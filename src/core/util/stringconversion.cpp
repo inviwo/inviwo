@@ -186,7 +186,7 @@ std::string ltrim(std::string s) {
 std::string dotSeperatedToPascalCase(const std::string& s) {
     std::stringstream ss;
     for (auto elem : splitString(s, '.')) {
-        elem[0] = std::toupper(elem[0]);
+        elem[0] = static_cast<char>(std::toupper(elem[0]));
         ss << elem;
     }
     return ss.str();
@@ -203,7 +203,7 @@ std::string camelCaseToHeader(const std::string& s) {
         previous = c;
     }
     auto str{ss.str()};
-    str[0] = std::toupper(str[0]);
+    str[0] = static_cast<char>(std::toupper(str[0]));
     return str;
 }
 

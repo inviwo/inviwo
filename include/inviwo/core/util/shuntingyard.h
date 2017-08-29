@@ -99,7 +99,7 @@ private:
         char c;
         expr.get(c);
         ss << c;
-        while (isvariablechar(expr.peek()) || isdigit(expr.peek())) {
+        while (isvariablechar(static_cast<char>(expr.peek())) || isdigit(expr.peek())) {
             expr.get(c);
             ss << c;
         }

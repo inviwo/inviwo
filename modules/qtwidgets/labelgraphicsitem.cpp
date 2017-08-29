@@ -134,11 +134,11 @@ void LabelGraphicsItem::keyPressEvent(QKeyEvent* keyEvent) {
     }
 }
 
-void LabelGraphicsItem::focusInEvent(QFocusEvent* event) {
+void LabelGraphicsItem::focusInEvent(QFocusEvent*) {
     if (isCropped()) setPlainText(orgText_);
 }
 
-void LabelGraphicsItem::focusOutEvent(QFocusEvent* event) {
+void LabelGraphicsItem::focusOutEvent(QFocusEvent*) {
     focusOut_ = true;
     setFlags(nullptr);
     setTextInteractionFlags(Qt::NoTextInteraction);

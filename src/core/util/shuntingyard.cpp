@@ -87,12 +87,12 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
             rpnQueue.push(util::make_unique<Token<double>>(digit));
             lastTokenWasOp = false;
 
-        } else if (isvariablechar(expr.peek())) {
+        } else if (isvariablechar(static_cast<char>(expr.peek()))) {
             rpnQueue.push(util::make_unique<Token<std::string>>(getVariable(expr)));
             lastTokenWasOp = false;
 
         } else {
-            // Otherwise, the variable is an operator or paranthesis.
+            // Otherwise, the variable is an operator or parenthesis.
             expr.get(c);
             switch (c) {
                 case '(':
@@ -118,7 +118,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
                     std::stringstream ss;
                     ss << c;
                     while (!expr.eof() && !isspace(expr.peek()) && !isdigit(expr.peek()) &&
-                           !isvariablechar(expr.peek()) && expr.peek() != '(' &&
+                           !isvariablechar(static_cast<char>(expr.peek())) && expr.peek() != '(' &&
                            expr.peek() != ')') {
                         expr.get(c);
                         ss << c;

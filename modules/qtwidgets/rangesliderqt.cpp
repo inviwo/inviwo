@@ -45,7 +45,7 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool 
     , range_{0,10}
     , value_{0,10}
     , minSeperation_(0)
-    , formatTooltip_{[](int hanlde, int pos) {
+    , formatTooltip_{[](int /*hanlde*/, int pos) {
         return toString(pos);
     }}{
 
@@ -207,7 +207,7 @@ void RangeSliderQt::updateSlidersFromState() {
     setSizes(sizes);
 }
 
-void RangeSliderQt::updateSplitterPosition(int pos, int idx) {
+void RangeSliderQt::updateSplitterPosition(int /*pos*/, int /*idx*/) {
     updateStateFromSliders();
 
     //Emit
