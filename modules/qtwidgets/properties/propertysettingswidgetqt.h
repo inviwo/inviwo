@@ -72,10 +72,16 @@ class TemplatePropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
     using BT = typename util::value_type<T>::type;
     TemplatePropertySettingsWidgetQt(OrdinalProperty<T>* property, QWidget* widget);
-    virtual ~TemplatePropertySettingsWidgetQt() = default;
+    virtual ~TemplatePropertySettingsWidgetQt();
 
     virtual void updateFromProperty() override;
+    /**
+     * \brief shows the widget and registers the widget with the property
+     */
     void showWidget();
+    /**
+     * \brief hides the widget and deregisters it from the property
+     */
     void hideWidget();
     bool getVisible() const;
 
@@ -152,6 +158,11 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
 
     reload();
     setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
+}
+
+template <typename T>
+TemplatePropertySettingsWidgetQt<T>::~TemplatePropertySettingsWidgetQt() {
+    if (property_) property_->deregisterWidget(this);
 }
 
 template <typename T>
@@ -244,12 +255,18 @@ class TemplateMinMaxPropertySettingsWidgetQt : public QDialog, public PropertyWi
 public:
     using BT = typename util::value_type<T>::type;
     TemplateMinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property, QWidget* widget);
-    virtual ~TemplateMinMaxPropertySettingsWidgetQt() = default;
+    virtual ~TemplateMinMaxPropertySettingsWidgetQt();
 
     using V = glm::tvec2<T, glm::defaultp>;
 
     virtual void updateFromProperty() override;
+    /**
+     * \brief shows the widget and registers the widget with the property
+     */
     void showWidget();
+    /**
+     * \brief hides the widget and deregisters it from the property
+     */
     void hideWidget();
     bool getVisible() const;
 
@@ -332,6 +349,11 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
 }
 
 template <typename T>
+TemplateMinMaxPropertySettingsWidgetQt<T>::~TemplateMinMaxPropertySettingsWidgetQt() {
+    if (property_) property_->deregisterWidget(this);
+}
+
+template <typename T>
 void TemplateMinMaxPropertySettingsWidgetQt<T>::apply() {
     NetworkLock lock(property_);
 
@@ -339,9 +361,7 @@ void TemplateMinMaxPropertySettingsWidgetQt<T>::apply() {
 
     // order of values stored in setting_:
     // "Component", "Min Bound", "Start","End", "Max Bound", "MinSeparation", "Increment"
-    auto getVal = [&](int index) {
-        return static_cast<BT>(settings_[0]->getFieldAsDouble(index));
-    };
+    auto getVal = [&](int index) { return static_cast<BT>(settings_[0]->getFieldAsDouble(index)); };
 
     range_type newVal(getVal(1), getVal(2));
     range_type newRange(getVal(0), getVal(3));
