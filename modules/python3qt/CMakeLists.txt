@@ -3,6 +3,8 @@
 ivw_module(Python3Qt)
 
 find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -34,10 +36,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 ivw_define_qt_definitions()
 ivw_add_definition(IVW_PYTHON3_QT)
-
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5widgets QUIET REQUIRED)
 
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})

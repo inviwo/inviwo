@@ -4,7 +4,7 @@ ivw_module(QtWidgets)
 
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5widgets QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
 find_package(Qt5Help QUIET REQUIRED)
 
 #-------------------------------------------------------------------- 

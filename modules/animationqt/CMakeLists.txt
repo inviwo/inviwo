@@ -4,7 +4,7 @@ ivw_module(AnimationQt)
 
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5widgets QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add header files

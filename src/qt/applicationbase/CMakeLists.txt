@@ -28,7 +28,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Create library
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5widgets QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
 
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
