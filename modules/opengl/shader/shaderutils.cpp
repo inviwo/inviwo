@@ -38,9 +38,18 @@ namespace utilgl {
 void addShaderDefines(Shader& shader, const SimpleLightingProperty& property) {
     addShaderDefines(shader, ShadingMode::Modes(property.shadingMode_.get()));
     size_t numLights = property.lights_.getNumberOfElements();
-    std::string numLightsStr = numLights == 0 ? "1" : std::to_string(numLights);
+    std::string numLightsStr = std::to_string(std::max(size_t(1),numLights));
     shader.getVertexShaderObject()->addShaderDefine("NUMBER_OF_LIGHTS", numLightsStr);
     shader.getFragmentShaderObject()->addShaderDefine("NUMBER_OF_LIGHTS", numLightsStr);
+    if (property.applyLightAttenuation_.get()) {
+        shader.getFragmentShaderObject()->addShaderDefine("LIGHT_ATTENUATION", "1");
+        shader.getVertexShaderObject()->addShaderDefine("LIGHT_ATTENUATION", "1");
+
+    } else {
+        shader.getFragmentShaderObject()->removeShaderDefine("LIGHT_ATTENUATION");
+        shader.getVertexShaderObject()->removeShaderDefine("LIGHT_ATTENUATION");
+
+    }
 }
 
 void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
@@ -107,12 +116,9 @@ void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, s
         shader.setUniform(name + prefix + ".ambientColor", light->ambientColor_.get());
         shader.setUniform(name + prefix + ".diffuseColor", light->diffuseColor_.get());
         shader.setUniform(name + prefix + ".specularColor", light->specularColor_.get());
-        if (light->applyLightAttenuation_.get()) {
+        if (property.applyLightAttenuation_.get())
             shader.setUniform(name + prefix + ".attenuation",
-                              vec4(light->lightAttenuation_.get(), 1.0f));
-        } else {
-            shader.setUniform(name + prefix + ".attenuation", vec4(1.0f, 0.0f, 0.0f, 0.0f));
-        }
+                              light->lightAttenuation_.get());
     }
 }
 

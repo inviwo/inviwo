@@ -39,7 +39,6 @@ LightProperty::LightProperty(std::string identifier, std::string displayName,
 	: CompositeProperty(identifier, displayName, invalidationLevel, semantics)
 	, lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10), vec3(10, 10, 10))
 	, lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
-	, applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false)
 	, ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f))
 	, diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f))
 	, specularColor_("lightColorSpecular", "Specular color", vec3(0.4f))
@@ -54,7 +53,6 @@ LightProperty::LightProperty(std::string identifier, std::string displayName,
 	addProperty(diffuseColor_);
 	addProperty(specularColor_);
 
-	addProperty(applyLightAttenuation_);
 	addProperty(lightAttenuation_);
 }
 
@@ -62,7 +60,6 @@ LightProperty::LightProperty(const LightProperty& rhs)
 	: CompositeProperty(rhs)
 	, lightPosition_(rhs.lightPosition_)
 	, lightAttenuation_(rhs.lightAttenuation_)
-	, applyLightAttenuation_(rhs.applyLightAttenuation_)
 	, ambientColor_(rhs.ambientColor_)
 	, diffuseColor_(rhs.diffuseColor_)
 	, specularColor_(rhs.specularColor_)
@@ -71,7 +68,6 @@ LightProperty::LightProperty(const LightProperty& rhs)
 	addProperty(ambientColor_);
 	addProperty(diffuseColor_);
 	addProperty(specularColor_);
-	addProperty(applyLightAttenuation_);
 	addProperty(lightAttenuation_);
 }
 
@@ -80,7 +76,6 @@ LightProperty& LightProperty::operator=(const LightProperty& that) {
 		CompositeProperty::operator=(that);
 		lightPosition_ = that.lightPosition_;
 		lightAttenuation_ = that.lightAttenuation_;
-		applyLightAttenuation_ = that.applyLightAttenuation_;
 		ambientColor_ = that.ambientColor_;
 		diffuseColor_ = that.diffuseColor_;
 		specularColor_ = that.specularColor_;

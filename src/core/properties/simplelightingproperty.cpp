@@ -43,6 +43,7 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     , referenceFrame_("referenceFrame", "Space")
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
     , roughness_("materialRoughness", "Roughness", 0.4f, 0.0f, 1.0f)
+    , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false, InvalidationLevel::InvalidResources)
     , camera_(camera)
     , lights_("lightList", "Lights", "Light", std::move(std::make_unique<LightProperty>("light", "Light")),
               maxNumberOfLights) {
@@ -72,6 +73,8 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     addProperty(referenceFrame_);
     addProperty(specularExponent_);
     addProperty(roughness_);
+    addProperty(applyLightAttenuation_);
+
 
     addProperty(lights_);
     if(lights_.getNumberOfElements() == 0)
@@ -84,6 +87,7 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     , referenceFrame_(rhs.referenceFrame_)
     , specularExponent_(rhs.specularExponent_)
     , roughness_(rhs.roughness_)
+    , applyLightAttenuation_(rhs.applyLightAttenuation_)
     , lights_(rhs.lights_) {
 
     // add properties
@@ -91,6 +95,7 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     addProperty(referenceFrame_);
     addProperty(specularExponent_);
     addProperty(roughness_);
+    addProperty(applyLightAttenuation_);
 
     addProperty(lights_);
 }
@@ -102,6 +107,7 @@ SimpleLightingProperty& SimpleLightingProperty::operator=(const SimpleLightingPr
         referenceFrame_ = that.referenceFrame_;
         specularExponent_ = that.specularExponent_;
         roughness_ = that.roughness_;
+        applyLightAttenuation_ = that.applyLightAttenuation_;
         lights_ = that.lights_;
     }
     return *this;

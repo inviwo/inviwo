@@ -75,6 +75,8 @@ public:
 
     FloatProperty specularExponent_;
     FloatProperty roughness_;
+    BoolProperty applyLightAttenuation_;
+
 
     ListProperty<LightProperty> lights_;
 

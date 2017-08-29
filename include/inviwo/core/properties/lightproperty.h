@@ -60,7 +60,6 @@ public:
 
     FloatVec3Property lightPosition_;
     FloatVec3Property lightAttenuation_;
-    BoolProperty applyLightAttenuation_;
 
     FloatVec3Property ambientColor_;
     FloatVec3Property diffuseColor_;

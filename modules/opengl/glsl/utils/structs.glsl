@@ -112,7 +112,9 @@ struct Light {
 	vec3 ambientColor;
 	vec3 diffuseColor;
 	vec3 specularColor;
-	vec4 attenuation;
+#ifdef LIGHT_ATTENUATION
+	vec3 attenuation;
+#endif
 };
 
 #ifndef NUMBER_OF_LIGHTS
