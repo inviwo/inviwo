@@ -49,13 +49,13 @@ class ListProperty : public CompositeProperty {
 
 private:
     std::string elementName_;
-    std::unique_ptr<T> prefab_;
+    const T prefab_;
 
 public:
     size_t maxNumElements_;
 
-    ListProperty(std::string identifier, std::string displayName, std::string elementName = "Element",
-                 std::unique_ptr<T> prefab = nullptr, size_t maxNumberOfElements = 0,
+    ListProperty(std::string identifier, std::string displayName, std::string elementName,
+                 T& prefab, size_t maxNumberOfElements = 0,
                  InvalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
     ListProperty(const ListProperty& rhs);
@@ -80,12 +80,12 @@ public:
 
 template <typename T>
 ListProperty<T>::ListProperty(std::string identifier, std::string displayName,
-                              std::string elementName, std::unique_ptr<T> prefab,
+                              std::string elementName, T& prefab,
                               size_t maxNumberOfElements, InvalidationLevel invalidationLevel,
                               PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , elementName_(elementName)
-    , prefab_(std::move(prefab))
+    , prefab_(prefab)
     , addElementButton_("addElement", "Add Element", InvalidationLevel::InvalidResources)
     , deleteElementButton_("deleteElement", "Delete Element", InvalidationLevel::InvalidResources)
     , elementSelection_("elementSelection", "Element Selection")
@@ -104,7 +104,7 @@ template <typename T>
 ListProperty<T>::ListProperty(const ListProperty<T>& rhs)
     : CompositeProperty(rhs)
     , elementName_(rhs.elementName_)
-    , prefab_(rhs.prefab_->clone())
+    , prefab_(rhs.prefab_)
     , addElementButton_(rhs.addElementButton_)
     , deleteElementButton_(rhs.deleteElementButton_)
     , elementSelection_(rhs.elementSelection_)
@@ -124,7 +124,6 @@ ListProperty<T>& ListProperty<T>::operator=(const ListProperty<T>& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
         elementName_ = that.elementName_;
-        prefab_ = std::make_unique<T>(*(that.prefab_->clone()));
         addElementButton_ = that.addElementButton_;
         deleteElementButton_ = that.deleteElementButton_;
         elementSelection_ = that.elementSelection_;
@@ -147,7 +146,7 @@ void ListProperty<T>::addElement() {
 
         elementSelection_.addOption("elementOption_" + num, elementName_ + " " + num);
 
-        T* property = prefab_->clone();
+        T* property = prefab_.clone();
         property->setSerializationMode(PropertySerializationMode::All);
         property->setIdentifier("element_" + num);
         property->setDisplayName(elementName_ + " " + num);
@@ -188,21 +187,13 @@ void ListProperty<T>::deleteElement() {
 template <typename T>
 void ListProperty<T>::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
-    /*
     s.serialize("maxNumElements", maxNumElements_);
-    PropertyOwner prefab = static_cast<PropertyOwner>(*prefab_);
-    s.serialize("prefab", prefab); */
 }
 
 template <typename T>
 void ListProperty<T>::deserialize(Deserializer& d) {
     CompositeProperty::deserialize(d);
-    /* 
     d.deserialize("maxNumElements", maxNumElements_);
-    PropertyOwner prefab;
-    d.deserialize("prefab", prefab);
-    T casted = static_cast<T>(prefab);
-    prefab_ = std::make_unique<T>(casted); */
 }
 
 }  // namespace inviwo

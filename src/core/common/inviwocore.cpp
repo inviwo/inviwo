@@ -309,7 +309,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<RaycastingProperty>();
     registerProperty<SimpleLightingProperty>();
     registerProperty<LightProperty>();
-    registerProperty<ListProperty<LightProperty>>();
     registerProperty<SimpleRaycastingProperty>();
     registerProperty<StipplingProperty>();
     registerProperty<StringProperty>();
