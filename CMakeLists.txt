@@ -89,8 +89,8 @@ include(cmake/globalconfig.cmake)
 option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
 option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
 
-string(FIND "${CMAKE_PREFIX_PATH}" qt hasqt) # Skip if qt is already in CMAKE_PREFIX_PATH
-if(NOT ${hasqt} GREATER 0) # try and find qt and add it to CMAKE_PREFIX_PATH
+# Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
+if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
     if(NOT QT_QMAKE_EXECUTABLE)
         find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake4 qmake-qt4 qmake5 qmake-qt5
            PATHS "${QT_SEARCH_PATH}/bin" "$ENV{QTDIR}/bin")
