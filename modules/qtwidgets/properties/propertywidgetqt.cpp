@@ -250,7 +250,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
         menu->addSeparator();
     }
 
-    {
+    if (property_) {
         auto resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the property back to it's initial state"));
         connect(resetAction, &QAction::triggered, this,
