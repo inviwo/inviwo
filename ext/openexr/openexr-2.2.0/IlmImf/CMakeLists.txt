@@ -288,7 +288,7 @@ ivw_suppress_compiler_warnings(openexr-ilmimf)
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(openexr-ilmimf)
+ivw_default_install_comp_targets(core openexr-ilmimf)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

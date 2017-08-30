@@ -66,7 +66,7 @@ ivw_suppress_compiler_warnings(openexr-imath)
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(openexr-imath)
+ivw_default_install_comp_targets(core openexr-imath)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
