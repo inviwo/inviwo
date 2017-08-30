@@ -99,7 +99,7 @@ if(NOT ${hasqt} GREATER 0) # try and find qt and add it to CMAKE_PREFIX_PATH
 
     if(WIN32)
         if(QT_QMAKE_EXECUTABLE)
-            string(REGEX REPLACE "bin\\\\qmake([^ ]*)$" "lib\\\\cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
+            execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query "QT_INSTALL_PREFIX" OUTPUT_VARIABLE QT5_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
         endif()
     elseif(APPLE)
         if(EXISTS "/usr/local/Cellar/qt")
@@ -123,7 +123,7 @@ if(NOT ${hasqt} GREATER 0) # try and find qt and add it to CMAKE_PREFIX_PATH
         endif()
     else()
         if(QT_QMAKE_EXECUTABLE)
-            string(REGEX REPLACE "bin/qmake([^ ]*)$" "lib/cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
+            execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query "QT_INSTALL_PREFIX" OUTPUT_VARIABLE QT5_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
         endif()
     endif()
 
