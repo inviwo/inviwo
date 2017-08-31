@@ -248,15 +248,12 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
         menu->addSeparator();
         addPresetMenuActions(menu.get(), app);
         menu->addSeparator();
-    }
-
-    if (property_) {
+        
         auto resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the property back to it's initial state"));
         connect(resetAction, &QAction::triggered, this,
                 [&]() { property_->resetToDefaultState(); });
     }
-
     // Module actions.
     addModuleMenuActions(menu.get(), app);
 
