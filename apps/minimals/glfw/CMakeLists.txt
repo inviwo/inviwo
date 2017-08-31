@@ -22,14 +22,6 @@ foreach(module ${package_list})
         list(REMOVE_ITEM package_list ${module})
     endif()
 endforeach()
-# Remove other GL stuff from list
-list(REMOVE_ITEM package_list InviwoGLUTModule)
-list(REMOVE_ITEM package_list InviwoSDLModule)
-
-#--------------------------------------------------------------------
-# Remove modules not used by this app
-list(REMOVE_ITEM package_list InviwoPythonModule)
-list(REMOVE_ITEM package_list InviwoUnitTestsModule)
 
 #--------------------------------------------------------------------
 # Register the use of modules

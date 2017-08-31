@@ -41,8 +41,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-
-
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
@@ -104,4 +102,6 @@ ivw_set_cpack_name(qt_editor)
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
 
 ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
-ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help)
+
+# Qt5Sql is needed by Qt5Help
+ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql)

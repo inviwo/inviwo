@@ -54,27 +54,6 @@ ivw_define_standard_properties(inviwo-integrationtests)
 ivw_memleak_setup(inviwo-integrationtests)
 
 #--------------------------------------------------------------------
-# Move to folder
-#ivw_folder(inviwo-integrationtests minimals)
-
-#--------------------------------------------------------------------
-# Add application to pack
-if(IVW_PACKAGE_PROJECT)
-if(WIN32)
-    install(TARGETS inviwo-integrationtests
-            RUNTIME DESTINATION bin
-            COMPONENT integrationtest_app)
-else()
-    install(TARGETS inviwo-integrationtests
-            RUNTIME DESTINATION bin
-            BUNDLE DESTINATION bin
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-            COMPONENT integrationtest_app)
-endif()
-endif()
-
-#--------------------------------------------------------------------
 # Add dependencies
 ivw_add_dependencies(${package_list})
 
