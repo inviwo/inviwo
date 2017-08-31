@@ -40,7 +40,14 @@ if(PYTHONLIBS_FOUND)
         # Prevent setting the /GL and -LTCG flag 
         set(PYBIND11_LTO_CXX_FLAGS "" CACHE INTERNAL "")
         set(PYBIND11_LTO_LINKER_FLAGS "" CACHE INTERNAL "")
-    endif(MSVC)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        # Workaround
+        CHECK_CXX_COMPILER_FLAG("-flto-partition=none" HAS_LTO_PARTITION_FLAG)
+        if(HAS_LTO_PARTITION_FLAG)
+            set(PYBIND11_LTO_CXX_FLAGS "" CACHE INTERNAL "")
+            set(PYBIND11_LTO_LINKER_FLAGS "-flto-partition=one" CACHE INTERNAL "")
+        endif(HAS_LTO_PARTITION_FLAG)
+    endif()
 endif(PYTHONLIBS_FOUND)
 
 
