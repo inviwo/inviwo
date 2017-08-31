@@ -220,22 +220,14 @@ include(${CMAKE_CURRENT_LIST_DIR}/pybind11.cmake)
 
 #--------------------------------------------------------------------
 # Build shared libs or static libs
-mark_as_advanced(BUILD_SHARED_LIBS)
 mark_as_advanced(FORCE GLM_DIR)
 mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
 if(WIN32 AND MSVC)
-    if(SHARED_LIBS)
-        set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
-    else()
-        set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs, else static libs" FORCE)
-    endif()
-    
-    # Determine runtime library linkage depending on SHARED_LIBS setting.
     # Shared runtime can be forced by setting the IVW_FORCE_SHARED_CRT option.
     option(IVW_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
     mark_as_advanced(IVW_FORCE_SHARED_CRT)
-    if(SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
+    if(IVW_FORCE_SHARED_CRT)
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
         set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MD")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
