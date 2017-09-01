@@ -166,7 +166,7 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
 std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 
-    if (propertyOwner_) {
+    if (propertyOwner_ && !property_) {
         menu->addAction(QString::fromStdString(displayName_));
         menu->addSeparator();
     
