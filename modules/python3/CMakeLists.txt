@@ -71,7 +71,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/simple_buffer_test.py
 )
 
-if  (NOT NUMPY_OUTPUT_VERSION MATCHES "failed")
+if(NOT NUMPY_OUTPUT_VERSION MATCHES "failed")
     set(TEST_FILES
         ${TEST_FILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/numpy-test.cpp
@@ -126,8 +126,25 @@ if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
     get_filename_component(python_lib_dir "${PYTHON_LIB}" DIRECTORY)
     get_filename_component(python_dir "${python_lib_dir}" DIRECTORY)
     if(WIN32)
-        find_file(PYTHON_DLL NAMES ${python_lib_name}.dll PATHS ${python_dir})
-        install(FILES ${PYTHON_DLL} DESTINATION bin COMPONENT modules)
+        #find_file(PYTHON_DLL NAMES ${python_lib_name}.dll PATHS ${python_dir})
+        #install(FILES ${PYTHON_DLL} DESTINATION bin COMPONENT python)
+
+        set(py_version "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
+        set(py_url "https://www.python.org/ftp/python/${py_version}/python-${py_version}-embed-amd64.zip")
+        set(py_dir "${CMAKE_BINARY_DIR}/py_embedd/")
+        set(py_file "${py_dir}/py_embedd.${py_version}.zip")
+        if(NOT EXISTS "${py_file}")
+            file(DOWNLOAD ${py_url} ${py_file} STATUS py_status SHOW_PROGRESS)
+            list(GET py_status 0 py_success)
+            if(NOT py_success EQUAL 0)
+                message(FATAL_ERROR "Could not download python embedd: ${py_url}")
+            endif()
+        endif()
+       
+        file(MAKE_DIRECTORY "${py_dir}/python")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file} 
+                        WORKING_DIRECTORY "${py_dir}/python")
+        install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT python)
     endif()
 endif()
 
