@@ -284,9 +284,8 @@ function(ivw_private_make_help)
         GENERATE_QHP
     )
 
-    get_filename_component(QT_BIN_PATH ${QT_QMAKE_EXECUTABLE} PATH)
-    find_program(IVW_DOXY_QCOLLECTIONGENERATOR "qcollectiongenerator" ${QT_BIN_PATH})
-    find_program(IVW_DOXY_QHELPGENERATOR "qhelpgenerator" ${QT_BIN_PATH})
+    find_program(IVW_DOXY_QCOLLECTIONGENERATOR "qcollectiongenerator")
+    find_program(IVW_DOXY_QHELPGENERATOR "qhelpgenerator")
 
     add_custom_target("DOXY-HELP-${HARG_NAME}"
         COMMAND ${CMAKE_COMMAND} -E echo "Building help for ${ARG_NAME}"
