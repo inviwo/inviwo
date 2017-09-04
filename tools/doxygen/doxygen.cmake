@@ -284,7 +284,6 @@ function(ivw_private_make_help)
         GENERATE_QHP
     )
 
-    find_program(IVW_DOXY_QCOLLECTIONGENERATOR "qcollectiongenerator")
     find_program(IVW_DOXY_QHELPGENERATOR "qhelpgenerator")
 
     add_custom_target("DOXY-HELP-${HARG_NAME}"
