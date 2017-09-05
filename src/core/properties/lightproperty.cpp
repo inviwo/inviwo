@@ -28,77 +28,73 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/lightproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 
 namespace inviwo {
 
-	PropertyClassIdentifier(LightProperty, "org.inviwo.LightProperty");
+PropertyClassIdentifier(LightProperty, "org.inviwo.LightProperty");
 
 LightProperty::LightProperty(std::string identifier, std::string displayName,
-							 InvalidationLevel invalidationLevel,
-							 PropertySemantics semantics)
-	: CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-	, lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10), vec3(10, 10, 10))
-	, lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
-	, ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f))
-	, diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f))
-	, specularColor_("lightColorSpecular", "Specular color", vec3(0.4f))
-{
-	lightPosition_.setSemantics(PropertySemantics("Spherical"));
-	ambientColor_.setSemantics(PropertySemantics::Color);
-	diffuseColor_.setSemantics(PropertySemantics::Color);
-	specularColor_.setSemantics(PropertySemantics::Color);
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10),
+                     vec3(10, 10, 10))
+    , lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
+    , ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f))
+    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f))
+    , specularColor_("lightColorSpecular", "Specular color", vec3(0.4f)) {
+    lightPosition_.setSemantics(PropertySemantics("Spherical"));
+    ambientColor_.setSemantics(PropertySemantics::Color);
+    diffuseColor_.setSemantics(PropertySemantics::Color);
+    specularColor_.setSemantics(PropertySemantics::Color);
 
-	addProperty(lightPosition_);
-	addProperty(ambientColor_);
-	addProperty(diffuseColor_);
-	addProperty(specularColor_);
-
-	addProperty(lightAttenuation_);
+    addProperty(lightPosition_);
+    addProperty(ambientColor_);
+    addProperty(diffuseColor_);
+    addProperty(specularColor_);
+    addProperty(lightAttenuation_);
 }
 
-LightProperty::LightProperty(const LightProperty& rhs) 
-	: CompositeProperty(rhs)
-	, lightPosition_(rhs.lightPosition_)
-	, lightAttenuation_(rhs.lightAttenuation_)
-	, ambientColor_(rhs.ambientColor_)
-	, diffuseColor_(rhs.diffuseColor_)
-	, specularColor_(rhs.specularColor_)
-{
-	addProperty(lightPosition_);
-	addProperty(ambientColor_);
-	addProperty(diffuseColor_);
-	addProperty(specularColor_);
-	addProperty(lightAttenuation_);
+LightProperty::LightProperty(const LightProperty& rhs)
+    : CompositeProperty(rhs)
+    , lightPosition_(rhs.lightPosition_)
+    , lightAttenuation_(rhs.lightAttenuation_)
+    , ambientColor_(rhs.ambientColor_)
+    , diffuseColor_(rhs.diffuseColor_)
+    , specularColor_(rhs.specularColor_) {
+    addProperty(lightPosition_);
+    addProperty(ambientColor_);
+    addProperty(diffuseColor_);
+    addProperty(specularColor_);
+    addProperty(lightAttenuation_);
 }
 
 LightProperty& LightProperty::operator=(const LightProperty& that) {
-	if (this != &that) {
-		CompositeProperty::operator=(that);
-		lightPosition_ = that.lightPosition_;
-		lightAttenuation_ = that.lightAttenuation_;
-		ambientColor_ = that.ambientColor_;
-		diffuseColor_ = that.diffuseColor_;
-		specularColor_ = that.specularColor_;
-	}
-	return *this;
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        lightPosition_ = that.lightPosition_;
+        lightAttenuation_ = that.lightAttenuation_;
+        ambientColor_ = that.ambientColor_;
+        diffuseColor_ = that.diffuseColor_;
+        specularColor_ = that.specularColor_;
+    }
+    return *this;
 }
 
-LightProperty* LightProperty::clone() const {
-	return new LightProperty(*this);
-}
+LightProperty* LightProperty::clone() const { return new LightProperty(*this); }
 
-LightProperty::~LightProperty() {}
+LightProperty::~LightProperty() = default;
 
-vec3 LightProperty::getTransformedPosition(const CameraProperty* camera, CoordinateSpace space) const {
+vec3 LightProperty::getTransformedPosition(const CameraProperty* camera,
+                                           CoordinateSpace space) const {
     switch (space) {
         case CoordinateSpace::View:
-		return camera ? vec3(camera->inverseViewMatrix() * vec4(lightPosition_.get(), 1.0f))
-			: lightPosition_.get();
-	case CoordinateSpace::World:
-	default:
-		return lightPosition_.get();
-	}
+            return camera ? vec3(camera->inverseViewMatrix() * vec4(lightPosition_.get(), 1.0f))
+                          : lightPosition_.get();
+        case CoordinateSpace::World:
+        default:
+            return lightPosition_.get();
+    }
 }
 
-} // namespace
-
+}  // namespace inviwo
