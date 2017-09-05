@@ -221,9 +221,10 @@ void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec
 }
 
 void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& light) {
-    setLightingProperties(ShadingMode::Modes(light.shadingMode_.get()), light.lightPosition_.get(),
-                          light.ambientColor_.get(), light.diffuseColor_.get(),
-                          light.specularColor_.get(), light.specularExponent_.get());
+    const auto& l0 = light.lights_[0];
+    setLightingProperties(ShadingMode::Modes(light.shadingMode_.get()), l0.lightPosition_.get(),
+                          l0.ambientColor_.get(), l0.diffuseColor_.get(),
+                          l0.specularColor_.get(), light.specularExponent_.get());
 }
 
 void VolumeRaycasterCL::setDefaultBackgroundColor(const vec4 color) {
