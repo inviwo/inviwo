@@ -56,8 +56,8 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     , roughness_("materialRoughness", "Roughness", 0.4f, 0.0f, 1.0f)
     , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false,
                              InvalidationLevel::InvalidResources)
-    , camera_(camera)
-    , lights_("lightList", "Lights", "Light", LightProperty("light", "Light"), maxNumberOfLights) {
+    , lights_("lightList", "Lights", "Light", LightProperty("light", "Light"), maxNumberOfLights)
+    , camera_(camera) {
 
     if (camera_) {
         referenceFrame_.addOption("view", "View", static_cast<int>(CoordinateSpace::View));
@@ -85,7 +85,8 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     , specularExponent_(rhs.specularExponent_)
     , roughness_(rhs.roughness_)
     , applyLightAttenuation_(rhs.applyLightAttenuation_)
-    , lights_(rhs.lights_) {
+    , lights_(rhs.lights_)
+    , camera_(rhs.camera_){
 
     // add properties
     addProperty(shadingMode_);
@@ -106,6 +107,7 @@ SimpleLightingProperty& SimpleLightingProperty::operator=(const SimpleLightingPr
         roughness_ = that.roughness_;
         applyLightAttenuation_ = that.applyLightAttenuation_;
         lights_ = that.lights_;
+        camera_ = that.camera_;
     }
     return *this;
 }

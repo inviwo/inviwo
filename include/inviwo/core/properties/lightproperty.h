@@ -40,6 +40,9 @@
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 
 namespace inviwo {
+
+class CameraProperty;
+
 /**
  * \class LightProperty
  * \brief Holds information of a light source
