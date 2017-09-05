@@ -39,34 +39,31 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , shadingMode_("shadingMode", "Shading", InvalidationLevel::InvalidResources)
-    , referenceFrame_("referenceFrame", "Space")
+    , shadingMode_(
+          "shadingMode", "Shading",
+          {{"none", "No Shading", ShadingMode::None},
+           {"ambient", "Ambient", ShadingMode::Ambient},
+           {"diffuse", "Diffuse", ShadingMode::Diffuse},
+           {"specular", "Specular", ShadingMode::Specular},
+           {"blinnphong", "Blinn Phong", ShadingMode::BlinnPhong},
+           {"phong", "Phong", ShadingMode::Phong},
+           {"orennayar", "Oren Nayar", ShadingMode::OrenNayar},
+           {"orennayardiffuse", "Oren Nayar (Diffuse only)", ShadingMode::OrenNayarDiffuse}},
+          5, InvalidationLevel::InvalidResources)
+    , referenceFrame_("referenceFrame", "Space",
+                      {{"world", "World", static_cast<int>(CoordinateSpace::World)}}, 0)
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
     , roughness_("materialRoughness", "Roughness", 0.4f, 0.0f, 1.0f)
-    , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false, InvalidationLevel::InvalidResources)
+    , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false,
+                             InvalidationLevel::InvalidResources)
     , camera_(camera)
-    , lights_("lightList", "Lights", "Light", LightProperty("light", "Light"),
-              maxNumberOfLights) {
-    shadingMode_.addOption("none", "No Shading", ShadingMode::None);
-    shadingMode_.addOption("ambient", "Ambient", ShadingMode::Ambient);
-    shadingMode_.addOption("diffuse", "Diffuse", ShadingMode::Diffuse);
-    shadingMode_.addOption("specular", "Specular", ShadingMode::Specular);
-    shadingMode_.addOption("blinnphong", "Blinn Phong", ShadingMode::BlinnPhong);
-    shadingMode_.addOption("phong", "Phong", ShadingMode::Phong);
-    shadingMode_.addOption("orennayar", "Oren Nayar", ShadingMode::OrenNayar);
-    shadingMode_.addOption("orennayardiffuse", "Oren Nayar (Diffuse only)",
-                           ShadingMode::OrenNayarDiffuse);
-    shadingMode_.setSelectedValue(ShadingMode::Phong);
-    shadingMode_.setCurrentStateAsDefault();
+    , lights_("lightList", "Lights", "Light", LightProperty("light", "Light"), maxNumberOfLights) {
 
-    referenceFrame_.addOption("world", "World", static_cast<int>(CoordinateSpace::World));
-    referenceFrame_.setSelectedValue(static_cast<int>(CoordinateSpace::World));
     if (camera_) {
         referenceFrame_.addOption("view", "View", static_cast<int>(CoordinateSpace::View));
         referenceFrame_.setSelectedValue(static_cast<int>(CoordinateSpace::View));
+        referenceFrame_.setCurrentStateAsDefault();
     }
-
-    referenceFrame_.setCurrentStateAsDefault();
 
     // add properties
     addProperty(shadingMode_);
@@ -75,10 +72,10 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     addProperty(roughness_);
     addProperty(applyLightAttenuation_);
 
-
     addProperty(lights_);
-    if(lights_.getNumberOfElements() == 0)
+    if (lights_.size() == 0) {
         lights_.addElement();
+    }
 }
 
 SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs)
@@ -117,6 +114,6 @@ SimpleLightingProperty* SimpleLightingProperty::clone() const {
     return new SimpleLightingProperty(*this);
 }
 
-SimpleLightingProperty::~SimpleLightingProperty() {}
+SimpleLightingProperty::~SimpleLightingProperty() = default;
 
 }  // namespace inviwo

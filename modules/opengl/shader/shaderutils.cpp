@@ -37,7 +37,7 @@ namespace utilgl {
 
 void addShaderDefines(Shader& shader, const SimpleLightingProperty& property) {
     addShaderDefines(shader, ShadingMode::Modes(property.shadingMode_.get()));
-    size_t numLights = property.lights_.getNumberOfElements();
+    size_t numLights = property.lights_.size();
     std::string numLightsStr = std::to_string(std::max(size_t(1),numLights));
     shader.getVertexShaderObject()->addShaderDefine("NUMBER_OF_LIGHTS", numLightsStr);
     shader.getFragmentShaderObject()->addShaderDefine("NUMBER_OF_LIGHTS", numLightsStr);
@@ -103,22 +103,20 @@ void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, s
     shader.setUniform(name + ".specularExponent", property.specularExponent_.get());
     shader.setUniform(name + ".roughness", property.roughness_.get());
 
-    std::vector<Property*> lights = property.lights_.elements_.getProperties();
-
     name += ".lights";
-    for (size_t i = 0; i < lights.size(); ++i) {
-        LightProperty* light = static_cast<LightProperty*>(lights[i]);
+    for (size_t i = 0; i < property.lights_.size(); ++i) {
+        auto& light = property.lights_[i];
         std::string prefix = "[" + std::to_string(i) + "]";
-        shader.setUniform(
-            name + prefix + ".position",
-            light->getTransformedPosition(property.getCameraProperty(),
-                                          static_cast<CoordinateSpace>(property.referenceFrame_.get())));
-        shader.setUniform(name + prefix + ".ambientColor", light->ambientColor_.get());
-        shader.setUniform(name + prefix + ".diffuseColor", light->diffuseColor_.get());
-        shader.setUniform(name + prefix + ".specularColor", light->specularColor_.get());
-        if (property.applyLightAttenuation_.get())
-            shader.setUniform(name + prefix + ".attenuation",
-                              light->lightAttenuation_.get());
+        shader.setUniform(name + prefix + ".position",
+                          light.getTransformedPosition(
+                              property.getCameraProperty(),
+                              static_cast<CoordinateSpace>(property.referenceFrame_.get())));
+        shader.setUniform(name + prefix + ".ambientColor", light.ambientColor_.get());
+        shader.setUniform(name + prefix + ".diffuseColor", light.diffuseColor_.get());
+        shader.setUniform(name + prefix + ".specularColor", light.specularColor_.get());
+        if (property.applyLightAttenuation_.get()) {
+            shader.setUniform(name + prefix + ".attenuation", light.lightAttenuation_.get());
+        }
     }
 }
 
@@ -175,9 +173,11 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     // gradient for channel 1
     std::string gradientComputationKey = "COMPUTE_GRADIENT(voxel, volume, volumeParams, samplePos)";
     // gradient for specific channel
-    std::string singleChannelGradientKey = "COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParams, samplePos, channel)";
-    // gradients for all channels 
-    std::string allChannelsGradientKey = "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
+    std::string singleChannelGradientKey =
+        "COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParams, samplePos, channel)";
+    // gradients for all channels
+    std::string allChannelsGradientKey =
+        "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
 
     std::string gradientValue = "";
     std::string singleChannelGradientValue = "";
@@ -309,31 +309,32 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
     shader.setUniform(name + ".isoValue", property.isoValue_.get());
 }
 
-void addShaderDefinesBGPort(Shader& shader,ImageInport port){
+void addShaderDefinesBGPort(Shader& shader, ImageInport port) {
     std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {
         shader.getFragmentShaderObject()->addShaderDefine("HAS_BACKGROUND");
-        shader.getFragmentShaderObject()->addShaderDefine(bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);");
-    }
-    else {
+        shader.getFragmentShaderObject()->addShaderDefine(
+            bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);");
+    } else {
         shader.getFragmentShaderObject()->removeShaderDefine("HAS_BACKGROUND");
         shader.getFragmentShaderObject()->addShaderDefine(bgKey, "result");
     }
-
 }
 
 void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& property) {
     // compositing defines
-    std::string key = "DRAW_PLANES(result, samplePosition, rayDirection, increment, params,t,tDepth)";
+    std::string key =
+        "DRAW_PLANES(result, samplePosition, rayDirection, increment, params,t,tDepth)";
     std::string value = "result";
 
     if (property.enable_ &&
         (property.plane1_.enable_ || property.plane2_.enable_ || property.plane3_.enable_)) {
         std::string planes("");
-        planes += property.plane1_.enable_ ? ", params.plane1" : ""; 
-        planes += property.plane2_.enable_ ? ", params.plane2" : ""; 
+        planes += property.plane1_.enable_ ? ", params.plane1" : "";
+        planes += property.plane2_.enable_ ? ", params.plane2" : "";
         planes += property.plane3_.enable_ ? ", params.plane3" : "";
-        value = "drawPlanes(result, samplePosition, rayDirection, increment " + planes + ",t,tDepth)";
+        value =
+            "drawPlanes(result, samplePosition, rayDirection, increment " + planes + ",t,tDepth)";
     }
     shader.getFragmentShaderObject()->addShaderDefine(key, value);
 }
