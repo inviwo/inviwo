@@ -227,7 +227,7 @@ if(WIN32 AND MSVC)
     # Shared runtime can be forced by setting the IVW_FORCE_SHARED_CRT option.
     option(IVW_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
     mark_as_advanced(IVW_FORCE_SHARED_CRT)
-    if(IVW_FORCE_SHARED_CRT)
+    if(BUILD_SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
         set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MD")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
