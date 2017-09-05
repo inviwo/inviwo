@@ -12,7 +12,7 @@
 
 # When other libraries are using a shared version of runtime libraries,
 # Google Test also has to use one.
-if(SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
+if(BUILD_SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
     set(gtest_force_shared_crt ON CACHE BOOL "Use shared (DLL) run-time lib even when Google Test is built as static lib." FORCE)
 else()
     set(gtest_force_shared_crt OFF CACHE BOOL "Use shared (DLL) run-time lib even when Google Test is built as static lib." FORCE)

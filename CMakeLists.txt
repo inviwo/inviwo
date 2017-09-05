@@ -64,7 +64,7 @@ else()
     project(inviwo-projects)
 endif()
 # Build
-option(SHARED_LIBS "Build shared libs, else static libs" ON)
+option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 
 # Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
