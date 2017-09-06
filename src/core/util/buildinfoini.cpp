@@ -58,7 +58,6 @@ struct IniSeparator : std::ctype<char> {
 BuildInfo getBuildInfo() {
     auto dir =
         filesystem::getFileDirectory(filesystem::getExecutablePath()) + "/inviwo_buildinfo.ini";
-    LogInfoCustom("BUILDINFO", dir);
     std::ifstream in(dir.c_str(), std::ios::in);
     if (!in.is_open()) {
         return {};
