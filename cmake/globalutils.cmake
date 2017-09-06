@@ -681,6 +681,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # A helper funtion to install targets
+# usage: ivw_default_install_comp_targets(<cpack component> <list of targets)
 function(ivw_default_install_comp_targets comp)
     if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
         if(WIN32)
@@ -708,6 +709,8 @@ function(ivw_default_install_comp_targets comp)
     endif()
 endfunction()
 
+#--------------------------------------------------------------------
+# A helper funtion to install module targets
 function(ivw_default_install_targets)
     ivw_default_install_comp_targets(modules ${ARGN})
 endfunction()

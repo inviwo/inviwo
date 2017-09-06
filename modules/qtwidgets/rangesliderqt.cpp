@@ -45,7 +45,7 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool 
     , range_{0,10}
     , value_{0,10}
     , minSeperation_(0)
-    , formatTooltip_{[](int /*hanlde*/, int pos) {
+    , formatTooltip_{[](int /*handle*/, int pos) {
         return toString(pos);
     }}{
 

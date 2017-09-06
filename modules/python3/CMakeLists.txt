@@ -122,13 +122,7 @@ endif()
 #--------------------------------------------------------------------
 # Add Python to package
 if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
-    get_filename_component(python_lib_name "${PYTHON_LIB}" NAME_WE)
-    get_filename_component(python_lib_dir "${PYTHON_LIB}" DIRECTORY)
-    get_filename_component(python_dir "${python_lib_dir}" DIRECTORY)
     if(WIN32)
-        #find_file(PYTHON_DLL NAMES ${python_lib_name}.dll PATHS ${python_dir})
-        #install(FILES ${PYTHON_DLL} DESTINATION bin COMPONENT python)
-
         set(py_version "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
         set(py_url "https://www.python.org/ftp/python/${py_version}/python-${py_version}-embed-amd64.zip")
         set(py_dir "${CMAKE_BINARY_DIR}/py_embedd/")
