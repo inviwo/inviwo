@@ -29,7 +29,7 @@ ivw_suppress_compiler_warnings(openexr-iexmath)
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(openexr-iexmath)
+ivw_default_install_comp_targets(core openexr-iexmath)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

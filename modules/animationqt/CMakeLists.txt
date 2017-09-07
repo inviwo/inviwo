@@ -3,6 +3,8 @@
 ivw_module(AnimationQt)
 
 find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add header files
@@ -47,7 +49,5 @@ ivw_define_qt_definitions()
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
-
-#--------------------------------------------------------------------
-# Add shader directory to pack
-# ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
+target_link_libraries(inviwo-module-animationqt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+ivw_make_package(InviwoAnimationQtModule inviwo-module-animationqt)

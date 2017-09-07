@@ -3,6 +3,8 @@
 ivw_module(Python3Qt)
 
 find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -37,6 +39,5 @@ ivw_add_definition(IVW_PYTHON3_QT)
 
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
-
-
-#target_link_libraries(${${mod}_target} pybind11::module)
+target_link_libraries(inviwo-module-python3qt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+ivw_make_package(InviwoPython3QtModule inviwo-module-python3qt)

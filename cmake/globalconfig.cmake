@@ -79,33 +79,18 @@ if(IVW_CMAKE_DEBUG)
     #variable_watch(_projectName log_proj)
 endif()
 
-#--------------------------------------------------------------------
-# Only output error messages
-function(message)
-    if(IVW_CMAKE_DEBUG)
-        _message(${ARGV})
-    else()
-        if( GET )
-            list(GET ARGV 0 MessageType)
-            if( MessageType STREQUAL FATAL_ERROR OR
-                MessageType STREQUAL SEND_ERROR OR
-                MessageType STREQUAL WARNING OR
-                MessageType STREQUAL AUTHOR_WARNING)
-                    list(REMOVE_AT ARGV 0)
-                    _message(STATUS "${ARGV}")
-            endif()
-        endif()
-    endif()
-endfunction()
+# Make sure we print deprecation warnings
+set(CMAKE_WARN_DEPRECATED ON)
 
 function(ivw_debug_message)
     if(IVW_CMAKE_DEBUG)
-        _message(${ARGV})
+        message(${ARGV})
     endif()
 endfunction()
 
 function(ivw_message)
-    _message(${ARGV})
+    message(DEPRECATION "ivw_message is deprecatede, just use message")
+    message(${ARGV})
 endfunction()
 
 
@@ -188,11 +173,6 @@ configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_definitions(-DDARWIN)
 endif()
-
-#--------------------------------------------------------------------
-# Force use of GLFW context over QT context
-option(IVW_USE_GLFW_NOT_OPENGLQT "Use GLFW for context creation instead of OpenGLQt module" OFF)
-mark_as_advanced(FORCE IVW_USE_GLFW_NOT_OPENGLQT)
 
 #--------------------------------------------------------------------
 # Package creation

@@ -107,7 +107,7 @@ function(ivw_generate_module_paths_header)
         if(IS_DIRECTORY ${dir})
             list(APPEND dirs ${dir})
         else()
-            ivw_message("Path to external module is not a directory (${dir})")
+            message("Path to external module is not a directory (${dir})")
         endif()
     endforeach()
 
@@ -197,17 +197,17 @@ function(ivw_private_is_valid_module_dir path dir retval)
                     set(${retval} TRUE PARENT_SCOPE)
                     return()
                 else()
-                    ivw_message(WARNING "Found invalid module \"${dir}\" at \"${module_path}\". "
+                    message("Found invalid module \"${dir}\" at \"${module_path}\". "
                         "ivw_module called with \"${name}\" which is different from the directory \"${dir}\""
                         "They should be the same except for casing.")
                 endif()
             else()
-                ivw_message(WARNING "Found invalid module \"${dir}\" at \"${module_path}\". "
+                message("Found invalid module \"${dir}\" at \"${module_path}\". "
                     "CMakeLists.txt is missing")
             endif()
         else()
-            ivw_message(WARNING "Found invalid module dir \"${dir}\" at \"${module_path}\". "
-                    "Dir names should be all lowercase and without spaces")
+            message("Found invalid module dir \"${dir}\" at \"${module_path}\". "
+                "Dir names should be all lowercase and without spaces")
         endif()
     endif()
     set(${retval} FALSE PARENT_SCOPE)
@@ -231,7 +231,7 @@ function(ivw_register_modules retval)
             ivw_dir_to_mod_dep(mod ${dir})
             list(FIND modules ${mod} found)
             if(NOT ${found} EQUAL -1)
-                ivw_message(WARNING "Module with name ${dir} already added at ${${mod}_path}")
+                message("Module with name ${dir} already added at ${${mod}_path}")
                 continue()
             endif()
             ivw_private_is_valid_module_dir(${module_path} ${dir} valid)
@@ -358,7 +358,7 @@ function(ivw_register_modules retval)
             foreach(dep ${${mod}_ivw_dependencies})
                 if(NOT ${${dep}_opt})
                     ivw_add_module_option_to_cache(${${dep}_dir} ON TRUE)
-                    ivw_message(STATUS "${${dep}_opt} was set to build, "
+                    message(STATUS "${${dep}_opt} was set to build, "
                         "due to dependency towards ${${mod}_opt}")
                 endif()
             endforeach()
@@ -377,8 +377,7 @@ function(ivw_register_modules retval)
         if(${${mod}_opt})
             add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
             if(NOT "${${mod}_class}" STREQUAL "${IVW_MODULE_CLASS}")
-                ivw_message(WARNING 
-                    "Missmatched module class names \"${${mod}_class}\" vs \"${IVW_MODULE_CLASS}\"")
+                message("Missmatched module class names \"${${mod}_class}\" vs \"${IVW_MODULE_CLASS}\"")
             endif()
             list(APPEND ivw_module_names ${${mod}_name})
             list(APPEND ivw_module_classes ${${mod}_class})
@@ -407,7 +406,7 @@ function(ivw_add_build_module_dependency the_module the_owner)
     first_case_upper(dir_name_cap ${the_module})
     if(${the_owner} AND NOT ${mod_name})
         ivw_add_module_option_to_cache(${the_module} ON TRUE)
-        ivw_message(STATUS "${mod_name} was set to build, due to dependency towards ${the_owner}")
+        message(STATUS "${mod_name} was set to build, due to dependency towards ${the_owner}")
     endif()
 endfunction()
 
@@ -587,7 +586,7 @@ macro(ivw_create_module)
     ivw_define_standard_properties(${${mod}_target})
     
     # Add dependencies
-    target_link_libraries(${${mod}_target} ${_preModuleDependencies})
+    target_link_libraries(${${mod}_target} PUBLIC ${_preModuleDependencies})
 
     # Add dependencies from depends.cmake and InviwoCore
     ivw_add_dependencies_on_target(${${mod}_target} InviwoCore ${${mod}_dependencies})
@@ -668,29 +667,7 @@ endmacro()
 #--------------------------------------------------------------------
 # Install files
 function(ivw_private_install_package project_name)
-   # Add to package
-   if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-        if(WIN32)
-           install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    COMPONENT ${_cpackName})
-        
-        elseif(APPLE)
-            install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION .
-                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                    COMPONENT ${_cpackName})
-        else()
-            install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION bin
-                    ARCHIVE DESTINATION lib
-                    LIBRARY DESTINATION lib
-                    COMPONENT ${_cpackName})
-        endif()
-    endif()
+    ivw_default_install_comp_targets(${_cpackName} ${project_name})
 endfunction()
 
 function(ivw_private_install_module_dirs)
@@ -848,7 +825,7 @@ macro(ivw_add_dependencies_on_target target)
         endif()
     
         # Set includes and append to list (Only add new include dirs)
-        get_target_property(ivw_already_added_incdirs ${target} INCLUDE_DIRECTORIES)
+        get_target_property(ivw_already_added_incdirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
         if(NOT ivw_already_added_incdirs)
             set(ivw_already_added_incdirs "")
         endif()
@@ -870,34 +847,17 @@ macro(ivw_add_dependencies_on_target target)
         endif(BUILD_${u_package})
       
         # Link library (Only link new libs)
-        get_target_property(ivw_already_added_libs ${target} LINK_LIBRARIES)
+        get_target_property(ivw_already_added_libs ${target} INTERFACE_LINK_LIBRARIES)
         if(NOT ivw_already_added_libs)
             set(ivw_already_added_libs "")
         endif()
         remove_from_list(ivw_new_libs "${${u_package}_LIBRARIES}" ${ivw_already_added_libs})
-        target_link_libraries(${target} ${ivw_new_libs})
+        target_link_libraries(${target} PUBLIC ${ivw_new_libs})
       
         # Link flags
         if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
             set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " ${${u_package}_LINK_FLAGS}")
         endif()
-      
-        # Qt5
-        set(Qt5DependLibs "")
-        foreach (package_lib ${${u_package}_LIBRARIES})
-            string(LENGTH "${package_lib}" package_lib_length)
-            if(${package_lib_length} GREATER 5)
-                string(SUBSTRING "${package_lib}" 0 5 package_lib_start)
-                string(SUBSTRING "${package_lib}" 5 -1 package_lib_end)
-                if(${package_lib_start} STREQUAL "Qt5::")
-                     list(APPEND Qt5DependLibs ${package_lib_end})
-                endif()
-            endif()
-        endforeach()
-        remove_duplicates(uniqueQt5DependLibs ${Qt5DependLibs})
-        foreach (uniqueQt5Lib ${uniqueQt5DependLibs})
-           qt5_use_modules(${target} ${uniqueQt5Lib})
-        endforeach()
     endforeach()
 endmacro()
 
@@ -930,40 +890,42 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Adds special qt dependency and includes package variables to the project
-macro(ivw_qt_add_to_install qtarget ivw_comp)
-    if(IVW_PACKAGE_PROJECT)
+macro(ivw_qt_add_to_install ivw_comp)
+    foreach(qtarget ${ARGN})
         find_package(${qtarget} QUIET REQUIRED)
-        if(${qtarget}_FOUND)
-            if(WIN32)
-                set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
-                install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
-                        DESTINATION bin 
-                        COMPONENT ${ivw_comp} 
-                        CONFIGURATIONS Debug)
-                install(FILES ${QTARGET_DIR}/${qtarget}.dll 
-                        DESTINATION bin 
-                        COMPONENT ${ivw_comp} 
-                        CONFIGURATIONS Release)
-                foreach(plugin ${${qtarget}_PLUGINS})
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} PATH)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION bin/${_dirname} 
-                            COMPONENT ${ivw_comp})
-                endforeach()
-            elseif(APPLE)
-                foreach(plugin ${${qtarget}_PLUGINS})
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} PATH)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
-                            COMPONENT ${ivw_comp})
-                endforeach()
+        if(IVW_PACKAGE_PROJECT)
+            if(${qtarget}_FOUND)
+                if(WIN32)
+                    set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
+                    install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
+                            DESTINATION bin 
+                            COMPONENT ${ivw_comp} 
+                            CONFIGURATIONS Debug)
+                    install(FILES ${QTARGET_DIR}/${qtarget}.dll 
+                            DESTINATION bin 
+                            COMPONENT ${ivw_comp} 
+                            CONFIGURATIONS Release)
+                    foreach(plugin ${${qtarget}_PLUGINS})
+                        get_target_property(_loc ${plugin} LOCATION)
+                        get_filename_component(_path ${_loc} PATH)
+                        get_filename_component(_dirname ${_path} NAME)
+                        install(FILES ${_loc} 
+                                DESTINATION bin/${_dirname} 
+                                COMPONENT ${ivw_comp})
+                    endforeach()
+                elseif(APPLE)
+                    foreach(plugin ${${qtarget}_PLUGINS})
+                        get_target_property(_loc ${plugin} LOCATION)
+                        get_filename_component(_path ${_loc} PATH)
+                        get_filename_component(_dirname ${_path} NAME)
+                        install(FILES ${_loc} 
+                                DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
+                                COMPONENT ${ivw_comp})
+                    endforeach()
+                endif()
             endif()
         endif()
-    endif()
+    endforeach()
 endmacro()
 
 #-------------------------------------------------------------------#

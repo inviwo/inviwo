@@ -269,7 +269,7 @@ ivw_link_directories(${LIBRARY_OUTPUT_PATH})
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(zlib1)
+ivw_default_install_comp_targets(core zlib1)
 
 
 #--------------------------------------------------------------------

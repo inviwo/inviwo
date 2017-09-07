@@ -45,10 +45,7 @@ ivw_folder(ticpp ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(core)
+ivw_default_install_comp_targets(core ticpp)
 ivw_make_package(TiCPP ticpp)
 
-if(APPLE)
-  #Ignore warnings in external packages
-  set_target_properties(ticpp PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
-endif()
+ivw_suppress_compiler_warnings(ticpp)

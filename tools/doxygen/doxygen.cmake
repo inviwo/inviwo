@@ -32,7 +32,7 @@ include(CMakeParseArguments)
 if(${MSVC})
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" OFF)
     if(${IVW_DOXYGEN_PROJECT})
-        ivw_message(STATUS 
+        message(STATUS 
             "In Visual Studio the doxygen project will rerun every time you run\n"
             "\"ALL_BUILD\" even if it is up to date. Hence, you propbably want\n"
             "to disable generation of doxygen on each build this can be done\n"
@@ -321,7 +321,7 @@ function(make_doxygen_target modules_var)
     find_package(PythonInterp QUIET)    # sets: PYTHONINTERP_FOUND PYTHON_EXECUTABLE
 
     if(NOT ${DOXYGEN_FOUND})
-        ivw_message(WARNING "Tried to create doxygen project, but doxygen was not found")
+    message(WARNING "Tried to create doxygen project, but doxygen was not found")
         return()
     endif()
 

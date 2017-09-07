@@ -2,11 +2,8 @@
 # Inviwo Python3 Module
 ivw_module(Python3)
 
-
 ivw_include_directories(${PYTHON_INCLUDE_DIR})
 ivw_include_directories(${CMAKE_SOURCE_DIR}/ext/pybind11/include)
-
-
 
 #Check if numpy exist 
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
@@ -74,7 +71,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/scripts/simple_buffer_test.py
 )
 
-if  (NOT NUMPY_OUTPUT_VERSION MATCHES "failed")
+if(NOT NUMPY_OUTPUT_VERSION MATCHES "failed")
     set(TEST_FILES
         ${TEST_FILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/numpy-test.cpp
@@ -110,16 +107,11 @@ set(INTERFACE_SRC_FILES
 )
 #ivw_group("Source Files" ${INTERFACE_SRC_FILES})
 
-
-
 add_dependency_libs_to_module(pybind11::module)
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
-target_link_libraries(${${mod}_target} $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>)
-
-#target_link_libraries(${${mod}_target} pybind11::module)
-
+target_link_libraries(${${mod}_target} PUBLIC $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>)
 
 ivw_add_py_wrapper(inviwopy ${INTERFACE_SRC_FILES} ${INTERFACE_HEADER_FILES})
 
@@ -130,14 +122,26 @@ endif()
 #--------------------------------------------------------------------
 # Add Python to package
 if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
-    get_filename_component(python_lib_name "${PYTHON_LIB}" NAME_WE)
-    get_filename_component(python_lib_dir "${PYTHON_LIB}" DIRECTORY)
-    get_filename_component(python_dir "${python_lib_dir}" DIRECTORY)
     if(WIN32)
-        find_file(PYTHON_DLL NAMES ${python_lib_name}.dll PATHS ${python_dir})
-        install(FILES ${PYTHON_DLL} DESTINATION bin COMPONENT modules)
+        set(py_version "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
+        set(py_url "https://www.python.org/ftp/python/${py_version}/python-${py_version}-embed-amd64.zip")
+        set(py_dir "${CMAKE_BINARY_DIR}/py_embedd/")
+        set(py_file "${py_dir}/py_embedd.${py_version}.zip")
+        if(NOT EXISTS "${py_file}")
+            file(DOWNLOAD ${py_url} ${py_file} STATUS py_status SHOW_PROGRESS)
+            list(GET py_status 0 py_success)
+            if(NOT py_success EQUAL 0)
+                message(FATAL_ERROR "Could not download python embedd: ${py_url}")
+            endif()
+        endif()
+       
+        file(MAKE_DIRECTORY "${py_dir}/python")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file} 
+                        WORKING_DIRECTORY "${py_dir}/python")
+        install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT python)
     endif()
 endif()
 
+ivw_default_install_comp_targets(python inviwopy)
 # Add scripts directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)

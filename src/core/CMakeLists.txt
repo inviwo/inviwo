@@ -614,6 +614,7 @@ ivw_compile_optimize()
 # Make package (for other projects to find)
 ivw_set_cpack_name(core)
 ivw_make_package(InviwoCore inviwo-core)
+ivw_default_install_targets(inviwo-core)
 
 if(IVW_UNITTESTS)
     ivw_make_unittest_target(core inviwo-core)

@@ -36,7 +36,7 @@ ivw_suppress_compiler_warnings(openexr-iex)
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(openexr-iex)
+ivw_default_install_comp_targets(core openexr-iex)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
