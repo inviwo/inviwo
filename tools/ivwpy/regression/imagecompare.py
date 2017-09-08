@@ -47,7 +47,7 @@ class ImageCompare:
         if self.testImage.mode != self.refImage.mode or self.testImage.size != self.refImage.size:
             return 
 
-        numPixels = self.maskImage.size[0] * self.maskImage.size[1]
+        numPixels = self.testImage.size[0] * self.testImage.size[1]
         channels = len(self.testImage.getbands());
 
         self.diffImage = ImageChops.difference(self.testImage, self.refImage)
