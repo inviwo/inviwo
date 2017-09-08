@@ -93,7 +93,7 @@ class ImageCompare:
 				self.difference += n
 				d[i,j] = tocolor(t[i,j], r[i,j])
 
-				if n == 0.0:
+				if n <= 0.9/255:
 					m[i,j] = 1
 				else:
 					m[i,j] = 0
