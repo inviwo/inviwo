@@ -33,7 +33,7 @@ import PIL.ImageStat as ImageStat
 import PIL.ImageChops as ImageChops
 
 class ImageCompare:
-    def __init__(self, testImage, refImage, enhance = 255):
+    def __init__(self, testImage, refImage, enhance = 10):
 
         self.testImage = Image.open(testImage)
         self.refImage = Image.open(refImage)
