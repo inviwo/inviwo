@@ -281,7 +281,7 @@ void add(std::false_type, Buffer<T> *buffer, const std::string &value) {
 
 template <typename T>
 void TemplateColumn<T>::add(const std::string &value) {
-    detail::add(std::bool_constant<util::rank<T>::value == 0>::type(), buffer_.get(), value);
+    detail::add(typename std::integral_constant<bool,util::rank<T>::value == 0>::type(), buffer_.get(), value);
 }
 
 template <typename T>
