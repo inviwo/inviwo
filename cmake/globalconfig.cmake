@@ -79,33 +79,18 @@ if(IVW_CMAKE_DEBUG)
     #variable_watch(_projectName log_proj)
 endif()
 
-#--------------------------------------------------------------------
-# Only output error messages
-function(message)
-    if(IVW_CMAKE_DEBUG)
-        _message(${ARGV})
-    else()
-        if( GET )
-            list(GET ARGV 0 MessageType)
-            if( MessageType STREQUAL FATAL_ERROR OR
-                MessageType STREQUAL SEND_ERROR OR
-                MessageType STREQUAL WARNING OR
-                MessageType STREQUAL AUTHOR_WARNING)
-                    list(REMOVE_AT ARGV 0)
-                    _message(STATUS "${ARGV}")
-            endif()
-        endif()
-    endif()
-endfunction()
+# Make sure we print deprecation warnings
+set(CMAKE_WARN_DEPRECATED ON)
 
 function(ivw_debug_message)
     if(IVW_CMAKE_DEBUG)
-        _message(${ARGV})
+        message(${ARGV})
     endif()
 endfunction()
 
 function(ivw_message)
-    _message(${ARGV})
+    message(DEPRECATION "ivw_message is deprecatede, just use message")
+    message(${ARGV})
 endfunction()
 
 
@@ -190,11 +175,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 #--------------------------------------------------------------------
-# Force use of GLFW context over QT context
-option(IVW_USE_GLFW_NOT_OPENGLQT "Use GLFW for context creation instead of OpenGLQt module" OFF)
-mark_as_advanced(FORCE IVW_USE_GLFW_NOT_OPENGLQT)
-
-#--------------------------------------------------------------------
 # Package creation
 option(IVW_PACKAGE_PROJECT "Create Inviwo Package Project" OFF)
 
@@ -220,22 +200,14 @@ include(${CMAKE_CURRENT_LIST_DIR}/pybind11.cmake)
 
 #--------------------------------------------------------------------
 # Build shared libs or static libs
-mark_as_advanced(BUILD_SHARED_LIBS)
 mark_as_advanced(FORCE GLM_DIR)
 mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
 if(WIN32 AND MSVC)
-    if(SHARED_LIBS)
-        set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
-    else()
-        set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs, else static libs" FORCE)
-    endif()
-    
-    # Determine runtime library linkage depending on SHARED_LIBS setting.
     # Shared runtime can be forced by setting the IVW_FORCE_SHARED_CRT option.
     option(IVW_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
     mark_as_advanced(IVW_FORCE_SHARED_CRT)
-    if(SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
+    if(BUILD_SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
         set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MD")
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")

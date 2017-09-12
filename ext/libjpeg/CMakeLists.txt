@@ -39,7 +39,7 @@ ivw_suppress_compiler_warnings(libjpeg)
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(libjpeg)
+ivw_default_install_comp_targets(core libjpeg)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

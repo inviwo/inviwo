@@ -89,6 +89,8 @@ public:
     virtual QSize minimumSizeHint() const override;
 
     void toggleCollapsed();
+    
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
 
 protected:
     void updatePropertyWidgetSemantics(PropertyWidgetQt*);

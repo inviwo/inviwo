@@ -40,7 +40,7 @@ ivw_suppress_compiler_warnings(libpng)
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(libpng)
+ivw_default_install_comp_targets(core libpng)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

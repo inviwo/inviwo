@@ -52,7 +52,7 @@ ivw_suppress_compiler_warnings(openexr-ilmthread)
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(openexr-ilmthread)
+ivw_default_install_comp_targets(core openexr-ilmthread)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

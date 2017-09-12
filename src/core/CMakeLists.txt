@@ -604,7 +604,7 @@ endif()
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
    mark_as_advanced(CORESERVICES_LIBRARY)
-   target_link_libraries(inviwo-core ${CORESERVICES_LIBRARY})
+   target_link_libraries(inviwo-core PRIVATE ${CORESERVICES_LIBRARY})
 endif (APPLE)
 
 #Optimize compiliation with PCH etc
@@ -614,6 +614,7 @@ ivw_compile_optimize()
 # Make package (for other projects to find)
 ivw_set_cpack_name(core)
 ivw_make_package(InviwoCore inviwo-core)
+ivw_default_install_targets(inviwo-core)
 
 if(IVW_UNITTESTS)
     ivw_make_unittest_target(core inviwo-core)

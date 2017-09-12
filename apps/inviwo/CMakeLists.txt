@@ -3,9 +3,7 @@
 ivw_project(inviwo)
 
 find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
-find_package(Qt5Help QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -32,7 +30,7 @@ source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc)
 # Add resource file
 qt5_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
 ivw_define_qt_definitions()
-        
+
 #--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(package_list)
@@ -41,16 +39,7 @@ list(APPEND package_list InviwoCore)
 list(APPEND package_list InviwoQtApplicationBase)
 
 # Only include one OpenGL context creation module
-if(IVW_USE_GLFW_NOT_OPENGLQT)
-    list(REMOVE_ITEM package_list InviwoOpenGLQtModule)
-else()
-    list(REMOVE_ITEM package_list InviwoGLFWModule)
-endif()
-
-#--------------------------------------------------------------------
-# Remove modules not used by this app
-list(REMOVE_ITEM package_list InviwoGLUTModule)
-list(REMOVE_ITEM package_list InviwoSDLModule)
+list(REMOVE_ITEM package_list InviwoGLFWModule)
 
 #--------------------------------------------------------------------
 # Register the use of modules
@@ -85,6 +74,8 @@ add_executable(inviwo MACOSX_BUNDLE WIN32
     ${MOC_FILES} 
     ${QRC_FILE} 
     ${RES_FILES})
+
+target_link_libraries(inviwo PRIVATE Qt5::Core Qt5::Widgets)
 
 #--------------------------------------------------------------------
 # Define defintions
@@ -178,7 +169,8 @@ if(WIN32)
         ${MOC_FILES} 
         ${QRC_FILE} 
         ${RES_FILES})
-
+    
+    target_link_libraries(inviwo-cli PRIVATE Qt5::Core Qt5::Widgets)
     add_dependencies(inviwo-cli inviwo)
 
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)

@@ -32,7 +32,7 @@ include(CMakeParseArguments)
 if(${MSVC})
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" OFF)
     if(${IVW_DOXYGEN_PROJECT})
-        ivw_message(STATUS 
+        message(STATUS 
             "In Visual Studio the doxygen project will rerun every time you run\n"
             "\"ALL_BUILD\" even if it is up to date. Hence, you propbably want\n"
             "to disable generation of doxygen on each build this can be done\n"
@@ -284,9 +284,7 @@ function(ivw_private_make_help)
         GENERATE_QHP
     )
 
-    get_filename_component(QT_BIN_PATH ${QT_QMAKE_EXECUTABLE} PATH)
-    find_program(IVW_DOXY_QCOLLECTIONGENERATOR "qcollectiongenerator" ${QT_BIN_PATH})
-    find_program(IVW_DOXY_QHELPGENERATOR "qhelpgenerator" ${QT_BIN_PATH})
+    find_program(IVW_DOXY_QHELPGENERATOR "qhelpgenerator")
 
     add_custom_target("DOXY-HELP-${HARG_NAME}"
         COMMAND ${CMAKE_COMMAND} -E echo "Building help for ${ARG_NAME}"
@@ -323,7 +321,7 @@ function(make_doxygen_target modules_var)
     find_package(PythonInterp QUIET)    # sets: PYTHONINTERP_FOUND PYTHON_EXECUTABLE
 
     if(NOT ${DOXYGEN_FOUND})
-        ivw_message(WARNING "Tried to create doxygen project, but doxygen was not found")
+    message(WARNING "Tried to create doxygen project, but doxygen was not found")
         return()
     endif()
 

@@ -45,6 +45,8 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QCheckBox>
+#include <QMenu>
+#include <QAction>
 #include <warn/pop>
 
 namespace inviwo {
@@ -159,6 +161,21 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     this->setContentsMargins(margin, margin, margin, margin);
 
     this->setLayout(layout);
+}
+
+std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+
+    if (propertyOwner_ && !property_) {
+        menu->addAction(QString::fromStdString(displayName_));
+        menu->addSeparator();
+    
+        auto resetAction = menu->addAction(tr("&Reset to default"));
+        resetAction->setToolTip(tr("&RReset the group of properties to its default state"));
+        connect(resetAction, &QAction::triggered, this,
+                [&]() { propertyOwner_->resetAllPoperties(); });
+    }
+    return menu;
 }
 
 QSize CollapsibleGroupBoxWidgetQt::sizeHint() const {

@@ -64,7 +64,7 @@ else()
     project(inviwo-projects)
 endif()
 # Build
-option(SHARED_LIBS "Build shared libs, else static libs" ON)
+option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 
 # Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
@@ -89,41 +89,31 @@ include(cmake/globalconfig.cmake)
 option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
 option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
 
-string(FIND "${CMAKE_PREFIX_PATH}" qt hasqt) # Skip if qt is already in CMAKE_PREFIX_PATH
-if(NOT ${hasqt} GREATER 0) # try and find qt and add it to CMAKE_PREFIX_PATH
+# Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
+if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
     if(NOT QT_QMAKE_EXECUTABLE)
         find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake4 qmake-qt4 qmake5 qmake-qt5
            PATHS "${QT_SEARCH_PATH}/bin" "$ENV{QTDIR}/bin")
         set(QT_QMAKE_EXECUTABLE ${QT_QMAKE_EXECUTABLE_FINDQT} CACHE PATH "Qt qmake program.")
     endif()
 
-    if(WIN32)
-        if(QT_QMAKE_EXECUTABLE)
-            string(REGEX REPLACE "bin\\\\qmake([^ ]*)$" "lib\\\\cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
-        endif()
-    elseif(APPLE)
-        if(EXISTS "/usr/local/Cellar/qt")
-            file(GLOB qtversions RELATIVE "/usr/local/Cellar/qt/" "/usr/local/Cellar/qt/?.?.*")
-            list(LENGTH qtversions len)
-            if(${len} GREATER 0)
-                list(GET qtversions -1 qtlatest)
-                if(EXISTS "/usr/local/Cellar/qt/${qtlatest}")   
-                    set(QT5_PATH "/usr/local/Cellar/qt/${qtlatest}")          
-                endif()
-             endif()
-        elseif(EXISTS "/usr/local/Cellar/qt5")
-            file(GLOB qtversions RELATIVE "/usr/local/Cellar/qt5/" "/usr/local/Cellar/qt5/?.?.*")
-            list(LENGTH qtversions len)
-            if(${len} GREATER 0)
-                list(GET qtversions -1 qtlatest)
-                if(EXISTS "/usr/local/Cellar/qt5/${qtlatest}")   
-                    set(QT5_PATH "/usr/local/Cellar/qt5/${qtlatest}")          
-                endif()
-             endif()
-        endif()
+    if(QT_QMAKE_EXECUTABLE)
+        execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query "QT_INSTALL_PREFIX" OUTPUT_VARIABLE QT5_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
     else()
-        if(QT_QMAKE_EXECUTABLE)
-            string(REGEX REPLACE "bin/qmake([^ ]*)$" "lib/cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
+        if(APPLE) # On OSX look for the usual brew installation. 
+            foreach(path "/usr/local/Cellar/qt" "/usr/local/Cellar/qt5")
+                if(EXISTS ${path})
+                    file(GLOB qtversions RELATIVE "${path}/" "${path}/?.?.*")
+                    list(LENGTH qtversions len)
+                    if(${len} GREATER 0)
+                        list(GET qtversions -1 qtlatest)
+                        if(EXISTS "${path}/${qtlatest}")
+                            set(QT5_PATH "${path}/${qtlatest}")
+                            break()
+                        endif()
+                    endif()
+                endif()
+            endforeach()
         endif()
     endif()
 
@@ -211,13 +201,6 @@ ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
 #--------------------------------------------------------------------
 # Add modules
 ivw_register_modules(all_modules)
-
-# OpenGL Context created with GLFW or Qt within Inviwo by default
-if(IVW_USE_GLFW_NOT_OPENGLQT)
-    ivw_enable_module(GLFW)
-else()
-    ivw_enable_module(OpenGLQt)
-endif()
 
 #--------------------------------------------------------------------
 # Add Qt

@@ -70,7 +70,7 @@ ivw_suppress_compiler_warnings(openexr-half)
 
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_targets(openexr-half)
+ivw_default_install_comp_targets(core openexr-half)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

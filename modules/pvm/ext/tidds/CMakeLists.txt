@@ -33,3 +33,4 @@ ivw_folder(tidds ext)
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_make_package(TiDDS tidds)
+ivw_default_install_targets(tidds)

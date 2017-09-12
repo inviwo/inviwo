@@ -22,13 +22,10 @@ list(APPEND package_list InviwoQtApplicationBase)
 #--------------------------------------------------------------------
 # Only include one OpenGL context creation module
 list(REMOVE_ITEM package_list InviwoGLFWModule)
-list(REMOVE_ITEM package_list InviwoGLUTModule)
-list(REMOVE_ITEM package_list InviwoSDLModule)
 
 #--------------------------------------------------------------------
 # Remove modules not used by this app
 list(REMOVE_ITEM package_list InviwoPython3QtModule)
-list(REMOVE_ITEM package_list InviwoUnitTestsModule)
 
 #--------------------------------------------------------------------
 # Register the use of modules
@@ -44,7 +41,7 @@ add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Add qt dependencies to this list
-ivw_add_dependencies(Qt5Core Qt5Gui Qt5Widgets)    
+ivw_add_dependencies(Qt5Core Qt5Gui Qt5Widgets)
 ivw_define_qt_definitions()
 
 #--------------------------------------------------------------------
@@ -60,20 +57,7 @@ ivw_folder(inviwo_qtminimum minimals)
 
 #--------------------------------------------------------------------
 # Add application to pack
-if(IVW_PACKAGE_PROJECT)
-if(WIN32)
-   install(TARGETS inviwo_qtminimum
-            RUNTIME DESTINATION bin
-            COMPONENT qt_app)
-else()
-    install(TARGETS inviwo_qtminimum
-            RUNTIME DESTINATION bin
-            BUNDLE DESTINATION bin
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-            COMPONENT qt_app)
-endif()
-endif()
+ivw_default_install_comp_targets(qt_app inviwo_qtminimum)
 
 #--------------------------------------------------------------------
 # Add dependencies

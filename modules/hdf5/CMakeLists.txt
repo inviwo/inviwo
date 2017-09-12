@@ -93,9 +93,9 @@ if(WIN32 AND MSVC)
 endif()
 
 if(${BUILD_SHARED_LIBS})
-    target_link_libraries(inviwo-module-hdf5 ${h5-shared})
+    target_link_libraries(inviwo-module-hdf5 PUBLIC ${h5-shared})
 else()
-    target_link_libraries(inviwo-module-hdf5 ${h5-static})
+    target_link_libraries(inviwo-module-hdf5 PUBLIC ${h5-static})
 endif()
 
 # not sure why this dir is nto picked up automatically

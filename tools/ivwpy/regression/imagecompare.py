@@ -28,118 +28,93 @@
 #*********************************************************************************
 
 import PIL.Image as Image
+import PIL.ImageMath as ImageMath
+import PIL.ImageStat as ImageStat
+import PIL.ImageChops as ImageChops
 
 class ImageCompare:
-	def __init__(self, testImage, refImage, enhance = 10):
+    def __init__(self, testImage, refImage, enhance = 10):
 
-		self.testImage = Image.open(testImage)
-		self.refImage = Image.open(refImage)
+        self.testImage = Image.open(testImage)
+        self.refImage = Image.open(refImage)
 
-		self.maskImage = None
-		self.diffImage = None
-		self.difference = 100
-		self.numberOfDifferentPixels = None
-		self.maxDifference = None
+        self.maskImage = None
+        self.diffImage = None
+        self.difference = 100
+        self.numberOfDifferentPixels = None
+        self.maxDifference = None
 
-		if self.testImage.mode != self.refImage.mode or self.testImage.size != self.refImage.size:
-			return 
+        if self.testImage.mode != self.refImage.mode or self.testImage.size != self.refImage.size:
+            return 
 
-		if len(self.testImage.getbands()) == 1: # for gray-scale jpegs
-			def norm(x,y): return abs(x-y) / 255.0
-		else:
-			def norm(x,y): 
-				return sum([abs(i-j) for i,j in zip(x,y)]) / \
-						(len(self.testImage.getbands()) * 255.0)
+        numPixels = self.testImage.size[0] * self.testImage.size[1]
+        channels = len(self.testImage.getbands());
 
-		def issame(x,y): return norm(x, y) == 0.0
+        self.diffImage = ImageChops.difference(self.testImage, self.refImage)
 
-		if len(self.testImage.getbands()) == 1:
-			def tocolor(x,y): 
-				return (255-enhance*abs(x-y),
-				        255-enhance*abs(x-y),
-				        255-enhance*abs(x-y),
-				        255)
+        if channels == 1:
+            normImage = self.diffImage
+        elif channels == 2:
+            (a,b) = self.diffImage.split()
+            normImage = ImageMath.eval("convert((a+b), 'L')" , a=a, b=b)
+        elif channels == 3:
+            (a,b,c) = self.diffImage.split()
+            normImage = ImageMath.eval("convert((a+b+c), 'L')" , a=a, b=b, c=c)
+        elif channels == 4:
+            (a,b,c,d) = self.diffImage.split()
+            normImage = ImageMath.eval("convert((a+b+c+d), 'L')" , a=a, b=b, c=c, d=d)
 
-		elif len(self.testImage.getbands()) == 2:
-			def tocolor(x,y): 
-				return (255-enhance*abs(x[0]-y[0]),
-					    255-enhance*abs(x[1]-y[1]),
-					    255, 
-					    255)
+        stats = ImageStat.Stat(normImage)
+        self.maxDifference = stats.extrema[0][1] / (channels*255)
+        self.difference = (sum(stats.sum)/(255*channels)) * 100.0 / numPixels
 
-		elif len(self.testImage.getbands()) >= 3:
-			def tocolor(x,y): 
-				return (255-enhance*abs(x[0]-y[0]),
-					    255-enhance*abs(x[1]-y[1]),
-					    255-enhance*abs(x[2]-y[2]), 
-					    255)
+        if enhance != 1:
+            self.diffImage = self.diffImage.point(lambda i : i * (enhance))
+        self.diffImage = ImageChops.invert(self.diffImage)
+        
+        self.maskImage = self.diffImage.convert('1')
+        self.numberOfDifferentPixels = int(numPixels - ImageStat.Stat(self.maskImage).sum[0] / 255)
 
-		self.maskImage = Image.new('1', self.refImage.size)
-		self.diffImage = Image.new('RGBA', self.refImage.size)
+    def saveDifferenceImage(self, difffile):
+        if self.diffImage is not None: 
+            self.diffImage.save(difffile)
+            return True
+        else: 
+            return False
+            
+    def saveMaskImage(self, maskfile):
+        if self.maskImage is not None: 
+            self.maskImage.save(maskfile)
+            return True
+        else: 
+            return False
 
-		d = self.diffImage.load()
-		m = self.maskImage.load()
-		t = self.testImage.load()
-		r = self.refImage.load()
+    def saveReferenceImage(self, file):
+        self.refImage.save(file)
 
-		self.numberOfDifferentPixels = 0
-		self.maxDifference = 0
-		self.difference = 0
+    def getRefSize(self):
+        return self.refImage.size
+    def getRefMode(self):
+        return self.refImage.mode
 
-		for i in range(self.diffImage.size[0]):
-			for j in range(self.diffImage.size[1]):
-				n = norm(t[i,j], r[i,j])
-				self.maxDifference = max(self.maxDifference, n)
-				self.difference += n
-				d[i,j] = tocolor(t[i,j], r[i,j])
+    def getTestSize(self):
+        return self.testImage.size
+    def getTestMode(self):
+        return self.testImage.mode
 
-				if n == 0.0:
-					m[i,j] = 1
-				else:
-					m[i,j] = 0
-					self.numberOfDifferentPixels += 1
+    def getDifference(self):
+        return self.difference
+    
+    def getNumberOfDifferentPixels(self):
+        return self.numberOfDifferentPixels
+    
+    def getMaxDifference(self):
+        return self.maxDifference
 
-		pixels = self.testImage.size[0] * self.testImage.size[1]
-		self.difference = self.difference * 100.0 / pixels
+    def isSameSize(self):
+        return self.testImage.size == self.refImage.size
 
-	def saveDifferenceImage(self, difffile):
-		if self.diffImage is not None: 
-			self.diffImage.save(difffile)
-			return True
-		else: 
-			return False
-			
-	def saveMaskImage(self, maskfile):
-		if self.maskImage is not None: 
-			self.maskImage.save(maskfile)
-			return True
-		else: 
-			return False
+    def isSameMode(self):
+        return self.testImage.mode == self.refImage.mode
 
-	def saveReferenceImage(self, file):
-		self.refImage.save(file)
 
-	def getRefSize(self):
-		return self.refImage.size
-	def getRefMode(self):
-		return self.refImage.mode
-
-	def getTestSize(self):
-		return self.testImage.size
-	def getTestMode(self):
-		return self.testImage.mode
-
-	def getDifference(self):
-		return self.difference
-	
-	def getNumberOfDifferentPixels(self):
-		return self.numberOfDifferentPixels
-	
-	def getMaxDifference(self):
-		return self.maxDifference
-
-	def isSameSize(self):
-		return self.testImage.size == self.refImage.size
-
-	def isSameMode(self):
-		return self.testImage.mode == self.refImage.mode
