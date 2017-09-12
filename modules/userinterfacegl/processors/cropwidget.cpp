@@ -91,6 +91,7 @@ CropWidget::CropWidget()
                    {"cropAxisZEnabled", "Enabled", true},
                    {"cropZ", "Range", 0, 256, 0, 256, 1, 1},
                    AnnotationInfo()}}})
+    , useNormalizedRanges_("useNormalizedRanges", "Rel. Values on Range Adjustment", true)
     , camera_("camera", "Camera")
 
     , lightingProperty_("internalLighting", "Lighting", &camera_)
@@ -119,6 +120,7 @@ CropWidget::CropWidget()
         elem.composite.setCollapsed(true);
         addProperty(elem.composite);
     }
+    addProperty(useNormalizedRanges_);
 
     handleColor_.setSemantics(PropertySemantics::Color);
     cropLineColor_.setSemantics(PropertySemantics::Color);
@@ -291,7 +293,8 @@ void CropWidget::renderAxis(const CropAxis &axis) {
             mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
             shader_.setUniform("geometry.dataToWorld", worldMatrix);
             shader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
-            unsigned int pickID = static_cast<unsigned int>(picking_.getPickingId(axisIDOffset + elemID));
+            unsigned int pickID =
+                static_cast<unsigned int>(picking_.getPickingId(axisIDOffset + elemID));
             shader_.setUniform("pickId", pickID);
 
             drawObject.draw();
@@ -377,11 +380,15 @@ void CropWidget::updateAxisRanges() {
         cropDims[i] = cropAxes_[i].range.getRangeMax() + 1;
     }
 
-    if (dims != cropDims) {
+    {
         NetworkLock lock(this);
 
         for (int i = 0; i < 3; ++i) {
-            cropAxes_[i].range.setRange(ivec2(0, dims[i] - 1));
+            if (useNormalizedRanges_.get()) {
+                cropAxes_[i].range.setRangeNormalized(ivec2(0, dims[i] - 1));
+            } else {
+                cropAxes_[i].range.setRange(ivec2(0, dims[i] - 1));
+            }
 
             // set the new dimensions to default if we were to press reset
             cropAxes_[i].range.setCurrentStateAsDefault();

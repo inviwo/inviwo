@@ -130,6 +130,8 @@ private:
     FloatProperty offset_;
     FloatProperty scale_;
     std::array<CropAxis, 3> cropAxes_;
+    BoolProperty useNormalizedRanges_;
+
     CameraProperty camera_;
 
     SimpleLightingProperty lightingProperty_;
