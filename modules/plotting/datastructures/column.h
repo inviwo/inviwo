@@ -259,16 +259,29 @@ void TemplateColumn<T>::add(const T &value) {
     buffer_->getEditableRAMRepresentation()->add(value);
 }
 
+namespace detail {
+
 template <typename T>
-void TemplateColumn<T>::add(const std::string &value) {
+void add(std::true_type, Buffer<T> *buffer, const std::string &value) {
     T result;
-    std::istringstream stream;
-    stream.str(value);
+    std::istringstream stream(value);
     stream >> result;
     if (stream.fail()) {
         throw InvalidConversion("cannot convert \"" + value + "\" to target type");
     }
-    buffer_->getEditableRAMRepresentation()->add(result);
+    buffer->getEditableRAMRepresentation()->add(result);
+}
+
+template <typename T>
+void add(std::false_type, Buffer<T> *buffer, const std::string &value) {
+    throw InvalidConversion("conversion to target type not implemented (\"" + value + "\")");
+}
+
+} // namespace detail
+
+template <typename T>
+void TemplateColumn<T>::add(const std::string &value) {
+    detail::add(typename std::integral_constant<bool,util::rank<T>::value == 0>::type(), buffer_.get(), value);
 }
 
 template <typename T>
