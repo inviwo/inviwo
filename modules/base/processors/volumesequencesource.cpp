@@ -84,11 +84,11 @@ VolumeSequenceSource::VolumeSequenceSource()
 void VolumeSequenceSource::load(bool deserialize) {
     switch (inputType_.get()) {
     case InputType::Folder:
-        loadFolder();
+        loadFolder(deserialize);
         break;
     case InputType::SingleFile:
     default:
-        loadFile();
+        loadFile(deserialize);
         break;
     }
 }
