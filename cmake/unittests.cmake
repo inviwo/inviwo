@@ -62,8 +62,8 @@ function(ivw_make_unittest_target name target)
     #--------------------------------------------------------------------
     # Create application
     add_executable(${test_name} MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
-    target_link_libraries(${test_name} gtest)
-    target_link_libraries(${test_name} ${target})
+    target_link_libraries(${test_name} PUBLIC gtest)
+    target_link_libraries(${test_name} PUBLIC ${target})
     set_target_properties(${test_name} PROPERTIES FOLDER unittests)
 
     #--------------------------------------------------------------------
