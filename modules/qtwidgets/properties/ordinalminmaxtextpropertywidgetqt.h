@@ -238,8 +238,8 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax() {
             QSignalBlocker minBlock(min_);
 
             const V newVal(minMaxProperty_->get());
-            min_->setValue(value.x);
-            max_->setValue(value.y);
+            min_->setValue(newVal.x);
+            max_->setValue(newVal.y);
         }
     }
 }

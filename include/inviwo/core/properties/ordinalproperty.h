@@ -257,7 +257,7 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
         modified = true;
     }
     if (increment != increment_) {
-        increment_ = value;
+        increment_ = increment;
         modified = true;
     }
     auto retVal = validateValues(value);

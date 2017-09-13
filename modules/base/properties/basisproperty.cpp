@@ -108,10 +108,32 @@ BasisProperty* BasisProperty::clone() const {
 
 void BasisProperty::updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize) {
     // Set basis properties to the values from the new volume
-    a_.set(volume.getBasis()[0]);
-    b_.set(volume.getBasis()[1]);
-    c_.set(volume.getBasis()[2]);
-    offset_.set(volume.getOffset());
+    // Heuristics: Use the same min/max of basis vector, 
+    // since basis is often zero in two dimensions, i.e. when axis-aligned and orthogonal.
+
+    // Set min/max range to be an order of magnitude larger
+    const auto boundsScale = 5.f;
+    const auto incrementScale = 0.1f;
+
+    auto minBounds = volume.getModelMatrix() - boundsScale* glm::abs(volume.getModelMatrix());
+    auto maxBounds = volume.getModelMatrix() + boundsScale* glm::abs(volume.getModelMatrix());
+    // Min/max for basis vectors (cannot do compMin/compMax on matrices)
+    auto minBound = glm::compMin(minBounds[0]);
+    for (auto i = 1; i < 3; i++) { minBound = glm::min(minBound, glm::compMin(minBounds[i])); }
+    auto maxBound = glm::compMax(maxBounds[0]);
+    for (auto i = 1; i < 3; i++) { maxBound = glm::max(maxBound, glm::compMax(maxBounds[i])); }
+    auto increment = incrementScale*glm::abs(maxBound - minBound);
+
+    // Min/max/increment for offset
+    auto minOffset = glm::compMin(minBounds[3]);
+    auto maxOffset = glm::compMax(maxBounds[3]);
+    auto offsetIncrement = incrementScale*glm::abs(maxOffset - minOffset);
+
+    a_.set(volume.getBasis()[0], vec3(minBound), vec3(maxBound), vec3(increment));
+    b_.set(volume.getBasis()[1], vec3(minBound), vec3(maxBound), vec3(increment));
+    c_.set(volume.getBasis()[2], vec3(minBound), vec3(maxBound), vec3(increment));
+    offset_.set(volume.getOffset(), vec3(minOffset), vec3(maxOffset), vec3(offsetIncrement));
+
     a_.setCurrentStateAsDefault();
     b_.setCurrentStateAsDefault();
     c_.setCurrentStateAsDefault();
