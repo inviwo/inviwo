@@ -102,6 +102,7 @@ private:
         CompositeProperty composite;
         BoolProperty enabled;
         IntMinMaxProperty range;
+        IntMinMaxProperty outputRange;
 
         AnnotationInfo info;
     };
@@ -130,7 +131,8 @@ private:
     FloatProperty offset_;
     FloatProperty scale_;
     std::array<CropAxis, 3> cropAxes_;
-    BoolProperty useNormalizedRanges_;
+    CompositeProperty outputProps_;
+    BoolProperty relativeRangeAdjustment_;
 
     CameraProperty camera_;
 
