@@ -34,7 +34,7 @@ layout(location=6) in vec3 in_PickCoords_;
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-uniform vec4 overrideColor_;
+uniform vec4 overrideColor;
 
 uniform vec2 scaling_ = vec2(1.0f);
 uniform vec2 offset_ = vec2(0.0, 0.0);
@@ -69,7 +69,7 @@ void main() {
 
 #if defined(CUSTOM_COLOR)
 #  if (CUSTOM_COLOR == 0)
-    color_ = overrideColor_;
+    color_ = overrideColor;
 #  else
     // apply RGB axis coloring
     color_ = meshColors_[pickID / 2];
