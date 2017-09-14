@@ -3,7 +3,6 @@ tools/* linguist-vendored=false
 
 ext/* linguist-vendored
 modules/assimp/ext/* linguist-vendored
-modules/assimp/ext//* linguist-vendored
 modules/cimg/ext/* linguist-vendored
 modules/eigenutils/ext/* linguist-vendored
 modules/fontrendering/ext/* linguist-vendored
