@@ -36,9 +36,6 @@
 #ifndef GLM_FORCE_SIZE_T_LENGTH
 #define GLM_FORCE_SIZE_T_LENGTH
 #endif
-#ifndef GLM_FORCE_CXX14
-#define GLM_FORCE_CXX14
-#endif
 
 #include <warn/push>
 #include <warn/ignore/shadow>
