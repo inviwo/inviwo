@@ -160,16 +160,28 @@ void RangeSliderQt::setMinSeparation(int sep) {
 }
 
 void RangeSliderQt::setMinRange(int minR) {
-    range_.x = minR;
-    if (minR > value_.x) {
-        setMinValue(minR);
+    if (range_.x != minR) {
+        range_.x = minR;
+        // ensure that the values are within the updated range
+        if (value_.x < range_.x) {
+            // updateSlidersFromState() is called in setMinValue
+            setMinValue(range_.x);
+        } else { 
+            updateSlidersFromState();
+        }
     }
 }
 
 void RangeSliderQt::setMaxRange(int maxR) {
-    range_.y = maxR;
-    if (maxR < value_.y) {
-        setMaxValue(maxR);
+    if (range_.y != maxR) {
+        range_.y = maxR;
+        // ensure that the values are within the updated range
+        if (value_.y > range_.y) {
+            // updateSlidersFromState() is called in setMinValue
+            setMaxValue(range_.y);
+        } else { 
+            updateSlidersFromState();
+        }
     }
 }
 
