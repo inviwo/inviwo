@@ -1,0 +1,15 @@
+*.h linguist-language=C++
+tools/* linguist-vendored=false
+
+ext/* linguist-vendored
+modules/assimp/ext/* linguist-vendored
+modules/assimp/ext//* linguist-vendored
+modules/cimg/ext/* linguist-vendored
+modules/eigenutils/ext/* linguist-vendored
+modules/fontrendering/ext/* linguist-vendored
+modules/glfw/ext/* linguist-vendored
+modules/hdf5/ext/* linguist-vendored
+modules/nifti/ext/* linguist-vendored
+modules/opengl/ext/* linguist-vendored
+modules/pvm/ext/* linguist-vendored
+tools/codegen/warn/warn/ext/* linguist-vendored
