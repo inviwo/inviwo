@@ -209,6 +209,8 @@ void CameraWidget::initializeResources() {
         shader_.getVertexShaderObject()->removeShaderDefine("CUSTOM_COLOR");
     }
     shader_.build();
+
+    cubeShader_.getVertexShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
     cubeShader_.build();
 
     // initialize shader uniform containing all picking colors, the mesh will fetch the appropriate
@@ -248,7 +250,7 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
 
     utilgl::setShaderUniforms(shader_, internalCamera_, "camera");
     utilgl::setShaderUniforms(shader_, lightingProperty_, "lighting");
-    shader_.setUniform("overrideColor_", userColor_.get());
+    shader_.setUniform("overrideColor", userColor_.get());
 
     auto *meshDrawer = meshDrawers_[showRollWidget_.get() ? 1 : 0].get();
     utilgl::setShaderUniforms(shader_, *meshDrawer->getMesh(), "geometry");
@@ -274,7 +276,7 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
 
         cubeShader_.setUniform("geometry.dataToWorld", worldMatrix);
         cubeShader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
-        cubeShader_.setUniform("overrideColor_", cubeColor_.get());
+        cubeShader_.setUniform("overrideColor", cubeColor_.get());
 
         meshDrawers_[3]->draw();
     }

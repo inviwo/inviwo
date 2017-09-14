@@ -80,17 +80,22 @@ CropWidget::CropWidget()
                    {"cropAxisX", "Crop X"},
                    {"cropAxisXEnabled", "Enabled", true},
                    {"cropX", "Range", 0, 256, 0, 256, 1, 1},
+                   {"cropXOut", "Crop X", 0, 256, 0, 256, 1, 1},
                    AnnotationInfo()},
                   {CartesianCoordinateAxis::Y,
                    {"cropAxisY", "Crop Y"},
                    {"cropAxisYEnabled", "Enabled", true},
                    {"cropY", "Range", 0, 256, 0, 256, 1, 1},
+                   {"cropYOut", "Crop Y", 0, 256, 0, 256, 1, 1},
                    AnnotationInfo()},
                   {CartesianCoordinateAxis::Z,
                    {"cropAxisZ", "Crop Z"},
                    {"cropAxisZEnabled", "Enabled", true},
                    {"cropZ", "Range", 0, 256, 0, 256, 1, 1},
+                   {"cropZOut", "Crop Z", 0, 256, 0, 256, 1, 1},
                    AnnotationInfo()}}})
+    , relativeRangeAdjustment_("relativeRangeAdjustment", "Rel. Adjustment on Range Change", true)
+    , outputProps_("outputProperties", "Output")
     , camera_("camera", "Camera")
 
     , lightingProperty_("internalLighting", "Lighting", &camera_)
@@ -118,7 +123,43 @@ CropWidget::CropWidget()
         elem.composite.addProperty(elem.range);
         elem.composite.setCollapsed(true);
         addProperty(elem.composite);
+
+        auto updateRange = [&]() {
+            // sync ranges including extrema
+            const auto rangeExtrema = elem.range.getRange();
+            if (elem.enabled.get()) {
+                // sync the cropped range
+                elem.outputRange.set(ivec2(elem.range.getStart(), elem.range.getEnd()), rangeExtrema, 1, 1);
+            } else {
+                // don't sync the crop range, use the full range instead
+                elem.outputRange.set(rangeExtrema, rangeExtrema, 1, 1);
+            }
+        };
+        // update status of output ranges
+        elem.range.onChange(updateRange);
+        elem.range.setReadOnly(!elem.enabled.get());
+
+        elem.enabled.onChange([&]() {
+            // range should not be editable if axis is not enabled
+            elem.range.setReadOnly(!elem.enabled.get());
+            // sync ranges
+            if (elem.enabled.get()) {
+                // sync the cropped range
+                elem.outputRange.set(ivec2(elem.range.getStart(), elem.range.getEnd()));
+            } else {
+                // don't copy the crop range, use the full range instead
+                elem.outputRange.set(elem.range.getRange());
+            }
+        });
+
+        // set up output crop range properties
+        outputProps_.addProperty(elem.outputRange);
+        elem.outputRange.setReadOnly(true);
+        elem.outputRange.setSemantics(PropertySemantics::Text);
     }
+    outputProps_.setCollapsed(true);
+    addProperty(outputProps_);
+    addProperty(relativeRangeAdjustment_);
 
     handleColor_.setSemantics(PropertySemantics::Color);
     cropLineColor_.setSemantics(PropertySemantics::Color);
@@ -183,7 +224,6 @@ void CropWidget::process() {
         shader_.setUniform("overrideColor", handleColor_.get());
 
         for (auto &elem : cropAxes_) {
-            // if (elem.composite.isChecked()) {
             if (elem.enabled.get()) {
                 // update axis information
                 elem.info = getAxis(elem.axis);
@@ -291,7 +331,8 @@ void CropWidget::renderAxis(const CropAxis &axis) {
             mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
             shader_.setUniform("geometry.dataToWorld", worldMatrix);
             shader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
-            unsigned int pickID = static_cast<unsigned int>(picking_.getPickingId(axisIDOffset + elemID));
+            unsigned int pickID =
+                static_cast<unsigned int>(picking_.getPickingId(axisIDOffset + elemID));
             shader_.setUniform("pickId", pickID);
 
             drawObject.draw();
@@ -377,11 +418,15 @@ void CropWidget::updateAxisRanges() {
         cropDims[i] = cropAxes_[i].range.getRangeMax() + 1;
     }
 
-    if (dims != cropDims) {
+    {
         NetworkLock lock(this);
 
         for (int i = 0; i < 3; ++i) {
-            cropAxes_[i].range.setRange(ivec2(0, dims[i] - 1));
+            if (relativeRangeAdjustment_.get()) {
+                cropAxes_[i].range.setRangeNormalized(ivec2(0, dims[i] - 1));
+            } else {
+                cropAxes_[i].range.setRange(ivec2(0, dims[i] - 1));
+            }
 
             // set the new dimensions to default if we were to press reset
             cropAxes_[i].range.setCurrentStateAsDefault();
