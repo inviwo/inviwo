@@ -123,6 +123,7 @@ QPainterPath CurveGraphicsItem::shape() const {
 void CurveGraphicsItem::resetBorderColors() {
     setBorderColor(Qt::black);
     setSelectedBorderColor(Qt::darkRed);
+    update();
 }
 
 void CurveGraphicsItem::updateShape() {   
