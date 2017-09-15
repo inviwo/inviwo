@@ -50,8 +50,11 @@ namespace inviwo {
  * ![](org.inviwo.SphereRenderer.png?classIdentifier=org.inviwo.SphereRenderer)
  * This processor renders a set of point meshes using spherical glyphs in OpenGL.
  * The glyphs are resolution independent and consist only of a single point.
- * The radius of each point is given in the w coordinate of the vertex position unless
- * globally overwritten by the property.
+ *
+ * The radius of each point is provided by an additional single float buffer being part of the input
+ * meshes. This buffer must be bound to buffer location 5!
+ * Alternatively, the radius can be globally overwritten using the <em>Overwrite Sphere Radius</em>
+ * and <em>Custom Radius</em> properties.
  *
  * ### Inports
  *   * __geometry__ Input meshes
@@ -100,8 +103,8 @@ private:
      * lies behind the near clip plane of the camera.
      */
     enum class GlyphClippingMode {
-        Discard,    //!< glyph is not rendered
-        Cut,   //!< the cut surface is visible
+        Discard,  //!< glyph is not rendered
+        Cut,      //!< the cut surface is visible
     };
 
     MeshFlatMultiInport inport_;
