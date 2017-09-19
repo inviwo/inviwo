@@ -209,7 +209,6 @@ void NetworkEditor::removeConnectionGraphicsItem(const PortConnection& connectio
     ConnectionGraphicsItem* connectionGraphicsItem = connectionGraphicsItems_[connection];
     if (oldProcessorTarget_ && (oldConnectionTarget_ == connectionGraphicsItem)) {
         oldConnectionTarget_->resetBorderColors();
-        oldConnectionTarget_->clearMidPoint();
         oldConnectionTarget_ = nullptr;
     }
     connectionGraphicsItems_.erase(connection);
@@ -728,28 +727,18 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
                         return connectionItem->getInport()->canConnectTo(outport);
                     });
 
-                if (inputmatch && outputmatch) {
-                    connectionItem->setBorderColor(Qt::green);
-                    connectionItem->setMidPoint(e->scenePos());
-                    validConnectionTarget_ = true;
-                } else {
-                    connectionItem->setBorderColor(Qt::red);
-                    connectionItem->update();
-                }
+                validConnectionTarget_ = (inputmatch && outputmatch);
+                connectionItem->setBorderColor(validConnectionTarget_ ? Qt::green : Qt::red);
+                // force update of connection item since color has changed
+                connectionItem->update();
             } catch (Exception&) {
                 connectionItem->setBorderColor(Qt::red);
                 connectionItem->update();
             }
             oldConnectionTarget_ = connectionItem;
 
-        } else if (connectionItem) {  // move event on active connection
-            if (validConnectionTarget_) {
-                oldConnectionTarget_->setMidPoint(e->scenePos());
-            }
-
         } else if (oldConnectionTarget_ && !connectionItem) {  //< Connection no longer targeted
             oldConnectionTarget_->resetBorderColors();
-            oldConnectionTarget_->clearMidPoint();
             oldConnectionTarget_ = nullptr;
 
         } else if (!connectionItem) {  // processor replacement
@@ -812,7 +801,6 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
             } catch (Exception& exception) {
                 if (oldConnectionTarget_) {
                     oldConnectionTarget_->resetBorderColors();
-                    oldConnectionTarget_->clearMidPoint();
                 }
                 util::log(exception.getContext(), "Unable to create processor " + className +
                                                       " due to " + exception.getMessage(),
@@ -849,7 +837,6 @@ void NetworkEditor::placeProcessorOnConnection(Processor* processor,
         network_->addConnection(outport, connectionInport);
     } else {
         connectionItem->resetBorderColors();
-        connectionItem->clearMidPoint();
     }
 }
 
