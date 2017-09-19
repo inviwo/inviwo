@@ -48,8 +48,6 @@ namespace inviwo {
 CurveGraphicsItem::CurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color)
     : startPoint_(startPoint)
     , endPoint_(endPoint)
-    , midPoint_(QPointF(0,0))
-    , useMidPoint_(false)
     , color_(color.r, color.g, color.b)
     , borderColor_()
     , selectedBorderColor_() {
@@ -61,12 +59,7 @@ CurveGraphicsItem::CurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3
 CurveGraphicsItem::~CurveGraphicsItem() = default;
 
 QPainterPath CurveGraphicsItem::obtainCurvePath() const {
-    if (useMidPoint_) {
-    return obtainCurvePath(getStartPoint(), getMidPoint()) + 
-        obtainCurvePath(getMidPoint(), getEndPoint());    
-    } else {
-        return obtainCurvePath(getStartPoint(), getEndPoint());
-    }
+    return obtainCurvePath(getStartPoint(), getEndPoint());
 }
 
 QPainterPath CurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endPoint) const {
@@ -140,25 +133,14 @@ QRectF CurveGraphicsItem::boundingRect() const {
 }
 
 QPointF CurveGraphicsItem::getStartPoint() const { return startPoint_; }
-QPointF CurveGraphicsItem::getMidPoint() const { return midPoint_; }
 QPointF CurveGraphicsItem::getEndPoint() const { return endPoint_; }
 
 void CurveGraphicsItem::setStartPoint(QPointF startPoint) {
     startPoint_ = startPoint;
     updateShape();
 }
-void CurveGraphicsItem::setMidPoint(QPointF midPoint) {
-    useMidPoint_ = true;
-    midPoint_ = midPoint;
-    updateShape();
-}
 void CurveGraphicsItem::setEndPoint(QPointF endPoint) {
     endPoint_ = endPoint;
-    updateShape();
-}
-void CurveGraphicsItem::clearMidPoint() {  
-    midPoint_ = QPointF(0,0);
-    useMidPoint_ = false;
     updateShape();
 }
 

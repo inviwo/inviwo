@@ -61,17 +61,14 @@ public:
     virtual QPainterPath shape() const;
     virtual QPointF getStartPoint() const;
     virtual QPointF getEndPoint() const;
-    virtual QPointF getMidPoint() const;
     virtual QColor getColor() const;
 
     virtual void updateShape();
 
     void setStartPoint(QPointF startPoint);
     void setEndPoint(QPointF endPoint);
-    void setMidPoint(QPointF midPoint);
     void setColor(QColor color);
 
-    void clearMidPoint();
     void resetBorderColors();
     void setBorderColor(QColor borderColor);
     void setSelectedBorderColor(QColor selectedBorderColor);
@@ -92,8 +89,6 @@ public:
 protected:
     QPointF startPoint_;
     QPointF endPoint_;
-    QPointF midPoint_;
-    bool useMidPoint_;
 
     QColor color_;
     QColor borderColor_;

@@ -209,7 +209,6 @@ void NetworkEditor::removeConnectionGraphicsItem(const PortConnection& connectio
     ConnectionGraphicsItem* connectionGraphicsItem = connectionGraphicsItems_[connection];
     if (oldProcessorTarget_ && (oldConnectionTarget_ == connectionGraphicsItem)) {
         oldConnectionTarget_->resetBorderColors();
-        oldConnectionTarget_->clearMidPoint();
         oldConnectionTarget_ = nullptr;
     }
     connectionGraphicsItems_.erase(connection);
