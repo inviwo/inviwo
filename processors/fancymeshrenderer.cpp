@@ -185,6 +185,9 @@ void FancyMeshRenderer::initializeResources() {
 		shader_.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
 	}
 
+	//Settings
+	shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
+
 	// get a hold of the current output data
 	auto prevData = outport_.getData();
 	auto numLayers = static_cast<std::size_t>(layerID - 1); // Don't count picking
@@ -209,15 +212,24 @@ void FancyMeshRenderer::process() {
 	else {
 		utilgl::activateAndClearTarget(outport_);
 	}
+	if (faceSettings_[0].cull_ && faceSettings_[0].cull_)
+	{
+		return; //everything is culled
+	}
 
 	shader_.activate();
 
-	//utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_.get());
-	//utilgl::CullFaceState culling(cullFace_.get());
-	//utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+	utilgl::DepthMaskState depthMask(GL_FALSE);
+	utilgl::CullFaceState culling(
+		faceSettings_[0].cull_ && !faceSettings_[1].cull_ ? GL_FRONT :
+		!faceSettings_[0].cull_ && faceSettings_[1].cull_ ? GL_BACK :
+		GL_NONE);
+	utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	utilgl::setUniforms(shader_, camera_, lightingProperty_);
 	utilgl::setShaderUniforms(shader_, *(drawer_->getMesh()), "geometry");
+	shader_.setUniform("overrideColor", faceSettings_[0].externalColor_.get());
 	shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
 	drawer_->draw();
 

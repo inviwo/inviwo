@@ -34,6 +34,22 @@ uniform CameraParameters camera;
 
 uniform vec4 overrideColor;
 
+struct FaceRenderSettings
+{
+	sampler1D transferFunction;
+	vec4 externalColor;
+	int colorSource;
+
+	int alphaMode;
+	float alphaScale;
+
+	int normalSource;
+
+	int shadingMode;
+};
+uniform FaceRenderSettings frontSettings;
+uniform FaceRenderSettings backSettings;
+
 in vec4 worldPosition_;
 in vec3 normal_;
 in vec3 viewNormal_;

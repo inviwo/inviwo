@@ -29,18 +29,19 @@
 
 #include <fancymeshrenderer/fancymeshrenderermodule.h>
 #include <fancymeshrenderer/processors/fancymeshrenderer.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
 FancyMeshRendererModule::FancyMeshRendererModule(InviwoApplication* app) : InviwoModule(app, "FancyMeshRenderer") {   
-    registerProcessor<FancyMeshRenderer>();
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+    
+	// Add a directory to the search path of the Shadermanager
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
     
     // Processors
-    // registerProcessor<fancymeshrendererProcessor>();
+	registerProcessor<FancyMeshRenderer>();
     
     // Properties
     // registerProperty<fancymeshrendererProperty>();
