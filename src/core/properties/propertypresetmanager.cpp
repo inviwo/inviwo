@@ -124,6 +124,7 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
             auto it = std::find_if(workspacePresets_.begin(), workspacePresets_.end(),
                                    [&](const auto& item) { return item.name == name; });
             if (it != workspacePresets_.end()) {
+                it->classIdentifier = property->getClassIdentifier();
                 it->data = ss.str();
             } else {
                 workspacePresets_.emplace_back(property->getClassIdentifier(), name, ss.str());
@@ -134,6 +135,7 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
             auto it = std::find_if(appPresets_.begin(), appPresets_.end(),
                                    [&](const auto& item) { return item.name == name; });
             if (it != appPresets_.end()) {
+                it->classIdentifier = property->getClassIdentifier();
                 it->data = ss.str();
             } else {
                 appPresets_.emplace_back(property->getClassIdentifier(), name, ss.str());
