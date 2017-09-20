@@ -71,8 +71,10 @@ FancyMeshRenderer::FancyMeshRenderer()
 		InvalidationLevel::InvalidResources)
 	, separateFaceSettings_("separateFaceSettings", "Separate Face Settings", false)
 	, copyFrontToBack_("copyFrontToBack", "Copy Front to Back")
+    , forceOpaque_("forceOpaque", "Force Opaque", false)
 	, faceSettings_{"front_", "back_"}
 	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.frag", false)
+	, needsRecompilation_(true)
 {
 	addPort(inport_);
 	addPort(imageInport_);
@@ -99,6 +101,7 @@ FancyMeshRenderer::FancyMeshRenderer()
 	faceSettings_[1].container_.setCollapsed(true);
 	addProperty(separateFaceSettings_);
 	addProperty(copyFrontToBack_);
+    addProperty(forceOpaque_);
 	addProperty(faceSettings_[0].container_);
 	addProperty(faceSettings_[1].container_);
 
@@ -131,7 +134,6 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& pre
 	colorSource_.setCurrentStateAsDefault();
 	externalColor_.setSemantics(PropertySemantics::Color);
 
-	alphaMode_.addOption("opque", "Opaque", AlphaMode::Opaque);
 	alphaMode_.addOption("uniform", "Uniform", AlphaMode::Uniform);
 	alphaMode_.addOption("angle", "Angle-Based", AlphaMode::AngleBased);
 	alphaMode_.addOption("normal", "Normal-Based", AlphaMode::NormalBased);
@@ -162,31 +164,16 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& pre
 }
     
 void FancyMeshRenderer::initializeResources() {
-	// shading defines
-	utilgl::addShaderDefines(shader_, lightingProperty_);
-
+	
+	//get number of layers, see compileShader()
 	// first two layers (color and picking) are reserved
 	int layerID = 2;
 	if (normalsLayer_.get()) {
-		shader_.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
-		shader_.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
 		++layerID;
 	}
-	else {
-		shader_.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
-	}
-
 	if (viewNormalsLayer_.get()) {
-		shader_.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
-		shader_.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
 		++layerID;
 	}
-	else {
-		shader_.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
-	}
-
-	//Settings
-	shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
 
 	// get a hold of the current output data
 	auto prevData = outport_.getData();
@@ -201,8 +188,49 @@ void FancyMeshRenderer::initializeResources() {
 
 		outport_.setData(image);
 	}
+}
+
+void FancyMeshRenderer::compileShader()
+{
+	if (!needsRecompilation_) return;
+
+	// shading defines
+	utilgl::addShaderDefines(shader_, lightingProperty_);
+
+	if (colorLayer_.get()) {
+		shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
+	}
+	else {
+		shader_.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
+	}
+
+	// first two layers (color and picking) are reserved
+	int layerID = 2;
+	if (normalsLayer_.get()) {
+		shader_.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
+		shader_.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
+		++layerID;
+	}
+	else {
+		shader_.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
+	}
+	if (viewNormalsLayer_.get()) {
+		shader_.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
+		shader_.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
+		++layerID;
+	}
+	else {
+		shader_.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
+	}
+
+	//Settings
+	shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
+	//TODO: more settings
 
 	shader_.build();
+
+	LogProcessorInfo("shader compiled");
+	needsRecompilation_ = false;
 }
 
 void FancyMeshRenderer::process() {
@@ -212,25 +240,34 @@ void FancyMeshRenderer::process() {
 	else {
 		utilgl::activateAndClearTarget(outport_);
 	}
-	if (faceSettings_[0].cull_ && faceSettings_[0].cull_)
-	{
-		return; //everything is culled
-	}
 
+    if (faceSettings_[0].cull_ && faceSettings_[0].cull_)
+    {
+        utilgl::deactivateCurrentTarget();
+        return; //everything is culled
+    }
+
+	compileShader();
 	shader_.activate();
 
+    bool opaque = forceOpaque_.get();
+
 	utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-	utilgl::DepthMaskState depthMask(GL_FALSE);
+	utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
 	utilgl::CullFaceState culling(
 		faceSettings_[0].cull_ && !faceSettings_[1].cull_ ? GL_FRONT :
 		!faceSettings_[0].cull_ && faceSettings_[1].cull_ ? GL_BACK :
 		GL_NONE);
-	utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::BlendModeState blendModeStateGL(
+        opaque ? GL_ONE : GL_SRC_ALPHA,
+        opaque ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 
 	utilgl::setUniforms(shader_, camera_, lightingProperty_);
 	utilgl::setShaderUniforms(shader_, *(drawer_->getMesh()), "geometry");
 	shader_.setUniform("overrideColor", faceSettings_[0].externalColor_.get());
 	shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
+
+	//Finally, draw it
 	drawer_->draw();
 
 	shader_.deactivate();

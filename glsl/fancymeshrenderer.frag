@@ -58,11 +58,11 @@ in vec4 color_;
 void main() {
     vec4 fragColor = vec4(1.0);
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
-    #ifdef OVERRIDE_COLOR_BUFFER
+#ifdef OVERRIDE_COLOR_BUFFER
     vec4 color = overrideColor;
-    #else
+#else
     vec4 color = color_;
-    #endif
+#endif
 
     fragColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
                                    normalize(normal_), normalize(toCameraDir_));
@@ -79,7 +79,5 @@ void main() {
 #ifdef VIEW_NORMALS_LAYER
     view_normals_out = vec4((normalize(viewNormal_)+1.0)*0.5,1.0f);
 #endif
-
-    PickingData = pickColor_;
 
 }

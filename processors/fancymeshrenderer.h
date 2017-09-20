@@ -88,6 +88,8 @@ protected:
 	void updateDrawers();
 	void copyFrontToBackSettings();
 
+	void compileShader();
+
 	MeshInport inport_;
 	ImageInport imageInport_;
     ImageOutport outport_;
@@ -106,6 +108,7 @@ protected:
 
 	BoolProperty separateFaceSettings_;
 	ButtonProperty copyFrontToBack_;
+    BoolProperty forceOpaque_;
 
 	enum ColorSource
 	{
@@ -115,7 +118,6 @@ protected:
 	};
 	enum AlphaMode
 	{
-		Opaque,
 		Uniform,
 		AngleBased,
 		NormalBased
@@ -157,6 +159,7 @@ protected:
 
 
 	Shader shader_;
+	bool needsRecompilation_;
 	std::unique_ptr<MeshDrawer> drawer_;
 };
 
