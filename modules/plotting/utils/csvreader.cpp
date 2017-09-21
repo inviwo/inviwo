@@ -63,7 +63,6 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
 
     // create a string stream for easier handling
     std::stringstream in(buffer.data());
-    //in.rdbuf()->pubsetbuf(buffer.data(), len);
 
     // current line
     size_t line = 1u;
@@ -73,14 +72,30 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
         size_t quoteCount = 0;
         char prev = 0;
         const size_t startLine = line;
+
+        auto isLineBreak = [](const char ch, auto& in) {
+            if (ch == '\r') {
+                // consume potential LF (\n) following CR (\r)
+                if (in.peek() == '\n') {
+                    in.get();
+                }
+                return true;
+            } else {
+                return (ch == '\n');
+            }
+        };
+
         // ignore empty lines
-        while (!in.eof() && (in.peek() == '\n')) {
+        while (!in.eof() && ((in.peek() == '\n') || (in.peek() == '\r'))) {
             in.get();
         }
         char ch;
         while (in.get(ch)) {
-            if (ch == '\n') {
+            bool linebreak = isLineBreak(ch, in);
+            if (linebreak) {
                 ++line;  // increase line counter
+                // ensure that ch is equal to '\n'
+                ch = '\n';
                 // consume line break, if inside quotes
                 if ((quoteCount & 1) != 0) {
                     value += ch;
@@ -90,11 +105,11 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
             }
             if (ch == '"') {
                 ++quoteCount;
-            } else if (util::contains(delimiters_, ch) || (ch == '\n')) {
+            } else if (util::contains(delimiters_, ch) || linebreak) {
                 // found a delimiter/newline, ensure that it isn't enclosed by quotes,
                 // i.e. an even count of quotes
                 if ((quoteCount == 0) || ((prev == '"') && ((quoteCount & 1) == 0))) {
-                    return{ value, (ch == '\n') };
+                    return{ value, linebreak };
                 }
             }
             prev = ch;
