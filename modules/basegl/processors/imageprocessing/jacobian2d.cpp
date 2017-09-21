@@ -63,7 +63,7 @@ void Jacobian2D::initializeResources() {
     ImageGLProcessor::initializeResources();
 }
     
-void Jacobian2D::preProcess(TextureUnitContainer &cont) {
+void Jacobian2D::preProcess(TextureUnitContainer &) {
     shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
 }
 

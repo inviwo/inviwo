@@ -347,7 +347,8 @@ void ProcessorTreeWidget::addProcessorsToTree() {
     processorTree_->resizeColumnToContents(1);
 }
 
-void ProcessorTreeWidget::currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
+void ProcessorTreeWidget::currentItemChanged(QTreeWidgetItem* current,
+                                             QTreeWidgetItem* /*previous*/) {
     if (!current) return;
     std::string classname =
         current->data(0, ProcessorTree::IDENTIFIER_ROLE).toString().toUtf8().constData();

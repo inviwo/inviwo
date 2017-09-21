@@ -63,9 +63,9 @@ VolumeLowPass::VolumeLowPass()
     useGaussianWeights_.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
 
     sigma_.onChange([&]() {
-        int kernelSize90 = sigma_.get() * 2 * 1.645f;
-        int kernelSize95 = sigma_.get() * 2 * 1.960f;
-        int kernelSize99 = sigma_.get() * 2 * 2.576f;
+        int kernelSize90 = static_cast<int>(sigma_.get() * 2 * 1.645f);
+        int kernelSize95 = static_cast<int>(sigma_.get() * 2 * 1.960f);
+        int kernelSize99 = static_cast<int>(sigma_.get() * 2 * 2.576f);
         // https://de.wikipedia.org/wiki/Normalverteilung
         LogInfo("Optimizal kernelSize for sigma " << sigma_.get() << " is: "
                                                   << "\n\t90%: " << kernelSize90
@@ -80,15 +80,14 @@ VolumeLowPass::VolumeLowPass()
 
 VolumeLowPass::~VolumeLowPass() {}
 
-void VolumeLowPass::preProcess(TextureUnitContainer &cont) {
+void VolumeLowPass::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, kernelSize_); 
     
     float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();
-    float a = 1.0f / (sigmaSq2 * M_PI);
+    float a = static_cast<float>(1.0 / (sigmaSq2 * M_PI));
 
     shader_.setUniform("sigmaSq2", sigmaSq2);
     shader_.setUniform("a", a);
-    LogInfo(sigmaSq2 << " " << a);
 }
 
 void VolumeLowPass::postProcess() {

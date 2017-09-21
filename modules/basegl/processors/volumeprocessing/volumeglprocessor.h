@@ -67,17 +67,17 @@ protected:
      * after the shader has been activated.
      * Overwrite this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess(TextureUnitContainer &cont) {}
+    virtual void preProcess(TextureUnitContainer &cont);
 
     /*! \brief this function gets called at the end of the process function
      * Overwrite this function in the derived class to perform post-processing
      */
-    virtual void postProcess() {}
+    virtual void postProcess();
 
     /*! \brief this function gets called whenever the inport changes
      * Overwrite this function in the derived class to be notified of inport onChange events
      */
-    virtual void afterInportChanged() {}
+    virtual void afterInportChanged();
 
     VolumeInport inport_;
     VolumeOutport outport_;

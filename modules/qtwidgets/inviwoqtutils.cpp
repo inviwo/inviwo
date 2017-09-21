@@ -112,7 +112,7 @@ QMainWindow* getApplicationMainWindow() {
     }
 }
 
-QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,
+QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
                             bool decorationOffset /*= true*/) {
 #ifdef WIN32
     // Only non zero on windows, due to a QT bug in window decoration handling.

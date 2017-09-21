@@ -161,7 +161,7 @@ void EventPropertyWidgetQt::setButtonText() {
     button_->setText(QString::fromStdString(ss.str()));
 }
 
-void EventPropertyWidgetQt::focusOutEvent(QFocusEvent* event) {
+void EventPropertyWidgetQt::focusOutEvent(QFocusEvent*) {
     releaseKeyboard();
     setButtonText();
     button_->setEnabled(true);

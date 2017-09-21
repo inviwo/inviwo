@@ -327,7 +327,7 @@ void Property::resetToDefaultState() {
     propertyModified();
 }
 
-void Property::set(const Property* src) {
+void Property::set(const Property* /*src*/) {
     propertyModified();
 }
 

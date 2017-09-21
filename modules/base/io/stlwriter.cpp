@@ -53,7 +53,7 @@ void StlWriter::writeData(const Mesh* data, const std::string filePath) const {
 }
 
 std::unique_ptr<std::vector<unsigned char>> StlWriter::writeDataToBuffer(
-    const Mesh* data, const std::string& fileExtension) const {
+    const Mesh* data, const std::string& /*fileExtension*/) const {
     std::stringstream ss;
     writeData(data, ss);
     auto stringdata = ss.str();
@@ -126,7 +126,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
             }
         }
         return std::function<void(std::ostream&, size_t, size_t, size_t)>(
-            [&f](std::ostream& fs, size_t i1, size_t i2, size_t i3) -> void {
+            [&f](std::ostream& fs, size_t, size_t, size_t) -> void {
                 fs << "0.0 0.0 0.0\n";
             });
     }();

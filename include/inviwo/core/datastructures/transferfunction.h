@@ -45,9 +45,9 @@ class LayerRAMPrecision;
 
 class IVW_CORE_API TransferFunctionObserver : public Observer {
 public:
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p){};
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p){};
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p){};
+    virtual void onControlPointAdded(TransferFunctionDataPoint* p);
+    virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
+    virtual void onControlPointChanged(const TransferFunctionDataPoint* p);
 };
 class IVW_CORE_API TransferFunctionObservable : public Observable<TransferFunctionObserver> {
 protected:

@@ -84,7 +84,7 @@ void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, s
     shader.setUniform(name + ".specularExponent", property.specularExponent_.get());
 }
 
-void addShaderDefines(Shader& shader, const CameraProperty& property) {}
+void addShaderDefines(Shader& /*shader*/, const CameraProperty& /*property*/) {}
 
 void setShaderUniforms(Shader& shader, const CameraProperty& property, std::string name) {
     shader.setUniform(name + ".worldToView", property.viewMatrix());

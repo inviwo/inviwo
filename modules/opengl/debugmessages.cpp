@@ -58,8 +58,8 @@ void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID 
 }
 
 void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
-                                           GLenum eseverity, GLsizei length, const GLchar* message,
-                                           const void* module) {
+                                           GLenum eseverity, GLsizei /*length*/,
+                                           const GLchar* message, const void* /*module*/) {
 
     const auto source = debug::toSouce(esource);
     const auto type = debug::toType(etype);
@@ -95,7 +95,7 @@ void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint 
 void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
     if (RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->forEachContext(
-            [mode, severity](Canvas::ContextID id, const std::string& name, Canvas* canvas,
+            [mode, severity](Canvas::ContextID id, const std::string& /*name*/, Canvas* canvas,
                              std::thread::id threadId) {
                 if (threadId == std::this_thread::get_id()) {
                     canvas->activate();
@@ -135,18 +135,19 @@ void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
 
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
     if (RenderContext::getPtr()->getDefaultRenderContext()) {
-        RenderContext::getPtr()->forEachContext([severity](Canvas::ContextID id,
-                                                           const std::string& name, Canvas* canvas,
-                                                           std::thread::id threadId) {
-            if (threadId == std::this_thread::get_id()) {
-                const auto rc = RenderContext::getPtr();
-                canvas->activate();
-                configureOpenGLDebugMessages(severity);
-                LogInfoCustom("OpenGL Debug", "Debug messages for level: "
-                                                  << severity << " for context: "
-                                                  << rc->getContextName(id) << " (" << id << ")");
-            }
-        });
+        RenderContext::getPtr()->forEachContext(
+            [severity](Canvas::ContextID id, const std::string& /*name*/, Canvas* canvas,
+                       std::thread::id threadId) {
+                if (threadId == std::this_thread::get_id()) {
+                    const auto rc = RenderContext::getPtr();
+                    canvas->activate();
+                    configureOpenGLDebugMessages(severity);
+                    LogInfoCustom("OpenGL Debug", "Debug messages for level: "
+                                                      << severity
+                                                      << " for context: " << rc->getContextName(id)
+                                                      << " (" << id << ")");
+                }
+            });
         RenderContext::getPtr()->activateDefaultRenderContext();
     }
 }

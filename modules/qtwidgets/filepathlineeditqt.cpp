@@ -105,7 +105,7 @@ bool FilePathLineEditQt::isEditingEnabled() const {
     return editingEnabled_;
 }
 
-void FilePathLineEditQt::resizeEvent(QResizeEvent *event) {
+void FilePathLineEditQt::resizeEvent(QResizeEvent *) {
     // adjust position of warning label to be on the right side
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     warningLabel_->move(width() - warningLabel_->width() - frameWidth, 0);

@@ -69,8 +69,8 @@ bool CImgLayerWriter::writeDataToRepresentation(const repr* src, repr* dst) cons
     LayerRAM* target = dynamic_cast<LayerRAM*>(dst);
 
     if (!source || !target) {
-        return false;
         LogError("Target representation missing.");
+        return false;
     }
 
     return cimgutil::rescaleLayerRamToLayerRam(source, target);

@@ -35,7 +35,7 @@
 #include <modules/base/algorithm/randomutils.h>
 
 namespace {
-static inline int nextPow2(int x) {
+static inline glm::u64 nextPow2(glm::u64 x) {
     if (x == 0) return 0;
     --x;
     x |= x >> 1;
@@ -43,6 +43,7 @@ static inline int nextPow2(int x) {
     x |= x >> 4;
     x |= x >> 8;
     x |= x >> 16;
+    x |= x >> 32;
     return x + 1;
 }
 }  // namespace

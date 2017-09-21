@@ -37,33 +37,32 @@
 
 namespace inviwo {
 
-    // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-    const ProcessorInfo TMIP::processorInfo_{
-        "org.inviwo.TMIP",  // Class identifier
-        "TMIP",           // Display name
-        "Volume Sequence Operation",                  // Category
-        CodeState::Experimental,          // Code state
-        Tags::GL,                        // Tags
-    };
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo TMIP::processorInfo_{
+    "org.inviwo.TMIP",            // Class identifier
+    "TMIP",                       // Display name
+    "Volume Sequence Operation",  // Category
+    CodeState::Experimental,      // Code state
+    Tags::GL,                     // Tags
+};
 
-    const ProcessorInfo TMIP::getProcessorInfo() const {
-        return processorInfo_;
-    }
+const ProcessorInfo TMIP::getProcessorInfo() const { return processorInfo_; }
 
 TMIP::TMIP()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , outputType_("outputType","Output type")
+    , outputType_("outputType", "Output type",
+                  {{"scalar", "Maximum Scalar", OutputType::Scalar},
+                   {"velocity", "Vector with maximum velocity", OutputType::HighestVelocity}})
     , shader_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", false)
     , shaderLast_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", false)
     , fbo_() {
+
     addPort(inport_);
     addPort(outport_);
 
     addProperty(outputType_);
-    outputType_.addOption("scalar", "Maximum Scalar", OutputType::Scalar);
-    outputType_.addOption("velocity", "Vector with maximum velocity", OutputType::HighestVelocity);
 
     inport_.onChange([this]() { initializeResources(); });
 
@@ -92,7 +91,8 @@ void TMIP::process() {
         volume1_ = std::shared_ptr<Volume>(volume0_->clone());
     }
 
-    int iterations = static_cast<int>(std::ceil(volumes->size() / static_cast<float>(maxSamplers_)));
+    int iterations =
+        static_cast<int>(std::ceil(volumes->size() / static_cast<float>(maxSamplers_)));
 
     std::shared_ptr<Volume> readVol = volume0_;
     std::shared_ptr<Volume> writeVol = volume1_;
@@ -100,14 +100,13 @@ void TMIP::process() {
     for (int i = 0; i < iterations; i++) {
         bool firstIT = i == 0;
         bool lastIT = i != 0 && iterations;
-        
+
         auto startVolIT = volumes->begin() + offset + 1;
-        
+
         if (firstIT) {
             auto endVolIT = volumes->begin() + offset + maxSamplers_;
             iteration(shader_, volumes->at(0), writeVol, startVolIT, endVolIT);
-        }
-        else if (!lastIT) {
+        } else if (!lastIT) {
             auto endVolIT = volumes->begin() + offset + maxSamplers_;
             iteration(shader_, readVol, writeVol, startVolIT, endVolIT);
         } else {
@@ -147,46 +146,44 @@ void TMIP::initShader(Shader& s, int samplers) {
         sampling << "vec4 sample" << i << " = getVoxel(volume" << id
                  << ", volumeParameters, texCoord_.xyz);";
 
-        switch (outputType_.get())
-        {
-        case OutputType::Scalar:
-            if (i == 0) {
-                maximum << "result = sample0;";
-            }
-            else {
-                maximum << "result = max(result,sample" << i << ");";
-            }
-            break;
-        case OutputType::HighestVelocity:
-            if (i == 0) {
-                maximum << "result = sample0.xyz;result.a = length(sample0.xyz);";
-            }
-            else {
-                maximum << "{ float l = length(sample" << i
-                    << ".xyz); if(l > result.a)   result = vec4(sample" << i << ".xyz,l);}";
-            }
-            break;
+        switch (outputType_.get()) {
+            case OutputType::Scalar:
+                if (i == 0) {
+                    maximum << "result = sample0;";
+                } else {
+                    maximum << "result = max(result,sample" << i << ");";
+                }
+                break;
+            case OutputType::HighestVelocity:
+                if (i == 0) {
+                    maximum << "result = sample0.xyz;result.a = length(sample0.xyz);";
+                } else {
+                    maximum << "{ float l = length(sample" << i
+                            << ".xyz); if(l > result.a)   result = vec4(sample" << i << ".xyz,l);}";
+                }
+                break;
         }
     }
 
-    shader_.getFragmentShaderObject()->addShaderDefine("GEN_UNIFORMS", uniforms.str());
-    shader_.getFragmentShaderObject()->addShaderDefine("GEN_SAMPLING", sampling.str());
-    shader_.getFragmentShaderObject()->addShaderDefine("GEN_MAX", maximum.str());
-    shader_.build();
+    s[ShaderType::Fragment]->addShaderDefine("GEN_UNIFORMS", uniforms.str());
+    s[ShaderType::Fragment]->addShaderDefine("GEN_SAMPLING", sampling.str());
+    s[ShaderType::Fragment]->addShaderDefine("GEN_MAX", maximum.str());
+    s.build();
 }
 
-std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol, std::shared_ptr<Volume> target,
+std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol,
+                                        std::shared_ptr<Volume> target,
                                         std::vector<std::shared_ptr<Volume>>::const_iterator start,
                                         std::vector<std::shared_ptr<Volume>>::const_iterator end) {
-    shader_.activate();
+    s.activate();
 
     TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, *vol, "volume");
+    utilgl::bindAndSetUniforms(s, cont, *vol, "volume");
     int i = 1;
     for (auto v = start; v != end; ++v) {
         if (i >= maxSamplers_) break;
         std::string id = (i == 0) ? "" : toString(i);
-        utilgl::bindAndSetUniforms(shader_, cont, *(v->get()), "volume" + id);
+        utilgl::bindAndSetUniforms(s, cont, *(v->get()), "volume" + id);
         i++;
     }
 
@@ -201,7 +198,7 @@ std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol, 
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
 
-    shader_.deactivate();
+    s.deactivate();
     fbo_.deactivate();
 
     return vol;

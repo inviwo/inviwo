@@ -41,7 +41,7 @@ PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState stat
     : Event()
     , pickingAction_(pickingAction)
     , state_(state)
-    , event_{event, [](Event* e) {}}
+    , event_{event, [](Event*) {}}
     , ownsEvent_(false)
     , pressedNDC_(pressNDC)
     , previousNDC_(previousNDC)

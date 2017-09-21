@@ -100,6 +100,14 @@ void ImageGLProcessor::process() {
     postProcess();
 }
 
+void ImageGLProcessor::markInvalid() { internalInvalid_ = true; }
+
+void ImageGLProcessor::preProcess(TextureUnitContainer&) {}
+
+void ImageGLProcessor::postProcess() {}
+
+void ImageGLProcessor::afterInportChanged() {}
+
 void ImageGLProcessor::createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
                                          const SwizzleMask &swizzleMask, ImageInport &inport, ImageOutport &outport) {
 
@@ -139,6 +147,11 @@ size2_t ImageGLProcessor::calcOutputDimensions() const {
         dimensions = inport_.getData()->getDimensions();
     }
     return dimensions;
+}
+
+void ImageGLProcessor::inportChanged() {
+    markInvalid();
+    afterInportChanged();
 }
 
 }  // namespace

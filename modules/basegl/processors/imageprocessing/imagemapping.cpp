@@ -54,7 +54,7 @@ ImageMapping::ImageMapping()
 
 ImageMapping::~ImageMapping() {}
 
-void ImageMapping::preProcess(TextureUnitContainer &cont) {
+void ImageMapping::preProcess(TextureUnitContainer &) {
     TextureUnit transFuncUnit;
     const Layer* tfLayer = transferFunction_.get().getData();
     const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();

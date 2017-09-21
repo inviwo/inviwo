@@ -117,14 +117,14 @@ std::shared_ptr<Image> eigenMatToImage(const T& m,
     size_t idx = 0;
 
     if (flipY) {
-        for (int i = m.rows() - 1; i >= 0; i--) {
-            for (int j = 0; j < m.cols(); j++) {
+        for (auto i = m.rows() - 1; i >= 0; i--) {
+            for (auto j = 0; j < m.cols(); j++) {
                 data[idx++] = m.coeff(i, j);
             }
         }
     } else {
-        for (int i = 0; i < m.rows(); i++) {
-            for (int j = 0; j < m.cols(); j++) {
+        for (auto i = 0; i < m.rows(); i++) {
+            for (auto j = 0; j < m.cols(); j++) {
                 data[idx++] = m.coeff(i, j);
             }
         }

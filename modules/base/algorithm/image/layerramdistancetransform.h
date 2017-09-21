@@ -162,7 +162,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     #pragma omp parallel for
     for (int64 y = 0; y < dstDim.y; ++y) {
         // forward
-        U dist = dstDim.x;
+        U dist = static_cast<U>(dstDim.x);
         for (int64 x = 0; x < dstDim.x; ++x) {
             if (!is_feature(x, y)) {
                 ++dist;
@@ -173,7 +173,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
         }
 
         // backward
-        dist = dstDim.x;
+        dist = static_cast<U>(dstDim.x);
         for (int64 x = dstDim.x - 1; x >= 0; --x) {
             if (!is_feature(x, y)) {
                 ++dist;

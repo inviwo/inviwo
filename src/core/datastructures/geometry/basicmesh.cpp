@@ -191,7 +191,7 @@ std::shared_ptr<BasicMesh> BasicMesh::ellipse(const vec3& center, const vec3& ma
 
     vec3 p, p1;
     vec3 t;
-    double angle = M_PI * 2.0f / nsegments;
+    float angle = static_cast<float>(M_PI * 2.0 / nsegments);
     float a = glm::length(majorAxis);
     float b = glm::length(minorAxis);
     float eradius, eradius1;

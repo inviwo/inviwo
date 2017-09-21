@@ -40,8 +40,8 @@
 
 namespace inviwo {
 
-
-// This class enables inviwo to use cl::Image(s) in a generic way (i.e. not caring if it is an Image2D or Image2DGL/ImageGL).
+// This class enables inviwo to use cl::Image(s) in a generic way (i.e. not caring if it is an
+// Image2D or Image2DGL/ImageGL).
 class IVW_MODULE_OPENCL_API VolumeCLBase {
 
 public:
@@ -50,15 +50,18 @@ public:
         mat4 worldToModel;
         mat4 worldToTexture;
         mat4 textureToWorld;
-        mat4 textureToIndex;                    // Transform from [0 1] to [-0.5 dim-0.5]
-        mat4 indexToTexture;                    // Transform from [-0.5 dim-0.5] to [0 1]
-        mat4 textureSpaceGradientSpacing;       // Maximum possible distance to go without ending up outside of a voxel (half of minimum voxel spacing for volumes with orthogonal basis)
-        vec4 worldSpaceGradientSampleSpacing;   // Spacing (xyz) between gradient samples in world space (OpenCL memory layout does not support vec3)
-        float formatScaling;                    // Scaling of data values.
-        float formatOffset;                     // Offset of data values.
-        float signedFormatScaling;              // Scaling of signed data values.
-        float signedFormatOffset;               // Offset of signed data values.
-        char padding__[32];                     // Padding to align to 512 bytes
+        mat4 textureToIndex;               // Transform from [0 1] to [-0.5 dim-0.5]
+        mat4 indexToTexture;               // Transform from [-0.5 dim-0.5] to [0 1]
+        mat4 textureSpaceGradientSpacing;  // Maximum possible distance to go without ending up
+                                           // outside of a voxel (half of minimum voxel spacing for
+                                           // volumes with orthogonal basis)
+        vec4 worldSpaceGradientSampleSpacing;  // Spacing (xyz) between gradient samples in world
+                                               // space (OpenCL memory layout does not support vec3)
+        float formatScaling;                   // Scaling of data values.
+        float formatOffset;                    // Offset of data values.
+        float signedFormatScaling;             // Scaling of signed data values.
+        float signedFormatOffset;              // Offset of signed data values.
+        char padding__[32];                    // Padding to align to 512 bytes
     };
     VolumeCLBase();
     VolumeCLBase(const VolumeCLBase& other);

@@ -165,7 +165,7 @@ void LayerCLGL::notifyAfterTextureInitialization() {
 
 std::type_index LayerCLGL::getTypeIndex() const { return std::type_index(typeid(LayerCLGL)); }
 
-dvec4 LayerCLGL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
+dvec4 LayerCLGL::readPixel(size2_t pos, LayerType /*layer*/, size_t /*index*/) const {
     std::array<char, DataFormat<dvec4>::typesize> buffer;
     auto ptr = static_cast<void *>(buffer.data());
 

@@ -153,7 +153,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
                 // add all layer images into the same row
                 auto tableCell = t.append("tr").append("td").append("table").append("tr");
-                size_t perRow = std::ceil(std::sqrt(layers.size()));
+                size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
                 size_t rowCount = 0;
                 for (auto item : layers) {
                     if (rowCount >= perRow) {

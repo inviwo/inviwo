@@ -564,7 +564,7 @@ void TransferFunctionEditor::updateConnections() {
     }
 }
 
-void TransferFunctionEditor::onControlPointChanged(const TransferFunctionDataPoint* p) {}
+void TransferFunctionEditor::onControlPointChanged(const TransferFunctionDataPoint*) {}
 
 void TransferFunctionEditor::setControlPointSize(float val) {
     controlPointSize_ = val;

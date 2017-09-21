@@ -302,8 +302,7 @@ void CameraProperty::setInport(Inport* inport) {
     inport_ = inport;
 }
 
-void CameraProperty::adjustCameraToData(const mat4& prevDataToWorldMatrix,
-                                        const mat4& newDataToWorldMatrix) {
+void CameraProperty::adjustCameraToData(const mat4& newDataToWorldMatrix) {
     if (newDataToWorldMatrix != prevDataToWorldMatrix_) {
         // Transform to data space of old basis and then to world space in new basis.
         auto toNewSpace = newDataToWorldMatrix * glm::inverse(prevDataToWorldMatrix_);
@@ -374,8 +373,7 @@ void CameraProperty::inportChanged() {
             prevDataToWorldMatrix_ = data->getCoordinateTransformer().getDataToWorldMatrix();
         }
     } else if (data && data_ != data) {
-        adjustCameraToData(prevDataToWorldMatrix_,
-                           data->getCoordinateTransformer().getDataToWorldMatrix());
+        adjustCameraToData(data->getCoordinateTransformer().getDataToWorldMatrix());
     }
 
     data_ = data;

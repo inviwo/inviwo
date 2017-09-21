@@ -296,7 +296,7 @@ void InviwoMainWindow::addActions() {
 
     {
         connect(fileMenuItem->addAction("Save Network Image"), &QAction::triggered,
-                [&](bool state) {
+                [&](bool /*state*/) {
                     InviwoFileDialog saveFileDialog(this, "Save Network Image ...", "image");
                     saveFileDialog.setFileMode(FileMode::AnyFile);
                     saveFileDialog.setAcceptMode(AcceptMode::Save);
@@ -965,7 +965,7 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
     saveWindowState();
 }
 
-void InviwoMainWindow::onModifiedStatusChanged(const bool& newStatus) { updateWindowTitle(); }
+void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
 
 void InviwoMainWindow::showAboutBox() {
     auto caps = InviwoApplication::getPtr()->getModuleByType<InviwoCore>()->getCapabilities();

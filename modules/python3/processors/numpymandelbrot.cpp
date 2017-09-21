@@ -52,7 +52,7 @@ NumpyMandelbrot::NumpyMandelbrot()
     , realBounds_("realBounds", "Real bounds", -2.f, 1.f, -3.f, 3.f)
     , imaginaryBound_("imaginaryBound", "Imaginary bounds", -1.1f, 1.1f, -3.f, 3.f)
     , power_("power", "power", 2.f, 0.01f, 10.f, 0.01f)
-    , iterations_("iterations", "Iterations", 10.f, 1.f, 1000.f)
+    , iterations_("iterations", "Iterations", 10, 1, 1000)
 
     , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(
                   ModulePath::Scripts) +

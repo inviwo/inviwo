@@ -86,6 +86,7 @@ public:
     GLuint getID() const { return id_; }
     const ShaderObjectMap& getShaderObjects() { return shaderObjects_; }
 
+    ShaderObject* operator[](ShaderType type) const;
     ShaderObject* getShaderObject(ShaderType type) const;
     ShaderObject* getVertexShaderObject() const;
     ShaderObject* getGeometryShaderObject() const;

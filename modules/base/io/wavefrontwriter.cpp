@@ -53,7 +53,7 @@ void WaveFrontWriter::writeData(const Mesh* data, const std::string filePath) co
 }
 
 std::unique_ptr<std::vector<unsigned char>> WaveFrontWriter::writeDataToBuffer(
-    const Mesh* data, const std::string& fileExtension) const {
+    const Mesh* data, const std::string& /*fileExtension*/) const {
     std::stringstream ss;
     writeData(data, ss);
     auto stringdata = ss.str();

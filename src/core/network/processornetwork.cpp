@@ -218,7 +218,7 @@ void ProcessorNetwork::removeLink(Property* src, Property* dst) {
     removeLink(link);
 }
 
-void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t index) {
+void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t /*index*/) {
     if (auto comp = dynamic_cast<PropertyOwner*>(property)) {
         size_t i = 0;
         for (auto p : comp->getProperties()) {
@@ -381,7 +381,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                     RenderContext::getPtr()->activateDefaultRenderContext();
                     return nullptr;
                 })
-                .onNew([&](const std::string& id, Processor*& p) { addProcessor(p); })
+                .onNew([&](const std::string& /*id*/, Processor*& p) { addProcessor(p); })
                 .onRemove([&](const std::string& id) {
                     removeAndDeleteProcessor(getProcessorByIdentifier(id));
                 });

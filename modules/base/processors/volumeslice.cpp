@@ -121,19 +121,19 @@ void VolumeSlice::process() {
         case CartesianCoordinateAxis::X:
             if (dims.x != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.x);
-                sliceNumber_.set(pos * dims.x);
+                sliceNumber_.set(static_cast<size_t>(pos * dims.x));
             }
             break;
         case CartesianCoordinateAxis::Y:
             if (dims.y != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.y);
-                sliceNumber_.set(pos * dims.y);
+                sliceNumber_.set(static_cast<size_t>(pos * dims.y));
             }
             break;
         case CartesianCoordinateAxis::Z:
             if (dims.z != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.z);
-                sliceNumber_.set(pos * dims.z);
+                sliceNumber_.set(static_cast<size_t>(pos * dims.z));
             }
             break;
     }

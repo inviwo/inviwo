@@ -151,21 +151,21 @@ SSAO::SSAO()
     hbaoCalcBlur_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     hbaoBlurHoriz_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     hbaoBlurVert_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-	inport_.onChange([this]() {
-		const DataFormatBase* format = inport_.getData()->getDataFormat();
-		const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
+    inport_.onChange([this]() {
+        const DataFormatBase* format = inport_.getData()->getDataFormat();
+        const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
 
-		if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
-			swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
-			auto dim = outport_.getData()->getDimensions();
-			Image *img = new Image(dim, format);
-			img->copyMetaDataFrom(*inport_.getData());
-			// forward swizzle mask of the input
-			img->getColorLayer()->setSwizzleMask(swizzleMask);
+        if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
+            swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
+            auto dim = outport_.getData()->getDimensions();
+            Image *img = new Image(dim, format);
+            img->copyMetaDataFrom(*inport_.getData());
+            // forward swizzle mask of the input
+            img->getColorLayer()->setSwizzleMask(swizzleMask);
 
-			outport_.setData(img);
-		}
-	});
+            outport_.setData(img);
+        }
+    });
 
 }
 
@@ -182,25 +182,28 @@ SSAO::~SSAO() {
 }
 
 void SSAO::initializeResources() {
-    depthLinearize_.getShaderObject(ShaderType::Fragment)->addShaderDefine("DEPTHLINEARIZE_MSAA", "0");
+    depthLinearize_[ShaderType::Fragment]->addShaderDefine("DEPTHLINEARIZE_MSAA", "0");
     depthLinearize_.build();
-    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DEINTERLEAVED", "0");
-    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR", "0");
-    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_LAYERED", "0");
-    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
-    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
-    hbaoCalc_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_USE_NORMAL", std::to_string(useNormal_.get() ? 1 : 0));
+    hbaoCalc_[ShaderType::Fragment]->addShaderDefine("AO_DEINTERLEAVED", "0");
+    hbaoCalc_[ShaderType::Fragment]->addShaderDefine("AO_BLUR", "0");
+    hbaoCalc_[ShaderType::Fragment]->addShaderDefine("AO_LAYERED", "0");
+    hbaoCalc_[ShaderType::Fragment]->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
+    hbaoCalc_[ShaderType::Fragment]->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
+    hbaoCalc_[ShaderType::Fragment]->addShaderDefine("AO_USE_NORMAL",
+                                                     std::to_string(useNormal_.get() ? 1 : 0));
     hbaoCalc_.build();
-    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DEINTERLEAVED", "0");
-    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR", "1");
-    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_LAYERED", "0");
-    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_DIRS", std::to_string(directions_.get()));
-    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
-    hbaoCalcBlur_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_USE_NORMAL", std::to_string(useNormal_.get() ? 1 : 0));
+    hbaoCalcBlur_[ShaderType::Fragment]->addShaderDefine("AO_DEINTERLEAVED", "0");
+    hbaoCalcBlur_[ShaderType::Fragment]->addShaderDefine("AO_BLUR", "1");
+    hbaoCalcBlur_[ShaderType::Fragment]->addShaderDefine("AO_LAYERED", "0");
+    hbaoCalcBlur_[ShaderType::Fragment]->addShaderDefine("AO_DIRS",
+                                                         std::to_string(directions_.get()));
+    hbaoCalcBlur_[ShaderType::Fragment]->addShaderDefine("AO_STEPS", std::to_string(steps_.get()));
+    hbaoCalcBlur_[ShaderType::Fragment]->addShaderDefine("AO_USE_NORMAL",
+                                                         std::to_string(useNormal_.get() ? 1 : 0));
     hbaoCalcBlur_.build();
-    hbaoBlurHoriz_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR_PRESENT", "0");
+    hbaoBlurHoriz_[ShaderType::Fragment]->addShaderDefine("AO_BLUR_PRESENT", "0");
     hbaoBlurHoriz_.build();
-    hbaoBlurVert_.getShaderObject(ShaderType::Fragment)->addShaderDefine("AO_BLUR_PRESENT", "1");
+    hbaoBlurVert_[ShaderType::Fragment]->addShaderDefine("AO_BLUR_PRESENT", "1");
     hbaoBlurVert_.build();
 
     locations_.depthLinearClipInfo          = glGetUniformLocation(depthLinearize_.getID(), "clipInfo");
@@ -219,8 +222,8 @@ void SSAO::process() {
         return;
     }
 
-    int width = outport_.getDimensions().x;
-    int height = outport_.getDimensions().y;
+    int width = static_cast<int>(outport_.getDimensions().x);
+    int height = static_cast<int>(outport_.getDimensions().y);
 
     if (framebuffers_.width != width || framebuffers_.height != height) {
         initFramebuffers(width, height);
@@ -237,7 +240,7 @@ void SSAO::process() {
     }
     else {
         projParam_.ortho = 1;
-        projParam_.orthoheight = height;
+        projParam_.orthoheight = static_cast<float>(height);
     }
 
     utilgl::activateTargetAndCopySource(outport_, inport_);
@@ -421,14 +424,14 @@ void SSAO::drawLinearDepth(GLuint depthTex, const ProjectionParam& proj) {
 
 void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam& proj, int width, int height) {
     prepareHbaoData(proj, width, height);
-	glViewport(0, 0, width, height);
+    glViewport(0, 0, width, height);
     drawLinearDepth(depthTex, proj);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fboOut);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glColorMask(1, 1, 1, 0);
 
-	auto blur = enableBlur_.get();
+    auto blur = enableBlur_.get();
 
     if (blur) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers_.hbaoCalc);
@@ -482,7 +485,7 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
     glUseProgram(0);
 }
 
-void SSAO::drawHbaoBlur(GLuint fboOut, const ProjectionParam& proj, int width, int height) {
+void SSAO::drawHbaoBlur(GLuint fboOut, const ProjectionParam& /*proj*/, int width, int height) {
     auto meters2viewspace = 1.0f;
     auto sharpness = blurSharpness_.get();
 

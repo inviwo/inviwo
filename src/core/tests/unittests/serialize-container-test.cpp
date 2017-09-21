@@ -80,7 +80,7 @@ TEST(ContainerSerialitionTest, ContainerTest1) {
         "Item", [&](std::string id,
                     size_t ind) -> ContainerWrapper<int>::Item {
             if (ind < vector.size()) {
-                return {true, vector[ind], [&visited, ind](int& val) { visited[ind] = true; }};
+                return {true, vector[ind], [&visited, ind](int& /*val*/) { visited[ind] = true; }};
             } else {
                 return {true, tmp, [&visited, &vector](int& val) {
                             visited.push_back(true);
@@ -95,7 +95,7 @@ TEST(ContainerSerialitionTest, ContainerTest1) {
     deserializer.deserialize("Vector", cont);
 
     size_t ind = 0;
-    util::erase_remove_if(vector, [&](int& i) {
+    util::erase_remove_if(vector, [&](int&) {
         return !visited[ind++];
     });
     
@@ -141,11 +141,11 @@ TEST(ContainerSerialitionTest, ContainerTest2) {
     std::vector<std::string> visited;
     ContainerWrapper<Item> cont(
         "Item", [&](std::string id,
-                    size_t ind) -> ContainerWrapper<Item>::Item {
+                    size_t /*ind*/) -> ContainerWrapper<Item>::Item {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](const Item& i) { return i.id_ == id; });
             if (it != vector.end()) {
-                return {true, *it, [&](Item& val) {}};
+                return {true, *it, [&](Item& /*val*/) {}};
             } else {
                 return {true, tmp, [&](Item& val) { vector.push_back(val); }};
             }
@@ -205,11 +205,11 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
     std::vector<std::string> visited;
     ContainerWrapper<Item*> cont(
         "Item", [&](std::string id,
-                    size_t ind) -> ContainerWrapper<Item*>::Item {
+                    size_t /*ind*/) -> ContainerWrapper<Item*>::Item {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](Item*& i) { return i->id_ == id; });
             if (it != vector.end()) {
-                return {true, *it, [&](Item*& val) {}};
+                return {true, *it, [&](Item*& /*val*/) {}};
             } else {
                 tmp = new Item();
                 return {true, tmp, [&](Item*& val) { vector.push_back(val); }};
@@ -323,7 +323,7 @@ TEST(ContainerSerialitionTest, ContainerTest5) {
     auto des = util::IndexedDeserializer<int>("Vector", "Item")
                    .setMakeNew([]() { return 0; })
                    .onNew([&](int& i) { vector.push_back(i); })
-                   .onRemove([](int& i) {return true;});
+                   .onRemove([](int&) {return true;});
     
     des(deserializer, vector);
     

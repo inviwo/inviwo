@@ -108,8 +108,8 @@ void HdrBloom::process() {
         outport_.setData(inport_.getData());
         return;
     }
-    int width = outport_.getDimensions().x;
-    int height = outport_.getDimensions().y;
+    const int width = static_cast<int>(outport_.getDimensions().x);
+    const int height = static_cast<int>(outport_.getDimensions().y);
 
     if (width != width_ || height != height_) {
         resizeTextures(width, height);
@@ -117,9 +117,6 @@ void HdrBloom::process() {
 
     // Copy color, depth and picking
     utilgl::activateTargetAndCopySource(outport_, inport_);
-
-    auto outImageGL = outport_.getEditableData()->getRepresentation<ImageGL>();
-    auto outFbo = outImageGL->getFBO()->getID();
 
     auto imageGL = inport_.getData()->getRepresentation<ImageGL>();
     auto colorLayer = imageGL->getColorLayerGL();

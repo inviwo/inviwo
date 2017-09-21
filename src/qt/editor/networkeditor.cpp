@@ -1040,8 +1040,8 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->restore();
 }
 
-void NetworkEditor::drawForeground(QPainter* painter, const QRectF& rect) {
-    // For testing purpuses only. Draw bounding rects around all graphics items
+void NetworkEditor::drawForeground(QPainter* /*painter*/, const QRectF& /*rect*/) {
+    // For testing purposes only. Draw bounding rects around all graphics items
     /*
     QList<QGraphicsItem*> items = QGraphicsScene::items(Qt::DescendingOrder);
     painter->setPen(Qt::magenta);

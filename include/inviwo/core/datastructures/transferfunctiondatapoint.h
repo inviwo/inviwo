@@ -40,7 +40,7 @@ class TransferFunctionDataPoint;
 
 class IVW_CORE_API TransferFunctionPointObserver : public Observer {
 public:
-    virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p) {};
+    virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p);
 };
 
 class IVW_CORE_API TransferFunctionDataPoint : public Observable<TransferFunctionPointObserver>,

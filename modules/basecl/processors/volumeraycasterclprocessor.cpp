@@ -119,6 +119,10 @@ void VolumeRaycasterCLProcessor::process() {
     }
 }
 
+void VolumeRaycasterCLProcessor::onKernelCompiled(const cl::Kernel*) {
+    invalidate(InvalidationLevel::InvalidResources);
+}
+
 void VolumeRaycasterCLProcessor::onParameterChanged() {
     volumeRaycaster_.setLightingProperties(lighting_);
     volumeRaycaster_.samplingRate(samplingRate_.get());

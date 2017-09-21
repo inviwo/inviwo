@@ -138,7 +138,7 @@ void InviwoApplicationQt::fileChanged(QString fileName) {
 
 void InviwoApplicationQt::closeInviwoApplication() { QCoreApplication::quit(); }
 
-void InviwoApplicationQt::playSound(Message message) {}
+void InviwoApplicationQt::playSound(Message /*message*/) {}
 
 std::locale InviwoApplicationQt::getUILocale() const { return uiLocal_; }
 

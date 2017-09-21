@@ -92,5 +92,9 @@ void EntryExitPointsCLProcessor::process() {
         useGLSharing_.get());
 }
 
+void EntryExitPointsCLProcessor::onKernelCompiled(const cl::Kernel*) {
+    invalidate(InvalidationLevel::InvalidResources);
+}
+
 }  // namespace
 

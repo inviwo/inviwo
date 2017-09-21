@@ -59,26 +59,26 @@ CanvasProcessor::CanvasProcessor()
     , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, InvalidationLevel::Valid)
     , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f,
                           InvalidationLevel::Valid)
-    , position_("position", "Canvas Position", ivec2(128, 128), ivec2(std::numeric_limits<int>::lowest() ), ivec2(std::numeric_limits<int>::max()),
-        ivec2(1, 1), InvalidationLevel::Valid,PropertySemantics::Text)
+    , position_("position", "Canvas Position", ivec2(128, 128),
+                ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
+                ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
     , visibleLayer_("visibleLayer", "Visible Layer")
     , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
     , imageTypeExt_("fileExt", "Image Type")
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
-    , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...", InvalidationLevel::Valid)
+    , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...",
+                             InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
     , toggleFullscreen_("toggleFullscreen", "Toggle Full Screen")
-    , fullscreen_("fullscreen", "FullScreen",
-                  [this](Event* event) { setFullScreen(!isFullScreen()); }, IvwKey::F,
-        KeyState::Press, KeyModifier::Shift)
+    , fullscreen_("fullscreen", "FullScreen", [this](Event*) { setFullScreen(!isFullScreen()); },
+                  IvwKey::F, KeyState::Press, KeyModifier::Shift)
     , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)}
     , canvasWidget_(nullptr)
-    , queuedRequest_(false) 
-{
+    , queuedRequest_(false) {
     widgetMetaData_->addObserver(this);
     
     addPort(inport_);

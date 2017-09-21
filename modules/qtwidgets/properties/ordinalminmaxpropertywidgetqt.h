@@ -54,11 +54,11 @@ namespace inviwo {
 template <typename T, class Enable = void>
 class Transformer {
 public:
-    static T sliderToValue(MinMaxProperty<T>* p, int val) { return static_cast<T>(val); };
-    static int valueToSlider(MinMaxProperty<T>* p, T val) { return static_cast<int>(val); }
-    static int sepToSlider(MinMaxProperty<T>* p, T sep) { return static_cast<int>(sep); }
-    static T spinboxToValue(MinMaxProperty<T>* p, double val) { return static_cast<T>(val); };
-    static double valueToSpinbox(MinMaxProperty<T>* p, T val) { return static_cast<double>(val); }
+    static T sliderToValue(MinMaxProperty<T>*, int val) { return static_cast<T>(val); };
+    static int valueToSlider(MinMaxProperty<T>*, T val) { return static_cast<int>(val); }
+    static int sepToSlider(MinMaxProperty<T>*, T sep) { return static_cast<int>(sep); }
+    static T spinboxToValue(MinMaxProperty<T>*, double val) { return static_cast<T>(val); };
+    static double valueToSpinbox(MinMaxProperty<T>*, T val) { return static_cast<double>(val); }
 };
 
 template <typename T>
@@ -75,8 +75,8 @@ public:
     static int sepToSlider(MinMaxProperty<T>* p, T sep) {
         return static_cast<int>(sep / (p->getRangeMax() - p->getRangeMin()) * steps());
     }
-    static T spinboxToValue(MinMaxProperty<T>* p, double val) { return static_cast<T>(val); }
-    static double valueToSpinbox(MinMaxProperty<T>* p, T val) { return static_cast<double>(val); }
+    static T spinboxToValue(MinMaxProperty<T>*, double val) { return static_cast<T>(val); }
+    static double valueToSpinbox(MinMaxProperty<T>*, T val) { return static_cast<double>(val); }
     static T steps() { return 10000; }
 };
 

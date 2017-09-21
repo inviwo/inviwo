@@ -120,6 +120,8 @@ IVW_CORE_API std::unordered_set<Processor*> getSuccessors(Processor* processor);
 enum class TraversalDirection {Up, Down};
 enum class VisitPattern {Pre, Post};
 
+#include <warn/push>
+#include <warn/ignore/constant-conditional>
 template <TraversalDirection D, VisitPattern V, typename Func>
 void traverseNetwork(ProcessorStates& state, Processor* processor, Func f) {
     if (!state.hasBeenVisited(processor)) {
@@ -150,6 +152,7 @@ void traverseNetwork(ProcessorStates& state, Processor* processor, Func f) {
         if (V == VisitPattern::Post) f(processor);
     }
 }
+#include <warn/pop>
 
 IVW_CORE_API std::vector<Processor*> topologicalSort(ProcessorNetwork* network);
 

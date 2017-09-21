@@ -119,7 +119,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     connect(zoomVSlider_, SIGNAL(valuesChanged(int, int)), this,
             SLOT(changeVerticalZoom(int, int)));
 
-    zoomVSlider_->setTooltipFormat([range = sliderRange_](int handle, int val) {
+    zoomVSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(1.0f - static_cast<float>(val)/range);
     });
 
@@ -131,7 +131,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     connect(zoomHSlider_, SIGNAL(valuesChanged(int, int)), this,
             SLOT(changeHorizontalZoom(int, int)));
 
-    zoomHSlider_->setTooltipFormat([range = sliderRange_](int handle, int val) {
+    zoomHSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(static_cast<float>(val) / range);
     });
 
@@ -140,7 +140,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     maskSlider_->setValue(static_cast<int>(tfProperty_->getMask().x * sliderRange_),
                           static_cast<int>(tfProperty_->getMask().y * sliderRange_));
     connect(maskSlider_, SIGNAL(valuesChanged(int, int)), this, SLOT(changeMask(int, int)));
-    maskSlider_->setTooltipFormat([range = sliderRange_](int handle, int val) {
+    maskSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(static_cast<float>(val) / range);
     });
 

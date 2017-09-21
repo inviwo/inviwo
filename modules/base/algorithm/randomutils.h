@@ -53,7 +53,7 @@ namespace util {
 
 namespace {
 // Internal function to give the next power of 2 for a given integer ( 78 -> 128 )
-static inline int nextPow2(int x) {
+static inline glm::u64 nextPow2(glm::u64 x) {
     if (x == 0) return 0;
     --x;
     x |= x >> 1;
@@ -61,6 +61,7 @@ static inline int nextPow2(int x) {
     x |= x >> 4;
     x |= x >> 8;
     x |= x >> 16;
+    x |= x >> 32;
     return x + 1;
 }
 }  // namespace
@@ -290,8 +291,8 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
                                    Rand &randomNumberGenerator = Rand()) {
     std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFloat32::get());
 
-    std::uniform_int_distribution<int> rx(0, dims.x);
-    std::uniform_int_distribution<int> ry(0, dims.y);
+    std::uniform_int_distribution<int> rx(0, static_cast<int>(dims.x));
+    std::uniform_int_distribution<int> ry(0, static_cast<int>(dims.y));
     std::uniform_real_distribution<float> rand(0, 1);
 
     float minDist = static_cast<float>(dims.x);

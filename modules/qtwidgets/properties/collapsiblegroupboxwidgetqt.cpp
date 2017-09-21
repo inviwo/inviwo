@@ -370,7 +370,7 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
     setUpdatesEnabled(true);
 }
 
-void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* prop, size_t index) {
+void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_t index) {
     PropertyWidgetQt* propertyWidget = propertyWidgets_[index];
 
     propertyWidgetGroupLayout_->removeWidget(propertyWidget);

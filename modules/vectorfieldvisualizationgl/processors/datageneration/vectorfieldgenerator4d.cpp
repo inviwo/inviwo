@@ -110,7 +110,7 @@ void VectorFieldGenerator4D::process() {
     const size3_t dim{ size_.get() };
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     for (size_t i = 0; i < size_.get().w; ++i) {
-        float t = i;
+        float t = static_cast<float>(i);
         t /= size_.get().w - 1;
         t = tRange_.get().x + t * (tRange_.get().y - tRange_.get().x);
         

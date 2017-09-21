@@ -112,7 +112,7 @@ RandomMeshGenerator::RandomMeshGenerator()
     camera_.setCollapsed(true);
 
     reseed_.onChange([&]() {
-        seed_.set(rand(0.0, seed_.getMaxValue()));
+        seed_.set(static_cast<glm::i64>(rand(0.0f, static_cast<float>(seed_.getMaxValue()))));
         rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
     });
 }

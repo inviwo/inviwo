@@ -119,7 +119,7 @@ void EditableLabelQt::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);
 }
 
-void EditableLabelQt::mouseDoubleClickEvent(QMouseEvent* e) { edit(); }
+void EditableLabelQt::mouseDoubleClickEvent(QMouseEvent*) { edit(); }
 
 void EditableLabelQt::setText(const std::string& txt) {
     text_ = txt;

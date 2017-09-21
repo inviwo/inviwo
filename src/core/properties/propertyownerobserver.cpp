@@ -31,6 +31,15 @@
 
 namespace inviwo {
 
+void PropertyOwnerObserver::onWillAddProperty(Property*, size_t) {}
+
+void PropertyOwnerObserver::onDidAddProperty(Property*, size_t) {}
+
+void PropertyOwnerObserver::onWillRemoveProperty(Property*, size_t) {}
+
+void PropertyOwnerObserver::onDidRemoveProperty(Property*, size_t) {}
+
+
 void PropertyOwnerObservable::notifyObserversWillAddProperty(Property* property, size_t index) {
     forEachObserver([&](PropertyOwnerObserver* o) { o->onWillAddProperty(property, index); });
 }
@@ -48,3 +57,5 @@ void PropertyOwnerObservable::notifyObserversDidRemoveProperty(Property* propert
 }
 
 }  // namespace
+
+
