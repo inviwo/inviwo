@@ -35,7 +35,11 @@ namespace inviwo {
 std::map<cl_context, pfnclCreateEventFromSyncKHR> SyncCLGL::syncFunctionMap_;
 
 SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
-    : context_(context), queue_(queue), glFenceSync_(nullptr) {
+    : context_(context), queue_(queue)
+#if defined(CL_VERSION_1_1)
+    , glFenceSync_(nullptr) 
+#endif
+{
 #if defined(CL_VERSION_1_1)
     //  Check if function clCreateEventFromGLsyncKHR has been fetched previously,
     // add it if it has not
