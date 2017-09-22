@@ -60,7 +60,7 @@ namespace inviwo {
  * ### Properties
  *   * __Camera__ Camera of the scene.
  *   * __Work group size__ OpenCL work group size (performance)
- *   * __Use OpenGL sharing__ Share data with OpenGL (performance and comparability).
+ *   * __Use OpenGL sharing__ Share data with OpenGL (performance and compatibility).
  */
 
 /**

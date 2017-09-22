@@ -51,7 +51,6 @@ namespace inviwo {
 
 namespace util {
 
-namespace {
 // Internal function to give the next power of 2 for a given integer ( 78 -> 128 )
 static inline glm::u64 nextPow2(glm::u64 x) {
     if (x == 0) return 0;
@@ -64,7 +63,6 @@ static inline glm::u64 nextPow2(glm::u64 x) {
     x |= x >> 32;
     return x + 1;
 }
-}  // namespace
 
 /**
  * Generate a sequence of length numberOfPoints of pseduo-random numbers on the open range (0 1).
