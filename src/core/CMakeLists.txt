@@ -269,6 +269,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/ostreamjoiner.h
@@ -494,6 +495,7 @@ set(SOURCE_FILES
     util/inviwosetupinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
+    util/moduleutils.cpp
     util/memoryfilehandle.cpp
     util/observer.cpp
     util/rendercontext.cpp
