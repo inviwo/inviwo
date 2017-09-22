@@ -55,12 +55,12 @@ public:
     virtual ~HiddenCanvasQt() = default;
 
 protected:
-    virtual void initializeGL() override{};
-    virtual void resizeGL(int width, int height) override{};
-    virtual void paintGL() override{};
+    virtual void initializeGL() override {};
+    virtual void resizeGL(int /*width*/, int /*height*/) override {};
+    virtual void paintGL() override {};
 
-    virtual void resizeEvent(QResizeEvent *event) override{};
-    virtual void paintEvent(QPaintEvent *) override{};
+    virtual void resizeEvent(QResizeEvent *) override {};
+    virtual void paintEvent(QPaintEvent *) override {};
 };
 
 }  // namespace

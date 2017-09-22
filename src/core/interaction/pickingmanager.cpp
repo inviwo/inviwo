@@ -166,9 +166,9 @@ uvec3 PickingManager::indexToColor(size_t id) {
 }
 
 size_t PickingManager::colorToIndex(uvec3 color) {
-    const std::uint32_t r = reverse(color[0]);
-    const std::uint32_t g = reverse(color[1]);
-    const std::uint32_t b = reverse(color[2]);
+    const std::uint32_t r = reverse(static_cast<std::uint8_t>(color[0]));
+    const std::uint32_t g = reverse(static_cast<std::uint8_t>(color[1]));
+    const std::uint32_t b = reverse(static_cast<std::uint8_t>(color[2]));
 
     std::uint32_t index = 0;
     for (int i = 0; i < 8; ++i) {

@@ -67,7 +67,7 @@ ImageNormalizationProcessor::ImageNormalizationProcessor()
 
 ImageNormalizationProcessor::~ImageNormalizationProcessor() = default;
 
-void ImageNormalizationProcessor::preProcess(TextureUnitContainer &cont) {
+void ImageNormalizationProcessor::preProcess(TextureUnitContainer &) {
     if (inport_.isChanged() || normalizeSeparately_.isModified()) {
         updateMinMax();
     }

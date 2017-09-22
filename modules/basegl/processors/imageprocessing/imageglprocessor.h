@@ -63,26 +63,26 @@ public:
 
     virtual void process() override;
 protected:
-    void markInvalid() { internalInvalid_ = true; }
+    void markInvalid();
 
     /*! \brief this function gets called right before the actual processing but 
      *         after the shader has been activated
      *
      * overwrite this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess(TextureUnitContainer &cont) {}
+    virtual void preProcess(TextureUnitContainer &cont);
 
     /*! \brief this function gets called at the end of the process function
      *
      * overwrite this function in the derived class to perform post-processing
      */
-    virtual void postProcess(){}
+    virtual void postProcess();
 
     /*! \brief this function gets called whenever the inport changes
      *
      * overwrite this function in the derived class to be notified of inport onChange events
      */
-    virtual void afterInportChanged() {}
+    virtual void afterInportChanged();
 
     static void createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
                                   const SwizzleMask &swizzleMask, ImageInport &inport,
@@ -107,10 +107,7 @@ protected:
 
     /*! \brief call-back function for onChange events of the inport
      */
-    void inportChanged() {
-        markInvalid();
-        afterInportChanged();
-    }
+    void inportChanged();
 };
 
 } // namespace

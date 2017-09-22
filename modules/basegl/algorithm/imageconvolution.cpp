@@ -47,8 +47,9 @@ std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, int
 }
 
 std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, float sigma) {
-    int kernelSize = sigma * 2 * 2.576;  // 99% of samples are within +- 2.576 standard deviations
-                                         // https://de.wikipedia.org/wiki/Normalverteilung
+    int kernelSize = static_cast<int>(
+        sigma * 2 * 2.576);  // 99% of samples are within +- 2.576 standard deviations
+                             // https://de.wikipedia.org/wiki/Normalverteilung
     return gaussianLowpass(layer, kernelSize, sigma);
 }
 
@@ -68,8 +69,8 @@ std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, int
 }
 
 std::shared_ptr<Image> ImageConvolution::lowpass(const Layer &layer, int kernelSize) {
-    return convolution_separable(layer, [kernelSize](float p) { return 1.f; }, kernelSize,
-                                kernelSize);
+    return convolution_separable(layer, [kernelSize](float /*p*/) { return 1.f; }, kernelSize,
+                                static_cast<float>(kernelSize));
 }
 
 std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer,

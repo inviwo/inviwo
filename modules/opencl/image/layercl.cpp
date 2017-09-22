@@ -111,7 +111,7 @@ bool LayerCL::copyRepresentationsTo(LayerRepresentation* target) const {
 
 std::type_index LayerCL::getTypeIndex() const { return std::type_index(typeid(LayerCL)); }
 
-dvec4 LayerCL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
+dvec4 LayerCL::readPixel(size2_t pos, LayerType /*layer*/, size_t /*index = 0*/) const {
     std::array<char, DataFormat<dvec4>::typesize> buffer;
     auto ptr = static_cast<void *>(buffer.data());
 

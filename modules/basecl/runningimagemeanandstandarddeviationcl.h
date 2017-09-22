@@ -41,51 +41,56 @@ namespace inviwo {
 /** \class RunningImageMeanAndStandardDeviationCL
  *
  * Computes per-pixel standard deviation and mean value.
- * Can be used both with external data and by letting the class manage 
+ * Can be used both with external data and by letting the class manage
  * the temporary and current data.
  * http://en.wikipedia.org/wiki/Standard_deviation
  */
-class IVW_MODULE_BASECL_API RunningImageMeanAndStandardDeviationCL : public KernelOwner { 
+class IVW_MODULE_BASECL_API RunningImageMeanAndStandardDeviationCL : public KernelOwner {
 public:
-    /** 
-     * \brief Initiate with layer dimension and work group size. 
+    /**
+     * \brief Initiate with layer dimension and work group size.
      *
      * Managed layers will be resized if a different dimension is used during computation.
-     * 
+     *
      * @param layerDimension    Initial guess on layer dimension
-     * @param workgroupSize     Work group size 
+     * @param workgroupSize     Work group size
      */
-    RunningImageMeanAndStandardDeviationCL(const uvec2& layerDimension = uvec2(32), const size2_t& workgroupSize = uvec2(16));
-    virtual ~RunningImageMeanAndStandardDeviationCL(){}
+    RunningImageMeanAndStandardDeviationCL(const uvec2& layerDimension = uvec2(32),
+                                           const size2_t& workgroupSize = uvec2(16));
+    virtual ~RunningImageMeanAndStandardDeviationCL() = default;
 
-    virtual void onKernelCompiled(const cl::Kernel* kernel) {};
+    virtual void onKernelCompiled(const cl::Kernel*){};
 
-
-    /** 
+    /**
      * \brief Computes mean and standard deviation of given new values and iteration number.
      *
      * Computes mean and standard deviation of all channels (RBGA) separately.
-     * This class manages mean and standard deviation layers. 
+     * This class manages mean and standard deviation layers.
      * Output pointers are only valid if true is returned.
-     * 
+     *
      * @param newSamples                New samples to be used for computation.
      * @param iteration                 Current iteration number, 0 being the first
-     * @param outMean                   Will contain mean value upon return. This class owns the data.
-     * @param outStandardDeviation      Will contain standard deviation upon return. This class owns the data.
+     * @param outMean                   Will contain mean value upon return. This class owns the
+     *                                  data.
+     * @param outStandardDeviation      Will contain standard deviation upon return. This class owns
+     *                                  the data.
      * @param useGLSharing              Specifies if OpenCL/OpenGL sharing be used.
      * @param waitForEvents             Events to wait for before starting.
      * @param event                     Event that will be signaled on completion.
      * @return bool                     True if successful, false otherwise.
      */
-    bool computeMeanAndStandardDeviation(const Layer* newSamples, int iteration, Layer*& outMean, Layer*& outStandardDeviation, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
+    bool computeMeanAndStandardDeviation(const Layer* newSamples, int iteration, Layer*& outMean,
+                                         Layer*& outStandardDeviation, bool useGLSharing,
+                                         const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
+                                         cl::Event* event = nullptr);
 
-    /** 
-     * \brief Computes mean and standard deviation of given new values and iteration number without managing the data 
-     * or OpenCL/OpenGL synchronization.
+    /**
+     * \brief Computes mean and standard deviation of given new values and iteration number without
+     * managing the data or OpenCL/OpenGL synchronization.
      *
      * Computes mean and standard deviation of all channels (RBGA) separately.
      * Output pointers are only valid if true is returned.
-     * 
+     *
      * @param nSamples                  Dimension if samples layer
      * @param newSamples                New samples to be used for computation.
      * @param iteration                 Current iteration number, 0 being the first
@@ -96,15 +101,24 @@ public:
      * @param workGroupSize             Work group size to be used during computation
      * @param waitForEvents             Events to wait for before starting.
      * @param event                     Event that will be signaled on completion.
-     * @return void 
+     * @return void
      */
-    void computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* newSamples, int iteration, const LayerCLBase* prevMean, LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation, LayerCLBase* nextStandardDeviation, const size2_t& workGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
+    void computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* newSamples,
+                                         int iteration, const LayerCLBase* prevMean,
+                                         LayerCLBase* nextMean,
+                                         const LayerCLBase* prevStandardDeviation,
+                                         LayerCLBase* nextStandardDeviation,
+                                         const size2_t& workGroupSize,
+                                         const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
+                                         cl::Event* event = nullptr);
 
     size2_t WorkGroupSize() const { return workGroupSize_; }
     void WorkGroupSize(size2_t val) { workGroupSize_ = val; }
+
 private:
-    Layer standardDeviation_[2]; ///< Standard deviation for each pixel of previous and current iteration. 
-    Layer mean_[2]; ///< Mean value for each pixel of previous and current iteration. 
+    Layer standardDeviation_[2];  ///< Standard deviation for each pixel of previous and current
+                                  ///< iteration.
+    Layer mean_[2];               ///< Mean value for each pixel of previous and current iteration.
     int pingPongIndex_;
     size2_t workGroupSize_;
 

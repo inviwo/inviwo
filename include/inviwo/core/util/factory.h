@@ -46,8 +46,8 @@ class Serializable;
 template <typename T>
 class FactoryObserver : public Observer {
 public:
-    virtual void onRegister(T* p) {}
-    virtual void onUnRegister(T* p) {}
+    virtual void onRegister(T* /*p*/) {}
+    virtual void onUnRegister(T* /*p*/) {}
 };
 
 template <typename T>

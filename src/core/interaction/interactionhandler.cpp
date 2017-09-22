@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-void InteractionHandler::serialize(Serializer& s) const {}
+void InteractionHandler::serialize(Serializer&) const {}
 
-void InteractionHandler::deserialize(Deserializer& d) {}
+void InteractionHandler::deserialize(Deserializer&) {}
 
 } // namespace

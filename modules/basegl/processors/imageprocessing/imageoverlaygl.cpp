@@ -261,7 +261,7 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
     } else {
         if (overlayInteraction_.get() && overlayPort_.isConnected()) {
             bool overlayHandlesEvent =
-                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t ind) {
+                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t /*ind*/) {
                 overlayPort_.propagateEvent(newEvent);
             }));
 

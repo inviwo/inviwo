@@ -41,20 +41,19 @@ namespace inviwo {
 
 class IVW_CORE_API TransferFunctionPropertyObserver : public Observer {
 public:
-    virtual void onMaskChange(const vec2& mask) {};
-    virtual void onZoomHChange(const vec2& zoomH) {};
-    virtual void onZoomVChange(const vec2& zoomV) {};
-    virtual void onHistogramModeChange(HistogramMode mode) {};
+    virtual void onMaskChange(const vec2& mask);
+    virtual void onZoomHChange(const vec2& zoomH);
+    virtual void onZoomVChange(const vec2& zoomV);
+    virtual void onHistogramModeChange(HistogramMode mode);
 };
-class IVW_CORE_API TransferFunctionPropertyObservable : public Observable<TransferFunctionPropertyObserver> {
+class IVW_CORE_API TransferFunctionPropertyObservable
+    : public Observable<TransferFunctionPropertyObserver> {
 protected:
     virtual void notifyMaskChange(const vec2& mask);
     virtual void notifyZoomHChange(const vec2& zoomH);
     virtual void notifyZoomVChange(const vec2& zoomV);
     virtual void notifyHistogramModeChange(HistogramMode mode);
 };
-
-
 
 /**
  * \ingroup properties

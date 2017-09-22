@@ -72,8 +72,7 @@ void ProcessorStatusGraphicsItem::setRunning(bool running) {
     update();
 }
 
-void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                        QWidget* widget) {
+void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
     qreal ledRadius = size_ / 2.0f;
     QColor baseColor = QColor(0, 170, 0).light(200);
 

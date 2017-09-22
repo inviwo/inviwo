@@ -79,7 +79,6 @@ std::string getExecutablePath() {
     std::string retVal;
 #ifdef WIN32
     const DWORD maxBufSize = 1 << 20;  // corresponds to 1MiB
-    auto pathSize = FILENAME_MAX;
     std::vector<char> executablePath(FILENAME_MAX);
 
     auto size = GetModuleFileNameA(nullptr, executablePath.data(),
@@ -589,7 +588,7 @@ bool isAbsolutePath(const std::string& path) {
     }
 
     // check for '[A-Z]:' in the begin of path
-    char driveLetter = toupper(path[0]);
+    char driveLetter = static_cast<char>(toupper(path[0]));
     return ((driveLetter >= 'A') && (driveLetter <= 'Z') && (path[1] == ':'));
 
 #else

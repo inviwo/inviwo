@@ -149,21 +149,19 @@ void ProcessorNetworkEvaluator::evaluate() {
     notifyObserversProcessorNetworkEvaluationEnd();
 }
 
-void ProcessorNetworkEvaluator::onProcessorNetworkDidAddProcessor(Processor* processor) {
+void ProcessorNetworkEvaluator::onProcessorNetworkDidAddProcessor(Processor*) {
     processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 
-void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
+void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveProcessor(Processor*) {
     processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 
-void ProcessorNetworkEvaluator::onProcessorNetworkDidAddConnection(
-    const PortConnection& connection) {
+void ProcessorNetworkEvaluator::onProcessorNetworkDidAddConnection(const PortConnection&) {
     processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 
-void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveConnection(
-    const PortConnection& connection) {
+void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveConnection(const PortConnection&) {
     processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 

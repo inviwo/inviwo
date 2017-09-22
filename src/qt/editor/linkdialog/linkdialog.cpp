@@ -134,7 +134,7 @@ void LinkDialog::closeLinkDialog() {
     eventLoop_.quit();
 }
 
-void LinkDialog::closeEvent(QCloseEvent* event) { closeLinkDialog(); }
+void LinkDialog::closeEvent(QCloseEvent*) { closeLinkDialog(); }
 
 void LinkDialog::clickedSmartLinkPushButton() {
     std::vector<Property*> srcProperties = src_->getProperties();
@@ -240,7 +240,7 @@ std::vector<std::string> CheckableQComboBox::getCheckedItems() {
     return checkedItemString;
 }
 
-void CheckableQComboBox::onSmartLinkOptionChecked(const QModelIndex& tl, const QModelIndex& br) {
+void CheckableQComboBox::onSmartLinkOptionChecked(const QModelIndex&, const QModelIndex&) {
     lineEdit()->setText(QString(widgetName_.c_str()));
 }
 

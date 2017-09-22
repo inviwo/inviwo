@@ -34,19 +34,6 @@
 #include <inviwo/core/util/zip.h>
 #include <modules/base/algorithm/randomutils.h>
 
-namespace {
-static inline int nextPow2(int x) {
-    if (x == 0) return 0;
-    --x;
-    x |= x >> 1;
-    x |= x >> 2;
-    x |= x >> 4;
-    x |= x >> 8;
-    x |= x >> 16;
-    return x + 1;
-}
-}  // namespace
-
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -118,7 +105,7 @@ NoiseProcessor::NoiseProcessor()
 
     size_.onChange([&]() {
         auto s = std::max(size_.get().x, size_.get().y);
-        s = nextPow2(s);
+        s = util::nextPow2(s);
         auto l2 = log(s) / log(2.0f);
         levels_.setRangeMax(static_cast<int>(std::round(l2)));
     });

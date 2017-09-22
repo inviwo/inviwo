@@ -62,7 +62,7 @@ ImageGrayscale::ImageGrayscale()
 
 ImageGrayscale::~ImageGrayscale() {}
 
-void ImageGrayscale::preProcess(TextureUnitContainer &cont) {
+void ImageGrayscale::preProcess(TextureUnitContainer &) {
     vec3 lumScale(1.0f);
     switch (luminanceModel_.get()) {
     case LuminanceModels::PerceivedLum:

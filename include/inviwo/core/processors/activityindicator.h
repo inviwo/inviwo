@@ -38,7 +38,7 @@ namespace inviwo {
 
 class IVW_CORE_API ActivityIndicatorObserver: public Observer {
 public:
-    virtual void activityIndicatorChanged(bool active) {};
+    virtual void activityIndicatorChanged(bool active);
 };
 
 /**

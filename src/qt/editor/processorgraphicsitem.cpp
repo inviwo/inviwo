@@ -95,8 +95,8 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     setRect(-size_.width() / 2, -size_.height() / 2, size_.width(), size_.height());
 
     {
-        nameLabel_ =
-            new LabelGraphicsItem(this, size_.width() - 2 * labelHeight_ - 10, Qt::AlignBottom);
+        nameLabel_ = new LabelGraphicsItem(
+            this, static_cast<int>(size_.width() - 2 * labelHeight_ - 10), Qt::AlignBottom);
         nameLabel_->setPos(QPointF(rect().left() + labelMargin_, -3));
         nameLabel_->setDefaultTextColor(Qt::white);
         QFont nameFont("Segoe", labelHeight_, QFont::Black, false);
@@ -106,7 +106,8 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         LabelGraphicsItemObserver::addObservation(nameLabel_);
     }
     {
-        classLabel_ = new LabelGraphicsItem(this, size_.width() - 2 * labelHeight_, Qt::AlignTop);
+        classLabel_ = new LabelGraphicsItem(
+            this, static_cast<int>(size_.width() - 2 * labelHeight_), Qt::AlignTop);
         classLabel_->setPos(QPointF(rect().left() + labelMargin_, -3));
         classLabel_->setDefaultTextColor(Qt::lightGray);
         QFont classFont("Segoe", labelHeight_, QFont::Normal, true);

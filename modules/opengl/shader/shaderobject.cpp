@@ -191,7 +191,7 @@ void ShaderObject::addIncludes(std::ostringstream& source,
     std::string curLine;
     includeResources_.push_back(resource);
     resourceCallbacks_.push_back(
-        resource->onChange([this](const ShaderResource* res) { callbacks_.invoke(this); }));
+        resource->onChange([this](const ShaderResource* /*res*/) { callbacks_.invoke(this); }));
     std::istringstream shaderSource(resource->source());
     int localLineNumber = 1;
     bool isInsideBlockComment = false;

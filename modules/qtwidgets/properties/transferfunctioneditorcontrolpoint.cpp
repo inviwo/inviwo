@@ -126,11 +126,11 @@ QPainterPath TransferFunctionEditorControlPoint::shape() const {
     return path;
 }
 
-void TransferFunctionEditorControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
+void TransferFunctionEditorControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent*) {
     setHovered(true);
 }
 
-void TransferFunctionEditorControlPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
+void TransferFunctionEditorControlPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent*) {
     setHovered(false);
 }
 

@@ -82,8 +82,8 @@ DiscardShortLines::DiscardShortLines()
         dataMinLength_.set(minL);
         dataMaxLength_.set(maxL);
 
-        float t = (minLength_.get() - minLength_.getMinValue()) /
-                  (minLength_.getMaxValue() - minLength_.getMinValue());
+        auto t = (minLength_.get() - minLength_.getMinValue()) /
+                 (minLength_.getMaxValue() - minLength_.getMinValue());
         minLength_.setMinValue(minL);
         minLength_.setMaxValue(maxL);
         minLength_.set(minL + t * (maxL - minL));

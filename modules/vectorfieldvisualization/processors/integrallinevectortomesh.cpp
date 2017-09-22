@@ -167,7 +167,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
                 Timestep t(line);
                 for (size_t ii = 0; ii < size; ii++) {
-                    float tt = (t++).x;
+                    float tt = static_cast<float>((t++).x);
                     minT = std::min(minT, tt);
                     maxT = std::max(tt, maxT);
                 }
@@ -245,8 +245,8 @@ void IntegralLineVectorToMesh::process() {
 
             position++;
             velocity++;
-            float tt = (t++).x;
-            float kk = (k++).x;
+            float tt = static_cast<float>((t++).x);
+            float kk = static_cast<float>((k++).x);
 
             if (timeBasedFiltering_.isChecked() &&
                 (tt < minMaxT_.get().x || tt > minMaxT_.get().y)) {

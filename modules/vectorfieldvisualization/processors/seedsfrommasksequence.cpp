@@ -74,7 +74,7 @@ void SeedsFromMaskSequence::process() {
         vol->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto typedVol) -> void {
             float t = 0;
             if (util::hasTimestamp(vol)) {
-                t = util::getTimestamp(vol);
+                t = static_cast<float>(util::getTimestamp(vol));
             } else {
                 t = static_cast<float>(volID) / static_cast<float>(volumes.size() - 1);
             }

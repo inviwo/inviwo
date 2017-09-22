@@ -50,7 +50,7 @@ ImageBinary::ImageBinary()
     addProperty(threshold_);
 }
 
-void ImageBinary::preProcess(TextureUnitContainer &cont) {
+void ImageBinary::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, threshold_);
 }
 

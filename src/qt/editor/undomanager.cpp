@@ -65,7 +65,7 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
         clear();
         pushState();
     });
-    loadHandle_ = manager_->onLoad([&](Deserializer& d) { 
+    loadHandle_ = manager_->onLoad([&](Deserializer&) { 
         if (isRestoring) return;
         clear();
         pushState();
@@ -170,25 +170,11 @@ void UndoManager::updateActions() {
     redoAction_->setEnabled(head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size()) - 1);
 }
 
-void UndoManager::onProcessorNetworkChange() {
-    dirty_ = true;
-}
-void UndoManager::onProcessorNetworkDidAddProcessor(Processor* processor) {
-    dirty_ = true;
-}
-void UndoManager::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
-    dirty_ = true;
-}
-void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
-    dirty_ = true;
-}
-void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection& connection) {
-    dirty_ = true;
-}
-void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) {
-    dirty_ = true;
-}
-void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {
-    dirty_ = true;
-}
+void UndoManager::onProcessorNetworkChange() { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidAddProcessor(Processor *) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidRemoveProcessor(Processor *) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection &) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection &) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink &) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink &) { dirty_ = true; }
 }  // namespace

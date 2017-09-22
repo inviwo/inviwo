@@ -199,13 +199,13 @@ void TransferFunctionProperty::set(const Property *property) {
     }
 }
 
-void TransferFunctionProperty::onControlPointAdded(TransferFunctionDataPoint* p) {
+void TransferFunctionProperty::onControlPointAdded(TransferFunctionDataPoint*) {
     propertyModified();
 }
-void TransferFunctionProperty::onControlPointRemoved(TransferFunctionDataPoint* p) {
+void TransferFunctionProperty::onControlPointRemoved(TransferFunctionDataPoint*) {
     propertyModified();
 }
-void TransferFunctionProperty::onControlPointChanged(const TransferFunctionDataPoint* p) {
+void TransferFunctionProperty::onControlPointChanged(const TransferFunctionDataPoint*) {
     propertyModified();
 }
 
@@ -224,5 +224,13 @@ void TransferFunctionPropertyObservable::notifyZoomVChange(const vec2& zoomV) {
 void TransferFunctionPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
     forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onHistogramModeChange(mode); });
 }
+
+void TransferFunctionPropertyObserver::onMaskChange(const vec2&) {}
+
+void TransferFunctionPropertyObserver::onZoomHChange(const vec2&) {}
+
+void TransferFunctionPropertyObserver::onZoomVChange(const vec2&) {}
+
+void TransferFunctionPropertyObserver::onHistogramModeChange(HistogramMode) {}
 
 } // namespace

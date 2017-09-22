@@ -54,7 +54,7 @@ void BinarySTLWriter::writeData(const Mesh* data, const std::string filePath) co
 }
 
 std::unique_ptr<std::vector<unsigned char>> BinarySTLWriter::writeDataToBuffer(
-    const Mesh* data, const std::string& fileExtension) const {
+    const Mesh* data, const std::string& /*fileExtension*/) const {
     std::stringstream ss(std::ios_base::binary);
     writeData(data, ss);
     auto stringdata = ss.str();
@@ -125,7 +125,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
             }
         }
         return std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>(
-            [&f](std::vector<vec3>& normals, size_t i1, size_t i2, size_t i3) -> void {
+            [&f](std::vector<vec3>& normals, size_t, size_t, size_t) -> void {
                 normals.emplace_back(0.0f);
             });
     }();

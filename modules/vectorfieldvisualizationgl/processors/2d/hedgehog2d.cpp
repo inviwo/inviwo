@@ -142,7 +142,7 @@ void HedgeHog2D::adjustVisibilites() {
     quiverSettings_.setVisible(glyph == GlyphType::Quiver);
 }
 
-inviwo::vec4 HedgeHog2D::getColor(const dvec2 &velocity) { return color_; }
+vec4 HedgeHog2D::getColor(const dvec2 &/*velocity*/) { return color_; }
 
 void HedgeHog2D::createArrow(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx,
                              float dy, const dvec2 &velocity) {

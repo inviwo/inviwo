@@ -56,7 +56,7 @@ void SingleFileObserver::removeOnChange(const BaseCallBack* callback) {
 
 const std::string& SingleFileObserver::getFilename() const { return filename_; }
 
-void SingleFileObserver::fileChanged(const std::string& filename) {
+void SingleFileObserver::fileChanged(const std::string& /*filename*/) {
     onChangeCallbacks_.invokeAll();
 }
 

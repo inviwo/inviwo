@@ -170,7 +170,7 @@ void DistanceTransformRAM::updateOutport() {
         const auto progress = [pb](double f) {
             dispatchFront([f, pb]() {
                 f < 1.0 ? pb->show() : pb->hide();
-                pb->updateProgress(f);
+                pb->updateProgress(static_cast<float>(f));
             });
         };
         util::volumeDistanceTransform(volume.get(), dstRepr.get(), upsample, threshold, normalize,

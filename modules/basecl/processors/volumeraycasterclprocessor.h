@@ -83,9 +83,7 @@ public:
 
     virtual void process() override;
 
-    void onKernelCompiled( const cl::Kernel* kernel ) override {
-        invalidate(InvalidationLevel::InvalidResources);
-    }
+    void onKernelCompiled(const cl::Kernel*) override;
 
 private:
     void onParameterChanged();

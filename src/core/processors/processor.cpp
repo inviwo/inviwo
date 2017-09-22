@@ -353,7 +353,7 @@ void Processor::deserialize(Deserializer& d) {
             util::IdentifiedDeserializer<std::string, Inport*>("InPorts", "InPort")
                 .setGetId([](Inport* const& port) { return port->getIdentifier(); })
                 .setMakeNew([]() { return nullptr; })
-                .setNewFilter([&](const std::string& id, size_t ind) {
+                .setNewFilter([&](const std::string& id, size_t /*ind*/) {
                     return util::contains(ownedInportIds, id);
                 })
                 .onNew([&](Inport*& port) {
@@ -377,7 +377,7 @@ void Processor::deserialize(Deserializer& d) {
             util::IdentifiedDeserializer<std::string, Outport*>("OutPorts", "OutPort")
                 .setGetId([](Outport* const& port) { return port->getIdentifier(); })
                 .setMakeNew([]() { return nullptr; })
-                .setNewFilter([&](const std::string& id, size_t ind) {
+                .setNewFilter([&](const std::string& id, size_t /*ind*/) {
                     return util::contains(ownedOutportIds, id);
                 })
                 .onNew([&](Outport*& port) {

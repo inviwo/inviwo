@@ -56,7 +56,7 @@ ImageSharpen::ImageSharpen()
     addProperty(kernel_);
 }
 
-void ImageSharpen::preProcess(TextureUnitContainer &cont) {
+void ImageSharpen::preProcess(TextureUnitContainer &) {
     kernel_.set(kernels_[filter_.get()]);
     utilgl::setUniforms(shader_, sharpen_);
     shader_.setUniform("kernel", kernels_[filter_.get()]);

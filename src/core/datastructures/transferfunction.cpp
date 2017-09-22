@@ -425,4 +425,10 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
     }
 }
 
+void TransferFunctionObserver::onControlPointAdded(TransferFunctionDataPoint*) {}
+
+void TransferFunctionObserver::onControlPointRemoved(TransferFunctionDataPoint*) {}
+
+void TransferFunctionObserver::onControlPointChanged(const TransferFunctionDataPoint*) {}
+
 }  // namespace

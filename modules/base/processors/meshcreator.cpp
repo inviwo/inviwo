@@ -91,7 +91,7 @@ MeshCreator::MeshCreator()
     meshType_.setCurrentStateAsDefault();
 
     meshType_.onChange([this]() {
-        auto updateNone = [](PickingEvent* p) {};
+        auto updateNone = [](PickingEvent*) {};
     
         auto getDelta = [this](PickingEvent* p) {
             auto currNDC = p->getNDC();

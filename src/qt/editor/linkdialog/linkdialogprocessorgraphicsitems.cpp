@@ -58,14 +58,14 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Proc
     auto idFont = QFont("Segoe", linkdialog::processorLabelHeight, QFont::Bold, false);
     idFont.setPixelSize(linkdialog::processorLabelHeight);
     identifier->setFont(idFont);
-    identifier->setCrop(rect().width() - 2.0 * linkdialog::offset);
+    identifier->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
 
     auto classIdentifier = new LabelGraphicsItem(this);
     classIdentifier->setDefaultTextColor(Qt::lightGray);
     auto classFont = QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true);
     classFont.setPixelSize(linkdialog::processorLabelHeight);
     classIdentifier->setFont(classFont);
-    classIdentifier->setCrop(rect().width() - 2.0 * linkdialog::offset);
+    classIdentifier->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
     auto offset = classIdentifier->boundingRect().height();
     classIdentifier->setPos(rect().bottomLeft() +
                             QPointF(linkdialog::offset, -linkdialog::offset - offset));

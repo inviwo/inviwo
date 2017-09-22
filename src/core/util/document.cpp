@@ -212,7 +212,7 @@ void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const char*
     row.insert(Document::PathComponent::end(), "td", std::string(val));
 }
 
-void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, Span_t val) {
+void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) {
     auto l = row.get({Document::PathComponent::last()});
     if (l) {
         auto it = l.element()->attributes().find("colspan");

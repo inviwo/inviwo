@@ -99,7 +99,7 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     preprocess->setCheckable(true);
 
 
-    auto update = [=](int state) {
+    auto update = [=](int /*state*/) {
         shadercode->setText(obj->print(showSource->isChecked(), preprocess->isChecked()).c_str());
         shadercode->setReadOnly(showSource->isChecked() || preprocess->isChecked());
         save->setEnabled(!showSource->isChecked() && !preprocess->isChecked());

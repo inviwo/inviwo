@@ -50,4 +50,6 @@ const ActivityIndicator& ActivityIndicatorOwner::getActivityIndicator() const {
     return indicator_;
 }
 
+void ActivityIndicatorObserver::activityIndicatorChanged(bool) {}
+
 }  // namespace

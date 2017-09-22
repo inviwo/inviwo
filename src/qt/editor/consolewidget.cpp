@@ -196,14 +196,15 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         auto vrows = tableView_->verticalHeader()->count();
         for (int i = 0; i < vrows; ++i) {
             auto mind = mapToSource(i, static_cast<int>(LogTableModelEntry::ColumnID::Message));
-            auto message = mind.data(Qt::DisplayRole).toString();
-            auto lines = std::count(message.begin(), message.end(), '\n') + 1;
-            tableView_->verticalHeader()->resizeSection(i, margin + lines * height);
+            const auto message = mind.data(Qt::DisplayRole).toString();
+            const auto lines = std::count(message.begin(), message.end(), '\n') + 1;
+            tableView_->verticalHeader()->resizeSection(i,
+                                                        margin + static_cast<int>(lines) * height);
         }
         tableView_->setUpdatesEnabled(true);
     };
 
-    auto levelCallback = [this, updateRowsHeights](bool checked) {
+    auto levelCallback = [this, updateRowsHeights](bool /*checked*/) {
         if (util::all_of(levels, [](const auto& level) { return level.action->isChecked(); })) {
             levelFilter_->setFilterRegExp("");
         } else {
@@ -407,7 +408,8 @@ void ConsoleWidget::logEntry(LogTableModelEntry e) {
     if (lines != 1) {
         auto vind = mapFromSource(model_.model()->rowCount() - 1, 0);
         if (vind.isValid()) {
-            tableView_->verticalHeader()->resizeSection(vind.row(), 2 + lines * height);
+            tableView_->verticalHeader()->resizeSection(vind.row(),
+                                                        2 + static_cast<int>(lines) * height);
         }
     }
 
@@ -421,7 +423,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* keyEvent) {
     }
 }
 
-bool ConsoleWidget::eventFilter(QObject* object, QEvent* event) {
+bool ConsoleWidget::eventFilter(QObject* /*object*/, QEvent* event) {
     if (event->type() == QEvent::FocusIn) {
         focus_ = true;
 

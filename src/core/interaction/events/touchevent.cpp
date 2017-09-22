@@ -202,10 +202,10 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
     if (touchPoints_.size() > 1) {
         const TouchPoint* touchPoint1 = &touchPoints_[0];
         const TouchPoint* touchPoint2 = &touchPoints_[1];
-        float distance = std::numeric_limits<float>::max();
+        double distance = std::numeric_limits<float>::max();
         for (size_t i = 0; i < touchPoints_.size() - 1; ++i) {
             for (size_t j = i + 1; j < touchPoints_.size(); ++j) {
-                float ijDistance = glm::distance2(touchPoints_[i].pos(), touchPoints_[j].pos());
+                double ijDistance = glm::distance2(touchPoints_[i].pos(), touchPoints_[j].pos());
                 if (ijDistance < distance) {
                     distance = ijDistance;
                     touchPoint1 = &touchPoints_[i];

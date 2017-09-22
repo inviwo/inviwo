@@ -134,13 +134,9 @@ public:
 
     /** 
      * \brief Translates and scales camera to match new data and fit new object into view.
-     *
-     * @note requires that adjustCameraOnDataChange_ is true
-     * and that an inport has been supplied during construction.
-     * @param prevDataToWorldMatrix Matrix of previous object
      * @param newDataToWorldMatrix Matrix of new object
      */
-    void adjustCameraToData(const mat4& prevDataToWorldMatrix, const mat4& newDataToWorldMatrix);
+    void adjustCameraToData(const mat4& newDataToWorldMatrix);
     /** 
      * \brief Reset the camera adjustment matrix to currently set inport data.
      */

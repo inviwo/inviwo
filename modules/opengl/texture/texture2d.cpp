@@ -34,13 +34,14 @@ namespace inviwo {
 
 Texture2D::Texture2D(size2_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
                      GLint level)
-    : Texture(GL_TEXTURE_2D, glFormat, filtering), dimensions_(dimensions) {
+    : Texture(GL_TEXTURE_2D, glFormat, filtering, level), dimensions_(dimensions) {
     setTextureParameters(&Texture2D::default2DTextureParameterFunction);
 }
 
 Texture2D::Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                      GLenum filtering, GLint level)
-    : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering), dimensions_(dimensions) {
+    : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering, level)
+    , dimensions_(dimensions) {
     setTextureParameters(&Texture2D::default2DTextureParameterFunction);
 }
 

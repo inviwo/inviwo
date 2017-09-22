@@ -49,11 +49,11 @@ public:
     * This methods will be called when observed object changes.
     * Override it to add behavior.
     */
-    virtual void onWillAddProperty(Property* property, size_t index){};
-    virtual void onDidAddProperty(Property* property, size_t index){};
+    virtual void onWillAddProperty(Property* property, size_t index);
+    virtual void onDidAddProperty(Property* property, size_t index);
 
-    virtual void onWillRemoveProperty(Property* property, size_t index){};
-    virtual void onDidRemoveProperty(Property* property, size_t index){};
+    virtual void onWillRemoveProperty(Property* property, size_t index);
+    virtual void onDidRemoveProperty(Property* property, size_t index);
 };
 
 class IVW_CORE_API PropertyOwnerObservable : public Observable<PropertyOwnerObserver> {

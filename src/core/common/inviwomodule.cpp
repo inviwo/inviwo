@@ -161,7 +161,7 @@ int InviwoModule::getVersion() const {
     return 0;
 }
 
-std::unique_ptr<VersionConverter> InviwoModule::getConverter(int version) const {
+std::unique_ptr<VersionConverter> InviwoModule::getConverter(int) const {
     return nullptr;
 }
 

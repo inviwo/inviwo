@@ -111,13 +111,13 @@ public:
                                     static_cast<double>(val[0] * val[0] + val[1] * val[1])))),
                  arctan(val[0], val[1]));
     }
-    virtual V min(V val) { return V(std::numeric_limits<T>::epsilon(), 0, -M_PI); }
+    virtual V min(V /*val*/) { return V(std::numeric_limits<T>::epsilon(), 0, -M_PI); }
     virtual V max(V val) {
         return V(
             3 * std::sqrt(static_cast<double>(val[0] * val[0] + val[1] * val[1] + val[2] * val[2])),
             M_PI, M_PI);
     }
-    virtual V inc(V val) { return V(0.01, 0.01, 0.01); }
+    virtual V inc(V /*val*/) { return V(0.01, 0.01, 0.01); }
 
     virtual V invValue(V val) {
         return V(
@@ -125,9 +125,9 @@ public:
             val[0] * std::sin(static_cast<double>(val[1])) * std::sin(static_cast<double>(val[2])),
             val[0] * std::cos(static_cast<double>(val[1])));
     }
-    virtual V invMin(V val) { return this->property_->getMinValue(); }
-    virtual V invMax(V val) { return this->property_->getMaxValue(); }
-    virtual V invInc(V val) { return this->property_->getIncrement(); }
+    virtual V invMin(V /*val*/) { return this->property_->getMinValue(); }
+    virtual V invMax(V /*val*/) { return this->property_->getMaxValue(); }
+    virtual V invInc(V /*val*/) { return this->property_->getIncrement(); }
 
 private:
     T arctan(T x, T y) {

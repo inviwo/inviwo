@@ -112,7 +112,7 @@ template <typename DataType, typename P, typename T, unsigned int DataDims>
 Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::sampleDataSpace(
     const dvec3 &pos) const {
     if (!withinBoundsDataSpace(pos)) {
-        return Vector<DataDims, T>(0.0);
+        return Vector<DataDims, T>{};
     }
     const dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
     const size3_t indexPos = size3_t(samplePos);

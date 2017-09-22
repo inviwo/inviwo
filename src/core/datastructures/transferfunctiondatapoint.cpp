@@ -164,4 +164,7 @@ bool operator>=(const TransferFunctionDataPoint& lhs, const TransferFunctionData
     return !(lhs < rhs);
 }
 
+void TransferFunctionPointObserver::onTransferFunctionPointChange(
+    const TransferFunctionDataPoint*) {}
+
 } // namespace

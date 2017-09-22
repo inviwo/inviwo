@@ -230,7 +230,7 @@ void NetworkEditorView::zoom(double dz) {
     scale(dz, dz);
 }
 
-void NetworkEditorView::onNetworkEditorFileChanged(const std::string& newFilename) {
+void NetworkEditorView::onNetworkEditorFileChanged(const std::string& /*newFilename*/) {
     fitNetwork();
 }
 

@@ -377,10 +377,10 @@ public:
             itemKey_, [&](std::string id, size_t ind) -> typename ContainerWrapper<T>::Item {
                 ++count;
                 if (ind < container.size()) {
-                    return {true, container[ind], [&](T& val) {}};
+                    return {true, container[ind], [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {true, tmp, [&](T& val) {
+                    return {true, tmp, [&](T& /*val*/) {
                                 container.push_back(std::move(tmp));
                                 onNewItem_(container.back());
                             }};
@@ -441,7 +441,7 @@ public:
                 util::erase_remove(toRemove, id);
                 auto it = util::find_if(container, [&](T& i) { return getID_(i) == id; });
                 if (it != container.end()) {
-                    return {true, *it, [&](T& val) {}};
+                    return {true, *it, [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
                     return {filter_(id, ind), tmp, [&](T& val) { onNewItem_(val); }};
@@ -462,7 +462,7 @@ private:
         throw Exception("OnRemove callback is not set!");
     };
 
-    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& id, size_t ind) {
+    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;
     };
 
@@ -507,7 +507,7 @@ public:
                 util::erase_remove(toRemove, id);
                 auto it = container.find(id);
                 if (it != container.end()) {
-                    return {true, it->second, [&](T& val) {}};
+                    return {true, it->second, [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
                     return {filter_(id, ind), tmp, [&, id](T& val) { onNewItem_(id, val); }};
@@ -535,7 +535,7 @@ private:
     std::function<void(const K&)> onRemoveItem_ = [](const K&) {
         throw Exception("OnRemove callback is not set!");
     };
-    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& id, size_t ind) {
+    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;
     };
     std::function<K(const K&)> identifierTransform_ = [](const K &identifier) { 

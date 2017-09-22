@@ -41,7 +41,7 @@ public:
     CompositePropertyObserver() = default;
     virtual ~CompositePropertyObserver() = default;
 
-    virtual void onSetCollapsed(bool value) {}
+    virtual void onSetCollapsed(bool value);
 };
 
 class IVW_CORE_API CompositePropertyObservable : public Observable<CompositePropertyObserver> {

@@ -72,8 +72,6 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
         default:
             return false; // No changes
     }
-
-    return true;
 }
 
 void ProcessorNetworkConverter::traverseNodes(TxElement* node, updateType update) {

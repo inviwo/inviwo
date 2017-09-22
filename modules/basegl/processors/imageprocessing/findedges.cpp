@@ -51,7 +51,7 @@ FindEdges::FindEdges()
 
 FindEdges::~FindEdges() = default;
 
-void FindEdges::preProcess(TextureUnitContainer &cont) {
+void FindEdges::preProcess(TextureUnitContainer &) {
     shader_.setUniform("alpha_", alpha_.get());
 }
 

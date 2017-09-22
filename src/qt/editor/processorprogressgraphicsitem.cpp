@@ -50,9 +50,8 @@ ProcessorProgressGraphicsItem::ProcessorProgressGraphicsItem(QGraphicsRectItem* 
 
 }
 
-void ProcessorProgressGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                          QWidget* widget) {
-    
+void ProcessorProgressGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
+
     float progress = progressBar_->getProgress();
 
     p->save();

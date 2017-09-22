@@ -418,19 +418,19 @@ TimerThread& InviwoApplication::getTimerThread() {
 void InviwoApplication::closeInviwoApplication() {
     LogWarn("this application have not implemented the closeInviwoApplication function");
 }
-void InviwoApplication::registerFileObserver(FileObserver* fileObserver) {
+void InviwoApplication::registerFileObserver(FileObserver*) {
     LogWarn("this application have not implemented the registerFileObserver function");
 }
-void InviwoApplication::unRegisterFileObserver(FileObserver* fileObserver) {
+void InviwoApplication::unRegisterFileObserver(FileObserver*) {
     LogWarn("this application have not implemented the unRegisterFileObserver function");
 }
-void InviwoApplication::startFileObservation(std::string fileName) {
+void InviwoApplication::startFileObservation(std::string) {
     LogWarn("this application have not implemented the startFileObservation function");
 }
-void InviwoApplication::stopFileObservation(std::string fileName) {
+void InviwoApplication::stopFileObservation(std::string) {
     LogWarn("this application have not implemented the stopFileObservation function");
 }
-void InviwoApplication::playSound(Message soundID) {
+void InviwoApplication::playSound(Message) {
     LogWarn("this application have not implemented the playSound function");
 }
 

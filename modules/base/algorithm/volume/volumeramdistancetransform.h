@@ -161,7 +161,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
     for (int64 z = 0; z < dstDim.z; ++z) {
         for (int64 y = 0; y < dstDim.y; ++y) {
             // forward
-            U dist = dstDim.x;
+            U dist = static_cast<U>(dstDim.x);
             for (int64 x = 0; x < dstDim.x; ++x) {
                 if (!is_feature(x, y, z)) {
                     ++dist;
@@ -172,7 +172,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
             }
 
             // backward
-            dist = dstDim.x;
+            dist = static_cast<U>(dstDim.x);
             for (int64 x = dstDim.x - 1; x >= 0; --x) {
                 if (!is_feature(x, y, z)) {
                     ++dist;

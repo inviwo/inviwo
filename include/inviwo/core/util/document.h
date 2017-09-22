@@ -223,7 +223,7 @@ std::string convert(T&& val) {
 }
 template <typename T,
           typename std::enable_if<!util::is_stream_insertable<T>::value, std::size_t>::type = 0>
-std::string convert(T&& val) {
+std::string convert(T&& /*val*/) {
     return "???";
 }
 }

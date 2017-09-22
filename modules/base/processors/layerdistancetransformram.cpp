@@ -162,7 +162,7 @@ void LayerDistanceTransformRAM::updateOutport() {
         const auto progress = [pb](double f) {
             dispatchFront([f, pb]() {
                 f < 1.0 ? pb->show() : pb->hide();
-                pb->updateProgress(f);
+                pb->updateProgress(static_cast<float>(f));
             });
         };
         util::layerDistanceTransform(image->getColorLayer(), dstRepr, upsample, threshold,

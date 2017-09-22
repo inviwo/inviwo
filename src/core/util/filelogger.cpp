@@ -64,7 +64,7 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
 
 FileLogger::~FileLogger() = default;
 
-void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audience,
+void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*audience*/,
                      const char* fileName, const char* functionName, int lineNumber,
                      std::string logMsg) {
     IVW_UNUSED_PARAM(fileName);

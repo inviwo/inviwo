@@ -62,7 +62,7 @@ LightPositionWidgetQt::~LightPositionWidgetQt() {
     delete gradientPixmap_;
 }
 
-void LightPositionWidgetQt::mousePressEvent(QMouseEvent* e) {
+void LightPositionWidgetQt::mousePressEvent(QMouseEvent*) {
     mouseDown_ = true;
 }
 
@@ -162,7 +162,7 @@ float LightPositionWidgetQt::getZ() const {
     return (radius_ < 0.0f ? -1.0f : 1.0f) * cos(theta_);
 }
 
-void LightPositionWidgetQt::mouseDoubleClickEvent(QMouseEvent* e) {
+void LightPositionWidgetQt::mouseDoubleClickEvent(QMouseEvent*) {
     radius_ *= -1.0;
     emit positionChanged();
 }

@@ -88,13 +88,15 @@ struct Filter<Predicate, std::tuple<Args...>> {
     using type = typename Filter<Predicate, Args...>::type;
 };
 
-
 /**
- * Helper class to find the matching DataFormatId amoung a sorted list of types.
+ * Helper class to find the matching DataFormatId among a sorted list of types.
  * Does a binary search in the type list.
  */
 template <typename Result, int B, int E, typename... Args>
 struct DispatchHelper {};
+
+#include <warn/push>
+#include <warn/ignore/constant-conditional>
 
 template <typename Result, int B, int E, typename... Formats>
 struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
@@ -123,6 +125,8 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
         }
     }
 };
+
+#include <warn/pop>
 
 } // namespace detail
 

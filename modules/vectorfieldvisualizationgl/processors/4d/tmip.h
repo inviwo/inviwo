@@ -59,11 +59,7 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API TMIP : public Processor {
 public:
-
-    enum class OutputType {
-        Scalar , 
-        HighestVelocity
-    };
+    enum class OutputType { Scalar, HighestVelocity };
 
     TMIP();
     virtual ~TMIP() = default;
@@ -77,7 +73,8 @@ public:
 
 private:
     void initShader(Shader &s, int samplers);
-    std::shared_ptr<Volume> iteration(Shader &s, std::shared_ptr<Volume> vol, std::shared_ptr<Volume> target,
+    std::shared_ptr<Volume> iteration(Shader &s, std::shared_ptr<Volume> vol,
+                                      std::shared_ptr<Volume> target,
                                       std::vector<std::shared_ptr<Volume>>::const_iterator start,
                                       std::vector<std::shared_ptr<Volume>>::const_iterator end);
 
@@ -85,7 +82,6 @@ private:
 
     DataInport<std::vector<std::shared_ptr<Volume>>> inport_;
     VolumeOutport outport_;
-
 
     TemplateOptionProperty<OutputType> outputType_;
 

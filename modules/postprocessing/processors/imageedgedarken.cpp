@@ -53,7 +53,7 @@ ImageEdgeDarken::ImageEdgeDarken()
     addProperty(intensity_);
 }
     
-void ImageEdgeDarken::preProcess(TextureUnitContainer &cont) {
+void ImageEdgeDarken::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, darken_, intensity_);
 }
 

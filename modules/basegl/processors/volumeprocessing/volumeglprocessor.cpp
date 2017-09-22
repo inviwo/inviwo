@@ -105,6 +105,12 @@ void VolumeGLProcessor::process() {
 
 void VolumeGLProcessor::markInvalid() { internalInvalid_ = true; }
 
+void VolumeGLProcessor::preProcess(TextureUnitContainer&) {}
+
+void VolumeGLProcessor::postProcess() {}
+
+void VolumeGLProcessor::afterInportChanged() {}
+
 void VolumeGLProcessor::inportChanged() {
     markInvalid();
     afterInportChanged();

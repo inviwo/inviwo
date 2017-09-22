@@ -35,4 +35,6 @@ void CompositePropertyObservable::notifyObserversOnSetCollapsed(bool collapsed) 
     forEachObserver([&](CompositePropertyObserver* o) { o->onSetCollapsed(collapsed); });
 }
 
+void CompositePropertyObserver::onSetCollapsed(bool) {}
+
 }  // namespace

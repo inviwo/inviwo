@@ -46,7 +46,7 @@
 namespace inviwo {
 /** \docpage{org.inviwo.EntryExitPointsCL, Entry-exit points}
  * ![](org.inviwo.EntryExitPointsCL.png?classIdentifier=org.inviwo.EntryExitPointsCL)
- * Computes the entry and exit points of a triangle mesh from the camera position in data space. 
+ * Computes the entry and exit points of a triangle mesh from the camera position in data space.
  * The output color will be zero if no intersection is found, otherwise .
  * @see MeshEntryExitPointsCL
  *
@@ -56,15 +56,16 @@ namespace inviwo {
  * ### Outports
  *   * __ImageOutport__ The first hit point in data space.
  *   * __ImageOutport__ The last hit point in data space.
- * 
+ *
  * ### Properties
  *   * __Camera__ Camera of the scene.
  *   * __Work group size__ OpenCL work group size (performance)
- *   * __Use OpenGL sharing__ Share data with OpenGL (performance and compability).
+ *   * __Use OpenGL sharing__ Share data with OpenGL (performance and compatibility).
  */
 
 /**
- * \brief Computes the entry and exit points of a triangle mesh from the camera position in texture space.
+ * \brief Computes the entry and exit points of a triangle mesh from the camera position in texture
+ * space.
  *
  */
 class IVW_MODULE_BASECL_API EntryExitPointsCLProcessor : public Processor, public KernelObserver {
@@ -78,7 +79,7 @@ public:
     virtual void process() override;
 
 protected:
-    void onKernelCompiled( const cl::Kernel* kernel ) override { invalidate(InvalidationLevel::InvalidResources); }
+    void onKernelCompiled(const cl::Kernel*) override;
 
 private:
     MeshInport geometryPort_;

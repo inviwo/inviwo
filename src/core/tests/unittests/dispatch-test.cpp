@@ -64,6 +64,7 @@ res_t test(DataFormatId id) {
     auto buf = createBufferRAM(10, DataFormatBase::get(id), BufferUsage::Static, BufferTarget::Data);
 
     return dispatch<res_t, Predicate>(buf.get(), [](auto b) -> res_t {
+        IVW_UNUSED_PARAM(b);
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
         return res_t{DataFormat<DT>::id(), DataFormat<DT>::numericType(), DataFormat<DT>::components(),
@@ -103,6 +104,7 @@ TEST(DispatchTests, InstantiationTest1) {
                                BufferUsage::Static, BufferTarget::Data);
 
     auto res = dispatch<float, dispatching::filter::Scalars>(buf.get(), [](auto b) {
+        IVW_UNUSED_PARAM(b);
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
 
@@ -110,7 +112,7 @@ TEST(DispatchTests, InstantiationTest1) {
         DT v2{1};
         
         auto min = std::min(v1,v2);
-        return min;
+        return static_cast<float>(min);
     });
     EXPECT_EQ(0.0f, res);
 }
@@ -121,6 +123,7 @@ TEST(DispatchTests, InstantiationTest2) {
                                BufferUsage::Static, BufferTarget::Data);
 
     auto res = dispatch<float, dispatching::filter::Vecs>(buf.get(), [](auto b) {
+        IVW_UNUSED_PARAM(b);
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
 
@@ -128,7 +131,7 @@ TEST(DispatchTests, InstantiationTest2) {
         DT v2{1};
         
         auto min = glm::min(v1,v2);
-        return min[0];
+        return static_cast<float>(min[0]);
     });
     EXPECT_EQ(0.0f, res);
 }

@@ -48,7 +48,7 @@ namespace inviwo {
 ConsoleLogger::ConsoleLogger() = default;
 ConsoleLogger::~ConsoleLogger() = default;
 
-void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience audience,
+void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*audience*/,
                         const char* fileName, const char* functionName, int lineNumber,
                         std::string logMsg) {
     IVW_UNUSED_PARAM(fileName);
@@ -64,13 +64,13 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience au
     const auto k = [&]() {
         switch (logLevel) {
             case LogLevel::Info:
-                return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+                return WORD{FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE};
             case LogLevel::Warn:
-                return FOREGROUND_RED | FOREGROUND_GREEN  | FOREGROUND_INTENSITY;
+                return WORD{FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY};
             case LogLevel::Error:
-                return FOREGROUND_RED | FOREGROUND_INTENSITY;
+                return WORD{FOREGROUND_RED | FOREGROUND_INTENSITY};
             default:
-                return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+                return WORD{FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE};
         }
     }();
 
