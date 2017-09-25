@@ -163,6 +163,12 @@ endif()
 # Add dependencies
 ivw_add_dependencies(${dependencies})
 
+# Ensure that modules build before this project when they are changed
+# Note: could not get this to work on xcode ver 9, cmake 3.7.2
+foreach (package ${package_list})
+    add_dependencies(inviwo ${package})
+endforeach()
+
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
 #ivw_compile_optimize_inviwo_core()
