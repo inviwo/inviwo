@@ -30,12 +30,16 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/io/imagewriterutil.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLocale>
 #include <QApplication>
+#include <QClipboard>
+#include <QPixmap>
 #include <QDesktopWidget>
 #include <QMenu>
 #include <QAction>
@@ -73,8 +77,12 @@ std::ios_base& localizeStream(std::ios_base& stream) {
 }
 
 QString toLocalQString(const std::string& input) { return QString::fromLocal8Bit(input.c_str()); }
+std::string fromLocalQString(const QString& input) {
+    return std::string(input.toLocal8Bit().constData());
+}
 
 QString toQString(const std::string& input) { return QString::fromUtf8(input.c_str()); }
+std::string fromQString(const QString& input) { return std::string(input.toUtf8().constData()); }
 
 QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }
 
@@ -104,7 +112,7 @@ QMainWindow* getApplicationMainWindow() {
     }
 }
 
-QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,
+QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
                             bool decorationOffset /*= true*/) {
 #ifdef WIN32
     // Only non zero on windows, due to a QT bug in window decoration handling.
@@ -112,8 +120,8 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,
         // Fix window offset when restoring positions saved during shutdown.
         // Determined the window frame/border size once.
         QWidget w(nullptr, Qt::Tool);
-        // Move the widget out of sight.
-        w.move(-5000, -5000);
+        // ensure that widget is not positioned on a visible desktop
+        w.setAttribute(Qt::WA_DontShowOnScreen);
         // Need to show the widget, otherwise no border exists, i.e. this->pos() ==
         // this->geometry().topLeft()
         w.show();
@@ -136,20 +144,25 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,
     }
 
     // Check if point is within any desktops rect (with some extra padding applied).
-    static constexpr int padding = 10;
-    bool withinAnyDesktop = false;
-    for (int i = 0; i < desktop->screenCount(); i++) {
-        auto geom = desktop->screenGeometry(i).marginsAdded({padding, padding, padding, padding});
-        if (geom.contains(pos)) {
-            withinAnyDesktop = true;
-            break;
+    static constexpr int leftPadding = 0;
+    static constexpr int topPadding = 0;
+    static constexpr int rightPadding = 10;
+    static constexpr int bottomPadding = 10;
+    const bool withinAnyDesktop = [&]() {
+        for (int i = 0; i < desktop->screenCount(); i++) {
+            auto geom = desktop->screenGeometry(i).marginsRemoved(
+                {leftPadding, topPadding, rightPadding, bottomPadding});
+            if (geom.contains(pos)) {
+                return true;
+            }
         }
-    }
+        return false;
+    }();
 
     if (!withinAnyDesktop) {
         // If the widget is outside visible screen
         auto mainWindow = getApplicationMainWindow();
-        QPoint appPos;
+        QPoint appPos(0,0);
         if (mainWindow) {
             appPos = mainWindow->pos();
         }
@@ -225,6 +238,39 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
         }
     }
     throw Exception("No Qt main window found");
+}
+
+QImage layerToQImage(const Layer &layer){
+    auto data = layer.getAsCodedBuffer("png"); 
+    return QImage::fromData(data->data(), static_cast<int>(data->size()),"png");
+}
+
+void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, size_t visibleIndex) {
+    QMenu* copy = menu.addMenu("Copy");
+    QMenu* save = menu.addMenu("Save");
+
+    auto addAction = [&copy, &save](const std::string& name, const Layer* layer, bool visible) {
+        std::ostringstream oss;
+        oss << name << (visible ? " (Visible)" : "");
+        auto copyAction = copy->addAction(oss.str().c_str());
+        copyAction->connect(copyAction, &QAction::triggered, [layer]() {
+            QApplication::clipboard()->setPixmap(QPixmap::fromImage(utilqt::layerToQImage(*layer)));
+        });
+
+        auto saveAction = save->addAction(oss.str().c_str());
+        saveAction->connect(saveAction, &QAction::triggered, [layer]() {
+             util::saveLayer(*layer);
+        });
+    };
+
+    const auto nLayers = image.getNumberOfColorLayers();
+    for (size_t i = 0; i < nLayers; i++) {
+        addAction("Color Layer " + (nLayers > 1 ? toString(i) : ""), image.getColorLayer(i),
+                      visibleLayer == LayerType::Color && visibleIndex == i);
+    }
+
+    addAction("Picking Layer", image.getPickingLayer(), visibleLayer == LayerType::Picking);
+    addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
 }
 
 } // namespace utilqt

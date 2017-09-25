@@ -33,32 +33,46 @@
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo LineRenderer::processorInfo_{
-    "org.inviwo.LineRenderer",      // Class identifier
-    "Line Renderer",                // Display name
-    "Rendering",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::GL,               // Tags
-};
-const ProcessorInfo LineRenderer::getProcessorInfo() const {
-    return processorInfo_;
+namespace util {
+MeshDrawerGL::DrawMode getDrawMode(LineRenderer::LineDrawMode drawMode, bool useAdjacency);
 }
 
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo LineRenderer::processorInfo_{
+    "org.inviwo.LineRenderer",  // Class identifier
+    "Line Renderer",            // Display name
+    "Mesh Rendering",           // Category
+    CodeState::Stable,          // Code state
+    Tags::GL,                   // Tags
+};
+const ProcessorInfo LineRenderer::getProcessorInfo() const { return processorInfo_; }
 
 LineRenderer::LineRenderer()
     : Processor()
     , inport_("geometry")
     , imageInport_("imageInport")
     , outport_("image")
+    , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
+    , antialiasing_("antialiasing", "Antialiasing (pixel)", 0.5f, 0.0f, 10.0f, 0.1f)
+    , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
+    , roundCaps_("roundCaps", "Round Caps", true)
+    , pseudoLighting_("pseudoLighting", "Pseudo Lighting", true,
+                      InvalidationLevel::InvalidResources)
+    , roundDepthProfile_("roundDepthProfile", "Round Depth Profile", true,
+                         InvalidationLevel::InvalidResources)
+    , writeDepth_("writeDepth", "Write Depth Layer", true)
+    , drawMode_("drawMode", "Draw Mode",
+                {{"auto", "Automatic", LineDrawMode::Auto},
+                 {"lineSegments", "Line Segments", LineDrawMode::LineSegments},
+                 {"lineStrip", "Line Strip", LineDrawMode::LineStrip},
+                 {"lineLoop", "Line Loop", LineDrawMode::LineLoop}},
+                0, InvalidationLevel::InvalidResources)
+    , useAdjacency_("useAdjacency", "Use Adjacency Information", true,
+                    InvalidationLevel::InvalidResources)
+    , stippling_("stippling", "Stippling")
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
-    , antialising_("antialising", "Antialising (pixel)", 1.0f, 0.0f, 10.0f, 0.1f)
-    , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
-    , useAdjacency_("useAdjacency", "Use Adjacency Information", true)
-    , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) 
-{
+    , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
     outport_.addResizeEventListener(&camera_);
 
     addPort(inport_);
@@ -67,41 +81,67 @@ LineRenderer::LineRenderer()
     imageInport_.setOptional(true);
 
     addProperty(lineWidth_);
-    addProperty(antialising_);
+    addProperty(antialiasing_);
     addProperty(miterLimit_);
-    addProperty(useAdjacency_);    
+    addProperty(roundCaps_);
+    addProperty(pseudoLighting_);
+    addProperty(roundDepthProfile_);
+    addProperty(writeDepth_);
+    addProperty(drawMode_);
+    addProperty(useAdjacency_);
+
+    addProperty(stippling_);
 
     addProperty(camera_);
     addProperty(trackball_);
 
-    useAdjacency_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    drawMode_.onChange([this]() {
+        bool noAdjacencySupport = (drawMode_.get() == LineDrawMode::LineLoop);
+        useAdjacency_.setReadOnly(noAdjacencySupport);
+    });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-void LineRenderer::initializeResources() { 
-    shader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", useAdjacency_.get() ? "1" : "0");
+void LineRenderer::initializeResources() {
+    bool adjacencySupport = (drawMode_.get() != LineDrawMode::LineLoop);
+
+    shader_.getGeometryShaderObject()->addShaderDefine(
+        "ENABLE_ADJACENCY", useAdjacency_.get() && adjacencySupport ? "1" : "0");
+
+    auto fragShader = shader_.getFragmentShaderObject();
+    if (pseudoLighting_.get()) {
+        fragShader->addShaderDefine("ENABLE_PSEUDO_LIGHTING");
+    } else {
+        fragShader->removeShaderDefine("ENABLE_PSEUDO_LIGHTING");
+    }
+    if (roundDepthProfile_.get()) {
+        fragShader->addShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
+    } else {
+        fragShader->removeShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
+    }
+
+    utilgl::addShaderDefines(shader_, stippling_);
 
     shader_.build();
 }
-    
+
 void LineRenderer::process() {
     if (imageInport_.isConnected()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
-    }
-    else {
+    } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::DepthMaskState depthMask(writeDepth_.get());
+
+    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+
     shader_.activate();
+    shader_.setUniform("screenDim", vec2(outport_.getDimensions()));
+    utilgl::setUniforms(shader_, camera_, lineWidth_, antialiasing_, miterLimit_, roundCaps_,
+                        stippling_);
 
-    shader_.setUniform("screenDim_", vec2(outport_.getDimensions()));
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-
-    shader_.setUniform("lineWidth_", lineWidth_.get());
-    shader_.setUniform("antialias_", antialising_.get());
-    shader_.setUniform("miterLimit_", miterLimit_.get());
-    
     drawMeshes();
 
     shader_.deactivate();
@@ -109,16 +149,45 @@ void LineRenderer::process() {
 }
 
 void LineRenderer::drawMeshes() {
-    auto drawMode = (useAdjacency_.get() ? MeshDrawerGL::DrawMode::LineStripAdjacency
-                                         : MeshDrawerGL::DrawMode::LineStrip);
+    bool autoDrawMode = (drawMode_.get() == LineDrawMode::Auto);
+    auto drawmode = util::getDrawMode(drawMode_.get(), useAdjacency_.get());
 
-    for (auto& elem : inport_.getVectorData()) {
+    for (const auto& elem : inport_) {
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                         elem->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(shader_, *elem, "geometry_");
-        drawer.draw(drawMode);
+        utilgl::setShaderUniforms(shader_, *elem, "geometry");
+        if (autoDrawMode) {
+            drawer.draw();
+        } else {
+            drawer.draw(drawmode);
+        }
     }
 }
 
-} // namespace
+namespace util {
 
+MeshDrawerGL::DrawMode getDrawMode(LineRenderer::LineDrawMode drawMode, bool useAdjacency) {
+    switch (drawMode) {
+        case LineRenderer::LineDrawMode::LineSegments:
+            if (useAdjacency) {
+                return MeshDrawerGL::DrawMode::LinesAdjacency;
+            } else {
+                return MeshDrawerGL::DrawMode::Lines;
+            }
+        case LineRenderer::LineDrawMode::LineStrip:
+            if (useAdjacency) {
+                return MeshDrawerGL::DrawMode::LineStripAdjacency;
+            } else {
+                return MeshDrawerGL::DrawMode::LineStrip;
+            }
+        case LineRenderer::LineDrawMode::LineLoop:
+            return MeshDrawerGL::DrawMode::LineLoop;
+        case LineRenderer::LineDrawMode::Auto:
+        default:
+            return MeshDrawerGL::DrawMode::NotSpecified;
+    }
+}
+
+}  // namespace util
+
+}  // namespace inviwo

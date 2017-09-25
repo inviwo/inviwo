@@ -35,23 +35,12 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/compositepropertyobserver.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QLineEdit>
-#include <QToolButton>
-#include <warn/pop>
-
 namespace inviwo {
 
 class BoolCompositeProperty;
 
 class IVW_MODULE_QTWIDGETS_API BoolCompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
                                                         public CompositePropertyObserver {
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
-
 public:
     BoolCompositePropertyWidgetQt(BoolCompositeProperty* property);
     virtual void updateFromProperty() override;
@@ -63,9 +52,6 @@ public:
     virtual void onSetCollapsed(bool value) override;
 
     virtual void initState() override; 
-
-protected slots:
-    virtual void labelDidChange() override;
 
 protected:
     // override from CollapsibleGroupBoxWidgetQt

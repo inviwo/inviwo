@@ -36,8 +36,12 @@
 // so we need not to check the version (because we only support _MSC_VER >= 1100)!
 #pragma once
 
+#if !defined(NOMINMAX)
 #define NOMINMAX
+#endif
+#if !defined(WIN32_LEAN_AND_MEAN)
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 
 // special defines for VC5/6 (if no actual PSDK is installed):
@@ -143,7 +147,7 @@ public:
 // in older compilers in order to use it... starting with VC7 we can declare it as "protected"
 protected:
 #endif
-	enum { STACKWALK_MAX_NAMELEN = 1024 }; // max name length for found symbols
+    enum { STACKWALK_MAX_NAMELEN = 1024 }; // max name length for found symbols
 
 protected:
   // Entry for each Callstack-Entry

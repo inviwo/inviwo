@@ -182,7 +182,7 @@ public:
     GLSLPreProcessorFormater(const QTextCharFormat& format) : format_(format) {
     }
 
-    virtual Result eval(const QString& text, const int& previousBlockState) override {
+    virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
         Result res;
         res.format = &format_;
 
@@ -200,7 +200,7 @@ private:
 
 class GLSLKeywordFormater : public SyntaxFormater {
 public:
-    virtual Result eval(const QString& text, const int& previousBlockState) override {
+    virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
         Result result;
         result.format = &format_;
         std::vector<QRegExp>::iterator reg;

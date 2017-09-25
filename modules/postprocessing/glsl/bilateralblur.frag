@@ -69,8 +69,8 @@ layout(location=0,index=0) out vec4 out_Color;
 
 vec4 BlurFunction(vec2 uv, float r, vec4 center_c, float center_d, inout float w_total)
 {
-  vec4  c = texture2D( texSource, uv );
-  float d = texture2D( texLinearDepth, uv).x;
+  vec4  c = texture( texSource, uv );
+  float d = texture( texLinearDepth, uv).x;
   
   const float BlurSigma = float(KERNEL_RADIUS) * 0.5;
   const float BlurFalloff = 1.0 / (2.0*BlurSigma*BlurSigma);
@@ -84,8 +84,8 @@ vec4 BlurFunction(vec2 uv, float r, vec4 center_c, float center_d, inout float w
 
 void main()
 {
-  vec4  center_c = texture2D( texSource, texCoord );
-  float center_d = texture2D( texLinearDepth, texCoord).x;
+  vec4  center_c = texture( texSource, texCoord );
+  float center_d = texture( texLinearDepth, texCoord).x;
   
   vec4  c_total = center_c;
   float w_total = 1.0;

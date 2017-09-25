@@ -36,8 +36,9 @@ namespace inviwo {
 CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 
 LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-                     std::shared_ptr<Texture2D> data, const SwizzleMask &swizzleMask)
-    : LayerRepresentation(dimensions, type, format)
+                     std::shared_ptr<Texture2D> data, const SwizzleMask& swizzleMask)
+    : LayerCLBase()
+    , LayerRepresentation(dimensions, type, format)
     , texture_(data)
     , swizzleMask_(swizzleMask) {
     if (data) {
@@ -58,7 +59,10 @@ LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* f
 }
 
 LayerCLGL::LayerCLGL(const LayerCLGL& rhs)
-    : LayerRepresentation(rhs), texture_(rhs.texture_->clone()), swizzleMask_(rhs.swizzleMask_) {
+    : LayerCLBase(rhs)
+    , LayerRepresentation(rhs)
+    , texture_(rhs.texture_->clone())
+    , swizzleMask_(rhs.swizzleMask_) {
     initialize(texture_.get());
 }
 
@@ -161,7 +165,7 @@ void LayerCLGL::notifyAfterTextureInitialization() {
 
 std::type_index LayerCLGL::getTypeIndex() const { return std::type_index(typeid(LayerCLGL)); }
 
-dvec4 LayerCLGL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
+dvec4 LayerCLGL::readPixel(size2_t pos, LayerType /*layer*/, size_t /*index*/) const {
     std::array<char, DataFormat<dvec4>::typesize> buffer;
     auto ptr = static_cast<void *>(buffer.data());
 

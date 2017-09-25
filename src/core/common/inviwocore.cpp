@@ -89,6 +89,7 @@
 #include <inviwo/core/properties/advancedmaterialproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
+#include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 
 
@@ -168,8 +169,6 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     
     // Register Capabilities
     auto syscap = util::make_unique<SystemCapabilities>();
-    syscap->retrieveStaticInfo();
-    syscap->printInfo();
     registerCapabilities(std::move(syscap));
     
     // Register Data readers
@@ -255,6 +254,7 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<DoubleVec2Property>();
     registerProperty<DoubleVec3Property>();
     registerProperty<DoubleVec4Property>();
+    registerProperty<DoubleMinMaxProperty>();
     registerProperty<FileProperty>();
     registerProperty<FilePatternProperty>();
     registerProperty<MultiFileProperty>();
@@ -267,6 +267,8 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<FloatVec3Property>();
     registerProperty<FloatVec4Property>();
     registerProperty<ImageEditorProperty>();
+    registerProperty<IntSizeTMinMaxProperty>();
+    registerProperty<Int64MinMaxProperty>();
     registerProperty<IntMinMaxProperty>();
     registerProperty<IntProperty>();
     registerProperty<IntVec2Property>();
@@ -284,6 +286,7 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<PositionProperty>();
     registerProperty<SimpleLightingProperty>();
     registerProperty<SimpleRaycastingProperty>();
+    registerProperty<StipplingProperty>();
     registerProperty<StringProperty>();
     registerProperty<TransferFunctionProperty>();
     registerProperty<VolumeIndicatorProperty>();

@@ -13,7 +13,7 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 #target_include_directories(moduleA ...) # Transitively forwarded
 #install(TARGETS moduleA ...)
 
-#  HACK: have the files showing in the IDE, under the name 'flags'
+#  HACK: have the files showing in the IDE, under the name 'tinydir'
 add_custom_target(tinydir SOURCES ${HEADER_FILES})
 
 # Creates VS folder structure

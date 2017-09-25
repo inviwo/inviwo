@@ -9,7 +9,7 @@ set(HEADER_FILES
     ${IVW_EXTENSIONS_DIR}/warn/push
 )
 set(TEXT_FILES 
-    ${IVW_EXTENSIONS_DIR}/warn/warnings.txt
+    ${IVW_EXTENSIONS_DIR}/warn/warnings.md
 )
 
 ivw_group("Header Files" ${HEADER_FILES})

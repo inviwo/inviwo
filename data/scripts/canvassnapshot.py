@@ -1,5 +1,8 @@
 # Inviwo Python script 
-import inviwo 
+import inviwopy
 
-inviwo.snapshotCanvas(0,"snapshot.png") 
-#this will take a snapshot of the first canvas, or fail with an error if there is no canvas in the current workspace 
+inviwopy.app.network.Canvas.snapshot("snapshot.png") 
+
+# this will take a snapshot of the with identifier Canvas,
+# or fail with an error if there is no canvas with that
+# identifier in the current workspace 

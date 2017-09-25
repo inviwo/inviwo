@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API LogErrorCounter : public Singleton<LogErrorCounter>, public Logger {
+class IVW_CORE_API LogErrorCounter : public Logger {
 public:
     LogErrorCounter();
     virtual ~LogErrorCounter();
@@ -47,10 +47,11 @@ public:
                      std::string logMsg) override;
 
     size_t getCount(const LogLevel& level) const;
-
     size_t getInfoCount() const;
     size_t getWarnCount() const;
     size_t getErrorCount() const;
+
+    void reset();
 
 private:
     std::map<LogLevel, size_t> messageCount_;

@@ -63,12 +63,12 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
     auto makeReadable = [](const std::string &str) {
         std::string dst(str);
         auto it = dst.begin();
-        *it = std::toupper(*it);
+        *it = static_cast<char>(std::toupper(*it));
         while (it != dst.end()) {
             if ((*it == '-') || (*it == ' ')) {
                 *it = ' ';
                 if ((it + 1) != dst.end()) {
-                    *(it + 1) = std::toupper(*(it + 1));
+                    *(it + 1) = static_cast<char>(std::toupper(*(it + 1)));
                 }
             }
             ++it;

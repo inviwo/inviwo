@@ -67,6 +67,7 @@ public:
 
 protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void postProcess() override;
 
     virtual void initializeResources() override;
 
@@ -75,6 +76,7 @@ private:
 
     BoolCompositeProperty useGaussianWeights_;
     FloatProperty sigma_;
+    BoolProperty updateDataRange_;
 };
 
 }  // namespace

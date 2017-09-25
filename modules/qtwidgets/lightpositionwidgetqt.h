@@ -34,16 +34,14 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLabel>
-#include <QRadialGradient>
-#include <QPixmap>
-#include <QPainter>
-#include <QBrush>
-#include <QMouseEvent>
-#include <QPoint>
-#include <QtCore/qmath.h>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
+
+class QMouseEvent;
+class QPixmap;
+class QRadialGradient;
+class QPainter;
 
 namespace inviwo {
 
@@ -52,8 +50,6 @@ class IVW_MODULE_QTWIDGETS_API LightPositionWidgetQt : public QLabel {
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
-
 public:
     LightPositionWidgetQt();
     void setPosition(const vec3& positionVector);
@@ -77,7 +73,6 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent* e);
 
 private:
-    void generateWidget();
     void setNewPosition(QMouseEvent* event);
 
     QPixmap* gradientPixmap_;

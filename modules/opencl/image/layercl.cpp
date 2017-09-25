@@ -36,14 +36,18 @@ namespace inviwo {
 
 LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* format,
                  const SwizzleMask& swizzleMask, const void* data)
-    : LayerRepresentation(dimensions, type, format)
+    : LayerCLBase()
+    , LayerRepresentation(dimensions, type, format)
     , layerFormat_(dataFormatToCLImageFormat(format->getId()))
     , swizzleMask_(swizzleMask) {
     initialize(data);
 }
 
 LayerCL::LayerCL(const LayerCL& rhs)
-    : LayerRepresentation(rhs), layerFormat_(rhs.layerFormat_), swizzleMask_(rhs.swizzleMask_) {
+    : LayerCLBase(rhs)
+    , LayerRepresentation(rhs)
+    , layerFormat_(rhs.layerFormat_)
+    , swizzleMask_(rhs.swizzleMask_) {
     initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::size3_t(0),
                                                   glm::size3_t(0), glm::size3_t(dimensions_, 1));
@@ -107,7 +111,7 @@ bool LayerCL::copyRepresentationsTo(LayerRepresentation* target) const {
 
 std::type_index LayerCL::getTypeIndex() const { return std::type_index(typeid(LayerCL)); }
 
-dvec4 LayerCL::readPixel(size2_t pos, LayerType layer, size_t index /*= 0*/) const {
+dvec4 LayerCL::readPixel(size2_t pos, LayerType /*layer*/, size_t /*index = 0*/) const {
     std::array<char, DataFormat<dvec4>::typesize> buffer;
     auto ptr = static_cast<void *>(buffer.data());
 

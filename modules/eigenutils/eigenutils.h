@@ -36,16 +36,19 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <warn/pop>
 
 namespace inviwo {
 
 namespace util {
 
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-auto glm2eigen(T& elem) -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> {
-    Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value> a;
+auto glm2eigen(const T& elem) -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> {
+    Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> a;
     for (size_t i = 0; i < util::extent<T, 0>::value; i++) {
         a(i) = elem[i];
     }
@@ -53,12 +56,12 @@ auto glm2eigen(T& elem) -> Eigen::Matrix<typename T::value_type, util::extent<T,
 }
 
 template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
-auto glm2eigen(T& elem)
+auto glm2eigen(const T& elem)
     -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, util::extent<T, 1>::value> {
     Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, util::extent<T, 1>::value> a;
-    for (size_t i = 0; i < util::extent<T, 0>::value; i++) {
-        for (size_t j = 0; j < util::extent<T, 1>::value; j++) {
-            a(i, j) = elem[i][j];
+    for (size_t row = 0; row < util::extent<T, 0>::value; row++) {
+        for (size_t col = 0; col < util::extent<T, 1>::value; col++) {
+            a(row, col) = elem[col][row];
         }
     }
     return a;
@@ -70,9 +73,9 @@ template <
 auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     using GlmMatrix = typename util::glmtype<T, Cols, Rows>::type;
     GlmMatrix outm;
-    for (size_t i = 0; i < Rows; i++) {
-        for (size_t j = 0; j < Cols; j++) {
-            outm[i][j] = m(j, i);
+    for (size_t row = 0; row < Rows; row++) {
+        for (size_t col = 0; col < Cols; col++) {
+            outm[col][row] = m(row, col);
         }
     }
     return outm;
@@ -83,8 +86,8 @@ template <typename T, unsigned Rows, unsigned Cols,
 auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     using GlmVector = typename util::glmtype<T, Rows, 1>::type;
     GlmVector outv;
-    for (size_t i = 0; i < Rows; i++) {
-        outv[i] = m(i);
+    for (size_t row = 0; row < Rows; row++) {
+        outv[row] = m(row);
     }
     return outv;
 }
@@ -94,39 +97,41 @@ template <typename T, unsigned Rows, unsigned Cols,
 auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
     using GlmVector = typename util::glmtype<T, Cols, 1>::type;
     GlmVector outv;
-    for (size_t i = 0; i < Cols; i++) {
-        outv[i] = m(i);
+    for (size_t row = 0; row < Cols; row++) {
+        outv[row] = m(row);
     }
     return outv;
 }
 
 template <typename T>
-std::shared_ptr<Image> eigenMatToImage(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m,
-                                       bool flippY = false, std::string name = "") {
-    auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<T>::get());
+std::shared_ptr<Image> eigenMatToImage(const T& m,
+                                       bool flipY = false, std::string name = "") {
+    using Type = typename T::value_type;
+    
+    auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<Type>::get());
 
-    auto rep = dynamic_cast<LayerRAMPrecision<T>*>(
-        img->getColorLayer(0)->getEditableRepresentation<LayerRAM>());
+    auto rep = dynamic_cast<LayerRAMPrecision<Type>*>(
+        img->getColorLayer(0)->template getEditableRepresentation<LayerRAM>());
     auto data = rep->getDataTyped();
 
     size_t idx = 0;
 
-    if (flippY) {
-        for (int i = m.rows() - 1; i >= 0; i--) {
-            for (int j = 0; j < m.cols(); j++) {
-                data[idx++] = m(i, j);
+    if (flipY) {
+        for (auto i = m.rows() - 1; i >= 0; i--) {
+            for (auto j = 0; j < m.cols(); j++) {
+                data[idx++] = m.coeff(i, j);
             }
         }
     } else {
-        for (int i = 0; i < m.rows(); i++) {
-            for (int j = 0; j < m.cols(); j++) {
-                data[idx++] = m(i, j);
+        for (auto i = 0; i < m.rows(); i++) {
+            for (auto j = 0; j < m.cols(); j++) {
+                data[idx++] = m.coeff(i, j);
             }
         }
     }
 
     if (name != "") {
-        img->setMetaData<StringMetaData>("name", name);
+        img->template setMetaData<StringMetaData>("name", name);
     }
 
     img->getColorLayer(0)->setSwizzleMask(swizzlemasks::luminance);

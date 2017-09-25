@@ -86,9 +86,10 @@ public:
     ButtonProperty abufferReSize_;
     BoolProperty abufferWriteABufferInfoToFile_;
     FloatVec4Property bgColor_;
+    BoolProperty verboseLogging_;
     size_t sharedPoolSize_;
 
-	int getSquaredPageSize() { return abufferPageSize_*abufferPageSize_; }
+    int getSquaredPageSize() { return abufferPageSize_*abufferPageSize_; }
 };
 
 class IVW_MODULE_ABUFFERGL_API Inviwo_ABufferGL4 {
@@ -103,7 +104,7 @@ public:
 
         virtual std::string getClassIdentifier() const override; 
 
-        void invokeEvent(Event* event);
+        void invokeEvent(Event* event) override;
 
     private:
         Inviwo_ABufferGL4* parent_;
@@ -119,8 +120,8 @@ public:
     void abuffer_addUniforms(Shader* shader);
     void abuffer_addShaderDefinesAndBuild(Shader* shader);
     void aBuffer_unbind();
-    void aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage=nullptr);
-    void aBuffer_resetLinkList(ImageGL* imageGL);
+    void aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage=nullptr, ImageType layerType=ImageType::ColorDepth);
+    void aBuffer_resetLinkList(ImageGL* imageGL, bool forceReset=false, ImageType layerType = ImageType::ColorDepth);
     glm::uint abuffer_fetchCurrentAtomicCounterValue();
     void abuffer_printDebugInfo(glm::ivec2 pos);
     void abuffer_textureInfo();
@@ -128,7 +129,13 @@ public:
     Shader resolveABufferShader_;
     Shader resetABufferShader_;
 
+    void setLogStatus(bool enable) { verboseLogging_ = enable; }
+    bool getLogStatus() const { return verboseLogging_; }
+
 protected:
+    // Global init function
+    void init(void);
+
     void aBuffer_incrementSharedPoolSize();
     bool aBuffer_isMemoryReallocationRequired(ivec2 currentPortDim);
     bool abuffer_isMemoryPoolExpansionRequired();
@@ -153,9 +160,7 @@ protected:
     std::vector<TextureUnit*> texUnits_;
 
     ivec2 dim_;
-
-    // Global init function
-    void init(void);
+    bool verboseLogging_;
 };
 
 }  // namespace

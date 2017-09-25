@@ -94,9 +94,9 @@ private:
     OptionPropertyInt channel_;
     
     SimpleRaycastingProperty raycasting_;
+    CameraProperty camera_;
     SimpleLightingProperty lighting_;
 
-    CameraProperty camera_;
 private:
 };
 

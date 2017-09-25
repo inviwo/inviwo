@@ -100,12 +100,8 @@ private:
     // ScopedClockCPU() {};
     Clock clock_;
 
-// We can safely ingnore the C4251 warning for private members.
-#pragma warning( push )
-#pragma warning( disable: 4251 )
     std::string logSource_;
     std::string logMessage_;
-#pragma warning( pop )
 
     float logIfAtLeastMilliSec_;
 };
@@ -154,6 +150,6 @@ private:
 #define IVW_CPU_PROFILING_IF_CUSTOM(time, src, message)
 #endif
 
-};  // namespace inviwo
+}  // namespace inviwo
 
 #endif  // IVW_TIMER_H

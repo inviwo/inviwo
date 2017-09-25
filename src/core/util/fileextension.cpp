@@ -34,15 +34,11 @@
 
 namespace inviwo {
 
-FileExtension::FileExtension()
-    : extension_()
-    , description_() {};
+FileExtension::FileExtension() : extension_(), description_() {}
 
 FileExtension::FileExtension(std::string extension, std::string description)
-    : extension_(toLower(extension)) // Make sure that the extension is given in lower case 
-    , description_(description) {
-    
-};
+    : extension_(toLower(extension))  // Make sure that the extension is given in lower case
+    , description_(description) {}
 
 FileExtension FileExtension::createFileExtensionFromString(const std::string &str) {
     // try to split extension string

@@ -56,8 +56,7 @@ ProcessorPortGraphicsItem::ProcessorPortGraphicsItem(ProcessorGraphicsItem* pare
     , processor_(parent)
     , port_(port)
     , size_(9.0f)
-    , lineWidth_(1.0f)
-    , up_(up) {
+    , lineWidth_(1.0f) {
     
     setRect(-(0.5f * size_ + lineWidth_), -(0.5f * size_ + lineWidth_), size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
@@ -70,8 +69,7 @@ ProcessorPortGraphicsItem::ProcessorPortGraphicsItem(ProcessorGraphicsItem* pare
     connectionIndicator_->setVisible(false);
 }
 
-void ProcessorPortGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                      QWidget* widget) {
+void ProcessorPortGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setRenderHint(QPainter::SmoothPixmapTransform, true);
@@ -195,9 +193,8 @@ ProcessorPortConnectionIndicator::ProcessorPortConnectionIndicator(
     setPos(0.0f,0.0f);
 }
 
-
-void ProcessorPortConnectionIndicator::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                             QWidget* widget) {
+void ProcessorPortConnectionIndicator::paint(QPainter* p, const QStyleOptionGraphicsItem*,
+                                             QWidget*) {
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
 

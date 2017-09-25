@@ -33,14 +33,18 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/propertyobserver.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QLabel>
-#include <QLineEdit>
-#include <QHBoxLayout>
-#include <QMouseEvent>
-#include <QMenu>
+#include <QWidget>
 #include <warn/pop>
+
+class QLineEdit;
+class QLabel;
+class QMenu;
+class QMouseEvent;
+class QResizeEvent;
+class QAction;
 
 namespace inviwo {
 
@@ -52,40 +56,37 @@ class IVW_MODULE_QTWIDGETS_API EditableLabelQt : public QWidget, public Property
 public:
     EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText = true);
     EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText = true);
-    std::string getText() { return text_; };
-    void setText(std::string txt);
-    void setContextMenu(QMenu* menu) { contextMenu_ = menu; };
+    std::string getText();
+    void setText(const std::string& txt);
     void setShortenText(bool shorten);
 
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;
 
-public slots:
     void edit();
-    void finishEditing();
-    void showContextMenu(const QPoint& pos);
 
 protected:
+    virtual bool event(QEvent* event) override;
     virtual void resizeEvent(QResizeEvent*) override;
 
 private:
-    void updateText();
-    void generateWidget();
+    void updateLabel(const std::string& text);
     void mouseDoubleClickEvent(QMouseEvent* e) override;
     virtual void onSetDisplayName(const std::string& displayName) override;
-    QString shortenText();
+    QString shortenText(const std::string& text);
+
+    QLineEdit* getLineEdit();
 
     QLabel* label_;
     QLineEdit* lineEdit_;
     std::string text_;
     Property* property_;
     PropertyWidgetQt* propertyWidget_;
-    QMenu* contextMenu_;
-    QAction* renameAction_;
     bool shortenText_;
 
 signals:
     void textChanged();
+
 };
 }  // namespace
 

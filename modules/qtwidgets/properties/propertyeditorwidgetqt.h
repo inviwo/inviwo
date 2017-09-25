@@ -47,10 +47,6 @@ namespace inviwo {
 // PropertyEditorWidget owned by PropertyWidget
 class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
                                                         public PropertyEditorWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     PropertyEditorWidgetQt(Property *property, std::string widgetName, QWidget *parent);
     virtual ~PropertyEditorWidgetQt();
@@ -60,6 +56,8 @@ public:
     virtual void setPosition(const ivec2& pos) override;
     virtual void setDockStatus(PropertyEditorWidgetDockStatus dockStatus) override;
     virtual void setSticky(bool sticky) override;
+
+    virtual bool isVisible() const override;
 
 protected:
     virtual void resizeEvent(QResizeEvent *event) override;

@@ -2,7 +2,7 @@
 # Inviwo OpenGLQt Module
 ivw_module(OpenGLQt)
 
-find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5OpenGL QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -42,25 +42,16 @@ set(SOURCE_FILES
 #    list(APPEND SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/canvasqopenglwidget.cpp)
 #endif()
 
-
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 ivw_group("Header Files" ${HEADER_FILES})
 ivw_group("Source Files" ${SOURCE_FILES})
 
 ivw_define_qt_definitions()
-ivw_add_definition(QT_OPENGL_LIB)
 
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+target_link_libraries(inviwo-module-openglqt PRIVATE Qt5::OpenGL)
+ivw_make_package(InviwoOpenGLQtModule inviwo-module-openglqt)
+ivw_qt_add_to_install(qt_modules Qt5OpenGL)
 
-# Add Qt OpenGL to package
-if(IVW_PACKAGE_PROJECT)
-    if(WIN32)
-        if(Qt5OpenGL_FOUND)
-            set(QT_BINARY_DIR "${Qt5OpenGL_DIR}/../../../bin")
-            install(FILES ${QT_BINARY_DIR}/Qt5OpenGL${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
-            install(FILES ${QT_BINARY_DIR}/Qt5OpenGL.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
-        endif()
-    endif()
-endif()

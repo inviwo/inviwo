@@ -40,7 +40,6 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <inviwo/core/interaction/interactionstatemanager.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
@@ -75,6 +74,7 @@ class PropertyWidgetFactory;
 class OutportFactory;
 class InportFactory;
 class PortInspectorFactory;
+class PortInspectorManager;
 
 class Settings;
 class InviwoModule;
@@ -84,6 +84,11 @@ class FileObserver;
 class InviwoModuleLibraryObserver; // Observer for module dll/so files
 class SharedLibrary;
 class PropertyPresetManager;
+
+class FileLogger;
+class ConsoleLogger;
+
+class TimerThread;
 
 
 /**
@@ -148,8 +153,6 @@ public:
 
     const std::string& getDisplayName() const;
 
-    const std::string& getBinaryPath() const;
-
     /**
      * Get basePath + pathType + suffix.
      * @see PathType
@@ -172,6 +175,7 @@ public:
     ProcessorNetworkEvaluator* getProcessorNetworkEvaluator();
     WorkspaceManager* getWorkspaceManager();
     PropertyPresetManager* getPropertyPresetManager();
+    PortInspectorManager* getPortInspectorManager();
 
     template <class T>
     T* getSettingsByType();
@@ -229,7 +233,7 @@ public:
     enum class Message { Ok, Error };
     virtual void playSound(Message soundID);
 
-    InteractionStateManager& getInteractionStateManager();
+    TimerThread& getTimerThread();
 
     std::vector<std::string> findDependentModules(std::string module) const;
 
@@ -272,8 +276,8 @@ protected:
     };
 
     std::string displayName_;
-    std::string binaryPath_;
     std::shared_ptr<FileLogger> filelogger_;
+    std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::function<void(std::string)> progressCallback_;
     Dispatcher<void()> onModulesDidRegister_; ///< Called after modules have been registered
     Dispatcher<void()> onModulesWillUnregister_; ///< Called before modules have been unregistered
@@ -281,8 +285,6 @@ protected:
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
-
-    InteractionStateManager interactionState_;
 
     util::OnScopeExit clearAllSingeltons_;
 
@@ -316,6 +318,7 @@ protected:
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
     std::unique_ptr<WorkspaceManager> workspaceManager_;
     std::unique_ptr<PropertyPresetManager> propertyPresetManager_;
+    std::unique_ptr<PortInspectorManager> portInspectorManager_;
 
     WorkspaceManager::ClearHandle networkClearHandle_;
     WorkspaceManager::SerializationHandle networkSerializationHandle_;
@@ -324,7 +327,7 @@ protected:
     WorkspaceManager::ClearHandle presetsClearHandle_;
     WorkspaceManager::SerializationHandle presetsSerializationHandle_;
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
-
+    std::unique_ptr<TimerThread> timerThread_;
 };
 
 template <class T>
@@ -436,8 +439,10 @@ inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() co
     return processorWidgetFactory_.get();
 }
 
+namespace util{
+    IVW_CORE_API InviwoApplication* getInviwoApplication();
+} // namespace util
 
-
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INVIWOAPPLICATION_H

@@ -34,6 +34,7 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 
@@ -52,31 +53,69 @@ VolumeLowPass::VolumeLowPass()
     : VolumeGLProcessor("volume_lowpass.frag")
     , kernelSize_("kernelSize", "Kernel size", 3, 2, 27)
     , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights")
-    , sigma_("sigma", "Sigma", 1.f, 0.001f, 2.f, 0.001f) {
+    , sigma_("sigma", "Sigma", 1.f, 0.001f, 2.f, 0.001f) 
+    , updateDataRange_("updateDataRange","Update Data Range",false)
+{
     addProperty(kernelSize_);
     addProperty(useGaussianWeights_);
+    addProperty(updateDataRange_);
     useGaussianWeights_.addProperty(sigma_);
     useGaussianWeights_.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
+
+    sigma_.onChange([&]() {
+        int kernelSize90 = static_cast<int>(sigma_.get() * 2 * 1.645f);
+        int kernelSize95 = static_cast<int>(sigma_.get() * 2 * 1.960f);
+        int kernelSize99 = static_cast<int>(sigma_.get() * 2 * 2.576f);
+        // https://de.wikipedia.org/wiki/Normalverteilung
+        LogInfo("Optimizal kernelSize for sigma " << sigma_.get() << " is: "
+                                                  << "\n\t90%: " << kernelSize90
+                                                  << "\n\t95%: " << kernelSize95 
+                                                  << "\n\t99%: " << kernelSize99);
+    });
+
+
 
     setAllPropertiesCurrentStateAsDefault();
 }
 
 VolumeLowPass::~VolumeLowPass() {}
 
-void VolumeLowPass::preProcess(TextureUnitContainer &cont) {
+void VolumeLowPass::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, kernelSize_); 
-    shader_.setUniform("inv2Sigma", 1.0f / (sigma_.get() * 2.0f));
+    
+    float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();
+    float a = static_cast<float>(1.0 / (sigmaSq2 * M_PI));
+
+    shader_.setUniform("sigmaSq2", sigmaSq2);
+    shader_.setUniform("a", a);
+}
+
+void VolumeLowPass::postProcess() {
+    if (updateDataRange_.get()) {
+        auto minmax = util::volumeMinMax(volume_.get() , IgnoreSpecialValues::Yes);
+        auto min = minmax.first.x;
+        auto max = minmax.second.x;
+        for (size_t i = 1; i < volume_->getDataFormat()->getComponents(); i++) {
+            min = std::min(min, minmax.first[i]);
+            max = std::max(max, minmax.second[i]);
+        }
+        volume_->dataMap_.valueRange = volume_->dataMap_.dataRange = dvec2(min, max);
+
+    }
+    else {
+        volume_->dataMap_ = inport_.getData()->dataMap_;
+    }
+    
 }
 
 void VolumeLowPass::initializeResources() {
-    VolumeGLProcessor::initializeResources();
-
     if (useGaussianWeights_.isChecked()) {
         shader_.getFragmentShaderObject()->addShaderDefine("GAUSSIAN");
     } else {
         shader_.getFragmentShaderObject()->removeShaderDefine("GAUSSIAN");
     }
 
+    VolumeGLProcessor::initializeResources();
     shader_.build();
 }
 

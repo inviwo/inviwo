@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/inport.h>
@@ -79,25 +79,24 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , statusItem_(nullptr)
     , linkItem_(nullptr)
     , highlight_(false)
-    #if IVW_PROFILING
+#if IVW_PROFILING
     , processCount_(0)
     , countLabel_(nullptr)
     , maxEvalTime_(0.0)
     , evalTime_(0.0)
     , totEvalTime_(0.0)
-    #endif
+#endif
 {
     static constexpr int labelHeight_ = 8;
     static constexpr int labelMargin_ = 8;
-    
 
     setZValue(PROCESSORGRAPHICSITEM_DEPTH);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setRect(-size_.width() / 2, -size_.height() / 2, size_.width(), size_.height());
 
     {
-        nameLabel_ =
-            new LabelGraphicsItem(this, size_.width() - 2 * labelHeight_ - 10, Qt::AlignBottom);
+        nameLabel_ = new LabelGraphicsItem(
+            this, static_cast<int>(size_.width() - 2 * labelHeight_ - 10), Qt::AlignBottom);
         nameLabel_->setPos(QPointF(rect().left() + labelMargin_, -3));
         nameLabel_->setDefaultTextColor(Qt::white);
         QFont nameFont("Segoe", labelHeight_, QFont::Black, false);
@@ -107,33 +106,34 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         LabelGraphicsItemObserver::addObservation(nameLabel_);
     }
     {
-        classLabel_ = new LabelGraphicsItem(this, size_.width() - 2 * labelHeight_, Qt::AlignTop);
+        classLabel_ = new LabelGraphicsItem(
+            this, static_cast<int>(size_.width() - 2 * labelHeight_), Qt::AlignTop);
         classLabel_->setPos(QPointF(rect().left() + labelMargin_, -3));
         classLabel_->setDefaultTextColor(Qt::lightGray);
         QFont classFont("Segoe", labelHeight_, QFont::Normal, true);
         classFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
         classLabel_->setFont(classFont);
-        classLabel_->setText(QString::fromStdString(processor_->getDisplayName() + " " +
-                                                    processor_->getTags().getString()));
+        classLabel_->setText(
+            QString::fromStdString(processor_->getDisplayName() + " " +
+                                   util::getPlatformTags(processor_->getTags()).getString()));
     }
     processor_->ProcessorObservable::addObserver(this);
 
     processorMeta_ = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
     processorMeta_->addObserver(this);
 
-    
     linkItem_ = new ProcessorLinkGraphicsItem(this);
-    
+
     for (auto& inport : processor_->getInports()) {
         addInport(inport);
     }
     for (auto& outport : processor_->getOutports()) {
         addOutport(outport);
     }
-    
+
     statusItem_ = new ProcessorStatusGraphicsItem(this, processor_);
     statusItem_->setPos(rect().topRight() + QPointF(-9.0f, 9.0f));
-    
+
     if (auto progressBarOwner = dynamic_cast<ProgressBarOwner*>(processor_)) {
         progressItem_ =
             new ProcessorProgressGraphicsItem(this, &(progressBarOwner->getProgressBar()));
@@ -141,22 +141,22 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
 
         progressBarOwner->getProgressBar().ActivityIndicator::addObserver(statusItem_);
     }
-        
-    if (auto activityInd = dynamic_cast<ActivityIndicatorOwner*>(processor_)){
+
+    if (auto activityInd = dynamic_cast<ActivityIndicatorOwner*>(processor_)) {
         activityInd->getActivityIndicator().addObserver(statusItem_);
     }
-    
-    #if IVW_PROFILING
+
+#if IVW_PROFILING
     {
         countLabel_ = new LabelGraphicsItem(this, 100, Qt::AlignRight | Qt::AlignBottom);
         countLabel_->setPos(rect().bottomRight() + QPointF(-5.0, 0.0));
         countLabel_->setDefaultTextColor(Qt::lightGray);
-        QFont font("Segoe", labelHeight_, QFont::Normal, true);
+        QFont font("Segoe", labelHeight_, QFont::Normal, false);
         font.setPixelSize(pointSizeToPixelSize(labelHeight_));
         countLabel_->setFont(font);
     }
-    #endif
-    
+#endif
+
     setVisible(processorMeta_->isVisible());
     setSelected(processorMeta_->isSelected());
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
@@ -235,9 +235,7 @@ ProcessorOutportGraphicsItem* ProcessorGraphicsItem::getOutportGraphicsItem(Outp
 
 ProcessorGraphicsItem::~ProcessorGraphicsItem() = default;
 
-inviwo::Processor* ProcessorGraphicsItem::getProcessor() const {
-    return processor_;
-}
+inviwo::Processor* ProcessorGraphicsItem::getProcessor() const { return processor_; }
 
 void ProcessorGraphicsItem::editProcessorName() {
     setFocus();
@@ -256,17 +254,17 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
     IVW_UNUSED_PARAM(options);
     IVW_UNUSED_PARAM(widget);
     const float roundedCorners = 9.0f;
-    
+
     p->save();
     p->setPen(Qt::NoPen);
     p->setRenderHint(QPainter::Antialiasing, true);
     QColor topColor(140, 140, 140);
     QColor middleColor(59, 61, 61);
     QColor bottomColor(40, 40, 40);
-    
+
     p->setBrush(middleColor);
     p->setPen(QPen(QBrush(isSelected() ? Qt::darkRed : bottomColor), 2.0));
-    
+
     p->drawRoundedRect(rect(), roundedCorners, roundedCorners);
 
     p->restore();
@@ -365,7 +363,7 @@ ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { 
 
 void ProcessorGraphicsItem::onProcessorIdentifierChange(Processor* processor) {
     std::string newIdentifier = processor->getIdentifier();
-    
+
     if (newIdentifier != nameLabel_->text().toUtf8().constData()) {
         nameLabel_->setText(QString::fromStdString(newIdentifier));
     }
@@ -376,18 +374,22 @@ void ProcessorGraphicsItem::onProcessorIdentifierChange(Processor* processor) {
     if (processorWidgetQt) processorWidgetQt->setWindowTitle(QString::fromStdString(newIdentifier));
 }
 
-void ProcessorGraphicsItem::onProcessorPortAdded(Processor *, Port *port){
-    Inport *inport = dynamic_cast<Inport*>(port);
-    Outport *outport = dynamic_cast<Outport*>(port);
-    if(inport) addInport(inport);
-    else if(outport) addOutport(outport);
+void ProcessorGraphicsItem::onProcessorPortAdded(Processor*, Port* port) {
+    Inport* inport = dynamic_cast<Inport*>(port);
+    Outport* outport = dynamic_cast<Outport*>(port);
+    if (inport)
+        addInport(inport);
+    else if (outport)
+        addOutport(outport);
 }
 
 void ProcessorGraphicsItem::onProcessorPortRemoved(Processor*, Port* port) {
-    Inport *inport = dynamic_cast<Inport*>(port);
-    Outport *outport = dynamic_cast<Outport*>(port);
-    if (inport) removeInport(inport);
-    else if (outport) removeOutport(outport);
+    Inport* inport = dynamic_cast<Inport*>(port);
+    Outport* outport = dynamic_cast<Outport*>(port);
+    if (inport)
+        removeInport(inport);
+    else if (outport)
+        removeOutport(outport);
 }
 
 #if IVW_PROFILING
@@ -396,13 +398,15 @@ void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     countLabel_->setText(QString::number(processCount_));
     clock_.start();
 }
+
 void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
     clock_.tick();
     evalTime_ = clock_.getElapsedMiliseconds();
     maxEvalTime_ = maxEvalTime_ < evalTime_ ? evalTime_ : maxEvalTime_;
     totEvalTime_ += evalTime_;
 }
-void ProcessorGraphicsItem::resetTimeMeasurements(){
+
+void ProcessorGraphicsItem::resetTimeMeasurements() {
     processCount_ = 0;
     countLabel_->setText("0");
     maxEvalTime_ = 0.0;
@@ -411,17 +415,15 @@ void ProcessorGraphicsItem::resetTimeMeasurements(){
 }
 #endif
 
-ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const {
-    return statusItem_;
-}
+ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const { return statusItem_; }
 
 void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
-    
+
     Document doc;
     auto b = doc.append("html").append("body");
-    b.append("b", processor_->getDisplayName(), { {"style", "color:white;"} });
+    b.append("b", processor_->getDisplayName(), {{"style", "color:white;"}});
     utildoc::TableBuilder tb(b, P::end());
 
     tb(H("Identifier"), processor_->getIdentifier());
@@ -431,11 +433,12 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Tags"), processor_->getTags().getString());
 
 #if IVW_PROFILING
-    tb(H("Ready"), processor_->isReady()?"Yes":"No");
+    tb(H("Ready"), processor_->isReady() ? "Yes" : "No");
     tb(H("Eval Count"), processCount_);
-    tb(H("Eval Time"), evalTime_);
-    tb(H("Mean Time"), totEvalTime_/ std::max(static_cast<double>(processCount_), 1.0));
-    tb(H("Max Time"), maxEvalTime_);
+    tb(H("Eval Time"), msToString(evalTime_, true, true));
+    tb(H("Mean Time"),
+       msToString(totEvalTime_ / std::max(static_cast<double>(processCount_), 1.0), true, true));
+    tb(H("Max Time"), msToString(maxEvalTime_, true, true));
 #endif
 
     showToolTipHelper(e, utilqt::toLocalQString(doc));
@@ -446,4 +449,4 @@ void ProcessorGraphicsItem::setHighlight(bool val) {
     setSelected(val);
 }
 
-}  // namespace
+}  // namespace inviwo

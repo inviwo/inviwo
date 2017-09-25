@@ -59,7 +59,11 @@ void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
 
     if (jobs == 0) {
         auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-        jobs = 4*settings->poolSize_.get();
+        jobs = 4 * settings->poolSize_.get();
+        if (jobs == 0) { // if poolsize is zero
+            forEachVoxel(v, callback);
+            return;
+        }
     }
 
     std::vector<std::future<void>> futures;
@@ -85,9 +89,8 @@ void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
     }
 }
 
-} // namespace
+}  // namespace
 
 }  // namespace
 
-#endif // IVW_VOLUMERAMUTILS_H
-
+#endif  // IVW_VOLUMERAMUTILS_H

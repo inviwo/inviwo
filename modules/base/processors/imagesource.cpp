@@ -51,8 +51,7 @@ ImageSource::ImageSource()
     , outport_("image", DataVec4UInt8::get(), false)
     , file_("imageFileName", "File name", "", "image")
     , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
-                      InvalidationLevel::Valid, PropertySemantics("Text"))
-    , isDeserializing_(false) {
+                      InvalidationLevel::Valid, PropertySemantics("Text")) {
 
     addPort(outport_);
 

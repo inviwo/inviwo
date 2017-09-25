@@ -267,6 +267,33 @@ utilgl::TexParameter::~TexParameter() {
     }
 }
 
+TexEnv& utilgl::TexEnv::operator=(TexEnv&& that) {
+    if (this != &that) {
+        target_ = 0;
+        std::swap(target_, that.target_);
+        name_ = that.name_;
+        oldValue_ = that.oldValue_;
+    }
+    return *this;
+}
+
+utilgl::TexEnv::TexEnv(TexEnv&& rhs)
+    : target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
+    rhs.target_ = 0;
+}
+
+utilgl::TexEnv::TexEnv(GLenum target, GLenum name, GLint value)
+    : target_(target), name_(name), oldValue_{} {
+    glGetTexEnviv(target_, name_, &oldValue_);
+    glTexEnvi(target_, name_, value);
+    TextureUnit::setZeroUnit();
+}
+
+utilgl::TexEnv::~TexEnv() {
+    if (target_ != 0) {
+        glTexEnvi(target_, name_, oldValue_);
+    }
+}
 
 utilgl::BlendModeState::BlendModeState(GLenum smode, GLenum dmode)
     : GlBoolState(GL_BLEND, smode != GL_NONE), smode_(smode), dmode_(dmode) {

@@ -49,7 +49,7 @@ public:
     virtual PVMVolumeReader* clone() const override;
     virtual ~PVMVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
     static std::shared_ptr<Volume> readPVMData(std::string filePath);
 
  protected:

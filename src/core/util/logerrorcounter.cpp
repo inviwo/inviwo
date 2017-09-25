@@ -24,20 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/logerrorcounter.h>
 
 namespace inviwo {
 
-LogErrorCounter::LogErrorCounter() {}
+LogErrorCounter::LogErrorCounter() = default;
+LogErrorCounter::~LogErrorCounter() = default;
 
-LogErrorCounter::~LogErrorCounter() {}
-
-void LogErrorCounter::log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                          const char* fileName, const char* functionName, int lineNumber,
-                          std::string logMsg) {
+void LogErrorCounter::log(std::string /*logSource*/, LogLevel logLevel, LogAudience /*audience*/,
+                          const char* /*fileName*/, const char* /*functionName*/, int /*lineNumber*/,
+                          std::string /*logMsg*/) {
     messageCount_[static_cast<LogLevel>(logLevel)]++;
 }
 
@@ -52,5 +51,11 @@ size_t LogErrorCounter::getInfoCount() const { return getCount(LogLevel::Info); 
 size_t LogErrorCounter::getWarnCount() const { return getCount(LogLevel::Warn); }
 
 size_t LogErrorCounter::getErrorCount() const { return getCount(LogLevel::Error); }
+
+void LogErrorCounter::reset() {
+    for (auto& item : messageCount_) {
+        item.second = 0;
+    }
+}
 
 }  // namespace

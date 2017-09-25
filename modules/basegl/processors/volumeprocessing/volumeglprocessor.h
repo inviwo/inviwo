@@ -54,7 +54,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor {
 public:
-    VolumeGLProcessor(const std::string &fragmentShader , bool buildShader = true);
+    VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader, bool buildShader = true);
+    VolumeGLProcessor(const std::string &fragmentShader, bool buildShader = true);
     virtual ~VolumeGLProcessor();
 
     virtual void process() override;
@@ -66,17 +67,17 @@ protected:
      * after the shader has been activated.
      * Overwrite this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess(TextureUnitContainer &cont) {}
+    virtual void preProcess(TextureUnitContainer &cont);
 
     /*! \brief this function gets called at the end of the process function
      * Overwrite this function in the derived class to perform post-processing
      */
-    virtual void postProcess() {}
+    virtual void postProcess();
 
     /*! \brief this function gets called whenever the inport changes
      * Overwrite this function in the derived class to be notified of inport onChange events
      */
-    virtual void afterInportChanged() {}
+    virtual void afterInportChanged();
 
     VolumeInport inport_;
     VolumeOutport outport_;

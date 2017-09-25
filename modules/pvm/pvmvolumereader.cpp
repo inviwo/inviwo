@@ -43,7 +43,7 @@ PVMVolumeReader::PVMVolumeReader() : DataReaderType<Volume>() {
 
 PVMVolumeReader* PVMVolumeReader::clone() const { return new PVMVolumeReader(*this); }
 
-std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string filePath) {
+std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string& filePath) {
     auto volume = readPVMData(filePath);
 
     if (!volume) return std::shared_ptr<Volume>();
@@ -79,11 +79,11 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
 
     // Reading MPVM volume
     unsigned char* data = nullptr;
-    unsigned int bytesPerVoxel;
-    unsigned char* description;
-    unsigned char* courtesy;
-    unsigned char* parameter;
-    unsigned char* comment;
+    unsigned int bytesPerVoxel = 0;
+    unsigned char* description = nullptr;
+    unsigned char* courtesy = nullptr;
+    unsigned char* parameter = nullptr;
+    unsigned char* comment = nullptr;
 
     try {
         uvec3 udim{0};

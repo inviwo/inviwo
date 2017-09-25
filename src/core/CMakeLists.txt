@@ -92,7 +92,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/wheelevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionstatemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontroller.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
@@ -109,6 +108,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datvolumewriter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumewriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
@@ -123,6 +123,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ticpp.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/tempfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkconditions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkevaluator.h
@@ -136,6 +137,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processormetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processorwidgetmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/propertyeditorwidgetmetadata.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/evaluationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networklock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/portconnection.h
@@ -145,6 +147,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/workspacemanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/workspaceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/datainport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/dataoutport.h
@@ -160,6 +163,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspector.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectorfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectorfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectormanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/volumeport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/activityindicator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessor.h
@@ -214,6 +218,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/stipplingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stringproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/templateproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
@@ -226,6 +231,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanagerobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/templateresource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/assertion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/buildinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/canvas.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
@@ -234,6 +240,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/commandlineparser.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/consolelogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/constexprhash.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialog.h
@@ -246,6 +253,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filedialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filedialogstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileextension.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/filelogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
@@ -264,6 +272,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/ostreamjoiner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/pathtype.h
@@ -293,6 +302,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/zip.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -356,7 +366,6 @@ set(SOURCE_FILES
     interaction/events/touchevent.cpp
     interaction/events/wheelevent.cpp
     interaction/interactionhandler.cpp
-    interaction/interactionstatemanager.cpp
     interaction/pickingaction.cpp
     interaction/pickingcontroller.cpp
     interaction/pickingmanager.cpp
@@ -371,6 +380,7 @@ set(SOURCE_FILES
     io/datawriterfactory.cpp
     io/datvolumereader.cpp
     io/datvolumewriter.cpp
+    io/imagewriterutil.cpp
     io/ivfvolumereader.cpp
     io/ivfvolumewriter.cpp
     io/rawvolumeramloader.cpp
@@ -382,6 +392,7 @@ set(SOURCE_FILES
     io/serialization/serializeconstants.cpp
     io/serialization/serializer.cpp
     io/serialization/versionconverter.cpp
+    io/tempfilehandle.cpp
     io/textfilereader.cpp
     links/linkconditions.cpp
     links/linkevaluator.cpp
@@ -393,6 +404,7 @@ set(SOURCE_FILES
     metadata/processormetadata.cpp
     metadata/processorwidgetmetadata.cpp
     metadata/propertyeditorwidgetmetadata.cpp
+    network/evaluationerrorhandler.cpp
     network/networklock.cpp
     network/networkutils.cpp
     network/portconnection.cpp
@@ -402,6 +414,7 @@ set(SOURCE_FILES
     network/processornetworkevaluator.cpp
     network/processornetworkobserver.cpp
     network/workspacemanager.cpp
+    network/workspaceutils.cpp
     ports/imageport.cpp
     ports/inport.cpp
     ports/outport.cpp
@@ -411,6 +424,7 @@ set(SOURCE_FILES
     ports/portinspector.cpp
     ports/portinspectorfactory.cpp
     ports/portinspectorfactoryobject.cpp
+    ports/portinspectormanager.cpp
     processors/activityindicator.cpp
     processors/canvasprocessor.cpp
     processors/processor.cpp
@@ -454,6 +468,7 @@ set(SOURCE_FILES
     properties/propertywidgetfactoryobject.cpp
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp
+    properties/stipplingproperty.cpp
     properties/stringproperty.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
@@ -466,12 +481,14 @@ set(SOURCE_FILES
     util/colorbrewer.cpp
     util/colorconversion.cpp
     util/commandlineparser.cpp
+    util/consolelogger.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
     util/document.cpp
     util/exception.cpp
     util/filedialog.cpp
     util/fileextension.cpp
+    util/filelogger.cpp
     util/fileobserver.cpp
     util/filesystem.cpp
     util/formatconversion.cpp
@@ -483,6 +500,7 @@ set(SOURCE_FILES
     util/inviwosetupinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
+    util/memoryfilehandle.cpp
     util/observer.cpp
     util/rendercontext.cpp
     util/settings/linksettings.cpp
@@ -504,6 +522,16 @@ set(SOURCE_FILES
     util/volumesequenceutils.cpp
     util/volumeutils.cpp
 )
+
+#--------------------------------------------------------------------
+# include implementation for build info - the build info will be 
+# updated during every compilation
+if(IVW_EMBED_BUILDINFO)
+    list(APPEND SOURCE_FILES "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp")
+else()
+    list(APPEND SOURCE_FILES util/buildinfoini.cpp)
+endif()
+
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
@@ -521,6 +549,7 @@ ivw_add_pch_path(${PCH_PATH_FILES})
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/commandlineparser-test.cpp
+    tests/unittests/dataformats-test.cpp
     tests/unittests/dispatch-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/metadata-test.cpp
@@ -530,7 +559,9 @@ set(TEST_FILES
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/conversion-test.cpp
     tests/unittests/document-test.cpp
+    tests/unittests/utilities-test.cpp
     tests/unittests/glm-test.cpp
+    tests/unittests/zip-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
@@ -580,7 +611,7 @@ endif()
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
    mark_as_advanced(CORESERVICES_LIBRARY)
-   target_link_libraries(inviwo-core ${CORESERVICES_LIBRARY})
+   target_link_libraries(inviwo-core PRIVATE ${CORESERVICES_LIBRARY})
 endif (APPLE)
 if(UNIX)
     # Required for dlopen
@@ -594,9 +625,10 @@ ivw_compile_optimize()
 # Make package (for other projects to find)
 ivw_set_cpack_name(core)
 ivw_make_package(InviwoCore inviwo-core)
+ivw_default_install_targets(inviwo-core)
 
 if(IVW_UNITTESTS)
-    ivw_make_unittest_target("inviwo-core" "")
+    ivw_make_unittest_target(core inviwo-core)
 endif()
 
 
@@ -606,9 +638,9 @@ endif()
 # make a clean help script
 set(build_info_script_list
     "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
-    "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.h"
+    "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.cpp"
     "    ${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.ini"
-    "    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.h"
+    "    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp"
     "    inviwo_buildinfo.ini"
     "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
 )
@@ -617,8 +649,8 @@ file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script
 
 # Custom target for updating the build information (this target is always out-of-date)
 add_custom_target(inviwo-buildinfo-header ALL
-    BYPRODUCTS "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.h"
-    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/" -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
+    BYPRODUCTS "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp"
+    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/" -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
     WORKING_DIRECTORY ${OUTPUT_DIR}
     COMMENT "Generating inviwo build info (buildinfo)"
     VERBATIM

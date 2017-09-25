@@ -39,6 +39,8 @@
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/metadata/processormetadata.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
@@ -56,6 +58,9 @@
 #include <QGestureEvent>
 #include <QTouchEvent>
 #include <QThread>
+#include <QMenu>
+#include <QAction>
+#include <QWidget>
 #include <warn/pop>
 
 namespace inviwo {
@@ -86,6 +91,7 @@ protected:
     virtual bool event(QEvent *e) override;
 
 private:
+    void doContextMenu(QMouseEvent* event);
     dvec2 normalPos(dvec2 pos) const;
 
     bool mapMousePressEvent(QMouseEvent* e);
@@ -103,18 +109,20 @@ private:
     Qt::GestureType lastType_;
     int lastNumFingers_;
     vec2 screenPositionNormalized_;
+    bool blockContextMenu_;
 };
 
 using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
 //using CanvasQt = CanvasQtBase<CanvasQWindow>;
 //using CanvasQt = CanvasQtBase<CanvasQOpenGLWidget>;
 
-
 template <typename T>
-CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name) : T(nullptr, dim) {
+CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name)
+    : T(nullptr, dim), blockContextMenu_(false) {
     QtBase::makeCurrent();
     RenderContext::getPtr()->registerContext(this, name);
     utilgl::handleOpenGLDebugMode(this->activeContext());
+    this->setContextMenuPolicy(Qt::PreventContextMenu);
 }
 
 template <typename T>
@@ -160,6 +168,31 @@ bool inviwo::CanvasQtBase<T>::isFullScreen() const {
     return this->parentWidget()->windowState() == Qt::WindowFullScreen;
 }
 
+template <typename T>
+void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
+    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(this->ownerWidget_->getProcessor())) {
+
+        if (!canvasProcessor->isContextMenuAllowed()) return;
+
+        QMenu menu(this);
+
+        this->connect(menu.addAction("Select Processor"), &QAction::triggered, this, [&]() {
+            canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                ->setSelected(true);
+        });
+        this->connect(menu.addAction("Hide Widget"), &QAction::triggered, this, [&]() {
+            this->ownerWidget_->setVisible(false);
+        });
+
+        if (this->image_) {
+            menu.addSeparator();
+            utilqt::addImageActions(menu, *(this->image_), this->layerType_,
+                                    this->activeRenderLayerIdx_);
+        }
+
+        menu.exec(event->globalPos());
+    }
+}
 
 #include <warn/push>
 #include <warn/ignore/switch-enum>
@@ -213,6 +246,11 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    
+    if (e->button() == Qt::RightButton && mouseEvent.hasBeenUsed()) {
+        blockContextMenu_ = true;
+    }
+    
     return true;
 }
 
@@ -228,6 +266,9 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    if (e->button() == Qt::RightButton) {
+        blockContextMenu_ = true;
+    }
     return true;
 }
 
@@ -243,6 +284,13 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
                           this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    
+    // Only show context menu when we have not used the event and the mouse have not been dragged.
+    if (e->button() == Qt::RightButton && !mouseEvent.hasBeenUsed() && !blockContextMenu_) {
+        doContextMenu(e);
+    }
+    blockContextMenu_ = false;
+    
     return true;
 }
 
@@ -257,6 +305,9 @@ bool CanvasQtBase<T>::mapMouseMoveEvent(QMouseEvent* e) {
                           this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
+    if (e->button() == Qt::RightButton) {
+        blockContextMenu_ = true;
+    }
     return true;
 }
 
@@ -373,14 +424,13 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapGestureEvent(QGestureEvent* ge) {
-    QGesture* gesture = nullptr;
     QPanGesture* panGesture = nullptr;
     QPinchGesture* pinchGesture = nullptr;
 
-    if ((gesture = ge->gesture(Qt::PanGesture))) {
+    if (auto gesture = ge->gesture(Qt::PanGesture)) {
         panGesture = static_cast<QPanGesture*>(gesture);
     }
-    if ((gesture = ge->gesture(Qt::PinchGesture))) {
+    if (auto gesture = ge->gesture(Qt::PinchGesture)) {
         pinchGesture = static_cast<QPinchGesture*>(gesture);
     }
     ge->accept();

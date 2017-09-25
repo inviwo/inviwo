@@ -41,20 +41,19 @@ namespace inviwo {
 
 class IVW_CORE_API TransferFunctionPropertyObserver : public Observer {
 public:
-    virtual void onMaskChange(const vec2& mask) {};
-    virtual void onZoomHChange(const vec2& zoomH) {};
-    virtual void onZoomVChange(const vec2& zoomV) {};
-    virtual void onHistogramModeChange(HistogramMode mode) {};
+    virtual void onMaskChange(const vec2& mask);
+    virtual void onZoomHChange(const vec2& zoomH);
+    virtual void onZoomVChange(const vec2& zoomV);
+    virtual void onHistogramModeChange(HistogramMode mode);
 };
-class IVW_CORE_API TransferFunctionPropertyObservable : public Observable<TransferFunctionPropertyObserver> {
+class IVW_CORE_API TransferFunctionPropertyObservable
+    : public Observable<TransferFunctionPropertyObserver> {
 protected:
     virtual void notifyMaskChange(const vec2& mask);
     virtual void notifyZoomHChange(const vec2& zoomH);
     virtual void notifyZoomVChange(const vec2& zoomV);
     virtual void notifyHistogramModeChange(HistogramMode mode);
 };
-
-
 
 /**
  * \ingroup properties
@@ -67,14 +66,20 @@ class IVW_CORE_API TransferFunctionProperty
 
 public:
     InviwoPropertyInfo();
-    
-    TransferFunctionProperty(const std::string &identifier,
-                             const std::string &displayName,
-                             const TransferFunction &value = TransferFunction(),
-                             VolumeInport* volumeInport = nullptr,
-                             InvalidationLevel invalidationLevel=InvalidationLevel::InvalidOutput,
-                             PropertySemantics semantics=PropertySemantics::Default);
-    
+
+    TransferFunctionProperty(
+        const std::string& identifier, const std::string& displayName,
+        const TransferFunction& value = TransferFunction({{0.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                                          {1.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+        VolumeInport* volumeInport = nullptr,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = PropertySemantics::Default);
+
+    TransferFunctionProperty(const std::string& identifier, const std::string& displayName,
+                             VolumeInport* volumeInport,
+                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                             PropertySemantics semantics = PropertySemantics::Default);
+
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
     TransferFunctionProperty& operator=(const TransferFunctionProperty& that);  
     virtual TransferFunctionProperty* clone() const override;

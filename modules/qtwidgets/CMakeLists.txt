@@ -2,7 +2,11 @@
 # Inviwo Qt Widgets
 ivw_module(QtWidgets)
 
-#--------------------------------------------------------------------
+find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
+
+#-------------------------------------------------------------------- 
 # Add MOC files
 set(MOC_FILES
     angleradiuswidget.h
@@ -19,38 +23,14 @@ set(MOC_FILES
     ordinaleditorwidget.h
     processors/processordockwidgetqt.h
     processors/processorwidgetqt.h
-    properties/anglepropertywidgetqt.h
-    properties/boolcompositepropertywidgetqt.h
-    properties/buttonpropertywidgetqt.h
-    properties/collapsiblegroupboxwidgetqt.h
-    properties/colorpropertywidgetqt.h
-    properties/compositepropertywidgetqt.h
-    properties/eventpropertywidgetqt.h
-    properties/filepropertywidgetqt.h
-    properties/htmleditorwidgetqt.h
-    properties/htmllistwidgetqt.h
-    properties/imageeditorwidgetqt.h
-    properties/lightpropertywidgetqt.h
-    properties/multifilepropertywidgetqt.h
-    properties/optionpropertywidgetqt.h
-    properties/ordinalminmaxpropertywidgetqt.h
-    properties/ordinalminmaxtextpropertywidgetqt.h
-    properties/ordinalpropertywidgetqt.h
-    properties/propertyeditorwidgetqt.h
-    properties/propertysettingswidgetqt.h
     properties/propertywidgetqt.h
     properties/stringmultilinepropertywidgetqt.h
-    properties/stringpropertywidgetqt.h
-    properties/syntaxhighlighter.h
     properties/texteditorwidgetqt.h
     properties/transferfunctioneditor.h
     properties/transferfunctionpropertydialog.h
-    properties/transferfunctionpropertywidgetqt.h
     propertylistwidget.h
-    propertyselectiontreewidget.h
     rangesliderqt.h
     sliderwidgetqt.h
-    spinboxrangesliderwidgetqt.h
 )
 
 #--------------------------------------------------------------------
@@ -61,10 +41,29 @@ set(HEADER_FILES
     inviwoqtutils.h
     keyboardutils.h
     labelgraphicsitem.h
+    properties/anglepropertywidgetqt.h
     properties/boolpropertywidgetqt.h
+    properties/boolcompositepropertywidgetqt.h
+    properties/buttonpropertywidgetqt.h
+    properties/collapsiblegroupboxwidgetqt.h
+    properties/colorpropertywidgetqt.h
+    properties/compositepropertywidgetqt.h
+    properties/eventpropertywidgetqt.h
+    properties/filepropertywidgetqt.h
+    properties/lightpropertywidgetqt.h
+    properties/multifilepropertywidgetqt.h
+    properties/optionpropertywidgetqt.h
+    properties/ordinalminmaxpropertywidgetqt.h
+    properties/ordinalminmaxtextpropertywidgetqt.h
+    properties/ordinalpropertywidgetqt.h
+    properties/propertyeditorwidgetqt.h
+    properties/propertysettingswidgetqt.h
+    properties/stringpropertywidgetqt.h
+    properties/syntaxhighlighter.h
     properties/transferfunctioncontrolpointconnection.h
     properties/transferfunctioneditorcontrolpoint.h
     properties/transferfunctioneditorview.h
+    properties/transferfunctionpropertywidgetqt.h
     qstringhelper.h
     qtwidgetsmodule.h
     qtwidgetsmoduledefine.h
@@ -104,9 +103,6 @@ set(SOURCE_FILES
     properties/eventpropertywidgetqt.cpp
     properties/filepropertywidgetqt.cpp
     properties/glslsyntaxhighlighter.cpp
-    properties/htmleditorwidgetqt.cpp
-    properties/htmllistwidgetqt.cpp
-    properties/imageeditorwidgetqt.cpp
     properties/lightpropertywidgetqt.cpp
     properties/multifilepropertywidgetqt.cpp
     properties/optionpropertywidgetqt.cpp
@@ -128,55 +124,30 @@ set(SOURCE_FILES
     properties/transferfunctionpropertydialog.cpp
     properties/transferfunctionpropertywidgetqt.cpp 
     propertylistwidget.cpp
-    propertyselectiontreewidget.cpp
     qtwidgetsmodule.cpp
 	qtwidgetssettings.cpp
     rangesliderqt.cpp
     rawdatareaderdialogqt.cpp
     sliderwidgetqt.cpp
-    spinboxrangesliderwidgetqt.cpp
 )
 
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create library
-find_package(Qt5Core QUIET REQUIRED)
 ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
-#add_library(inviwo-qtwidgets ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
-
 
 #--------------------------------------------------------------------
 # Define defintions
-#ivw_define_standard_definitions(IVW_QTWIDGETS inviwo-qtwidgets)
-#ivw_define_standard_properties(inviwo-qtwidgets)
 ivw_define_qt_definitions()
-
-
-
-# Add core dependencies to this list
-#ivw_add_dependencies(InviwoCore)
-
-
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-#ivw_set_cpack_name(qt_widgets)
-#ivw_make_package(InviwoQtWidgets inviwo-qtwidgets)
 
 #--------------------------------------------------------------------
 # Create module
+ivw_set_cpack_name(qt_widgets)
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
 
-# Add qt dependencies to this list
-set(IVW_WIDGETS_QT_DEPENDS
-    Qt5Core
-    Qt5Gui
-    Qt5Widgets
-    Qt5Help
-)
+ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets)
 
-foreach(qtarget ${IVW_WIDGETS_QT_DEPENDS})
-    #ivw_add_dependencies(${qtarget})
-    ivw_qt_add_to_install(${qtarget} qt_widgets)
-endforeach()

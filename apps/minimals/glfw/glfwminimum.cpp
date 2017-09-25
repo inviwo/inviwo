@@ -45,6 +45,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/consolelogger.h>
 #include <moduleregistration.h>
 
 using namespace inviwo;

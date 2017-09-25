@@ -36,6 +36,9 @@
 
 namespace inviwo {
 
+template <typename T>
+class OrdinalAnimationProperty;
+
 class IVW_MODULE_BASE_API BaseModule : public InviwoModule {
 public:
     BaseModule(InviwoApplication* app);
@@ -44,6 +47,14 @@ public:
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
 
 private:
+
+    struct RegHelper {
+        template <typename T>
+        void operator()(BaseModule& base) {
+            base.registerProperty<OrdinalAnimationProperty<T>>();
+        }
+    };
+
     class Converter : public VersionConverter {
     public:
         Converter(int version);

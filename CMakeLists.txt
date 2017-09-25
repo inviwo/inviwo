@@ -30,14 +30,6 @@
 cmake_minimum_required(VERSION 3.2.0)
 cmake_policy(VERSION 3.2.0)
 
-if(POLICY CMP0020)
-    cmake_policy(SET CMP0020 OLD) # Missing dependencies policy.
-endif()
-
-if(POLICY CMP0028)
-    cmake_policy(SET CMP0028 OLD) # allow :: in targets. like Qt5::Sql
-endif()
-
 if(POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW) # MacOSX rpath policy.
 endif()
@@ -63,13 +55,32 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+# option for setting the project/solution name of the Inviwo project
+set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
+
 if(IVW_PROJECT_NAME)
     project(${IVW_PROJECT_NAME})
 else()
     project(inviwo-projects)
 endif()
 # Build
-option(SHARED_LIBS "Build shared libs, else static libs" ON)
+option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
+
+
+# Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/tools") 
+
+
+# Make sure we do look for python 3 here, before it is done in any subdirectory or external library. 
+# If we do not specify version number on our first call to find_package(PythonLibs) it returns the 
+# first python version that is found on the system and then set the PYTHON_FOUND variable, this 
+# version may be 2.x and not 3.x and later when we find_package(PythonLibsNew 3) (or find_package(PythonLibs 3))
+# it will detected that PYTHON_FOUND is set and reuse the paths found before and not look for python
+# again resulting in Python 2.x binaries will be used. 
+set(PythonLibsNew_FIND_VERSION 3)
+set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
+find_package(PythonLibsNew 3)
+
 
 include(cmake/globalconfig.cmake)
 
@@ -78,8 +89,48 @@ include(cmake/globalconfig.cmake)
 option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
 option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
 
+# Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
+if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
+    if(NOT QT_QMAKE_EXECUTABLE)
+        find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake4 qmake-qt4 qmake5 qmake-qt5
+           PATHS "${QT_SEARCH_PATH}/bin" "$ENV{QTDIR}/bin")
+        set(QT_QMAKE_EXECUTABLE ${QT_QMAKE_EXECUTABLE_FINDQT} CACHE PATH "Qt qmake program.")
+    endif()
+
+    if(QT_QMAKE_EXECUTABLE)
+        execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query "QT_INSTALL_PREFIX" OUTPUT_VARIABLE QT5_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+    else()
+        if(APPLE) # On OSX look for the usual brew installation. 
+            foreach(path "/usr/local/Cellar/qt" "/usr/local/Cellar/qt5")
+                if(EXISTS ${path})
+                    file(GLOB qtversions RELATIVE "${path}/" "${path}/?.?.*")
+                    list(LENGTH qtversions len)
+                    if(${len} GREATER 0)
+                        list(GET qtversions -1 qtlatest)
+                        if(EXISTS "${path}/${qtlatest}")
+                            set(QT5_PATH "${path}/${qtlatest}")
+                            break()
+                        endif()
+                    endif()
+                endif()
+            endforeach()
+        endif()
+    endif()
+
+    if(QT5_PATH)
+        ivw_debug_message(STATUS "Found qt at: ${QT5_PATH}") 
+        list(APPEND CMAKE_PREFIX_PATH ${QT5_PATH}) 
+    endif()
+endif()
+
 #--------------------------------------------------------------------
-# Add externals
+# Add external libraries.
+# 
+# Dependencies between libraries are solved using the given order
+add_subdirectory(ext/zlib-1.2.11)
+add_subdirectory(ext/libpng)
+add_subdirectory(ext/libjpeg)
+add_subdirectory(ext/openexr)
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
@@ -88,6 +139,7 @@ add_subdirectory(ext/warn)
 add_subdirectory(ext/tclap)
 add_subdirectory(ext/tinydir)
 add_subdirectory(ext/half)
+add_subdirectory(ext/utf)
 
 option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)
@@ -115,16 +167,17 @@ set(ivw_default_modules
     "OpenGL"
     "OpenGLQt"
     "PVM"
+    "Nifti"
     "QtWidgets" 
     "VectorFieldVisualization"
     "VectorFieldVisualizationGL"
+    "PostProcessing"
     "Nifti" 
 	"zlib" 
     CACHE INTERNAL "Default Inviwo Modules"
 )
 
-set(Python_ADDITIONAL_VERSIONS 3.5)
-find_package(PythonLibs 3 QUIET)
+
 if(PYTHONLIBS_FOUND)
     set(ivw_default_modules
         ${ivw_default_modules}
@@ -142,17 +195,13 @@ if(OPENCL_FOUND)
         )
 endif()
 
+option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
+ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
+ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
 
 #--------------------------------------------------------------------
 # Add modules
 ivw_register_modules(all_modules)
-
-# OpenGL Context created with GLFW or Qt within Inviwo by default
-if(IVW_USE_GLFW_NOT_OPENGLQT)
-    ivw_enable_module(GLFW)
-else()
-    ivw_enable_module(OpenGLQt)
-endif()
 
 #--------------------------------------------------------------------
 # Add Qt
@@ -161,10 +210,23 @@ add_subdirectory(src/qt)
 #--------------------------------------------------------------------
 # Add applications
 add_subdirectory(apps)
+if(WIN32)
+    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.6")
+        set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo-cli)
+    endif()
+endif()
+
 
 #--------------------------------------------------------------------
 # Add external projects
 ivw_add_external_projects()
+
+
+#--------------------------------------------------------------------
+# Add integration tests project
+if(IVW_INTEGRATION_TESTS)
+    add_subdirectory(tests/integrationtests)
+endif()
 
 #--------------------------------------------------------------------
 # Package creation

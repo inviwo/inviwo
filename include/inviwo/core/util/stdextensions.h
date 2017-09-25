@@ -44,6 +44,7 @@
 #include <type_traits>
 #include <future>
 #include <utility>
+#include <tuple>
 #include <warn/pop>
 
 namespace inviwo {
@@ -93,14 +94,14 @@ template <typename T, typename std::enable_if<
     int>::type = 0>
     T* defaultConstructType() {
     return new T();
-};
+}
 
 template <typename T, typename std::enable_if<
     std::is_abstract<T>::value || !std::is_default_constructible<T>::value,
     int>::type = 0>
     T* defaultConstructType() {
     return nullptr;
-};
+}
 
 
 // type trait to check if T is derived from std::basic_string
@@ -132,19 +133,32 @@ auto for_each_argument(F&& f, Args&&... args) {
 
 namespace detail {
 
-template <typename F, typename T, size_t... Is>
-auto for_each_in_tuple_impl(F&& f, T&& t, std::index_sequence<Is...>) {
+template <typename F, typename TupleType, size_t... Is>
+auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType&& t) {
     return (void)std::initializer_list<int>{0, (f(std::get<Is>(t)), 0)...}, std::forward<F>(f);
 }
-
-}  // namespace
-
-template <typename F, typename... Ts>
-void for_each_in_tuple(F&& f, std::tuple<Ts...>&& t) {
-    detail::for_each_in_tuple_impl(std::forward<F>(f), std::forward<std::tuple<Ts...>>(t),
-                                   std::index_sequence_for<Ts...>{});
+template <typename F, typename TupleType1, typename TupleType2, size_t... Is>
+auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType1&& t1, TupleType2&& t2) {
+    return (void)std::initializer_list<int>{0, (f(std::get<Is>(t1), std::get<Is>(t2)), 0)...},
+        std::forward<F>(f);
 }
 
+}  // namespace detail
+
+template <typename F, typename TupleType>
+void for_each_in_tuple(F&& f, TupleType&& t) {
+    detail::for_each_in_tuple_impl(std::forward<F>(f),
+                                   std::make_index_sequence<std::tuple_size<typename std::remove_reference<TupleType>::type>::value>{},
+                                   std::forward<TupleType>(t));
+}
+template <typename F, typename TupleType1, typename TupleType2>
+void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
+    detail::for_each_in_tuple_impl(std::forward<F>(f),
+                                   std::make_index_sequence<std::min(std::tuple_size<typename std::remove_reference<TupleType1>::type>::value,
+                                                                     std::tuple_size<typename std::remove_reference<TupleType2>::type>::value)>{},
+                                   std::forward<TupleType1>(t1),
+                                   std::forward<TupleType2>(t2));
+}
 template <class... Types>
 struct for_each_type;
 
@@ -498,59 +512,30 @@ inline void hash_combine(std::size_t& seed, const T& v) {
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+namespace hashtuple {
+
+/**
+ * Hashing for tuples
+ * https://stackoverflow.com/questions/20834838/using-tuple-in-unordered-map
+ */
+template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
+struct HashValueImpl {
+    static void apply(size_t& seed, Tuple const& tuple) {
+        HashValueImpl<Tuple, Index - 1>::apply(seed, tuple);
+        hash_combine(seed, std::get<Index>(tuple));
+    }
+};
+
+template <class Tuple>
+struct HashValueImpl<Tuple, 0> {
+    static void apply(size_t& seed, Tuple const& tuple) { hash_combine(seed, std::get<0>(tuple)); }
+};
+
+}  // namespace hashtuple
 }  // namespace util
 }  // namespace inviwo
 
-// namespace std {
-// template <typename T, glm::precision P, template<typename, glm::precision> class VecType>
-// struct hash<VecType<T, P>> {
-//     size_t operator()(const VecType<T, P>& v) const {
-//         size_t h = 0;
-//         for (size_t i = 0; i < inviwo::util::flat_extent<VecType<T, P>>::value; ++i) {
-//             T& val = inviwo::util::glmcomp<const VecType<T, P>&>(v, i);
-//             inviwo::util::hash_combine(h, val);
-//         }
-//         return h;
-//     }
-// };
-// 
-
 namespace std {
-template <typename T, glm::precision P>
-struct hash<glm::tvec2<T, P>> {
-    size_t operator()(const glm::tvec2<T, P>& v) const {
-        size_t h = 0;
-        for (size_t i = 0; i < inviwo::util::flat_extent<glm::tvec2<T, P>>::value; ++i) {
-            inviwo::util::hash_combine(h, v[i]);
-        }
-        return h;
-    }
-};
-
-template <typename T, glm::precision P>
-struct hash<glm::tvec3<T, P>>
-{
-    size_t operator()(const glm::tvec3<T, P>& v) const {
-        size_t h = 0;
-        for (size_t i = 0; i < inviwo::util::flat_extent<glm::tvec3<T, P>>::value; ++i) {
-            inviwo::util::hash_combine(h, v[i]);
-        }
-        return h;
-    }
-};
-
-template <typename T, glm::precision P>
-struct hash<glm::tvec4<T, P>>
-{
-    size_t operator()(const glm::tvec4<T, P>& v) const {
-        size_t h = 0;
-        for (size_t i = 0; i < inviwo::util::flat_extent<glm::tvec4<T, P>>::value; ++i) {
-            inviwo::util::hash_combine(h, v[i]);
-        }
-        return h;
-    }
-};
-
 
 template <typename T, typename U>
 struct hash<std::pair<T, U>> {
@@ -561,7 +546,16 @@ struct hash<std::pair<T, U>> {
         return h;
     }
 };
-
+    
+template <typename ... TT>
+struct hash<std::tuple<TT...>> {
+    size_t
+        operator()(std::tuple<TT...> const& tt) const {
+        size_t seed = 0;
+        inviwo::util::hashtuple::HashValueImpl<std::tuple<TT...> >::apply(seed, tt);
+        return seed;
+    }
+};
 
 template <class ForwardIt> 
 ForwardIt rotateRetval(ForwardIt first, ForwardIt n_first, ForwardIt last) {

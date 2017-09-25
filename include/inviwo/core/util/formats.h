@@ -130,7 +130,7 @@ namespace util {
 
 template <typename T>
 constexpr NumericType getNumericType() {
-    return (std::is_floating_point<T>::value
+    return (util::is_floating_point<T>::value
                 ? NumericType::Float
                 : (std::is_signed<T>::value ? NumericType::SignedInteger
                                             : NumericType::UnsignedInteger));
@@ -202,8 +202,11 @@ public:
     auto dispatch(T& obj, Args&&... args) const -> typename T::type;
 
 protected:
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     static std::array<std::unique_ptr<DataFormatBase>,
                       static_cast<size_t>(DataFormatId::NumberOfFormats)> instance_;
+#include <warn/pop>
 
     DataFormatId formatId_;
     size_t components_;
@@ -377,7 +380,7 @@ std::string DataFormat<T>::str() {
         case NumericType::UnsignedInteger: return "UINT" + toString(precision());
         case NumericType::NotSpecialized:
         default:
-            throw DataFormatException("Invalid format", IvwContextCustom("DataForrmat"));
+            throw DataFormatException("Invalid format", IvwContextCustom("DataFormat"));
     }
 }
 
@@ -675,9 +678,6 @@ typedef DataFormat<glm::u64vec4> DataVec4UInt64;
 
 /*---------------Single Value Formats------------------*/
 
-// Bit Specializations
-template<> constexpr  size_t DataFloat16::size() { return DataFloat32::size(); }
-
 // Type Function Specializations
 template<> constexpr DataFormatId DataFloat16::id() { return DataFormatId::Float16; }
 template<> constexpr DataFormatId DataFloat32::id() { return DataFormatId::Float32; }
@@ -695,9 +695,6 @@ template<> constexpr DataFormatId DataUInt64::id() { return DataFormatId::UInt64
 
 
 /*---------------Vec2 Formats--------------------*/
-
-// Bit Specializations
-template<> constexpr size_t DataVec2Float16::size() { return DataVec2Float32::size(); }
 
 // Type Function Specializations
 template<> constexpr DataFormatId DataVec2Float16::id() { return DataFormatId::Vec2Float16; }
@@ -717,9 +714,6 @@ template<> constexpr DataFormatId DataVec2UInt64::id() { return DataFormatId::Ve
 
 /*---------------Vec3 Formats--------------------*/
 
-// Bit Specializations
-template<> constexpr size_t DataVec3Float16::size() { return DataVec3Float32::size(); }
-
 // Type Function Specializations
 template<> constexpr DataFormatId DataVec3Float16::id() { return DataFormatId::Vec3Float16; }
 template<> constexpr DataFormatId DataVec3Float32::id() { return DataFormatId::Vec3Float32; }
@@ -738,9 +732,6 @@ template<> constexpr DataFormatId DataVec3UInt64::id() { return DataFormatId::Ve
 
 
 /*---------------Vec4 Formats--------------------*/
-
-// Bit Specializations
-template<> constexpr size_t DataVec4Float16::size() { return DataVec4Float32::size(); }
 
 // Type Function Specializations
 template<> constexpr DataFormatId DataVec4Float16::id() { return DataFormatId::Vec4Float16; }
@@ -857,6 +848,14 @@ auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type 
     }
 }
 
+using DefaultDataFormats = std::tuple<
+    DataFloat16, DataFloat32, DataFloat64, DataInt8, DataInt16, DataInt32, DataInt64, DataUInt8,
+    DataUInt16, DataUInt32, DataUInt64, DataVec2Float16, DataVec2Float32, DataVec2Float64,
+    DataVec2Int8, DataVec2Int16, DataVec2Int32, DataVec2Int64, DataVec2UInt8, DataVec2UInt16,
+    DataVec2UInt32, DataVec2UInt64, DataVec3Float16, DataVec3Float32, DataVec3Float64, DataVec3Int8,
+    DataVec3Int16, DataVec3Int32, DataVec3Int64, DataVec3UInt8, DataVec3UInt16, DataVec3UInt32,
+    DataVec3UInt64, DataVec4Float16, DataVec4Float32, DataVec4Float64, DataVec4Int8, DataVec4Int16,
+    DataVec4Int32, DataVec4Int64, DataVec4UInt8, DataVec4UInt16, DataVec4UInt32, DataVec4UInt64>;
 
 template <typename T>
 struct Defaultvalues {};

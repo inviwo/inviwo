@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<InviwoTreeData version="1.0">
+    <RawFile content="testdata.INT8.raw" />
+    <Format content="INT8" />
+    <Dimension x="13" y="7" z="3" />
+    <MetaDataMap>
+        <MetaDataItem type="org.inviwo.BoolMetaData" key="LittleEndian">
+            <MetaData content="1" />
+        </MetaDataItem>
+    </MetaDataMap>
+</InviwoTreeData>

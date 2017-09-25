@@ -188,10 +188,6 @@
 		<file>icons/check_checkmark_good_improve_improved_ok_success_icon_64.png</file>
 		<file>icons/check_checkmark_good_improve_improved_ok_success_icon_128.png</file>
 		<file>icons/check_checkmark_good_improve_improved_ok_success_icon_128.svg</file>
-		<file>icons/arrow_bottom_direction_down_icon_32.png</file>
-		<file>icons/arrow_bottom_direction_down_icon_64.png</file>
-		<file>icons/arrow_bottom_direction_down_icon_128.png</file>
-		<file>icons/arrow_bottom_direction_down_icon_128.svg</file>
 		<file>icons/more_options_player_preferences_settings_icon_32.png</file>
 		<file>icons/more_options_player_preferences_settings_icon_64.png</file>
 		<file>icons/more_options_player_preferences_settings_icon_128.png</file>
@@ -216,10 +212,6 @@
 		<file>icons/micro_microphone_mute_off_radio_icon_64.png</file>
 		<file>icons/micro_microphone_mute_off_radio_icon_128.png</file>
 		<file>icons/micro_microphone_mute_off_radio_icon_128.svg</file>
-		<file>icons/arrow_direction_top_up_icon_32.png</file>
-		<file>icons/arrow_direction_top_up_icon_64.png</file>
-		<file>icons/arrow_direction_top_up_icon_128.png</file>
-		<file>icons/arrow_direction_top_up_icon_128.svg</file>
 		<file>icons/cloud_sky_thunder_weather_icon_32.png</file>
 		<file>icons/cloud_sky_thunder_weather_icon_64.png</file>
 		<file>icons/cloud_sky_thunder_weather_icon_128.png</file>
@@ -240,10 +232,6 @@
 		<file>icons/audio_call_communication_headphone_talk_icon_64.png</file>
 		<file>icons/audio_call_communication_headphone_talk_icon_128.png</file>
 		<file>icons/audio_call_communication_headphone_talk_icon_128.svg</file>
-		<file>icons/media_next_player_previous_song_track_icon_32.png</file>
-		<file>icons/media_next_player_previous_song_track_icon_64.png</file>
-		<file>icons/media_next_player_previous_song_track_icon_128.png</file>
-		<file>icons/media_next_player_previous_song_track_icon_128.svg</file>
 		<file>icons/media_monitor_player_resize_screen_icon_32.png</file>
 		<file>icons/media_monitor_player_resize_screen_icon_64.png</file>
 		<file>icons/media_monitor_player_resize_screen_icon_128.png</file>

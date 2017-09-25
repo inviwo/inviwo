@@ -280,7 +280,7 @@ void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
     return;
 }
 
-void LinkDialogGraphicsScene::executeTimeLine(qreal x) {
+void LinkDialogGraphicsScene::executeTimeLine(qreal /*x*/) {
     float yIncrement = linkdialog::processorHeight * (0.09f) * (currentScrollSteps_);
     offsetItems(yIncrement, mouseOnLeftSide_);
 }

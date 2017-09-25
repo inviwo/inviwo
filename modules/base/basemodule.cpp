@@ -41,6 +41,7 @@
 #include <modules/base/processors/imagesource.h>
 #include <modules/base/processors/imagesourceseries.h>
 #include <modules/base/processors/imagecontourprocessor.h>
+#include <modules/base/processors/layerdistancetransformram.h>
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/noiseprocessor.h>
@@ -74,6 +75,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/datainport.h>
 #include <modules/base/processors/pixelvalue.h>
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
 #include <modules/base/processors/volumegradientcpuprocessor.h>
@@ -86,6 +89,12 @@
 #include <modules/base/io/binarystlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
 #include <modules/base/processors/randommeshgenerator.h>
+#include <modules/base/processors/randomspheregenerator.h>
+#include <modules/base/processors/inputselector.h>
+
+
+#include <modules/base/processors/noisevolumeprocessor.h>
+
 
 namespace inviwo {
 
@@ -94,6 +103,7 @@ using BasisTransformVolume = BasisTransform<Volume>;
 
 using WorldTransformMesh = WorldTransform<Mesh>;
 using WorldTransformVolume = WorldTransform<Volume>;
+
 
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ConvexHull2DProcessor>();
@@ -107,6 +117,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ImageSnapshot>();
     registerProcessor<ImageSource>();
     registerProcessor<ImageSourceSeries>();
+    registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshCreator>();
     registerProcessor<NoiseProcessor>();
@@ -144,6 +155,12 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeLaplacianProcessor>();
     registerProcessor<MeshExport>();
     registerProcessor<RandomMeshGenerator>();
+    registerProcessor<RandomSphereGenerator>();
+    registerProcessor<NoiseVolumeProcessor>();
+    // input selectors
+    registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
+    registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
+    registerProcessor<InputSelector<ImageMultiInport, ImageOutport>>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
@@ -160,6 +177,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataWriter(util::make_unique<StlWriter>());
     registerDataWriter(util::make_unique<BinarySTLWriter>());
     registerDataWriter(util::make_unique<WaveFrontWriter>());
+    
+    util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
 int BaseModule::getVersion() const {

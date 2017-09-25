@@ -35,7 +35,7 @@
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/logcentral.h>
-#include <assimp/LogStream.hpp>
+
 
 namespace inviwo {
 
@@ -67,7 +67,7 @@ public:
     void setFixInvalidDataFlag(bool enable);
     bool getFixInvalidDataFlag() const;
 
-    virtual std::shared_ptr<Mesh> readData(const std::string filePath) override;
+    virtual std::shared_ptr<Mesh> readData(const std::string& filePath) override;
 
 private:
     AssimpLogLevel
@@ -78,28 +78,6 @@ private:
                            //!< Assimp
 };
 
-/** 
- * \brief Assimp LogStream => Inviwo LogCentral 
- *
- *  Derive Assimp::LogStream to forward logged messages from the library to Inviwos LogCentral.
- */
-class InviwoAssimpLogStream : public Assimp::LogStream {
-private:
-    LogLevel loglevel;
-
-public:
-    InviwoAssimpLogStream(LogLevel ploglevel) { loglevel = ploglevel; }
-
-    virtual ~InviwoAssimpLogStream() = default;
-
-    void write(const char* message) {
-        std::string tmp(message);
-        while ('\n' == tmp.back()) tmp.pop_back();
-
-        inviwo::LogCentral::getPtr()->log("Assimp Geometry Importer", loglevel, LogAudience::User,
-                                          "<Assimp Bibliothek>", "<Funktion>", 0, tmp);
-    }
-};
 
 }  // namespace
 

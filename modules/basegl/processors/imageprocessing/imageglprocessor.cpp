@@ -36,29 +36,34 @@
 
 namespace inviwo {
 
-ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
-    : Processor()
-    , inport_("inputImage")
-    , outport_("outputImage")
-    , dataFormat_(nullptr)
-    , swizzleMask_(swizzlemasks::rgba)
-    , internalInvalid_(false)
-    , fragmentShader_(fragmentShader)
-    , shader_(fragmentShader, false) {
-    addPort(inport_);
-    addPort(outport_);
+    ImageGLProcessor::ImageGLProcessor(const std::string& fragmentShader, bool buildShader)
+        : ImageGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
 
-    inport_.onChange(this, &ImageGLProcessor::inportChanged);
-    inport_.setOutportDeterminesSize(true);
-    outport_.setHandleResizeEvents(false);
-    shader_.onReload([this](){invalidate(InvalidationLevel::InvalidResources);});
-}
+    ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
+        bool buildShader)
+        : Processor()
+        , inport_("inputImage")
+        , outport_("outputImage")
+        , dataFormat_(nullptr)
+        , swizzleMask_(swizzlemasks::rgba)
+        , internalInvalid_(false)
+        , shader_({ {ShaderType::Fragment, fragmentShader} },
+            buildShader ? Shader::Build::Yes : Shader::Build::No)
+    {
+        addPort(inport_);
+        addPort(outport_);
 
-ImageGLProcessor::~ImageGLProcessor() {}
+        inport_.onChange(this, &ImageGLProcessor::inportChanged);
+        inport_.setOutportDeterminesSize(true);
+        outport_.setHandleResizeEvents(false);
+        shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    }
 
-void ImageGLProcessor::initializeResources() {
-    shader_.build();
-    internalInvalid_ = true;
+    ImageGLProcessor::~ImageGLProcessor() {}
+
+    void ImageGLProcessor::initializeResources() {
+        shader_.build();
+        internalInvalid_ = true;
 }
 
 void ImageGLProcessor::process() {
@@ -94,6 +99,14 @@ void ImageGLProcessor::process() {
 
     postProcess();
 }
+
+void ImageGLProcessor::markInvalid() { internalInvalid_ = true; }
+
+void ImageGLProcessor::preProcess(TextureUnitContainer&) {}
+
+void ImageGLProcessor::postProcess() {}
+
+void ImageGLProcessor::afterInportChanged() {}
 
 void ImageGLProcessor::createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
                                          const SwizzleMask &swizzleMask, ImageInport &inport, ImageOutport &outport) {
@@ -134,6 +147,11 @@ size2_t ImageGLProcessor::calcOutputDimensions() const {
         dimensions = inport_.getData()->getDimensions();
     }
     return dimensions;
+}
+
+void ImageGLProcessor::inportChanged() {
+    markInvalid();
+    afterInportChanged();
 }
 
 }  // namespace

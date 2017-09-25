@@ -149,8 +149,6 @@ protected:
 
     // Override for tooltips
     virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
-    // Override for custom events
-    virtual bool event(QEvent* e) override;
 
 private:
     friend class ProcessorGraphicsItem;
@@ -206,19 +204,18 @@ private:
 
     void deleteItems(QList<QGraphicsItem*> items);
 
-    typedef std::map<Processor*, ProcessorGraphicsItem*> ProcessorMap;
-    typedef std::map<PortConnection, ConnectionGraphicsItem*> ConnectionMap;
-    typedef std::map<ProcessorPair, LinkConnectionGraphicsItem*> LinkMap;
-    typedef std::map<Outport*, PortInspector*> PortInspectorMap;
+    using ProcessorMap = std::map<Processor*, ProcessorGraphicsItem*>;
+    using ConnectionMap = std::map<PortConnection, ConnectionGraphicsItem*>;
+    using LinkMap = std::map<ProcessorPair, LinkConnectionGraphicsItem*>;
 
     ProcessorMap processorGraphicsItems_;
     ConnectionMap connectionGraphicsItems_;
     LinkMap linkGraphicsItems_;
-    PortInspectorMap portInspectors_;
 
     // Drag n drop state
     ConnectionGraphicsItem* oldConnectionTarget_;
     ProcessorGraphicsItem* oldProcessorTarget_;
+    bool validConnectionTarget_;
 
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};
@@ -245,34 +242,6 @@ T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
     }
     return nullptr;
 }
-
-class IVW_QTEDITOR_API PortInspectorObserver : public ProcessorWidgetObserver {
-public:
-    PortInspectorObserver(NetworkEditor* editor, Outport* port)
-        : ProcessorWidgetObserver(), editor_(editor), port_(port) {}
-    virtual void onProcessorWidgetHide(ProcessorWidget* widget);
-    NetworkEditor* editor_;
-    Outport* port_;
-};
-
-class IVW_QTEDITOR_API PortInspectorEvent : public QEvent {
-    Q_GADGET
-public:
-    PortInspectorEvent(Outport* port) : QEvent(PortInspectorEvent::type()), port_(port) {}
-
-    static QEvent::Type type() {
-        if (PortInspectorEventType == QEvent::None) {
-            PortInspectorEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
-        }
-        return PortInspectorEventType;
-    }
-
-    Outport* port_;
-
-private:
-    static QEvent::Type PortInspectorEventType;
-};
-
 
 }  // namespace
 

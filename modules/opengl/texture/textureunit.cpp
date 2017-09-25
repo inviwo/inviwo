@@ -81,7 +81,7 @@ void TextureUnit::initialize(int numUnits) { textureUnits_.resize(numUnits, fals
 
 void TextureUnit::deinitialize() { textureUnits_.clear(); }
 
-TextureUnitContainer::TextureUnitContainer(size_t i) : units_(i) {};
+TextureUnitContainer::TextureUnitContainer(size_t i) : units_(i) {}
 
 TextureUnitContainer::TextureUnitContainer(TextureUnitContainer&& rhs)
     : units_(std::move(rhs.units_)) {}

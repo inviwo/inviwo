@@ -62,7 +62,7 @@ public:
 
     virtual ~NiftiReader() = default;
 
-    virtual std::shared_ptr<VolumeSequence> readData(const std::string filePath) override;
+    virtual std::shared_ptr<VolumeSequence> readData(const std::string& filePath) override;
 
     /**
      * \brief Convert from Nifti defined data types to inviwo DataFormat.

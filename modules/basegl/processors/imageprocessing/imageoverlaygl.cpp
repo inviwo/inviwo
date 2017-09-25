@@ -174,7 +174,14 @@ void OverlayProperty::updateViewport() {
     
     // use pixel aligned positions for best results
     viewport_ = ivec4(pos.x, pos.y, size.x, size.y);
+    // mark the composite property as modified. This will in turn trigger a 
+    // resize event in ImageOverlayGL::onStatusChange().
     CompositeProperty::propertyModified();
+    // If an ImagePort with a non-resizeable image is connected, there
+    // will be no change in the inport and the ImageOverlay processor
+    // is not re-evaluated.
+    // Thus we need to invalidate the property as well.
+    CompositeProperty::invalidate(InvalidationLevel::InvalidOutput, this);
 }
 
 void OverlayProperty::updateVisibilityState() {
@@ -254,7 +261,7 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
     } else {
         if (overlayInteraction_.get() && overlayPort_.isConnected()) {
             bool overlayHandlesEvent =
-                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t ind) {
+                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t /*ind*/) {
                 overlayPort_.propagateEvent(newEvent);
             }));
 

@@ -35,7 +35,7 @@
 #include <warn/ignore/all>
 #include <QWheelEvent>
 #include <QPainter>
-#include <QScrollbar>
+#include <QScrollBar>
 #include <qmath.h>
 #include <warn/pop>
 

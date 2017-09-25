@@ -36,8 +36,11 @@
 #endif
 
  // for Qt key codes
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QtCore/qnamespace.h>
 #include <QKeyEvent>
+#include <warn/pop>
 
 namespace inviwo {
 

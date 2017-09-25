@@ -35,6 +35,7 @@
 #include <QLineEdit>
 #include <QRegExp>
 #include <QRegExpValidator>
+#include <QHBoxLayout>
 #include <warn/pop>
 
 
@@ -44,14 +45,8 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
     : PropertyWidgetQt(property)
     , property_(property)
     , checkBox_{nullptr}
-    , lineEdit_{nullptr} {
-
-    generateWidget();
-    updateFromProperty();
-}
-
-void BoolPropertyWidgetQt::generateWidget() {
-    label_ = new EditableLabelQt(this, property_, false);
+    , lineEdit_{nullptr}
+    , label_{new EditableLabelQt(this, property_, false)} {
 
     // create widget layout
     QHBoxLayout* hLayout = new QHBoxLayout();
@@ -89,6 +84,8 @@ void BoolPropertyWidgetQt::generateWidget() {
     }
 
     setLayout(hLayout);
+
+    updateFromProperty();
 }
 
 void BoolPropertyWidgetQt::updateFromProperty() {

@@ -58,7 +58,7 @@ SettingsWidget::SettingsWidget(QString title, InviwoMainWindow* mainwindow)
     mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
-    layout_->setContentsMargins(0, PropertyWidgetQt::SPACING, 0, PropertyWidgetQt::SPACING);
+    layout_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
     layout_->setSpacing(7);
     scrollArea_->setWidget(mainWidget_);
 

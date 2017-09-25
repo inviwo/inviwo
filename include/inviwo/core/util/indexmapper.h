@@ -50,9 +50,7 @@ struct IndexMapper<2, IndexType> {
         return pos.x + pos.y * dimx;
     }
     constexpr Vector<2, IndexType> operator()(const IndexType index) const noexcept {
-        const auto y = index / dimx;
-        const auto x = index % dimx;
-        return Vector<2, IndexType>(x, y);
+        return Vector<2, IndexType>(index / dimx, index % dimx);
     }
 
 private:
@@ -71,10 +69,7 @@ struct IndexMapper<3, IndexType> {
         return pos.x + pos.y * dimx + pos.z * dimxy;
     }
     constexpr Vector<3, IndexType> operator()(const IndexType index) const noexcept {
-        const auto z = index / dimxy;
-        const auto y = (index % dimxy) / dimx;
-        const auto x = (index % dimxy) % dimx;
-        return Vector<3, IndexType>(x, y, z);
+        return Vector<3, IndexType>((index % dimxy) % dimx, (index % dimxy) / dimx, index / dimxy);
     }
 
 private:

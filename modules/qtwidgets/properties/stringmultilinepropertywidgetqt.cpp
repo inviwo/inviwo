@@ -29,38 +29,26 @@
 
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFontMetrics>
+#include <QHBoxLayout>
 #include <warn/pop>
 
 namespace inviwo {
 
 StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty *property)
     : PropertyWidgetQt(property), property_(property) {
-    generateWidget();
-    updateFromProperty();
-}
-
-void StringMultilinePropertyWidgetQt::generateWidget() {
+    
     QHBoxLayout *hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
-    // QVBoxLayout* vLayout = new QVBoxLayout;
-    // vLayout->setContentsMargins(0, 0, 0, 0);
-    // vLayout->setSpacing(0);
-
     label_ = new EditableLabelQt(this, property_);
-    // vLayout->addWidget(label_);
-    // vLayout->addStretch();
-    // hLayout->addLayout(vLayout);
-
     hLayout->addWidget(label_);
 
     textEdit_ = new MultilineTextEdit;
-    // if(property_->getSemantics().getString() == "Password"){
-    //    textEdit_->setEchoMode(QLineEdit::PasswordEchoOnEdit);
-    //}
 
     QSizePolicy sp = textEdit_->sizePolicy();
     sp.setHorizontalStretch(3);
@@ -70,11 +58,14 @@ void StringMultilinePropertyWidgetQt::generateWidget() {
     hLayout->addWidget(textEdit_);
 
     setLayout(hLayout);
-    connect(textEdit_, SIGNAL(editingFinished()), this, SLOT(setPropertyValue()));
+    connect(textEdit_, &MultilineTextEdit::editingFinished, this,
+            &StringMultilinePropertyWidgetQt::setPropertyValue);
+
+    updateFromProperty();
 }
 
 void StringMultilinePropertyWidgetQt::setPropertyValue() {
-    std::string valueStr = textEdit_->toPlainText().toLocal8Bit().constData();
+    std::string valueStr = utilqt::fromQString(textEdit_->toPlainText());
     property_->setInitiatingWidget(this);
     property_->set(valueStr);
     property_->clearInitiatingWidget();
@@ -82,7 +73,7 @@ void StringMultilinePropertyWidgetQt::setPropertyValue() {
 
 void StringMultilinePropertyWidgetQt::updateFromProperty() {
     QString text(textEdit_->toPlainText());
-    QString newContents(QString::fromStdString(property_->get()));
+    QString newContents(utilqt::toQString(property_->get()));
     if (text != newContents) {
         textEdit_->setPlainText(newContents);
         textEdit_->moveCursor(QTextCursor::Start);
@@ -107,7 +98,8 @@ MultilineTextEdit::MultilineTextEdit(QWidget *parent)
     setMinimumHeight(minLineCount_ * lineHeight_);
     setMaximumHeight(maxLineCount_ * lineHeight_);
 }
-MultilineTextEdit::~MultilineTextEdit() {}
+
+MultilineTextEdit::~MultilineTextEdit() = default;
 
 void MultilineTextEdit::focusOutEvent(QFocusEvent *e) {
     if (showContextMenu_) {

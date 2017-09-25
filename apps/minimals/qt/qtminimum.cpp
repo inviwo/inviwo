@@ -38,6 +38,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <inviwo/core/util/consolelogger.h>
 #include <moduleregistration.h>
 
 using namespace inviwo;

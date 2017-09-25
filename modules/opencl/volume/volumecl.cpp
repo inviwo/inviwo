@@ -36,27 +36,32 @@
 namespace inviwo {
 
 VolumeCL::VolumeCL(const DataFormatBase* format, const void* data)
-    : VolumeRepresentation(format)
+    : VolumeCLBase()
+    , VolumeRepresentation(format)
     , dimensions_(size3_t(128, 128, 128))
     , imageFormat_(dataFormatToCLImageFormat(format->getId())) {
     initialize(data);
 }
 
 VolumeCL::VolumeCL(size3_t dimensions, const DataFormatBase* format, const void* data)
-    : VolumeRepresentation(format)
+    : VolumeCLBase()
+    , VolumeRepresentation(format)
     , dimensions_(dimensions)
     , imageFormat_(dataFormatToCLImageFormat(format->getId())) {
     initialize(data);
 }
 
 VolumeCL::VolumeCL(const VolumeCL& rhs)
-    : VolumeRepresentation(rhs), dimensions_(rhs.dimensions_), imageFormat_(rhs.imageFormat_) {
+    : VolumeCLBase(rhs)
+    , VolumeRepresentation(rhs)
+    , dimensions_(rhs.dimensions_)
+    , imageFormat_(rhs.imageFormat_) {
     initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::size3_t(0),
                                                   glm::size3_t(0), glm::size3_t(dimensions_));
 }
 
-VolumeCL::~VolumeCL() {}
+VolumeCL::~VolumeCL() = default;
 
 void VolumeCL::initialize(const void* voxels) {
     clImage_ =

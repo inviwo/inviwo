@@ -90,7 +90,6 @@ protected:
      */
     const MeshGL* squareGL_ = nullptr; ///< Non-owning reference.
 
-private:
     /**
      * Sometime on OSX in renderNoise when on the first time using
      * a canvas we get a INVALID_FRAMEBUFFER_OPERATION error
@@ -104,7 +103,6 @@ private:
     Shader* textureShader_ = nullptr; ///< non-owning reference
     Shader* noiseShader_ = nullptr;   ///< non-owning reference
 
-    size_t channels_ = 0;
     size_t activeRenderLayerIdx_ = 0;
 };
 

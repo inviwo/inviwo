@@ -40,6 +40,8 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stipplingproperty.h>
 #include <modules/opengl/shader/shader.h>
 #include <vector>
 
@@ -58,9 +60,14 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Line Width__  width of the rendered lines (in pixel)
- *   * __Antialising__ width of the antialised line edge (in pixel), this determines the 
+ *   * __Antialising__ width of the antialiased line edge (in pixel), this determines the 
  *                     softness along the edge
  *   * __Miter Limit_  limit for cutting of sharp corners
+ *   * __Round Caps_   if enabled, round caps are drawn at the end of each line
+ *   * __Pseudo Lighting__      enables radial shading as depth cue, i.e. tube like appearance
+ *   * __Round Depth Profile__  modify line depth matching a round depth profile
+ *   * __Write Depth Layer__    if enabled, line depths are rendered onto the background image
+ *   * __Draw Mode__      overwrites mesh drawing mode
  *   * __Use Adjacency__  enable the use of adjacency information along the line. The 
  *                        start and end points need to be duplicated.
  */
@@ -71,6 +78,13 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API LineRenderer : public Processor { 
 public:
+    enum class LineDrawMode {
+        Auto,
+        LineSegments,
+        LineStrip,
+        LineLoop
+    };
+
     LineRenderer();
     virtual ~LineRenderer() = default;
      
@@ -90,9 +104,17 @@ private:
     ImageOutport outport_;
 
     FloatProperty lineWidth_;
-    FloatProperty antialising_;
+    FloatProperty antialiasing_;
     FloatProperty miterLimit_;
+    BoolProperty roundCaps_;
+
+    BoolProperty pseudoLighting_;
+    BoolProperty roundDepthProfile_;
+    BoolProperty writeDepth_;
+    TemplateOptionProperty<LineDrawMode> drawMode_;
     BoolProperty useAdjacency_;
+
+    StipplingProperty stippling_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;

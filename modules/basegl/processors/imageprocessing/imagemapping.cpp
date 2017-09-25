@@ -48,13 +48,13 @@ const ProcessorInfo ImageMapping::getProcessorInfo() const {
 
 ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")
-    , transferFunction_("transferFunction", "Transfer Function", TransferFunction()) {
+    , transferFunction_("transferFunction", "Transfer Function") {
     addProperty(transferFunction_);
 }
 
 ImageMapping::~ImageMapping() {}
 
-void ImageMapping::preProcess(TextureUnitContainer &cont) {
+void ImageMapping::preProcess(TextureUnitContainer &) {
     TextureUnit transFuncUnit;
     const Layer* tfLayer = transferFunction_.get().getData();
     const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();

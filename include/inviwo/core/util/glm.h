@@ -33,9 +33,6 @@
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
 #endif
-#ifndef GLM_SWIZZLE
-#define GLM_SWIZZLE
-#endif
 #ifndef GLM_FORCE_SIZE_T_LENGTH
 #define GLM_FORCE_SIZE_T_LENGTH
 #endif
@@ -44,6 +41,7 @@
 #include <warn/ignore/shadow>
 #include <warn/ignore/sign-compare>
 #include <warn/ignore/conversion>
+#include <warn/ignore/misleading-indentation>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -59,6 +57,7 @@
 #include <glm/detail/type_vec.hpp>
 #include <glm/gtx/io.hpp>
 #include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include <half/half.hpp>
 
@@ -257,25 +256,25 @@ template <typename T, glm::precision P>
 struct glmtype<T, 2, 2, P> { typedef glm::tmat2x2<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 2, 3, P> { typedef glm::tmat3x2<T, P> type; };
+struct glmtype<T, 2, 3, P> { typedef glm::tmat2x3<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 2, 4, P> { typedef glm::tmat4x2<T, P> type; };
+struct glmtype<T, 2, 4, P> { typedef glm::tmat2x4<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 3, 2, P> { typedef glm::tmat2x3<T, P> type; };
+struct glmtype<T, 3, 2, P> { typedef glm::tmat3x2<T, P> type; };
 
 template <typename T, glm::precision P>
 struct glmtype<T, 3, 3, P> { typedef glm::tmat3x3<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 3, 4, P> { typedef glm::tmat4x3<T, P> type; };
+struct glmtype<T, 3, 4, P> { typedef glm::tmat3x4<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 4, 2, P> { typedef glm::tmat2x4<T, P> type; };
+struct glmtype<T, 4, 2, P> { typedef glm::tmat4x2<T, P> type; };
 
 template <typename T, glm::precision P>
-struct glmtype<T, 4, 3, P> { typedef glm::tmat3x4<T, P> type; };
+struct glmtype<T, 4, 3, P> { typedef glm::tmat4x3<T, P> type; };
 
 template <typename T, glm::precision P>
 struct glmtype<T, 4, 4, P> { typedef glm::tmat4x4<T, P> type; };
@@ -301,8 +300,8 @@ struct same_extent<G<T,P>, U> { typedef G<U,P> type; };
 
 
 // disable conversion warning
-#pragma warning(push)
-#pragma warning(disable: 4244)
+#include <warn/push>
+#include <warn/ignore/conversion>
 
 // Standard conversion simple casts
 // Just using standard casts. When targets has more dimensions then the source
@@ -654,13 +653,13 @@ To glm_convert_normalized(From x) {
     return res;
 }
 
-#pragma warning(pop)
+#include <warn/pop>
 
 // GLM element access wrapper functions.
 
 // vector like access
 template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-auto glmcomp(T& elem, size_t i) -> T& {
+auto glmcomp(T& elem, size_t) -> T& {
     return elem;
 }
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>

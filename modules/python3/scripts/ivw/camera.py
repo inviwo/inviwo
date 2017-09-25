@@ -27,43 +27,47 @@
 # 
 #*********************************************************************************
 
-import inviwo 
+import inviwopy
+
+from inviwopy.glm import ivec2,vec3,mat3
 
 import math
-import numpy as np
 
 def rotation_matrix(axis, angle):
-    a = np.asarray(axis)
-    a = a / np.linalg.norm(a)
+    a = inviwopy.glm.normalize(axis)
     v = a * math.sin(0.5 * angle)
     w = math.cos(0.5 * angle)
 
-    m = np.zeros([3,3])
+    m = mat3()
     m[0][0] = 1 - (2) * (v[1] * v[1] + v[2] * v[2]);
-    m[0][1] = 2 * (v[0] * v[1] + v[2] * w);
-    m[0][2] = 2 * (v[2] * v[0] - v[1] * w);
+    m[1][0] = 2 * (v[0] * v[1] + v[2] * w);
+    m[2][0] = 2 * (v[2] * v[0] - v[1] * w);
 
-    m[1][0] = 2 * (v[0] * v[1] - v[2] * w);
+    m[0][1] = 2 * (v[0] * v[1] - v[2] * w);
     m[1][1] = 1 - (2) * (v[2] * v[2] + v[0] * v[0]);
-    m[1][2] = 2 * (v[1] * v[2] + v[0] * w);
+    m[2][1] = 2 * (v[1] * v[2] + v[0] * w);
 
-    m[2][0] = 2 * (v[2] * v[0] + v[1] * w);
-    m[2][1] = 2 * (v[1] * v[2] - v[0] * w);
+    m[0][2] = 2 * (v[2] * v[0] + v[1] * w);
+    m[1][2] = 2 * (v[1] * v[2] - v[0] * w);
     m[2][2] = 1 - (2) * (v[1] * v[1] + v[0] * v[0]);
+
     return m
 
 
 class Camera:
     """
     Example:
-    with ivw.camera.Camera("EntryExitPoints.camera") as c:
+    with ivw.camera.Camera(app.network.EntryExitPoints.camera) as c:
         for step in c.rotate(2.0*math.pi/steps, steps, [0,0,1]): 
             print(step)
             inviwoqt.update()
     """
-    def __init__(self, id, lookfrom = None, lookto = None, lookup = None):
-        self.id = id
-        (self.oldlookfrom, self.oldlookto, self.oldlookup) = inviwo.getPropertyValue(self.id)
+    def __init__(self, cameraProperty, lookfrom = None, lookto = None, lookup = None):
+        self.cam = cameraProperty
+        self.oldlookfrom = cameraProperty.lookFrom
+        self.oldlookto = cameraProperty.lookTo
+        self.oldlookup = cameraProperty.lookUp
+
         self.lookfrom = lookfrom if lookfrom != None else self.oldlookfrom
         self.lookto = lookto if lookto != None else self.oldlookto
         self.lookup = lookup if lookup != None else self.oldlookup
@@ -76,22 +80,28 @@ class Camera:
         self.restore()
 
     def set(self):
-        inviwo.setPropertyValue(self.id, (self.lookfrom, self.lookto, self.lookup))
+        self.cam.lookFrom = self.lookfrom;
+        self.cam.lookTo = self.lookto;
+        self.cam.lookUp = self.lookup;
+        self.cam.invalidate()
 
     def restore(self):
-        inviwo.setPropertyValue(self.id, (self.oldlookfrom, self.oldlookto, self.oldlookup))
+        self.cam.lookFrom = self.oldlookfrom;
+        self.cam.lookTo = self.oldlookto;
+        self.cam.lookUp = self.oldlookup;
+        self.cam.invalidate()
 
     def rotate(self, delta = math.pi/30, steps = 60, axis = None):
         if axis == None: axis = self.lookup
-        lookfrom = np.asarray(self.lookfrom)
-        lookto = np.asarray(self.lookto)
-        vec = lookfrom - lookto
-        up = np.asarray(self.lookup)
+        
+        vec = self.lookfrom - self.lookto
+
         mat = rotation_matrix(axis, delta)
+
         for i in range(1, steps+1):
-            vec = np.dot(mat, vec)
-            up = np.dot(mat, up)
-            self.lookfrom = vec + lookto
+            vec = mat * vec
+            up = mat * self.lookup
+            self.lookfrom = vec + self.lookto
             self.lookup = up
             self.set()
             yield i

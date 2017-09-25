@@ -31,16 +31,6 @@
 
 namespace inviwo {
 
-BufferCLBase::BufferCLBase()
-{
-}
-
-BufferCLBase::BufferCLBase(const BufferCLBase& rhs) {
-}
-
-BufferCLBase::~BufferCLBase() {
-}
-
 } // namespace
 
 namespace cl {

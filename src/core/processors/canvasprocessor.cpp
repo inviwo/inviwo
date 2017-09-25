@@ -41,6 +41,8 @@
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/dialogfactory.h>
+#include <inviwo/core/io/imagewriterutil.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -57,19 +59,21 @@ CanvasProcessor::CanvasProcessor()
     , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, InvalidationLevel::Valid)
     , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f,
                           InvalidationLevel::Valid)
-    , position_("position", "Canvas Position", ivec2(128, 128), ivec2(std::numeric_limits<int>::lowest() ), ivec2(std::numeric_limits<int>::max()),
-        ivec2(1, 1), InvalidationLevel::Valid,PropertySemantics::Text)
+    , position_("position", "Canvas Position", ivec2(128, 128),
+                ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
+                ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
     , visibleLayer_("visibleLayer", "Visible Layer")
     , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
     , imageTypeExt_("fileExt", "Image Type")
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
-    , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...", InvalidationLevel::Valid)
+    , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...",
+                             InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
     , toggleFullscreen_("toggleFullscreen", "Toggle Full Screen")
-    , fullscreen_("fullscreen", "FullScreen",
-                  [this](Event* event) { setFullScreen(!isFullScreen()); }, IvwKey::F,
-                  KeyState::Press, KeyModifier::Shift)
+    , fullscreen_("fullscreen", "FullScreen", [this](Event*) { setFullScreen(!isFullScreen()); },
+                  IvwKey::F, KeyState::Press, KeyModifier::Shift)
+    , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)}
@@ -130,22 +134,10 @@ CanvasProcessor::CanvasProcessor()
     addProperty(saveLayerButton_);
 
     saveLayerToFileButton_.onChange([this]() {
-        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
-            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
-        if (!fileDialog) {
-            // no file dialog found, disable button
-            saveLayerToFileButton_.setReadOnly(true);
-            return;
-        }
-        fileDialog->setTitle("Save Layer to File...");
-        fileDialog->setAcceptMode(AcceptMode::Save);
-        fileDialog->setFileMode(FileMode::AnyFile);
-
-        auto writerFactory = InviwoApplication::getPtr()->getDataWriterFactory();
-        fileDialog->addExtensions(writerFactory->getExtensionsForType<Layer>());
-
-        if (fileDialog->show()) {
-            saveImageLayer(fileDialog->getSelectedFile(), fileDialog->getSelectedFileExtension());
+        if (auto layer = getVisibleLayer()) {
+            util::saveLayer(*layer);
+        } else {
+            LogError("Could not find visible layer");
         }
     });
     addProperty(saveLayerToFileButton_);
@@ -164,6 +156,7 @@ CanvasProcessor::CanvasProcessor()
 
     addProperty(toggleFullscreen_);
     addProperty(fullscreen_);
+    addProperty(allowContextMenu_);
 
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
@@ -270,38 +263,10 @@ void CanvasProcessor::saveImageLayer() {
     saveImageLayer(snapshotPath, ext);
 }
 
-void CanvasProcessor::saveImageLayer(std::string snapshotPath, const FileExtension &extension) {
+void CanvasProcessor::saveImageLayer(std::string snapshotPath, const FileExtension& extension) {
     if (auto layer = getVisibleLayer()) {
-        auto writer = std::shared_ptr<DataWriterType<Layer>>(
-            InviwoApplication::getPtr()
-            ->getDataWriterFactory()
-            ->getWriterForTypeAndExtension<Layer>(extension));
-
-        if (!writer) {
-            // could not find a reader for the given extension, extension might be invalid
-            // try to get reader for the extension extracted from the file name, i.e. snapshotPath
-            const auto ext = filesystem::getFileExtension(snapshotPath);
-            writer = std::shared_ptr<DataWriterType<Layer>>(
-                InviwoApplication::getPtr()
-                ->getDataWriterFactory()
-                ->getWriterForTypeAndExtension<Layer>(ext));
-            if (!writer) {
-                LogError("Could not find a writer for the specified file extension (\""
-                         << ext << "\")");
-                return;
-            }
-        }
-
-        try {
-            writer->setOverwrite(true);
-            writer->writeData(layer, snapshotPath);
-            LogInfo("Canvas layer exported to disk: " << snapshotPath);
-        }
-        catch (DataWriterException const& e) {
-            LogError(e.getMessage());
-        }
-    }
-    else {
+        util::saveLayer(*layer, snapshotPath, extension);
+    } else {
         LogError("Could not find visible layer");
     }
 }
@@ -415,5 +380,7 @@ void CanvasProcessor::setFullScreen(bool fullscreen) {
         return canvasWidget_->getCanvas()->setFullScreen(fullscreen);
     }
 }
+
+bool CanvasProcessor::isContextMenuAllowed() const { return allowContextMenu_.get(); }
 
 }  // namespace

@@ -1,0 +1,4 @@
+RawFile: testdata.INT8.raw
+Resolution: 13 7 3
+Format: INT8
+ByteOrder:  LittleEndian

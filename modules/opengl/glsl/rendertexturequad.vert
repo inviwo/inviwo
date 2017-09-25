@@ -29,12 +29,14 @@
 #include "utils/structs.glsl"
 
 uniform GeometryParameters geometry_;
+uniform mat4 texCoordTransform = mat4(1);
+
 out vec2 texCoord;
 
 void main(void) {
     // transform input coords from [-1,1] to [0,1]
-    vec4 vertex = vec4(in_Vertex.xyz * 0.5 + 0.5, in_Vertex.w);
+    vec4 vertex = vec4(in_Vertex.xy * 0.5 + 0.5, 0.0, in_Vertex.w);
     // move vertices to screen coords
     gl_Position = geometry_.dataToWorld * vertex;
-    texCoord = in_TexCoord.xy;
+    texCoord = (texCoordTransform * vec4(in_TexCoord, 1.0)).xy;
 }

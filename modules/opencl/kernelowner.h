@@ -49,7 +49,7 @@ public:
     * This method will be called when observed object changes.
     * Override it to add behavior.
     */
-    virtual void onKernelCompiled(const cl::Kernel* kernel) {};
+    virtual void onKernelCompiled(const cl::Kernel* kernel);
 
 };
 

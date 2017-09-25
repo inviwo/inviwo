@@ -27,24 +27,34 @@
  * 
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+layout(location = 4) in uint in_PickId;
 
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
+#include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
+
+uniform GeometryParameters geometry;
+
+// initialize camera matrices with the identity matrix to enable default rendering
+// without any transformation, i.e. all lines in clip space
+uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
+                                    mat4(1), mat4(1), vec3(0), 0, 1);
+
+uniform bool pickingEnabled = false;
 
 out vec4 worldPosition_;
 out vec3 normal_;
 out vec3 viewNormal_;
 out vec4 vertexColor_;
 out vec3 texCoord_;
+flat out vec4 pickColors_;
  
 void main() {
     vertexColor_ = in_Color;
     texCoord_ = in_TexCoord;
 
-    worldPosition_ = geometry_.dataToWorld * in_Vertex;
-    normal_ = geometry_.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
-    viewNormal_ = (camera_.worldToView * vec4(normal_,0)).xyz;
-    gl_Position = camera_.worldToClip * worldPosition_;
-    //gl_Position = in_Vertex;
+    worldPosition_ = geometry.dataToWorld * in_Vertex;
+    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
+    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
+    gl_Position = camera.worldToClip * worldPosition_;
+    pickColors_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }

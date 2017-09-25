@@ -47,6 +47,7 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     , workspace_("w", "workspace", "Specify workspace to open", false, "", "workspace file")
     , outputPath_("o", "output", "Specify output path", false, "", "output path")
     , logfile_("l", "logfile", "Write log messages to file.", false, "", "logfile")
+    , logConsole_("c", "logconsole", "Write log messages to console (cout)", false)
     , noSplashScreen_("n", "nosplash", "Pass this flag if you do not want to show a splash screen.")
     , quitAfterStartup_("q", "quit", "Pass this flag if you want to close inviwo after startup.")
     , wildcard_()
@@ -57,6 +58,7 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     cmdQuiet_.add(quitAfterStartup_);
     cmdQuiet_.add(noSplashScreen_);
     cmdQuiet_.add(logfile_);
+    cmdQuiet_.add(logConsole_);
     cmdQuiet_.add(helpQuiet_);
     cmdQuiet_.add(versionQuiet_);
     cmdQuiet_.add(wildcard_);
@@ -66,27 +68,16 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     cmd_.add(quitAfterStartup_);
     cmd_.add(noSplashScreen_);
     cmd_.add(logfile_);
+    cmd_.add(logConsole_);
 
     parse(Mode::Quiet);
 }
 
-CommandLineParser::~CommandLineParser() {}
-
-const std::string CommandLineParser::getOutputPath() const {
-    if (outputPath_.isSet()) return (outputPath_.getValue());
-
-    return "";
-}
-
-const std::string CommandLineParser::getWorkspacePath() const {
-    if (workspace_.isSet()) return (workspace_.getValue());
-
-    return "";
-}
+CommandLineParser::~CommandLineParser() = default;
 
 void CommandLineParser::parse(int argc, char** argv, Mode mode) {
     switch (mode) {
-        case inviwo::CommandLineParser::Mode::Normal: {
+        case CommandLineParser::Mode::Normal: {
             helpQuiet_.reset();
             versionQuiet_.reset();
             try {
@@ -101,7 +92,7 @@ void CommandLineParser::parse(int argc, char** argv, Mode mode) {
             break;
         }
 
-        case inviwo::CommandLineParser::Mode::Quiet: {
+        case CommandLineParser::Mode::Quiet: {
             try {
                 if (argc > 0) {
                     cmdQuiet_.reset();
@@ -117,6 +108,24 @@ void CommandLineParser::parse(int argc, char** argv, Mode mode) {
 }
 
 void CommandLineParser::parse(Mode mode) { parse(argc_, argv_, mode); }
+
+void CommandLineParser::setArgc(int argc) {
+    argc_ = argc;
+}
+
+void CommandLineParser::setArgv(char** argv) {
+    argv_ = argv;
+}
+
+const std::string CommandLineParser::getOutputPath() const {
+    if (outputPath_.isSet()) return (outputPath_.getValue());
+    return "";
+}
+
+const std::string CommandLineParser::getWorkspacePath() const {
+    if (workspace_.isSet()) return (workspace_.getValue());
+    return "";
+}
 
 const std::string CommandLineParser::getLogToFileFileName() const {
     if (logfile_.isSet())
@@ -154,6 +163,18 @@ bool CommandLineParser::getLogToFile() const {
     }
 
     return false;
+}
+
+bool CommandLineParser::getLogToConsole() const {
+    return logConsole_.isSet();
+}
+
+int CommandLineParser::getARGC() const {
+    return argc_;
+}
+
+char** CommandLineParser::getARGV() const {
+    return argv_;
 }
 
 void CommandLineParser::processCallbacks() {

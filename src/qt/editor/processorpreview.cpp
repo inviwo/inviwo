@@ -30,6 +30,7 @@
 #include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
@@ -50,6 +51,7 @@
 
 namespace inviwo {
 
+
 QImage utilqt::generatePreview(const QString& classIdentifier) {
     std::string cid = classIdentifier.toLocal8Bit().constData();
 
@@ -61,7 +63,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
 
         double yshift = 20.0;
         double offset = processor->getInports().size()*yshift;
-        
+
         for (auto inport : processor->getInports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
             classFont.setPixelSize(14);
@@ -79,7 +81,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
             path.lineTo(pos + QPointF(0, -offset));
             path.lineTo(pos + QPointF(2, -offset));
             auto li = new QGraphicsPathItem(path);
-  
+
             li->setPen(QPen(Qt::lightGray));
             scene->addItem(li);
 
@@ -104,7 +106,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
             path.lineTo(pos + QPointF(0, offset));
             path.lineTo(pos + QPointF(2, offset));
             auto li = new QGraphicsPathItem(path);
-            
+
             li->setPen(QPen(Qt::lightGray));
             scene->addItem(li);
 
@@ -115,7 +117,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
         float padAbove = processor->getInports().empty() ? 10.0f : 0.0f;
 
         scene->clearSelection();  // Selections would also render to the file
-        // Re-shrink the scene to it's bounding contents
+                                  // Re-shrink the scene to it's bounding contents
         scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10.0, -padAbove, 10.0, padBelow));
         QImage image(
             scene->sceneRect().size().toSize(),
@@ -132,9 +134,47 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     }
 }
 
-IVW_QTEDITOR_API void utilqt::saveProcessorPreviews(
-    const std::string& path, const std::vector<std::string>& classIdentifiers) {
-    for (const auto& classIdentifier : classIdentifiers) {
+QImage utilqt::generateProcessorPreview(const QString& classIdentifier, double opacity) {
+    std::string cid = classIdentifier.toLocal8Bit().constData();
+
+    try {
+        auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
+        auto item = new ProcessorGraphicsItem(processor.get());
+        auto scene = util::make_unique<QGraphicsScene>(nullptr);
+        scene->addItem(item);
+                
+        const float padBelow = 10.0f;
+        const float padAbove = 10.0f;
+
+        scene->clearSelection();  // Selections would also render to the file
+        // Re-shrink the scene to it's bounding contents
+        scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10.0, -padAbove, 10.0, padBelow));
+        QImage image(
+            scene->sceneRect().size().toSize(),
+            QImage::Format_ARGB32);   // Create the image with the exact size of the shrunk scene
+        image.fill(Qt::transparent);  // Start all pixels transparent
+
+        QPainter painter(&image);
+        painter.setRenderHints(QPainter::Antialiasing);
+        scene->render(&painter);
+
+        // make the image semitransparent
+        if (opacity < 1.0) {
+            painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+            painter.fillRect(image.rect(), QColor(0, 0, 0, static_cast<int>(opacity * 255)));
+        }
+        painter.end();
+
+        return image;
+    } catch (Exception&) {
+        // We will just ignore this...
+        return QImage();
+    }
+}
+
+void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
+
+    auto save = [&](const std::string& classIdentifier) {
         QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
         QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));
         if (!img.isNull()) {
@@ -149,6 +189,10 @@ IVW_QTEDITOR_API void utilqt::saveProcessorPreviews(
             LogWarnCustom("saveProcessorPreviews",
                           "No preview generated for: \"" + classIdentifier + "\"");
         }
+    };
+
+    for (const auto& classIdentifier : app->getProcessorFactory()->getKeys()) {
+        save(classIdentifier);
     }
 }
 

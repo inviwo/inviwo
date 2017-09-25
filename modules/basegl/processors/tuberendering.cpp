@@ -28,14 +28,12 @@
  *********************************************************************************/
 
 /*
-Code for rendering tubes is heavily inspired by a blog post written by Philip Rideout 
+Code for rendering tubes is heavily inspired by a blog post written by Philip Rideout
 (Tron, Volumetric Lines, and Meshless Tubes)
-at "The little grasshopper, Graphics Programming Tips" 
+at "The little grasshopper, Graphics Programming Tips"
 http://prideout.net/blog/?p=61
 
 */
-
-
 
 #include "tuberendering.h"
 #include <modules/opengl/texture/textureutils.h>
@@ -50,26 +48,23 @@ namespace inviwo {
 const ProcessorInfo TubeRendering::processorInfo_{
     "org.inviwo.TubeRendering",  // Class identifier
     "Tube Rendering",            // Display name
-    "Rendering",                 // Category
-    CodeState::Experimental,     // Code state
+    "Mesh Rendering",            // Category
+    CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo TubeRendering::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo TubeRendering::getProcessorInfo() const { return processorInfo_; }
 
 TubeRendering::TubeRendering()
     : Processor()
     , mesh_("mesh")
     , imageInport_("imageInport")
     , outport_("outport")
-    , radius_("radius","Tube Radius", 0.01f , 0.0001f , 2.f , 0.0001f)
-    , camera_("camera","Camera")
+    , radius_("radius", "Tube Radius", 0.01f, 0.0001f, 2.f, 0.0001f)
+    , camera_("camera", "Camera")
     , trackball_(&camera_)
     , light_("light", "Lighting", &camera_)
-    , shader_("tuberendering.vert", "tuberendering.geom", "tuberendering.frag",false)
-    , drawer_(nullptr)
-{
+    , shader_("tuberendering.vert", "tuberendering.geom", "tuberendering.frag", false)
+    , drawer_(nullptr) {
     addPort(mesh_);
     addPort(imageInport_);
     addPort(outport_);
@@ -83,23 +78,22 @@ TubeRendering::TubeRendering()
     imageInport_.setOptional(true);
 
     outport_.addResizeEventListener(&camera_);
-    
-    mesh_.onChange([this]() {drawer_ = nullptr; });
+
+    mesh_.onChange([this]() { drawer_ = nullptr; });
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
-    
+
 void TubeRendering::process() {
     if (!drawer_) {
         indexBuffersToRender_.clear();
         size_t nonAdjLineStrips = 0;
-        
+
         size_t idx = 0;
         for (auto ib : mesh_.getData()->getIndexBuffers()) {
             if (ib.first.dt == DrawType::Lines && ib.first.ct == ConnectivityType::StripAdjacency) {
                 indexBuffersToRender_.push_back(idx);
-            }
-            else {
+            } else {
                 nonAdjLineStrips++;
             }
             idx++;
@@ -109,16 +103,16 @@ void TubeRendering::process() {
                 "Tube renderer only support rendering of lines strips with adjacency information. "
                 "Ignoring "
                 << nonAdjLineStrips << " index buffers of incompatible type");
-            LogInfo("Number of lines strips with adjacency index buffers: " << indexBuffersToRender_.size());
+            LogInfo("Number of lines strips with adjacency index buffers: "
+                    << indexBuffersToRender_.size());
         }
         drawer_ = util::make_unique<MeshDrawerGL>(mesh_.getData().get());
     }
     if (!drawer_) return;
 
     if (imageInport_.isConnected()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_ , ImageType::ColorDepth);
-    }
-    else {
+        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
+    } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
 
@@ -129,26 +123,22 @@ void TubeRendering::process() {
     utilgl::setShaderUniforms(shader_, camera_, "camera");
     utilgl::setShaderUniforms(shader_, light_, "light");
 
-  //  utilgl::PolygonModeState polygon(GL_LINE, 1, 1);
+    //  utilgl::PolygonModeState polygon(GL_LINE, 1, 1);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
 
     auto drawObj = drawer_->getDrawObject();
-    //drawer_->draw();
+    // drawer_->draw();
     for (const auto &idx : indexBuffersToRender_) {
         drawObj.draw(idx);
     }
-
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-void TubeRendering::initializeResources()
-{
+void TubeRendering::initializeResources() {
     utilgl::addShaderDefines(shader_, light_);
     shader_.build();
 }
 
-} // namespace
-
-
+}  // namespace

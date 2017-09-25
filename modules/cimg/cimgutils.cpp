@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/cimg/cimgutils.h>
+#include <modules/cimg/cimgsavebuffer.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriter.h>
@@ -36,8 +37,19 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#define cimg_verbosity 0 //Disable all cimg output
-#define cimg_display 0 // Do not use any gui stuff
+#if (_MSC_VER)
+#pragma warning(disable : 4146)
+#pragma warning(disable : 4197)
+#pragma warning(disable : 4293)
+#pragma warning(disable : 4309)
+#pragma warning(disable : 4319)
+#pragma warning(disable : 4324)
+#pragma warning(disable : 4456)
+#pragma warning(disable : 4458)
+#pragma warning(disable : 4611)
+#endif
+#define cimg_verbosity 0  // Disable all cimg output
+#define cimg_display 0    // Do not use any gui stuff
 #include <modules/cimg/ext/cimg/CImg.h>
 #include <warn/pop>
 
@@ -45,11 +57,8 @@
 #include <warn/ignore/switch-enum>
 #include <warn/ignore/conversion>
 #if (_MSC_VER)
-#pragma warning(disable : 4146)
-#pragma warning(disable : 4197)
 #pragma warning(disable : 4297)
 #pragma warning(disable : 4267)
-#pragma warning(disable : 4293)
 #endif
 
 // Added in Cimg.h below struct type<float>...
@@ -126,9 +135,10 @@ template <typename T>
 struct LayerToCImg {
     static std::unique_ptr<CImg<T>> convert(const LayerRAM* inputLayerRAM, bool permute = true) {
         // Single channel means we can do xyzc, as no permutation is needed
-        auto img = util::make_unique<CImg<T>>(static_cast<const T*>(inputLayerRAM->getData()),
-                                              static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
-                                              static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, 1, false);
+        auto img = util::make_unique<CImg<T>>(
+            static_cast<const T*>(inputLayerRAM->getData()),
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, 1, false);
 
         return img;
     }
@@ -146,8 +156,9 @@ struct LayerToCImg<G<T, glm::defaultp>> {
         // Permute from interleaved to planer format, does we need to specify yzcx as input instead
         // of cxyz
         auto img = util::make_unique<CImg<T>>(
-            glm::value_ptr(*typedDataPtr), dataFormat->getComponents(),
-            inputLayerRAM->getDimensions().x, inputLayerRAM->getDimensions().y, 1, false);
+            glm::value_ptr(*typedDataPtr), static_cast<unsigned int>(dataFormat->getComponents()),
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
+            static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1u, false);
 
         if (permute) img->permute_axes("yzcx");
 
@@ -161,8 +172,13 @@ struct CImgNormalizedLayerDispatcher {
     std::unique_ptr<std::vector<unsigned char>> dispatch(const LayerRAM* inputLayer) {
         auto img = LayerToCImg<typename T::type>::convert(inputLayer, false);
 
+        // TODO this does not work for signed char... 255 out of range
         CImg<unsigned char> normalizedImg = img->get_normalize(0, 255);
         normalizedImg.mirror('z');
+
+        if (inputLayer->getDataFormat()->getComponents() == 1) {
+            normalizedImg.mirror('y');
+        }
 
         auto data = util::make_unique<std::vector<unsigned char>>(
             &normalizedImg[0], &normalizedImg[normalizedImg.size()]);
@@ -255,7 +271,64 @@ struct CImgSaveLayerDispatcher {
         try {
             img->save(filePath);
         } catch (CImgIOException& e) {
-            throw DataWriterException("Failed to save image to: " + std::string(filePath), IvwContext);
+            throw DataWriterException("Failed to save image to: " + std::string(filePath) +
+                                          " Reason: " + std::string(e.what()),
+                                      IvwContext);
+        }
+    }
+};
+
+struct CImgSaveLayerToBufferDispatcher {
+    using type = std::unique_ptr<std::vector<unsigned char>>;
+    template <typename T>
+    type dispatch(const LayerRAM* inputLayer, const std::string& extension) {
+        auto img = LayerToCImg<typename T::type>::convert(inputLayer);
+
+        // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
+        const DataFormatBase* outFormat = DataFloat32::get();
+        std::string fileExtension = toLower(extension);
+        if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+            outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
+        }
+
+        // Image is up-side-down
+        img->mirror('y');
+
+        const DataFormatBase* inFormat = inputLayer->getDataFormat();
+        double inMin = inFormat->getMin();
+        double inMax = inFormat->getMax();
+        double outMin = outFormat->getMin();
+        double outMax = outFormat->getMax();
+
+        // Special treatment for float data types:
+        // For float input images, we assume that the range is [0,1] (which is the same as rendered
+        // in a Canvas)
+        // For float output images, we normalize to [0,1]
+        // Note that no normalization is performed if both input and output are float images
+        if (inFormat->getNumericType() == NumericType::Float) {
+            inMin = 0.0;
+            inMax = 1.0;
+        }
+        if (outFormat->getNumericType() == NumericType::Float) {
+            outMin = 0.0;
+            outMax = 1.0;
+        }
+
+        // The image values should be rescaled if the ranges of the input and output are different
+        if (inMin != outMin || inMax != outMax) {
+            typename T::primitive* data = img->data();
+            double scale = (outMax - outMin) / (inMax - inMin);
+            for (size_t i = 0; i < img->size(); i++) {
+                auto dataValue = glm::clamp(static_cast<double>(data[i]), inMin, inMax);
+                data[i] = static_cast<typename T::primitive>((dataValue - inMin) * scale + outMin);
+            }
+        }
+        try {
+            return std::make_unique<std::vector<unsigned char>>(
+                std::move(cimgutil::saveCImgToBuffer(*img.get(), extension)));
+        } catch (CImgIOException& e) {
+            throw DataWriterException(
+                "Failed to save image to buffer. Reason: " + std::string(e.what()), IvwContext);
         }
     }
 };
@@ -299,7 +372,7 @@ struct CImgLoadVolumeDispatcher {
 ////////////////////// CImgUtils ///////////////////////////////////////////////////
 
 void* loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
-    DataFormatId& formatId, bool rescaleToDim) {
+                    DataFormatId& formatId, bool rescaleToDim) {
     std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
@@ -314,7 +387,7 @@ void* loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
 }
 
 void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions,
-    DataFormatId& formatId) {
+                     DataFormatId& formatId) {
     std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
@@ -330,19 +403,14 @@ void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions
 void saveLayer(const std::string& filePath, const Layer* inputLayer) {
     CImgSaveLayerDispatcher disp;
     const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();
-    inputLayer->getDataFormat()->dispatch(disp, filePath.c_str(), inputLayerRam);
+    inputLayerRam->getDataFormat()->dispatch(disp, filePath.c_str(), inputLayerRam);
 }
 
-std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(const std::string& fileType,
+std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(const std::string& extension,
                                                               const Layer* inputLayer) {
-    if (fileType != "raw") {
-        throw DataWriterException("CImage: cimgutil::saveLayerToBuffer() only supports \"raw\" format.",
-                                  IvwContextCustom("cimgutil::saveLayerToBuffer()"));
-    }
-
-    const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();  
-    CImgNormalizedLayerDispatcher disp;
-    return inputLayer->getDataFormat()->dispatch(disp, inputLayerRam);
+    CImgSaveLayerToBufferDispatcher disp;
+    const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();
+    return inputLayerRam->getDataFormat()->dispatch(disp, inputLayerRam, extension);
 }
 
 void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim) {
@@ -420,6 +488,36 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
 
     CImgRescaleLayerRamToLayerRamDispatcher disp;
     return source->getDataFormat()->dispatch(disp, source, target);
+}
+
+std::string getLibPNGVesrion() {
+#ifdef cimg_use_png
+    std::ostringstream oss;
+    oss << PNG_LIBPNG_VER_MAJOR << "." << PNG_LIBPNG_VER_MINOR << "." << PNG_LIBPNG_VER_RELEASE;
+    return oss.str();
+#else
+    return "LibPNG not available";
+#endif
+}
+
+std::string getLibJPGVesrion() {
+#ifdef cimg_use_jpeg
+    std::ostringstream oss;
+    oss << JPEG_LIB_VERSION_MAJOR << "." << JPEG_LIB_VERSION_MINOR;
+    return oss.str();
+#else
+    return "LibJPG not available";
+#endif
+}
+
+std::string getOpenEXRVesrion() {
+#ifdef cimg_use_openexr
+    std::ostringstream oss;
+    oss << OPENEXR_VERSION_MAJOR << "." << OPENEXR_VERSION_MINOR << "." << OPENEXR_VERSION_PATCH;
+    return oss.str();
+#else
+    return "OpenEXR not available";
+#endif
 }
 
 }  // namespace

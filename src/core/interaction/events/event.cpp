@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-bool Event::shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) {
+bool Event::shouldPropagateTo(Inport* /*inport*/, Processor* /*processor*/, Outport* /*source*/) {
     return true;
 }
 

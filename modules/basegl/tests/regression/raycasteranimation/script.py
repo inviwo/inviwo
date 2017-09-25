@@ -1,6 +1,8 @@
 # Inviwo Python script 
-import inviwo 
-import inviwoqt
+import inviwopy
+from inviwopy import qt as inviwoqt
+from inviwopy.glm import ivec2,vec3
+
 import math 
 import time
 
@@ -11,13 +13,16 @@ steps = 50
 
 m = ivw.regression.Measurements()
 
-with ivw.camera.Camera("EntryExitPoints.camera", lookfrom = [0,4,0], lookto = [0,0,0], lookup = [0,0,1]) as c:
+network = inviwopy.app.network;
+canvas = network.CanvasGL;
+
+with ivw.camera.Camera(network.EntryExitPoints.camera, lookfrom = vec3(0,4,0), lookto = vec3(0,0,0), lookup = vec3(0,0,1)) as c:
     for size in [256,512,768,1024]:
-        inviwo.resizecanvas("CanvasGL", size, size)
-        ivw.regression.saveCanvas("CanvasGL", "CanvasGL-"+str(size) + "x" +str(size))
+        canvas.size=ivec2(size,size)
+        ivw.regression.saveCanvas(canvas, "CanvasGL-"+str(size) + "x" +str(size))
 
         start = time.clock()
-        for step in c.rotate(math.pi/steps, steps, [0,1,0]):
+        for step in c.rotate(math.pi/steps, steps, vec3(0,1,0)):
             inviwoqt.update()
         end = time.clock()
         frametime = (end - start) / steps

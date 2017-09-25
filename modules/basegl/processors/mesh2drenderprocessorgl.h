@@ -42,19 +42,6 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, Mesh2DRenderer}
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_BASEGL_API Mesh2DRenderProcessorGL : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;

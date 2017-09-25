@@ -80,4 +80,6 @@ void ProcessorKernelOwner::notifyObserversKernelCompiled(const cl::Kernel* kerne
     processor_->invalidate(InvalidationLevel::InvalidResources);
 }
 
+void KernelObserver::onKernelCompiled(const cl::Kernel*) {}
+
 } // namespace

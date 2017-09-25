@@ -39,26 +39,25 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QPushButton>
+#include <QHBoxLayout>
+#include <QGridLayout>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QFocusEvent>
 #include <warn/pop>
 
 namespace inviwo {
 
 EventPropertyWidgetQt::EventPropertyWidgetQt(EventProperty* eventproperty)
-    : PropertyWidgetQt(eventproperty), eventproperty_(eventproperty) {
-    generateWidget();
-}
+    : PropertyWidgetQt(eventproperty)
+    , eventproperty_(eventproperty)
+    , button_{new IvwPushButton(this)}
+    , label_{new EditableLabelQt(this, eventproperty_)} {
 
-EventPropertyWidgetQt::~EventPropertyWidgetQt() = default;
-
-void inviwo::EventPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
 
-    label_ = new EditableLabelQt(this, eventproperty_);
-
-    button_ = new IvwPushButton(this);
-    connect(button_, SIGNAL(clicked()), this, SLOT(clickedSlot()));
+    connect(button_, &IvwPushButton::clicked, this, &EventPropertyWidgetQt::clickedSlot);
     hLayout->addWidget(label_);
 
     {
@@ -79,6 +78,8 @@ void inviwo::EventPropertyWidgetQt::generateWidget() {
 
     setButtonText();
 }
+
+EventPropertyWidgetQt::~EventPropertyWidgetQt() = default;
 
 void EventPropertyWidgetQt::updateFromProperty() { setButtonText(); }
 
@@ -160,7 +161,7 @@ void EventPropertyWidgetQt::setButtonText() {
     button_->setText(QString::fromStdString(ss.str()));
 }
 
-void EventPropertyWidgetQt::focusOutEvent(QFocusEvent* event) {
+void EventPropertyWidgetQt::focusOutEvent(QFocusEvent*) {
     releaseKeyboard();
     setButtonText();
     button_->setEnabled(true);

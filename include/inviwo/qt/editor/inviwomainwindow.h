@@ -34,7 +34,6 @@
 #include <inviwo/qt/editor/networkeditorobserver.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/qt/editor/undomanager.h>
-#include <inviwo/qt/editor/globaleventfilter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -195,8 +194,8 @@ private:
     TCLAP::ValueArg<std::string> snapshotArg_;
     TCLAP::ValueArg<std::string> screenGrabArg_;
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
+    TCLAP::SwitchArg updateWorkspaces_;
     
-    GlobalEventFilter eventFilter_;
     UndoManager undoManager_;
 
     std::shared_ptr<std::function<void()>> onModulesDidRegister_; ///< Called after modules have been registered

@@ -158,9 +158,9 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
 
 PointLightInteractionHandler::~PointLightInteractionHandler() {}
 
-void PointLightInteractionHandler::serialize(Serializer& s) const {}
+void PointLightInteractionHandler::serialize(Serializer&) const {}
 
-void PointLightInteractionHandler::deserialize(Deserializer& d) {}
+void PointLightInteractionHandler::deserialize(Deserializer&) {}
 
 const vec3& PointLightInteractionHandler::getLookFrom() const { return lightPosition_->get(); }
 

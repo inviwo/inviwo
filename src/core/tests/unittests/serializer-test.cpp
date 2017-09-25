@@ -87,10 +87,10 @@ T serializationOfType(T inValue) {
 static const float oneMinusEpsilonF = 1.0f - std::numeric_limits<float>::epsilon();
 static const double oneMinusEpsilonD = 1.0 - std::numeric_limits<double>::epsilon();
 
-NUMERIC_TESTS(floatSerialization, float, 3.14f);
-NUMERIC_TESTS(doubleSerializationTest, double, 6.28);
-TYPE_TEST(oneMinusEpsilonFloatTest, float, oneMinusEpsilonF);
-TYPE_TEST(oneMinusEpsilonDobuleTest, double, oneMinusEpsilonD);
+NUMERIC_TESTS(floatSerialization, float, 3.14f)
+NUMERIC_TESTS(doubleSerializationTest, double, 6.28)
+TYPE_TEST(oneMinusEpsilonFloatTest, float, oneMinusEpsilonF)
+TYPE_TEST(oneMinusEpsilonDobuleTest, double, oneMinusEpsilonD)
 
 #undef TYPE_TEST
 #undef MIN_TEST
@@ -115,22 +115,22 @@ TYPE_TEST(oneMinusEpsilonDobuleTest, double, oneMinusEpsilonD);
                   serializationOfType(std::numeric_limits<T>::epsilon())); \
     }
 
-NUMERIC_TESTS(signedCharSerializationTest, signed char, 3);
-NUMERIC_TESTS(charSerializationTest, char, 3);
-NUMERIC_TESTS(unsignedCharSerializationTest, unsigned char, 3);
+NUMERIC_TESTS(signedCharSerializationTest, signed char, 3)
+NUMERIC_TESTS(charSerializationTest, char, 3)
+NUMERIC_TESTS(unsignedCharSerializationTest, unsigned char, 3)
 
-TYPE_TEST(letterCharSerializationTest1, char, 'b');
-TYPE_TEST(letterCharSerializationTest2, char, 't');
+TYPE_TEST(letterCharSerializationTest1, char, 'b')
+TYPE_TEST(letterCharSerializationTest2, char, 't')
 
-NUMERIC_TESTS(shortSerializationTest, short, -1065);
-NUMERIC_TESTS(unsignedShortSerializationTest, unsigned short, 1065);
+NUMERIC_TESTS(shortSerializationTest, short, -1065)
+NUMERIC_TESTS(unsignedShortSerializationTest, unsigned short, 1065)
 
-NUMERIC_TESTS(intSerializationTest, int, -65124);
-NUMERIC_TESTS(unsignedIntSerializationTest, unsigned int, 45654);
+NUMERIC_TESTS(intSerializationTest, int, -65124)
+NUMERIC_TESTS(unsignedIntSerializationTest, unsigned int, 45654)
 
-NUMERIC_TESTS(longSerializationTest, long, 650004);
-NUMERIC_TESTS(longLongSerializationTest, long long, 6700089);
-NUMERIC_TESTS(unsignedLongLongSerializationTest, unsigned long long, 99996789);
+NUMERIC_TESTS(longSerializationTest, long, 650004)
+NUMERIC_TESTS(longLongSerializationTest, long long, 6700089)
+NUMERIC_TESTS(unsignedLongLongSerializationTest, unsigned long long, 99996789)
 
 class MinimumSerilizableClass : public Serializable {
 public:

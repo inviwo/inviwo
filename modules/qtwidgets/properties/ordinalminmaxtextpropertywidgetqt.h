@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
@@ -39,172 +39,250 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>
-
-namespace inviwo {
-
-class IVW_MODULE_QTWIDGETS_API BaseOrdinalMinMaxTextPropertyWidgetQt : public PropertyWidgetQt {
+#include <inviwo/core/metadata/metadata.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-    Q_OBJECT
+#include <QAction>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QSignalBlocker>
 #include <warn/pop>
 
-public:
-    BaseOrdinalMinMaxTextPropertyWidgetQt(Property* property);
-    virtual ~BaseOrdinalMinMaxTextPropertyWidgetQt();
-    
-    virtual void updateFromProperty() = 0;
-    virtual QMenu* getContextMenu();
-    
-public slots:
-    virtual void updateFromMin() = 0;
-    virtual void updateFromMax() = 0;
-    virtual void showSettings() = 0;
-    virtual void showContextMenu(const QPoint& pos);    
-    
-protected:
-    void generateWidget();
-    virtual void makeEditorWidgets() = 0;    
-
-    PropertySettingsWidgetQt* settingsWidget_;    
-    
-    BaseOrdinalEditorWidget* min_;
-    BaseOrdinalEditorWidget* max_;
-    EditableLabelQt* label_;
-
-    QMenu* contextMenu_;
-    QAction* settingsAction_;
-    void generatesSettingsWidget();
-};
-
-
+namespace inviwo {
 
 template <typename BT, typename T>
-class OrdinalMinMaxTextPropertyWidgetQt : public BaseOrdinalMinMaxTextPropertyWidgetQt {
+class OrdinalMinMaxTextPropertyWidgetQt : public PropertyWidgetQt {
 
 public:
     OrdinalMinMaxTextPropertyWidgetQt(MinMaxProperty<T>* property);
     virtual ~OrdinalMinMaxTextPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
-    virtual void updateFromMin() override;
-    virtual void updateFromMax() override;
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
 
-    typedef glm::tvec2<T, glm::defaultp> V;
-    
+    using V = glm::tvec2<T, glm::defaultp>;
+
 protected:
-    virtual void makeEditorWidgets() override;
+    void updateFromMin();
+    void updateFromMax();
+    void showSettings();
 
-    virtual void showSettings() override {
-        if (!this->settingsWidget_) {
-            this->settingsWidget_ =
-                new TemplateMinMaxPropertySettingsWidgetQt<BT, T>(minMaxProperty_, this);
-        }
-        this->settingsWidget_->showWidget();
-    }
-    
+    TemplateMinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
+    EditableLabelQt* label_;
     MinMaxProperty<T>* minMaxProperty_;
-    
     OrdinalEditorWidget<T>* min_;
     OrdinalEditorWidget<T>* max_;
 };
 
-typedef OrdinalMinMaxTextPropertyWidgetQt<double, double> DoubleMinMaxTextPropertyWidgetQt;
-typedef OrdinalMinMaxTextPropertyWidgetQt<double, float> FloatMinMaxTextPropertyWidgetQt;
-typedef OrdinalMinMaxTextPropertyWidgetQt<int, int> IntMinMaxTextPropertyWidgetQt;
-
+using DoubleMinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<double, double>;
+using FloatMinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<double, float>;
+using IntMinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<int, int>;
 
 template <typename BT, typename T>
-OrdinalMinMaxTextPropertyWidgetQt<BT, T>::OrdinalMinMaxTextPropertyWidgetQt(MinMaxProperty<T>* property)
-    : BaseOrdinalMinMaxTextPropertyWidgetQt(property)
-    , minMaxProperty_(property) {
-    
-    BaseOrdinalMinMaxTextPropertyWidgetQt::generateWidget();
+OrdinalMinMaxTextPropertyWidgetQt<BT, T>::OrdinalMinMaxTextPropertyWidgetQt(
+    MinMaxProperty<T>* property)
+    : PropertyWidgetQt(property)
+    , settingsWidget_(nullptr)
+    , label_(new EditableLabelQt(this, property_))
+    , minMaxProperty_(property)
+    , min_{new OrdinalEditorWidget<T>()}
+    , max_{new OrdinalEditorWidget<T>()} {
+
+    QHBoxLayout* hLayout = new QHBoxLayout();
+    setSpacingAndMargins(hLayout);
+    hLayout->addWidget(label_);
+
+    QHBoxLayout* textLayout = new QHBoxLayout();
+    QWidget* textWidget = new QWidget();
+    textWidget->setLayout(textLayout);
+    textLayout->setContentsMargins(0, 0, 0, 0);
+
+    QSizePolicy sp = QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    sp.setHorizontalStretch(3);
+
+    textLayout->addWidget(new QLabel("Min:"));
+    textLayout->addWidget(min_);
+    min_->setSizePolicy(sp);
+
+    textLayout->addWidget(new QLabel("Max:"));
+    textLayout->addWidget(max_);
+    max_->setSizePolicy(sp);
+
+    hLayout->addWidget(textWidget);
+    setLayout(hLayout);
+
+    QSizePolicy textsp = textWidget->sizePolicy();
+    textsp.setHorizontalStretch(3);
+    textWidget->setSizePolicy(textsp);
+
+    connect(min_, &OrdinalEditorWidget<T>::valueChanged, this,
+            &OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin);
+    connect(max_, &OrdinalEditorWidget<T>::valueChanged, this,
+            &OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax);
+
+    setFixedHeight(sizeHint().height());
+    sp = sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Fixed);
+    setSizePolicy(sp);
+
     updateFromProperty();
 }
 
 template <typename BT, typename T>
-OrdinalMinMaxTextPropertyWidgetQt<BT, T>::~OrdinalMinMaxTextPropertyWidgetQt() {
-}
-
-template <typename BT, typename T>
-void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::makeEditorWidgets(){
-    min_ = new OrdinalEditorWidget<T>();
-    max_ = new OrdinalEditorWidget<T>();
-    
-    BaseOrdinalMinMaxTextPropertyWidgetQt::min_ = min_;
-    BaseOrdinalMinMaxTextPropertyWidgetQt::max_ = max_;
-}
+OrdinalMinMaxTextPropertyWidgetQt<BT, T>::~OrdinalMinMaxTextPropertyWidgetQt() = default;
 
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromProperty() {
-    V val = minMaxProperty_->get();
-    V range = minMaxProperty_->getRange();
-    T inc = minMaxProperty_->getIncrement();
-    T sep = minMaxProperty_->getMinSeparation();
-    
-    min_->blockSignals(true);
-    max_->blockSignals(true);
+    const V val = minMaxProperty_->get();
+    const V range = minMaxProperty_->getRange();
+    const T inc = minMaxProperty_->getIncrement();
+    const T sep = minMaxProperty_->getMinSeparation();
 
-    min_->setRange(range.x, range.y-sep);
-    max_->setRange(range.x+sep, range.y);
-    
+    QSignalBlocker minBlock(min_);
+    QSignalBlocker maxBlock(max_);
+
+    min_->setRange(range.x, range.y - sep);
+    max_->setRange(range.x + sep, range.y);
+
     min_->initValue(val.x);
     max_->initValue(val.y);
 
     min_->setIncrement(inc);
     max_->setIncrement(inc);
-
-    min_->blockSignals(false);
-    max_->blockSignals(false);
 }
-
 
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin() {
-    T min = min_->getValue();
-    T sep = minMaxProperty_->getMinSeparation();
-    V range = minMaxProperty_->get();
-    
-    if (std::abs(min - range.x) > glm::epsilon<T>()) {
-        range.x = min;
-        
-        if (range.y-range.x < sep) {
-            range.y = range.x + sep;
-            max_->blockSignals(true);
-            max_->setValue(range.y);
-            max_->blockSignals(false);
+    QSignalBlocker minBlock(min_);
+
+    const T min = min_->getValue();
+    V value = minMaxProperty_->get();
+
+    // check for modification of range start
+    if (std::abs(min - value.x) > glm::epsilon<T>()) {
+        const T sep = minMaxProperty_->getMinSeparation();
+        V range = minMaxProperty_->getRange();
+
+        value.x = min;
+
+        // adjust range end position if range start is larger than range end - minSep
+        if (value.x > value.y - sep) {
+            // offset value.y
+            value.y = min + sep;
         }
-        
+        if ((value.x < range.x) || (value.y > range.y)) {
+            // range adjustment necessary
+            if (minMaxProperty_->template getMetaData<BoolMetaData>("autoAdjustRanges", false)) {
+                // adjust ranges to fit values
+                range.x = glm::min(range.x, value.x);
+                range.y = glm::max(range.y, value.y);
+            } else {
+                // clamp values to range
+                value.x = glm::clamp(value.x, range.x, range.y - sep);
+                value.y = glm::clamp(value.y, range.x + sep, range.y);
+            }
+        }
+
         minMaxProperty_->setInitiatingWidget(this);
-        minMaxProperty_->set(range);
+        minMaxProperty_->set(value, range, minMaxProperty_->getIncrement(), sep);
         minMaxProperty_->clearInitiatingWidget();
+
+        {
+            QSignalBlocker maxBlock(max_);
+
+            const V newVal(minMaxProperty_->get());
+            min_->setValue(newVal.x);
+            max_->setValue(newVal.y);
+        }
     }
 }
 
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax() {
-    T max = max_->getValue();
-    T sep = minMaxProperty_->getMinSeparation();
-    V range = minMaxProperty_->get();
-    
-    if (std::abs(max - range.y) > glm::epsilon<T>()) {
-        range.y = max;
-        
-        if (range.y - range.x < sep) {
-            range.x = range.y - sep;
-            min_->blockSignals(true);
-            min_->setValue(range.x);
-            min_->blockSignals(false);
+    QSignalBlocker maxBlock(max_);
+
+    const T max = max_->getValue();
+    V value = minMaxProperty_->get();
+
+    // check for modification of range start
+    if (std::abs(max - value.y) > glm::epsilon<T>()) {
+        const T sep = minMaxProperty_->getMinSeparation();
+        V range = minMaxProperty_->getRange();
+
+        value.y = max;
+
+        // adjust range start position if range end is smaller than range start + minSep
+        if (value.y < value.x + sep) {
+            // offset value.x
+            value.x = max - sep;
         }
-        
+        if ((value.x < range.x) || (value.y > range.y)) {
+            // range adjustment necessary
+            if (minMaxProperty_->template getMetaData<BoolMetaData>("autoAdjustRanges", false)) {
+                // adjust ranges to fit values
+                range.x = glm::min(range.x, value.x);
+                range.y = glm::max(range.y, value.y);
+            } else {
+                // clamp values to range
+                value.x = glm::clamp(value.x, range.x, range.y - sep);
+                value.y = glm::clamp(value.y, range.x + sep, range.y);
+            }
+        }
+
         minMaxProperty_->setInitiatingWidget(this);
-        minMaxProperty_->set(range);
+        minMaxProperty_->set(value, range, minMaxProperty_->getIncrement(), sep);
         minMaxProperty_->clearInitiatingWidget();
+
+        {
+            QSignalBlocker minBlock(min_);
+
+            const V newVal(minMaxProperty_->get());
+            min_->setValue(newVal.x);
+            max_->setValue(newVal.y);
+        }
     }
 }
 
-} // namespace
+template <typename BT, typename T>
+std::unique_ptr<QMenu> OrdinalMinMaxTextPropertyWidgetQt<BT, T>::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
 
-#endif // IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
+    auto rangeAutoAdjustAction = menu->addAction(tr("&Auto adjust ranges"));
+    rangeAutoAdjustAction->setCheckable(true);
+    rangeAutoAdjustAction->setChecked(
+        minMaxProperty_->template getMetaData<BoolMetaData>("autoAdjustRanges", false));
 
+    connect(rangeAutoAdjustAction, &QAction::toggled, [&](bool toggled) {
+        // adjust metadata of the property
+        if (toggled) {
+            minMaxProperty_->template setMetaData<BoolMetaData>("autoAdjustRanges", true);
+        } else {
+            // remove metadata entry
+            minMaxProperty_->template unsetMetaData<BoolMetaData>("autoAdjustRanges");
+        }
+    });
+
+    auto settingsAction = menu->addAction(tr("&Property settings..."));
+    settingsAction->setToolTip(
+        tr("&Open the property settings dialog to adjust min bound, start, end, max bound, "
+           "minSepration and increment values"));
+
+    connect(settingsAction, &QAction::triggered, this,
+            &OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings);
+    settingsAction->setEnabled(!property_->getReadOnly());
+    settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);
+    return menu;
+}
+
+template <typename BT, typename T>
+void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings() {
+    if (!settingsWidget_) {
+        settingsWidget_ = new TemplateMinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
+    }
+    settingsWidget_->showWidget();
+}
+
+}  // namespace inviwo
+
+#endif  // IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H

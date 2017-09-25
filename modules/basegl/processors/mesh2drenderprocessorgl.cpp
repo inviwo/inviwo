@@ -62,16 +62,13 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     , inport_("inputMesh")
     , imageInport_("imageInport")
     , outport_("outputImage")
+    , shader_("mesh2drendering.vert", "mesh2drendering.frag")
     , enableDepthTest_("enableDepthTest","Enable Depth Test" ,true)
 
     , top_("top", "Top", 1, -1, 1)
     , bottom_("bottom", "Bottom", 0, -1, 1)
     , left_("left", "Left", 0, -1, 1)
     , right_("right", "Right", 1, -1, 1)
-
-    , shader_("mesh2drendering.vert", "mesh2drendering.frag") 
-
-
 {
     addPort(inport_);
     addPort(imageInport_);

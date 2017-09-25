@@ -34,7 +34,8 @@ namespace inviwo {
 CLTexture3DSharingMap VolumeCLGL::clVolumeSharingMap_;
 
 VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
-    : VolumeRepresentation(format)
+    : VolumeCLBase()
+    , VolumeRepresentation(format)
     , dimensions_(data != nullptr ? data->getDimensions() : size3_t(64))
     , texture_(data) {
     initialize();
@@ -42,12 +43,15 @@ VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
 
 VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format,
                        std::shared_ptr<Texture3D> data)
-    : VolumeRepresentation(format), dimensions_(dimensions), texture_(data) {
+    : VolumeCLBase(), VolumeRepresentation(format), dimensions_(dimensions), texture_(data) {
     initialize();
 }
 
 VolumeCLGL::VolumeCLGL(const VolumeCLGL& rhs)
-    : VolumeRepresentation(rhs), dimensions_(rhs.dimensions_), texture_(rhs.texture_->clone()) {
+    : VolumeCLBase(rhs)
+    , VolumeRepresentation(rhs)
+    , dimensions_(rhs.dimensions_)
+    , texture_(rhs.texture_->clone()) {
     initialize();
 }
 

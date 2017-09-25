@@ -54,18 +54,20 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , xSlide_("x", "X Slide")
     , ySlide_("y", "Y Slide")
     , zSlide_("z", "Z Slide")
+    , channel_("channel", "Channel", {{"channel0", "Channel 1", 0}})
     , disableTF_("disableTF", "Disable transfer function", false,
                  InvalidationLevel::InvalidResources)
-    , tf_("transferfunction", "Transfer function", TransferFunction(), &volume_)
-    , sliceShader_("geometryrendering.vert", "axisalignedcutplaneslice.frag", false)
-    , boundingBoxShader_("geometryrendering.vert", "axisalignedcutplaneboundingbox.frag")
+    , tf_("transferfunction", "Transfer function", &volume_)
     , showBoundingBox_("boundingBox", "Show Bounding Box", true)
     , boundingBoxColor_("boundingBoxColor", "Bounding Box Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
-	, renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
-	, renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
+    , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
+    , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , nearestInterpolation_("nearestInterpolation", "Use nearest neighbor interpolation", false)
     , camera_("camera", "Camera")
-    , trackball_(&camera_) {
+    , trackball_(&camera_)
+    , sliceShader_("geometryrendering.vert", "axisalignedcutplaneslice.frag", false)
+    , boundingBoxShader_("geometryrendering.vert", "axisalignedcutplaneboundingbox.frag") {
+
     addPort(volume_);
     addPort(imageInport_);
     addPort(outport_);
@@ -76,9 +78,9 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     addProperty(disableTF_);
     addProperty(tf_);
     addProperty(showBoundingBox_);
-	addProperty(boundingBoxColor_);
-	addProperty(renderPointSize_);
-	addProperty(renderLineWidth_);
+    addProperty(boundingBoxColor_);
+    addProperty(renderPointSize_);
+    addProperty(renderLineWidth_);
 
     addProperty(camera_);
     addProperty(trackball_);
@@ -90,6 +92,9 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     tf_.get().addPoint(vec2(1.0f, 1.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
     tf_.setCurrentStateAsDefault();
+
+    sliceShader_.onReload([&]() {this->invalidate(InvalidationLevel::InvalidResources); });
+    boundingBoxShader_.onReload([&]() {this->invalidate(InvalidationLevel::InvalidResources); });
 
     xSlide_.onChange([&]() {
         if (volume_.hasData()) xSlide_.createDrawer(volume_.getData());
@@ -112,6 +117,27 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
         }
         boundingBoxMesh_->setModelMatrix(vol->getModelMatrix());
         boundingBoxMesh_->setWorldMatrix(vol->getWorldMatrix());
+
+
+        // Update channel option property
+        if (channel_.size() != vol->getDataFormat()->getComponents()) {
+            auto curC = channel_.getSelectedIndex();
+
+            for (auto i = channel_.size(); i < vol->getDataFormat()->getComponents(); i++) {
+                channel_.addOption("channel" + std::to_string(i),
+                    "Channel " + std::to_string(i + 1), static_cast<int>(i));
+            }
+
+            while (channel_.size() > vol->getDataFormat()->getComponents()) {
+                channel_.removeOption(channel_.size() - 1);
+            }
+            
+            channel_.setSelectedIndex(0);
+            channel_.setCurrentStateAsDefault();
+
+            channel_.setSelectedIndex(std::min(curC , channel_.size()-1) );
+                        
+        }
     });
 
     boundingBoxColor_.setSemantics(PropertySemantics::Color);
@@ -128,7 +154,7 @@ void AxisAlignedCutPlane::process() {
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
-    
+
     if (!boundingBoxDrawer_) {
         boundingBoxDrawer_ =
             getNetwork()->getApplication()->getMeshDrawerFactory()->create(boundingBoxMesh_.get());
@@ -140,8 +166,10 @@ void AxisAlignedCutPlane::process() {
     TextureUnitContainer cont;
 
     sliceShader_.activate();
-    utilgl::setShaderUniforms(sliceShader_, camera_, "camera_");
+
+    utilgl::setUniforms(sliceShader_, camera_);
     utilgl::bindAndSetUniforms(sliceShader_, cont, volume_);
+
     if (nearestInterpolation_.get()) {
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -177,10 +205,10 @@ void AxisAlignedCutPlane::createBoundingBox() {
 void AxisAlignedCutPlane::drawBoundingBox() {
     if (showBoundingBox_.get() == false) return;
     boundingBoxShader_.activate();
-    utilgl::setShaderUniforms(boundingBoxShader_, camera_, "camera_");
-    utilgl::setShaderUniforms(boundingBoxShader_, *boundingBoxMesh_, "geometry_");
-    utilgl::setShaderUniforms(boundingBoxShader_, boundingBoxColor_);
-	utilgl::PolygonModeState polygon(GL_LINE, renderLineWidth_, renderPointSize_);
+    utilgl::setShaderUniforms(boundingBoxShader_, *boundingBoxMesh_, "geometry");
+    utilgl::setUniforms(boundingBoxShader_, camera_, boundingBoxColor_);
+
+    utilgl::PolygonModeState polygon(GL_LINE, renderLineWidth_, renderPointSize_);
     boundingBoxDrawer_->draw();
     boundingBoxShader_.deactivate();
 }

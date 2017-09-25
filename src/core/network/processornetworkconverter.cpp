@@ -63,12 +63,15 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetworkConverter::updateDisplayName);
         case 12:
             traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiers);
+        case 13:
+            traverseNodes(root, &ProcessorNetworkConverter::updateTransferfunctions);
+        case 14:
+            usedIdentifier_.clear();
+            traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiersStriped);
             return true; // Changes has been made.
         default:
             return false; // No changes
     }
-
-    return true;
 }
 
 void ProcessorNetworkConverter::traverseNodes(TxElement* node, updateType update) {
@@ -435,6 +438,61 @@ void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
             });
 
             node->SetAttribute("identifier", identifier);
+        }
+    }
+}
+
+void ProcessorNetworkConverter::updateTransferfunctions(TxElement* node) {
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "transferFunction") {
+        node->SetValue("TransferFunction");
+
+        xml::visitMatchingNodes(node, {{"dataPoints", {}}},
+                                [](TxElement* node) { node->SetValue("Points"); });
+
+        xml::visitMatchingNodes(node, {{"Points", {}}, {"point", {}}},
+                                [](TxElement* node) { node->SetValue("Point"); });
+
+        xml::visitMatchingNodes(node, {{"Points", {}}, {"Point", {}}, {"pos", {}}},
+                                [](TxElement* posNode) {
+                                    auto pos = posNode->GetAttributeOrDefault("x", "0.0");
+                                    posNode->SetAttribute("content", pos);
+                                });
+    }
+}
+
+void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* node) {
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "Processor") {
+        std::string identifier = node->GetAttributeOrDefault("identifier", "");
+        if (identifier != "") {
+            
+            std::string baseIdentifier = identifier;
+            std::string newIdentifier = identifier;
+            int i = 2;
+
+            auto parts = splitString(identifier, ' ');
+            if (parts.size() > 1 &&
+                util::all_of(parts.back(), [](const char& c) { return std::isdigit(c); })) {
+                i = std::stoi(parts.back());
+                baseIdentifier = joinString(parts.begin(), parts.end() - 1, " ");
+                newIdentifier = baseIdentifier + " " + toString(i);
+            }
+
+            std::string stripedIdentifier = util::stripIdentifier(newIdentifier);
+
+            while (usedIdentifier_.find(stripedIdentifier) != usedIdentifier_.end()) {
+                newIdentifier = baseIdentifier + " " + toString(i++);
+                stripedIdentifier = util::stripIdentifier(newIdentifier);
+            }
+
+            usedIdentifier_.insert(stripedIdentifier);
+
+            node->SetAttribute("identifier", newIdentifier);
         }
     }
 }

@@ -31,6 +31,7 @@
 #include <modules/cimg/cimglayerreader.h>
 #include <modules/cimg/cimglayerwriter.h>
 #include <modules/cimg/cimgvolumereader.h>
+#include <modules/cimg/cimgutils.h>
 
 namespace inviwo {
 
@@ -43,6 +44,11 @@ CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
     
     // Register Data Writers
     registerDataWriter(util::make_unique<CImgLayerWriter>());
+
+
+    LogInfo("Using LibPNG Version " << cimgutil::getLibPNGVesrion());
+    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVesrion());
+    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVesrion());
 }
 
 } // namespace

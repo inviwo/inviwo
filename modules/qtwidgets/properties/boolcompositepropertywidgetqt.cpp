@@ -48,11 +48,6 @@ void BoolCompositePropertyWidgetQt::updateFromProperty() {
     setChecked(boolCompProperty_->isChecked());
 }
 
-void BoolCompositePropertyWidgetQt::labelDidChange() {
-    CollapsibleGroupBoxWidgetQt::labelDidChange();
-    property_->setDisplayName(getDisplayName());
-}
-
 void BoolCompositePropertyWidgetQt::setCollapsed(bool value) {
     boolCompProperty_->setCollapsed(value);
 }

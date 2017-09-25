@@ -39,9 +39,11 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portinspectorfactory.h>
+#include <inviwo/core/ports/portinspectormanager.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -62,6 +64,9 @@
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/util/filelogger.h>
+#include <inviwo/core/util/timer.h>
 
 #include <locale>
 #include <codecvt>
@@ -90,7 +95,6 @@ void dataFormatDummyInitialization() {
     
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
-    , binaryPath_(filesystem::getFileDirectory(argv[0]))
     , progressCallback_()
     , commandLineParser_(argc, argv)
     , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
@@ -129,17 +133,24 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , moudleCallbackActions_()
 
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
-    , processorNetworkEvaluator_{
-          util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())}
-    , workspaceManager_{ util::make_unique<WorkspaceManager>(this)}
-    , propertyPresetManager_{ util::make_unique<PropertyPresetManager>() }
-{
+    , processorNetworkEvaluator_{util::make_unique<ProcessorNetworkEvaluator>(
+          processorNetwork_.get())}
+    , workspaceManager_{util::make_unique<WorkspaceManager>(this)}
+    , propertyPresetManager_{util::make_unique<PropertyPresetManager>()}
+    , portInspectorManager_{util::make_unique<PortInspectorManager>(this)} {
+
+    if (commandLineParser_.getLogToConsole()) {
+        consoleLogger_ = std::make_shared<ConsoleLogger>();
+        LogCentral::getPtr()->registerLogger(consoleLogger_);
+    }
 
     if (commandLineParser_.getLogToFile()) {
         auto filename = commandLineParser_.getLogToFileFileName();
         auto dir = filesystem::getFileDirectory(filename);
         if (dir.empty() || !filesystem::directoryExists(dir)){
-            filename = commandLineParser_.getOutputPath() + "/" + filename;
+            if(!commandLineParser_.getOutputPath().empty()){
+                filename = commandLineParser_.getOutputPath() + "/" + filename;
+            }
         }
         filelogger_ = std::make_shared<FileLogger>(filename);
         LogCentral::getPtr()->registerLogger(filelogger_);
@@ -171,11 +182,18 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     workspaceManager_->registerFactory(getInportFactory());
     workspaceManager_->registerFactory(getOutportFactory());
 
-    networkClearHandle_ = workspaceManager_->onClear([&]() { processorNetwork_->clear(); });
-    networkSerializationHandle_ = workspaceManager_->onSave(
-        [&](Serializer& s) { s.serialize("ProcessorNetwork", *processorNetwork_); });
-    networkDeserializationHandle_ = workspaceManager_->onLoad(
-        [&](Deserializer& d) { d.deserialize("ProcessorNetwork", *processorNetwork_); });
+    networkClearHandle_ = workspaceManager_->onClear([&]() { 
+        portInspectorManager_->clear();
+        processorNetwork_->clear(); 
+    });
+    networkSerializationHandle_ = workspaceManager_->onSave([&](Serializer& s) {
+        s.serialize("ProcessorNetwork", *processorNetwork_);
+        s.serialize("PortInspectors", *portInspectorManager_);
+    });
+    networkDeserializationHandle_ = workspaceManager_->onLoad([&](Deserializer& d) {
+        d.deserialize("ProcessorNetwork", *processorNetwork_);
+        d.deserialize("PortInspectors", *portInspectorManager_);
+    });
 
     presetsClearHandle_ =
         workspaceManager_->onClear([&]() { propertyPresetManager_->clearWorkspacePresets(); });
@@ -200,7 +218,6 @@ InviwoApplication::InviwoApplication(std::string displayName)
 
 InviwoApplication::~InviwoApplication() {
     resizePool(0);
-    portInspectorFactory_->clearCache();
     ResourceManager::getPtr()->clearAllResources();
 }
 
@@ -647,6 +664,10 @@ PropertyPresetManager* InviwoApplication::getPropertyPresetManager() {
     return propertyPresetManager_.get();
 }
 
+PortInspectorManager* InviwoApplication::getPortInspectorManager() {
+    return portInspectorManager_.get();
+}
+
 const CommandLineParser& InviwoApplication::getCommandLineParser() const {
     return commandLineParser_;
 }
@@ -692,8 +713,6 @@ void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
 }
 
 const std::string& InviwoApplication::getDisplayName() const { return displayName_; }
-
-const std::string& InviwoApplication::getBinaryPath() const { return binaryPath_; }
 
 void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
     moudleCallbackActions_.emplace_back(callbackAction);
@@ -780,28 +799,36 @@ void InviwoApplication::waitForPool() {
     resizePool(old_size);
 }
 
+
+TimerThread& InviwoApplication::getTimerThread() {
+    if(!timerThread_) {
+        timerThread_ = util::make_unique<TimerThread>();
+    }
+    return *timerThread_;
+}
+
 void InviwoApplication::closeInviwoApplication() {
     LogWarn("this application have not implemented the closeInviwoApplication function");
 }
-void InviwoApplication::registerFileObserver(FileObserver* fileObserver) {
+void InviwoApplication::registerFileObserver(FileObserver*) {
     LogWarn("this application have not implemented the registerFileObserver function");
 }
-void InviwoApplication::unRegisterFileObserver(FileObserver* fileObserver) {
+void InviwoApplication::unRegisterFileObserver(FileObserver*) {
     LogWarn("this application have not implemented the unRegisterFileObserver function");
 }
-void InviwoApplication::startFileObservation(std::string fileName) {
+void InviwoApplication::startFileObservation(std::string) {
     LogWarn("this application have not implemented the startFileObservation function");
 }
-void InviwoApplication::stopFileObservation(std::string fileName) {
+void InviwoApplication::stopFileObservation(std::string) {
     LogWarn("this application have not implemented the stopFileObservation function");
 }
-void InviwoApplication::playSound(Message soundID) {
+void InviwoApplication::playSound(Message) {
     LogWarn("this application have not implemented the playSound function");
 }
 
-InteractionStateManager& InviwoApplication::getInteractionStateManager() {
-    return interactionState_;
-}
+namespace util {
+InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
+}  // namespace util
 
 
 

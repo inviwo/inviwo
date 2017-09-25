@@ -124,30 +124,13 @@ void BasicMesh::setVertexColor(size_t index, vec4 color) {
 
 IndexBufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
     auto indicesRam = std::make_shared<IndexBufferRAM>();
-    auto indices_ = std::make_shared<IndexBuffer>(indicesRam);
-    addIndicies(Mesh::MeshInfo(dt, ct), indices_);
+    auto indices = std::make_shared<IndexBuffer>(indicesRam);
+    addIndicies(Mesh::MeshInfo(dt, ct), indices);
     return indicesRam.get();
 }
 
 void BasicMesh::append(const BasicMesh* mesh) {
-    size_t size = buffers_[0].second->getSize();
-
-    getEditableVerticesRAM()->append(mesh->getVerticesRAM()->getDataContainer());
-    getEditableTexCoordsRAM()->append(mesh->getTexCoordsRAM()->getDataContainer());
-    getEditableColorsRAM()->append(mesh->getColorsRAM()->getDataContainer());
-    getEditableNormalsRAM()->append(mesh->getNormalsRAM()->getDataContainer());
-
-    for (auto buffer : mesh->indices_) {
-        IndexBufferRAM* ind = addIndexBuffer(buffer.first.dt, buffer.first.ct);
-
-        const std::vector<unsigned int>& newinds =
-            static_cast<const IndexBufferRAM*>(buffer.second->getRepresentation<BufferRAM>())
-                ->getDataContainer();
-
-        for (const auto& newind : newinds) {
-            ind->add(static_cast<const unsigned int>(newind + size));
-        }
-    }
+    if (mesh) Mesh::append(*mesh);
 }
 
 const Buffer<vec3>* BasicMesh::getVertices() const { return vertices_.get(); }
@@ -199,6 +182,63 @@ vec3 BasicMesh::orthvec(const vec3& vec) {
 
 vec3 BasicMesh::tospherical(const vec2& v) {
     return vec3(std::sin(v.x) * std::cos(v.y), std::sin(v.x) * std::sin(v.y), std::cos(v.x));
+}
+
+std::shared_ptr<BasicMesh> BasicMesh::ellipse(const vec3& center, const vec3& majorAxis,
+                                              const vec3& minorAxis, const vec4& color,
+                                              const float& radius, const size_t& nsegments) {
+    auto mesh = std::make_shared<BasicMesh>();
+
+    vec3 p, p1;
+    vec3 t;
+    float angle = static_cast<float>(M_PI * 2.0 / nsegments);
+    float a = glm::length(majorAxis);
+    float b = glm::length(minorAxis);
+    float eradius, eradius1;
+    float x, y;
+    vec3 rot, rot1;
+
+    auto segments = static_cast<std::uint32_t>(nsegments);
+    for (std::uint32_t i = 0; i < segments; ++i) {
+        x = glm::cos(i * angle) * a;
+        y = glm::sin(i * angle) * b;
+        eradius = glm::length(glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y);
+        rot = glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y;
+
+        x = glm::cos(((i + 1) % segments) * angle) * a;
+        y = glm::sin(((i + 1) % segments) * angle) * b;
+
+        eradius1 = glm::length(glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y);
+        rot1 = glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y;
+
+        p = center + eradius * glm::normalize(rot);
+        p1 = center + eradius1 * glm::normalize(rot1);
+
+        vec3 dir = glm::normalize(p1 - p);
+        vec3 odir = orthvec(dir);
+
+        float k;
+        vec3 o;
+        auto tube = util::make_unique<BasicMesh>();
+        IndexBufferRAM* inds = tube->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+        for (std::uint32_t j = 0; j < segments; ++j) {
+            k = static_cast<float>(j);
+            o = glm::rotate(odir, static_cast<float>(j * angle), dir);
+            tube->addVertex(p + radius * o, o, vec3(k / segments, 0.0f, 0.0f), color);
+            tube->addVertex(p1 + radius * o, o, vec3(k / segments, 1.0f, 0.0f), color);
+
+            inds->add(j * 2 + 1);
+            inds->add(j * 2 + 0);
+            inds->add(((j + 1) * 2) % (2 * segments) + 0);
+
+            inds->add(j * 2 + 1);
+            inds->add(((j + 1) * 2) % (2 * segments) + 0);
+            inds->add(((j + 1) * 2) % (2 * segments) + 1);
+        }
+
+        mesh->append(tube.get());
+    }
+    return mesh;
 }
 
 std::shared_ptr<BasicMesh> BasicMesh::disk(const vec3& center, const vec3& normal,
@@ -279,20 +319,20 @@ std::shared_ptr<BasicMesh> BasicMesh::cone(const vec3& start, const vec3& stop, 
 
 std::shared_ptr<BasicMesh> BasicMesh::cylinder(const vec3& start, const vec3& stop,
                                                const vec4& color, const float& radius,
-                                               const size_t& segments, bool caps, std::shared_ptr<BasicMesh> mesh ) {
+                                               const size_t& segments, bool caps,
+                                               std::shared_ptr<BasicMesh> mesh) {
     std::uint32_t globalIndexOffset = 0;
     if (!mesh) {
         mesh = std::make_shared<BasicMesh>();
         mesh->setModelMatrix(mat4(1.f));
-    }
-    else {
+    } else {
         globalIndexOffset = static_cast<std::uint32_t>(mesh->getVertices()->getSize());
     }
     std::vector<BasicMesh::Vertex> vertices;
-    vertices.reserve(segments*2);
+    vertices.reserve(segments * 2);
 
     auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-    inds->getDataContainer().reserve(6*segments);
+    inds->getDataContainer().reserve(6 * segments);
     vec3 e1 = glm::normalize(stop - start);
     vec3 e2 = orthvec(e1);
     vec3 e3 = glm::cross(e1, e2);
@@ -307,7 +347,7 @@ std::shared_ptr<BasicMesh> BasicMesh::cylinder(const vec3& start, const vec3& st
         vec3 normal = basis * vec3(0.0, x, y);
         vec3 dir = basis * vec3(0.0, x * radius, y * radius);
         vec3 texCoord = vec3(static_cast<float>(i) / segments, 0.0, 0.0);
-        
+
         // vertex at base
         vertices.push_back({start + dir, normal, texCoord, color});
         // vertex at top
@@ -394,7 +434,8 @@ std::shared_ptr<BasicMesh> BasicMesh::arrow(const vec3& start, const vec3& stop,
     return mesh;
 }
 
-std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const float& radius, std::shared_ptr<BasicMesh> mesh) {
+std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const float& radius,
+                                                  std::shared_ptr<BasicMesh> mesh) {
     const static std::vector<vec2> spheremesh = {
         {M_PI_2, 0.0f},
         {M_PI_2, M_PI_2},
@@ -449,21 +490,21 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
     if (!mesh) {
         mesh = std::make_shared<BasicMesh>();
         mesh->setModelMatrix(mat4(1.f));
-    }
-    else {
+    } else {
         globalIndexOffset = static_cast<std::uint32_t>(mesh->getVertices()->getSize());
     }
 
     std::vector<BasicMesh::Vertex> vertices;
-    vertices.reserve(spheremesh.size()*8);
+    vertices.reserve(spheremesh.size() * 8);
     auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-    inds->getDataContainer().reserve(sphereind.size()*8*3);
+    inds->getDataContainer().reserve(sphereind.size() * 8 * 3);
 
     vec3 quad(0);
     for (quad.x = -1.0f; quad.x <= 1.0f; quad.x += 2.0f) {
         for (quad.y = -1.0f; quad.y <= 1.0f; quad.y += 2.0f) {
             for (quad.z = -1.0f; quad.z <= 1.0f; quad.z += 2.0f) {
-                glm::uint32_t idxOffset = static_cast<std::uint32_t>(vertices.size()) + globalIndexOffset;
+                glm::uint32_t idxOffset =
+                    static_cast<std::uint32_t>(vertices.size()) + globalIndexOffset;
 
                 vec3 normal;
                 vec3 vertex;
@@ -478,12 +519,11 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
 
                 if (quad.x * quad.y * quad.z > 0) {
                     for (auto& elem : sphereind) {
-                        inds->add({idxOffset +  elem.x, idxOffset + elem.y, idxOffset + elem.z });
+                        inds->add({idxOffset + elem.x, idxOffset + elem.y, idxOffset + elem.z});
                     }
-                }
-                else {
+                } else {
                     for (auto& elem : sphereind) {
-                        inds->add({ idxOffset + elem.z,idxOffset +  elem.y,idxOffset +  elem.x });
+                        inds->add({idxOffset + elem.z, idxOffset + elem.y, idxOffset + elem.x});
                     }
                 }
             }
@@ -493,8 +533,9 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
     return mesh;
 }
 
-std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& radius, const vec4 &color, std::shared_ptr<BasicMesh> mesh) {
-    std::vector<vec2> spheremesh = { {M_PI_2, 0.0f},
+std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& radius,
+                                             const vec4& color, std::shared_ptr<BasicMesh> mesh) {
+    std::vector<vec2> spheremesh = {{M_PI_2, 0.0f},
                                     {M_PI_2, M_PI_2},
                                     {0.0f, 0.0f},
                                     {0.0f, 0.0f},
@@ -530,7 +571,7 @@ std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& ra
                                     {std::atan(std::sqrt(26.0f)), std::atan(5.0f)},
                                     {std::atan(5.0f / 2.0f), M_PI_2},
                                     {M_PI_2, std::atan(6.0f)},
-                                    {std::atan(6.0f), M_PI_2} };
+                                    {std::atan(6.0f), M_PI_2}};
 
     std::vector<uvec3> sphereind = {
         {0, 10, 4},   {4, 11, 5},   {5, 12, 6},   {6, 13, 7},   {7, 14, 8},   {8, 15, 9},
@@ -541,13 +582,13 @@ std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& ra
         {13, 6, 12},  {14, 7, 13},  {15, 8, 14},  {16, 9, 15},  {18, 11, 17}, {19, 12, 18},
         {20, 13, 19}, {21, 14, 20}, {22, 15, 21}, {24, 18, 23}, {25, 19, 24}, {26, 20, 25},
         {27, 21, 26}, {29, 24, 28}, {30, 25, 29}, {31, 26, 30}, {33, 29, 32}, {34, 30, 33},
-        {36, 33, 35} };
+        {36, 33, 35}};
 
     std::uint32_t globalIndexOffset = 0;
     if (!mesh) {
         mesh = std::make_shared<BasicMesh>();
         mesh->setModelMatrix(mat4(1.f));
-    }else{
+    } else {
         globalIndexOffset = static_cast<std::uint32_t>(mesh->getVertices()->getSize());
     }
 
@@ -560,7 +601,8 @@ std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& ra
     for (quad.x = -1.0f; quad.x <= 1.0f; quad.x += 2.0f) {
         for (quad.y = -1.0f; quad.y <= 1.0f; quad.y += 2.0f) {
             for (quad.z = -1.0f; quad.z <= 1.0f; quad.z += 2.0f) {
-                glm::uint32_t idxOffset = static_cast<std::uint32_t>(vertices.size()) + globalIndexOffset;
+                glm::uint32_t idxOffset =
+                    static_cast<std::uint32_t>(vertices.size()) + globalIndexOffset;
                 vec3 normal;
                 vec3 vertex;
                 vec3 tcoord;
@@ -573,12 +615,11 @@ std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& ra
 
                 if (quad.x * quad.y * quad.z > 0) {
                     for (auto& elem : sphereind) {
-                        inds->add({idxOffset+ elem.x,idxOffset+ elem.y, idxOffset+elem.z });
+                        inds->add({idxOffset + elem.x, idxOffset + elem.y, idxOffset + elem.z});
                     }
-                }
-                else {
+                } else {
                     for (auto& elem : sphereind) {
-                        inds->add({ idxOffset+elem.z,idxOffset+ elem.y, idxOffset+elem.x });
+                        inds->add({idxOffset + elem.z, idxOffset + elem.y, idxOffset + elem.x});
                     }
                 }
             }
@@ -590,12 +631,12 @@ std::shared_ptr<BasicMesh> BasicMesh::sphere(const vec3& center, const float& ra
 
 static vec3 V(const mat4& m, const vec3 v) {
     vec4 V = m * vec4(v, 1);
-    return V.xyz() / V.w;
+    return vec3(V) / V.w;
 }
 
 static vec3 N(const mat4& m, const vec3 v) {
     vec4 V = m * vec4(v, 0);
-    return V.xyz();
+    return vec3(V);
 }
 
 std::shared_ptr<BasicMesh> BasicMesh::cube(const mat4& m, const vec4& color) {
@@ -729,58 +770,54 @@ std::shared_ptr<BasicMesh> BasicMesh::boundingBoxAdjacency(const mat4& basisando
     return mesh;
 }
 
-std::shared_ptr<BasicMesh> BasicMesh::torus(const vec3& center,const vec3 &up_, float r1, float r2, const ivec2 &subdivisions, vec4 color) {
+std::shared_ptr<BasicMesh> BasicMesh::torus(const vec3& center, const vec3& up_, float r1, float r2,
+                                            const ivec2& subdivisions, vec4 color) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
     auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
     vec3 side;
     auto up = glm::normalize(up_);
-    if (std::abs(std::abs(glm::dot(up, vec3(0, 1, 0)))-1) < std::numeric_limits<float>::epsilon()) {
+    if (std::abs(std::abs(glm::dot(up, vec3(0, 1, 0))) - 1) <
+        std::numeric_limits<float>::epsilon()) {
         side = vec3(1, 0, 0);
-    }
-    else {
+    } else {
         side = glm::normalize(glm::cross(up, vec3(0, 1, 0)));
     }
 
-    auto numVertex = subdivisions.x*subdivisions.y;
+    auto numVertex = subdivisions.x * subdivisions.y;
 
     for (int i = 0; i < subdivisions.x; i++) {
         auto axis = glm::rotate(side, static_cast<float>(i * 2 * M_PI / subdivisions.x), up);
-        auto centerP = center + axis*r1;
-        
+        auto centerP = center + axis * r1;
+
         auto N = glm::normalize(glm::cross(axis, up));
 
         int startI = i * subdivisions.y;
-        int startJ = ((i+1)% subdivisions.x) * subdivisions.y;
+        int startJ = ((i + 1) % subdivisions.x) * subdivisions.y;
 
         for (int j = 0; j < subdivisions.y; j++) {
             auto axis2 = glm::rotate(axis, static_cast<float>(j * 2 * M_PI / subdivisions.y), N);
-            auto VP = centerP + axis2*r2;
-            
+            auto VP = centerP + axis2 * r2;
+
             mesh->addVertex(VP, axis2, N, color);
 
             int i0 = startI + j;
             int i1 = startI + j + 1;
             int j0 = startJ + j;
             int j1 = startJ + j + 1;
-            
-            inds->add(i0%numVertex);
-            inds->add(j0%numVertex);
-            inds->add(i1%numVertex);
 
-            inds->add(j0%numVertex);
-            inds->add(j1%numVertex);
-            inds->add(i1%numVertex);
+            inds->add(i0 % numVertex);
+            inds->add(j0 % numVertex);
+            inds->add(i1 % numVertex);
 
-
-
+            inds->add(j0 % numVertex);
+            inds->add(j1 % numVertex);
+            inds->add(i1 % numVertex);
         }
     }
 
-
     return mesh;
-
 }
 
 std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& center, const vec3& normal,

@@ -29,28 +29,37 @@
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
 PropertyClassIdentifier(TransferFunctionProperty, "org.inviwo.TransferFunctionProperty");
 
-TransferFunctionProperty::TransferFunctionProperty(const std::string &identifier,
-                                                   const std::string &displayName,
-                                                   const TransferFunction &value,
-                                                   VolumeInport* volumeInport,
-                                                   InvalidationLevel invalidationLevel,
-                                                   PropertySemantics semantics)
-    : TemplateProperty<TransferFunction>(identifier, displayName, value, invalidationLevel, semantics)
+TransferFunctionProperty::TransferFunctionProperty(
+    const std::string& identifier, const std::string& displayName, const TransferFunction& value,
+    VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : TemplateProperty<TransferFunction>(identifier, displayName, value, invalidationLevel,
+                                         semantics)
     , TransferFunctionObserver()
     , zoomH_("zoomH_", vec2(0.0f, 1.0f))
     , zoomV_("zoomV_", vec2(0.0f, 1.0f))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , volumeInport_(volumeInport) {
-    
+
     // rename the "value" to make the serialized file easier to understand.
-    this->value_.name = "transferFunction";
+    this->value_.name = "TransferFunction";
     this->value_.value.addObserver(this);
 }
+
+TransferFunctionProperty::TransferFunctionProperty(const std::string& identifier,
+                                                   const std::string& displayName,
+                                                   VolumeInport* volumeInport,
+                                                   InvalidationLevel invalidationLevel,
+                                                   PropertySemantics semantics)
+    : TransferFunctionProperty(identifier, displayName,
+                               TransferFunction({{0.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                                 {1.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+                               volumeInport, invalidationLevel, semantics) {}
 
 TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionProperty& rhs)
     : TemplateProperty<TransferFunction>(rhs)
@@ -190,13 +199,13 @@ void TransferFunctionProperty::set(const Property *property) {
     }
 }
 
-void TransferFunctionProperty::onControlPointAdded(TransferFunctionDataPoint* p) {
+void TransferFunctionProperty::onControlPointAdded(TransferFunctionDataPoint*) {
     propertyModified();
 }
-void TransferFunctionProperty::onControlPointRemoved(TransferFunctionDataPoint* p) {
+void TransferFunctionProperty::onControlPointRemoved(TransferFunctionDataPoint*) {
     propertyModified();
 }
-void TransferFunctionProperty::onControlPointChanged(const TransferFunctionDataPoint* p) {
+void TransferFunctionProperty::onControlPointChanged(const TransferFunctionDataPoint*) {
     propertyModified();
 }
 
@@ -215,5 +224,13 @@ void TransferFunctionPropertyObservable::notifyZoomVChange(const vec2& zoomV) {
 void TransferFunctionPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
     forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onHistogramModeChange(mode); });
 }
+
+void TransferFunctionPropertyObserver::onMaskChange(const vec2&) {}
+
+void TransferFunctionPropertyObserver::onZoomHChange(const vec2&) {}
+
+void TransferFunctionPropertyObserver::onZoomVChange(const vec2&) {}
+
+void TransferFunctionPropertyObserver::onHistogramModeChange(HistogramMode) {}
 
 } // namespace

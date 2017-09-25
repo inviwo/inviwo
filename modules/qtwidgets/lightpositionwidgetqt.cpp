@@ -28,12 +28,32 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/lightpositionwidgetqt.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QRadialGradient>
+#include <QPixmap>
+#include <QPainter>
+#include <QBrush>
+#include <QMouseEvent>
+#include <QPoint>
+#include <QtCore/qmath.h>
+#include <warn/pop>
 
 namespace inviwo {
 
 
 LightPositionWidgetQt::LightPositionWidgetQt() : QLabel(), mouseDown_(false) {
-    generateWidget();
+    gradientPixmap_ = new QPixmap(100, 100);
+    gradientPixmap_->fill(Qt::transparent);
+    this->setFixedWidth(100);
+    this->setFixedHeight(100);
+    gradient_ = new QRadialGradient(50.0f, 50.0f, 50.0f, 50.0f, 50.0f);
+    gradient_->setColorAt(0, QColor::fromRgbF(1.0f, 1.0f, 1.0f, 1.0f));
+    gradient_->setColorAt(1, QColor::fromRgbF(0.0f, 0.0f, 0.0f, 0.0f));
+    radius_ = static_cast<float>(gradient_->radius());
+    painter_ = new QPainter(gradientPixmap_);
+    painter_->fillRect(0, 0, 100, 100, *gradient_);
+    this->setPixmap(*gradientPixmap_);
 }
 
 LightPositionWidgetQt::~LightPositionWidgetQt() {
@@ -42,22 +62,7 @@ LightPositionWidgetQt::~LightPositionWidgetQt() {
     delete gradientPixmap_;
 }
 
-void inviwo::LightPositionWidgetQt::generateWidget() {
-    gradientPixmap_ = new QPixmap(100,100);
-    gradientPixmap_->fill(Qt::transparent);
-    this->setFixedWidth(100);
-    this->setFixedHeight(100);
-    gradient_ = new QRadialGradient(50.0f, 50.0f, 50.0f, 50.0f, 50.0f);
-    gradient_->setColorAt(0, QColor::fromRgbF(1.0f, 1.0f, 1.0f, 1.0f));
-    gradient_->setColorAt(1, QColor::fromRgbF(0.0f, 0.0f, 0.0f, 0.0f));
-    radius_ = static_cast<float>( gradient_->radius());
-    painter_ = new QPainter(gradientPixmap_);
-    painter_->fillRect(0, 0, 100, 100, *gradient_);
-    this->setPixmap(*gradientPixmap_);    
-}
-
-
-void LightPositionWidgetQt::mousePressEvent(QMouseEvent* e) {
+void LightPositionWidgetQt::mousePressEvent(QMouseEvent*) {
     mouseDown_ = true;
 }
 
@@ -157,7 +162,7 @@ float LightPositionWidgetQt::getZ() const {
     return (radius_ < 0.0f ? -1.0f : 1.0f) * cos(theta_);
 }
 
-void LightPositionWidgetQt::mouseDoubleClickEvent(QMouseEvent* e) {
+void LightPositionWidgetQt::mouseDoubleClickEvent(QMouseEvent*) {
     radius_ *= -1.0;
     emit positionChanged();
 }

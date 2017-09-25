@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
@@ -43,12 +44,6 @@ CompositePropertyWidgetQt::CompositePropertyWidgetQt(CompositeProperty* property
 }                           
 
 void CompositePropertyWidgetQt::updateFromProperty() {
-    for (auto& elem : propertyWidgets_) elem->updateFromProperty();  
-}
-
-void CompositePropertyWidgetQt::labelDidChange() {
-    CollapsibleGroupBoxWidgetQt::labelDidChange();
-    compProperty_->setDisplayName(getDisplayName());
 }
 
 void CompositePropertyWidgetQt::setCollapsed(bool value) {

@@ -29,7 +29,7 @@
 #include "utils/structs.glsl"
 
 #if !defined(ENABLE_ADJACENCY)
-#  define ENABLE_ADJACENCY 1
+#  define ENABLE_ADJACENCY 0
 #endif
 
 #if ENABLE_ADJACENCY == 1
@@ -40,23 +40,22 @@ layout(lines) in;
 
 layout(triangle_strip, max_vertices=5) out;
 
-
-uniform GeometryParameters geometry_;
-uniform CameraParameters camera_;
-
-uniform vec2 screenDim_ = vec2(512, 512);
-uniform float antialias_ = 1.0; // width of antialised edged [pixel]
-uniform float lineWidth_ = 2.0; // line width [pixel]
-uniform float miterLimit_ = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
-
+uniform vec2 screenDim = vec2(512, 512);
+uniform float antialiasing = 0.5; // width of antialised edged [pixel]
+uniform float lineWidth = 2.0; // line width [pixel]
+uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
+uniform bool roundCaps = false;
 
 in vec4 vertexColor_[];
 in vec4 worldPosition_[];
+in vec4 pickColors_[];
 
-out float segmentLength_; // length of the current line segment in screen space
-out float objectLength_;  // length of line segment in world space
-out vec2 texCoord_;
+out float segmentLength_; // total length of the current line segment in screen space
+out float lineLengthWorld_;  // total length of line segment in world space
+out float distanceWorld_;  // distance in world coords to segment start
+out vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
 out vec4 color_;
+flat out vec4 pickColor_;
 
 //
 // 2D line rendering in screen space.
@@ -78,69 +77,131 @@ float projectedDistance(vec2 p0, vec2 p1, vec2 p) {
 }
 
 // emit vertex data consisting of position in NDC, texture coord, and color
-void emit(in vec4 pos, in vec2 texCoord, in vec4 color, in float ndcToWorldFactor) {
+void emit(in vec4 pos, in vec2 texCoord, in vec4 color, in float screenToWorldFactor) {
     gl_Position = pos;
     texCoord_ = texCoord;
     color_ = color;
-    objectLength_ = texCoord.x * ndcToWorldFactor;
+    distanceWorld_ = texCoord.x * screenToWorldFactor;
     EmitVertex();
 }
 
-// render the current line segment without joints
-void renderLineWithoutJoints() {
-#if ENABLE_ADJACENCY == 1
-#  define INDEX1 1
-#  define INDEX2 2
-#else
-#  define INDEX1 0
-#  define INDEX2 1
-#endif
-
-    vec4 pStart = gl_in[INDEX1].gl_Position / gl_in[INDEX1].gl_Position.w;
-    vec4 pEnd = gl_in[INDEX2].gl_Position / gl_in[INDEX2].gl_Position.w;
-
-    // line direction in screen space (2D)
-    vec2 v = normalize(pEnd.xy - pStart.xy);
-
-    // determine normal
-    vec2 normal = vec2(-v.y, v.x);
-
-    float halfWidth = lineWidth_ * 0.5;
-
-    vec4 offset = vec4(normal * halfWidth, 0.0, 0.0);
-    segmentLength_ = length(pEnd - pStart);
-    // segment length in world space
-    float lineLength = length(worldPosition_[INDEX2] - worldPosition_[INDEX1]);
-    // scaling factor to convert line lengths in normalized device coords back to model space
-    // this is used for reparametrization of the line
-    float ndcToWorldFactor = lineLength / segmentLength_;
-
-    emit(pStart + offset, vec2(0.0, halfWidth), vertexColor_[INDEX1], ndcToWorldFactor);
-    emit(pStart - offset, vec2(0.0, -halfWidth), vertexColor_[INDEX1], ndcToWorldFactor);
-
-    emit(pEnd + offset, vec2(segmentLength_, halfWidth), vertexColor_[INDEX2], ndcToWorldFactor);
-    emit(pEnd - offset, vec2(segmentLength_, -halfWidth), vertexColor_[INDEX2], ndcToWorldFactor);
-
-    EndPrimitive();
+vec2 convertNDCToScreen(vec2 v) {
+    return (v + 1.0) * 0.5 * screenDim;
 }
 
+vec4 convertScreenToNDC(vec2 v, float z) {
+    return vec4(v / screenDim * 2.0 - 1.0, z, 1.0);
+}
+
+// homogeneous clipping for line segments
+// 
+// @param p1, p2    describe line segment
+// @param axis      determines plane which the line segment is clipped against (x = 0, y = 1, z = 2)
+// @param sign      +1 for positive clip plane, -1 for negative clip plane
+//   
+// @result clipped line segmenet p1-p2
+//
+void homogeneousClip(inout vec4 p1, inout vec4 p2, int axis, float sign, 
+                     inout bool p1Clipped, inout bool p2Clipped) {
+    // clip against -y
+    float t = (p1.w + sign * p1[axis]) / ((p1.w + sign * p1[axis]) - (p2.w + sign * p2[axis]));
+    vec4 pNew = mix(p1, p2, t);
+
+    if (sign*p1[axis] + p1.w > 0) {
+        p2 = pNew;
+        p2Clipped = true;
+    } else {
+        p1 = pNew;
+        p1Clipped = true;
+    }
+}
+
+
+
 void main(void) {
+    vec2 halfScreenDim = screenDim * 0.5;
 
 #if ENABLE_ADJACENCY == 0
-    // regular line rendering
-    renderLineWithoutJoints();
+    // no adjacency information available, duplicate first and second vertex
+    const int index1 = 0;
+    const int index2 = 1;
+
+    vec4 p0in = gl_in[0].gl_Position;
+    vec4 p1in = gl_in[0].gl_Position;
+    vec4 p2in = gl_in[1].gl_Position;
+    vec4 p3in = gl_in[1].gl_Position;
+
+    // set pick color equivalent to first vertex
+    pickColor_ = pickColors_[0];
+
 #else
-    vec2 screenDim = screenDim_ * 0.5;
-
     // Get the four vertices passed to the shader
-    vec2 p0 = gl_in[0].gl_Position.xy / gl_in[0].gl_Position.w;
-    vec2 p1 = gl_in[1].gl_Position.xy / gl_in[1].gl_Position.w;
-    vec2 p2 = gl_in[2].gl_Position.xy / gl_in[2].gl_Position.w;
-    vec2 p3 = gl_in[3].gl_Position.xy / gl_in[3].gl_Position.w;
-    float linewidth = lineWidth_ / screenDim.x;
-    float w = linewidth / 2.0 + 1.5*antialias_ / screenDim.x;
+    const int index1 = 1;
+    const int index2 = 2;
 
-    segmentLength_ = length(p2-p1);
+    vec4 p0in = gl_in[0].gl_Position;
+    vec4 p1in = gl_in[1].gl_Position;
+    vec4 p2in = gl_in[2].gl_Position;
+    vec4 p3in = gl_in[3].gl_Position;
+    
+    // set pick color equivalent to first vertex
+    pickColor_ = pickColors_[1];
+#endif
+    
+    // perform homogeneous clipping
+    if (p1in.w * p2in.w < 0.0) {
+        // TODO: ignore all segments intersecting with the near clip plane due 
+        //       to bug in homogeneous clipping 
+        return;
+        /*
+        bool p1Clipped = false;
+        bool p2Clipped = false;
+        
+        // clip against w = 0
+        float t = p1in.w / (p1in.w - p2in.w);
+        vec4 pNew = mix(p1in, p2in, t);
+        if (p1in.w > 0.0) {
+            // replace p2 and p3
+            p2in = pNew;
+            p2Clipped = true;
+        } else {
+            // replace p1 and p0
+            p1Clipped = true;
+            p1in = pNew;
+        }
+
+        // clip against neg. y
+        homogeneousClip(p1in, p2in, 1, -1, p1Clipped, p2Clipped);
+        // clip against pos. y
+        homogeneousClip(p1in, p2in, 1, +1, p1Clipped, p2Clipped);
+        // clip against neg. x
+        homogeneousClip(p1in, p2in, 0, -1, p1Clipped, p2Clipped);
+        // clip against pos. x
+        homogeneousClip(p1in, p2in, 0, +1, p1Clipped, p2Clipped);
+        // clip against neg. z
+        homogeneousClip(p1in, p2in, 2, -1, p1Clipped, p2Clipped);
+        // clip against pos. z
+        homogeneousClip(p1in, p2in, 2, +1, p1Clipped, p2Clipped);
+
+        if (p1Clipped) {
+            p0in = p1in;
+        }
+        if (p2Clipped) {
+            p3in = p2in;
+        }
+        if (p1Clipped && p2Clipped);
+        */
+    }
+
+    vec2 p0ndc = p0in.xy / p0in.w;
+    vec4 p1ndc = p1in / p1in.w;
+    vec4 p2ndc = p2in / p2in.w;
+    vec2 p3ndc = p3in.xy / p3in.w;    
+
+    vec2 p0 = convertNDCToScreen(p0ndc);
+    vec2 p1 = convertNDCToScreen(p1ndc.xy);
+    vec2 p2 = convertNDCToScreen(p2ndc.xy);
+    vec2 p3 = convertNDCToScreen(p3ndc);
 
     // determine line directions
     vec2 v0 = normalize(p1 - p0); // previous segment
@@ -151,6 +212,16 @@ void main(void) {
     vec2 n1 = vec2(-v1.y, v1.x);
     vec2 n2 = vec2(-v2.y, v2.x);
 
+    vec2 depth = vec2(p1ndc.z, p2ndc.z);
+
+    float w = lineWidth * 0.5 + 1.2 * antialiasing;
+    segmentLength_ = length(p2 - p1);
+    // segment length in world space
+    lineLengthWorld_ = length(worldPosition_[index2] - worldPosition_[index1]);
+    // scaling factor to convert line lengths in screenspace coords back to model space
+    // this is used for reparametrization of the line
+    float screenToWorldFactor = lineLengthWorld_ / segmentLength_;
+
     // angle between previous and current segment
     float d0 = sign(dot(v0, v1));
     // angle between current and next segment
@@ -160,12 +231,6 @@ void main(void) {
     vec2 miterBegin = normalize(n0 + n1); // miter at start of current segment
     vec2 miterEnd = normalize(n1 + n2); // miter at end of current segment
 
-    // segment length in world space
-    float lineLength = length(worldPosition_[2] - worldPosition_[1]);
-    // scaling factor to convert line lengths in normalized device coords back to model space
-    // this is used for reparametrization of the line
-    float ndcToWorldFactor = lineLength / segmentLength_;
-
     // Determine the length of the miter by projecting it onto normal
     float length_a = w / dot(miterBegin, n1);
     float length_b = w / dot(miterEnd, n1);
@@ -173,22 +238,22 @@ void main(void) {
     bool capBegin = (p0 == p1);
     bool capEnd = (p2 == p3);
 
-    vec2 depth = vec2(gl_in[1].gl_Position.z / gl_in[1].gl_Position.w,
-                      gl_in[2].gl_Position.z / gl_in[2].gl_Position.w);
+    // depth delta is computed in NDC, but we need to apply the slope depth in screen space
+    // i.e. normalization with respect to segmentLength_ and not length(p2ndc - p1ndc)
     float slopeDepth = (depth.y - depth.x) / segmentLength_;
 
     // avoid sharp corners by cutting them off
     // corner between previous segment and current one
-    if( dot( v0, v1 ) < -miterLimit_ ) {
+    if (dot(v0, v1) < -miterLimit) {
         miterBegin = normalize(-n0 + n1);
-        length_a = linewidth * 0.5;
+        length_a = lineWidth * 0.5;
 
         length_a = w / dot(miterBegin, n1);
     }
     // corner between current segment and next one
-    if( dot( v1, v2 ) < -miterLimit_ ) {
+    if (dot(v1, v2) < -miterLimit) {
         miterEnd = normalize(-n2 + n1);
-        length_b = linewidth * 0.5;
+        length_b = lineWidth * 0.5;
 
         length_b = w / dot(miterEnd, n1);
     }
@@ -196,10 +261,17 @@ void main(void) {
     vec2 leftTop, leftBottom;
     vec2 texCoord;
     if (capBegin) {
-        // offset start position p1 by radius
-        leftTop = p1 - w * v1 + w * n1;
-        leftBottom = p1 - w * v1 - w * n1;
-        texCoord = vec2(-w);
+        // compute start position at p1
+        leftTop = p1 + w * n1;
+        leftBottom = p1 - w * n1;
+        texCoord = vec2(0);
+
+        if (roundCaps) {
+            // extend segment beyond p1 by radius for cap
+            leftTop -= w * v1;
+            leftBottom -= w * v1;
+            texCoord -= w;
+        }
     }
     else {
         leftTop = p1 + length_a * miterBegin;
@@ -210,19 +282,23 @@ void main(void) {
 
     vec2 vertexDepth = slopeDepth * texCoord + depth.x;
 
-    objectLength_ = texCoord.x/segmentLength_ * lineLength;
-    emit(vec4(leftTop, vertexDepth.x, 1.0), vec2(texCoord.x, w), vertexColor_[1], ndcToWorldFactor);
-    
-    objectLength_ = texCoord.y/segmentLength_ * lineLength;
-    emit(vec4(leftBottom, vertexDepth.y, 1.0), vec2(texCoord.y, -w), vertexColor_[1], ndcToWorldFactor);
+    emit(convertScreenToNDC(leftTop, vertexDepth.x), vec2(texCoord.x, w), vertexColor_[index1], screenToWorldFactor);
+    emit(convertScreenToNDC(leftBottom, vertexDepth.y), vec2(texCoord.y, -w), vertexColor_[index1], screenToWorldFactor);
 
 
     vec2 rightTop, rightBottom;
     if (capEnd) {
-        // offset end position p2 by radius
-        rightTop = p2 + w * v1 + w * n1;
-        rightBottom = p2 + w * v1 - w * n1;
-        texCoord = vec2(segmentLength_ + w);
+        // compute end position at p2
+        rightTop = p2 + w * n1;
+        rightBottom = p2 - w * n1;
+        texCoord = vec2(segmentLength_);
+
+        if (roundCaps) {
+            // extend segment beyond p2 by radius for cap
+            rightTop += w * v1;
+            rightBottom += w * v1;
+            texCoord += w;
+        }
     }
     else {
         rightTop = p2 + length_b * miterEnd;
@@ -233,12 +309,8 @@ void main(void) {
 
     vertexDepth = slopeDepth * texCoord + depth.x;
 
-    objectLength_ = texCoord.x/segmentLength_ * lineLength;
-    emit(vec4(rightTop, vertexDepth.x, 1.0), vec2(texCoord.x, w), vertexColor_[2], ndcToWorldFactor);
-
-    objectLength_ = texCoord.y/segmentLength_ * lineLength;
-    emit(vec4(rightBottom, vertexDepth.y, 1.0), vec2(texCoord.y, -w), vertexColor_[2], ndcToWorldFactor);
+    emit(convertScreenToNDC(rightTop, vertexDepth.x), vec2(texCoord.x, w), vertexColor_[index2], screenToWorldFactor);
+    emit(convertScreenToNDC(rightBottom, vertexDepth.y), vec2(texCoord.y, -w), vertexColor_[index2], screenToWorldFactor);
 
     EndPrimitive();
-#endif
 }

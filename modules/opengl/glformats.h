@@ -58,9 +58,9 @@ public:
 
     GLFormats();
     const GLFormat& getGLFormat(DataFormatId id) const;
-    
+
     static const GLFormat& get(DataFormatId id);
-    
+
 private:
     GLFormat glFormatArray_[static_cast<size_t>(DataFormatId::NumberOfFormats)];
 };

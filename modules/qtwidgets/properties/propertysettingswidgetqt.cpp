@@ -31,40 +31,28 @@
 
 namespace inviwo {
 
-PropertySettingsWidgetQt::PropertySettingsWidgetQt(Property* property, QWidget* parent)
-    : QDialog(parent)
-    , PropertyWidget(property)
-    , gridLayout_(new QGridLayout())
-    , btnApply_("Apply", this)
-    , btnOk_("Ok", this)
-    , btnCancel_("Cancel", this) {
-    //this->setWindowFlags(Qt::WindowStaysOnTopHint);
-    this->setModal(false);
-    // remove help button from title bar
-    Qt::WindowFlags flags = this->windowFlags() ^ Qt::WindowContextHelpButtonHint;
-    // make it a tool window
-    flags |= Qt::Popup;
-    this->setWindowFlags(flags);
+SinglePropertySetting::SinglePropertySetting(QWidget* widget, std::string label)
+    : label_(new QLabel(QString::fromStdString(label), widget)), widget_(widget) {}
+
+QLineEdit* SinglePropertySetting::addField() {
+    QLineEdit* ext = new QLineEdit(widget_);
+    ext->setValidator(new QDoubleValidator(widget_));
+    additionalFields_.push_back(ext);
+    return ext;
 }
 
-PropertySettingsWidgetQt::~PropertySettingsWidgetQt() {
-    if (gridLayout_ && (gridLayout_->parent() == nullptr)) {
-        delete gridLayout_;
+double SinglePropertySetting::getFieldAsDouble(int i) {
+    if (i >= 0 && static_cast<size_t>(i) < additionalFields_.size()) {
+        QLocale locale = additionalFields_[i]->locale();
+        return locale.toDouble(
+            additionalFields_[i]->text().remove(QChar(' ')).remove(locale.groupSeparator()));
     }
-
-    for (auto s : settings_){
-        delete s;
-    }
+    return DataFloat64::minToDouble();
 }
 
-void PropertySettingsWidgetQt::keyPressEvent(QKeyEvent * event) {
-    if (event->key() == Qt::Key_Escape) {
-        cancel();
-    } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
-        apply();
-    }
-    QWidget::keyPressEvent(event);
-}
+
+
+
 
 
 

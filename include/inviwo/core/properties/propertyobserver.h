@@ -43,12 +43,12 @@ public:
     PropertyObserver() = default;
     virtual ~PropertyObserver() = default;
 
-    virtual void onSetIdentifier(const std::string& identifier) {}
-    virtual void onSetDisplayName(const std::string& displayName) {}
-    virtual void onSetSemantics(const PropertySemantics& semantics) {}
-    virtual void onSetReadOnly(bool readonly) {}
-    virtual void onSetVisible(bool visible) {}
-    virtual void onSetUsageMode(UsageMode usageMode) {}
+    virtual void onSetIdentifier(const std::string& identifier);
+    virtual void onSetDisplayName(const std::string& displayName);
+    virtual void onSetSemantics(const PropertySemantics& semantics);
+    virtual void onSetReadOnly(bool readonly);
+    virtual void onSetVisible(bool visible);
+    virtual void onSetUsageMode(UsageMode usageMode);
 };
 
 class IVW_CORE_API PropertyObservable : public Observable<PropertyObserver> {

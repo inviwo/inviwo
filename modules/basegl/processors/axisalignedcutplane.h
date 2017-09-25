@@ -49,19 +49,6 @@
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, AxisAlignedCutPlane}
-* Explanation of how to use the processor.
-*
-* ### Inports
-*   * __<Inport1>__ <description>.
-*
-* ### Outports
-*   * __<Outport1>__ <description>.
-*
-* ### Properties
-*   * __<Prop1>__ <description>.
-*   * __<Prop2>__ <description>
-*/
 class IVW_MODULE_BASEGL_API AxisAlignedCutPlane : public Processor {
     enum class Axis { X = 0, Y = 1, Z = 2 };
     template <Axis axis>
@@ -109,6 +96,7 @@ protected:
     SliceProperty<Axis::Y> ySlide_;
     SliceProperty<Axis::Z> zSlide_;
 
+    OptionPropertyInt channel_;
     BoolProperty disableTF_;
     TransferFunctionProperty tf_;
 
@@ -180,16 +168,12 @@ void AxisAlignedCutPlane::SliceProperty<axis>::createDrawer(std::shared_ptr<cons
 template <AxisAlignedCutPlane::Axis axis>
 void AxisAlignedCutPlane::SliceProperty<axis>::draw(Shader &shader) {
     if (!isChecked()) return;
-    LGL_ERROR;
-    utilgl::setShaderUniforms(shader, *mesh_, "geometry_");
-    LGL_ERROR;
+    utilgl::setShaderUniforms(shader, *mesh_, "geometry");
     drawer_->draw();
-    LGL_ERROR;
 }
 
 template <AxisAlignedCutPlane::Axis axis>
-vec3 inviwo::AxisAlignedCutPlane::SliceProperty<axis>::forSlice(int axes, double a, double b,
-                                                                double t) {
+vec3 AxisAlignedCutPlane::SliceProperty<axis>::forSlice(int axes, double a, double b, double t) {
     switch (axes) {
         case 0:
             return vec3(t, a, b);

@@ -60,6 +60,7 @@ static const int faceAxis_[6] = {
     0, 0, 1, 1, 2, 2
 };
 
+/*
 static const vec3 faceCenters_[6] = {
     vec3(1.f, 0.5f, 0.5f),
     vec3(0.f, 0.5f, 0.5f),
@@ -68,6 +69,7 @@ static const vec3 faceCenters_[6] = {
     vec3(0.5f, 0.5f, 1.f),
     vec3(0.5f, 0.5f, 0.f)
 };
+*/
 
 static const vec3 faceNormals_[6] = {
     vec3(1.f, 0.f, 0.f),
@@ -120,7 +122,7 @@ LightVolumeGL::LightVolumeGL()
     , lightSource_("lightSource")
     , supportColoredLight_("supportColoredLight", "Support Light Color", false)
     , volumeSizeOption_("volumeSizeOption", "Light Volume Size")
-    , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &inport_)
+    , transferFunction_("transferFunction", "Transfer function", &inport_)
     , floatPrecision_("floatPrecision", "Float Precision", false)
     , propagationShader_("lighting/lightpropagation.vert", "lighting/lightpropagation.geom",
                          "lighting/lightpropagation.frag", true)
@@ -276,7 +278,7 @@ bool LightVolumeGL::lightSourceChanged() {
             if (auto directionLight = dynamic_cast<const DirectionalLight*>(lightSource_.getData().get())) {
                 mat4 worldToTexture = inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix();
                 vec4 lightPositionTexture = worldToTexture * vec4(-directionLight->getDirection(), 1.f);
-                lightPos_ = lightPositionTexture.xyz();
+                lightPos_ = vec3(lightPositionTexture);
                 lightDirection = lightPos_ - vec3(0.5f);
                 if (glm::length(lightDirection) == 0)
                     lightDirection = vec3(1,0,0);
@@ -300,7 +302,7 @@ bool LightVolumeGL::lightSourceChanged() {
             if (auto pointLight = dynamic_cast<const PointLight*>(lightSource_.getData().get())) {
                 mat4 worldToTexture = inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix();
                 vec4 lightPositionTexture = worldToTexture * vec4(pointLight->getPosition(), 1.f);
-                lightPos_ = lightPositionTexture.xyz();
+                lightPos_ = vec3(lightPositionTexture);
                 lightDirection = lightPos_ - vec3(0.5f);
                 if (glm::length(lightDirection) == 0)
                     lightDirection = vec3(1,0,0);

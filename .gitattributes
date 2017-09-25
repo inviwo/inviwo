@@ -1,0 +1,11 @@
+*.h linguist-language=C++
+## mark shader files as GLSL
+*.frag linguist-language=GLSL
+*.geom linguist-language=GLSL
+*.vert linguist-language=GLSL
+
+## tools is ignored by default (see linguist docs)
+tools/** linguist-vendored=false
+
+## exclude all external libraries
+**/ext/** linguist-vendored

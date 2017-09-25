@@ -36,19 +36,23 @@
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 #include <modules/qtwidgets/qstringhelper.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWidget>
+#include <warn/pop>
+
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API BaseOrdinalEditorWidget : public QWidget  {
+class IVW_MODULE_QTWIDGETS_API BaseOrdinalEditorWidget : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
-
 public:
     BaseOrdinalEditorWidget();
     virtual ~BaseOrdinalEditorWidget();
 
-protected: 
+protected:
     virtual QString transformValueToEditor() = 0;
     virtual void newEditorValue(QString) = 0;
 
@@ -57,30 +61,20 @@ protected:
 
     IvwLineEdit* editor_;
 
-private slots:
-    void updateFromEditor();
-
 signals:
     void valueChanged();
 
 private:
-    void generateWidget();
+    void updateFromEditor();
     void updateEditor();
-
-
 };
 
 template <typename T>
 class TemplateOrdinalEditorWidget : public BaseOrdinalEditorWidget, public OrdinalBaseWidget<T> {
 public:
-    TemplateOrdinalEditorWidget() : BaseOrdinalEditorWidget()
-        , value_(0)
-        , minValue_(0)
-        , maxValue_(0)
-        , increment_(0)
-    {
-    }
-    virtual ~TemplateOrdinalEditorWidget() {}
+    TemplateOrdinalEditorWidget()
+        : BaseOrdinalEditorWidget(), value_(0), minValue_(0), maxValue_(0), increment_(0) {}
+    virtual ~TemplateOrdinalEditorWidget() = default;
 
     virtual T getValue();
     virtual void setValue(T value);
@@ -98,13 +92,12 @@ protected:
     // Has default implementations using above transformations.
     virtual QString transformValueToEditor();
     virtual void newEditorValue(QString);
-    
+
     T value_;
     T minValue_;
     T maxValue_;
     T increment_;
 };
-
 
 // Default case for fractional numbers
 template <typename T>
@@ -113,9 +106,9 @@ public:
     OrdinalEditorWidget() : TemplateOrdinalEditorWidget<T>() {
         this->editor_->setValidator(new QDoubleValidator(this));
     }
-    virtual ~OrdinalEditorWidget() {}
+    virtual ~OrdinalEditorWidget() = default;
 
-protected:  
+protected:
     // Defines the transform
     virtual T editorToRepr(QString val) {
         QLocale locale = BaseOrdinalEditorWidget::editor_->locale();
@@ -123,18 +116,18 @@ protected:
     }
     virtual QString reprToEditor(T val) {
         QLocale locale = BaseOrdinalEditorWidget::editor_->locale();
-        return QStringHelper<T>::toLocaleString(locale,val);// locale.toString(val);
+        return QStringHelper<T>::toLocaleString(locale, val);
     }
 };
 
 // Specialization for integer types
 template <>
-class OrdinalEditorWidget<int> : public TemplateOrdinalEditorWidget<int>{
+class OrdinalEditorWidget<int> : public TemplateOrdinalEditorWidget<int> {
 public:
     OrdinalEditorWidget() : TemplateOrdinalEditorWidget<int>() {
         editor_->setValidator(new QIntValidator(this));
     }
-    virtual ~OrdinalEditorWidget() {}
+    virtual ~OrdinalEditorWidget() = default;
 
 protected:
     // Defines the transform
@@ -148,13 +141,12 @@ protected:
     }
 };
 
-
 template <typename T>
-QString inviwo::TemplateOrdinalEditorWidget<T>::transformValueToEditor() {
+QString TemplateOrdinalEditorWidget<T>::transformValueToEditor() {
     return reprToEditor(value_);
 }
 template <typename T>
-void inviwo::TemplateOrdinalEditorWidget<T>::newEditorValue(QString val) {
+void TemplateOrdinalEditorWidget<T>::newEditorValue(QString val) {
     value_ = editorToRepr(val);
 }
 template <typename T>
@@ -163,7 +155,7 @@ T TemplateOrdinalEditorWidget<T>::getValue() {
 }
 template <typename T>
 void TemplateOrdinalEditorWidget<T>::setValue(T value) {
-    if(value >= minValue_ && value <= maxValue_ && value != value_) {
+    if (value >= minValue_ && value <= maxValue_ && value != value_) {
         value_ = value;
         applyValue();
     }
@@ -175,13 +167,13 @@ void TemplateOrdinalEditorWidget<T>::initValue(T value) {
 }
 template <typename T>
 void TemplateOrdinalEditorWidget<T>::setMinValue(T minValue) {
-    if(minValue_ != minValue) {
+    if (minValue_ != minValue) {
         minValue_ = minValue;
     }
 }
 template <typename T>
 void TemplateOrdinalEditorWidget<T>::setMaxValue(T maxValue) {
-    if(maxValue_ != maxValue) {
+    if (maxValue_ != maxValue) {
         maxValue_ = maxValue;
     }
 }
@@ -192,12 +184,10 @@ void TemplateOrdinalEditorWidget<T>::setRange(T minValue, T maxValue) {
 }
 template <typename T>
 void TemplateOrdinalEditorWidget<T>::setIncrement(T increment) {
-    if(increment_ != increment) {
+    if (increment_ != increment) {
         increment_ = increment;
     }
 }
-
-
 
 } // namespace
 

@@ -34,14 +34,13 @@
 
 namespace inviwo {
 
-StreamLineTracer::StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> sampler, const StreamLineProperties &properties)
+StreamLineTracer::StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> sampler,
+                                   const StreamLineProperties &properties)
     : IntegralLineTracer(properties)
-    , volumeSampler_(sampler)
-    , invBasis_(dmat3(glm::inverse(sampler->getBasis())))
-    , normalizeSample_(properties.getNormalizeSamples())
-{
 
-}
+    , invBasis_(dmat3(glm::inverse(sampler->getBasis())))
+    , volumeSampler_(sampler)
+    , normalizeSample_(properties.getNormalizeSamples()) {}
 
 StreamLineTracer::~StreamLineTracer() {}
 
@@ -49,34 +48,39 @@ void StreamLineTracer::addMetaVolume(const std::string &name, std::shared_ptr<co
     metaSamplers_.insert(std::make_pair(name, std::make_shared<VolumeDoubleSampler<3>>(vol)));
 }
 
-
-void StreamLineTracer::addMetaSampler(const std::string &name, std::shared_ptr<const SpatialSampler<3, 3, double>> sampler) {
+void StreamLineTracer::addMetaSampler(const std::string &name,
+                                      std::shared_ptr<const SpatialSampler<3, 3, double>> sampler) {
     metaSamplers_.insert(std::make_pair(name, sampler));
 }
 
 inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p) {
     IntegralLine line;
+    auto& positions = line.getPositions();
 
-    bool fwd = dir_ == IntegralLineProperties::Direction::BOTH || dir_ == IntegralLineProperties::Direction::FWD;
-    bool bwd = dir_ == IntegralLineProperties::Direction::BOTH || dir_ == IntegralLineProperties::Direction::BWD;
+    bool fwd = dir_ == IntegralLineProperties::Direction::BOTH ||
+               dir_ == IntegralLineProperties::Direction::FWD;
+    bool bwd = dir_ == IntegralLineProperties::Direction::BOTH ||
+               dir_ == IntegralLineProperties::Direction::BWD;
     bool both = fwd && bwd;
 
-    line.positions_.reserve(steps_ + 2);
-    line.metaData_["velocity"].reserve(steps_ + 2);
+    positions.reserve(steps_ + 2);
+    line.getMetaData("velocity").reserve(steps_ + 2);
     for (auto &m : metaSamplers_) {
-        line.metaData_[m.first].reserve(steps_ + 2);
+        line.getMetaData(m.first).reserve(steps_ + 2);
     }
 
     if (bwd) {
-        step(steps_ / (both ? 2 : 1), p, line,false);
+        step(steps_ / (both ? 2 : 1), p, line, false);
     }
-    if (both && !line.positions_.empty()) {
-        std::reverse(line.positions_.begin(),
-                     line.positions_.end());  // reverse is faster than insert first
-        line.positions_.pop_back();           // dont repeat first step
-        for (auto &m : line.metaData_) {
-            std::reverse(m.second.begin(), m.second.end());  // reverse is faster than insert first
-            m.second.pop_back();                             // dont repeat first step
+    if (both && !positions.empty()) {
+        std::reverse(positions.begin(),
+            positions.end());  // reverse is faster than insert first
+        positions.pop_back();           // dont repeat first step
+        auto keys = line.getMetaDataKeys();
+        for (auto &key : keys) {
+            auto m = line.getMetaData(key);
+            std::reverse(m.begin(), m.end());  // reverse is faster than insert first
+            m.pop_back();                             // dont repeat first step
         }
     }
     if (fwd) {
@@ -91,6 +95,8 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const vec3 &p) {
 }
 
 void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd) {
+    auto& positions = line.getPositions();
+
     for (int i = 0; i <= steps; i++) {
         if (!volumeSampler_->withinBounds(curPos)) {
             line.setTerminationReason(IntegralLine::TerminationReason::OutOfBounds);
@@ -115,15 +121,15 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
         }
 
         
-        dvec3 worldVelocty = volumeSampler_->sample(curPos).xyz();
+        const dvec3 worldVelocty{volumeSampler_->sample(curPos)};
 
 
         if (normalizeSample_) v = glm::normalize(v);
         dvec3 velocity = invBasis_ * (v * stepSize_ * (fwd ? 1.0 : -1.0));
-        line.positions_.push_back(curPos);
-        line.metaData_["velocity"].push_back(worldVelocty);
+        positions.push_back(curPos);
+        line.getMetaData("velocity").push_back(worldVelocty);
         for (auto &m : metaSamplers_) {
-            line.metaData_[m.first].push_back(m.second->sample(curPos));
+            line.getMetaData(m.first).push_back(m.second->sample(curPos));
         }
 
         curPos += velocity;
@@ -131,7 +137,7 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
 }
 
 dvec3 StreamLineTracer::euler(const dvec3 &curPos) {
-    return volumeSampler_->sample(curPos).xyz();
+    return dvec3(volumeSampler_->sample(curPos));
 }
 
 dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
@@ -149,19 +155,19 @@ dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
         }
     };
 
-    auto k1 = volumeSampler_->sample(curPos).xyz();
+    auto k1 = dvec3(volumeSampler_->sample(curPos));
     if (normalizeSample_) k1 = normalize(k1);
     auto K1 = m * k1;
-    auto k2 = volumeSampler_->sample(curPos + K1 * h2).xyz();
+    auto k2 = dvec3(volumeSampler_->sample(curPos + K1 * h2));
     if (normalizeSample_) k2 = normalize(k2);
     auto K2 = m * k2;
-    auto k3 = volumeSampler_->sample(curPos + K2 * h2).xyz();
+    auto k3 = dvec3(volumeSampler_->sample(curPos + K2 * h2));
     if (normalizeSample_) k3 = normalize(k3);
     auto K3 = m * k3;
-    auto k4 = volumeSampler_->sample(curPos + K3 * h).xyz();
+    auto k4 = dvec3(volumeSampler_->sample(curPos + K3 * h));
     if (normalizeSample_) k4 = normalize(k4);
 
-    return (k1+2.0*(k2+k3)+k4 )/6.0;
+    return (k1 + 2.0 * (k2 + k3) + k4) / 6.0;
 }
 
 }  // namespace

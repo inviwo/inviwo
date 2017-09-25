@@ -41,7 +41,7 @@ PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState stat
     : Event()
     , pickingAction_(pickingAction)
     , state_(state)
-    , event_{event, [](Event* e) {}}
+    , event_{event, [](Event*) {}}
     , ownsEvent_(false)
     , pressedNDC_(pressNDC)
     , previousNDC_(previousNDC)
@@ -60,7 +60,8 @@ PickingEvent::PickingEvent(const PickingAction* pickingAction, PickingState stat
     , pickedId_(pickedId) {}
 
 PickingEvent::PickingEvent(const PickingEvent& rhs)
-    : pickingAction_(rhs.pickingAction_)
+    : Event(rhs)
+    , pickingAction_(rhs.pickingAction_)
     , state_(rhs.state_)
     , event_(rhs.event_->clone(), [](Event* event) {delete event;})
     , ownsEvent_(true)
@@ -70,6 +71,7 @@ PickingEvent::PickingEvent(const PickingEvent& rhs)
 
 PickingEvent& PickingEvent::operator=(const PickingEvent& that) {
     if (this != &that) {
+        Event::operator=(that);
         pickingAction_ = that.pickingAction_;
         state_ = that.state_;
         event_ = EventPtr(that.event_->clone(), [](Event* event) {delete event;});
@@ -85,7 +87,7 @@ PickingEvent::~PickingEvent() = default;
 
 PickingEvent* PickingEvent::clone() const {
     return new PickingEvent(*this);
-};
+}
 
 uint64_t PickingEvent::hash() const {
     return chash();
@@ -149,7 +151,7 @@ uvec2 PickingEvent::getCanvasSize() const {
 }
 
 dvec2 PickingEvent::getPreviousPosition() const {
-    return dvec2(0.5) * (previousNDC_.xy() + dvec2(1.0));
+    return dvec2(0.5) * (dvec2(previousNDC_) + dvec2(1.0));
 }
 
 
@@ -159,7 +161,7 @@ double PickingEvent::getPreviousDepth() const {
 
 
 dvec2 PickingEvent::getPressedPosition() const {
-    return dvec2(0.5) * (pressedNDC_.xy() + dvec2(1.0));
+    return dvec2(0.5) * (dvec2(pressedNDC_) + dvec2(1.0));
 }
 
 

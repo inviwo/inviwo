@@ -136,7 +136,7 @@ void OpenGLCapabilities::printInfo() {
     }
     print("OpenGL Version: ", glVersionStr_);
     std::string profile = preferredProfile_;
-    profile[0] = toupper(profile[0]);
+    profile[0] = static_cast<char>(toupper(profile[0]));
     print("OpenGL Profile: ", profile);
 
     if (isShadersSupported()) {
@@ -150,7 +150,7 @@ void OpenGLCapabilities::printDetailedInfo() {
     print("GPU Renderer: " + glRenderStr_);
     print("OpenGL Version: " + glVersionStr_);
     std::string profile = preferredProfile_;
-    profile[0] = toupper(profile[0]);
+    profile[0] = static_cast<char>(toupper(profile[0]));
     print("OpenGL Profile: " + profile);
 
     // GLSL

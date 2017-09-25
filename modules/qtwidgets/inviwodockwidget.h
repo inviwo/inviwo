@@ -41,7 +41,7 @@ class QLayout;
 
 namespace inviwo {
 
-    class InviwoDockWidgetTitleBar;
+class InviwoDockWidgetTitleBar;
 
 class IVW_MODULE_QTWIDGETS_API InviwoDockWidget : public QDockWidget {
     #include <warn/push>
@@ -63,9 +63,6 @@ public:
 
 signals:
     void stickyFlagChanged(bool sticky);
-
-protected slots:
-    void updateWindowTitle(const QString &string);
 
 private:
     InviwoDockWidgetTitleBar* dockWidgetTitleBar_;

@@ -35,14 +35,12 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
-
 namespace util {
 
-IVW_MODULE_BASE_API std::shared_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume);
+    IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(const Volume &volume);
+    IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume);
 
-}  // namespace
+}  // namespace util
+}  // namespace inviwo
 
-}  // namespace
-
-#endif // IVW_VOLUMECURL_H
-
+#endif  // IVW_VOLUMEDIVERGENCE_H

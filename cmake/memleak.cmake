@@ -28,52 +28,15 @@
  #################################################################################
 
  ####  Memory leak checks ####
-
 IF(WIN32 AND MSVC)
-   	option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
+    option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
     if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        add_definitions(-DIVW_ENABLE_MSVC_MEM_LEAK_TEST)
-        if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-            link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win64)
-        else ()
-    	    link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win32)
-        endif()
-
-        if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-            set(arch "Win64")
-        else()
-            set(arch "Win32")
-        endif()
-
-        add_custom_target("copy-memleak-lib"
-           COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/vld_x64.dll
-                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll 
-            
-            COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/dbghelp.dll
-                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll
-            
-            COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/Microsoft.DTfW.DHL.manifest
-                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest    
-
-            DEPENDS 
-                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/vld_x64.dll
-                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/dbghelp.dll
-                ${IVW_EXTENSIONS_DIR}/vld/bin/${arch}/Microsoft.DTfW.DHL.manifest
-
-            WORKING_DIRECTORY ${OUTPUT_DIR}
-            COMMENT "Copying memleak libs"
-            VERBATIM
-        )
-        set_target_properties("copy-memleak-lib" PROPERTIES FOLDER "unittests")
-
-    endif()    
+        add_subdirectory(${IVW_EXTENSIONS_DIR}/vld)
+    endif()
 ENDIF()
 
 function(ivw_memleak_setup target)
-	if(WIN32 AND MSVC AND IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        add_dependencies(${target} copy-memleak-lib)
-	endif()
+    if(WIN32 AND MSVC AND IVW_ENABLE_MSVC_MEMLEAK_TEST)
+        target_link_libraries(${target} vld-interface)
+    endif()
 endfunction()

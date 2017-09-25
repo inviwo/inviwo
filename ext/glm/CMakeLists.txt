@@ -17,6 +17,10 @@ file(GLOB_RECURSE GTX_SOURCE ./gtx/*.cpp)
 file(GLOB_RECURSE GTX_INLINE ./gtx/*.inl)
 file(GLOB_RECURSE GTX_HEADER ./gtx/*.hpp)
 
+file(GLOB_RECURSE SIMD_SOURCE ./simd/*.cpp)
+file(GLOB_RECURSE SIMD_INLINE ./simd/*.inl)
+file(GLOB_RECURSE SIMD_HEADER ./simd/*.h)
+
 #source_group("Text Files" FILES ${ROOT_TEXT})
 #source_group("Core Files" FILES ${CORE_SOURCE})
 #source_group("Core Files" FILES ${CORE_INLINE})
@@ -46,6 +50,7 @@ set(HEADER_FILES
     ${CORE_SOURCE}    ${CORE_INLINE}    ${CORE_HEADER}
     ${GTC_SOURCE}     ${GTC_INLINE}     ${GTC_HEADER}
     ${GTX_SOURCE}     ${GTX_INLINE}     ${GTX_HEADER}
+    ${SIMD_SOURCE}    ${SIMD_INLINE}    ${SIMD_HEADER}
 )
 
 ivw_group("Header Files" ${HEADER_FILES})

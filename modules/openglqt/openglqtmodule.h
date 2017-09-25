@@ -32,9 +32,8 @@
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <modules/openglqt/canvasqt.h>
-#include <modules/openglqt/openglqtmenu.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
+#include <inviwo/core/util/canvas.h>
 
 namespace inviwo {
 
@@ -48,7 +47,7 @@ public:
     virtual void onProcessorNetworkEvaluationEnd() override;
 
 private:
-    std::unique_ptr<CanvasQt> sharedCanvas_;
+    std::unique_ptr<Canvas> sharedCanvas_;
 };
 
 }  // namespace

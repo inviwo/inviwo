@@ -61,6 +61,17 @@ function(join sep glue output)
 endfunction()
 
 #--------------------------------------------------------------------
+# ivw_prepend(output str)
+# ivw_prepends str to each element of the input
+function(ivw_prepend var prefix)
+   set(listVar "")
+   foreach(f ${ARGN})
+      list(APPEND listVar "${prefix}${f}")
+   endforeach(f)
+   set(${var} "${listVar}" PARENT_SCOPE)
+endfunction(ivw_prepend)
+
+#--------------------------------------------------------------------
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
 # result in output.
@@ -197,7 +208,8 @@ function(ivw_add_module_option_to_cache the_module onoff forcemodule)
     first_case_upper(dir_name_cap ${the_module})
 
     if(${mod_dep}_description)
-        set(desc "Build ${dir_name_cap} Module\n${${mod_dep}_description}")
+        decodeLineBreaks(decodedDesc ${${mod_dep}_description})
+        set(desc "Build ${dir_name_cap} Module\n${decodedDesc}")
     else()
         set(desc "Build ${dir_name_cap} Module")
     endif()
@@ -206,6 +218,9 @@ function(ivw_add_module_option_to_cache the_module onoff forcemodule)
         set(${mod_name} ${onoff} CACHE BOOL "${desc}" FORCE)
     elseif(NOT DEFINED ${mod_name})
         option(${mod_name} "${desc}" ${onoff})
+    else()
+        # need to do this to update the docstring
+        set(${mod_name} ${${mod_name}} CACHE BOOL "${desc}" FORCE)
     endif()
 endfunction()
 
@@ -381,7 +396,7 @@ endfunction()
 # ivw_print_list(list) -> "list  = list1, list2, list3"
 function(ivw_print_list list_var)
     string(REPLACE ";" ", " res "${${list_var}}") 
-    ivw_message("${list_var} = ${res}")
+    message(STATUS "${list_var} = ${res}")
 endfunction()
 
 #--------------------------------------------------------------------
@@ -413,7 +428,7 @@ endfunction()
 function(ivw_private_visit_node node sorted_var marked_var tempmarked_var node_list_var node_edge_var count)
     MATH(EXPR count "${count}+1")
     if(${count} GREATER 30)
-        ivw_message(ERROR "Stoppig to deep recursion")
+        message(ERROR "Stoppig to deep recursion")
         return()
     endif()
 
@@ -424,7 +439,7 @@ function(ivw_private_visit_node node sorted_var marked_var tempmarked_var node_l
 
     list(FIND tempmarked ${node} tempfound)
     if(NOT ${tempfound} EQUAL -1) # Error not a dag
-        ivw_message(ERROR "Dependency graph not a DAG. Cant resove for node \"${node}\"")
+        message(ERROR "Dependency graph not a DAG. Cant resove for node \"${node}\"")
     endif()
 
     list(FIND marked ${node} markedfound)
@@ -647,7 +662,7 @@ endfunction()
 # A helper funtion to generate a header file with inviwo build 
 # information, like the build date and the commit hash
 # ivw_generate_build_info(<template> <outputfile> <module dir1> <module dir2> ...
-function(ivw_generate_build_info header_template ini_template buildinfo_headerfile buildinfo_inifile)
+function(ivw_generate_build_info source_template ini_template buildinfo_sourcefile buildinfo_inifile)
     ivw_find_unique_path_segements(unique_names "${ARGN}")
     set(index 0)
     set(hashes_list "")
@@ -657,8 +672,8 @@ function(ivw_generate_build_info header_template ini_template buildinfo_headerfi
         list(APPEND hashes_list "{\"${name}\", \"${hash}\"}")
         MATH(EXPR index "${index}+1")
     endforeach()
-    string(REPLACE ";" ",\n    " hashes "${hashes_list}")
-    set(HASHES "{{\n    ${hashes}\n}}")
+    string(REPLACE ";" ",\n            " hashes "${hashes_list}")
+    set(HASHES "{\n            ${hashes}\n        }")
     set(NHASHES "${index}")
 
     set(index 0)
@@ -670,7 +685,7 @@ function(ivw_generate_build_info header_template ini_template buildinfo_headerfi
         MATH(EXPR index "${index}+1")
     endforeach()
     string(REPLACE ";" "\n" hashes "${hashes_list}")
-    set(INIHASHES "${hashes}\n")
+    set(INIHASHES "${hashes}")
 
 
     string(TIMESTAMP TMPYEAR "%Y")
@@ -685,7 +700,7 @@ function(ivw_generate_build_info header_template ini_template buildinfo_headerfi
     string(REGEX REPLACE "0*([0-9]+)" "\\1" MINUTE ${TMPMINUTE})
     string(TIMESTAMP TMPSECOND "%S")
     string(REGEX REPLACE "0*([0-9]+)" "\\1" SECOND ${TMPSECOND})
-    configure_file("${header_template}" "${buildinfo_headerfile}" @ONLY)
+    configure_file("${source_template}" "${buildinfo_sourcefile}" @ONLY)
 
     string(REPLACE "\"" "" ini_dest_path ${INI_DEST_PATH})
     configure_file("${ini_template}" "${ini_dest_path}${buildinfo_inifile}" @ONLY)
@@ -694,20 +709,22 @@ endfunction()
 
 #--------------------------------------------------------------------
 # A helper funtion to install targets
-function(ivw_default_install_targets)
-    # package the zlib lib
+# usage: ivw_default_install_comp_targets(<cpack component> <list of targets)
+function(ivw_default_install_comp_targets comp)
     if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
         if(WIN32)
            install(TARGETS ${ARGN}
                     RUNTIME DESTINATION bin
-                    COMPONENT modules)
-        else(APPLE)
+                    ARCHIVE DESTINATION bin
+                    LIBRARY DESTINATION bin
+                    COMPONENT ${comp})
+        elseif(APPLE)
             install(TARGETS ${ARGN}
                     RUNTIME DESTINATION bin
                     BUNDLE DESTINATION .
                     ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
                     LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                    COMPONENT modules)
+                    COMPONENT ${comp})
         
         else()
             install(TARGETS ${ARGN}
@@ -715,8 +732,14 @@ function(ivw_default_install_targets)
                     BUNDLE DESTINATION bin
                     ARCHIVE DESTINATION lib
                     LIBRARY DESTINATION lib
-                    COMPONENT modules)
+                    COMPONENT ${comp})
         endif()
     endif()
+endfunction()
+
+#--------------------------------------------------------------------
+# A helper funtion to install module targets
+function(ivw_default_install_targets)
+    ivw_default_install_comp_targets(modules ${ARGN})
 endfunction()
 

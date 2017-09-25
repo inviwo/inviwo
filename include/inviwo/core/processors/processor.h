@@ -322,6 +322,9 @@ private:
     ProcessorNetwork* network_;
 };
 
+
+inline ProcessorNetwork* Processor::getNetwork() const { return network_; }
+
 }  // namespace
 
 #endif  // IVW_PROCESSOR_H

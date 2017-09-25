@@ -33,10 +33,14 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/processorwidget.h>
+
+#include <inviwo/core/properties/property.h>
 
 namespace inviwo {
+namespace util {
 
-void util::saveNetwork(ProcessorNetwork* network, std::string filename) {
+void saveNetwork(ProcessorNetwork* network, std::string filename) {
     try {
         Serializer xmlSerializer(filename);
         network->serialize(xmlSerializer);
@@ -48,8 +52,8 @@ void util::saveNetwork(ProcessorNetwork* network, std::string filename) {
     }
 }
 
-void util::saveAllCanvases(ProcessorNetwork* network, std::string dir, std::string name,
-                           std::string ext) {
+void saveAllCanvases(ProcessorNetwork* network, std::string dir, std::string name,
+                     std::string ext) {
     int i = 0;
     for (auto cp : network->getProcessorsByType<inviwo::CanvasProcessor>()) {
         std::stringstream ss;
@@ -72,12 +76,12 @@ void util::saveAllCanvases(ProcessorNetwork* network, std::string dir, std::stri
     }
 }
 
-bool util::isValidIdentifierCharacter(char c, const std::string& extra) {
+bool isValidIdentifierCharacter(char c, const std::string& extra) {
     return (std::isalnum(c) || c == '_' || c == '-' || util::contains(extra, c));
 }
 
-void util::validateIdentifier(const std::string& identifier, const std::string& type,
-                              ExceptionContext context, const std::string& extra) {
+void validateIdentifier(const std::string& identifier, const std::string& type,
+                        ExceptionContext context, const std::string& extra) {
     for (const auto& c : identifier) {
         if (!(c >= -1) || !isValidIdentifierCharacter(c, extra)) {
             throw Exception(type + " identifiers are not allowed to contain \"" + c +
@@ -110,4 +114,35 @@ std::string util::stripModuleFileNameDecoration(std::string filePath) {
     return moduleName;
 }
 
-}  // namespace
+std::string stripIdentifier(std::string identifier) {
+    // What we allow: [a-zA-Z_][a-zA-Z0-9_]*
+    auto testFirst = [](unsigned char c) -> bool { return !(c == '_' || std::isalpha(c)); };
+
+    auto testRest = [](unsigned char c) -> bool { return !(c == '_' || std::isalnum(c)); };
+
+    while (identifier.size() > 0) {
+        const auto& c = identifier[0];
+        if (!testFirst(c)) { break; }
+        if (std::isdigit(c)) {  // prepend an underscore if first char is a digit
+            identifier = "_" + identifier;
+            break;
+        }
+        identifier = identifier.substr(1);
+    }
+
+    util::erase_remove_if(identifier, testRest);
+    return identifier;
+}
+
+namespace detail {
+
+void Shower::operator()(Property& p) {p.setVisible(true);}
+void Hideer::operator()(Property& p) {p.setVisible(false);}
+
+void Shower::operator()(ProcessorWidget& p) {p.setVisible(true);}
+void Hideer::operator()(ProcessorWidget& p) {p.setVisible(false);}
+
+}  // namespace detail
+
+}  // namespace util
+}  // namespace inviwo

@@ -101,7 +101,6 @@ signals:
 class IVW_MODULE_QTWIDGETS_API SimpleWithRectangleLabel : public QGraphicsRectItem {
 public:
     SimpleWithRectangleLabel(QPointF mendPoint, QGraphicsScene* scene, int index=0);
-    SimpleWithRectangleLabel();
     ~SimpleWithRectangleLabel();
     void updateLabelPosition();
     void setLabel(std::string label);
@@ -171,11 +170,7 @@ class IVW_MODULE_QTWIDGETS_API ImageLabelWidget : public QWidget {
 #include <warn/pop>
 public:
     ImageLabelWidget();
-    virtual ~ImageLabelWidget(){
-        delete backGroundImage_;
-        delete view_;
-    }
-    bool saveDialog();
+    virtual ~ImageLabelWidget();
     void setParent(ImageEditorWidgetQt*);
     QGraphicsScene* getScene() {return scene_;}
     QGraphicsView* getView() {return view_;}

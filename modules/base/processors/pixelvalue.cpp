@@ -178,7 +178,9 @@ PixelValue::PixelValue()
 void PixelValue::process() { outport_.setData(inport_.getData()); }
 
 void PixelValue::mouseMoveEvent(Event* theevent) {
-    if (auto mouseEvent = dynamic_cast<MouseEvent*>(theevent)) {
+    if (!inport_.hasData()) return;
+
+    if (auto mouseEvent = theevent->getAs<MouseEvent>()) {
         auto img = inport_.getData();
         auto dims = img->getDimensions();
         auto numCh = img->getNumberOfColorLayers();

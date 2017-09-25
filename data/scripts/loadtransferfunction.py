@@ -1,4 +1,6 @@
 # Inviwo Python script 
-import inviwo 
+import inviwopy
 
-inviwo.loadTransferFunction("VolumeRaycaster.transferFunction",inviwo.getDataPath() + "/transferfunction.itf")
+tf = inviwopy.app.network.VolumeRaycaster.transferFunction
+tf.load( inviwopy.app.getPath( inviwopy.PathType.TransferFunctions) + "/transferfunction.itf" )
+

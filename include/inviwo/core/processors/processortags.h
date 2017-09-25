@@ -78,6 +78,10 @@ public:
     virtual ~Tags() = default;
 
     void addTag(Tag);
+    void addTags(const Tags &t);
+
+    size_t size() const;
+    bool empty() const;
 
     std::string getString() const;
 
@@ -89,6 +93,7 @@ public:
 
     std::vector<Tag> tags_;
 
+    // pre-defined platform tags
     static const Tags None;
     static const Tags GL;
     static const Tags CL;
@@ -106,8 +111,13 @@ inline bool operator> (const Tags& lhs, const Tags& rhs) { return  operator< (rh
 inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator> (lhs, rhs); }
 inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator< (lhs, rhs); }
 
+namespace util {
 
-} // namespace
+Tags IVW_CORE_API getPlatformTags(const Tags& t);
+
+} // namespace util
+
+} // namespace inviwo
 
 #endif // IVW_PROCESSORTAGS_H
 

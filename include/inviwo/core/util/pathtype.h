@@ -38,7 +38,7 @@ enum class PathType {
     Data,               // /data
     Volumes,            // /data/volumes
     Workspaces,         // /data/workspaces
-    Scripts,            // /data/workspaces
+    Scripts,            // /data/scripts
     PortInspectors,     // /data/workspaces/portinspectors
     Images,             // /data/images
     Databases,          // /data/databases

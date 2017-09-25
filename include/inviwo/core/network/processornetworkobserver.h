@@ -54,22 +54,22 @@ public:
     virtual void onProcessorNetworkUnlocked() {};
 
     // Processors
-    virtual void onProcessorNetworkWillAddProcessor(Processor* processor) {};
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) {};
-    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) {};
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) {};
+    virtual void onProcessorNetworkWillAddProcessor(Processor*) {};
+    virtual void onProcessorNetworkDidAddProcessor(Processor*) {};
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) {};
+    virtual void onProcessorNetworkDidRemoveProcessor(Processor*) {};
 
     // Connections
-    virtual void onProcessorNetworkWillAddConnection(const PortConnection& connection) {};
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) {};
-    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection& connection) {};
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) {};
+    virtual void onProcessorNetworkWillAddConnection(const PortConnection&) {};
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) {};
+    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection&) {};
+    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) {};
 
     // Links
-    virtual void onProcessorNetworkWillAddLink(const PropertyLink& propertyLink) {};
-    virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) {};
-    virtual void onProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink) {};
-    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {};
+    virtual void onProcessorNetworkWillAddLink(const PropertyLink&) {};
+    virtual void onProcessorNetworkDidAddLink(const PropertyLink&) {};
+    virtual void onProcessorNetworkWillRemoveLink(const PropertyLink&) {};
+    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink&) {};
 };
 
 class IVW_CORE_API ProcessorNetworkObservable: public Observable<ProcessorNetworkObserver> {

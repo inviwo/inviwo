@@ -28,19 +28,115 @@
  *********************************************************************************/
 
 /**
-This complete file is auto-generated with python script 
+This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 **/
 
 #include <inviwo/core/util/colorbrewer.h>
-#include <exception>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 namespace colorbrewer {
 
+const std::vector<dvec4> &getColormap(Colormap colormap) {
+    switch (colormap) {
 ##PLACEHOLDER##
+    }
+    throw Exception("invalid colorbrewer colormap");
+}
 
-} // namespace
-} // namespace
+const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors) {
+    if (getMinNumberOfColorsForFamily(family) > numberOfColors ||
+        getMaxNumberOfColorsForFamily(family) < numberOfColors) {
+        throw ColorBrewerException();
+    }
 
+    // Calculate offset into the std::vector<dvec4> enum class
+    auto familyIndex = static_cast<int>(family);
+    int accumulated = 0;
+    for (int i = 0; i < familyIndex; i++) {
+        auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
+        auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
+        accumulated += (b - a) + 1;
+    }
 
+    accumulated += numberOfColors - getMinNumberOfColorsForFamily(family);
+
+    auto c = static_cast<Colormap>(accumulated);
+
+    return getColormap(c);
+}
+
+std::vector<std::vector<dvec4>> getColormaps(const Family &family) {
+    // Calculate offset into the std::vector<dvec4> enum class
+    auto familyIndex = static_cast<int>(family);
+    int accumulated = 0;
+    for (int i = 0; i < familyIndex; i++) {
+        auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
+        auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
+        accumulated += (b - a) + 1;
+    }
+
+    auto numColormapsInThisFamily =
+        getMaxNumberOfColorsForFamily(static_cast<Family>(familyIndex)) -
+        getMinNumberOfColorsForFamily(static_cast<Family>(familyIndex));
+
+    std::vector<Colormap> v;
+    for (int i = 0; i < numColormapsInThisFamily; i++)
+        v.emplace_back(static_cast<Colormap>(accumulated + i));
+
+    std::vector<std::vector<dvec4>> ret;
+    for (const auto &c : v) {
+        ret.emplace_back(getColormap(c));
+    }
+
+    return ret;
+}
+
+std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category &category) {
+    std::map<Family, std::vector<std::vector<dvec4>>> v;
+
+    for (const auto &family : getFamiliesForCategory(category))
+        v.emplace(family, getColormaps(family));
+
+    return v;
+}
+
+std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
+                                                   glm::uint8 numberOfColors) {
+    std::map<Family, std::vector<dvec4>> v;
+
+    for (const auto &family : getFamiliesForCategory(category)) {
+        try {
+            v.emplace(family, getColormap(family, numberOfColors));
+        }
+        catch (ColorBrewerException&) {
+        }
+    }
+
+    if (v.empty()) {
+        throw ColorBrewerException();
+    }
+
+    return v;
+}
+
+glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { return 3; }
+
+glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
+##GETMAXIMPL##
+    return 0;
+}
+
+std::vector<Family> getFamiliesForCategory(const Category &category) {
+    std::vector<Family> v;
+    switch (category) {
+##GETFAMILIESIMPL##
+    }
+
+    return v;
+}
+
+}  // namespace colorbrewer
+
+}  // namespace inviwo

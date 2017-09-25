@@ -161,7 +161,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
     for (int64 z = 0; z < dstDim.z; ++z) {
         for (int64 y = 0; y < dstDim.y; ++y) {
             // forward
-            U dist = dstDim.x;
+            U dist = static_cast<U>(dstDim.x);
             for (int64 x = 0; x < dstDim.x; ++x) {
                 if (!is_feature(x, y, z)) {
                     ++dist;
@@ -172,7 +172,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
             }
 
             // backward
-            dist = dstDim.x;
+            dist = static_cast<U>(dstDim.x);
             for (int64 x = dstDim.x - 1; x >= 0; --x) {
                 if (!is_feature(x, y, z)) {
                     ++dist;
@@ -285,9 +285,6 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
 
     const auto inputVolumeRep = inVolume->getRepresentation<VolumeRAM>();
     inputVolumeRep->dispatch<void, dispatching::filter::Scalars>([&](const auto vrprecision) {
-        using VolumeType = util::PrecsionType<decltype(vrprecision)>;
-        using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
-
         volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(), upsample,
                                    predicate, valueTransform, callback);
 
@@ -302,7 +299,6 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
 
     const auto inputVolumeRep = inVolume->getRepresentation<VolumeRAM>();
     inputVolumeRep->dispatch<void, dispatching::filter::Scalars>([&](const auto vrprecision) {
-        using VolumeType = util::PrecsionType<decltype(vrprecision)>;
         using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
 
         const auto predicateIn = [threshold](const ValueType &val) { return val < threshold; };

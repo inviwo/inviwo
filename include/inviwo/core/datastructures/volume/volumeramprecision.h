@@ -158,12 +158,12 @@ VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision
         ownsDataPtr_ = true;
     }
     return *this;
-};
+}
 
 template <typename T>
 VolumeRAMPrecision<T>::~VolumeRAMPrecision() {
     if (!ownsDataPtr_) data_.release();
-};
+}
 
 template <typename T>
 VolumeRAMPrecision<T>* VolumeRAMPrecision<T>::clone() const {

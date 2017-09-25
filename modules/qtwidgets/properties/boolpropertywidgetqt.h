@@ -45,11 +45,9 @@ public:
     BoolPropertyWidgetQt(BoolProperty* property);
     virtual ~BoolPropertyWidgetQt() = default;
 
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
 
 private:
-    void generateWidget();
-
     BoolProperty* property_;
     QCheckBox* checkBox_;
     QLineEdit* lineEdit_;

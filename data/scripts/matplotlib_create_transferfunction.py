@@ -1,7 +1,8 @@
 # Inviwo Python script 
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
-import inviwo 
+import inviwopy
+from inviwopy.glm import vec2,vec3
 
 #http://matplotlib.org/examples/color/colormaps_reference.html
 
@@ -12,15 +13,19 @@ import inviwo
 #Miscellaneous :  #['Accent', 'Dark2', 'Paired', 'Pastel1', 'Pastel2', 'Set1', 'Set2', 'Set3']
 #Sequential :  #['gist_earth', 'terrain', 'ocean', 'gist_stern','brg', 'CMRmap', 'cubehelix','gnuplot', 'gnuplot2', 'gist_ncar', 'nipy_spectral', 'jet', 'rainbow', 'gist_rainbow', 'hsv', 'flag', 'prism']
 
-inviwo.clearTransferfunction("VolumeRaycaster.transferFunction")
+
+tf = inviwopy.app.network.VolumeRaycaster.transferFunction
+tf.clear()
 
 cmapName = "hot"
 
 cmap=plt.get_cmap(cmapName)
 
-for i in range(0,256,1):
-   x = i / 256.0
+N = 128
+
+for i in range(0,N,1):
+   x = i / (N-1)
    a = 1.0
    color = cmap(x)
-   inviwo.addPointToTransferFunction("VolumeRaycaster.transferFunction",(x,a), (color[0:3])) 
+   tf.addPoint(vec2(x,a), vec3(color[0],color[1],color[2])) 
 

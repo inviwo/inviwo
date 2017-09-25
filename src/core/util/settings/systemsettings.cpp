@@ -57,9 +57,8 @@ SystemSettings::SystemSettings()
     , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
     , btnAllocTestProperty_("allocTest", "Perform Allocation Test")
     , btnSysInfoProperty_("printSysInfo", "Print System Info")
-
-    , followObjectDuringRotation_("followObjectDuringRotation","Follow Object During Camera Rotation",true)
-
+    , followObjectDuringRotation_("followObjectDuringRotation",
+                                  "Follow Object During Camera Rotation", true)
     , allocTest_(nullptr) {
 
     addProperty(applicationUsageMode_);
@@ -78,6 +77,7 @@ SystemSettings::SystemSettings()
     logStackTraceProperty_.onChange(this, &SystemSettings::logStacktraceCallback);
     // btnAllocTestProperty_.onChange(this, &SystemSettings::allocationTest);
     // addProperty(&btnAllocTestProperty_);
+
 
     auto cores = std::thread::hardware_concurrency();
     if (cores > 0) {
@@ -114,14 +114,13 @@ void SystemSettings::allocationTest() {
                                  << useRAMPercent->get() << "% of available memory");
             delete allocTest_;
         } catch (std::bad_alloc&) {
-            LogError("Failed allocation of " << util::formatBytesToString(memBytesAlloc) << ", which is "
-                                             << useRAMPercent->get() << "% of available memory");
+            LogError("Failed allocation of " << util::formatBytesToString(memBytesAlloc)
+                                             << ", which is " << useRAMPercent->get()
+                                             << "% of available memory");
         }
     }
 }
 
-UsageMode SystemSettings::getApplicationUsageMode() const {
-    return applicationUsageMode_.get();
-}
+UsageMode SystemSettings::getApplicationUsageMode() const { return applicationUsageMode_.get(); }
 
-}  // namespace
+}  // namespace inviwo

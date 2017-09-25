@@ -35,6 +35,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/camera.h>
 
 namespace inviwo {
 class Image;
@@ -46,15 +47,15 @@ class Texture2D;
  * \brief This class provides functionality for rendering an image, a layer, or a texture
  * onto the current render target.
  */
-class IVW_MODULE_OPENGL_API TextureQuadRenderer { 
+class IVW_MODULE_OPENGL_API TextureQuadRenderer {
 public:
     TextureQuadRenderer();
     TextureQuadRenderer(const Shader &shader);
     TextureQuadRenderer(Shader &&shader);
     virtual ~TextureQuadRenderer();
 
-    Shader& getShader();
-    const Shader& getShader() const;
+    Shader &getShader();
+    const Shader &getShader() const;
 
     /**
      * \brief renders an image at position pos onto the current canvas. The image
@@ -66,109 +67,198 @@ public:
      * @param canvasSize   dimensions of the current render target
      * @param layerType  defines which layer of the input image will be rendered, i.e. Color, Depth,
      *                   or Picking
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
      */
     void render(const std::shared_ptr<Image> &image, const ivec2 &pos, const size2_t &canvasSize,
-                LayerType layerType = LayerType::Color);
+                LayerType layerType = LayerType::Color, const mat4 &transformation = mat4(1),
+                const mat4 &texTransform = mat4(1));
+    void render(const std::shared_ptr<Image> &image, const std::vector<ivec2> &pos,
+                const std::vector<mat4> &texTransform, const size2_t &canvasSize,
+                LayerType layerType = LayerType::Color, const mat4 &transformation = mat4(1));
 
     /**
-    * \brief renders a color layer of an image at position pos onto the current canvas. The layer
-    * dimensions determine the covered area in pixel. The anchor point of the image is in the lower
-    * left corner. By default, the first color layer is rendered.
-    *
-    * @param image   input image which is to be rendered onto the current render target
-    * @param pos     position of lower left corner in screen space coordinates
-    * @param canvasSize   dimensions of the current render target
-    * @param colorLayerIndex defines which color layer of the input image will be rendered.
-    */
+     * \brief renders a color layer of an image at position pos onto the current canvas. The layer
+     * dimensions determine the covered area in pixel. The anchor point of the image is in the lower
+     * left corner. By default, the first color layer is rendered.
+     *
+     * @param image   input image which is to be rendered onto the current render target
+     * @param pos     position of lower left corner in screen space coordinates
+     * @param canvasSize   dimensions of the current render target
+     * @param colorLayerIndex defines which color layer of the input image will be rendered.
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
     void render(const std::shared_ptr<Image> &image, const ivec2 &pos, const size2_t &canvasSize,
-                std::size_t colorLayerIndex);
+                std::size_t colorLayerIndex, const mat4 &transformation = mat4(1),
+                const mat4 &texTransform = mat4(1));
+    void render(const std::shared_ptr<Image> &image, const std::vector<ivec2> &pos,
+                const std::vector<mat4> &texTransform, const size2_t &canvasSize,
+                std::size_t colorLayerIndex, const mat4 &transformation = mat4(1));
 
     /**
-    * \brief renders a layer at position pos onto the current canvas. The layer
-    * dimensions determine the covered area in pixel. The anchor point of the
-    * image is in the lower left corner. 
-    *
-    * @param layer   layer which is to be rendered onto the current render target
-    * @param pos     position of lower left corner in screen space coordinates
-    * @param canvasSize   dimensions of the current render target
-    */
-    void render(const std::shared_ptr<Layer> &image, const ivec2 &pos, const size2_t &canvasSize);
+     * \brief renders a layer at position pos onto the current canvas. The layer
+     * dimensions determine the covered area in pixel. The anchor point of the
+     * image is in the lower left corner.
+     *
+     * @param layer   layer which is to be rendered onto the current render target
+     * @param pos     position of lower left corner in screen space coordinates
+     * @param canvasSize   dimensions of the current render target
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
+    void render(const std::shared_ptr<Layer> &image, const ivec2 &pos, const size2_t &canvasSize,
+                const mat4 &transformation = mat4(1), const mat4 &texTransform = mat4(1));
+    void render(const std::shared_ptr<Layer> &image, const std::vector<ivec2> &pos,
+                const std::vector<mat4> &texTransform, const size2_t &canvasSize,
+                const mat4 &transformation = mat4(1));
 
     /**
-    * \brief renders a texture at position pos onto the current canvas. The texture
-    * dimensions determine the covered area in pixel. The anchor point of the
-    * texture is in the lower left corner.
-    *
-    * @param texture   texture which is to be rendered onto the current render target
-    * @param pos     position of lower left corner in screen space coordinates
-    * @param canvasSize   dimensions of the current render target
-    */
+     * \brief renders a texture at position pos onto the current canvas. The texture
+     * dimensions determine the covered area in pixel. The anchor point of the
+     * texture is in the lower left corner.
+     *
+     * @param texture   texture which is to be rendered onto the current render target
+     * @param pos     position of lower left corner in screen space coordinates
+     * @param canvasSize   dimensions of the current render target
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
     void render(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
-                const size2_t &canvasSize);
+                const size2_t &canvasSize, const mat4 &transformation = mat4(1),
+                const mat4 &texTransform = mat4(1));
+    void render(const std::shared_ptr<Texture2D> &texture, const std::vector<ivec2> &pos,
+                const std::vector<mat4> &texTransform, const size2_t &canvasSize,
+                const mat4 &transformation = mat4(1));
 
     /**
-    * \brief renders an image at position pos onto the current canvas with the given
-    * extent. The covered area is defined by the extent (in pixel). The anchor point
-    * of the image is in the lower left corner. By default, the first color layer is 
-    * rendered.
-    *
-    * @param image   input image which is to be rendered onto the current render target
-    * @param pos     position of lower left corner in screen space coordinates
-    * @param extent      extent covered by the rendered texture in screen space coordinates
-    * @param canvasSize   dimensions of the current render target
-    * @param layerType  defines which layer of the input image will be rendered, i.e. Color, Depth,
-    *                   or Picking
-    */
-    void renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos,
-                const ivec2 &extent, const size2_t &canvasSize,
-                LayerType layerType = LayerType::Color);
+     * \brief renders an image at position pos onto the current canvas with the given
+     * extent. The covered area is defined by the extent (in pixel). The anchor point
+     * of the image is in the lower left corner. By default, the first color layer is
+     * rendered.
+     *
+     * @param image   input image which is to be rendered onto the current render target
+     * @param pos     position of lower left corner in screen space coordinates
+     * @param extent      extent covered by the rendered texture in screen space coordinates
+     * @param canvasSize   dimensions of the current render target
+     * @param layerType  defines which layer of the input image will be rendered, i.e. Color, Depth,
+     *                   or Picking
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
+    void renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos, const ivec2 &extent,
+                      const size2_t &canvasSize, LayerType layerType = LayerType::Color,
+                      const mat4 &transformation = mat4(1), const mat4 &texTransform = mat4(1));
+    void renderToRect(const std::shared_ptr<Image> &image, const std::vector<ivec2> &pos,
+                      const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
+                      const size2_t &canvasSize, LayerType layerType = LayerType::Color,
+                      const mat4 &transformation = mat4(1));
 
     /**
-    * \brief renders a color layer of an image at position pos onto the current canvas 
-    * with the given extent. The covered area is defined by the extent (in pixel). 
-    * The anchor point of the image is in the lower left corner. By default, 
-    * the first color layer is rendered.
-    *
-    * @param image   input image which is to be rendered onto the current render target
-    * @param pos     position of lower left corner in screen space coordinates
-    * @param extent      extent covered by the rendered texture in screen space coordinates
-    * @param canvasSize   dimensions of the current render target
-    * @param colorLayerIndex defines which color layer of the input image will be rendered.
-    */
-    void renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos,
-                const ivec2 &extent, const size2_t &canvasSize,
-                std::size_t colorLayerIndex);
+     * \brief renders a color layer of an image at position pos onto the current canvas
+     * with the given extent. The covered area is defined by the extent (in pixel).
+     * The anchor point of the image is in the lower left corner. By default,
+     * the first color layer is rendered.
+     *
+     * @param image   input image which is to be rendered onto the current render target
+     * @param pos     position of lower left corner in screen space coordinates
+     * @param extent      extent covered by the rendered texture in screen space coordinates
+     * @param canvasSize   dimensions of the current render target
+     * @param colorLayerIndex defines which color layer of the input image will be rendered.
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
+    void renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos, const ivec2 &extent,
+                      const size2_t &canvasSize, std::size_t colorLayerIndex,
+                      const mat4 &transformation = mat4(1), const mat4 &texTransform = mat4(1));
+    void renderToRect(const std::shared_ptr<Image> &image, const std::vector<ivec2> &pos,
+                      const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
+                      const size2_t &canvasSize, std::size_t colorLayerIndex,
+                      const mat4 &transformation = mat4(1));
 
     /**
-    * \brief renders a layer at position pos onto the current canvas with the given
-    * extent. The covered area is defined by the extent (in pixel). The anchor point
-    * of the layer is in the lower left corner.
-    *
-    * @param layer   layer which is to be rendered onto the current render target
-    * @param pos     position of lower left corner in screen space coordinates
-    * @param extent      extent covered by the rendered texture in screen space coordinates
-    * @param canvasSize   dimensions of the current render target
-    */
-    void renderToRect(const std::shared_ptr<Layer> &image, const ivec2 &pos,
-                const ivec2 &extent, const size2_t &canvasSize);
+     * \brief renders a layer at position pos onto the current canvas with the given
+     * extent. The covered area is defined by the extent (in pixel). The anchor point
+     * of the layer is in the lower left corner.
+     *
+     * @param layer   layer which is to be rendered onto the current render target
+     * @param pos     position of lower left corner in screen space coordinates
+     * @param extent      extent covered by the rendered texture in screen space coordinates
+     * @param canvasSize   dimensions of the current render target
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                  example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
+    void renderToRect(const std::shared_ptr<Layer> &image, const ivec2 &pos, const ivec2 &extent,
+                      const size2_t &canvasSize, const mat4 &transformation = mat4(1),
+                      const mat4 &texTransform = mat4(1));
+    void renderToRect(const std::shared_ptr<Layer> &image, const std::vector<ivec2> &pos,
+                      const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
+                      const size2_t &canvasSize, const mat4 &transformation = mat4(1));
 
     /**
-    * \brief renders a texture at position pos onto the current canvas with the given
-    * extent. The covered area is defined by the extent (in pixel). The anchor point 
-    * of the texture is in the lower left corner.
-    *
-    * @param texture     texture which is to be rendered onto the current render target
-    * @param pos         position of lower left corner in screen space coordinates
-    * @param extent      extent covered by the rendered texture in screen space coordinates
-    * @param canvasSize  dimensions of the current render target
-    */
+     * \brief renders a texture at position pos onto the current canvas with the given
+     * extent. The covered area is defined by the extent (in pixel). The anchor point
+     * of the texture is in the lower left corner.
+     *
+     * @param texture     texture which is to be rendered onto the current render target
+     * @param pos         position of lower left corner in screen space coordinates
+     * @param extent      extent covered by the rendered texture in screen space coordinates
+     * @param canvasSize  dimensions of the current render target
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
     void renderToRect(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
-                      const ivec2 &extent, const size2_t &canvasSize);
+                      const ivec2 &extent, const size2_t &canvasSize,
+                      const mat4 &transformation = mat4(1), const mat4 &texTransform = mat4(1));
+    void renderToRect(const std::shared_ptr<Texture2D> &texture, const std::vector<ivec2> &pos,
+                      const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
+                      const size2_t &canvasSize, const mat4 &transformation = mat4(1));
+
+    /**
+     * \brief renders a texture at world position pos onto the current canvas with the given
+     * extent. The covered area is defined by the extent (in pixel). The anchor point
+     * of the texture is defined by anchor (-1 to 1).
+     *
+     * @param camera      camera used for determining the screen position
+     * @param texture     texture which is to be rendered onto the current render target
+     * @param pos         position in world coordinates
+     * @param extent      extent covered by the rendered texture in screen space coordinates
+     * @param canvasSize  dimensions of the current render target
+     * @param anchor      anchor position of texture (default lower left, i.e. (-1,-1))
+     * @param transformation  additional transformation matrix to be applied before rendering. (For
+     *                 example a rotation matrix to rotate the quad)
+     * @param texTransform   optional transformation for texture coordinates, e.g.
+     *                 for rendering a sub region of the input
+     */
+    void renderToRect3D(const Camera &camera, const std::shared_ptr<Texture2D> &texture,
+                        const vec3 &pos, const ivec2 &extent, const size2_t &canvasSize,
+                        const vec2 &anchor = vec2(-1.0f), const mat4 &transformation = mat4(1),
+                        const mat4 &texTransform = mat4(1));
+    void renderToRect3D(const Camera &camera, const std::shared_ptr<Texture2D> &texture,
+                        const std::vector<vec3> &pos, const std::vector<ivec2> &extent,
+                        const std::vector<mat4> &texTransform, const size2_t &canvasSize,
+                        const vec2 &anchor = vec2(-1.0f), const mat4 &transformation = mat4(1));
 
 private:
     Shader shader_;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_TEXTUREQUADRENDERER_H
+#endif  // IVW_TEXTUREQUADRENDERER_H

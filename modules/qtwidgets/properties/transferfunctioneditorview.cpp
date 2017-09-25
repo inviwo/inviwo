@@ -95,9 +95,9 @@ void TransferFunctionEditorView::onMaskChange(const vec2& mask) {
     }
 }
 
-void TransferFunctionEditorView::onZoomHChange(const vec2& zoomH) { updateZoom(); }
+void TransferFunctionEditorView::onZoomHChange(const vec2&) { updateZoom(); }
 
-void TransferFunctionEditorView::onZoomVChange(const vec2& zoomV) { updateZoom(); }
+void TransferFunctionEditorView::onZoomVChange(const vec2&) { updateZoom(); }
 
 void TransferFunctionEditorView::onHistogramModeChange(HistogramMode mode) {
     if (histogramMode_ != mode) {

@@ -84,7 +84,6 @@ protected:
     virtual bool withinBoundsDataSpace(const dvec4 &pos) const;
 
 private:
-    std::vector<VolumeDoubleSampler<4>> samplers_;
     std::vector<std::shared_ptr<Wrapper>> wrappers_;
 
     bool allowLooping_;

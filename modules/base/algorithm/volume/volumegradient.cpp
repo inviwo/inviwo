@@ -60,8 +60,7 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
     auto data = static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
 
     auto func = [&](const size3_t& pos) {
-        const vec3 world =
-            (m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)).xyz();
+        const vec3 world{m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)};
 
         vec3 g;
         g.x = static_cast<float>((sampler.sample(world + ox, worldSpace) -

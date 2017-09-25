@@ -56,7 +56,6 @@ StreamRibbons::StreamRibbons()
     , colors_("colors")
     , volume_("vectorVolume")
     , vorticityVolume_("vorticityVolume")
-    , mesh_("mesh")
     , streamLineProperties_("streamLineProperties", "Stream Line Properties")
     , ribbonWidth_("ribbonWidth", "Ribbon Width", 0.1f, 0.00001f)
     , tf_("transferFunction", "Transfer Function")
@@ -64,7 +63,7 @@ StreamRibbons::StreamRibbons()
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Max Velocity", "0", InvalidationLevel::Valid)
     , maxVorticity_("maxVorticity", "Max Vorticity", "0", InvalidationLevel::Valid)
-
+    , mesh_("mesh")
 {
     addPort(sampler_);
     addPort(vorticitySampler_);
@@ -131,7 +130,7 @@ void StreamRibbons::process() {
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
-            auto line = tracer.traceFrom(P.xyz());
+            auto line = tracer.traceFrom(vec3(P));
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();

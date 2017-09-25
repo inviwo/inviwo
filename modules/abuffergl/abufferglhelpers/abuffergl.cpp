@@ -59,7 +59,8 @@ ABufferGLCompositeProperty::ABufferGLCompositeProperty(std::string identifier,
     , abufferLocalMemorySize_("abuffer-local-memory", "ABuffer Local Memory", 128, 128, 256, 128)
     , abufferReSize_("abuffer-resize", "ABuffer Resize")
     , abufferWriteABufferInfoToFile_("abuffer-write-abuffer-info", "Write ABuffer To File", false)
-    , bgColor_("bgColor", "Background Color", vec4(1.0)) {
+    , bgColor_("bgColor", "Background Color", vec4(1.0))
+    , verboseLogging_("logging", "Verbose Log", false) {
     addProperty(abufferEnable_);
     addProperty(abufferPageSize_);
     addProperty(abufferLocalMemorySize_);
@@ -78,7 +79,9 @@ ABufferGLCompositeProperty::ABufferGLCompositeProperty(const ABufferGLCompositeP
     , abufferLocalMemorySize_(rhs.abufferLocalMemorySize_)
     , abufferReSize_(rhs.abufferReSize_)
     , abufferWriteABufferInfoToFile_(rhs.abufferWriteABufferInfoToFile_)
-    , bgColor_(rhs.bgColor_) {
+    , bgColor_(rhs.bgColor_)
+    , verboseLogging_(rhs.verboseLogging_)
+{
     setAllPropertiesCurrentStateAsDefault();
 }
 
@@ -90,6 +93,7 @@ ABufferGLCompositeProperty& ABufferGLCompositeProperty::operator=(const ABufferG
         abufferLocalMemorySize_ = that.abufferLocalMemorySize_;
         abufferReSize_ = that.abufferReSize_;
         abufferWriteABufferInfoToFile_ = that.abufferWriteABufferInfoToFile_;
+        verboseLogging_ = that.verboseLogging_;
     }
     return *this;
 }
@@ -107,19 +111,21 @@ std::string ABufferGLCompositeProperty::getClassIdentifierForWidget() const {
 //////////////////////////////////////////////////////////////////////////
 
 Inviwo_ABufferGL4::Inviwo_ABufferGL4(ivec2 dim)
-    : abuffInteractionHandler_(this)
-    , dim_(dim)
-    , abufferPageIdxImgTexture_(nullptr)
-    , abufferFragCountImgTexture_(nullptr)
-    , semaphoreImgTexture_(nullptr)
-    , globalAtomicCounterBuffer_(nullptr)
+    : settings_("abuffer-settings-property", "ABuffer Settings")
+    , resolveABufferShader_("abufferresolve.hglsl")
+    , resetABufferShader_("abufferreset.hglsl")
+    , abuffInteractionHandler_(this)
     , shared_RGBA_DataListBuffID_(0)
     , shared_Ext_DataListBuffID_(0)
     , sharedLinkListBuffID_(0)
     , globalAtomicsBufferId_(0)
-    , resolveABufferShader_("abufferresolve.hglsl")
-    , resetABufferShader_("abufferreset.hglsl")
-    , settings_("abuffer-settings-property", "ABuffer Settings") {
+    , abufferPageIdxImgTexture_(nullptr)
+    , abufferFragCountImgTexture_(nullptr)
+    , semaphoreImgTexture_(nullptr)
+    , globalAtomicCounterBuffer_(nullptr)
+    , dim_(dim)
+    , verboseLogging_(false)
+{
     settings_.sharedPoolSize_ = dim_.x * dim_.y * settings_.getSquaredPageSize() * 40;
 }
 
@@ -162,7 +168,9 @@ bool Inviwo_ABufferGL4::abuffer_isMemoryPoolExpansionRequired() {
 
 void Inviwo_ABufferGL4::abuffer_allocateMemory() {
     // allocate abuffer - one time only
-    LogWarn("ABuffer allocate abuffer");
+    if (verboseLogging_) {
+        LogWarn("ABuffer allocate abuffer");
+    }
     if (abufferPageIdxImgTexture_) delete abufferPageIdxImgTexture_;
     if (abufferFragCountImgTexture_) delete abufferFragCountImgTexture_;
     if (semaphoreImgTexture_) delete semaphoreImgTexture_;
@@ -304,7 +312,9 @@ void Inviwo_ABufferGL4::abuffer_initABuffer(ivec2 dim, bool forceInitialization)
     glGetBufferParameterui64vNV(GL_TEXTURE_BUFFER, GL_BUFFER_GPU_ADDRESS_NV,
                                 &sharedLinkListAddress_);
 
-    LogWarn("ABuffer init called. This is expensive")
+    if (verboseLogging_) {
+        LogWarn("ABuffer init called. This is expensive")
+    }
 }
 
 void Inviwo_ABufferGL4::aBuffer_bindTextures() {
@@ -337,7 +347,7 @@ void Inviwo_ABufferGL4::aBuffer_bindTextures() {
     glBindImageTextureEXT(tex2->getUnitNumber(), layer->getTexture()->getID(), 0, false, 0,
                           GL_READ_WRITE, GL_R32UI);
     LGL_ERROR;
-
+    
     /// Semaphore///
     imageGL = semaphoreImgTexture_->getEditableRepresentation<ImageGL>();
     layer = imageGL->getColorLayerGL(0);
@@ -384,7 +394,9 @@ void Inviwo_ABufferGL4::abuffer_addUniforms(Shader* shader) {
 void Inviwo_ABufferGL4::aBuffer_incrementSharedPoolSize() {
     glm::uint newSize = dim_.x * dim_.y * settings_.getSquaredPageSize();
     settings_.sharedPoolSize_ += newSize;
-    LogWarn("Incrementing Shared Pool Size (Upper Bound)")
+    if (verboseLogging_) {
+        LogWarn("Incrementing Shared Pool Size (Upper Bound)")
+    }
 }
 
 void Inviwo_ABufferGL4::abuffer_addShaderDefinesAndBuild(Shader* shader) {
@@ -438,14 +450,14 @@ void Inviwo_ABufferGL4::aBuffer_unbind() {
     layer->unbindTexture();
 }
 
-void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage) {
+void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage, ImageType layerType) {
     //TextureUnit* tex1 = texUnits_[0]; //unused
     //TextureUnit* tex2 = texUnits_[1]; //unused
     //TextureUnit* tex3 = texUnits_[2]; //unused
 
     TextureUnitContainer units;
 
-    imageGL->activateBuffer();
+    imageGL->activateBuffer(layerType);
     // utilgl::activateTarget(outport_);
 
     aBuffer_bindTextures();
@@ -464,7 +476,7 @@ void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* i
     if (inputimage) {
         resolveABufferShader_.setUniform("isInputImageGiven", true);
         utilgl::bindAndSetUniforms(resolveABufferShader_, units,
-            *inputimage, "inputimage", ImageType::ColorDepth);
+            *inputimage, "inputimage", layerType);
     }
     else resolveABufferShader_.setUniform("isInputImageGiven", false);
 
@@ -478,28 +490,23 @@ void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* i
     utilgl::deactivateCurrentTarget();
 }
 
-void Inviwo_ABufferGL4::aBuffer_resetLinkList(ImageGL* imageGL) {
+void Inviwo_ABufferGL4::aBuffer_resetLinkList(ImageGL* imageGL, bool forceReset, ImageType layerType) {
     // TODO: Remove explicit reset. Alternatively perform reset after every reslove, this can avoid
     // some overheads.
-    /*imageGL->activateBuffer();
-    utilgl::clearCurrentTarget();
-    //utilgl::activateTarget(outport_);
-    aBuffer_bindTextures(tex1, tex2, tex3);
-    //aBuffer_bindBuffers();
-    resetABufferShader_->activate();
-    setGlobalShaderParameters(resetABufferShader_);
+    if (forceReset) {
+        TextureUnitContainer units;
 
-    abuffer_addUniforms(resetABufferShader_);
-    //aBuffer_addUniforms(resetABufferShader_, tex1, tex2, tex3);
+        imageGL->activateBuffer(layerType);
+        // utilgl::activateTarget(outport_);
 
-    LGL_ERROR;
-
-    utilgl::singleDrawImagePlaneRect();
-
-    resetABufferShader_->deactivate();
-
-    glDisable(GL_BLEND);
-    utilgl::deactivateCurrentTarget();*/
+        aBuffer_bindTextures();
+        resetABufferShader_.activate();
+        abuffer_addUniforms(&resetABufferShader_);
+        LGL_ERROR;
+        utilgl::singleDrawImagePlaneRect();
+        resetABufferShader_.deactivate();
+        utilgl::deactivateCurrentTarget();
+    }
 
     if (globalAtomicCounterBuffer_ && globalAtomicsBufferId_) {
         // bind the buffer and define its initial storage capacity
@@ -520,7 +527,7 @@ glm::uint Inviwo_ABufferGL4::abuffer_fetchCurrentAtomicCounterValue() {
     memcpy(atomicCounterBuff, glAtomicCounterBuff, 4 * sizeof(glm::uint));
     glUnmapBuffer(GL_TEXTURE_BUFFER);
     totalABuffUsed = atomicCounterBuff[0];
-    delete atomicCounterBuff;
+    delete[] atomicCounterBuff;
     return totalABuffUsed;
 }
 
@@ -533,8 +540,7 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
         const LayerRAM* layerRam_FragCount =
             fcImage->getColorLayer()->getRepresentation<LayerRAM>();
         const glm::uint32* fcImageData = (const glm::uint32*)layerRam_FragCount->getData();
-        ivec2 dim = fcImage->getDimensions();
-        ivec2 sPos = ivec2(pos.x, dim.y - pos.y);
+        ivec2 sPos = ivec2(pos.x, pos.y);
         size_t ind = LayerRAM::posToIndex(sPos, fcImage->getDimensions());
         glm::uint32 fragCountVal = fcImageData[ind];
         ss << "Frag Count Value : " << fragCountVal << std::endl;
@@ -565,7 +571,7 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
                 ss << currPage << " ";
                 currPage = data[currPage];
             };
-            delete data;
+            delete[] data;
 
             glm::uint totalABuffUsed = abuffer_fetchCurrentAtomicCounterValue();
 
@@ -622,8 +628,8 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
                         ss << "####" << std::endl;
                         // if (totalCount>=fragCountVal) break;
 
-                        delete rgbData;
-                        delete extData;
+                        delete[] rgbData;
+                        delete[] extData;
                     }
                     ss << " ------------------------------------ " << std::endl;
                     ss << "Total fragements in Pages " << totalCount << std::endl;
@@ -646,8 +652,6 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
         }
         LogWarn(ss.str());
     }
-
-    abuffer_textureInfo();
 }
 
 #define DUMP_TO_FILE 1
@@ -761,7 +765,7 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
                 LogWarn("ABuffer info @ " << basePath + rndInt + "abuffer_linkListBuffer.txt")
             }
 
-            delete data;
+            delete[] data;
         }
     }
 }
@@ -770,10 +774,10 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
 
 Inviwo_ABufferGL4::ABufferGLInteractionHandler::ABufferGLInteractionHandler(
     Inviwo_ABufferGL4* parent)
-    : mousePressEvent_(MouseButton::Left, MouseState::Press)
+    : parent_(parent)
+    , mousePressEvent_(MouseButton::Left, MouseState::Press)
     , upEvent_(IvwKey::W, KeyState::Press, KeyModifier::Control)
-    , downEvent_(IvwKey::S, KeyState::Press, KeyModifier::Control)
-    , parent_(parent) {}
+    , downEvent_(IvwKey::S, KeyState::Press, KeyModifier::Control) {}
 
 std::string Inviwo_ABufferGL4::ABufferGLInteractionHandler::getClassIdentifier() const {
     return "org.inviwo.ABufferGLInteractionHandler";
@@ -784,8 +788,7 @@ void Inviwo_ABufferGL4::ABufferGLInteractionHandler::invokeEvent(Event* event) {
     if (mEvent) prevMousePos_ = glm::ivec2(mEvent->x(), mEvent->y());
 
     if (mEvent && (mEvent->state() & MouseState::Release) &&
-        (mEvent->button() & MouseButton::Right) &&
-        (mEvent->modifiers() & KeyModifier::Control)) {
+        (mEvent->button() & MouseButton::Right) && (mEvent->modifiers() & KeyModifier::Control)) {
         parent_->abuffer_printDebugInfo(glm::ivec2(mEvent->x(), mEvent->y()));
     }
 

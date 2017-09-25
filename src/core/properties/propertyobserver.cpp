@@ -55,4 +55,16 @@ void PropertyObservable::notifyObserversOnSetUsageMode(UsageMode usageMode) {
     forEachObserver([&](PropertyObserver* o) { o->onSetUsageMode(usageMode); });
 }
 
+void PropertyObserver::onSetIdentifier(const std::string&) {}
+
+void PropertyObserver::onSetDisplayName(const std::string&) {}
+
+void PropertyObserver::onSetSemantics(const PropertySemantics&) {}
+
+void PropertyObserver::onSetReadOnly(bool) {}
+
+void PropertyObserver::onSetVisible(bool) {}
+
+void PropertyObserver::onSetUsageMode(UsageMode) {}
+
 }  // namespace

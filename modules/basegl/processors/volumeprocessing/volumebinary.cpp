@@ -63,7 +63,7 @@ VolumeBinary::VolumeBinary()
     this->dataFormat_ = DataUInt8::get();
 }
     
-void VolumeBinary::preProcess(TextureUnitContainer &cont) {
+void VolumeBinary::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, threshold_);
 }
 

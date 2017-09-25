@@ -35,7 +35,9 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/network/processornetworkconverter.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <algorithm>
 
@@ -57,7 +59,7 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     NetworkLock lock(this);
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
-    processors_[processor->getIdentifier()] = processor;
+    processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
     addPropertyOwnerObservation(processor);
@@ -99,7 +101,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
 
     // remove processor itself
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
-    processors_.erase(processor->getIdentifier());
+    processors_.erase( util::stripIdentifier(processor->getIdentifier()));
     processor->ProcessorObservable::removeObserver(this);
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
@@ -115,7 +117,7 @@ void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
 }
 
 Processor* ProcessorNetwork::getProcessorByIdentifier(std::string identifier) const {
-    return util::map_find_or_null(processors_, identifier);
+    return util::map_find_or_null(processors_, util::stripIdentifier(identifier));
 }
 
 std::vector<Processor*> ProcessorNetwork::getProcessors() const {
@@ -216,7 +218,7 @@ void ProcessorNetwork::removeLink(Property* src, Property* dst) {
     removeLink(link);
 }
 
-void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t index) {
+void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t /*index*/) {
     if (auto comp = dynamic_cast<PropertyOwner*>(property)) {
         size_t i = 0;
         for (auto p : comp->getProperties()) {
@@ -306,7 +308,7 @@ void ProcessorNetwork::onProcessorIdentifierChange(Processor* processor) {
         return elem.second == processor;
     });
 
-    processors_[processor->getIdentifier()] = processor;
+    processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
 }
 
 void ProcessorNetwork::onProcessorPortRemoved(Processor*, Port* port) {
@@ -348,7 +350,7 @@ int ProcessorNetwork::getVersion() const {
     return processorNetworkVersion_;
 }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 13;
+const int ProcessorNetwork::processorNetworkVersion_ = 15;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     NetworkLock lock(this);
@@ -374,27 +376,27 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
         auto des =
             util::MapDeserializer<std::string, Processor*>("Processors", "Processor", "identifier")
+                .setIdentifierTransform([](const std::string &id) { return util::stripIdentifier(id); })
                 .setMakeNew([]() {
                     RenderContext::getPtr()->activateDefaultRenderContext();
                     return nullptr;
                 })
-                .onNew([&](const std::string& id, Processor*& p) { addProcessor(p); })
+                .onNew([&](const std::string& /*id*/, Processor*& p) { addProcessor(p); })
                 .onRemove([&](const std::string& id) {
                     removeAndDeleteProcessor(getProcessorByIdentifier(id));
                 });
         des(d, processors_);
 
-    } catch (const SerializationException& exception) {
+    } catch (const Exception& exception) {
         clear();
         throw AbortException("Deserialization error: " + exception.getMessage(),
                              exception.getContext());
-    } catch (Exception& exception) {
+    } catch (const std::exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + exception.getMessage(),
-                             exception.getContext());
+        throw AbortException("Deserialization error: " + std::string(exception.what()), IvwContext);
     } catch (...) {
         clear();
-        throw AbortException("Deserialization error", IvwContext);
+        throw AbortException("Unknown Exception during deserialization.", IvwContext);
     }
 
     // Connections
@@ -409,12 +411,16 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         }
         for (auto& con : toDelete) removeConnection(con);
 
-    } catch (const SerializationException& exception) {
+    } catch (const Exception& exception) {
+        clear();
         throw IgnoreException("Deserialization error: " + exception.getMessage(),
-                              exception.getContext());
+                             exception.getContext());
+    } catch (const std::exception& exception) {
+        clear();
+        throw AbortException("Deserialization error: " + std::string(exception.what()), IvwContext);
     } catch (...) {
         clear();
-        throw AbortException("Deserialization error:", IvwContext);
+        throw AbortException("Unknown Exception during deserialization.", IvwContext);
     }
 
     // Links
@@ -429,12 +435,16 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         }
         for (auto& link : toDelete) removeLink(link);
 
-    } catch (const SerializationException& exception) {
-        throw IgnoreException("DeSerialization Exception " + exception.getMessage(),
-                              exception.getContext());
+    } catch (const Exception& exception) {
+        clear();
+        throw IgnoreException("Deserialization error: " + exception.getMessage(),
+                             exception.getContext());
+    } catch (const std::exception& exception) {
+        clear();
+        throw AbortException("Deserialization error: " + std::string(exception.what()), IvwContext);
     } catch (...) {
         clear();
-        throw AbortException("Unknown Exception.", IvwContext);
+        throw AbortException("Unknown Exception during deserialization.", IvwContext);
     }
 
     notifyObserversProcessorNetworkChanged();

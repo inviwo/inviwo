@@ -32,6 +32,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
 
 namespace inviwo {
 
@@ -101,16 +103,6 @@ struct ValueWrapper {
     T value;
     T defaultValue;
     std::string name;
-
-    template <typename U>
-    friend bool operator==(const ValueWrapper<U>& lhs, const ValueWrapper<U>& rhs);
-    template <typename U>
-    friend bool operator<(const ValueWrapper<U>& lhs, const ValueWrapper<U>& rhs);
-
-    template <typename U>
-    friend bool operator==(const ValueWrapper<U>& lhs, const U& rhs);
-    template <typename U>
-    friend bool operator<(const ValueWrapper<U>& lhs, const U& rhs);
 };
 
 template <typename T>

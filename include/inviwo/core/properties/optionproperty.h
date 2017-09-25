@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/introspection.h>
 #include <type_traits>
 #include <iterator>
 

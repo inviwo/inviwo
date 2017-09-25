@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/util/imagesampler.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
 
 namespace inviwo {
 
@@ -55,15 +56,13 @@ PathLines::PathLines()
     , colors_("colors")
     , volume_("vectorvolume")
 
-    , linesStripsMesh_("linesStripsMesh_")
     , lines_("lines")
+    , linesStripsMesh_("linesStripsMesh_")
 
     , pathLineProperties_("pathLineProperties", "Path Line Properties")
-
-
-
-    , coloringMethod_("coloringMethod","Color by")
     , tf_("transferFunction", "Transfer Function")
+    , coloringMethod_("coloringMethod","Color by")
+
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
 
@@ -149,7 +148,7 @@ void PathLines::process() {
         for (long long j = 0; j < static_cast<long long>(seeds->size());j++){
             const auto &p = (*seeds)[j];
             vec4 P = m * vec4(p, 1.0f);
-            auto line = tracer.traceFrom(vec4(P.xyz(), pathLineProperties_.getStartT()));
+            auto line = tracer.traceFrom(vec4(vec3(P), pathLineProperties_.getStartT()));
             auto size = line.getPositions().size();
             if (size>1) {  
                 #pragma omp critical
@@ -229,6 +228,10 @@ void PathLines::process() {
     mesh->addVertices(vertices);
 
     linesStripsMesh_.setData(mesh);
+
+    util::curvature(*lines);
+    util::tortuosity(*lines);
+
     lines_.setData(lines);
     maxVelocity_.set(toString(maxVelocity));
 

@@ -28,35 +28,31 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
+#include <inviwo/core/properties/buttonproperty.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <warn/pop>
 
 namespace inviwo {
 
-ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property) 
-    : PropertyWidgetQt(property)
-    , property_(property) {
+ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
+    : PropertyWidgetQt(property), property_(property) {
 
-    generateWidget();
-    updateFromProperty();
-}
-
-void ButtonPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     button_ = new QPushButton();
     button_->setText(QString::fromStdString(property_->getDisplayName()));
-    connect(button_, SIGNAL(released()), this, SLOT(handleButton()));
+    connect(button_, &QPushButton::released, this, [&]() {
+        if (!property_->getReadOnly()) property_->pressButton();
+    });
     hLayout->addWidget(button_);
     setLayout(hLayout);
-}
-
-void ButtonPropertyWidgetQt::handleButton() {
-    if (!property_->getReadOnly()) property_->pressButton();
+    updateFromProperty();
 }
 
 void ButtonPropertyWidgetQt::onSetDisplayName(const std::string& displayName) {

@@ -87,7 +87,6 @@ private:
     Port* port_;
     float size_;
     float lineWidth_;
-    bool up_;
 };
 
 class IVW_QTEDITOR_API ProcessorInportGraphicsItem : public ProcessorPortGraphicsItem {

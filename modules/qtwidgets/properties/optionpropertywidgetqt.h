@@ -41,23 +41,16 @@ class IvwComboBox;
 class EditableLabelQt;
 
 class IVW_MODULE_QTWIDGETS_API OptionPropertyWidgetQt : public PropertyWidgetQt {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
 public:
     OptionPropertyWidgetQt(BaseOptionProperty* property);
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
 
 private:
+    void optionChanged(int);
+ 
     BaseOptionProperty* property_;
     IvwComboBox* comboBox_;
     EditableLabelQt* label_;
-    void generateWidget();
-
-public slots:
-    void optionChanged();
 };
 
 } // namespace

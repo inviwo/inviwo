@@ -32,13 +32,10 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/properties/property.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QTextDocument>
-#include <QTextBlock>
-#include <QFileInfo>
-#include <warn/pop>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/editablelabelqt.h>
 
 #include <modules/qtwidgets/properties/syntaxhighlighter.h>
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
@@ -46,87 +43,97 @@
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/htmleditorwidgetqt.h>
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
+
+#include <inviwo/core/metadata/propertyeditorwidgetmetadata.h>
+
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QTextDocument>
+#include <QTextBlock>
+#include <QFileInfo>
+#include <QVBoxLayout>
+#include <QToolButton>
+#include <QToolBar>
+#include <QTextEdit>
+#include <QDesktopServices>
+#include <QTextStream>
+#include <QMessageBox>
+#include <warn/pop>
 
 namespace inviwo {
 
-ModifiedWidget::ModifiedWidget() {
-    generateWidget();
-}
-
-void ModifiedWidget::textHasChanged() {
-}
-
-void ModifiedWidget::closeEvent(QCloseEvent* event)
+ModifiedWidget::ModifiedWidget(Property* property , TextEditorWidgetQt *parent) 
+    : PropertyEditorWidgetQt(property,property->getDisplayName(),parent)
+    , mainParentWidget_(parent)
 {
-    if (mainParentWidget_->saveDialog())
-        event->accept();
-    else
-        event->ignore();
-}
-
-SyntaxHighligther* ModifiedWidget::getSyntaxHighligther() {
-    return syntaxHighligther_;
-}
-
-void ModifiedWidget::generateWidget() {
+    property->addObserver(this);
+    QWidget* mainPanel = new QWidget(this);
     QVBoxLayout* textEditorLayout = new QVBoxLayout();
     textEditorLayout->setSpacing(0);
     textEditorLayout->setMargin(0);
     toolBar_ = new QToolBar();
     saveButton_ = new QToolButton();
-    saveButton_->setIcon(QIcon(":/icons/save.png")); // Temporary icon
-    saveButton_->setToolTip("Save file");
+    saveButton_->setIcon(QIcon(":/icons/button_ok.png"));  
+    saveButton_->setToolTip("Apply changes");
+    saveButton_->setShortcut(QKeySequence::Save);
     unDoButton_ = new QToolButton();
-    unDoButton_->setIcon(QIcon(":/icons/arrow_left.png")); // Temporary icon
+    unDoButton_->setIcon(QIcon(":/icons/undo.png"));  
     unDoButton_->setToolTip("Undo");
+    saveButton_->setShortcut(QKeySequence::Undo);
     reDoButton_ = new QToolButton();
-    reDoButton_->setIcon(QIcon(":/icons/arrow_right.png")); // Temporary icon
+    reDoButton_->setIcon(QIcon(":/icons/redo.png"));  
     reDoButton_->setToolTip("Redo");
+    saveButton_->setShortcut(QKeySequence::Redo);
     reLoadButton_ = new QToolButton();
-    reLoadButton_->setIcon(QIcon(":/icons/inviwo_tmp.png")); // Temporary icon
-    reLoadButton_->setToolTip("Reload");
+    reLoadButton_->setIcon(QIcon(":/icons/button_cancel-bw.png"));  
+    reLoadButton_->setToolTip("Discard changes");
     toolBar_->addWidget(saveButton_);
-    toolBar_->addSeparator();
-    toolBar_->addWidget(unDoButton_);
-    toolBar_->addSeparator();
-    toolBar_->addWidget(reDoButton_);
-    toolBar_->addSeparator();
     toolBar_->addWidget(reLoadButton_);
-    toolBar_->addSeparator();
+    toolBar_->addWidget(unDoButton_);
+    toolBar_->addWidget(reDoButton_);
     textEditor_ = new QTextEdit();
+    textEditor_->setObjectName("modifiedWidgetTextEdit");
+    textEditor_->setStyleSheet("font: 10pt \"Courier\";");
     textEditor_->createStandardContextMenu();
     syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<None>(textEditor_->document());
     textEditorLayout->addWidget(toolBar_);
     textEditorLayout->addWidget(textEditor_);
-    setLayout(textEditorLayout);
-    connect(textEditor_,SIGNAL(textChanged()),this,SLOT(textHasChanged()));
-    connect(unDoButton_,SIGNAL(pressed()),textEditor_,SLOT(undo()));
-    connect(reDoButton_,SIGNAL(pressed()),textEditor_,SLOT(redo()));
+    mainPanel->setLayout(textEditorLayout);
+    setWidget(mainPanel);
+    connect(unDoButton_, SIGNAL(pressed()), textEditor_, SLOT(undo()));
+    connect(reDoButton_, SIGNAL(pressed()), textEditor_, SLOT(redo()));
+
+    setMinimumSize(QSize(560,500));
+
+    setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 }
 
-void ModifiedWidget::setParent(TextEditorWidgetQt* tmp) {
-    mainParentWidget_ = tmp;
+
+SyntaxHighligther* ModifiedWidget::getSyntaxHighligther() { return syntaxHighligther_; }
+
+
+void ModifiedWidget::closeEvent(QCloseEvent *){
+    if (dynamic_cast<FileProperty*>(property_)) {
+        mainParentWidget_->writeToFile();
+    } else if (dynamic_cast<StringProperty*>(property_)) {
+        mainParentWidget_->writeToString();
+    }
 }
-
-
+ 
 TextEditorWidgetQt::TextEditorWidgetQt(Property* property) : PropertyWidgetQt(property) {
-    generateWidget();
-    updateFromProperty();
-}
-
-TextEditorWidgetQt::~TextEditorWidgetQt() {
-    delete textEditorWidget_;
-    delete htmlEditorWidget_;
-}
-
-void TextEditorWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
 
     btnEdit_ = new QToolButton();
     btnEdit_->setIcon(QIcon(":/icons/edit.png"));
+
+    textEditorWidget_ = new ModifiedWidget(property_,this);
+    if (property_->getSemantics().getString() == "ShaderEditor") {
+        textEditorWidget_->getSyntaxHighligther()->setSyntax<GLSL>();
+    }
 
     if (dynamic_cast<FileProperty*>(property_)) {
         fileWidget_ = new FilePropertyWidgetQt(static_cast<FileProperty*>(property_));
@@ -142,46 +149,33 @@ void TextEditorWidgetQt::generateWidget() {
 
     setLayout(hLayout);
 
-    textEditorWidget_= new ModifiedWidget();
-    textEditorWidget_->setParent(this);
-    if(property_->getSemantics().getString()=="ShaderEditor")
-        textEditorWidget_->getSyntaxHighligther()->setSyntax<GLSL>();
-    htmlEditorWidget_ = new HtmlEditorWidgetQt();
-    htmlEditorWidget_->setParent(this);
+    updateFromProperty();
 }
 
-void TextEditorWidgetQt::setPropertyValue() {}
+TextEditorWidgetQt::~TextEditorWidgetQt() {
+    delete textEditorWidget_;
+}
 
-//Function loads the file into the textEditor_
+// Function loads the file into the textEditor_
 void TextEditorWidgetQt::editFile() {
     // fetch settings from the settings menu to determine what editor to use
     InviwoApplication* inviwoApp = InviwoApplication::getPtr();
 
-    if (dynamic_cast<BoolProperty*>(inviwoApp->getSettingsByType<SystemSettings>()->getPropertyByIdentifier("txtEditor"))->get()) {
-        if (static_cast<StringProperty*>(property_)->get() == "")
-            fileWidget_->setPropertyValue();
-
+    if (dynamic_cast<BoolProperty*>(
+            inviwoApp->getSettingsByType<SystemSettings>()->getPropertyByIdentifier("txtEditor"))
+            ->get()) {
         tmpPropertyValue_ = static_cast<StringProperty*>(property_)->get();
         const QString filePath_ = QString::fromStdString(tmpPropertyValue_);
         QUrl url_ = QUrl(filePath_);
         QDesktopServices::openUrl(url_);
-    }
-    else {
-        if (static_cast<StringProperty*>(property_)->get() == "")
-            fileWidget_->setPropertyValue();
-
+    } else {
         connect(textEditorWidget_->saveButton_, SIGNAL(pressed()), this, SLOT(writeToFile()));
         connect(textEditorWidget_->reLoadButton_, SIGNAL(pressed()), this, SLOT(loadFile()));
-        connect(htmlEditorWidget_->saveButton_, SIGNAL(pressed()), this, SLOT(writeToFile()));
-        connect(htmlEditorWidget_->reLoadButton_, SIGNAL(pressed()), this, SLOT(loadFile()));
         loadFile();
         std::string fileName = static_cast<StringProperty*>(property_)->get();
         std::string extension = filesystem::getFileExtension(fileName);
 
-        if (extension=="html" || extension=="htm")
-            htmlEditorWidget_->show();
-        else
-            textEditorWidget_->show();
+        textEditorWidget_->show();
     }
 }
 
@@ -192,10 +186,7 @@ void TextEditorWidgetQt::loadFile() {
     QTextStream textStream_(file_);
     std::string extension = filesystem::getFileExtension(tmpPropertyValue_);
 
-    if (extension == "html" || extension == "htm")
-        htmlEditorWidget_->htmlEditor_->setPlainText(textStream_.readAll());
-    else
-        textEditorWidget_->textEditor_->setPlainText(textStream_.readAll());
+    textEditorWidget_->textEditor_->setPlainText(textStream_.readAll());
 }
 
 //Function writes content of the textEditor_ to the file
@@ -209,10 +200,7 @@ bool TextEditorWidgetQt::writeToFile() {
     std::string fileName = qfilename.toLocal8Bit().constData();
     std::string extension = filesystem::getFileExtension(fileName);
 
-    if (extension == "html" || extension == "htm")
-        textStream <<  htmlEditorWidget_->htmlOutput_->toPlainText();
-    else
-        textStream << textEditorWidget_->textEditor_->toPlainText();
+    textStream << textEditorWidget_->textEditor_->toPlainText();
 
     file_->close();
     return true;
@@ -223,24 +211,25 @@ void TextEditorWidgetQt::editString() {
     connect(textEditorWidget_->reLoadButton_, SIGNAL(pressed()), this, SLOT(loadString()));
     loadString();
     textEditorWidget_->show();
+    textEditorWidget_->raise();
 }
 
 void TextEditorWidgetQt::loadString() {
     tmpPropertyValue_ = static_cast<StringProperty*>(property_)->get();
-    textEditorWidget_->textEditor_->setPlainText(QString::fromStdString(tmpPropertyValue_));
+    textEditorWidget_->textEditor_->setPlainText(utilqt::toQString(tmpPropertyValue_));
 }
 bool TextEditorWidgetQt::writeToString() {
-    static_cast<StringProperty*>(property_)->set(textEditorWidget_->textEditor_->toPlainText().toLocal8Bit().constData());
+    static_cast<StringProperty*>(property_)->set(utilqt::fromQString(textEditorWidget_->textEditor_->toPlainText()));
     stringWidget_->updateFromProperty();
     return true;
 }
 
 bool TextEditorWidgetQt::saveDialog() {
-    if (textEditorWidget_->textEditor_->document()->isModified() ||
-        htmlEditorWidget_->htmlEditor_->document()->isModified()) {
+    if (textEditorWidget_->textEditor_->document()->isModified()) {
         QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(this, tr("Application"), tr("The document has been modified.\n"
-                                                               "Do you want to save your changes?"),
+        ret = QMessageBox::warning(this, tr("Application"),
+                                   tr("The document has been modified.\n"
+                                      "Do you want to save your changes?"),
                                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
         if (ret == QMessageBox::Save) {
@@ -268,7 +257,6 @@ void TextEditorWidgetQt::updateFromProperty() {
 SyntaxHighligther* TextEditorWidgetQt::getSyntaxHighligther() {
     return textEditorWidget_->getSyntaxHighligther();
 }
-
 
 } // namespace
 

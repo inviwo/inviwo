@@ -37,10 +37,15 @@
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/base/properties/basisproperty.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/utilities.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/properties/cameraproperty.h>
 
 namespace inviwo {
+
+class PickingEvent;
 
 /** \docpage{org.inviwo.MeshCreator, Mesh Creator}
  * ![](org.inviwo.MeshCreator.png?classIdentifier=org.inviwo.MeshCreator)
@@ -88,16 +93,6 @@ protected:
     virtual void process() override;
 
 private:
-    template <typename... Args>
-    void show(Args&&... args) {
-        util::for_each_argument([](Property& p) { p.setVisible(true); }, std::forward<Args>(args)...);
-    }
-
-    template <typename... Args>
-    void hide(Args&&... args) {
-        util::for_each_argument([](Property& p) { p.setVisible(false); }, std::forward<Args>(args)...);
-    }
-
     enum class MeshType {
         Sphere,
         ColorSphere,
@@ -111,23 +106,29 @@ private:
         Cylinder,
         Arrow,
         CoordAxes, 
-        Torus
+        Torus,
+        SphereOpt
     };
+
+    void handlePicking(PickingEvent*);
 
     MeshOutport outport_;
     
     FloatVec3Property position1_;
     FloatVec3Property position2_;
+    BasisProperty basis_;
     FloatVec3Property normal_;
     FloatVec4Property color_;
     FloatProperty torusRadius1_;
     FloatProperty torusRadius2_;
     
-    BasisProperty basis_;
-
     FloatProperty meshScale_; // Scale size of mesh
     IntVec2Property meshRes_; // mesh resolution
     TemplateOptionProperty<MeshType> meshType_;
+    BoolProperty enablePicking_;
+    PickingMapper picking_;
+    CameraProperty camera_;
+    std::function<void(PickingEvent*)> pickingUpdate_;
 };
 
 } // namespace

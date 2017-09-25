@@ -38,239 +38,217 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+
+
+#include <glm/vector_relational.hpp>
+
+#include <tuple>
 
 namespace inviwo {
 
+class BaseOrdinalAnimationProperty : public CompositeProperty {
+public:
+    using CompositeProperty::CompositeProperty;
+    virtual ~BaseOrdinalAnimationProperty() = default;
+    virtual void update() = 0;
+};
+
+enum class BoundaryType {Stop, Periodic, Mirror};
+
+template <typename T>
+class OrdinalAnimationProperty : public BaseOrdinalAnimationProperty {
+public:
+    InviwoPropertyInfo();
+    using valueType = T;
+
+    OrdinalAnimationProperty(const std::string& identifier, const std::string& displayName);
+    virtual ~OrdinalAnimationProperty() = default;
+
+    void setLimits();
+
+    virtual void update() override;
+
+    OrdinalProperty<T> value_;
+    OrdinalProperty<T> delta_;
+    TemplateOptionProperty<BoundaryType> boundary_;
+    BoolProperty active_;
+};
+
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             BoundaryType bt) {
+    switch (bt) {
+        case BoundaryType::Stop:
+            ss << "Stop";
+            break;
+        case BoundaryType::Periodic:
+            ss << "Periodic";
+            break;
+        case BoundaryType::Mirror:
+            ss << "Mirror";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+
+template <typename T>
+PropertyClassIdentifier(OrdinalAnimationProperty<T>,
+                        "org.inviwo.OrdinalAnimationProperty." + Defaultvalues<T>::getName());
+
+template <typename T>
+OrdinalAnimationProperty<T>::OrdinalAnimationProperty(const std::string& identifier,
+                                                      const std::string& displayName)
+    : BaseOrdinalAnimationProperty(identifier, displayName)
+    , value_("value", "Value")
+    , delta_("delta", "Delta")
+    , boundary_("boundary", "Boundary",
+                {BoundaryType::Stop, BoundaryType::Periodic, BoundaryType::Mirror}, 0)
+    , active_("active", "Active", true) {
+
+    addProperty(value_);
+    addProperty(delta_);
+    addProperty(boundary_);
+    addProperty(active_);
+}
+
+namespace detail {
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
+T pbc(const T& val, const T& min, const T& max) {
+    const auto minmask = glm::lessThan(val, min);
+    const auto maxmask = glm::greaterThanEqual(val, max);
+    const auto range = max - min;
+    return val + T{minmask} * range - T{maxmask} * range;
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
+T pbc(const T& val, const T& min, const T& max) {
+    if (val < min) {
+        return val + (max - min);
+    } else if (val >= max) {
+        return val - (max - min);
+    } else {
+        return val;
+    }
+}
+
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
+T mirror(const T& val, const T& min, const T& max) {
+    const auto minmask = glm::lessThan(val, min);
+    const auto maxmask = glm::greaterThanEqual(val, max);
+    const auto mask = minmask || maxmask;
+    return T{-1} * T{mask} + (T{1} - T{mask});
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
+T mirror(const T& val, const T& min, const T& max) {
+    if (val < min || val > max) {
+        return T{-1};
+    } else {
+        return T{1};
+    }
+}
+
+}
+
+template <typename T>
+void OrdinalAnimationProperty<T>::update() {
+    if (!active_) return;
+
+    T p = value_.get();
+    T d = delta_.get();
+    T r = p + d;
+
+    switch (boundary_.get()) {
+        case BoundaryType::Stop:
+            r = glm::clamp(r, value_.getMinValue(), value_.getMaxValue());
+            break;
+        case BoundaryType::Periodic:
+            r = detail::pbc(r, value_.getMinValue(), value_.getMaxValue());
+            break;
+        case BoundaryType::Mirror: {
+            auto m = detail::mirror(r, value_.getMinValue(), value_.getMaxValue());
+            delta_.set(m * delta_.get());
+            r = glm::clamp(r, value_.getMinValue(), value_.getMaxValue());
+            break;
+        }
+        default:
+            break;
+    }
+    if (r != p) {
+        value_.set(r);
+    }
+}
+
+template <typename T>
+void OrdinalAnimationProperty<T>::setLimits() {
+    using P = typename util::value_type<T>::type;
+
+    T max = value_.getMaxValue();
+
+    T dmin = delta_.getMinValue();
+    T dmax = delta_.getMaxValue();
+
+    T newMin = -T{static_cast<P>(0.1)} * max;
+    T newMax = T{static_cast<P>(0.1)} * max;
+
+    if (dmin != newMin) {
+        delta_.setMinValue(newMin);
+    }
+    if (dmax != newMax) {
+        delta_.setMaxValue(newMax);
+    }
+}
+
 /** \docpage{org.inviwo.OrdinalPropertyAnimator, Property Animator}
  * ![](org.inviwo.OrdinalPropertyAnimator.png?classIdentifier=org.inviwo.OrdinalPropertyAnimator)
- *
  * Generate a periodically uppdating property. Usefull for animations
  *
  * ### Properties
- *   * __Property__ The type of property
- *   * __Active__ Enable/Disable the updates
- *   * __Delay (ms)__ Delay between updates
- *   * __Periodic__ Start over when the end is reached. 
+ *   * __Property__ The type of ordinal property
+ *   * __Add__ Add property.
+ *   * __Delay (ms)__ elay between updates.
+ *   * __Play/Pause__ Activate animation.
  *
  */
 class IVW_MODULE_BASE_API OrdinalPropertyAnimator : public Processor {
 public:
+    using Types =
+        std::tuple<float, vec2, vec3, vec4, double, dvec2, dvec3, dvec4, int, ivec2, ivec3, ivec4>;
+
     OrdinalPropertyAnimator();
     virtual ~OrdinalPropertyAnimator() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void initializeResources() override;
-
-protected:
-    void updateTimerInterval();
-    void timerEvent();
-    void changeProperty();
-    void changeActive();
+    virtual void deserialize(Deserializer& d) override;
 
 private:
-    struct BaseProp {
-        BaseProp(std::string classname, std::string displayName)
-            : classname_(classname), displayName_(displayName) {}
-        virtual ~BaseProp() {}
-
-        virtual Property* getProp() = 0;
-        virtual Property* getDelta() = 0;
-        virtual void update(bool pbc) = 0;
-
-        std::string classname_;
-        std::string displayName_;
-    };
-
-    template <typename T>
-    struct VecProp : public BaseProp {
-        VecProp(std::string classname, std::string displayName);
-        virtual ~VecProp();
-
-        void setLimits();
-
-        virtual Property* getProp() override;
-        virtual Property* getDelta() override;
-        virtual void update(bool pbc) override;
-
-        std::unique_ptr<OrdinalProperty<T>> prop_;
-        std::unique_ptr<OrdinalProperty<T>> delta_;
-        typedef T valueType;
-    };
-
-    template <typename T>
-    struct PrimProp : public BaseProp {
-        PrimProp(std::string classname, std::string displayName);
-        virtual ~PrimProp();
-
-        void setLimits();
-
-        virtual Property* getProp() override;
-        virtual Property* getDelta() override;
-        virtual void update(bool pbc) override;
-
-        std::unique_ptr<OrdinalProperty<T>> prop_;
-        std::unique_ptr<OrdinalProperty<T>> delta_;
-        typedef T valueType;
-    };
-
-    OptionPropertyInt type_;
+    OptionPropertySize_t type_;
+    ButtonProperty create_;
     IntProperty delay_;
-    BoolProperty pbc_;
-    BoolProperty active_;
+    ButtonProperty play_;
     Timer timer_;
 
-    std::vector<std::unique_ptr<BaseProp>> properties_;
+    std::vector<std::function<std::unique_ptr<Property>()>> factory_;
+    std::vector<BaseOrdinalAnimationProperty*> props_;
+
+    struct TypeFunctor {
+        template <typename T>
+        void operator()(OrdinalPropertyAnimator& animator) {
+            animator.type_.addOption(OrdinalProperty<T>::CLASS_IDENTIFIER,
+                                     Defaultvalues<T>::getName(), animator.type_.size());
+            animator.factory_.push_back([]() -> std::unique_ptr<Property> {
+                return util::make_unique<OrdinalAnimationProperty<T>>(Defaultvalues<T>::getName(),
+                                                                      Defaultvalues<T>::getName());
+            });
+        }
+    };
 };
-
-template <typename T>
-void OrdinalPropertyAnimator::VecProp<T>::update(bool pbc) {
-    T p = prop_->get();
-    T d = delta_->get();
-    T r = p + d;
-    for (glm::length_t i = 0; i < static_cast<glm::length_t>(prop_->getDim().x); ++i) {
-        if (r[i] > prop_->getMaxValue()[i]) {
-            if (pbc) {
-                r[i] = r[i] - (prop_->getMaxValue()[i] - prop_->getMinValue()[i]);
-            } else {
-                r[i] = prop_->getMaxValue()[i];
-            }
-        } else if (r[i] < prop_->getMinValue()[i]) {
-            if (pbc) {
-                r[i] = r[i] + (prop_->getMaxValue()[i] - prop_->getMinValue()[i]);
-            } else {
-                r[i] = prop_->getMinValue()[i];
-            }
-        }
-    }
-    if (r != p) {
-        prop_->set(r);
-    }
-}
-
-template <typename T>
-Property* OrdinalPropertyAnimator::VecProp<T>::getDelta() {
-    return delta_.get();
-}
-
-template <typename T>
-Property* OrdinalPropertyAnimator::VecProp<T>::getProp() {
-    return prop_.get();
-}
-
-template <typename T>
-OrdinalPropertyAnimator::VecProp<T>::~VecProp() {}
-
-template <typename T>
-void OrdinalPropertyAnimator::VecProp<T>::setLimits() {
-    T max = prop_->getMaxValue();
-
-    T dmin = delta_->getMinValue();
-    T dmax = delta_->getMaxValue();
-
-    T newMin = -T(static_cast<typename T::value_type>(0.1)) * max;
-    T newMax = T(static_cast<typename T::value_type>(0.1)) * max;
-
-    if (dmin != newMin) {
-        delta_->setMinValue(newMin);
-    }
-    if (dmax != newMax) {
-        delta_->setMaxValue(newMax);
-    }
-}
-
-template <typename T>
-OrdinalPropertyAnimator::VecProp<T>::VecProp(std::string classname, std::string displayName)
-    : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
-    auto factory = InviwoApplication::getPtr()->getPropertyFactory();
-
-    prop_ = util::dynamic_unique_ptr_cast<OrdinalProperty<T>>(
-        factory->create(classname, dotSeperatedToPascalCase(classname), displayName));
-
-    std::stringstream ss1;
-    ss1 << dotSeperatedToPascalCase(classname) << "-"
-        << "Delta";
-    std::string identifier = ss1.str();
-
-    delta_ = util::dynamic_unique_ptr_cast<OrdinalProperty<T>>(
-        factory->create(classname, identifier, "Delta"));
-
-    prop_->onChange(this, &VecProp<T>::setLimits);
-}
-
-template <typename T>
-void OrdinalPropertyAnimator::PrimProp<T>::update(bool pbc) {
-    T p = prop_->get();
-    T d = delta_->get();
-    T r = p + d;
-
-    if (r > prop_->getMaxValue()) {
-        if (pbc) {
-            r = r - (prop_->getMaxValue() - prop_->getMinValue());
-        } else {
-            r = prop_->getMaxValue();
-        }
-    } else if (r < prop_->getMinValue()) {
-        if (pbc) {
-            r = r + (prop_->getMaxValue() - prop_->getMinValue());
-        } else {
-            r = prop_->getMinValue();
-        }
-    }
-
-    if (r != p) {
-        prop_->set(r);
-    }
-}
-
-template <typename T>
-Property* OrdinalPropertyAnimator::PrimProp<T>::getDelta() {
-    return delta_.get();
-}
-
-template <typename T>
-Property* OrdinalPropertyAnimator::PrimProp<T>::getProp() {
-    return prop_.get();
-}
-
-template <typename T>
-OrdinalPropertyAnimator::PrimProp<T>::~PrimProp() {}
-
-template <typename T>
-void OrdinalPropertyAnimator::PrimProp<T>::setLimits() {
-    T max = prop_->getMaxValue();
-
-    T dmin = delta_->getMinValue();
-    T dmax = delta_->getMaxValue();
-
-    if (dmin != -max / 10) {
-        delta_->setMinValue(-max / 10);
-    }
-    if (dmax != max / 10) {
-        delta_->setMaxValue(max / 10);
-    }
-}
-
-template <typename T>
-OrdinalPropertyAnimator::PrimProp<T>::PrimProp(std::string classname, std::string displayName)
-    : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
-    auto factory = InviwoApplication::getPtr()->getPropertyFactory();
-
-    prop_ = util::dynamic_unique_ptr_cast<OrdinalProperty<T>>(
-        factory->create(classname, dotSeperatedToPascalCase(classname), displayName));
-
-    std::stringstream ss1;
-    ss1 << dotSeperatedToPascalCase(classname) << "-"
-        << "Delta";
-    std::string identifier = ss1.str();
-
-    delta_ = util::dynamic_unique_ptr_cast<OrdinalProperty<T>>(
-        factory->create(classname, identifier, "Delta"));
-
-    prop_->onChange(this, &PrimProp<T>::setLimits);
-}
 
 }  // namespace
 

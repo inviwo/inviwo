@@ -53,7 +53,7 @@ BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage,
 }
 
 BufferCL::BufferCL(const BufferCL& rhs)
-    : BufferRepresentation(rhs), readWriteFlag_(rhs.readWriteFlag_), size_(rhs.size_) {
+    : BufferCLBase(rhs), BufferRepresentation(rhs), readWriteFlag_(rhs.readWriteFlag_), size_(rhs.size_) {
     clBuffer_ = util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
         std::max(std::size_t{ 1 }, getSize()) * getSizeOfElement());
     OpenCL::getPtr()->getQueue().enqueueCopyBuffer(rhs.get(), *clBuffer_, 0, 0,

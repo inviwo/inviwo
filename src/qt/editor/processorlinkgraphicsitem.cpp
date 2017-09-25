@@ -63,8 +63,7 @@ ProcessorGraphicsItem* ProcessorLinkGraphicsItem::getProcessorGraphicsItem() con
 }
 
 QRectF ProcessorLinkGraphicsItem::boundingRect() const { return QRectF(); }
-void ProcessorLinkGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                      QWidget* widget) {}
+void ProcessorLinkGraphicsItem::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) {}
 
 QVariant ProcessorLinkGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
     if (change == QGraphicsItem::ItemScenePositionHasChanged) {
@@ -108,15 +107,15 @@ void ProcessorLinkGraphicsItem::LinkItem::mousePressEvent(QGraphicsSceneMouseEve
     e->accept();
 }
 
-void ProcessorLinkGraphicsItem::LinkItem::paint(QPainter* p,
-                                                const QStyleOptionGraphicsItem* options,
-                                                QWidget* widget) {
+void ProcessorLinkGraphicsItem::LinkItem::paint(QPainter* p, const QStyleOptionGraphicsItem*,
+                                                QWidget*) {
     p->save();
     p->setBrush(Qt::NoBrush);
     p->setBrush(QColor(164, 164, 164));
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setPen(QPen(QColor(164, 164, 164), lineWidth_, Qt::SolidLine, Qt::FlatCap));
-    p->drawArc(QRectF(QPointF(-size_, size_), QPointF(size_, -size_)), 16*angle_, 16*180);
+    p->drawArc(QRectF(QPointF(-size_, size_), QPointF(size_, -size_)),
+               static_cast<int>(16.0f * angle_), 16 * 180);
     p->restore();
 }
 

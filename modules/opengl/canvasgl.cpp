@@ -132,7 +132,7 @@ void CanvasGL::renderTexture(int unitNumber) {
                static_cast<GLsizei>(getCanvasDimensions().y));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     textureShader_->activate();
     textureShader_->setUniform("tex_", unitNumber);
     drawSquare();

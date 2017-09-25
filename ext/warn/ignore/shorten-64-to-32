@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,21 +24,27 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#if !defined(IVW_WARN_PUSH_)
-# error "`warn/ignore/shorten-64-to-32` used without `warn/push`"
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/shorten-64-to-32` used without `warn/push`"
 #endif
 
-#if defined(IVW_WARN_PUSH_SHORTEN_64_TO_32_)
-# error "`warn/ignore/shorten-64-to-32` already included"
-#else
-# define IVW_WARN_SHORTEN_64_TO_32_
+#if defined(WARN_IGNORE_SHORTEN_64_TO_32)
+#   error "`warn/ignore/shorten-64-to-32` already included"
 #endif
 
-#if (__clang__)
-# if __has_warning("-Wshorten-64-to-32")
-#  pragma clang diagnostic ignored "-Wshorten-64-to-32"
-# endif
+#define WARN_IGNORE_SHORTEN_64_TO_32
+
+#if defined(__clang__)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 2)
+#       if __has_warning("-Wshorten-64-to-32")
+#           pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#       endif
+#   endif
+#elif defined(__GNUC__)
+//  Not available
+#elif defined(_MSC_VER)
+//  Not available
 #endif

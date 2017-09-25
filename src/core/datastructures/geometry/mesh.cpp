@@ -122,6 +122,31 @@ size_t Mesh::getNumberOfBuffers() const { return buffers_.size(); }
 
 size_t Mesh::getNumberOfIndicies() const { return indices_.size(); }
 
+void Mesh::append(const Mesh& mesh) {
+    if (buffers_.size() != mesh.buffers_.size()) {
+        throw Exception("Mismatched meshed, number of buffer does not match", IvwContext);
+    }
+    for (size_t i = 0; i < buffers_.size(); ++i) {
+        if (buffers_[i].first != mesh.buffers_[i].first ||
+            buffers_[i].second->getDataFormat() != mesh.buffers_[i].second->getDataFormat()) {
+            throw Exception("Mismatched meshed, buffer types does not match", IvwContext);
+        }
+    }
+    size_t size = buffers_[0].second->getSize();
+    for (size_t i = 0; i < buffers_.size(); ++i) {
+        buffers_[i].second->append(*(mesh.buffers_[i].second));
+    }
+    for (auto indbuffer : mesh.indices_) {
+        const auto& inds = indbuffer.second->getRAMRepresentation()->getDataContainer();
+
+        std::vector<std::uint32_t> newInds;
+        newInds.reserve(inds.size());
+        std::transform(inds.begin(), inds.end(), std::back_inserter(newInds),
+                       [&](auto& i) { return i + static_cast<uint32_t>(size); });
+        addIndicies(indbuffer.first, util::makeIndexBuffer(std::move(newInds)));
+    }
+}
+
 const SpatialCameraCoordinateTransformer<3>& Mesh::getCoordinateTransformer(
     const Camera& camera) const {
     return SpatialEntity<3>::getCoordinateTransformer(camera);
@@ -132,26 +157,80 @@ inviwo::uvec3 Mesh::COLOR_CODE = uvec3(188, 188, 101);
 const std::string Mesh::CLASS_IDENTIFIER = "org.inviwo.Mesh";
 
 std::string Mesh::getDataInfo() const {
+    const int maxLines = 20;
+
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
     Document doc;
     doc.append("b", "Mesh", {{"style", "color:white;"}});
+
     utildoc::TableBuilder tb(doc.handle(), P::end());
-
-    for (const auto& elem : indices_) {
-        std::stringstream ss;
-        ss << elem.first.dt << " " << elem.first.ct;
-        ss << " (" << elem.second->getSize() << ")";
-        tb(H("IndexBuffer"), ss.str());
-    }
-
+    
+    tb(H(std::string("Buffers (") + std::to_string(buffers_.size()) + ")"));
+    
+    // show all the buffers
     for (const auto& elem : buffers_) {
-        std::stringstream ss;
-        ss << elem.first << " " << elem.second->getBufferUsage();
-        ss << " (" << elem.second->getSize() << ")";
-        tb(H("Buffer"), ss.str());
+        std::stringstream ss1;
+        ss1 << elem.first << ", " << elem.second->getBufferUsage();
+        std::stringstream ss2; 
+        ss2 << " (" << elem.second->getSize() << ")";
+        tb(ss1.str(), ss2.str());
     }
+
+    // ensure that at least one index buffer is shown
+    int maxPrintableIndexBuf = std::max<int>(maxLines - static_cast<int>(buffers_.size()), 1);
+    int numIndexBuffers = static_cast<int>(indices_.size());
+
+    if (!indices_.empty()) {
+        std::stringstream ss;
+        ss << "Indexbuffers (" << indices_.size() << ")";
+        tb(H(ss.str()));
+    }
+    int line = 0;
+    for (const auto& elem : indices_) {
+        std::stringstream ss1;
+        ss1 << elem.first.dt << ", " << elem.first.ct;
+        std::stringstream ss2;
+        ss2 << " (" << elem.second->getSize() << ")";
+        tb(ss1.str(), ss2.str());
+        ++line;
+        if (line >= maxPrintableIndexBuf) break;
+    }
+    if (maxPrintableIndexBuf < numIndexBuffers) {
+        std::stringstream ss;
+        ss << "... (" << (numIndexBuffers - maxPrintableIndexBuf) << " additional buffers)";
+        tb(ss.str());
+    }
+
     return doc;
 }
+
+namespace meshutil {
+
+bool hasPickIDBuffer(const Mesh* mesh) {
+    if (!mesh) return false;
+    for (auto buffer : mesh->getBuffers()) {
+        // FIXME: this assumes the picking data to be stored at location 4
+        if ((buffer.first.type == BufferType::NumberOfBufferTypes) &&
+            (buffer.first.location == 4)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool hasRadiiBuffer(const Mesh* mesh) {
+    if (!mesh) return false;
+    for (auto buffer : mesh->getBuffers()) {
+        // FIXME: this assumes the radii to be stored at location 5
+        if ((buffer.first.type == BufferType::NumberOfBufferTypes) &&
+            (buffer.first.location == 5)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+}  // namespace meshutil
 
 }  // namespace

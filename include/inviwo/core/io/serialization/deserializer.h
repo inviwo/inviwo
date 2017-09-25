@@ -71,6 +71,11 @@ public:
      */
     Deserializer(std::istream& stream, const std::string& refPath, bool allowReference = true);
 
+    Deserializer(const Deserializer&) = delete;
+    Deserializer(Deserializer&&) = default;
+    Deserializer& operator=(const Deserializer& that) = delete;
+    Deserializer& operator=(Deserializer&& that) = default;
+
     virtual ~Deserializer() = default;
 
     // std containers
@@ -372,10 +377,10 @@ public:
             itemKey_, [&](std::string id, size_t ind) -> typename ContainerWrapper<T>::Item {
                 ++count;
                 if (ind < container.size()) {
-                    return {true, container[ind], [&](T& val) {}};
+                    return {true, container[ind], [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {true, tmp, [&](T& val) {
+                    return {true, tmp, [&](T& /*val*/) {
                                 container.push_back(std::move(tmp));
                                 onNewItem_(container.back());
                             }};
@@ -436,7 +441,7 @@ public:
                 util::erase_remove(toRemove, id);
                 auto it = util::find_if(container, [&](T& i) { return getID_(i) == id; });
                 if (it != container.end()) {
-                    return {true, *it, [&](T& val) {}};
+                    return {true, *it, [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
                     return {filter_(id, ind), tmp, [&](T& val) { onNewItem_(val); }};
@@ -457,7 +462,7 @@ private:
         throw Exception("OnRemove callback is not set!");
     };
 
-    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& id, size_t ind) {
+    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;
     };
 
@@ -474,7 +479,7 @@ public:
         makeNewItem_ = makeNewItem;
         return *this;
     }
-    IdentifiedDeserializer<K, T>& setNewFilter(
+    MapDeserializer<K, T>& setNewFilter(
         std::function<bool(const K& id, size_t ind)> filter) {
         filter_ = filter;
         return *this;
@@ -485,6 +490,10 @@ public:
     }
     MapDeserializer<K, T>& onRemove(std::function<void(const K&)> onRemoveItem) {
         onRemoveItem_ = onRemoveItem;
+        return *this;
+    }
+    MapDeserializer<K, T>& setIdentifierTransform(std::function<K(const K&)> identifierTransform) {
+        identifierTransform_ = identifierTransform;
         return *this;
     }
 
@@ -498,7 +507,7 @@ public:
                 util::erase_remove(toRemove, id);
                 auto it = container.find(id);
                 if (it != container.end()) {
-                    return {true, it->second, [&](T& val) {}};
+                    return {true, it->second, [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
                     return {filter_(id, ind), tmp, [&, id](T& val) { onNewItem_(id, val); }};
@@ -508,7 +517,7 @@ public:
         cont.setIdentityGetter([&](TxElement* node) {
             K key{};
             node->GetAttribute(attribKey_, &key);
-            return key;
+            return identifierTransform_(key);
         });
 
         d.deserialize(key_, cont);
@@ -526,8 +535,11 @@ private:
     std::function<void(const K&)> onRemoveItem_ = [](const K&) {
         throw Exception("OnRemove callback is not set!");
     };
-    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& id, size_t ind) {
+    std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;
+    };
+    std::function<K(const K&)> identifierTransform_ = [](const K &identifier) { 
+        return identifier; 
     };
 
     const std::string key_;

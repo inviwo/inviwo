@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,29 +24,27 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#if !defined(IVW_WARN_PUSH_)
-# error "`warn/ignore/undef` used without `warn/push`"
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/undef` used without `warn/push`"
 #endif
 
-#if defined(IVW_WARN_PUSH_UNDEF_)
-# error "`warn/ignore/undef` already included"
-#else
-# define IVW_WARN_UNDEF_
+#if defined(WARN_IGNORE_UNDEF)
+#   error "`warn/ignore/undef` already included"
 #endif
 
-#if (__clang__)
-# if __has_warning("-Wundef")
-#  pragma clang diagnostic ignored "-Wundef"
-# endif
-#endif
+#define WARN_IGNORE_UNDEF
 
-#if (__GNUC__)
-# pragma GCC diagnostic ignored "-Wundef"
-#endif
-
-#if (_MSC_VER)
-# pragma warning(disable: 4668)
+#if defined(__clang__)
+//  Not available
+#elif defined(__GNUC__)
+#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ > 4)
+#       pragma GCC diagnostic ignored "-Wundef"
+#   endif
+#elif defined(_MSC_VER)
+#   if (_MSC_FULL_VER >= 130000000)
+#       pragma warning(disable: 4668)
+#   endif
 #endif

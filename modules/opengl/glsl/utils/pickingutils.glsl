@@ -31,38 +31,38 @@
 #define IVW_PICKING_UTILS_GLSL
 
 uint reverseByte(uint b) {
-    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
-    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
-    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    b = (b & uint(0xF0)) >> 4 | (b & uint(0x0F)) << 4;
+    b = (b & uint(0xCC)) >> 2 | (b & uint(0x33)) << 2;
+    b = (b & uint(0xAA)) >> 1 | (b & uint(0x55)) << 1;
     return b;
 }
 
 vec3 pickingIndexToColor(uint id) {
     uint index = id;
 
-    uint r = 0;
-    uint g = 0;
-    uint b = 0;
+    uint r = 0u;
+    uint g = 0u;
+    uint b = 0u;
 
     for (int i = 0; i < 8; ++i) {
-        r |= ((index & (1 << (3 * i + 2))) >> (2 * i + 2));
-        g |= ((index & (1 << (3 * i + 1))) >> (2 * i + 1));
-        b |= ((index & (1 << (3 * i + 0))) >> (2 * i + 0));
+        r |= ((index & uint(1 << (3 * i + 2))) >> (2 * i + 2));
+        g |= ((index & uint(1 << (3 * i + 1))) >> (2 * i + 1));
+        b |= ((index & uint(1 << (3 * i + 0))) >> (2 * i + 0));
     }
 
     return vec3(reverseByte(r), reverseByte(g), reverseByte(b))/255.0;
 }
 
 uint pickingColorToIndex(vec3 color) {
-    const uint r = reverseByte(uint(color[0]*255.0));
-    const uint g = reverseByte(uint(color[1]*255.0));
-    const uint b = reverseByte(uint(color[2]*255.0));
+    uint r = reverseByte(uint(color[0]*255.0));
+    uint g = reverseByte(uint(color[1]*255.0));
+    uint b = reverseByte(uint(color[2]*255.0));
 
-    uint index = 0;
+    uint index = 0u;
     for (int i = 0; i < 8; ++i) {
-        index |= (((b & (1 << i)) << (0 + 2 * i)));
-        index |= (((g & (1 << i)) << (1 + 2 * i)));
-        index |= (((r & (1 << i)) << (2 + 2 * i)));
+        index |= (((b & uint(1 << i)) << (0 + 2 * i)));
+        index |= (((g & uint(1 << i)) << (1 + 2 * i)));
+        index |= (((r & uint(1 << i)) << (2 + 2 * i)));
     }
     return index;
 }

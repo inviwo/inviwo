@@ -46,7 +46,7 @@ enum class MouseButton {
     Middle = 1 << 1,
     Right  = 1 << 2
 };
-ALLOW_FLAGS_FOR_ENUM(MouseButton);
+ALLOW_FLAGS_FOR_ENUM(MouseButton)
 using MouseButtons = flags::flags<MouseButton>;
 
 enum class MouseState {
@@ -55,7 +55,7 @@ enum class MouseState {
     Release     = 1 << 2,
     DoubleClick = 1 << 3
 };
-ALLOW_FLAGS_FOR_ENUM(MouseState);
+ALLOW_FLAGS_FOR_ENUM(MouseState)
 using MouseStates = flags::flags<MouseState>;
 
 template <class Elem, class Traits>

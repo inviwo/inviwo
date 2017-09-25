@@ -38,7 +38,6 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -46,7 +45,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
 
@@ -113,9 +112,11 @@ private:
     BoolProperty normalize_;
     DoubleProperty resultDistScale_; // scaling factor for distances
     BoolProperty resultSquaredDist_; // determines whether output uses squared euclidean distances
-    IntSize3Property upsample_;      // Upscale the output field 
+    BoolProperty uniformUpsampling_;
+    IntProperty upsampleFactorUniform_; // uniform upscaling of the output field
+    IntSize3Property upsampleFactorVec3_; // non-uniform upscaling of the output field 
     
-    DoubleMinMaxProperty dataRange_;
+    DoubleMinMaxProperty dataRangeOutput_;
     TemplateOptionProperty<DataRangeMode> dataRangeMode_;
     DoubleMinMaxProperty customDataRange_;
 

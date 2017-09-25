@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
+#include <inviwo/core/network/evaluationerrorhandler.h>
 
 namespace inviwo {
 
@@ -47,7 +48,7 @@ class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
 public:
     ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
     virtual ~ProcessorNetworkEvaluator() = default;
-    void setExceptionHandler(ExceptionHandler handler);
+    void setExceptionHandler(EvaluationErrorHandler handler);
 
 private:
     virtual void onProcessorNetworkEvaluateRequest() override;
@@ -64,7 +65,7 @@ private:
     // the sorted list of processors obtained through topological sorting
     std::vector<Processor*> processorsSorted_;
     bool evaulationQueued_;
-    ExceptionHandler exceptionHandler_;
+    EvaluationErrorHandler exceptionHandler_;
 };
 
 }  // namespace

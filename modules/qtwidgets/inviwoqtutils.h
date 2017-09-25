@@ -33,6 +33,8 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 #include <locale>
 #include <ios>
@@ -45,7 +47,9 @@
 #include <QSizeF>
 #include <QSize>
 #include <QMainWindow>
+#include <QImage>
 #include <warn/pop>
+
 
 namespace inviwo {
 
@@ -72,12 +76,23 @@ IVW_MODULE_QTWIDGETS_API std::locale getCurrentStdLocale();
  */
 IVW_MODULE_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
 
-/** 
- * \brief create a localized QString from an "imbued" std::string
- * The given string is imbued with the currently set system locale provided by Qt.
+/**
+ * \brief convert a std::string to a localized QString using the currently set system locale
  */
 IVW_MODULE_QTWIDGETS_API QString toLocalQString(const std::string&);
+/**
+ * \brief convert a QString to a localized 8bit std::string
+ */
+IVW_MODULE_QTWIDGETS_API std::string fromLocalQString(const QString& input);
+
+/**
+* \brief create a QString from a UTF8-encoded std::string
+*/
 IVW_MODULE_QTWIDGETS_API QString toQString(const std::string&);
+/**
+ * \brief create a UTF8-encoded std::string from a QString
+ */
+IVW_MODULE_QTWIDGETS_API std::string fromQString(const QString& input);
 
 IVW_MODULE_QTWIDGETS_API dvec2 toGLM(QPointF);
 IVW_MODULE_QTWIDGETS_API ivec2 toGLM(QPoint);
@@ -124,6 +139,11 @@ IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, std::string before
 IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, QMenu * before = nullptr);
 IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string menuName, bool createIfNotFound = false);
 
+IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer &layer);
+
+IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
+                                              LayerType visibleLayer = LayerType::Color,
+                                              size_t visibleIndex = 10000);
 
 } // namespace utilqt
 

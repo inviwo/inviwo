@@ -36,11 +36,13 @@
 
 namespace inviwo{
 
+/* This will not work with ccache.
 TEST(filesystemTest, fileExistsTest) {
 #ifdef __FILE__
     EXPECT_TRUE(filesystem::fileExists(__FILE__));
 #endif
 }
+*/
 
 TEST(filesystemTest, fileExtensionTest) {
     EXPECT_STREQ("", filesystem::getFileExtension("").c_str());

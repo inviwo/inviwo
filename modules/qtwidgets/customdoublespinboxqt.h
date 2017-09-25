@@ -43,7 +43,8 @@ namespace inviwo {
 
 /** \class CustomDoubleSpinBoxQt
  *
- * Enables displaying a value with a certain precision without truncation the actual value, which QDoubleSpinBox does.
+ * Enables displaying a value with a certain precision without truncation the actual value, which
+ * QDoubleSpinBox does.
  */
 class IVW_MODULE_QTWIDGETS_API CustomDoubleSpinBoxQt : public QDoubleSpinBox {
 #include <warn/push>
@@ -67,16 +68,16 @@ public:
      */
     virtual void setDecimals(int decimals);
 
-    /** 
+    /**
      * \brief Overrides the timerEvent to prevent
-     * spinbox to be updated twice in case of 
+     * spinbox to be updated twice in case of
      * calculations being slows
      */
-    virtual void timerEvent(QTimerEvent *event);
+    virtual void timerEvent(QTimerEvent* event);
+
 protected:
     QSize cachedSizeHint_;
     int displayDecimals_;
-
 };
 
 }//namespace

@@ -11,6 +11,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
@@ -20,6 +22,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/imagereusecache.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/kdtree.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
@@ -38,18 +41,22 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesnapshot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/inputselector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/noisevolumeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/orientationindicator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixelvalue.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/randommeshgenerator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/randomspheregenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/singlevoxel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.h
@@ -87,6 +94,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
@@ -96,6 +104,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/imagereusecache.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
@@ -111,18 +120,22 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/inputselector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/noisevolumeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/orientationindicator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixelvalue.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/randommeshgenerator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/randomspheregenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/singlevoxel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp

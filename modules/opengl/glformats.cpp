@@ -40,7 +40,7 @@ GLFormats::GLFormat::GLFormat()
     , normalization(Normalization::None)
     , scaling(0.f)
     , valid(false) {}
-    
+
 GLFormats::GLFormat::GLFormat(GLint f, GLint i, GLenum t, GLuint c, GLuint s, Normalization n,
                               GLfloat sc)
     : format(f)
@@ -130,7 +130,7 @@ const GLFormats::GLFormat& GLFormats::getGLFormat(DataFormatId id) const {
                               IvwContext);
     }
     return glFormatArray_[static_cast<size_t>(id)];
-};
+}
 
 const GLFormats::GLFormat& GLFormats::get(DataFormatId id) {
     static const GLFormats glFormats = GLFormats();
@@ -138,15 +138,11 @@ const GLFormats::GLFormat& GLFormats::get(DataFormatId id) {
 }
 
 bool operator==(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b) {
-    return  a.format    == b.format   && a.internalFormat == b.internalFormat &&
-            a.type      == b.type     && a.channels       == b.channels &&
-            a.typeSize  == b.typeSize && a.normalization  == b.normalization &&
-            a.scaling   == b.scaling  && a.valid          == b.valid;
+    return a.format == b.format && a.internalFormat == b.internalFormat && a.type == b.type &&
+           a.channels == b.channels && a.typeSize == b.typeSize &&
+           a.normalization == b.normalization && a.scaling == b.scaling && a.valid == b.valid;
 }
 
-bool operator!=(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b) {
-    return !(a == b);
-}
-
+bool operator!=(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b) { return !(a == b); }
 
 }  // namespace

@@ -48,10 +48,9 @@ public:
                                             glm::u8 percentageOfAvailableMemory = 100);
 
     virtual void retrieveStaticInfo() = 0;
+
 protected:
     virtual glm::u64 getMemorySizeInBytes(uvec3 dimensions, size_t formatSizeInBytes);
-
-
     virtual void retrieveDynamicInfo() = 0;
 };
 

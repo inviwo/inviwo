@@ -27,45 +27,39 @@
  * 
  *********************************************************************************/
 #include "utils/structs.glsl"
+#include "utils/depth.glsl"
 
+#if defined(ENABLE_ROUND_DEPTH_PROFILE)
 // enable conservative depth writes (supported since GLSL 4.20)
-#if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || defined(GLSL_VERSION_420)
-layout (depth_less) out float gl_FragDepth;
+#   if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || defined(GLSL_VERSION_420)
+        layout (depth_less) out float gl_FragDepth;
+#   endif
 #endif
 
-uniform vec2 screenDim_;
-uniform float antialias_;
-uniform float lineWidth_;
-uniform CameraParameters camera_;
+uniform vec2 screenDim = vec2(512, 512);
+uniform float antialiasing = 0.5; // width of antialised edged [pixel]
+uniform float lineWidth = 2.0; // line width [pixel]
 
-in float segmentLength_; // length of the current line segment in screen space
-in float objectLength_;  // length of line segment in world space
-in vec2 texCoord_;
+// initialize camera matrices with the identity matrix to enable default rendering
+// without any transformation, i.e. all lines in clip space
+uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
+                                    mat4(1), mat4(1), vec3(0), 0, 1);
+
+
+// line stippling
+uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
+
+in float segmentLength_; // total length of the current line segment in screen space
+in float lineLengthWorld_; // total length of line segment in world space
+in float distanceWorld_; // distance in world coords to segment start
+in vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
 in vec4 color_;
-
-float reconstructDepth(float z) {
-    float Zn = camera_.nearPlane;
-    float Zf = camera_.farPlane;
-
-    //  Z = Zn*Zf / (Zf - z*(Zf - Zn))
-    return Zn*Zf / (Zf - z*(Zf - Zn));
-}
-
-float computeDepth(float z) {
-    float Zn = camera_.nearPlane;
-    float Zf = camera_.farPlane;
-    // compute depth in [-1,1]
-    //float depth = (Zf + Zn) / (2.0 * (Zf - Zn)) - (Zf * Zn) / (z * (Zf - Zn));
-    float depth = (Zf + Zn) / (Zf - Zn) + (-2.0 * Zf * Zn) / (z * (Zf - Zn));
-    return (depth + 1.0) * 0.5;
-    return depth;
-}
+flat in vec4 pickColor_;
 
 void main() {
     vec4 color = color_;
-    vec2 screenDim = screenDim_;
 
-    float linewidthHalf = lineWidth_ * 0.5;
+    float linewidthHalf = lineWidth * 0.5;
 
     // make joins round by using the texture coords
     float distance = abs(texCoord_.y);
@@ -76,41 +70,55 @@ void main() {
         distance = length(vec2(texCoord_.x - segmentLength_, texCoord_.y)); 
     }
 
-    float d = distance * screenDim.x * 0.5 - linewidthHalf + antialias_;
+    float d = distance - linewidthHalf + antialiasing;
 
-
-    // default color
-    //color.rgb = vec3(0.7, 0.0, 0.0);
     // apply pseudo lighting
-    color.rgb *= cos(distance * screenDim.x * 0.5 / (linewidthHalf + antialias_) * 1.2);
+#if defined(ENABLE_PSEUDO_LIGHTING)
+    color.rgb *= cos(distance / (linewidthHalf + antialiasing) * 1.2);
+#endif
 
     float alpha = 1.0;
+
     // line stippling
-    // if (int(objectLength_ * 5.0) % 4 == 0) {
-    //    alpha = 0.0; 
-    //    d = -0.2;      
-    // }
+#if defined(ENABLE_STIPPLING)
+
+#if STIPPLE_MODE == 2
+    // in world space
+    float v = (distanceWorld_ * stippling.worldScale);
+#else
+    // in screen space
+    float v = (texCoord_.x + stippling.offset) / stippling.length;    
+#endif // STIPPLE_MODE
+
+    float t = fract(v) * (stippling.length) / stippling.spacing;
+    if ((t > 0.0) && (t < 1.0)) {
+        // renormalize t with respect to stippling length
+        t = min(t, 1.0-t) * (stippling.spacing) * 0.5;
+        d = max(d, t);
+    }
+#endif // ENABLE_STIPPLING
+
+    // antialiasing around the edges
     if( d > 0) {
-        // apply antialising by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
-        d /= antialias_;
+        // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
+        d /= antialiasing;
         alpha = exp(-d*d);
     }
     // prevent fragments with low alpha from being rendered
-    if (alpha < 0.2) discard;
+    if (alpha < 0.05) discard;
 
+    color.rgb *= alpha;
     color.a = alpha;
-
     FragData0 = color;
-    //FragData0 = vec4(1, 0, 0, alpha);
-    //FragData0 = vec4(abs(texCoord_) * vec2(0.5, 10.0), 0.0, 1.0);
-    //FragData0 = vec4(vec3(distance), 1.0);
-    
-    //FragData0 = vec4(vec3(texCoord_.x), 1.0);
-    //FragData0 = vec4(vec3(objectLength_ * 0.1), 1.0);
 
-    // correct depth
-    float depth = reconstructDepth(gl_FragCoord.z);
-    float maxDist = (linewidthHalf + antialias_) / screenDim.x * 2.0;
+#if defined(ENABLE_ROUND_DEPTH_PROFILE)
+    // correct depth for a round profile, i.e. tube like appearance
+    const float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
+    const float maxDist = (linewidthHalf + antialiasing);
     // assume circular profile of line
-    gl_FragDepth = computeDepth(depth - cos(distance/maxDist) * maxDist);    
+    gl_FragDepth = convertDepthViewToScreen(camera, 
+        depth - cos(distance/maxDist) * maxDist / screenDim.x*0.5);
+#endif // ENABLE_ROUND_DEPTH_PROFILE
+
+    PickingData = pickColor_;
 }

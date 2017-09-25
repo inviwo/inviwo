@@ -66,7 +66,7 @@ public:
         Element(Element&&) = default;
         Element& operator=(Element&&) = default;
 
-        Element(Element* parent, const std::string& name, const std::string content = "",
+        Element(const std::string& name, const std::string content = "",
                 const std::unordered_map<std::string, std::string>& attributes = {});
 
         const std::string& name() const;
@@ -78,7 +78,6 @@ public:
         std::string& content();
 
     private:
-        Element* parent_;
         std::vector<std::unique_ptr<Element>> children_;
         std::string name_;
         std::unordered_map<std::string, std::string> attributes_;
@@ -224,7 +223,7 @@ std::string convert(T&& val) {
 }
 template <typename T,
           typename std::enable_if<!util::is_stream_insertable<T>::value, std::size_t>::type = 0>
-std::string convert(T&& val) {
+std::string convert(T&& /*val*/) {
     return "???";
 }
 }

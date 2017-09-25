@@ -42,28 +42,19 @@ namespace inviwo {
 
 TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
     TransferFunctionProperty* property)
-    : PropertyWidgetQt(property) {
-    generateWidget();
-}
+    : PropertyWidgetQt(property)
+    , label_{new EditableLabelQt(this, property_)}
+    , btnOpenTF_{new TFPushButton(static_cast<TransferFunctionProperty*>(property_), this)} {
 
-TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
-    if(transferFunctionDialog_) transferFunctionDialog_->hide();
-    delete transferFunctionDialog_;
-    delete btnOpenTF_;
-}
-
-void TransferFunctionPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
-    btnOpenTF_ = new TFPushButton(static_cast<TransferFunctionProperty*>(property_), this);
-    label_ = new EditableLabelQt(this, property_);
-
     hLayout->addWidget(label_);
 
-    connect(btnOpenTF_, &TFPushButton::clicked, [this](){
-        getEditorWidget()->setVisibility(true);
+    connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
+        auto tfwidget = getEditorWidget();
+        tfwidget->setVisibility(!tfwidget->isVisible());
     });
 
     btnOpenTF_->setEnabled(!property_->getReadOnly());
@@ -77,7 +68,7 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
         widget->setLayout(vLayout);
         vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->setSpacing(0);
-        
+
         vLayout->addWidget(btnOpenTF_);
         hLayout->addWidget(widget);
     }
@@ -90,6 +81,10 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
     setSizePolicy(sp);
 }
 
+TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
+    if (transferFunctionDialog_) transferFunctionDialog_->hide();
+}
+
 void TransferFunctionPropertyWidgetQt::updateFromProperty() {
     btnOpenTF_->updateFromProperty();
 }
@@ -97,10 +92,10 @@ void TransferFunctionPropertyWidgetQt::updateFromProperty() {
 TransferFunctionPropertyDialog* TransferFunctionPropertyWidgetQt::getEditorWidget() const {
     if (!transferFunctionDialog_) {
         auto mainWindow = utilqt::getApplicationMainWindow();
-        transferFunctionDialog_ = new TransferFunctionPropertyDialog(
+        transferFunctionDialog_ = util::make_unique<TransferFunctionPropertyDialog>(
             static_cast<TransferFunctionProperty*>(property_), mainWindow);
     }
-    return transferFunctionDialog_;
+    return transferFunctionDialog_.get();
 }
 
 bool TransferFunctionPropertyWidgetQt::hasEditorWidget() const {
@@ -116,7 +111,7 @@ void TFPushButton::updateFromProperty() {
 
     TransferFunction& transFunc = tfProperty_->get();
     QVector<QGradientStop> gradientStops;
-    for (int i = 0; i < transFunc.getNumPoints(); i++) {
+    for (size_t i = 0; i < transFunc.getNumPoints(); i++) {
         TransferFunctionDataPoint* curPoint = transFunc.getPoint(i);
         vec4 curColor = curPoint->getRGBA();
 
@@ -125,7 +120,7 @@ void TFPushButton::updateFromProperty() {
         curColor.a = 1.0f - factor * factor;
 
         gradientStops.append(
-            QGradientStop(curPoint->getPos().x,
+            QGradientStop(curPoint->getPos(),
                           QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
     }
 

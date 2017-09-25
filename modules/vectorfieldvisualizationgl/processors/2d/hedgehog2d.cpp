@@ -50,9 +50,8 @@ HedgeHog2D::HedgeHog2D()
     , glyphScale_("glyphScale", "Glyph Scale", 0.9f, 0.0f, 2.0f)
     , numberOfGlyphs_("numberOfGlyphs", "Number of Glyphs", ivec2(30), ivec2(1), ivec2(1000))
     , jitter_("jitter", "Jitter", false)
-    , color_("color", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
-
     , glyphType_("glyphType", "Glyph Type")
+    , color_("color", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
 
     , arrowSettings_("arrowSettings", "Arrow Settings")
     , arrowBaseWidth_("baseWidth_", "Base Width", 0.1f, 0.001f, 1.0f, 0.001f)
@@ -121,8 +120,8 @@ void HedgeHog2D::process() {
                 jx = jitterx(mt_);
                 jy = jittery(mt_);
             }
-            auto v = sampler.sample(x + jx + dx / 2, y + jy + dy / 2).xy();
-            auto t = glyphType_.get();
+            const dvec3 v{sampler.sample(x + jx + dx / 2, y + jy + dy / 2)};
+            const auto t = glyphType_.get();
             switch (t) {
                 case GlyphType::Arrow:
                     createArrow(*(mesh.get()), *indexTriangles, x + jx, y + jy, dx, dy, v);
@@ -143,7 +142,7 @@ void HedgeHog2D::adjustVisibilites() {
     quiverSettings_.setVisible(glyph == GlyphType::Quiver);
 }
 
-inviwo::vec4 HedgeHog2D::getColor(const dvec2 &velocity) { return color_; }
+vec4 HedgeHog2D::getColor(const dvec2 &/*velocity*/) { return color_; }
 
 void HedgeHog2D::createArrow(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx,
                              float dy, const dvec2 &velocity) {

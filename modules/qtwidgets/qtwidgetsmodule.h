@@ -39,9 +39,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
 public:
     QtWidgetsModule(InviwoApplication* app);
-    virtual ~QtWidgetsModule() {}
-    
-    virtual std::string getPath() const override;
+    virtual ~QtWidgetsModule() = default;
 };
 
 }  // namespace

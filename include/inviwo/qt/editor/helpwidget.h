@@ -34,51 +34,34 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QTextBrowser>
-#include <QEvent>
-#include <warn/pop>
 class QObject;
 class QHelpEngineCore;
+class QResizeEvent;
 
 namespace inviwo {
 
+class QCHFileObserver;
+class HelpBrowser;
+
+
 class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     HelpWidget(InviwoMainWindow* parent);
-    virtual ~HelpWidget() {}
+    virtual ~HelpWidget();
+    HelpWidget(const HelpWidget&) = delete;
+    HelpWidget& operator=(const HelpWidget&) = delete;
 
     void showDocForClassName(std::string className);
-
-protected slots:
-    void setupFinished();
-
+    void registerQCHFiles();
 protected:
-    virtual void resizeEvent(QResizeEvent * event) override;
+    virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
-    class HelpBrowser : public QTextBrowser {
-    public:
-        HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine);
-        virtual ~HelpBrowser();
-
-    protected:
-        QVariant loadResource(int type, const QUrl& name);
-
-    private:
-        HelpWidget* helpwidget_;
-        QHelpEngineCore* helpEngine_;
-    };
-
     InviwoMainWindow* mainwindow_;
-    HelpBrowser* helpBrowser_;
     QHelpEngineCore* helpEngine_;
-    std::string current_ = "org.inviwo.Background";
+    HelpBrowser* helpBrowser_;
+    std::string current_;
+    std::unique_ptr<QCHFileObserver> fileObserver_;
 };
 
 }  // namespace

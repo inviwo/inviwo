@@ -1,7 +1,7 @@
 #Inviwo Python script 
-import inviwo 
-import inviwoqt 
+import inviwopy 
+import inviwopy.qt 
 
-help('inviwo') 
-help('inviwoqt') 
+help('inviwopy') 
+help('inviwopy.qt') 
  

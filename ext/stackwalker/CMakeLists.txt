@@ -19,12 +19,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create library
-
-IF(${SHARED_LIBS})
-    add_library(stackwalker SHARED ${SOURCE_FILES} ${HEADER_FILES})
-ELSE()
-    add_library(stackwalker STATIC ${SOURCE_FILES} ${HEADER_FILES})
-ENDIF()
+add_library(stackwalker ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Define defintions
@@ -36,6 +31,6 @@ ivw_folder(stackwalker ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(core)
+ivw_default_install_comp_targets(core stackwalker)
 ivw_make_package(stackwalker stackwalker)
 ivw_suppress_compiler_warnings(stackwalker)

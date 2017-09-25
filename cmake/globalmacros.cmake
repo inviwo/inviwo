@@ -39,7 +39,7 @@
 # _cpackName -> modules or qt_modules if QT
 # _pchDisabledForThisModule -> FALSE 
 macro(ivw_project project_name)
-    project(${project_name})
+    project(${project_name} ${ARGN})
     set(_projectName ${project_name})
     set(_allLibsDir "")
     set(_allDefinitions "")
@@ -158,7 +158,7 @@ function(ivw_generate_module_paths_header)
         if(IS_DIRECTORY ${dir})
             list(APPEND dirs ${dir})
         else()
-            ivw_message("Path to external module is not a directory (${dir})")
+            message("Path to external module is not a directory (${dir})")
         endif()
     endforeach()
 
@@ -290,17 +290,17 @@ function(ivw_private_is_valid_module_dir path dir retval)
                     set(${retval} TRUE PARENT_SCOPE)
                     return()
                 else()
-                    ivw_message(WARNING "Found invalid module \"${dir}\" at \"${module_path}\". "
+                    message("Found invalid module \"${dir}\" at \"${module_path}\". "
                         "ivw_module called with \"${name}\" which is different from the directory \"${dir}\""
                         "They should be the same except for casing.")
                 endif()
             else()
-                ivw_message(WARNING "Found invalid module \"${dir}\" at \"${module_path}\". "
+                message("Found invalid module \"${dir}\" at \"${module_path}\". "
                     "CMakeLists.txt is missing")
             endif()
         else()
-            ivw_message(WARNING "Found invalid module dir \"${dir}\" at \"${module_path}\". "
-                    "Dir names should be all lowercase and without spaces")
+            message("Found invalid module dir \"${dir}\" at \"${module_path}\". "
+                "Dir names should be all lowercase and without spaces")
         endif()
     endif()
     set(${retval} FALSE PARENT_SCOPE)
@@ -324,7 +324,7 @@ function(ivw_register_modules retval)
             ivw_dir_to_mod_dep(mod ${dir})
             list(FIND modules ${mod} found)
             if(NOT ${found} EQUAL -1)
-                ivw_message(WARNING "Module with name ${dir} already added at ${${mod}_path}")
+                message("Module with name ${dir} already added at ${${mod}_path}")
                 continue()
             endif()
             ivw_private_is_valid_module_dir(${module_path} ${dir} valid)
@@ -474,7 +474,7 @@ function(ivw_register_modules retval)
             foreach(dep ${${mod}_ivw_dependencies})
                 if(NOT ${${dep}_opt})
                     ivw_add_module_option_to_cache(${${dep}_dir} ON TRUE)
-                    ivw_message(STATUS "${${dep}_opt} was set to build, "
+                    message(STATUS "${${dep}_opt} was set to build, "
                         "due to dependency towards ${${mod}_opt}")
                 endif()
             endforeach()
@@ -496,8 +496,7 @@ function(ivw_register_modules retval)
         if(${${mod}_opt})
             add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
             if(NOT "${${mod}_class}" STREQUAL "${IVW_MODULE_CLASS}")
-                ivw_message(WARNING 
-                    "Missmatched module class names \"${${mod}_class}\" vs \"${IVW_MODULE_CLASS}\"")
+                message("Missmatched module class names \"${${mod}_class}\" vs \"${IVW_MODULE_CLASS}\"")
             endif()
             list(APPEND ivw_module_names ${${mod}_name})
             list(APPEND ivw_module_classes ${${mod}_class})
@@ -519,33 +518,13 @@ function(ivw_register_modules retval)
 endfunction()
 
 #--------------------------------------------------------------------
-# Add all minimal applications in folder
-macro(ivw_add_minimal_applications)
-    file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/minimals ${CMAKE_CURRENT_SOURCE_DIR}/minimals/*)
-    list(REMOVE_ITEM sub-dir .svn)
-    set(sorted_dirs ${sub-dir})
-    foreach(dir ${sub-dir})
-        if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
-            string(TOUPPER ${dir} u_dir)
-            option(IVW_TINY_${u_dir}_APPLICATION "Build Inviwo Tiny ${u_dir} Application" OFF)
-            if(NOT ${u_dir} STREQUAL "QT")
-                ivw_private_build_module_dependency(${u_dir} IVW_TINY_${u_dir}_APPLICATION)
-            endif()
-            if(IVW_TINY_${u_dir}_APPLICATION)
-                add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
-            endif()
-        endif()
-    endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
 # Set module build option to true if the owner is built
-function(ivw_private_build_module_dependency the_module the_owner)
+function(ivw_add_build_module_dependency the_module the_owner)
     ivw_dir_to_mod_prefix(mod_name ${the_module})
     first_case_upper(dir_name_cap ${the_module})
     if(${the_owner} AND NOT ${mod_name})
         ivw_add_module_option_to_cache(${the_module} ON TRUE)
-        ivw_message(STATUS "${mod_name} was set to build, due to dependency towards ${the_owner}")
+        message(STATUS "${mod_name} was set to build, due to dependency towards ${the_owner}")
     endif()
 endfunction()
 
@@ -598,46 +577,61 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-function(ivw_folder project_name folder_name)
-    set_target_properties(${project_name} PROPERTIES FOLDER ${folder_name})
+function(ivw_folder target folder_name)
+    set_target_properties(${target} PROPERTIES FOLDER ${folder_name})
 endfunction()
 
 #--------------------------------------------------------------------
-# Specify console as target
-function(ivw_define_standard_properties project_name)
-    #if(NOT MSVC)
-    #    set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 14)
-    #    set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
-    #endif()
+# Specify standard compile options
+# ivw_define_standard_properties(target1 [target2 ...])
+function(ivw_define_standard_properties)
+    foreach(target ${ARGN})
+        # Specify warnings
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
+            list(APPEND comp_opts "-Wall")
+            list(APPEND comp_opts "-Wextra")
+            list(APPEND comp_opts "-pedantic")
+            list(APPEND comp_opts "-Wno-unused-parameter") # not sure we want to remove them.
+            list(APPEND comp_opts "-Wno-missing-braces")   # http://stackoverflow.com/questions/13905200/is-it-wise-to-ignore-gcc-clangs-wmissing-braces-warning
+            set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
+        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+            get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
+            string(REGEX REPLACE "(^|;)([/-])W[0-9](;|$)" ";" comp_opts "${comp_opts}") # remove any other waning level
+            #list(APPEND comp_opts "/nologo") # Suppress Startup Banner
+            list(APPEND comp_opts "/W4")     # Set default warning level to 4
+            list(APPEND comp_opts "/wd4005") # macro redefinition    https://msdn.microsoft.com/en-us/library/8d10sc3w.aspx
+            list(APPEND comp_opts "/wd4201") # nameless struct/union https://msdn.microsoft.com/en-us/library/c89bw853.aspx
+            list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
+            list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
+            list(APPEND comp_opts "/wd4996") # ignore deprication    https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx
+            list(REMOVE_DUPLICATES comp_opts)
+            set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
+    
+            get_property(comp_defs TARGET ${target} PROPERTY COMPILE_DEFINITIONS)
+            list(APPEND comp_defs "_CRT_SECURE_NO_WARNINGS") # https://msdn.microsoft.com/en-us/library/ms175759.aspx
+            list(REMOVE_DUPLICATES comp_defs)
+            set_property(TARGET ${target} PROPERTY COMPILE_DEFINITIONS ${comp_defs})
+        endif()
 
-    # Specify warnings
-    if(APPLE)
-        #https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_NON_VIRTUAL_DESTRUCTOR YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_FUNCTION YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_VARIABLE YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_RETURN_TYPE YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_PEDANTIC YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SHADOW YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
-        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
-    elseif(MSVC)
-        set_property(TARGET ${project_name} APPEND_STRING PROPERTY 
-            COMPILE_FLAGS "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo /w34061 /w34062 /w34189 /w34263 /w34266 /w34289 /w34296 /wd4251")
-        # /wXN tread warning N as level X, for example /w34061 will treat warning 4061 as a level 3 warning
-        # /w34061 # enumerator 'identifier' in a switch of enum 'enumeration' is not explicitly handled by a case label
-        # /w34062 # enumerator 'identifier' in a switch of enum 'enumeration' is not handled
-        # /w34189 # warn for declared but unused variable 
-        # /w34263 # warn for virtual functions that do not override something in base class
-        # /w34266 # warn if no override of function in base class
-        # /w34289 # loop control variable declared in the for-loop is used outside the for-loop scope
-        # /w34296 # expression is always false
-        # /wd4251 # 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2
-    endif()
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            #https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_NON_VIRTUAL_DESTRUCTOR YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_FUNCTION YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_VARIABLE YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_RETURN_TYPE YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_PEDANTIC YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SHADOW YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
+            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
+         endif()
+    endforeach()
 endfunction()
 
 #--------------------------------------------------------------------
@@ -648,50 +642,24 @@ macro(ivw_define_standard_definitions project_name target_name)
     target_compile_definitions(${target_name} PRIVATE -D${u_project_name}_EXPORTS)
     target_compile_definitions(${target_name} PRIVATE -DGLM_EXPORTS)
 
-    if(WIN32)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         # Large memory support
-        if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
-            if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
-            endif()
-            if(NOT CMAKE_SHARED_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
-            endif()
-            if(NOT CMAKE_MODULE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-                set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-            endif()
+        if(CMAKE_SIZEOF_VOID_P MATCHES 4)
+            set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " /LARGEADDRESSAWARE") 
         endif()
-    else()
-        target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
-    endif()
-        
-    if(MSVC)
         target_compile_definitions(${target_name} PRIVATE -DUNICODE)
         target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS 
                                                           -D_CRT_SECURE_NO_DEPRECATE)
+    else()
+        target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
     endif()
 
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 endmacro()
 
 #--------------------------------------------------------------------
-# Add definition
-macro(ivw_add_definition def)
-    add_definitions(-D${def})
-    list(APPEND _allDefinitions -D${def})
-endmacro()
-
-#--------------------------------------------------------------------
-# Add definition to list only 
-macro(ivw_add_definition_to_list def)
-    list(APPEND _allDefinitions -D${def})
-endmacro()
-
-#--------------------------------------------------------------------
 # Add folder to module pack
 macro(ivw_add_to_module_pack folder)
-    set(IVW_SHADER_INCLUDE_PATHS "${IVW_SHADER_INCLUDE_PATHS};${folder}" PARENT_SCOPE)
-    
     if(IVW_PACKAGE_PROJECT)
         get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
         if(APPLE)
@@ -744,38 +712,48 @@ macro(ivw_create_module)
     ivw_define_standard_properties(${${mod}_target})
     
     # Add dependencies
-    target_link_libraries(${${mod}_target} ${_preModuleDependencies})
+    target_link_libraries(${${mod}_target} PUBLIC ${_preModuleDependencies})
 
     # Add dependencies from depends.cmake and InviwoCore
     ivw_add_dependencies_on_target(${${mod}_target} InviwoCore ${${mod}_dependencies})
 
     # Optimize compilation with pre-compilied headers based on inviwo-core
     ivw_compile_optimize_inviwo_core_on_target(${${mod}_target})
-           
+
     # Make package (for other modules to find)
     ivw_make_package(${_packageName} ${${mod}_target})
 
     # Add stuff to the installer
+    ivw_private_install_package(${${mod}_target})
     ivw_private_install_module_dirs()
 
-    ivw_make_unittest_target("${_projectName}" "${${mod}_dependencies}")
+    ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
 endmacro()
 
 #--------------------------------------------------------------------
 # Make package (with configure file etc)
-macro(ivw_make_package package_name project_name)
-    ivw_private_install_package(${project_name})
+macro(ivw_make_package package_name target)
+        # retrieve output name of target, use project name if not set
+    get_target_property(ivw_output_name ${target} OUTPUT_NAME)
+    if(NOT ivw_output_name)
+        set(ivw_output_name ${target})
+    endif()
 
-    list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
+    # retrieve target definitions
+    get_target_property(ivw_target_defs ${target} INTERFACE_COMPILE_DEFINITIONS)
+    if(ivw_target_defs)
+        ivw_prepend(ivw_target_defs "-D" ${ivw_target_defs})
+        list(APPEND _allDefinitions ${ivw_target_defs})
+    endif()
 
     # Set up libraries
     if(WIN32 AND BUILD_SHARED_LIBS)
-        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
+        set(PROJECT_LIBRARIES ${IVW_LIBRARY_DIR}/$<CONFIG>/${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>.lib)
     else()
-       set(PROJECT_LIBRARIES ${project_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
+       set(PROJECT_LIBRARIES ${ivw_output_name}$<$<CONFIG:DEBUG>:${CMAKE_DEBUG_POSTFIX}>)
     endif()
     
-    get_target_property(ivw_allLibs ${project_name} INTERFACE_LINK_LIBRARIES)
+    get_target_property(ivw_allLibs ${target} INTERFACE_LINK_LIBRARIES)
     if(NOT ivw_allLibs)
         set(ivw_allLibs "")
     endif()
@@ -785,11 +763,11 @@ macro(ivw_make_package package_name project_name)
 
     # Set up inlude directories 
     # Should only INTERFACE_INCLUDE_DIRECTORIES but we can't since we use include_directories...
-    get_target_property(ivw_allIncDirs ${project_name} INCLUDE_DIRECTORIES)
+    get_target_property(ivw_allIncDirs ${target} INCLUDE_DIRECTORIES)
     if(NOT ivw_allIncDirs)
         set(ivw_allIncDirs "")
     endif()
-    get_target_property(ivw_allInterfaceIncDirs ${project_name} INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(ivw_allInterfaceIncDirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
     if(ivw_allInterfaceIncDirs)
         list(APPEND ivw_allIncDirs ${ivw_allInterfaceIncDirs})
     endif()
@@ -805,7 +783,7 @@ macro(ivw_make_package package_name project_name)
     set(_allLibsDir ${uniqueLibsDir})
     set(_allDefinitions ${uniqueDefs})
     set(_allLinkFlags ${uniqueLinkFlags})
-    set(_project_name ${project_name})
+    set(_project_name ${target})
   
     configure_file(${IVW_CMAKE_TEMPLATES}/mod_package_template.cmake 
                    ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY)
@@ -815,44 +793,23 @@ endmacro()
 #--------------------------------------------------------------------
 # Install files
 function(ivw_private_install_package project_name)
-   # Add to package
-   if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-        if(WIN32)
-           install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    COMPONENT ${_cpackName})
-        
-        elseif(APPLE)
-            install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION .
-                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                    COMPONENT ${_cpackName})
-        else()
-            install(TARGETS ${project_name}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION bin
-                    ARCHIVE DESTINATION lib
-                    LIBRARY DESTINATION lib
-                    COMPONENT ${_cpackName})
-        endif()
-    endif()
+    ivw_default_install_comp_targets(${_cpackName} ${project_name})
 endfunction()
 
 function(ivw_private_install_module_dirs)
     if(IVW_PACKAGE_PROJECT) 
-        get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-        foreach(folder ${CMAKE_CURRENT_SOURCE_DIR}/data)
-            if(EXISTS ${folder})
+        get_filename_component(module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        foreach(folder data docs)
+            set(dir ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
+            if(EXISTS ${dir})
                 if(APPLE)
-                    install(DIRECTORY ${folder}
-                             DESTINATION Inviwo.app/Contents/Resources/modules/${FOLDER_NAME}
-                             COMPONENT ${_cpackName})
+                    install(DIRECTORY ${dir}
+                            DESTINATION Inviwo.app/Contents/Resources/modules/${module_name}
+                            COMPONENT ${_cpackName})
                 else()
-                    install(DIRECTORY ${folder}
-                             DESTINATION modules/${FOLDER_NAME}
-                             COMPONENT ${_cpackName})
+                    install(DIRECTORY ${dir}
+                            DESTINATION modules/${module_name}
+                            COMPONENT ${_cpackName})
                 endif()
             endif()
         endforeach()
@@ -866,7 +823,9 @@ macro(ivw_include_directories)
 endmacro()
 
 #--------------------------------------------------------------------
-# Add includes
+# Add includes, should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
 macro(ivw_link_directories)
     # Set includes
     link_directories("${ARGN}")
@@ -875,16 +834,41 @@ macro(ivw_link_directories)
 endmacro()
 
 #--------------------------------------------------------------------
-# Add includes
+# Add includes, should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
 macro(ivw_add_link_flags)
     # Set link flags
-    set_target_properties(${project_name} PROPERTIES LINK_FLAGS "${ARGN}")
+    get_property(flags TARGET ${_projectName} PROPERTY LINK_FLAGS)
+    list(APPEND flags "${ARGN}")
+    set_property(TARGET ${_projectName} PROPERTY LINK_FLAGS ${flags})
+
     # Append includes to project list
     list(APPEND _allLinkFlags "\"${ARGN}\"")
 endmacro()
 
 #--------------------------------------------------------------------
+# Add definition, should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
+macro(ivw_add_definition def)
+    add_definitions(-D${def})
+    list(APPEND _allDefinitions -D${def})
+endmacro()
+
+#--------------------------------------------------------------------
+# Add definition to list only , should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
+macro(ivw_add_definition_to_list def)
+    list(APPEND _allDefinitions -D${def})
+endmacro()
+
+#--------------------------------------------------------------------
 # adds link_directories for the supplies dependencies
+# should be called inside a module 
+# after ivw_module has been called
+# and befor ive_create_module
 macro(ivw_add_dependency_directories)
     foreach (package ${ARGN})
         # Locate libraries
@@ -967,7 +951,7 @@ macro(ivw_add_dependencies_on_target target)
         endif()
     
         # Set includes and append to list (Only add new include dirs)
-        get_target_property(ivw_already_added_incdirs ${target} INCLUDE_DIRECTORIES)
+        get_target_property(ivw_already_added_incdirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
         if(NOT ivw_already_added_incdirs)
             set(ivw_already_added_incdirs "")
         endif()
@@ -989,34 +973,17 @@ macro(ivw_add_dependencies_on_target target)
         endif(BUILD_${u_package})
       
         # Link library (Only link new libs)
-        get_target_property(ivw_already_added_libs ${target} LINK_LIBRARIES)
+        get_target_property(ivw_already_added_libs ${target} INTERFACE_LINK_LIBRARIES)
         if(NOT ivw_already_added_libs)
             set(ivw_already_added_libs "")
         endif()
         remove_from_list(ivw_new_libs "${${u_package}_LIBRARIES}" ${ivw_already_added_libs})
-        target_link_libraries(${target} ${ivw_new_libs})
+        target_link_libraries(${target} PUBLIC ${ivw_new_libs})
       
         # Link flags
         if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
             set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " ${${u_package}_LINK_FLAGS}")
         endif()
-      
-        # Qt5
-        set(Qt5DependLibs "")
-        foreach (package_lib ${${u_package}_LIBRARIES})
-            string(LENGTH "${package_lib}" package_lib_length)
-            if(${package_lib_length} GREATER 5)
-                string(SUBSTRING "${package_lib}" 0 5 package_lib_start)
-                string(SUBSTRING "${package_lib}" 5 -1 package_lib_end)
-                if(${package_lib_start} STREQUAL "Qt5::")
-                     list(APPEND Qt5DependLibs ${package_lib_end})
-                endif()
-            endif()
-        endforeach()
-        remove_duplicates(uniqueQt5DependLibs ${Qt5DependLibs})
-        foreach (uniqueQt5Lib ${uniqueQt5DependLibs})
-           qt5_use_modules(${target} ${uniqueQt5Lib})
-        endforeach()
     endforeach()
 endmacro()
 
@@ -1049,40 +1016,42 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Adds special qt dependency and includes package variables to the project
-macro(ivw_qt_add_to_install qtarget ivw_comp)
-    if(IVW_PACKAGE_PROJECT)
+macro(ivw_qt_add_to_install ivw_comp)
+    foreach(qtarget ${ARGN})
         find_package(${qtarget} QUIET REQUIRED)
-        if(${qtarget}_FOUND)
-            if(WIN32)
-                set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
-                install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
-                        DESTINATION bin 
-                        COMPONENT ${ivw_comp} 
-                        CONFIGURATIONS Debug)
-                install(FILES ${QTARGET_DIR}/${qtarget}.dll 
-                        DESTINATION bin 
-                        COMPONENT ${ivw_comp} 
-                        CONFIGURATIONS Release)
-                foreach(plugin ${${qtarget}_PLUGINS})
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} PATH)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION bin/${_dirname} 
-                            COMPONENT ${ivw_comp})
-                endforeach()
-            elseif(APPLE)
-                foreach(plugin ${${qtarget}_PLUGINS})
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} PATH)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
-                            COMPONENT ${ivw_comp})
-                endforeach()
+        if(IVW_PACKAGE_PROJECT)
+            if(${qtarget}_FOUND)
+                if(WIN32)
+                    set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
+                    install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
+                            DESTINATION bin 
+                            COMPONENT ${ivw_comp} 
+                            CONFIGURATIONS Debug)
+                    install(FILES ${QTARGET_DIR}/${qtarget}.dll 
+                            DESTINATION bin 
+                            COMPONENT ${ivw_comp} 
+                            CONFIGURATIONS Release)
+                    foreach(plugin ${${qtarget}_PLUGINS})
+                        get_target_property(_loc ${plugin} LOCATION)
+                        get_filename_component(_path ${_loc} PATH)
+                        get_filename_component(_dirname ${_path} NAME)
+                        install(FILES ${_loc} 
+                                DESTINATION bin/${_dirname} 
+                                COMPONENT ${ivw_comp})
+                    endforeach()
+                elseif(APPLE)
+                    foreach(plugin ${${qtarget}_PLUGINS})
+                        get_target_property(_loc ${plugin} LOCATION)
+                        get_filename_component(_path ${_loc} PATH)
+                        get_filename_component(_dirname ${_path} NAME)
+                        install(FILES ${_loc} 
+                                DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
+                                COMPONENT ${ivw_comp})
+                    endforeach()
+                endif()
             endif()
         endif()
-    endif()
+    endforeach()
 endmacro()
 
 #-------------------------------------------------------------------#
@@ -1159,16 +1128,33 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Suppres all compiler warnings
-macro(ivw_suppress_compiler_warnings target)
-    if(CMAKE_COMPILER_IS_GNUCC)
-        set_target_properties(${target} PROPERTIES COMPILE_FLAGS -w)
-    elseif(APPLE)
-        set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
-    elseif(WIN32)
-        set_target_properties(${target} PROPERTIES COMPILE_FLAGS "/W0 /D_CRT_SECURE_NO_WARNINGS")
-        set_target_properties(${target} PROPERTIES LINK_FLAGS "/IGNORE:4006")
-    endif()
-endmacro()
+# ivw_suppress_compiler_warnings(target1 [target2 ...])
+function(ivw_suppress_compiler_warnings)
+    foreach(target ${ARGN})
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            set_property(TARGET ${target} APPEND_STRING PROPERTY COMPILE_FLAGS -w)
 
+        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+            get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
+            string(REGEX REPLACE "(^|;)([/-])W[0-9](;|$)" ";" comp_opts "${comp_opts}")
+            list(APPEND comp_opts "/W0")
+            list(REMOVE_DUPLICATES comp_opts)
+            set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
+    
+            get_property(comp_defs TARGET ${target} PROPERTY COMPILE_DEFINITIONS)
+            list(APPEND comp_defs "_CRT_SECURE_NO_WARNINGS")
+            list(REMOVE_DUPLICATES comp_defs)
+            set_property(TARGET ${target} PROPERTY COMPILE_DEFINITIONS ${comp_defs})
+            
+            set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " /IGNORE:4006")
+        endif()
+
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
+        endif()
+    endforeach()
+endfunction()
 
 

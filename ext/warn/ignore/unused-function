@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,25 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#if !defined(IVW_WARN_PUSH_)
-# error "`warn/ignore/unused-function` used without `warn/push`"
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/unused-function` used without `warn/push`"
 #endif
 
-#if defined(IVW_WARN_PUSH_UNUSED_FUNCTION_)
-# error "`warn/ignore/unused-function` already included"
-#else
-# define IVW_WARN_UNUSED_FUNCTION_
+#if defined(WARN_IGNORE_UNUSED_FUNCTION)
+#   error "`warn/ignore/unused-function` already included"
 #endif
 
-#if (__clang__)
-# if __has_warning("-Wunused-function")
-#  pragma clang diagnostic ignored "-Wunused-function"
-# endif
-#endif
+#define WARN_IGNORE_UNUSED_FUNCTION
 
-#if (__GNUC__)
-# pragma GCC diagnostic ignored "-Wunused-function"
+#if defined(__clang__)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 2)
+#       if __has_warning("-Wunused-function")
+#           pragma clang diagnostic ignored "-Wunused-function"
+#       endif
+#   endif
+#elif defined(__GNUC__)
+#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ > 4)
+#       pragma GCC diagnostic ignored "-Wunused-function"
+#   endif
+#elif defined(_MSC_VER)
+//  Not available
 #endif

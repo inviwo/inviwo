@@ -34,40 +34,45 @@
 
 namespace inviwo {
 
-RunningImageMeanAndStandardDeviationCL::RunningImageMeanAndStandardDeviationCL(const uvec2& layerDimension, const size2_t& workgroupSize)
-    : pingPongIndex_(0)
-    , workGroupSize_(workgroupSize)
-    , kernel_(nullptr) {
+RunningImageMeanAndStandardDeviationCL::RunningImageMeanAndStandardDeviationCL(
+    const uvec2& layerDimension, const size2_t& workgroupSize)
+    : pingPongIndex_(0), workGroupSize_(workgroupSize), kernel_(nullptr) {
     standardDeviation_[0] = Layer(layerDimension, DataVec4Float32::get());
     standardDeviation_[1] = Layer(layerDimension, DataVec4Float32::get());
     mean_[0] = Layer(layerDimension, DataVec4Float32::get());
     mean_[1] = Layer(layerDimension, DataVec4Float32::get());
-    kernel_ = addKernel("statistics/runningmeanandstandarddeviationkernel.cl", "runningMeanAndStandardDeviationKernel");
+    kernel_ = addKernel("statistics/runningmeanandstandarddeviationkernel.cl",
+                        "runningMeanAndStandardDeviationKernel");
 }
 
-bool RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(const Layer* newSamples, int iteration, Layer*& outMean, Layer*& outStandardDeviation, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents, cl::Event *event) {
+bool RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(
+    const Layer* newSamples, int iteration, Layer*& outMean, Layer*& outStandardDeviation,
+    bool useGLSharing, const VECTOR_CLASS<cl::Event>* waitForEvents, cl::Event* event) {
     if (kernel_ == nullptr) {
         return false;
     }
-    if (glm::any(glm::notEqual(newSamples->getDimensions(), standardDeviation_[0].getDimensions()))) {
+    if (glm::any(
+            glm::notEqual(newSamples->getDimensions(), standardDeviation_[0].getDimensions()))) {
         standardDeviation_[0].setDimensions(newSamples->getDimensions());
         standardDeviation_[1].setDimensions(newSamples->getDimensions());
         mean_[0].setDimensions(newSamples->getDimensions());
         mean_[1].setDimensions(newSamples->getDimensions());
     }
 
-    //IVW_OPENCL_PROFILING(profilingEvent, "")
+    // IVW_OPENCL_PROFILING(profilingEvent, "")
     int prevStdId = pingPongIndex_;
     int nextStdId = (pingPongIndex_ + 1) % 2;
     try {
         if (useGLSharing) {
             SyncCLGL glSync;
-            
+
             const LayerCLGL* samples = newSamples->getRepresentation<LayerCLGL>();
             LayerCLGL* prevMeanCL = mean_[prevStdId].getEditableRepresentation<LayerCLGL>();
             LayerCLGL* nextMeanCL = mean_[nextStdId].getEditableRepresentation<LayerCLGL>();
-            LayerCLGL* prevStandardDeviation = standardDeviation_[prevStdId].getEditableRepresentation<LayerCLGL>();
-            LayerCLGL* nextStandardDeviation = standardDeviation_[nextStdId].getEditableRepresentation<LayerCLGL>();
+            LayerCLGL* prevStandardDeviation =
+                standardDeviation_[prevStdId].getEditableRepresentation<LayerCLGL>();
+            LayerCLGL* nextStandardDeviation =
+                standardDeviation_[nextStdId].getEditableRepresentation<LayerCLGL>();
 
             // Acquire shared representations before using them in OpenGL
             // The SyncCLGL object will take care of synchronization between OpenGL and OpenCL
@@ -78,14 +83,20 @@ bool RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(con
             glSync.addToAquireGLObjectList(nextStandardDeviation);
 
             glSync.aquireAllObjects();
-            computeMeanAndStandardDeviation(newSamples->getDimensions(), samples, iteration, prevMeanCL, nextMeanCL, prevStandardDeviation, nextStandardDeviation, workGroupSize_, waitForEvents, event);
+            computeMeanAndStandardDeviation(
+                newSamples->getDimensions(), samples, iteration, prevMeanCL, nextMeanCL,
+                prevStandardDeviation, nextStandardDeviation, workGroupSize_, waitForEvents, event);
         } else {
             LayerCL* prevMeanCL = mean_[prevStdId].getEditableRepresentation<LayerCL>();
             LayerCL* nextMeanCL = mean_[nextStdId].getEditableRepresentation<LayerCL>();
             const LayerCL* samples = newSamples->getRepresentation<LayerCL>();
-            LayerCL* prevStandardDeviation = standardDeviation_[prevStdId].getEditableRepresentation<LayerCL>();
-            LayerCL* nextStandardDeviation = standardDeviation_[nextStdId].getEditableRepresentation<LayerCL>();
-            computeMeanAndStandardDeviation(newSamples->getDimensions(), samples, iteration, prevMeanCL, nextMeanCL, prevStandardDeviation, nextStandardDeviation, workGroupSize_, waitForEvents, event);
+            LayerCL* prevStandardDeviation =
+                standardDeviation_[prevStdId].getEditableRepresentation<LayerCL>();
+            LayerCL* nextStandardDeviation =
+                standardDeviation_[nextStdId].getEditableRepresentation<LayerCL>();
+            computeMeanAndStandardDeviation(
+                newSamples->getDimensions(), samples, iteration, prevMeanCL, nextMeanCL,
+                prevStandardDeviation, nextStandardDeviation, workGroupSize_, waitForEvents, event);
         }
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
@@ -98,22 +109,28 @@ bool RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(con
     return true;
 }
 
-void RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* samples, int iteration, const LayerCLBase* prevMean, LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation, LayerCLBase* nextStandardDeviation, const size2_t& workGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents, cl::Event *event) {
-    
-    
-    size_t workGroupSizeX = static_cast<size_t>(workGroupSize.x); size_t workGroupSizeY = static_cast<size_t>(workGroupSize.y);
+void RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(
+    const uvec2& nSamples, const LayerCLBase* samples, int iteration, const LayerCLBase* prevMean,
+    LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation,
+    LayerCLBase* nextStandardDeviation, const size2_t& workGroupSize,
+    const VECTOR_CLASS<cl::Event>* waitForEvents, cl::Event* event) {
+
+    size_t workGroupSizeX = static_cast<size_t>(workGroupSize.x);
+    size_t workGroupSizeY = static_cast<size_t>(workGroupSize.y);
     size_t globalWorkSizeX = getGlobalWorkGroupSize(nSamples.x, workGroupSizeX);
     size_t globalWorkSizeY = getGlobalWorkGroupSize(nSamples.y, workGroupSizeY);
 
     int argIndex = 0;
     kernel_->setArg(argIndex++, nSamples);
     kernel_->setArg(argIndex++, *samples);
-    kernel_->setArg(argIndex++, static_cast<float>(iteration+1));
+    kernel_->setArg(argIndex++, static_cast<float>(iteration + 1));
     kernel_->setArg(argIndex++, *prevMean);
     kernel_->setArg(argIndex++, *nextMean);
     kernel_->setArg(argIndex++, *prevStandardDeviation);
     kernel_->setArg(argIndex++, *nextStandardDeviation);
-    OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, size2_t(globalWorkSizeX, globalWorkSizeY) , size2_t(workGroupSizeX, workGroupSizeY), waitForEvents, event);
+    OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(
+        *kernel_, cl::NullRange, size2_t(globalWorkSizeX, globalWorkSizeY),
+        size2_t(workGroupSizeX, workGroupSizeY), waitForEvents, event);
 }
 
 } // namespace

@@ -257,19 +257,19 @@ std::string deviceInfoToString<std::string>(cl_device_info, const std::string& v
 // they cannot be in a switch statement. Note that neither
 // specialization prints anything yet.cl_context;
 template<> inline
-std::string deviceInfoToString<cl_platform_id>(cl_device_info, const cl_platform_id& value, bool) {  return ""; }
+std::string deviceInfoToString<cl_platform_id>(cl_device_info, const cl_platform_id& /*value*/, bool) {  return ""; }
 template<> inline
-std::string deviceInfoToString<cl_device_id>(cl_device_info, const cl_device_id& value, bool) {  return ""; }
+std::string deviceInfoToString<cl_device_id>(cl_device_info, const cl_device_id& /*value*/, bool) {  return ""; }
 template<> inline
-std::string deviceInfoToString<cl_command_queue>(cl_device_info, const cl_command_queue& value, bool) {  return ""; }
+std::string deviceInfoToString<cl_command_queue>(cl_device_info, const cl_command_queue& /*value*/, bool) {  return ""; }
 template<> inline
-std::string deviceInfoToString<cl_program>(cl_device_info, const cl_program& value, bool) {  return ""; }
+std::string deviceInfoToString<cl_program>(cl_device_info, const cl_program& /*value*/, bool) {  return ""; }
 template<> inline
-std::string deviceInfoToString<cl_kernel>(cl_device_info, const cl_kernel& value, bool) {  return ""; }
+std::string deviceInfoToString<cl_kernel>(cl_device_info, const cl_kernel& /*value*/, bool) {  return ""; }
 template<> inline
-std::string deviceInfoToString<cl_event>(cl_device_info, const cl_event& value, bool) {  return ""; }
+std::string deviceInfoToString<cl_event>(cl_device_info, const cl_event& /*value*/, bool) {  return ""; }
 template<> inline
-std::string deviceInfoToString<cl_sampler>(cl_device_info, const cl_sampler& value, bool) {  return ""; }
+std::string deviceInfoToString<cl_sampler>(cl_device_info, const cl_sampler& /*value*/, bool) {  return ""; }
 
 } // end namespace
 

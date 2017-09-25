@@ -37,7 +37,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
@@ -71,31 +70,35 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API Background : public Processor {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    
-    enum class BlendMode {
-        BackToFront,
-        AlphaMixing
-    };
-
     Background();
     virtual ~Background();
 
     virtual void initializeResources() override;
-
-protected:
     virtual void process() override;
 
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
 private:
-    void switchColors();
+    void updateShaderInputs();
+
+    enum class BlendMode {
+        BackToFront,
+        AlphaMixing
+    };
+    enum class BackgroundStyle {
+        LinearHorizontal,
+        LinearVertical,
+        Uniform,
+        CheckerBoard,
+    };
 
     ImageInport inport_;
     ImageOutport outport_;
 
-    OptionPropertyInt backgroundStyle_;
-    FloatVec4Property color1_;
-    FloatVec4Property color2_;
+    TemplateOptionProperty<BackgroundStyle> backgroundStyle_;
+    FloatVec4Property bgColor1_;
+    FloatVec4Property bgColor2_;
     IntVec2Property checkerBoardSize_;
     ButtonProperty switchColors_;
 

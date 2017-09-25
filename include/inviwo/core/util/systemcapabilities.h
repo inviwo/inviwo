@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/capabilities.h>
+#include <inviwo/core/util/buildinfo.h>
 #include <vector>
 #include <string>
 
@@ -72,16 +73,6 @@ public:
         glm::u64 sharedMem; //In Bytes
         glm::u64 virtualMem; //In Bytes
     };
-    struct BuildInfo {
-        int year = 0;
-        int month = 0;
-        int day = 0;
-        int hour = 0;
-        int minute = 0;
-        int second = 0;
-
-        std::vector<std::pair<std::string, std::string>> githashes;
-    };
 
     SystemCapabilities();
     virtual ~SystemCapabilities();
@@ -100,13 +91,13 @@ public:
     virtual void retrieveDynamicInfo() override;
 
     std::string getBuildDateString() const;
-    const int getBuildTimeYear() const;
-    const int getBuildTimeMonth() const;
-    const int getBuildTimeDay() const;
-    const int getBuildTimeHour() const;
-    const int getBuildTimeMinute() const;
-    const int getBuildTimeSecond() const;
-    const std::size_t getGitNumberOfHashes() const;
+    int getBuildTimeYear() const;
+    int getBuildTimeMonth() const;
+    int getBuildTimeDay() const;
+    int getBuildTimeHour() const;
+    int getBuildTimeMinute() const;
+    int getBuildTimeSecond() const;
+    std::size_t getGitNumberOfHashes() const;
     const std::pair<std::string, std::string>& getGitHash(std::size_t i) const;
 
 private:
@@ -115,14 +106,13 @@ private:
     bool lookupMemoryInfo();
     bool lookupDiskInfo();
     bool lookupProcessMemoryInfo();
-    void readBuildInfoFromIni();
 
     OSInfo infoOS_;
     std::vector<CPUInfo> infoCPUs_;
     MemoryInfo infoRAM_;
     std::vector<DiskInfo> infoDisks_;
     ProcessMemoryInfo infoProcRAM_;
-    BuildInfo buildInfo_;
+    util::BuildInfo buildInfo_;
 
     bool successOSInfo_;
     bool successCPUInfo_;

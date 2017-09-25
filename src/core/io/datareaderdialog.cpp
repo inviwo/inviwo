@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-DataReaderDialog::DataReaderDialog() {};
-DataReaderDialog::~DataReaderDialog() {};
+DataReaderDialog::DataReaderDialog() {}
+DataReaderDialog::~DataReaderDialog() {}
 
 } // namespace

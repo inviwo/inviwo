@@ -39,7 +39,7 @@ namespace inviwo {
 const ProcessorInfo EntryExitPointsCLProcessor::processorInfo_{
     "org.inviwo.EntryExitPointsCL",  // Class identifier
     "Entry Exit Points",             // Display name
-    "Geometry Rendering",            // Category
+    "Mesh Rendering",                // Category
     CodeState::Stable,               // Code state
     Tags::CL,                        // Tags
 };
@@ -90,6 +90,10 @@ void EntryExitPointsCLProcessor::process() {
         mesh.get(), camera_.viewMatrix(), camera_.projectionMatrix(),
         entryPort_.getEditableData()->getColorLayer(), exitPort_.getEditableData()->getColorLayer(),
         useGLSharing_.get());
+}
+
+void EntryExitPointsCLProcessor::onKernelCompiled(const cl::Kernel*) {
+    invalidate(InvalidationLevel::InvalidResources);
 }
 
 }  // namespace

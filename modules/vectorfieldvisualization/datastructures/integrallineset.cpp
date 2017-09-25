@@ -66,4 +66,14 @@ void IntegralLineSet::push_back(IntegralLine &line, size_t idx)
     lines_.push_back(line);
 }
 
+void IntegralLineSet::push_back(const IntegralLine &line) {
+    lines_.emplace_back(line);
+}
+
+void IntegralLineSet::push_back(const IntegralLine &line, size_t idx)
+{
+    IntegralLine copy(line);
+    push_back(copy,idx);
+}
+
 }  // namespace

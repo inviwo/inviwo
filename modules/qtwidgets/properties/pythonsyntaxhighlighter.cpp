@@ -56,7 +56,7 @@ public:
     PythonCommentFormater(const QTextCharFormat& format)
         : format_(format){}
 
-    virtual Result eval(const QString& text, const int& previousBlockState) override {
+    virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
         Result res;
         res.format = &format_;
         auto index = text.indexOf('#');
@@ -75,7 +75,7 @@ private:
 
 class PythonKeywordFormater : public SyntaxFormater {
 public:
-    virtual Result eval(const QString& text, const int& previousBlockState) override {
+    virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
         Result result;
         result.format = &format_;
         std::vector<QRegExp>::iterator reg;

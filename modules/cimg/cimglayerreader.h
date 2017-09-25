@@ -53,7 +53,7 @@ public:
     virtual CImgLayerReader* clone() const override;
     virtual ~CImgLayerReader() = default;
 
-    virtual std::shared_ptr<Layer> readData(const std::string filePath) override;
+    virtual std::shared_ptr<Layer> readData(const std::string& filePath) override;
 };
 
 class IVW_MODULE_CIMG_API CImgLayerRAMLoader : public DiskRepresentationLoader<LayerRepresentation> {

@@ -74,7 +74,7 @@ public:
     void setVisible(bool visibility);
     bool isVisible() const;
     void setDockStatus(PropertyEditorWidgetDockStatus& dockStatus);
-    const PropertyEditorWidgetDockStatus getDockStatus() const;
+    PropertyEditorWidgetDockStatus getDockStatus() const;
 
     void setSticky(bool sticky);
     bool isSticky() const;

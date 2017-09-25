@@ -10,12 +10,14 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dcurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2ddivergence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dmagnitude.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/lic3d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3dcurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3ddivergence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/4d/tmip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/lorenzsystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator3d.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator4d.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -27,12 +29,14 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dcurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2ddivergence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dmagnitude.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/lic3d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3dcurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3ddivergence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/4d/tmip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/lorenzsystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator3d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator4d.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -41,6 +45,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Add shaders
 set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lic2d.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lic3d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lorenzsystem.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamlinesgl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamlinesgl.geom
@@ -52,6 +57,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector3ddivergence.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator2d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator3d.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator4d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tmip.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})

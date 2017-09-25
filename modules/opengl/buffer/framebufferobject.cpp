@@ -444,7 +444,9 @@ bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber, int a
 }
 
 int FrameBufferObject::getAttachmentLocation(GLenum attachmentID) const {
-    if ((attachmentID == GL_DEPTH_ATTACHMENT) || (attachmentID == GL_STENCIL_ATTACHMENT) || (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT)) return 0;
+    if ((attachmentID == GL_DEPTH_ATTACHMENT) || (attachmentID == GL_STENCIL_ATTACHMENT) ||
+        (attachmentID == GL_DEPTH_STENCIL_ATTACHMENT))
+        return 0;
 
     auto it = util::find_if(drawBuffers_, [&](const auto& b) { return b == attachmentID; });
     if (it != drawBuffers_.end()) {
