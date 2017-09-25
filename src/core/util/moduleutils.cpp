@@ -37,13 +37,17 @@ std::string getModulePath(const std::string &identifier, ModulePath pathType) {
     std::string path;
     if (auto m = InviwoApplication::getPtr()->getModuleByIdentifier(identifier)) {
         path = m->getPath(pathType);
-        if (!path.empty()) {
-            path.append("/");
+        if (path.empty() || path == m->getPath()) {
+            // if the result of getPath(pathType) is identical with getPath(), 
+            // i.e. the module path, the specific path does not exist.
+            throw Exception("Could not locate module path for specified path type");
         }
+    } else {
+        throw Exception("Could not locate module");
     }
     return path;
 }
 
-} // namespace module
+}  // namespace module
 
-} // namespace inviwo
+}  // namespace inviwo

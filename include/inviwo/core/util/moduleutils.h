@@ -35,12 +35,13 @@
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
 namespace module {
 
-/** 
+/**
  * \brief return the path for a specific type located within the requested module
  *
  * @param identifier   name of the module
@@ -50,31 +51,30 @@ namespace module {
 IVW_CORE_API std::string getModulePath(const std::string &identifier, ModulePath pathType);
 
 /**
-* \brief return the path for a specific type located within the requested module of type T
-*
-* @param pathType     type of the requested path
-* @return subdirectory of the module matching the type
-*/
+ * \brief return the path for a specific type located within the requested module of type T
+ *
+ * @param pathType     type of the requested path
+ * @return subdirectory of the module matching the type
+ */
 template <typename T>
 std::string getModulePath(ModulePath pathType);
-
-
 
 template <typename T>
 std::string getModulePath(ModulePath pathType) {
     std::string path;
     if (auto m = InviwoApplication::getPtr()->getModuleByType<T>()) {
         path = m->getPath(pathType);
-        if (!path.empty()) {
-            path.append("/");
+        if (path.empty() || path == m->getPath()) {
+            throw Exception("Could not locate module path for specified path type");
         }
+    } else {
+        throw Exception("Could not locate module");
     }
     return path;
 }
 
-} // namespace module
+}  // namespace module
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_MODULEUTILS_H
-
+#endif  // IVW_MODULEUTILS_H
