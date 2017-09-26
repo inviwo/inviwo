@@ -91,7 +91,7 @@ void validateIdentifier(const std::string& identifier, const std::string& type,
     }
 }
 
-std::string util::stripModuleFileNameDecoration(std::string filePath) {
+std::string stripModuleFileNameDecoration(std::string filePath) {
     auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
 #if defined(WIN32)
     auto decoration = std::string("inviwo-module-");

@@ -127,37 +127,6 @@ std::string getExecutablePath() {
     return retVal;
 }
 
-std::string getExecutablePath() {
-    // http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
-#ifdef WIN32
-    char* executablePath;
-    //  Get global variable containing the full path to the executable associated with the process
-    if (_get_pgmptr(&executablePath) != 0) {
-        executablePath = "";
-    }
-#elif __APPLE__
-    // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
-    char executablePath[PATH_MAX];
-    auto pid = getpid();
-    if (proc_pidpath(pid, executablePath, sizeof(executablePath)) <= 0) {
-        // Error retrieving path
-        return "";
-    };
-#else // Linux
-    char executablePath[PATH_MAX];
-    auto size = ::readlink("/proc/self/exe", executablePath, sizeof(executablePath) - 1);
-    if (size != -1) {
-        // readlink does not append a null character to the path
-        executablePath[size] = '\0';
-    }
-    else {
-        // Error retrieving path
-        executablePath[0] = '\0';;
-    }
-#endif
-    return std::string(executablePath);
-}
-
 IVW_CORE_API std::string getInviwoUserCachePath() {
     std::stringstream ss;
 #ifdef _WIN32

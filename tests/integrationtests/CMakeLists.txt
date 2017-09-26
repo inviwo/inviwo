@@ -33,6 +33,14 @@ endforeach()
 ivw_register_use_of_modules(${package_list})
 
 #--------------------------------------------------------------------
+# Determine dendendencies and set runtime module loading defines
+set(dependencies "")
+ivw_configure_application_module_dependencies("inviwo-integrationtests"
+                                              "${core_dependencies}"
+                                              "${package_list}"
+                                              dependencies)
+
+#--------------------------------------------------------------------
 # Need to add dependent directories before creating application
 ivw_add_dependency_directories(${package_list})
 

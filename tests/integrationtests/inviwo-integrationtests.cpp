@@ -73,7 +73,9 @@ int main(int argc, char** argv) {
         });
 
         // Initialize all modules
-        inviwoApp.registerModules(&inviwo::registerAllModules);
+        inviwoApp.registerModules(std::move(inviwo::getModuleList()), false /* no runtime reloading */);
+
+        
         auto& cmdparser = inviwoApp.getCommandLineParser();
 
         inviwoApp.getSettingsByType<SystemSettings>()->poolSize_.set(0);

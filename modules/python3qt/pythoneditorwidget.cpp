@@ -41,7 +41,6 @@
 #include <modules/qtwidgets/qtwidgetssettings.h>
 
 #include <modules/python3/python3module.h>
-#include <modules/python3/pyinviwo.h>
 #include <modules/python3/pythoninterpreter.h>
 
 #include <warn/push>

@@ -50,9 +50,15 @@ ivw_register_use_of_modules(${package_list})
 #--------------------------------------------------------------------
 # Determine dendendencies and set runtime module loading defines
 set(dependencies "")
-ivw_configure_application_module_dependencies("inviwo" "${core_dependencies}" "${package_list}" dependencies)
+ivw_configure_application_module_dependencies("inviwo"
+                                              "${core_dependencies}"
+                                              "${package_list}"
+                                              dependencies)
 if(WIN32)
-    ivw_configure_application_module_dependencies("inviwo-cli" "${core_dependencies}" "${package_list}" dependencies)
+    ivw_configure_application_module_dependencies("inviwo-cli"
+                                                  "${core_dependencies}"
+                                                  "${package_list}"
+                                                  dependencies)
 endif()
 
 # Need to add dependent directories before creating application

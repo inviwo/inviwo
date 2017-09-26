@@ -50,7 +50,7 @@ PythonMenu::PythonMenu(InviwoApplication* app) {
         editor_ = new PythonEditorWidget(win, app);
         win->connect(pythonEditorOpen, SIGNAL(triggered(bool)), editor_, SLOT(show(void)));
 
-        auto pyPropertoes = menu->addAction("&List unexposed properties");
+        auto pyPropertoes = menu_->addAction("&List unexposed properties");
         win->connect(pyPropertoes, &QAction::triggered, [app]() {
             auto mod = app->getModuleByType<Python3Module>();
             PythonScriptDisk(mod->getPath() + "/scripts/list_not_exposed_properties.py").run();
