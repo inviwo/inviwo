@@ -55,7 +55,7 @@ namespace inviwo {
  * Calls glFinish(), or glFenceSync if supported, upon construction.
  * Releases all objects and calls clFinish,
  * or glWaitSync if supported, on the supplied queue upon destruction.
- s*/
+ */
 class IVW_MODULE_OPENCL_API SyncCLGL {
 public:
     /**
