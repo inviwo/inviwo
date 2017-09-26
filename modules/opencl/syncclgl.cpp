@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/syncclgl.h>
@@ -35,9 +35,10 @@ namespace inviwo {
 std::map<cl_context, pfnclCreateEventFromSyncKHR> SyncCLGL::syncFunctionMap_;
 
 SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
-    : context_(context), queue_(queue)
+    : context_(context)
+    , queue_(queue)
 #if defined(CL_VERSION_1_1)
-    , glFenceSync_(nullptr) 
+    , glFenceSync_(nullptr)
 #endif
 {
 #if defined(CL_VERSION_1_1)
@@ -46,14 +47,15 @@ SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
     if (syncFunctionMap_.find(context()) == syncFunctionMap_.end()) {
         auto device = queue.getInfo<CL_QUEUE_DEVICE>();
         auto platform = device.getInfo<CL_DEVICE_PLATFORM>();
-        // Get clCreateEventFromGLsyncKHR function from platform since 
+        // Get clCreateEventFromGLsyncKHR function from platform since
         // it is a vendor extension and cannot be statically linked
         syncFunctionMap_[context()] =
-            (pfnclCreateEventFromSyncKHR)clGetExtensionFunctionAddressForPlatform(platform, "clCreateEventFromGLsyncKHR");
+            (pfnclCreateEventFromSyncKHR)clGetExtensionFunctionAddressForPlatform(
+                platform, "clCreateEventFromGLsyncKHR");
     }
     pfnclCreateEventFromSyncKHR clCreateEventFromGLsync = syncFunctionMap_[context()];
     if (clCreateEventFromGLsync) {
-        // Use more efficient synchronization 
+        // Use more efficient synchronization
         // See section 9.9 in the OpenCL 1.1 spec for more information, also
         // https://www.cct.lsu.edu/~korobkin/tmp/SC10/tutorials/docs/M13/M13.pdf
 
@@ -93,28 +95,31 @@ void SyncCLGL::addToAquireGLObjectList(const VolumeCLGL* object) {
     syncedObjects_.push_back(object->get());
 }
 
-void SyncCLGL::aquireAllObjects(const std::vector<cl::Event>* waitForEvents /*= nullptr*/, cl::Event* event /*= nullptr*/) const {
+void SyncCLGL::aquireAllObjects(const std::vector<cl::Event>* waitForEvents /*= nullptr*/,
+                                cl::Event* event /*= nullptr*/) const {
 #if defined(CL_VERSION_1_1)
     // Use fast synchronization if we can
     if (glFenceSync_) {
         pfnclCreateEventFromSyncKHR clCreateEventFromGLsync = syncFunctionMap_[context_()];
         // Sync with OpenGL
         cl_int err;
-        std::vector<cl::Event> waitForSyncAndEvents(1, clCreateEventFromGLsync(context_(), glFenceSync_, &err));
+        std::vector<cl::Event> waitForSyncAndEvents(
+            1, clCreateEventFromGLsync(context_(), glFenceSync_, &err));
         if (err != CL_SUCCESS) {
             throw OpenCLException("Failed to create sync event");
         }
         if (waitForEvents) {
             // Add events to wait for
             waitForSyncAndEvents.reserve(waitForEvents->size() + 1);
-            waitForSyncAndEvents.insert(std::end(waitForSyncAndEvents), std::begin(*waitForEvents), std::end(*waitForEvents));
+            waitForSyncAndEvents.insert(std::end(waitForSyncAndEvents), std::begin(*waitForEvents),
+                                        std::end(*waitForEvents));
         }
         queue_.enqueueAcquireGLObjects(&syncedObjects_, &waitForSyncAndEvents, event);
     } else {
         // Fast sync not supported, glFinish has been called in constructor instead
         queue_.enqueueAcquireGLObjects(&syncedObjects_, waitForEvents, event);
     }
-#else 
+#else
     queue_.enqueueAcquireGLObjects(&syncedObjects_, waitForEvents, event);
 #endif
 }
@@ -125,11 +130,11 @@ void SyncCLGL::releaseAllGLObjects(const std::vector<cl::Event>* waitForEvents, 
         if (glFenceSync_) {
             cl::Event releaseEvent;
             // Use supplied event if existing
-            cl::Event* releaseEventPtr = event != nullptr ? event : &releaseEvent;;
-            
+            cl::Event* releaseEventPtr = event != nullptr ? event : &releaseEvent;
             queue_.enqueueReleaseGLObjects(&syncedObjects_, waitForEvents, releaseEventPtr);
-            // Synchronize OpenCL and OpeGL
+            // Synchronize OpenCL and OpenGL
             GLsync clSync = glCreateSyncFromCLeventARB(context_(), (*releaseEventPtr)(), 0);
+            // without stalling CPU-thread:
             glWaitSync(clSync, 0, GL_TIMEOUT_IGNORED);
         } else {
             queue_.enqueueReleaseGLObjects(&syncedObjects_, waitForEvents, event);
@@ -141,7 +146,6 @@ void SyncCLGL::releaseAllGLObjects(const std::vector<cl::Event>* waitForEvents, 
 #endif
         syncedObjects_.clear();
     }
-       
 }
 
-}  // end namespace
+}  // namespace inviwo
