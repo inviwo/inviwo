@@ -615,7 +615,7 @@ if(APPLE)
 endif (APPLE)
 if(UNIX)
     # Required for dlopen
-    target_link_libraries(inviwo-core ${CMAKE_DL_LIBS})
+    target_link_libraries(inviwo-core PRIVATE ${CMAKE_DL_LIBS})
 endif(UNIX)
 
 #Optimize compiliation with PCH etc
