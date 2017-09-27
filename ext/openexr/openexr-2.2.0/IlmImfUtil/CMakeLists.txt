@@ -26,18 +26,19 @@ ADD_LIBRARY ( openexr-ilmimfutil ${LIB_TYPE}
   ${ILMIMFUTIL_SRCS}
 )
 
-TARGET_LINK_LIBRARIES ( openexr-ilmimfutil 
+TARGET_LINK_LIBRARIES ( openexr-ilmimfutil PUBLIC
   openexr-half
   openexr-iex
   openexr-imath
   openexr-ilmthread
   openexr-ilmimf
+  inviwo::zlib1
   # Half 
   # Iex${ILMBASE_LIBSUFFIX}
   # Imath${ILMBASE_LIBSUFFIX}
   # IlmThread${ILMBASE_LIBSUFFIX}
   # IlmImf
-  ${PTHREAD_LIB} ${ZLIB_LIBRARIES}
+  ${PTHREAD_LIB}
 )
 
 
@@ -74,6 +75,10 @@ TARGET_LINK_LIBRARIES ( openexr-ilmimfutil
 # Supress warnings
 ivw_suppress_compiler_warnings(openexr-ilmimfutil)
 
+target_include_directories(openexr-ilmimfutil PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
 #--------------------------------------------------------------------
 # Install library into target folder
 ivw_default_install_comp_targets(core openexr-ilmimfutil)
@@ -85,5 +90,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(openexr-ilmimfutil)
 ivw_make_package(openexr-ilmimfutil openexr-ilmimfutil)

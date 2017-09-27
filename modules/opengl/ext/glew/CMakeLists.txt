@@ -29,16 +29,9 @@ source_group("Source Files" FILES ${SOURCE_FILES})
 find_package(OpenGL QUIET REQUIRED)
 
 #--------------------------------------------------------------------
-# Set includes
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-    ${OPENGL_INCLUDE_DIR}
-)
-
-#--------------------------------------------------------------------
 # Set the compiler flags
 if(WIN32)
-  add_definitions(-DGLEW_BUILD)
+
 else()
   add_definitions(-DHAVE_CONFIG_H)
 endif()
@@ -49,12 +42,24 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 #--------------------------------------------------------------------
 # Create a target for the library
 add_library(GLEW ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(GLEW ${OPENGL_LIBRARIES})
+target_link_libraries(GLEW PUBLIC ${OPENGL_LIBRARIES})
 
-# InViWo Macros
+#--------------------------------------------------------------------
+# Set includes
+target_include_directories(GLEW PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    #$<INSTALL_INTERFACE:???>
+    ${OPENGL_INCLUDE_DIR}
+)
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(GLEW PUBLIC -DGLEW_BUILD)
+else()
+    target_compile_definitions(GLEW PUBLIC -DGLEW_STATIC)
+endif()
+
 ivw_folder(GLEW ext)
 
 #--------------------------------------------------------------------
 # Add to package
 ivw_default_install_targets(GLEW)
-
+ivw_make_package(GLEW GLEW)

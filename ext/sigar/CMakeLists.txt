@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Sigar Library
-ivw_project(sigar)
+project(sigar)
 
 #--------------------------------------------------------------------
 # Define defintions
@@ -11,9 +11,6 @@ if(WIN32)
     add_definitions(-DWIN32_LEAN_AND_MEAN)
 endif()
 
-add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-ivw_add_definition(IVW_SIGAR)
-    
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 set(HEADER_FILES include/sigar.h 
@@ -26,12 +23,9 @@ set(HEADER_FILES include/sigar.h
     include/sigar_util.h
 )
 
-include_directories(include/)
-
 ## linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(SIGAR_SRC src/os/linux/linux_sigar.c)
-    include_directories(src/os/linux/)
 endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
 ## macosx, freebsd
@@ -39,7 +33,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
     set(SIGAR_SRC src/os/darwin/darwin_sigar.c)
     include_directories(src/os/darwin/)
     if(CMAKE_SYSTEM_NAME MATCHES "(Darwin)")
-        ivw_include_directories(/Developer/Headers/FlatCarbon/)
         add_definitions(-DDARWIN)
         set(SIGAR_LINK_FLAGS "-framework CoreServices -framework IOKit")
     else()
@@ -48,43 +41,8 @@ if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
     endif()
 endif()
 
-## solaris
-if(CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)" )
-    set(SIGAR_SRC
-        src/os/solaris/solaris_sigar.c
-        src/os/solaris/get_mib2.c
-        src/os/solaris/kstats.c
-        src/os/solaris/procfs.c
-    )
-
-    include_directories(src/os/solaris/)
-    add_definitions(-DSOLARIS)
-    set(SIGAR_LINK_FLAGS -lkstat -ldl -lnsl -lsocket -lresolv)
-endif()
-
-## solaris
-if(CMAKE_SYSTEM_NAME MATCHES "(hpux)" )
-    set(SIGAR_SRC src/os/hpux/hpux_sigar.c)
-    include_directories(src/os/hpux/)
-    ivw_add_definition(-DSIGAR_HPUX)
-    set(SIGAR_LINK_FLAGS -lnm)
-endif()
-
-## aix
-if(CMAKE_SYSTEM_NAME MATCHES "(AIX)" )
-    set(SIGAR_SRC src/os/aix/aix_sigar.c)
-
-    include_directories(src/os/aix/)
-    set(SIGAR_LINK_FLAGS -lodm -lcfg)
-endif()
-
 if(WIN32)
-    if(BUILD_SHARED_LIBS)
-        ivw_add_definition(SIGAR_SHARED)
-        add_definitions(-DSIGAR_EXPORTS)
-    endif()
     set(SIGAR_SRC src/os/win32/peb.c src/os/win32/win32_sigar.c src/os/win32/wmi.cpp)
-    include_directories(src/os/win32)
 else()
     add_definitions(-DHAVE_CONFIG_H)
 endif()
@@ -101,10 +59,35 @@ set(SIGAR_SRC ${SIGAR_SRC}
 )
 
 add_library(sigar ${SIGAR_SRC} ${HEADER_FILES})
+target_include_directories(sigar PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include/ext/sigar>
+)
 
+target_compile_definitions(sigar PUBLIC IVW_SIGAR)
+
+## linux
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(sys_headers src/os/linux/)
+endif()
+## macosx, freebsd
+if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
+    set(sys_headers src/os/darwin/)
+endif()
 if(WIN32)
+    if(BUILD_SHARED_LIBS)
+        target_compile_definitions(sigar PUBLIC SIGAR_SHARED)
+        target_compile_definitions(sigar PUBLIC SIGAR_EXPORTS)
+    endif()
+    target_compile_definitions(sigar PRIVATE -D_CRT_SECURE_NO_WARNINGS 
+                                             -D_CRT_SECURE_NO_DEPRECATE)
     target_link_libraries(sigar PRIVATE ws2_32 netapi32 version)
-endif(WIN32)
+    set(sys_headers src/os/win32/)
+endif()
+target_include_directories(sigar PRIVATE 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${sys_headers}>
+    $<INSTALL_INTERFACE:include/ext/sigar/${sys_headers}>
+)
 
 if(SIGAR_LINK_FLAGS)
     ivw_add_link_flags(${SIGAR_LINK_FLAGS})

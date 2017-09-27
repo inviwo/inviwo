@@ -37,7 +37,7 @@ endif()
 # as ${gtest_SOURCE_DIR} and to the root binary directory as
 # ${gtest_BINARY_DIR}.
 # Language "C" is required for find_package(Threads).
-ivw_project(gtest CXX C)
+project(gtest CXX C)
 cmake_minimum_required(VERSION 2.6.2)
 
 if (COMMAND set_up_hermetic_build)
@@ -79,13 +79,22 @@ endif()
 # Creates VS folder structure
 ivw_folder(gtest ext)
 
-target_include_directories(gtest INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(gtest INTERFACE 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include/ext/gtest>
+)
+
 target_compile_definitions(gtest INTERFACE -DGTEST_HAS_TR1_TUPLE=0)
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(gtest INTERFACE -DGTEST_LINKED_AS_SHARED_LIBRARY=1)
 endif()
 
+
+#--------------------------------------------------------------------
+# Install library into target folder
+ivw_default_install_comp_targets(core gtest)
+
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(gtest)
 ivw_make_package(gtest gtest)
+

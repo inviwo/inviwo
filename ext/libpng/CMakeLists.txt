@@ -1,15 +1,13 @@
-ivw_project(libpng C)
+project(libpng C)
 
 #--------------------------------------------------------------------
 # Add header files
 file(GLOB_RECURSE HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
-
 ivw_group("Header Files" ${HEADER_FILES} )
 
 #--------------------------------------------------------------------
 # Add source files
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
-
 ivw_group("Source Files" ${SOURCE_FILES} )
 
 #--------------------------------------------------------------------
@@ -20,19 +18,25 @@ add_library(libpng ${SOURCE_FILES} ${HEADER_FILES})
 # Define definitions for build on windows
 if(BUILD_SHARED_LIBS AND WIN32)
     target_compile_definitions(libpng PRIVATE PNG_BUILD_DLL)
-    ivw_add_definition_to_list(PNG_USE_DLL)
+    target_compile_definitions(libpng INTERFACE PNG_USE_DLL)
 endif()
 
 #--------------------------------------------------------------------
 # Add includes
-target_include_directories(libpng INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(libpng INTERFACE 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include/ext/libpng>
+)
+
 
 #--------------------------------------------------------------------
 # libpng depends on zlib
-find_package(ZLIB REQUIRED)
-target_include_directories(libpng PRIVATE ${ZLIB_INCLUDE_DIR})
-target_link_libraries(libpng PRIVATE ${ZLIB_LIBRARIES})
-add_dependencies(libpng zlib1)
+target_link_libraries(libpng PRIVATE zlib1)
+
+#find_package(ZLIB REQUIRED)
+#target_include_directories(libpng PRIVATE ${ZLIB_INCLUDE_DIR})
+#target_link_libraries(libpng PRIVATE ${ZLIB_LIBRARIES})
+#add_dependencies(libpng zlib1)
 
 #--------------------------------------------------------------------
 # Supress warnings
@@ -50,5 +54,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(libpng)
 ivw_make_package(PNG libpng)

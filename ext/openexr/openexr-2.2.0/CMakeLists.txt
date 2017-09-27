@@ -1,6 +1,6 @@
 #CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-ivw_project(openexr)
+project(openexr)
 
 find_package(openexr-iex REQUIRED)
 find_package(openexr-iexmath REQUIRED)

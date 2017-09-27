@@ -2,7 +2,7 @@
 #Please contact hans-johnson@uiowa.edu for making enhancments/corrections
 PROJECT(ZNZLIB)
 
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+#INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
 
 SET(ZNZLIB_SRC znzlib.c)
 INCLUDE_REGULAR_EXPRESSION("^.*$")
@@ -10,7 +10,11 @@ INCLUDE_REGULAR_EXPRESSION("^.*$")
 SET(NIFTI_ZNZLIB_NAME ${PACKAGE_PREFIX}znz)
 
 ADD_LIBRARY(${NIFTI_ZNZLIB_NAME} STATIC ${ZNZLIB_SRC} )
-TARGET_LINK_LIBRARIES( ${NIFTI_ZNZLIB_NAME} ${NIFTI_ZLIB_LIBRARIES} )
+ADD_LIBRARY(inviwo::znz ALIAS ${NIFTI_ZNZLIB_NAME})
+TARGET_LINK_LIBRARIES( ${NIFTI_ZNZLIB_NAME} PUBLIC inviwo::zlib1)
+target_include_directories(${NIFTI_ZNZLIB_NAME} PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
+)
 #ivw_message("NIFTI_ZLIB_LIBRARIES:" ${NIFTI_ZLIB_LIBRARIES})
 # Set library version if building shared libs.
 IF (BUILD_SHARED_LIBS)
@@ -34,11 +38,11 @@ ENDIF(NOT NIFTI_INSTALL_NO_DEVELOPMENT)
 
 # Turn off warnings: 
 # conversion from 'size_t' to 'int'
-if(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
-    add_definitions("-Wno-conversion")
-elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
-	add_definitions("/wd4267")
-endif()
+#if(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+#    add_definitions("-Wno-conversion")
+#elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+#	add_definitions("/wd4267")
+#endif()
 
 ivw_folder(znz ext/nifti)
 ivw_suppress_compiler_warnings(znz)

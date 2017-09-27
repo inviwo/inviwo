@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Create project
-ivw_project(sigar-systeminfo)
+project(sigar-systeminfo)
 #--------------------------------------------------------------------
 # Need to add dependent directories before creating application
 ivw_add_dependency_directories(Sigar)
@@ -14,7 +14,7 @@ ivw_add_dependencies(Sigar)
 
 #--------------------------------------------------------------------
 # Create project
-ivw_project(sigar-processlist)
+project((sigar-processlist)
 #--------------------------------------------------------------------
 # Need to add dependent directories before creating application
 ivw_add_dependency_directories(Sigar)

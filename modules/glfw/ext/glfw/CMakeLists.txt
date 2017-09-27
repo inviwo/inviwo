@@ -572,9 +572,6 @@ endif()
     #add_subdirectory(docs)
 #endif()
 
-# InViWo Macros
-ivw_define_standard_definitions(glfw glfw)
-ivw_folder(glfw ext)
 
 #--------------------------------------------------------------------
 # Install files other than the library

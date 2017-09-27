@@ -50,6 +50,10 @@ TARGET_LINK_LIBRARIES(openexr-ilmthread openexr-iex)
 # Supress warnings
 ivw_suppress_compiler_warnings(openexr-ilmthread)
 
+target_include_directories(openexr-ilmthread PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
 #--------------------------------------------------------------------
 # Install library into target folder
 ivw_default_install_comp_targets(core openexr-ilmthread)
@@ -61,5 +65,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(openexr-ilmthread)
 ivw_make_package(openexr-ilmthread openexr-ilmthread)

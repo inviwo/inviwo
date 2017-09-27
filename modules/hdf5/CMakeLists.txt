@@ -57,9 +57,11 @@ else()
 endif()
 
 set(HDF5_ENABLE_Z_LIB_SUPPORT   ON)
-find_package(ZLIB)
+
+get_target_property(ZLIB_INCLUDE_DIRS inviwo::zlib1 INTERFACE_INCLUDE_DIRECTORIES)
+set(ZLIB_LIBRARIES inviwo::zlib1)
 set(H5_ZLIB_HEADER "zlib.h")
-set(ZLIB_INCLUDE_DIRS "${ZLIB_INCLUDE_DIR}")
+set(ZLIB_INCLUDE_DIRS "${ZLIB_INCLUDE_DIRS}")
 if(${BUILD_SHARED_LIBS})
     set(ZLIB_SHARED_LIBRARY "${ZLIB_LIBRARIES}")
 else()

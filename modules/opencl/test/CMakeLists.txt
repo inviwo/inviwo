@@ -1,4 +1,4 @@
-ivw_project(opencl)
+project(opencl)
 
 #--------------------------------------------------------------------
 # Add source files
@@ -12,13 +12,9 @@ ivw_retrieve_all_modules(package_list)
 list(APPEND package_list InviwoCore)
 
 #--------------------------------------------------------------------
-# Need to add dependent directories before creating application
-ivw_add_dependency_directories(${package_list})
-
-#--------------------------------------------------------------------
 # Create test
 ivw_create_test(${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Add dependencies
-ivw_add_dependencies(${package_list})
+ivw_add_module_dependencies(sometarget ${package_list})

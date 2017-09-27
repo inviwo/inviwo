@@ -1,7 +1,7 @@
 #cmake_minimum_required(VERSION 2.4.4)
 #set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
-ivw_project(zlib1 C)
+project(zlib1 C)
 
 set(VERSION "1.2.11")
 
@@ -193,7 +193,7 @@ else()
 	add_library(zlib1 STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
     ivw_suppress_compiler_warnings(zlib1)
 endif()
-
+add_library(inviwo::zlib1 ALIAS zlib1)
 
 
 
@@ -263,9 +263,15 @@ SET_TARGET_PROPERTIES ( zlib1
   OUTPUT_NAME "zlib1"
 )
 
+target_include_directories(zlib1 INTERFACE 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>
+    #$<INSTALL_INTERFACE:???>
+)
+
 #--------------------------------------------------------------------
 # add library path directory 
-ivw_link_directories(${LIBRARY_OUTPUT_PATH})
+#ivw_link_directories(${LIBRARY_OUTPUT_PATH})
 
 #--------------------------------------------------------------------
 # Install library into target folder
@@ -280,6 +286,5 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(zlib1)
 ivw_make_package(ZLIB zlib1)
 

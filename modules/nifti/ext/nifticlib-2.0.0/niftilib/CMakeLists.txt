@@ -2,13 +2,16 @@
 #Please contact hans-johnson@uiowa.edu for making enhancments/corrections
 PROJECT(NIFTILIB)
 
-INCLUDE_DIRECTORIES(${ZNZLIB_SOURCE_DIR} ${ZLIB_INCLUDE_DIRS})
+#INCLUDE_DIRECTORIES(${ZNZLIB_SOURCE_DIR} ${ZLIB_INCLUDE_DIRS})
 SET(NIFTILIB_SRC nifti1_io.c)
 
 SET(NIFTI_NIFTILIB_NAME ${PACKAGE_PREFIX}niftiio)
 ADD_LIBRARY(${NIFTI_NIFTILIB_NAME} STATIC ${NIFTILIB_SRC} )
-TARGET_LINK_LIBRARIES( ${NIFTI_NIFTILIB_NAME} ${PACKAGE_PREFIX}znz)
-
+ADD_LIBRARY(inviwo::niftiio ALIAS ${NIFTI_NIFTILIB_NAME})
+TARGET_LINK_LIBRARIES( ${NIFTI_NIFTILIB_NAME} PUBLIC inviwo::zlib1 ${PACKAGE_PREFIX}znz)
+target_include_directories(${NIFTI_NIFTILIB_NAME} PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
+)
 # Set library version when building shared libs.
 IF (BUILD_SHARED_LIBS)
   SET_TARGET_PROPERTIES(${NIFTI_NIFTILIB_NAME} PROPERTIES ${NIFTI_LIBRARY_PROPERTIES})
@@ -35,11 +38,11 @@ ENDIF(NOT NIFTI_INSTALL_NO_DEVELOPMENT)
 # Turn off warnings: 
 # conversion from 'double' to 'float'
 # conversion from 'size_t' to 'int'
-if(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
-    add_definitions("-Wno-conversion")
-elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
-	add_definitions("/wd4244 /wd4267")
-endif()
+# if(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+#     add_definitions("-Wno-conversion")
+# elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+#   add_definitions("/wd4244 /wd4267")
+# endif()
 
 ivw_folder(niftiio ext/nifti)
 ivw_suppress_compiler_warnings(niftiio)
