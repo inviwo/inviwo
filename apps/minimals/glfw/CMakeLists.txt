@@ -12,7 +12,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(package_list)
-
+# Core dependencies are linked and will never be loaded at runtime
 set(core_dependencies InviwoCore)
 list(APPEND core_dependencies GLFW)
 list(APPEND core_dependencies InviwoGLFWModule)

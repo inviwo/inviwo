@@ -18,6 +18,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 ivw_retrieve_all_modules(package_list)
 
 set(core_dependencies InviwoCore)
+# Core dependencies are linked and will never be loaded at runtime
 list(APPEND core_dependencies InviwoQtApplicationBase)
 list(APPEND package_list ${core_dependencies})
 

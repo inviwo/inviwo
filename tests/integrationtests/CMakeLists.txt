@@ -17,7 +17,11 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(package_list)
-list(APPEND package_list InviwoCore)
+# Core dependencies are linked and will never be loaded at runtime
+set(core_dependencies InviwoCore)
+list(APPEND core_dependencies InviwoBaseModule)
+list(APPEND core_dependencies InviwoGLFWModule)
+list(APPEND package_list ${core_dependencies})
 
 #--------------------------------------------------------------------
 # Remove Qt stuff from list
@@ -42,7 +46,7 @@ ivw_configure_application_module_dependencies("inviwo-integrationtests"
 
 #--------------------------------------------------------------------
 # Need to add dependent directories before creating application
-ivw_add_dependency_directories(${package_list})
+ivw_add_dependency_directories(${dependencies})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -63,7 +67,7 @@ ivw_memleak_setup(inviwo-integrationtests)
 
 #--------------------------------------------------------------------
 # Add dependencies
-ivw_add_dependencies(${package_list})
+ivw_add_dependencies(${dependencies})
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
