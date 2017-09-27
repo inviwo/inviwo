@@ -93,6 +93,7 @@ node {
                               -DIVW_UNITTESTS=ON \
                               -DIVW_UNITTESTS_RUN_ON_BUILD=OFF \
                               -DIVW_INTEGRATION_TESTS=ON \
+                              -DIVW_RUNTIME_MODULE_LOADING=ON \
                               ../inviwo
 
                         ninja
