@@ -30,6 +30,7 @@
 #include <modules/plotting/utils/csvreader.h>
 
 #include <modules/plotting/datastructures/column.h>
+#include <modules/plotting/datastructures/dataframe.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <fstream>
@@ -85,10 +86,6 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
             }
         };
 
-        // ignore empty lines
-        while (!in.eof() && ((in.peek() == '\n') || (in.peek() == '\r'))) {
-            in.get();
-        }
         char ch;
         while (in.get(ch)) {
             bool linebreak = isLineBreak(ch, in);
@@ -160,8 +157,17 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
     auto dataFrame = plot::createDataFrame(data, headers);
     
     while (!data.empty()) {
-        dataFrame->addRow(data);
-
+        try {
+            // Do not add empty rows, i.e. rows with only delimiters (,,,,) or newline
+            auto emptyIt = std::find_if(std::begin(data), std::end(data), [](const auto& a) { return !a.empty(); });
+            if (emptyIt != data.end()) {
+                dataFrame->addRow(data);
+            }
+        } catch (plot::DataTypeMismatch& e) {
+            // Continue reading data since it is not a fatal error
+            auto rowIndex = dataFrame->getSize() + (firstRowHeader_ ? 1 : 0);
+            LogInfo("Row " << rowIndex << ": " << e.what());
+        }
         data = extractRow();
     }
     dataFrame->updateIndexBuffer();
