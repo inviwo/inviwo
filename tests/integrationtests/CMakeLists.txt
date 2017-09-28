@@ -16,32 +16,32 @@ ivw_group("Source Files" ${SOURCE_FILES})
         
 #--------------------------------------------------------------------
 # Define libraries that should be linked
-ivw_retrieve_all_modules(package_list)
+ivw_retrieve_all_modules(enabled_modules)
 # Core dependencies are linked and will never be loaded at runtime
 set(core_dependencies InviwoCore)
 list(APPEND core_dependencies InviwoBaseModule)
 list(APPEND core_dependencies InviwoGLFWModule)
-list(APPEND package_list ${core_dependencies})
+list(APPEND enabled_modules ${core_dependencies})
 
 #--------------------------------------------------------------------
 # Remove Qt stuff from list
-foreach(module ${package_list})
+foreach(module ${enabled_modules})
     string(TOUPPER ${module} u_module)
     if(u_module MATCHES "QT+")
-        list(REMOVE_ITEM package_list ${module})
+        list(REMOVE_ITEM enabled_modules ${module})
     endif()
 endforeach()
 
 #--------------------------------------------------------------------
 # Register the use of modules
-ivw_register_use_of_modules(${package_list})
+ivw_register_use_of_modules(${enabled_modules})
 
 #--------------------------------------------------------------------
 # Determine dendendencies and set runtime module loading defines
 set(dependencies "")
 ivw_configure_application_module_dependencies("inviwo-integrationtests"
                                               "${core_dependencies}"
-                                              "${package_list}"
+                                              "${enabled_modules}"
                                               dependencies)
 
 #--------------------------------------------------------------------
@@ -67,7 +67,17 @@ ivw_memleak_setup(inviwo-integrationtests)
 
 #--------------------------------------------------------------------
 # Add dependencies
+
+# Dependencies to build and link before this project
 ivw_add_dependencies(${dependencies})
+
+# Dependencies to build before this project when they are changed.
+# Needed if modules are loaded at runtime since they should be built
+# when this project is set as startup project
+foreach (module_name ${enabled_modules})
+    ivw_mod_name_to_target_name(target_name ${module_name})
+    add_dependencies(inviwo-integrationtests "${target_name}")
+endforeach()
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core

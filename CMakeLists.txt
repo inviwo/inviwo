@@ -173,7 +173,6 @@ set(ivw_default_modules
     "VectorFieldVisualizationGL"
     "PostProcessing"
     "Nifti" 
-	"zlib" 
     CACHE INTERNAL "Default Inviwo Modules"
 )
 

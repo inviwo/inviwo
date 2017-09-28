@@ -203,15 +203,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/pybind11.cmake)
 mark_as_advanced(FORCE GLM_DIR)
 mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
-### Only for backwards compability. Remove when all modules use BUILD_SHARED_LIBS
-# Set SHARED_LIBS to the global cmake setting (BUILD_SHARED_LIBS).
-if(BUILD_SHARED_LIBS)
-    set(SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
-else()
-    set(SHARED_LIBS OFF CACHE BOOL "Build shared libs, else static libs" FORCE)
-endif()
-###
-
 if(WIN32 AND MSVC)
     # Determine runtime library linkage depending on BUILD_SHARED_LIBS setting.
     # Shared runtime can be forced by setting the IVW_FORCE_SHARED_CRT option.
@@ -283,8 +274,10 @@ endif()
 
 #--------------------------------------------------------------------
 # Calculate and display profiling information
-option(IVW_RUNTIME_MODULE_LOADING "Load modules from dynamic libraries (dll/so) at application startup" OFF)
-option(IVW_RUNTIME_MODULE_RELOADING "Reload modules at runtime when a dynamic library changes. Requires a temporary copy of libraries and file observers" OFF)
+option(IVW_RUNTIME_MODULE_LOADING 
+       "Load modules from dynamic libraries (dll/so) at application startup" OFF)
+option(IVW_RUNTIME_MODULE_RELOADING "Reload modules at runtime when a dynamic library changes. 
+       Requires a temporary copy of libraries and file observers" OFF)
 
 #--------------------------------------------------------------------
 # Check if OpenMP is available and set it to use, and include the dll in packs

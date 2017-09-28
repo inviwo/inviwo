@@ -100,27 +100,19 @@ endmacro()
 # Creates a list of enabled modules in executable directory if runtime
 # module loading is enabled.
 # Returns chosen dependencies in retVal
-macro(ivw_configure_application_module_dependencies target_name core_dependencies enabled_modules retVal)
+function(ivw_configure_application_module_dependencies target_name core_dependencies enabled_modules retVal)
     
     if(IVW_RUNTIME_MODULE_LOADING)
+        # Specify which modules to load at runtime (all will be loaded if the file does not exist)
+        ivw_create_enabled_modules_file(${target_name} ${enabled_modules})
         # Application does not need to depend on all modules
         # if they are loaded at runtime.
-        set(${retVal} ${core_dependencies})
-        add_definitions(-DIVW_RUNTIME_MODULE_LOADING)
-        #target_compile_definitions(${target_name} PUBLIC -DIVW_RUNTIME_MODULE_LOADING)
-        if (IVW_RUNTIME_MODULE_RELOADING)
-            #target_compile_definitions(${target_name} PUBLIC -DIVW_RUNTIME_MODULE_RELOADING)
-            add_definitions(-DIVW_RUNTIME_MODULE_RELOADING)
-        endif()
-
-        # Specify which modules to load at runtime (all will be loaded if not existing)
-        ivw_create_enabled_modules_file(${target_name} ${enabled_modules})
- 
+        set(${retVal} ${core_dependencies} PARENT_SCOPE)
     else()
-        set(${retVal} ${enabled_modules})
+        set(${retVal} ${enabled_modules} PARENT_SCOPE)
     endif()
 
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Retrieve all modules as a list
@@ -133,7 +125,8 @@ endfunction()
 # The application can use the file to check the enabled modules at runtime.
 # Usage: ivw_create_enabled_modules_file("application_name" ${enabled_modules})
 # where enabled_modules is a list of module names (i.e. InviwoBaseModule)
-macro(ivw_create_enabled_modules_file executable_name)
+function(ivw_create_enabled_modules_file executable_name)
+    set(enabled_modules "")
     foreach(mod ${ARGN})  
 		ivw_mod_name_to_dir(mod_name ${mod})
 		set(enabled_modules "${enabled_modules}${mod_name}\n") 
@@ -148,7 +141,7 @@ macro(ivw_create_enabled_modules_file executable_name)
 		file(WRITE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${executable_name}-enabled-modules.txt" ${enabled_modules})
 	endif()
 
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Generate header for external modules
@@ -231,14 +224,18 @@ function(ivw_private_generate_module_registration_file modules_var)
 
 		ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
 		list_to_stringvector(module_depends_vector ${module_dependencies})
+        list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
 		set(factory_object
 			"    #ifdef REG_${mod}\n" 
 			"    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-			"        \"${${mod}_class}\",\n"
-			"        \"${${mod}_description}\",\n" 
-			"        ${module_depends_vector}\n" 
-			"        )\n"
-			"    )__SEMICOLON__\n"
+            "        \"${${mod}_class}\",// Module name \n"
+            "        \"${${mod}_version}\",// Module version\n"
+            "        \"${${mod}_description}\", // Description\n" 
+            "        {\"${IVW_VERSION}\"}, // Based on Inviwo core version \n" 
+            "        ${module_depends_vector}, // Dependencies\n" 
+            "        ${module_depends_version_vector} // Version number of dependencies\n" 
+            "        )\n"
+            "    )__SEMICOLON__\n"
 			"    #endif\n"
 			"\n"
 		)
@@ -652,6 +649,15 @@ macro(ivw_define_standard_definitions project_name target_name)
                                                           -D_CRT_SECURE_NO_DEPRECATE)
     else()
         target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
+    endif()
+
+    # Runtime module loading is only applicable to executables (InviwoApplication).
+    get_target_property(target_type ${target_name} TYPE)
+    if("${target_type}" STREQUAL "EXECUTABLE" AND IVW_RUNTIME_MODULE_LOADING)
+        target_compile_definitions(${target_name} PRIVATE -DIVW_RUNTIME_MODULE_LOADING)
+        if (IVW_RUNTIME_MODULE_RELOADING)
+            target_compile_definitions(${target_name} PRIVATE -DIVW_RUNTIME_MODULE_RELOADING)
+        endif()
     endif()
 
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)

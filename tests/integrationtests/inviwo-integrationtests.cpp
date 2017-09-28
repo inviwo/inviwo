@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
         });
 
         // Initialize all modules
-        inviwoApp.registerModules(std::move(inviwo::getModuleList()), false /* no runtime reloading */);
+        inviwoApp.registerModules(inviwo::getModuleList());
 
         
         auto& cmdparser = inviwoApp.getCommandLineParser();

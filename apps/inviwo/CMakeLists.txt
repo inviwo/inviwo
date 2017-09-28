@@ -33,33 +33,27 @@ ivw_define_qt_definitions()
 
 #--------------------------------------------------------------------
 # Define libraries that should be linked
-ivw_retrieve_all_modules(package_list)
+ivw_retrieve_all_modules(enabled_modules)
 
 set(core_dependencies InviwoCore)
 list(APPEND core_dependencies InviwoQtEditor)
 list(APPEND core_dependencies InviwoQtApplicationBase)
-list(APPEND package_list ${core_dependencies})
+list(APPEND enabled_modules ${core_dependencies})
 
 # Only include one OpenGL context creation module
-list(REMOVE_ITEM package_list InviwoGLFWModule)
+list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
 
 #--------------------------------------------------------------------
 # Register the use of modules
-ivw_register_use_of_modules(${package_list})
+ivw_register_use_of_modules(${enabled_modules})
 
 #--------------------------------------------------------------------
 # Determine dendendencies and set runtime module loading defines
 set(dependencies "")
-ivw_configure_application_module_dependencies("inviwo"
+ivw_configure_application_module_dependencies(inviwo
                                               "${core_dependencies}"
-                                              "${package_list}"
+                                              "${enabled_modules}"
                                               dependencies)
-if(WIN32)
-    ivw_configure_application_module_dependencies("inviwo-cli"
-                                                  "${core_dependencies}"
-                                                  "${package_list}"
-                                                  dependencies)
-endif()
 
 # Need to add dependent directories before creating application
 ivw_add_dependency_directories(${dependencies})
@@ -158,15 +152,19 @@ endif()
 
 #--------------------------------------------------------------------
 # Add dependencies
+
+# Dependencies to build and link before this project
 ivw_add_dependencies(${dependencies})
 
-# Ensure that modules build before this project when they are changed
-# Note: could not get this to work on xcode ver 9, cmake 3.7.2
-foreach (package ${package_list})
-    add_dependencies(inviwo ${package})
+# Dependencies to build before this project when they are changed.
+# Needed if modules are loaded at runtime since they should be built
+# when this project is set as startup project
+foreach (module_name ${enabled_modules})
+    ivw_mod_name_to_target_name(target_name ${module_name})
+    add_dependencies(inviwo "${target_name}")
 endforeach()
 
-# Add build dependency towards any pybind11 targets and inviwo, 
+# Add build dependency towards any pybind11 targets and inviwo,
 # if python is not enabled, this list will be empty
 if(${_allPyBindWrappers})
     add_dependencies(inviwo ${_allPyBindWrappers})
@@ -186,20 +184,26 @@ if(WIN32)
 
     ivw_project(inviwo-cli)
 
-    add_executable(inviwo-cli MACOSX_BUNDLE WIN32 
-        ${SOURCE_FILES} 
-        ${HEADER_FILES} 
-        ${MOC_FILES} 
-        ${QRC_FILE} 
+    set(dependencies-cli "")
+    ivw_configure_application_module_dependencies(inviwo-cli
+        "${core_dependencies}"
+        "${enabled_modules}"
+        dependencies-cli)
+
+    add_executable(inviwo-cli MACOSX_BUNDLE WIN32
+        ${SOURCE_FILES}
+        ${HEADER_FILES}
+        ${MOC_FILES}
+        ${QRC_FILE}
         ${RES_FILES})
-    
+
     target_link_libraries(inviwo-cli PRIVATE Qt5::Core Qt5::Widgets)
     add_dependencies(inviwo-cli inviwo)
 
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
 
-    ivw_add_dependencies(${dependencies})
+    ivw_add_dependencies(${dependencies-cli})
     if(${_allPyBindWrappers})
         add_dependencies(inviwo-cli ${_allPyBindWrappers})
     endif()

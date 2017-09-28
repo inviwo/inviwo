@@ -240,6 +240,7 @@ endfunction()
 # ivw_dir_to_mod_prefix        OpenGL             -> IVW_MODULE_OPENGL
 # ivw_mod_prefix_to_dir        IVW_MODULE_OPENGL  -> opengl
 # ivw_mod_name_to_dir          InviwoOpenGLModule -> opengl
+# ivw_mod_name_to_target_name  InviwoOpenGLModule -> inviwo-module-opengl
 # ivw_mod_name_to_mod_dep      InviwoOpenGLModule -> INVIWOOPENGLMODULE
 # ivw_to_mod_name              OpenGL             -> InviwoOpenGLModule
 # ivw_dir_to_module_taget_name opengl             -> inviwo-module-opengl
@@ -329,6 +330,17 @@ function(ivw_mod_name_to_dir retval)
         endif()
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# ivw_mod_name_to_target_name(retval item1 item2 ...)
+# Convert module name to target name, i.e. InviwoOpenGLModule -> inviwo-opengl-module
+function(ivw_mod_name_to_target_name retval)
+    set(dirs "")
+    ivw_mod_name_to_dir(dirs ${ARGN})
+    set(targets "")
+    ivw_dir_to_module_taget_name(targets ${dirs})
+    set(${retval} ${targets} PARENT_SCOPE)
 endfunction()
 
 #--------------------------------------------------------------------

@@ -65,11 +65,7 @@ int main(int argc, char** argv) {
     CanvasGLFW::setAlwaysOnTopByDefault(false);
 
     // Initialize all modules
-    inviwoApp.registerModules(inviwo::getModuleList()
-#ifdef IVW_RUNTIME_MODULE_RELOADING
-                              , true
-#endif
-    );
+    inviwoApp.registerModules(inviwo::getModuleList());
 
     auto& cmdparser = inviwoApp.getCommandLineParser();
     TCLAP::ValueArg<std::string> snapshotArg(

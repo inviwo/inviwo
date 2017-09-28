@@ -132,7 +132,7 @@ public:
      * restarting the application.
      */
     virtual void registerModules(
-        const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged = false);
+        const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged = isRuntimeModuleReloadingEnabled());
     /**
      * \brief Removes all modules not marked as protected by the application.
      *
