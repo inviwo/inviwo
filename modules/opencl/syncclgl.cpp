@@ -57,7 +57,7 @@ SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
             (pfnclCreateEventFromSyncKHR)clGetExtensionFunctionAddressForPlatform(
                 platform, "clCreateEventFromGLsyncKHR");
 #else  // Version 1.1
-        // Requirescl_khr_gl_sharing extension must be supported since we are using sharing
+        // Requires cl_khr_gl_sharing extension. Extension is supported since we are using sharing
         syncFunctionMap_[context()] = (pfnclCreateEventFromSyncKHR)clGetExtensionFunctionAddress(
             "clCreateEventFromGLsyncKHR");
 #endif
