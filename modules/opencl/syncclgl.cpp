@@ -32,7 +32,9 @@
 
 namespace inviwo {
 
+#if defined(CL_VERSION_1_1)
 std::map<cl_context, pfnclCreateEventFromSyncKHR> SyncCLGL::syncFunctionMap_;
+#endif
 
 SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
     : context_(context)
@@ -45,13 +47,20 @@ SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
     //  Check if function clCreateEventFromGLsyncKHR has been fetched previously,
     // add it if it has not
     if (syncFunctionMap_.find(context()) == syncFunctionMap_.end()) {
-        auto device = queue.getInfo<CL_QUEUE_DEVICE>();
-        auto platform = device.getInfo<CL_DEVICE_PLATFORM>();
         // Get clCreateEventFromGLsyncKHR function from platform since
         // it is a vendor extension and cannot be statically linked
+#if defined(CL_VERSION_1_2)  // version >= 1.2
+        // Function was renamed in version 1.2
+        auto device = queue.getInfo<CL_QUEUE_DEVICE>();
+        auto platform = device.getInfo<CL_DEVICE_PLATFORM>();
         syncFunctionMap_[context()] =
             (pfnclCreateEventFromSyncKHR)clGetExtensionFunctionAddressForPlatform(
                 platform, "clCreateEventFromGLsyncKHR");
+#else  // Version 1.1
+        // Requirescl_khr_gl_sharing extension must be supported since we are using sharing
+        syncFunctionMap_[context()] = (pfnclCreateEventFromSyncKHR)clGetExtensionFunctionAddress(
+            "clCreateEventFromGLsyncKHR");
+#endif
     }
     pfnclCreateEventFromSyncKHR clCreateEventFromGLsync = syncFunctionMap_[context()];
     if (clCreateEventFromGLsync) {
