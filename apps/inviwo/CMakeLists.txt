@@ -38,7 +38,7 @@ ivw_retrieve_all_modules(enabled_modules)
 set(core_dependencies InviwoCore)
 list(APPEND core_dependencies InviwoQtEditor)
 list(APPEND core_dependencies InviwoQtApplicationBase)
-list(APPEND enabled_modules ${core_dependencies})
+
 
 # Only include one OpenGL context creation module
 list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
@@ -49,11 +49,10 @@ ivw_register_use_of_modules(${enabled_modules})
 
 #--------------------------------------------------------------------
 # Determine dendendencies and set runtime module loading defines
-set(dependencies "")
 ivw_configure_application_module_dependencies(inviwo
-                                              "${core_dependencies}"
                                               "${enabled_modules}"
                                               dependencies)
+list(APPEND dependencies ${core_dependencies})
 
 # Need to add dependent directories before creating application
 ivw_add_dependency_directories(${dependencies})
@@ -159,10 +158,8 @@ ivw_add_dependencies(${dependencies})
 # Dependencies to build before this project when they are changed.
 # Needed if modules are loaded at runtime since they should be built
 # when this project is set as startup project
-foreach (module_name ${enabled_modules})
-    ivw_mod_name_to_target_name(target_name ${module_name})
-    add_dependencies(inviwo "${target_name}")
-endforeach()
+ivw_mod_name_to_target_name(target_names ${enabled_modules})
+add_dependencies(inviwo "${target_names}")
 
 # Add build dependency towards any pybind11 targets and inviwo,
 # if python is not enabled, this list will be empty
@@ -184,11 +181,10 @@ if(WIN32)
 
     ivw_project(inviwo-cli)
 
-    set(dependencies-cli "")
     ivw_configure_application_module_dependencies(inviwo-cli
-        "${core_dependencies}"
         "${enabled_modules}"
         dependencies-cli)
+    list(APPEND dependencies-cli ${core_dependencies})
 
     add_executable(inviwo-cli MACOSX_BUNDLE WIN32
         ${SOURCE_FILES}

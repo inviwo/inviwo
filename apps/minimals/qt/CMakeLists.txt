@@ -20,7 +20,7 @@ ivw_retrieve_all_modules(enabled_modules)
 set(core_dependencies InviwoCore)
 # Core dependencies are linked and will never be loaded at runtime
 list(APPEND core_dependencies InviwoQtApplicationBase)
-list(APPEND enabled_modules ${core_dependencies})
+
 
 #--------------------------------------------------------------------
 # Only include one OpenGL context creation module
@@ -36,8 +36,10 @@ ivw_register_use_of_modules(${enabled_modules})
 
 #--------------------------------------------------------------------
 # Determine dendendencies and set runtime module loading defines
-set(dependencies "")
-ivw_configure_application_module_dependencies("inviwo_qtminimum" "${core_dependencies}" "${enabled_modules}" dependencies)
+ivw_configure_application_module_dependencies(inviwo_qtminimum
+                                              "${enabled_modules}"
+                                              dependencies)
+list(APPEND dependencies ${core_dependencies})
 
 # Need to add dependent directories before creating application
 ivw_add_dependency_directories(${dependencies})

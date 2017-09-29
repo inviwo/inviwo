@@ -21,7 +21,6 @@ ivw_retrieve_all_modules(enabled_modules)
 set(core_dependencies InviwoCore)
 list(APPEND core_dependencies InviwoBaseModule)
 list(APPEND core_dependencies InviwoGLFWModule)
-list(APPEND enabled_modules ${core_dependencies})
 
 #--------------------------------------------------------------------
 # Remove Qt stuff from list
@@ -38,11 +37,10 @@ ivw_register_use_of_modules(${enabled_modules})
 
 #--------------------------------------------------------------------
 # Determine dendendencies and set runtime module loading defines
-set(dependencies "")
-ivw_configure_application_module_dependencies("inviwo-integrationtests"
-                                              "${core_dependencies}"
+ivw_configure_application_module_dependencies(inviwo-integrationtests
                                               "${enabled_modules}"
                                               dependencies)
+list(APPEND dependencies ${core_dependencies})
 
 #--------------------------------------------------------------------
 # Need to add dependent directories before creating application
