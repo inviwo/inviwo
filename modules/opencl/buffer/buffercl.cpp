@@ -77,6 +77,7 @@ std::type_index BufferCL::getTypeIndex() const { return std::type_index(typeid(B
 void BufferCL::upload(const void* data, size_t size) {
     // Resize buffer if necessary
     if (size > size_ * getSizeOfElement()) {
+        size_ = size;
         clBuffer_ = util::make_unique<cl::Buffer>(
             OpenCL::getPtr()->getContext(),
             readWriteFlag_ | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
