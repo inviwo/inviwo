@@ -80,7 +80,6 @@ macro(ivw_define_standard_definitions project_name target)
     # Set the compiler flags
     ivw_to_macro_name(u_project_name ${project_name})
     target_compile_definitions(${target} PRIVATE ${u_project_name}_EXPORTS)
-    target_compile_definitions(${target} PRIVATE GLM_EXPORTS)
 
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         # Large memory support

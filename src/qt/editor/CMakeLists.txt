@@ -83,9 +83,9 @@ source_group("MOC Files" FILES ${MOC_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 add_library(inviwo::qteditor ALIAS inviwo-qteditor)
 target_link_libraries(inviwo-qteditor PUBLIC 
-    inviwo-core 
-    inviwo-qtapplicationbase 
-    inviwo-module-qtwidgets
+    inviwo::core 
+    inviwo::qtapplicationbase
+    inviwo::module::qtwidgets
     Qt5::Core 
     Qt5::Gui 
     Qt5::Widgets 

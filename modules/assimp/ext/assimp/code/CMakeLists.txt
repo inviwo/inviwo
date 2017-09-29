@@ -737,6 +737,7 @@ else (UNZIP_FOUND)
 	INCLUDE_DIRECTORIES("../contrib/unzip")
 endif (UNZIP_FOUND)
 
+# we do inviwo install below... 
 #INSTALL( TARGETS assimp
 #         LIBRARY DESTINATION ${ASSIMP_LIB_INSTALL_DIR}
 #         ARCHIVE DESTINATION ${ASSIMP_LIB_INSTALL_DIR}

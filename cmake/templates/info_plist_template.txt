@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>inviwo</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Inviwo @IVW_VERSION@, Copyright (c) 2012-2015 Inviwo Foundation</string>
+	<string>Inviwo @IVW_VERSION@, Copyright (c) 2012-2017 Inviwo Foundation</string>
 	<key>CFBundleIconFile</key>
 	<string>inviwo_light.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -47,6 +47,6 @@
 	<key>LSRequiresCarbon</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
-	<string>(C) 2012-2015 Inviwo Foundation</string>
+	<string>(C) 2012-2017 Inviwo Foundation</string>
 </dict>
 </plist>

@@ -568,7 +568,7 @@ ivw_define_standard_definitions(IVW_CORE inviwo-core)
 ivw_define_standard_properties(inviwo-core)
 
 #--------------------------------------------------------------------
-# Add core folders to includes
+# Add core folders to includes, this will also be picked up by all the modules
 target_include_directories(inviwo-core PUBLIC 
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
@@ -578,10 +578,16 @@ target_include_directories(inviwo-core PUBLIC
 )
 
 # Add path for external modules
-if (NOT "${IVW_EXTERNAL_MODULES}" STREQUAL "")
+# example we have an extarnal path to: /my/dir/structure/repo/modules
+# inside the module folder we have a bunch of modules.
+# we will add /my/dir/structure/repo as an include path since
+# we usually refer to module headers as <modules/mymodule1/someheader.h>
+# hence we add the parent of the path given.
+if (IVW_EXTERNAL_MODULES)
     foreach(dir ${IVW_EXTERNAL_MODULES})
+        get_filename_component(dir_parent ${dir} PATH)
         target_include_directories(inviwo-core PUBLIC 
-            $<BUILD_INTERFACE:${dir}>
+            $<BUILD_INTERFACE:${dir_parent}>
         )
     endforeach()
 endif()

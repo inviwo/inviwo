@@ -43,14 +43,14 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Register the use of modules
-macro(ivw_register_use_of_modules target)
+function(ivw_register_use_of_modules target)
     set(modules "")
     foreach(module ${ARGN})
         string(TOUPPER ${module} u_module)
         list(APPEND modules "REG_${u_module}")
     endforeach()
     target_compile_definitions(${target} PUBLIC ${modules})
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Retrieve all modules as a list
@@ -388,7 +388,7 @@ endfunction()
 # Creates project module from name
 # This it called from the inviwo module CMakeLists.txt 
 # that is included from ivw_register_modules. 
-macro(ivw_create_module)
+function(ivw_create_module)
     string(TOLOWER ${PROJECT_NAME} l_project_name)
     ivw_debug_message(STATUS "create module: ${PROJECT_NAME}")
     ivw_dir_to_mod_dep(mod ${l_project_name})  # opengl -> INVIWOOPENGLMODULE
@@ -432,30 +432,30 @@ macro(ivw_create_module)
     # Make package (for other modules to find)
     ivw_make_package($Inviwo${PROJECT_NAME}Module ${${mod}_target})
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Adds dependency to the target 
-macro(ivw_add_module_dependencies target)
+function(ivw_add_module_dependencies target)
     ivw_mod_name_to_alias(ivw_dep_targets ${ARGN})
     target_link_libraries(${target} PUBLIC ${ivw_dep_targets})
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
-# Add all external modules specified in cmake string IVW_EXTERNAL_MODULES
-macro(ivw_add_external_projects)
+# Add all external projects specified in cmake string IVW_EXTERNAL_PROJECTS
+function(ivw_add_external_projects)
     foreach(project_root_path ${IVW_EXTERNAL_PROJECTS})
         string(STRIP ${project_root_path} project_root_path)
         get_filename_component(FOLDER_NAME ${project_root_path} NAME)
         add_subdirectory(${project_root_path} ${CMAKE_CURRENT_BINARY_DIR}/ext_${FOLDER_NAME})
     endforeach()
-endmacro()
+endfunction()
 
 #-------------------------------------------------------------------#
 #                        Precompile headers                         #
 #-------------------------------------------------------------------#
 # Set header ignore paths for cotire
-macro(ivw_cotire_ignore_on_target target)
+function(ivw_cotire_ignore_on_target target)
     get_target_property(COTIRE_PREFIX_HEADER_IGNORE_PATH ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
     if(NOT COTIRE_PREFIX_HEADER_IGNORE_PATH)
         set(COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -465,10 +465,10 @@ macro(ivw_cotire_ignore_on_target target)
     list(REMOVE_DUPLICATES COTIRE_PREFIX_HEADER_IGNORE_PATH)
 
     set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}")  
-endmacro()
+endfunction()
 
 # Optimize compilation with pre-compilied headers from inviwo core
-macro(ivw_compile_optimize_inviwo_core_on_target target)
+function(ivw_compile_optimize_inviwo_core_on_target target)
     if(PRECOMPILED_HEADERS)
         ivw_cotire_ignore_on_target(${target})
         set_target_properties(${target} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
@@ -476,14 +476,14 @@ macro(ivw_compile_optimize_inviwo_core_on_target target)
         set_target_properties(${target} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
         cotire(${target})
     endif()
-endmacro()
+endfunction()
 
 # Optimize compilation with pre-compilied headers
-macro(ivw_compile_optimize_on_target target)
+function(ivw_compile_optimize_on_target target)
     if(PRECOMPILED_HEADERS)
         ivw_cotire_ignore_on_target(${target})
         set_target_properties(${target} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
         set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${IVW_EXTENSIONS_DIR}")
         cotire(${target})
     endif()
-endmacro()
+endfunction()

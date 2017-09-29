@@ -539,28 +539,32 @@ function(ivw_private_get_ivw_module_name path retval)
      set(${retval} NOTFOUND PARENT_SCOPE)
 endfunction()
 
+#--------------------------------------------------------------------
+# Verify that a given path and dir name is in fact a inviwo module
+# This is done by chekcing that there exists a CMakeLists file
+# and that it declares a inviwo module with the same name as dir.
 function(ivw_private_is_valid_module_dir path dir retval)
-    if(IS_DIRECTORY ${module_path}/${dir})
+    if(IS_DIRECTORY ${path}/${dir})
         string(TOLOWER ${dir} test)
         string(REPLACE " " "" ${test} test)
         if(${dir} STREQUAL ${test})
-            if(EXISTS ${module_path}/${dir}/CMakeLists.txt)
-                ivw_private_get_ivw_module_name(${module_path}/${dir}/CMakeLists.txt name)
+            if(EXISTS ${path}/${dir}/CMakeLists.txt)
+                ivw_private_get_ivw_module_name(${path}/${dir}/CMakeLists.txt name)
                 string(TOLOWER ${name} l_name)
                 if(${dir} STREQUAL ${l_name})
                     set(${retval} TRUE PARENT_SCOPE)
                     return()
                 else()
-                    message("Found invalid module \"${dir}\" at \"${module_path}\". "
+                    message("Found invalid module \"${dir}\" at \"${path}\". "
                         "ivw_module called with \"${name}\" which is different from the directory \"${dir}\""
                         "They should be the same except for casing.")
                 endif()
             else()
-                message("Found invalid module \"${dir}\" at \"${module_path}\". "
+                message("Found invalid module \"${dir}\" at \"${path}\". "
                     "CMakeLists.txt is missing")
             endif()
         else()
-            message("Found invalid module dir \"${dir}\" at \"${module_path}\". "
+            message("Found invalid module dir \"${dir}\" at \"${path}\". "
                 "Dir names should be all lowercase and without spaces")
         endif()
     endif()

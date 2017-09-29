@@ -147,9 +147,12 @@ endmacro()
 #--------------------------------------------------------------------
 # Make package (with configure file etc)
 macro(ivw_make_package package_name target)
-    include(CMakePackageConfigHelpers)
+ # Will uncomment in the future, this is for when we what to ship 
+ # a version that also includes header files, so one can build modules 
+ # without having to build all of inviwo. So far this is just work in progress
+ #   include(CMakePackageConfigHelpers)
 
-    set(${target}_VERSION 1.0.0)
+ #   set(${target}_VERSION 1.0.0)
 
  #   write_basic_package_version_file(
  #       "${CMAKE_CURRENT_BINARY_DIR}/cmake/${target}-config-version.cmake"
@@ -174,24 +177,23 @@ macro(ivw_make_package package_name target)
  #           @ONLY
  #       )
  #   endif()
-
-    #set(ConfigPackageLocation lib/cmake/${target})
-    #install(EXPORT ${target}-targets
-    #    FILE 
-    #        ${target}-targets.cmake
-    #    NAMESPACE 
-    #        ${target}::
-    #    DESTINATION 
-    #        ${ConfigPackageLocation}
-    #)
-    #install(
-    #    FILES
-    #        "${CMAKE_CURRENT_BINARY_DIR}/cmake/${target}-config.cmake"
-    #        "${CMAKE_CURRENT_BINARY_DIR}/cmake/${target}-config-version.cmake"
-    #    DESTINATION
-    #        ${ConfigPackageLocation}
-    #    COMPONENT
-    #        Devel
-    #)
-
+ 
+ #   set(ConfigPackageLocation lib/cmake/${target})
+ #   install(EXPORT ${target}-targets
+ #       FILE 
+ #           ${target}-targets.cmake
+ #       NAMESPACE 
+ #           ${target}::
+ #       DESTINATION 
+ #           ${ConfigPackageLocation}
+ #   )
+ #   install(
+ #       FILES
+ #           "${CMAKE_CURRENT_BINARY_DIR}/cmake/${target}-config.cmake"
+ #           "${CMAKE_CURRENT_BINARY_DIR}/cmake/${target}-config-version.cmake"
+ #       DESTINATION
+ #           ${ConfigPackageLocation}
+ #       COMPONENT
+ #           Devel
+ #   )
 endmacro()
