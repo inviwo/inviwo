@@ -583,11 +583,14 @@ target_include_directories(inviwo-core PUBLIC
 # we will add /my/dir/structure/repo as an include path since
 # we usually refer to module headers as <modules/mymodule1/someheader.h>
 # hence we add the parent of the path given.
+# Except for in the module registration where we don't include 'modules'
+# So we need to add the acctual path also
 if (IVW_EXTERNAL_MODULES)
     foreach(dir ${IVW_EXTERNAL_MODULES})
         get_filename_component(dir_parent ${dir} PATH)
         target_include_directories(inviwo-core PUBLIC 
             $<BUILD_INTERFACE:${dir_parent}>
+            $<BUILD_INTERFACE:${dir}>
         )
     endforeach()
 endif()
