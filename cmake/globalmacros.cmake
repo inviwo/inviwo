@@ -142,6 +142,25 @@ function(ivw_private_create_pyconfig modulepaths activemodules)
                    ${CMAKE_BINARY_DIR}/pyconfig.ini @ONLY)
 endfunction()
 
+function(ivw_private_filter_dependency_list retval module)
+    set(the_list "")
+    if(ARGN)
+        foreach(item ${ARGN})
+            string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
+            if(found_item)
+                list(APPEND the_list ${item})
+            else()
+                string(TOLOWER ${module} l_module)
+                message(WARNING "Found dependency: \"${item}\", "
+                    "which is not an Inviwo module in depends.cmake for module: \"${module}\". "
+                    "Incorporate non Inviwo module dependencies using regular target_link_libraries. "
+                    "For example: target_link_libraries(inviwo-module-${l_module} PUBLIC ${item})")
+            endif()
+        endforeach()
+    endif()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
 #--------------------------------------------------------------------
 # Register modules
 # Generate module options (which was not specified before) and,
@@ -186,7 +205,7 @@ function(ivw_register_modules retval)
                 if(EXISTS "${${mod}_path}/depends.cmake")
                     set(dependencies "")
                     set(aliases "")
-                    include(${${mod}_path}/depends.cmake) 
+                    include(${${mod}_path}/depends.cmake)
                     set("${mod}_dependencies" ${dependencies} CACHE INTERNAL "Module dependencies")
                     set("${mod}_aliases" ${aliases} CACHE INTERNAL "Module aliases")
                     unset(dependencies)
@@ -260,6 +279,8 @@ function(ivw_register_modules retval)
                 list(APPEND new_dependencies ${dependency})
             endif()
         endforeach()
+        # Validate that there only are module dependencies
+        ivw_private_filter_dependency_list(new_dependencies ${${mod}_class} ${new_dependencies})
         set("${mod}_dependencies" ${new_dependencies} CACHE INTERNAL "Module dependencies")
     endforeach()
 

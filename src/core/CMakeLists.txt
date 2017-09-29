@@ -569,45 +569,31 @@ ivw_define_standard_properties(inviwo-core)
 
 #--------------------------------------------------------------------
 # Add core folders to includes
-
 target_include_directories(inviwo-core PUBLIC 
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
-    $<INSTALL_INTERFACE:include/ext>
     $<BUILD_INTERFACE:${IVW_MODULE_DIR}> # We should not use these..."
-    $<INSTALL_INTERFACE:modules/> # We should not use these..."
     $<BUILD_INTERFACE:${IVW_ROOT_DIR}> # We should not use these..."
-    $<INSTALL_INTERFACE:/> # We should not use these..."
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/modules/_generated>
 )
 
 # Add path for external modules
 if (NOT "${IVW_EXTERNAL_MODULES}" STREQUAL "")
     foreach(dir ${IVW_EXTERNAL_MODULES})
-        ivw_include_directories(${dir})
         target_include_directories(inviwo-core PUBLIC 
             $<BUILD_INTERFACE:${dir}>
-            #???
         )
-
-        #get_filename_component(dir_parent ${dir} PATH)
-        #ivw_include_directories(${dir_parent})
     endforeach()
 endif()
 
-target_include_directories(inviwo-core PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/modules/_generated>
-    #???
-)
-
 # Add core dependencies to this list
-target_link_libraries(inviwo-core PUBLIC ticpp tinydir)
+target_link_libraries(inviwo-core PUBLIC ticpp inviwo::tinydir)
 
 if(IVW_SIGAR)
-    target_link_libraries(inviwo-core PUBLIC sigar)
+    target_link_libraries(inviwo-core PUBLIC inviwo::sigar)
 endif()
 if(WIN32)
-    target_link_libraries(inviwo-core PUBLIC stackwalker)
+    target_link_libraries(inviwo-core PUBLIC inviwo::stackwalker)
 endif()
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)

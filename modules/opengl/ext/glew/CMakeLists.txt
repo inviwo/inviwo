@@ -42,13 +42,13 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 #--------------------------------------------------------------------
 # Create a target for the library
 add_library(GLEW ${SOURCE_FILES} ${HEADER_FILES})
+add_library(inviwo::GLEW ALIAS GLEW)
 target_link_libraries(GLEW PUBLIC ${OPENGL_LIBRARIES})
 
 #--------------------------------------------------------------------
 # Set includes
 target_include_directories(GLEW PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    #$<INSTALL_INTERFACE:???>
     ${OPENGL_INCLUDE_DIR}
 )
 if(BUILD_SHARED_LIBS)
