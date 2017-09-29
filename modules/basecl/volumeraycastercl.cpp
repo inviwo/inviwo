@@ -48,18 +48,19 @@ VolumeRaycasterCL::VolumeRaycasterCL()
     , outputOffset_(0)
     , outputSize_(1)
     , camera_(nullptr)
+    , light_(1)
     , samplingRate_(2.f)
     , background_(nullptr)
     , defaultBackground_(uvec2(1), DataVec4UInt8::get())
     , lightStruct_(sizeof(utilcl::LightParameters), DataUInt8::get(), BufferUsage::Static, nullptr,
                    CL_MEM_READ_ONLY)
     , kernel_(nullptr) {
-    light_.ambientColor = vec4(1.f);
-    light_.diffuseColor = vec4(1.f);
-    light_.specularColor = vec4(1.f);
-    light_.specularExponent = 110.f;
-    light_.position = vec4(0.7f);
-    light_.shadingMode = ShadingMode::Phong;
+    light_[0].ambientColor = vec4(1.f);
+    light_[0].diffuseColor = vec4(1.f);
+    light_[0].specularColor = vec4(1.f);
+    light_[0].specularExponent = 110.f;
+    light_[0].position = vec4(0.7f);
+    light_[0].shadingMode = ShadingMode::Phong;
 
     compileKernel();
 }
@@ -139,7 +140,7 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const VolumeCLBase* 
     kernel_->setArg(4, *exitCLGL);
     kernel_->setArg(5, *transferFunctionCL);
     kernel_->setArg(6, camera_->getLookFrom());
-    kernel_->setArg(9, *outImageCL);
+    kernel_->setArg(10, *outImageCL);
     //
     OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, globalWorkGroupSize,
                                                       localWorkGroupSize, waitForEvents, event);
@@ -159,7 +160,7 @@ void VolumeRaycasterCL::samplingRate(float samplingRate) {
 void VolumeRaycasterCL::outputOffset(ivec2 val) {
     if (kernel_) {
         try {
-            kernel_->setArg(10, val);
+            kernel_->setArg(11, val);
         } catch (cl::Error& err) {
             LogError(getCLErrorString(err));
         }
@@ -171,7 +172,7 @@ void VolumeRaycasterCL::outputOffset(ivec2 val) {
 void VolumeRaycasterCL::outputSize(ivec2 val) {
     if (kernel_) {
         try {
-            kernel_->setArg(11, val);
+            kernel_->setArg(12, val);
         } catch (cl::Error& err) {
             LogError(getCLErrorString(err));
         }
@@ -191,40 +192,57 @@ void VolumeRaycasterCL::setKernelArguments() {
     outputOffset(outputOffset_);
     outputSize(outputSize_);
     samplingRate(samplingRate());
-    setLightingProperties(light_.shadingMode, vec3(light_.position), vec3(light_.ambientColor),
-                          vec3(light_.diffuseColor), vec3(light_.specularColor),
-                          light_.specularExponent);
+    setLightingKernelArgs();
 }
 
 void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition,
                                               const vec3& ambientColor, const vec3& diffuseColor,
                                               const vec3& specularColor, float specularExponent) {
-    light_.position = vec4(lightPosition, 1.f);
-    light_.ambientColor = vec4(ambientColor, 1.f);
-    light_.diffuseColor = vec4(diffuseColor, 1.f);
-    light_.specularColor = vec4(specularColor, 1.f);
-    light_.specularExponent = specularExponent;
-    if (mode != light_.shadingMode) {
-        light_.shadingMode = mode;
+    auto prevShadingMode = light_[0].shadingMode;
+    if (light_.size() != 1) {
+        light_.resize(1);
+    }
+    light_[0].position = vec4(lightPosition, 1.f);
+    light_[0].ambientColor = vec4(ambientColor, 1.f);
+    light_[0].diffuseColor = vec4(diffuseColor, 1.f);
+    light_[0].specularColor = vec4(specularColor, 1.f);
+    light_[0].specularExponent = specularExponent;
+    if (mode != prevShadingMode) {
+        light_[0].shadingMode = mode;
         compileKernel();
     }
-    if (kernel_) {
-        try {
-            // Update data before returning it
-            lightStruct_.upload(&light_, sizeof(utilcl::LightParameters));
-
-            kernel_->setArg(8, lightStruct_);
-        } catch (cl::Error& err) {
-            LogError(getCLErrorString(err));
-        }
-    }
+    setLightingKernelArgs();
 }
 
 void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& light) {
-    const auto& l0 = light.lights_[0];
-    setLightingProperties(ShadingMode::Modes(light.shadingMode_.get()), l0.lightPosition_.get(),
-                          l0.ambientColor_.get(), l0.diffuseColor_.get(),
-                          l0.specularColor_.get(), light.specularExponent_.get());
+    auto shadingMode = ShadingMode::Modes(light.shadingMode_.get());
+    if (light_[0].shadingMode != shadingMode) {
+        light_[0].shadingMode = shadingMode;
+        compileKernel();
+    }
+    if (light.lights_.size() > 0) {
+        light_.resize(light.lights_.size());
+        for (size_t lightId = 0; lightId < light.lights_.size(); ++lightId) {
+            const auto& l0 = light.lights_[lightId];
+            light_[lightId].position = vec4(l0.lightPosition_.get(), 1.f);
+            light_[lightId].ambientColor = vec4(l0.ambientColor_.get(), 1.f);
+            light_[lightId].diffuseColor = vec4(l0.diffuseColor_.get(), 1.f);
+            light_[lightId].specularColor = vec4(l0.specularColor_.get(), 1.f);
+            light_[lightId].specularExponent = light.specularExponent_.get();
+            light_[lightId].shadingMode = shadingMode;
+        }
+    } else {
+        auto prevShadingMode = light_[0].shadingMode;
+        // No light
+        light_.resize(1);
+        light_[0].ambientColor = vec4(0.f);
+        light_[0].diffuseColor = vec4(0.f);
+        light_[0].specularColor = vec4(0.f);
+        light_[0].specularExponent = 0.f;
+        light_[0].position = vec4(0.0f);
+        light_[0].shadingMode = prevShadingMode;
+    }
+    setLightingKernelArgs();
 }
 
 void VolumeRaycasterCL::setDefaultBackgroundColor(const vec4 color) {
@@ -241,12 +259,26 @@ void VolumeRaycasterCL::compileKernel() {
         removeKernel(kernel_);
     }
     std::stringstream defines;
-    if (light_.shadingMode != 0) defines << " -D SHADING_MODE=" << light_.shadingMode;
+    if (light_[0].shadingMode != 0) defines << " -D SHADING_MODE=" << light_[0].shadingMode;
     // Will compile kernel and make sure that it it
     // recompiled whenever the file changes
     // If the kernel fails to compile it will be set to nullptr
     kernel_ = addKernel("volumeraycaster.cl", "raycaster", "", defines.str());
     setKernelArguments();
+}
+    
+void VolumeRaycasterCL::setLightingKernelArgs() {
+    if (kernel_) {
+        try {
+            // Upload data light sources
+            lightStruct_.upload(&light_.front(), light_.size()*sizeof(utilcl::LightParameters));
+            
+            kernel_->setArg(8, lightStruct_);
+            kernel_->setArg(9, static_cast<int>(light_.size()));
+        } catch (cl::Error& err) {
+            LogError(getCLErrorString(err));
+        }
+    }
 }
 
 }  // namespace

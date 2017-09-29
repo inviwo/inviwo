@@ -130,13 +130,14 @@ public:
 
 private:
     void compileKernel();
+    void setLightingKernelArgs();
     // Parameters
     size2_t workGroupSize_;
     bool useGLSharing_;
     ivec2 outputOffset_;
     ivec2 outputSize_;
     CameraProperty* camera_;
-    utilcl::LightParameters light_;
+    std::vector<utilcl::LightParameters> light_; // Always size >= 1, no lights means single black light
     float samplingRate_;
 
     const Layer* background_;
