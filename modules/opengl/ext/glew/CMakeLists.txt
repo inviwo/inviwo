@@ -52,9 +52,9 @@ target_include_directories(GLEW PUBLIC
     ${OPENGL_INCLUDE_DIR}
 )
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(GLEW PUBLIC -DGLEW_BUILD)
+    target_compile_definitions(GLEW PRIVATE GLEW_BUILD)
 else()
-    target_compile_definitions(GLEW PUBLIC -DGLEW_STATIC)
+    target_compile_definitions(GLEW PRIVATE GLEW_STATIC)
 endif()
 
 ivw_folder(GLEW ext)
