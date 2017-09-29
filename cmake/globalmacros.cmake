@@ -651,15 +651,6 @@ macro(ivw_define_standard_definitions project_name target_name)
         target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
     endif()
 
-    # Runtime module loading is only applicable to executables (InviwoApplication).
-    get_target_property(target_type ${target_name} TYPE)
-    if("${target_type}" STREQUAL "EXECUTABLE" AND IVW_RUNTIME_MODULE_LOADING)
-        target_compile_definitions(${target_name} PRIVATE -DIVW_RUNTIME_MODULE_LOADING)
-        if (IVW_RUNTIME_MODULE_RELOADING)
-            target_compile_definitions(${target_name} PRIVATE -DIVW_RUNTIME_MODULE_RELOADING)
-        endif()
-    endif()
-
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 endmacro()
 
