@@ -2,12 +2,6 @@
 
 project(openexr)
 
-find_package(openexr-iex REQUIRED)
-find_package(openexr-iexmath REQUIRED)
-find_package(openexr-imath REQUIRED)
-find_package(openexr-half REQUIRED)
-find_package(openexr-ilmthread REQUIRED)
-
 SET(OPENEXR_VERSION_MAJOR "2")
 SET(OPENEXR_VERSION_MINOR "2")
 SET(OPENEXR_VERSION_PATCH "0")
@@ -56,8 +50,9 @@ INCLUDE_DIRECTORIES (
   # IlmImfFuzzTest
 )
 
-FIND_PACKAGE(ZLIB REQUIRED)
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+#FIND_PACKAGE(ZLIB REQUIRED)
+get_target_property(ZLIB_INCLUDE_DIRS inviwo::zlib1 INTERFACE_INCLUDE_DIRECTORIES)
+INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
 
 IF (NOT WIN32)
   SET ( PTHREAD_LIB pthread )
