@@ -580,7 +580,7 @@ add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Define standard defintions
-ivw_define_standard_definitions(inviwo-core inviwo-core)
+ivw_define_standard_definitions(IVW_CORE inviwo-core)
 ivw_define_standard_properties(inviwo-core)
 if(IVW_RUNTIME_MODULE_LOADING)
     # Propagate defines to projects dependent on core (PUBLIC)
