@@ -147,7 +147,7 @@ endmacro()
 #--------------------------------------------------------------------
 # Make package (with configure file etc)
 macro(ivw_make_package package_name target)
- # Will uncomment in the future, this is for when we what to ship 
+ # Will uncomment in the future, this is for when we want to ship 
  # a version that also includes header files, so one can build modules 
  # without having to build all of inviwo. So far this is just work in progress
  #   include(CMakePackageConfigHelpers)
