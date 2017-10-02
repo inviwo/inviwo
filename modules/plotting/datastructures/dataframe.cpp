@@ -96,7 +96,7 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
         errStr << "DataFrame: data type mismatch for columns: (";
         std::copy(columnIdForDataTypeErrors.begin(),columnIdForDataTypeErrors.end(), 
              std::ostream_iterator<size_t>(errStr,", "));
-        errStr << ") with values: ("
+        errStr << ") with values: (";
         std::copy(data.begin(),data.end(), 
              std::ostream_iterator<std::string>(errStr,", "));
         errStr << ")";
