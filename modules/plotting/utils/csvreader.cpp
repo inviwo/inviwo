@@ -66,13 +66,13 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
     std::stringstream in(buffer.data());
 
     // current line
-    size_t line = 1u;
+    size_t lineNumber = 1u;
 
     auto extractColumn = [&]() -> std::pair<std::string, bool> {
         std::string value;
         size_t quoteCount = 0;
         char prev = 0;
-        const size_t start = line;
+        const size_t start = lineNumber;
 
         auto isLineBreak = [](const char ch, auto& in) {
             if (ch == '\r') {
@@ -90,7 +90,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
         while (in.get(ch)) {
             bool linebreak = isLineBreak(ch, in);
             if (linebreak) {
-                ++line;  // increase line counter
+                ++lineNumber;  // increase line counter
                 // ensure that ch is equal to '\n'
                 ch = '\n';
                 // consume line break, if inside quotes
@@ -113,7 +113,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
             value += ch;
         }
         if (((quoteCount & 1) != 0) && in.eof()) {
-            throw Exception("CSVReader: unmatched quotes (line " + std::to_string(startLine) + ")");
+            throw Exception("CSVReader: unmatched quotes (line " + std::to_string(lineNumber) + ")");
         }
         return {value, false};
     };
