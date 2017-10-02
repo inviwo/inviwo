@@ -88,15 +88,18 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
         try {
             columns_[i+1]->add(data[i]);
         } catch (InvalidConversion &) {
-            columnIdForDataTypeErrors.push_back(i);
+            columnIdForDataTypeErrors.push_back(i+1);
         }
     }
     if (!columnIdForDataTypeErrors.empty()) {
         std::stringstream errStr;
-        errStr << "DataFrame: data type does not match for columns:";
-        for (auto column : columnIdForDataTypeErrors) {
-            errStr << " " << (column + 1) << " (value: " << data[column] << ")";
-        }
+        errStr << "DataFrame: data type mismatch for columns: (";
+        std::copy(columnIdForDataTypeErrors.begin(),columnIdForDataTypeErrors.end(), 
+             std::ostream_iterator<size_t>(errStr,", "));
+        errStr << ") with values: ("
+        std::copy(data.begin(),data.end(), 
+             std::ostream_iterator<std::string>(errStr,", "));
+        errStr << ")";
         throw DataTypeMismatch(errStr.str());
     }
 }
