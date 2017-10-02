@@ -33,13 +33,10 @@
 namespace inviwo {
 
 SingleFileObserver::SingleFileObserver(std::string filename) : FileObserver(), filename_(filename) {
-    InviwoApplication::getPtr()->registerFileObserver(this);
     start();
 }
 
 SingleFileObserver::~SingleFileObserver() {
-    stop();
-    InviwoApplication::getPtr()->unRegisterFileObserver(this);
 }
 
 void SingleFileObserver::start() { startFileObservation(filename_); }

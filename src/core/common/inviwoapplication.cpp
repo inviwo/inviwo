@@ -559,13 +559,23 @@ void InviwoApplication::registerModules(
         if (lpfnAdllDllDirectory) {
             // Add search paths to find module dll dependencies
             for (auto searchPath : librarySearchPaths) {
-                addedSearchDirectories.emplace_back(
-                    AddDllDirectory(converter.from_bytes(searchPath).c_str()));
+                const auto path = converter.from_bytes(searchPath);
+                const auto dlldir = AddDllDirectory(path.c_str());
+                if (dlldir) {
+                    addedSearchDirectories.emplace_back(dlldir);
+                } else {
+                    LogWarn("Could not get AddDllDirectory for path " << searchPath);
+                }
             }
             // Also add recursively found directories
             for (auto searchPath : libraryDirectories) {
-                addedSearchDirectories.emplace_back(
-                    AddDllDirectory(converter.from_bytes(searchPath).c_str()));
+                const auto path = converter.from_bytes(searchPath);
+                const auto dlldir = AddDllDirectory(path.c_str());
+                if (dlldir) {
+                    addedSearchDirectories.emplace_back(dlldir);
+                } else {
+                    LogWarn("Could not get AddDllDirectory for path " << searchPath);
+                }
             }
         }
 

@@ -73,12 +73,10 @@ private:
 
 class QCHFileObserver : public FileObserver {
 public:
-    QCHFileObserver(InviwoApplication* app, QHelpEngineCore* engine) : app_(app), engine_(engine) {
-        app_->registerFileObserver(this);    
+    QCHFileObserver(InviwoApplication* app, QHelpEngineCore* engine) : app_(app), engine_(engine) { 
     }
 
     virtual ~QCHFileObserver() {
-        app_->unRegisterFileObserver(this);
     }
     void addFile(const std::string& fileName) {
         reload(fileName);
