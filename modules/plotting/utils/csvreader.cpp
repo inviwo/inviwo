@@ -72,7 +72,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
         std::string value;
         size_t quoteCount = 0;
         char prev = 0;
-        const size_t startLine = line;
+        const size_t start = line;
 
         auto isLineBreak = [](const char ch, auto& in) {
             if (ch == '\r') {
@@ -155,7 +155,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
     }
     // figure out column types
     auto dataFrame = plot::createDataFrame(data, headers);
-    
+    size_t rowIndex = firstRowHeader_ ? 1 : 0;
     while (!data.empty()) {
         try {
             // Do not add empty rows, i.e. rows with only delimiters (,,,,) or newline
@@ -165,10 +165,10 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
             }
         } catch (plot::DataTypeMismatch& e) {
             // Continue reading data since it is not a fatal error
-            auto rowIndex = dataFrame->getSize() + (firstRowHeader_ ? 1 : 0);
-            LogInfo("Row " << rowIndex << ": " << e.what());
+            LogError("Row " << rowIndex << ": " << e.what());
         }
         data = extractRow();
+        ++rowIndex;
     }
     dataFrame->updateIndexBuffer();
     return dataFrame;
