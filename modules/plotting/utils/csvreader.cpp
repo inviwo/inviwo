@@ -30,6 +30,7 @@
 #include <modules/plotting/utils/csvreader.h>
 
 #include <modules/plotting/datastructures/column.h>
+#include <modules/plotting/datastructures/dataframe.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <fstream>
@@ -65,13 +66,13 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
     std::stringstream in(buffer.data());
 
     // current line
-    size_t line = 1u;
+    size_t lineNumber = 1u;
 
     auto extractColumn = [&]() -> std::pair<std::string, bool> {
         std::string value;
         size_t quoteCount = 0;
         char prev = 0;
-        const size_t startLine = line;
+        const size_t start = lineNumber;
 
         auto isLineBreak = [](const char ch, auto& in) {
             if (ch == '\r') {
@@ -85,15 +86,11 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
             }
         };
 
-        // ignore empty lines
-        while (!in.eof() && ((in.peek() == '\n') || (in.peek() == '\r'))) {
-            in.get();
-        }
         char ch;
         while (in.get(ch)) {
             bool linebreak = isLineBreak(ch, in);
             if (linebreak) {
-                ++line;  // increase line counter
+                ++lineNumber;  // increase line counter
                 // ensure that ch is equal to '\n'
                 ch = '\n';
                 // consume line break, if inside quotes
@@ -116,7 +113,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
             value += ch;
         }
         if (((quoteCount & 1) != 0) && in.eof()) {
-            throw Exception("CSVReader: unmatched quotes (line " + std::to_string(startLine) + ")");
+            throw Exception("CSVReader: unmatched quotes (line " + std::to_string(lineNumber) + ")");
         }
         return {value, false};
     };
@@ -158,11 +155,20 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
     }
     // figure out column types
     auto dataFrame = plot::createDataFrame(data, headers);
-    
+    size_t rowIndex = firstRowHeader_ ? 1 : 0;
     while (!data.empty()) {
-        dataFrame->addRow(data);
-
+        try {
+            // Do not add empty rows, i.e. rows with only delimiters (,,,,) or newline
+            auto emptyIt = std::find_if(std::begin(data), std::end(data), [](const auto& a) { return !a.empty(); });
+            if (emptyIt != data.end()) {
+                dataFrame->addRow(data);
+            }
+        } catch (plot::DataTypeMismatch& e) {
+            // Continue reading data since it is not a fatal error
+            LogError("Row " << rowIndex << ": " << e.what());
+        }
         data = extractRow();
+        ++rowIndex;
     }
     dataFrame->updateIndexBuffer();
     return dataFrame;

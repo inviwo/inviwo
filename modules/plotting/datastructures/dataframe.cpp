@@ -82,14 +82,25 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
     } else if (columns_.size() != data.size() + 1) { // consider index column of DataFrame
         throw InvalidColCount("DataFrame: data does not match column count");
     }
-    // try to match up input data with columns.
+    // Try to match up input data with columns.
+    std::vector<size_t> columnIdForDataTypeErrors;
     for (size_t i = 0; i < data.size(); ++i) {
         try {
             columns_[i+1]->add(data[i]);
         } catch (InvalidConversion &) {
-            throw DataTypeMismatch("DataFrame: data type does not match (col. " +
-                                   std::to_string(i + 1) + ")");
+            columnIdForDataTypeErrors.push_back(i+1);
         }
+    }
+    if (!columnIdForDataTypeErrors.empty()) {
+        std::stringstream errStr;
+        errStr << "DataFrame: data type mismatch for columns: (";
+        std::copy(columnIdForDataTypeErrors.begin(),columnIdForDataTypeErrors.end(), 
+             std::ostream_iterator<size_t>(errStr,", "));
+        errStr << ") with values: (";
+        std::copy(data.begin(),data.end(), 
+             std::ostream_iterator<std::string>(errStr,", "));
+        errStr << ")";
+        throw DataTypeMismatch(errStr.str());
     }
 }
 
