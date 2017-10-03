@@ -96,7 +96,12 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
                        Li += shadeBlinnPhong(light[lightId],  color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
                 #elif SHADING_MODE == 5
                        Li += shadePhong(light[lightId], color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+                #elif SHADING_MODE == 6
+                        Li += shadeOrenNayar(light[lightId], color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+                #elif SHADING_MODE == 7 
+                        Li += shadeOrenNayarDiffuseCalculation(light[lightId], color.xyz, worldSpacePosition, -gradient, toCameraDir);
                 #endif
+
                 #else
                     Li = color.xyz;
                 #endif

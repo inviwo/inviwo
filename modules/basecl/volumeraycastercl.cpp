@@ -59,6 +59,8 @@ VolumeRaycasterCL::VolumeRaycasterCL()
     light_[0].diffuseColor = vec4(1.f);
     light_[0].specularColor = vec4(1.f);
     light_[0].specularExponent = 110.f;
+    light_[0].attenuation = vec4(0.f);
+    light_[0].roughness = 0.4f;
     light_[0].position = vec4(0.7f);
     light_[0].shadingMode = ShadingMode::Phong;
 
@@ -197,7 +199,8 @@ void VolumeRaycasterCL::setKernelArguments() {
 
 void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition,
                                               const vec3& ambientColor, const vec3& diffuseColor,
-                                              const vec3& specularColor, float specularExponent) {
+                                              const vec3& specularColor, float specularExponent,
+                                              float roughness, const vec3& attenuation, bool enableAttenuation) {
     auto prevShadingMode = light_[0].shadingMode;
     if (light_.size() != 1) {
         light_.resize(1);
@@ -206,7 +209,10 @@ void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec
     light_[0].ambientColor = vec4(ambientColor, 1.f);
     light_[0].diffuseColor = vec4(diffuseColor, 1.f);
     light_[0].specularColor = vec4(specularColor, 1.f);
+    light_[0].attenuation = vec4(attenuation, enableAttenuation ? 1.f : 0.f);
     light_[0].specularExponent = specularExponent;
+    light_[0].roughness = roughness;
+    
     if (mode != prevShadingMode) {
         light_[0].shadingMode = mode;
         compileKernel();
@@ -216,7 +222,10 @@ void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec
 
 void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& light) {
     auto shadingMode = ShadingMode::Modes(light.shadingMode_.get());
-    if (light_[0].shadingMode != shadingMode) {
+    bool isAttenuationEnabled = light_[0].attenuation.w != 0.f ? true : false;
+    if (light_[0].shadingMode != shadingMode ||
+        light.applyLightAttenuation_ != isAttenuationEnabled ) {
+        light_[0].attenuation.w = !isAttenuationEnabled ? 1.f : 0.f;
         light_[0].shadingMode = shadingMode;
         compileKernel();
     }
@@ -228,18 +237,24 @@ void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& ligh
             light_[lightId].ambientColor = vec4(l0.ambientColor_.get(), 1.f);
             light_[lightId].diffuseColor = vec4(l0.diffuseColor_.get(), 1.f);
             light_[lightId].specularColor = vec4(l0.specularColor_.get(), 1.f);
+            light_[lightId].attenuation = vec4(l0.lightAttenuation_.get(),
+                                               light.applyLightAttenuation_ ? 1.f : 0.f);
             light_[lightId].specularExponent = light.specularExponent_.get();
+            light_[lightId].roughness = light.roughness_.get();
+            
             light_[lightId].shadingMode = shadingMode;
         }
     } else {
         auto prevShadingMode = light_[0].shadingMode;
         // No light
         light_.resize(1);
+        light_[0].position = vec4(0.0f);
         light_[0].ambientColor = vec4(0.f);
         light_[0].diffuseColor = vec4(0.f);
         light_[0].specularColor = vec4(0.f);
+        light_[0].attenuation = vec4(0.f);
         light_[0].specularExponent = 0.f;
-        light_[0].position = vec4(0.0f);
+        light_[0].roughness = 0.f;
         light_[0].shadingMode = prevShadingMode;
     }
     setLightingKernelArgs();
@@ -260,6 +275,7 @@ void VolumeRaycasterCL::compileKernel() {
     }
     std::stringstream defines;
     if (light_[0].shadingMode != 0) defines << " -D SHADING_MODE=" << light_[0].shadingMode;
+    if (light_[0].attenuation.w != 0) defines << " -D LIGHT_ATTENUATION";
     // Will compile kernel and make sure that it it
     // recompiled whenever the file changes
     // If the kernel fails to compile it will be set to nullptr

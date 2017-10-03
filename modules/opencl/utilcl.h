@@ -47,10 +47,12 @@ typedef struct LightParameters {
     vec4 ambientColor; 
     vec4 diffuseColor;
     vec4 specularColor;
+    vec4 attenuation; // fourth component: 1=enabled, 0 disabled
     float specularExponent;
+    float roughness;
     ShadingMode::Modes shadingMode;
 
-    char padding[56]; // Align to power of two bytes (128)
+    char padding[40]; // Align to power of two bytes (128)
 } LightParameters;
 }  // namspace utilcl
 
