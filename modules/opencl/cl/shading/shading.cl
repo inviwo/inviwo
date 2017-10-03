@@ -44,6 +44,16 @@
 // http://www.cs.ucl.ac.uk/staff/j.kautz/GameCourse/04_PointLights.pdf
 
 
+float computeLightAttenuation(LightParameters light, float3 position){
+    #ifdef LIGHT_ATTENUATION
+        float dist = length(light.position - position);
+        return 1.f / (light.attenuation.x + light.attenuation.y * dist +
+                      light.attenuation.z * (dist * dist));
+    #else
+        return 1.f;
+    #endif
+}
+
 // Helper functions to calculate the shading
 float3 shadeDiffuseCalculation(LightParameters light_, float3 materialDiffuseColor, float3 normal,
                              float3 toLightDir) {
@@ -99,7 +109,9 @@ float3 shadeBlinnPhong(LightParameters light_, float3 materialAmbientColor, floa
     float3 resDiff = shadeDiffuseCalculation(light_, materialDiffuseColor, normal, toLightDir);
     float3 resSpec = shadeSpecularBlinnPhongCalculation(light_, materialSpecularColor, normal,
                                                       toLightDir, toCameraDir);
-    return resAmb + resDiff + resSpec;
+                                                      
+    float attenuation = computeLightAttenuation(light_, position);
+    return resAmb + attenuation *(resDiff + resSpec);
 }
 
 float3 shadePhong(LightParameters light_, float3 materialAmbientColor, float3 materialDiffuseColor,
@@ -109,7 +121,47 @@ float3 shadePhong(LightParameters light_, float3 materialAmbientColor, float3 ma
     float3 resDiff = shadeDiffuseCalculation(light_, materialDiffuseColor, normal, toLightDir);
     float3 resSpec = shadeSpecularPhongCalculation(light_, materialSpecularColor, normal, toLightDir,
                                                  toCameraDir);
-    return resAmb + resDiff + resSpec;
+                                                 
+    float attenuation = computeLightAttenuation(light_, position);
+    return resAmb + attenuation * (resDiff + resSpec);
+}
+
+// http://ruh.li/GraphicsOrenNayar.html
+float3 shadeOrenNayarDiffuseCalculation(LightParameters light_, float3 materialDiffuseColor,
+                                        float3 position, float3 normal, float3 toCameraDir) {
+    float3 lightDirection = normalize(light_.position - position);
+    
+    float NdotL = dot(normal, lightDirection);
+    
+    float angleLN = acos(NdotL);
+    float roughnessSquared = light_.roughness * light_.roughness;
+    
+    float A = 1.0f - 0.5f * (roughnessSquared / (roughnessSquared + 0.57f));
+    float B = 0.45f * (roughnessSquared / (roughnessSquared + 0.09f));
+    
+    float NdotV = dot(normal, toCameraDir);
+    float angleVN = acos(NdotV);
+    
+    float alpha = max(angleVN, angleLN);
+    float beta = min(angleVN, angleLN);
+    float gamma = dot(toCameraDir - normal * dot(toCameraDir, normal),
+    lightDirection - normal * dot(lightDirection, normal));
+    
+    float C = sin(alpha) * tan(beta);
+    
+    // put it all together
+    float result = max(0.f, NdotL) * (A + B * max(0.f, gamma) * C);
+    return light_.diffuseColor * materialDiffuseColor * result;
+}
+
+float3 shadeOrenNayar(LightParameters light_, float3 materialAmbientColor,
+float3 materialDiffuseColor, float3 materialSpecularColor, float3 position, float3 normal, float3 toCameraDir) {
+
+    float3 diffuse = shadeOrenNayarDiffuseCalculation(light_, materialDiffuseColor, position, normal,
+    toCameraDir);
+    float3 ambient = shadeAmbient(light_, materialAmbientColor);
+    float attenuation = computeLightAttenuation(light_, position);
+    return ambient + attenuation*diffuse;
 }
 
 /////// Physically based shading //////////

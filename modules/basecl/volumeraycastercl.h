@@ -87,7 +87,8 @@ public:
     void setLightingProperties(const SimpleLightingProperty& light);
     void setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition,
                                const vec3& ambientColor, const vec3& diffuseColor,
-                               const vec3& specularColor, float specularExponent);
+                               const vec3& specularColor, float specularExponent,
+                               float roughness, const vec3& attenuation, bool enableAttenuation);
 
     const Layer* getBackground() const {
         if (background_)
