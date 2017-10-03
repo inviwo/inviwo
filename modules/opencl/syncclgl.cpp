@@ -37,16 +37,17 @@ std::map<cl_context, pfnclCreateEventFromSyncKHR> SyncCLGL::syncFunctionMap_;
 #endif
 
 SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
-    : context_(context)
-    , queue_(queue)
+    :
 #if defined(CL_VERSION_1_1)
-    , glFenceSync_(nullptr)
+      glFenceSync_(nullptr)
 #endif
+    , context_(context)
+    , queue_(queue)
 {
 #if defined(CL_VERSION_1_1)
-    //  Check if function clCreateEventFromGLsyncKHR has been fetched previously,
-    // add it if it has not
-    if (syncFunctionMap_.find(context()) == syncFunctionMap_.end()) {
+    // Check if function clCreateEventFromGLsyncKHR has been fetched previously
+    // and that glCreateSyncFromCLeventARB exist (non-existing on Mac).
+    if (syncFunctionMap_.find(context()) == syncFunctionMap_.end() && glCreateSyncFromCLeventARB) {
         // Get clCreateEventFromGLsyncKHR function from platform since
         // it is a vendor extension and cannot be statically linked
 #if defined(CL_VERSION_1_2)  // version >= 1.2
