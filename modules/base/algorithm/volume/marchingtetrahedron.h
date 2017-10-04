@@ -65,8 +65,8 @@ double getValue(const T *src, size3_t pos, size3_t dim, double iso, bool invert 
 
 void evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
                    std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
-                   double v0, const glm::vec3 &p1, double v1, const glm::vec3 &p2,
-                   double v2, const glm::vec3 &p3, double v3);
+                   double v0, const glm::vec3 &p1, double v1, const glm::vec3 &p2, double v2,
+                   const glm::vec3 &p3, double v3);
 
 void evaluateTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
                       std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
@@ -108,9 +108,9 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
 
     const size3_t dim{volume->getDimensions()};
     double x, y, z, dx, dy, dz;
-    dx = 1.0f / (dim.x - 1);
-    dy = 1.0f / (dim.y - 1);
-    dz = 1.0f / (dim.z - 1);
+    dx = 1.0 / static_cast<double>(std::max(size_t(1), (dim.x - 1)));
+    dy = 1.0 / static_cast<double>(std::max(size_t(1), (dim.y - 1)));
+    dz = 1.0 / static_cast<double>(std::max(size_t(1), (dim.z - 1)));
     double v[8];
     glm::vec3 p[8];
     auto volSize = dim.x * dim.y * dim.z;
@@ -175,10 +175,14 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     }
 
     if (enclose) {
+        auto cubeEdgeIndices = [](size_t n) -> std::vector<size_t> {
+            if (n == 1) return {size_t(0)};
+            return {size_t(0), n-1};
+        };
         {
             K3DTree<size_t, float> sideVertexTree;
             // Z axis
-            for (size_t k = 0; k < dim.z; k += dim.z - 1) {
+            for (auto &k : cubeEdgeIndices(dim.z)) {
                 for (size_t j = 0; j < dim.y - 1; ++j) {
                     for (size_t i = 0; i < dim.x - 1; ++i) {
                         x = dx * i;
@@ -197,15 +201,14 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
 
                         if (k == 0) {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[3], v[3], p[1], v[1]);
+                                             v[0], p[3], v[3], p[1], v[1]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[1],
-                                v[1], p[3], v[3], p[2], v[2]);
-                        }
-                        else {
+                                             v[1], p[3], v[3], p[2], v[2]);
+                        } else {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[1], v[1], p[3], v[3]);
+                                             v[0], p[1], v[1], p[3], v[3]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[1],
-                                v[1], p[2], v[2], p[3], v[3]);
+                                             v[1], p[2], v[2], p[3], v[3]);
                         }
                     }
                 }
@@ -215,7 +218,7 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
             K3DTree<size_t, float> sideVertexTree;
             // Y axis
             for (size_t k = 0; k < dim.z - 1; ++k) {
-                for (size_t j = 0; j < dim.y; j += dim.y - 1) {
+                for (auto &j : cubeEdgeIndices(dim.y)) {
                     for (size_t i = 0; i < dim.x - 1; ++i) {
                         x = dx * i;
                         y = dy * j;
@@ -233,15 +236,14 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
 
                         if (j == 0) {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[1], v[1], p[2], v[2]);
+                                             v[0], p[1], v[1], p[2], v[2]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[2], v[2], p[3], v[3]);
-                        }
-                        else {
+                                             v[0], p[2], v[2], p[3], v[3]);
+                        } else {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[2], v[2], p[1], v[1]);
+                                             v[0], p[2], v[2], p[1], v[1]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[3], v[3], p[2], v[2]);
+                                             v[0], p[3], v[3], p[2], v[2]);
                         }
                     }
                 }
@@ -252,7 +254,7 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
             // X axis
             for (size_t k = 0; k < dim.z - 1; ++k) {
                 for (size_t j = 0; j < dim.y - 1; ++j) {
-                    for (size_t i = 0; i < dim.x; i += dim.x - 1) {
+                    for (auto &i : cubeEdgeIndices(dim.z)) {
                         x = dx * i;
                         y = dy * j;
                         z = dz * k;
@@ -269,15 +271,14 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
 
                         if (i == 0) {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[3], v[3], p[1], v[1]);
+                                             v[0], p[3], v[3], p[1], v[1]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[1],
-                                v[1], p[3], v[3], p[2], v[2]);
-                        }
-                        else {
+                                             v[1], p[3], v[3], p[2], v[2]);
+                        } else {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[1], v[1], p[3], v[3]);
+                                             v[0], p[1], v[1], p[3], v[3]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[1],
-                                v[1], p[2], v[2], p[3], v[3]);
+                                             v[1], p[2], v[2], p[3], v[3]);
                         }
                     }
                 }
@@ -301,8 +302,8 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     return mesh;
 }
 
-}  // namespace
+}  // namespace detail
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MARCHINGTETRAHEDRON_H
