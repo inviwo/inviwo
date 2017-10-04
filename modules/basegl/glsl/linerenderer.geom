@@ -48,7 +48,7 @@ uniform bool roundCaps = false;
 
 in vec4 vertexColor_[];
 in vec4 worldPosition_[];
-in vec4 pickColors_[];
+flat in vec4 pickColors_[];
 
 out float segmentLength_; // total length of the current line segment in screen space
 out float lineLengthWorld_;  // total length of line segment in world space
