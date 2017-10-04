@@ -28,5 +28,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_set_cpack_name(glfw_modules)
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+
+target_link_libraries(inviwo-module-glfw PUBLIC glfw)
+
+ivw_make_package(InviwoGLFWModule inviwo-module-glfw)

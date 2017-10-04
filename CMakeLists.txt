@@ -176,22 +176,13 @@ set(ivw_default_modules
     CACHE INTERNAL "Default Inviwo Modules"
 )
 
-
 if(PYTHONLIBS_FOUND)
-    set(ivw_default_modules
-        ${ivw_default_modules}
-        "Python3"
-        "Python3Qt"
-        )
+    list(APPEND ivw_default_modules "Python3" "Python3Qt")
 endif()
 
 find_package(OpenCL QUIET)
 if(OPENCL_FOUND)
-    set(ivw_default_modules
-        ${ivw_default_modules}
-        "OpenCL"
-        "BaseCL"
-        )
+    list(APPEND ivw_default_modules "OpenCL" "BaseCL")
 endif()
 
 option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
@@ -215,11 +206,9 @@ if(WIN32)
     endif()
 endif()
 
-
 #--------------------------------------------------------------------
 # Add external projects
 ivw_add_external_projects()
-
 
 #--------------------------------------------------------------------
 # Add integration tests project

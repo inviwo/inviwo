@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Inviwo Qt Application
-ivw_project(inviwo)
+project(inviwo)
 
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
@@ -22,42 +22,26 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_qt_wrap_cpp(MOC_FILES ${HEADER_FILES})
+# Add moc files
+qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
-source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc)
 
-#--------------------------------------------------------------------
 # Add resource file
 qt5_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
-ivw_define_qt_definitions()
+source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc)
 
 #--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(enabled_modules)
 
-set(core_dependencies InviwoCore)
-list(APPEND core_dependencies InviwoQtEditor)
-list(APPEND core_dependencies InviwoQtApplicationBase)
-
-
 # Only include one OpenGL context creation module
 list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
-
-#--------------------------------------------------------------------
-# Register the use of modules
-ivw_register_use_of_modules(${enabled_modules})
 
 #--------------------------------------------------------------------
 # Determine dendendencies and set runtime module loading defines
 ivw_configure_application_module_dependencies(inviwo
                                               "${enabled_modules}"
                                               dependencies)
-list(APPEND dependencies ${core_dependencies})
-
-# Need to add dependent directories before creating application
-ivw_add_dependency_directories(${dependencies})
-
-#--------------------------------------------------------------------
 
 set(RES_FILES "")
 if(WIN32)
@@ -85,14 +69,18 @@ add_executable(inviwo MACOSX_BUNDLE WIN32
     ${QRC_FILE} 
     ${RES_FILES})
 
-target_link_libraries(inviwo PRIVATE Qt5::Core Qt5::Widgets)
-
 #--------------------------------------------------------------------
-# Define defintions
+# Register the use of modules
+ivw_register_use_of_modules(inviwo ${enabled_modules})
+target_link_libraries(inviwo PUBLIC 
+    inviwo::core
+    inviwo::qtapplicationbase
+    inviwo::qteditor
+    Qt5::Core
+    Qt5::Widgets
+)
+ivw_add_module_dependencies(inviwo ${dependencies})
 ivw_define_standard_definitions(inviwo inviwo)
-
-#--------------------------------------------------------------------
-# Define standard properties
 ivw_define_standard_properties(inviwo)
 
 #--------------------------------------------------------------------
@@ -103,7 +91,6 @@ if(IVW_PACKAGE_PROJECT)
 
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
-
         install(
             TARGETS inviwo 
             RUNTIME   DESTINATION bin 
@@ -112,7 +99,6 @@ if(IVW_PACKAGE_PROJECT)
             LIBRARY   DESTINATION Inviwo.app/Contents/MacOS/ 
             COMPONENT qt_app
         )
-
         set(plugin_dest_dir Inviwo.app/Contents/MacOS)
         set(qtconf_dest_dir Inviwo.app/Contents/Resources)
         set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
@@ -120,7 +106,6 @@ if(IVW_PACKAGE_PROJECT)
         
         # get link errors with out this line.
         install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
-        
         install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
                       include(BundleUtilities)
                       file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
@@ -128,7 +113,6 @@ if(IVW_PACKAGE_PROJECT)
                       fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
                 COMPONENT qt_app
         )
-
         install(
             DIRECTORY   ${IVW_ROOT_DIR}/data/ 
             DESTINATION Inviwo.app/Contents/Resources/data
@@ -149,28 +133,17 @@ if(IVW_PACKAGE_PROJECT)
     endif()
 endif()
 
-#--------------------------------------------------------------------
-# Add dependencies
-
-# Dependencies to build and link before this project
-ivw_add_dependencies(${dependencies})
-
 # Dependencies to build before this project when they are changed.
 # Needed if modules are loaded at runtime since they should be built
 # when this project is set as startup project
 ivw_mod_name_to_target_name(target_names ${enabled_modules})
-add_dependencies(inviwo "${target_names}")
+add_dependencies(inviwo ${target_names})
 
 # Add build dependency towards any pybind11 targets and inviwo,
 # if python is not enabled, this list will be empty
 if(${_allPyBindWrappers})
     add_dependencies(inviwo ${_allPyBindWrappers})
 endif()
-
-#--------------------------------------------------------------------
-# Optimize compilation with pre-compilied headers based on inviwo-core
-#ivw_compile_optimize_inviwo_core()
-
 ivw_memleak_setup(inviwo)
 
 #--------------------------------------------------------------------
@@ -179,35 +152,41 @@ if(WIN32)
     set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS 
         " /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
-    ivw_project(inviwo-cli)
+    project(inviwo-cli)
 
     ivw_configure_application_module_dependencies(inviwo-cli
         "${enabled_modules}"
         dependencies-cli)
-    list(APPEND dependencies-cli ${core_dependencies})
 
-    add_executable(inviwo-cli MACOSX_BUNDLE WIN32
-        ${SOURCE_FILES}
-        ${HEADER_FILES}
-        ${MOC_FILES}
-        ${QRC_FILE}
-        ${RES_FILES})
-
-    target_link_libraries(inviwo-cli PRIVATE Qt5::Core Qt5::Widgets)
-    add_dependencies(inviwo-cli inviwo)
-
+    add_executable(inviwo-cli MACOSX_BUNDLE WIN32 
+        ${SOURCE_FILES} 
+        ${HEADER_FILES} 
+        ${MOC_FILES} 
+        ${QRC_FILE} 
+        ${RES_FILES}
+    )
+    ivw_register_use_of_modules(inviwo-cli ${enabled_modules})
+    target_link_libraries(inviwo-cli  PUBLIC
+        inviwo::core 
+        inviwo::qtapplicationbase
+        inviwo::qteditor
+        Qt5::Core 
+        Qt5::Widgets
+    )
+    ivw_add_module_dependencies(inviwo-cli ${dependencies-cli})
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
 
-    ivw_add_dependencies(${dependencies-cli})
+    add_dependencies(inviwo-cli inviwo)
+    
     if(${_allPyBindWrappers})
         add_dependencies(inviwo-cli ${_allPyBindWrappers})
     endif()
+
     ivw_memleak_setup(inviwo-cli)
 
     set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
         " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
 
     install(TARGETS inviwo-cli RUNTIME DESTINATION bin COMPONENT qt_app)
-
 endif()

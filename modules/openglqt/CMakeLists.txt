@@ -24,6 +24,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmoduledefine.h
     ${MOC_FILES}
 )
+ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
@@ -36,18 +37,15 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shaderwidget.cpp
 )
+ivw_group("Source Files" ${SOURCE_FILES})
 
 #if(NOT ${Qt5Core_VERSION} VERSION_LESS "5.4.0")
 #    list(APPEND HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/canvasqopenglwidget.h)
 #    list(APPEND SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/canvasqopenglwidget.cpp)
 #endif()
 
-ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
+qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
-ivw_group("Header Files" ${HEADER_FILES})
-ivw_group("Source Files" ${SOURCE_FILES})
-
-ivw_define_qt_definitions()
 
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})

@@ -44,15 +44,6 @@ set(SHADER_FILES
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
-#set(TEST_FILES
-#    ${CMAKE_CURRENT_SOURCE_DIR}/tests/runningimagemeanandstandarddeviationcl-test.cpp
-#)
-#ivw_add_unittest(${TEST_FILES})
-
-#--------------------------------------------------------------------
-# Add definition
-ivw_add_definition(__CL_ENABLE_EXCEPTIONS)
-
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})

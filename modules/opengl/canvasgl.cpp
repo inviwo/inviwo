@@ -97,8 +97,18 @@ bool CanvasGL::ready() {
         return true;
     } else if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
         ready_ = true;
-
-        defaultGLState();
+        
+        // Setup the GL state for the canvas, only need to do this once, since this
+        // context will only be used to render the canvas on screen.
+        // All other computation is done in the hidden contexts, which should never
+        // call this function.
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearDepth(1.0f);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_ALWAYS);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        
         square_ = utilgl::planeRect();
         squareGL_ = square_->getRepresentation<MeshGL>();
         textureShader_ = SharedOpenGLResources::getPtr()->getTextureShader();
@@ -111,7 +121,6 @@ bool CanvasGL::ready() {
 
 void CanvasGL::renderNoise() {
     if (!ready()) return;
-    LGL_ERROR;
 
     glViewport(0, 0, static_cast<GLsizei>(getCanvasDimensions().x),
                static_cast<GLsizei>(getCanvasDimensions().y));
@@ -120,34 +129,25 @@ void CanvasGL::renderNoise() {
     drawSquare();
     noiseShader_->deactivate();
     glSwapBuffers();
- 
-    LGL_ERROR;
 }
 
 void CanvasGL::renderTexture(int unitNumber) {
     if (!ready()) return;
-    LGL_ERROR;
 
     glViewport(0, 0, static_cast<GLsizei>(getCanvasDimensions().x),
                static_cast<GLsizei>(getCanvasDimensions().y));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     textureShader_->activate();
     textureShader_->setUniform("tex_", unitNumber);
     drawSquare();
     textureShader_->deactivate();
-    glDisable(GL_BLEND);
     glSwapBuffers();
-    LGL_ERROR;
 }
 
 void CanvasGL::drawSquare() {
     squareGL_->enable();
-    glDepthFunc(GL_ALWAYS);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     squareGL_->disable();
-    glDepthFunc(GL_LESS);
 }
 
 double CanvasGL::getDepthValueAtCoord(ivec2 coord) const {

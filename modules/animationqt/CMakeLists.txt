@@ -9,7 +9,6 @@ find_package(Qt5Widgets QUIET REQUIRED)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    #${CMAKE_CURRENT_SOURCE_DIR}/animationqtprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditordockwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditorqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.h
@@ -23,7 +22,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    #${CMAKE_CURRENT_SOURCE_DIR}/animationqtprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditordockwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditorqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.cpp
@@ -34,17 +32,9 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
-# Add Unittests
-set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/animationqt-test.cpp
-)
-ivw_add_unittest(${TEST_FILES})
-
 # Add some qt specific things
 source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc)
 qt5_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
-ivw_define_qt_definitions()
 
 #--------------------------------------------------------------------
 # Create module

@@ -7,7 +7,7 @@ IF(${OpenEXR_GENERATE_LUT})
     b44ExpLogTable.cpp
   )
 
-  TARGET_LINK_LIBRARIES ( b44ExpLogTable
+  TARGET_LINK_LIBRARIES ( b44ExpLogTable PUBLIC
     openexr-half
     openexr-iex
     openexr-ilmthread
@@ -27,7 +27,7 @@ IF(${OpenEXR_GENERATE_LUT})
     dwaLookups.cpp
   )
 
-  TARGET_LINK_LIBRARIES ( dwaLookups
+  TARGET_LINK_LIBRARIES ( dwaLookups PUBLIC
     openexr-half
     openexr-iex
     openexr-ilmthread
@@ -144,16 +144,17 @@ ADD_LIBRARY ( openexr-ilmimf ${LIB_TYPE}
   ${ILMIMF_SRCS}
 )
 
-TARGET_LINK_LIBRARIES ( openexr-ilmimf
+TARGET_LINK_LIBRARIES ( openexr-ilmimf PUBLIC
   openexr-half
   openexr-iex
   openexr-imath
   openexr-ilmthread
+  inviwo::zlib1
   # Half 
   # Iex${ILMBASE_LIBSUFFIX}
   # Imath${ILMBASE_LIBSUFFIX}
   # IlmThread${ILMBASE_LIBSUFFIX}
-  ${PTHREAD_LIB} ${ZLIB_LIBRARIES}
+  ${PTHREAD_LIB}
 )
 
 IF(${OpenEXR_GENERATE_LUT})
@@ -286,6 +287,11 @@ SET_SOURCE_FILES_PROPERTIES (
 # Supress warnings
 ivw_suppress_compiler_warnings(openexr-ilmimf)
 
+target_include_directories(openexr-ilmimf PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr>
+)
+
 #--------------------------------------------------------------------
 # Install library into target folder
 ivw_default_install_comp_targets(core openexr-ilmimf)
@@ -301,5 +307,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(openexr-ilmimf)
 ivw_make_package(openexr-ilmimf openexr-ilmimf)

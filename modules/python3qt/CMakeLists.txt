@@ -22,7 +22,7 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
+qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 
 #--------------------------------------------------------------------
@@ -33,9 +33,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/python3qtmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
-
-ivw_define_qt_definitions()
-ivw_add_definition(IVW_PYTHON3_QT)
 
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})

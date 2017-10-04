@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SYNC_CL_GL_H
@@ -38,78 +38,99 @@
 #include <modules/opencl/volume/volumeclgl.h>
 
 #ifdef CL_VERSION_1_1
+// cl_GLsync was introduced in ver 1.1
 #ifdef __APPLE__
-#include <OpenCL/cl_gl_ext.h>
+#include <OpenCL/cl_gl.h>
 #else
-#include <CL/cl_gl_ext.h>
+#include <CL/cl_gl.h>
 #endif
-#endif
+// Define function clCreateEventFromGLsync (vendor extension)
+typedef cl_event (*pfnclCreateEventFromSyncKHR)(cl_context context, cl_GLsync sync,
+                                                cl_int* errcode_ret);
+#endif // CL_VERSION_1_1
 
 namespace inviwo {
-
+/** \class SyncCLGL
+ * Helper for synchronizing OpenGL and OpenCL.
+ * Calls glFinish(), or glFenceSync if supported, upon construction.
+ * Releases all objects and calls clFinish,
+ * or glWaitSync if supported, on the supplied queue upon destruction.
+ */
 class IVW_MODULE_OPENCL_API SyncCLGL {
 public:
-    SyncCLGL(const cl::Context& context= OpenCL::getPtr()->getContext(), const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue());
+    /**
+     * \brief Start synchronization of shared OpenGL and OpenCL objects
+     *
+     * Calls glFinish(), or glFenceSync if supported
+     *
+     */
+    SyncCLGL(const cl::Context& context = OpenCL::getPtr()->getContext(),
+             const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue());
     ~SyncCLGL();
 
     /**
-     * Added object will be enquired when calling aquireAllObject.
+     * Added object will be acquired when calling aquireAllObject.
      * The added object will be released upon destruction of this SyncCLGL object.
-     * @note aquireAllObjects need to be called to actually enquire the added object.
+     * @note aquireAllObjects need to be called to actually acquire the added object.
      * @param object
      */
     void addToAquireGLObjectList(const BufferCLGL* object);
     /**
-     * Added object will be enquired when calling aquireAllObject.
+     * Added object will be acquired when calling aquireAllObject.
      * The added object will be released upon destruction of this SyncCLGL object.
-     * @note aquireAllObjects need to be called to actually enquire the added object.
+     * @note aquireAllObjects need to be called to actually acquire the added object.
      * @param object
      */
     void addToAquireGLObjectList(const LayerCLGL* object);
     /**
      * Currently only adds the color layer to the list of objects that
-     * will be enquired when calling aquireAllObject.
+     * will be acquired when calling aquireAllObject.
      * The added object will be released upon destruction of this SyncCLGL object.
-     * @note aquireAllObjects need to be called to actually enquire the added object.
+     * @note aquireAllObjects need to be called to actually acquire the added object.
      * @param object
      */
     void addToAquireGLObjectList(const ImageCLGL* object);
     /**
-     * Added object will be enquired when calling aquireAllObject.
+     * Added object will be acquired when calling aquireAllObject.
      * The added object will be released upon destruction of this SyncCLGL object.
-     * @note aquireAllObjects need to be called to actually enquire the added object.
+     * @note aquireAllObjects need to be called to actually acquire the added object.
      * @param object
      */
     void addToAquireGLObjectList(const VolumeCLGL* object);
 
     /**
-     * Calls enqueueAcquireGLObjects on all previously added objects
-     *
-     * @note Do not call enqueueReleaseGLObjects on an added object as this
-     * will be done upon destruction of this object.
+     * Call this function after adding objects to synchronize using addToAquireGLObjectList
+     * Calls enqueueAcquireGLObjects on all previously added objects.
+     * Will wait for provided events.
+     * @note While you manually need to call aquireAllObjects, you do not need to call
+     * releaseAllGLObjects as this will be done upon destruction of this object.
      */
-    void aquireAllObjects() const;
+    void aquireAllObjects(const std::vector<cl::Event>* waitForEvents = nullptr,
+                          cl::Event* event = nullptr) const;
 
     /**
      * Release all added objects. Done automatically at destruction.
      * Will wait for provided events.
+     * @note You do not need to call releaseAllGLObjects as this
+     * will be done upon destruction of this object.
      */
-    void releaseAllGLObjects(const std::vector<cl::Event>* waitForEvents = nullptr, cl::Event* event = nullptr);
+    void releaseAllGLObjects(const std::vector<cl::Event>* waitForEvents = nullptr,
+                             cl::Event* event = nullptr);
 
 protected:
-
-
     std::vector<cl::Memory> syncedObjects_;
 #if defined(CL_VERSION_1_1)
-    // TODO: Fix support for faster synchronization. See constructor
-    //GLsync glFenceSync_;
-    //cl::Event glSync_;
+    // Faster synchronization might be supported when CL version >= 1.1
+
+    // Store clCreateEventFromGLsync function per context
+    // so that we only need to get them once
+    static std::map<cl_context, pfnclCreateEventFromSyncKHR> syncFunctionMap_;
+    GLsync glFenceSync_;  // OpenGL sync point - created in constructor
 #endif
-    std::unique_ptr< std::vector<cl::Event> > syncEvents_;
     const cl::Context& context_;
     const cl::CommandQueue& queue_;
 };
 
-}
+}  // namespace inviwo
 
-#endif // IVW_SYNC_CL_GL_H
+#endif  // IVW_SYNC_CL_GL_H

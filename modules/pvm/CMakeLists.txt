@@ -1,6 +1,4 @@
-if(IVW_MODULE_PVM)
-    add_subdirectory(ext/tidds)
-endif(IVW_MODULE_PVM)
+add_subdirectory(ext/tidds)
 
 #--------------------------------------------------------------------
 # Inviwo PVM Module
@@ -28,3 +26,5 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+target_link_libraries(inviwo-module-pvm PRIVATE tidds)
+ivw_make_package(InviwoPVMModule inviwo-module-pvm)

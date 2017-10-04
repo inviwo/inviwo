@@ -357,7 +357,7 @@ void CropWidget::renderAxis(const CropAxis &axis) {
                 }
             }
         }
-        shader_.setUniform("pickId", 0);
+        shader_.setUniform("pickId", 0u);
     }
 
     if (showCropPlane_.get()) {

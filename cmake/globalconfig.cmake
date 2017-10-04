@@ -1,35 +1,35 @@
- #################################################################################
- #
- # Inviwo - Interactive Visualization Workshop
- #
- # Copyright (c) 2013-2017 Inviwo Foundation
- # All rights reserved.
- # 
- # Redistribution and use in source and binary forms, with or without
- # modification, are permitted provided that the following conditions are met: 
- # 
- # 1. Redistributions of source code must retain the above copyright notice, this
- # list of conditions and the following disclaimer. 
- # 2. Redistributions in binary form must reproduce the above copyright notice,
- # this list of conditions and the following disclaimer in the documentation
- # and/or other materials provided with the distribution. 
- # 
- # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- # 
- #################################################################################
+#################################################################################
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2013-2017 Inviwo Foundation
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met: 
+# 
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer. 
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution. 
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
+#################################################################################
  
 set(IVW_MAJOR_VERSION 0)
 set(IVW_MINOR_VERSION 9)
-set(IVW_PATCH_VERSION 8)
+set(IVW_PATCH_VERSION 9)
 set(IVW_VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION})
 
 #--------------------------------------------------------------------
@@ -57,7 +57,6 @@ endif()
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(WARNING "Inviwo is only supported for 64-bit architectures.")
 endif()
-
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
@@ -88,12 +87,6 @@ function(ivw_debug_message)
     endif()
 endfunction()
 
-function(ivw_message)
-    message(DEPRECATION "ivw_message is deprecatede, just use message")
-    message(${ARGV})
-endfunction()
-
-
 #--------------------------------------------------------------------
 # Add own cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/modules")
@@ -102,6 +95,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/cmake/")
 #--------------------------------------------------------------------
 # Add globalmacros
 include(${CMAKE_CURRENT_LIST_DIR}/globalutils.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
 
 #--------------------------------------------------------------------
@@ -307,15 +303,11 @@ endif(DEBUG_POSTFIX)
 # Specify build-based defintions
 if(BUILD_SHARED_LIBS)
     add_definitions(-DINVIWO_ALL_DYN_LINK)
-    add_definitions(-DGLM_SHARED_BUILD)
-else(BUILD_SHARED_LIBS)
-    add_definitions(-DFREEGLUT_STATIC)
-    add_definitions(-DGLEW_STATIC)
-endif(BUILD_SHARED_LIBS)
+endif()
 
 if(IVW_PROFILING)
     add_definitions(-DIVW_PROFILING)
-endif(IVW_PROFILING)
+endif()
 
 #--------------------------------------------------------------------
 # Add option to enable include-what-you-use 
@@ -352,10 +344,3 @@ mark_as_advanced(
     COTIRE_UNITY_SOURCE_EXCLUDE_EXTENSIONS
     COTIRE_VERBOSE
 )
-
-# Exclude stuff from cotire
-set(IVW_COTIRE_EXCLUDES
-    "${IVW_EXTENSIONS_DIR}/warn"
-)
-
-
