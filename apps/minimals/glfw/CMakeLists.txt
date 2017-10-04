@@ -30,7 +30,7 @@ ivw_configure_application_module_dependencies(inviwo_glfwminimum
 # Create application
 add_executable(inviwo_glfwminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
 ivw_register_use_of_modules(inviwo_glfwminimum ${enabled_modules})
-target_link_libraries(inviwo_glfwminimum PUBLIC inviwo-core)
+target_link_libraries(inviwo_glfwminimum PUBLIC inviwo::core inviwo::module::glfw)
 ivw_add_module_dependencies(inviwo_glfwminimum ${dependencies})
 ivw_define_standard_definitions(inviwo_glfwminimum inviwo_glfwminimum)
 ivw_define_standard_properties(inviwo_glfwminimum)
