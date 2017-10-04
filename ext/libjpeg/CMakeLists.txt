@@ -1,4 +1,4 @@
-ivw_project(libjpeg C)
+project(libjpeg C)
 
 #--------------------------------------------------------------------
 # Add header files
@@ -31,7 +31,10 @@ endif(BUILD_SHARED_LIBS)
 
 #--------------------------------------------------------------------
 # Add includes
-target_include_directories(libjpeg INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(libjpeg INTERFACE 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include/ext/libjpeg>
+)
 
 #--------------------------------------------------------------------
 # Supress warnings
@@ -48,5 +51,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(libjpeg)
 ivw_make_package(JPEG libjpeg)

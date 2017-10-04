@@ -1,4 +1,4 @@
-ivw_project( assimp )
+project( assimp )
 
 # Define here the needed parameters
 set (ASSIMP_VERSION_MAJOR 3)
@@ -141,9 +141,9 @@ SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
 	"Disable Assimp's export functionality." 
 )
 
-find_package(ZLIB REQUIRED)
+#find_package(ZLIB REQUIRED)
 ADD_DEFINITIONS(-DASSIMP_BUILD_NO_OWN_ZLIB)
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+#INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR}) # handled via inviwo::zlib1 instead
 
 # Search for unzip
 if (PKG_CONFIG_FOUND)

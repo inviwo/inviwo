@@ -27,6 +27,11 @@ TARGET_LINK_LIBRARIES(openexr-iexmath openexr-iex)
 # Supress warnings
 ivw_suppress_compiler_warnings(openexr-iexmath)
 
+target_include_directories(openexr-iexmath PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
+
 #--------------------------------------------------------------------
 # Install library into target folder
 ivw_default_install_comp_targets(core openexr-iexmath)
@@ -38,5 +43,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(openexr-iexmath)
 ivw_make_package(openexr-iexmath openexr-iexmath)

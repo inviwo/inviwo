@@ -3,7 +3,7 @@
 
 ## this CMake file is based on the file shipped with the IlmBase used in OpenEXR 
 ## Cimg only requires IlmBase for reading and writing OpenEXR images
-ivw_project(openexr-ilmbase)
+project(openexr-ilmbase)
 
 SET(ILMBASE_VERSION_MAJOR "2")
 SET(ILMBASE_VERSION_MINOR "2")

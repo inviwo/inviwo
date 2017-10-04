@@ -24,14 +24,6 @@ set(SOURCE_FILES
 )
 
 #--------------------------------------------------------------------
-# Define defintions
-ivw_add_definition(cimg_use_cpp11)
-ivw_add_definition(cimg_use_png)
-ivw_add_definition(cimg_use_jpeg)
-ivw_add_definition(cimg_use_zlib)
-ivw_add_definition(cimg_use_openexr)
-
-#--------------------------------------------------------------------
 # Unit tests
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/cimg-unittest-main.cpp
@@ -42,3 +34,27 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+
+target_link_libraries(inviwo-module-cimg PUBLIC
+    inviwo::zlib1
+    libjpeg
+    libpng
+
+    openexr-half
+    openexr-iex
+    openexr-iexmath
+    openexr-imath
+    openexr-ilmthread
+    openexr-ilmimf
+    openexr-ilmimfutil
+)
+
+target_compile_definitions(inviwo-module-cimg PUBLIC 
+    cimg_use_cpp11
+    cimg_use_png
+    cimg_use_jpeg
+    cimg_use_zlib
+    cimg_use_openexr
+)
+
+ivw_make_package(InviwoCImgModule inviwo-module-cimg)

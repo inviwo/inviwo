@@ -108,19 +108,18 @@ set(SHADER_FILES
 ivw_group("Shader Files" ${SHADER_FILES})
 
 #--------------------------------------------------------------------
-# Add definition
-ivw_add_definition(__CL_ENABLE_EXCEPTIONS)
-
-
-set(TEST_FILES
-    #${CMAKE_CURRENT_SOURCE_DIR}/test/opencl-test.cpp
-)
-ivw_add_unittest(${TEST_FILES})
-
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 #--------------------------------------------------------------------
 # Add kernel directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/cl)
+
+find_package(OpenCL QUIET REQUIRED)
+target_link_libraries(inviwo-module-opencl PUBLIC ${OpenCL_LIBRARY})
+target_include_directories(inviwo-module-opencl PUBLIC 
+    $<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR}>
+)
+target_compile_definitions(inviwo-module-opencl PUBLIC __CL_ENABLE_EXCEPTIONS)
+
+ivw_make_package(InviwoOpenCLModule inviwo-module-opencl)

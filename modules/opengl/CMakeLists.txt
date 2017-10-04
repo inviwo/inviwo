@@ -1,3 +1,6 @@
+
+add_subdirectory(ext/glew)
+
 #--------------------------------------------------------------------
 # Inviwo OpenGL Module
 ivw_module(OpenGL)
@@ -136,12 +139,14 @@ ivw_group("Shader Files" ${SHADER_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
+target_link_libraries(inviwo-module-opengl PUBLIC GLEW)
+
+find_package(OpenGL QUIET REQUIRED)
+target_link_libraries(inviwo-module-opengl PUBLIC ${OPENGL_LIBRARIES})
+target_include_directories(inviwo-module-opengl INTERFACE ${OPENGL_INCLUDE_DIR})
+
 #--------------------------------------------------------------------
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 
-#--------------------------------------------------------------------
-# Build GLEW if it couldn't be found
-if(BUILD_GLEW)
-    add_subdirectory(ext/glew)
-endif()
+ivw_make_package(InviwoOpenGLModule inviwo-module-opengl)

@@ -21,8 +21,13 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/include)
-
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+target_link_libraries(inviwo-module-assimp PUBLIC assimp)
+target_include_directories(inviwo-module-assimp PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/include>
+    #$<INSTALL_INTERFACE:???>
+)
+
+ivw_make_package(InviwoAssimpModule inviwo-module-assimp)

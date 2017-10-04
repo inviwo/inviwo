@@ -1,6 +1,4 @@
-if(IVW_MODULE_FONTRENDERING)
-    add_subdirectory(ext/freetype)
-endif(IVW_MODULE_FONTRENDERING)
+add_subdirectory(ext/freetype)
 
 #--------------------------------------------------------------------
 # Inviwo FontRendering Module
@@ -58,4 +56,5 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/fonts)
 #--------------------------------------------------------------------
 # Add dependency to ext/utf 
 target_link_libraries(inviwo-module-fontrendering PRIVATE utf)
+target_link_libraries(inviwo-module-fontrendering PUBLIC freetype)
 ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)

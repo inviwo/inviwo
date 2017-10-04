@@ -27,41 +27,59 @@
 # 
 #################################################################################
 
- ### Generate python binding targets for modules. ###
+ 
+macro(ivw_project project_name)
+    message(DEPRECATION "Use project")
+    project(${project_name} ${ARGN})
+endmacro()
 
-# Needed for the function pybind11_add_module and dependency pybind11::module 
+macro(ivw_set_cpack_name cpack_name)
+    message(DEPRECATION "not used anymore")
+endmacro()
 
- set(_allPyBindWrappers "" CACHE INTERNAL  "")
+macro(add_dependency_libs_to_module)
+    message(FATAL_ERROR "use target_link_libraries")
+endmacro()
 
-if(PYTHONLIBS_FOUND)
-    add_subdirectory(${IVW_ROOT_DIR}/ext/pybind11)
+macro(ivw_add_dependency_directories)
+    message(FATAL_ERROR "Avoid using link directories.")
+endmacro()
 
-    if(MSVC)
-        # Prevent setting the /GL and -LTCG flag 
-        set(PYBIND11_LTO_CXX_FLAGS "" CACHE INTERNAL "")
-        set(PYBIND11_LTO_LINKER_FLAGS "" CACHE INTERNAL "")
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-        # Workaround
-        CHECK_CXX_COMPILER_FLAG("-flto-partition=none" HAS_LTO_PARTITION_FLAG)
-        if(HAS_LTO_PARTITION_FLAG)
-            set(PYBIND11_LTO_CXX_FLAGS "" CACHE INTERNAL "")
-            set(PYBIND11_LTO_LINKER_FLAGS "-flto-partition=one" CACHE INTERNAL "")
-        endif(HAS_LTO_PARTITION_FLAG)
-    endif()
-endif(PYTHONLIBS_FOUND)
+macro(ivw_include_directories)
+    message(DEPRECATION "Use target_include_directories")
+    include_directories(${ARGN})
+endmacro()
 
+macro(ivw_link_directories)
+    message(DEPRECATION "Avoid link directories")
+    link_directories("${ARGN}")
+endmacro()
 
-function (ivw_add_py_wrapper name)
-    if(IVW_MODULE_PYTHON3)
-        pybind11_add_module(${name} ${ARGN})
-        set_target_properties(${name} PROPERTIES DEBUG_POSTFIX "")
-        set_target_properties(${name} PROPERTIES PREFIX "")
+macro(ivw_add_link_flags)
+    message(FATAL_ERROR "use target properties")
+endmacro()
 
-        set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-        target_link_libraries(${name} PUBLIC ${${mod}_target})
+macro(ivw_add_definition def)
+    message(FATAL_ERROR "use target_compile_definitions")
+endmacro()
+macro(ivw_add_definition_to_list def)
+    message(FATAL_ERROR "use target_compile_definitions with INTERFACE")
+endmacro()
+macro(ivw_add_dependencies_on_target target)
+    message(FATAL_ERROR "use target_link_libraries")
+endmacro()
+macro(ivw_define_qt_definitions)
+    message(FATAL_ERROR "Not needed when using target_link_libraries")
+endmacro()
 
-        ivw_folder(${name} pybind11modules)
+# Wrap Qt CPP to create MOC files
+macro(ivw_qt_wrap_cpp retval)
+    message(DEPRECATION "Use qt5_wrap_cpp")
+    qt5_wrap_cpp(the_list ${ARGN})
+    set(${retval} ${the_list})
+endmacro()
 
-        set(_allPyBindWrappers "${_allPyBindWrappers};${name}" CACHE INTERNAL  "_allPyBindWrappers")
-    endif()
+function(ivw_message)
+    message(DEPRECATION "ivw_message is deprecatede, just use message")
+    message(${ARGV})
 endfunction()

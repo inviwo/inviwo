@@ -68,6 +68,10 @@ ENDIF()
 # Supress warnings
 ivw_suppress_compiler_warnings(openexr-half)
 
+target_include_directories(openexr-half PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
 #--------------------------------------------------------------------
 # Install library into target folder
 ivw_default_install_comp_targets(core openexr-half)
@@ -83,5 +87,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(openexr-half)
 ivw_make_package(openexr-half openexr-half)

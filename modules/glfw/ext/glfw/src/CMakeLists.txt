@@ -89,36 +89,22 @@ if (BUILD_SHARED_LIBS)
 
     target_link_libraries(glfw ${glfw_LIBRARIES})
 endif()
-
-#--------------------------------------------------------------------
-# Add to package
-if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-if(WIN32)
-   install(TARGETS glfw
-            RUNTIME DESTINATION bin
-            COMPONENT glfw_module)
-elseif(APPLE)
-    install(TARGETS glfw
-            RUNTIME DESTINATION bin
-            BUNDLE DESTINATION .
-            ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-            LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-            COMPONENT glfw_module)
-else()
-    install(TARGETS glfw
-            RUNTIME DESTINATION bin
-            BUNDLE DESTINATION bin
-	        ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-            COMPONENT glfw_module)
-endif()
-endif()
-
+  
 if (GLFW_INSTALL)
     install(TARGETS glfw EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX})
 endif()
 
-if(APPLE)
-  #Ignore warnings in external packages
-  set_target_properties(glfw PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
-endif(APPLE)
+
+target_include_directories(glfw PUBLIC 
+    $<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>
+)
+ivw_default_install_targets(glfw)
+
+#--------------------------------------------------------------------
+# Supress warnings
+ivw_suppress_compiler_warnings(glfw)
+# InViWo Macros
+ivw_define_standard_definitions(glfw glfw)
+ivw_folder(glfw ext)
+
+ivw_make_package(GLFW glfw)

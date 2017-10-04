@@ -30,6 +30,10 @@ ADD_LIBRARY ( openexr-iex ${LIB_TYPE}
 #   include/OpenEXR
 # )
 
+target_include_directories(openexr-iex PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
 #--------------------------------------------------------------------
 # Supress warnings
 ivw_suppress_compiler_warnings(openexr-iex)
@@ -45,5 +49,4 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(openexr-iex)
 ivw_make_package(openexr-iex openexr-iex)

@@ -34,7 +34,7 @@
 #define NOMINMAX // tinydir.h includes windows.h... 
 #define WIN32_LEAN_AND_MEAN
 #endif
-#include <ext/tinydir/tinydir.h>
+#include <tinydir.h>
 #include <algorithm>
 #include <cerrno>
 

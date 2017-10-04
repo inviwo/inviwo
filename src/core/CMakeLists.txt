@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Inviwo Core
-ivw_project(inviwo-core)
+project(inviwo-core)
 
 #--------------------------------------------------------------------
 # Add header files
@@ -529,18 +529,6 @@ endif()
 
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
-# Optimize compilation with pre-compilied headers
-set(PCH_PATH_FILES
-    ${IVW_INCLUDE_DIR}/inviwo/core/common
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization
-    ${IVW_INCLUDE_DIR}/inviwo/core/metadata
-    ${IVW_INCLUDE_DIR}/inviwo/core/ports
-    ${IVW_INCLUDE_DIR}/inviwo/core/util
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/settings
-)
-ivw_add_pch_path(${PCH_PATH_FILES})
-
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/commandlineparser-test.cpp
@@ -572,6 +560,7 @@ add_definitions(-DCMAKE_GENERATOR="${CMAKE_GENERATOR}")
 #--------------------------------------------------------------------
 # Create library
 add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES})
+add_library(inviwo::core ALIAS inviwo-core)
 
 #--------------------------------------------------------------------
 # Define standard defintions
@@ -579,29 +568,41 @@ ivw_define_standard_definitions(IVW_CORE inviwo-core)
 ivw_define_standard_properties(inviwo-core)
 
 #--------------------------------------------------------------------
-# Add core folders to includes
-ivw_include_directories(${IVW_INCLUDE_DIR})
-ivw_include_directories(${IVW_EXTENSIONS_DIR})
-ivw_include_directories(${IVW_ROOT_DIR})
-ivw_include_directories(${IVW_MODULE_DIR})
+# Add core folders to includes, this will also be picked up by all the modules
+target_include_directories(inviwo-core PUBLIC 
+    $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
+    $<BUILD_INTERFACE:${IVW_MODULE_DIR}> # We should not use these..."
+    $<BUILD_INTERFACE:${IVW_ROOT_DIR}> # We should not use these..."
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/modules/_generated>
+)
+
 # Add path for external modules
-if (NOT "${IVW_EXTERNAL_MODULES}" STREQUAL "")
+# example we have an extarnal path to: /my/dir/structure/repo/modules
+# inside the module folder we have a bunch of modules.
+# we will add /my/dir/structure/repo as an include path since
+# we usually refer to module headers as <modules/mymodule1/someheader.h>
+# hence we add the parent of the path given.
+# Except for in the module registration where we don't include 'modules'
+# So we need to add the acctual path also
+if (IVW_EXTERNAL_MODULES)
     foreach(dir ${IVW_EXTERNAL_MODULES})
-        ivw_include_directories(${dir})
         get_filename_component(dir_parent ${dir} PATH)
-        ivw_include_directories(${dir_parent})
+        target_include_directories(inviwo-core PUBLIC 
+            $<BUILD_INTERFACE:${dir_parent}>
+            $<BUILD_INTERFACE:${dir}>
+        )
     endforeach()
 endif()
-ivw_include_directories(${CMAKE_BINARY_DIR}/modules/_generated)
 
 # Add core dependencies to this list
-ivw_add_dependencies(TiCPP)
+target_link_libraries(inviwo-core PUBLIC ticpp inviwo::tinydir)
 
 if(IVW_SIGAR)
-    ivw_add_dependencies(Sigar)
+    target_link_libraries(inviwo-core PUBLIC inviwo::sigar)
 endif()
 if(WIN32)
-    ivw_add_dependencies(stackwalker)
+    target_link_libraries(inviwo-core PUBLIC inviwo::stackwalker)
 endif()
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
@@ -610,13 +611,12 @@ if(APPLE)
 endif (APPLE)
 
 #Optimize compiliation with PCH etc
-ivw_compile_optimize()
+ivw_compile_optimize_on_target(inviwo-core)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(core)
-ivw_make_package(InviwoCore inviwo-core)
 ivw_default_install_targets(inviwo-core)
+ivw_make_package(InviwoCore inviwo-core)
 
 if(IVW_UNITTESTS)
     ivw_make_unittest_target(core inviwo-core)

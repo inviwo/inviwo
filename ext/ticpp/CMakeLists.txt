@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # TiCPP Package
-ivw_project(ticpp)
+project(ticpp)
 
 #--------------------------------------------------------------------
 # Add header files
@@ -31,11 +31,11 @@ add_library(ticpp ${SOURCE_FILES} ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Define defintions
 ivw_define_standard_definitions(ticpp ticpp)
-ivw_add_definition(TIXML_USE_TICPP)
+target_compile_definitions(ticpp PRIVATE TIXML_USE_TICPP)
 if(WIN32)
     if(BUILD_SHARED_LIBS)
-        ivw_add_definition_to_list(TICPP_DLL)
-        add_definitions(-DBUILD_TICPP_DLL)
+        target_compile_definitions(ticpp PRIVATE BUILD_TICPP_DLL)
+        target_compile_definitions(ticpp INTERFACE TICPP_DLL)
     endif()
 endif()
 

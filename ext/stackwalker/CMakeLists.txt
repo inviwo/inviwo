@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # stackwalker Package
-ivw_project(stackwalker)
+project(stackwalker)
 #--------------------------------------------------------------------
 
 #--------------------------------------------------------------------
@@ -20,7 +20,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Create library
 add_library(stackwalker ${SOURCE_FILES} ${HEADER_FILES})
-
+add_library(inviwo::stackwalker ALIAS stackwalker)
 #--------------------------------------------------------------------
 # Define defintions
 ivw_define_standard_definitions(stackwalker stackwalker)

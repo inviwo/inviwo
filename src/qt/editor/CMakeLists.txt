@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Inviwo Qt Editor
-ivw_project(inviwo-qteditor)
+project(inviwo-qteditor)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -78,30 +78,31 @@ find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
 find_package(Qt5Help QUIET REQUIRED)
 
-ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
+qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-qteditor PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Help)
+add_library(inviwo::qteditor ALIAS inviwo-qteditor)
+target_link_libraries(inviwo-qteditor PUBLIC 
+    inviwo::core 
+    inviwo::qtapplicationbase
+    inviwo::module::qtwidgets
+    Qt5::Core 
+    Qt5::Gui 
+    Qt5::Widgets 
+    Qt5::Help
+)
 
 #--------------------------------------------------------------------
 # Define defintions
 ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)
 ivw_define_standard_properties(inviwo-qteditor)
-ivw_define_qt_definitions()
-
-ivw_add_dependencies(InviwoQtWidgetsModule)
-ivw_add_dependencies(InviwoQtApplicationBase)
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
-ivw_compile_optimize_inviwo_core()
+ivw_compile_optimize_inviwo_core_on_target(inviwo-qteditor)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_set_cpack_name(qt_editor)
-ivw_make_package(InviwoQtEditor inviwo-qteditor)
-
 ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
-
-# Qt5Sql is needed by Qt5Help
-ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql)
+ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql) # Qt5Sql is needed by Qt5Help
+ivw_make_package(InviwoQtEditor inviwo-qteditor)

@@ -1,31 +1,31 @@
- #################################################################################
- #
- # Inviwo - Interactive Visualization Workshop
- #
- # Copyright (c) 2013-2017 Inviwo Foundation
- # All rights reserved.
- # 
- # Redistribution and use in source and binary forms, with or without
- # modification, are permitted provided that the following conditions are met: 
- # 
- # 1. Redistributions of source code must retain the above copyright notice, this
- # list of conditions and the following disclaimer. 
- # 2. Redistributions in binary form must reproduce the above copyright notice,
- # this list of conditions and the following disclaimer in the documentation
- # and/or other materials provided with the distribution. 
- # 
- # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- # 
- #################################################################################
+#################################################################################
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2013-2017 Inviwo Foundation
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met: 
+# 
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer. 
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution. 
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
+#################################################################################
 
 #--------------------------------------------------------------------
 # This file contains a collection of CMake utility scripts
@@ -227,6 +227,7 @@ endfunction()
 #--------------------------------------------------------------------
 # Name conventions:
 # opengl               : dir                : Name of module folder, should be lowercase with no spaces (opengl)
+# OpenGl               : class              : The c++ class name / the module project name
 # OPENGL               : macro_name         : C Macro name, to uppercase, "-" -> "_"
 # INVIWOOPENGLMODULE   : mod_dep            : Internal name for module all uppercase
 # IVW_MODULE_OPENGL    : mod_prefix         : Name of cmake option for module
@@ -235,14 +236,16 @@ endfunction()
 # 
 # Name conversion functions:
 # ivw_to_macro_name            OpenGL-test        -> OPENGL_TEST
-# ivw_dir_to_mod_dep           OpenGL             -> INVIWOOPENGLMODULE
+# ivw_dir_to_mod_dep           opengl             -> INVIWOOPENGLMODULE
 # ivw_mod_dep_to_dir           INVIWOOPENGLMODULE -> opengl 
-# ivw_dir_to_mod_prefix        OpenGL             -> IVW_MODULE_OPENGL
+# ivw_dir_to_mod_prefix        opengl             -> IVW_MODULE_OPENGL
 # ivw_mod_prefix_to_dir        IVW_MODULE_OPENGL  -> opengl
 # ivw_mod_name_to_dir          InviwoOpenGLModule -> opengl
+# ivw_mod_name_to_class        InviwoOpenGLModule -> OpenGL
 # ivw_mod_name_to_mod_dep      InviwoOpenGLModule -> INVIWOOPENGLMODULE
 # ivw_to_mod_name              OpenGL             -> InviwoOpenGLModule
 # ivw_dir_to_module_taget_name opengl             -> inviwo-module-opengl
+# ivw_mod_name_to_alias        InviwoOpenGLModule -> inviwo::module::opengl
 #--------------------------------------------------------------------
 
 #--------------------------------------------------------------------
@@ -326,6 +329,43 @@ function(ivw_mod_name_to_dir retval)
             string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
             string(TOLOWER ${new_item} l_new_item)
             list(APPEND the_list ${l_new_item})
+        else()
+            message(FATAL_ERROR "Error argument format error: ${item}, should be in the form Inviwo<Name>Module")
+        endif()
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# ivw_mod_name_to_class(retval item1 item2 ...)
+# Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
+function(ivw_mod_name_to_class retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
+        if(found_item)
+            string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
+            list(APPEND the_list ${new_item})
+        else()
+            message(FATAL_ERROR "Error argument format error: ${item}, should be in the form Inviwo<Name>Module")
+        endif()
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# ivw_mod_name_to_class(retval item1 item2 ...)
+# Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
+function(ivw_mod_name_to_alias retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
+        if(found_item)
+            string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
+            string(TOLOWER ${new_item} l_new_item)
+            list(APPEND the_list inviwo::module::${l_new_item})
+        else()
+            message(FATAL_ERROR "Error argument format error: ${item}, should be in the form Inviwo<Name>Module")
         endif()
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
@@ -499,6 +539,37 @@ function(ivw_private_get_ivw_module_name path retval)
      set(${retval} NOTFOUND PARENT_SCOPE)
 endfunction()
 
+#--------------------------------------------------------------------
+# Verify that a given path and dir name is in fact a inviwo module
+# This is done by chekcing that there exists a CMakeLists file
+# and that it declares a inviwo module with the same name as dir.
+function(ivw_private_is_valid_module_dir path dir retval)
+    if(IS_DIRECTORY ${path}/${dir})
+        string(TOLOWER ${dir} test)
+        string(REPLACE " " "" ${test} test)
+        if(${dir} STREQUAL ${test})
+            if(EXISTS ${path}/${dir}/CMakeLists.txt)
+                ivw_private_get_ivw_module_name(${path}/${dir}/CMakeLists.txt name)
+                string(TOLOWER ${name} l_name)
+                if(${dir} STREQUAL ${l_name})
+                    set(${retval} TRUE PARENT_SCOPE)
+                    return()
+                else()
+                    message("Found invalid module \"${dir}\" at \"${path}\". "
+                        "ivw_module called with \"${name}\" which is different from the directory \"${dir}\""
+                        "They should be the same except for casing.")
+                endif()
+            else()
+                message("Found invalid module \"${dir}\" at \"${path}\". "
+                    "CMakeLists.txt is missing")
+            endif()
+        else()
+            message("Found invalid module dir \"${dir}\" at \"${path}\". "
+                "Dir names should be all lowercase and without spaces")
+        endif()
+    endif()
+    set(${retval} FALSE PARENT_SCOPE)
+endfunction()
 
 #--------------------------------------------------------------------
 # Query if a lib is compiled with 32 or 64 bits, will return 0 if it 
@@ -676,42 +747,5 @@ function(ivw_generate_build_info source_template ini_template buildinfo_sourcefi
 
     string(REPLACE "\"" "" ini_dest_path ${INI_DEST_PATH})
     configure_file("${ini_template}" "${ini_dest_path}${buildinfo_inifile}" @ONLY)
-endfunction()
-
-
-#--------------------------------------------------------------------
-# A helper funtion to install targets
-# usage: ivw_default_install_comp_targets(<cpack component> <list of targets)
-function(ivw_default_install_comp_targets comp)
-    if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-        if(WIN32)
-           install(TARGETS ${ARGN}
-                    RUNTIME DESTINATION bin
-                    ARCHIVE DESTINATION bin
-                    LIBRARY DESTINATION bin
-                    COMPONENT ${comp})
-        elseif(APPLE)
-            install(TARGETS ${ARGN}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION .
-                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                    COMPONENT ${comp})
-        
-        else()
-            install(TARGETS ${ARGN}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION bin
-                    ARCHIVE DESTINATION lib
-                    LIBRARY DESTINATION lib
-                    COMPONENT ${comp})
-        endif()
-    endif()
-endfunction()
-
-#--------------------------------------------------------------------
-# A helper funtion to install module targets
-function(ivw_default_install_targets)
-    ivw_default_install_comp_targets(modules ${ARGN})
 endfunction()
 
