@@ -906,6 +906,7 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
         });
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
+        LogInfo("Workspace saved to: " << fileName);
     } catch (const Exception& e) {
         util::log(e.getContext(),
                   "Unable to save network " + fileName + " due to " + e.getMessage(),
