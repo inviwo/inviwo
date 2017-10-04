@@ -63,7 +63,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , fontColor_("fontColor", "Font Color", vec4(0, 0, 0, 1))
     , fontSize_("fontSize", "Font size")
     , statsFontSize_("statsFontSize", "Font size (stats)")
-
+    , showCorrelationValues_("showStatistics", "Show correlation values", true)
     , correlectionTF_("correlectionTF", "Correlation TF")
 
     , textRenderer_()
@@ -100,6 +100,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     addProperty(selectedY_);
     addProperty(labels_);
     addProperty(correlectionTF_);
+    addProperty(showCorrelationValues_);
 
     addProperty(mouseEvent_);
 
@@ -230,7 +231,7 @@ void ScatterPlotMatrixProcessor::process() {
 
             textureQuadRenderer_.renderToRect(bgTextures_[idx], pos2, size, dims);
 
-            if (numParams_ < 6) {
+            if (showCorrelationValues_) {
                 textureQuadRenderer_.render(statsTextures_[idx], ivec2(statstextPos), dims);
             }
 
