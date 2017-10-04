@@ -50,7 +50,6 @@ uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), m
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
 
 in float segmentLength_; // total length of the current line segment in screen space
-in float lineLengthWorld_; // total length of line segment in world space
 in float distanceWorld_; // distance in world coords to segment start
 in vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
 in vec4 color_;
