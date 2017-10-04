@@ -254,7 +254,7 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
             // X axis
             for (size_t k = 0; k < dim.z - 1; ++k) {
                 for (size_t j = 0; j < dim.y - 1; ++j) {
-                    for (auto &i : cubeEdgeIndices(dim.z)) {
+                    for (auto &i : cubeEdgeIndices(dim.x)) {
                         x = dx * i;
                         y = dy * j;
                         z = dz * k;
