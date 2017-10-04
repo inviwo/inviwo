@@ -95,6 +95,7 @@ private:
     FloatVec4Property fontColor_;
     OptionPropertyInt fontSize_;
     OptionPropertyInt statsFontSize_;
+    BoolProperty showCorrelationValues_; // Show numerical correlation values
 
     TransferFunctionProperty correlectionTF_;
 
