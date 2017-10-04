@@ -30,6 +30,8 @@
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
+#include <random>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -42,13 +44,22 @@ const ProcessorInfo SeedPointsFromMask::processorInfo_{
 };
 const ProcessorInfo SeedPointsFromMask::getProcessorInfo() const { return processorInfo_; }
 
-SeedPointsFromMask::SeedPointsFromMask() : Processor(), volumes_("volumes"), seedPoints_("seeds") {
+SeedPointsFromMask::SeedPointsFromMask()
+    : Processor()
+    , volumes_("volumes")
+    , seedPoints_("seeds")
+    , superSample_("superSample", "Super Sample", 1, 1, 10) {
     addPort(volumes_);
     addPort(seedPoints_);
+
+    addProperty(superSample_);
 }
 
 void SeedPointsFromMask::process() {
     auto points = std::make_shared<std::vector<vec3>>();
+
+    std::mt19937 r(0);
+    std::uniform_real_distribution<float> dis(0,1);
 
     for (const auto &v : volumes_) {
         auto dim = v->getDimensions();
@@ -60,7 +71,19 @@ void SeedPointsFromMask::process() {
             for (pos.y = 0; pos.y < dim.y; pos.y++) {
                 for (pos.x = 0; pos.x < dim.x; pos.x++) {
                     if (data[i] != 0) {
-                        points->push_back(vec3(pos) / vec3(dim - size3_t(1, 1, 1)));
+                            if(superSample_.get()>1){
+                                for (int i = 0; i < superSample_.get(); i++) {
+                                    vec3 off;
+                                    off.x = dis(r);
+                                    off.y = dis(r);
+                                    off.z = dis(r);
+
+                                    points->push_back((vec3(pos) + off) /
+                                                      vec3(dim - size3_t(1, 1, 1)));
+                                }
+                            }else{
+                                points->push_back(vec3(pos) / vec3(dim - size3_t(1, 1, 1)));
+                            }
                     }
                     i++;
                 }

@@ -52,6 +52,8 @@ protected:
 
     DataInport<Volume, 0> volumes_;
     SeedPoints3DOutport seedPoints_;
+
+    IntProperty superSample_;
 };
 
 } // namespace
