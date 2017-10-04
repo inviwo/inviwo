@@ -33,7 +33,10 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 #include <string>
+
 
 namespace inviwo {
 
@@ -45,6 +48,7 @@ class ProcessorWidget;
 namespace util {
 
 IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string filename);
+
 
 IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
                                   std::string name = "UPN", std::string ext = ".png");
@@ -72,7 +76,7 @@ IVW_CORE_API std::string findUniqueIdentifier(const std::string& identifier,
 IVW_CORE_API std::string cleanIdentifier(const std::string& identifier,
                                          const std::string& extra = "");
 
-/**
+/** 
  * \brief Removes inviwo-module from module library file name.
  * Turns "/path/to/inviwo-module-yourmodule.dll" into "yourmodule".
  * Returns filename without extension if inviwo-module was not found.
@@ -96,7 +100,40 @@ struct IVW_CORE_API Hideer {
     void operator()(ProcessorWidget& p);
 };
 
-}  // namespace detail
+
+
+// https://stackoverflow.com/a/22882504/600633
+struct can_call_test {
+    template <typename F, typename... A>
+    static decltype(std::declval<F>()(std::declval<A>()...), std::true_type()) f(int);
+
+    template <typename F, typename... A>
+    static std::false_type f(...);
+};
+
+template <typename F, typename... A>
+struct can_call : decltype(can_call_test::f<F, A...>(0)) {};
+
+template <typename F, typename... A>
+struct can_call<F(A...)> : can_call<F, A...> {};
+
+template <typename... A, typename F>
+constexpr can_call<F, A...> is_callable_with(F&&) {
+    return can_call<F(A...)>{};
+}
+
+template <typename Callback, typename IT>
+void foreach (std::false_type, IT a, IT b, Callback callback, size_t = 0) {
+    std::for_each(a, b, callback);
+}
+
+template <typename Callback, typename IT>
+void foreach (std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
+    std::for_each(a, b, [&](auto v) { callback(v, start++); });
+}
+
+
+} // detail namespace
 
 template <typename... Args>
 void show(Args&&... args) {
@@ -108,8 +145,51 @@ void hide(Args&&... args) {
     util::for_each_argument(detail::Hideer{}, std::forward<Args>(args)...);
 }
 
-}  // namespace util
 
-}  // namespace inviwo
+
+template <typename Iterable, typename Callback>
+std::vector<std::future<void>> forEachParallelAsync(const Iterable& vector, Callback callback,
+                                                    size_t jobs = 0) {
+    using T = Iterable::value_type;
+    auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    auto poolSize = settings->poolSize_.get();
+    auto includeIndex = typename std::conditional<detail::is_callable_with<T, size_t>(callback),
+                                                  std::true_type, std::false_type>::type();
+    if (poolSize == 0) {
+        detail::foreach (includeIndex, vector.begin(), vector.end(), callback);
+        return {};
+    }
+
+    if (jobs == 0) {  // If jobs is zero, set to 4 times the pool size
+        jobs = 4 * poolSize;
+    }
+
+    auto s = vector.size();
+    std::vector<std::future<void>> futures;
+    for (size_t job = 0; job < jobs; ++job) {
+        auto start = (s * job) / jobs;
+        auto end = (s * (job + 1)) / jobs;
+        futures.push_back(dispatchPool([&callback, &vector, start, end, &includeIndex]() {
+            detail::foreach (includeIndex, vector.begin() + start,
+                             vector.begin() + static_cast<size_t>(end), callback, start);
+        }));
+    }
+    return futures;
+}
+
+template <typename Iterable, typename Callback>
+void forEachParallel(const Iterable& vector, Callback callback, size_t jobs = 0) {
+    auto futures = forEachParallelAsync(vector, callback, jobs);
+
+    for (const auto& e : futures) {
+        e.wait();
+    }
+}
+
+
+
+} // util namespace
+
+} // inviwo namespace
 
 #endif  // IVW_UTILITIES_H
