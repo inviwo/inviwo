@@ -267,6 +267,9 @@ void FancyMeshRenderer::process() {
 	shader_.setUniform("overrideColor", faceSettings_[0].externalColor_.get());
 	shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
 
+    //update face render settings
+    shader_.setUniform("frontSettings.alphaScale", faceSettings_[0].alphaScale_.get());
+
 	//Finally, draw it
 	drawer_->draw();
 

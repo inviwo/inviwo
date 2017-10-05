@@ -7,6 +7,7 @@ ivw_module(FancyMeshRenderer)
 set(HEADER_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/fancymeshrendererprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fancymeshrenderer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/FragmentListRenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -15,6 +16,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/fancymeshrendererprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/fancymeshrenderer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/FragmentListRenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -26,6 +28,18 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fancymeshrenderer.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fancymeshrenderer.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fancymeshrenderer.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferLinkedList.hglsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferShading.hglsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferSort.hglsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/clearABuffer.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/clearABufferLinkedList.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dispABuffer.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dispABufferLinkedList.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/passThrough.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABuffer.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABuffer.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABufferLinkedList.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABufferLinkedList.vert
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

@@ -1,0 +1,95 @@
+/**
+ * Fast Single-pass A-Buffer using OpenGL 4.0 V2.0
+ * Copyright Cyril Crassin, July 2010
+**/
+#ifndef ABUFFERSHADING_HGLSL
+#define ABUFFERSHADING_HGLSL
+
+#include "ABufferSort.hglsl"
+
+const vec4 backgroundColor=vec4(BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, 0.0f);
+const float fragmentAlpha=0.5f;
+
+//Blend fragments front-to-back
+vec4 resolveAlphaBlend(int abNumFrag);
+//Compute gelly shader
+vec4 resolveGelly(int abNumFrag);
+
+
+//Blend fragments front-to-back
+vec4 resolveAlphaBlend(int abNumFrag){
+			
+	vec4 finalColor=vec4(0.0f);
+
+	const float sigma = 30.0f;
+	float thickness=fragmentList[0].w/2.0f;
+
+	finalColor=vec4(0.0f);
+	for(int i=0; i<abNumFrag; i++){
+		vec4 frag=fragmentList[i];
+		
+		vec4 col;
+		col.rgb=frag.rgb;
+		col.w=fragmentAlpha;	//uses constant alpha
+
+#if ABUFFER_RESOLVE_ALPHA_CORRECTION
+		if(i%2==abNumFrag%2)
+			thickness=(fragmentList[i+1].w-frag.w)*0.5f;
+		col.w=1.0f-pow(1.0f-col.w, thickness* sigma );
+#endif
+
+		col.rgb=col.rgb*col.w;
+
+		finalColor=finalColor+col*(1.0f-finalColor.a);
+	}
+
+	finalColor=finalColor+backgroundColor*(1.0f-finalColor.a);
+
+	return finalColor;
+
+}
+
+//Blend fragments front-to-back
+vec4 resolveGelly(int abNumFrag){	
+
+	float thickness=0.0f;
+	vec4 accumColor=vec4(0.0f);
+
+	vec4 prevFrag;
+	for(int i=0; i<abNumFrag; i++){
+		vec4 frag=fragmentList[i];
+
+		if(i%2==1){
+			thickness+=frag.w-prevFrag.w;
+		}
+
+		vec4 col;
+		col.rgb=frag.rgb;
+		col.w=fragmentAlpha;	//uses constant alpha
+	
+		col.rgb=col.rgb*col.w;
+		accumColor=accumColor+col*(1.0f-accumColor.a);
+
+		prevFrag=frag;
+	}
+	accumColor=accumColor+backgroundColor*(1.0f-accumColor.a);
+
+	
+	//thickness=fragmentList[abNumFrag-1].w-fragmentList[0].w;
+	float sigma = 20.0f;
+	float Ia = exp(-sigma*thickness);
+	float ka = 0.9f;
+
+	vec4 finalColor=vec4(0.0f);
+	finalColor = ka * Ia + (1.0-ka) * fragmentList[0]; //Same as Louis Bavoil 2005
+	//finalColor = ka * Ia + (1.0-ka) * accumColor;   //Uses accumulated Color
+
+	const vec4 jade = vec4(0.4f, 0.14f, 0.11f, 1.0f)* 8.0f;
+	const vec4 green = vec4(0.3f, 0.7f, 0.1f, 1.0f)* 4.0f;
+	const vec4 green2 = vec4(0.14f, 0.45f, 0.05f, 1.0f)* 8.0f;
+	finalColor *= green2 ;
+
+	return finalColor;
+}
+
+#endif

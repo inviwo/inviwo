@@ -60,12 +60,16 @@ void main() {
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
 #ifdef OVERRIDE_COLOR_BUFFER
     vec4 color = overrideColor;
+    color.a = 1;
 #else
     vec4 color = color_;
 #endif
+    color.a *= frontSettings.alphaScale;
 
+    // shading
     fragColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
                                    normalize(normal_), normalize(toCameraDir_));
+    fragColor.a = color.a;
 
 #ifdef COLOR_LAYER
     FragData0 = fragColor;
