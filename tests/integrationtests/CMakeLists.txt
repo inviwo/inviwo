@@ -47,6 +47,10 @@ ivw_define_standard_definitions(inviwo-integrationtests inviwo-integrationtests)
 ivw_define_standard_properties(inviwo-integrationtests)
 ivw_memleak_setup(inviwo-integrationtests)
 
+if(IVW_RUNTIME_MODULE_LOADING)
+    target_compile_definitions(inviwo-integrationtests PUBLIC IVW_RUNTIME_MODULE_LOADING)
+endif()
+
 # Dependencies to build before this project when they are changed.
 # Needed if modules are loaded at runtime since they should be built
 # when this project is set as startup project

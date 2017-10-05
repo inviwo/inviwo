@@ -59,6 +59,7 @@ SystemSettings::SystemSettings()
     , btnSysInfoProperty_("printSysInfo", "Print System Info")
     , followObjectDuringRotation_("followObjectDuringRotation",
                                   "Follow Object During Camera Rotation", true)
+    , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
     , allocTest_(nullptr) {
 
     addProperty(applicationUsageMode_);
@@ -73,11 +74,15 @@ SystemSettings::SystemSettings()
     addProperty(useRAMPercentProperty_);
     addProperty(logStackTraceProperty_);
     addProperty(followObjectDuringRotation_);
+    addProperty(runtimeModuleReloading_);
 
     logStackTraceProperty_.onChange(this, &SystemSettings::logStacktraceCallback);
     // btnAllocTestProperty_.onChange(this, &SystemSettings::allocationTest);
     // addProperty(&btnAllocTestProperty_);
 
+    runtimeModuleReloading_.onChange([this](){
+       LogInfo("Inviwo needs to be restarted for Runtime Module Reloading change to take effect");
+    });
 
     auto cores = std::thread::hardware_concurrency();
     if (cores > 0) {

@@ -90,7 +90,6 @@ class ConsoleLogger;
 
 class TimerThread;
 
-
 /**
  * \class InviwoApplication
  *
@@ -109,6 +108,13 @@ public:
 
     virtual ~InviwoApplication();
 
+
+    /*
+     * Use as second argument in InviwoApplication::registerModules
+     * See inviwo.cpp for an example.
+     */
+    bool isRuntimeModuleReloadingEnabled();
+
     /**
      * \brief Registers modules from factories and takes ownership of input module factories.
      *
@@ -125,12 +131,8 @@ public:
      * @note Which modules to load can be specified by creating a file
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      * @param librarySearchPaths Paths to directories to recursively search.
-     * @param reloadLibrariesWhenChanged Add file watchers and reload libraries without
-     * restarting the application.
      */
-    virtual void registerModules(
-        const std::vector<std::string>& librarySearchPaths,
-        bool reloadLibrariesWhenChanged = isRuntimeModuleReloadingEnabled());
+    virtual void registerModules(const std::vector<std::string>& librarySearchPaths);
 
     /**
      * \brief Removes all modules not marked as protected by the application.
@@ -260,8 +262,6 @@ protected:
     void postProgress(std::string progress);
     void cleanupSingletons();
     virtual void resizePool(size_t newSize);
-
-
 
     struct Queue {
         // Task queue

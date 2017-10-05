@@ -35,6 +35,10 @@ ivw_add_module_dependencies(inviwo_glfwminimum ${dependencies})
 ivw_define_standard_definitions(inviwo_glfwminimum inviwo_glfwminimum)
 ivw_define_standard_properties(inviwo_glfwminimum)
 
+if(IVW_RUNTIME_MODULE_LOADING)
+    target_compile_definitions(inviwo_glfwminimum PUBLIC IVW_RUNTIME_MODULE_LOADING)
+endif()
+
 ivw_folder(inviwo_glfwminimum minimals)
 ivw_default_install_comp_targets(glfw_app inviwo_glfwminimum)
 

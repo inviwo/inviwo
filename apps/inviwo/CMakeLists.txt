@@ -83,6 +83,10 @@ ivw_add_module_dependencies(inviwo ${dependencies})
 ivw_define_standard_definitions(inviwo inviwo)
 ivw_define_standard_properties(inviwo)
 
+if(IVW_RUNTIME_MODULE_LOADING)
+    target_compile_definitions(inviwo PUBLIC IVW_RUNTIME_MODULE_LOADING)
+endif()
+
 #--------------------------------------------------------------------
 # Add application to pack
 if(IVW_PACKAGE_PROJECT)
@@ -176,6 +180,10 @@ if(WIN32)
     ivw_add_module_dependencies(inviwo-cli ${dependencies-cli})
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
+
+    if(IVW_RUNTIME_MODULE_LOADING)
+        target_compile_definitions(inviwo-cli PUBLIC IVW_RUNTIME_MODULE_LOADING)
+    endif()
 
     add_dependencies(inviwo-cli inviwo)
     

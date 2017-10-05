@@ -272,8 +272,6 @@ endif()
 # Calculate and display profiling information
 option(IVW_RUNTIME_MODULE_LOADING 
        "Load modules from dynamic libraries (dll/so) at application startup" OFF)
-option(IVW_RUNTIME_MODULE_RELOADING "Reload modules at runtime when a dynamic library changes. 
-       Requires a temporary copy of libraries and file observers" OFF)
 
 #--------------------------------------------------------------------
 # Check if OpenMP is available and set it to use, and include the dll in packs

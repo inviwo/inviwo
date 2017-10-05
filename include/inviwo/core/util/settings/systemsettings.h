@@ -61,6 +61,7 @@ public:
     ButtonProperty btnSysInfoProperty_;
 
     BoolProperty followObjectDuringRotation_;
+    BoolProperty runtimeModuleReloading_;
 
 protected:
     void logStacktraceCallback();

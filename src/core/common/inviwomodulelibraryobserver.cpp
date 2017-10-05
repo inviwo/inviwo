@@ -62,9 +62,8 @@ void InviwoModuleLibraryObserver::fileChanged(const std::string& fileName) {
     app->unregisterModules();
 
     // Register modules again
-    app->registerModules(std::vector<std::string>(1, inviwo::filesystem::getFileDirectory(
-                                                         inviwo::filesystem::getExecutablePath())),
-                         true);
+    app->registerModules(std::vector<std::string>(
+        1, inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath())));
 
     // De-serialize network
     try {

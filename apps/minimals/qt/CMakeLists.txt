@@ -44,6 +44,10 @@ ivw_add_module_dependencies(inviwo_qtminimum ${dependencies})
 ivw_define_standard_definitions(inviwo_qtminimum inviwo_qtminimum) 
 ivw_define_standard_properties(inviwo_qtminimum)
 
+if(IVW_RUNTIME_MODULE_LOADING)
+    target_compile_definitions(inviwo_qtminimum PUBLIC IVW_RUNTIME_MODULE_LOADING)
+endif()
+
 #--------------------------------------------------------------------
 # Move to folder
 ivw_folder(inviwo_qtminimum minimals)

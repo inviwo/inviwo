@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 // Used for registering modules (see globalmacros.cmake, ivw_private_generate_module_registration_file)
-#ifdef IVW_RUNTIME_MODULE_LOADING
 
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/util/sharedlibrary.h>
@@ -114,5 +113,3 @@ std::vector<std::string> getModuleList() {
 }
 
 }  //namespace
-
-#endif // IVW_RUNTIME_MODULE_LOADING

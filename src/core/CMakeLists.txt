@@ -573,13 +573,6 @@ add_library(inviwo::core ALIAS inviwo-core)
 # Define standard defintions
 ivw_define_standard_definitions(inviwo-core inviwo-core)
 ivw_define_standard_properties(inviwo-core)
-if(IVW_RUNTIME_MODULE_LOADING)
-    # Propagate defines to projects dependent on core (PUBLIC)
-    target_compile_definitions(inviwo-core PUBLIC -DIVW_RUNTIME_MODULE_LOADING)
-    if (IVW_RUNTIME_MODULE_RELOADING)
-        target_compile_definitions(inviwo-core PUBLIC -DIVW_RUNTIME_MODULE_RELOADING)
-    endif()
-endif()
 
 #--------------------------------------------------------------------
 # Add core folders to includes, this will also be picked up by all the modules

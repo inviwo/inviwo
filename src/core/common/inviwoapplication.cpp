@@ -388,8 +388,9 @@ void InviwoApplication::registerModules(
     onModulesDidRegister_.invoke();
 }
 
-void InviwoApplication::registerModules(
-    const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged) {
+void InviwoApplication::registerModules(const std::vector<std::string>& librarySearchPaths) {
+    bool reloadLibrariesWhenChanged = isRuntimeModuleReloadingEnabled();
+
     // Perform the following steps
     // 1. Recursively get all library files and the folders they are in
     // 2. Sort them according to protected modules (done by std::set).
@@ -786,6 +787,13 @@ std::shared_ptr<std::function<void()>> InviwoApplication::onModulesWillUnregiste
     return onModulesWillUnregister_.add(callback);
 }
 
+bool InviwoApplication::isRuntimeModuleReloadingEnabled() {
+    if (auto sys = getSettingsByType<SystemSettings>()) {
+        return sys->runtimeModuleReloading_.get();
+    }
+    return false;
+}
+
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }
 
 void InviwoApplication::processFront() {
@@ -841,9 +849,9 @@ void InviwoApplication::playSound(Message) {
 }
 
 namespace util {
+
 InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
+
 }  // namespace util
-
-
 
 }  // namespace
