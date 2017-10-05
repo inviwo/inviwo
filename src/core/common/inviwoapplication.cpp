@@ -71,6 +71,13 @@
 #include <locale>
 #include <codecvt>
 #include <string>
+
+#ifdef WIN32
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 namespace inviwo {
 
 namespace util {
