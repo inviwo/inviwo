@@ -32,7 +32,7 @@
 
 #ifdef INVIWO_ALL_DYN_LINK //DYNAMIC
     // If we are building DLL files we must declare dllexport/dllimport
-    #ifdef IVW_CORE_EXPORTS
+    #ifdef INVIWO_CORE_EXPORTS
         #ifdef _WIN32
             #define IVW_CORE_API __declspec(dllexport)
             #define IVW_CORE_EXT
