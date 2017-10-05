@@ -93,7 +93,7 @@
 /* 
  * Use as second argument in InviwoApplication::registerModules
  * See inviwo.cpp for an example.
- * @return true if Cmake option IVW_RUNTIME_MODULE_RELOADING is enabled, false otherwise.
+ * @return true if CMake option IVW_RUNTIME_MODULE_RELOADING is enabled, false otherwise.
  */
 constexpr bool isRuntimeModuleReloadingEnabled() {
 #ifdef IVW_RUNTIME_MODULE_RELOADING

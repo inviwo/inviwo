@@ -113,8 +113,6 @@ public:
      * \brief Registers modules from factories and takes ownership of input module factories.
      *
      * Module is registered if dependencies exist and they have correct version.
-     *
-     * @param std::vector<std::unique_ptr<InviwoModuleFactoryObject>> & moduleFactories
      */
     virtual void registerModules(
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories);
@@ -124,15 +122,16 @@ public:
      * Will recursively search for all dll/so/dylib/bundle files in the specified search paths.
      * The library filename must contain "inviwo-module" to be loaded.
      *
-     * @note Which modules to load can be specified by creating a file (application_name-enabled-modules.txt)
-     * containing the names of the modules to load.
-     * @param const std::vector<std::string> & librarySearchPaths Paths to directories to recursively
-     * search.
-     * @param bool reloadLibrariesWhenChanged Add file watchers and reload libraries without
+     * @note Which modules to load can be specified by creating a file
+     * (application_name-enabled-modules.txt) containing the names of the modules to load.
+     * @param librarySearchPaths Paths to directories to recursively search.
+     * @param reloadLibrariesWhenChanged Add file watchers and reload libraries without
      * restarting the application.
      */
     virtual void registerModules(
-        const std::vector<std::string>& librarySearchPaths, bool reloadLibrariesWhenChanged = isRuntimeModuleReloadingEnabled());
+        const std::vector<std::string>& librarySearchPaths,
+        bool reloadLibrariesWhenChanged = isRuntimeModuleReloadingEnabled());
+
     /**
      * \brief Removes all modules not marked as protected by the application.
      *
@@ -237,25 +236,24 @@ public:
 
     std::vector<std::string> findDependentModules(std::string module) const;
 
-    /** 
+    /**
      * \brief Register callback for monitoring when modules have been registered.
      * Invoked in registerModules.
      */
-    std::shared_ptr< std::function<void()> > onModulesDidRegister(std::function<void()> callback);
-    /** 
+    std::shared_ptr<std::function<void()>> onModulesDidRegister(std::function<void()> callback);
+    /**
      * \brief Register callback for monitoring when modules have been registered.
      * Invoked in unregisterModules.
      */
-    std::shared_ptr< std::function<void()> > onModulesWillUnregister(std::function<void()> callback);
-protected:
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister(std::function<void()> callback);
 
-    /** 
+protected:
+    /**
      * \brief List of modules to keep during runtime library reloading.
-     * 
+     *
      * Some modules such as Core can cause errors if unloaded.
-     * Append them to this list in your application to prevent them from 
-     * being unloaded.
-     * @return std::set<std::string> Module identifiers of modules
+     * Append them to this list in your application to prevent them from being unloaded.
+     * @return Module identifiers of modules
      */
     virtual std::set<std::string> getProtectedModuleIdentifiers() const;
     virtual void printApplicationInfo();
@@ -309,8 +307,11 @@ protected:
     std::vector<std::unique_ptr<InviwoModule>> modules_;
     std::vector<std::unique_ptr<SharedLibrary>> moduleSharedLibraries_;
     // Need to be pointer since we cannot initialize the observer before the application.
-    std::unique_ptr<InviwoModuleLibraryObserver> moduleLibraryObserver_; ///< Observes shared libraries and reload modules when file changes. 
-       
+    std::unique_ptr<InviwoModuleLibraryObserver> moduleLibraryObserver_;  ///< Observes shared
+                                                                          ///< libraries and reload
+                                                                          ///< modules when file
+                                                                          ///< changes.
+
     util::OnScopeExit clearModules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 

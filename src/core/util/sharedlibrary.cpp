@@ -43,15 +43,11 @@
 
 namespace inviwo {
 
-SharedLibrary::SharedLibrary(std::string filePath)
-    : filePath_(filePath)
-{
-
+SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) {
 #if WIN32
-    
-    // Search for dlls in directories specified by the path environment variable 
+    // Search for dlls in directories specified by the path environment variable
     // Need to be done since we are using a non-standard call to LoadLibrary
-    static auto addDirectoriesInPath = []() { // Lambda executed once
+    static auto addDirectoriesInPath = []() {  // Lambda executed once
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         const char* environmentPath = std::getenv("PATH");
         if (environmentPath &&
@@ -60,18 +56,17 @@ SharedLibrary::SharedLibrary(std::string filePath)
             for (auto path : elems) {
                 std::wstring dd;
 
-                //std::string narrow = converter.to_bytes(wide_utf16_source_string);
+                // std::string narrow = converter.to_bytes(wide_utf16_source_string);
                 std::wstring wide = converter.from_bytes(path);
                 AddDllDirectory(converter.from_bytes(path).c_str());
             }
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }();
 
-    // Load library and search for dependencies in 
+    // Load library and search for dependencies in
     // 1. The directory that contains the DLL (LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR).
     // 2. Paths explicitly added with the AddDllDirectory function (LOAD_LIBRARY_SEARCH_USER_DIRS)
     // or the SetDllDirectory function. If more than one path has been added, the order in which the
@@ -85,43 +80,40 @@ SharedLibrary::SharedLibrary(std::string filePath)
     // to be installed.
     // Note 3: Not supported on Windows XP and Server 2003
     if (GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory")) {
-        handle_ = LoadLibraryExA(filePath.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS);
+        handle_ = LoadLibraryExA(filePath.c_str(), nullptr,
+                                 LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 |
+                                     LOAD_LIBRARY_SEARCH_USER_DIRS);
     } else {
         // LOAD_LIBRARY_SEARCH_* flags are not supported
         // Fall back to LoadLibrary
         handle_ = LoadLibraryA(filePath.c_str());
     }
 
-    
     if (!handle_) {
         auto error = GetLastError();
         std::ostringstream errorStream;
         LPVOID errorText;
-        
+
         auto outputSize = FormatMessage(
             // use system message tables to retrieve error text
             FORMAT_MESSAGE_FROM_SYSTEM
-            // allocate buffer on local heap for error text
-            | FORMAT_MESSAGE_ALLOCATE_BUFFER
-            // Important! will fail otherwise, since we're not 
-            // (and CANNOT) pass insertion parameters
-            | FORMAT_MESSAGE_IGNORE_INSERTS,
-            NULL,
-            error,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPTSTR)&errorText,
-            0, NULL);
+                // allocate buffer on local heap for error text
+                | FORMAT_MESSAGE_ALLOCATE_BUFFER
+                // Important! will fail otherwise, since we're not
+                // (and CANNOT) pass insertion parameters
+                | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&errorText, 0, NULL);
         if (errorText != nullptr) {
-            std::string errorString(static_cast<const char *>(errorText), outputSize + 1);
+            std::string errorString(static_cast<const char*>(errorText), outputSize + 1);
             errorStream << errorString;
-            //errorStream << static_cast<const char *>(errorText);
+            // errorStream << static_cast<const char *>(errorText);
             // release memory allocated by FormatMessage()
             LocalFree(errorText);
         }
 
         throw Exception("Failed to load library: " + filePath + "\n Error: " + errorStream.str());
     }
-#else 
+#else
     // RTLD_GLOBAL gives all other loaded libraries access to library
     // RTLD_LOCAL is preferred but would require each module to
     // explicitly load its dependent libraries as well.
@@ -130,24 +122,23 @@ SharedLibrary::SharedLibrary(std::string filePath)
         throw Exception("Failed to load library: " + filePath);
     }
 #endif
-
 }
+
 SharedLibrary::~SharedLibrary() {
 #if WIN32
     FreeLibrary(handle_);
-#else 
+#else
     dlclose(handle_);
 #endif
 }
 
-void* SharedLibrary::findSymbol(std::string name) {
+void* SharedLibrary::findSymbol(const std::string& name) {
 #if WIN32
-    return GetProcAddress(handle_, "createModule");
-#else 
+    return GetProcAddress(handle_, name.c_str());
+#else
     return dlsym(handle_, name.c_str());
 #endif
 }
-
 
 } // namespace
 

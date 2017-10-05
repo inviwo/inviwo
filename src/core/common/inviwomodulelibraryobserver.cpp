@@ -34,6 +34,8 @@
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <sstream>
+
 namespace inviwo {
 
 InviwoModuleLibraryObserver::InviwoModuleLibraryObserver(const std::string& filePath /*= ""*/)
@@ -41,45 +43,36 @@ InviwoModuleLibraryObserver::InviwoModuleLibraryObserver(const std::string& file
 
 void InviwoModuleLibraryObserver::fileChanged(const std::string& fileName) {
     // 1. Serialize network
-    // 2. Clear modules/unload module libraries 
-    // 3. Load module libraries and register them 
+    // 2. Clear modules/unload module libraries
+    // 3. Load module libraries and register them
     // 4. De-serialize network
-    
+
     // Serialize network
-    std::stringbuf buf;
-    std::iostream stream(&buf);
-    InviwoApplication* app = InviwoApplication::getPtr();
-    Serializer xmlSerializer(app->getBasePath());
-    
+    std::stringstream stream;
+    auto app = InviwoApplication::getPtr();
+
     try {
         app->getWorkspaceManager()->save(stream, app->getBasePath());
-        
-        xmlSerializer.writeFile(stream);
-    }
-    catch (SerializationException& exception) {
-        util::log(exception.getContext(),
-            "Unable to save network due to " + exception.getMessage(),
-            LogLevel::Error);
+    } catch (SerializationException& exception) {
+        util::log(exception.getContext(), "Unable to save network due to " + exception.getMessage(),
+                  LogLevel::Error);
         return;
     }
     // Unregister modules and clear network
     app->unregisterModules();
 
     // Register modules again
-    app->registerModules(
-        std::vector<std::string>(
-            1, inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath())),
-        true);
+    app->registerModules(std::vector<std::string>(1, inviwo::filesystem::getFileDirectory(
+                                                         inviwo::filesystem::getExecutablePath())),
+                         true);
 
     // De-serialize network
     try {
         // Lock the network that so no evaluations are triggered during the de-serialization
         app->getWorkspaceManager()->load(stream, app->getBasePath());
-    }
-    catch (SerializationException& exception) {
-        util::log(exception.getContext(),
-            "Unable to load network due to " + exception.getMessage(),
-            LogLevel::Error);
+    } catch (SerializationException& exception) {
+        util::log(exception.getContext(), "Unable to load network due to " + exception.getMessage(),
+                  LogLevel::Error);
         return;
     }
 }

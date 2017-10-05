@@ -52,7 +52,7 @@ namespace inviwo {
  */
 class IVW_CORE_API SharedLibrary {
 public:
-    SharedLibrary(std::string filePath);
+    SharedLibrary(const std::string& filePath);
     virtual ~SharedLibrary();
 
     std::string getFilePath() { return filePath_; }
@@ -68,7 +68,7 @@ public:
      * @param std::string name Function name
      * @return void* Address to function if found, otherwise nullptr
      */
-    virtual void* findSymbol(std::string name);
+    virtual void* findSymbol(const std::string& name);
 private:
     std::string filePath_;
 #if WIN32

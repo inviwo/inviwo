@@ -49,12 +49,13 @@ public:
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
 
-    const std::string name;                  // Module name
-    const std::string version;               // Module version (Major.Minor.Patch)
-    const std::string description;           // Module description
-    const std::string inviwoCoreVersion;     // Supported inviwo core version (Major.Minor.Patch)
-    const std::vector<std::string> dependencies;        // Module dependencies
-    const std::vector<std::string> dependenciesVersion; // Major.Minor.Patch version of each dependency
+    const std::string name;               // Module name
+    const std::string version;            // Module version (Major.Minor.Patch)
+    const std::string description;        // Module description
+    const std::string inviwoCoreVersion;  // Supported inviwo core version (Major.Minor.Patch)
+    const std::vector<std::string> dependencies;  // Module dependencies
+    const std::vector<std::string>
+        dependenciesVersion;  // Major.Minor.Patch version of each dependency
 };
 
 template <typename T>
@@ -82,7 +83,7 @@ using f_getModule = InviwoModuleFactoryObject*(*)();
 #endif
 
 template <typename T>
-inviwo::InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
+InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
     const std::string& name, const std::string& version, const std::string& description,
     const std::string& inviwoCoreVersion, std::vector<std::string> dependencies,
     std::vector<std::string> dependenciesVersion)
@@ -94,9 +95,8 @@ inviwo::InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
  *
  * https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
  *
- * @param std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start Start of range to
- * sort
- * @param std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end End of range to sort
+ * @param start Start of range to sort
+ * @param end End of range to sort
  */
 IVW_CORE_API void topologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start,
