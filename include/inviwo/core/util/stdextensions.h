@@ -247,7 +247,7 @@ std::vector<T>& append(std::vector<T> &dest, const std::vector<T> &source) {
 }
 
 template <typename T, typename V>
-auto find(T& cont, const V& elem) -> typename T::iterator {
+auto find(T& cont, const V& elem) {
     using std::begin;
     using std::end;
     return std::find(begin(cont), end(cont), elem);
