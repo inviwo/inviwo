@@ -53,7 +53,7 @@ public:
     virtual ~FontProperty() = default;
 
     OptionPropertyString fontFace_;
-    OptionPropertyInt fontSize_;
+    IntProperty fontSize_;
     FloatVec2Property anchorPos_;
 };
 
