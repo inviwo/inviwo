@@ -10,7 +10,9 @@ If you are unsure on any of the points bellow, please make a note bellow and so 
 - [ ] New processors are properly tested in unittest and/or regresion tests
 
 **Updated feature / Fixes** 
-- [ ] Relevant documentation has been update
+- [ ] Relevant documentation has been updated
 
 **What evineroment has the code been compiled and tested on?** 
-(Operating system, Compiler/IDE, QT/CMake/Python versions)
+- Operating system
+- Compiler/IDE
+- QT/CMake/Python versions
