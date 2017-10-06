@@ -179,6 +179,8 @@ public:
     static Kind outport(const std::string& type);
     static Kind portgroup(const std::string& type);
     static Kind property(const std::string& type);
+    static Kind propertyLinkSource(const std::string& type, const std::string& identifier);
+    static Kind propertyLinkDestination(const std::string& type, const std::string& identifier);
 
     const std::string& name() const;
     const std::string& list() const;
@@ -195,6 +197,16 @@ private:
     std::string type_;
 };
 
+
+/**
+* Utility function to change a xml tag matching oldName.
+* @param root The xml node to start looking.
+* @param path A vector of Kind items (@See Kind) that specifies the elements that you want to change.
+* @param oldName The old tag value. This is also used for identifying the elements.
+* @param newName The new tag value
+*/
+IVW_CORE_API bool changeTag(TxElement* root, const std::vector<Kind>& path, const std::string& oldName,
+                            const std::string& newName);
 
 /**
  * Utility function to change a attribute processor network element, i.e a processor, port, or 
