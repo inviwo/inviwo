@@ -128,7 +128,7 @@ endif()
 
 # Add build dependency towards any pybind11 targets and inviwo, 
 # if python is not enabled, this list will be empty
-if(${_allPyBindWrappers})
+if(_allPyBindWrappers)
     add_dependencies(inviwo ${_allPyBindWrappers})
 endif()
 ivw_memleak_setup(inviwo)
@@ -160,7 +160,7 @@ if(WIN32)
     ivw_define_standard_properties(inviwo-cli)
 
     add_dependencies(inviwo-cli inviwo)
-    if(${_allPyBindWrappers})
+    if(_allPyBindWrappers)
         add_dependencies(inviwo-cli ${_allPyBindWrappers})
     endif()
 
