@@ -32,11 +32,12 @@
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
+#include <inviwo/core/properties/ordinalproperty.h>
+
 #include <array>
 
 namespace inviwo {
 
-class IntProperty;
 class IvwComboBox;
 class EditableLabelQt;
 

@@ -31,8 +31,6 @@
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 
-#include <inviwo/core/properties/ordinalproperty.h>
-
 #include <typeinfo>
 #include <algorithm>
 
