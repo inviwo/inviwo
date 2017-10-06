@@ -31,12 +31,12 @@
 #define IVW_FONTSIZEPROPERTYWIDGETQT_H
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/optionproperty.h>
 
 #include <array>
 
 namespace inviwo {
 
+class IntProperty;
 class IvwComboBox;
 class EditableLabelQt;
 

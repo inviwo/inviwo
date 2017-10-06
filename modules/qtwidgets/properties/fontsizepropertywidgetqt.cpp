@@ -31,9 +31,10 @@
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 #include <typeinfo>
+#include <algorithm>
 
 #include <warn/push>
 #include <warn/ignore/all>
