@@ -228,16 +228,16 @@ std::shared_ptr<Texture2D> AxisRendererBase::getLabelAtlasTexture() const {
 void AxisRendererBase::updateCaptionTexture() {
     // set up text renderer
     textRenderer_.setFont(property_.caption_.font_.fontFace_.get());
-    textRenderer_.setFontSize(property_.caption_.font_.fontSize_.getSelectedValue());
+    textRenderer_.setFontSize(property_.caption_.font_.fontSize_.get());
 
     axisCaptionTex_ = util::createTextTexture(textRenderer_, property_.caption_.title_.get(),
-                                              property_.caption_.font_.fontSize_.getSelectedValue(),
+                                              property_.caption_.font_.fontSize_.get(),
                                               property_.caption_.color_.get());
 }
 
 void AxisRendererBase::updateLabelAtlas() {
     textRenderer_.setFont(property_.labels_.font_.fontFace_.get());
-    textRenderer_.setFontSize(property_.labels_.font_.fontSize_.getSelectedValue());
+    textRenderer_.setFontSize(property_.labels_.font_.fontSize_.get());
 
     const auto tickmarks = plot::getMajorTickPositions(property_);
     if (tickmarks.empty()) {
