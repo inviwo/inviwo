@@ -179,6 +179,8 @@ public:
     static Kind outport(const std::string& type);
     static Kind portgroup(const std::string& type);
     static Kind property(const std::string& type);
+    static Kind propertyLinkSource(const std::string& type, const std::string& identifier);
+    static Kind propertyLinkDestination(const std::string& type, const std::string& identifier);
 
     const std::string& name() const;
     const std::string& list() const;
@@ -197,10 +199,20 @@ private:
 
 
 /**
+ * Utility function to change a xml tag matching oldName.
+ * @param root The xml node to start from.
+ * @param path The elements that you want to change (@See Kind).
+ * @param oldName The old tag value. This is also used for identifying the elements.
+ * @param newName The new tag value
+ */
+IVW_CORE_API bool changeTag(TxElement* root, const std::vector<Kind>& path, const std::string& oldName,
+                            const std::string& newName);
+
+/**
  * Utility function to change a attribute processor network element, i.e a processor, port, or 
  * property.
- * @param root The xml node to start looking.
- * @param path A vector of Kind items (@See Kind) that specifies the elements that you want to change.
+ * @param root The xml node to start from.
+ * @param path The elements that you want to change (@See Kind).
  * @param attribute The name of the attribute to change
  * @param oldValue The old attribute value. This is also used for identifying the elements.
  * @param newValye The new attribute value
@@ -210,7 +222,7 @@ IVW_CORE_API bool changeAttribute(TxElement* root, const std::vector<Kind>& path
                                   const std::string& newValue);
 
 /**
- *	@See changeAttribute. Same a changeAttribute but will specifically change a identifier attribute
+ *	Change identifier attribute. @See changeAttribute
  */
 IVW_CORE_API bool changeIdentifier(TxElement* root, const std::vector<Kind>& path,
                                    const std::string& oldId, const std::string& newId);

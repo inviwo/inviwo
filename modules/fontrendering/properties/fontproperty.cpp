@@ -40,8 +40,7 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , fontFace_("fontFace", "Font Face")
-    , fontSize_("fontSize", "Font size", {6, 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96},
-                5)
+    , fontSize_("fontSize", "Font size", 14, 0, 144, 1)
     , anchorPos_("anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f)) {
     auto fonts = util::getAvailableFonts();
 
@@ -52,6 +51,8 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
     }
     fontFace_.setSelectedIdentifier("Montserrat-Medium");
     fontFace_.setCurrentStateAsDefault();
+
+    fontSize_.setSemantics(PropertySemantics("Fontsize"));
 
     addProperty(fontFace_);
     addProperty(fontSize_);

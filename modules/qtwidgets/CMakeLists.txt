@@ -42,14 +42,15 @@ set(HEADER_FILES
     keyboardutils.h
     labelgraphicsitem.h
     properties/anglepropertywidgetqt.h
-    properties/boolpropertywidgetqt.h
     properties/boolcompositepropertywidgetqt.h
+    properties/boolpropertywidgetqt.h
     properties/buttonpropertywidgetqt.h
     properties/collapsiblegroupboxwidgetqt.h
     properties/colorpropertywidgetqt.h
     properties/compositepropertywidgetqt.h
     properties/eventpropertywidgetqt.h
     properties/filepropertywidgetqt.h
+    properties/fontsizepropertywidgetqt.h
     properties/lightpropertywidgetqt.h
     properties/multifilepropertywidgetqt.h
     properties/optionpropertywidgetqt.h
@@ -101,6 +102,7 @@ set(SOURCE_FILES
     properties/compositepropertywidgetqt.cpp
     properties/eventpropertywidgetqt.cpp
     properties/filepropertywidgetqt.cpp
+    properties/fontsizepropertywidgetqt.cpp
     properties/glslsyntaxhighlighter.cpp
     properties/lightpropertywidgetqt.cpp
     properties/multifilepropertywidgetqt.cpp

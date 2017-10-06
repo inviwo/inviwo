@@ -24,39 +24,36 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_FONTPROPERTY_H
-#define IVW_FONTPROPERTY_H
+#ifndef IVW_FONTSIZEPROPERTYWIDGETQT_H
+#define IVW_FONTSIZEPROPERTYWIDGETQT_H
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+
+#include <array>
 
 namespace inviwo {
 
-class IVW_MODULE_FONTRENDERING_API FontProperty : public CompositeProperty {
+class IvwComboBox;
+class EditableLabelQt;
+
+class IVW_MODULE_QTWIDGETS_API FontSizePropertyWidgetQt : public PropertyWidgetQt {
 public:
-    InviwoPropertyInfo();
+    FontSizePropertyWidgetQt(IntProperty* property);
+    virtual void updateFromProperty() override;
 
-    FontProperty(const std::string& identifier, const std::string& displayName,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
-    FontProperty(const FontProperty& rhs);
-    FontProperty& operator=(const FontProperty& rhs) = default;
-    virtual FontProperty* clone() const override;
-    virtual ~FontProperty() = default;
+private: 
+    IntProperty* property_;
+    IvwComboBox* comboBox_;
+    EditableLabelQt* label_;
 
-    OptionPropertyString fontFace_;
-    IntProperty fontSize_;
-    FloatVec2Property anchorPos_;
+    const std::array<int, 15> fontSizes_ = { {6, 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96} };
 };
 
-}  // namespace inviwo
+} // namespace
 
-#endif  // IVW_FONTPROPERTY_H
+#endif  // IVW_FONTSIZEPROPERTYWIDGETQT_H

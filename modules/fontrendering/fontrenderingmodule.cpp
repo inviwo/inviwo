@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/fontrendering/fontrenderingmodule.h>
@@ -37,50 +37,47 @@
 
 namespace inviwo {
 
-FontRenderingModule::FontRenderingModule(InviwoApplication* app) : InviwoModule(app, "FontRendering") {
+FontRenderingModule::FontRenderingModule(InviwoApplication* app)
+    : InviwoModule(app, "FontRendering") {
     fontrendering::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
     registerProcessor<TextOverlayGL>();
 
     registerProperty<FontProperty>();
 }
 
-int FontRenderingModule::getVersion() const {
-    return 2;
-}
+int FontRenderingModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> FontRenderingModule::getConverter(int version) const {
-        return util::make_unique<Converter>(version);
+    return util::make_unique<Converter>(version);
 }
 
 FontRenderingModule::Converter::Converter(int version) : version_(version) {}
 
 bool FontRenderingModule::Converter::convert(TxElement* root) {
     const std::vector<xml::IdentifierReplacement> repl = {
-           // TextOverlayGL
-            {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
-              xml::Kind::property("org.inviwo.OptionPropertyInt")},
-             "Font size",
-             "fontSize"}
-    };
+        // TextOverlayGL
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.OptionPropertyInt")},
+         "Font size",
+         "fontSize"}};
     const std::vector<xml::IdentifierReplacement> repl2 = {
         // TextOverlayGL
-        { { xml::Kind::processor("org.inviwo.TextOverlayGL"),
-        xml::Kind::property("org.inviwo.FloatVec2Property") },
-        "Position",
-        "position" }, 
-        { { xml::Kind::processor("org.inviwo.TextOverlayGL"),
-        xml::Kind::property("org.inviwo.FloatVec2Property") },
-        "Anchor",
-        "anchor" },
-        { { xml::Kind::processor("org.inviwo.TextOverlayGL"),
-        xml::Kind::property("org.inviwo.FloatVec4Property") },
-        "color_",
-        "color" },
-        { { xml::Kind::processor("org.inviwo.TextOverlayGL"),
-        xml::Kind::property("org.inviwo.StringProperty") },
-        "Text",
-        "text" }
-    };
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.FloatVec2Property")},
+         "Position",
+         "position"},
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.FloatVec2Property")},
+         "Anchor",
+         "anchor"},
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.FloatVec4Property")},
+         "color_",
+         "color"},
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.StringProperty")},
+         "Text",
+         "text"}};
 
     bool res = false;
     switch (version_) {
@@ -89,6 +86,32 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
         }
         case 1: {
             res |= xml::changeIdentifiers(root, repl2);
+        }
+        case 2: {
+
+            res |= xml::changeTag(root,
+                                  {{
+                                      xml::Kind::processor("org.inviwo.TextOverlayGL"),
+                                      xml::Kind::property("org.inviwo.FontProperty"),
+                                      xml::Kind::property("org.inviwo.OptionPropertyInt"),
+                                  }},
+                                  "selectedIdentifier", "value");
+
+            res |= xml::changeAttribute(root,
+                                        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+                                          xml::Kind::property("org.inviwo.FontProperty"),
+                                          xml::Kind::property("org.inviwo.OptionPropertyInt")}},
+                                        "type", "org.inviwo.OptionPropertyInt",
+                                        "org.inviwo.IntProperty");
+
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::propertyLinkSource("org.inviwo.OptionPropertyInt", "fontSize")}},
+                "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
+            res |= xml::changeAttribute(
+                root,
+                {{xml::Kind::propertyLinkDestination("org.inviwo.OptionPropertyInt", "fontSize")}},
+                "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
+
             return res;
         }
         default:
@@ -97,4 +120,4 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
     return true;
 }
 
-} // namespace
+}  // namespace inviwo
