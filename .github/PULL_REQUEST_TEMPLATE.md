@@ -1,13 +1,12 @@
-Thank you for contributing to the Inviwo repository. Please ensure the following:
-If you are unsure on any of the points bellow, please make a note bellow and so we can help
+Thank you for contributing to the Inviwo repository! Great code makes great apps so please ensure the following:
 
 **Always**
 - [ ] Code is error and warning free
-- [ ] Code follows the Inviwo coding guidelines 
+- [ ] Code follows the [Inviwo coding guidelines](https://github.com/inviwo/inviwo/wiki/Coding-Conventions)
 
 **New features**
-- [ ] Code / Processors are properly documented
-- [ ] New processors are properly tested in unittest and/or regresion tests
+- [ ] Code / Processors follows the [Inviwo documentation guidelines](https://github.com/inviwo/inviwo/wiki/Documentation-guide)
+- [ ] Code / processors are tested in [unittest and/or regresion tests](https://github.com/inviwo/inviwo/wiki/Manual#testing)
 
 **Updated feature / Fixes** 
 - [ ] Relevant documentation has been updated
@@ -16,3 +15,5 @@ If you are unsure on any of the points bellow, please make a note bellow and so 
 - Operating system
 - Compiler/IDE
 - QT/CMake/Python versions
+
+Are you are unsure how to address these points? Please make a note here so that we can help out:
