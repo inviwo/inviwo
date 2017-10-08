@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/qtwidgetsmodule.h>
@@ -52,6 +52,7 @@
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/eventpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/fontsizepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
@@ -93,6 +94,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>("Default");
     registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
+    registerPropertyWidget<FontSizePropertyWidgetQt, IntProperty>("Fontsize");
     registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
 
     registerPropertyWidget<FloatMat2PropertyWidgetQt, FloatMat2Property>("Default");

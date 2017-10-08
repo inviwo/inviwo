@@ -48,10 +48,9 @@ uniform bool roundCaps = false;
 
 in vec4 vertexColor_[];
 in vec4 worldPosition_[];
-in vec4 pickColors_[];
+flat in vec4 pickColors_[];
 
 out float segmentLength_; // total length of the current line segment in screen space
-out float lineLengthWorld_;  // total length of line segment in world space
 out float distanceWorld_;  // distance in world coords to segment start
 out vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
 out vec4 color_;
@@ -217,10 +216,10 @@ void main(void) {
     float w = lineWidth * 0.5 + 1.2 * antialiasing;
     segmentLength_ = length(p2 - p1);
     // segment length in world space
-    lineLengthWorld_ = length(worldPosition_[index2] - worldPosition_[index1]);
+    float lineLengthWorld = length(worldPosition_[index2] - worldPosition_[index1]);
     // scaling factor to convert line lengths in screenspace coords back to model space
     // this is used for reparametrization of the line
-    float screenToWorldFactor = lineLengthWorld_ / segmentLength_;
+    float screenToWorldFactor = lineLengthWorld / segmentLength_;
 
     // angle between previous and current segment
     float d0 = sign(dot(v0, v1));

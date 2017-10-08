@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/serialization/versionconverter.h>
@@ -83,10 +83,10 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
             if (p->getIdentifier() == id &&
                 (p->getClassIdentifier() == type ||
                  p->getClassIdentifier() == splitString(type, '.').back())) {
-                LogInfoCustom("VersionConverter", "    Match for sub property: " +
-                                                          joinString(p->getPath(), ".") +
-                                                          " found in type: "
-                                                      << type << " id: " << id);
+                LogInfoCustom("VersionConverter",
+                              "    Match for sub property: " + joinString(p->getPath(), ".") +
+                                      " found in type: "
+                                  << type << " id: " << id);
 
                 list.InsertEndChild(*(child->Clone()));
                 toBeDeleted.push_back(child.Get());
@@ -136,7 +136,7 @@ bool xml::findMatchingSubPropertiesForComposites(
     TxElement* processornode, const std::vector<const CompositeProperty*>& props) {
     auto pelm = xml::getMatchingElements(processornode, "Properties");
     if (pelm.empty()) return false;
-    
+
     bool res = false;
     for (auto& prop : props) {
         if (!xml::hasProp(pelm[0], *prop)) {
@@ -251,9 +251,9 @@ void util::changePropertyType(Deserializer& d,
     NodeVersionConverter vc([&rules](TxElement* node) {
         bool didChanges = false;
         for (auto rule : rules) {
-            TxElement* p = xml::getElement(node, "Properties/Property&type=" +
-                                                     rule.first->getClassIdentifier() +
-                                                     "&identifier=" + rule.first->getIdentifier());
+            TxElement* p = xml::getElement(
+                node, "Properties/Property&type=" + rule.first->getClassIdentifier() +
+                          "&identifier=" + rule.first->getIdentifier());
             if (p) {
                 p->SetAttribute("type", rule.second);
                 didChanges = true;
@@ -262,6 +262,25 @@ void util::changePropertyType(Deserializer& d,
         return didChanges;
     });
     d.convertVersion(&vc);
+}
+
+bool xml::changeTag(TxElement* node, const std::vector<Kind>& path, const std::string& oldName,
+                    const std::string& newName) {
+    if (path.empty()) return false;
+
+    std::vector<xml::ElementMatcher> selector;
+    for (const auto& kind : path) {
+        selector.insert(selector.end(), kind.getMatchers().begin(), kind.getMatchers().end());
+    }
+    // selector.back().name = oldName;
+    selector.insert(selector.end(), {oldName, {}});
+
+    bool res = false;
+    xml::visitMatchingNodes(node, selector, [&res, &newName](TxElement* n) {
+        n->SetValue(newName);
+        res |= true;
+    });
+    return res;
 }
 
 bool xml::changeIdentifier(TxElement* root, const std::vector<Kind>& path, const std::string& oldId,
@@ -298,21 +317,19 @@ bool xml::changeAttribute(TxElement* node, const std::vector<Kind>& path,
     return res;
 }
 
-
 xml::Kind::Kind(const std::string& name, const std::string& list, const std::string& type)
     : name_(name), list_(list), type_(type) {
 
-    ElementMatcher m1 = { list_, {} };
-    ElementMatcher m2 = { name_, {{"type", type_}} };
+    ElementMatcher m1 = {list_, {}};
+    ElementMatcher m2 = {name_, {{"type", type_}}};
 
     matchers_.push_back(m1);
     matchers_.push_back(m2);
-
 }
 
 xml::Kind xml::Kind::processor(const std::string& type) {
     Kind kind("Processor", "Processors", type);
-    ElementMatcher m = { "ProcessorNetwork", {} };
+    ElementMatcher m = {"ProcessorNetwork", {}};
     kind.matchers_.insert(kind.matchers_.begin(), m);
     return kind;
 }
@@ -329,15 +346,34 @@ xml::Kind xml::Kind::property(const std::string& type) {
     return Kind("Property", "Properties", type);
 }
 
+xml::Kind xml::Kind::propertyLinkSource(const std::string& type, const std::string& identifier) {
+    Kind kind("SourceProperty", "PropertyLink", type);
+    kind.matchers_.back().attributes.push_back({"identifier", identifier});
+    ElementMatcher m = {"ProcessorNetwork", {}};
+    ElementMatcher m2 = {"PropertyLinks", {}};
+    kind.matchers_.insert(kind.matchers_.begin(), m2);
+    kind.matchers_.insert(kind.matchers_.begin(), m);
+    return kind;
+}
+
+xml::Kind xml::Kind::propertyLinkDestination(const std::string& type,
+                                             const std::string& identifier) {
+    Kind kind("DestinationProperty", "PropertyLink", type);
+    kind.matchers_.back().attributes.push_back({"identifier", identifier});
+    ElementMatcher m = {"ProcessorNetwork", {}};
+    ElementMatcher m2 = {"PropertyLinks", {}};
+    kind.matchers_.insert(kind.matchers_.begin(), m2);
+    kind.matchers_.insert(kind.matchers_.begin(), m);
+    return kind;
+}
+
 const std::string& xml::Kind::name() const { return name_; }
 
 const std::string& xml::Kind::list() const { return list_; }
 
 const std::string& xml::Kind::type() const { return type_; }
 
-const std::vector<xml::ElementMatcher>& xml::Kind::getMatchers() const {
-    return matchers_;
-}
+const std::vector<xml::ElementMatcher>& xml::Kind::getMatchers() const { return matchers_; }
 
 xml::IdentifierReplacement::IdentifierReplacement(const std::vector<xml::Kind>& p,
                                                   const std::string& oi, const std::string& ni)
@@ -354,4 +390,4 @@ xml::IdentifierReplacement& xml::IdentifierReplacement::operator=(IdentifierRepl
     return *this;
 }
 
-}  // namespace
+}  // namespace inviwo

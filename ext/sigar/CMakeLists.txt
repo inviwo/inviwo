@@ -91,7 +91,7 @@ target_include_directories(sigar PRIVATE
 )
 
 if(SIGAR_LINK_FLAGS)
-    ivw_add_link_flags(${SIGAR_LINK_FLAGS})
+    set_property(TARGET sigar APPEND_STRING PROPERTY LINK_FLAGS "${SIGAR_LINK_FLAGS}")
 endif()
 
 #--------------------------------------------------------------------

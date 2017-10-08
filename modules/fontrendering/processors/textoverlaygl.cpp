@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "textoverlaygl.h"
@@ -51,24 +51,21 @@ const ProcessorInfo TextOverlayGL::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo TextOverlayGL::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo TextOverlayGL::getProcessorInfo() const { return processorInfo_; }
 
 TextOverlayGL::TextOverlayGL()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , enable_("enable","Enabled",true)
+    , enable_("enable", "Enabled", true)
     , text_("text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
             PropertySemantics::TextEditor)
     , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-                  InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , font_("font", "Font Settings")
     , position_("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , addArgButton_("addArgBtn", "Add String Argument")
-    , numArgs_(0u)
-{
+    , numArgs_(0u) {
     inport_.setOptional(true);
 
     addPort(inport_);
@@ -91,11 +88,11 @@ TextOverlayGL::TextOverlayGL()
         property->setSerializationMode(PropertySerializationMode::All);
         addProperty(property, true);
     });
-    
+
     font_.fontFace_.setSelectedIdentifier("arial");
     font_.fontFace_.setCurrentStateAsDefault();
 
-    font_.fontSize_.setSelectedIndex(5);
+    font_.fontSize_.set(14);
     font_.fontSize_.setCurrentStateAsDefault();
 }
 
@@ -104,7 +101,7 @@ void TextOverlayGL::process() {
         outport_.setData(inport_.getData());
         return;
     }
-    
+
     if (font_.fontFace_.isModified()) {
         textRenderer_.setFont(font_.fontFace_.get());
     }
@@ -137,13 +134,13 @@ void TextOverlayGL::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void TextOverlayGL::deserialize(Deserializer & d) {
+void TextOverlayGL::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     // update the number of place markers properties using the total number of string properties in
     // this processor. Note that this number is one element larger.
     auto args = this->getPropertiesByType<StringProperty>(false);
     numArgs_ = args.size() - 1;
-    
+
     // only maxNumArgs_ are supported, disable button if more exist
     addArgButton_.setReadOnly(numArgs_ > maxNumArgs_);
 }
@@ -201,9 +198,10 @@ std::string TextOverlayGL::getString() const {
 }
 
 void TextOverlayGL::updateCache() {
-    textRenderer_.setFontSize(font_.fontSize_.getSelectedValue());
+    textRenderer_.setFontSize(font_.fontSize_.get());
     std::string str(getString());
-    cacheTexture_ = util::createTextTexture(textRenderer_ , str , font_.fontSize_.getSelectedValue() , color_.get() , cacheTexture_ );
+    cacheTexture_ = util::createTextTexture(textRenderer_, str, font_.fontSize_.get(), color_.get(),
+                                            cacheTexture_);
 }
 
-}  // namespace
+}  // namespace inviwo
