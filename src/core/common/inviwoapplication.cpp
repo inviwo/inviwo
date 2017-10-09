@@ -283,7 +283,7 @@ void InviwoApplication::registerModules(
 
     auto checkDepencyVersion = [&](const std::string& moduleName, const std::string& depVersions) {
         auto it = util::find_if(modulesFactoryObjects_, [&](const auto& module) {
-            return icasecmp(module->name, moduleName);
+            return iCaseCmp(module->name, moduleName);
         });
         // Check if dependent module is of correct version
         return (it != modulesFactoryObjects_.end() &&
@@ -318,7 +318,7 @@ void InviwoApplication::registerModules(
 
             if (!checkDepencyVersion(name, version)) {
                 auto it = util::find_if(modulesFactoryObjects_, [&name](const auto& module) {
-                    return icasecmp(module->name, name);
+                    return iCaseCmp(module->name, name);
                 });
                 if (it != modulesFactoryObjects_.end()) {
                     depError << "Module depends on " + name + " version " << version
@@ -401,7 +401,7 @@ void InviwoApplication::registerModules(const std::vector<std::string>& libraryS
         auto foundFirst = protectedModules.find(util::stripModuleFileNameDecoration(first));
         auto foundSecond = protectedModules.find(util::stripModuleFileNameDecoration(second));
         if (foundFirst == protectedModules.end() && foundSecond == protectedModules.end()) {
-            return icaseless(first, second);
+            return iCaseLess(first, second);
         } else {
             return std::distance(protectedModules.begin(), foundFirst) <
                    std::distance(protectedModules.begin(), foundSecond);
@@ -554,7 +554,6 @@ void InviwoApplication::registerModules(const std::vector<std::string>& libraryS
     }
 #endif
 
-
     // Load libraries from temporary directory
     // but observe the original file
     for (auto&& item : util::zip(originalLibraryFiles, tmpSharedLibraryFiles)) {
@@ -564,7 +563,8 @@ void InviwoApplication::registerModules(const std::vector<std::string>& libraryS
             // Load library. Will throw exception if failed to load
             auto sharedLib = util::make_unique<SharedLibrary>(tmpPath);
             // Only consider libraries with Inviwo module creation function
-            if (auto moduleFunc = static_cast<f_getModule>(sharedLib->findSymbol("createModule"))) {
+            if (auto moduleFunc =
+                    reinterpret_cast<f_getModule>(sharedLib->findSymbol("createModule"))) {
                 // Add module factory object
                 modules.emplace_back(moduleFunc());
                 auto moduleName = toLower(modules.back()->name);
@@ -658,10 +658,10 @@ CommandLineParser& InviwoApplication::getCommandLineParser() {
     return commandLineParser_;
 }
 
-std::set<std::string, InsensitiveStringCompare> InviwoApplication::getProtectedModuleIdentifiers()
+std::set<std::string, CaseInsensitiveCompare> InviwoApplication::getProtectedModuleIdentifiers()
     const {
     // Core:      Statically linked and should not be unloaded
-    return std::set<std::string, InsensitiveStringCompare>{"Core"};
+    return std::set<std::string, CaseInsensitiveCompare>{"Core"};
 }
 
 void InviwoApplication::printApplicationInfo() {

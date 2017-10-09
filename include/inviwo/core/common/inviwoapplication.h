@@ -258,7 +258,7 @@ protected:
      * Append them to this list in your application to prevent them from being unloaded.
      * @return Module identifiers of modules
      */
-    virtual std::set<std::string, InsensitiveStringCompare> getProtectedModuleIdentifiers()
+    virtual std::set<std::string, CaseInsensitiveCompare> getProtectedModuleIdentifiers()
         const;
     virtual void printApplicationInfo();
     void postProgress(std::string progress);

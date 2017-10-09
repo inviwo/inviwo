@@ -114,11 +114,11 @@ IVW_CORE_API std::string dotSeperatedToPascalCase(const std::string& s);
 IVW_CORE_API std::string camelCaseToHeader(const std::string& s);
 
 
-IVW_CORE_API bool icasecmp(const std::string& l, const std::string& r);
+IVW_CORE_API bool iCaseCmp(const std::string& l, const std::string& r);
 
-IVW_CORE_API bool icaseless(const std::string& l, const std::string& r);
+IVW_CORE_API bool iCaseLess(const std::string& l, const std::string& r);
 
-struct IVW_CORE_API InsensitiveStringCompare {
+struct IVW_CORE_API CaseInsensitiveCompare {
     bool operator() (const std::string& a, const std::string& b) const;
 };
 

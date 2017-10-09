@@ -207,19 +207,19 @@ std::string camelCaseToHeader(const std::string& s) {
     return str;
 }
 
-IVW_CORE_API bool icasecmp(const std::string& l, const std::string& r) {
+bool iCaseCmp(const std::string& l, const std::string& r) {
     return l.size() == r.size() &&
-        std::equal(l.cbegin(), l.cend(), r.cbegin(),
-                   [](std::string::value_type l1, std::string::value_type r1) {
-        return std::tolower(l1) == std::tolower(r1);
-    });
+           std::equal(l.cbegin(), l.cend(), r.cbegin(),
+                      [](std::string::value_type l1, std::string::value_type r1) {
+                          return std::tolower(l1) == std::tolower(r1);
+                      });
 }
 
-IVW_CORE_API bool icaseless(const std::string& l, const std::string& r) {
+bool iCaseLess(const std::string& l, const std::string& r) {
     return std::lexicographical_compare(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
                                         [](std::string::value_type l1, std::string::value_type r1) {
-        return std::tolower(l1) < std::tolower(r1);
-    });
+                                            return std::tolower(l1) < std::tolower(r1);
+                                        });
 }
 
 // trim from end
@@ -282,8 +282,8 @@ std::string msToString(double ms, bool includeZeros, bool spacing) {
     return ss.str();
 }
 
-bool InsensitiveStringCompare::operator()(const std::string& a, const std::string& b) const {
-    return icaseless(a, b);
+bool CaseInsensitiveCompare::operator()(const std::string& a, const std::string& b) const {
+    return iCaseLess(a, b);
 }
 
 }  // namespace inviwo

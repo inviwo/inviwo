@@ -64,7 +64,10 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, cha
     setPostEnqueueFront([this]() { postEvent(this, new InviwoQtEvent()); });
 
     fileWatcher_ = new QFileSystemWatcher(this);
-    connect(fileWatcher_, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+    connect(fileWatcher_, &QFileSystemWatcher::fileChanged, this,
+            &InviwoApplicationQt::fileChanged);
+    connect(fileWatcher_, &QFileSystemWatcher::directoryChanged, this,
+            &InviwoApplicationQt::fileChanged);
 
 #ifdef WIN32
     // set default font since the QApplication font is not properly initialized
@@ -146,7 +149,7 @@ void InviwoApplicationQt::playSound(Message /*message*/) {}
 
 std::locale InviwoApplicationQt::getUILocale() const { return uiLocal_; }
 
-std::set<std::string, InsensitiveStringCompare> InviwoApplicationQt::getProtectedModuleIdentifiers()
+std::set<std::string, CaseInsensitiveCompare> InviwoApplicationQt::getProtectedModuleIdentifiers()
     const {
     // QtWidgets: Statically linked and should not be unloaded
     // OpenGLQt:  Crashes when canvas is shown after library has been reloaded
