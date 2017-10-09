@@ -110,9 +110,10 @@ protected:
      * OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded
      *
      * @see InviwoApplication::getProtectedModuleIdentifiers()
-     * @return std::set<std::string> Module identifiers of modules
+     * @return Module identifiers of modules
      */
-    virtual std::set<std::string> getProtectedModuleIdentifiers() const override;
+    virtual std::set<std::string, InsensitiveStringCompare> getProtectedModuleIdentifiers()
+        const override;
     virtual void printApplicationInfo() override;
     virtual void resizePool(size_t newSize) override;
     void wait(int);

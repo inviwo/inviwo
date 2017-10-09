@@ -54,11 +54,13 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
             GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory")) {
             auto elems = splitString(std::string(environmentPath), ';');
             for (auto path : elems) {
-                std::wstring dd;
-
-                // std::string narrow = converter.to_bytes(wide_utf16_source_string);
-                std::wstring wide = converter.from_bytes(path);
-                AddDllDirectory(converter.from_bytes(path).c_str());
+                path = filesystem::cleanupPath(path);
+                replaceInString(path, "/", "\\");
+                const auto wide = converter.from_bytes(path);
+                const auto dlldir = AddDllDirectory(wide.c_str());
+                if (!dlldir) {
+                    LogWarnCustom("SharedLibrary", "Could not get AddDllDirectory for path " << path);
+                }
             }
             return true;
         } else {

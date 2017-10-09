@@ -39,6 +39,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
@@ -257,7 +258,8 @@ protected:
      * Append them to this list in your application to prevent them from being unloaded.
      * @return Module identifiers of modules
      */
-    virtual std::set<std::string> getProtectedModuleIdentifiers() const;
+    virtual std::set<std::string, InsensitiveStringCompare> getProtectedModuleIdentifiers()
+        const;
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
     void cleanupSingletons();

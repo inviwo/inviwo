@@ -113,7 +113,9 @@ void InviwoApplicationQt::startFileObservation(std::string fileName) {
 }
 
 void InviwoApplicationQt::stopFileObservation(std::string fileName) {
-    auto it = std::find_if(std::begin(fileObservers_), std::end(fileObservers_), [fileName](const auto observer) { return observer->isObserved(fileName); });
+    auto it =
+        std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
+                     [fileName](const auto observer) { return observer->isObserved(fileName); });
     // Make sure that no observer is observing the file
     if (it == std::end(fileObservers_)) fileWatcher_->removePath(QString::fromStdString(fileName));
 }
@@ -144,10 +146,11 @@ void InviwoApplicationQt::playSound(Message /*message*/) {}
 
 std::locale InviwoApplicationQt::getUILocale() const { return uiLocal_; }
 
-std::set<std::string> InviwoApplicationQt::getProtectedModuleIdentifiers() const {
+std::set<std::string, InsensitiveStringCompare> InviwoApplicationQt::getProtectedModuleIdentifiers()
+    const {
     // QtWidgets: Statically linked and should not be unloaded
-    // OpenGLQt:  Crashes when canvas is shown after library has been reloaded 
-    // OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded 
+    // OpenGLQt:  Crashes when canvas is shown after library has been reloaded
+    // OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded
     auto protectedModules = InviwoApplication::getProtectedModuleIdentifiers();
     protectedModules.insert({"QtWidgets", "OpenGLQt", "OpenGL"});
     return protectedModules;
