@@ -113,6 +113,16 @@ IVW_CORE_API std::string trim(std::string s);
 IVW_CORE_API std::string dotSeperatedToPascalCase(const std::string& s);
 IVW_CORE_API std::string camelCaseToHeader(const std::string& s);
 
+
+IVW_CORE_API bool icasecmp(const std::string& l, const std::string& r);
+
+IVW_CORE_API bool icaseless(const std::string& l, const std::string& r);
+
+struct IVW_CORE_API InsensitiveStringCompare {
+    bool operator() (const std::string& a, const std::string& b) const;
+};
+
+
 /**
  * \brief convert the given duration from milliseconds to a string.
  * The returned string will have the format "%dd %dh %dmin %dsec %.3fms", where days, hours,
