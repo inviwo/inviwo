@@ -261,8 +261,8 @@ void TemplateColumn<T>::add(const T &value) {
 
 namespace detail {
 
-template <typename T>
-void add(std::true_type, Buffer<T> *buffer, const std::string &value) {
+template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
+void add(Buffer<T> *buffer, const std::string &value) {
     T result;
     std::istringstream stream(value);
     stream >> result;
@@ -271,9 +271,23 @@ void add(std::true_type, Buffer<T> *buffer, const std::string &value) {
     }
     buffer->getEditableRAMRepresentation()->add(result);
 }
+// Specialization for float and double types, add NaN instead of throwing an error
+template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
+void add(Buffer<T> *buffer, const std::string &value) {
+    T result;
+    std::istringstream stream(value);
+    stream >> result;
+    if (stream.fail()) {
+        buffer->getEditableRAMRepresentation()->add(std::numeric_limits<T>::quiet_NaN());
+    } else {
+        buffer->getEditableRAMRepresentation()->add(result);
+    }
+}
 
-template <typename T>
-void add(std::false_type, Buffer<T> *buffer, const std::string &value) {
+template <typename T
+    ,typename std::enable_if<!std::is_integral<T>::value &&
+    !std::is_floating_point<T>::value, int>::type = 0>
+void add(Buffer<T> *buffer, const std::string &value) {
     throw InvalidConversion("conversion to target type not implemented (\"" + value + "\")");
 }
 
@@ -281,7 +295,7 @@ void add(std::false_type, Buffer<T> *buffer, const std::string &value) {
 
 template <typename T>
 void TemplateColumn<T>::add(const std::string &value) {
-    detail::add(typename std::integral_constant<bool,util::rank<T>::value == 0>::type(), buffer_.get(), value);
+    detail::add<T>(buffer_.get(), value);
 }
 
 template <typename T>
