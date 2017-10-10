@@ -3,12 +3,11 @@
  * Copyright Cyril Crassin, July 2010
 **/
 
-#version 400
-#extension GL_NV_gpu_shader5 : enable
-#extension GL_EXT_shader_image_load_store : enable
-#extension GL_NV_shader_buffer_load : enable
-#extension GL_NV_shader_buffer_store : enable
-#extension GL_EXT_bindable_uniform : enable
+//#extension GL_NV_gpu_shader5 : enable
+//#extension GL_EXT_shader_image_load_store : enable
+//#extension GL_NV_shader_buffer_load : enable
+//#extension GL_NV_shader_buffer_store : enable
+//#extension GL_EXT_bindable_uniform : enable
 
 #include "ABufferLinkedList.hglsl"
 #include "ABufferSort.hglsl"
@@ -35,14 +34,16 @@ void main(void) {
 
 	ivec2 coords=ivec2(gl_FragCoord.xy);
 	
-	if(coords.x>=0 && coords.y>=0 && coords.x<SCREEN_WIDTH && coords.y<SCREEN_HEIGHT ){
+	if(coords.x>=0 && coords.y>=0 
+	   && coords.x<AbufferParams.screenWidth 
+	   && coords.y<AbufferParams.screenHeight ){
 
-		int pageIdx=(int)getPixelCurrentPage(coords);
+		int pageIdx=int(getPixelCurrentPage(coords));
 
 		if(pageIdx > 0 ){
 
 			//Load the number of fragments in the last page.
-			int abNumFrag=(int)getPixelFragCounter(coords);
+			int abNumFrag=int(getPixelFragCounter(coords));
 
 
 			if(abNumFrag>0){
@@ -118,7 +119,7 @@ vec4 resolveClosest(int pageIdx, int abNumFrag){
 		}
 
 		//Get next page index
-		curPage=(int)sharedPoolGetLink(curPage/ABUFFER_PAGE_SIZE);
+		curPage=int(sharedPoolGetLink(curPage/ABUFFER_PAGE_SIZE));
 
 		ip++;
 	}
@@ -152,7 +153,7 @@ void fillFragmentArray(int pageIdx, int abNumFrag){
 		}
 
 
-		curPage=(int)sharedPoolGetLink(curPage/ABUFFER_PAGE_SIZE);
+		curPage=int(sharedPoolGetLink(curPage/ABUFFER_PAGE_SIZE));
 
 		ip++;
 	}

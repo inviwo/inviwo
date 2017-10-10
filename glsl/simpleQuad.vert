@@ -3,14 +3,11 @@
  * Copyright Cyril Crassin, June 2010
 **/
 
-#version 400
-
-
-in vec4 vertexPos;
+#include "utils/structs.glsl"
 
 smooth out vec4 fragPos;
 
 void main(){
-	fragPos=vertexPos;
-	gl_Position = vertexPos;
+	fragPos=vec4(in_Vertex.xy, 0.0, 1.0);
+	gl_Position = fragPos;
 }

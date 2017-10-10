@@ -7,7 +7,6 @@
 
 #include "ABufferSort.hglsl"
 
-const vec4 backgroundColor=vec4(BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, 0.0f);
 const float fragmentAlpha=0.5f;
 
 //Blend fragments front-to-back
@@ -43,7 +42,7 @@ vec4 resolveAlphaBlend(int abNumFrag){
 		finalColor=finalColor+col*(1.0f-finalColor.a);
 	}
 
-	finalColor=finalColor+backgroundColor*(1.0f-finalColor.a);
+	finalColor=finalColor+AbufferParams.backgroundColor*(1.0f-finalColor.a);
 
 	return finalColor;
 
@@ -72,7 +71,7 @@ vec4 resolveGelly(int abNumFrag){
 
 		prevFrag=frag;
 	}
-	accumColor=accumColor+backgroundColor*(1.0f-accumColor.a);
+	accumColor=accumColor+AbufferParams.backgroundColor*(1.0f-accumColor.a);
 
 	
 	//thickness=fragmentList[abNumFrag-1].w-fragmentList[0].w;

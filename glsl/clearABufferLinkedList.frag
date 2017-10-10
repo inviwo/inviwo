@@ -3,12 +3,11 @@
  * Copyright Cyril Crassin, July 2010
 **/
 
-#version 400
-#extension GL_NV_gpu_shader5 : enable
-#extension GL_EXT_shader_image_load_store : enable
-#extension GL_NV_shader_buffer_load : enable
-#extension GL_EXT_bindable_uniform : enable
-#extension GL_NV_shader_buffer_store : enable
+//#extension GL_NV_gpu_shader5 : enable
+//#extension GL_EXT_shader_image_load_store : enable
+//#extension GL_NV_shader_buffer_load : enable
+//#extension GL_EXT_bindable_uniform : enable
+//#extension GL_NV_shader_buffer_store : enable
 
 #include "ABufferLinkedList.hglsl"
 
@@ -20,7 +19,9 @@ void main(void) {
 
 	ivec2 coords=ivec2(gl_FragCoord.xy);
 	
-	if(coords.x>=0 && coords.y>=0 && coords.x<SCREEN_WIDTH && coords.y<SCREEN_HEIGHT ){
+	if(coords.x>=0 && coords.y>=0 
+	   && coords.x<AbufferParams.screenWidth 
+	   && coords.y<AbufferParams.screenHeight ){
 
 		setPixelCurrentPage(coords, 0U);
 		setPixelFragCounter(coords, 0U);
@@ -28,8 +29,6 @@ void main(void) {
 
 		//sharedPoolSetLink(0, 0U);
 		//sharedPoolSetValue(0, vec4(0.0f, 0.0f, 4.0f, 1.0f));
-
-		setSharedPageCounter(ABUFFER_PAGE_SIZE);
 		
 	}
 

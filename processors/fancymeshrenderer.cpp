@@ -246,11 +246,17 @@ void FancyMeshRenderer::process() {
         utilgl::deactivateCurrentTarget();
         return; //everything is culled
     }
+    bool opaque = forceOpaque_.get();
+
+    if (!opaque)
+    {
+        //prepare fragment list rendering
+        flr_.prePass(outport_.getDimensions());
+        LogProcessorInfo("fragment-list: pre pass");
+    }
 
 	compileShader();
 	shader_.activate();
-
-    bool opaque = forceOpaque_.get();
 
 	utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
 	utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
@@ -270,10 +276,24 @@ void FancyMeshRenderer::process() {
     //update face render settings
     shader_.setUniform("frontSettings.alphaScale", faceSettings_[0].alphaScale_.get());
 
+    if (!opaque)
+    {
+        //set uniforms fragment list rendering
+        flr_.setShaderUniforms(shader_);
+    }
+
 	//Finally, draw it
 	drawer_->draw();
 
 	shader_.deactivate();
+
+    if (!opaque)
+    {
+        //final processing of fragment list rendering
+        flr_.postPass();
+        LogProcessorInfo("fragment-list: post pass");
+    }
+
 	utilgl::deactivateCurrentTarget();
 }
 

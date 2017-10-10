@@ -35,7 +35,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/clearABufferLinkedList.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dispABuffer.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dispABufferLinkedList.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/passThrough.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/simpleQuad.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABuffer.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABuffer.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABufferLinkedList.frag

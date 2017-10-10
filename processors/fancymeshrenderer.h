@@ -45,6 +45,8 @@
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
 
+#include <fancymeshrenderer/processors/FragmentListRenderer.h>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.FancyMeshRenderer, Fancy Mesh Renderer}
@@ -161,6 +163,7 @@ protected:
 	Shader shader_;
 	bool needsRecompilation_;
 	std::unique_ptr<MeshDrawer> drawer_;
+    FragmentListRenderer flr_;
 };
 
 } // namespace

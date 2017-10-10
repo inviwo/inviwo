@@ -32,8 +32,10 @@
 
 #include <fancymeshrenderer/fancymeshrenderermoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/texture2d.h>
 
 namespace inviwo {
 
@@ -43,7 +45,31 @@ namespace inviwo {
  */
 class IVW_MODULE_FANCYMESHRENDERER_API FragmentListRenderer
 {
+public:
+    FragmentListRenderer();
+    ~FragmentListRenderer();
 
+    void prePass(const size2_t& screenSize);
+
+    void setShaderUniforms(Shader& shader);
+
+    void postPass();
+
+private:
+    void initShaders();
+    void initBuffers(const size2_t& screenSize, size_t fragmentSize);
+    void assignUniforms(Shader& shader) const;
+    void drawQuad() const;
+
+    size2_t screenSize_;
+    size_t fragmentSize_;
+
+    Texture2D* abufferPageIdxImg_;
+    Texture2D* abufferFragCountImg_;
+    Texture2D* semaphoreImg_;
+
+    Shader clearShader_;
+    Shader displayShader_;
 };
 
 }
