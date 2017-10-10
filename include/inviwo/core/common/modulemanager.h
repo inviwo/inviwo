@@ -35,6 +35,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/util/vectoroperations.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -65,6 +66,7 @@ public:
      * See inviwo.cpp for an example.
      */
     bool isRuntimeModuleReloadingEnabled();
+
 
     /**
      * \brief Registers modules from factories and takes ownership of input module factories.
