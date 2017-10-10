@@ -35,13 +35,16 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
+#include <random>
+
 namespace inviwo {
 
-
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointsFromMask : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointsFromMask : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -54,10 +57,21 @@ protected:
     DataInport<Volume, 0> volumes_;
     SeedPoints3DOutport seedPoints_;
 
+    DoubleProperty threshold_;
+
+    BoolProperty enableSuperSample_;
     IntProperty superSample_;
+
+
+    CompositeProperty randomness_;
+    BoolProperty useSameSeed_;
+    IntProperty seed_;
+
+private:
+    std::mt19937 mt_;
+    std::uniform_real_distribution<float> dis_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SEEDPOINTSFROMMASK_H
-
+#endif  // IVW_SEEDPOINTSFROMMASK_H
