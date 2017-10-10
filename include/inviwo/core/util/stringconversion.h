@@ -113,11 +113,22 @@ IVW_CORE_API std::string trim(std::string s);
 IVW_CORE_API std::string dotSeperatedToPascalCase(const std::string& s);
 IVW_CORE_API std::string camelCaseToHeader(const std::string& s);
 
-
+/**
+ * \brief Case insensitive equal comparison of two strings.
+ * @return true if all the elements in the two containers are the same. 
+ * @seealso CaseInsensitiveCompare
+ */
 IVW_CORE_API bool iCaseCmp(const std::string& l, const std::string& r);
-
+/**
+ * \brief Case insensitive alphabetical less than comparison of two strings, i.e. "aa" < "ab" = true.
+ * Compares letters from left to right using std::lexicographical_compare.
+ * @return true if the alphabetical order in the first string is less than the second string. 
+ */
 IVW_CORE_API bool iCaseLess(const std::string& l, const std::string& r);
-
+/**
+ * \brief Case insensitive equal comparison of two strings to be used for template arguments.
+ * @see iCaseCmp
+ */
 struct IVW_CORE_API CaseInsensitiveCompare {
     bool operator() (const std::string& a, const std::string& b) const;
 };
