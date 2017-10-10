@@ -187,11 +187,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     addActions();
     updateRecentWorkspaceMenu();
 
-    onModulesDidRegister_ = app->onModulesDidRegister([&]() {
+    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([&]() {
         fillExampleWorkspaceMenu();
         fillTestWorkspaceMenu();
     });
-    onModulesWillUnregister_ = app->onModulesWillUnregister([&]() {
+    onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([&]() {
         exampleMenu_->clear();
         testMenu_->clear();
     });
@@ -483,9 +483,7 @@ void InviwoMainWindow::addActions() {
         viewMenuItem->addAction(visibilityModeAction_);
         viewModeToolBar->addAction(visibilityModeAction_);
 
-        appUsageModeProp_ = &InviwoApplication::getPtr()
-                                 ->getSettingsByType<SystemSettings>()
-                                 ->applicationUsageMode_;
+        appUsageModeProp_ = &app_->getSettingsByType<SystemSettings>()->applicationUsageMode_;
 
         appUsageModeProp_->onChange([&]() { visibilityModeChangedInSettings(); });
 
@@ -970,7 +968,7 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
 
 void InviwoMainWindow::showAboutBox() {
-    auto caps = InviwoApplication::getPtr()->getModuleByType<InviwoCore>()->getCapabilities();
+    auto caps = app_->getModuleByType<InviwoCore>()->getCapabilities();
     auto syscap = getTypeFromVector<SystemCapabilities>(caps);
 
     const int buildYear = (syscap ? syscap->getBuildTimeYear() : 0);
@@ -1013,7 +1011,7 @@ void InviwoMainWindow::showAboutBox() {
         }
         aboutText << "</table></p>\n";
     }
-    const auto& mfos = InviwoApplication::getPtr()->getModuleFactoryObjects();
+    const auto& mfos = app_->getModuleManager().getModuleFactoryObjects();
     auto names = util::transform(
         mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name; });
     std::sort(names.begin(), names.end());

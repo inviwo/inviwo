@@ -126,11 +126,11 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
 
-    onModulesDidRegister_ =
-        parent->getInviwoApplication()->onModulesDidRegister([&]() { addProcessorsToTree(); });
-    onModulesWillUnregister_ = parent->getInviwoApplication()->onModulesWillUnregister([&]() {
-        processorTree_->clear();
-    });
+    onModulesDidRegister_ = parent->getInviwoApplication()->getModuleManager().onModulesDidRegister(
+        [&]() { addProcessorsToTree(); });
+    onModulesWillUnregister_ =
+        parent->getInviwoApplication()->getModuleManager().onModulesWillUnregister(
+            [&]() { processorTree_->clear(); });
 }
 
 ProcessorTreeWidget::~ProcessorTreeWidget() {}

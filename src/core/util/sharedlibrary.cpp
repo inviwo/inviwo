@@ -32,6 +32,7 @@
 #include <inviwo/core/util/stringconversion.h> // splitString
 #include <codecvt>
 #include <locale>
+#include <algorithm>
 
 #if WIN32
 #define NOMINMAX
@@ -53,6 +54,11 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
         if (environmentPath &&
             GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory")) {
             auto elems = splitString(std::string(environmentPath), ';');
+            // Reverse the order since empirically windows looks in the last one first.
+            // opposite to the order in the env path.
+            // According to the docs the search order for multiple calls to AddDllDirectory
+            // is unspecified, so this might be quite fragile.
+            std::reverse(elems.begin(), elems.end());
             for (auto path : elems) {
                 path = filesystem::cleanupPath(path);
                 replaceInString(path, "/", "\\");

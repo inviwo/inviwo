@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/threadpool.h>
@@ -40,7 +41,6 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
@@ -82,8 +82,6 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
-class InviwoModuleLibraryObserver; // Observer for module dll/so files
-class SharedLibrary;
 class PropertyPresetManager;
 
 class FileLogger;
@@ -109,13 +107,6 @@ public:
 
     virtual ~InviwoApplication();
 
-
-    /*
-     * Use as second argument in InviwoApplication::registerModules
-     * See inviwo.cpp for an example.
-     */
-    bool isRuntimeModuleReloadingEnabled();
-
     /**
      * \brief Registers modules from factories and takes ownership of input module factories.
      *
@@ -134,19 +125,6 @@ public:
      * @param librarySearchPaths Paths to directories to recursively search.
      */
     virtual void registerModules(const std::vector<std::string>& librarySearchPaths);
-
-    /**
-     * \brief Removes all modules not marked as protected by the application.
-     *
-     * Use this function with care since all modules will be destroyed.
-     * 1. Network will be cleared.
-     * 2. Non-protected modules will be removed.
-     * 3. Loaded dynamic module libraries will be unloaded (unless marked as protected).
-     *
-     * @see InviwoApplication::getProtectedModuleIdentifiers
-     * @see InviwoModuleLibraryObserver
-     */
-    void unregisterModules();
     /**
      * Get the base path of the application.
      * i.e. where the core data and modules folder and etc are.
@@ -166,9 +144,9 @@ public:
     std::string getPath(PathType pathType, const std::string& suffix = "",
                         const bool& createFolder = false);
 
-    void registerModule(std::unique_ptr<InviwoModule> module);
+    ModuleManager& getModuleManager();
+    const ModuleManager& getModuleManager() const;
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
-    const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
     template <class T>
     T* getModuleByType() const;
     InviwoModule* getModuleByIdentifier(const std::string& identifier) const;
@@ -237,31 +215,10 @@ public:
 
     TimerThread& getTimerThread();
 
-    std::vector<std::string> findDependentModules(std::string module) const;
-
-    /**
-     * \brief Register callback for monitoring when modules have been registered.
-     * Invoked in registerModules.
-     */
-    std::shared_ptr<std::function<void()>> onModulesDidRegister(std::function<void()> callback);
-    /**
-     * \brief Register callback for monitoring when modules have been registered.
-     * Invoked in unregisterModules.
-     */
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister(std::function<void()> callback);
-
-protected:
-    /**
-     * \brief List of modules to keep during runtime library reloading.
-     *
-     * Some modules such as Core can cause errors if unloaded.
-     * Append them to this list in your application to prevent them from being unloaded.
-     * @return Module identifiers of modules
-     */
-    virtual std::set<std::string, CaseInsensitiveCompare> getProtectedModuleIdentifiers()
-        const;
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
+
+protected:
     void cleanupSingletons();
     virtual void resizePool(size_t newSize);
 
@@ -279,8 +236,7 @@ protected:
     std::shared_ptr<FileLogger> filelogger_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::function<void(std::string)> progressCallback_;
-    Dispatcher<void()> onModulesDidRegister_; ///< Called after modules have been registered
-    Dispatcher<void()> onModulesWillUnregister_; ///< Called before modules have been unregistered
+
 
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
@@ -304,19 +260,8 @@ protected:
     std::unique_ptr<PropertyFactory> propertyFactory_;
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
-
-    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
-    std::vector<std::unique_ptr<InviwoModule>> modules_;
-    std::vector<std::unique_ptr<SharedLibrary>> moduleSharedLibraries_;
-    // Need to be pointer since we cannot initialize the observer before the application.
-    std::unique_ptr<InviwoModuleLibraryObserver> moduleLibraryObserver_;  ///< Observes shared
-                                                                          ///< libraries and reload
-                                                                          ///< modules when file
-                                                                          ///< changes.
-
-    util::OnScopeExit clearModules_;
+    ModuleManager moduleManager_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
-
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
     std::unique_ptr<WorkspaceManager> workspaceManager_;
@@ -341,7 +286,7 @@ T* InviwoApplication::getSettingsByType() {
 
 template <class T>
 T* InviwoApplication::getModuleByType() const {
-    return getTypeFromVector<T>(modules_);
+    return moduleManager_.getModuleByType<T>();
 }
 
 template <class F, class... Args>
@@ -442,9 +387,9 @@ inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() co
     return processorWidgetFactory_.get();
 }
 
-namespace util{
-    IVW_CORE_API InviwoApplication* getInviwoApplication();
-} // namespace util
+namespace util {
+IVW_CORE_API InviwoApplication* getInviwoApplication();
+}  // namespace util
 
 }  // namespace inviwo
 

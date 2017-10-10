@@ -219,7 +219,7 @@ const std::vector<Resource*> InviwoModule::getResources() const { return uniqueT
 const std::vector<Settings*> InviwoModule::getSettings() const { return uniqueToPtr(settings_); }
 
 std::string InviwoModule::getDescription() const {
-    for (auto& item : app_->getModuleFactoryObjects()) {
+    for (auto& item : app_->getModuleManager().getModuleFactoryObjects()) {
         if (item->name == identifier_) {
             return item->description;
         }

@@ -90,6 +90,13 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, cha
 
     // Make qt write errors in the console;
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
+
+    // QtWidgets: Statically linked and should not be unloaded
+    // OpenGLQt:  Crashes when canvas is shown after library has been reloaded
+    // OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded
+    getModuleManager().addProtectedIdentifier("QtWidgets");
+    getModuleManager().addProtectedIdentifier("OpenGLQt");
+    getModuleManager().addProtectedIdentifier("OpenGL");
 }
 
 void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) { 
@@ -148,16 +155,6 @@ void InviwoApplicationQt::closeInviwoApplication() { QCoreApplication::quit(); }
 void InviwoApplicationQt::playSound(Message /*message*/) {}
 
 std::locale InviwoApplicationQt::getUILocale() const { return uiLocal_; }
-
-std::set<std::string, CaseInsensitiveCompare> InviwoApplicationQt::getProtectedModuleIdentifiers()
-    const {
-    // QtWidgets: Statically linked and should not be unloaded
-    // OpenGLQt:  Crashes when canvas is shown after library has been reloaded
-    // OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded
-    auto protectedModules = InviwoApplication::getProtectedModuleIdentifiers();
-    protectedModules.insert({"QtWidgets", "OpenGLQt", "OpenGL"});
-    return protectedModules;
-}
 
 void InviwoApplicationQt::printApplicationInfo() {
     InviwoApplication::printApplicationInfo();
