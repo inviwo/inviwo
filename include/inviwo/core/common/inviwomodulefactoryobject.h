@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/version.h>
 #include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
@@ -41,31 +42,32 @@ class InviwoApplication;
 
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
-    InviwoModuleFactoryObject(const std::string& name, const std::string& version,
-                              const std::string& description, const std::string& inviwoCoreVersion,
+    InviwoModuleFactoryObject(const std::string& name, Version version,
+                              const std::string& description, Version inviwoCoreVersion,
                               std::vector<std::string> dependencies,
-                              std::vector<std::string> dependenciesVersion);
+                              std::vector<Version> dependenciesVersion,
+                              std::vector<std::string> aliases);
     virtual ~InviwoModuleFactoryObject() = default;
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
 
-    const std::string name;               // Module name
-    const std::string version;            // Module version (Major.Minor.Patch)
-    const std::string description;        // Module description
-    const std::string inviwoCoreVersion;  // Supported inviwo core version (Major.Minor.Patch)
-    const std::vector<std::string> dependencies;  // Module dependencies
-    const std::vector<std::string>
-        dependenciesVersion;  // Major.Minor.Patch version of each dependency
+    const std::string name;           // Module name
+    const Version version;            // Module version (Major.Minor.Patch)
+    const std::string description;    // Module description
+    const Version inviwoCoreVersion;  // Supported inviwo core version (Major.Minor.Patch)
+    // Module dependencies Major.Minor.Patch version of each dependency
+    const std::vector<std::pair<std::string, Version>> dependencies;
+    const std::vector<std::string> aliases;
 };
 
 template <typename T>
 class InviwoModuleFactoryObjectTemplate : public InviwoModuleFactoryObject {
 public:
-    InviwoModuleFactoryObjectTemplate(const std::string& name, const std::string& version,
-                                      const std::string& description,
-                                      const std::string& inviwoCoreVersion,
+    InviwoModuleFactoryObjectTemplate(const std::string& name, Version version,
+                                      const std::string& description, Version inviwoCoreVersion,
                                       std::vector<std::string> dependencies,
-                                      std::vector<std::string> dependenciesVersion);
+                                      std::vector<Version> dependenciesVersion,
+                                      std::vector<std::string> aliases);
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) override {
         return util::make_unique<T>(app);
@@ -79,16 +81,16 @@ public:
 // __stdcall is the convention used by the WinAPI
 using f_getModule = InviwoModuleFactoryObject*(__stdcall*)();
 #else
-using f_getModule = InviwoModuleFactoryObject*(*)();
+using f_getModule = InviwoModuleFactoryObject* (*)();
 #endif
 
 template <typename T>
 InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
-    const std::string& name, const std::string& version, const std::string& description,
-    const std::string& inviwoCoreVersion, std::vector<std::string> dependencies,
-    std::vector<std::string> dependenciesVersion)
+    const std::string& name, Version version, const std::string& description,
+    Version inviwoCoreVersion, std::vector<std::string> dependencies,
+    std::vector<Version> dependenciesVersion, std::vector<std::string> aliases)
     : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion, dependencies,
-                                dependenciesVersion) {}
+                                dependenciesVersion, aliases) {}
 
 /**
  * \brief Topological sort to make sure that we load modules in correct order
@@ -102,6 +104,6 @@ IVW_CORE_API void topologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start,
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end);
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INVIWOMODULEFACTORYOBJECT_H

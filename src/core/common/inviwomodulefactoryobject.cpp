@@ -31,22 +31,27 @@
 
 namespace inviwo {
 
-InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_,
-                                                     const std::string& version_,
+InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_, Version version_,
                                                      const std::string& description_,
-                                                     const std::string& inviwoCoreVersion_,
+                                                     Version inviwoCoreVersion_,
                                                      std::vector<std::string> dependencies_,
-                                                     std::vector<std::string> dependenciesVersion_)
+                                                     std::vector<Version> dependenciesVersion_,
+                                                     std::vector<std::string> aliases_)
     : name(name_)
     , version(version_)
     , description(description_)
     , inviwoCoreVersion(inviwoCoreVersion_)
-    , dependencies(dependencies_)
-    , dependenciesVersion(dependenciesVersion_) {
-    if (dependencies.size() != dependenciesVersion.size()) {
-        throw Exception("Each module dependency must have a version");
-    }
-}
+    , dependencies([&]() {
+        if (dependencies_.size() != dependenciesVersion_.size()) {
+            throw Exception("Each module dependency must have a version");
+        }
+        std::vector<std::pair<std::string, Version>> deps;
+        for (auto&& item : util::zip(dependencies_, dependenciesVersion_)) {
+            deps.emplace_back(get<0>(item), Version(get<0>(item)));
+        }
+        return deps;
+    }())
+    , aliases(aliases_) {}
 
 /**
  * \brief Sorts modules according to their dependencies.
@@ -79,7 +84,7 @@ void recursiveTopologicalModuleFactoryObjectSort(
     tmpVisited.insert(lname);
 
     for (const auto& dependency : (*it)->dependencies) {
-        auto ldep = toLower(dependency);
+        auto ldep = toLower(dependency.first);
         recursiveTopologicalModuleFactoryObjectSort(start, end, ldep, visited, tmpVisited, sorted);
     }
     visited.insert(lname);

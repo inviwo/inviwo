@@ -60,9 +60,7 @@ function(ivw_configure_application_module_dependencies target)
     if(IVW_RUNTIME_MODULE_LOADING)
         # Specify which modules to load at runtime (all will be loaded if the file does not exist)
         ivw_create_enabled_modules_file(${target} ${ARGN})
-        if(IVW_RUNTIME_MODULE_LOADING)
-            target_compile_definitions(${target} PUBLIC IVW_RUNTIME_MODULE_LOADING)
-        endif()
+        target_compile_definitions(${target} PUBLIC IVW_RUNTIME_MODULE_LOADING)
         # Dependencies to build before this project when they are changed.
         # Needed if modules are loaded at runtime since they should be built
         # when this project is set as startup project
@@ -134,23 +132,26 @@ function(ivw_private_generate_module_registration_file modules_var)
     foreach(mod ${${modules_var}})   
         set(header
             "#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
+            "#include <inviwo/core/common/version.h>\n"
         )   
         join(";" "" header ${header})
         ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
         list_to_stringvector(module_depends_vector ${module_dependencies})
+        list_to_stringvector(module_alias_vector ${${mod}_aliases})
         string(TOUPPER ${${mod}_class} u_module)
 
         list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
         set(create_module_object
             "IVW_MODULE_${u_module}\_API InviwoModuleFactoryObject* createModule() {\n"
             "    return new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-            "        \"${${mod}_class}\",// Module name \n"
-            "        \"${${mod}_version}\",// Module version\n"
+            "        \"${${mod}_class}\", // Module name \n"
+            "        \"${${mod}_version}\", // Module version\n"
             "        \"${${mod}_description}\", // Description\n" 
-            "        {\"${IVW_VERSION}\"}, // Based on Inviwo core version \n" 
+            "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
             "        ${module_depends_vector}, // Dependencies\n" 
-            "        ${module_depends_version_vector} // Version number of dependencies\n" 
-            "        )__SEMICOLON__\n"
+            "        ${module_depends_version_vector}, // Version number of dependencies\n"
+            "        ${module_alias_vector} // List of aliases\n"
+            "    )__SEMICOLON__\n"
             "}\n"
             "\n"
         )
@@ -170,7 +171,7 @@ function(ivw_private_generate_module_registration_file modules_var)
 
     # Generate function for creating modules in a single function
     # Requires all modules to be linked to the application
-    set(headers "")
+    set(headers "#include <inviwo/core/common/version.h>\n")
     set(functions "")
     foreach(mod ${${modules_var}}) 
         set(header
@@ -186,12 +187,13 @@ function(ivw_private_generate_module_registration_file modules_var)
         set(factory_object
             "    #ifdef REG_${mod}\n" 
             "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-            "        \"${${mod}_class}\",// Module name \n"
-            "        \"${${mod}_version}\",// Module version\n"
+            "        \"${${mod}_class}\", // Module name \n"
+            "        \"${${mod}_version}\", // Module version\n"
             "        \"${${mod}_description}\", // Description\n" 
-            "        {\"${IVW_VERSION}\"}, // Based on Inviwo core version \n" 
+            "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
             "        ${module_depends_vector}, // Dependencies\n" 
-            "        ${module_depends_version_vector} // Version number of dependencies\n" 
+            "        ${module_depends_version_vector}, // Version number of dependencies\n"
+            "        ${module_alias_vector} // List of aliases\n"
             "        )\n"
             "    )__SEMICOLON__\n"
             "    #endif\n"

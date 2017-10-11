@@ -105,8 +105,10 @@ public:
     template <class T>
     T* getModuleByType() const;
     InviwoModule* getModuleByIdentifier(const std::string& identifier) const;
+    std::vector<InviwoModule*> getModulesByAlias(const std::string& alias) const;
 
-    std::vector<std::string> findDependentModules(std::string module) const;
+
+    std::vector<std::string> findDependentModules(const std::string& module) const;
 
     /**
      * \brief Register callback for monitoring when modules have been registered.

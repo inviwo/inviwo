@@ -33,6 +33,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <ostream>
+
 namespace inviwo {
 
 /**
@@ -63,6 +65,7 @@ public:
      * @param std::string versionString Dot separated version string "Major.Minor.Patch.Build"
      */
     Version(std::string versionString);
+    Version(const char* versionString);
     ~Version() = default;
 
     /** 
@@ -101,6 +104,12 @@ public:
 private:
 
 };
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, const Version& v) {
+    ss << v.major << "." << v.minor << "." << v.patch << "." << v.build;
+    return ss;
+}
 
 } // namespace
 

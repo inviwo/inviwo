@@ -31,9 +31,11 @@
 
 namespace inviwo {
 
-Version::Version(std::string versionString)  {
+Version::Version(std::string versionString) {
     sscanf(versionString.c_str(), "%u.%u.%u.%u", &major, &minor, &patch, &build);
 }
+
+Version::Version(const char* versionString) : Version(std::string(versionString)) {}
 
 } // namespace
 

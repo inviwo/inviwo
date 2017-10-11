@@ -89,21 +89,21 @@ void ModuleManager::registerModules(
                                        std::end(modulesFactoryObjects_));
 
     std::vector<std::string> failed;
-    auto checkdepends = [&](const std::vector<std::string>& deps) {
+    auto checkdepends = [&](const auto& deps) {
         for (const auto& dep : deps) {
-            auto it = util::find(failed, dep);
+            auto it = util::find(failed, dep.first);
             if (it != failed.end()) return it;
         }
         return failed.end();
     };
 
-    auto checkDepencyVersion = [&](const std::string& moduleName, const std::string& depVersions) {
+    auto checkDepencyVersion = [&](const std::string& moduleName, const Version& depVersions) {
         auto it = util::find_if(modulesFactoryObjects_, [&](const auto& module) {
             return iCaseCmp(module->name, moduleName);
         });
         // Check if dependent module is of correct version
         return (it != modulesFactoryObjects_.end() &&
-                Version((*it)->version).semanticVersionEqual(Version(depVersions)));
+                (*it)->version.semanticVersionEqual(depVersions));
     };
 
     for (auto& moduleObj : modulesFactoryObjects_) {
@@ -116,9 +116,9 @@ void ModuleManager::registerModules(
 
         // Make sure that the module supports the current inviwo core version
         if (!Version(IVW_VERSION).semanticVersionEqual(Version(moduleObj->inviwoCoreVersion))) {
-            LogError("Failed to register module: " + moduleObj->name);
-            LogError("Reason: Module was built for Inviwo version " + moduleObj->inviwoCoreVersion +
-                     ", current version is " + IVW_VERSION);
+            LogError("Failed to register module: " << moduleObj->name);
+            LogError("Reason: Module was built for Inviwo version "
+                     << moduleObj->inviwoCoreVersion << ", current version is " << IVW_VERSION);
             util::push_back_unique(failed, toLower(moduleObj->name));
             continue;
         }
@@ -128,26 +128,26 @@ void ModuleManager::registerModules(
         // since we are ensuring the they must be built for the
         // same core version.
         std::stringstream depError;
-        for (auto&& item : util::zip(moduleObj->dependencies, moduleObj->dependenciesVersion)) {
-            const auto& name = get<0>(item);
-            const auto& version = get<1>(item);
+        for (const auto& item : moduleObj->dependencies) {
+            const auto& name = item.first;
+            const auto& version = item.second;
 
             if (!checkDepencyVersion(name, version)) {
                 auto it = util::find_if(modulesFactoryObjects_, [&name](const auto& module) {
                     return iCaseCmp(module->name, name);
                 });
                 if (it != modulesFactoryObjects_.end()) {
-                    depError << "Module depends on " + name + " version " << version
+                    depError << "Module depends on " << name << " version " << version
                              << " but version " << (*it)->version << " was loaded" << std::endl;
                 } else {
-                    depError << "Module depends on " + name + " version " << version
+                    depError << "Module depends on " << name << " version " << version
                              << " but no such module was loaded" << std::endl;
                 }
             };
         }
         if (depError.str().size() > 0) {
-            LogError("Failed to register module: " + moduleObj->name);
-            LogError("Reason: " + depError.str());
+            LogError("Failed to register module: " << moduleObj->name);
+            LogError("Reason: " << depError.str());
             util::push_back_unique(failed, toLower(moduleObj->name));
             continue;
         }
@@ -474,10 +474,22 @@ InviwoModule* ModuleManager::getModuleByIdentifier(const std::string& identifier
     }
 }
 
-std::vector<std::string> ModuleManager::findDependentModules(std::string module) const {
+std::vector<InviwoModule*> ModuleManager::getModulesByAlias(const std::string& alias) const {
+    std::vector<InviwoModule*> res;
+    for (const auto& mfo : modulesFactoryObjects_) {
+        if (util::contains(mfo->aliases, alias)) {
+            if (auto m = getModuleByIdentifier(mfo->name)) {
+                res.push_back(m);
+            }
+        }
+    }
+    return res;
+}
+
+std::vector<std::string> ModuleManager::findDependentModules(const std::string& module) const {
     std::vector<std::string> dependencies;
     for (const auto& item : modulesFactoryObjects_) {
-        if (util::contains(item->dependencies, module)) {
+        if (util::contains_if(item->dependencies, [&](auto& dep) { return dep.first == module; })) {
             auto name = toLower(item->name);
             auto deps = findDependentModules(name);
             util::append(dependencies, deps);

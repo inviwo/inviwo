@@ -39,17 +39,10 @@
 namespace inviwo {
 
 GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
-    if (app->getModuleByIdentifier("OpenGLQt")) {
-        // Hack to ensure that only one OpenGL initialization is performed.
-        // TODO: Rely on aliases specified in cmake for dependency analysis instead.
-        // This would scale with different OpenGL implementations and allow
-        // dependent modules to check for any module implementing the behavior
-        // instead of a specific one.
-        // The OpenCL module would for instance fail to load if built with OpenGLQt enabled
-        // but GLFW module is loaded instead.
-        // Also see openglqtmodule.cpp
+    if (!app->getModuleManager().getModulesByAlias("OpenGLSupplier").empty()) {
         throw ModuleInitException(
-            "GLFW could not be initialized because OpenGLQt is already used for OpenGL context.");
+            "GLFW could not be initialized because an other OpenGLSupplier is already used for "
+            "OpenGL context.");
     }
     if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.");
 
