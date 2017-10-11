@@ -170,7 +170,7 @@ void HdrBloom::process() {
     utilgl::GlBoolState blend(GL_BLEND, true);
     glBlendFunc(GL_ONE, GL_ONE);
     glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
-    std::array<float, Levels> factors{1.0f, 0.8f, 0.6f, 0.4f, 0.2f};
+
     compose_.setUniform("bloomStrength", strength_.get());
     compose_.setUniform("bloomRadius", radius_.get());
     for (int i = 0; i < Levels; i++) {
