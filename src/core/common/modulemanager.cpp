@@ -65,7 +65,7 @@ ModuleManager::ModuleManager(InviwoApplication* app)
             it = std::vector<std::unique_ptr<InviwoModule>>::reverse_iterator(
                 modules_.erase((++it).base()));
         }
-        modulesFactoryObjects_.clear();
+        factoryObjects_.clear();
     }) {}
 
 ModuleManager::~ModuleManager() = default;
@@ -77,92 +77,24 @@ bool ModuleManager::isRuntimeModuleReloadingEnabled() {
     return false;
 }
 
-void ModuleManager::registerModules(
-    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
+void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo) {
     app_->printApplicationInfo();
-    for (auto& mod : moduleFactories) {
-        modulesFactoryObjects_.emplace_back(std::move(mod));
-    }
+    factoryObjects_.insert(factoryObjects_.end(), std::make_move_iterator(mfo.begin()),
+                           std::make_move_iterator(mfo.end()));
 
     // Topological sort to make sure that we load modules in correct order
-    topologicalModuleFactoryObjectSort(std::begin(modulesFactoryObjects_),
-                                       std::end(modulesFactoryObjects_));
+    topologicalModuleFactoryObjectSort(std::begin(factoryObjects_), std::end(factoryObjects_));
 
-    std::vector<std::string> failed;
-    auto checkdepends = [&](const auto& deps) {
-        for (const auto& dep : deps) {
-            auto it = util::find(failed, dep.first);
-            if (it != failed.end()) return it;
-        }
-        return failed.end();
-    };
+    for (auto& obj : factoryObjects_) {
+        if (getModuleByIdentifier(obj->name)) continue;  // already loaded
+        app_->postProgress("Loading module: " + obj->name);
 
-    auto checkDepencyVersion = [&](const std::string& moduleName, const Version& depVersions) {
-        auto it = util::find_if(modulesFactoryObjects_, [&](const auto& module) {
-            return iCaseCmp(module->name, moduleName);
-        });
-        // Check if dependent module is of correct version
-        return (it != modulesFactoryObjects_.end() &&
-                (*it)->version.semanticVersionEqual(depVersions));
-    };
-
-    for (auto& moduleObj : modulesFactoryObjects_) {
-        app_->postProgress("Loading module: " + moduleObj->name);
-        if (util::contains_if(modules_, [&](const auto& module) {
-                return module->getIdentifier().compare(moduleObj->name) == 0;
-            })) {
-            continue;
-        }
-
-        // Make sure that the module supports the current inviwo core version
-        if (!Version(IVW_VERSION).semanticVersionEqual(Version(moduleObj->inviwoCoreVersion))) {
-            LogError("Failed to register module: " << moduleObj->name);
-            LogError("Reason: Module was built for Inviwo version "
-                     << moduleObj->inviwoCoreVersion << ", current version is " << IVW_VERSION);
-            util::push_back_unique(failed, toLower(moduleObj->name));
-            continue;
-        }
-        // Check if dependency modules have correct versions.
-        // Note that the module version only need to be increased
-        // when changing and the inviwo core version has not changed
-        // since we are ensuring the they must be built for the
-        // same core version.
-        std::stringstream depError;
-        for (const auto& item : moduleObj->dependencies) {
-            const auto& name = item.first;
-            const auto& version = item.second;
-
-            if (!checkDepencyVersion(name, version)) {
-                auto it = util::find_if(modulesFactoryObjects_, [&name](const auto& module) {
-                    return iCaseCmp(module->name, name);
-                });
-                if (it != modulesFactoryObjects_.end()) {
-                    depError << "Module depends on " << name << " version " << version
-                             << " but version " << (*it)->version << " was loaded" << std::endl;
-                } else {
-                    depError << "Module depends on " << name << " version " << version
-                             << " but no such module was loaded" << std::endl;
-                }
-            };
-        }
-        if (depError.str().size() > 0) {
-            LogError("Failed to register module: " << moduleObj->name);
-            LogError("Reason: " << depError.str());
-            util::push_back_unique(failed, toLower(moduleObj->name));
-            continue;
-        }
         try {
-            auto it = checkdepends(moduleObj->dependencies);
-            if (it == failed.end()) {
-                registerModule(moduleObj->create(app_));
-            } else {
-                LogError("Could not register module: " + moduleObj->name +
-                         " since dependency: " + *it + " failed to register");
+            if (checkDependencies(*obj)) {
+                registerModule(obj->create(app_));
             }
         } catch (const ModuleInitException& e) {
-            LogError("Failed to register module: " + moduleObj->name);
-            LogError("Reason: " + e.getMessage());
-            util::push_back_unique(failed, toLower(moduleObj->name));
+            LogError("Failed to register module: " << obj->name << ". Reason:\n" << e.getMessage());
 
             std::vector<std::string> toDeregister;
             for (const auto& m : e.getModulesToDeregister()) {
@@ -172,14 +104,13 @@ void ModuleManager::registerModules(
             for (const auto& dereg : toDeregister) {
                 util::erase_remove_if(modules_, [&](const std::unique_ptr<InviwoModule>& m) {
                     if (toLower(m->getIdentifier()) == dereg) {
-                        LogError("De-registering " + m->getIdentifier() + " because " +
-                                 moduleObj->name + " failed to register");
+                        LogError("Deregistering " << m->getIdentifier() << " because " << obj->name
+                                                  << " failed to register");
                         return true;
                     } else {
                         return false;
                     }
                 });
-                util::push_back_unique(failed, dereg);
             }
         }
     }
@@ -253,8 +184,10 @@ void ModuleManager::registerModules(const std::vector<std::string>& librarySearc
         // Make sure that we have an absolute path to avoid duplicates
         path = filesystem::cleanupPath(path);
         try {
-            auto files = getDirectoryContentsRecursively(path, filesystem::ListMode::Files);
-            auto dirs = getDirectoryContentsRecursively(path, filesystem::ListMode::Directories);
+            auto files =
+                filesystem::getDirectoryContentsRecursively(path, filesystem::ListMode::Files);
+            auto dirs = filesystem::getDirectoryContentsRecursively(
+                path, filesystem::ListMode::Directories);
             libraryFiles.insert(std::make_move_iterator(files.begin()),
                                 std::make_move_iterator(files.end()));
             libraryDirectories.insert(std::make_move_iterator(dirs.begin()),
@@ -265,9 +198,9 @@ void ModuleManager::registerModules(const std::vector<std::string>& librarySearc
     }
     // Determines if a library is already loaded into the application
     auto isModuleLibraryLoaded = [&](const std::string path) {
-        return moduleSharedLibraries_.end() !=
+        return sharedLibraries_.end() !=
                std::find_if(
-                   std::begin(moduleSharedLibraries_), std::end(moduleSharedLibraries_),
+                   std::begin(sharedLibraries_), std::end(sharedLibraries_),
                    [path](const auto& lib) { return lib->getFilePath().compare(path) == 0; });
     };
     // Load enabled modules if file "application_name-enabled-modules.txt" exists,
@@ -384,18 +317,18 @@ void ModuleManager::registerModules(const std::vector<std::string>& librarySearc
                 // Add module factory object
                 modules.emplace_back(moduleFunc());
                 auto moduleName = toLower(modules.back()->name);
-                moduleSharedLibraries_.emplace_back(std::move(sharedLib));
+                sharedLibraries_.emplace_back(std::move(sharedLib));
                 if (reloadLibrariesWhenChanged) {
                     // Start observing file
-                    if (!moduleLibraryObserver_) {
+                    if (!libraryObserver_) {
                         // We cannot create the observer in the constructor since
                         // deriving applications will implement observer behavior
                         // and they will not have been created when InviwoApplication
                         // constructor is called.
-                        moduleLibraryObserver_ = util::make_unique<InviwoModuleLibraryObserver>();
+                        libraryObserver_ = util::make_unique<InviwoModuleLibraryObserver>();
                     }
-                    if (!moduleLibraryObserver_->isObserved(filePath)) {
-                        moduleLibraryObserver_->startFileObservation(filePath);
+                    if (!libraryObserver_->isObserved(filePath)) {
+                        libraryObserver_->startFileObservation(filePath);
                     }
                 }
             } else {
@@ -425,10 +358,8 @@ void ModuleManager::unregisterModules() {
     ResourceManager::getPtr()->clearAllResources();
     // Need to clear the modules in reverse order since the might depend on each other.
     // The destruction order of vector is undefined.
-    auto protectedModules = getProtectedModuleIdentifiers();
-
     for (auto it = std::rbegin(modules_); it != std::rend(modules_);) {
-        if (protectedModules.count((*it)->getIdentifier()) == 0) {
+        if (!isProtected((*it)->getIdentifier())) {
             // Erase does not take reverse_iterator so we need to convert it
             it = decltype(it)(modules_.erase((++it).base()));
         } else {
@@ -437,16 +368,16 @@ void ModuleManager::unregisterModules() {
     }
 
     // Remove module factories
-    util::erase_remove_if(modulesFactoryObjects_, [&](const auto& module) {
-        return protectedModules.count(module->name) == 0;
+    util::erase_remove_if(factoryObjects_, [&](const auto& module) {
+        return !isProtected(module->name);
     });
 
     // Modules should now have removed all allocated resources and it should be safe to unload
     // shared libraries.
-    util::erase_remove_if(moduleSharedLibraries_, [&](const auto& module) {
+    util::erase_remove_if(sharedLibraries_, [&](const auto& module) {
         // Figure out module identifier from file name
         auto moduleName = util::stripModuleFileNameDecoration(module->getFilePath());
-        return protectedModules.count(moduleName) == 0;
+        return !isProtected(moduleName);
     });
 }
 
@@ -460,13 +391,14 @@ const std::vector<std::unique_ptr<InviwoModule>>& ModuleManager::getModules() co
 
 const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>&
 ModuleManager::getModuleFactoryObjects() const {
-    return modulesFactoryObjects_;
+    return factoryObjects_;
 }
 
 InviwoModule* ModuleManager::getModuleByIdentifier(const std::string& identifier) const {
-    const auto it = std::find_if(
-        modules_.begin(), modules_.end(),
-        [&](const std::unique_ptr<InviwoModule>& m) { return m->getIdentifier() == identifier; });
+    const auto it =
+        std::find_if(modules_.begin(), modules_.end(), [&](const std::unique_ptr<InviwoModule>& m) {
+            return iCaseCmp(m->getIdentifier(), identifier);
+        });
     if (it != modules_.end()) {
         return it->get();
     } else {
@@ -476,7 +408,7 @@ InviwoModule* ModuleManager::getModuleByIdentifier(const std::string& identifier
 
 std::vector<InviwoModule*> ModuleManager::getModulesByAlias(const std::string& alias) const {
     std::vector<InviwoModule*> res;
-    for (const auto& mfo : modulesFactoryObjects_) {
+    for (const auto& mfo : factoryObjects_) {
         if (util::contains(mfo->aliases, alias)) {
             if (auto m = getModuleByIdentifier(mfo->name)) {
                 res.push_back(m);
@@ -486,9 +418,20 @@ std::vector<InviwoModule*> ModuleManager::getModulesByAlias(const std::string& a
     return res;
 }
 
+InviwoModuleFactoryObject* ModuleManager::getFactoryObject(const std::string& identifier) const {
+    auto it = util::find_if(factoryObjects_,
+                            [&](const auto& module) { return iCaseCmp(module->name, identifier); });
+    // Check if dependent module is of correct version
+    if (it != factoryObjects_.end()) {
+        return it->get();
+    } else {
+        return nullptr;
+    }
+}
+
 std::vector<std::string> ModuleManager::findDependentModules(const std::string& module) const {
     std::vector<std::string> dependencies;
-    for (const auto& item : modulesFactoryObjects_) {
+    for (const auto& item : factoryObjects_) {
         if (util::contains_if(item->dependencies, [&](auto& dep) { return dep.first == module; })) {
             auto name = toLower(item->name);
             auto deps = findDependentModules(name);
@@ -515,11 +458,51 @@ std::shared_ptr<std::function<void()>> ModuleManager::onModulesWillUnregister(
 
 const std::set<std::string, CaseInsensitiveCompare>& ModuleManager::getProtectedModuleIdentifiers()
     const {
-    return protectedIdentifiers_;
+    return protected_;
 }
 
-void ModuleManager::addProtectedIdentifier(const std::string& id) {
-    protectedIdentifiers_.insert(id);
+bool ModuleManager::isProtected(const std::string& module) const {
+    return protected_.count(module) != 0;
+}
+
+void ModuleManager::addProtectedIdentifier(const std::string& id) { protected_.insert(id); }
+
+bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) const {
+    std::stringstream err;
+
+    // Make sure that the module supports the current inviwo core version
+    if (!Version(IVW_VERSION).semanticVersionEqual(obj.inviwoCoreVersion)) {
+        err << "\nModule was built for Inviwo version " << obj.inviwoCoreVersion
+            << ", current version is " << IVW_VERSION;
+    }
+
+    // Check if dependency modules have correct versions.
+    // Note that the module version only need to be increased
+    // when changing and the inviwo core version has not changed
+    // since we are ensuring the they must be built for the
+    // same core version.
+    for (const auto& dep : obj.dependencies) {
+        const auto& name = dep.first;
+        const auto& version = dep.second;
+
+        if (auto depObj = getFactoryObject(name)) {
+            if (!getModuleByIdentifier(depObj->name)) {
+                err << "\nModule dependency: " + depObj->name + " failed to register";
+            } else if (!depObj->version.semanticVersionEqual(obj.version)) {
+                err << "\nModule depends on " << depObj->name << " version " << version
+                    << " but version " << depObj->version << " was loaded";
+            }
+        } else {
+            err << "\nModule depends on " << name << " version " << version
+                << " but no such module was found";
+        }
+    }
+    if (err.str().size() > 0) {
+        LogError("Failed to register module: " << obj.name << ". Reason: " << err.str());
+        return false;
+    } else {
+        return true;
+    }
 }
 
 }  // namespace inviwo

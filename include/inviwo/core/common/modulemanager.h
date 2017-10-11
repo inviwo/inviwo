@@ -48,7 +48,7 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
-class InviwoModuleLibraryObserver; // Observer for module dll/so files
+class InviwoModuleLibraryObserver;  // Observer for module dll/so files
 class SharedLibrary;
 
 /**
@@ -66,7 +66,6 @@ public:
      * See inviwo.cpp for an example.
      */
     bool isRuntimeModuleReloadingEnabled();
-
 
     /**
      * \brief Registers modules from factories and takes ownership of input module factories.
@@ -106,8 +105,7 @@ public:
     T* getModuleByType() const;
     InviwoModule* getModuleByIdentifier(const std::string& identifier) const;
     std::vector<InviwoModule*> getModulesByAlias(const std::string& alias) const;
-
-
+    InviwoModuleFactoryObject* getFactoryObject(const std::string& identifier) const;
     std::vector<std::string> findDependentModules(const std::string& module) const;
 
     /**
@@ -128,26 +126,29 @@ public:
      * Append them to this list in your application to prevent them from being unloaded.
      * @return Module identifiers of modules
      */
-     const std::set<std::string, CaseInsensitiveCompare>& getProtectedModuleIdentifiers() const;
-     void addProtectedIdentifier(const std::string& id);
+    const std::set<std::string, CaseInsensitiveCompare>& getProtectedModuleIdentifiers() const;
+    bool isProtected(const std::string& module) const;
+    void addProtectedIdentifier(const std::string& id);
 
 private:
-    InviwoApplication* app_;
-    std::set<std::string, CaseInsensitiveCompare> protectedIdentifiers_;
-    Dispatcher<void()> onModulesDidRegister_; ///< Called after modules have been registered
-    Dispatcher<void()> onModulesWillUnregister_; ///< Called before modules have been unregistered
+    bool checkDependencies(const InviwoModuleFactoryObject& obj) const;
 
-    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
+    InviwoApplication* app_;
+    std::set<std::string, CaseInsensitiveCompare> protected_;
+
+    Dispatcher<void()> onModulesDidRegister_;     ///< Called after modules have been registered
+    Dispatcher<void()> onModulesWillUnregister_;  ///< Called before modules have been unregistered
+
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> factoryObjects_;
     std::vector<std::unique_ptr<InviwoModule>> modules_;
-    std::vector<std::unique_ptr<SharedLibrary>> moduleSharedLibraries_;
+    std::vector<std::unique_ptr<SharedLibrary>> sharedLibraries_;
     // Need to be pointer since we cannot initialize the observer before the application.
-    std::unique_ptr<InviwoModuleLibraryObserver> moduleLibraryObserver_;  ///< Observes shared
-                                                                          ///< libraries and reload
-                                                                          ///< modules when file
-                                                                          ///< changes.
+    std::unique_ptr<InviwoModuleLibraryObserver> libraryObserver_;  ///< Observes shared
+                                                                    ///< libraries and reload
+                                                                    ///< modules when file
+                                                                    ///< changes.
 
     util::OnScopeExit clearModules_;
-    
 };
 
 template <class T>
@@ -155,7 +156,6 @@ T* ModuleManager::getModuleByType() const {
     return getTypeFromVector<T>(modules_);
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MODULEMANAGER_H
-
+#endif  // IVW_MODULEMANAGER_H
