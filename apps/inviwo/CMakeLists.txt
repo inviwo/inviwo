@@ -37,12 +37,6 @@ ivw_retrieve_all_modules(enabled_modules)
 # Only include one OpenGL context creation module
 list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
 
-#--------------------------------------------------------------------
-# Determine dendendencies and set runtime module loading defines
-ivw_configure_application_module_dependencies(inviwo
-                                              "${enabled_modules}"
-                                              dependencies)
-
 set(RES_FILES "")
 if(WIN32)
     set(RES_FILES ${RES_FILES} "${IVW_RESOURCES_DIR}/inviwo.rc")
@@ -68,10 +62,6 @@ add_executable(inviwo MACOSX_BUNDLE WIN32
     ${MOC_FILES} 
     ${QRC_FILE} 
     ${RES_FILES})
-
-#--------------------------------------------------------------------
-# Register the use of modules
-ivw_register_use_of_modules(inviwo ${enabled_modules})
 target_link_libraries(inviwo PUBLIC 
     inviwo::core
     inviwo::qtapplicationbase
@@ -79,13 +69,12 @@ target_link_libraries(inviwo PUBLIC
     Qt5::Core
     Qt5::Widgets
 )
-ivw_add_module_dependencies(inviwo ${dependencies})
+#--------------------------------------------------------------------
+# Register the use of modules
+# Determine dendendencies and set runtime module loading defines
+ivw_configure_application_module_dependencies(inviwo ${enabled_modules})
 ivw_define_standard_definitions(inviwo inviwo)
 ivw_define_standard_properties(inviwo)
-
-if(IVW_RUNTIME_MODULE_LOADING)
-    target_compile_definitions(inviwo PUBLIC IVW_RUNTIME_MODULE_LOADING)
-endif()
 
 #--------------------------------------------------------------------
 # Add application to pack
@@ -137,12 +126,6 @@ if(IVW_PACKAGE_PROJECT)
     endif()
 endif()
 
-# Dependencies to build before this project when they are changed.
-# Needed if modules are loaded at runtime since they should be built
-# when this project is set as startup project
-ivw_mod_name_to_target_name(target_names ${enabled_modules})
-add_dependencies(inviwo ${target_names})
-
 # Add build dependency towards any pybind11 targets and inviwo,
 # if python is not enabled, this list will be empty
 if(_allPyBindWrappers)
@@ -158,10 +141,6 @@ if(WIN32)
 
     project(inviwo-cli)
 
-    ivw_configure_application_module_dependencies(inviwo-cli
-        "${enabled_modules}"
-        dependencies-cli)
-
     add_executable(inviwo-cli MACOSX_BUNDLE WIN32 
         ${SOURCE_FILES} 
         ${HEADER_FILES} 
@@ -169,7 +148,6 @@ if(WIN32)
         ${QRC_FILE} 
         ${RES_FILES}
     )
-    ivw_register_use_of_modules(inviwo-cli ${enabled_modules})
     target_link_libraries(inviwo-cli  PUBLIC
         inviwo::core 
         inviwo::qtapplicationbase
@@ -177,15 +155,9 @@ if(WIN32)
         Qt5::Core 
         Qt5::Widgets
     )
-    ivw_add_module_dependencies(inviwo-cli ${dependencies-cli})
+    ivw_configure_application_module_dependencies(inviwo-cli ${enabled_modules})
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
-
-    if(IVW_RUNTIME_MODULE_LOADING)
-        target_compile_definitions(inviwo-cli PUBLIC IVW_RUNTIME_MODULE_LOADING)
-    endif()
-
-    add_dependencies(inviwo-cli inviwo)
 
     if(_allPyBindWrappers)
         add_dependencies(inviwo-cli ${_allPyBindWrappers})

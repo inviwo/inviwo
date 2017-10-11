@@ -56,16 +56,22 @@ endfunction()
 # Determine application dependencies. 
 # Creates a list of enabled modules in executable directory if runtime
 # module loading is enabled.
-# Returns dependencies in retVal
-function(ivw_configure_application_module_dependencies target_name enabled_modules retVal)
+function(ivw_configure_application_module_dependencies target)
     if(IVW_RUNTIME_MODULE_LOADING)
         # Specify which modules to load at runtime (all will be loaded if the file does not exist)
-        ivw_create_enabled_modules_file(${target_name} ${enabled_modules})
-        # Application does not need to depend on all modules
-        # if they are loaded at runtime.
-        set(${retVal} "" PARENT_SCOPE)
+        ivw_create_enabled_modules_file(${target} ${ARGN})
+        if(IVW_RUNTIME_MODULE_LOADING)
+            target_compile_definitions(${target} PUBLIC IVW_RUNTIME_MODULE_LOADING)
+        endif()
+        # Dependencies to build before this project when they are changed.
+        # Needed if modules are loaded at runtime since they should be built
+        # when this project is set as startup project
+        ivw_mod_name_to_target_name(dep_targets ${ARGN})
+        add_dependencies(${target} ${dep_targets})
     else()
-        set(${retVal} ${enabled_modules} PARENT_SCOPE)
+        ivw_register_use_of_modules(${target} ${ARGN})
+        ivw_mod_name_to_alias(dep_targets ${ARGN})
+        target_link_libraries(${target} PUBLIC ${dep_targets})
     endif()
 endfunction()
 
@@ -547,13 +553,6 @@ function(ivw_create_module)
     # Make package (for other modules to find)
     ivw_make_package($Inviwo${PROJECT_NAME}Module ${${mod}_target})
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
-endfunction()
-
-#--------------------------------------------------------------------
-# Adds dependency to the target 
-function(ivw_add_module_dependencies target)
-    ivw_mod_name_to_alias(ivw_dep_targets ${ARGN})
-    target_link_libraries(${target} PUBLIC ${ivw_dep_targets})
 endfunction()
 
 #--------------------------------------------------------------------

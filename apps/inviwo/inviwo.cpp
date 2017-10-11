@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
-    inviwoApp.getModuleManager().registerModules(inviwo::getModuleList());
+    inviwoApp.registerModules(inviwo::getModuleList());
 
     inviwoApp.processEvents();
 
@@ -99,11 +99,10 @@ int main(int argc, char** argv) {
     if (auto numErrors = logCounter->getWarnCount()) {
         LogWarnCustom("inviwo.cpp", numErrors << " warnings generated during startup");
     }
-
     if (auto numErrors = logCounter->getErrorCount()) {
         LogErrorCustom("inviwo.cpp", numErrors << " errors generated during startup");
     }
-    
+    logCounter.reset();
 
     // process last arguments
     if (!clp.getQuitApplicationAfterStartup()) {
