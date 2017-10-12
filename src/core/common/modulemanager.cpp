@@ -368,13 +368,12 @@ void ModuleManager::unregisterModules() {
     }
 
     // Remove module factories
-    util::erase_remove_if(factoryObjects_, [&](const auto& module) {
-        return !isProtected(module->name);
-    });
+    util::erase_remove_if(factoryObjects_,
+                          [this](const auto& mfo) { return !isProtected(mfo->name); });
 
     // Modules should now have removed all allocated resources and it should be safe to unload
     // shared libraries.
-    util::erase_remove_if(sharedLibraries_, [&](const auto& module) {
+    util::erase_remove_if(sharedLibraries_, [this](const auto& module) {
         // Figure out module identifier from file name
         auto moduleName = util::stripModuleFileNameDecoration(module->getFilePath());
         return !isProtected(moduleName);
