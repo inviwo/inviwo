@@ -130,6 +130,8 @@ public:
     bool isProtected(const std::string& module) const;
     void addProtectedIdentifier(const std::string& id);
 
+    static std::function<bool(const std::string&)> getEnabledFilter();
+
 private:
     bool checkDependencies(const InviwoModuleFactoryObject& obj) const;
 

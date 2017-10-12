@@ -53,7 +53,7 @@ namespace inviwo {
 class IVW_CORE_API SharedLibrary {
 public:
     SharedLibrary(const std::string& filePath);
-    virtual ~SharedLibrary();
+    ~SharedLibrary();
 
     std::string getFilePath() { return filePath_; }
 
@@ -62,13 +62,28 @@ public:
      *
      * Example usage:
      * @code
-     *      typedef InviwoModuleFactoryObject* (__stdcall *f_getModule)();
-     *      f_getModule moduleFunc = (f_getModule)sharedLib->findSymbol("createModule");
+     *      using f_getModule = InviwoModuleFactoryObject* (__stdcall *)();
+     *      auto moduleFunc = reinterpret_cast<f_getModule>(sharedLib->findSymbol("createModule"));
      * @endcode
      * @param std::string name Function name
-     * @return void* Address to function if found, otherwise nullptr
+     * @return Address to function if found, otherwise nullptr
      */
-    virtual void* findSymbol(const std::string& name);
+     void* findSymbol(const std::string& name);
+
+     /** 
+     * \brief Get typed function address from library.
+     *
+     * Example usage:
+     * @code
+     *      using f_getModule = InviwoModuleFactoryObject* (__stdcall *)();
+     *      auto moduleFunc = sharedLib->findSymbolTyped<f_getModule>("createModule"));
+     * @endcode
+     * @param std::string name Function name
+     * @return Address to function if found, otherwise nullptr
+     */
+     template <typename T>
+     T findSymbolTyped(const std::string& name);
+
 private:
     std::string filePath_;
 #if WIN32
@@ -77,6 +92,11 @@ private:
     void* handle_ = nullptr;
 #endif
 };
+
+template <typename T>
+T SharedLibrary::findSymbolTyped(const std::string& name) {
+    return reinterpret_cast<T>(findSymbol(name));
+}
 
 } // namespace
 
