@@ -206,8 +206,8 @@ void InviwoApplication::registerModules(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
 }
 
-void InviwoApplication::registerModules(const std::vector<std::string>& librarySearchPaths) {
-    moduleManager_.registerModules(librarySearchPaths);
+void InviwoApplication::registerModules(RuntimeModuleLoading token) {
+    moduleManager_.registerModules(token);
 }
 
 std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }

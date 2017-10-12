@@ -29,10 +29,8 @@
 
 #include <inviwo/core/common/inviwomodulelibraryobserver.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/workspacemanager.h>
-#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/runtimemoduleregistration.h>
 
 #include <sstream>
 
@@ -62,8 +60,7 @@ void InviwoModuleLibraryObserver::fileChanged(const std::string& fileName) {
     app->getModuleManager().unregisterModules();
 
     // Register modules again
-    app->getModuleManager().registerModules(std::vector<std::string>(
-        1, inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath())));
+    app->getModuleManager().registerModules(RuntimeModuleLoading{});
 
     // De-serialize network
     try {

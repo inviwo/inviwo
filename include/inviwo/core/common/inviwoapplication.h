@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/modulemanager.h>
+#include <inviwo/core/common/runtimemoduleregistration.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/threadpool.h>
@@ -124,7 +125,7 @@ public:
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      * @param librarySearchPaths Paths to directories to recursively search.
      */
-    virtual void registerModules(const std::vector<std::string>& librarySearchPaths);
+    virtual void registerModules(RuntimeModuleLoading);
     /**
      * Get the base path of the application.
      * i.e. where the core data and modules folder and etc are.

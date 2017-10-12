@@ -2,6 +2,9 @@
 #ifdef IVW_RUNTIME_MODULE_LOADING
 
 #include <inviwo/core/common/runtimemoduleregistration.h>
+namespace inviwo {
+RuntimeModuleLoading getModuleList() { return RuntimeModuleLoading{}; }
+}  //namespace
 
 #else
 

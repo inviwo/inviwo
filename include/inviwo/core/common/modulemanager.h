@@ -35,6 +35,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/common/runtimemoduleregistration.h>
 #include <inviwo/core/util/vectoroperations.h>
 
 #include <warn/push>
@@ -50,6 +51,20 @@ class FileObserver;
 
 class InviwoModuleLibraryObserver;  // Observer for module dll/so files
 class SharedLibrary;
+
+namespace util {
+/**
+ * \brief Returns paths to search for module libraries.
+ * All platforms: executable directory and application modules directory
+ * (AppData/Inviwo/modules on windows).
+ * Platform dependent search directories:
+ * OSX: DYLD_LIBRARY_PATH
+ * UNIX: LD_LIBRARY_PATH/LD_RUN_PATH, RPATH and "executable directory
+ * /../../lib"
+ * @return List of paths to directories
+ */
+IVW_CORE_API std::vector<std::string> getLibrarySearchPaths();
+}
 
 /**
  * Manages finding, loading, unloading, reloading of Inviwo modules
@@ -83,7 +98,7 @@ public:
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      * @param librarySearchPaths Paths to directories to recursively search.
      */
-    void registerModules(const std::vector<std::string>& librarySearchPaths);
+    void registerModules(RuntimeModuleLoading);
 
     /**
      * \brief Removes all modules not marked as protected by the application.
