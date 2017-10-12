@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
