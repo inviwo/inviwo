@@ -239,10 +239,15 @@ bool push_back_unique(T& cont, typename T::value_type elem) {
     }
 }
 
-template <typename T>
-std::vector<T>& append(std::vector<T> &dest, const std::vector<T> &source) {
-    dest.reserve(dest.size() + source.size());
-    dest.insert(dest.end(), source.begin(), source.end());
+template <typename Dst, typename... Srcs>
+Dst& append(Dst& dest, Srcs&&... sources) {
+    for_each_argument(
+        [&](auto&& source) {
+            using std::begin;
+            using std::end;
+            dest.insert(end(dest), begin(source), end(source));
+        },
+        std::forward<Srcs>(sources)...);
     return dest;
 }
 
