@@ -96,7 +96,6 @@ public:
 protected:
     virtual void printApplicationInfo() override;
     virtual void resizePool(size_t newSize) override;
-    void wait(int);
 
 private:
     void fileChanged(QString fileName);

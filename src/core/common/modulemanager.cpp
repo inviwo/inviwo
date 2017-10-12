@@ -119,6 +119,60 @@ std::vector<std::string> util::getLibrarySearchPaths() {
     return paths;
 }
 
+namespace {
+#if WIN32
+bool hasAddDllFunc() {
+    // Get AddDllDirectory function.
+    // This function is only available after installing KB2533623
+    using addDllDirectory_func = DLL_DIRECTORY_COOKIE(WINAPI*)(PCWSTR);
+    auto lpfnAdllDllDirectory = reinterpret_cast<addDllDirectory_func>(
+        GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory"));
+    return lpfnAdllDllDirectory != nullptr;
+}
+
+std::vector<DLL_DIRECTORY_COOKIE> addDllDirs(const std::vector<std::string>& dirs) {
+    std::vector<DLL_DIRECTORY_COOKIE> addedSearchDirectories;
+    // Prevent error mode dialogs from displaying.
+    SetErrorMode(SEM_FAILCRITICALERRORS);
+    if (hasAddDllFunc()) {
+        // Add search paths to find module dll dependencies
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        for (auto searchPath : dirs) {
+            searchPath = filesystem::cleanupPath(searchPath);
+            replaceInString(searchPath, "/", "\\");
+            const auto path = converter.from_bytes(searchPath);
+            const auto dlldir = AddDllDirectory(path.c_str());
+            if (dlldir) {
+                addedSearchDirectories.emplace_back(dlldir);
+            } else {
+                LogWarnCustom("ModuleManager",
+                              "Could not get AddDllDirectory for path " << searchPath);
+            }
+        }
+    }
+    return addedSearchDirectories;
+}
+void removeDllDirs(const std::vector<DLL_DIRECTORY_COOKIE>& dirs) {
+    if (hasAddDllFunc()) {
+        for (const auto& dir : dirs) {
+            RemoveDllDirectory(dir);
+        }
+    }
+}
+// only consider files with dll extension
+std::set<std::string> libTypes() { return{ "dll" }; }
+#else
+// only consider files with so, dylib or bundle extension
+std::set<std::string> libTypes() { return{ "so", "dylib", "bundle" }; }
+// dummy functions
+int addDllDirs(const std::vector<std::string>&) { return 0; }
+void removeDllDirs(const int&) {}
+bool hasAddDllFunc() { return true; }
+#endif
+
+}  // namespace
+
+
 ModuleManager::ModuleManager(InviwoApplication* app)
     : app_{app}, modules_(), clearModules_([&]() {
         // Note: be careful when changing the order of clearModules
@@ -205,7 +259,9 @@ std::function<bool(const std::string&)> ModuleManager::getEnabledFilter() {
 #else
     std::string enabledModulesFilePath(exepath + "/" + enabledModuleFileName);
 #endif
-    if (filesystem::fileExists(enabledModulesFilePath)) {
+    LogInfoCustom("ModuleManager", "Enabled file: " << enabledModulesFilePath);
+    if (!filesystem::fileExists(enabledModulesFilePath)) {
+        LogInfoCustom("ModuleManager", "Enable file not found");
         return [](const std::string&) { return true; };
     }
 
@@ -221,59 +277,6 @@ std::function<bool(const std::string&)> ModuleManager::getEnabledFilter() {
     };
 }
 
-namespace {
-#if WIN32
-bool hasAddDllFunc() {
-    // Get AddDllDirectory function.
-    // This function is only available after installing KB2533623
-    using addDllDirectory_func = DLL_DIRECTORY_COOKIE(WINAPI*)(PCWSTR);
-    auto lpfnAdllDllDirectory = reinterpret_cast<addDllDirectory_func>(
-        GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory"));
-    return lpfnAdllDllDirectory != nullptr;
-}
-
-std::vector<DLL_DIRECTORY_COOKIE> addDllDirs(const std::vector<std::string>& dirs) {
-    std::vector<DLL_DIRECTORY_COOKIE> addedSearchDirectories;
-    // Prevent error mode dialogs from displaying.
-    SetErrorMode(SEM_FAILCRITICALERRORS);
-    if (hasAddDllFunc()) {
-        // Add search paths to find module dll dependencies
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        for (auto searchPath : dirs) {
-            searchPath = filesystem::cleanupPath(searchPath);
-            replaceInString(searchPath, "/", "\\");
-            const auto path = converter.from_bytes(searchPath);
-            const auto dlldir = AddDllDirectory(path.c_str());
-            if (dlldir) {
-                addedSearchDirectories.emplace_back(dlldir);
-            } else {
-                LogWarnCustom("ModuleManager",
-                              "Could not get AddDllDirectory for path " << searchPath);
-            }
-        }
-    }
-    return addedSearchDirectories;
-}
-void removeDllDirs(const std::vector<DLL_DIRECTORY_COOKIE>& dirs) {
-    if (hasAddDllFunc()) {
-        for (const auto& dir : dirs) {
-            RemoveDllDirectory(dir);
-        }
-    }
-}
-// only consider files with dll extension
-std::set<std::string> libTypes() { return {"dll"}; }
-#else
-// only consider files with so, dylib or bundle extension
-std::set<std::string> libTypes() { return {"so", "dylib", "bundle"}; }
-// dummy functions
-int addDllDirs(const std::vector<std::string>&) { return 0; }
-void removeDllDirs(const int&) {}
-bool hasAddDllFunc() { return true; }
-#endif
-
-}  // namespace
-
 void ModuleManager::registerModules(RuntimeModuleLoading) {
     // Perform the following steps
     // 1. Recursively get all library files and the folders they are in
@@ -285,8 +288,6 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
     // 4. Load libraries and see if createModule function exist.
     // 5. Start observing file if reloadLibrariesWhenChanged
     // 6. Pass module factories to registerModules
-
-    auto librarySearchPaths = util::getLibrarySearchPaths();
 
     auto orderByProtectedModule = [&](std::string first, std::string second) -> bool {
         auto foundFirst = protected_.find(util::stripModuleFileNameDecoration(first));
@@ -309,6 +310,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
     std::set<std::string> libraryDirectories;
 
     // Find unique files and directories in specified search paths
+    auto librarySearchPaths = util::getLibrarySearchPaths();
     for (auto path : librarySearchPaths) {
         // Make sure that we have an absolute path to avoid duplicates
         path = filesystem::cleanupPath(path);

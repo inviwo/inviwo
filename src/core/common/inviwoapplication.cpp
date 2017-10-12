@@ -366,13 +366,11 @@ void InviwoApplication::registerFileObserver(FileObserver*) {
     LogWarn("this application have not implemented the registerFileObserver function");
 }
 void InviwoApplication::unRegisterFileObserver(FileObserver*) {
-    LogWarn("this application have not implemented the unRegisterFileObserver function");
 }
 void InviwoApplication::startFileObservation(std::string) {
     LogWarn("this application have not implemented the startFileObservation function");
 }
 void InviwoApplication::stopFileObservation(std::string) {
-    LogWarn("this application have not implemented the stopFileObservation function");
 }
 void InviwoApplication::playSound(Message) {
     LogWarn("this application have not implemented the playSound function");

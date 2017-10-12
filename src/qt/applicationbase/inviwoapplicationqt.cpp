@@ -131,7 +131,7 @@ void InviwoApplicationQt::stopFileObservation(std::string fileName) {
 }
 
 void InviwoApplicationQt::fileChanged(QString fileName) {
-    wait(200);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     if (QFile::exists(fileName)) {
         std::string fileNameStd = fileName.toLocal8Bit().constData();
@@ -199,13 +199,6 @@ void InviwoApplicationQt::resizePool(size_t newSize) {
         processEvents();
     }
 }
-
-
-void InviwoApplicationQt::wait(int ms) {
-    if (ms <= 0) return;
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-}
-
 
 void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext& context,
                                         const QString& msg) {
