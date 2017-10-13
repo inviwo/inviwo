@@ -61,15 +61,14 @@ namespace inviwo {
 class RenderHandler : public CefRenderHandler
 {
 public:
-    Layer m_renderTexture;
-
-    RenderHandler()
+    ImageOutport* image_;
+    RenderHandler(ImageOutport* image) : image_(image)
     {;}
     // CefRenderHandler interface
 public:
     bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
     {
-        rect = CefRect(0, 0, m_renderTexture.getDimensions().x, m_renderTexture.getDimensions().y);
+        rect = CefRect(0, 0, image_->getData()->getDimensions().x, image_->getData()->getDimensions().y);
         return true;
     }
     void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height);
@@ -114,12 +113,12 @@ public:
 private:
     ImageOutport outport_;
 
-    //Timer doChromiumWork_;
+    Timer doChromiumWork_;
 
-    //// create browser-window
-    //CefRefPtr<CefBrowser> browser;
-    //CefRefPtr<BrowserClient> browserClient;
-    //RenderHandler* renderHandler;
+    // create browser-window
+    CefRefPtr<CefBrowser> browser;
+    CefRefPtr<BrowserClient> browserClient;
+    CefRefPtr<RenderHandler> renderHandler;
 };
 
 } // namespace

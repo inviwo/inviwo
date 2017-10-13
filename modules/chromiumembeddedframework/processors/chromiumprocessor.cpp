@@ -37,57 +37,61 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ChromiumProcessor::processorInfo_{
-    "org.inviwo.ChromiumProcessor",      // Class identifier
-    "Chromium Processor",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.ChromiumProcessor",  // Class identifier
+    "Browser",                       // Display name
+    "Web",                           // Category
+    CodeState::Experimental,         // Code state
+    Tags::None,                      // Tags
 };
-const ProcessorInfo ChromiumProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ChromiumProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ChromiumProcessor::ChromiumProcessor()
-    : Processor() 
+    : Processor()
     , outport_("image", DataVec4UInt8::get())
-    //, doChromiumWork_(100, []() { CefDoMessageLoopWork(); })
-    //, renderHandler(new RenderHandler()) 
+    , doChromiumWork_(Timer::Milliseconds(100), []() { CefDoMessageLoopWork(); })
+    , renderHandler(new RenderHandler(&outport_))
 {
+    outport_.setData(std::make_shared<Image>(uvec2(128, 128), DataVec4UInt8::get()));
     addPort(outport_);
-    
-    //{
-    //    CefWindowInfo window_info;
-    //    CefBrowserSettings browserSettings;
 
-    //    // browserSettings.windowless_frame_rate = 60; // 30 is default
+    {
+        CefWindowInfo window_info;
+        
+        CefBrowserSettings browserSettings;
 
-    //    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause some render errors, in context-menu and plugins.
-    //    std::size_t windowHandle = 0;
+        // browserSettings.windowless_frame_rate = 60; // 30 is default
 
-    //    window_info.SetAsWindowless(nullptr, false); // false means no transparency (site background colour)
+        // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause
+        // some render errors, in context-menu and plugins.
+        std::size_t windowHandle = 0;
 
-    //    browserClient = new BrowserClient(renderHandler);
+        window_info.SetAsWindowless(
+            nullptr);  // false means no transparency (site background colour)
 
-    //    browser = CefBrowserHost::CreateBrowserSync(window_info, browserClient.get(), "http://www.google.com", browserSettings, nullptr);
+        browserClient = new BrowserClient(renderHandler);
 
-    //    // inject user-input by calling - non-trivial for non-windows - checkout the cefclient source and the platform specific cpp, like cefclient_osr_widget_gtk.cpp for linux
-    //    // browser->GetHost()->SendKeyEvent(...);
-    //    // browser->GetHost()->SendMouseMoveEvent(...);
-    //    // browser->GetHost()->SendMouseClickEvent(...);
-    //    // browser->GetHost()->SendMouseWheelEvent(...);
-    //}
+        browser = CefBrowserHost::CreateBrowserSync(
+            window_info, browserClient.get(), "http://www.google.com", browserSettings, nullptr);
+
+        // inject user-input by calling - non-trivial for non-windows - checkout the cefclient
+        // source and the platform specific cpp, like cefclient_osr_widget_gtk.cpp for linux
+        // browser->GetHost()->SendKeyEvent(...);
+        // browser->GetHost()->SendMouseMoveEvent(...);
+        // browser->GetHost()->SendMouseClickEvent(...);
+        // browser->GetHost()->SendMouseWheelEvent(...);
+    }
     //doChromiumWork_.start();
 }
-    
+
 void ChromiumProcessor::process() {
-    //outport_.setData(myImage);
-
+    
 }
 
-void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height) {
-    auto layerGL = m_renderTexture.getEditableRepresentation<LayerGL>();
+void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
+                            const RectList &dirtyRects, const void *buffer, int width, int height) {
+    auto layerGL = image_->getEditableData()->getColorLayer()->getEditableRepresentation<LayerGL>();
     layerGL->getTexture()->upload(buffer);
+    image_->invalidate(InvalidationLevel::InvalidOutput);
 }
 
-} // namespace
-
+}  // namespace inviwo
