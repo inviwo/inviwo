@@ -211,6 +211,30 @@ auto erase_remove_if(T& cont, Pred pred)
     return nelem;
 }
 
+template <typename T>
+void reverse_erase(T& cont) {
+    using std::rbegin;
+    using std::rend;
+    for (auto it = rbegin(cont); it != rend(cont);) {
+        // Erase does not take reverse_iterator so we need to convert it
+        it = decltype(it)(cont.erase((++it).base()));
+    }
+}
+
+template <typename T, typename Pred>
+void reverse_erase_if(T& cont, Pred pred) {
+    using std::begin;
+    using std::end;
+    for (auto it = rbegin(cont); it != rend(cont);) {
+        if (pred(*it)) {
+            // Erase does not take reverse_iterator so we need to convert it
+            it = decltype(it)(cont.erase((++it).base()));
+        } else {
+            ++it;
+        }
+    }
+}
+
 template <typename T, typename Pred>
 size_t map_erase_remove_if(T& cont, Pred pred) {
     using std::begin;
