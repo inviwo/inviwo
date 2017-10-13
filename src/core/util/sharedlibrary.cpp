@@ -29,7 +29,7 @@
 
 #include <inviwo/core/util/sharedlibrary.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/stringconversion.h> // splitString
+#include <inviwo/core/util/stringconversion.h>  // splitString
 #include <codecvt>
 #include <locale>
 #include <algorithm>
@@ -61,11 +61,14 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
             std::reverse(elems.begin(), elems.end());
             for (auto path : elems) {
                 path = filesystem::cleanupPath(path);
-                replaceInString(path, "/", "\\");
-                const auto wide = converter.from_bytes(path);
-                const auto dlldir = AddDllDirectory(wide.c_str());
-                if (!dlldir) {
-                    LogWarnCustom("SharedLibrary", "Could not get AddDllDirectory for path " << path);
+                if (filesystem::directoryExists(path)) {
+                    replaceInString(path, "/", "\\");
+                    const auto wide = converter.from_bytes(path);
+                    const auto dlldir = AddDllDirectory(wide.c_str());
+                    if (!dlldir) {
+                        LogWarnCustom("SharedLibrary",
+                                      "Could not get AddDllDirectory for path " << path);
+                    }
                 }
             }
             return true;
@@ -148,5 +151,4 @@ void* SharedLibrary::findSymbol(const std::string& name) {
 #endif
 }
 
-} // namespace
-
+}  // namespace inviwo

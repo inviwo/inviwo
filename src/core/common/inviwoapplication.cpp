@@ -204,6 +204,7 @@ InviwoApplication::~InviwoApplication() {
 
 void InviwoApplication::registerModules(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
+    moduleManager_.registerModules(std::move(moduleFactories));
 }
 
 void InviwoApplication::registerModules(RuntimeModuleLoading token) {

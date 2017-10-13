@@ -53,6 +53,10 @@ namespace inviwo {
 class IVW_CORE_API SharedLibrary {
 public:
     SharedLibrary(const std::string& filePath);
+    SharedLibrary(const SharedLibrary& rhs) = delete;
+    SharedLibrary& operator=(const SharedLibrary& that) = delete;
+    SharedLibrary( SharedLibrary&& rhs) = default;
+    SharedLibrary& operator=(SharedLibrary&& that) = default;
     ~SharedLibrary();
 
     std::string getFilePath() { return filePath_; }

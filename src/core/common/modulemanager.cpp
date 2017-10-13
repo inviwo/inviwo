@@ -52,7 +52,7 @@
 #endif
 
 #if defined(__unix__)
-#include <elf.h> // To retrieve rpath
+#include <elf.h>  // To retrieve rpath
 #include <link.h>
 #endif
 
@@ -61,40 +61,39 @@ namespace inviwo {
 std::vector<std::string> util::getLibrarySearchPaths() {
     auto paths = std::vector<std::string>{
         inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()),
-        inviwo::filesystem::getPath(inviwo::PathType::Modules) };
+        inviwo::filesystem::getPath(inviwo::PathType::Modules)};
 
     // http://unix.stackexchange.com/questions/22926/where-do-executables-look-for-shared-objects-at-runtime
 #if defined(__APPLE__)
     // Xcode/OSX store library output path in DYLD_LIBRARY_PATH
-    if (char *envPaths = std::getenv("DYLD_LIBRARY_PATH")) {
+    if (char* envPaths = std::getenv("DYLD_LIBRARY_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
     }
 #elif defined(__unix__)
-    paths.push_back(inviwo::filesystem::getFileDirectory(
-        inviwo::filesystem::getExecutablePath()) +
-        "/../lib");
+    paths.push_back(inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()) +
+                    "/../lib");
     // Unix uses LD_LIBRARY_PATH or LD_RUN_PATH
-    if (char *envPaths = std::getenv("LD_LIBRARY_PATH")) {
+    if (char* envPaths = std::getenv("LD_LIBRARY_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
     }
-    if (char *envPaths = std::getenv("LD_RUN_PATH")) {
+    if (char* envPaths = std::getenv("LD_RUN_PATH")) {
         auto libPaths = splitString(envPaths, ':');
         paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
     }
     // Additional paths can be specified in
     // ELF header: RUN_PATH or RPATH
-    const ElfW(Dyn) *rPath = nullptr;
-    const ElfW(Dyn) *runPath = nullptr;
-    const char *offset = nullptr;
-    for (const ElfW(Dyn) *dyn = _DYNAMIC; dyn->d_tag != DT_NULL; ++dyn) {
+    const ElfW(Dyn)* rPath = nullptr;
+    const ElfW(Dyn)* runPath = nullptr;
+    const char* offset = nullptr;
+    for (const ElfW(Dyn)* dyn = _DYNAMIC; dyn->d_tag != DT_NULL; ++dyn) {
         if (dyn->d_tag == DT_RUNPATH) {
             runPath = dyn;
         } else if (dyn->d_tag == DT_RPATH) {
             rPath = dyn;
         } else if (dyn->d_tag == DT_STRTAB) {
-            offset = (const char *)dyn->d_un.d_val;
+            offset = (const char*)dyn->d_un.d_val;
         }
     }
     if (offset) {
@@ -102,14 +101,14 @@ std::vector<std::string> util::getLibrarySearchPaths() {
         if (runPath) {
             auto rPaths = splitString(offset + runPath->d_un.d_val, ':');
             auto execPath = inviwo::filesystem::getExecutablePath();
-            for (auto &path : rPaths) {
+            for (auto& path : rPaths) {
                 replaceInString(path, "$ORIGIN", execPath);
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
         } else if (rPath) {
             auto rPaths = splitString(offset + rPath->d_un.d_val, ':');
             auto execPath = inviwo::filesystem::getExecutablePath();
-            for (auto &path : rPaths) {
+            for (auto& path : rPaths) {
                 replaceInString(path, "$ORIGIN", execPath);
             }
             paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
@@ -139,14 +138,16 @@ std::vector<DLL_DIRECTORY_COOKIE> addDllDirs(const std::vector<std::string>& dir
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         for (auto searchPath : dirs) {
             searchPath = filesystem::cleanupPath(searchPath);
-            replaceInString(searchPath, "/", "\\");
-            const auto path = converter.from_bytes(searchPath);
-            const auto dlldir = AddDllDirectory(path.c_str());
-            if (dlldir) {
-                addedSearchDirectories.emplace_back(dlldir);
-            } else {
-                LogWarnCustom("ModuleManager",
-                              "Could not get AddDllDirectory for path " << searchPath);
+            if (filesystem::directoryExists(searchPath)) {
+                replaceInString(searchPath, "/", "\\");
+                const auto path = converter.from_bytes(searchPath);
+                const auto dlldir = AddDllDirectory(path.c_str());
+                if (dlldir) {
+                    addedSearchDirectories.emplace_back(dlldir);
+                } else {
+                    LogWarnCustom("ModuleManager",
+                                  "Could not get AddDllDirectory for path " << searchPath);
+                }
             }
         }
     }
@@ -160,10 +161,10 @@ void removeDllDirs(const std::vector<DLL_DIRECTORY_COOKIE>& dirs) {
     }
 }
 // only consider files with dll extension
-std::set<std::string> libTypes() { return{ "dll" }; }
+std::set<std::string> libTypes() { return {"dll"}; }
 #else
 // only consider files with so, dylib or bundle extension
-std::set<std::string> libTypes() { return{ "so", "dylib", "bundle" }; }
+std::set<std::string> libTypes() { return {"so", "dylib", "bundle"}; }
 // dummy functions
 int addDllDirs(const std::vector<std::string>&) { return 0; }
 void removeDllDirs(const int&) {}
@@ -172,20 +173,25 @@ bool hasAddDllFunc() { return true; }
 
 }  // namespace
 
-
 ModuleManager::ModuleManager(InviwoApplication* app)
-    : app_{app}, modules_(), clearModules_([&]() {
+    : app_{app}
+    , modules_()
+    , clearLibs_([&]() {
+        util::reverse_erase_if(sharedLibraries_, [this](const auto& module) {
+            // Figure out module identifier from file name
+            auto moduleName = util::stripModuleFileNameDecoration(module->getFilePath());
+            return !this->isProtected(moduleName);
+        });
+        // Leak the protected dlls here to avoid openglqt crash
+        for (auto& lib : sharedLibraries_) lib.release();
+    })
+    , clearModules_([&]() {
         // Note: be careful when changing the order of clearModules
         // as modules need to be removed before factories for example.
         ResourceManager::getPtr()->clearAllResources();
         // Need to clear the modules in reverse order since the might depend on each other.
         // The destruction order of vector is undefined.
-        for (auto it = std::rbegin(modules_); it != std::rend(modules_);) {
-            // Erase does not take reverse_iterator so we need to convert it
-            it = std::vector<std::unique_ptr<InviwoModule>>::reverse_iterator(
-                modules_.erase((++it).base()));
-        }
-        factoryObjects_.clear();
+        util::reverse_erase(modules_);
     }) {}
 
 ModuleManager::~ModuleManager() = default;
@@ -259,9 +265,7 @@ std::function<bool(const std::string&)> ModuleManager::getEnabledFilter() {
 #else
     std::string enabledModulesFilePath(exepath + "/" + enabledModuleFileName);
 #endif
-    LogInfoCustom("ModuleManager", "Enabled file: " << enabledModulesFilePath);
     if (!filesystem::fileExists(enabledModulesFilePath)) {
-        LogInfoCustom("ModuleManager", "Enable file not found");
         return [](const std::string&) { return true; };
     }
 
@@ -427,14 +431,8 @@ void ModuleManager::unregisterModules() {
     ResourceManager::getPtr()->clearAllResources();
     // Need to clear the modules in reverse order since the might depend on each other.
     // The destruction order of vector is undefined.
-    for (auto it = std::rbegin(modules_); it != std::rend(modules_);) {
-        if (!isProtected((*it)->getIdentifier())) {
-            // Erase does not take reverse_iterator so we need to convert it
-            it = decltype(it)(modules_.erase((++it).base()));
-        } else {
-            ++it;
-        }
-    }
+    util::reverse_erase_if(
+        modules_, [this](const auto& m) { return !this->isProtected(m->getIdentifier()); });
 
     // Remove module factories
     util::erase_remove_if(factoryObjects_,

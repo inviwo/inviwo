@@ -156,15 +156,15 @@ private:
     Dispatcher<void()> onModulesDidRegister_;     ///< Called after modules have been registered
     Dispatcher<void()> onModulesWillUnregister_;  ///< Called before modules have been unregistered
 
-    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> factoryObjects_;
-    std::vector<std::unique_ptr<InviwoModule>> modules_;
-    std::vector<std::unique_ptr<SharedLibrary>> sharedLibraries_;
     // Need to be pointer since we cannot initialize the observer before the application.
     std::unique_ptr<InviwoModuleLibraryObserver> libraryObserver_;  ///< Observes shared
                                                                     ///< libraries and reload
                                                                     ///< modules when file
                                                                     ///< changes.
-
+    std::vector<std::unique_ptr<SharedLibrary>> sharedLibraries_;
+    util::OnScopeExit clearLibs_;
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> factoryObjects_;
+    std::vector<std::unique_ptr<InviwoModule>> modules_;
     util::OnScopeExit clearModules_;
 };
 
