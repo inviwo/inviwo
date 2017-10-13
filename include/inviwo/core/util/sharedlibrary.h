@@ -36,17 +36,34 @@
 #if WIN32
 // Forward declare HINSTANCE
 #ifndef _WINDEF_
-struct HINSTANCE__; // Forward or never
+struct HINSTANCE__;  // Forward or never
 typedef HINSTANCE__* HINSTANCE;
 #endif
 #endif
 
 namespace inviwo {
 
+namespace util {
+bool hasAddLibrarySearchDirsFunction();
+std::vector<void*> addLibrarySearchDirs(const std::vector<std::string>& dirs);
+void removeLibrarySearchDirs(const std::vector<void*>& dirs);
+
+}  // namespace util
+
+class IVW_CORE_API LibrarySearchDirs {
+public:
+    LibrarySearchDirs(const std::vector<std::string>& dirs = {});
+    void add(const std::vector<std::string>& dirs);
+    ~LibrarySearchDirs();
+
+private:
+    std::vector<void*> addedDirs_;
+};
+
 /**
  * \class SharedLibrary
  * \brief Loader for dll/so/dylib. Get functions from loaded library using findSymbol(...).
- * 
+ *
  * Loads specified dll/so/dylib on construction and unloads it on destruction.
  * Throws an inviwo::Exception if library failed to load.
  */
@@ -55,13 +72,13 @@ public:
     SharedLibrary(const std::string& filePath);
     SharedLibrary(const SharedLibrary& rhs) = delete;
     SharedLibrary& operator=(const SharedLibrary& that) = delete;
-    SharedLibrary( SharedLibrary&& rhs) = default;
-    SharedLibrary& operator=(SharedLibrary&& that) = default;
+    SharedLibrary(SharedLibrary&& rhs);
+    SharedLibrary& operator=(SharedLibrary&& that);
     ~SharedLibrary();
 
     std::string getFilePath() { return filePath_; }
 
-    /** 
+    /**
      * \brief Get function address from library.
      *
      * Example usage:
@@ -72,9 +89,9 @@ public:
      * @param std::string name Function name
      * @return Address to function if found, otherwise nullptr
      */
-     void* findSymbol(const std::string& name);
+    void* findSymbol(const std::string& name);
 
-     /** 
+    /**
      * \brief Get typed function address from library.
      *
      * Example usage:
@@ -85,8 +102,10 @@ public:
      * @param std::string name Function name
      * @return Address to function if found, otherwise nullptr
      */
-     template <typename T>
-     T findSymbolTyped(const std::string& name);
+    template <typename T>
+    T findSymbolTyped(const std::string& name);
+
+    static std::set<std::string> libraryFileExtensions();
 
 private:
     std::string filePath_;
@@ -102,7 +121,6 @@ T SharedLibrary::findSymbolTyped(const std::string& name) {
     return reinterpret_cast<T>(findSymbol(name));
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SHAREDLIBRARY_H
-
+#endif  // IVW_SHAREDLIBRARY_H

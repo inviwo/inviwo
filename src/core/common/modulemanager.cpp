@@ -118,61 +118,6 @@ std::vector<std::string> util::getLibrarySearchPaths() {
     return paths;
 }
 
-namespace {
-#if WIN32
-bool hasAddDllFunc() {
-    // Get AddDllDirectory function.
-    // This function is only available after installing KB2533623
-    using addDllDirectory_func = DLL_DIRECTORY_COOKIE(WINAPI*)(PCWSTR);
-    auto lpfnAdllDllDirectory = reinterpret_cast<addDllDirectory_func>(
-        GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory"));
-    return lpfnAdllDllDirectory != nullptr;
-}
-
-std::vector<DLL_DIRECTORY_COOKIE> addDllDirs(const std::vector<std::string>& dirs) {
-    std::vector<DLL_DIRECTORY_COOKIE> addedSearchDirectories;
-    // Prevent error mode dialogs from displaying.
-    SetErrorMode(SEM_FAILCRITICALERRORS);
-    if (hasAddDllFunc()) {
-        // Add search paths to find module dll dependencies
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        for (auto searchPath : dirs) {
-            searchPath = filesystem::cleanupPath(searchPath);
-            if (filesystem::directoryExists(searchPath)) {
-                replaceInString(searchPath, "/", "\\");
-                const auto path = converter.from_bytes(searchPath);
-                const auto dlldir = AddDllDirectory(path.c_str());
-                if (dlldir) {
-                    addedSearchDirectories.emplace_back(dlldir);
-                } else {
-                    LogWarnCustom("ModuleManager",
-                                  "Could not get AddDllDirectory for path " << searchPath);
-                }
-            }
-        }
-    }
-    return addedSearchDirectories;
-}
-void removeDllDirs(const std::vector<DLL_DIRECTORY_COOKIE>& dirs) {
-    if (hasAddDllFunc()) {
-        for (const auto& dir : dirs) {
-            RemoveDllDirectory(dir);
-        }
-    }
-}
-// only consider files with dll extension
-std::set<std::string> libTypes() { return {"dll"}; }
-#else
-// only consider files with so, dylib or bundle extension
-std::set<std::string> libTypes() { return {"so", "dylib", "bundle"}; }
-// dummy functions
-int addDllDirs(const std::vector<std::string>&) { return 0; }
-void removeDllDirs(const int&) {}
-bool hasAddDllFunc() { return true; }
-#endif
-
-}  // namespace
-
 ModuleManager::ModuleManager(InviwoApplication* app)
     : app_{app}
     , modules_()
@@ -310,23 +255,20 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
     // Note: OpenGL module will fail to load if OpenGLQt is enabled and sorting is removed.
     // Recursively found libraries:
     std::set<std::string, decltype(orderByProtectedModule)> libraryFiles(orderByProtectedModule);
-    // Recursively found directories:
-    std::set<std::string> libraryDirectories;
 
     // Find unique files and directories in specified search paths
     auto librarySearchPaths = util::getLibrarySearchPaths();
+    LibrarySearchDirs searchDirectories{librarySearchPaths};
     for (auto path : librarySearchPaths) {
+        using namespace inviwo::filesystem;
         // Make sure that we have an absolute path to avoid duplicates
-        path = filesystem::cleanupPath(path);
+        path = cleanupPath(path);
         try {
-            auto files =
-                filesystem::getDirectoryContentsRecursively(path, filesystem::ListMode::Files);
-            auto dirs = filesystem::getDirectoryContentsRecursively(
-                path, filesystem::ListMode::Directories);
+            auto files = getDirectoryContentsRecursively(path, ListMode::Files);
+            auto dirs = getDirectoryContentsRecursively(path, ListMode::Directories);
             libraryFiles.insert(std::make_move_iterator(files.begin()),
                                 std::make_move_iterator(files.end()));
-            libraryDirectories.insert(std::make_move_iterator(dirs.begin()),
-                                      std::make_move_iterator(dirs.end()));
+            searchDirectories.add(dirs);
         } catch (FileException&) {  // Invalid path, ignore it
         }
     }
@@ -339,7 +281,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
     // Load enabled modules if file "application_name-enabled-modules.txt" exists,
     // otherwise load all modules
     auto isEnabled = getEnabledFilter();
-    auto libraryTypes = libTypes();
+    auto libraryTypes = SharedLibrary::libraryFileExtensions();
     // Remove unsupported files and files belonging to already loaded modules.
     util::map_erase_remove_if(libraryFiles, [&](const auto& file) {
         return libraryTypes.count(filesystem::getFileExtension(file)) == 0 ||
@@ -352,34 +294,29 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
     // libFilePairs second = temp
     // Otherwise, temp = original
     std::vector<std::pair<std::string, std::string>> libFilePairs;
-    const auto tmpLibraryDir = filesystem::getInviwoUserCachePath() + "/temporary-module-libraries";
-    std::vector<std::string> searchDirectories;
-    if (isRuntimeModuleReloadingEnabled() && hasAddDllFunc()) {
-        if (!filesystem::directoryExists(tmpLibraryDir)) {
-            filesystem::createDirectoryRecursively(tmpLibraryDir);
+    if (isRuntimeModuleReloadingEnabled() && util::hasAddLibrarySearchDirsFunction()) {
+        const auto tmpDir = filesystem::getInviwoUserCachePath() + "/temporary-module-libraries";
+        if (!filesystem::directoryExists(tmpDir)) {
+            filesystem::createDirectoryRecursively(tmpDir);
         }
         for (const auto& filePath : libraryFiles) {
-            auto dstPath = tmpLibraryDir + "/" + filesystem::getFileNameWithExtension(filePath);
+            auto dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
             if (isProtected(util::stripModuleFileNameDecoration(filePath))) {
-                // Protected modules are loaded from the application dir
-                dstPath = filePath;
+                dstPath = filePath; // Protected modules are loaded from the application dir
             } else if (filesystem::fileModificationTime(filePath) !=
                        filesystem::fileModificationTime(dstPath)) {
-                // Load a copy of the file to make sure that
-                // we can overwrite the file.
+                // Load a copy of the file to make sure that we can overwrite the file.
                 filesystem::copyFile(filePath, dstPath);
             }
             libFilePairs.emplace_back(filePath, dstPath);
         }
-        searchDirectories.push_back(tmpLibraryDir);
+        searchDirectories.add({tmpDir});
     } else {
         // Libraries will not be reloaded, we can use the original files
         for (const auto& filePath : libraryFiles) {
             libFilePairs.emplace_back(filePath, filePath);
         }
     }
-    util::append(searchDirectories, librarySearchPaths, libraryDirectories);
-    auto addedSearchDirectories = addDllDirs(searchDirectories);
 
     if (!libraryObserver_ && isRuntimeModuleReloadingEnabled()) {
         // We cannot create the observer in the constructor since
@@ -419,8 +356,6 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
             LogInfo("Could not load library: " + filePath);
         }
     }
-    // Remove added search paths
-    removeDllDirs(addedSearchDirectories);
 
     registerModules(std::move(modules));
 }

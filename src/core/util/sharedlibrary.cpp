@@ -30,6 +30,7 @@
 #include <inviwo/core/util/sharedlibrary.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>  // splitString
+#include <inviwo/core/util/stdextensions.h>
 #include <codecvt>
 #include <locale>
 #include <algorithm>
@@ -44,6 +45,17 @@
 
 namespace inviwo {
 
+LibrarySearchDirs::LibrarySearchDirs(const std::vector<std::string>& dirs)
+    : addedDirs_{util::addLibrarySearchDirs(dirs)} {}
+
+void LibrarySearchDirs::add(const std::vector<std::string>& dirs) {
+    util::append(addedDirs_, util::addLibrarySearchDirs(dirs));
+}
+
+LibrarySearchDirs::~LibrarySearchDirs() {
+    util::removeLibrarySearchDirs(addedDirs_);
+}
+
 SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) {
 #if WIN32
     // Search for dlls in directories specified by the path environment variable
@@ -51,26 +63,14 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
     static auto addDirectoriesInPath = []() {  // Lambda executed once
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         const char* environmentPath = std::getenv("PATH");
-        if (environmentPath &&
-            GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory")) {
+        if (environmentPath && util::hasAddLibrarySearchDirsFunction()) {
             auto elems = splitString(std::string(environmentPath), ';');
             // Reverse the order since empirically windows looks in the last one first.
             // opposite to the order in the env path.
             // According to the docs the search order for multiple calls to AddDllDirectory
             // is unspecified, so this might be quite fragile.
             std::reverse(elems.begin(), elems.end());
-            for (auto path : elems) {
-                path = filesystem::cleanupPath(path);
-                if (filesystem::directoryExists(path)) {
-                    replaceInString(path, "/", "\\");
-                    const auto wide = converter.from_bytes(path);
-                    const auto dlldir = AddDllDirectory(wide.c_str());
-                    if (!dlldir) {
-                        LogWarnCustom("SharedLibrary",
-                                      "Could not get AddDllDirectory for path " << path);
-                    }
-                }
-            }
+            util::addLibrarySearchDirs(elems);
             return true;
         } else {
             return false;
@@ -90,7 +90,7 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
     // Note 2: LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR and LOAD_LIBRARY_SEARCH_USER_DIRS requires KB2533623
     // to be installed.
     // Note 3: Not supported on Windows XP and Server 2003
-    if (GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory")) {
+    if (util::hasAddLibrarySearchDirsFunction()) {
         handle_ = LoadLibraryExA(filePath.c_str(), nullptr,
                                  LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32 |
                                      LOAD_LIBRARY_SEARCH_USER_DIRS);
@@ -117,7 +117,6 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
         if (errorText != nullptr) {
             std::string errorString(static_cast<const char*>(errorText), outputSize + 1);
             errorStream << errorString;
-            // errorStream << static_cast<const char *>(errorText);
             // release memory allocated by FormatMessage()
             LocalFree(errorText);
         }
@@ -135,6 +134,26 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
 #endif
 }
 
+SharedLibrary::SharedLibrary(SharedLibrary&& rhs)
+    : filePath_{std::move(rhs.filePath_)}, handle_{rhs.handle_} {
+    rhs.handle_ = nullptr;
+}
+
+SharedLibrary& SharedLibrary::operator=(SharedLibrary&& that) {
+    if (this != &that) {
+#if WIN32
+        FreeLibrary(handle_);
+#else
+        dlclose(handle_);
+#endif
+        handle_ = nullptr;
+        filePath_ = "";
+        std::swap(handle_, that.handle_);
+        std::swap(filePath_, that.filePath_);
+    }
+    return *this;
+}
+
 SharedLibrary::~SharedLibrary() {
 #if WIN32
     FreeLibrary(handle_);
@@ -150,5 +169,66 @@ void* SharedLibrary::findSymbol(const std::string& name) {
     return dlsym(handle_, name.c_str());
 #endif
 }
+
+std::set<std::string> SharedLibrary::libraryFileExtensions() {
+#if WIN32
+    return {"dll"};
+#else
+    return {"so", "dylib", "bundle"};
+#endif
+}
+
+namespace util {
+
+#if WIN32
+bool hasAddLibrarySearchDirsFunction() {
+    // Get AddDllDirectory function.
+    // This function is only available after installing KB2533623
+    using addDllDirectory_func = DLL_DIRECTORY_COOKIE(WINAPI*)(PCWSTR);
+    auto lpfnAdllDllDirectory = reinterpret_cast<addDllDirectory_func>(
+        GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "AddDllDirectory"));
+    return lpfnAdllDllDirectory != nullptr;
+}
+
+std::vector<DLL_DIRECTORY_COOKIE> addLibrarySearchDirs(const std::vector<std::string>& dirs) {
+    std::vector<DLL_DIRECTORY_COOKIE> addedSearchDirectories;
+    // Prevent error mode dialogs from displaying.
+    SetErrorMode(SEM_FAILCRITICALERRORS);
+    if (hasAddLibrarySearchDirsFunction()) {
+        // Add search paths to find module dll dependencies
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        for (auto searchPath : dirs) {
+            searchPath = filesystem::cleanupPath(searchPath);
+            if (filesystem::directoryExists(searchPath)) {
+                replaceInString(searchPath, "/", "\\");
+                const auto path = converter.from_bytes(searchPath);
+                const auto dlldir = AddDllDirectory(path.c_str());
+                if (dlldir) {
+                    addedSearchDirectories.emplace_back(dlldir);
+                } else {
+                    LogWarnCustom("ModuleManager",
+                                  "Could not get AddDllDirectory for path " << searchPath);
+                }
+            }
+        }
+    }
+    return addedSearchDirectories;
+}
+
+void removeLibrarySearchDirs(const std::vector<DLL_DIRECTORY_COOKIE>& dirs) {
+    if (hasAddLibrarySearchDirsFunction()) {
+        for (const auto& dir : dirs) {
+            RemoveDllDirectory(dir);
+        }
+    }
+}
+
+#else
+// dummy functions
+std::vector<void*> addLibrarySearchDirs(const std::vector<std::string>&) { return {}; }
+void removeLibrarySearchDirs(const std::vector<void*>&) {}
+bool hasAddLibrarySearchDirsFunction() { return true; }
+#endif
+}  // namespace util
 
 }  // namespace inviwo
