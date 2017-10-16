@@ -46,7 +46,23 @@
 #include <modules/vectorfieldvisualization/processors/seedsfrommasksequence.h>
 #include <modules/vectorfieldvisualization/processors/discardshortlines.h>
 
+#include <modules/base/processors/inputselector.h>
+
 namespace inviwo {
+
+    using LineSetSelector = InputSelector<DataInport<IntegralLineSet,0>,IntegralLineSetOutport>;
+    template <>
+    struct ProcessorTraits<LineSetSelector> {
+        static ProcessorInfo getProcessorInfo() {
+            return {
+                "org.inviwo.IntegralLineSetSelector",  // Class identifier
+                "Integral Line Set Selector",          // Display name
+                "Data Selector",                           // Category
+                CodeState::Experimental,                   // Code state
+                Tags::CPU                                  // Tags
+            };
+        }
+    };
 
 VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
     : InviwoModule(app, "VectorFieldVisualization") {
@@ -63,6 +79,8 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<Seed3Dto4D>();
     registerProcessor<SeedsFromMaskSequence>();
     registerProcessor<DiscardShortLines>();
+
+    registerProcessor<LineSetSelector>();
 
     registerPort < SeedPoints3DOutport>("SeedPointsOutport");
     registerPort < SeedPoints3DInport>("SeedPointsInport");

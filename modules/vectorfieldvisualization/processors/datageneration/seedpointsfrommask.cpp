@@ -29,6 +29,8 @@
 
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/volumeramutils.h>
 
 namespace inviwo {
 
@@ -42,32 +44,73 @@ const ProcessorInfo SeedPointsFromMask::processorInfo_{
 };
 const ProcessorInfo SeedPointsFromMask::getProcessorInfo() const { return processorInfo_; }
 
-SeedPointsFromMask::SeedPointsFromMask() : Processor(), volumes_("volumes"), seedPoints_("seeds") {
+SeedPointsFromMask::SeedPointsFromMask()
+    : Processor()
+    , volumes_("volumes")
+    , seedPoints_("seeds")
+    , threshold_("threshold", "Threshold", 0.5, 0.0, 1.0, 0.01)
+    , enableSuperSample_("enableSuperSample", "Enable Super Sample", false)
+    , superSample_("superSample", "Super Sample", 1, 1, 10)
+
+    , randomness_("randomness", "Randomness")
+    , useSameSeed_("useSameSeed", "Use same seed", true)
+    , seed_("seed", "Seed", 1, 0, 1000)
+    , mt_()
+    , dis_(.0f, 1.f) {
     addPort(volumes_);
     addPort(seedPoints_);
+
+    addProperty(threshold_);
+
+    addProperty(enableSuperSample_);
+    addProperty(superSample_);
+
+    addProperty(randomness_);
+    randomness_.addProperty(useSameSeed_);
+    randomness_.addProperty(seed_);
+    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
+
+    superSample_.setVisible(false);
+    randomness_.setVisible(false);
+    enableSuperSample_.onChange([&]() {
+        superSample_.setVisible(enableSuperSample_.get());
+        randomness_.setVisible(enableSuperSample_.get());
+    });
 }
 
 void SeedPointsFromMask::process() {
+    if (useSameSeed_.get()) {
+        mt_.seed(seed_.get());
+    }
+
     auto points = std::make_shared<std::vector<vec3>>();
 
     for (const auto &v : volumes_) {
-        auto dim = v->getDimensions();
-        auto data = static_cast<const unsigned char *>(
-            v->getRepresentation<VolumeRAM>()->getData());  // TODO make a dispatch
-        size3_t pos;
-        size_t i = 0;
-        for (pos.z = 0; pos.z < dim.z; pos.z++) {
-            for (pos.y = 0; pos.y < dim.y; pos.y++) {
-                for (pos.x = 0; pos.x < dim.x; pos.x++) {
-                    if (data[i] != 0) {
-                        points->push_back(vec3(pos) / vec3(dim - size3_t(1, 1, 1)));
+        v->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto volPrecision) {
+            auto dim = volPrecision->getDimensions();
+            auto data = volPrecision->getDataTyped();
+            util::IndexMapper3D index(dim);
+            vec3 invDim = vec3(1.0f) / vec3(dim);
+
+            util::forEachVoxel(*volPrecision, [&](const size3_t &pos) {
+                if (util::glm_convert_normalized<double>(data[index(pos)]) > threshold_.get()) {
+                    if (enableSuperSample_.get()) {
+                        for (int j = 0; j < superSample_.get(); j++) {
+                            vec3 off;
+                            off.x = dis_(mt_);
+                            off.y = dis_(mt_);
+                            off.z = dis_(mt_);
+                            points->push_back((vec3(pos) + off) * invDim);
+                        }
+                    } else {
+                        points->push_back((vec3(pos) + 0.5f) * invDim);
                     }
-                    i++;
                 }
-            }
-        }
+            });
+        });
+
+        seedPoints_.setData(points);
     }
-    seedPoints_.setData(points);
 }
 
-}  // namespace
+}  // namespace inviwo

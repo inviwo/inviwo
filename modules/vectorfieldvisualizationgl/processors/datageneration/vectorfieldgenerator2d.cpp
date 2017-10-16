@@ -49,7 +49,7 @@ const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const { return pr
 VectorFieldGenerator2D::VectorFieldGenerator2D()
     : Processor()
     , outport_("outport", DataVec2Float32::get(), false)
-    , size_("size", "Volume size", ivec2(16), ivec2(1), ivec2(1024))
+    , size_("size", "Field size", ivec2(16), ivec2(1), ivec2(1024))
     , xRange_("xRange", "X Range", -1, 1, -10, 10)
     , yRange_("yRange", "Y Range", -1, 1, -10, 10)
     , xValue_("x", "X", "-x", InvalidationLevel::InvalidResources)
@@ -78,6 +78,8 @@ void VectorFieldGenerator2D::initializeResources() {
 void VectorFieldGenerator2D::process() {
 
     image_ = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
+    image_->getColorLayer()->setSwizzleMask(
+        {{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One}});
 
     utilgl::activateAndClearTarget(*(image_.get()), ImageType::ColorOnly);
 
