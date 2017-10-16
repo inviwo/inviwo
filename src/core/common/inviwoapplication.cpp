@@ -146,6 +146,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     // Create and register core
     auto ivwCore = util::make_unique<InviwoCore>(this);
     moduleManager_.addProtectedIdentifier(ivwCore->getIdentifier());
+    moduleManager_.addProtectedIdentifier("Python3");
+
     moduleManager_.registerModule(std::move(ivwCore));
 
     auto sys = getSettingsByType<SystemSettings>();

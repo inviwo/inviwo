@@ -33,63 +33,55 @@
 #include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
-
-FileObserver::FileObserver(const std::string& filePath) {
-    InviwoApplication::getPtr()->registerFileObserver(this);
+FileObserver::FileObserver(InviwoApplication* app) : app_{app} { app_->registerFileObserver(this); }
+FileObserver::FileObserver(const std::string& filePath) : app_{InviwoApplication::getPtr()} {
+    app_->registerFileObserver(this);
     startFileObservation(filePath);
 }
 
-FileObserver::FileObserver(FileObserver&& other): observedFiles_(std::move(other.observedFiles_)) {
-    InviwoApplication::getPtr()->unRegisterFileObserver(&other);
-    InviwoApplication::getPtr()->registerFileObserver(this);
-
+FileObserver::FileObserver(FileObserver&& other) : observedFiles_(std::move(other.observedFiles_)) {
+    app_->registerFileObserver(this);
+}
+FileObserver& FileObserver::operator=(FileObserver&& that) {
+    if (this != &that) {
+        observedFiles_ = std::move(that.observedFiles_);
+    }
+    return *this;
 }
 
 FileObserver::~FileObserver() {
-    InviwoApplication::getPtr()->unRegisterFileObserver(this);
-    // Do not use iterators here since stopFileObservation
-    // may erase items.
-    std::vector<std::string> fileNames;
+    app_->unRegisterFileObserver(this);
     for (auto file : observedFiles_) {
-        fileNames.push_back(file.first);
-    }
-    for (auto file: fileNames) {
-        stopFileObservation(file);
+        app_->stopFileObservation(file);
     }
 }
 
-void FileObserver::startFileObservation(const std::string fileName) {
+bool FileObserver::startFileObservation(const std::string& fileName) {
     auto it = observedFiles_.find(fileName);
     if (it == observedFiles_.end()) {
         if (filesystem::fileExists(fileName)) {
-            observedFiles_[fileName] = 1;
-            InviwoApplication::getPtr()->startFileObservation(fileName);
+            observedFiles_.insert(fileName);
+            app_->startFileObservation(fileName);
+            return true;
         }
-    } else {
-        ++(it->second);
     }
+    return false;
 }
 
-void FileObserver::stopFileObservation(const std::string fileName) {
+bool FileObserver::stopFileObservation(const std::string& fileName) {
     auto it = observedFiles_.find(fileName);
     if (it != observedFiles_.end()) {
-        --(it->second);
-
-        if (it->second == 0) {
-            observedFiles_.erase(it);
-            InviwoApplication::getPtr()->stopFileObservation(fileName);
-        }
+        observedFiles_.erase(it);
+        app_->stopFileObservation(fileName);
+        return true;
     }
+    return false;
 }
 
 bool FileObserver::isObserved(const std::string& fileName) const {
     return observedFiles_.find(fileName) != observedFiles_.end();
 }
 
-std::vector<std::string> FileObserver::getFiles() const {
-    std::vector<std::string> files;
-    for (auto& elem : observedFiles_) files.push_back(elem.first);
-    return files;
-}
+const std::unordered_set<std::string>& FileObserver::getFiles() const { return observedFiles_; }
 
-}  // namespace
+}  // namespace inviwo

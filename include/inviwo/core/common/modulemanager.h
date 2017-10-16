@@ -37,6 +37,7 @@
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/common/inviwomodulelibraryobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -49,22 +50,7 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
-class InviwoModuleLibraryObserver;  // Observer for module dll/so files
 class SharedLibrary;
-
-namespace util {
-/**
- * \brief Returns paths to search for module libraries.
- * All platforms: executable directory and application modules directory
- * (AppData/Inviwo/modules on windows).
- * Platform dependent search directories:
- * OSX: DYLD_LIBRARY_PATH
- * UNIX: LD_LIBRARY_PATH/LD_RUN_PATH, RPATH and "executable directory
- * /../../lib"
- * @return List of paths to directories
- */
-IVW_CORE_API std::vector<std::string> getLibrarySearchPaths();
-}
 
 /**
  * Manages finding, loading, unloading, reloading of Inviwo modules
@@ -146,7 +132,7 @@ public:
     void addProtectedIdentifier(const std::string& id);
 
     static std::function<bool(const std::string&)> getEnabledFilter();
-
+    void reloadModules();
 private:
     bool checkDependencies(const InviwoModuleFactoryObject& obj) const;
 
@@ -156,11 +142,8 @@ private:
     Dispatcher<void()> onModulesDidRegister_;     ///< Called after modules have been registered
     Dispatcher<void()> onModulesWillUnregister_;  ///< Called before modules have been unregistered
 
-    // Need to be pointer since we cannot initialize the observer before the application.
-    std::unique_ptr<InviwoModuleLibraryObserver> libraryObserver_;  ///< Observes shared
-                                                                    ///< libraries and reload
-                                                                    ///< modules when file
-                                                                    ///< changes.
+    // Observes shared libraries and reload modules when file changes.
+    InviwoModuleLibraryObserver libraryObserver_;
     std::vector<std::unique_ptr<SharedLibrary>> sharedLibraries_;
     util::OnScopeExit clearLibs_;
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> factoryObjects_;

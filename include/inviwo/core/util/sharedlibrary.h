@@ -33,6 +33,10 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <set>
+#include <vector>
+#include <string>
+
 #if WIN32
 // Forward declare HINSTANCE
 #ifndef _WINDEF_
@@ -44,9 +48,22 @@ typedef HINSTANCE__* HINSTANCE;
 namespace inviwo {
 
 namespace util {
-bool hasAddLibrarySearchDirsFunction();
-std::vector<void*> addLibrarySearchDirs(const std::vector<std::string>& dirs);
-void removeLibrarySearchDirs(const std::vector<void*>& dirs);
+
+/**
+ * \brief Returns paths to search for module libraries.
+ * All platforms: executable directory and application modules directory
+ * (AppData/Inviwo/modules on windows).
+ * Platform dependent search directories:
+ * OSX: DYLD_LIBRARY_PATH
+ * UNIX: LD_LIBRARY_PATH/LD_RUN_PATH, RPATH and "executable directory
+ * /../../lib"
+ * @return List of paths to directories
+ */
+IVW_CORE_API std::vector<std::string> getLibrarySearchPaths();
+
+IVW_CORE_API bool hasAddLibrarySearchDirsFunction();
+IVW_CORE_API std::vector<void*> addLibrarySearchDirs(const std::vector<std::string>& dirs);
+IVW_CORE_API void removeLibrarySearchDirs(const std::vector<void*>& dirs);
 
 }  // namespace util
 

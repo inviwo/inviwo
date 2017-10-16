@@ -31,47 +31,84 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
-
+#include <inviwo/core/util/filesystem.h>
 #include <sstream>
 
 namespace inviwo {
 
-InviwoModuleLibraryObserver::InviwoModuleLibraryObserver(const std::string& filePath /*= ""*/)
-    : FileObserver(filePath) {}
+InviwoModuleLibraryObserver::Observer::Observer(InviwoModuleLibraryObserver& imo,
+                                                InviwoApplication* app)
+    : FileObserver(app), imo_(imo) {}
 
-void InviwoModuleLibraryObserver::fileChanged(const std::string& fileName) {
+void InviwoModuleLibraryObserver::Observer::fileChanged(const std::string& dir) {
+    imo_.fileChanged(dir);
+}
+
+InviwoModuleLibraryObserver::InviwoModuleLibraryObserver(InviwoApplication* app) : app_(app) {}
+ 
+void InviwoModuleLibraryObserver::observe(const std::string& file) {
+    // We cannot create the observer in the constructor since
+    // deriving applications will implement observer behavior
+    // and they will not have been created when InviwoApplication
+    // constructor is called.
+    if (!observer_) observer_ = util::make_unique<Observer>(*this, app_);
+    if (observing_.count(file) != 0) return;
+    auto dir = filesystem::getFileDirectory(file);
+    if (!observer_->isObserved(dir)) observer_->startFileObservation(dir);
+
+    auto time = filesystem::fileModificationTime(file);
+    observing_[file] = time;
+}
+
+void InviwoModuleLibraryObserver::fileChanged(const std::string& dir) {
+    bool reload = false;
+    for (const auto& f : filesystem::getDirectoryContents(dir)) {
+        const auto file = dir + "/" + f;
+        auto it = observing_.find(file);
+        if (it != observing_.end()) {
+            auto time = filesystem::fileModificationTime(file);
+            if (time > it->second) {
+                it->second = time;
+                reload = true;
+                LogInfo("Detected change in: " << file);
+            }
+        }
+    }
+    if (reload) reloadModules();
+}
+
+void InviwoModuleLibraryObserver::reloadModules() {
     // 1. Serialize network
     // 2. Clear modules/unload module libraries
     // 3. Load module libraries and register them
     // 4. De-serialize network
 
+    LogInfo("Reloading modules");
+
     // Serialize network
     std::stringstream stream;
-    auto app = InviwoApplication::getPtr();
-
     try {
-        app->getWorkspaceManager()->save(stream, app->getBasePath());
+        app_->getWorkspaceManager()->save(stream, app_->getBasePath());
     } catch (SerializationException& exception) {
         util::log(exception.getContext(), "Unable to save network due to " + exception.getMessage(),
                   LogLevel::Error);
         return;
     }
     // Unregister modules and clear network
-    app->getModuleManager().unregisterModules();
+    app_->getModuleManager().unregisterModules();
 
     // Register modules again
-    app->getModuleManager().registerModules(RuntimeModuleLoading{});
+    app_->getModuleManager().registerModules(RuntimeModuleLoading{});
 
     // De-serialize network
     try {
         // Lock the network that so no evaluations are triggered during the de-serialization
-        app->getWorkspaceManager()->load(stream, app->getBasePath());
-    } catch (SerializationException& exception) {
-        util::log(exception.getContext(), "Unable to load network due to " + exception.getMessage(),
+        app_->getWorkspaceManager()->load(stream, app_->getBasePath());
+    } catch (SerializationException& e) {
+        util::log(e.getContext(), "Unable to load network due to " + e.getMessage(),
                   LogLevel::Error);
         return;
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

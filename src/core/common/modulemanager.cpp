@@ -29,7 +29,6 @@
 
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/common/inviwomodulelibraryobserver.h>
 #include <inviwo/core/common/version.h>
 #include <inviwo/core/resources/resourcemanager.h>
 #include <inviwo/core/util/filesystem.h>
@@ -40,87 +39,18 @@
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/network/processornetwork.h>
 
-#include <locale>
-#include <codecvt>
 #include <string>
 #include <functional>
 
-#ifdef WIN32
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
-
-#if defined(__unix__)
-#include <elf.h>  // To retrieve rpath
-#include <link.h>
-#endif
-
 namespace inviwo {
-
-std::vector<std::string> util::getLibrarySearchPaths() {
-    auto paths = std::vector<std::string>{
-        inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()),
-        inviwo::filesystem::getPath(inviwo::PathType::Modules)};
-
-    // http://unix.stackexchange.com/questions/22926/where-do-executables-look-for-shared-objects-at-runtime
-#if defined(__APPLE__)
-    // Xcode/OSX store library output path in DYLD_LIBRARY_PATH
-    if (char* envPaths = std::getenv("DYLD_LIBRARY_PATH")) {
-        auto libPaths = splitString(envPaths, ':');
-        paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
-    }
-#elif defined(__unix__)
-    paths.push_back(inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()) +
-                    "/../lib");
-    // Unix uses LD_LIBRARY_PATH or LD_RUN_PATH
-    if (char* envPaths = std::getenv("LD_LIBRARY_PATH")) {
-        auto libPaths = splitString(envPaths, ':');
-        paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
-    }
-    if (char* envPaths = std::getenv("LD_RUN_PATH")) {
-        auto libPaths = splitString(envPaths, ':');
-        paths.insert(std::end(paths), std::begin(libPaths), std::end(libPaths));
-    }
-    // Additional paths can be specified in
-    // ELF header: RUN_PATH or RPATH
-    const ElfW(Dyn)* rPath = nullptr;
-    const ElfW(Dyn)* runPath = nullptr;
-    const char* offset = nullptr;
-    for (const ElfW(Dyn)* dyn = _DYNAMIC; dyn->d_tag != DT_NULL; ++dyn) {
-        if (dyn->d_tag == DT_RUNPATH) {
-            runPath = dyn;
-        } else if (dyn->d_tag == DT_RPATH) {
-            rPath = dyn;
-        } else if (dyn->d_tag == DT_STRTAB) {
-            offset = (const char*)dyn->d_un.d_val;
-        }
-    }
-    if (offset) {
-        // Prioritize DT_RUNPATH, DT_RPATH is deprecated
-        if (runPath) {
-            auto rPaths = splitString(offset + runPath->d_un.d_val, ':');
-            auto execPath = inviwo::filesystem::getExecutablePath();
-            for (auto& path : rPaths) {
-                replaceInString(path, "$ORIGIN", execPath);
-            }
-            paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
-        } else if (rPath) {
-            auto rPaths = splitString(offset + rPath->d_un.d_val, ':');
-            auto execPath = inviwo::filesystem::getExecutablePath();
-            for (auto& path : rPaths) {
-                replaceInString(path, "$ORIGIN", execPath);
-            }
-            paths.insert(std::end(paths), std::begin(rPaths), std::end(rPaths));
-        }
-    }
-#endif
-    return paths;
-}
 
 ModuleManager::ModuleManager(InviwoApplication* app)
     : app_{app}
-    , modules_()
+    , protected_{}
+    , onModulesDidRegister_{}
+    , onModulesWillUnregister_{}
+    , libraryObserver_{app}
+    , sharedLibraries_{}
     , clearLibs_([&]() {
         util::reverse_erase_if(sharedLibraries_, [this](const auto& module) {
             // Figure out module identifier from file name
@@ -130,6 +60,8 @@ ModuleManager::ModuleManager(InviwoApplication* app)
         // Leak the protected dlls here to avoid openglqt crash
         for (auto& lib : sharedLibraries_) lib.release();
     })
+    , factoryObjects_{}
+    , modules_{}
     , clearModules_([&]() {
         // Note: be careful when changing the order of clearModules
         // as modules need to be removed before factories for example.
@@ -226,6 +158,10 @@ std::function<bool(const std::string&)> ModuleManager::getEnabledFilter() {
     };
 }
 
+void ModuleManager::reloadModules() {
+    if (isRuntimeModuleReloadingEnabled()) libraryObserver_.reloadModules();
+}
+
 void ModuleManager::registerModules(RuntimeModuleLoading) {
     // Perform the following steps
     // 1. Recursively get all library files and the folders they are in
@@ -302,7 +238,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
         for (const auto& filePath : libraryFiles) {
             auto dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
             if (isProtected(util::stripModuleFileNameDecoration(filePath))) {
-                dstPath = filePath; // Protected modules are loaded from the application dir
+                dstPath = filePath;  // Protected modules are loaded from the application dir
             } else if (filesystem::fileModificationTime(filePath) !=
                        filesystem::fileModificationTime(dstPath)) {
                 // Load a copy of the file to make sure that we can overwrite the file.
@@ -316,14 +252,6 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
         for (const auto& filePath : libraryFiles) {
             libFilePairs.emplace_back(filePath, filePath);
         }
-    }
-
-    if (!libraryObserver_ && isRuntimeModuleReloadingEnabled()) {
-        // We cannot create the observer in the constructor since
-        // deriving applications will implement observer behavior
-        // and they will not have been created when InviwoApplication
-        // constructor is called.
-        libraryObserver_ = util::make_unique<InviwoModuleLibraryObserver>();
     }
 
     // Load libraries from temporary directory
@@ -341,8 +269,8 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
                 modules.emplace_back(moduleFunc());
                 auto moduleName = toLower(modules.back()->name);
                 sharedLibraries_.emplace_back(std::move(sharedLib));
-                if (isRuntimeModuleReloadingEnabled() && !libraryObserver_->isObserved(filePath)) {
-                    libraryObserver_->startFileObservation(filePath);
+                if (isRuntimeModuleReloadingEnabled()) {
+                    libraryObserver_.observe(filePath);
                 }
             } else {
                 LogInfo(

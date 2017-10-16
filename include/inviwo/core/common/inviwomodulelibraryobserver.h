@@ -41,12 +41,30 @@ namespace inviwo {
  * \brief Serializes the network, reloads modules and de-serializes the network when observed module
  * library changes.
  */
-class IVW_CORE_API InviwoModuleLibraryObserver : public FileObserver {
+class IVW_CORE_API InviwoModuleLibraryObserver {
 public:
-    InviwoModuleLibraryObserver(const std::string& filePath = "");
+    InviwoModuleLibraryObserver(InviwoApplication* app);
     virtual ~InviwoModuleLibraryObserver() = default;
 
-    virtual void fileChanged(const std::string& fileName);
+    void observe(const std::string& file);
+    void reloadModules();
+
+private:
+    class Observer : public FileObserver {
+    public:
+        Observer(InviwoModuleLibraryObserver& imo, InviwoApplication* app);
+        virtual void fileChanged(const std::string& dir) override;
+    private:
+        InviwoModuleLibraryObserver& imo_;
+    };
+
+    void fileChanged(const std::string& dir);
+
+    InviwoApplication* app_;
+    // Need to be pointer since we cannot initialize the observer before the application.
+    std::unique_ptr<Observer> observer_;
+    std::unordered_map<std::string, std::time_t> observing_;
+
 };
 
 } // namespace
