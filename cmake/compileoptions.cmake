@@ -31,7 +31,7 @@
 # Specify standard compile options
 # ivw_define_standard_properties(target1 [target2 ...])
 
-option(IVW_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
+option(IVW_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 
 function(ivw_define_standard_properties)
     foreach(target ${ARGN})
