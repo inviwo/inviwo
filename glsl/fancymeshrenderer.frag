@@ -34,6 +34,13 @@ uniform CameraParameters camera;
 
 uniform vec4 overrideColor;
 
+smooth in vec4 position_;
+
+#if USE_FRAGMENT_LIST
+#include "ABufferLinkedList.hglsl"
+layout(pixel_center_integer) in vec4 gl_FragCoord;
+#endif
+
 struct FaceRenderSettings
 {
 	sampler1D transferFunction;
@@ -71,6 +78,17 @@ void main() {
                                    normalize(normal_), normalize(toCameraDir_));
     fragColor.a = color.a;
 
+#if USE_FRAGMENT_LIST
+
+    //fragment list rendering
+    ivec2 coords=ivec2(gl_FragCoord.xy);
+    float depth = position_.z / position_.w;
+    abufferRender(coords, depth, fragColor);
+    discard
+
+#else
+    //traditional rendering
+
 #ifdef COLOR_LAYER
     FragData0 = fragColor;
 #endif
@@ -82,6 +100,7 @@ void main() {
 #endif
 #ifdef VIEW_NORMALS_LAYER
     view_normals_out = vec4((normalize(viewNormal_)+1.0)*0.5,1.0f);
+#endif
 #endif
 
 }

@@ -19,7 +19,7 @@ void bitonicSort( int n );
 void bubbleSort(int array_size) {
   for (int i = (array_size - 2); i >= 0; --i) {
     for (int j = 0; j <= i; ++j) {
-      if (fragmentList[j].w > fragmentList[j+1].w) {
+      if (fragmentList[j].y > fragmentList[j+1].y) {
 		vec4 temp = fragmentList[j+1];
 		fragmentList[j+1] = fragmentList[j];
 		fragmentList[j] = temp;
@@ -44,10 +44,10 @@ void bitonicSort( int n ) {
 			for (i=0;i<n;i++) {
 			  int ixj=i^j;
 			  if ((ixj)>i) {
-				  if ((i&k)==0 && fragmentList[i].w>fragmentList[ixj].w){
+				  if ((i&k)==0 && fragmentList[i].y>fragmentList[ixj].y){
 					swapFragArray(i, ixj);
 				  }
-				  if ((i&k)!=0 && fragmentList[i].w<fragmentList[ixj].w) {
+				  if ((i&k)!=0 && fragmentList[i].y<fragmentList[ixj].y) {
 					swapFragArray(i, ixj);
 				  }
 			  }

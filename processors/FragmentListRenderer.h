@@ -67,6 +67,8 @@ private:
     Texture2D* abufferPageIdxImg_;
     Texture2D* abufferFragCountImg_;
     Texture2D* semaphoreImg_;
+    GLuint atomicCounter_;
+    GLuint pixelBuffer_;
 
     Shader clearShader_;
     Shader displayShader_;

@@ -35,11 +35,7 @@ uniform AbufferParameters AbufferParams;
 
 #if ABUFFER_USE_TEXTURES
 //A-Buffer fragments storage
-coherent uniform layout(size1x32) uimage2D abufferPageIdxImg;
-//A-Buffer fragment counter
-coherent uniform layout(size1x32) uimage2D abufferFragCountImg;
-//per-pixel semaphore
-coherent uniform layout(size1x32) uimage2D abufferSemaphoreImg;
+coherent uniform layout(size1x32) uimage2D abufferIdxImg;
 #else
 #error Buffer access not supported
 //coherent uniform uint *d_abufferPageIdx;
@@ -47,119 +43,106 @@ coherent uniform layout(size1x32) uimage2D abufferSemaphoreImg;
 //coherent uniform uint *d_semaphore;
 #endif
 
-#if ABUFFER_SHAREDPOOL_USE_TEXTURES
-//A-Buffer shared fragment pages buffer
-coherent uniform layout(size4x32) imageBuffer sharedPageListImg;
-//A-Buffer shared link list
-coherent uniform layout(size1x32) uimageBuffer sharedLinkListImg;
-#else
-#error Buffer access not supported
-//coherent uniform uint *d_sharedLinkList;
-//coherent uniform vec4 *d_sharedPageList;
-#endif
+
+//TODO: remove hardcoded binding point
+layout (binding = 6, offset = 0) uniform atomic_uint abufferCounter;
+layout(std430, binding=7) buffer abufferStorage
+{
+    //x: previous chain element, uint, +1
+    //y: depth, float
+    //z: alpha, float
+    //w: color, 10/10/10 rgb
+    vec4 abufferPixelData[]; 
+};
+uniform uint abufferStorageSize;
+struct abufferPixel
+{
+    uint previous;
+    float depth;
+    vec4 color;
+};
 
 
-//Access functions
+//Fragment linked list
 
 #if ABUFFER_USE_TEXTURES
 
-bool semaphoreAcquire(ivec2 coords){
-	return imageAtomicExchange(abufferSemaphoreImg, coords, 1U)==0U;
-}
-void semaphoreRelease(ivec2 coords){
-	imageAtomicExchange(abufferSemaphoreImg, coords, 0U);
-}
-bool getSemaphore(ivec2 coords){
-	return imageLoad(abufferSemaphoreImg, coords).x==0U;
-}
-void setSemaphore(ivec2 coords, bool val){
-	imageStore(abufferSemaphoreImg, coords, uvec4(val ? 1U : 0U, 0U, 0U, 0U));
+uint setPixelLink(ivec2 coords, uint val) {
+    return imageAtomicExchange(abufferIdxImg, coords, val);
 }
 
-uint getPixelCurrentPage(ivec2 coords){
-	return imageLoad(abufferPageIdxImg, coords).x;
-}
-void setPixelCurrentPage(ivec2 coords, uint newpageidx){
-	imageStore(abufferPageIdxImg, coords, uvec4(newpageidx, 0U, 0U, 0U) );
-}
-
-uint getPixelFragCounter(ivec2 coords){
-	return imageLoad(abufferFragCountImg, coords).x;
-}
-void setPixelFragCounter(ivec2 coords, uint val){
-	imageStore(abufferFragCountImg, coords, uvec4(val, 0U, 0U, 0U) );
-}
-uint pixelFragCounterAtomicAdd(ivec2 coords, uint val){
-	return imageAtomicAdd(abufferFragCountImg, coords, val);
+uint getPixelLink(ivec2 coords) {
+    return uint(imageLoad(abufferIdxImg, coords).x);
 }
 
 #else
 
-bool semaphoreAcquire(ivec2 coords){
-	return atomicExchange(d_semaphore+coords.x+coords.y*AbufferParams.screenWidth, 0U) != 0U;
-}
-void semaphoreRelease(ivec2 coords){
-	atomicExchange(d_semaphore+coords.x+coords.y*AbufferParams.ScreenWidth, 1U);
-}
-bool getSemaphore(ivec2 coords){
-	return d_semaphore[coords.x+coords.y*AbufferParams.ScreenWidth]==0U;
-}
-void setSemaphore(ivec2 coords, bool val){
-	d_semaphore[coords.x+coords.y*AbufferParams.ScreenWidth]=val ? 0U : 1U;
-}
-
-uint getPixelCurrentPage(ivec2 coords){
-	return d_abufferPageIdx[coords.x+coords.y*AbufferParams.ScreenWidth];
-}
-void setPixelCurrentPage(ivec2 coords, uint newpageidx){
-	d_abufferPageIdx[coords.x+coords.y*AbufferParams.ScreenWidth]=newpageidx;
-}
-
-uint getPixelFragCounter(ivec2 coords){
-	return d_abufferFragCount[coords.x+coords.y*AbufferParams.ScreenWidth];
-}
-void setPixelFragCounter(ivec2 coords, uint val){
-	d_abufferFragCount[coords.x+coords.y*AbufferParams.ScreenWidth]=val;
-}
-uint pixelFragCounterAtomicAdd(ivec2 coords, uint val){
-	return atomicAdd(d_abufferFragCount+coords.x+coords.y*AbufferParams.ScreenWidth, val);
-}
+#error Buffer access not supported
 
 #endif
 
 
-#if ABUFFER_SHAREDPOOL_USE_TEXTURES
-uint sharedPoolGetLink(uint pageNum){
-	return imageLoad(sharedLinkListImg, int(pageNum) ).x;
-}
-void sharedPoolSetLink(uint pageNum, uint pointer){
-	imageStore(sharedLinkListImg, int(pageNum), uvec4(pointer, 0U, 0U, 0U) );
+// Pixel data storage
+
+uint dataCounterAtomicInc() {
+    return atomicCounterIncrement(abufferCounter);
 }
 
-vec4 sharedPoolGetValue(uint index){
-	return imageLoad(sharedPageListImg, int(index));
-}
-void sharedPoolSetValue(uint index, vec4 val){
-	imageStore(sharedPageListImg, int(index), val);
-}
-#else
-uint sharedPoolGetLink(uint pageNum){
-	return d_sharedLinkList[(int)pageNum];
-}
-void sharedPoolSetLink(uint pageIdx, uint pointer){
-	d_sharedLinkList[(int)pageIdx]=pointer;
+vec4 readPixelStorage(uint idx) {
+    return abufferPixelData[int(idx)];
 }
 
-vec4 sharedPoolGetValue(uint index){
-	return d_sharedPageList[(int)index];
+void writePixelStorage(uint idx, vec4 value) {
+    abufferPixelData[int(idx)] = value;
 }
-void sharedPoolSetValue(uint index, vec4 val){
-	d_sharedPageList[(int)index]=val;
+
+abufferPixel uncompressPixelData(vec4 data)
+{
+    abufferPixel p;
+    p.previous = floatBitsToUint(data.x);
+    p.depth = data.y;
+    p.color.a = data.z;
+    uint c = floatBitsToUint(data.w);
+    p.color.r = float((c>>20) & 0x3ff) / 1023.0f;
+    p.color.g = float((c>>10) & 0x3ff) / 1023.0f;
+    p.color.b = float(c & 0x3ff) / 1023.0f;
+    return p;
 }
-#endif
+
+vec4 compressPixelData(abufferPixel p)
+{
+    vec4 data;
+    data.x = uintBitsToFloat(p.previous);
+    data.y = p.depth;
+    data.z = p.color.a;
+    uint c = (int((p.color.r * 1023)) & 0x3ff) << 20;
+    c += (int((p.color.g * 1023)) & 0x3ff) << 10;
+    c += (int((p.color.b * 1023)) & 0x3ff);
+    data.w = uintBitsToFloat(c);
+    return data;
+}
 
 
 // Rendering function
 
+// The central function for the user-code
+bool abufferRender(ivec2 coords, float depth, vec4 color)
+{
+    //reserve space for pixel
+    uint pixelIdx = dataCounterAtomicInc();
+    if (pixelIdx >= abufferStorageSize) {
+        //we are out of space
+        return false;
+    }
+    //write index
+    uint prevIdx = setPixelLink(coords, pixelIdx);
+    //assemble and write pixel
+    abufferPixel p;
+    p.previous = prevIdx;
+    p.depth = depth;
+    p.color = color;
+    writePixelStorage(pixelIdx, compressPixelData(p));
+    return true;
+}
 
 #endif	//ABUFFERLINKEDLIST_HGLSL

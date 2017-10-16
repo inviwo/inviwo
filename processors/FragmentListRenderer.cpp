@@ -42,10 +42,18 @@ namespace inviwo
         , abufferPageIdxImg_(nullptr)
         , abufferFragCountImg_(nullptr)
         , semaphoreImg_(nullptr)
+        , atomicCounter_(0)
+        , pixelBuffer_(0)
         , clearShader_("simpleQuad.vert", "clearABufferLinkedList.frag", true)
         , displayShader_("simpleQuad.vert", "dispABufferLinkedList.frag", true)
     {
         initShaders();
+
+        //init atomic counter
+        glGenBuffers(1, &atomicCounter_);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicCounter_);
+        glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
     }
 
     FragmentListRenderer::~FragmentListRenderer()
@@ -53,12 +61,24 @@ namespace inviwo
         if (abufferPageIdxImg_) delete abufferPageIdxImg_;
         if (abufferFragCountImg_) delete abufferFragCountImg_;
         if (semaphoreImg_) delete semaphoreImg_;
+        if (atomicCounter_) glDeleteBuffers(1, &atomicCounter_);
+        if (pixelBuffer_) glDeleteBuffers(1, &pixelBuffer_);
+        LGL_ERROR;
     }
 
     void FragmentListRenderer::prePass(const size2_t& screenSize)
     {
+        fragmentSize_ = std::max(fragmentSize_, screenSize.x*screenSize.y);
         initBuffers(screenSize, fragmentSize_);
 
+        //reset counter
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicCounter_);
+        GLuint v[1] = { 0 };
+        glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), v);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+        LGL_ERROR;
+
+        //clear textures
         clearShader_.activate();
         assignUniforms(clearShader_);
         drawQuad();
@@ -96,6 +116,18 @@ namespace inviwo
 
             LogInfo("fragment-list: screen size buffers allocated of size " << screenSize);
         }
+
+        if (fragmentSize != fragmentSize_)
+        {
+            fragmentSize_ = fragmentSize;
+            //create new SSBO for the pixel storage
+            if (pixelBuffer_) glDeleteBuffers(1, &pixelBuffer_);
+            glGenBuffers(1, &pixelBuffer_);
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, pixelBuffer_);
+            glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize*2*sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+            LGL_ERROR;
+        }
     }
 
     void FragmentListRenderer::assignUniforms(Shader& shader) const
@@ -108,6 +140,12 @@ namespace inviwo
         utilgl::bindTexture(*abufferPageIdxImg_, abufferPageIdxUnit);
         utilgl::bindTexture(*abufferFragCountImg_, abufferFragCountUnit);
         utilgl::bindTexture(*semaphoreImg_, semaphoreUnit);
+
+        //pixel storage
+        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 6, atomicCounter_);
+        LGL_ERROR;
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, pixelBuffer_);
+        LGL_ERROR;
 
         //other uniforms
         shader.setUniform("AbufferParams.screenWidth", static_cast<int>(screenSize_.x));

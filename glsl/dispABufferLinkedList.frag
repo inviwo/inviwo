@@ -11,8 +11,7 @@
 
 #include "ABufferLinkedList.hglsl"
 #include "ABufferSort.hglsl"
-#include "ABufferShading.hglsl"
-
+//#include "ABufferShading.hglsl"
 
 
 //Whole number pixel offsets (not necessary just to test the layout keyword !)
@@ -23,10 +22,12 @@ smooth in vec4 fragPos;
 //Output fragment color
 out vec4 outFragColor;
 
+//Computes only the number of fragments
+int getFragmentCount(uint pixelIdx);
 //Keeps only closest fragment
-vec4 resolveClosest(int pageIdx, int abNumFrag);
+vec4 resolveClosest(uint idx);
 //Fill local memory array of fragments
-void fillFragmentArray(int pageIdx, int abNumFrag);
+void fillFragmentArray(uint idx, out int numFrag);
 
 
 //Resolve A-Buffer and blend sorted fragments
@@ -38,45 +39,34 @@ void main(void) {
 	   && coords.x<AbufferParams.screenWidth 
 	   && coords.y<AbufferParams.screenHeight ){
 
-		int pageIdx=int(getPixelCurrentPage(coords));
+		uint pixelIdx=getPixelLink(coords);
 
-		if(pageIdx > 0 ){
-
-			//Load the number of fragments in the last page.
-			int abNumFrag=int(getPixelFragCounter(coords));
-
-
-			if(abNumFrag>0){
+		if(pixelIdx > 0 ){
 
 #if ABUFFER_DISPNUMFRAGMENTS==0
-
-				//Copute ans output final color for the frame buffer
-#	if ABUFFER_RESOLVE_USE_SORTING==0	
-				//If we only want the closest fragment
-				outFragColor=resolveClosest(pageIdx, abNumFrag);
-#	else
-				//Copy fragments in local array
-				fillFragmentArray(pageIdx, abNumFrag);
-				abNumFrag=min(abNumFrag, ABUFFER_SIZE);
-				//Sort fragments in local memory array
-				bubbleSort(abNumFrag);
-
-#		if ABUFFER_RESOLVE_GELLY
-				//We want to sort and apply gelly shader
-				outFragColor=resolveGelly(abNumFrag);
-#		else
-				//We want to sort and blend fragments
-				outFragColor=resolveAlphaBlend(abNumFrag);
-#		endif
-
-#	endif
-
+        outFragColor=vec4(getFragmentCount(pixelIdx) / float(ABUFFER_SIZE));
+#elif ABUFFER_RESOLVE_USE_SORTING==0	
+		//If we only want the closest fragment
+        vec4 p = resolveClosest(pixelIdx);
+		outFragColor = uncompressPixelData(p).color;
 #else
-				outFragColor=vec4(abNumFrag/float(ABUFFER_SIZE));
+		//Copy fragments in local array
+        int numFrag = 0;
+		fillFragmentArray(pixelIdx, numFrag);
+		//Sort fragments in local memory array
+		bubbleSort(numFrag);
+
+        //front-to-back shading
+		vec4 color = vec4(0);
+        for (int i=0; i<numFrag; ++i) {
+            vec4 c = uncompressPixelData(fragmentList[i]).color;
+            color.rgb = color.rgb + (1-color.a)*c.a*c.rgb;
+            color.a = color.a + (1-color.a)*c.a;
+        }
+        outFragColor = color;
 #endif
 
-			}
-		}else{
+		}else{ //no pixel found
 #if ABUFFER_DISPNUMFRAGMENTS==0
 			//If no fragment, write nothing
 			discard;
@@ -84,42 +74,35 @@ void main(void) {
 			outFragColor=vec4(0.0f);
 #endif
 		}
-
 	}
-	
 }
 
 
 
-vec4 resolveClosest(int pageIdx, int abNumFrag){
+int getFragmentCount(uint pixelIdx){
+    int counter = 0;
+	while(pixelIdx!=0 && counter<ABUFFER_SIZE){
+        vec4 val = readPixelStorage(pixelIdx);
+        counter++;
+		pixelIdx = floatBitsToUint(val.x) - 1;
+	}
+	return counter;
+}
 
-	int curPage=pageIdx;
+vec4 resolveClosest(uint pixelIdx){
 
 	//Search smallest z
-	vec4 minFrag=vec4(0.0f, 0.0f, 0.0f, 1000000.0f);
+	vec4 minFrag=vec4(0.0f, 1000000.0f, 0.0f, 0.0f);
 	int ip=0;
 
-	while(curPage!=0 && ip<20){
-		int numElem;
-		if(ip==0){
-			numElem=abNumFrag%(ABUFFER_PAGE_SIZE);
-			if(numElem==0)
-				numElem=ABUFFER_PAGE_SIZE;
-		}else{
-			numElem=ABUFFER_PAGE_SIZE;
-		}
+	while(pixelIdx!=0 && ip<ABUFFER_SIZE){
+        vec4 val = readPixelStorage(pixelIdx);
 
-		for(int i=0; i<numElem; i++){
-			vec4 val=sharedPoolGetValue(curPage+i);
+        if (val.y<minFrag.y) {
+            minFrag = val;
+        }
 
-			if(val.w<minFrag.w){
-				minFrag=val;
-			}
-
-		}
-
-		//Get next page index
-		curPage=int(sharedPoolGetLink(curPage/ABUFFER_PAGE_SIZE));
+		pixelIdx = floatBitsToUint(val.x) - 1;
 
 		ip++;
 	}
@@ -127,35 +110,15 @@ vec4 resolveClosest(int pageIdx, int abNumFrag){
 	return minFrag;
 }
 
-
-
-void fillFragmentArray(int pageIdx, int abNumFrag){
+void fillFragmentArray(uint pixelIdx, out int numFrag){
 	//Load fragments into a local memory array for sorting
 
-	int curPage=pageIdx;
 	int ip=0;
-	int fi=0;
-	while(curPage!=0 && ip<20){
-		int numElem;
-		if(ip==0){
-			numElem=abNumFrag%(ABUFFER_PAGE_SIZE);
-			if(numElem==0)
-				numElem=ABUFFER_PAGE_SIZE;
-		}else{
-			numElem=ABUFFER_PAGE_SIZE;
-		}
-
-		for(int i=0; i<numElem; i++){
-			if(fi<ABUFFER_SIZE){
-				fragmentList[fi]=sharedPoolGetValue(curPage+i);
-			}
-			fi++;
-		}
-
-
-		curPage=int(sharedPoolGetLink(curPage/ABUFFER_PAGE_SIZE));
-
+	while(pixelIdx!=0 && ip<ABUFFER_SIZE){
+		vec4 val = readPixelStorage(pixelIdx);
+        fragmentList[ip] = val;
+        pixelIdx = floatBitsToUint(val.x) - 1;
 		ip++;
 	}
-
+    numFrag = ip;
 }

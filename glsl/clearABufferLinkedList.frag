@@ -23,9 +23,7 @@ void main(void) {
 	   && coords.x<AbufferParams.screenWidth 
 	   && coords.y<AbufferParams.screenHeight ){
 
-		setPixelCurrentPage(coords, 0U);
-		setPixelFragCounter(coords, 0U);
-		setSemaphore(coords, false);
+		imageStore(abufferIdxImg, coords, ivec4(0));
 
 		//sharedPoolSetLink(0, 0U);
 		//sharedPoolSetValue(0, vec4(0.0f, 0.0f, 4.0f, 1.0f));
