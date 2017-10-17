@@ -27,36 +27,39 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
+#include <modules/userinterfacegl/glui/manager.h>
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
-
-#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace glui {
 
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
-
-    registerProcessor<GLUITestProcessor>();
-
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
+ButtonPropertyWidget::ButtonPropertyWidget(Manager *uiManager, ButtonProperty *property,
+                                           const ivec2 &extent)
+    : Button(&uiManager->getUIRenderer(), property->getDisplayName(), extent)
+    , PropertyWidget(property)
+    , property_(property) {
+    property_->addObserver(this);
+    property_->registerWidget(this);
+    action_ = [&]() {
+        if (!property_->getReadOnly()) {
+            property_->pressButton();
+        }
+    };
+    updateFromProperty();
 }
+
+void ButtonPropertyWidget::updateFromProperty() { setLabel(property_->getDisplayName()); }
+
+void ButtonPropertyWidget::onSetVisible(bool visible) { setVisible(visible); }
+
+void ButtonPropertyWidget::onSetDisplayName(const std::string &displayName) {
+    setLabel(displayName);
+    property_->propertyModified();
+}
+
+}  // namespace glui
 
 }  // namespace inviwo

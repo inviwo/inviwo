@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +24,42 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+#include "utils/structs.glsl"
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+uniform sampler2DArray arrayTexSampler; //!< normal, pressed, checked, halo normal, halo pressed, halo checked
 
-#include <modules/opengl/shader/shadermanager.h>
+//uniform ImageParameters outportParameters;
 
-namespace inviwo {
+uniform vec4 uiColor_ = vec4(0.0, 0.0, 0.0, 1.0);
+uniform vec4 haloColor_ = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec3 pickingColor_ = vec3(0.0);
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+uniform ivec2 uiState_ = ivec2(0, -1); // active / hovered
 
-    // Register objects that can be shared with the rest of inviwo here:
+in vec3 texCoord_;
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
+void main() {
+    vec4 dstColor = vec4(0.0);
 
-    registerProcessor<GLUITestProcessor>();
+    // draw halo only if hovered
+    if (uiState_.y > 0) {
+        vec4 halo = texture(arrayTexSampler, vec3(texCoord_.xy, uiState_.x + 3));
+        // front-to-back blending
+        dstColor = vec4(haloColor_.rgb, haloColor_.a * halo.a);
+    }
 
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
+    // sample UI color texture
+    vec4 uiTexColor = texture(arrayTexSampler, vec3(texCoord_.xy, uiState_.x));
+    //dstColor = mix(dstColor, uiColor_, uiTexColor.a);
+    dstColor = mix(dstColor, vec4(uiColor_.rgb * uiTexColor.rgb, uiColor_.a * uiTexColor.a), uiTexColor.a);
 
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
+    //dstColor = uiTexColor * uiColor_;
+
+    FragData0 = dstColor;
+    // prevent picking for transparent regions and if picking color alpha is negative
+    // by setting the alpha to 0.
+    PickingData = vec4(pickingColor_.rgb, step(0.0, (uiTexColor.a - 0.001)));
 }
-
-}  // namespace inviwo

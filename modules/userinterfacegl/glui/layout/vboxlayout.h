@@ -27,36 +27,30 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+#ifndef IVW_GLUIVBOXLAYOUT_H
+#define IVW_GLUIVBOXLAYOUT_H
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/userinterfacegl/glui/layout/boxlayout.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace glui {
 
-    // Register objects that can be shared with the rest of inviwo here:
+/**
+ * \class glui::VBoxLayout
+ * \brief layout for aligning glui::Elements vertically (top to bottom)
+ */
+class IVW_MODULE_USERINTERFACEGL_API VBoxLayout : public BoxLayout {
+public:
+    VBoxLayout();
+    virtual ~VBoxLayout() = default;
+};
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
-
-    registerProcessor<GLUITestProcessor>();
-
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
-}
+}  // namespace glui
 
 }  // namespace inviwo
+
+#endif  // IVW_GLUIVBOXLAYOUT_H

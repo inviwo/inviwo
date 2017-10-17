@@ -27,36 +27,62 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+#ifndef IVW_GLUISLIDER_H
+#define IVW_GLUISLIDER_H
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/userinterfacegl/glui/element.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class Texture2DArray;
 
-    // Register objects that can be shared with the rest of inviwo here:
+namespace glui {
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
+class Renderer;
 
-    registerProcessor<GLUITestProcessor>();
+/**
+ * \class Button
+ * \brief glui::element representing a button with the label centered within
+ */
+class IVW_MODULE_USERINTERFACEGL_API Slider : public Element {
+public:
+    Slider(Renderer *uiRenderer, const std::string &label,
+        int value, int minValue, int maxValue,
+               const ivec2 &extent = ivec2(100, 24));
+    virtual ~Slider() = default;
 
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
+    void set(int value);
+    void set(int value, int minValue, int maxValue);
+    int get() const;
+    int getMinValue() const;
+    int getMaxValue() const;
 
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
-}
+    virtual void renderWidget(const ivec2 &origin, const PickingMapper &pickingMapper) override;
+
+protected:
+    int getPreviousValue() const;
+
+private:
+    virtual ivec2 computeLabelPos(int descent) const override;
+    virtual UIState uiState() const override;
+    virtual vec2 marginScale() const override;
+    virtual void pushStateChanged() override;
+
+    Texture2DArray *uiTextures_;
+    Texture2DArray *grooveTextures_;
+
+    int value_;
+    int min_;
+    int max_;
+
+    int prevValue_;
+};
+
+} // namespace glui
 
 }  // namespace inviwo
+
+#endif  // IVW_GLUISLIDER_H

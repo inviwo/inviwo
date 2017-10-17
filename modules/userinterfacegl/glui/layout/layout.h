@@ -27,36 +27,68 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+#ifndef IVW_GLUILAYOUT_H
+#define IVW_GLUILAYOUT_H
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+
+#include <vector>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace glui {
 
-    // Register objects that can be shared with the rest of inviwo here:
+class Element;
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
+/**
+ * \class Layout
+ * \brief base class for layouting glui::Elements
+ *
+ * \see glui::Element
+ */
+class IVW_MODULE_USERINTERFACEGL_API Layout {
+public:
+    Layout();
+    virtual ~Layout() = default;
 
-    registerProcessor<GLUITestProcessor>();
+    virtual ivec2 getExtent() const = 0;
 
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
+    void setMargins(int top, int left, int bottom, int right);
+    const ivec4 &getMargins() const;
 
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
-}
+    /**
+     * \brief render the layout and all its UI elements at the given position
+     *
+     * @param topLeft         defines the top left corner where the UI is positioned
+     * @param pickingMapper  picking mapper provided by the GLUI manager
+     * @param canvasDim      dimensions of the output canvas
+     */
+    virtual void render(const ivec2 &topLeft, PickingMapper &pickingMapper,
+                        const ivec2 &canvasDim) = 0;
+
+    /**
+     * \brief add a UI element to the layout at the end of the layout
+     *
+     * @param element  UI element to be added
+     */
+    virtual void addElement(Element *element) = 0;
+
+    /**
+     * \brief remove the given UI element from the layout
+     *
+     * @param element  UI element to be removed
+     */
+    virtual void removeElement(Element *element) = 0;
+
+protected:
+    ivec4 margins_ = ivec4(10, 10, 10, 10);  //!< top, left, bottom, right
+};
+
+}  // namespace glui
 
 }  // namespace inviwo
+
+#endif  // IVW_GLUILAYOUT_H

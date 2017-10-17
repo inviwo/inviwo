@@ -27,36 +27,49 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+#ifndef IVW_GLUIBUTTONPROPERTYWIDGET_H
+#define IVW_GLUIBUTTONPROPERTYWIDGET_H
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/userinterfacegl/glui/widgets/button.h>
+
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/properties/propertyobserver.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class ButtonProperty;
 
-    // Register objects that can be shared with the rest of inviwo here:
+namespace glui {
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
+class Manager;
 
-    registerProcessor<GLUITestProcessor>();
+/**
+ * \class GLUIButtonProperty
+ * \brief GLUI property widget for a button property using GLUIButton
+ */
+class IVW_MODULE_USERINTERFACEGL_API ButtonPropertyWidget : public Button,
+                                                            public PropertyWidget,
+                                                            public PropertyObserver {
+public:
+    ButtonPropertyWidget(Manager *uiManager, ButtonProperty *property,
+                         const ivec2 &extent = ivec2(100, 24));
+    virtual ~ButtonPropertyWidget() = default;
 
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
+    virtual void updateFromProperty() override;
 
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
-}
+    // PropertyObservable overrides
+    virtual void onSetVisible(bool visible) override;
+    virtual void onSetDisplayName(const std::string &displayName) override;
+
+private:
+    ButtonProperty *property_;
+};
+
+}  // namespace glui
 
 }  // namespace inviwo
+
+#endif  // IVW_GLUIBUTTONPROPERTYWIDGET_H
