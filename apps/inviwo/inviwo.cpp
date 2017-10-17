@@ -86,6 +86,7 @@ int main(int argc, char** argv) {
     inviwoApp.processEvents();  // Make sure the gui is done loading before loading workspace
 
     mainWin.openLastWorkspace(clp.getWorkspacePath());  // open last workspace
+    inviwoApp.setProgressCallback(std::function<void(std::string)>{});
     splashScreen.finish(&mainWin);
 
     inviwoApp.processEvents();

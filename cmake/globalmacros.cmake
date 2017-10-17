@@ -140,6 +140,12 @@ function(ivw_private_generate_module_registration_file modules_var)
         list_to_stringvector(module_alias_vector ${${mod}_aliases})
         string(TOUPPER ${${mod}_class} u_module)
 
+        if(${${mod}_protected})
+            set(module_protected "ProtectedModule::on")
+        else()
+            set(module_protected "ProtectedModule::off")
+        endif()
+
         list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
         set(create_module_object
             "IVW_MODULE_${u_module}\_API InviwoModuleFactoryObject* createModule() {\n"
@@ -150,7 +156,8 @@ function(ivw_private_generate_module_registration_file modules_var)
             "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
             "        ${module_depends_vector}, // Dependencies\n" 
             "        ${module_depends_version_vector}, // Version number of dependencies\n"
-            "        ${module_alias_vector} // List of aliases\n"
+            "        ${module_alias_vector}, // List of aliases\n"
+            "        ${module_protected} // protected\n"
             "    )__SEMICOLON__\n"
             "}\n"
             "\n"
@@ -162,8 +169,8 @@ function(ivw_private_generate_module_registration_file modules_var)
         string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" create_module_object "${create_module_object}")
         string(REPLACE "__SEMICOLON__" ";" create_module_object "${create_module_object}")
 
-        string(REPLACE ":" ";" MODULE_DEFINE_HEADER "${module_header}")   
-        string(REPLACE ":" ";" CREATE_MODULE_FUNCTION "${create_module_object}")
+        set(MODULE_DEFINE_HEADER "${module_header}")   
+        set(CREATE_MODULE_FUNCTION "${create_module_object}")
 
         configure_file(${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
                     ${CMAKE_BINARY_DIR}/modules/_generated/modules/${${mod}_dir}/${${mod}_dir}modulesharedlibrary.cpp @ONLY)
@@ -193,7 +200,8 @@ function(ivw_private_generate_module_registration_file modules_var)
             "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
             "        ${module_depends_vector}, // Dependencies\n" 
             "        ${module_depends_version_vector}, // Version number of dependencies\n"
-            "        ${module_alias_vector} // List of aliases\n"
+            "        ${module_alias_vector}, // List of aliases\n"
+            "        ${module_protected} // protected\n"
             "        )\n"
             "    )__SEMICOLON__\n"
             "    #endif\n"
@@ -211,8 +219,9 @@ function(ivw_private_generate_module_registration_file modules_var)
     # linebreaks are replaced with '\n"'
     string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" functions "${functions}")
     string(REPLACE "__SEMICOLON__" ";" functions "${functions}")
-    string(REPLACE ":" ";" MODULE_HEADERS "${headers}")   
-    string(REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
+
+    set(MODULE_HEADERS "${headers}")
+    set(MODULE_CLASS_FUNCTIONS "${functions}")
 
     configure_file(${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
         ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
@@ -297,15 +306,19 @@ function(ivw_register_modules retval)
                 # Defines dependencies, aliases
                 # Save dependencies to INVIWO<NAME>MODULE_dependencies
                 # Save aliases to INVIWO<NAME>MODULE_aliases
+
+                set(dependencies "")
+                set(aliases "")
+                set(protected OFF)
                 if(EXISTS "${${mod}_path}/depends.cmake")
-                    set(dependencies "")
-                    set(aliases "")
                     include(${${mod}_path}/depends.cmake)
-                    set("${mod}_dependencies" ${dependencies} CACHE INTERNAL "Module dependencies")
-                    set("${mod}_aliases" ${aliases} CACHE INTERNAL "Module aliases")
-                    unset(dependencies)
-                    unset(aliases)
                 endif()
+                set("${mod}_dependencies" ${dependencies} CACHE INTERNAL "Module dependencies")
+                set("${mod}_aliases" ${aliases} CACHE INTERNAL "Module aliases")
+                set("${mod}_protected" ${protected} CACHE INTERNAL "Protected Module")
+                unset(dependencies)
+                unset(aliases)
+                unset(protected)
 
                 # Check if there is a readme.md of the module. 
                 # In that case set to INVIWO<NAME>MODULE_description
@@ -400,7 +413,6 @@ function(ivw_register_modules retval)
             list(FIND modules ${dep} found)
             if(NOT ${found} EQUAL -1)
                 list(GET modules ${found} module)
-                # ivw_message("${${mod}_class}: ${dependency} version ${${module}_version}")
                 list(APPEND dependencies_version ${${module}_version})
             else()
                 # Dependency was not found, not an inviwo module...

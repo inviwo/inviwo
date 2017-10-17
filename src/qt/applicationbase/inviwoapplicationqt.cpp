@@ -90,13 +90,6 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, cha
 
     // Make qt write errors in the console;
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
-
-    // QtWidgets: Statically linked and should not be unloaded
-    // OpenGLQt:  Crashes when canvas is shown after library has been reloaded
-    // OpenGL:    Dependency of OpenGLQt and therefore cannot be unloaded
-    getModuleManager().addProtectedIdentifier("QtWidgets");
-    getModuleManager().addProtectedIdentifier("OpenGLQt");
-    getModuleManager().addProtectedIdentifier("OpenGL");
 }
 
 void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) { 

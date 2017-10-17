@@ -39,6 +39,9 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <psapi.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -66,7 +69,6 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
     // Search for dlls in directories specified by the path environment variable
     // Need to be done since we are using a non-standard call to LoadLibrary
     static auto addDirectoriesInPath = []() {  // Lambda executed once
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         const char* environmentPath = std::getenv("PATH");
         if (environmentPath && util::hasAddLibrarySearchDirsFunction()) {
             auto elems = splitString(std::string(environmentPath), ';');
@@ -288,7 +290,61 @@ void removeLibrarySearchDirs(const std::vector<DLL_DIRECTORY_COOKIE>& dirs) {
     }
 }
 
+std::vector<std::string> getLoadedLibraries() {
+    auto ws2s = [](const std::wstring& wstr) -> std::string {
+        using convert_typeX = std::codecvt_utf8<wchar_t>;
+        std::wstring_convert<convert_typeX, wchar_t> converterX;
+        return converterX.to_bytes(wstr);
+    };
+
+    std::vector<std::string> res;
+
+    DWORD processID = GetCurrentProcessId();
+    HMODULE hMods[1024];
+    HANDLE hProcess;
+    DWORD cbNeeded;
+    unsigned int i;
+
+    // Get a handle to the process.
+    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processID);
+    if (NULL == hProcess) return {};
+
+    // Get a list of all the modules in this process.
+    if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded)) {
+        for (i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
+            TCHAR szModName[MAX_PATH];
+            // Get the full path to the module's file.
+            if (GetModuleFileNameEx(hProcess, hMods[i], szModName,
+                                    sizeof(szModName) / sizeof(TCHAR))) {
+
+                std::string name = ws2s(std::wstring(szModName));
+                replaceInString(name, "\\", "/");
+                res.push_back(name);
+            }
+        }
+    }
+
+    // Release the handle to the process.
+    CloseHandle(hProcess);
+
+    return res;
+}
+
 #else
+
+namespace {
+int visitLibraries(struct dl_phdr_info *info, size_t size, void *data) {
+    auto res = reinterpret_cast<std::vector<std::string>*>(data);
+    res->emplace_back(info->dlpi_name);
+    return 0;
+}
+}
+std::vector<std::string> getLoadedLibraries() {
+    std::vector<std::string> res;
+    dl_iterate_phdr(visitLibraries, reinterpret_cast<void*>(&res));
+    return res;
+}
+
 // dummy functions
 std::vector<void*> addLibrarySearchDirs(const std::vector<std::string>&) { return {}; }
 void removeLibrarySearchDirs(const std::vector<void*>&) {}
@@ -297,3 +353,4 @@ bool hasAddLibrarySearchDirsFunction() { return true; }
 }  // namespace util
 
 }  // namespace inviwo
+

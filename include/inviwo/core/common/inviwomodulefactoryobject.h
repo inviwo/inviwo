@@ -40,13 +40,15 @@ namespace inviwo {
 class InviwoModule;
 class InviwoApplication;
 
+enum class ProtectedModule { on, off };
+
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
     InviwoModuleFactoryObject(const std::string& name, Version version,
                               const std::string& description, Version inviwoCoreVersion,
                               std::vector<std::string> dependencies,
                               std::vector<Version> dependenciesVersion,
-                              std::vector<std::string> aliases);
+                              std::vector<std::string> aliases, ProtectedModule protectedModule);
     virtual ~InviwoModuleFactoryObject() = default;
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
@@ -58,6 +60,7 @@ public:
     // Module dependencies Major.Minor.Patch version of each dependency
     const std::vector<std::pair<std::string, Version>> dependencies;
     const std::vector<std::string> aliases;
+    const ProtectedModule protectedModule;
 };
 
 template <typename T>
@@ -67,7 +70,8 @@ public:
                                       const std::string& description, Version inviwoCoreVersion,
                                       std::vector<std::string> dependencies,
                                       std::vector<Version> dependenciesVersion,
-                                      std::vector<std::string> aliases);
+                                      std::vector<std::string> aliases,
+                                      ProtectedModule protectedModule);
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) override {
         return util::make_unique<T>(app);
@@ -88,9 +92,10 @@ template <typename T>
 InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
     const std::string& name, Version version, const std::string& description,
     Version inviwoCoreVersion, std::vector<std::string> dependencies,
-    std::vector<Version> dependenciesVersion, std::vector<std::string> aliases)
+    std::vector<Version> dependenciesVersion, std::vector<std::string> aliases,
+    ProtectedModule protectedModule)
     : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion, dependencies,
-                                dependenciesVersion, aliases) {}
+                                dependenciesVersion, aliases, protectedModule) {}
 
 /**
  * \brief Topological sort to make sure that we load modules in correct order

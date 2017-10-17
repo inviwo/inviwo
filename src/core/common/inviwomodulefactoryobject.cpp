@@ -37,7 +37,8 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_, V
                                                      Version inviwoCoreVersion_,
                                                      std::vector<std::string> dependencies_,
                                                      std::vector<Version> dependenciesVersion_,
-                                                     std::vector<std::string> aliases_)
+                                                     std::vector<std::string> aliases_,
+                                                     ProtectedModule protectedModule_)
     : name(name_)
     , version(version_)
     , description(description_)
@@ -52,7 +53,8 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_, V
         }
         return deps;
     }())
-    , aliases(aliases_) {}
+    , aliases(aliases_)
+    , protectedModule(protectedModule_) {}
 
 /**
  * \brief Sorts modules according to their dependencies.
@@ -116,4 +118,4 @@ void topologicalModuleFactoryObjectSort(
     });
 }
 
-}  // namespace
+}  // namespace inviwo

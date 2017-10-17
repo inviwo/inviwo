@@ -165,35 +165,15 @@ void ModuleManager::reloadModules() {
 void ModuleManager::registerModules(RuntimeModuleLoading) {
     // Perform the following steps
     // 1. Recursively get all library files and the folders they are in
-    // 2. Sort them according to protected modules (done by std::set).
-    //    Prevents dependent modules from being loaded from temporary directory.
-    //    Only necessary when libraries can be reloaded.
-    // 3. Filter out files with correct extension, named inviwo-module
+    // 2. Filter out files with correct extension, named inviwo-module
     //    and listed in application_name-enabled-modules.txt (if it exist).
-    // 4. Load libraries and see if createModule function exist.
-    // 5. Start observing file if reloadLibrariesWhenChanged
-    // 6. Pass module factories to registerModules
-
-    auto orderByProtectedModule = [&](std::string first, std::string second) -> bool {
-        auto foundFirst = protected_.find(util::stripModuleFileNameDecoration(first));
-        auto foundSecond = protected_.find(util::stripModuleFileNameDecoration(second));
-        if (foundFirst == protected_.end() && foundSecond == protected_.end()) {
-            return iCaseLess(first, second);
-        } else {
-            return std::distance(protected_.begin(), foundFirst) <
-                   std::distance(protected_.begin(), foundSecond);
-        }
-    };
-    // Load protected modules first, necessary when library reloading is enabled
-    // since dependent modules can exist in both temporary and application directory.
-    // The modules which protected modules depend on will be loaded from the application
-    // directory instead of the temporary directory.
-    // Note: OpenGL module will fail to load if OpenGLQt is enabled and sorting is removed.
-    // Recursively found libraries:
-    std::set<std::string, decltype(orderByProtectedModule)> libraryFiles(orderByProtectedModule);
+    // 3. Load libraries and see if createModule function exist.
+    // 4. Start observing file if reloadLibrariesWhenChanged
+    // 5. Pass module factories to registerModules
 
     // Find unique files and directories in specified search paths
     auto librarySearchPaths = util::getLibrarySearchPaths();
+    std::set<std::string> libraryFiles;
     LibrarySearchDirs searchDirectories{librarySearchPaths};
     for (auto path : librarySearchPaths) {
         using namespace inviwo::filesystem;
@@ -235,10 +215,16 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
         if (!filesystem::directoryExists(tmpDir)) {
             filesystem::createDirectoryRecursively(tmpDir);
         }
+
+        auto isLoaded = [loaded = util::getLoadedLibraries()](const auto& path) {
+            return util::contains_if(loaded, [&](const auto& lib) { return iCaseCmp(path, lib); });
+        };
+
         for (const auto& filePath : libraryFiles) {
             auto dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
-            if (isProtected(util::stripModuleFileNameDecoration(filePath))) {
-                dstPath = filePath;  // Protected modules are loaded from the application dir
+            if (isLoaded(filePath)) {
+                dstPath = filePath;  // Already loaded modules are loaded from the application dir
+                protected_.insert(util::stripModuleFileNameDecoration(filePath));
             } else if (filesystem::fileModificationTime(filePath) !=
                        filesystem::fileModificationTime(dstPath)) {
                 // Load a copy of the file to make sure that we can overwrite the file.
@@ -268,6 +254,9 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
                 // Add module factory object
                 modules.emplace_back(moduleFunc());
                 auto moduleName = toLower(modules.back()->name);
+                if (modules.back()->protectedModule == ProtectedModule::on) {
+                    protected_.insert(modules.back()->name);
+                }
                 sharedLibraries_.emplace_back(std::move(sharedLib));
                 if (isRuntimeModuleReloadingEnabled()) {
                     libraryObserver_.observe(filePath);
@@ -285,6 +274,21 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
         }
     }
 
+    std::set<std::string, CaseInsensitiveCompare> dependencies;
+    std::function<void(const std::string&)> getDeps = [&](const std::string& module) {
+        auto it = util::find_if(modules, [&](const auto& m) { return iCaseCmp(m->name, module); });
+        if (it != modules.end()) {
+            for (const auto dep : (*it)->dependencies) {
+                dependencies.insert(dep.first);
+                getDeps(dep.first);
+            }
+        }
+    };
+    for (auto& module : protected_) {
+        getDeps(module);
+    }
+    protected_.insert(dependencies.begin(), dependencies.end());
+
     registerModules(std::move(modules));
 }
 
@@ -298,12 +302,12 @@ void ModuleManager::unregisterModules() {
         modules_, [this](const auto& m) { return !this->isProtected(m->getIdentifier()); });
 
     // Remove module factories
-    util::erase_remove_if(factoryObjects_,
+    util::reverse_erase_if(factoryObjects_,
                           [this](const auto& mfo) { return !this->isProtected(mfo->name); });
 
     // Modules should now have removed all allocated resources and it should be safe to unload
     // shared libraries.
-    util::erase_remove_if(sharedLibraries_, [this](const auto& module) {
+    util::reverse_erase_if(sharedLibraries_, [this](const auto& module) {
         // Figure out module identifier from file name
         auto moduleName = util::stripModuleFileNameDecoration(module->getFilePath());
         return !this->isProtected(moduleName);

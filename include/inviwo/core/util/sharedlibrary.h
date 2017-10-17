@@ -65,6 +65,7 @@ IVW_CORE_API bool hasAddLibrarySearchDirsFunction();
 IVW_CORE_API std::vector<void*> addLibrarySearchDirs(const std::vector<std::string>& dirs);
 IVW_CORE_API void removeLibrarySearchDirs(const std::vector<void*>& dirs);
 
+IVW_CORE_API std::vector<std::string> getLoadedLibraries();
 }  // namespace util
 
 class IVW_CORE_API LibrarySearchDirs {

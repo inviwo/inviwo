@@ -352,7 +352,15 @@ void InviwoMainWindow::addActions() {
         testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
         fillTestWorkspaceMenu();
     }
-
+    {
+        if (app_->getModuleManager().isRuntimeModuleReloadingEnabled()) {
+            fileMenuItem->addSeparator();
+            auto reloadAction = new QAction(tr("&Reload modules"), this);
+            connect(reloadAction, &QAction::triggered, this,
+                    [&]() { app_->getModuleManager().reloadModules(); });
+            fileMenuItem->addAction(reloadAction);
+        }
+    }
     {
         fileMenuItem->addSeparator();
         auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
