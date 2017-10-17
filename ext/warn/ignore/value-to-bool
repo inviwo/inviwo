@@ -27,28 +27,22 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/moduleutils.h>
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/value-to-bool` used without `warn/push`"
+#endif
 
-namespace inviwo {
+#if defined(WARN_IGNORE_VALUE_TO_BOOL)
+#   error "`warn/ignore/value-to-bool` already included"
+#endif
 
-namespace module {
+#define WARN_IGNORE_VALUE_TO_BOOL
 
-std::string getModulePath(const std::string &identifier, ModulePath pathType) {
-    std::string path;
-    if (auto m = InviwoApplication::getPtr()->getModuleByIdentifier(identifier)) {
-        path = m->getPath(pathType);
-        if (path.empty() || path == m->getPath()) {
-            // if the result of getPath(pathType) is identical with getPath(),
-            // i.e. the module path, the specific path does not exist.
-            throw Exception("Could not locate module path for specified path type (module \"" +
-                            identifier + "\")");
-        }
-    } else {
-        throw Exception("Could not locate module \"" + identifier + "\"");
-    }
-    return path;
-}
-
-}  // namespace module
-
-}  // namespace inviwo
+#if defined(__clang__)
+//  Not available
+#elif defined(__GNUC__)
+//  Not available
+#elif defined(_MSC_VER)
+#   if (_MSC_FULL_VER >= 130000000)
+#       pragma warning(disable: 4800)
+#   endif
+#endif

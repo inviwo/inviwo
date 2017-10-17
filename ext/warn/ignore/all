@@ -113,3 +113,4 @@
 #include <warn/ignore/unused-variable>
 #include <warn/ignore/used-but-marked-unused>
 #include <warn/ignore/user-ctor-required>
+#include <warn/ignore/value-to-bool>
