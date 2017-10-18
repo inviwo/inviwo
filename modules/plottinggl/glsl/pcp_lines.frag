@@ -20,6 +20,7 @@ uniform sampler2D tfSelection;
 
 void main() {
     vec4 res = vec4(1);
+	// Do not draw missing data
     if (isnan(ltexCoord.y) || isinf(ltexCoord.y)) {
         discard;
     }

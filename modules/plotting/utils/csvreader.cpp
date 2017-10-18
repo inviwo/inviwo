@@ -141,31 +141,42 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
             throw Exception("CSVReader: no column headers found.");
         }
     }
-
-    std::vector<std::string> data = extractRow();
-    if (data.empty()) {
-        throw Exception("CSVReader: empty file, no data");
-    }
-
+ 
+    std::vector<std::vector<std::string>> exampleRows;
+    std::streampos streamPos = in.tellg();
+    for (auto exampleRow = 0u; exampleRow < 50; ++exampleRow) {
+        auto row = extractRow();
+        if (exampleRow == 0 && row.empty()) {
+            throw Exception("CSVReader: empty file, no data");
+        }
+        else if (row.empty()) {
+            // No more rows
+            in.clear(); // clear eof-bit
+            break;
+        }
+        exampleRows.emplace_back(row);
+    } 
+    // Rewind to start position
+    in.seekg(streamPos, std::ios::beg);
     if (!firstRowHeader_) {
         // assign default column headers
-        for (size_t i = 0; i < data.size(); ++i) {
+        for (size_t i = 0; i < exampleRows.front().size(); ++i) {
             headers.push_back(std::string("Column ") + std::to_string(i + 1));
         }
     }
+
     // figure out column types
-    auto dataFrame = plot::createDataFrame(data, headers);
+    auto dataFrame = plot::createDataFrame(exampleRows, headers);
     size_t rowIndex = firstRowHeader_ ? 1 : 0;
+    std::vector<std::string> data = extractRow();
     while (!data.empty()) {
-        try {
-            // Do not add empty rows, i.e. rows with only delimiters (,,,,) or newline
-            auto emptyIt = std::find_if(std::begin(data), std::end(data), [](const auto& a) { return !a.empty(); });
-            if (emptyIt != data.end()) {
-                dataFrame->addRow(data);
-            }
-        } catch (plot::DataTypeMismatch& e) {
-            // Continue reading data since it is not a fatal error
-            LogError("Row " << rowIndex << ": " << e.what());
+        // Do not add empty rows, i.e. rows with only delimiters (,,,,) or newline
+        auto emptyIt = std::find_if(std::begin(data), std::end(data),
+                                    [](const auto& a) { return !a.empty(); });
+        if (emptyIt != data.end()) {
+            // May throw DataTypeMismatch, but do not catch it since it means that the DataFrame is
+            // in an invalid state
+            dataFrame->addRow(data);
         }
         data = extractRow();
         ++rowIndex;

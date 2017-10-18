@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <ostream>
+#include <stdexcept>
 
 namespace inviwo {
 
@@ -55,6 +56,59 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
 
     return os;
 }
+
+/**
+ * \brief Compute value below a percentage of observations in the data.
+ * Uses the nearest rank method, i.e. ceil(percentile * N), where N = number of elements in data.
+ *
+ * NaNs (Not a Numbers) are excluded from the computation.
+ * The following example will return {1,2}
+ * @code auto percentiles = utilstats::percentiles({1, 0, 3, 2}, {0.25, 0.75});
+ *
+ * See also https://en.wikipedia.org/wiki/Percentile
+ *
+ * @param data to compute percentiles on
+ * @param percentiles in the range [0 1]
+ * @return values below the percentage given by the percentiles.
+ * @throw invalid_argument exception if any percentile is less than 0 or larger than 1
+ */
+template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
+std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
+    std::sort(data.begin(), data.end());
+    std::vector<T> result; 
+    result.reserve(percentiles.size());
+    auto nElements = data.size();
+    for (auto percentile : percentiles) {
+        if (percentile < 0.f || percentile > 1.f) {
+            throw std::invalid_argument("Percentile must be between 0 and 1");
+        }
+        // Take care of percentile == 1 using std::min
+        result.push_back(data[std::min(static_cast<size_t>(std::ceil(nElements * percentile)), nElements-1)]);
+    }
+    return result;
+}
+
+// Float/double types have special values
+template <typename T,
+    typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
+std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
+    auto noNaN = std::partition(data.begin(), data.end(), [](const auto& a) { return std::isnan(a); });
+    std::sort(noNaN, data.end());
+    std::vector<T> result;
+    result.reserve(percentiles.size());
+    size_t nElements = std::distance(noNaN, data.end());
+    for (auto percentile : percentiles) {
+        if (percentile < 0.f || percentile > 1.f) {
+            throw std::invalid_argument("Percentile must be between 0 and 1");
+        }
+        // Take care of percentile == 1 using std::min
+        result.push_back(data[std::min(static_cast<size_t>(std::ceil(nElements * percentile)), nElements - 1)]);
+    }
+    return result;
+
+}
+
+
 
 }  // namespace statsutil
 

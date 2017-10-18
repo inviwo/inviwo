@@ -64,19 +64,24 @@ IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(
 IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
     const BufferBase* buffer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
 
-template <typename ValueType>
+namespace detail {
+
+// Specialization for double and float types
+template <typename ValueType,
+          typename std::enable_if<util::is_floating_point<ValueType>::value, int>::type = 0>
 std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
                                    IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
     using Res = std::pair<ValueType, ValueType>;
     Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
 
     if (ignore == IgnoreSpecialValues::Yes) {
-        minmax = std::accumulate(data, data + size, minmax,
-                                 [](const Res& mm, const ValueType& v) -> Res {
-                                     return util::all(v != v + ValueType(1))
-                                                ? Res{glm::min(mm.first, v), glm::max(mm.second, v)}
-                                                : mm;
-                                 });
+        minmax = std::accumulate(
+            data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
+                return 
+                    util::any(glm::isnan(v))
+                           ? mm
+                           : Res{glm::min(mm.first, v), glm::max(mm.second, v)};
+            });
     } else {
         minmax = std::accumulate(data, data + size, minmax,
                                  [](const Res& mm, const ValueType& v) -> Res {
@@ -85,6 +90,28 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
     }
 
     return {util::glm_convert<dvec4>(minmax.first), util::glm_convert<dvec4>(minmax.second)};
+}
+// Integer types do not have special values
+template <typename ValueType,
+          typename std::enable_if<!util::is_floating_point<ValueType>::value, int>::type = 0>
+std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
+                                   IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
+    using Res = std::pair<ValueType, ValueType>;
+    Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
+    minmax =
+        std::accumulate(data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
+            return {glm::min(mm.first, v), glm::max(mm.second, v)};
+        });
+
+    return {util::glm_convert<dvec4>(minmax.first), util::glm_convert<dvec4>(minmax.second)};
+}
+
+}  // namespace detail
+
+template <typename ValueType>
+std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
+                                   IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
+    return detail::dataMinMax<ValueType>(data, size, ignore);
 }
 
 }  // namespace

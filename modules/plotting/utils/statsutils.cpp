@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plotting/utils/statsutils.h>
+#include <stdexcept>      // std::invalid_argument
 
 namespace inviwo {
 namespace statsutil {
@@ -35,40 +36,46 @@ namespace detail {
 template <typename Tx, typename Ty>
 RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
     RegresionResult res;
-
-    ivwAssert(X.getSize() == Y.getSize(), "Buffers are not of equal length");
-
+    if (X.getSize() != Y.getSize()) {
+        throw std::invalid_argument("Buffers are not of equal length");
+    }
     auto &xvec = X.getDataContainer();
     auto &yvec = Y.getDataContainer();
 
     // Ax = b;
+    // Minimize the sum of squares of individual errors
+    // http://users.metu.edu.tr/csert/me310/me310_5_regression.pdf
     dmat2 A = dmat2(xvec.size(), 0, 0, 0);
     dvec2 b(0);
-    double meanX = 0;
-    double meanY = 0;
+    double sumX = 0;
+    double sumY = 0;
 
     {
         auto xit = xvec.begin();
         auto yit = yvec.begin();
 
         for (; xit != xvec.end() && yit != yvec.end(); ++xit, ++yit) {
+            
             auto x = *xit;
             auto y = *yit;
-            meanX += x;
-            meanY += y;
-            A[0][1] += x;
+            if (std::isnan(static_cast<double>(x)) || 
+                std::isnan(static_cast<double>(y))) { 
+                --A[0][0];
+                continue; }
+            sumX += x;
+            sumY += y;
             A[1][1] += x * x;
-            b.x += y;
             b.y += y * x;
         }
     }
-    A[1][0] = A[0][1];
+    b.x = sumY;
+    A[1][0] = A[0][1] = sumX;
     dvec2 km = glm::inverse(A) * b;
     res.k = km.y;
     res.m = km.x;
     res.r2 = 0;
-    meanX /= A[0][0];
-    meanY /= A[0][0];
+    double meanX = sumX / A[0][0];
+    double meanY = sumY / A[0][0];
     double stdX = 0;
     double stdY = 0;
 
@@ -77,6 +84,10 @@ RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
         auto yit = yvec.begin();
 
         for (; xit != xvec.end() && yit != yvec.end(); ++xit, ++yit) {
+            if (std::isnan(static_cast<double>(*xit)) ||
+                std::isnan(static_cast<double>(*yit))) {
+                continue;
+            }
             auto x = *xit - meanX;
             auto y = *yit - meanY;
 

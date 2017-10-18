@@ -68,7 +68,13 @@ public:
         : Exception(message, context) {}
     virtual ~DataTypeMismatch() throw() {}
 };
-
+/**
+ * \class DataFrame
+ * Table of data for plotting where each column can have a header (title).
+ * Missing float/double data is stored as Not a Number (NaN)
+ * All columns must have the same number of elements for the 
+ * DataFrame to be valid.
+ */
 class IVW_MODULE_PLOTTING_API DataFrame {
 public:
     using DataItem = std::vector<std::shared_ptr<DataPointBase>>;
@@ -109,8 +115,10 @@ public:
     std::shared_ptr<TemplateColumn<std::uint32_t>> getIndexColumn();
     std::shared_ptr<const TemplateColumn<std::uint32_t>> getIndexColumn() const;
 
-    size_t getSize() const;
     size_t getNumberOfColumns() const;
+    /**
+     * Returns the number of rows of the largest column, excluding the header, or zero if no columns exist.
+     */
     size_t getNumberOfRows() const;
 
     std::vector<std::shared_ptr<Column>>::iterator begin();
@@ -128,14 +136,14 @@ using DataFrameOutport = DataOutport<DataFrame>;
 using DataFrameInport = DataInport<DataFrame>;
 
 /**
- * \brief create a new DataFrame given a vector of strings as input
+ * \brief Create a new DataFrame by guessing the column types from a number of rows.
  *
- * @param exampleData  data for guessing data type of each column
- * @param colHeaders   headers for the columns. If none given, "Column 1", "Column 2", ... is used
- * @throws InvalidColCount  if column count between exampleData and colHeaders does not match
+ * @param exampleRows  Rows for guessing data type of each column. 
+ * @param colHeaders   Name of each column. If none are given, "Column 1", "Column 2", ... is used
+ * @throws InvalidColCount  if column count between exampleRows and colHeaders does not match
  */
 std::shared_ptr<DataFrame> IVW_MODULE_PLOTTING_API createDataFrame(
-    const std::vector<std::string> &exampleData, const std::vector<std::string> &colHeaders = {});
+    const std::vector<std::vector<std::string>> &exampleRows, const std::vector<std::string> &colHeaders = {});
 
 template <typename T>
 std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &header, size_t size) {
