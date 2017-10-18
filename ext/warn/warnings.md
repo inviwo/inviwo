@@ -86,3 +86,4 @@ unused-value                     | *same* (3.2)       | *same* (3.4)         | C
 unused-variable                  | *same* (3.2)       | *same* (3.4)         | C4189 (13)   
 used-but-marked-unused           | *same* (3.2)       | *no*                 | *no*         
 user-ctor-required               | *no*               | *no*                 | C4610 (13)   
+value-to-bool                    | *no*               | *no*                 | C4800 (13)   
