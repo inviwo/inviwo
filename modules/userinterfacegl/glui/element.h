@@ -33,6 +33,9 @@
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/userinterfacegl/glui/renderer.h>
+
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 
 #include <functional>
@@ -45,27 +48,24 @@ class Texture2D;
 
 namespace glui {
 
-class Renderer;
-
-enum class ItemType { Unknown, Checkbox, Slider, Button };
-
 /**
  * \class glui::Element
- * \brief graphical UI element for use in combination with glui::Manager
+ * \brief graphical UI element for use in combination with glui::Layout
  *
- * \see glui::Manager
+ * \see glui::Layout, glui::Renderer
  */
 class IVW_MODULE_USERINTERFACEGL_API Element {
 public:
     enum class UIState { Normal, Pressed, Checked };
 
-    Element(ItemType type, const std::string &label, Renderer *uiRenderer);
+    Element(const std::string &label, Processor &processor, Renderer &uiRenderer);
     virtual ~Element();
-
-    ItemType getType() const;
 
     void setLabel(const std::string &str);
     const std::string &getLabel() const;
+
+    void setLabelBold(bool bold);
+    bool isLabelBold() const;
 
     bool isDirty() const;
 
@@ -75,42 +75,15 @@ public:
     const ivec2 &getExtent();
 
     /**
-     * \brief a UI element may consist of several, separate components.
-     * Each with a unique picking ID.
-     *
-     * @return number of widget components / picking IDs
-     */
-    virtual int getNumWidgetComponents() const;
-
-    /**
-     * \brief update all picking IDs starting at the given index.
-     *
-     * @param startIndex  first picking ID of the UI element
-     * @return first unused picking ID, i.e. startIndex + number of widget components
-     *
-     * \see getNumWidgetComponents
-     */
-    int updatePickingIDs(const int startIndex);
-
-    /**
-     * \brief check whether the UI element uses a certain picking ID.
-     *
-     * @return true if picking ID is assigned to this UI element
-     */
-    bool hasPickingID(int id);
-
-    /**
      * \brief render the widget and its label at the given position
      *
      * @param origin         defines the lower left corner where the widget is positioned
-     * @param pickingMapper  picking mapper provided by the glui::manager
      * @param canvasDim      dimensions of the output canvas
      */
-    void render(const ivec2 &origin, const PickingMapper &pickingMapper, const ivec2 &canvasDim);
-
-    void renderLabel(const ivec2 &origin, const size2_t &canvasDim);
+    void render(const ivec2 &origin, const ivec2 &canvasDim);
 
     void setHoverState(bool enable);
+    bool isHovered() const { return hovered_; }
 
     void setPushedState(bool pushed);
     bool isPushed() const;
@@ -165,9 +138,11 @@ protected:
      */
     virtual void pushStateChanged(){};
 
-    virtual void renderWidget(const ivec2 &origin, const PickingMapper &pickingMapper) = 0;
+    virtual void renderWidget(const ivec2 &origin) = 0;
 
-    ItemType itemType_;
+    void renderLabel(const ivec2 &origin, const size2_t &canvasDim);
+
+    void handlePickingEvent(PickingEvent *e);
 
     std::function<void()>
         action_;  //<! is called by triggerAction() after the internal state has been updated
@@ -180,6 +155,8 @@ protected:
     bool checked_;
 
     bool visible_;
+
+    bool boldLabel_;
 
     // Layout of a UI element:
     //                                                         extent
@@ -207,11 +184,12 @@ protected:
     std::string labelStr_;
     bool labelDirty_;
 
-    std::vector<int> pickingIDs_;
-
     std::shared_ptr<Texture2D> labelTexture_;
 
+    Processor *processor_;
     Renderer *uiRenderer_;
+
+    PickingMapper pickingMapper_;
 };
 
 }  // namespace glui

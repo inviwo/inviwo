@@ -50,63 +50,67 @@ namespace glui {
 
 /**
  * \class Renderer
- * \brief provides the basic rendering functionality required to render UI elements.
+ * \brief provides the basic rendering functionality required to render UI elements. Also provides a
+ * texture cache for different widgets. Each set of widget textures is represented by a 2D texture
+ * array consisting of six textures (widget state normal, pressed, checked plus corresponding
+ * halos).
+ *
  * \see glui::Element
  */
-class IVW_MODULE_USERINTERFACEGL_API Renderer { 
+class IVW_MODULE_USERINTERFACEGL_API Renderer {
 public:
     Renderer();
     virtual ~Renderer() = default;
 
-    /** 
+    /**
      * \brief create a UI texture object representing the normal, pressed, and checked state
      * for both the UI widget and its halo.
-     * 
+     *
      * @param name    internal name of the texture object
      * @param files   list of file names representing the following states:
      *                  texture:   normal, pressed, checked
      *                  halo:      normal, pressed, checked
-     * @return true if successful
+     * @return pointer to texture array
+     * @throws Exception if not successful.
      */
-    bool createUITextures(const std::string& name, const std::vector<std::string>& files,
-                        const std::string& sourcePath);
+    Texture2DArray* createUITextures(const std::string& name, const std::vector<std::string>& files,
+                                     const std::string& sourcePath);
 
     Shader& getShader();
     const Shader& getShader() const;
 
-    TextRenderer& getTextRenderer();
-    const TextRenderer& getTextRenderer() const;
-    
+    TextRenderer& getTextRenderer(bool bold = false);
+    const TextRenderer& getTextRenderer(bool bold = false) const;
+
     TextureQuadRenderer& getTextureQuadRenderer();
     const TextureQuadRenderer& getTextureQuadRenderer() const;
 
     MeshDrawerGL* getMeshDrawer() const;
 
-    Texture2DArray* getUITextures(const std::string &name) const;
+    Texture2DArray* getUITextures(const std::string& name) const;
 
-
-    void setTextColor(const vec4 &color) {
+    void setTextColor(const vec4& color) {
         if (glm::any(glm::notEqual(color, colorText_))) {
             colorText_ = color;
-            auto &shader = quadRenderer_.getShader();
+            auto& shader = quadRenderer_.getShader();
             shader.activate();
-            shader.setUniform("uiColor_", color);
+            shader.setUniform("uiColor", color);
         }
     }
     const vec4& getTextColor() const;
 
-    void setUIColor(const vec4 &color) { colorUI_ = color; }
+    void setUIColor(const vec4& color) { colorUI_ = color; }
     const vec4& getUIColor() const;
 
-    void setHoverColor(const vec4 &color) { colorHover_ = color; }
+    void setHoverColor(const vec4& color) { colorHover_ = color; }
     const vec4& getHoverColor() const;
 
 protected:
     void setupRectangleMesh();
 
     std::shared_ptr<Texture2DArray> createUITextureObject(
-        const std::vector<std::string> &textureFiles, const std::string &sourcePath) const;
-    
+        const std::vector<std::string>& textureFiles, const std::string& sourcePath) const;
+
     Shader uiShader_;
     TextRenderer textRenderer_;
     TextRenderer textRendererBold_;
@@ -122,8 +126,8 @@ protected:
     vec4 colorHover_;
 };
 
-} // namespace glui
+}  // namespace glui
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_GLUIRENDERER_H
+#endif  // IVW_GLUIRENDERER_H

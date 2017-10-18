@@ -31,18 +31,17 @@
 
 uniform ImageParameters outportParameters;
 
-uniform vec2 origin_ = vec2(0.0, 0.0);   // screen coords (pixel)
-uniform vec2 extent_ = vec2(32.0, 32.0); // width and height in screen coords (pixel)
+uniform vec2 origin = vec2(0.0, 0.0);   // screen coords (pixel)
+uniform vec2 extent = vec2(32.0, 32.0); // width and height in screen coords (pixel)
 
-uniform vec2 marginScale_ = vec2(1.0);
+uniform vec2 marginScale = vec2(1.0);
 
-out vec4 color_;
-out vec3 texCoord_;
+out vec4 color;
+out vec3 texCoord;
 
 void main() {
-    //vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-    color_ = in_Color;
-    texCoord_ = vec3(in_TexCoord.x, 1.0 - in_TexCoord.y, 0.0);
+    color = in_Color;
+    texCoord = vec3(in_TexCoord.x, 1.0 - in_TexCoord.y, 0.0);
 
     vec2 vertexPos = in_Vertex.xy;
 
@@ -52,19 +51,19 @@ void main() {
     //
     //    if (vertexPos.x < 0.5) {
     //        // adjust left margin without affecting left edge
-    //        vertexPos.x *= marginScale_.x;
+    //        vertexPos.x *= marginScale.x;
     //    }
     //    else {
     //        // adjust right margin without affecting right edge
-    //        vertexPos.x = 1.0 - (1.0 - vertexPos.x) * marginScale_.x;
+    //        vertexPos.x = 1.0 - (1.0 - vertexPos.x) * marginScale.x;
     //    }
     // compact calculations identical to the code in the above comment
-    vec2 leftAdjustment = vertexPos * marginScale_;
-    vec2 rightAdjustment = 1.0 - (1.0 - vertexPos) * marginScale_;
+    vec2 leftAdjustment = vertexPos * marginScale;
+    vec2 rightAdjustment = 1.0 - (1.0 - vertexPos) * marginScale;
     vertexPos = mix(leftAdjustment, rightAdjustment, step(0.5, vertexPos));
 
     // determine vertex position
-    vec2 pos = vertexPos * extent_ + origin_;
+    vec2 pos = vertexPos * extent + origin;
 
     // transform incoming vertex coords from screen coords to normalized dev coords
     pos = pos * outportParameters.reciprocalDimensions * 2.0 - 1.0;

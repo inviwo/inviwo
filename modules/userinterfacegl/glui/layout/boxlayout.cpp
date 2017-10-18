@@ -79,7 +79,7 @@ void BoxLayout::setSpacing(int spacing) { spacing_ = spacing; }
 
 int BoxLayout::getSpacing() const { return spacing_; }
 
-void BoxLayout::render(const ivec2 &topLeft, PickingMapper &pickingMapper, const ivec2 &canvasDim) {
+void BoxLayout::render(const ivec2 &topLeft, const ivec2 &canvasDim) {
     ivec2 pos(topLeft + ivec2(margins_.y, -margins_.x));
 
     if (direction_ == LayoutDirection::Vertical) {
@@ -88,8 +88,7 @@ void BoxLayout::render(const ivec2 &topLeft, PickingMapper &pickingMapper, const
             if (elem->isVisible()) {
                 // consider vertical extent of UI element (lower left corner)
                 pos.y -= elem->getExtent().y;
-                elem->render(pos, pickingMapper, canvasDim);
-                elem->renderLabel(pos, canvasDim);
+                elem->render(pos, canvasDim);
                 pos.y -= spacing_;
             }
         }
@@ -106,28 +105,27 @@ void BoxLayout::render(const ivec2 &topLeft, PickingMapper &pickingMapper, const
                 ivec2 offset(0);
                 offset.y = (extent.y - elem->getExtent().y) / 2;
 
-                elem->render(pos + offset, pickingMapper, canvasDim);
-                elem->renderLabel(pos + offset, canvasDim);
+                elem->render(pos + offset, canvasDim);
                 pos.x += elem->getExtent().x + spacing_;
             }
         }
     }
 }
 
-void BoxLayout::addElement(Element *element) { uiElements_.push_back(element); }
+void BoxLayout::addElement(Element &element) { uiElements_.push_back(&element); }
 
-void BoxLayout::insertElement(int index, Element *element) {
+void BoxLayout::insertElement(int index, Element &element) {
     if ((index < 0) || (index >= uiElements_.size())) {
         addElement(element);
     } else {
-        uiElements_.insert(uiElements_.begin() + index, element);
+        uiElements_.insert(uiElements_.begin() + index, &element);
     }
 }
 
-void BoxLayout::removeElement(Element *element) {
+void BoxLayout::removeElement(Element &element) {
     auto it = uiElements_.begin();
     while (it != uiElements_.end()) {
-        if (*it == element) {
+        if ((*it) == &element) {
             it = uiElements_.erase(it);
         } else {
             ++it;

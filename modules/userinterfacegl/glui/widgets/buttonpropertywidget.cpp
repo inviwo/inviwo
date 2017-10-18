@@ -28,19 +28,16 @@
  *********************************************************************************/
 
 #include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
-#include <modules/userinterfacegl/glui/manager.h>
-
-#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
 namespace glui {
 
-ButtonPropertyWidget::ButtonPropertyWidget(Manager *uiManager, ButtonProperty *property,
-                                           const ivec2 &extent)
-    : Button(&uiManager->getUIRenderer(), property->getDisplayName(), extent)
-    , PropertyWidget(property)
-    , property_(property) {
+ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty &property, Processor &processor,
+                                           Renderer &uiRenderer, const ivec2 &extent)
+    : Button(property.getDisplayName(), processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
     property_->addObserver(this);
     property_->registerWidget(this);
     action_ = [&]() {

@@ -49,19 +49,19 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {
 public:
-    CheckBox(Renderer *uiRenderer, const std::string &label, const ivec2 &extent = ivec2(24, 24));
+    CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
+             const ivec2 &extent = ivec2(24, 24));
     virtual ~CheckBox() = default;
-
-    virtual void renderWidget(const ivec2 &origin, const PickingMapper &pickingMapper) override;
 
     void setValue(bool value);
     bool getValue() const;
 
 private:
+    virtual void renderWidget(const ivec2 &origin) override;
+
     virtual ivec2 computeLabelPos(int descent) const override;
     virtual UIState uiState() const override;
     virtual void updateState() override;
-    ;
 
     Texture2DArray *uiTextures_;
 };

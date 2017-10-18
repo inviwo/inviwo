@@ -35,16 +35,13 @@
 
 #include <modules/userinterfacegl/glui/widgets/checkbox.h>
 
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
 
 namespace inviwo {
 
-class BoolProperty;
-
 namespace glui {
-
-class Manager;
 
 /**
  * \class BoolPropertyWidget
@@ -54,7 +51,7 @@ class IVW_MODULE_USERINTERFACEGL_API BoolPropertyWidget : public CheckBox,
                                                           public PropertyWidget,
                                                           public PropertyObserver {
 public:
-    BoolPropertyWidget(Manager *uiManager, BoolProperty *property,
+    BoolPropertyWidget(BoolProperty &property, Processor &processor, Renderer &uiRenderer,
                        const ivec2 &extent = ivec2(24, 24));
     virtual ~BoolPropertyWidget() = default;
 

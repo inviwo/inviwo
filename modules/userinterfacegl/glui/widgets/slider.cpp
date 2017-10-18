@@ -43,15 +43,10 @@ namespace inviwo {
 
 namespace glui {
 
-Slider::Slider(Renderer *uiRenderer, const std::string &label, int value, int minValue,
-               int maxValue, const ivec2 &extent)
-    : Element(ItemType::Slider, label, uiRenderer)
-    , value_(value)
-    , min_(minValue)
-    , max_(maxValue)
-    , prevValue_(0) {
+Slider::Slider(const std::string &label, int value, int minValue, int maxValue,
+               Processor &processor, Renderer &uiRenderer, const ivec2 &extent)
+    : Element(label, processor, uiRenderer), value_(value), min_(minValue), max_(maxValue), prevValue_(0) {
     widgetExtent_ = extent;
-    // action_ = [&]() { LogInfo("UI Slider " << getLabel() << " triggered."); };
     moveAction_ = [&](const dvec2 &delta) {
         // delta in pixel (screen coords),
         // need to scale from graphical representation to slider
@@ -68,20 +63,14 @@ Slider::Slider(Renderer *uiRenderer, const std::string &label, int value, int mi
     const std::vector<std::string> sliderFiles = {
         "sliderhandle-normal.png", "sliderhandle-pressed.png", "sliderhandle-checked.png",
         "sliderhandle-halo.png",   "sliderhandle-halo.png",    "sliderhandle-halo.png"};
-    uiRenderer_->createUITextures("Slider", sliderFiles, texSourcePath);
+    uiTextures_ = uiRenderer_->createUITextures("Slider", sliderFiles, texSourcePath);
 
     const std::vector<std::string> sliderGrooveFiles = {
         "slidergroove-normal.png", "slidergroove-pressed.png", "slidergroove-checked.png",
         "slidergroove-halo.png",   "slidergroove-halo.png",    "slidergroove-halo.png",
     };
-    uiRenderer_->createUITextures("SliderGroove", sliderGrooveFiles, texSourcePath);
-
-    uiTextures_ = uiRenderer_->getUITextures("Slider");
-    grooveTextures_ = uiRenderer_->getUITextures("SliderGroove");
-
-    if (!uiTextures_ || !grooveTextures_) {
-        LogWarn("Could not create UI textures for a Slider");
-    }
+    grooveTextures_ =
+        uiRenderer_->createUITextures("SliderGroove", sliderGrooveFiles, texSourcePath);
 }
 
 void Slider::set(int value, int minValue, int maxValue) {
@@ -98,7 +87,7 @@ int Slider::getMinValue() const { return min_; }
 
 int Slider::getMaxValue() const { return max_; }
 
-void Slider::renderWidget(const ivec2 &origin, const PickingMapper &pickingMapper) {
+void Slider::renderWidget(const ivec2 &origin) {
     TextureUnit texUnit;
     texUnit.activate();
 
@@ -108,12 +97,12 @@ void Slider::renderWidget(const ivec2 &origin, const PickingMapper &pickingMappe
 
     // render groove first
     grooveTextures_->bind();
-    uiShader.setUniform("origin_", vec2(origin + widgetPos_));
-    uiShader.setUniform("extent_", vec2(widgetExtent_));
+    uiShader.setUniform("origin", vec2(origin + widgetPos_));
+    uiShader.setUniform("extent", vec2(widgetExtent_));
 
-    uiShader.setUniform("pickingColor_", vec3(0.0f));
-    uiShader.setUniform("uiState_", ivec2(0, (hovered_ ? 1 : 0)));
-    uiShader.setUniform("marginScale_", marginScale());
+    uiShader.setUniform("pickingColor", vec3(0.0f));
+    uiShader.setUniform("uiState", ivec2(0, (hovered_ ? 1 : 0)));
+    uiShader.setUniform("marginScale", marginScale());
 
     uiRenderer_->getMeshDrawer()->draw();
 
@@ -123,13 +112,13 @@ void Slider::renderWidget(const ivec2 &origin, const PickingMapper &pickingMappe
     int sliderPos = static_cast<int>((glm::clamp(value_, min_, max_) - min_) /
                                      static_cast<double>(max_ - min_) *
                                      static_cast<double>(widgetExtent_.x - widgetExtent_.y));
-    uiShader.setUniform("origin_", vec2(origin + widgetPos_ + ivec2(sliderPos, 0)));
-    uiShader.setUniform("extent_", vec2(widgetExtent_.y));
+    uiShader.setUniform("origin", vec2(origin + widgetPos_ + ivec2(sliderPos, 0)));
+    uiShader.setUniform("extent", vec2(widgetExtent_.y));
 
     // set up picking color
-    uiShader.setUniform("pickingColor_", pickingMapper.getColor(pickingIDs_.front()));
-    uiShader.setUniform("uiState_", ivec2(uiState(), (hovered_ ? 1 : 0)));
-    uiShader.setUniform("marginScale_", vec2(marginScale().y));
+    uiShader.setUniform("pickingColor", pickingMapper_.getColor(0));
+    uiShader.setUniform("uiState", ivec2(uiState(), (hovered_ ? 1 : 0)));
+    uiShader.setUniform("marginScale", vec2(marginScale().y));
 
     // render quad
     uiRenderer_->getMeshDrawer()->draw();

@@ -29,12 +29,13 @@
 
 #include <modules/userinterfacegl/processors/gluitestprocessor.h>
 #include <modules/userinterfacegl/glui/element.h>
-#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
-#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
 
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
+
+#include <modules/userinterfacegl/glui/widgets/button.h>
+#include <modules/userinterfacegl/glui/widgets/checkbox.h>
+#include <modules/userinterfacegl/glui/widgets/slider.h>
 
 namespace inviwo {
 
@@ -68,11 +69,10 @@ GLUITestProcessor::GLUITestProcessor()
                        1)
     , layoutSpacing_("layoutSpacing", "Layout Spacing", 5, 0, 50)
     , layoutMargins_("layoutMargins", "Layout Margins", ivec4(10), ivec4(0), ivec4(50))
-    , uiManager_(this)
     , layout_(glui::BoxLayout::LayoutDirection::Vertical)
-    , boolPropertyUI_(nullptr)
-    , intPropertyUI_(nullptr)
-    , buttonPropertyUI_(nullptr) {
+    , boolPropertyUI_(boolProperty_, *this, uiRenderer_)
+    , intPropertyUI_(intProperty_, *this, uiRenderer_, ivec2(100, 24))
+    , buttonPropertyUI_(buttonProperty_, *this, uiRenderer_, ivec2(150, 30)) {
     inport_.setOptional(true);
 
     addPort(inport_);
@@ -94,7 +94,7 @@ GLUITestProcessor::GLUITestProcessor()
     uiSettings_.addProperty(layoutMargins_);
 
     // regular properties
-    buttonProperty_.onChange([&]() { LogInfo("button pressed"); });
+    buttonProperty_.onChange([&]() { LogInfo("Property button pressed"); });
 
     addProperty(boolProperty_);
     addProperty(intProperty_);
@@ -103,51 +103,51 @@ GLUITestProcessor::GLUITestProcessor()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    // plain GLUI widgets
-
-    // create a small check box
-    auto elem = uiManager_.createUIElement(glui::ItemType::Checkbox, "checkbox 1", ivec2(24, 24));
-    layout_.addElement(elem);
-    // create a larger check box
-    elem = uiManager_.createUIElement(glui::ItemType::Checkbox, "checkbox 2", ivec2(32, 32));
-    layout_.addElement(elem);
-    // create a wide button
-    elem = uiManager_.createUIElement(glui::ItemType::Button, "button", ivec2(100, 24));
-    layout_.addElement(elem);
-    // create a large button
-    elem = uiManager_.createUIElement(glui::ItemType::Button, "button2", ivec2(70, 50));
-    layout_.addElement(elem);
-
     // inviwo GLUI property widgets
-    boolPropertyUI_ = new glui::BoolPropertyWidget(&uiManager_, &boolProperty_);
-    uiManager_.addUIElement(boolPropertyUI_);
-
-    intPropertyUI_ = new glui::IntPropertyWidget(&uiManager_, &intProperty_, ivec2(100, 24));
-    uiManager_.addUIElement(intPropertyUI_);
-
-    buttonPropertyUI_ =
-        new glui::ButtonPropertyWidget(&uiManager_, &buttonProperty_, ivec2(150, 30));
-    uiManager_.addUIElement(buttonPropertyUI_);
-
     propertyLayout_.addElement(boolPropertyUI_);
     propertyLayout_.addElement(intPropertyUI_);
     propertyLayout_.addElement(buttonPropertyUI_);
 
+    // plain GLUI widgets w/o connection to any Inviwo property
+    //
+    // create a small check box
+    widgets_.push_back(std::make_shared<glui::CheckBox>("checkbox 1", *this, uiRenderer_, ivec2(24, 24)));
+    // create a larger check box
+    widgets_.push_back(std::make_shared<glui::CheckBox>("checkbox 2", *this, uiRenderer_, ivec2(32, 32)));
+    // create a slider
+    auto slider = std::make_shared<glui::Slider>("slider", 0, 0, 100, *this, uiRenderer_, ivec2(100, 24));
+    slider->setAction([&, slider]() {
+        LogInfo("UI slider value changed: " << slider->get());
+    });
+    widgets_.push_back(slider);
+    // create a wide button
+    auto button = std::make_shared<glui::Button>("button 1", *this, uiRenderer_, ivec2(100, 28));
+    button->setAction([&, slider]() {
+        LogInfo("UI button pressed");
+    });
+    widgets_.push_back(button);
+    // create a large button
+    widgets_.push_back(std::make_shared<glui::Button>("button 2", *this, uiRenderer_, ivec2(80, 50)));
+
+    for (auto widget : widgets_) {
+        layout_.addElement(*widget);
+    }
+
     // initialize color states
-    uiManager_.setUIColor(uiColor_.get());
-    uiManager_.setTextColor(uiTextColor_.get());
-    uiManager_.setHoverColor(hoverColor_.get());
+    uiRenderer_.setUIColor(uiColor_.get());
+    uiRenderer_.setTextColor(uiTextColor_.get());
+    uiRenderer_.setHoverColor(hoverColor_.get());
 }
 
 void GLUITestProcessor::process() {
     if (uiColor_.isModified()) {
-        uiManager_.setUIColor(uiColor_.get());
+        uiRenderer_.setUIColor(uiColor_.get());
     }
     if (uiTextColor_.isModified()) {
-        uiManager_.setTextColor(uiTextColor_.get());
+        uiRenderer_.setTextColor(uiTextColor_.get());
     }
     if (hoverColor_.isModified()) {
-        uiManager_.setHoverColor(hoverColor_.get());
+        uiRenderer_.setHoverColor(hoverColor_.get());
     }
     if (layoutDirection_.isModified()) {
         layout_.setDirection(layoutDirection_.get());
@@ -179,7 +179,7 @@ void GLUITestProcessor::process() {
             const ivec2 extent(layout_.getExtent());
             ivec2 origin(ivec2(0, extent.y));
 
-            uiManager_.renderLayout(layout_, origin, outport_);
+            layout_.render(origin, outport_.getDimensions());
         }
 
         {
@@ -188,7 +188,7 @@ void GLUITestProcessor::process() {
             const ivec2 outputDim(outport_.getDimensions());
             ivec2 origin(ivec2(outputDim.x - extent.x, outputDim.y));
 
-            uiManager_.renderLayout(propertyLayout_, origin, outport_);
+            propertyLayout_.render(origin, outport_.getDimensions());
         }
     }
 

@@ -35,16 +35,13 @@
 
 #include <modules/userinterfacegl/glui/widgets/button.h>
 
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
 
 namespace inviwo {
 
-class ButtonProperty;
-
 namespace glui {
-
-class Manager;
 
 /**
  * \class GLUIButtonProperty
@@ -54,7 +51,7 @@ class IVW_MODULE_USERINTERFACEGL_API ButtonPropertyWidget : public Button,
                                                             public PropertyWidget,
                                                             public PropertyObserver {
 public:
-    ButtonPropertyWidget(Manager *uiManager, ButtonProperty *property,
+    ButtonPropertyWidget(ButtonProperty &property, Processor &processor, Renderer &uiRenderer,
                          const ivec2 &extent = ivec2(100, 24));
     virtual ~ButtonPropertyWidget() = default;
 

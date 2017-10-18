@@ -43,23 +43,19 @@ namespace inviwo {
 
 namespace glui {
 
-CheckBox::CheckBox(Renderer *uiRenderer, const std::string &label, const ivec2 &extent)
-    : Element(ItemType::Checkbox, label, uiRenderer) {
+CheckBox::CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer, const ivec2 &extent)
+    : Element(label, processor, uiRenderer) {
     widgetExtent_ = extent;
     action_ = [&]() { LogInfo("UI checkbox " << getLabel() << " toggled: " << getValue()); };
 
     std::vector<std::string> textureFiles = {
         "checkbox-unchecked.png",      "checkbox-checked.png",      "checkbox-checked.png",
         "checkbox-unchecked-halo.png", "checkbox-checked-halo.png", "checkbox-checked-halo.png"};
-    uiRenderer_->createUITextures("checkbox", textureFiles,
+    uiTextures_ = uiRenderer_->createUITextures("checkbox", textureFiles,
                                   module::getModulePath("UserInterfaceGL", ModulePath::Images));
-    uiTextures_ = uiRenderer_->getUITextures("checkbox");
-    if (!uiTextures_) {
-        LogWarn("Could not create UI textures for a checkbox");
-    }
 }
 
-void CheckBox::renderWidget(const ivec2 &origin, const PickingMapper &pickingMapper) {
+void CheckBox::renderWidget(const ivec2 &origin) {
     TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();
@@ -68,13 +64,13 @@ void CheckBox::renderWidget(const ivec2 &origin, const PickingMapper &pickingMap
     auto &uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
 
-    uiShader.setUniform("origin_", vec2(origin + widgetPos_));
-    uiShader.setUniform("extent_", vec2(widgetExtent_));
+    uiShader.setUniform("origin", vec2(origin + widgetPos_));
+    uiShader.setUniform("extent", vec2(widgetExtent_));
 
     // set up picking color
-    uiShader.setUniform("pickingColor_", pickingMapper.getColor(pickingIDs_.front()));
-    uiShader.setUniform("uiState_", ivec2(uiState(), (hovered_ ? 1 : 0)));
-    uiShader.setUniform("marginScale_", marginScale());
+    uiShader.setUniform("pickingColor", pickingMapper_.getColor(0));
+    uiShader.setUniform("uiState", ivec2(uiState(), (hovered_ ? 1 : 0)));
+    uiShader.setUniform("marginScale", marginScale());
 
     // render quad
     uiRenderer_->getMeshDrawer()->draw();

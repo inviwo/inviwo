@@ -40,19 +40,15 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/ports/imageport.h>
 
-#include <modules/userinterfacegl/glui/manager.h>
+#include <modules/userinterfacegl/glui/renderer.h>
 #include <modules/userinterfacegl/glui/layout/boxlayout.h>
 #include <modules/userinterfacegl/glui/layout/vboxlayout.h>
 
+#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
+
 namespace inviwo {
-
-namespace glui {
-
-class BoolPropertyWidget;
-class ButtonPropertyWidget;
-class IntPropertyWidget;
-
-}  // namespace glui
 
 /** \docpage{org.inviwo.GLUITestProcessor, GLUITest Processor}
  * ![](org.inviwo.GLUITestProcessor.png?classIdentifier=org.inviwo.GLUITestProcessor)
@@ -108,13 +104,15 @@ private:
     IntProperty layoutSpacing_;
     IntVec4Property layoutMargins_;
 
-    glui::Manager uiManager_;
+    glui::Renderer uiRenderer_;
     glui::BoxLayout layout_;
     glui::VBoxLayout propertyLayout_;
 
-    glui::BoolPropertyWidget *boolPropertyUI_;
-    glui::IntPropertyWidget *intPropertyUI_;
-    glui::ButtonPropertyWidget *buttonPropertyUI_;
+    glui::BoolPropertyWidget boolPropertyUI_;
+    glui::IntPropertyWidget intPropertyUI_;
+    glui::ButtonPropertyWidget buttonPropertyUI_;
+
+    std::vector<std::shared_ptr<glui::Element>> widgets_;
 };
 
 }  // namespace inviwo

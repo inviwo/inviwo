@@ -49,9 +49,8 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API Slider : public Element {
 public:
-    Slider(Renderer *uiRenderer, const std::string &label,
-        int value, int minValue, int maxValue,
-               const ivec2 &extent = ivec2(100, 24));
+    Slider(const std::string &label, int value, int minValue, int maxValue, Processor &processor,
+           Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24));
     virtual ~Slider() = default;
 
     void set(int value);
@@ -60,9 +59,9 @@ public:
     int getMinValue() const;
     int getMaxValue() const;
 
-    virtual void renderWidget(const ivec2 &origin, const PickingMapper &pickingMapper) override;
-
 protected:
+    virtual void renderWidget(const ivec2 &origin) override;
+
     int getPreviousValue() const;
 
 private:
@@ -81,7 +80,7 @@ private:
     int prevValue_;
 };
 
-} // namespace glui
+}  // namespace glui
 
 }  // namespace inviwo
 

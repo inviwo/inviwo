@@ -31,7 +31,7 @@ uniform sampler2D tex;
 
 in vec2 texCoord;
 
-uniform vec4 uiColor_ = vec4(0.0, 0.0, 0.0, 1.0);
+uniform vec4 uiColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 void main() {
     vec4 dstColor = vec4(0.0);
@@ -39,7 +39,7 @@ void main() {
     // sample UI color texture
     vec4 uiLabelColor = texture(tex, texCoord);
     // only use alpha of the texture
-    dstColor = mix(dstColor, uiColor_, uiLabelColor.a);
+    dstColor = mix(dstColor, uiColor, uiLabelColor.a);
 
     FragData0 = dstColor;
     PickingData = vec4(0.0);

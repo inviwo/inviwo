@@ -60,8 +60,8 @@ namespace glui {
 
 Renderer::Renderer()
     : uiShader_("renderui.vert", "renderui.frag")
-    , textRenderer_(util::getDefaultFontPath() + "/Montserrat-Regular.otf")
-    , textRendererBold_(util::getDefaultFontPath() + "/Montserrat-Medium.otf")
+    , textRenderer_(util::getDefaultFontPath() + "/OpenSans-Semibold.ttf")
+    , textRendererBold_(util::getDefaultFontPath() + "/OpenSans-Bold.ttf")
     , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag"))
     , colorUI_(0.0f, 0.0f, 0.0f, 1.0f)
     , colorText_(0.0f, 0.0f, 0.0f, 1.0f)
@@ -72,32 +72,42 @@ Renderer::Renderer()
     setupRectangleMesh();
 }
 
-bool Renderer::createUITextures(const std::string& name, const std::vector<std::string>& files,
-                                const std::string& sourcePath) {
-    if (uiTextureMap_.find(name) != uiTextureMap_.end()) {
-        return false;
+Texture2DArray* Renderer::createUITextures(const std::string& name,
+                                           const std::vector<std::string>& files,
+                                           const std::string& sourcePath) {
+    if (auto textures = getUITextures(name)) {
+        return textures;
     }
-    auto result = uiTextureMap_.insert({name, createUITextureObject(files, sourcePath)});
-    return result.second;
+    auto textures = createUITextureObject(files, sourcePath);
+    uiTextureMap_.insert({name, textures});
+    return textures.get();
 }
 
-const inviwo::Shader& Renderer::getShader() const { return uiShader_; }
+const Shader& Renderer::getShader() const { return uiShader_; }
 
-inviwo::Shader& Renderer::getShader() { return uiShader_; }
+Shader& Renderer::getShader() { return uiShader_; }
 
-const inviwo::TextRenderer& Renderer::getTextRenderer() const { return textRenderer_; }
-
-inviwo::TextRenderer& Renderer::getTextRenderer() { return textRenderer_; }
-
-const inviwo::TextureQuadRenderer& Renderer::getTextureQuadRenderer() const {
-    return quadRenderer_;
+const TextRenderer& Renderer::getTextRenderer(bool bold) const {
+    if (bold)
+        return textRendererBold_;
+    else
+        return textRenderer_;
 }
 
-inviwo::TextureQuadRenderer& Renderer::getTextureQuadRenderer() { return quadRenderer_; }
+TextRenderer& Renderer::getTextRenderer(bool bold) {
+    if (bold)
+        return textRendererBold_;
+    else
+        return textRenderer_;
+}
 
-inviwo::MeshDrawerGL* Renderer::getMeshDrawer() const { return meshDrawer_.get(); }
+const TextureQuadRenderer& Renderer::getTextureQuadRenderer() const { return quadRenderer_; }
 
-inviwo::Texture2DArray* Renderer::getUITextures(const std::string& name) const {
+TextureQuadRenderer& Renderer::getTextureQuadRenderer() { return quadRenderer_; }
+
+MeshDrawerGL* Renderer::getMeshDrawer() const { return meshDrawer_.get(); }
+
+Texture2DArray* Renderer::getUITextures(const std::string& name) const {
     auto it = uiTextureMap_.find(name);
     if (it != uiTextureMap_.end()) {
         return it->second.get();
@@ -106,11 +116,11 @@ inviwo::Texture2DArray* Renderer::getUITextures(const std::string& name) const {
     }
 }
 
-const inviwo::vec4& Renderer::getTextColor() const { return colorText_; }
+const vec4& Renderer::getTextColor() const { return colorText_; }
 
-const inviwo::vec4& Renderer::getUIColor() const { return colorUI_; }
+const vec4& Renderer::getUIColor() const { return colorUI_; }
 
-const inviwo::vec4& Renderer::getHoverColor() const { return colorHover_; }
+const vec4& Renderer::getHoverColor() const { return colorHover_; }
 
 void Renderer::setupRectangleMesh() {
     // set up mesh for drawing a single quad from (0,0) to (1,1) with subdivisions at .45 and
@@ -168,7 +178,7 @@ void Renderer::setupRectangleMesh() {
     meshDrawer_ = std::make_shared<MeshDrawerGL>(rectangleMesh_.get());
 }
 
-std::shared_ptr<inviwo::Texture2DArray> Renderer::createUITextureObject(
+std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     const std::vector<std::string>& textureFiles, const std::string& sourcePath) const {
     // read in textures
     std::vector<std::shared_ptr<Layer> > textureLayers;
@@ -191,7 +201,7 @@ std::shared_ptr<inviwo::Texture2DArray> Renderer::createUITextureObject(
             textureLayers.push_back(layer);
         }
     } else {
-        LogError("Could not find a data reader for texture data (png).");
+        throw Exception("Could not find a data reader for texture data (png).", IvwContext);
         return nullptr;
     }
 

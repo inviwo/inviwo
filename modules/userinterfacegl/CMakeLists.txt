@@ -10,7 +10,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/hboxlayout.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/layout.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/vboxlayout.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/manager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/renderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/boolpropertywidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/button.h
@@ -33,7 +32,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/hboxlayout.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/layout.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/vboxlayout.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/renderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/boolpropertywidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/button.cpp

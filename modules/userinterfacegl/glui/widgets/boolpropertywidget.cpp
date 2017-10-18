@@ -28,19 +28,16 @@
  *********************************************************************************/
 
 #include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
-#include <modules/userinterfacegl/glui/manager.h>
-
-#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
 namespace glui {
 
-BoolPropertyWidget::BoolPropertyWidget(Manager *uiManager, BoolProperty *property,
-                                   const ivec2 &extent)
-    : CheckBox(&uiManager->getUIRenderer(), property->getDisplayName(), extent)
-    , PropertyWidget(property)
-    , property_(property) {
+BoolPropertyWidget::BoolPropertyWidget(BoolProperty &property, Processor &processor,
+                                       Renderer &uiRenderer, const ivec2 &extent)
+    : CheckBox(property.getDisplayName(), processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
     property_->addObserver(this);
     property_->registerWidget(this);
     action_ = [&]() {
@@ -55,10 +52,7 @@ void BoolPropertyWidget::updateFromProperty() { setValue(property_->get()); }
 
 void BoolPropertyWidget::onSetVisible(bool visible) { setVisible(visible); }
 
-void BoolPropertyWidget::onSetDisplayName(const std::string &displayName) {
-    setLabel(displayName);
-    property_->propertyModified();
-}
+void BoolPropertyWidget::onSetDisplayName(const std::string &displayName) { setLabel(displayName); }
 
 }  // namespace glui
 

@@ -49,12 +49,13 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API Button : public Element {
 public:
-    Button(Renderer *uiRenderer, const std::string &label, const ivec2 &extent = ivec2(100, 24));
+    Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
+           const ivec2 &extent = ivec2(100, 24));
     virtual ~Button() = default;
 
-    virtual void renderWidget(const ivec2 &origin, const PickingMapper &pickingMapper) override;
-
 private:
+    virtual void renderWidget(const ivec2 &origin) override;
+
     virtual ivec2 computeLabelPos(int descent) const override;
     virtual UIState uiState() const override;
     virtual vec2 marginScale() const override;

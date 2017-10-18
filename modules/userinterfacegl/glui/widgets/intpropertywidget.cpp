@@ -28,17 +28,17 @@
  *********************************************************************************/
 
 #include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
-#include <modules/userinterfacegl/glui/manager.h>
 
 namespace inviwo {
 
 namespace glui {
 
-IntPropertyWidget::IntPropertyWidget(Manager *uiManager, IntProperty *property, const ivec2 &extent)
-    : Slider(&uiManager->getUIRenderer(), property->getDisplayName(), property->get(),
-             property->getMinValue(), property->getMaxValue(), extent)
-    , PropertyWidget(property)
-    , property_(property) {
+IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor,
+                                     Renderer &uiRenderer, const ivec2 &extent)
+    : Slider(property.getDisplayName(), property.get(), property.getMinValue(),
+             property.getMaxValue(), processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
     property_->addObserver(this);
     property_->registerWidget(this);
 

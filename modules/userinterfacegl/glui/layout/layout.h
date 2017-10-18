@@ -63,25 +63,23 @@ public:
      * \brief render the layout and all its UI elements at the given position
      *
      * @param topLeft         defines the top left corner where the UI is positioned
-     * @param pickingMapper  picking mapper provided by the GLUI manager
      * @param canvasDim      dimensions of the output canvas
      */
-    virtual void render(const ivec2 &topLeft, PickingMapper &pickingMapper,
-                        const ivec2 &canvasDim) = 0;
+    virtual void render(const ivec2 &topLeft, const ivec2 &canvasDim) = 0;
 
     /**
      * \brief add a UI element to the layout at the end of the layout
      *
      * @param element  UI element to be added
      */
-    virtual void addElement(Element *element) = 0;
+    virtual void addElement(Element &element) = 0;
 
     /**
      * \brief remove the given UI element from the layout
      *
      * @param element  UI element to be removed
      */
-    virtual void removeElement(Element *element) = 0;
+    virtual void removeElement(Element &element) = 0;
 
 protected:
     ivec4 margins_ = ivec4(10, 10, 10, 10);  //!< top, left, bottom, right

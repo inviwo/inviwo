@@ -35,26 +35,24 @@
 
 #include <modules/userinterfacegl/glui/widgets/slider.h>
 
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
 namespace glui {
-
-class Manager;
 
 /**
  * \class BoolPropertyWidget
  * \brief glui property widget for a bool property using glui::Slider
  */
 class IVW_MODULE_USERINTERFACEGL_API IntPropertyWidget : public Slider,
-                                                          public PropertyWidget,
-                                                          public PropertyObserver {
+                                                         public PropertyWidget,
+                                                         public PropertyObserver {
 public:
-    IntPropertyWidget(Manager *uiManager, IntProperty *property,
-                       const ivec2 &extent = ivec2(24, 24));
+    IntPropertyWidget(IntProperty &property, Processor &processor, Renderer &uiRenderer,
+                      const ivec2 &extent = ivec2(24, 24));
     virtual ~IntPropertyWidget() = default;
 
     virtual void updateFromProperty() override;

@@ -31,35 +31,32 @@
 
 uniform sampler2DArray arrayTexSampler; //!< normal, pressed, checked, halo normal, halo pressed, halo checked
 
-//uniform ImageParameters outportParameters;
+uniform vec4 uiColor = vec4(0.0, 0.0, 0.0, 1.0);
+uniform vec4 haloColor = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec3 pickingColor = vec3(0.0);
 
-uniform vec4 uiColor_ = vec4(0.0, 0.0, 0.0, 1.0);
-uniform vec4 haloColor_ = vec4(1.0, 1.0, 1.0, 1.0);
-uniform vec3 pickingColor_ = vec3(0.0);
+uniform ivec2 uiState = ivec2(0, -1); // active / hovered
 
-uniform ivec2 uiState_ = ivec2(0, -1); // active / hovered
-
-in vec3 texCoord_;
+in vec3 texCoord;
 
 void main() {
     vec4 dstColor = vec4(0.0);
 
     // draw halo only if hovered
-    if (uiState_.y > 0) {
-        vec4 halo = texture(arrayTexSampler, vec3(texCoord_.xy, uiState_.x + 3));
+    if (uiState.y > 0) {
+        vec4 halo = texture(arrayTexSampler, vec3(texCoord.xy, uiState.x + 3));
         // front-to-back blending
-        dstColor = vec4(haloColor_.rgb, haloColor_.a * halo.a);
+        dstColor = vec4(haloColor.rgb, haloColor.a * halo.a);
     }
 
     // sample UI color texture
-    vec4 uiTexColor = texture(arrayTexSampler, vec3(texCoord_.xy, uiState_.x));
-    //dstColor = mix(dstColor, uiColor_, uiTexColor.a);
-    dstColor = mix(dstColor, vec4(uiColor_.rgb * uiTexColor.rgb, uiColor_.a * uiTexColor.a), uiTexColor.a);
+    vec4 uiTexColor = texture(arrayTexSampler, vec3(texCoord.xy, uiState.x));
+    dstColor = mix(dstColor, vec4(uiColor.rgb * uiTexColor.rgb, uiColor.a * uiTexColor.a), uiTexColor.a);
 
-    //dstColor = uiTexColor * uiColor_;
+    //dstColor = uiTexColor * uiColor;
 
     FragData0 = dstColor;
     // prevent picking for transparent regions and if picking color alpha is negative
     // by setting the alpha to 0.
-    PickingData = vec4(pickingColor_.rgb, step(0.0, (uiTexColor.a - 0.001)));
+    PickingData = vec4(pickingColor.rgb, step(0.0, (uiTexColor.a - 0.001)));
 }
