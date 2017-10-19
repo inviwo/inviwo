@@ -112,7 +112,7 @@ private:
     glui::IntPropertyWidget intPropertyUI_;
     glui::ButtonPropertyWidget buttonPropertyUI_;
 
-    std::vector<std::shared_ptr<glui::Element>> widgets_;
+    std::vector<std::unique_ptr<glui::Element>> widgets_;
 };
 
 }  // namespace inviwo

@@ -36,6 +36,7 @@
 #include <modules/userinterfacegl/glui/layout/layout.h>
 
 #include <vector>
+#include <functional>
 
 namespace inviwo {
 
@@ -97,7 +98,7 @@ private:
     LayoutDirection direction_;
     int spacing_;
 
-    std::vector<Element *> uiElements_;
+    std::vector<std::reference_wrapper<Element>> uiElements_;
 };
 
 }  // namespace glui

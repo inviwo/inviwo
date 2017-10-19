@@ -78,7 +78,7 @@ const std::string &Element::getLabel() const { return labelStr_; }
 
 bool Element::isDirty() const { return labelDirty_; }
 
-void Element::setVisible(bool visible /*= true*/) { visible_ = visible; }
+void Element::setVisible(bool visible) { visible_ = visible; }
 
 bool Element::isVisible() const { return visible_; }
 

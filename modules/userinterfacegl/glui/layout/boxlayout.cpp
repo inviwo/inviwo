@@ -45,10 +45,10 @@ BoxLayout::LayoutDirection BoxLayout::getDirection() const { return direction_; 
 ivec2 BoxLayout::getExtent() const {
     ivec2 extent;
     if (direction_ == LayoutDirection::Vertical) {
-        for (auto elem : uiElements_) {
-            if (elem->isVisible()) {
-                extent.x = std::max(extent.x, elem->getExtent().x);
-                extent.y += elem->getExtent().y + spacing_;
+        for (Element &elem : uiElements_) {
+            if (elem.isVisible()) {
+                extent.x = std::max(extent.x, elem.getExtent().x);
+                extent.y += elem.getExtent().y + spacing_;
             }
         }
         if (!uiElements_.empty()) {
@@ -57,10 +57,10 @@ ivec2 BoxLayout::getExtent() const {
         }
     } else {
         // horizontal layout
-        for (auto elem : uiElements_) {
-            if (elem->isVisible()) {
-                extent.x += elem->getExtent().x + spacing_;
-                extent.y = std::max(extent.y, elem->getExtent().y);
+        for (Element &elem : uiElements_) {
+            if (elem.isVisible()) {
+                extent.x += elem.getExtent().x + spacing_;
+                extent.y = std::max(extent.y, elem.getExtent().y);
             }
         }
         if (!uiElements_.empty()) {
@@ -84,11 +84,11 @@ void BoxLayout::render(const ivec2 &topLeft, const ivec2 &canvasDim) {
 
     if (direction_ == LayoutDirection::Vertical) {
         // vertical layout
-        for (auto elem : uiElements_) {
-            if (elem->isVisible()) {
+        for (Element &elem : uiElements_) {
+            if (elem.isVisible()) {
                 // consider vertical extent of UI element (lower left corner)
-                pos.y -= elem->getExtent().y;
-                elem->render(pos, canvasDim);
+                pos.y -= elem.getExtent().y;
+                elem.render(pos, canvasDim);
                 pos.y -= spacing_;
             }
         }
@@ -99,33 +99,33 @@ void BoxLayout::render(const ivec2 &topLeft, const ivec2 &canvasDim) {
         // reference position is in the lower left corner
         pos.y -= extent.y;
 
-        for (auto elem : uiElements_) {
-            if (elem->isVisible()) {
+        for (Element &elem : uiElements_) {
+            if (elem.isVisible()) {
                 // compute vertical offset
                 ivec2 offset(0);
-                offset.y = (extent.y - elem->getExtent().y) / 2;
+                offset.y = (extent.y - elem.getExtent().y) / 2;
 
-                elem->render(pos + offset, canvasDim);
-                pos.x += elem->getExtent().x + spacing_;
+                elem.render(pos + offset, canvasDim);
+                pos.x += elem.getExtent().x + spacing_;
             }
         }
     }
 }
 
-void BoxLayout::addElement(Element &element) { uiElements_.push_back(&element); }
+void BoxLayout::addElement(Element &element) { uiElements_.push_back(std::ref(element)); }
 
 void BoxLayout::insertElement(int index, Element &element) {
     if ((index < 0) || (index >= uiElements_.size())) {
         addElement(element);
     } else {
-        uiElements_.insert(uiElements_.begin() + index, &element);
+        uiElements_.insert(uiElements_.begin() + index, std::ref(element));
     }
 }
 
 void BoxLayout::removeElement(Element &element) {
     auto it = uiElements_.begin();
     while (it != uiElements_.end()) {
-        if ((*it) == &element) {
+        if (&(*it).get() == &element) {
             it = uiElements_.erase(it);
         } else {
             ++it;

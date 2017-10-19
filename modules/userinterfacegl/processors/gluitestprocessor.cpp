@@ -111,25 +111,25 @@ GLUITestProcessor::GLUITestProcessor()
     // plain GLUI widgets w/o connection to any Inviwo property
     //
     // create a small check box
-    widgets_.push_back(std::make_shared<glui::CheckBox>("checkbox 1", *this, uiRenderer_, ivec2(24, 24)));
+    widgets_.emplace_back(
+        util::make_unique<glui::CheckBox>("checkbox 1", *this, uiRenderer_, ivec2(24, 24)));
     // create a larger check box
-    widgets_.push_back(std::make_shared<glui::CheckBox>("checkbox 2", *this, uiRenderer_, ivec2(32, 32)));
+    widgets_.emplace_back(
+        std::make_unique<glui::CheckBox>("checkbox 2", *this, uiRenderer_, ivec2(32, 32)));
     // create a slider
-    auto slider = std::make_shared<glui::Slider>("slider", 0, 0, 100, *this, uiRenderer_, ivec2(100, 24));
-    slider->setAction([&, slider]() {
-        LogInfo("UI slider value changed: " << slider->get());
-    });
-    widgets_.push_back(slider);
+    auto slider =
+        std::make_unique<glui::Slider>("slider", 0, 0, 100, *this, uiRenderer_, ivec2(100, 24));
+    slider->setAction([&, p = slider.get() ]() { LogInfo("UI slider changed: " << p->get()); });
+    widgets_.emplace_back(std::move(slider));
     // create a wide button
-    auto button = std::make_shared<glui::Button>("button 1", *this, uiRenderer_, ivec2(100, 28));
-    button->setAction([&, slider]() {
-        LogInfo("UI button pressed");
-    });
-    widgets_.push_back(button);
+    auto button = std::make_unique<glui::Button>("button 1", *this, uiRenderer_, ivec2(100, 28));
+    button->setAction([&]() { LogInfo("UI button pressed"); });
+    widgets_.emplace_back(std::move(button));
     // create a large button
-    widgets_.push_back(std::make_shared<glui::Button>("button 2", *this, uiRenderer_, ivec2(80, 50)));
+    widgets_.emplace_back(
+        std::make_unique<glui::Button>("button 2", *this, uiRenderer_, ivec2(80, 50)));
 
-    for (auto widget : widgets_) {
+    for (auto &widget : widgets_) {
         layout_.addElement(*widget);
     }
 
