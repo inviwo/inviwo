@@ -715,6 +715,7 @@ void Deserializer::deserialize(const std::string& key, Mat& data) {
     if (NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
             deserialize("row" + toString(i), data[i]);
+            deserialize("col" + toString(i), data[i]);
         }
     }
 }

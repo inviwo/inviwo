@@ -281,7 +281,7 @@ void Serializer::serialize(const std::string& key, const Mat& data) {
 
     NodeSwitch nodeSwitch(*this, node.get());
     for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
-        serialize("row" + toString(i), data[i]);
+        serialize("col" + toString(i), data[i]);
     }
 }
 
