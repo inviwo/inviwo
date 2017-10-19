@@ -27,36 +27,51 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
-
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
-
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace glui {
 
-    // Register objects that can be shared with the rest of inviwo here:
+IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor,
+                                     Renderer &uiRenderer, const ivec2 &extent)
+    : Slider(property.getDisplayName(), property.get(), property.getMinValue(),
+             property.getMaxValue(), processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
+    property_->addObserver(this);
+    property_->registerWidget(this);
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
-
-    registerProcessor<GLUITestProcessor>();
-
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
+    moveAction_ = [&](const dvec2 &delta) {
+        bool triggerUpdate = false;
+        if (!property_->getReadOnly()) {
+            // delta in pixel (screen coords),
+            // need to scale from graphical representation to slider
+            int newVal = static_cast<int>(
+                round(getPreviousValue() +
+                      delta.x / static_cast<double>(widgetExtent_.x - widgetExtent_.y) *
+                          static_cast<double>(getMaxValue() - getMinValue())));
+            if (newVal != property_->get()) {
+                property_->set(newVal);
+                triggerUpdate = true;
+            }
+        }
+        return triggerUpdate;
+    };
+    updateFromProperty();
 }
+
+void IntPropertyWidget::updateFromProperty() {
+    set(property_->get(), property_->getMinValue(), property_->getMaxValue());
+}
+
+void IntPropertyWidget::onSetVisible(bool visible) { setVisible(visible); }
+
+void IntPropertyWidget::onSetDisplayName(const std::string &displayName) {
+    setLabel(displayName);
+    property_->propertyModified();
+}
+
+}  // namespace glui
 
 }  // namespace inviwo

@@ -27,36 +27,22 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
-
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
-
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/userinterfacegl/glui/layout/layout.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace glui {
 
-    // Register objects that can be shared with the rest of inviwo here:
+Layout::Layout() {}
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
-
-    registerProcessor<GLUITestProcessor>();
-
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
+void Layout::setMargins(int top, int left, int bottom, int right) {
+    margins_ = ivec4(top, left, bottom, right);
 }
+
+const ivec4 & Layout::getMargins() const {
+    return margins_;
+}
+
+} // namespace glui
 
 }  // namespace inviwo

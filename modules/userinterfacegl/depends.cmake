@@ -5,4 +5,6 @@ set(dependencies
     InviwoOpenGLModule
     InviwoBaseGLModule  
     InviwoAssimpModule
+    InviwoCImgModule
+    InviwoFontRenderingModule
 )

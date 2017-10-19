@@ -27,36 +27,33 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
-
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
-
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace glui {
 
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
-
-    registerProcessor<GLUITestProcessor>();
-
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
+BoolPropertyWidget::BoolPropertyWidget(BoolProperty &property, Processor &processor,
+                                       Renderer &uiRenderer, const ivec2 &extent)
+    : CheckBox(property.getDisplayName(), processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
+    property_->addObserver(this);
+    property_->registerWidget(this);
+    action_ = [&]() {
+        if (!property_->getReadOnly()) {
+            property_->set(getValue());
+        }
+    };
+    updateFromProperty();
 }
+
+void BoolPropertyWidget::updateFromProperty() { setValue(property_->get()); }
+
+void BoolPropertyWidget::onSetVisible(bool visible) { setVisible(visible); }
+
+void BoolPropertyWidget::onSetDisplayName(const std::string &displayName) { setLabel(displayName); }
+
+}  // namespace glui
 
 }  // namespace inviwo

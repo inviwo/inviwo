@@ -27,36 +27,46 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+#ifndef IVW_GLUIBOOLPROPERTYWIDGET_H
+#define IVW_GLUIBOOLPROPERTYWIDGET_H
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/userinterfacegl/glui/widgets/checkbox.h>
+
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/properties/propertyobserver.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace glui {
 
-    // Register objects that can be shared with the rest of inviwo here:
+/**
+ * \class BoolPropertyWidget
+ * \brief glui property widget for a bool property using glui::CheckBox
+ */
+class IVW_MODULE_USERINTERFACEGL_API BoolPropertyWidget : public CheckBox,
+                                                          public PropertyWidget,
+                                                          public PropertyObserver {
+public:
+    BoolPropertyWidget(BoolProperty &property, Processor &processor, Renderer &uiRenderer,
+                       const ivec2 &extent = ivec2(24, 24));
+    virtual ~BoolPropertyWidget() = default;
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
+    virtual void updateFromProperty() override;
 
-    registerProcessor<GLUITestProcessor>();
+    // PropertyObservable overrides
+    virtual void onSetVisible(bool visible) override;
+    virtual void onSetDisplayName(const std::string &displayName) override;
 
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
+private:
+    BoolProperty *property_;
+};
 
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
-}
+}  // namespace glui
 
 }  // namespace inviwo
+
+#endif  // IVW_GLUIBOOLPROPERTYWIDGET_H

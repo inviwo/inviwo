@@ -24,39 +24,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+uniform sampler2D tex;
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+in vec2 texCoord;
 
-#include <modules/opengl/shader/shadermanager.h>
+uniform vec4 uiColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-namespace inviwo {
+void main() {
+    vec4 dstColor = vec4(0.0);
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+    // sample UI color texture
+    vec4 uiLabelColor = texture(tex, texCoord);
+    // only use alpha of the texture
+    dstColor = mix(dstColor, uiColor, uiLabelColor.a);
 
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
-
-    registerProcessor<GLUITestProcessor>();
-
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
+    FragData0 = dstColor;
+    PickingData = vec4(0.0);
 }
-
-}  // namespace inviwo

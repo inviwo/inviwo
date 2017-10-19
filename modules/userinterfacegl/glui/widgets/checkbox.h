@@ -27,36 +27,47 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/userinterfaceglmodule.h>
+#ifndef IVW_GLUICHECKBOX_H
+#define IVW_GLUICHECKBOX_H
 
-#include <modules/userinterfacegl/processors/camerawidget.h>
-#include <modules/userinterfacegl/processors/cropwidget.h>
-#include <modules/userinterfacegl/processors/gluitestprocessor.h>
-#include <modules/userinterfacegl/processors/presentationprocessor.h>
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/userinterfacegl/glui/element.h>
 
 namespace inviwo {
 
-UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class Texture2DArray;
 
-    // Register objects that can be shared with the rest of inviwo here:
+namespace glui {
 
-    // Processors
-    registerProcessor<CameraWidget>();
-    registerProcessor<CropWidget>();
-    registerProcessor<PresentationProcessor>();
+class Renderer;
 
-    registerProcessor<GLUITestProcessor>();
+/**
+ * \class Checkbox
+ * \brief glui::Element representing a checkbox with the label positioned on the right side
+ */
+class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {
+public:
+    CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
+             const ivec2 &extent = ivec2(24, 24));
+    virtual ~CheckBox() = default;
 
-    // Properties
-    // registerProperty<UserInterfaceGLProperty>();
+    void setValue(bool value);
+    bool getValue() const;
 
-    // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
-}
+private:
+    virtual void renderWidget(const ivec2 &origin) override;
+
+    virtual ivec2 computeLabelPos(int descent) const override;
+    virtual UIState uiState() const override;
+    virtual void updateState() override;
+
+    Texture2DArray *uiTextures_;
+};
+
+}  // namespace glui
 
 }  // namespace inviwo
+
+#endif  // IVW_GLUICHECKBOX_H
