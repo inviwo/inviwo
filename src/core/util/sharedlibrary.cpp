@@ -51,6 +51,10 @@
 #include <link.h>
 #endif
 
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#endif
+
 namespace inviwo {
 
 LibrarySearchDirs::LibrarySearchDirs(const std::vector<std::string>& dirs)
@@ -329,6 +333,21 @@ std::vector<std::string> getLoadedLibraries() {
 
     return res;
 }
+
+#elif defined(__APPLE__)
+
+std::vector<std::string> getLoadedLibraries() {
+    std::vector<std::string> res;
+    const uint32_t count = _dyld_image_count();
+    for (uint32_t i = 0; i < count; i++) {
+       res.emplace_back(_dyld_get_image_name(i));
+    }
+    return res;
+}
+// dummy functions
+std::vector<void*> addLibrarySearchDirs(const std::vector<std::string>&) { return {}; }
+void removeLibrarySearchDirs(const std::vector<void*>&) {}
+bool hasAddLibrarySearchDirsFunction() { return true; }
 
 #else
 

@@ -106,7 +106,7 @@ function(ivw_suppress_compiler_warnings)
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-            set_property(TARGET ${target} APPEND_STRING PROPERTY COMPILE_FLAGS -w)
+            set_property(TARGET ${target} APPEND_STRING PROPERTY COMPILE_FLAGS " -w")
 
         elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
             get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
