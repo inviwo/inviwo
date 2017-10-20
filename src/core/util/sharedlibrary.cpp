@@ -64,9 +64,7 @@ void LibrarySearchDirs::add(const std::vector<std::string>& dirs) {
     util::append(addedDirs_, util::addLibrarySearchDirs(dirs));
 }
 
-LibrarySearchDirs::~LibrarySearchDirs() {
-    util::removeLibrarySearchDirs(addedDirs_);
-}
+LibrarySearchDirs::~LibrarySearchDirs() { util::removeLibrarySearchDirs(addedDirs_); }
 
 SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) {
 #if WIN32
@@ -166,11 +164,13 @@ SharedLibrary& SharedLibrary::operator=(SharedLibrary&& that) {
 }
 
 SharedLibrary::~SharedLibrary() {
+    if (handle_) {
 #if WIN32
-    FreeLibrary(handle_);
+        FreeLibrary(handle_);
 #else
-    dlclose(handle_);
+        dlclose(handle_);
 #endif
+    }
 }
 
 void* SharedLibrary::findSymbol(const std::string& name) {
@@ -189,16 +189,14 @@ std::set<std::string> SharedLibrary::libraryFileExtensions() {
 #endif
 }
 
-void SharedLibrary::release() {
-    handle_ = nullptr;
-}
+void SharedLibrary::release() { handle_ = nullptr; }
 
 namespace util {
 
 std::vector<std::string> getLibrarySearchPaths() {
     auto paths = std::vector<std::string>{
         inviwo::filesystem::getFileDirectory(inviwo::filesystem::getExecutablePath()),
-        inviwo::filesystem::getPath(inviwo::PathType::Modules) };
+        inviwo::filesystem::getPath(inviwo::PathType::Modules)};
 
     // http://unix.stackexchange.com/questions/22926/where-do-executables-look-for-shared-objects-at-runtime
 #if defined(__APPLE__)
@@ -344,7 +342,7 @@ std::vector<std::string> getLoadedLibraries() {
     std::vector<std::string> res;
     const uint32_t count = _dyld_image_count();
     for (uint32_t i = 0; i < count; i++) {
-       res.emplace_back(_dyld_get_image_name(i));
+        res.emplace_back(_dyld_get_image_name(i));
     }
     return res;
 }
@@ -356,12 +354,12 @@ bool hasAddLibrarySearchDirsFunction() { return true; }
 #else
 
 namespace {
-int visitLibraries(struct dl_phdr_info *info, size_t size, void *data) {
+int visitLibraries(struct dl_phdr_info* info, size_t size, void* data) {
     auto res = reinterpret_cast<std::vector<std::string>*>(data);
     res->emplace_back(info->dlpi_name);
     return 0;
 }
-}
+}  // namespace
 std::vector<std::string> getLoadedLibraries() {
     std::vector<std::string> res;
     dl_iterate_phdr(visitLibraries, reinterpret_cast<void*>(&res));
@@ -376,4 +374,3 @@ bool hasAddLibrarySearchDirsFunction() { return true; }
 }  // namespace util
 
 }  // namespace inviwo
-
