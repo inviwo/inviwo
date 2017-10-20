@@ -714,7 +714,10 @@ template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int
 void Deserializer::deserialize(const std::string& key, Mat& data) {
     if (NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
+            // Deserialization of row needs to be here for backwards compatibility,
+            // we used to incorrectly serialize columns as row
             deserialize("row" + toString(i), data[i]);
+            deserialize("col" + toString(i), data[i]);
         }
     }
 }
