@@ -94,10 +94,10 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
     if (!columnIdForDataTypeErrors.empty()) {
         std::stringstream errStr;
         errStr << "Data type mismatch for columns: (";
-        std::copy(columnIdForDataTypeErrors.begin(), columnIdForDataTypeErrors.end(),
-            std::ostream_iterator<size_t>(errStr, ", "));
+        auto joiner = util::make_ostream_joiner(errStr, ", ");
+        std::copy(columnIdForDataTypeErrors.begin(), columnIdForDataTypeErrors.end(), joiner);
         errStr << ") with values: (";
-        std::copy(data.begin(), data.end(), std::ostream_iterator<std::string>(errStr, ", "));
+        std::copy(data.begin(), data.end(), joiner);
         errStr << ")" << std::endl << " DataFrame will be in an invalid state since since all columns must be of equal size.";
         throw DataTypeMismatch(errStr.str());
     }

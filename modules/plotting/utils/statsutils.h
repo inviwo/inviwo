@@ -35,7 +35,6 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <ostream>
-#include <stdexcept>
 
 namespace inviwo {
 
@@ -70,7 +69,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
  * @param data to compute percentiles on
  * @param percentiles in the range [0 1]
  * @return values below the percentage given by the percentiles.
- * @throw invalid_argument exception if any percentile is less than 0 or larger than 1
+ * @throw Exception if any percentile is less than 0 or larger than 1
  */
 template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
 std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
@@ -80,10 +79,10 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
     auto nElements = data.size();
     for (auto percentile : percentiles) {
         if (percentile < 0.f || percentile > 1.f) {
-            throw std::invalid_argument("Percentile must be between 0 and 1");
+            throw Exception("Percentile must be between 0 and 1");
         }
         // Take care of percentile == 1 using std::min
-        result.push_back(data[std::min(static_cast<size_t>(std::ceil(nElements * percentile)), nElements-1)]);
+        result.push_back(data[static_cast<size_t>(std::max(std::ceil(nElements * percentile)-1., 0.))]);
     }
     return result;
 }
@@ -92,7 +91,7 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
 template <typename T,
     typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
 std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
-    auto noNaN = std::partition(data.begin(), data.end(), [](const auto& a) { return std::isnan(a); });
+    auto noNaN = std::partition(data.begin(), data.end(), [](const auto& a) { return util::isnan(a); });
     std::sort(noNaN, data.end());
     std::vector<T> result;
     result.reserve(percentiles.size());
@@ -102,7 +101,7 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
             throw std::invalid_argument("Percentile must be between 0 and 1");
         }
         // Take care of percentile == 1 using std::min
-        result.push_back(data[std::min(static_cast<size_t>(std::ceil(nElements * percentile)), nElements - 1)]);
+        result.push_back(data[static_cast<size_t>(std::max(std::ceil(nElements * percentile)-1., 0.))]);
     }
     return result;
 

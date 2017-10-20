@@ -66,9 +66,10 @@ IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
 
 namespace detail {
 
-// Specialization for double and float types
-template <typename ValueType,
-          typename std::enable_if<util::is_floating_point<ValueType>::value, int>::type = 0>
+// Specialization for double, float and half types
+template <typename ValueType, typename std::enable_if<util::is_floating_point<ValueType>::value &&
+                                                          (util::extent<ValueType>::value < 1),
+                                                      int>::type = 0>
 std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
                                    IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
     using Res = std::pair<ValueType, ValueType>;
@@ -77,10 +78,7 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
     if (ignore == IgnoreSpecialValues::Yes) {
         minmax = std::accumulate(
             data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
-                return 
-                    util::any(glm::isnan(v))
-                           ? mm
-                           : Res{glm::min(mm.first, v), glm::max(mm.second, v)};
+                return util::isfinite(v) ? mm : Res{glm::min(mm.first, v), glm::max(mm.second, v)};
             });
     } else {
         minmax = std::accumulate(data, data + size, minmax,
@@ -91,7 +89,38 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
 
     return {util::glm_convert<dvec4>(minmax.first), util::glm_convert<dvec4>(minmax.second)};
 }
-// Integer types do not have special values
+
+// Specialization for vec types (double, float, half)
+template <typename ValueType, typename std::enable_if<util::is_floating_point<ValueType>::value &&
+                                                          (util::extent<ValueType>::value > 1),
+                                                      int>::type = 0>
+std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
+                                   IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
+    using Res = std::pair<ValueType, ValueType>;
+    Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
+
+    if (ignore == IgnoreSpecialValues::Yes) {
+        minmax = std::accumulate(
+            data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
+                Res res(mm);
+                for (size_t i = 0; i < util::extent<ValueType, 0>::value; ++i) {
+                    if (!glm::isfinite(v[i])) {
+                        res.first[i] = std::min(mm.first[i], v[i]);
+                        res.second[i] = std::max(mm.second[i], v[i]);
+                    }
+                }
+                return res;
+            });
+    } else {
+        minmax = std::accumulate(data, data + size, minmax,
+                                 [](const Res& mm, const ValueType& v) -> Res {
+                                     return {glm::min(mm.first, v), glm::max(mm.second, v)};
+                                 });
+    }
+
+    return {util::glm_convert<dvec4>(minmax.first), util::glm_convert<dvec4>(minmax.second)};
+}
+// Specialization for integer types. They do not have special values
 template <typename ValueType,
           typename std::enable_if<!util::is_floating_point<ValueType>::value, int>::type = 0>
 std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
@@ -108,6 +137,14 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
 
 }  // namespace detail
 
+/**
+ * Compute component-wise minimum and maximum values scalar and glm::vec types.
+ *
+ * @param data pointer to values
+ * @param size of data 
+ * @param ignore infinite and NaN
+ * @return mininum and maximum values of each component and zero for non-existing components
+ */
 template <typename ValueType>
 std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
                                    IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {

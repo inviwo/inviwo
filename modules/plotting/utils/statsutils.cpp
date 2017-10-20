@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/plotting/utils/statsutils.h>
-#include <stdexcept>      // std::invalid_argument
 
 namespace inviwo {
 namespace statsutil {
@@ -37,7 +36,7 @@ template <typename Tx, typename Ty>
 RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
     RegresionResult res;
     if (X.getSize() != Y.getSize()) {
-        throw std::invalid_argument("Buffers are not of equal length");
+        throw Exception("Buffers are not of equal length");
     }
     auto &xvec = X.getDataContainer();
     auto &yvec = Y.getDataContainer();

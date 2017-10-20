@@ -72,7 +72,6 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
         std::string value;
         size_t quoteCount = 0;
         char prev = 0;
-        const size_t start = lineNumber;
 
         auto isLineBreak = [](const char ch, auto& in) {
             if (ch == '\r') {

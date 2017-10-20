@@ -57,6 +57,15 @@ TEST(StatsUtilsTest, init) {
     EXPECT_DOUBLE_EQ(0.64383561643835918, res.k) << " value of K";
     EXPECT_DOUBLE_EQ(26.780821917808225, res.m) << " value of m";
     EXPECT_DOUBLE_EQ(0.48032180908893229, res.r2) << " value of r";
+    
+    // https://en.wikipedia.org/wiki/Percentile
+    auto data = std::vector<double>({20., 15., 50., 40., 35.});
+    auto percentiles = statsutil::percentiles(data, {0.05, .30, 0.40, 0.5, 1.0});
+    EXPECT_DOUBLE_EQ(15., percentiles[0]) << " 5 percentile";
+    EXPECT_DOUBLE_EQ(20., percentiles[1]) << " 30 percentile";
+    EXPECT_DOUBLE_EQ(20., percentiles[2]) << " 40 percentile";
+    EXPECT_DOUBLE_EQ(35., percentiles[3]) << " 50 percentile";
+    EXPECT_DOUBLE_EQ(50., percentiles[4]) << " 100 percentile";
 }
 
 
