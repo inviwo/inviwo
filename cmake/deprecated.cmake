@@ -90,3 +90,7 @@ function(ivw_add_module_dependencies target)
     ivw_mod_name_to_alias(ivw_dep_targets ${ARGN})
     target_link_libraries(${target} PUBLIC ${ivw_dep_targets})
 endfunction()
+
+function(ivw_register_use_of_modules target)
+    message(FATAL_ERROR "Replaced with: ivw_configure_application_module_dependencies")
+endfunction()

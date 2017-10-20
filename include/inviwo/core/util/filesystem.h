@@ -51,27 +51,27 @@ IVW_CORE_API std::string getWorkingDirectory();
 
 /**
  * Get full/path/to/executable running the application.
- * @return Full path to the executable if successfull, empty string otherwise.
+ * @return Full path to the executable if successful, empty string otherwise.
  */
 IVW_CORE_API std::string getExecutablePath();
 
 /**
- * Get application path for Inviwo, i.e. a folder where we have write-access.
+ * Get path to the user settings / data folder for Inviwo,
+ * i.e. a folder where we have write-access.
  * Will be:
  * - Windows: /AppData/Inviwo/
  * - Linux:   /home/.inviwo
  * - Mac:     /Library/Application Support/org.inviwo.network-editor
  *
- * Not to be confused with the path where the executable is.
- * @return std::string Inviwo application folder
+ * @return Path to user settings folder
  */
-IVW_CORE_API std::string getInviwoUserCachePath();
+IVW_CORE_API std::string getInviwoUserSettingsPath();
 
 /**
  * \brief Check if a file exists.
  * @see directoryExists for directories
- * @param std::string fileName The path to the file
- * @return bool True if file exists, false otherwise
+ * @param fileName The path to the file
+ * @return True if file exists, false otherwise
  */
 IVW_CORE_API bool fileExists(const std::string& filePath);
 
@@ -80,21 +80,21 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
  *
  * @see fileExists for files
  * @param path Directory path
- * @return bool True if directory exists, false otherwise
+ * @return True if directory exists, false otherwise
  */
 IVW_CORE_API bool directoryExists(const std::string& path);
 
 /**
  * \brief Get last time file was modified.
- * @param std::string filePath The path to the file
- * @return time_t Time of last modification
+ * @param filePath The path to the file
+ * @return Time of last modification
  */
 IVW_CORE_API std::time_t fileModificationTime(const std::string& filePath);
 
 /**
  * \brief Copy an existing file to a new file. Overwrites existing file.
- * @param const std::string& src Path to the file to the existing file
- * @param const std::string& dst Path to the new file
+ * @param src Path to the file to the existing file
+ * @param dst Path to the new file
  * @return True if source file exists and the copy is successful, false otherwise
  */
 IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst);
@@ -114,20 +114,21 @@ IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& pa
                                                            ListMode mode = ListMode::Files);
 
 /**
- * Recursively searches and returns full path to files/directories in specified directory and its subdirectories.
+ * Recursively searches and returns full path to files/directories in specified directory and its
+ * subdirectories.
  * @param path Files are listed for this directory and its subdirectories
  * @return List of files residing in the given path and its subdirectories
  */
 IVW_CORE_API std::vector<std::string> getDirectoryContentsRecursively(
     const std::string& path, ListMode mode = ListMode::Files);
 
-/** 
+/**
  * Checks whether a given string matches a pattern. The pattern
  * might contain '*' matching any string including the empty string
  * and '?' matching a single character.
  *
- * @param std::string pattern  The pattern used for matching, might contain '*' and '?'
- * @param std::string str      String which needs to be checked
+ * @param pattern  The pattern used for matching, might contain '*' and '?'
+ * @param str      String which needs to be checked
  * @return True if the given string matches the pattern, false otherwise.
  */
 IVW_CORE_API bool wildcardStringMatch(const std::string& pattern, const std::string& str);
@@ -149,14 +150,14 @@ IVW_CORE_API bool wildcardStringMatch(const std::string& pattern, const std::str
  *       'matchMore = true' matches the same files, but might extract longer numbers.
  *  * 'myfile#.png' matches all files containing exactly one digit with 'matchMore = false'.
  *
- * @param std::string pattern  The pattern used for matching, might contain a single
+ * @param pattern  The pattern used for matching, might contain a single
  *             sequence of '#' besides '*', and '?'
- * @param std::string str      String which needs to be checked
- * @param int index  if the match is successful, this index contains the extracted
+ * @param str      String which needs to be checked
+ * @param index  if the match is successful, this index contains the extracted
  *             digit sequence indicated by '#'
- * @param bool matchLess   allows to match digit sequences shorter than defined by the number of '#'
+ * @param matchLess   allows to match digit sequences shorter than defined by the number of '#'
  * (default false)
- * @param bool matchMore   allows to match longer digit sequences (default true)
+ * @param matchMore   allows to match longer digit sequences (default true)
  * @return True if the given string matches the pattern, false otherwise.
  */
 IVW_CORE_API bool wildcardStringMatchDigits(const std::string& pattern, const std::string& str,
@@ -198,8 +199,8 @@ IVW_CORE_API void createDirectoryRecursively(std::string path);
  * \brief Adds the InviwoApplication base path before the url
  *
  * @see InviwoApplication::getBasePath
- * @param const std::string url Relative path
- * @return std::string InviwoApplication base path + url
+ * @param url Relative path
+ * @return InviwoApplication base path + url
  */
 IVW_CORE_API std::string addBasePath(const std::string& url);
 
@@ -216,7 +217,7 @@ IVW_CORE_API std::string replaceFileExtension(const std::string& url,
                                               const std::string& newFileExtension);
 
 /**
- *	\brief Make a path relative to basePath.
+ * \brief Make a path relative to basePath.
  * Requirement: basePath and absulutePath has to be absolute paths.
  * basePath should point at directory.
  *
@@ -237,9 +238,9 @@ IVW_CORE_API bool isAbsolutePath(const std::string& path);
  * If both paths are relative, this function returns true. If only refPath is relative
  * InviwoApplication::getBasePath is used instead as reference.
  *
- * @param const std::string& refPath reference path, if relative then InviwoApplication::getBasePath
+ * @param refPath reference path, if relative then InviwoApplication::getBasePath
  * is used instead
- * @param const std::string& queryPath path to be checked
+ * @param queryPath path to be checked
  * @return true if queryPath and refPath are located on the same drive (on Windows), always true on
  * all other systems
  */
@@ -248,7 +249,7 @@ IVW_CORE_API bool sameDrive(const std::string& refPath, const std::string& query
 /**
  * \brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
  *
- * @param const std::string& path given path to be cleaned up
+ * @param path given path to be cleaned up
  * @return non-quoted path containing no backslashes as directory separators
  */
 IVW_CORE_API std::string cleanupPath(const std::string& path);

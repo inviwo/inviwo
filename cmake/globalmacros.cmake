@@ -34,28 +34,18 @@ macro(ivw_module project_name)
 endmacro()
 
 #--------------------------------------------------------------------
-# Append to cmake module path
-macro(ivw_add_cmake_find_package_path)
-    foreach(item ${ARGN})
-        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${item})
-    endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
-# Register the use of modules
-function(ivw_register_use_of_modules target)
-    set(modules "")
-    foreach(module ${ARGN})
-        string(TOUPPER ${module} u_module)
-        list(APPEND modules "REG_${u_module}")
-    endforeach()
-    target_compile_definitions(${target} PUBLIC ${modules})
+# Retrieve all enabled modules as a list
+function(ivw_retrieve_all_modules module_list)
+    set(${module_list} ${ivw_all_registered_modules} PARENT_SCOPE)
 endfunction()
 
 #--------------------------------------------------------------------
 # Determine application dependencies. 
 # Creates a list of enabled modules in executable directory if runtime
-# module loading is enabled.
+# module loading is enabled. Otherwise sets the registration macros and
+# adds module dependencies
+# Example: ivw_configure_application_module_dependencies(inviwo ${list_of_modules})
+# The list of modules is usually fetched from ivw_retrieve_all_modules
 function(ivw_configure_application_module_dependencies target)
     if(IVW_RUNTIME_MODULE_LOADING)
         # Specify which modules to load at runtime (all will be loaded if the file does not exist)
@@ -67,16 +57,11 @@ function(ivw_configure_application_module_dependencies target)
         ivw_mod_name_to_target_name(dep_targets ${ARGN})
         add_dependencies(${target} ${dep_targets})
     else()
-        ivw_register_use_of_modules(${target} ${ARGN})
+        ivw_mod_name_to_reg(reg_targets ${ARGN})
+        target_compile_definitions(${target} PUBLIC ${reg_targets})
         ivw_mod_name_to_alias(dep_targets ${ARGN})
         target_link_libraries(${target} PUBLIC ${dep_targets})
     endif()
-endfunction()
-
-#--------------------------------------------------------------------
-# Retrieve all modules as a list
-function(ivw_retrieve_all_modules module_list)
-    set(${module_list} ${ivw_all_registered_modules} PARENT_SCOPE)
 endfunction()
 
 #--------------------------------------------------------------------
@@ -125,75 +110,39 @@ endfunction()
 #--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
 function(ivw_private_generate_module_registration_file modules_var)
-    
-    # Export a module factory function for all modules.
+    # For runtime loading export a module factory function for all modules.
     # Function will be requested by the application after loading the library (dll/so)
     # Does not require modules to be linked to the application
-    foreach(mod ${${modules_var}})   
-        set(header
-            "#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
-            "#include <inviwo/core/common/version.h>\n"
-        )   
-        join(";" "" header ${header})
+    # For static loading generate function for creating modules in a single function
+    # Requires all modules to be linked to the application
+
+    set(static_headers "#include <inviwo/core/common/version.h>\n")
+    set(static_functions "")
+
+    foreach(mod ${${modules_var}})
         ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
         list_to_stringvector(module_depends_vector ${module_dependencies})
+        list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
         list_to_stringvector(module_alias_vector ${${mod}_aliases})
-        string(TOUPPER ${${mod}_class} u_module)
-
+        string(TOUPPER "${${mod}_class}" u_module)
         if(${${mod}_protected})
             set(module_protected "ProtectedModule::on")
         else()
             set(module_protected "ProtectedModule::off")
         endif()
 
-        list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
-        set(create_module_object
-            "IVW_MODULE_${u_module}\_API InviwoModuleFactoryObject* createModule() {\n"
-            "    return new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-            "        \"${${mod}_class}\", // Module name \n"
-            "        \"${${mod}_version}\", // Module version\n"
-            "        \"${${mod}_description}\", // Description\n" 
-            "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
-            "        ${module_depends_vector}, // Dependencies\n" 
-            "        ${module_depends_version_vector}, // Version number of dependencies\n"
-            "        ${module_alias_vector}, // List of aliases\n"
-            "        ${module_protected} // protected\n"
-            "    )__SEMICOLON__\n"
-            "}\n"
-            "\n"
-        )
-        join(";" "" create_module_object ${create_module_object})
-        set(module_header ${header})
-        # undo encoding of linebreaks and semicolon in the module description read from file
-        # linebreaks are replaced with '\n"'
-        string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" create_module_object "${create_module_object}")
-        string(REPLACE "__SEMICOLON__" ";" create_module_object "${create_module_object}")
+        set(runtime_header
+            "#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
+            "#include <inviwo/core/common/version.h>\n"
+        )   
 
-        set(MODULE_DEFINE_HEADER "${module_header}")   
-        set(CREATE_MODULE_FUNCTION "${create_module_object}")
-
-        configure_file(${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
-                    ${CMAKE_BINARY_DIR}/modules/_generated/modules/${${mod}_dir}/${${mod}_dir}modulesharedlibrary.cpp @ONLY)
-    endforeach()
-
-    # Generate function for creating modules in a single function
-    # Requires all modules to be linked to the application
-    set(headers "#include <inviwo/core/common/version.h>\n")
-    set(functions "")
-    foreach(mod ${${modules_var}}) 
-        set(header
+        list(APPEND static_headers
             "#ifdef REG_${mod}\n"
             "#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
             "#endif\n"
         )
-        join(";" "" header ${header})
 
-        ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
-        list_to_stringvector(module_depends_vector ${module_dependencies})
-        list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
-        set(factory_object
-            "    #ifdef REG_${mod}\n" 
-            "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
+        set(fuction_args
             "        \"${${mod}_class}\", // Module name \n"
             "        \"${${mod}_version}\", // Module version\n"
             "        \"${${mod}_description}\", // Description\n" 
@@ -202,29 +151,53 @@ function(ivw_private_generate_module_registration_file modules_var)
             "        ${module_depends_version_vector}, // Version number of dependencies\n"
             "        ${module_alias_vector}, // List of aliases\n"
             "        ${module_protected} // protected\n"
+        )
+
+        set(runtime_function
+            "IVW_MODULE_${u_module}_API InviwoModuleFactoryObject* createModule() {\n"
+            "    return new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
+            ${fuction_args}
+            "    )__SEMICOLON__\n"
+            "}\n"
+            "\n"
+        )
+
+        list(APPEND static_functions
+            "    #ifdef REG_${mod}\n" 
+            "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
+            ${fuction_args}
             "        )\n"
             "    )__SEMICOLON__\n"
             "    #endif\n"
             "\n"
         )
-        join(";" "" factory_object ${factory_object})
 
-        list(APPEND headers ${header})
-        list(APPEND functions ${factory_object})
+        join(";" "" runtime_header ${runtime_header})
+        join(";" "" runtime_function ${runtime_function})
+        string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" runtime_function "${runtime_function}")
+        string(REPLACE "__SEMICOLON__" ";" runtime_function "${runtime_function}")
+
+        set(MODULE_DEFINE_HEADER "${runtime_header}")
+        set(CREATE_MODULE_FUNCTION "${runtime_function}")
+        configure_file(
+            ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
+            ${CMAKE_BINARY_DIR}/modules/_generated/modules/${${mod}_dir}/${${mod}_dir}modulesharedlibrary.cpp 
+            @ONLY
+        )
     endforeach()
-    join(";" "" headers ${headers})
-    join(";" "" functions ${functions})
 
-    # undo encoding of linebreaks and semicolon in the module description read from file
-    # linebreaks are replaced with '\n"'
-    string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" functions "${functions}")
-    string(REPLACE "__SEMICOLON__" ";" functions "${functions}")
+    join(";" "" static_headers ${static_headers})
+    join(";" "" static_functions ${static_functions})
+    string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" static_functions "${static_functions}")
+    string(REPLACE "__SEMICOLON__" ";" static_functions "${static_functions}")
 
-    set(MODULE_HEADERS "${headers}")
-    set(MODULE_CLASS_FUNCTIONS "${functions}")
-
-    configure_file(${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
-        ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
+    set(MODULE_HEADERS "${static_headers}")
+    set(MODULE_CLASS_FUNCTIONS "${static_functions}")
+    configure_file(
+        ${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
+        ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h 
+        @ONLY
+    )
 endfunction()
 
 function(ivw_private_create_pyconfig modulepaths activemodules)
@@ -303,10 +276,10 @@ function(ivw_register_modules retval)
                 set("${mod}_version" "${version}"           CACHE INTERNAL "Module version")
 
                 # Check of there is a depends.cmake
-                # Defines dependencies, aliases
+                # Optionally defines: dependencies, aliases, protected
                 # Save dependencies to INVIWO<NAME>MODULE_dependencies
                 # Save aliases to INVIWO<NAME>MODULE_aliases
-
+                # Save protected to INVIWO<NAME>MODULE_protected
                 set(dependencies "")
                 set(aliases "")
                 set(protected OFF)
@@ -391,19 +364,6 @@ function(ivw_register_modules retval)
         ivw_private_filter_dependency_list(new_dependencies ${${mod}_class} ${new_dependencies})
         set("${mod}_dependencies" ${new_dependencies} CACHE INTERNAL "Module dependencies")
     endforeach()
-
-    # Filter out inviwo dependencies
-    foreach(mod ${modules})
-        set(ivw_dependencies "")
-        foreach(dependency ${${mod}_dependencies})
-            ivw_mod_name_to_mod_dep(dep ${dependency})
-            list(FIND modules ${dep} found)
-            if(NOT ${found} EQUAL -1) # This is a dependency to a inviwo module
-                list(APPEND ivw_dependencies ${dep})
-            endif()
-        endforeach()
-        set("${mod}_ivw_dependencies" ${ivw_dependencies} CACHE INTERNAL "Module inviwo module dependencies")
-    endforeach()
     
     # Add module versions dependencies
     foreach(mod ${modules})
@@ -425,13 +385,13 @@ function(ivw_register_modules retval)
     endforeach()
 
     # Sort modules by dependencies
-    ivw_topological_sort(modules _ivw_dependencies sorted_modules)
+    ivw_topological_sort(modules _dependencies sorted_modules)
 
     # enable depencenies
     ivw_reverse_list_copy(sorted_modules rev_sorted_modules)
     foreach(mod ${rev_sorted_modules})
         if(${${mod}_opt})
-            foreach(dep ${${mod}_ivw_dependencies})
+            foreach(dep ${${mod}_dependencies})
                 if(NOT ${${dep}_opt})
                     ivw_add_module_option_to_cache(${${dep}_dir} ON TRUE)
                     message(STATUS "${${dep}_opt} was set to build, "

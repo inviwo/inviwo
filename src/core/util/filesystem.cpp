@@ -49,16 +49,16 @@
 #include <Shlobj.h>
 #elif defined(__APPLE__)
 #include <CoreServices/CoreServices.h>
-#include <libproc.h> // proc_pidpath
+#include <libproc.h>  // proc_pidpath
 #include <unistd.h>
-#include <fcntl.h>         // open
+#include <fcntl.h>  // open
 // sendfile
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
 #else
 #include <unistd.h>
-#include <fcntl.h>         // open
+#include <fcntl.h>  // open
 #include <sys/sendfile.h>
 #endif
 
@@ -127,28 +127,24 @@ std::string getExecutablePath() {
     return retVal;
 }
 
-IVW_CORE_API std::string getInviwoUserCachePath() {
+IVW_CORE_API std::string getInviwoUserSettingsPath() {
     std::stringstream ss;
 #ifdef _WIN32
     PWSTR path;
     HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &path);
-    std::string s = "";
     if (SUCCEEDED(hr)) {
         char ch[1024];
         static const char DefChar = ' ';
         WideCharToMultiByte(CP_ACP, 0, path, -1, ch, 1024, &DefChar, nullptr);
-        s = std::string(ch);
         std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
         auto tstConv = converter.to_bytes(path);
-}
-    else {
-        LogErrorCustom("filesystem::getInviwoApplicationPath",
-            "SHGetKnownFolderPath failed to get settings folder");
+        CoTaskMemFree(path);
+        ss << std::string(ch) << "/Inviwo";
+    } else {
+        throw Exception("SHGetKnownFolderPath failed to get settings folder",
+                        IvwContextCustom("filesystem"));
     }
 
-    CoTaskMemFree(path);
-    ss << s;
-    ss << "/Inviwo";
 #elif defined(__unix__)
     ss << std::getenv("HOME");
     ss << "/.inviwo";
@@ -170,7 +166,8 @@ IVW_CORE_API std::string getInviwoUserCachePath() {
     ss << path << "/org.inviwo.network-editor";
 
 #else
-    LogWarnCustom("filesystem::getInviwoApplicationPath", "Get User Setting Path is not implemented for current system");
+    LogWarnCustom("filesystem::getInviwoApplicationPath",
+                  "Get User Setting Path is not implemented for current system");
 #endif
     return ss.str();
 }
@@ -199,7 +196,7 @@ bool directoryExists(const std::string& path) {
 
 std::time_t fileModificationTime(const std::string& filePath) {
     struct stat buffer;
-    // If path contains the location of a directory, it cannot contain a trailing backslash. 
+    // If path contains the location of a directory, it cannot contain a trailing backslash.
     // If it does, -1 will be returned and errno will be set to ENOENT.
     // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
     // We therefore check if path ends with a backslash
@@ -207,8 +204,7 @@ std::time_t fileModificationTime(const std::string& filePath) {
         // Remove trailing backslash
         std::string pathWithoutSlash = filePath.substr(0, filePath.size() - 1);
         stat(pathWithoutSlash.c_str(), &buffer);
-    }
-    else {
+    } else {
         // No need to modify path
         stat(filePath.c_str(), &buffer);
     }
@@ -217,19 +213,24 @@ std::time_t fileModificationTime(const std::string& filePath) {
 
 IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {
 #ifdef WIN32
-    // Copy file and overwrite if it exists. 
+    // Copy file and overwrite if it exists.
     // != 0 to get rid of bool comparison warning (C4800)
     return CopyFileA(src.c_str(), dst.c_str(), FALSE) != 0;
-#else 
+#else
     int source = open(src.c_str(), O_RDONLY, 0);
-    if (source < 0) { return false; }
+    if (source < 0) {
+        return false;
+    }
 
     int dest = open(dst.c_str(), O_WRONLY | O_CREAT, 0644);
-    if (dest < 0) { close(source); return false; }
+    if (dest < 0) {
+        close(source);
+        return false;
+    }
 
     bool successful = false;
 #if defined(__APPLE__)
-    off_t bytesWritten = 0; // send until the end of file has been reached
+    off_t bytesWritten = 0;  // send until the end of file has been reached
     successful = sendfile(dest, source, 0, &bytesWritten, nullptr, 0) == 0;
 #else
     struct stat stat_source;
@@ -274,7 +275,7 @@ std::vector<std::string> getDirectoryContentsRecursively(const std::string& path
             return dir.compare(".") == 0 || dir.compare("..") == 0;
         });
     }
-    
+
     for (auto& file : content) {
         file = path + "/" + file;
     }
@@ -508,10 +509,10 @@ IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix,
             break;
 
         case PathType::Settings:
-            result = getInviwoUserCachePath();
+            result = getInviwoUserSettingsPath();
             break;
         case PathType::Modules:
-            result = getInviwoUserCachePath() + "/modules";
+            result = getInviwoUserSettingsPath() + "/modules";
             break;
         case PathType::Help:
             result += "/data/help";
@@ -576,37 +577,6 @@ static std::string helperSHGetKnownFolderPath(const KNOWNFOLDERID& id) {
     return s;
 }
 #endif
-
-std::string getInviwoUserSettingsPath() {
-    std::stringstream ss;
-#ifdef _WIN32
-    ss << helperSHGetKnownFolderPath(FOLDERID_RoamingAppData);
-    ss << "/Inviwo";
-#elif defined(__unix__)
-    ss << std::getenv("HOME");
-    ss << "/.inviwo";
-#elif defined(__APPLE__)
-    // Taken from:
-    // http://stackoverflow.com/questions/5123361/finding-library-application-support-from-c?rq=1
-    // A depricated solution, but a solution...
-
-    FSRef ref;
-    OSType folderType = kApplicationSupportFolderType;
-    int MAX_PATH = 512;
-    char path[PATH_MAX];
-
-#include <warn/push>
-#include <warn/ignore/deprecated-declarations>
-    FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
-    FSRefMakePath(&ref, (UInt8*)&path, MAX_PATH);
-#include <warn/pop>
-    ss << path << "/org.inviwo.network-editor";
-
-#else
-    LogWarnCustom("", "Get User Setting Path is not implemented for current system");
-#endif
-    return ss.str();
-}
 
 std::string addBasePath(const std::string& url) {
     if (url.empty()) return findBasePath();

@@ -48,7 +48,7 @@
 int main(int argc, char** argv) {
     inviwo::LogCentral::init();
     inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
-    auto logCounter = std::make_shared<inviwo::LogErrorCounter>();    
+    auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     inviwo::LogCentral::getPtr()->registerLogger(logCounter);
     inviwo::InviwoApplicationQt inviwoApp("Inviwo v" + IVW_VERSION, argc, argv);
     inviwoApp.setWindowIcon(QIcon(":/icons/inviwo_light.png"));
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
     // Do this after registerModules if some arguments were added
     clp.parse(inviwo::CommandLineParser::Mode::Normal);
 
-    inviwoApp.processEvents(); // Update GUI
+    inviwoApp.processEvents();  // Update GUI
     splashScreen.showMessage("Loading workspace...");
     inviwoApp.processEvents();
     mainWin.showWindow();
@@ -90,12 +90,10 @@ int main(int argc, char** argv) {
     splashScreen.finish(&mainWin);
 
     inviwoApp.processEvents();
-    clp.processCallbacks(); // run any command line callbacks from modules.
+    clp.processCallbacks();  // run any command line callbacks from modules.
     inviwoApp.processEvents();
 
-    inviwo::util::OnScopeExit clearNetwork([&](){
-        inviwoApp.getProcessorNetwork()->clear();
-    });
+    inviwo::util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
 
     if (auto numErrors = logCounter->getWarnCount()) {
         LogWarnCustom("inviwo.cpp", numErrors << " warnings generated during startup");
@@ -108,8 +106,7 @@ int main(int argc, char** argv) {
     // process last arguments
     if (!clp.getQuitApplicationAfterStartup()) {
         return inviwoApp.exec();
-    }
-    else {
+    } else {
         mainWin.exitInviwo(false);
         return 0;
     }

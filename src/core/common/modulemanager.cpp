@@ -58,14 +58,11 @@ ModuleManager::ModuleManager(InviwoApplication* app)
             return !this->isProtected(moduleName);
         });
         // Leak the protected dlls here to avoid openglqt crash
-        for (auto& lib : sharedLibraries_) lib.release();
+        for (auto& lib : sharedLibraries_) lib->release();
     })
     , factoryObjects_{}
     , modules_{}
     , clearModules_([&]() {
-        // Note: be careful when changing the order of clearModules
-        // as modules need to be removed before factories for example.
-        ResourceManager::getPtr()->clearAllResources();
         // Need to clear the modules in reverse order since the might depend on each other.
         // The destruction order of vector is undefined.
         util::reverse_erase(modules_);
@@ -89,32 +86,18 @@ void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFact
     topologicalModuleFactoryObjectSort(std::begin(factoryObjects_), std::end(factoryObjects_));
 
     for (auto& obj : factoryObjects_) {
-        if (getModuleByIdentifier(obj->name)) continue;  // already loaded
         app_->postProgress("Loading module: " + obj->name);
-
+        if (getModuleByIdentifier(obj->name)) continue;  // already loaded
+        if (!checkDependencies(*obj)) continue;
         try {
-            if (checkDependencies(*obj)) {
-                registerModule(obj->create(app_));
-            }
+            registerModule(obj->create(app_));
         } catch (const ModuleInitException& e) {
-            LogError("Failed to register module: " << obj->name << ". Reason:\n" << e.getMessage());
-
-            std::vector<std::string> toDeregister;
-            for (const auto& m : e.getModulesToDeregister()) {
-                util::append(toDeregister, findDependentModules(m));
-                toDeregister.push_back(toLower(m));
-            }
-            for (const auto& dereg : toDeregister) {
-                util::erase_remove_if(modules_, [&](const std::unique_ptr<InviwoModule>& m) {
-                    if (toLower(m->getIdentifier()) == dereg) {
-                        LogError("Deregistering " << m->getIdentifier() << " because " << obj->name
-                                                  << " failed to register");
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-            }
+            auto dereg = deregisterDependetModules(e.getModulesToDeregister());
+            auto err = (!dereg.empty() ? "\nUnregistered dependent modules: " +
+                                             joinString(dereg.begin(), dereg.end(), ", ")
+                                       : "");
+            LogError("Failed to register module: " << obj->name << ". Reason:\n"
+                                                   << e.getMessage() << err);
         }
     }
 
@@ -205,47 +188,44 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
                !isEnabled(file);
     });
 
-    // Libraries are copied to a temporary folder in the case of runtime re-loading.
-    // libFilePairs first = original
-    // libFilePairs second = temp
-    // Otherwise, temp = original
-    std::vector<std::pair<std::string, std::string>> libFilePairs;
-    if (isRuntimeModuleReloadingEnabled() && util::hasAddLibrarySearchDirsFunction()) {
-        const auto tmpDir = filesystem::getInviwoUserCachePath() + "/temporary-module-libraries";
-        if (!filesystem::directoryExists(tmpDir)) {
-            filesystem::createDirectoryRecursively(tmpDir);
-        }
-
-        auto isLoaded = [loaded = util::getLoadedLibraries()](const auto& path) {
-            return util::contains_if(loaded, [&](const auto& lib) { return iCaseCmp(path, lib); });
-        };
-
-        for (const auto& filePath : libraryFiles) {
-            auto dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
-            if (isLoaded(filePath)) {
-                dstPath = filePath;  // Already loaded modules are loaded from the application dir
-                protected_.insert(util::stripModuleFileNameDecoration(filePath));
-            } else if (filesystem::fileModificationTime(filePath) !=
-                       filesystem::fileModificationTime(dstPath)) {
-                // Load a copy of the file to make sure that we can overwrite the file.
-                filesystem::copyFile(filePath, dstPath);
+    const auto tmpDir = [&]() -> std::string {
+        if (isRuntimeModuleReloadingEnabled() && util::hasAddLibrarySearchDirsFunction()) {
+            const auto tmp =
+                filesystem::getInviwoUserSettingsPath() + "/temporary-module-libraries";
+            if (!filesystem::directoryExists(tmp)) {
+                filesystem::createDirectoryRecursively(tmp);
             }
-            libFilePairs.emplace_back(filePath, dstPath);
+            searchDirectories.add({tmp});
+            return tmp;
+        } else {
+            return "";
         }
-        searchDirectories.add({tmpDir});
-    } else {
-        // Libraries will not be reloaded, we can use the original files
-        for (const auto& filePath : libraryFiles) {
-            libFilePairs.emplace_back(filePath, filePath);
-        }
-    }
+    }();
 
-    // Load libraries from temporary directory
-    // but observe the original file
+    // Load libraries from temporary directory but observe the original file
+    auto isLoaded = [loaded = util::getLoadedLibraries()](const auto& path) {
+        return util::contains_if(loaded, [&](const auto& lib) { return iCaseCmp(path, lib); });
+    };
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-    for (const auto& item : libFilePairs) {
-        const auto& filePath = item.first;
-        const auto& tmpPath = item.second;
+    for (const auto& filePath : libraryFiles) {
+        const auto tmpPath = [&]() -> std::string {
+            if (isRuntimeModuleReloadingEnabled() && util::hasAddLibrarySearchDirsFunction()) {
+                auto dstPath = tmpDir + "/" + filesystem::getFileNameWithExtension(filePath);
+                if (isLoaded(filePath)) {
+                    // Already loaded modules are loaded from the application dir
+                    dstPath = filePath;
+                    protected_.insert(util::stripModuleFileNameDecoration(filePath));
+                } else if (filesystem::fileModificationTime(filePath) !=
+                           filesystem::fileModificationTime(dstPath)) {
+                    // Load a copy of the file to make sure that we can overwrite the file.
+                    filesystem::copyFile(filePath, dstPath);
+                }
+                return dstPath;
+            } else {
+                return filePath;
+            }
+        }();
+
         try {
             // Load library. Will throw exception if failed to load
             auto sharedLib = util::make_unique<SharedLibrary>(tmpPath);
@@ -267,26 +247,13 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
                     << tmpPath
                     << ". Make sure that you have compiled the library and exported the function.");
             }
-        } catch (Exception ex) {
-            // Library dependency is probably missing.
-            // We silently skip this library.
-            LogInfo("Could not load library: " + filePath);
+        } catch (const Exception& e) {
+            // Library dependency is probably missing. We silently skip this library.
+            LogInfo("Could not load library: " << filePath << " " << e.getMessage());
         }
     }
 
-    std::set<std::string, CaseInsensitiveCompare> dependencies;
-    std::function<void(const std::string&)> getDeps = [&](const std::string& module) {
-        auto it = util::find_if(modules, [&](const auto& m) { return iCaseCmp(m->name, module); });
-        if (it != modules.end()) {
-            for (const auto dep : (*it)->dependencies) {
-                dependencies.insert(dep.first);
-                getDeps(dep.first);
-            }
-        }
-    };
-    for (auto& module : protected_) {
-        getDeps(module);
-    }
+    auto dependencies = getProtectedDependencies(protected_, modules);
     protected_.insert(dependencies.begin(), dependencies.end());
 
     registerModules(std::move(modules));
@@ -303,7 +270,7 @@ void ModuleManager::unregisterModules() {
 
     // Remove module factories
     util::reverse_erase_if(factoryObjects_,
-                          [this](const auto& mfo) { return !this->isProtected(mfo->name); });
+                           [this](const auto& mfo) { return !this->isProtected(mfo->name); });
 
     // Modules should now have removed all allocated resources and it should be safe to unload
     // shared libraries.
@@ -436,6 +403,45 @@ bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) cons
     } else {
         return true;
     }
+}
+
+std::vector<std::string> ModuleManager::deregisterDependetModules(
+    const std::vector<std::string>& toDeregister) {
+    IdSet deregister;
+    for (const auto& m : toDeregister) {
+        deregister.insert(m);
+        auto dependents = findDependentModules(m);
+        deregister.insert(dependents.begin(), dependents.end());
+    }
+    std::vector<std::string> deregistered;
+    util::reverse_erase_if(modules_, [&](const auto& m) {
+        if (deregister.count(m->getIdentifier()) != 0) {
+            deregistered.push_back(m->getIdentifier());
+            return true;
+        } else {
+            return false;
+        }
+    });
+    return deregistered;
+}
+
+auto ModuleManager::getProtectedDependencies(
+    const IdSet& ptotectedIds,
+    const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& modules) -> IdSet {
+    IdSet dependencies;
+    std::function<void(const std::string&)> getDeps = [&](const std::string& module) {
+        auto it = util::find_if(modules, [&](const auto& m) { return iCaseCmp(m->name, module); });
+        if (it != modules.end()) {
+            for (const auto dep : (*it)->dependencies) {
+                dependencies.insert(dep.first);
+                getDeps(dep.first);
+            }
+        }
+    };
+    for (auto& module : ptotectedIds) {
+        getDeps(module);
+    }
+    return dependencies;
 }
 
 }  // namespace inviwo

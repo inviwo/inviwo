@@ -33,6 +33,9 @@
 
 namespace inviwo {
 
+/**
+ *	A tag type to select runtime module loading
+ */
 struct IVW_CORE_API RuntimeModuleLoading {};
 
 }  // namespace inviwo

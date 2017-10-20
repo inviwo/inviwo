@@ -40,7 +40,8 @@ namespace inviwo {
 class InviwoModule;
 class InviwoApplication;
 
-enum class ProtectedModule { on, off };
+// A protected module does not participate in runtime reloading
+enum class ProtectedModule : bool { on, off };
 
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
@@ -59,7 +60,10 @@ public:
     const Version inviwoCoreVersion;  // Supported inviwo core version (Major.Minor.Patch)
     // Module dependencies Major.Minor.Patch version of each dependency
     const std::vector<std::pair<std::string, Version>> dependencies;
+    // A module can have one or more aliases. Several modules can have the same alias. Useful when
+    // several modules implement the same functionality
     const std::vector<std::string> aliases;
+    // A protected module does not participate in runtime reloading
     const ProtectedModule protectedModule;
 };
 

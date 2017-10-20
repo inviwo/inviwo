@@ -132,6 +132,7 @@ public:
      * a larger value when you need to update the module version.
      */
     virtual int getVersion() const;
+
     /**
      * Should return a converter that updates a processor network from the oldModuleVersion to the
      * current module version returned by getVersion. You need to overload this together with

@@ -189,6 +189,10 @@ std::set<std::string> SharedLibrary::libraryFileExtensions() {
 #endif
 }
 
+void SharedLibrary::release() {
+    handle_ = nullptr;
+}
+
 namespace util {
 
 std::vector<std::string> getLibrarySearchPaths() {

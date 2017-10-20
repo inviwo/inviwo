@@ -57,6 +57,8 @@ class SharedLibrary;
  */
 class IVW_CORE_API ModuleManager {
 public:
+    using IdSet = std::set<std::string, CaseInsensitiveCompare>;
+
     ModuleManager(InviwoApplication* app);
     ModuleManager(const ModuleManager& rhs) = delete;
     ModuleManager& operator=(const ModuleManager& that) = delete;
@@ -70,7 +72,6 @@ public:
 
     /**
      * \brief Registers modules from factories and takes ownership of input module factories.
-     *
      * Module is registered if dependencies exist and they have correct version.
      */
     void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories);
@@ -82,9 +83,9 @@ public:
      *
      * @note Which modules to load can be specified by creating a file
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
-     * @param librarySearchPaths Paths to directories to recursively search.
      */
     void registerModules(RuntimeModuleLoading);
+
 
     /**
      * \brief Removes all modules not marked as protected by the application.
@@ -127,17 +128,23 @@ public:
      * Append them to this list in your application to prevent them from being unloaded.
      * @return Module identifiers of modules
      */
-    const std::set<std::string, CaseInsensitiveCompare>& getProtectedModuleIdentifiers() const;
+    const IdSet& getProtectedModuleIdentifiers() const;
     bool isProtected(const std::string& module) const;
     void addProtectedIdentifier(const std::string& id);
 
     static std::function<bool(const std::string&)> getEnabledFilter();
     void reloadModules();
+
 private:
     bool checkDependencies(const InviwoModuleFactoryObject& obj) const;
+    std::vector<std::string> deregisterDependetModules(
+        const std::vector<std::string>& toDeregister);
+    static auto getProtectedDependencies(
+        const IdSet& ptotectedIds,
+        const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& modules) -> IdSet;
 
     InviwoApplication* app_;
-    std::set<std::string, CaseInsensitiveCompare> protected_;
+    IdSet protected_;
 
     Dispatcher<void()> onModulesDidRegister_;     ///< Called after modules have been registered
     Dispatcher<void()> onModulesWillUnregister_;  ///< Called before modules have been unregistered

@@ -110,29 +110,27 @@ public:
 
     /**
      * \brief Registers modules from factories and takes ownership of input module factories.
-     *
      * Module is registered if dependencies exist and they have correct version.
      */
-    virtual void registerModules(
-        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories);
+    virtual void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules);
+
     /**
-     * \brief Load modules from dynamic library files in the specified search paths.
+     * \brief Load modules from dynamic library files in the regular search paths.
      *
-     * Will recursively search for all dll/so/dylib/bundle files in the specified search paths.
+     * Will recursively search for all dll/so/dylib/bundle files in the regular search paths.
      * The library filename must contain "inviwo-module" to be loaded.
      *
      * @note Which modules to load can be specified by creating a file
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
-     * @param librarySearchPaths Paths to directories to recursively search.
+     * Forwards to ModuleManager.
      */
     virtual void registerModules(RuntimeModuleLoading);
+
     /**
      * Get the base path of the application.
      * i.e. where the core data and modules folder and etc are.
      */
     std::string getBasePath() const;
-
-    const std::string& getDisplayName() const;
 
     /**
      * Get basePath + pathType + suffix.
@@ -140,7 +138,7 @@ public:
      * @param pathType Enum for type of path
      * @param suffix Path extension
      * @param createFolder whether to create the folder if it does not exist.
-     * @return basePath +  pathType + suffix
+     * @return basePath + pathType + suffix
      */
     std::string getPath(PathType pathType, const std::string& suffix = "",
                         const bool& createFolder = false);
@@ -215,7 +213,7 @@ public:
     virtual void playSound(Message soundID);
 
     TimerThread& getTimerThread();
-
+    const std::string& getDisplayName() const;
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
 
