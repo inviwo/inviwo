@@ -136,12 +136,12 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create library
-qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
-source_group("MOC Files" FILES ${MOC_FILES})
+qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+source_group("MOC Files" FILES ${MOCED_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+ivw_create_module(${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
 ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets)
