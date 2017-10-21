@@ -60,12 +60,9 @@ class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
 class InviwoApplicationQt;
+class NetworkSearch;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     static const unsigned int maxNumRecentFiles_ = 10;
 
@@ -92,7 +89,6 @@ public:
     InviwoApplication* getInviwoApplication() const;
     const std::unordered_map<std::string, QAction*>& getActions() const;
 
-public slots:
     void newWorkspace();
     void openWorkspace();
     void openRecentWorkspace();
@@ -156,7 +152,7 @@ private:
     void fillTestWorkspaceMenu();
 
     InviwoApplicationQt* app_;
-    std::shared_ptr<NetworkEditor> networkEditor_;
+    std::unique_ptr<NetworkEditor> networkEditor_;
     NetworkEditorView* networkEditorView_;
     TemplateOptionProperty<UsageMode>* appUsageModeProp_;
 
@@ -170,6 +166,7 @@ private:
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     ResourceManagerWidget* resourceManagerWidget_;
     HelpWidget* helpWidget_;
+    NetworkSearch* networkSearch_;
 
     // menu actions
     std::unordered_map<std::string, QAction*> actions_;
@@ -198,8 +195,11 @@ private:
     
     UndoManager undoManager_;
 
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_; ///< Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_; ///< Called before modules have been unregistered
+    ///< Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
+
+    ///< Called before modules have been unregistered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
 }  // namespace

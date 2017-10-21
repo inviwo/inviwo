@@ -122,6 +122,11 @@ public:
     
     void saveNetworkImage(const std::string& filename);
 
+    ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
+    ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
+    LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
+    LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
+                                                    Processor* processor2) const;
 public slots:
     void contextMenuShowInspector(EditorGraphicsItem*);
     void resetAllTimeMeasurements();
@@ -184,12 +189,6 @@ private:
     LinkConnectionGraphicsItem* addLinkGraphicsItem(Processor* processor1, Processor* processor2);
     void removeLinkGraphicsItem(LinkConnectionGraphicsItem* linkGraphicsItem);
     void showLinkDialog(Processor* processor1, Processor* processor2);
-
-    ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
-    ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
-    LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
-    LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
-                                                    Processor* processor2) const;
 
     // Get QGraphicsItems
     template <typename T>

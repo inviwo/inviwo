@@ -46,6 +46,7 @@
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
+#include <inviwo/qt/editor/networksearch.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
@@ -100,7 +101,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 
-    networkEditor_ = std::make_shared<NetworkEditor>(this);
+    networkEditor_ = util::make_unique<NetworkEditor>(this);
     // initialize console widget first to receive log messages
     consoleWidget_ = std::make_shared<ConsoleWidget>(this);
     LogCentral::getPtr()->registerLogger(consoleWidget_);
@@ -149,6 +150,12 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
+    auto grid = new QGridLayout(networkEditorView_);
+    grid->setContentsMargins(7, 7, 7, 7);
+    networkSearch_ = new NetworkSearch(this);
+    grid->addWidget(networkSearch_, 0, 0, Qt::AlignTop | Qt::AlignRight);
+
+
     setCentralWidget(networkEditorView_);
 
     resourceManagerWidget_ = new ResourceManagerWidget(this);
@@ -443,7 +450,16 @@ void InviwoMainWindow::addActions() {
         editMenuItem->addAction(findAction);
         connect(findAction, &QAction::triggered, [&]() { processorTreeWidget_->focusSearch(); });
     }
-
+    {
+        auto searchNetwork = new QAction(tr("&Search Network"), this);
+        actions_["Find Processor"] = searchNetwork;
+        searchNetwork->setShortcut(Qt::ShiftModifier + Qt::ControlModifier + Qt::Key_F);
+        editMenuItem->addAction(searchNetwork);
+        connect(searchNetwork, &QAction::triggered, [&]() { 
+            networkSearch_->setVisible(true);
+            networkSearch_->setFocus();
+        });
+    }
     {
         auto addProcessorAction = new QAction(tr("&Add Processor"), this);
         actions_["Add Processor"] = addProcessorAction;

@@ -446,7 +446,6 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 
 void ProcessorGraphicsItem::setHighlight(bool val) {
     highlight_ = val;
-    setSelected(val);
 }
 
 }  // namespace inviwo
