@@ -363,6 +363,8 @@ function(ivw_register_modules retval)
         # Validate that there only are module dependencies
         ivw_private_filter_dependency_list(new_dependencies ${${mod}_class} ${new_dependencies})
         set("${mod}_dependencies" ${new_dependencies} CACHE INTERNAL "Module dependencies")
+        ivw_mod_name_to_mod_dep(udependencies ${new_dependencies})
+        set("${mod}_udependencies" ${udependencies} CACHE INTERNAL "Module uppercase dependencies")
     endforeach()
     
     # Add module versions dependencies
@@ -385,13 +387,13 @@ function(ivw_register_modules retval)
     endforeach()
 
     # Sort modules by dependencies
-    ivw_topological_sort(modules _dependencies sorted_modules)
+    ivw_topological_sort(modules _udependencies sorted_modules)
 
-    # enable depencenies
+    # enable dependencies
     ivw_reverse_list_copy(sorted_modules rev_sorted_modules)
     foreach(mod ${rev_sorted_modules})
         if(${${mod}_opt})
-            foreach(dep ${${mod}_dependencies})
+            foreach(dep ${${mod}_udependencies})
                 if(NOT ${${dep}_opt})
                     ivw_add_module_option_to_cache(${${dep}_dir} ON TRUE)
                     message(STATUS "${${dep}_opt} was set to build, "
