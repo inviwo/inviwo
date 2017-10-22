@@ -78,9 +78,9 @@ find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
 find_package(Qt5Help QUIET REQUIRED)
 
-qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
-source_group("MOC Files" FILES ${MOC_FILES})
-add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+source_group("MOC Files" FILES ${MOCED_FILES})
+add_library(inviwo-qteditor ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 add_library(inviwo::qteditor ALIAS inviwo-qteditor)
 target_link_libraries(inviwo-qteditor PUBLIC 
     inviwo::core 

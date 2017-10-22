@@ -44,11 +44,11 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #    list(APPEND SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/canvasqopenglwidget.cpp)
 #endif()
 
-qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
-source_group("MOC Files" FILES ${MOC_FILES})
+qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Create module
-ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+ivw_create_module(${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-openglqt PRIVATE Qt5::OpenGL)
 ivw_make_package(InviwoOpenGLQtModule inviwo-module-openglqt)
 ivw_qt_add_to_install(qt_modules Qt5OpenGL)

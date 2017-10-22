@@ -29,10 +29,10 @@ find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
 
-qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
-source_group("MOC Files" FILES ${MOC_FILES})
+qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+source_group("MOC Files" FILES ${MOCED_FILES})
 
-add_library(inviwo-qtapplicationbase ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+add_library(inviwo-qtapplicationbase ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 add_library(inviwo::qtapplicationbase ALIAS inviwo-qtapplicationbase)
 target_link_libraries(inviwo-qtapplicationbase PUBLIC inviwo-core Qt5::Core Qt5::Gui Qt5::Widgets)
 
