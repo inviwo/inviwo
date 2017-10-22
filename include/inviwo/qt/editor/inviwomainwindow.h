@@ -72,7 +72,6 @@ public:
     InviwoMainWindow(InviwoApplicationQt* app);
     virtual ~InviwoMainWindow();
 
-    void updateForNewModules();
     void showWindow();
 
     void openLastWorkspace(std::string workspace = "");
@@ -198,6 +197,9 @@ private:
     TCLAP::SwitchArg updateWorkspaces_;
     
     UndoManager undoManager_;
+
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_; ///< Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_; ///< Called before modules have been unregistered
 };
 
 }  // namespace

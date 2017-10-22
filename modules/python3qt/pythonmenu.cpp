@@ -37,19 +37,20 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QAction>
+#include <QLayout>
 #include <warn/pop>
 
 namespace inviwo {
 
 PythonMenu::PythonMenu(InviwoApplication* app) {
     if (auto win = utilqt::getApplicationMainWindow()) {
-        auto menu = utilqt::addMenu("&Python");
+        menu_ = utilqt::addMenu("&Python");
         QAction* pythonEditorOpen =
-            menu->addAction(QIcon(":/icons/python.png"), "&Python Editor");
+            menu_->addAction(QIcon(":/icons/python.png"), "&Python Editor");
         editor_ = new PythonEditorWidget(win, app);
         win->connect(pythonEditorOpen, SIGNAL(triggered(bool)), editor_, SLOT(show(void)));
 
-        auto pyPropertoes = menu->addAction("&List unexposed properties");
+        auto pyPropertoes = menu_->addAction("&List unexposed properties");
         win->connect(pyPropertoes, &QAction::triggered, [app]() {
             auto mod = app->getModuleByType<Python3Module>();
             PythonScriptDisk(mod->getPath() + "/scripts/list_not_exposed_properties.py").run();
@@ -58,7 +59,15 @@ PythonMenu::PythonMenu(InviwoApplication* app) {
     }
 }
 
-PythonMenu::~PythonMenu() = default;
+PythonMenu::~PythonMenu() {
+    if (auto win = utilqt::getApplicationMainWindow()) {
+        // Delete menu_ and editor_ since the MainWindow is parent and will
+        // not delete menu_ until after module has been deinitialized.
+        // Destructors will remove the created widgets, actions and signals
+        delete menu_;
+        delete editor_;
+    }
+}
 
 PythonEditorWidget* PythonMenu::getEditor() const {
     return editor_;

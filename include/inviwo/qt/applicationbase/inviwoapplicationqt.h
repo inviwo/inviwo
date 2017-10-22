@@ -62,15 +62,11 @@ private:
     static QEvent::Type InviwoQtEventType;
 };
 
-class IVW_QTAPPLICATIONBASE_API InviwoApplicationQt : public QApplication, public InviwoApplication {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
+class IVW_QTAPPLICATIONBASE_API InviwoApplicationQt : public QApplication,
+                                                      public InviwoApplication {
 public:
     InviwoApplicationQt(std::string displayName, int& argc, char** argv);
-    virtual ~InviwoApplicationQt() =  default;
+    virtual ~InviwoApplicationQt() = default;
 
     virtual void registerFileObserver(FileObserver* fileObserver) override;
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
@@ -79,13 +75,13 @@ public:
     virtual void closeInviwoApplication() override;
     virtual void playSound(Message soundID) override;
     /**
-    * \brief Get locale object for determining parsing and formatting of data.
-    * 
-    * @return std::locale acquired during construction.
-    */
+     * \brief Get locale object for determining parsing and formatting of data.
+     *
+     * @return std::locale acquired during construction.
+     */
     virtual std::locale getUILocale() const override;
 
-    /** 
+    /**
      * \brief Set the main window used by the application.
      * The widget object name will be set to "InviwoMainWindow".
      * Other widgets can thereby find the main window in QApplication.
@@ -97,15 +93,13 @@ public:
 
     virtual bool event(QEvent* e) override;
 
-public slots:
-    void fileChanged(QString fileName);
-
 protected:
     virtual void printApplicationInfo() override;
     virtual void resizePool(size_t newSize) override;
-    void wait(int);
 
 private:
+    void fileChanged(QString fileName);
+
     static void logQtMessages(QtMsgType type, const QMessageLogContext& context,
                               const QString& msg);
     /**

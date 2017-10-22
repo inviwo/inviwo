@@ -197,4 +197,16 @@ void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int
     callbacks_.push_back(std::make_tuple(priority, arg, callback));
 }
 
+void CommandLineParser::remove(TCLAP::Arg* arg) {
+    auto& args = cmd_.getArgList();
+    auto argIt = std::find_if(std::begin(args), std::end(args), [arg](const auto& arg_) { return arg_ == arg; });
+    if (argIt != args.end()) {
+        args.erase(argIt);
+    }
+    auto it = std::find_if(std::begin(callbacks_), std::end(callbacks_), [arg](const auto& callback) { return std::get<1>(callback) == arg; });
+    if (it != callbacks_.end()) {
+        callbacks_.erase(it);
+    }
+}
+
 }  // namespace

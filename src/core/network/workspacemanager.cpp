@@ -192,7 +192,7 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
     InviwoSetupInfo info;
     deserializer.deserialize("InviwoSetup", info);
 
-    for (const auto& module : app_->getModules()) {
+    for (const auto& module : app_->getModuleManager().getModules()) {
         if (auto minfo = info.getModuleInfo(module->getIdentifier())) {
             if (minfo->version_ < module->getVersion()) {
                 auto converter = module->getConverter(minfo->version_);

@@ -211,6 +211,30 @@ auto erase_remove_if(T& cont, Pred pred)
     return nelem;
 }
 
+template <typename T>
+void reverse_erase(T& cont) {
+    using std::rbegin;
+    using std::rend;
+    for (auto it = rbegin(cont); it != rend(cont);) {
+        // Erase does not take reverse_iterator so we need to convert it
+        it = decltype(it)(cont.erase((++it).base()));
+    }
+}
+
+template <typename T, typename Pred>
+void reverse_erase_if(T& cont, Pred pred) {
+    using std::begin;
+    using std::end;
+    for (auto it = rbegin(cont); it != rend(cont);) {
+        if (pred(*it)) {
+            // Erase does not take reverse_iterator so we need to convert it
+            it = decltype(it)(cont.erase((++it).base()));
+        } else {
+            ++it;
+        }
+    }
+}
+
 template <typename T, typename Pred>
 size_t map_erase_remove_if(T& cont, Pred pred) {
     using std::begin;
@@ -239,10 +263,15 @@ bool push_back_unique(T& cont, typename T::value_type elem) {
     }
 }
 
-template <typename T>
-std::vector<T>& append(std::vector<T> &dest, const std::vector<T> &source) {
-    dest.reserve(dest.size() + source.size());
-    dest.insert(dest.end(), source.begin(), source.end());
+template <typename Dst, typename... Srcs>
+Dst& append(Dst& dest, Srcs&&... sources) {
+    for_each_argument(
+        [&](auto&& source) {
+            using std::begin;
+            using std::end;
+            dest.insert(end(dest), begin(source), end(source));
+        },
+        std::forward<Srcs>(sources)...);
     return dest;
 }
 

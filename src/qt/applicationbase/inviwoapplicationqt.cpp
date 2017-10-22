@@ -64,7 +64,10 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, cha
     setPostEnqueueFront([this]() { postEvent(this, new InviwoQtEvent()); });
 
     fileWatcher_ = new QFileSystemWatcher(this);
-    connect(fileWatcher_, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+    connect(fileWatcher_, &QFileSystemWatcher::fileChanged, this,
+            &InviwoApplicationQt::fileChanged);
+    connect(fileWatcher_, &QFileSystemWatcher::directoryChanged, this,
+            &InviwoApplicationQt::fileChanged);
 
 #ifdef WIN32
     // set default font since the QApplication font is not properly initialized
@@ -108,16 +111,20 @@ void InviwoApplicationQt::unRegisterFileObserver(FileObserver* fileObserver) {
 
 void InviwoApplicationQt::startFileObservation(std::string fileName) {
     QString qFileName = QString::fromStdString(fileName);
-    if (!fileWatcher_->files().contains(qFileName)) fileWatcher_->addPath(qFileName);
+    // Will add the path if file exists and is not already being watched.
+    fileWatcher_->addPath(qFileName);
 }
 
 void InviwoApplicationQt::stopFileObservation(std::string fileName) {
-    QString qFileName = QString::fromStdString(fileName);
-    if (fileWatcher_->files().contains(qFileName)) fileWatcher_->removePath(qFileName);
+    auto it =
+        std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
+                     [fileName](const auto observer) { return observer->isObserved(fileName); });
+    // Make sure that no observer is observing the file
+    if (it == std::end(fileObservers_)) fileWatcher_->removePath(QString::fromStdString(fileName));
 }
 
 void InviwoApplicationQt::fileChanged(QString fileName) {
-    wait(200);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     if (QFile::exists(fileName)) {
         std::string fileNameStd = fileName.toLocal8Bit().constData();
@@ -185,12 +192,6 @@ void InviwoApplicationQt::resizePool(size_t newSize) {
         processEvents();
     }
 }
-
-void InviwoApplicationQt::wait(int ms) {
-    if (ms <= 0) return;
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-}
-
 
 void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext& context,
                                         const QString& msg) {

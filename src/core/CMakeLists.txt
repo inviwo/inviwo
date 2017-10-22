@@ -12,8 +12,12 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocoredefine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodule.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulefactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulelibraryobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulemanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/runtimemoduleregistration.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/version.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/buffer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferramprecision.h
@@ -269,8 +273,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/ostreamjoiner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/pathtype.h
@@ -279,6 +283,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/linksettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/settings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/sharedlibrary.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singlefileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
@@ -310,7 +315,10 @@ set(SOURCE_FILES
     common/inviwocore.cpp
     common/inviwomodule.cpp
     common/inviwomodulefactoryobject.cpp
+    common/inviwomodulelibraryobserver.cpp
     common/moduleaction.cpp
+    common/modulemanager.cpp
+    common/version.cpp
     datastructures/buffer/buffer.cpp
     datastructures/buffer/bufferram.cpp
     datastructures/buffer/bufferrepresentation.cpp
@@ -495,13 +503,14 @@ set(SOURCE_FILES
     util/inviwosetupinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
-    util/moduleutils.cpp
     util/memoryfilehandle.cpp
+    util/moduleutils.cpp
     util/observer.cpp
     util/rendercontext.cpp
     util/settings/linksettings.cpp
     util/settings/settings.cpp
     util/settings/systemsettings.cpp
+    util/sharedlibrary.cpp
     util/shuntingyard.cpp
     util/singlefileobserver.cpp
     util/spatial4dsampler.cpp
@@ -564,7 +573,7 @@ add_library(inviwo::core ALIAS inviwo-core)
 
 #--------------------------------------------------------------------
 # Define standard defintions
-ivw_define_standard_definitions(IVW_CORE inviwo-core)
+ivw_define_standard_definitions(inviwo-core inviwo-core)
 ivw_define_standard_properties(inviwo-core)
 
 #--------------------------------------------------------------------
@@ -609,6 +618,10 @@ if(APPLE)
    mark_as_advanced(CORESERVICES_LIBRARY)
    target_link_libraries(inviwo-core PRIVATE ${CORESERVICES_LIBRARY})
 endif (APPLE)
+if(UNIX)
+    # Required for dlopen
+    target_link_libraries(inviwo-core PRIVATE ${CMAKE_DL_LIBS})
+endif(UNIX)
 
 #Optimize compiliation with PCH etc
 ivw_compile_optimize_on_target(inviwo-core)

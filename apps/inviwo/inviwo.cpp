@@ -48,7 +48,7 @@
 int main(int argc, char** argv) {
     inviwo::LogCentral::init();
     inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
-    auto logCounter = std::make_shared<inviwo::LogErrorCounter>();    
+    auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     inviwo::LogCentral::getPtr()->registerLogger(logCounter);
     inviwo::InviwoApplicationQt inviwoApp("Inviwo v" + IVW_VERSION, argc, argv);
     inviwoApp.setWindowIcon(QIcon(":/icons/inviwo_light.png"));
@@ -72,45 +72,41 @@ int main(int argc, char** argv) {
 
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
-    inviwoApp.registerModules(&inviwo::registerAllModules);
+    inviwoApp.registerModules(inviwo::getModuleList());
+
     inviwoApp.processEvents();
 
     // Do this after registerModules if some arguments were added
     clp.parse(inviwo::CommandLineParser::Mode::Normal);
 
-    // setup main window
-    mainWin.updateForNewModules();
-    inviwoApp.processEvents();
+    inviwoApp.processEvents();  // Update GUI
     splashScreen.showMessage("Loading workspace...");
     inviwoApp.processEvents();
     mainWin.showWindow();
     inviwoApp.processEvents();  // Make sure the gui is done loading before loading workspace
 
     mainWin.openLastWorkspace(clp.getWorkspacePath());  // open last workspace
+    inviwoApp.setProgressCallback(std::function<void(std::string)>{});
     splashScreen.finish(&mainWin);
 
     inviwoApp.processEvents();
-    clp.processCallbacks(); // run any command line callbacks from modules.
+    clp.processCallbacks();  // run any command line callbacks from modules.
     inviwoApp.processEvents();
 
-    inviwo::util::OnScopeExit clearNetwork([&](){
-        inviwoApp.getProcessorNetwork()->clear();
-    });
+    inviwo::util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
 
     if (auto numErrors = logCounter->getWarnCount()) {
         LogWarnCustom("inviwo.cpp", numErrors << " warnings generated during startup");
     }
-
     if (auto numErrors = logCounter->getErrorCount()) {
         LogErrorCustom("inviwo.cpp", numErrors << " errors generated during startup");
     }
-    
+    logCounter.reset();
 
     // process last arguments
     if (!clp.getQuitApplicationAfterStartup()) {
         return inviwoApp.exec();
-    }
-    else {
+    } else {
         mainWin.exitInviwo(false);
         return 0;
     }

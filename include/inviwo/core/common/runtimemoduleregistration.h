@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,53 +26,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#ifndef IVW_RUNTIMEMODLEREGISTRTION_H
+#define IVW_RUNTIMEMODLEREGISTRTION_H
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <modules/opengl/shader/shaderresource.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
 namespace inviwo {
 
-FileShaderResource::FileShaderResource(const std::string& key, const std::string& fileName)
-    : FileObserver(fileName), key_(key), fileName_(fileName) {
-}
+/**
+ *	A tag type to select runtime module loading
+ */
+struct IVW_CORE_API RuntimeModuleLoading {};
 
-std::unique_ptr<ShaderResource> FileShaderResource::clone() {
-    return util::make_unique<FileShaderResource>(key_, fileName_);
-}
+}  // namespace inviwo
 
-std::string FileShaderResource::key() const { return key_; }
-
-std::string FileShaderResource::source() const {
-    if (!cache_.empty()) return cache_;
-    std::ifstream stream(fileName_);
-    std::stringstream buffer;
-    buffer << stream.rdbuf();
-    cache_ = buffer.str();
-    return cache_;
-}
-
-std::string FileShaderResource::file() const { return fileName_; }
-
-void FileShaderResource::fileChanged(const std::string& /*fileName*/) { 
-    cache_ = "";
-    callbacks_.invoke(this); 
-}
-
-StringShaderResource::StringShaderResource(const std::string& key, const std::string& source)
-    : key_(key), source_(source) {}
-
-std::unique_ptr<ShaderResource> StringShaderResource::clone() {
-    return util::make_unique<StringShaderResource>(key_, source_);
-}
-
-std::string StringShaderResource::key() const { return key_; }
-
-std::string StringShaderResource::source() const { return source_; }
-
-void StringShaderResource::setSource(const std::string& source) {
-    source_ = source;
-    callbacks_.invoke(this);
-}
-
-}  // namespace
+#endif  // IVW_RUNTIMEMODLEREGISTRTION_H

@@ -28,17 +28,94 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
-InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name,
-                                                     const std::string& description,
-                                                     std::vector<std::string> depends)
-    : name_(name), description_(description), depends_(depends) {}
+InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_, Version version_,
+                                                     const std::string& description_,
+                                                     Version inviwoCoreVersion_,
+                                                     std::vector<std::string> dependencies_,
+                                                     std::vector<Version> dependenciesVersion_,
+                                                     std::vector<std::string> aliases_,
+                                                     ProtectedModule protectedModule_)
+    : name(name_)
+    , version(version_)
+    , description(description_)
+    , inviwoCoreVersion(inviwoCoreVersion_)
+    , dependencies([&]() {
+        if (dependencies_.size() != dependenciesVersion_.size()) {
+            throw Exception("Each module dependency must have a version");
+        }
+        std::vector<std::pair<std::string, Version>> deps;
+        for (auto&& item : util::zip(dependencies_, dependenciesVersion_)) {
+            deps.emplace_back(get<0>(item), Version(get<0>(item)));
+        }
+        return deps;
+    }())
+    , aliases(aliases_)
+    , protectedModule(protectedModule_) {}
 
-InviwoModuleFactoryObject::~InviwoModuleFactoryObject() {
-    
+/**
+ * \brief Sorts modules according to their dependencies.
+ *
+ * Recursive function that sorts the input vector according to their dependencies.
+ * Modules depending on other modules will end up last in the list.
+ *
+ * @param start graph Objects to sort
+ * @param end graph Objects to sort
+ * @param lname Module dependency to sort
+ * @param visited Modules already searched
+ * @param tmpVisited Modules being searched
+ * @param sorted Module names, sorted after dependencies.
+ */
+void recursiveTopologicalModuleFactoryObjectSort(
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start,
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end, const std::string& lname,
+    std::unordered_set<std::string>& visited, std::unordered_set<std::string>& tmpVisited,
+    std::vector<std::string>& sorted) {
+    auto it = std::find_if(start, end, [&](const auto& a) { return toLower(a->name) == lname; });
+    if (it == end) {  // This dependency has not been loaded
+        return;
+    }
+
+    if (visited.find(lname) != visited.end()) return;  // Already visited;
+    if (tmpVisited.find(lname) != tmpVisited.end()) {
+        throw Exception("Dependency graph not a DAG", IvwContextCustom("TopologicalModuleSort"));
+    }
+
+    tmpVisited.insert(lname);
+
+    for (const auto& dependency : (*it)->dependencies) {
+        auto ldep = toLower(dependency.first);
+        recursiveTopologicalModuleFactoryObjectSort(start, end, ldep, visited, tmpVisited, sorted);
+    }
+    visited.insert(lname);
+    sorted.insert(sorted.begin(), lname);
+
+    return;
 }
 
-} // namespace
+void topologicalModuleFactoryObjectSort(
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start,
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end) {
+    // Topological sort to make sure that we load modules in correct order
+    // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+    std::unordered_set<std::string> visited;
+    std::unordered_set<std::string> tmpVisited;
+    std::vector<std::string> sorted;
+    for (auto it = start; it != end; ++it) {
+        auto lname = toLower((*it)->name);
+        if (visited.find(lname) == visited.end()) {
+            recursiveTopologicalModuleFactoryObjectSort(start, end, lname, visited, tmpVisited,
+                                                        sorted);
+        }
+    }
+    // Sort modules according to dependency graph
+    std::sort(start, end, [&](const auto& a, const auto& b) {
+        return std::find(std::begin(sorted), std::end(sorted), toLower(a->name)) >
+               std::find(std::begin(sorted), std::end(sorted), toLower(b->name));
+    });
+}
 
+}  // namespace inviwo

@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwo.h>
@@ -90,6 +91,29 @@ void validateIdentifier(const std::string& identifier, const std::string& type,
     }
 }
 
+std::string stripModuleFileNameDecoration(std::string filePath) {
+    auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
+#if defined(WIN32)
+    auto decoration = std::string("inviwo-module-");
+#else
+    auto decoration = std::string("libinviwo-module-");
+#endif
+    auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
+    if (inviwoModulePos == std::string::npos) {
+        inviwoModulePos = 0;
+    }
+    else {
+        inviwoModulePos = decoration.size();
+    }
+    auto len = fileNameWithoutExtension.size() - inviwoModulePos;
+#ifdef DEBUG
+    // Remove debug ending "d" at end of file name
+    len -= 1;
+#endif 
+    auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
+    return moduleName;
+}
+
 std::string stripIdentifier(std::string identifier) {
     // What we allow: [a-zA-Z_][a-zA-Z0-9_]*
     auto testFirst = [](unsigned char c) -> bool { return !(c == '_' || std::isalpha(c)); };
@@ -118,8 +142,7 @@ void Hideer::operator()(Property& p) {p.setVisible(false);}
 void Shower::operator()(ProcessorWidget& p) {p.setVisible(true);}
 void Hideer::operator()(ProcessorWidget& p) {p.setVisible(false);}
 
-}  // namespace
-
+}  // namespace detail
 
 }  // namespace util
 }  // namespace inviwo

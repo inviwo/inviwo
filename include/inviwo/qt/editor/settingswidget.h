@@ -66,6 +66,9 @@ protected:
     QVBoxLayout* layout_ = nullptr;
     QWidget* mainWidget_ = nullptr;
     QScrollArea* scrollArea_ = nullptr;
+
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_; ///< Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_; ///< Called before modules have been unregistered
 };
 
 } // namespace

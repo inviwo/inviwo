@@ -80,6 +80,17 @@ macro(ivw_qt_wrap_cpp retval)
 endmacro()
 
 function(ivw_message)
-    message(DEPRECATION "ivw_message is deprecatede, just use message")
+    message(DEPRECATION "ivw_message is deprecated, just use message")
     message(${ARGV})
+endfunction()
+
+function(ivw_add_module_dependencies target)
+    message(DEPRECATION "ivw_add_module_dependencies is deprecated,"
+        " just use ivw_mod_name_to_alias and target_link_libraries")
+    ivw_mod_name_to_alias(ivw_dep_targets ${ARGN})
+    target_link_libraries(${target} PUBLIC ${ivw_dep_targets})
+endfunction()
+
+function(ivw_register_use_of_modules target)
+    message(FATAL_ERROR "Replaced with: ivw_configure_application_module_dependencies")
 endfunction()

@@ -68,6 +68,7 @@ set(HEADER_FILES
     qstringhelper.h
     qtwidgetsmodule.h
     qtwidgetsmoduledefine.h
+	qtwidgetssettings.h
     rawdatareaderdialogqt.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -126,6 +127,7 @@ set(SOURCE_FILES
     properties/transferfunctionpropertywidgetqt.cpp 
     propertylistwidget.cpp
     qtwidgetsmodule.cpp
+	qtwidgetssettings.cpp
     rangesliderqt.cpp
     rawdatareaderdialogqt.cpp
     sliderwidgetqt.cpp

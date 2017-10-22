@@ -200,6 +200,7 @@ mark_as_advanced(FORCE GLM_DIR)
 mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
 if(WIN32 AND MSVC)
+    # Determine runtime library linkage depending on BUILD_SHARED_LIBS setting.
     # Shared runtime can be forced by setting the IVW_FORCE_SHARED_CRT option.
     option(IVW_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
     mark_as_advanced(IVW_FORCE_SHARED_CRT)
@@ -266,6 +267,11 @@ if(UNIX AND NOT APPLE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON) # Will add -fPIC under linux.
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed") # Only link to libs as needed.
 endif()
+
+#--------------------------------------------------------------------
+# Calculate and display profiling information
+option(IVW_RUNTIME_MODULE_LOADING 
+       "Load modules from dynamic libraries (dll/so) at application startup" OFF)
 
 #--------------------------------------------------------------------
 # Check if OpenMP is available and set it to use, and include the dll in packs

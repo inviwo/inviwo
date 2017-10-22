@@ -58,23 +58,26 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
     }
     return pybind11::none();
 }
-}
+}  // namespace
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
-    auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>();
+    auto module = app->getModuleByType<Python3Module>();
     if (module) {
-        auto ivwmodule = module->getInviwopyModule();
-        auto m = ivwmodule->def_submodule("qt", "Qt dependent stuff");
+        if (auto ivwmodule = module->getInviwopyModule()) {
+            auto m = ivwmodule->def_submodule("qt", "Qt dependent stuff");
 
-        m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
-            pybind11::arg("defaultResponse") = "");
-        m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+            m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
+                  pybind11::arg("defaultResponse") = "");
+            m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+        } else {
+            throw ModuleInitException("Failed to get inviwopy");
+        }
     } else {
-        throw Exception("Failed to get Python3Module");
+        throw ModuleInitException("Failed to get Python3Module");
     }
 }
 
 Python3QtModule::~Python3QtModule() = default;
 
-}  // namespace
+}  // namespace inviwo

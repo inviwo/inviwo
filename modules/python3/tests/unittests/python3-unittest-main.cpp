@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->setLogLevel(LogLevel::Error);
     LogCentral::getPtr()->registerLogger(logger);
     InviwoApplication app(argc, argv, "inviwo");
-    app.registerModule(std::make_unique<Python3Module>(&app));
+    app.getModuleManager().registerModule(std::make_unique<Python3Module>(&app));
 
 
     app.processFront();

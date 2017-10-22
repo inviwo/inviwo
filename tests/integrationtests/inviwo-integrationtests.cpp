@@ -73,7 +73,9 @@ int main(int argc, char** argv) {
         });
 
         // Initialize all modules
-        inviwoApp.registerModules(&inviwo::registerAllModules);
+        inviwoApp.registerModules(inviwo::getModuleList());
+
+        
         auto& cmdparser = inviwoApp.getCommandLineParser();
 
         inviwoApp.getSettingsByType<SystemSettings>()->poolSize_.set(0);

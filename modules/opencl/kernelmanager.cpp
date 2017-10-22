@@ -37,7 +37,6 @@
 namespace inviwo {
 
 KernelManager::KernelManager() {
-    InviwoApplication::getPtr()->registerFileObserver(this);
 }
 
 KernelManager::~KernelManager() {

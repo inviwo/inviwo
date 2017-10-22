@@ -76,7 +76,7 @@ void ProcessorTree::mouseMoveEvent(QMouseEvent* e) {
 
 ProcessorTree::ProcessorTree(QWidget* parent) : QTreeWidget(parent) {}
 
-ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget)
+ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget)
     : InviwoDockWidget(tr("Processors"), parent), helpWidget_(helpWidget) {
     setObjectName("ProcessorTreeWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -125,6 +125,12 @@ ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget
     vLayout->addWidget(processorTree_);
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
+
+    onModulesDidRegister_ = parent->getInviwoApplication()->getModuleManager().onModulesDidRegister(
+        [&]() { addProcessorsToTree(); });
+    onModulesWillUnregister_ =
+        parent->getInviwoApplication()->getModuleManager().onModulesWillUnregister(
+            [&]() { processorTree_->clear(); });
 }
 
 ProcessorTreeWidget::~ProcessorTreeWidget() {}

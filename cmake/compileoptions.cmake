@@ -88,7 +88,7 @@ endfunction()
 macro(ivw_define_standard_definitions project_name target)
     # Set the compiler flags
     ivw_to_macro_name(u_project_name ${project_name})
-    target_compile_definitions(${target} PRIVATE ${u_project_name}_EXPORTS)
+    set_target_properties(${target} PROPERTIES DEFINE_SYMBOL ${u_project_name}_EXPORTS)
 
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         # Large memory support
@@ -115,7 +115,7 @@ function(ivw_suppress_compiler_warnings)
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-            set_property(TARGET ${target} APPEND_STRING PROPERTY COMPILE_FLAGS -w)
+            set_property(TARGET ${target} APPEND_STRING PROPERTY COMPILE_FLAGS " -w")
 
         elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
             get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)

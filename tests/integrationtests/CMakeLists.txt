@@ -2,7 +2,6 @@
 # Inviwo GLFW Application
 project(inviwo-integrationtests)
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     inviwo-integrationtests.cpp
@@ -14,29 +13,27 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
-# Define libraries that should be linked
-ivw_retrieve_all_modules(package_list)
-
-#--------------------------------------------------------------------
+ivw_retrieve_all_modules(enabled_modules)
 # Remove Qt stuff from list
-foreach(module ${package_list})
+foreach(module ${enabled_modules})
     string(TOUPPER ${module} u_module)
     if(u_module MATCHES "QT+")
-        list(REMOVE_ITEM package_list ${module})
+        list(REMOVE_ITEM enabled_modules ${module})
     endif()
 endforeach()
 
-#--------------------------------------------------------------------
 # Create application
 add_executable(inviwo-integrationtests MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
-ivw_register_use_of_modules(inviwo-integrationtests ${package_list})
-target_link_libraries(inviwo-integrationtests PRIVATE inviwo::core gtest)
-ivw_add_module_dependencies(inviwo-integrationtests ${package_list})
+target_link_libraries(inviwo-integrationtests PRIVATE 
+    inviwo::core
+    inviwo::module::glfw
+    inviwo::module::base
+    gtest
+)
+ivw_configure_application_module_dependencies(inviwo-integrationtests ${enabled_modules})
 ivw_define_standard_definitions(inviwo-integrationtests inviwo-integrationtests)
 ivw_define_standard_properties(inviwo-integrationtests)
 ivw_memleak_setup(inviwo-integrationtests)
 
-#--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
 ivw_compile_optimize_inviwo_core_on_target(inviwo-integrationtests)

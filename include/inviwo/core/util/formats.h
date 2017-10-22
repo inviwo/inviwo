@@ -911,6 +911,6 @@ DEFAULTVALUES(bool, uvec2(1, 1), "Bool", false, false, true, true)
 
 #undef DEFAULTVALUES
 
-}
+} // namespace inviwo
 
 #endif

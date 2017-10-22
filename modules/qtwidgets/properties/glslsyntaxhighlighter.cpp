@@ -31,7 +31,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/settings/systemsettings.h>
+#include <modules/qtwidgets/qtwidgetssettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -237,7 +237,7 @@ static inline QColor ivec4toQtColor(const ivec4 &i){
 
 template<>
 void SyntaxHighligther::loadConfig<GLSL>() {
-    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
     
     QColor textColor = ivec4toQtColor(sysSettings->glslTextColor_.get());
     QColor bgColor = ivec4toQtColor(sysSettings->glslBackgroundColor_.get());
@@ -258,9 +258,9 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     preprocessorformat.setBackground(bgColor);
     preprocessorformat.setForeground(ivec4toQtColor(sysSettings->glslPreProcessorColor_.get()));
 
-    if (formaters_.empty())
+    if (formaters_.empty()) {
         sysSettings->glslSyntax_.onChange(this, &SyntaxHighligther::loadConfig<GLSL>);
-    else{
+    } else {
         while (!formaters_.empty()) {
             delete formaters_.back();
             formaters_.pop_back();
@@ -274,8 +274,6 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     formaters_.push_back(new GLSLPreProcessorFormater(preprocessorformat));
     formaters_.push_back(new GLSLCommentFormater(commentformat));
 }
-
-
 
 } // namespace
 

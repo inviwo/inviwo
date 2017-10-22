@@ -63,6 +63,16 @@ SettingsWidget::SettingsWidget(QString title, InviwoMainWindow* mainwindow)
     scrollArea_->setWidget(mainWidget_);
 
     setWidget(scrollArea_);
+
+    onModulesDidRegister_ =
+        mainwindow->getInviwoApplication()->getModuleManager().onModulesDidRegister(
+            [&]() { updateSettingsWidget(); });
+    onModulesWillUnregister_ =
+        mainwindow->getInviwoApplication()->getModuleManager().onModulesWillUnregister([&]() {
+            while (auto item = layout_->takeAt(0)) {
+                delete item;
+            }
+        });
 }
 
 SettingsWidget::SettingsWidget(InviwoMainWindow* mainwindow)

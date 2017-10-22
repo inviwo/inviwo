@@ -31,10 +31,11 @@
 #define IVW_PYTHONMENU_H
 
 #include <modules/python3qt/python3qtmoduledefine.h>
-
+class QMenu;
 namespace inviwo {
 class PythonEditorWidget;
 class InviwoApplication;
+
 
 class IVW_MODULE_PYTHON3QT_API PythonMenu {
 public:
@@ -44,7 +45,8 @@ public:
     PythonEditorWidget* getEditor() const;
 
 private:
-    PythonEditorWidget* editor_;
+    PythonEditorWidget* editor_ = nullptr;
+    QMenu* menu_ = nullptr;
 };
 
 } // namespace

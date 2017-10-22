@@ -64,7 +64,28 @@
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/util/timer.h>
 
+
 namespace inviwo {
+
+namespace util {
+/*
+ * Make sure that all data formats are initialized.
+ * Should only be called in the core library, i.e. in InviwoApplication constructor.
+ *
+ * Need to be done when libraries are loaded at runtime since the
+ * data format may be used first in one of the loaded libraries
+ * but will not be cleaned up when the module is unloaded.
+ *
+ */
+void dataFormatDummyInitialization() {
+    #include <warn/push>
+    #include <warn/ignore/unused-variable>
+    #define DataFormatIdMacro(i) {const DataFormatBase* dummyInitialization =  Data##i::get();}
+    #include <inviwo/core/util/formatsdefinefunc.h>
+    #include <warn/pop>
+}
+    
+} // namespace util
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
@@ -89,19 +110,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , propertyFactory_{util::make_unique<PropertyFactory>()}
     , propertyWidgetFactory_{util::make_unique<PropertyWidgetFactory>()}
     , representationConverterMetaFactory_{util::make_unique<RepresentationConverterMetaFactory>()}
-
-    , modules_()
-    , clearModules_([&]() {
-        ResourceManager::getPtr()->clearAllResources();
-        // Need to clear the modules in reverse order since the might depend on each other.
-        // The destruction order of vector is undefined.
-        for (auto it = modules_.rbegin(); it != modules_.rend(); it++) {
-            it->reset();
-        }
-        modules_.clear();
-    })
+    , moduleManager_{this}
     , moudleCallbackActions_()
-
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{util::make_unique<ProcessorNetworkEvaluator>(
           processorNetwork_.get())}
@@ -135,7 +145,9 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     // Create and register core
     auto ivwCore = util::make_unique<InviwoCore>(this);
-    registerModule(std::move(ivwCore));
+    moduleManager_.addProtectedIdentifier(ivwCore->getIdentifier());
+
+    moduleManager_.registerModule(std::move(ivwCore));
 
     auto sys = getSettingsByType<SystemSettings>();
     if (sys && !commandLineParser_.getQuitApplicationAfterStartup()) {
@@ -171,6 +183,14 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         [&](Serializer& s) { propertyPresetManager_->saveWorkspacePresets(s); });
     presetsDeserializationHandle_ = workspaceManager_->onLoad(
         [&](Deserializer& d) { propertyPresetManager_->loadWorkspacePresets(d); });
+
+    // Make sure that all data formats are initialized.
+    // Should only be called in the core library, i.e. in InviwoApplication constructor.
+    //
+    // Need to be done when libraries are loaded at runtime since the
+    // data format may be used first in one of the loaded libraries
+    // but will not be cleaned up when the module is unloaded.
+    util::dataFormatDummyInitialization();
 }
 
 InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}
@@ -183,63 +203,13 @@ InviwoApplication::~InviwoApplication() {
     ResourceManager::getPtr()->clearAllResources();
 }
 
-void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
-    printApplicationInfo();
+void InviwoApplication::registerModules(
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
+    moduleManager_.registerModules(std::move(moduleFactories));
+}
 
-    // Create and register other modules
-    modulesFactoryObjects_ = regModuleFunc();
-
-    std::vector<std::string> failed;
-    auto checkdepends = [&](const std::vector<std::string>& deps) {
-        for (const auto& dep : deps) {
-            auto it = util::find(failed, dep);
-            if (it != failed.end()) return it;
-        }
-        return failed.end();
-    };
-
-    for (auto& moduleObj : modulesFactoryObjects_) {
-        postProgress("Loading module: " + moduleObj->name_);
-        try {
-            auto it = checkdepends(moduleObj->depends_);
-            if (it == failed.end()) {
-                registerModule(moduleObj->create(this));
-            } else {
-                LogError("Could not register module: " + moduleObj->name_ + " since dependency: " +
-                         *it + " failed to register");
-            }
-        } catch (const ModuleInitException& e) {
-            LogError("Failed to register module: " + moduleObj->name_);
-            LogError("Reason: " + e.getMessage());
-            util::push_back_unique(failed, toLower(moduleObj->name_));
-
-            std::vector<std::string> toDeregister;
-            for (const auto& m : e.getModulesToDeregister()) {
-                util::append(toDeregister, findDependentModules(m));
-                toDeregister.push_back(toLower(m));
-            }
-            for (const auto& dereg : toDeregister) {
-                util::erase_remove_if(modules_, [&](const std::unique_ptr<InviwoModule>& m) {
-                    if (toLower(m->getIdentifier()) == dereg) {
-                        LogError("De-registering " + m->getIdentifier() + " because " +
-                                 moduleObj->name_ + " failed to register");
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-                util::push_back_unique(failed, dereg);
-            }
-        }
-    }
-
-    postProgress("Loading Capabilities");
-    for (auto& module : modules_) {
-        for (auto& elem : module->getCapabilities()) {
-            elem->retrieveStaticInfo();
-            elem->printInfo();
-        }
-    }
+void InviwoApplication::registerModules(RuntimeModuleLoading token) {
+    moduleManager_.registerModules(token);
 }
 
 std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
@@ -249,28 +219,20 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
     return filesystem::getPath(pathType, suffix, createFolder);
 }
 
-void InviwoApplication::registerModule(std::unique_ptr<InviwoModule> module) {
-    modules_.push_back(std::move(module));
+ModuleManager& InviwoApplication::getModuleManager() {
+    return moduleManager_;
+}
+
+const ModuleManager& InviwoApplication::getModuleManager() const {
+    return moduleManager_;
 }
 
 const std::vector<std::unique_ptr<InviwoModule>>& InviwoApplication::getModules() const {
-    return modules_;
-}
-
-const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>&
-InviwoApplication::getModuleFactoryObjects() const {
-    return modulesFactoryObjects_;
+    return moduleManager_.getModules();
 }
 
 InviwoModule* InviwoApplication::getModuleByIdentifier(const std::string& identifier) const {
-    const auto it = std::find_if(
-        modules_.begin(), modules_.end(),
-        [&](const std::unique_ptr<InviwoModule>& m) { return m->getIdentifier() == identifier; });
-    if (it != modules_.end()) {
-        return it->get();
-    } else {
-        return nullptr;
-    }
+    return moduleManager_.getModuleByIdentifier(identifier);
 }
 
 ProcessorNetwork* InviwoApplication::getProcessorNetwork() { return processorNetwork_.get(); }
@@ -341,8 +303,9 @@ std::vector<std::unique_ptr<ModuleCallbackAction>>& InviwoApplication::getCallba
 std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
     std::vector<Settings*> allModuleSettings;
 
-    for (size_t i = startIdx; i < modules_.size(); i++) {
-        auto modSettings = modules_[i]->getSettings();
+    auto& modules = moduleManager_.getModules();
+    for (size_t i = startIdx; i < modules.size(); i++) {
+        auto modSettings = modules[i]->getSettings();
         allModuleSettings.insert(allModuleSettings.end(), modSettings.begin(), modSettings.end());
     }
 
@@ -361,23 +324,6 @@ void InviwoApplication::resizePool(size_t newSize) {
         size = pool_.trySetSize(newSize);
         processFront();
     }
-}
-
-std::vector<std::string> InviwoApplication::findDependentModules(std::string module) const {
-    std::vector<std::string> dependencies;
-    for (const auto& item : modulesFactoryObjects_) {
-        if (util::contains(item->depends_, module)) {
-           auto name = toLower(item->name_);
-           auto deps = findDependentModules(name);
-           util::append(dependencies, deps);
-           dependencies.push_back(name);
-        }
-    }
-    std::vector<std::string> unique;
-    for(const auto& item : dependencies) {
-        util::push_back_unique(unique, item);
-    }
-    return unique;
 }
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }
@@ -422,20 +368,20 @@ void InviwoApplication::registerFileObserver(FileObserver*) {
     LogWarn("this application have not implemented the registerFileObserver function");
 }
 void InviwoApplication::unRegisterFileObserver(FileObserver*) {
-    LogWarn("this application have not implemented the unRegisterFileObserver function");
 }
 void InviwoApplication::startFileObservation(std::string) {
     LogWarn("this application have not implemented the startFileObservation function");
 }
 void InviwoApplication::stopFileObservation(std::string) {
-    LogWarn("this application have not implemented the stopFileObservation function");
 }
 void InviwoApplication::playSound(Message) {
     LogWarn("this application have not implemented the playSound function");
 }
 
 namespace util {
+
 InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
+
 }  // namespace util
 
 }  // namespace

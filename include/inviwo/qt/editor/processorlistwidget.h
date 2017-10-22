@@ -47,6 +47,7 @@
 namespace inviwo {
 
 class HelpWidget;
+class InviwoMainWindow;
 
 class IVW_QTEDITOR_API ProcessorTree : public QTreeWidget {
 
@@ -70,7 +71,7 @@ class IVW_QTEDITOR_API ProcessorTreeWidget : public InviwoDockWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget);
+    ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget);
     ~ProcessorTreeWidget();
 
     void focusSearch();
@@ -105,6 +106,9 @@ private:
     QIcon iconBroken_;
 
     HelpWidget* helpWidget_;
+
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_; ///< Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_; ///< Called before modules have been unregistered
 };
 
 class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {

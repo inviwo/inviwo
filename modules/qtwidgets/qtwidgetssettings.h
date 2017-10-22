@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2016 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,45 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <modules/opengl/shader/shaderresource.h>
+#ifndef IVW_QTWIDGETSSETTINGS_H
+#define IVW_QTWIDGETSSETTINGS_H
+
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-FileShaderResource::FileShaderResource(const std::string& key, const std::string& fileName)
-    : FileObserver(fileName), key_(key), fileName_(fileName) {
-}
+/**
+ * \class QtWidgetsSettings
+ * \brief Text editor syntax highlighting settings
+ */
+class IVW_MODULE_QTWIDGETS_API QtWidgetsSettings : public Settings {
+public:
+    QtWidgetsSettings();
+    virtual ~QtWidgetsSettings() = default;
 
-std::unique_ptr<ShaderResource> FileShaderResource::clone() {
-    return util::make_unique<FileShaderResource>(key_, fileName_);
-}
+    CompositeProperty glslSyntax_;
+    IntVec4Property glslTextColor_;
+    IntVec4Property glslBackgroundColor_;
+    IntVec4Property glslQualifierColor_;
+    IntVec4Property glslBuiltinsColor_;
+    IntVec4Property glslTypeColor_;
+    IntVec4Property glslGlslBuiltinsColor_;
+    IntVec4Property glslCommentColor_;
+    IntVec4Property glslPreProcessorColor_;
 
-std::string FileShaderResource::key() const { return key_; }
+    CompositeProperty pythonSyntax_;
+    IntProperty pyFontSize_;
+    IntVec4Property pyBGColor_;
+    IntVec4Property pyTextColor_;
+    IntVec4Property pyTypeColor_;
+    IntVec4Property pyCommentsColor_;
+};
 
-std::string FileShaderResource::source() const {
-    if (!cache_.empty()) return cache_;
-    std::ifstream stream(fileName_);
-    std::stringstream buffer;
-    buffer << stream.rdbuf();
-    cache_ = buffer.str();
-    return cache_;
-}
+} // namespace
 
-std::string FileShaderResource::file() const { return fileName_; }
+#endif // IVW_QTWIDGETSSETTINGS_H
 
-void FileShaderResource::fileChanged(const std::string& /*fileName*/) { 
-    cache_ = "";
-    callbacks_.invoke(this); 
-}
-
-StringShaderResource::StringShaderResource(const std::string& key, const std::string& source)
-    : key_(key), source_(source) {}
-
-std::unique_ptr<ShaderResource> StringShaderResource::clone() {
-    return util::make_unique<StringShaderResource>(key_, source_);
-}
-
-std::string StringShaderResource::key() const { return key_; }
-
-std::string StringShaderResource::source() const { return source_; }
-
-void StringShaderResource::setSource(const std::string& source) {
-    source_ = source;
-    callbacks_.invoke(this);
-}
-
-}  // namespace

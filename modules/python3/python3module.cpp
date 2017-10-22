@@ -81,8 +81,9 @@ Python3Module::Python3Module(InviwoApplication* app)
     });
 }
 
-Python3Module::~Python3Module() { 
+Python3Module::~Python3Module() {
     pythonInterpreter_->removeObserver(&pythonLogger_); 
+    app_->getCommandLineParser().remove(&pythonScriptArg_);
 }
 
 PythonInterpreter* Python3Module::getPythonInterpreter() {

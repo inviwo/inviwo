@@ -226,13 +226,14 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Name conventions:
-# opengl               : dir                : Name of module folder, should be lowercase with no spaces (opengl)
-# OpenGl               : class              : The c++ class name / the module project name
-# OPENGL               : macro_name         : C Macro name, to uppercase, "-" -> "_"
-# INVIWOOPENGLMODULE   : mod_dep            : Internal name for module all uppercase
-# IVW_MODULE_OPENGL    : mod_prefix         : Name of cmake option for module
-# InviwoOpenGLModule   : mod_name           : The name of a module same as mod_dep, but not uppercase
-# inviwo-module-opengl : module_target_name : The name of the target for a module
+# opengl                 : dir                : Name of module folder, should be lowercase with no spaces (opengl)
+# OpenGl                 : class              : The c++ class name / the module project name
+# OPENGL                 : macro_name         : C Macro name, to uppercase, "-" -> "_"
+# INVIWOOPENGLMODULE     : mod_dep            : Internal name for module all uppercase
+# REG_INVIWOOPENGLMODULE : reg                : Registration macro
+# IVW_MODULE_OPENGL      : mod_prefix         : Name of cmake option for module
+# InviwoOpenGLModule     : mod_name           : The name of a module same as mod_dep, but not uppercase
+# inviwo-module-opengl   : module_target_name : The name of the target for a module
 # 
 # Name conversion functions:
 # ivw_to_macro_name            OpenGL-test        -> OPENGL_TEST
@@ -241,8 +242,10 @@ endfunction()
 # ivw_dir_to_mod_prefix        opengl             -> IVW_MODULE_OPENGL
 # ivw_mod_prefix_to_dir        IVW_MODULE_OPENGL  -> opengl
 # ivw_mod_name_to_dir          InviwoOpenGLModule -> opengl
+# ivw_mod_name_to_target_name  InviwoOpenGLModule -> inviwo-module-opengl
 # ivw_mod_name_to_class        InviwoOpenGLModule -> OpenGL
 # ivw_mod_name_to_mod_dep      InviwoOpenGLModule -> INVIWOOPENGLMODULE
+# ivw_mod_name_to_reg          InviwoOpenGLModule -> REG_INVIWOOPENGLMODULE
 # ivw_to_mod_name              OpenGL             -> InviwoOpenGLModule
 # ivw_dir_to_module_taget_name opengl             -> inviwo-module-opengl
 # ivw_mod_name_to_alias        InviwoOpenGLModule -> inviwo::module::opengl
@@ -372,6 +375,17 @@ function(ivw_mod_name_to_alias retval)
 endfunction()
 
 #--------------------------------------------------------------------
+# ivw_mod_name_to_target_name(retval item1 item2 ...)
+# Convert module name to target name, i.e. InviwoOpenGLModule -> inviwo-opengl-module
+function(ivw_mod_name_to_target_name retval)
+    set(dirs "")
+    ivw_mod_name_to_dir(dirs ${ARGN})
+    set(targets "")
+    ivw_dir_to_module_taget_name(targets ${dirs})
+    set(${retval} ${targets} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
 # ivw_to_mod_name(retval item1 item2 ...)
 # Convert module name to directory name, i.e. OpenGL -> InviwoOpenGLModule
 function(ivw_to_mod_name retval)
@@ -396,12 +410,24 @@ endfunction()
 
 #--------------------------------------------------------------------
 # ivw_mod_name_to_mod_dep(retval item1 item2 ...)
-# Convert module name to module dep, i.e. opengl -> INVIWOOPENGLMODULE
+# Convert module name to module dep, i.e. InviwoOpenGLModule -> INVIWOOPENGLMODULE
 function(ivw_mod_name_to_mod_dep retval)
     set(the_list "")
     foreach(item ${ARGN})
         string(TOUPPER ${item} uitem)
         list(APPEND the_list ${uitem})
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+#--------------------------------------------------------------------
+# ivw_mod_name_to_reg(retval item1 item2 ...)
+# Convert module name to module dep, i.e. InviwoOpenGLModule -> REG_INVIWOOPENGLMODULE
+function(ivw_mod_name_to_reg retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        string(TOUPPER ${item} uitem)
+        list(APPEND the_list REG_${uitem})
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
@@ -540,6 +566,32 @@ function(ivw_private_get_ivw_module_name path retval)
 endfunction()
 
 #--------------------------------------------------------------------
+# Get the module version from a CMakeLists.txt
+# Major.Minor.Path
+# Returns 1.0.0 if no version is found
+function(ivw_private_get_ivw_module_version path retval)
+    file(READ ${path} contents)
+    string(REPLACE "\n" ";" lines "${contents}")
+    foreach(line ${lines})
+        #\s*ivw_module_version\(\s*(\w+)\s*\)\s*
+        # This regex does not seem to be supported in cmake so use a two-step solution
+        #string(REGEX MATCHALL "IVW_.+_VERSION\\s([0-9]+)\\.([0-9]+)\\.([0-9]+)" found_item ${line})
+        string(REGEX MATCH "IVW_(.+)_VERSION" found_mod ${line})
+
+        if(CMAKE_MATCH_1)
+            # Extract version number
+            string(REGEX MATCH "\\s*\"*([0-9]+)\\.([0-9]+)\\.([0-9]+)" found_item ${line})
+            if(NOT "${CMAKE_MATCH_1}" STREQUAL "" AND NOT "${CMAKE_MATCH_2}" STREQUAL "" AND NOT "${CMAKE_MATCH_3}" STREQUAL "")
+            #ivw_message("Found version (${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3})")
+            set(${retval} "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}" PARENT_SCOPE)
+            return()
+        endif()
+       endif()
+    endforeach()
+    #ivw_message("Did not find version in (${path})")
+    set(${retval} "1.0.0" PARENT_SCOPE)
+endfunction()
+
 # Verify that a given path and dir name is in fact a inviwo module
 # This is done by chekcing that there exists a CMakeLists file
 # and that it declares a inviwo module with the same name as dir.
@@ -749,3 +801,10 @@ function(ivw_generate_build_info source_template ini_template buildinfo_sourcefi
     configure_file("${ini_template}" "${ini_dest_path}${buildinfo_inifile}" @ONLY)
 endfunction()
 
+#--------------------------------------------------------------------
+# Append to cmake module path
+macro(ivw_add_cmake_find_package_path)
+    foreach(item ${ARGN})
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${item})
+    endforeach()
+endmacro()

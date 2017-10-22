@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     });
 
     // Initialize all modules
-    inviwoApp.registerModules(&inviwo::registerAllModules);
+    inviwoApp.registerModules(inviwo::getModuleList());
 
     auto& cmdparser = inviwoApp.getCommandLineParser();
     TCLAP::ValueArg<std::string> snapshotArg(

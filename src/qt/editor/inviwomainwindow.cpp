@@ -186,17 +186,18 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     // initialize menus
     addActions();
     updateRecentWorkspaceMenu();
+
+    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([&]() {
+        fillExampleWorkspaceMenu();
+        fillTestWorkspaceMenu();
+    });
+    onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([&]() {
+        exampleMenu_->clear();
+        testMenu_->clear();
+    });
 }
 
 InviwoMainWindow::~InviwoMainWindow() = default;
-
-void InviwoMainWindow::updateForNewModules() {
-    settingsWidget_->updateSettingsWidget();
-    processorTreeWidget_->addProcessorsToTree();
-    helpWidget_->registerQCHFiles();
-    fillExampleWorkspaceMenu();
-    fillTestWorkspaceMenu();
-}
 
 void InviwoMainWindow::showWindow() {
     if (maximized_)
@@ -351,7 +352,15 @@ void InviwoMainWindow::addActions() {
         testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
         fillTestWorkspaceMenu();
     }
-
+    {
+        if (app_->getModuleManager().isRuntimeModuleReloadingEnabled()) {
+            fileMenuItem->addSeparator();
+            auto reloadAction = new QAction(tr("&Reload modules"), this);
+            connect(reloadAction, &QAction::triggered, this,
+                    [&]() { app_->getModuleManager().reloadModules(); });
+            fileMenuItem->addAction(reloadAction);
+        }
+    }
     {
         fileMenuItem->addSeparator();
         auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
@@ -482,9 +491,7 @@ void InviwoMainWindow::addActions() {
         viewMenuItem->addAction(visibilityModeAction_);
         viewModeToolBar->addAction(visibilityModeAction_);
 
-        appUsageModeProp_ = &InviwoApplication::getPtr()
-                                 ->getSettingsByType<SystemSettings>()
-                                 ->applicationUsageMode_;
+        appUsageModeProp_ = &app_->getSettingsByType<SystemSettings>()->applicationUsageMode_;
 
         appUsageModeProp_->onChange([&]() { visibilityModeChangedInSettings(); });
 
@@ -969,7 +976,7 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
 
 void InviwoMainWindow::showAboutBox() {
-    auto caps = InviwoApplication::getPtr()->getModuleByType<InviwoCore>()->getCapabilities();
+    auto caps = app_->getModuleByType<InviwoCore>()->getCapabilities();
     auto syscap = getTypeFromVector<SystemCapabilities>(caps);
 
     const int buildYear = (syscap ? syscap->getBuildTimeYear() : 0);
@@ -1012,9 +1019,9 @@ void InviwoMainWindow::showAboutBox() {
         }
         aboutText << "</table></p>\n";
     }
-    const auto& mfos = InviwoApplication::getPtr()->getModuleFactoryObjects();
+    const auto& mfos = app_->getModuleManager().getModuleFactoryObjects();
     auto names = util::transform(
-        mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name_; });
+        mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name; });
     std::sort(names.begin(), names.end());
     aboutText << "<p><b>Modules:</b><br>\n" << joinString(names, ", ") << "</p>\n";
     aboutText << "</body></html>";

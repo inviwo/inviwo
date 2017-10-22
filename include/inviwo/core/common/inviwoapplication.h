@@ -32,6 +32,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/modulemanager.h>
+#include <inviwo/core/common/runtimemoduleregistration.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/threadpool.h>
@@ -39,7 +41,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
-#include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
@@ -52,6 +54,7 @@
 #include <condition_variable>
 #include <future>
 #include <locale>
+#include <set>
 #include <warn/pop>
 
 namespace inviwo {
@@ -87,7 +90,6 @@ class ConsoleLogger;
 
 class TimerThread;
 
-
 /**
  * \class InviwoApplication
  *
@@ -98,9 +100,6 @@ class TimerThread;
  */
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
-    using RegisterModuleFunc =
-        std::function<std::vector<std::unique_ptr<InviwoModuleFactoryObject>>()>;
-
     InviwoApplication();
     InviwoApplication(std::string displayName);
     InviwoApplication(int argc, char** argv, std::string displayName);
@@ -109,7 +108,23 @@ public:
 
     virtual ~InviwoApplication();
 
-    virtual void registerModules(RegisterModuleFunc func);
+    /**
+     * \brief Registers modules from factories and takes ownership of input module factories.
+     * Module is registered if dependencies exist and they have correct version.
+     */
+    virtual void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules);
+
+    /**
+     * \brief Load modules from dynamic library files in the regular search paths.
+     *
+     * Will recursively search for all dll/so/dylib/bundle files in the regular search paths.
+     * The library filename must contain "inviwo-module" to be loaded.
+     *
+     * @note Which modules to load can be specified by creating a file
+     * (application_name-enabled-modules.txt) containing the names of the modules to load.
+     * Forwards to ModuleManager.
+     */
+    virtual void registerModules(RuntimeModuleLoading);
 
     /**
      * Get the base path of the application.
@@ -117,22 +132,20 @@ public:
      */
     std::string getBasePath() const;
 
-    const std::string& getDisplayName() const;
-
     /**
      * Get basePath + pathType + suffix.
      * @see PathType
      * @param pathType Enum for type of path
      * @param suffix Path extension
      * @param createFolder whether to create the folder if it does not exist.
-     * @return basePath +  pathType + suffix
+     * @return basePath + pathType + suffix
      */
     std::string getPath(PathType pathType, const std::string& suffix = "",
                         const bool& createFolder = false);
 
-    void registerModule(std::unique_ptr<InviwoModule> module);
+    ModuleManager& getModuleManager();
+    const ModuleManager& getModuleManager() const;
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
-    const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
     template <class T>
     T* getModuleByType() const;
     InviwoModule* getModuleByIdentifier(const std::string& identifier) const;
@@ -200,14 +213,13 @@ public:
     virtual void playSound(Message soundID);
 
     TimerThread& getTimerThread();
-
-protected:
+    const std::string& getDisplayName() const;
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
+
+protected:
     void cleanupSingletons();
     virtual void resizePool(size_t newSize);
-
-    std::vector<std::string> findDependentModules(std::string module) const;
 
     struct Queue {
         // Task queue
@@ -223,6 +235,8 @@ protected:
     std::shared_ptr<FileLogger> filelogger_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::function<void(std::string)> progressCallback_;
+
+
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
@@ -245,12 +259,8 @@ protected:
     std::unique_ptr<PropertyFactory> propertyFactory_;
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
-
-    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
-    std::vector<std::unique_ptr<InviwoModule>> modules_;
-    util::OnScopeExit clearModules_;
+    ModuleManager moduleManager_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
-
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
     std::unique_ptr<WorkspaceManager> workspaceManager_;
@@ -275,7 +285,7 @@ T* InviwoApplication::getSettingsByType() {
 
 template <class T>
 T* InviwoApplication::getModuleByType() const {
-    return getTypeFromVector<T>(modules_);
+    return moduleManager_.getModuleByType<T>();
 }
 
 template <class F, class... Args>
@@ -376,9 +386,9 @@ inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() co
     return processorWidgetFactory_.get();
 }
 
-namespace util{
-    IVW_CORE_API InviwoApplication* getInviwoApplication();
-} // namespace util
+namespace util {
+IVW_CORE_API InviwoApplication* getInviwoApplication();
+}  // namespace util
 
 }  // namespace inviwo
 

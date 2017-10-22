@@ -108,7 +108,7 @@ public:
     void processCallbacks();
     void add(TCLAP::Arg* arg);
     void add(TCLAP::Arg* arg, std::function<void()> callback, int priority = 0);
-    
+    void remove(TCLAP::Arg* arg);
 private:
     int argc_;
     char** argv_;

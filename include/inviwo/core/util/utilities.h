@@ -55,8 +55,17 @@ IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = 
 IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
                                      ExceptionContext context, const std::string& extra = "");
 
-IVW_CORE_API std::string stripIdentifier(std::string identifier);
+/** 
+ * \brief Removes inviwo-module from module library file name.
+ * Turns "/path/to/inviwo-module-yourmodule.dll" into "yourmodule".
+ * Returns filename without extension if inviwo-module was not found.
+ *
+ * @param std::string filePath Path to module file
+ * @return IVW_CORE_API std::string Module name
+ */
+IVW_CORE_API std::string stripModuleFileNameDecoration(std::string filePath);
 
+IVW_CORE_API std::string stripIdentifier(std::string identifier);
 
 namespace detail {
 
@@ -71,7 +80,7 @@ struct IVW_CORE_API Hideer {
 };
 
 
-}  // namespace
+} // detail namespace
 
 template <typename... Args>
 void show(Args&&... args) {
@@ -83,8 +92,8 @@ void hide(Args&&... args) {
     util::for_each_argument(detail::Hideer{}, std::forward<Args>(args)...);
 }
 
-}
+} // util namespace
 
-}  // namespace
+} // inviwo namespace
 
 #endif  // IVW_UTILITIES_H

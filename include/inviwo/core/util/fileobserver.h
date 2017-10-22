@@ -32,33 +32,63 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <string>
-#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 namespace inviwo {
 
+class InviwoApplication;
+
+/** \class FileObserver
+ * Calls fileChanged when an observed file/directory changes.
+ * One or multiple files/directories can be observed.
+ */
 class IVW_CORE_API FileObserver {
-
 public:
-    FileObserver() = default;
-    virtual ~FileObserver() = default;
+     /** 
+     * @note Registers as a file observer in InviwoApplication.
+     */
+    FileObserver(InviwoApplication* app);
+    /** 
+     * \brief Starts observing file if existing.
+     * @note Registers as a file observer in InviwoApplication.
+     * @param filePath Full path to file to observe
+     */
+    FileObserver(const std::string& filePath = "");
+    FileObserver(const FileObserver&) = delete;
+    FileObserver& operator=(const FileObserver&) = delete;
+    /**
+     * Moves observed files from other 
+     */
+    FileObserver(FileObserver&& rhs);
+    FileObserver& operator=(FileObserver&& that);
 
-    void startFileObservation(const std::string& fileName);
-    void stopFileObservation(const std::string& fileName);
-    std::vector<std::string> getFiles() const;
+    /**
+     * Unregisters file observer in InviwoApplication and stops observing all files.
+     */
+    virtual ~FileObserver();
+
+    /** 
+     * \brief Starts observing file if it exists.
+     * @param filePath Full path to file
+     */
+    bool startFileObservation(const std::string& filePath);
+    /** 
+     * \brief Stops observing the file if being observed.
+     * @param filePath Full path to file
+     */
+    bool stopFileObservation(const std::string& fileName);
+
+    const std::unordered_set<std::string>& getFiles() const;
     bool isObserved(const std::string& fileName) const;
 
     virtual void fileChanged(const std::string& fileName) = 0;
 
+protected:
+    InviwoApplication* app_;
 private:
-
-// We can safely ignore the C4251 warning for private members.
-#include <warn/push>
-#include <warn/ignore/dll-interface>
-    std::unordered_map<std::string, int> observedFiles_; ///< stores the files to be observed
-#include <warn/pop>
-    ///< plus the number of observers for each
+    std::unordered_set<std::string> observedFiles_;
 };
 
 } // namespace
