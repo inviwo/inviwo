@@ -285,7 +285,10 @@ std::string Image::getDataInfo() const {
     tb(H("Depth"), getDepthLayer() ? "Yes" : "No");
     tb(H("Picking"), getPickingLayer() ? "Yes" : "No");
     tb(H("Format"), getDataFormat()->getString());
-    tb(H("Dimension"), getDimensions());
+    auto dims = getDimensions();
+    double ar = static_cast<double>(dims.x)/static_cast<double>(dims.y);
+    tb(H("Dimension"), dims);
+    tb(H("Aspect Ratio"), ar);
 
     return doc;
 }
