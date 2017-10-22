@@ -167,7 +167,7 @@ CropWidget::CropWidget()
     cropLineColor_.setSemantics(PropertySemantics::Color);
 
     // brighten up ambient color
-    lightingProperty_.ambientColor_.set(vec3(0.6f));
+    lightingProperty_.lights_[0].ambientColor_.set(vec3(0.6f));
     lightingProperty_.setCollapsed(true);
 
     uiSettings_.setCollapsed(true);
