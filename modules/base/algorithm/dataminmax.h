@@ -78,7 +78,7 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
     if (ignore == IgnoreSpecialValues::Yes) {
         minmax = std::accumulate(
             data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
-                return util::isfinite(v) ? mm : Res{glm::min(mm.first, v), glm::max(mm.second, v)};
+                return util::isfinite(v) ? Res{glm::min(mm.first, v), glm::max(mm.second, v)} : mm;
             });
     } else {
         minmax = std::accumulate(data, data + size, minmax,
