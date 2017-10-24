@@ -66,28 +66,20 @@ private:
 };
 
 class IVW_QTEDITOR_API ProcessorTreeWidget : public InviwoDockWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget);
     ~ProcessorTreeWidget();
 
     void focusSearch();
     void addSelectedProcessor();
-
-public slots:
     void addProcessorsToTree();
 
 protected:
     bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
     const QIcon* getCodeStateIcon(CodeState) const;
 
-private slots:
-    void currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-
 private:
+    void currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void addProcessor(std::string className);
     
     
@@ -107,8 +99,10 @@ private:
 
     HelpWidget* helpWidget_;
 
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_; ///< Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_; ///< Called before modules have been unregistered
+    // Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
+    // Called before modules have been unregistered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
 class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {
