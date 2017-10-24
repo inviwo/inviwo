@@ -59,7 +59,6 @@ NetworkSearch::NetworkSearch(InviwoMainWindow *win)
     : QWidget(win)
     , win_{win}
     , edit_{new QLineEdit(this)}
-    , moduleMap_{getModuleMap(win_->getInviwoApplication())}
     , items_{
           {"class", "c", "processor class identifier", true,
            [](Processor *p, const std::string &s) -> bool {
@@ -121,9 +120,10 @@ NetworkSearch::NetworkSearch(InviwoMainWindow *win)
            }},
           {"module", "m", "processor module", true,
            [this](Processor *p, const std::string &s) -> bool {
+               auto  moduleMap = getModuleMap(win_->getInviwoApplication());
                bool module = false;
-               auto mit = moduleMap_.find(p->getClassIdentifier());
-               if (mit != moduleMap_.end()) {
+               auto mit = moduleMap.find(p->getClassIdentifier());
+               if (mit != moduleMap.end()) {
                    module |= find(mit->second, s);
                }
                return module;
@@ -146,9 +146,10 @@ NetworkSearch::NetworkSearch(InviwoMainWindow *win)
     using P = Document::PathComponent;
     auto b = doc.append("html").append("body");
     b.append("b", "Search network", {{"style", "color:white;"}});
-    b.append("p",
-             "Terms are intersecting. Double quotes are supported. It is possible to search for "
-             "specific keys, example: \"tag:gl port:volume\". Supported keys (shortcut):");
+    b.append("p", "Example: \"tag:gl port:volume raycaster\".");
+    b.append("p", "Terms are intersecting. Double quotes are supported. "
+             "Enter will confirm selection, escape will cancel.");
+    b.append("p", "Supported keys (shortcut):");
     using H = utildoc::TableBuilder::Header;
     utildoc::TableBuilder tb(b, P::end(), {{"identifier", "propertyInfo"}});
 

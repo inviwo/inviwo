@@ -46,6 +46,9 @@ namespace inviwo {
 class InviwoApplication;
 class InviwoMainWindow;
 
+/**
+ * Widget for searching the processor network for. will highlight matching processors.
+ */
 class IVW_QTEDITOR_API NetworkSearch : public QWidget {
 public:
     NetworkSearch(InviwoMainWindow* win);
@@ -71,7 +74,6 @@ private:
     static bool find(const std::string& cont, const std::string& s);
     InviwoMainWindow* win_;
     QLineEdit* edit_;
-    std::unordered_map<std::string, std::string> moduleMap_;
     std::vector<Item> items_;
     std::unordered_map<std::string, std::function<bool(Processor *, const std::string &)>> map_;
 };
