@@ -212,7 +212,7 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                         signalMapperSetPropertyValue,
                         static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
                 signalMapperSetPropertyValue->setMapping(
-                    editor, static_cast<int>(i + y * ordinalproperty_->getDim().x));
+                    editor, static_cast<int>(i + j * ordinalproperty_->getDim().x));
                 sliders_.push_back(editor);
                 controlWidget = editor;
             } else {
