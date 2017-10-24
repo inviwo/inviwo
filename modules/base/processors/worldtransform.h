@@ -157,7 +157,7 @@ WorldTransform<T>::WorldTransform()
     , scale_("scale", "Scale", vec3(1), vec3(0.001f), vec3(10))
     , rotationAxis_("rotationAxis", "Axis", vec3(1, 0, 0), vec3(-1), vec3(1))
     , rotationAngle_("rotationAngle", "Angle", 0, 0, 2.0f * static_cast<float>(M_PI))
-    , matrix_("matrix_", "Transformation", mat4(1))
+    , matrix_("matrix_", "Transformation", mat4(1) , mat4(0)-10.f , mat4(0)+10.f)
     , updatingValues_(false) {
 
     addPort(inport_);

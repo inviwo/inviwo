@@ -211,7 +211,8 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                 connect(editor, &OrdinalEditorWidget<BT>::valueChanged,
                         signalMapperSetPropertyValue,
                         static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-                signalMapperSetPropertyValue->setMapping(editor, static_cast<int>(i));
+                signalMapperSetPropertyValue->setMapping(
+                    editor, static_cast<int>(i + j * ordinalproperty_->getDim().x));
                 sliders_.push_back(editor);
                 controlWidget = editor;
             } else {
@@ -281,7 +282,6 @@ void OrdinalPropertyWidgetQt<T>::setPropertyValue(int sliderId) {
     T propValue = transformer_->value(ordinalproperty_->get());
 
     util::glmcomp(propValue, sliderId) = sliders_[sliderId]->getValue();
-
     ordinalproperty_->setInitiatingWidget(this);
     ordinalproperty_->set(transformer_->invValue(propValue));
     ordinalproperty_->clearInitiatingWidget();
