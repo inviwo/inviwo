@@ -47,7 +47,7 @@ class InviwoApplication;
 class InviwoMainWindow;
 
 /**
- * Widget for searching the processor network for. will highlight matching processors.
+ * Widget for searching the processor network. Will highlight matching processors.
  */
 class IVW_QTEDITOR_API NetworkSearch : public QWidget {
 public:
