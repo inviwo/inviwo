@@ -75,6 +75,7 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
         useGLSharing_.setReadOnly(true);
         useGLSharing_.set(false);
     }
+    LogWarn("This processor does not compute depth values. It act as an example on how to use OpenCL. Use OpenGL based Entry Exit Points processor, in module BaseGL, instead.");
 }
 
 void EntryExitPointsCLProcessor::process() {
