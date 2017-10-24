@@ -77,10 +77,10 @@ void SyntaxHighligther::highlightBlock(const QString& text) {
 
 template <>
 void SyntaxHighligther::loadConfig<None>() {
-    QColor textColor;
-    QColor bgColor;
-    textColor.setNamedColor("#aaaaaa");
-    bgColor.setNamedColor("#4d4d4d");
+    auto ivec4toQtColor = [](const ivec4& i) { return QColor(i.r, i.g, i.b, i.a); };
+    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    QColor textColor = ivec4toQtColor(sysSettings->glslTextColor_.get());
+    QColor bgColor = ivec4toQtColor(sysSettings->glslBackgroundColor_.get());
     defaultFormat_.setBackground(bgColor);
     defaultFormat_.setForeground(textColor);
 }
