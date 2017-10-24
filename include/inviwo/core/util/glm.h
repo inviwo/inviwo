@@ -686,7 +686,7 @@ To glm_convert_normalized(From x) {
 
 #include <warn/pop>
 
-// GLM element access wrapper functions.
+// GLM element access wrapper functions. Useful in template functions with scalar and vec types
 
 // vector like access
 template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>

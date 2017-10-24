@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plotting/utils/statsutils.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 namespace statsutil {
@@ -49,24 +50,21 @@ RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
     double sumX = 0;
     double sumY = 0;
 
-    {
-        auto xit = xvec.begin();
-        auto yit = yvec.begin();
-
-        for (; xit != xvec.end() && yit != yvec.end(); ++xit, ++yit) {
-            
-            auto x = *xit;
-            auto y = *yit;
-            if (std::isnan(static_cast<double>(x)) || 
-                std::isnan(static_cast<double>(y))) { 
-                --A[0][0];
-                continue; }
-            sumX += x;
-            sumY += y;
-            A[1][1] += x * x;
-            b.y += y * x;
+    // Iterate over containers in sync
+    for (auto&& i : util::zip(xvec, yvec)) {
+        auto x = get<0>(i);
+        auto y = get<1>(i);
+        if (std::isnan(static_cast<double>(x)) ||
+            std::isnan(static_cast<double>(y))) {
+            --A[0][0];
+            continue;
         }
+        sumX += x;
+        sumY += y;
+        A[1][1] += x * x;
+        b.y += y * x;
     }
+
     b.x = sumY;
     A[1][0] = A[0][1] = sumX;
     dvec2 km = glm::inverse(A) * b;
@@ -78,23 +76,18 @@ RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
     double stdX = 0;
     double stdY = 0;
 
-    {
-        auto xit = xvec.begin();
-        auto yit = yvec.begin();
-
-        for (; xit != xvec.end() && yit != yvec.end(); ++xit, ++yit) {
-            if (std::isnan(static_cast<double>(*xit)) ||
-                std::isnan(static_cast<double>(*yit))) {
-                continue;
-            }
-            auto x = *xit - meanX;
-            auto y = *yit - meanY;
-
-            stdX += x * x;
-            stdY += y * y;
-
-            res.r2 += x * y;
+    for (auto&& i : util::zip(xvec, yvec)) {
+        if (std::isnan(static_cast<double>(get<0>(i))) ||
+            std::isnan(static_cast<double>(get<1>(i)))) {
+            continue;
         }
+        auto x = get<0>(i) - meanX;
+        auto y = get<1>(i) - meanY;
+
+        stdX += x * x;
+        stdY += y * y;
+
+        res.r2 += x * y;
     }
 
     stdX /= A[0][0];

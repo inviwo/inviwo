@@ -177,17 +177,17 @@ std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::begin() const {
 
 std::vector<std::shared_ptr<Column>>::iterator DataFrame::end() { return columns_.end(); }
 
-std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::string>> &exampleData,
+std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::string>> &exampleRows,
     const std::vector<std::string> &colHeaders) {
 
-    if (exampleData.empty()) {
+    if (exampleRows.empty()) {
         throw InvalidColCount("No example data to derive columns from");
     }
 
     // Guess type of each column, ordinal or nominal
     std::vector<std::pair<unsigned int, unsigned int>> columnTypeStatistics(colHeaders.size(), std::make_pair(0, 0));
-    for (size_t i = 0; i < exampleData.size(); ++i) {
-        const auto& rowData = exampleData[i];
+    for (size_t i = 0; i < exampleRows.size(); ++i) {
+        const auto& rowData = exampleRows[i];
         if (rowData.size() != colHeaders.size()) {
             throw InvalidColCount("Number of headers does not match column count");
         }
@@ -204,7 +204,7 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
     }
 
     auto dataFrame = std::make_shared<DataFrame>(0u);
-    for (size_t column = 0; column < exampleData.front().size(); ++column) {
+    for (size_t column = 0; column < exampleRows.front().size(); ++column) {
         const auto header =
             (!colHeaders.empty() ? colHeaders[column] : std::string("Column ") + std::to_string(column + 1));
         if (columnTypeStatistics[column].first > columnTypeStatistics[column].second) {

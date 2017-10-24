@@ -489,8 +489,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
                             auto rangeProp = dynamic_cast<typename AxisT::MinMaxPropType *>(
                                 prop->getPropertyByIdentifier("range"));
 
-                            rangeProp->setRangeMin(minV);
-                            rangeProp->setRangeMax(maxV);
+                            rangeProp->setRange(glm::tvec2<T>(minV, maxV));
 
                             auto usePercentiles = dynamic_cast<BoolProperty *>(
                                 prop->getPropertyByIdentifier("usePercentiles"));
