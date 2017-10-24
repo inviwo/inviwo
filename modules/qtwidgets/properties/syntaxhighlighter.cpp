@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/qtwidgets/qtwidgetssettings.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -49,9 +50,9 @@ SyntaxHighligther::~SyntaxHighligther() {
     // A workaround since we do not know which loadConfig template 
     // that was used after creation... 
     // Preferably, the loadConfig should return an object that can be destroyed.
-    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
-    sysSettings->pythonSyntax_.removeOnChange(this);
-    sysSettings->glslSyntax_.removeOnChange(this);
+    auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
+    settings->pythonSyntax_.removeOnChange(this);
+    settings->glslSyntax_.removeOnChange(this);
 }
 
 void SyntaxHighligther::clearFormaters() {
@@ -77,10 +78,10 @@ void SyntaxHighligther::highlightBlock(const QString& text) {
 
 template <>
 void SyntaxHighligther::loadConfig<None>() {
-    QColor textColor;
-    QColor bgColor;
-    textColor.setNamedColor("#aaaaaa");
-    bgColor.setNamedColor("#4d4d4d");
+    auto ivec4toQtColor = [](const ivec4& i) { return QColor(i.r, i.g, i.b, i.a); };
+    auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
+    QColor textColor = ivec4toQtColor(settings->glslTextColor_.get());
+    QColor bgColor = ivec4toQtColor(settings->glslBackgroundColor_.get());
     defaultFormat_.setBackground(bgColor);
     defaultFormat_.setForeground(textColor);
 }
