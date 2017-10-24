@@ -748,9 +748,11 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
                 QString className;
                 ProcessorDragObject::decode(e->mimeData(), className);
                 processorItem->setHighlight(true);
+                processorItem->setSelected(true);
                 oldProcessorTarget_ = processorItem;
             } else if (!processorItem && oldProcessorTarget_) {  // processor no longer targeted
                 oldProcessorTarget_->setHighlight(false);
+                oldProcessorTarget_->setSelected(false);
                 oldProcessorTarget_ = nullptr;
             }
         }
