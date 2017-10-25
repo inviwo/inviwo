@@ -47,6 +47,7 @@
 #include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/editor/networksearch.h>
+#include <inviwo/qt/editor/inviwoeditmenu.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
@@ -73,7 +74,7 @@
 #include <QSettings>
 #include <QUrl>
 #include <QVariant>
-
+#include <QToolBar>
 #include <algorithm>
 
 #include <warn/pop>
@@ -100,7 +101,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
-
+    editMenu_ = new InviwoEditMenu(this);
     networkEditor_ = util::make_unique<NetworkEditor>(this);
     // initialize console widget first to receive log messages
     consoleWidget_ = std::make_shared<ConsoleWidget>(this);
@@ -110,8 +111,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     const QDesktopWidget dw;
     auto screen = dw.screenGeometry(this);
     const float maxRatio = 0.8f;
-
-    QApplication::instance()->installEventFilter(&undoManager_);
 
     QSize size(1920, 1080);
     size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));
@@ -234,7 +233,7 @@ void InviwoMainWindow::addActions() {
     auto menu = menuBar();
 
     auto fileMenuItem = menu->addMenu(tr("&File"));
-    auto editMenuItem = menu->addMenu(tr("&Edit"));
+    menu->addMenu(editMenu_);
     auto viewMenuItem = menu->addMenu(tr("&View"));
     auto evalMenuItem = menu->addMenu(tr("&Evaluation"));
     auto helpMenuItem = menu->addMenu(tr("&Help"));
@@ -249,7 +248,6 @@ void InviwoMainWindow::addActions() {
     // file menu entries
     {
         auto newAction = new QAction(QIcon(":/icons/new.png"), tr("&New Workspace"), this);
-        actions_["New"] = newAction;
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(newAction);
@@ -263,7 +261,6 @@ void InviwoMainWindow::addActions() {
         openAction->setShortcut(QKeySequence::Open);
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(openAction);
-        actions_["Open"] = openAction;
         connect(openAction, &QAction::triggered, this,
                 static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::openWorkspace));
         fileMenuItem->addAction(openAction);
@@ -275,7 +272,6 @@ void InviwoMainWindow::addActions() {
         saveAction->setShortcut(QKeySequence::Save);
         saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(saveAction);
-        actions_["Save"] = saveAction;
         connect(saveAction, &QAction::triggered, this,
                 static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::saveWorkspace));
         fileMenuItem->addAction(saveAction);
@@ -288,7 +284,6 @@ void InviwoMainWindow::addActions() {
         saveAsAction->setShortcut(QKeySequence::SaveAs);
         saveAsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(saveAsAction);
-        actions_["Save As"] = saveAsAction;
         connect(saveAsAction, &QAction::triggered, this, &InviwoMainWindow::saveWorkspaceAs);
         fileMenuItem->addAction(saveAsAction);
         workspaceToolBar->addAction(saveAsAction);
@@ -378,103 +373,34 @@ void InviwoMainWindow::addActions() {
 
     // Edit
     {
-        auto undoAction = undoManager_.getUndoAction();
-        actions_["Undo"] = undoAction;
-        editMenuItem->addAction(undoAction);
-    }
-    {
-        auto redoAction = undoManager_.getRedoAction();
-        actions_["Redo"] = redoAction;
-        editMenuItem->addAction(redoAction);
-    }
+        auto front = editMenu_->actions().front();
+        editMenu_->insertAction(front, undoManager_.getUndoAction());
+        editMenu_->insertAction(front, undoManager_.getRedoAction());
+        editMenu_->insertSeparator(front);
 
-    editMenuItem->addSeparator();
+        // here will the cut/copy/paste/del/select be
 
-    {
-        auto cutAction = new QAction(tr("Cu&t"), this);
-        actions_["Cut"] = cutAction;
-        cutAction->setShortcut(QKeySequence::Cut);
-        editMenuItem->addAction(cutAction);
-        cutAction->setEnabled(false);
-    }
-
-    {
-        auto copyAction = new QAction(tr("&Copy"), this);
-        actions_["Copy"] = copyAction;
-        copyAction->setShortcut(QKeySequence::Copy);
-        editMenuItem->addAction(copyAction);
-        // add copy action to console widget
-        auto widget = consoleWidget_->view();
-        auto actions = widget->actions();
-        if (actions.isEmpty()) {
-            widget->addAction(copyAction);
-        } else {
-            // insert copy action at the beginning
-            widget->insertAction(actions.front(), copyAction);
-        }
-        copyAction->setEnabled(false);
-    }
-
-    {
-        auto pasteAction = new QAction(tr("&Paste"), this);
-        actions_["Paste"] = pasteAction;
-        pasteAction->setShortcut(QKeySequence::Paste);
-        editMenuItem->addAction(pasteAction);
-    }
-
-    {
-        auto deleteAction = new QAction(tr("&Delete"), this);
-        actions_["Delete"] = deleteAction;
-        deleteAction->setShortcuts(QList<QKeySequence>(
-            {QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace)}));
-        editMenuItem->addAction(deleteAction);
-        deleteAction->setEnabled(false);
-    }
-
-    editMenuItem->addSeparator();
-
-    {
-        auto selectAlllAction = new QAction(tr("&Select All"), this);
-        actions_["Select All"] = selectAlllAction;
-        selectAlllAction->setShortcut(QKeySequence::SelectAll);
-        editMenuItem->addAction(selectAlllAction);
-        connect(selectAlllAction, &QAction::triggered, [&]() { networkEditor_->selectAll(); });
-    }
-
-    editMenuItem->addSeparator();
-
-    {
-        auto findAction = new QAction(tr("&Find Processor"), this);
-        actions_["Find Processor"] = findAction;
+        editMenu_->addSeparator();
+        auto findAction = editMenu_->addAction(tr("&Find Processor"));
         findAction->setShortcut(QKeySequence::Find);
-        editMenuItem->addAction(findAction);
-        connect(findAction, &QAction::triggered, [&]() { processorTreeWidget_->focusSearch(); });
-    }
-    {
-        auto searchNetwork = new QAction(tr("&Search Network"), this);
-        actions_["Find Processor"] = searchNetwork;
+        connect(findAction, &QAction::triggered, this,
+                [this]() { processorTreeWidget_->focusSearch(); });
+
+        auto searchNetwork = editMenu_->addAction(tr("&Search Network"));
         searchNetwork->setShortcut(Qt::ShiftModifier + Qt::ControlModifier + Qt::Key_F);
-        editMenuItem->addAction(searchNetwork);
-        connect(searchNetwork, &QAction::triggered, [&]() { 
+        connect(searchNetwork, &QAction::triggered, [this]() {
             networkSearch_->setVisible(true);
             networkSearch_->setFocus();
         });
-    }
-    {
-        auto addProcessorAction = new QAction(tr("&Add Processor"), this);
-        actions_["Add Processor"] = addProcessorAction;
+
+        auto addProcessorAction = editMenu_->addAction(tr("&Add Processor"));
         addProcessorAction->setShortcut(Qt::ControlModifier + Qt::Key_D);
-        editMenuItem->addAction(addProcessorAction);
-        connect(addProcessorAction, &QAction::triggered,
-                [&]() { processorTreeWidget_->addSelectedProcessor(); });
-    }
+        connect(addProcessorAction, &QAction::triggered, this,
+                [this]() { processorTreeWidget_->addSelectedProcessor(); });
 
-    editMenuItem->addSeparator();
+        editMenu_->addSeparator();
 
-    {
-        auto clearLogAction = consoleWidget_->getClearAction();
-        actions_["Clear Log"] = clearLogAction;
-        editMenuItem->addAction(clearLogAction);
+        editMenu_->addAction(consoleWidget_->getClearAction());
     }
 
     // View
@@ -1213,9 +1139,11 @@ ResourceManagerWidget* InviwoMainWindow::getResourceManagerWidget() const {
 HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 
 InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_; }
+InviwoApplicationQt* InviwoMainWindow::getInviwoApplicationQt() const { return app_; }
 
-const std::unordered_map<std::string, QAction*>& InviwoMainWindow::getActions() const {
-    return actions_;
+InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const {
+    return editMenu_;
 }
+
 
 }  // namespace inviwo

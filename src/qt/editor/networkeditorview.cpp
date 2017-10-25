@@ -34,7 +34,7 @@
 #include <inviwo/qt/editor/networkeditorview.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
-
+#include <inviwo/qt/editor/inviwoeditmenu.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -68,6 +68,82 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
 
     loadHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
         [this](Deserializer&) { fitNetwork(); });
+
+    auto editmenu = mainwindow_->getInviwoEditMenu();
+
+    editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
+        this,
+        [this](MenuItemType t) -> bool {
+        switch (t) {
+            case MenuItemType::cut:
+                return networkEditor_->selectedItems().size() > 0;
+            case MenuItemType::copy:
+                return networkEditor_->selectedItems().size() > 0;
+            case MenuItemType::paste:
+            {
+                auto clipboard = QApplication::clipboard();
+                auto mimeData = clipboard->mimeData();
+                if (mimeData->formats().contains(
+                    QString("application/x.vnd.inviwo.network+xml"))) {
+                    return true;
+                } else if (mimeData->formats().contains(QString("text/plain"))) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            case MenuItemType::del:
+                return networkEditor_->selectedItems().size() > 0;
+            case MenuItemType::select:
+                return true;
+            default:
+                return false;
+        }
+
+    },
+        [this](MenuItemType t) -> void {
+        switch (t) {
+            case MenuItemType::cut:
+            {
+                auto data = networkEditor_->cut();
+                auto mimedata = util::make_unique<QMimeData>();
+                mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+                mimedata->setData(QString("text/plain"), data);
+                QApplication::clipboard()->setMimeData(mimedata.release());
+                break;
+            }
+            case MenuItemType::copy:
+            {
+                auto data = networkEditor_->copy();
+                auto mimedata = util::make_unique<QMimeData>();
+                mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+                mimedata->setData(QString("text/plain"), data);
+                QApplication::clipboard()->setMimeData(mimedata.release());
+                break;
+            }
+            case MenuItemType::paste:
+            {
+                auto clipboard = QApplication::clipboard();
+                auto mimeData = clipboard->mimeData();
+                if (mimeData->formats().contains(
+                    QString("application/x.vnd.inviwo.network+xml"))) {
+                    networkEditor_->paste(mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
+                } else if (mimeData->formats().contains(QString("text/plain"))) {
+                    networkEditor_->paste(mimeData->data(QString("text/plain")));
+                }
+                break;
+            }
+            case MenuItemType::del:
+                networkEditor_->deleteSelection();
+                break;
+            case MenuItemType::select:
+                networkEditor_->selectAll();
+                break;
+            default:
+                break;
+        }
+
+    }));
 }
 
 NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(nullptr); }
@@ -124,68 +200,9 @@ void NetworkEditorView::fitNetwork() {
     }
 }
 
-void NetworkEditorView::setupAction(std::string tag, bool enable, std::function<void()> fun) {
-    auto actions = mainwindow_->getActions();
-    auto action = actions[tag];
-    if(!connections_[tag]){
-        connections_[tag] = connect(action, &QAction::triggered, fun);
-    }
-    action->setEnabled(enable);
-}
-
-void NetworkEditorView::takeDownAction(std::string tag) {
-    auto actions = mainwindow_->getActions();
-    auto action = actions[tag];
-    disconnect(connections_[tag]);
-    action->setEnabled(false);
-}
-
-void NetworkEditorView::focusInEvent(QFocusEvent* e) {
-    auto enable = networkEditor_->selectedItems().size() > 0;
-
-    setupAction("Cut", enable, [&]() {
-        auto data = networkEditor_->cut();
-
-        auto mimedata = util::make_unique<QMimeData>();
-        mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
-        mimedata->setData(QString("text/plain"), data);
-        QApplication::clipboard()->setMimeData(mimedata.release());
-    });
-    
-    setupAction("Copy", enable, [&]() {
-        auto data = networkEditor_->copy();
-
-        auto mimedata = util::make_unique<QMimeData>();
-        mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
-        mimedata->setData(QString("text/plain"), data);
-        QApplication::clipboard()->setMimeData(mimedata.release());
-    });
-
-    setupAction("Paste", true, [&]() {
-        auto clipboard = QApplication::clipboard();
-        auto mimeData = clipboard->mimeData();
-        if (mimeData->formats().contains(QString("application/x.vnd.inviwo.network+xml"))) {
-            networkEditor_->paste(mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
-        } else if (mimeData->formats().contains(QString("text/plain"))) {
-            networkEditor_->paste(mimeData->data(QString("text/plain")));
-        }
-    });
-
-    setupAction("Delete", enable, [&]() { networkEditor_->deleteSelection(); });
-
-    QGraphicsView::focusInEvent(e);
-}
 
 void NetworkEditorView::focusOutEvent(QFocusEvent *e) {
-    if(networkEditor_->doingContextMenu()) return;
-
-    setDragMode(QGraphicsView::RubberBandDrag);
-    
-    takeDownAction("Cut");
-    takeDownAction("Copy");
-    takeDownAction("Paste");
-    takeDownAction("Delete");
-    
+    setDragMode(QGraphicsView::RubberBandDrag);   
     QGraphicsView::focusOutEvent(e);
 }
 

@@ -30,6 +30,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFile>
+#include <QMessageBox>
 #include <warn/pop>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
@@ -105,7 +106,18 @@ int main(int argc, char** argv) {
 
     // process last arguments
     if (!clp.getQuitApplicationAfterStartup()) {
-        return inviwoApp.exec();
+        try {
+            return inviwoApp.exec();
+        } catch (const inviwo::Exception& e) {
+            inviwo::util::log(e.getContext(), e.getMessage());
+            QMessageBox::critical(nullptr, "Fatal Error", QString::fromStdString(e.getMessage()));
+        } catch (const std::exception& e) {
+            LogErrorCustom("inviwo.cpp", e.what());
+            QMessageBox::critical(nullptr, "Fatal Error", e.what());
+        } catch (...) {
+            LogErrorCustom("inviwo.cpp", "Uncought exception, teminating");
+            QMessageBox::critical(nullptr, "Fatal Error", "Uncought exception, teminating");
+        }
     } else {
         mainWin.exitInviwo(false);
         return 0;
