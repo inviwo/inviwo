@@ -78,15 +78,12 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
         minmax = std::accumulate(
             data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
                 Res res(mm);
-                // extent of scalars is 0 so we need to ensure that loop is executed at least once.
-                size_t i = 0;
-                do {
+                for (size_t i = 0; i < util::flat_extent<ValueType>::value; ++i) {
                     if (util::isfinite(util::glmcomp(v,i))) {
                         util::glmcomp(res.first, i) = std::min(util::glmcomp(mm.first, i), util::glmcomp(v,i));
                         util::glmcomp(res.second, i) = std::max(util::glmcomp(mm.second, i), util::glmcomp(v, i));
                     }
-                } while (++i < util::extent<ValueType, 0>::value);
-                    
+                }
                 return res;
             });
     } else {
