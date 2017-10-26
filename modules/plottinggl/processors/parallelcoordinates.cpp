@@ -41,6 +41,9 @@
 #include <inviwo/core/util/imagesampler.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/properties/boolproperty.h>
+
+#include <modules/base/algorithm/dataminmax.h>
+
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
@@ -48,6 +51,8 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/io/datareaderfactory.h>
+
+#include <modules/plotting/utils/statsutils.h>
 
 namespace inviwo {
 
@@ -71,12 +76,11 @@ struct Axis : public ParallelCoordinates::AxisBase {
         : AxisBase(columnId, name, boolCompositeProperty, usePercentiles, buffer)
         , range_(range)
         , dataVector_(dataVector) {
-        auto copy = *dataVector;
-        std::sort(copy.begin(), copy.end());
-        p0_ = copy.front();
-        p25_ = copy[copy.size() * 0.25];
-        p75_ = copy[copy.size() * 0.75];
-        p100_ = copy.back();
+        auto pecentiles = statsutil::percentiles(*dataVector_, { 0., 0.25, 0.75, 1. });
+        p0_ = pecentiles[0];
+        p25_ = pecentiles[1];
+        p75_ = pecentiles[2];
+        p100_ = pecentiles[3];
     }
     virtual ~Axis() = default;
 
@@ -150,8 +154,10 @@ struct Axis : public ParallelCoordinates::AxisBase {
         auto range = range_->get();
         auto &vec = *dataVector_;
         for (size_t i = 0; i < vec.size(); i++) {
-            if (vec[i] + std::numeric_limits<float>::epsilon() < range.x ||
-                vec[i] - std::numeric_limits<float>::epsilon() > range.y) {
+            // Do not filter missing data (NaN)
+            if (!util::isnan(vec[i]) &&
+                (vec[i] + std::numeric_limits<float>::epsilon() < range.x ||
+                vec[i] - std::numeric_limits<float>::epsilon() > range.y)) {
                 brushed.insert(i);
             }
         }
@@ -442,7 +448,7 @@ void ParallelCoordinates::process() {
 void ParallelCoordinates::createOrUpdateProperties() {
     if (dataFrame_.hasData()) {
         auto data = dataFrame_.getData();
-        if (!data->getSize()) return;
+        if (!data->getNumberOfRows()) return;
         axisVector_.clear();
 
         for (auto &p : axisProperties_.getProperties()) {
@@ -463,13 +469,10 @@ void ParallelCoordinates::createOrUpdateProperties() {
                     using AxisT = Axis<T>;
                     auto &dataVector = ram->getDataContainer();
 
-                    auto minMax = std::minmax_element(dataVector.begin(), dataVector.end());
-                    T minV = *minMax.first;
-                    T maxV = *minMax.second;
+                    auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
+                    double minV = minMax.first.x;
+                    double maxV = minMax.second.x;
 
-                    if (minV != minV) {
-                        minV = 0;
-                    }
 
                     std::string displayName = c->getHeader();
                     std::string identifier = displayName;  // remove non alpha num
@@ -488,8 +491,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
                             auto rangeProp = dynamic_cast<typename AxisT::MinMaxPropType *>(
                                 prop->getPropertyByIdentifier("range"));
 
-                            rangeProp->setRangeMin(minV);
-                            rangeProp->setRangeMax(maxV);
+                            rangeProp->setRange(glm::tvec2<T>(minV, maxV));
 
                             auto usePercentiles = dynamic_cast<BoolProperty *>(
                                 prop->getPropertyByIdentifier("usePercentiles"));

@@ -20,7 +20,6 @@ uniform sampler2D tfSelection;
 
 void main() {
     vec4 res = vec4(1);
-
     if (selected > 0) {
         res = texture(tfSelection, vec2(ltexCoord.y,0.5f));
         //res.rgb = selectedColor.rgb;

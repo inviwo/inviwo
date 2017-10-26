@@ -40,6 +40,53 @@
 
 namespace inviwo {
 
+TEST(GLMTest, isnan_half) {
+    auto isnan = util::isnan(std::numeric_limits<half_float::half>::quiet_NaN());
+    EXPECT_EQ(true, isnan);
+}
+TEST(GLMTest, isnan_vec2) {
+    auto isnan = util::isnan(glm::vec2(std::numeric_limits<float>::quiet_NaN(), 1.f));
+    EXPECT_EQ(true, isnan[0]);
+    EXPECT_EQ(false, isnan[1]);
+}
+TEST(GLMTest, isnan_vec3) {
+    auto isnan = util::isnan(glm::vec3(1.f, std::numeric_limits<float>::infinity(),
+                                       std::numeric_limits<float>::quiet_NaN()));
+    EXPECT_EQ(false, isnan[0]);
+    EXPECT_EQ(false, isnan[1]);
+    EXPECT_EQ(true, isnan[2]);
+}
+TEST(GLMTest, isnan_vec4) {
+    auto isnan = util::isnan(glm::vec4(std::numeric_limits<float>::quiet_NaN()));
+    EXPECT_EQ(true, isnan[0]);
+    EXPECT_EQ(true, isnan[1]);
+    EXPECT_EQ(true, isnan[2]);
+    EXPECT_EQ(true, isnan[3]);
+}
+
+TEST(GLMTest, isfinite_half) {
+    auto isfinite = util::isfinite(std::numeric_limits<half_float::half>::quiet_NaN());
+    EXPECT_EQ(false, isfinite);
+}
+TEST(GLMTest, isfinite_vec2) {
+    auto isfinite = util::isfinite(glm::vec2(std::numeric_limits<float>::quiet_NaN(), 1.f));
+    EXPECT_EQ(false, isfinite[0]);
+    EXPECT_EQ(true, isfinite[1]);
+}
+TEST(GLMTest, isfinite_vec3) {
+    auto isfinite = util::isfinite(glm::vec3(1.f, std::numeric_limits<float>::infinity(),
+                                          std::numeric_limits<float>::quiet_NaN()));
+    EXPECT_EQ(true, isfinite[0]);
+    EXPECT_EQ(false, isfinite[1]);
+    EXPECT_EQ(false, isfinite[2]);
+}
+TEST(GLMTest, isfinite_vec4) {
+    auto isfinite = util::isfinite(glm::vec4(std::numeric_limits<float>::infinity()));
+    EXPECT_EQ(false, isfinite[0]);
+    EXPECT_EQ(false, isfinite[1]);
+    EXPECT_EQ(false, isfinite[2]);
+    EXPECT_EQ(false, isfinite[3]);
+}
 
 TEST(GLMTest, Extent_ivec2) {
 	EXPECT_EQ(2, util::extent<ivec2>::value);

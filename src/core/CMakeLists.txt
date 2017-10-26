@@ -497,6 +497,7 @@ set(SOURCE_FILES
     util/formatconversion.cpp
     util/formatdispatching.cpp
     util/formats.cpp
+    util/glm.cpp
     util/imagecache.cpp
     util/imageramutils.cpp
     util/imagesampler.cpp

@@ -37,6 +37,8 @@
 #define GLM_FORCE_SIZE_T_LENGTH
 #endif
 
+#include <inviwo/core/common/inviwocoredefine.h>
+
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <warn/ignore/sign-compare>
@@ -55,6 +57,7 @@
 #include <glm/common.hpp>
 #include <glm/detail/precision.hpp>
 #include <glm/detail/type_vec.hpp>
+#include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/io.hpp>
 #include <glm/gtx/component_wise.hpp>
 #include <glm/gtx/hash.hpp>
@@ -65,7 +68,6 @@
 
 #include <limits>
 #include <type_traits>
-
 
 namespace inviwo {
 
@@ -108,6 +110,35 @@ struct is_floating_point : public std::is_floating_point<T> {};
 template <>
 struct is_floating_point<half_float::half> : std::true_type {};
 
+template <typename T>
+bool isfinite(const T& v) { return std::isfinite(v); }
+
+template<typename T , glm::precision P>
+glm::tvec2<bool, P> isfinite (const glm::tvec2< T, P > &x) { return glm::isfinite(x); }
+
+template<typename T , glm::precision P>
+glm::tvec3<bool, P> isfinite (const glm::tvec3< T, P > &x) { return glm::isfinite(x); }
+
+template<typename T , glm::precision P>
+glm::tvec4<bool, P> isfinite (const glm::tvec4< T, P > &x) { return glm::isfinite(x); }
+ 
+template <>
+IVW_CORE_API bool isfinite(const half_float::half& v);
+    
+template <typename T>
+bool isnan(const T& v) { return std::isnan(v); }
+    
+template<typename T , glm::precision P>
+glm::tvec2<bool, P> isnan (const glm::tvec2< T, P > &x) { return glm::isnan(x); }
+    
+template<typename T , glm::precision P>
+glm::tvec3<bool, P> isnan (const glm::tvec3< T, P > &x) { return glm::isnan(x); }
+    
+template<typename T , glm::precision P>
+glm::tvec4<bool, P> isnan (const glm::tvec4< T, P > &x) { return glm::isnan(x); }
+
+template <>
+IVW_CORE_API bool isnan(const half_float::half& v);
 
 template <typename T>
 struct rank : public std::rank<T> {};
@@ -655,7 +686,7 @@ To glm_convert_normalized(From x) {
 
 #include <warn/pop>
 
-// GLM element access wrapper functions.
+// GLM element access wrapper functions. Useful in template functions with scalar and vec types
 
 // vector like access
 template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
