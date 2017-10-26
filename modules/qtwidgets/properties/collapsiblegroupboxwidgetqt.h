@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_COLLAPSIVEGROUPBOXWIDGETQT_H
@@ -50,12 +50,12 @@ class PropertyOwner;
 class EditableLabelQt;
 
 class IVW_MODULE_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
-                                                      public PropertyOwnerObserver,
-                                                      public ProcessorObserver {
+                                                             public PropertyOwnerObserver,
+                                                             public ProcessorObserver {
 
 public:
-    CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable=false);
-    CollapsibleGroupBoxWidgetQt(std::string displayName = "", bool isCheckable=false);
+    CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable = false);
+    CollapsibleGroupBoxWidgetQt(std::string displayName = "", bool isCheckable = false);
     virtual std::string getDisplayName() const;
     virtual void setDisplayName(const std::string& displayName);
 
@@ -67,7 +67,7 @@ public:
     PropertyOwner* getPropertyOwner() const;
 
     void setShowIfEmpty(bool val);
-    
+
     virtual bool isCollapsed() const;
     virtual bool isChecked() const;
 
@@ -75,7 +75,10 @@ public:
     void setCheckable(bool checkable);
 
     // Overridden from PropertyWidget
-    virtual void updateFromProperty() override {} 
+    virtual void updateFromProperty() override {}
+
+    // PropertyObservable overrides
+    virtual void onSetReadOnly(bool readonly) override;
 
     // Overridden from PropertyOwnerObserver to add and remove properties dynamically
     virtual void onDidAddProperty(Property* property, size_t index) override;
@@ -89,7 +92,7 @@ public:
     virtual QSize minimumSizeHint() const override;
 
     void toggleCollapsed();
-    
+
     virtual std::unique_ptr<QMenu> getContextMenu() override;
 
 protected:
@@ -104,6 +107,7 @@ protected:
     bool collapsed_;
     bool checked_;
     EditableLabelQt* label_;
+    QToolButton* resetButton_;
 
     std::vector<Property*> properties_;
     std::vector<PropertyWidgetQt*> propertyWidgets_;
@@ -113,13 +117,12 @@ private:
     QWidget* propertyWidgetGroup_;
     QGridLayout* propertyWidgetGroupLayout_;
     QLabel* defaultLabel_;
-    QCheckBox *checkBox_;
+    QCheckBox* checkBox_;
     PropertyOwner* propertyOwner_;
     bool showIfEmpty_;
     bool checkable_;
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif //IVW_COLLAPSIVEGROUPBOXWIDGETQT_H
+#endif  // IVW_COLLAPSIVEGROUPBOXWIDGETQT_H

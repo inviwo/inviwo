@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/compositeproperty.h>
@@ -44,9 +44,7 @@ CompositeProperty::CompositeProperty(std::string identifier, std::string display
     , collapsed_(false)
     , subPropertyInvalidationLevel_(InvalidationLevel::Valid) {}
 
-CompositeProperty* CompositeProperty::clone() const {
-    return new CompositeProperty(*this);
-}
+CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
 
 std::string CompositeProperty::getClassIdentifierForWidget() const {
     return CompositeProperty::CLASS_IDENTIFIER;
@@ -54,7 +52,7 @@ std::string CompositeProperty::getClassIdentifierForWidget() const {
 
 void CompositeProperty::setOwner(PropertyOwner* owner) {
     Property::setOwner(owner);
-    for (Property* property: properties_) property->setOwner(this);
+    for (Property* property : properties_) property->setOwner(this);
 }
 
 void CompositeProperty::set(const Property* srcProperty) {
@@ -71,13 +69,12 @@ void CompositeProperty::set(const CompositeProperty* src) {
             this->properties_[i]->set(subProperties[i]);
         }
         propertyModified();
-    }
-    else {
+    } else {
         LogWarn("CompositeProperty mismatch. Unable to link");
     }
 }
 
-InvalidationLevel CompositeProperty::getInvalidationLevel() const  {
+InvalidationLevel CompositeProperty::getInvalidationLevel() const {
     return std::min(subPropertyInvalidationLevel_, Property::getInvalidationLevel());
 }
 
@@ -109,13 +106,20 @@ void CompositeProperty::resetToDefaultState() {
     Property::resetToDefaultState();
 }
 
-void CompositeProperty::serialize(Serializer& s) const{
+void CompositeProperty::setReadOnly(bool value) {
+    Property::setReadOnly(value);
+    for (auto& elem : properties_) {
+        elem->setReadOnly(value);
+    }
+}
+
+void CompositeProperty::serialize(Serializer& s) const {
     Property::serialize(s);
     PropertyOwner::serialize(s);
     s.serialize("collapsed", collapsed_);
 }
 
-void CompositeProperty::deserialize(Deserializer& d){
+void CompositeProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
     PropertyOwner::deserialize(d);
     d.deserialize("collapsed", collapsed_);
@@ -146,9 +150,7 @@ const Processor* CompositeProperty::getProcessor() const {
     }
 }
 
-bool CompositeProperty::isCollapsed() const {
-    return collapsed_;
-}
+bool CompositeProperty::isCollapsed() const { return collapsed_; }
 void CompositeProperty::setCollapsed(bool value) {
     if (collapsed_ != value) {
         collapsed_ = value;
@@ -156,4 +158,4 @@ void CompositeProperty::setCollapsed(bool value) {
     }
 }
 
-} // namespace
+}  // namespace inviwo
