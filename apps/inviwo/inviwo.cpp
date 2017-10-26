@@ -115,8 +115,8 @@ int main(int argc, char** argv) {
             LogErrorCustom("inviwo.cpp", e.what());
             QMessageBox::critical(nullptr, "Fatal Error", e.what());
         } catch (...) {
-            LogErrorCustom("inviwo.cpp", "Uncought exception, teminating");
-            QMessageBox::critical(nullptr, "Fatal Error", "Uncought exception, teminating");
+            LogErrorCustom("inviwo.cpp", "Uncaught exception, terminating");
+            QMessageBox::critical(nullptr, "Fatal Error", "Uncaught exception, terminating");
         }
     } else {
         mainWin.exitInviwo(false);
