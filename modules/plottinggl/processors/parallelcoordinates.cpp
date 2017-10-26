@@ -154,8 +154,10 @@ struct Axis : public ParallelCoordinates::AxisBase {
         auto range = range_->get();
         auto &vec = *dataVector_;
         for (size_t i = 0; i < vec.size(); i++) {
-            if (vec[i] + std::numeric_limits<float>::epsilon() < range.x ||
-                vec[i] - std::numeric_limits<float>::epsilon() > range.y) {
+            // Do not filter missing data (NaN)
+            if (!util::isnan(vec[i]) &&
+                (vec[i] + std::numeric_limits<float>::epsilon() < range.x ||
+                vec[i] - std::numeric_limits<float>::epsilon() > range.y)) {
                 brushed.insert(i);
             }
         }
