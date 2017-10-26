@@ -17,10 +17,10 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiongraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgrapicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/helpwidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoeditmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoqteditordefine.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h
@@ -33,6 +33,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networksearch.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlinkgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorportgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorpreview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorprogressgraphicsitem.h
@@ -49,6 +50,7 @@ set(SOURCE_FILES
     consolewidget.cpp
     editorgrapicsitem.cpp
     helpwidget.cpp
+    inviwoeditmenu.cpp
     inviwomainwindow.cpp
     linkdialog/linkdialog.cpp
     linkdialog/linkdialogcurvegraphicsitems.cpp

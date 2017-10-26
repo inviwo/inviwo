@@ -73,19 +73,21 @@ private:
 
 class QCHFileObserver : public FileObserver {
 public:
-    QCHFileObserver(InviwoApplication* app, QHelpEngineCore* engine) : app_(app), engine_(engine) { 
-    }
-
-    virtual ~QCHFileObserver() {
-    }
+    QCHFileObserver(QHelpEngineCore* engine) : engine_(engine) {}
+    virtual ~QCHFileObserver() = default;
+    
     void addFile(const std::string& fileName) {
         reload(fileName);
-
         if (!isObserved(fileName)) {
             startFileObservation(fileName);
         }
     }
-
+    void removeAll() {
+        stopAllObservation();
+        for (const auto& ns : engine_->registeredDocumentations()) {
+            engine_->unregisterDocumentation(ns);
+        }
+    }
     virtual void fileChanged(const std::string& fileName) override { reload(fileName); }
 
 private:
@@ -99,8 +101,6 @@ private:
                     << engine_->error().toStdString());
         }
     }
-
-    InviwoApplication* app_;
     QHelpEngineCore* engine_;
 };
 
@@ -168,7 +168,14 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
         throw Exception("Failed to setup the help engine:" + error);
     }
 
-    fileObserver_ = util::make_unique<QCHFileObserver>(app, helpEngine_);
+    fileObserver_ = util::make_unique<QCHFileObserver>(helpEngine_);
+    
+    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([this]() {
+        registerQCHFiles();
+    });
+    onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([this]() {
+        fileObserver_->removeAll();
+    });
 }
 
 HelpWidget::~HelpWidget() = default;

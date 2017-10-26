@@ -92,7 +92,9 @@ public:
     QMainWindow* getMainWindow() { return mainWindow_; }
 
     virtual bool event(QEvent* e) override;
-
+    
+    virtual bool notify(QObject *receiver, QEvent *e) override;
+    void setUndoTrigger(std::function<void()> func);
 protected:
     virtual void printApplicationInfo() override;
     virtual void resizePool(size_t newSize) override;
@@ -118,6 +120,7 @@ private:
     QFileSystemWatcher* fileWatcher_;
 
     std::locale uiLocal_;
+    std::function<void()> undoTrigger_;
 };
 
 }  // namespace

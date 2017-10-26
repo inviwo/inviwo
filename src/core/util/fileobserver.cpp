@@ -78,6 +78,13 @@ bool FileObserver::stopFileObservation(const std::string& fileName) {
     return false;
 }
 
+void FileObserver::stopAllObservation() {
+    for (auto file : observedFiles_) {
+        app_->stopFileObservation(file);
+    }
+    observedFiles_.clear();
+}
+
 bool FileObserver::isObserved(const std::string& fileName) const {
     return observedFiles_.find(fileName) != observedFiles_.end();
 }

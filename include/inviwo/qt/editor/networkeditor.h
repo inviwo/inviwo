@@ -68,6 +68,7 @@ class LinkConnectionDragGraphicsItem;
 class LinkDialog;
 class InviwoMainWindow;
 class Image;
+class MenuItem;
 
 /**
  * The NetworkEditor supports interactive editing of a ProcessorNetwork. Processors can be added
@@ -226,11 +227,9 @@ private:
 
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;
-
     static const int gridSpacing_;
     std::string filename_;
     bool modified_;
-    bool doingContextMenu_ = false;
 };
 
 template <typename T>

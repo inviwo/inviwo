@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,65 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HELPWIDGET_H
-#define IVW_HELPWIDGET_H
+#ifndef IVW_INVIWOEDITMENU_H
+#define IVW_INVIWOEDITMENU_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
+#include <inviwo/core/common/inviwo.h>
 
-class QObject;
-class QHelpEngineCore;
-class QResizeEvent;
+#include <functional>
+#include <unordered_map>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMenu>
+#include <warn/pop>
+
+class QAction;
+class QWidget;
+class QMenu;
 
 namespace inviwo {
 
-class QCHFileObserver;
-class HelpBrowser;
+class InviwoMainWindow;
 
-
-class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
-public:
-    HelpWidget(InviwoMainWindow* parent);
-    virtual ~HelpWidget();
-    HelpWidget(const HelpWidget&) = delete;
-    HelpWidget& operator=(const HelpWidget&) = delete;
-
-    void showDocForClassName(std::string className);
-    void registerQCHFiles();
-protected:
-    virtual void resizeEvent(QResizeEvent* event) override;
-
-private:
-    InviwoMainWindow* mainwindow_;
-    QHelpEngineCore* helpEngine_;
-    HelpBrowser* helpBrowser_;
-    std::string current_;
-    std::unique_ptr<QCHFileObserver> fileObserver_;
-    
-    // Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    // Called before modules have been unregistered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
+enum class MenuItemType {
+    cut,
+    copy,
+    paste,
+    del,
+    select
 };
 
-}  // namespace
+class IVW_QTEDITOR_API MenuItem {
+public:
+    MenuItem(QObject* owner, std::function<bool(MenuItemType)> enabled,
+             std::function<void(MenuItemType)> invoke);
+    QObject* owner;
+    std::function<bool(MenuItemType)> enabled;
+    std::function<void(MenuItemType)> invoke;
+};
 
-#endif  // IVW_HELPWIDGET_H
+/**
+ * Manage menu entries for the main window.
+ * Map the action to the focused widget
+ */
+class IVW_QTEDITOR_API InviwoEditMenu : public QMenu {
+public:
+    InviwoEditMenu(InviwoMainWindow* win);
+    virtual ~InviwoEditMenu() = default;
+    
+    std::shared_ptr<MenuItem> registerItem(std::shared_ptr<MenuItem> item);
+    
+private:
+    std::shared_ptr<MenuItem> getFocusItem();
+
+    std::unordered_map<QObject*, std::weak_ptr<MenuItem>> items_;
+    std::map<MenuItemType, QAction*> actions_; 
+    std::weak_ptr<MenuItem> lastItem_;
+};
+
+} // namespace
+
+#endif // IVW_INVIWOEDITMENU_H
+

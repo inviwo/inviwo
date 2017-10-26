@@ -58,6 +58,7 @@ class QWheelEvent;
 
 namespace inviwo {
 
+class MenuItem;
 class InviwoMainWindow;
 
 struct LogTableModelEntry {
@@ -166,12 +167,12 @@ signals:
 
 protected:
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
-    virtual bool eventFilter(QObject* object, QEvent* event) override;
     virtual void closeEvent(QCloseEvent* event) override;
 
 private:
     QModelIndex mapToSource(int row, int col);
     QModelIndex mapFromSource(int row, int col);
+    void copy();
 
     QTableView* tableView_;
     LogTableModel model_;
@@ -195,10 +196,7 @@ private:
     QLineEdit* filterPattern_;
     QAction* clearAction_;
     InviwoMainWindow* mainwindow_;
-    std::unordered_map<std::string, QMetaObject::Connection> connections_;
-
-    bool hover_ = false;
-    bool focus_ = false;
+    std::shared_ptr<MenuItem> editActionsHandle_;
 };
 
 }  // namespace

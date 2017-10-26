@@ -107,8 +107,6 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
 
     // The default BSP tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
-    
-    connect(this, &QGraphicsScene::selectionChanged, [&](){updateActionStates();});
 }
 
 ////////////////////////////////////////////////////////
@@ -597,31 +595,72 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         });
     }
 
-    menu.addSeparator();
-    auto actions = mainwindow_->getActions();
-    menu.addAction(actions["Copy"]);
-    menu.addAction(actions["Cut"]);
-    menu.addAction(actions["Paste"]);
-    menu.addSeparator();
-    
     clickedOnItems_.append(items(e->scenePos()));
-    clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
-    
-    bool enable = clickedProcessor || selectedItems().size() > 0;
-    actions["Copy"]->setEnabled(enable);
-    actions["Cut"]->setEnabled(enable);
+    clickedPosition_ = { true, utilqt::toGLM(e->scenePos()) };
+    {
+        menu.addSeparator();
+        auto cutAction = menu.addAction(tr("Cu&t"));
+        cutAction->setShortcut(QKeySequence::Cut);
+        cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
+        connect(cutAction, &QAction::triggered, this, [this](){       
+            auto data = cut();
+            auto mimedata = util::make_unique<QMimeData>();
+            mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+            mimedata->setData(QString("text/plain"), data);
+            QApplication::clipboard()->setMimeData(mimedata.release());
+        });
 
-    QAction* deleteAction = actions["Delete"];
-    menu.addAction(deleteAction);
+        auto copyAction = menu.addAction(tr("&Copy"));
+        copyAction->setShortcut(QKeySequence::Copy);
+        copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
+        connect(copyAction, &QAction::triggered, this, [this](){
+            auto data = copy();
+            auto mimedata = util::make_unique<QMimeData>();
+            mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+            mimedata->setData(QString("text/plain"), data);
+            QApplication::clipboard()->setMimeData(mimedata.release()); 
+        });
+
+
+        auto pasteAction = menu.addAction(tr("&Paste"));
+        pasteAction->setShortcut(QKeySequence::Paste);
+        auto clipboard = QApplication::clipboard();
+        auto mimeData = clipboard->mimeData();
+        if (mimeData->formats().contains(
+            QString("application/x.vnd.inviwo.network+xml"))) {
+            pasteAction->setEnabled(true);
+        } else if (mimeData->formats().contains(QString("text/plain"))) {
+            pasteAction->setEnabled(true);
+        } else {
+            pasteAction->setEnabled(false);
+        }
+        connect(pasteAction, &QAction::triggered, this, [this](){
+            auto clipboard = QApplication::clipboard();
+            auto mimeData = clipboard->mimeData();
+            if (mimeData->formats().contains(
+                QString("application/x.vnd.inviwo.network+xml"))) {
+                paste(mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
+            } else if (mimeData->formats().contains(QString("text/plain"))) {
+                paste(mimeData->data(QString("text/plain")));
+            }
+        });
+
+        menu.addSeparator();
+
+        auto deleteAction = menu.addAction(tr("&Delete"));
+        deleteAction->setShortcuts(QList<QKeySequence>(
+        { QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace) }));
+        deleteAction->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
+        connect(deleteAction, &QAction::triggered, this, [this](){
+            deleteSelection();
+        });
+    }  
     
-    actions["Delete"]->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
     
-    doingContextMenu_ = true;
     menu.exec(QCursor::pos());
     e->accept();
     clickedOnItems_.clear();
     clickedPosition_ = {false, ivec2{0,0}};
-    doingContextMenu_ = false;
 }
 
 void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
@@ -631,18 +670,6 @@ void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool r
         if (!help->isVisible()) help->show();
         help->raise();
     }
-}
-
-bool NetworkEditor::doingContextMenu() const {
-    return doingContextMenu_;
-}
-
-void NetworkEditor::updateActionStates() {
-    auto actions = mainwindow_->getActions();
-    auto enable = selectedItems().size() > 0;
-    actions["Copy"]->setEnabled(enable);
-    actions["Cut"]->setEnabled(enable);
-    actions["Delete"]->setEnabled(enable);
 }
 
 void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent) {
@@ -953,26 +980,31 @@ QByteArray NetworkEditor::cut() {
 }
 
 void NetworkEditor::paste(QByteArray mimeData) {
-    std::stringstream ss;
-    for (auto d : mimeData) ss << d;
-    RenderContext::getPtr()->activateDefaultRenderContext();
-    auto added = util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
-    
-    ivec2 top{std::numeric_limits<int>::max()};
-    
-    for (auto p : added) {
-        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        top = glm::min(top, m->getPosition());
-    }
+    try {
+        std::stringstream ss;
+        for (auto d : mimeData) ss << d;
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        auto added =
+            util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
 
-    ivec2 pos =
-        clickedPosition_.first
-            ? clickedPosition_.second - top
-            : ivec2(++pasteCount_) * ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
+        ivec2 top{std::numeric_limits<int>::max()};
 
-    for (auto p : added) {
-        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        m->setPosition(m->getPosition() + pos);
+        for (auto p : added) {
+            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            top = glm::min(top, m->getPosition());
+        }
+
+        ivec2 pos = clickedPosition_.first
+                        ? clickedPosition_.second - top
+                        : ivec2(++pasteCount_) *
+                              ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
+
+        for (auto p : added) {
+            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            m->setPosition(m->getPosition() + pos);
+        }
+    } catch (const Exception& e) {
+        LogWarn("Paste operation failed");
     }
 }
 

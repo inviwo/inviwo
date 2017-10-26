@@ -38,10 +38,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMainWindow>
-#include <QDockWidget>
-#include <QListWidget>
-#include <QToolBar>
-#include <QToolButton>
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
@@ -61,6 +57,7 @@ class SettingsWidget;
 class HelpWidget;
 class InviwoApplicationQt;
 class NetworkSearch;
+class InviwoEditMenu;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -80,14 +77,16 @@ public:
     void visibilityModeChangedInSettings();
 
     NetworkEditor* getNetworkEditor() const;
-    SettingsWidget*  getSettingsWidget() const;
-    ProcessorTreeWidget*  getProcessorTreeWidget() const;
-    PropertyListWidget*  getPropertyListWidget() const;
-    ConsoleWidget*  getConsoleWidget() const;
-    ResourceManagerWidget*  getResourceManagerWidget() const;
-    HelpWidget*  getHelpWidget() const;
+    SettingsWidget* getSettingsWidget() const;
+    ProcessorTreeWidget* getProcessorTreeWidget() const;
+    PropertyListWidget* getPropertyListWidget() const;
+    ConsoleWidget* getConsoleWidget() const;
+    ResourceManagerWidget* getResourceManagerWidget() const;
+    HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
-    const std::unordered_map<std::string, QAction*>& getActions() const;
+    InviwoApplicationQt* getInviwoApplicationQt() const;
+
+    InviwoEditMenu* getInviwoEditMenu() const;
 
     void newWorkspace();
     void openWorkspace();
@@ -156,8 +155,6 @@ private:
     NetworkEditorView* networkEditorView_;
     TemplateOptionProperty<UsageMode>* appUsageModeProp_;
 
-    // toolbar
-    QToolBar* basicToolbar_;
 
     // dock widgets
     SettingsWidget* settingsWidget_;
@@ -167,14 +164,12 @@ private:
     ResourceManagerWidget* resourceManagerWidget_;
     HelpWidget* helpWidget_;
     NetworkSearch* networkSearch_;
-
-    // menu actions
-    std::unordered_map<std::string, QAction*> actions_;
     
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
 
+    InviwoEditMenu* editMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;
     QMenu* testMenu_ = nullptr;
 
@@ -197,7 +192,6 @@ private:
 
     ///< Called after modules have been registered
     std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-
     ///< Called before modules have been unregistered
     std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
