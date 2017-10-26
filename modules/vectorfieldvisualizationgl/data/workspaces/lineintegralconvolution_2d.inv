@@ -3,11 +3,7 @@
     <InviwoSetup>
         <Modules>
             <Module name="Core" version="0" />
-            <Module name="OpenGL" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CanvasGL" />
-                </Processors>
-            </Module>
+            <Module name="assimp" version="0" />
             <Module name="Base" version="2">
                 <Processors>
                     <Processor content="org.inviwo.ConvexHull2DProcessor" />
@@ -64,6 +60,11 @@
                     <Processor content="org.inviwo.Image.InputSelector" />
                 </Processors>
             </Module>
+            <Module name="OpenGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CanvasGL" />
+                </Processors>
+            </Module>
             <Module name="BaseGL" version="3">
                 <Processors>
                     <Processor content="org.inviwo.AxisAlignedCutPlane" />
@@ -117,26 +118,6 @@
                     <Processor content="org.inviwo.VolumeShader" />
                 </Processors>
             </Module>
-            <Module name="ABufferGL" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
-                </Processors>
-            </Module>
-            <Module name="Animation" version="0" />
-            <Module name="QtWidget" version="0" />
-            <Module name="AnimationQt" version="0" />
-            <Module name="assimp" version="0" />
-            <Module name="OpenGLQt" version="0" />
-            <Module name="OpenCL" version="0" />
-            <Module name="BaseCL" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.EntryExitPointsCL" />
-                    <Processor content="org.inviwo.GrayscaleCL" />
-                    <Processor content="org.inviwo.VolumeFirstHitCL" />
-                    <Processor content="org.inviwo.VolumeMaxCL" />
-                    <Processor content="org.inviwo.VolumeRaycasterCL" />
-                </Processors>
-            </Module>
             <Module name="BrushingAndLinking" version="0">
                 <Processors>
                     <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
@@ -150,19 +131,15 @@
                     <Processor content="org.inviwo.EigenNormalize" />
                 </Processors>
             </Module>
-            <Module name="FontRendering" version="2">
+            <Module name="FontRendering" version="3">
                 <Processors>
                     <Processor content="org.inviwo.TextOverlayGL" />
                 </Processors>
             </Module>
-            <Module name="HDF5" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.hdf5.Source" />
-                    <Processor content="org.inviwo.hdf5.ToVolume" />
-                    <Processor content="org.inviwo.hdf5.PathSelection" />
-                </Processors>
-            </Module>
             <Module name="Nifti" version="0" />
+            <Module name="QtWidgets" version="0" />
+            <Module name="OpenGLQt" version="0" />
+            <Module name="OpenCL" version="0" />
             <Module name="Plotting" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CSVSource" />
@@ -207,6 +184,7 @@
                     <Processor content="org.inviwo.CameraWidget" />
                     <Processor content="org.inviwo.CropWidget" />
                     <Processor content="org.inviwo.PresentationProcessor" />
+                    <Processor content="org.inviwo.GLUITestProcessor" />
                 </Processors>
             </Module>
             <Module name="VectorFieldVisualization" version="1">
@@ -222,6 +200,7 @@
                     <Processor content="org.inviwo.Seed3Dto4D" />
                     <Processor content="org.inviwo.SeedsFromMaskSequence" />
                     <Processor content="org.inviwo.DiscardShortLines" />
+                    <Processor content="org.inviwo.IntegralLineSetSelector" />
                 </Processors>
             </Module>
             <Module name="VectorFieldVisualizationGL" version="1">
@@ -251,7 +230,7 @@
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref31" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref4" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -327,10 +306,10 @@
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref3" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref0" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref4" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref1" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.BoolProperty" identifier="normalizeSeparately" />
@@ -356,10 +335,10 @@
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref24" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref21" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref25" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref22" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FloatProperty" identifier="brightness">
@@ -383,10 +362,10 @@
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref17" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref2" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref18" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref3" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FloatProperty" identifier="brightness">
@@ -411,11 +390,11 @@
                     <PortGroup content="default" key="vectorField" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="vectorField" id="ref26" />
-                    <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" id="ref27" />
+                    <InPort type="org.inviwo.ImageInport" identifier="vectorField" id="ref23" />
+                    <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" id="ref24" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" id="ref28" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" id="ref25" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.IntProperty" identifier="samples">
@@ -443,7 +422,7 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref2" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref5" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.IntVec2Property" identifier="size">
@@ -476,10 +455,10 @@
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref0" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref11" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref1" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref12" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction">
@@ -771,11 +750,11 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport0" id="ref19" />
-                    <InPort type="org.inviwo.ImageInport" identifier="inport1" id="ref20" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inport0" id="ref27" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inport1" id="ref28" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref21" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref29" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyInt" identifier="blendMode">
@@ -799,7 +778,7 @@
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref11" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref26" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -875,10 +854,10 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref15" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref13" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref16" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref14" />
                 </OutPorts>
                 <MetaDataMap>
                     <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
@@ -893,7 +872,7 @@
                     <PortGroup content="default" key="noise" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="noise" id="ref5" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="noise" id="ref20" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.IntSize2Property" identifier="size">
@@ -948,10 +927,10 @@
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref29" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref30" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref30" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref31" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.BoolProperty" identifier="sharpen" />
@@ -972,10 +951,10 @@
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref22" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref6" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref23" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref7" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FloatProperty" identifier="hue" />
@@ -1000,10 +979,10 @@
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref9" />
+                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref18" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref10" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref19" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.BoolProperty" identifier="sharpen" />
@@ -1025,11 +1004,11 @@
                     <PortGroup content="default" key="vectorField" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="vectorField" id="ref6" />
-                    <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" id="ref7" />
+                    <InPort type="org.inviwo.ImageInport" identifier="vectorField" id="ref8" />
+                    <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" id="ref9" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" id="ref8" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" id="ref10" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.IntProperty" identifier="samples">
@@ -1059,11 +1038,11 @@
                     <PortGroup content="default" key="vectorField" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="vectorField" id="ref12" />
-                    <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" id="ref13" />
+                    <InPort type="org.inviwo.ImageInport" identifier="vectorField" id="ref15" />
+                    <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" id="ref16" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" id="ref14" />
+                    <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" id="ref17" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.IntProperty" identifier="samples">
@@ -1089,79 +1068,78 @@
         </Processors>
         <Connections>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref4" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref1" />
+                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref11" />
+            </Connection>
+            <Connection>
+                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref12" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport1" reference="ref28" />
+            </Connection>
+            <Connection>
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref29" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref26" />
+            </Connection>
+            <Connection>
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref14" />
                 <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref0" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref1" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport1" reference="ref20" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref5" />
+                <InPort type="org.inviwo.ImageInport" identifier="vectorField" reference="ref8" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref21" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref11" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref5" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref13" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref16" />
-                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref3" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref22" />
+                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref30" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref2" />
-                <InPort type="org.inviwo.ImageInport" identifier="vectorField" reference="ref6" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref3" />
+                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref6" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref2" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref15" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="noise" reference="ref20" />
+                <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" reference="ref9" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref25" />
-                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref29" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" reference="ref10" />
+                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref21" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref18" />
-                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref22" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref5" />
+                <InPort type="org.inviwo.ImageInport" identifier="vectorField" reference="ref15" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="noise" reference="ref5" />
-                <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" reference="ref7" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" reference="ref17" />
+                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref2" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" reference="ref8" />
-                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref24" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref5" />
+                <InPort type="org.inviwo.ImageInport" identifier="vectorField" reference="ref23" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref2" />
-                <InPort type="org.inviwo.ImageInport" identifier="vectorField" reference="ref12" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref7" />
+                <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" reference="ref24" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" reference="ref14" />
-                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref17" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" reference="ref25" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport0" reference="ref27" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref2" />
-                <InPort type="org.inviwo.ImageInport" identifier="vectorField" reference="ref26" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref31" />
+                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref18" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref23" />
-                <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" reference="ref27" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref19" />
+                <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" reference="ref16" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" reference="ref28" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport0" reference="ref19" />
-            </Connection>
-            <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref30" />
-                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref9" />
-            </Connection>
-            <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref10" />
-                <InPort type="org.inviwo.ImageInport" identifier="noiseTexture" reference="ref13" />
-            </Connection>
-            <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" reference="ref28" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref31" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="LIC2D" reference="ref25" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref4" />
             </Connection>
         </Connections>
     </ProcessorNetwork>
     <PortInspectors />
-    <Animation />
 </InviwoWorkspace>
