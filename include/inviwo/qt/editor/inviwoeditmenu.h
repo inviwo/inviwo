@@ -80,9 +80,8 @@ public:
 private:
     std::shared_ptr<MenuItem> getFocusItem();
 
-    InviwoMainWindow* win_;
     std::unordered_map<QObject*, std::weak_ptr<MenuItem>> items_;
-    std::unordered_map<MenuItemType, QAction*> actions_;
+    std::map<MenuItemType, QAction*> actions_; 
     std::weak_ptr<MenuItem> lastItem_;
 };
 

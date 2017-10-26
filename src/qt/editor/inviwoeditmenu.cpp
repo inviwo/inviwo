@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win), win_(win)  {
+InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) {
     {
         auto cutAction = addAction(tr("Cu&t"));
         actions_[MenuItemType::cut] = cutAction;
