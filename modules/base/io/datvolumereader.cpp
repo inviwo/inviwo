@@ -27,7 +27,9 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/io/datvolumereader.h>
+#include <modules/base/io/datvolumereader.h>
+#include <modules/base/algorithm/dataminmax.h>
+
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/filesystem.h>
@@ -309,6 +311,33 @@ std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(const
                                                                 littleEndian_, format_);
             diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);
+            if (t == 0 && datarange == dvec2(0)) {
+                // Compute data range if none is given
+                auto minmax = util::volumeMinMax(volumes->front().get(), IgnoreSpecialValues::Yes);
+                dvec2 computedRange(minmax.first[0], minmax.second[0]);
+                // min/max of all components
+                for (size_t component = 1; component < format_->getComponents(); ++component) {
+                    computedRange = dvec2(glm::min(computedRange[0], minmax.first[component]),
+                                          glm::max(computedRange[1], minmax.second[component]));
+                }
+                volumes->front()->dataMap_.dataRange = computedRange;
+                // Also set value range if not specified
+                if (valuerange == dvec2(0)) {
+                    volumes->front()->dataMap_.valueRange = computedRange;
+                }
+                LogWarn(
+                    "Performance warning: Using min/max of data since DataRange was not specified. "
+                    << std::endl
+                    << "Data range refer to the range of the data type, i.e. [0 4095] for 12-bit "
+                       "unsigned integer data."
+                    << std::endl
+                    << "Value range refer to the physical meaning of the value, i.e. Hounsfield "
+                       "value range is from [-1000 3000] "
+                    << std::endl
+                    << "Improve volume read performance by adding for example: " << std::endl
+                    << "DataRange: " << computedRange[0] << " " << computedRange[1] << std::endl
+                    << "in file: " << fileName << std::endl);
+            }
         }
 
         std::string size = util::formatBytesToString(bytes * sequences);
