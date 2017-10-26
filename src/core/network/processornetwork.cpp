@@ -429,7 +429,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
             }
         });
         
-        // remove any no longer used connectsions
+        // remove any no longer used connections
         auto remove = util::copy_if(connections_, [&](auto& c) {
             return save.count(c) == 0;
         });

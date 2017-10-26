@@ -24,9 +24,8 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
-
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/linksettings.h>
@@ -35,6 +34,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -57,7 +57,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
 
     NetworkEditorObserver::addObservation(networkEditor_);
     QGraphicsView::setScene(networkEditor_);
-    
+
     setRenderHint(QPainter::Antialiasing, true);
     setMouseTracking(true);
     setDragMode(QGraphicsView::RubberBandDrag);
@@ -74,76 +74,73 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
         this,
         [this](MenuItemType t) -> bool {
-        switch (t) {
-            case MenuItemType::cut:
-                return networkEditor_->selectedItems().size() > 0;
-            case MenuItemType::copy:
-                return networkEditor_->selectedItems().size() > 0;
-            case MenuItemType::paste:
-            {
-                auto clipboard = QApplication::clipboard();
-                auto mimeData = clipboard->mimeData();
-                if (mimeData->formats().contains(
-                    QString("application/x.vnd.inviwo.network+xml"))) {
+            switch (t) {
+                case MenuItemType::cut:
+                    return networkEditor_->selectedItems().size() > 0;
+                case MenuItemType::copy:
+                    return networkEditor_->selectedItems().size() > 0;
+                case MenuItemType::paste: {
+                    auto clipboard = QApplication::clipboard();
+                    auto mimeData = clipboard->mimeData();
+                    if (mimeData->formats().contains(
+                            QString("application/x.vnd.inviwo.network+xml"))) {
+                        return true;
+                    } else if (mimeData->formats().contains(QString("text/plain"))) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                case MenuItemType::del:
+                    return networkEditor_->selectedItems().size() > 0;
+                case MenuItemType::select:
                     return true;
-                } else if (mimeData->formats().contains(QString("text/plain"))) {
-                    return true;
-                } else {
+                default:
                     return false;
-                }
             }
-            case MenuItemType::del:
-                return networkEditor_->selectedItems().size() > 0;
-            case MenuItemType::select:
-                return true;
-            default:
-                return false;
-        }
 
-    },
+        },
         [this](MenuItemType t) -> void {
-        switch (t) {
-            case MenuItemType::cut:
-            {
-                auto data = networkEditor_->cut();
-                auto mimedata = util::make_unique<QMimeData>();
-                mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
-                mimedata->setData(QString("text/plain"), data);
-                QApplication::clipboard()->setMimeData(mimedata.release());
-                break;
-            }
-            case MenuItemType::copy:
-            {
-                auto data = networkEditor_->copy();
-                auto mimedata = util::make_unique<QMimeData>();
-                mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
-                mimedata->setData(QString("text/plain"), data);
-                QApplication::clipboard()->setMimeData(mimedata.release());
-                break;
-            }
-            case MenuItemType::paste:
-            {
-                auto clipboard = QApplication::clipboard();
-                auto mimeData = clipboard->mimeData();
-                if (mimeData->formats().contains(
-                    QString("application/x.vnd.inviwo.network+xml"))) {
-                    networkEditor_->paste(mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
-                } else if (mimeData->formats().contains(QString("text/plain"))) {
-                    networkEditor_->paste(mimeData->data(QString("text/plain")));
+            switch (t) {
+                case MenuItemType::cut: {
+                    auto data = networkEditor_->cut();
+                    auto mimedata = util::make_unique<QMimeData>();
+                    mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
+                    mimedata->setData(QString("text/plain"), data);
+                    QApplication::clipboard()->setMimeData(mimedata.release());
+                    break;
                 }
-                break;
+                case MenuItemType::copy: {
+                    auto data = networkEditor_->copy();
+                    auto mimedata = util::make_unique<QMimeData>();
+                    mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
+                    mimedata->setData(QString("text/plain"), data);
+                    QApplication::clipboard()->setMimeData(mimedata.release());
+                    break;
+                }
+                case MenuItemType::paste: {
+                    auto clipboard = QApplication::clipboard();
+                    auto mimeData = clipboard->mimeData();
+                    if (mimeData->formats().contains(
+                            utilqt::toQString(NetworkEditor::getMimeTag()))) {
+                        networkEditor_->paste(
+                            mimeData->data(utilqt::toQString(NetworkEditor::getMimeTag())));
+                    } else if (mimeData->formats().contains(QString("text/plain"))) {
+                        networkEditor_->paste(mimeData->data(QString("text/plain")));
+                    }
+                    break;
+                }
+                case MenuItemType::del:
+                    networkEditor_->deleteSelection();
+                    break;
+                case MenuItemType::select:
+                    networkEditor_->selectAll();
+                    break;
+                default:
+                    break;
             }
-            case MenuItemType::del:
-                networkEditor_->deleteSelection();
-                break;
-            case MenuItemType::select:
-                networkEditor_->selectAll();
-                break;
-            default:
-                break;
-        }
 
-    }));
+        }));
 }
 
 NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(nullptr); }
@@ -173,9 +170,7 @@ void NetworkEditorView::mouseDoubleClickEvent(QMouseEvent* e) {
     }
 }
 
-void NetworkEditorView::resizeEvent(QResizeEvent* e) {
-    QGraphicsView::resizeEvent(e);
-}
+void NetworkEditorView::resizeEvent(QResizeEvent* e) { QGraphicsView::resizeEvent(e); }
 
 void NetworkEditorView::fitNetwork() {
     const ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
@@ -186,12 +181,12 @@ void NetworkEditorView::fitNetwork() {
             QSizeF brsize = br.size();
 
             if (brsize.width() < viewsize.width()) {
-                br.setLeft(br.left() - 0.5*(viewsize.width() - brsize.width()));
-                br.setRight(br.right() + 0.5*(viewsize.width() - brsize.width()));
+                br.setLeft(br.left() - 0.5 * (viewsize.width() - brsize.width()));
+                br.setRight(br.right() + 0.5 * (viewsize.width() - brsize.width()));
             }
             if (brsize.height() < viewsize.height()) {
-                br.setTop(br.top() - 0.5*(viewsize.height() - brsize.height()));
-                br.setBottom(br.bottom() + 0.5*(viewsize.height() - brsize.height()));
+                br.setTop(br.top() - 0.5 * (viewsize.height() - brsize.height()));
+                br.setBottom(br.bottom() + 0.5 * (viewsize.height() - brsize.height()));
             }
 
             setSceneRect(br);
@@ -200,16 +195,15 @@ void NetworkEditorView::fitNetwork() {
     }
 }
 
-
-void NetworkEditorView::focusOutEvent(QFocusEvent *e) {
-    setDragMode(QGraphicsView::RubberBandDrag);   
+void NetworkEditorView::focusOutEvent(QFocusEvent* e) {
+    setDragMode(QGraphicsView::RubberBandDrag);
     QGraphicsView::focusOutEvent(e);
 }
 
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {
     QPointF numPixels = e->pixelDelta() / 5.0;
     QPointF numDegrees = e->angleDelta() / 8.0 / 15;
-    
+
     if (e->modifiers() == Qt::ControlModifier) {
         if (!numPixels.isNull()) {
             zoom(qPow(1.025, std::max(-15.0, std::min(15.0, numPixels.y()))));
@@ -231,10 +225,10 @@ void NetworkEditorView::wheelEvent(QWheelEvent* e) {
 }
 
 void NetworkEditorView::keyPressEvent(QKeyEvent* keyEvent) {
-     if (keyEvent->modifiers() & Qt::ControlModifier) {
+    if (keyEvent->modifiers() & Qt::ControlModifier) {
         setDragMode(QGraphicsView::ScrollHandDrag);
-     }
-     QGraphicsView::keyPressEvent(keyEvent);
+    }
+    QGraphicsView::keyPressEvent(keyEvent);
 }
 
 void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
@@ -251,4 +245,4 @@ void NetworkEditorView::onNetworkEditorFileChanged(const std::string& /*newFilen
     fitNetwork();
 }
 
-}  // namespace
+}  // namespace inviwo

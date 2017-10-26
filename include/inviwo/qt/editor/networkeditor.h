@@ -119,7 +119,6 @@ public:
     std::shared_ptr<const Image> renderPortInspectorImage(Outport* port);
 
     void updateLeds();
-    bool doingContextMenu() const;
     
     void saveNetworkImage(const std::string& filename);
 
@@ -128,6 +127,8 @@ public:
     LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
                                                     Processor* processor2) const;
+
+    static std::string getMimeTag();
 public slots:
     void contextMenuShowInspector(EditorGraphicsItem*);
     void resetAllTimeMeasurements();
@@ -171,8 +172,6 @@ private:
 
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
-
-    void updateActionStates();
     
     // Processors
     ProcessorGraphicsItem* addProcessorRepresentations(Processor* processor);

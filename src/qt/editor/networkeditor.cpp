@@ -303,6 +303,10 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItem(Processor* proces
     return getLinkGraphicsItem(ProcessorPair(processor1, processor2));
 }
 
+std::string NetworkEditor::getMimeTag() {
+    return "application/x.vnd.inviwo.network+xml";
+}
+
 ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItemAt(const QPointF pos) const {
     return getGraphicsItemAt<ProcessorGraphicsItem>(pos);
 }
@@ -605,7 +609,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         connect(cutAction, &QAction::triggered, this, [this](){       
             auto data = cut();
             auto mimedata = util::make_unique<QMimeData>();
-            mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+            mimedata->setData(utilqt::toQString(getMimeTag()), data);
             mimedata->setData(QString("text/plain"), data);
             QApplication::clipboard()->setMimeData(mimedata.release());
         });
@@ -616,7 +620,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         connect(copyAction, &QAction::triggered, this, [this](){
             auto data = copy();
             auto mimedata = util::make_unique<QMimeData>();
-            mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+            mimedata->setData(utilqt::toQString(getMimeTag()), data);
             mimedata->setData(QString("text/plain"), data);
             QApplication::clipboard()->setMimeData(mimedata.release()); 
         });
@@ -626,8 +630,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         pasteAction->setShortcut(QKeySequence::Paste);
         auto clipboard = QApplication::clipboard();
         auto mimeData = clipboard->mimeData();
-        if (mimeData->formats().contains(
-            QString("application/x.vnd.inviwo.network+xml"))) {
+        if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
             pasteAction->setEnabled(true);
         } else if (mimeData->formats().contains(QString("text/plain"))) {
             pasteAction->setEnabled(true);
@@ -637,9 +640,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         connect(pasteAction, &QAction::triggered, this, [this](){
             auto clipboard = QApplication::clipboard();
             auto mimeData = clipboard->mimeData();
-            if (mimeData->formats().contains(
-                QString("application/x.vnd.inviwo.network+xml"))) {
-                paste(mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
+            if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
+                paste(mimeData->data(utilqt::toQString(getMimeTag())));
             } else if (mimeData->formats().contains(QString("text/plain"))) {
                 paste(mimeData->data(QString("text/plain")));
             }
@@ -983,6 +985,7 @@ void NetworkEditor::paste(QByteArray mimeData) {
     try {
         std::stringstream ss;
         for (auto d : mimeData) ss << d;
+        // Activate the default context, might be needed in processor constructors.
         RenderContext::getPtr()->activateDefaultRenderContext();
         auto added =
             util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
@@ -1003,13 +1006,13 @@ void NetworkEditor::paste(QByteArray mimeData) {
             auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             m->setPosition(m->getPosition() + pos);
         }
-    } catch (const Exception& e) {
+    } catch (const Exception&) {
         LogWarn("Paste operation failed");
     }
 }
 
 void NetworkEditor::selectAll() {
-    for(auto i : items()) i->setSelected(true);
+    for (auto i : items()) i->setSelected(true);
 }
 
 void NetworkEditor::saveNetworkImage(const std::string& filename) {
