@@ -115,15 +115,13 @@ void FileProperty::deserialize(Deserializer& d) {
     d.deserialize("workspaceRelativePath", workspaceRelativePath);
     d.deserialize("ivwdataRelativePath", ivwdataRelativePath);
     d.deserialize("url", oldWorkspacePath);
-    
-    
-    if (!oldWorkspacePath.empty()) { // fallback if the old value "url" is used 
+
+    if (!oldWorkspacePath.empty()) {  // fallback if the old value "url" is used
         if (filesystem::isAbsolutePath(oldWorkspacePath)) {
             if (absolutePath.empty()) {   // on use url if "absolutePath" is not set
                 absolutePath = oldWorkspacePath;
             }
-        }
-        else {
+        } else {
             if (workspaceRelativePath.empty()) { // on use url if "workspaceRelativePath" is not set
                 workspaceRelativePath = oldWorkspacePath;
             }
@@ -138,12 +136,11 @@ void FileProperty::deserialize(Deserializer& d) {
     const auto ivwdataBasedPath =
         filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePath);
 
-    if (!absolutePath.empty() && filesystem::fileExists(absolutePath)) {
-        set(absolutePath);
+    // Prefer the relative paths to make relocation easier.
+    if (!ivwdataRelativePath.empty() && filesystem::fileExists(ivwdataBasedPath)) {
+        set(ivwdataBasedPath);
     } else if (!workspaceRelativePath.empty() && filesystem::fileExists(workspaceBasedPath)) {
         set(workspaceBasedPath);
-    } else if (!ivwdataRelativePath.empty() && filesystem::fileExists(ivwdataBasedPath)) {
-        set(ivwdataBasedPath);
     } else {
         set(absolutePath);
     }
