@@ -50,6 +50,8 @@ public:
     virtual TransferFunctionPropertyDialog* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
 
+    virtual void setReadOnly(bool readonly) override;
+
 private:
     EditableLabelQt* label_ = nullptr;
     TFPushButton* btnOpenTF_ = nullptr;

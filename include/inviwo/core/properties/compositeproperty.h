@@ -73,11 +73,12 @@ public:
 
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
+    virtual void setReadOnly(bool value) override;
 
     // Override from the PropertyOwner
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = 0) override;
-                            
+
     virtual Processor* getProcessor() override;
     virtual const Processor* getProcessor() const override;
     virtual std::vector<std::string> getPath() const override;
@@ -90,6 +91,6 @@ private:
     InvalidationLevel subPropertyInvalidationLevel_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_COMPOSITEPROPERTY_H

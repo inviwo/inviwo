@@ -51,6 +51,8 @@ public:
     PropertyEditorWidgetQt(Property *property, std::string widgetName, QWidget *parent);
     virtual ~PropertyEditorWidgetQt();
 
+    virtual void setReadOnly(bool readonly);
+
     virtual void setVisibility(bool visible) override;
     virtual void setDimensions(const ivec2& dimensions) override;
     virtual void setPosition(const ivec2& pos) override;

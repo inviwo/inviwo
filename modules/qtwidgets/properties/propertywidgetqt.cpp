@@ -92,7 +92,7 @@ PropertyWidgetQt::~PropertyWidgetQt() { applicationUsageMode_->removeOnChange(ap
 
 void PropertyWidgetQt::initState() {
     if (property_) {
-        setDisabled(property_->getReadOnly());
+        setReadOnly(property_->getReadOnly());
         setVisible(property_->getVisible());
     }
 }
@@ -117,11 +117,15 @@ void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* /*child*/) {
     }
 }
 
+void PropertyWidgetQt::setReadOnly(bool readonly) {
+    setDisabled(readonly);
+}
+
 void PropertyWidgetQt::onSetUsageMode(UsageMode /*usageMode*/) {
     setVisible(property_->getVisible());
 }
 
-void PropertyWidgetQt::onSetReadOnly(bool readonly) { setDisabled(readonly); }
+void PropertyWidgetQt::onSetReadOnly(bool readonly) { setReadOnly(readonly); }
 
 void PropertyWidgetQt::onSetSemantics(const PropertySemantics& /*semantics*/) {
     emit updateSemantics(this);

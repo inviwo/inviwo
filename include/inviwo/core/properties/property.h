@@ -52,7 +52,6 @@ namespace inviwo {
 #define PropertyClassIdentifier(T, classIdentifier) \
     const std::string T::CLASS_IDENTIFIER = classIdentifier
 
-
 /**
  *	\defgroup properties Properties
  *  \brief Properties represents a parameters to Processors.
@@ -67,8 +66,7 @@ class PropertyOwner;
  * Concepts:
  *  * __PropertyOwner__: A property can have a owner, usually a Processor or a CompositeProperty. If
  *    the property is modified, by calling Property::propertyModified then the property will set
- * it's
- *    owner's invalidation level to the property's invalidation level, usually
+ *    it's owner's invalidation level to the property's invalidation level, usually
  *    InvalidationLevel::InvalidOutput. This will in turn trigger a network evaluation that will
  *    update the processors to a valid state again.
  *
@@ -86,7 +84,8 @@ class PropertyOwner;
  *    calling Property::setCurrentStateAsDefault. The property can then also be reset to it's
  *    default state  by calling Property::resetToDefaultState. Both these functions are virtual and
  *    all property subclasses that introduce more state should make sure to implement these two
- *    function and also in their implementation make sure that to call the base class implementation.
+ *    function and also in their implementation make sure that to call the base class
+ *    implementation.
  *
  *  * __PropertyWidget__: A property can have one or multiple PropertyWidgets. The widget are used
  *    in the user interface to implement interactivity
@@ -103,7 +102,7 @@ public:
 
     /**
      * Property identifier has to be unique within the scope
-     * of a PropertyOwner. Property identifiers should only contain alpha numeric 
+     * of a PropertyOwner. Property identifiers should only contain alpha numeric
      * characters, "-" and "_".
      */
     virtual void setIdentifier(const std::string& identifier);
@@ -130,7 +129,7 @@ public:
     /**
      * \brief Enable or disable editing of property
      */
-    virtual void setReadOnly(const bool& value);
+    virtual void setReadOnly(bool value);
     virtual bool getReadOnly() const;
 
     virtual void setInvalidationLevel(InvalidationLevel invalidationLevel);
@@ -272,6 +271,6 @@ void Property::autoLinkToProperty(const std::string& propertyPath) {
     autoLinkTo_.push_back(std::make_pair(P::processorInfo_.classIdentifier, propertyPath));
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTY_H

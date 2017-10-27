@@ -378,7 +378,7 @@ void InviwoMainWindow::addActions() {
         editMenu_->insertAction(front, undoManager_.getRedoAction());
         editMenu_->insertSeparator(front);
 
-        // here will the cut/copy/paste/del/select be
+        // here will the cut/copy/paste/del/select already in the menu be.
 
         editMenu_->addSeparator();
         auto findAction = editMenu_->addAction(tr("&Find Processor"));

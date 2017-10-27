@@ -154,7 +154,7 @@ void BaseSliderWidgetQt::updateSlider() {
 bool BaseSliderWidgetQt::eventFilter(QObject *watched, QEvent *event) {
     if (watched == slider_ && event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent *me = static_cast<QMouseEvent *>(event);
-        if (me->button() == Qt::LeftButton && !slider_->isSliderDown()) {
+        if (me->button() == Qt::LeftButton && !slider_->isSliderDown() && isEnabled()) {
             auto newPos = slider_->minimum() + static_cast<double>(me->pos().x()) *
                                                    (slider_->maximum() - slider_->minimum()) /
                                                    slider_->width();

@@ -265,13 +265,13 @@ bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
             return true;
         }
         
-    } else if (obj == widget(1) && event->type() == QEvent::MouseButtonPress) {
+    } else if (obj == widget(1) && event->type() == QEvent::MouseButtonPress && isEnabled()) {
         QMouseEvent *me = static_cast<QMouseEvent *>(event);
         if (me->button() == Qt::LeftButton) {
             lastPos_ = orientation() == Qt::Horizontal ? me->globalX() : me->globalY();
             return true;
         }
-    } else if (obj == widget(1) && event->type() == QEvent::MouseMove) {
+    } else if (obj == widget(1) && event->type() == QEvent::MouseMove && isEnabled()) {
         QMouseEvent *me = static_cast<QMouseEvent *>(event);
         if (me->buttons().testFlag(Qt::LeftButton)) {
             const int newPos = orientation() == Qt::Horizontal ? me->globalX() : me->globalY();
@@ -283,7 +283,7 @@ bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
             me->accept();
             return true;
         }
-    } else if (obj == widget(0) && event->type() == QEvent::MouseButtonRelease) {
+    } else if (obj == widget(0) && event->type() == QEvent::MouseButtonRelease && isEnabled()) {
         QMouseEvent *me = static_cast<QMouseEvent *>(event);
         if (me->button() == Qt::LeftButton) {
             QList<int> sizes = QSplitter::sizes();
@@ -297,7 +297,7 @@ bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
             me->accept();
             return true;
         }
-    } else if (obj == widget(2) && event->type() == QEvent::MouseButtonRelease) {
+    } else if (obj == widget(2) && event->type() == QEvent::MouseButtonRelease && isEnabled()) {
         QMouseEvent *me = static_cast<QMouseEvent *>(event);
         if (me->button() == Qt::LeftButton) {
             QList<int> sizes = QSplitter::sizes();

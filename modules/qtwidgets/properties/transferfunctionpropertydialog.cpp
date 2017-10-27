@@ -61,9 +61,8 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     , tfProperty_(tfProperty)
     , tfEditor_(nullptr)
     , tfEditorView_(nullptr)
-    , tfPixmap_(nullptr) 
-    , gradient_(0, 0, 100, 20)
-{
+    , tfPixmap_(nullptr)
+    , gradient_(0, 0, 100, 20) {
     tfProperty_->get().addObserver(this);
 
     std::stringstream ss;
@@ -73,7 +72,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
 
     generateWidget();
     if (!tfProperty_->getVolumeInport()) chkShowHistogram_->setVisible(false);
-    
+
     updateTFPreview();
     updateFromProperty();
 
@@ -99,7 +98,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     connect(tfEditor_.get(), &TransferFunctionEditor::colorChanged, updateColorWheel);
 
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
-    
+
     // put origin to bottom left corner
     tfEditorView_->setFocusPolicy(Qt::StrongFocus);
     tfEditorView_->scale(1.0, -1.0);
@@ -120,7 +119,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
             SLOT(changeVerticalZoom(int, int)));
 
     zoomVSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
-        return toString(1.0f - static_cast<float>(val)/range);
+        return toString(1.0f - static_cast<float>(val) / range);
     });
 
     zoomHSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
@@ -144,21 +143,20 @@ void TransferFunctionPropertyDialog::generateWidget() {
         return toString(static_cast<float>(val) / range);
     });
 
-
     colorWheel_ = util::make_unique<ColorWheel>();
-    connect(colorWheel_.get(), &ColorWheel::colorChange, 
-            tfEditor_.get(), &TransferFunctionEditor::setPointColor);
+    connect(colorWheel_.get(), &ColorWheel::colorChange, tfEditor_.get(),
+            &TransferFunctionEditor::setPointColor);
 
     btnClearTF_ = new QPushButton("Reset");
-    connect(btnClearTF_, &QPushButton::clicked, [this](){tfEditor_->resetTransferFunction();});
+    connect(btnClearTF_, &QPushButton::clicked, [this]() { tfEditor_->resetTransferFunction(); });
     btnClearTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
 
     btnImportTF_ = new QPushButton("Import");
-    connect(btnImportTF_, &QPushButton::clicked, [this](){importTransferFunction();});
+    connect(btnImportTF_, &QPushButton::clicked, [this]() { importTransferFunction(); });
     btnImportTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
 
     btnExportTF_ = new QPushButton("Export");
-    connect(btnExportTF_, &QPushButton::clicked, [this](){exportTransferFunction();});
+    connect(btnExportTF_, &QPushButton::clicked, [this]() { exportTransferFunction(); });
     btnExportTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
 
     tfPreview_ = new QLabel();
@@ -282,9 +280,8 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
         const float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
         curColor.a = 1.0f - factor * factor;
 
-        gradientStops.append(
-            QGradientStop(curPoint->getPos(),
-                          QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
+        gradientStops.append(QGradientStop(
+            curPoint->getPos(), QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
     }
 
     gradient_.setStops(gradientStops);
@@ -392,6 +389,15 @@ TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() cons
     return tfEditorView_;
 }
 
+void TransferFunctionPropertyDialog::setReadOnly(bool readonly) {
+    colorWheel_->setDisabled(readonly);
+    tfEditorView_->setDisabled(readonly);
+    btnClearTF_->setDisabled(readonly);
+    btnImportTF_->setDisabled(readonly);
+    pointMoveMode_->setDisabled(readonly);
+    maskSlider_->setDisabled(readonly);
+}
+
 void TransferFunctionPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
 
-}  // namespace
+}  // namespace inviwo
