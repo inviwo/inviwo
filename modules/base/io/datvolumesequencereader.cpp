@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/io/datvolumereader.h>
+#include <modules/base/io/datvolumesequencereader.h>
 #include <modules/base/algorithm/dataminmax.h>
 
 #include <inviwo/core/datastructures/volume/volumedisk.h>
@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-DatVolumeReader::DatVolumeReader()
+DatVolumeSequenceReader::DatVolumeSequenceReader()
     : DataReaderType<VolumeSequence>()
     , rawFile_("")
     , filePos_(0)
@@ -53,7 +53,7 @@ DatVolumeReader::DatVolumeReader()
     addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
-DatVolumeReader::DatVolumeReader(const DatVolumeReader& rhs)
+DatVolumeSequenceReader::DatVolumeSequenceReader(const DatVolumeSequenceReader& rhs)
     : DataReaderType<VolumeSequence>(rhs)
     , rawFile_(rhs.rawFile_)
     , filePos_(rhs.filePos_)
@@ -62,7 +62,7 @@ DatVolumeReader::DatVolumeReader(const DatVolumeReader& rhs)
     , format_(rhs.format_)
     , enableLogOutput_(true) {}
 
-DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
+DatVolumeSequenceReader& DatVolumeSequenceReader::operator=(const DatVolumeSequenceReader& that) {
     if (this != &that) {
         rawFile_ = that.rawFile_;
         filePos_ = that.filePos_;
@@ -76,9 +76,9 @@ DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
     return *this;
 }
 
-DatVolumeReader* DatVolumeReader::clone() const { return new DatVolumeReader(*this); }
+DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const { return new DatVolumeSequenceReader(*this); }
 
-std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(const std::string& filePath) {
+std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader::readData(const std::string& filePath) {
     std::string fileName = filePath;
     if (!filesystem::fileExists(fileName)) {
         std::string newPath = filesystem::addBasePath(fileName);
@@ -216,7 +216,7 @@ std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(const
 
     if (!datFiles.empty()) {
         for (size_t t = 0; t < datFiles.size(); ++t) {
-            auto datVolReader = util::make_unique<DatVolumeReader>();
+            auto datVolReader = util::make_unique<DatVolumeSequenceReader>();
             datVolReader->enableLogOutput_ = false;
             auto v = datVolReader->readData(datFiles[t]);
 
@@ -311,32 +311,55 @@ std::shared_ptr<DatVolumeReader::VolumeSequence> DatVolumeReader::readData(const
                                                                 littleEndian_, format_);
             diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);
+            // Compute data range if not specified
             if (t == 0 && datarange == dvec2(0)) {
-                // Compute data range if none is given
-                auto minmax = util::volumeMinMax(volumes->front().get(), IgnoreSpecialValues::Yes);
+                // Use min/max value in data as data range if none is given
+                // Only consider first time step since it can be time consuming
+                // to compute for all time steps
+                auto minmax = util::volumeMinMax(volumes->front().get(), IgnoreSpecialValues::No);
+                // minmax always have four components, unused components are set to zero.
+                // Hence, only consider components used by the data format
                 dvec2 computedRange(minmax.first[0], minmax.second[0]);
-                // min/max of all components
                 for (size_t component = 1; component < format_->getComponents(); ++component) {
                     computedRange = dvec2(glm::min(computedRange[0], minmax.first[component]),
                                           glm::max(computedRange[1], minmax.second[component]));
                 }
+                // Set value range
                 volumes->front()->dataMap_.dataRange = computedRange;
                 // Also set value range if not specified
                 if (valuerange == dvec2(0)) {
                     volumes->front()->dataMap_.valueRange = computedRange;
                 }
-                LogWarn(
-                    "Performance warning: Using min/max of data since DataRange was not specified. "
-                    << std::endl
-                    << "Data range refer to the range of the data type, i.e. [0 4095] for 12-bit "
-                       "unsigned integer data."
-                    << std::endl
-                    << "Value range refer to the physical meaning of the value, i.e. Hounsfield "
-                       "value range is from [-1000 3000] "
-                    << std::endl
-                    << "Improve volume read performance by adding for example: " << std::endl
-                    << "DataRange: " << computedRange[0] << " " << computedRange[1] << std::endl
-                    << "in file: " << fileName << std::endl);
+                // Performance warning for larger volumes (rougly > 2MB)
+                if (bytes < 128 * 128 * 128 || sequences > 1) {
+                    LogWarn(
+                        "Performance warning: Using min/max of data since DataRange was not "
+                        "specified. "
+                        << "Data range refer to the range of the data type, i.e. [0 4095] for "
+                           "12-bit unsigned integer data. "
+                        << "It is important that the data range is specified for data types with a large range "
+                        << "(for example 32/64-bit float and integer) since the data is often "
+                           "normalized to [0 1], "
+                        << "when for example performing color mapping, i.e. applying a transfer "
+                           "function."
+                        << std::endl
+                        << "Value range refer to the physical meaning of the value, i.e. "
+                           "Hounsfield "
+                           "value range is from [-1000 3000]. "
+                        << "Improve volume read performance by adding for example: " << std::endl
+                        << "DataRange: " << computedRange[0] << " " << computedRange[1] << std::endl
+                        << "ValueRange: " << computedRange[0] << " " << computedRange[1]
+                        << std::endl
+                        << "in file: " << fileName);
+                }
+                if (sequences > 1) {
+                    LogWarn(
+                        "Multiple volumes in file but we only computed DataRange of the first "
+                        "volume sequence due to performance consideration. "
+                        << std::endl
+                        << "We strongly recommend setting the DataRange, for example to min(Volume "
+                           "sequence), max(Volume sequence). ");
+                }
             }
         }
 

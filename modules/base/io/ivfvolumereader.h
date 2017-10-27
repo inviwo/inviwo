@@ -30,7 +30,7 @@
 #ifndef IVW_IVFVOLUMEREADER_H
 #define IVW_IVFVOLUMEREADER_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -39,7 +39,7 @@ namespace inviwo {
 /**
  * \ingroup dataio
  */
-class IVW_CORE_API IvfVolumeReader : public DataReaderType<Volume> {
+class IVW_MODULE_BASE_API IvfVolumeReader : public DataReaderType<Volume> {
 public:
 
     IvfVolumeReader();

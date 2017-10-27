@@ -30,7 +30,7 @@
 #ifndef IVW_IVFVOLUMEWRITER_H
 #define IVW_IVFVOLUMEWRITER_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -40,7 +40,7 @@ namespace inviwo {
 /**
  * \ingroup dataio
  */
-class IVW_CORE_API IvfVolumeWriter : public DataWriterType<Volume> {
+class IVW_MODULE_BASE_API IvfVolumeWriter : public DataWriterType<Volume> {
 public:
     IvfVolumeWriter();
     IvfVolumeWriter(const IvfVolumeWriter& rhs);

@@ -86,7 +86,7 @@
 #include <modules/base/processors/meshexport.h>
 
 // Io
-#include <modules/base/io/datvolumereader.h>
+#include <modules/base/io/datvolumesequencereader.h>
 #include <modules/base/io/datvolumewriter.h>
 #include <modules/base/io/ivfvolumereader.h>
 #include <modules/base/io/ivfvolumewriter.h>
@@ -181,7 +181,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerPort<BufferOutport>("BufferOutport");
     
     // Register Data readers
-    registerDataReader(util::make_unique<DatVolumeReader>());
+    registerDataReader(util::make_unique<DatVolumeSequenceReader>());
     registerDataReader(util::make_unique<IvfVolumeReader>());
     // Register Data writers
     registerDataWriter(util::make_unique<DatVolumeWriter>());

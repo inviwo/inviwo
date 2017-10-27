@@ -25,7 +25,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/imagereusecache.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/kdtree.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumereader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumesequencereader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumewriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.h
@@ -110,7 +110,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/imagereusecache.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumereader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumesequencereader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumewriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.cpp
