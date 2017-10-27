@@ -63,6 +63,26 @@ static const float handleH = 20;
 
 namespace {
 
+/**
+ * Helper for brushing data
+ * @param value to filter
+ * @param range to use for filtering
+ * @return true if if value is outside range and not missing data.
+ */
+template<typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
+bool filterValue(const T& value, const vec2& range) {
+    // Do not filter missing data (NaN)
+    return !util::isnan(value) &&
+        (value + std::numeric_limits<float>::epsilon() < range.x ||
+            value - std::numeric_limits<float>::epsilon() > range.y);
+}
+// Filter specialization for integer types
+template<typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
+bool filterValue(const T& value, const vec2& range) {
+    return value + std::numeric_limits<float>::epsilon() < range.x ||
+            value - std::numeric_limits<float>::epsilon() > range.y;
+}
+
 template <typename T>
 struct Axis : public ParallelCoordinates::AxisBase {
     using FloatType = std::conditional_t<std::is_same<float, T>::value, float, double>;
@@ -154,10 +174,7 @@ struct Axis : public ParallelCoordinates::AxisBase {
         auto range = range_->get();
         auto &vec = *dataVector_;
         for (size_t i = 0; i < vec.size(); i++) {
-            // Do not filter missing data (NaN)
-            if (!util::isnan(vec[i]) &&
-                (vec[i] + std::numeric_limits<float>::epsilon() < range.x ||
-                vec[i] - std::numeric_limits<float>::epsilon() > range.y)) {
+            if (filterValue(vec[i], range)) {
                 brushed.insert(i);
             }
         }
