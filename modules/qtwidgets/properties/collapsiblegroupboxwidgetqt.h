@@ -77,9 +77,6 @@ public:
     // Overridden from PropertyWidget
     virtual void updateFromProperty() override {}
 
-    // PropertyObservable overrides
-    virtual void onSetReadOnly(bool readonly) override;
-
     // Overridden from PropertyOwnerObserver to add and remove properties dynamically
     virtual void onDidAddProperty(Property* property, size_t index) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
@@ -90,6 +87,7 @@ public:
     // Overridden from PropertyWidgetQt/QWidget
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
+    virtual void setReadOnly(bool readonly) override;
 
     void toggleCollapsed();
 

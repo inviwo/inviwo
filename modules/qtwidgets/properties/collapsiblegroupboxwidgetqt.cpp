@@ -192,6 +192,12 @@ QSize CollapsibleGroupBoxWidgetQt::minimumSizeHint() const {
     return size;
 }
 
+void CollapsibleGroupBoxWidgetQt::setReadOnly(bool readonly) {
+    label_->setDisabled(readonly);
+    checkBox_->setDisabled(readonly);
+    resetButton_->setDisabled(readonly);
+}
+
 void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
     properties_.push_back(prop);
 
@@ -330,12 +336,6 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
         }
     }
     setUpdatesEnabled(true);
-}
-
-void CollapsibleGroupBoxWidgetQt::onSetReadOnly(bool readonly) {
-    label_->setDisabled(readonly);
-    checkBox_->setDisabled(readonly);
-    resetButton_->setDisabled(readonly);
 }
 
 void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index) {

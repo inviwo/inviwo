@@ -107,6 +107,10 @@ PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, std::string w
 
 PropertyEditorWidgetQt::~PropertyEditorWidgetQt() = default;
 
+void PropertyEditorWidgetQt::setReadOnly(bool readonly) {
+    setDisabled(readonly);
+}
+
 void PropertyEditorWidgetQt::setVisibility(bool visible) {
     InviwoDockWidget::setVisible(visible);
     PropertyEditorWidget::setVisibility(visible);

@@ -74,6 +74,8 @@ public:
 
     virtual void onChildVisibilityChange(PropertyWidgetQt* child);
 
+    virtual void setReadOnly(bool readonly);
+
     // PropertyObservable overrides
     virtual void onSetSemantics(const PropertySemantics& semantics) override;
     virtual void onSetReadOnly(bool readonly) override;
