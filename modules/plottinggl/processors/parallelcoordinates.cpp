@@ -73,14 +73,14 @@ template<typename T, typename std::enable_if<util::is_floating_point<T>::value, 
 bool filterValue(const T& value, const vec2& range) {
     // Do not filter missing data (NaN)
     return !util::isnan(value) &&
-        (value + std::numeric_limits<float>::epsilon() < range.x ||
-            value - std::numeric_limits<float>::epsilon() > range.y);
+        (value < range.x ||
+            value > range.y);
 }
 // Filter specialization for integer types
 template<typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
-bool filterValue(const T& value, const vec2& range) {
-    return value + std::numeric_limits<float>::epsilon() < range.x ||
-            value - std::numeric_limits<float>::epsilon() > range.y;
+bool filterValue(const T& value, const vec2& range) { 
+    return value < range.x ||
+            value > range.y;
 }
 
 template <typename T>
@@ -172,6 +172,8 @@ struct Axis : public ParallelCoordinates::AxisBase {
 
     virtual void updateBrushing(std::unordered_set<size_t> &brushed) override {
         auto range = range_->get();
+        // Increase range to avoid conversion issues
+        range += vec2(-std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon());
         auto &vec = *dataVector_;
         for (size_t i = 0; i < vec.size(); i++) {
             if (filterValue(vec[i], range)) {
