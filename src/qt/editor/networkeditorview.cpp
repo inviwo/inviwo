@@ -83,7 +83,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                     auto clipboard = QApplication::clipboard();
                     auto mimeData = clipboard->mimeData();
                     if (mimeData->formats().contains(
-                            QString("application/x.vnd.inviwo.network+xml"))) {
+                            utilqt::toQString(NetworkEditor::getMimeTag()))) {
                         return true;
                     } else if (mimeData->formats().contains(QString("text/plain"))) {
                         return true;
