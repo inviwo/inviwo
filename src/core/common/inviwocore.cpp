@@ -53,10 +53,6 @@
 #include <inviwo/core/util/settings/linksettings.h>
 
 //Io
-#include <inviwo/core/io/datvolumereader.h>
-#include <inviwo/core/io/ivfvolumereader.h>
-#include <inviwo/core/io/datvolumewriter.h>
-#include <inviwo/core/io/ivfvolumewriter.h>
 #include <inviwo/core/io/rawvolumereader.h>
 
 //Others
@@ -172,12 +168,8 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerCapabilities(std::move(syscap));
     
     // Register Data readers
-    registerDataReader(util::make_unique<DatVolumeReader>());
-    registerDataReader(util::make_unique<IvfVolumeReader>());
     registerDataReader(util::make_unique<RawVolumeReader>());
     // Register Data writers
-    registerDataWriter(util::make_unique<DatVolumeWriter>());
-    registerDataWriter(util::make_unique<IvfVolumeWriter>());
 
     // Register Ports
     registerPort<MeshInport>("org.inviwo.MeshInport");

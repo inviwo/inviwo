@@ -85,9 +85,15 @@
 #include <modules/base/processors/volumedivergencecpuprocessor.h>
 #include <modules/base/processors/meshexport.h>
 
+// Io
+#include <modules/base/io/datvolumesequencereader.h>
+#include <modules/base/io/datvolumewriter.h>
+#include <modules/base/io/ivfvolumereader.h>
+#include <modules/base/io/ivfvolumewriter.h>
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/binarystlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
+
 #include <modules/base/processors/randommeshgenerator.h>
 #include <modules/base/processors/randomspheregenerator.h>
 #include <modules/base/processors/inputselector.h>
@@ -174,6 +180,12 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerPort<BufferInport>("BufferInport");
     registerPort<BufferOutport>("BufferOutport");
     
+    // Register Data readers
+    registerDataReader(util::make_unique<DatVolumeSequenceReader>());
+    registerDataReader(util::make_unique<IvfVolumeReader>());
+    // Register Data writers
+    registerDataWriter(util::make_unique<DatVolumeWriter>());
+    registerDataWriter(util::make_unique<IvfVolumeWriter>());
     registerDataWriter(util::make_unique<StlWriter>());
     registerDataWriter(util::make_unique<BinarySTLWriter>());
     registerDataWriter(util::make_unique<WaveFrontWriter>());

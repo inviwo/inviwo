@@ -27,30 +27,58 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_IVFVOLUMEWRITER_H
-#define IVW_IVFVOLUMEWRITER_H
+#ifndef IVW_DATVOLUMEWRITER_H
+#define IVW_DATVOLUMEWRITER_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
-
 /**
  * \ingroup dataio
  */
-class IVW_CORE_API IvfVolumeWriter : public DataWriterType<Volume> {
+class IVW_MODULE_BASE_API DatVolumeWriter : public DataWriterType<Volume> {
 public:
-    IvfVolumeWriter();
-    IvfVolumeWriter(const IvfVolumeWriter& rhs);
-    IvfVolumeWriter& operator=(const IvfVolumeWriter& that);
-    virtual IvfVolumeWriter* clone() const;
-    virtual ~IvfVolumeWriter() {}
+    DatVolumeWriter();
+    DatVolumeWriter(const DatVolumeWriter& rhs);
+    DatVolumeWriter& operator=(const DatVolumeWriter& that);
+    virtual DatVolumeWriter* clone() const;
+    virtual ~DatVolumeWriter() {};
 
     virtual void writeData(const Volume* data, const std::string filePath) const;
+
+private:
+    template<typename T>
+    void writeKeyToString(std::stringstream& ss, const std::string& key, const glm::tvec2<T, glm::defaultp>& vec) const;
+    template<typename T>
+    void writeKeyToString(std::stringstream& ss, const std::string& key, const glm::tvec3<T, glm::defaultp>& vec) const;
+    template<typename T>
+    void writeKeyToString(std::stringstream& ss, const std::string& key, const glm::tvec4<T, glm::defaultp>& vec) const;
+    void writeKeyToString(std::stringstream& ss, const std::string& key, const std::string& str) const;
 };
+
+template<typename T>
+void inviwo::DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key,
+        const glm::tvec2<T, glm::defaultp>& vec) const {
+    ss << key << ": " << vec.x << " " << vec.y << std::endl;
+}
+template<typename T>
+void inviwo::DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key,
+        const glm::tvec3<T, glm::defaultp>& vec) const {
+    ss << key << ": " << vec.x << " " << vec.y << " " << vec.z << std::endl;
+}
+template<typename T>
+void inviwo::DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key,
+        const glm::tvec4<T, glm::defaultp>& vec) const {
+    ss << key << ": " << vec.x << " " << vec.y << " " << vec.z << " " << vec.w << std::endl;
+}
+
+
+
+
 
 } // namespace
 
-#endif // IVW_IVFVOLUMEWRITER_H
+#endif // IVW_DATVOLUMEWRITER_H

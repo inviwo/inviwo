@@ -42,7 +42,7 @@ namespace inviwo {
 /**
  * \class RawVolumeRAMLoader
  * \brief A loader of raw files. Used to create VolumeRAM representations.
- * This class us used by the DatVolumeReader, IvfVolumeReader and RawVolumeReader.
+ * This class us used by the DatVolumeSequenceReader, IvfVolumeReader and RawVolumeReader.
  */
 
 class IVW_CORE_API RawVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {

@@ -27,37 +27,30 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_IVFVOLUMEREADER_H
-#define IVW_IVFVOLUMEREADER_H
+#ifndef IVW_IVFVOLUMEWRITER_H
+#define IVW_IVFVOLUMEWRITER_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
+
 /**
  * \ingroup dataio
  */
-class IVW_CORE_API IvfVolumeReader : public DataReaderType<Volume> {
+class IVW_MODULE_BASE_API IvfVolumeWriter : public DataWriterType<Volume> {
 public:
+    IvfVolumeWriter();
+    IvfVolumeWriter(const IvfVolumeWriter& rhs);
+    IvfVolumeWriter& operator=(const IvfVolumeWriter& that);
+    virtual IvfVolumeWriter* clone() const;
+    virtual ~IvfVolumeWriter() {}
 
-    IvfVolumeReader();
-    IvfVolumeReader(const IvfVolumeReader& rhs) = default;
-    IvfVolumeReader& operator=(const IvfVolumeReader& that) = default;
-    virtual IvfVolumeReader* clone() const override;
-    virtual ~IvfVolumeReader() = default;
-
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
-
-private:
-    std::string rawFile_;
-    size_t filePos_;
-    bool littleEndian_;
-    size3_t dimensions_;
-    const DataFormatBase* format_;
+    virtual void writeData(const Volume* data, const std::string filePath) const;
 };
 
 } // namespace
 
-#endif // IVW_IVFVOLUMEREADER_H
+#endif // IVW_IVFVOLUMEWRITER_H
