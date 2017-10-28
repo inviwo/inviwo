@@ -53,7 +53,7 @@ public:
 
     void setShaderUniforms(Shader& shader) const;
 
-    bool postPass();
+    bool postPass(bool debug=false);
 
 private:
     void initShaders();
@@ -66,6 +66,7 @@ private:
     size_t oldFragmentSize_;
 
     Texture2D* abufferIdxImg_;
+    TextureUnit* abufferIdxUnit_;
     //Texture2D* abufferFragCountImg_;
     //Texture2D* semaphoreImg_;
     GLuint atomicCounter_;

@@ -7,6 +7,9 @@
 #ifndef ABUFFERLINKEDLIST_HGLSL
 #define ABUFFERLINKEDLIST_HGLSL
 
+//this is important for the occlusion query
+layout(early_fragment_tests) in;
+
 //Uniforms changed from the C++ side
 struct AbufferParameters
 {
@@ -20,21 +23,16 @@ uniform AbufferParameters AbufferParams;
 //Macros (maybe) changed from the C++ side
 
 //max depth of the chain, all others are discarded during the final rendering
-#define ABUFFER_SIZE 16
+#define ABUFFER_SIZE 4
 
 #define ABUFFER_PAGE_SIZE 4
 
 #define ABUFFER_USE_TEXTURES 1
 #define ABUFFER_SHAREDPOOL_USE_TEXTURES 1
 
-#define ABUFFER_RESOLVE_USE_SORTING	1
-#define ABUFFER_RESOLVE_ALPHA_CORRECTION 0
-#define ABUFFER_RESOLVE_GELLY 0
-
-#define ABUFFER_DISPNUMFRAGMENTS 0
-
 #if ABUFFER_USE_TEXTURES
 //A-Buffer fragments storage
+//coherent uniform layout(binding=5, size1x32) uimage2D abufferIdxImg;
 coherent uniform layout(size1x32) uimage2D abufferIdxImg;
 #else
 #error Buffer access not supported
@@ -127,6 +125,7 @@ vec4 compressPixelData(abufferPixel p)
 // The central function for the user-code
 bool abufferRender(ivec2 coords, float depth, vec4 color)
 {
+    //coords.x=0; coords.y=0;
     //reserve space for pixel
     uint pixelIdx = dataCounterAtomicInc();
     if (pixelIdx >= AbufferParams.storageSize) {

@@ -75,6 +75,8 @@ FancyMeshRenderer::FancyMeshRenderer()
 	, faceSettings_{"front_", "back_"}
 	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.frag", false)
 	, needsRecompilation_(true)
+    , debugFragmentLists_(false)
+    , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
 {
 	addPort(inport_);
 	addPort(imageInport_);
@@ -102,6 +104,7 @@ FancyMeshRenderer::FancyMeshRenderer()
 	addProperty(separateFaceSettings_);
 	addProperty(copyFrontToBack_);
     addProperty(forceOpaque_);
+    addProperty(propDebugFragmentLists_);
 	addProperty(faceSettings_[0].container_);
 	addProperty(faceSettings_[1].container_);
 
@@ -117,6 +120,8 @@ FancyMeshRenderer::FancyMeshRenderer()
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     auto triggerRecompilation = [this]() {needsRecompilation_ = true; };
     forceOpaque_.onChange(triggerRecompilation);
+
+    propDebugFragmentLists_.onChange([this]() {debugFragmentLists_ = true; });
 }
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& prefix)
 	: container_(prefix + "container", "Foo")
@@ -281,7 +286,7 @@ void FancyMeshRenderer::process() {
 	compileShader();
 	shader_.activate();
 
-	utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+	utilgl::GlBoolState depthTest(GL_DEPTH_TEST, opaque);
 	utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
 	utilgl::CullFaceState culling(
 		faceSettings_[0].cull_ && !faceSettings_[1].cull_ ? GL_FRONT :
@@ -316,7 +321,8 @@ void FancyMeshRenderer::process() {
     {
         //final processing of fragment list rendering
         LogProcessorInfo("fragment-list: post pass");
-        bool success = flr_.postPass();
+        bool success = flr_.postPass(debugFragmentLists_);
+        debugFragmentLists_ = false;
         LogProcessorInfo("fragment-list: done, success="<<success);
         //if (!success) invalidate();
     }

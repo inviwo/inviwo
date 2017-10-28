@@ -41,7 +41,7 @@ void main(void) {
 
 		if(pixelIdx > 0 ){
 
-#if ABUFFER_DISPNUMFRAGMENTS==0
+#if ABUFFER_DISPNUMFRAGMENTS==1
         FragData0=vec4(getFragmentCount(pixelIdx) / float(ABUFFER_SIZE));
 #elif ABUFFER_RESOLVE_USE_SORTING==0	
 		//If we only want the closest fragment
@@ -80,9 +80,9 @@ void main(void) {
 int getFragmentCount(uint pixelIdx){
     int counter = 0;
 	while(pixelIdx!=0 && counter<ABUFFER_SIZE){
-        vec4 val = readPixelStorage(pixelIdx);
+        vec4 val = readPixelStorage(pixelIdx-1);
         counter++;
-		pixelIdx = floatBitsToUint(val.x) - 1;
+		pixelIdx = floatBitsToUint(val.x);
 	}
 	return counter;
 }
@@ -94,13 +94,13 @@ vec4 resolveClosest(uint pixelIdx){
 	int ip=0;
 
 	while(pixelIdx!=0 && ip<ABUFFER_SIZE){
-        vec4 val = readPixelStorage(pixelIdx);
+        vec4 val = readPixelStorage(pixelIdx-1);
 
         if (val.y<minFrag.y) {
             minFrag = val;
         }
 
-		pixelIdx = floatBitsToUint(val.x) - 1;
+		pixelIdx = floatBitsToUint(val.x);
 
 		ip++;
 	}
@@ -113,9 +113,9 @@ void fillFragmentArray(uint pixelIdx, out int numFrag){
 
 	int ip=0;
 	while(pixelIdx!=0 && ip<ABUFFER_SIZE){
-		vec4 val = readPixelStorage(pixelIdx);
+		vec4 val = readPixelStorage(pixelIdx-1);
         fragmentList[ip] = val;
-        pixelIdx = floatBitsToUint(val.x) - 1;
+        pixelIdx = floatBitsToUint(val.x);
 		ip++;
 	}
     numFrag = ip;

@@ -164,6 +164,9 @@ protected:
 	bool needsRecompilation_;
 	std::unique_ptr<MeshDrawer> drawer_;
     FragmentListRenderer flr_;
+
+    ButtonProperty propDebugFragmentLists_;
+    bool debugFragmentLists_;
 };
 
 } // namespace
