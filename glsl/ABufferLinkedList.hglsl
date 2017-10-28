@@ -111,6 +111,7 @@ vec4 compressPixelData(abufferPixel p)
     vec4 data;
     data.x = uintBitsToFloat(p.previous);
     data.y = p.depth;
+    p.color = clamp(p.color, 0, 1);
     data.z = p.color.a;
     uint c = (int((p.color.r * 1023)) & 0x3ff) << 20;
     c += (int((p.color.g * 1023)) & 0x3ff) << 10;

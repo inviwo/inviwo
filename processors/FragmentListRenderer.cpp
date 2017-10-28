@@ -113,7 +113,7 @@ namespace inviwo
 
     bool FragmentListRenderer::postPass(bool debug)
     {
-        LogInfo("FLR: post pass entry");
+        //LogInfo("FLR: post pass entry");
 
         //memory barrier
         glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
@@ -123,7 +123,7 @@ namespace inviwo
         GLuint numFrags = 0;
         glEndQuery(GL_SAMPLES_PASSED); LGL_ERROR;
         glGetQueryObjectuiv(totalFragmentQuery_, GL_QUERY_RESULT, &numFrags); LGL_ERROR;
-        LogInfo("FLR: fragment query: " << numFrags);
+        //LogInfo("FLR: fragment query: " << numFrags);
 
         if (debug)
         {
@@ -189,10 +189,11 @@ namespace inviwo
         delete abufferIdxUnit_;
         abufferIdxUnit_ = nullptr;
 
-        LogInfo("fragment lists resolved, pixels drawn: " << numFrags << ", available: " << fragmentSize_);
+        //LogInfo("fragment lists resolved, pixels drawn: " << numFrags << ", available: " << fragmentSize_);
         if (numFrags > fragmentSize_)
         {
             //we have to resize the fragment storage buffer
+            LogInfo("fragment lists resolved, pixels drawn: " << numFrags << ", available: " << fragmentSize_);
             fragmentSize_ = 1.1f * numFrags;
             return false;
         }
@@ -203,8 +204,8 @@ namespace inviwo
     void FragmentListRenderer::initShaders()
     {
         displayShader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
-        displayShader_.getFragmentShaderObject()->addShaderDefine("ABUFFER_DISPNUMFRAGMENTS", "1");
-        displayShader_.getFragmentShaderObject()->addShaderDefine("ABUFFER_RESOLVE_USE_SORTING", "0");
+        displayShader_.getFragmentShaderObject()->addShaderDefine("ABUFFER_DISPNUMFRAGMENTS", "0");
+        displayShader_.getFragmentShaderObject()->addShaderDefine("ABUFFER_RESOLVE_USE_SORTING", "1");
         displayShader_.build();
         clearShader_.build();
     }

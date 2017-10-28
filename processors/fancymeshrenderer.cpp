@@ -278,9 +278,9 @@ void FancyMeshRenderer::process() {
     if (fragmentLists)
     {
         //prepare fragment list rendering
-        LogProcessorInfo("fragment-list: pre pass");
+        //LogProcessorInfo("fragment-list: pre pass");
         flr_.prePass(outport_.getDimensions());
-        LogProcessorInfo("fragment-list: done");
+        //LogProcessorInfo("fragment-list: done");
     }
 
 	compileShader();
@@ -307,12 +307,12 @@ void FancyMeshRenderer::process() {
     if (fragmentLists)
     {
         //set uniforms fragment list rendering
-        LogProcessorInfo("fragment-list: set uniforms");
+        //LogProcessorInfo("fragment-list: set uniforms");
         flr_.setShaderUniforms(shader_);
     }
 
 	//Finally, draw it
-    LogProcessorInfo("draw");
+    //LogProcessorInfo("draw");
 	drawer_->draw();
 
 	shader_.deactivate();
@@ -320,11 +320,11 @@ void FancyMeshRenderer::process() {
     if (!opaque)
     {
         //final processing of fragment list rendering
-        LogProcessorInfo("fragment-list: post pass");
+        //LogProcessorInfo("fragment-list: post pass");
         bool success = flr_.postPass(debugFragmentLists_);
         debugFragmentLists_ = false;
-        LogProcessorInfo("fragment-list: done, success="<<success);
-        //if (!success) invalidate();
+        //LogProcessorInfo("fragment-list: done, success="<<success);
+        if (!success) invalidate(InvalidationLevel::InvalidOutput);
     }
 
 	utilgl::deactivateCurrentTarget();
