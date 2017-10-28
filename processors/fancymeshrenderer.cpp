@@ -115,6 +115,8 @@ FancyMeshRenderer::FancyMeshRenderer()
 	trackball_.setCollapsed(true);
 
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    auto triggerRecompilation = [this]() {needsRecompilation_ = true; };
+    forceOpaque_.onChange(triggerRecompilation);
 }
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& prefix)
 	: container_(prefix + "container", "Foo")
@@ -188,6 +190,11 @@ void FancyMeshRenderer::initializeResources() {
 
 		outport_.setData(image);
 	}
+
+    if (!colorLayer_.get())
+    {
+        LogProcessorWarn("requesting alpha blending, but no color layer attached -> no output will be produced");
+    }
 }
 
 void FancyMeshRenderer::compileShader()
@@ -225,7 +232,16 @@ void FancyMeshRenderer::compileShader()
 
 	//Settings
 	shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
-	//TODO: more settings
+    if (forceOpaque_) {
+        shader_.getFragmentShaderObject()->removeShaderDefine("USE_FRAGMENT_LIST");
+    } 
+    else {
+        shader_.getFragmentShaderObject()->addShaderDefine("USE_FRAGMENT_LIST");
+        if (!colorLayer_.get())
+        {
+            LogProcessorWarn("requesting alpha blending, but no color layer attached -> no output will be produced");
+        }
+    }
 
 	shader_.build();
 
@@ -247,12 +263,19 @@ void FancyMeshRenderer::process() {
         return; //everything is culled
     }
     bool opaque = forceOpaque_.get();
+    bool fragmentLists = !opaque; // or maybe add an option to use regular alpha blending
+    if (fragmentLists && !colorLayer_.get())
+    {
+        //fragment lists can only render to color layer, but no color layer is available
+        return;
+    }
 
-    if (!opaque)
+    if (fragmentLists)
     {
         //prepare fragment list rendering
-        flr_.prePass(outport_.getDimensions());
         LogProcessorInfo("fragment-list: pre pass");
+        flr_.prePass(outport_.getDimensions());
+        LogProcessorInfo("fragment-list: done");
     }
 
 	compileShader();
@@ -276,13 +299,15 @@ void FancyMeshRenderer::process() {
     //update face render settings
     shader_.setUniform("frontSettings.alphaScale", faceSettings_[0].alphaScale_.get());
 
-    if (!opaque)
+    if (fragmentLists)
     {
         //set uniforms fragment list rendering
+        LogProcessorInfo("fragment-list: set uniforms");
         flr_.setShaderUniforms(shader_);
     }
 
 	//Finally, draw it
+    LogProcessorInfo("draw");
 	drawer_->draw();
 
 	shader_.deactivate();
@@ -290,8 +315,10 @@ void FancyMeshRenderer::process() {
     if (!opaque)
     {
         //final processing of fragment list rendering
-        flr_.postPass();
         LogProcessorInfo("fragment-list: post pass");
+        bool success = flr_.postPass();
+        LogProcessorInfo("fragment-list: done, success="<<success);
+        //if (!success) invalidate();
     }
 
 	utilgl::deactivateCurrentTarget();

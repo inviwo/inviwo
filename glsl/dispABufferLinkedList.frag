@@ -19,8 +19,6 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 
 //Input interpolated fragment position
 smooth in vec4 fragPos;
-//Output fragment color
-out vec4 outFragColor;
 
 //Computes only the number of fragments
 int getFragmentCount(uint pixelIdx);
@@ -44,11 +42,11 @@ void main(void) {
 		if(pixelIdx > 0 ){
 
 #if ABUFFER_DISPNUMFRAGMENTS==0
-        outFragColor=vec4(getFragmentCount(pixelIdx) / float(ABUFFER_SIZE));
+        FragData0=vec4(getFragmentCount(pixelIdx) / float(ABUFFER_SIZE));
 #elif ABUFFER_RESOLVE_USE_SORTING==0	
 		//If we only want the closest fragment
         vec4 p = resolveClosest(pixelIdx);
-		outFragColor = uncompressPixelData(p).color;
+		FragData0 = uncompressPixelData(p).color;
 #else
 		//Copy fragments in local array
         int numFrag = 0;
@@ -63,7 +61,7 @@ void main(void) {
             color.rgb = color.rgb + (1-color.a)*c.a*c.rgb;
             color.a = color.a + (1-color.a)*c.a;
         }
-        outFragColor = color;
+        FragData0 = color;
 #endif
 
 		}else{ //no pixel found
@@ -71,7 +69,7 @@ void main(void) {
 			//If no fragment, write nothing
 			discard;
 #else
-			outFragColor=vec4(0.0f);
+			FragData0=vec4(0.0f);
 #endif
 		}
 	}

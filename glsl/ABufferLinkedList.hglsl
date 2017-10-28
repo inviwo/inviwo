@@ -13,7 +13,7 @@ struct AbufferParameters
     int screenWidth;
     int screenHeight;
     vec4 backgroundColor;
-    int sharedPoolSize;
+    uint storageSize;
 };
 uniform AbufferParameters AbufferParams;
 
@@ -54,7 +54,6 @@ layout(std430, binding=7) buffer abufferStorage
     //w: color, 10/10/10 rgb
     vec4 abufferPixelData[]; 
 };
-uniform uint abufferStorageSize;
 struct abufferPixel
 {
     uint previous;
@@ -130,7 +129,7 @@ bool abufferRender(ivec2 coords, float depth, vec4 color)
 {
     //reserve space for pixel
     uint pixelIdx = dataCounterAtomicInc();
-    if (pixelIdx >= abufferStorageSize) {
+    if (pixelIdx >= AbufferParams.storageSize) {
         //we are out of space
         return false;
     }

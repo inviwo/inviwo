@@ -41,7 +41,7 @@ namespace inviwo {
 
 /**
  * \brief helper class for rendering perfect alpha-blended shapes using fragment lists.
- * A large part of the code was taken from http://blog.icare3d.org/2010/07/opengl-40-abuffer-v20-linked-lists-of.html.
+ * Inspiration taken from http://blog.icare3d.org/2010/07/opengl-40-abuffer-v20-linked-lists-of.html.
  */
 class IVW_MODULE_FANCYMESHRENDERER_API FragmentListRenderer
 {
@@ -51,25 +51,26 @@ public:
 
     void prePass(const size2_t& screenSize);
 
-    void setShaderUniforms(Shader& shader);
+    void setShaderUniforms(Shader& shader) const;
 
-    void postPass();
+    bool postPass();
 
 private:
     void initShaders();
-    void initBuffers(const size2_t& screenSize, size_t fragmentSize);
+    void initBuffers(const size2_t& screenSize);
     void assignUniforms(Shader& shader) const;
     void drawQuad() const;
 
     size2_t screenSize_;
     size_t fragmentSize_;
+    size_t oldFragmentSize_;
 
-    Texture2D* abufferPageIdxImg_;
-    Texture2D* abufferFragCountImg_;
-    Texture2D* semaphoreImg_;
+    Texture2D* abufferIdxImg_;
+    //Texture2D* abufferFragCountImg_;
+    //Texture2D* semaphoreImg_;
     GLuint atomicCounter_;
     GLuint pixelBuffer_;
-
+    GLuint totalFragmentQuery_;
     Shader clearShader_;
     Shader displayShader_;
 };
