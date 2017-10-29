@@ -11,8 +11,10 @@
 
 #include "ABufferLinkedList.hglsl"
 #include "ABufferSort.hglsl"
-//#include "ABufferShading.hglsl"
 
+// How should the stuff be rendered? (Debugging options)
+#define ABUFFER_DISPNUMFRAGMENTS 0
+#define ABUFFER_RESOLVE_USE_SORTING 1
 
 //Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -30,7 +32,6 @@ void fillFragmentArray(uint idx, out int numFrag);
 
 //Resolve A-Buffer and blend sorted fragments
 void main(void) {
-
 	ivec2 coords=ivec2(gl_FragCoord.xy);
 	
 	if(coords.x>=0 && coords.y>=0 
@@ -46,7 +47,7 @@ void main(void) {
 #elif ABUFFER_RESOLVE_USE_SORTING==0	
 		//If we only want the closest fragment
         vec4 p = resolveClosest(pixelIdx);
-		FragData0 = uncompressPixelData(p).color;
+        FragData0 = uncompressPixelData(p).color;
 #else
 		//Copy fragments in local array
         int numFrag = 0;
@@ -79,18 +80,18 @@ void main(void) {
 
 int getFragmentCount(uint pixelIdx){
     int counter = 0;
-	while(pixelIdx!=0 && counter<ABUFFER_SIZE){
+    while(pixelIdx!=0 && counter<ABUFFER_SIZE){
         vec4 val = readPixelStorage(pixelIdx-1);
         counter++;
-		pixelIdx = floatBitsToUint(val.x);
-	}
-	return counter;
+        pixelIdx = floatBitsToUint(val.x);
+    }
+    return counter;
 }
 
 vec4 resolveClosest(uint pixelIdx){
 
 	//Search smallest z
-	vec4 minFrag=vec4(0.0f, 1000000.0f, 0.0f, 0.0f);
+	vec4 minFrag=vec4(0.0f, 1000000.0f, 1.0f, uintBitsToFloat(1024*1023));
 	int ip=0;
 
 	while(pixelIdx!=0 && ip<ABUFFER_SIZE){

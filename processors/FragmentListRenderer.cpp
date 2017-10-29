@@ -204,8 +204,6 @@ namespace inviwo
     void FragmentListRenderer::initShaders()
     {
         displayShader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
-        displayShader_.getFragmentShaderObject()->addShaderDefine("ABUFFER_DISPNUMFRAGMENTS", "0");
-        displayShader_.getFragmentShaderObject()->addShaderDefine("ABUFFER_RESOLVE_USE_SORTING", "1");
         displayShader_.build();
         clearShader_.build();
     }
