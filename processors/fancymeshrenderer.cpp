@@ -262,7 +262,7 @@ void FancyMeshRenderer::process() {
 		utilgl::activateAndClearTarget(outport_);
 	}
 
-    if (faceSettings_[0].cull_ && faceSettings_[0].cull_)
+    if (faceSettings_[0].cull_ && faceSettings_[1].cull_)
     {
         utilgl::deactivateCurrentTarget();
         return; //everything is culled

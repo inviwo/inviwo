@@ -29,17 +29,10 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fancymeshrenderer.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fancymeshrenderer.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferLinkedList.hglsl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferShading.hglsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferSort.hglsl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/clearABuffer.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/clearABufferLinkedList.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dispABuffer.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dispABufferLinkedList.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/simpleQuad.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABuffer.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABuffer.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABufferLinkedList.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderABufferLinkedList.vert
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
