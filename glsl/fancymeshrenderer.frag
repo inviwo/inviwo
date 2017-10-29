@@ -32,8 +32,6 @@
 uniform LightParameters lighting;
 uniform CameraParameters camera;
 
-uniform vec4 overrideColor;
-
 smooth in vec4 position_;
 
 #ifdef USE_FRAGMENT_LIST
@@ -41,9 +39,11 @@ smooth in vec4 position_;
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 #endif
 
+//GLSL does not support samplers within structures
+uniform sampler1D transferFunction0; //front
+uniform sampler1D transferFunction1; //back
 struct FaceRenderSettings
 {
-	sampler1D transferFunction;
 	vec4 externalColor;
 	int colorSource;
 
@@ -54,35 +54,69 @@ struct FaceRenderSettings
 
 	int shadingMode;
 };
-uniform FaceRenderSettings frontSettings;
-uniform FaceRenderSettings backSettings;
+uniform FaceRenderSettings renderSettings[2];
 
 in vec4 worldPosition_;
 in vec3 normal_;
 in vec3 viewNormal_;
 in vec4 color_;
 
-void main() {
-    vec4 fragColor = vec4(1.0);
-    vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
-#ifdef OVERRIDE_COLOR_BUFFER
-    vec4 color = overrideColor;
-    color.a = 1;
-#else
-    vec4 color = color_;
-#endif
-    color.a *= frontSettings.alphaScale;
+#define M_PI 3.1415926535897932384626433832795
+vec4 performShading()
+{
+    FaceRenderSettings settings = renderSettings[gl_FrontFacing ? 0 : 1];
+    vec3 toCameraDir = normalize(camera.position - worldPosition_.xyz);
+
+    // base color
+    vec4 color = vec4(1.0);
+    if (settings.colorSource == 0) {
+        // vertex color
+        // TODO
+    } else if (settings.colorSource == 1) {
+        // transfer function
+        // TODO
+    } else if (settings.colorSource == 2) {
+        // external color
+        color = settings.externalColor;
+        color.a = 1;
+    }
+
+    // normal vector
+    vec3 normal = normal_;
+    //TODO: switch on settings.normalSource. For now, assume ==0
+    normal = normalize(normal);
+    if (!gl_FrontFacing) normal = -normal; //backface -> invert normal
+
+    // alpha
+    float alpha = 1;
+    if (settings.alphaMode==1) {
+        //angle-based
+        alpha = acos(abs(dot(normal, toCameraDir))) * 2 / M_PI;
+    }
+    color.a *= alpha * settings.alphaScale;
 
     // shading
-    fragColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
-                                   normalize(normal_), normalize(toCameraDir_));
-    fragColor.a = color.a;
+    if (settings.shadingMode==1) {
+        //Phong
+        color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
+                                   normal, toCameraDir);
+    } else if (settings.shadingMode==2) {
+        //PBR
+    }
+
+    //done
+    return color;
+}
+
+void main() {
+    vec4 fragColor = performShading();
 
 #ifdef USE_FRAGMENT_LIST
 
     //fragment list rendering
     ivec2 coords=ivec2(gl_FragCoord.xy);
-    float depth = position_.z / position_.w;
+    //float depth = position_.z / position_.w;
+    float depth = gl_FragCoord.z;
     abufferRender(coords, depth, fragColor);
     discard;
 

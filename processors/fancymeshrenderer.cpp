@@ -36,6 +36,9 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/base/algorithm/dataminmax.h>
+#include <modules/opengl/image/layergl.h>
+
+#include <sstream>
 
 namespace inviwo {
 
@@ -236,7 +239,7 @@ void FancyMeshRenderer::compileShader()
 	}
 
 	//Settings
-	shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
+	//shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
     if (forceOpaque_) {
         shader_.getFragmentShaderObject()->removeShaderDefine("USE_FRAGMENT_LIST");
     } 
@@ -298,11 +301,30 @@ void FancyMeshRenderer::process() {
 
 	utilgl::setUniforms(shader_, camera_, lightingProperty_);
 	utilgl::setShaderUniforms(shader_, *(drawer_->getMesh()), "geometry");
-	shader_.setUniform("overrideColor", faceSettings_[0].externalColor_.get());
 	shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
 
     //update face render settings
-    shader_.setUniform("frontSettings.alphaScale", faceSettings_[0].alphaScale_.get());
+    TextureUnit transFuncUnit[2];
+    for (int i=0; i<2; ++i)
+    {
+        std::stringstream ss;
+        ss << "renderSettings[" << i << "].";
+        std::string prefix = ss.str();
+        shader_.setUniform(prefix + "externalColor", faceSettings_[i].externalColor_.get());
+        shader_.setUniform(prefix + "colorSource", static_cast<int>(faceSettings_[i].colorSource_.get()));
+        shader_.setUniform(prefix + "alphaMode", static_cast<int>(faceSettings_[i].alphaMode_.get()));
+        shader_.setUniform(prefix + "alphaScale", faceSettings_[i].alphaScale_.get());
+        shader_.setUniform(prefix + "normalSource", static_cast<int>(faceSettings_[i].normalSource_.get()));
+        shader_.setUniform(prefix + "shadingMode", static_cast<int>(faceSettings_[i].shadingMode_.get()));
+
+        const auto& tf = faceSettings_[i].transferFunction_.get();
+        const Layer* tfLayer = tf.getData();
+        const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
+        transferFunctionGL->bindTexture(transFuncUnit[i].getEnum());
+        ss = std::stringstream();
+        ss << "transferFunction" << i;
+        shader_.setUniform(ss.str(), transFuncUnit[i].getUnitNumber());
+    }
 
     if (fragmentLists)
     {
