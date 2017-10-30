@@ -298,16 +298,6 @@ if(DEBUG_POSTFIX)
 endif(DEBUG_POSTFIX)
 
 #--------------------------------------------------------------------
-# Specify build-based defintions
-if(BUILD_SHARED_LIBS)
-    add_definitions(-DINVIWO_ALL_DYN_LINK)
-endif()
-
-if(IVW_PROFILING)
-    add_definitions(-DIVW_PROFILING)
-endif()
-
-#--------------------------------------------------------------------
 # Add option to enable include-what-you-use 
 # https://github.com/include-what-you-use/include-what-you-use
 if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
