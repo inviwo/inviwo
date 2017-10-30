@@ -286,6 +286,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatial4dsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatialsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stacktrace.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/statecoordinator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
@@ -508,6 +509,7 @@ set(SOURCE_FILES
     util/singlefileobserver.cpp
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
+    util/statecoordinator.cpp
     util/stringconversion.cpp
     util/systemcapabilities.cpp
     util/threadpool.cpp
