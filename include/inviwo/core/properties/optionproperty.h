@@ -168,6 +168,8 @@ public:
     virtual TemplateOptionProperty<T>* clone() const override;
     virtual ~TemplateOptionProperty() = default;
 
+    operator const T&() const;
+
     /**
      * \brief Adds an option to the property
      *
@@ -232,7 +234,6 @@ private:
     size_t defaultSelectedIndex_;
     std::vector<OptionPropertyOption<T>> defaultOptions_;
 };
-
 
 namespace detail {
 template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
@@ -369,6 +370,11 @@ std::string TemplateOptionProperty<T>::getSelectedDisplayName() const {
 
 template <typename T>
 T TemplateOptionProperty<T>::getSelectedValue() const {
+    return options_[selectedIndex_].value_;
+}
+
+template <typename T>
+TemplateOptionProperty<T>::operator const T&() const {
     return options_[selectedIndex_].value_;
 }
 
