@@ -278,76 +278,85 @@ void FancyMeshRenderer::process() {
         return;
     }
 
-    if (fragmentLists)
-    {
-        //prepare fragment list rendering
-        //LogProcessorInfo("fragment-list: pre pass");
-        flr_.prePass(outport_.getDimensions());
-        //LogProcessorInfo("fragment-list: done");
-    }
+    bool retry;
+    do {
+        retry = false;
 
-	compileShader();
-	shader_.activate();
+        if (fragmentLists)
+        {
+            //prepare fragment list rendering
+            //LogProcessorInfo("fragment-list: pre pass");
+            flr_.prePass(outport_.getDimensions());
+            //LogProcessorInfo("fragment-list: done");
+        }
 
-	utilgl::GlBoolState depthTest(GL_DEPTH_TEST, opaque);
-	utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
-	utilgl::CullFaceState culling(
-		faceSettings_[0].cull_ && !faceSettings_[1].cull_ ? GL_FRONT :
-		!faceSettings_[0].cull_ && faceSettings_[1].cull_ ? GL_BACK :
-		GL_NONE);
-    utilgl::BlendModeState blendModeStateGL(
-        opaque ? GL_ONE : GL_SRC_ALPHA,
-        opaque ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
+        compileShader();
+        shader_.activate();
 
-	utilgl::setUniforms(shader_, camera_, lightingProperty_);
-	utilgl::setShaderUniforms(shader_, *(drawer_->getMesh()), "geometry");
-	shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, opaque);
+        utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
+        utilgl::CullFaceState culling(
+            faceSettings_[0].cull_ && !faceSettings_[1].cull_ ? GL_FRONT :
+            !faceSettings_[0].cull_ && faceSettings_[1].cull_ ? GL_BACK :
+            GL_NONE);
+        utilgl::BlendModeState blendModeStateGL(
+            opaque ? GL_ONE : GL_SRC_ALPHA,
+            opaque ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 
-    //update face render settings
-    TextureUnit transFuncUnit[2];
-    for (int i=0; i<2; ++i)
-    {
-        std::stringstream ss;
-        ss << "renderSettings[" << i << "].";
-        std::string prefix = ss.str();
-        shader_.setUniform(prefix + "externalColor", faceSettings_[i].externalColor_.get());
-        shader_.setUniform(prefix + "colorSource", static_cast<int>(faceSettings_[i].colorSource_.get()));
-        shader_.setUniform(prefix + "alphaMode", static_cast<int>(faceSettings_[i].alphaMode_.get()));
-        shader_.setUniform(prefix + "alphaScale", faceSettings_[i].alphaScale_.get());
-        shader_.setUniform(prefix + "normalSource", static_cast<int>(faceSettings_[i].normalSource_.get()));
-        shader_.setUniform(prefix + "shadingMode", static_cast<int>(faceSettings_[i].shadingMode_.get()));
+        utilgl::setUniforms(shader_, camera_, lightingProperty_);
+        utilgl::setShaderUniforms(shader_, *(drawer_->getMesh()), "geometry");
+        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
 
-        const auto& tf = faceSettings_[i].transferFunction_.get();
-        const Layer* tfLayer = tf.getData();
-        const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-        transferFunctionGL->bindTexture(transFuncUnit[i].getEnum());
-        ss = std::stringstream();
-        ss << "transferFunction" << i;
-        shader_.setUniform(ss.str(), transFuncUnit[i].getUnitNumber());
-    }
+        //update face render settings
+        TextureUnit transFuncUnit[2];
+        for (int i = 0; i < 2; ++i)
+        {
+            std::stringstream ss;
+            ss << "renderSettings[" << i << "].";
+            std::string prefix = ss.str();
+            shader_.setUniform(prefix + "externalColor", faceSettings_[i].externalColor_.get());
+            shader_.setUniform(prefix + "colorSource", static_cast<int>(faceSettings_[i].colorSource_.get()));
+            shader_.setUniform(prefix + "alphaMode", static_cast<int>(faceSettings_[i].alphaMode_.get()));
+            shader_.setUniform(prefix + "alphaScale", faceSettings_[i].alphaScale_.get());
+            shader_.setUniform(prefix + "normalSource", static_cast<int>(faceSettings_[i].normalSource_.get()));
+            shader_.setUniform(prefix + "shadingMode", static_cast<int>(faceSettings_[i].shadingMode_.get()));
 
-    if (fragmentLists)
-    {
-        //set uniforms fragment list rendering
-        //LogProcessorInfo("fragment-list: set uniforms");
-        flr_.setShaderUniforms(shader_);
-    }
+            const auto& tf = faceSettings_[i].transferFunction_.get();
+            const Layer* tfLayer = tf.getData();
+            const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
+            transferFunctionGL->bindTexture(transFuncUnit[i].getEnum());
+            ss = std::stringstream();
+            ss << "transferFunction" << i;
+            shader_.setUniform(ss.str(), transFuncUnit[i].getUnitNumber());
+        }
 
-	//Finally, draw it
-    //LogProcessorInfo("draw");
-	drawer_->draw();
+        if (fragmentLists)
+        {
+            //set uniforms fragment list rendering
+            //LogProcessorInfo("fragment-list: set uniforms");
+            flr_.setShaderUniforms(shader_);
+        }
 
-	shader_.deactivate();
+        //Finally, draw it
+        //LogProcessorInfo("draw");
+        drawer_->draw();
 
-    if (!opaque)
-    {
-        //final processing of fragment list rendering
-        //LogProcessorInfo("fragment-list: post pass");
-        bool success = flr_.postPass(debugFragmentLists_);
-        debugFragmentLists_ = false;
-        //LogProcessorInfo("fragment-list: done, success="<<success);
-        if (!success) invalidate(InvalidationLevel::InvalidOutput);
-    }
+        shader_.deactivate();
+
+        if (!opaque)
+        {
+            //final processing of fragment list rendering
+            //LogProcessorInfo("fragment-list: post pass");
+            bool success = flr_.postPass(debugFragmentLists_);
+            debugFragmentLists_ = false;
+            //LogProcessorInfo("fragment-list: done, success="<<success);
+            if (!success) {
+                std::cout << "retry" << std::endl;
+                retry = true;
+            }
+        }
+
+    } while (retry);
 
 	utilgl::deactivateCurrentTarget();
 }

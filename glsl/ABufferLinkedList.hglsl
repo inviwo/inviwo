@@ -132,7 +132,7 @@ bool abufferRender(ivec2 coords, float depth, vec4 color)
         return false;
     }
     //write index
-    uint prevIdx = setPixelLink(coords, pixelIdx);
+    uint prevIdx = setPixelLink(coords, pixelIdx+1);
     //assemble and write pixel
     abufferPixel p;
     p.previous = prevIdx;
