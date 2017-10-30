@@ -41,6 +41,7 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/util/statecoordinator.h>
 
 namespace inviwo {
 
@@ -171,16 +172,16 @@ public:
     // Should be implemented by all inheriting classes;
     virtual const ProcessorInfo getProcessorInfo() const = 0;
 
-    std::string getClassIdentifier() const { return getProcessorInfo().classIdentifier; }
-    std::string getDisplayName() const { return getProcessorInfo().displayName; }
-    std::string getCategory() const { return getProcessorInfo().category; }
-    CodeState getCodeState() const { return getProcessorInfo().codeState; }
-    Tags getTags() const { return getProcessorInfo().tags; }
+    std::string getClassIdentifier() const;
+    std::string getDisplayName() const;
+    std::string getCategory() const;
+    CodeState getCodeState() const;
+    Tags getTags() const;
 
     /**
      * Sets the identifier of the Processor. If there already exist a processor with that identifier
      * it will append a number, starting at 2 to ensure uniqueness of identifiers.
-     * @param identifier the new identifier. Processor identifiers should only contain alpha 
+     * @param identifier the new identifier. Processor identifiers should only contain alpha
               numeric characters, "-", "_" and " ".
      * @return The identifier that was set including eventual appended number
      */
@@ -202,7 +203,7 @@ public:
     virtual void initializeResources() {}
 
     Port* getPort(const std::string& identifier) const;
-    Inport* getInport(const std::string& identifier) const; 
+    Inport* getInport(const std::string& identifier) const;
     Outport* getOutport(const std::string& identifier) const;
 
     const std::vector<Inport*>& getInports() const;
@@ -216,9 +217,37 @@ public:
     bool allInportsConnected() const;
     bool allInportsAreReady() const;
 
-    virtual bool isSource() const;
-    virtual bool isSink() const;
-    virtual bool isReady() const;
+    /**
+     * Returns whether the processor is a source. I.e. whether it brings data into the network.
+     * By default a processor is a source if it has no inports. This behavior can be customized by
+     * setting the isSource_ update functor.
+     * @see StateCoordinator
+     */
+    bool isSource() const;
+
+    /**
+     * Returns whether the processor is a sink. I.e. whether it pulls data from the network.
+     * By default a processor is a sink if it has no outports. This behavior can be customized by
+     * setting the isSink_ update functor. For a processor to be evaluated there have to be a sink
+     * among its decedents.
+     * @see StateCoordinator
+     */
+    bool isSink() const;
+
+    /**
+     * Returns whether the processor is ready to be processed. By default this will depends on
+     * whether all inports are ready. This behavior can be customized by setting the isReady_
+     * update functor.
+     * @see StateCoordinator
+     */
+    bool isReady() const;
+
+    /**
+     * Let the processor know that it should update its isReady_ StateCoordinator. Usually called by
+     * the inports whenever they change isReady status.
+     * @see StateCoordinator
+     */
+    void readyUpdate();
 
     /**
      * Called when the network is evaluated and the processor is ready and not valid.
@@ -282,8 +311,6 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    static const std::string getCodeStateString(CodeState state);
-
 protected:
     void addPort(Inport& port, const std::string& portGroup = "default");
     void addPort(Outport& port, const std::string& portGroup = "default");
@@ -297,9 +324,10 @@ protected:
     Inport* removePort(Inport* port);
     Outport* removePort(Outport* port);
 
-    virtual void performEvaluateRequest();
-
     std::unique_ptr<ProcessorWidget> processorWidget_;
+    StateCoordinator<bool> isReady_;
+    StateCoordinator<bool> isSink_;
+    StateCoordinator<bool> isSource_;
 
 private:
     void addPort(Inport* port, const std::string& portGroup);
@@ -322,9 +350,8 @@ private:
     ProcessorNetwork* network_;
 };
 
-
 inline ProcessorNetwork* Processor::getNetwork() const { return network_; }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSOR_H

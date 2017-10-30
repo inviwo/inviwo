@@ -374,6 +374,10 @@ void ProcessorGraphicsItem::onProcessorIdentifierChange(Processor* processor) {
     if (processorWidgetQt) processorWidgetQt->setWindowTitle(QString::fromStdString(newIdentifier));
 }
 
+void ProcessorGraphicsItem::onProcessorReadyChange(Processor*) {
+    statusItem_->update();
+}
+
 void ProcessorGraphicsItem::onProcessorPortAdded(Processor*, Port* port) {
     Inport* inport = dynamic_cast<Inport*>(port);
     Outport* outport = dynamic_cast<Outport*>(port);
@@ -429,7 +433,7 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Identifier"), processor_->getIdentifier());
     tb(H("Class"), processor_->getClassIdentifier());
     tb(H("Category"), processor_->getCategory());
-    tb(H("Code"), Processor::getCodeStateString(processor_->getCodeState()));
+    tb(H("Code"), processor_->getCodeState());
     tb(H("Tags"), processor_->getTags().getString());
 
 #if IVW_PROFILING

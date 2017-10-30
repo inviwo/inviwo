@@ -53,12 +53,11 @@ class IVW_CORE_API ProcessorObserver : public Observer {
 public:
     friend ProcessorObservable;
     ProcessorObserver() = default;
-    virtual ~ProcessorObserver() = default; 
+    virtual ~ProcessorObserver() = default;
 
     virtual void onAboutPropertyChange(Property*){};
     virtual void onProcessorInvalidationBegin(Processor*){};
     virtual void onProcessorInvalidationEnd(Processor*){};
-    virtual void onProcessorRequestEvaluate(Processor*){};
     virtual void onProcessorIdentifierChange(Processor*){};
 
     virtual void onProcessorPortAdded(Processor*, Port*){};
@@ -66,6 +65,10 @@ public:
 
     virtual void onProcessorAboutToProcess(Processor*){};
     virtual void onProcessorFinishedProcess(Processor*){};
+
+    virtual void onProcessorSourceChange(Processor*){};
+    virtual void onProcessorSinkChange(Processor*){};
+    virtual void onProcessorReadyChange(Processor*){};
 };
 
 /** \class ProcessorObservable
@@ -75,9 +78,9 @@ class IVW_CORE_API ProcessorObservable : public Observable<ProcessorObserver> {
 protected:
     friend ProcessorNetworkEvaluator;
     friend Property;
-    
+
     ProcessorObservable() = default;
-    virtual ~ProcessorObservable() = default; 
+    virtual ~ProcessorObservable() = default;
 
     void notifyObserversAboutPropertyChange(Property* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onAboutPropertyChange(p); });
@@ -89,10 +92,6 @@ protected:
 
     void notifyObserversInvalidationEnd(Processor* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorInvalidationEnd(p); });
-    }
-
-    void notifyObserversRequestEvaluate(Processor* p) {
-        forEachObserver([&](ProcessorObserver* o) { o->onProcessorRequestEvaluate(p); });
     }
 
     void notifyObserversIdentifierChange(Processor* p) {
@@ -113,8 +112,17 @@ protected:
     void notifyObserversFinishedProcess(Processor* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorFinishedProcess(p); });
     }
+    void notifyObserversSourceChange(Processor* p) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorSourceChange(p); });
+    }
+    void notifyObserversSinkChange(Processor* p) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorSinkChange(p); });
+    }
+    void notifyObserversReadyChange(Processor* p) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorReadyChange(p); });
+    }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSOROBSERVER_H

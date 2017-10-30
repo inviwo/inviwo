@@ -262,7 +262,7 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
         tb(H("Module"), moduleId);
         tb(H("Identifier"), processor->getClassIdentifier());
         tb(H("Category"), processor->getCategory());
-        tb(H("Code"), Processor::getCodeStateString(processor->getCodeState()));
+        tb(H("Code"), processor->getCodeState());
         tb(H("Tags"), processor->getTags().getString());
 
         newItem->setToolTip(0, utilqt::toQString(doc));
@@ -309,7 +309,7 @@ void ProcessorTreeWidget::addProcessorsToTree() {
                         categoryDesc = "";
                         break;
                     case 2:  // By Code State
-                        categoryName = Processor::getCodeStateString(processor->getCodeState());
+                        categoryName = toString(processor->getCodeState());
                         categoryDesc = "";
                         break;
                     case 3:  // By Module

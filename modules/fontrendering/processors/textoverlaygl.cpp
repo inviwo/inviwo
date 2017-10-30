@@ -145,15 +145,6 @@ void TextOverlayGL::deserialize(Deserializer& d) {
     addArgButton_.setReadOnly(numArgs_ > maxNumArgs_);
 }
 
-bool TextOverlayGL::isReady() const {
-    if (enable_.get())
-        return Processor::isReady();
-    else {
-        // if font overlay is not enabled we need data from the inport
-        return inport_.isReady();
-    }
-}
-
 std::string TextOverlayGL::getString() const {
     std::string str = text_.get();
     // replace all occurrences of place markers with the corresponding args

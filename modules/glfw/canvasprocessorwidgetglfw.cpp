@@ -79,7 +79,6 @@ Canvas* CanvasProcessorWidgetGLFW::getCanvas() const { return canvas_.get(); }
 void CanvasProcessorWidgetGLFW::updateVisible(bool visible) {
     if (visible) {
         canvas_->show();
-        static_cast<CanvasProcessor*>(processor_)->triggerQueuedEvaluation();
     } else {
         canvas_->hide();
     }
@@ -91,4 +90,4 @@ void CanvasProcessorWidgetGLFW::updatePosition(ivec2 pos) {
     canvas_->setWindowPosition(uvec2(pos.x, pos.y));
 }
 
-}  // namespace
+}  // namespace inviwo

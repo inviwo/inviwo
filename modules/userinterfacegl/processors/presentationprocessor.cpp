@@ -84,8 +84,17 @@ PresentationProcessor::PresentationProcessor()
     , mouseNextSlide_("mouseNextSlide", "Next Slide (Mouse)", [this](Event *e) { nextSlide(e); },
                       MouseButton::Left, MouseState::Press)
     , mousePrevSlide_("mousePrevSlide", "Previous Slide (Mouse)",
-                      [this](Event *e) { previousSlide(e); }, MouseButton::Right, MouseState::Press)
-    , ready_(false) {
+                      [this](Event *e) { previousSlide(e); }, MouseButton::Right,
+                      MouseState::Press) {
+
+    isReady_.setUpdate([this]() {
+        if (!presentationMode_) {
+            return allInportsAreReady();
+        } else {
+            return !fileList_.empty();
+        }
+    });
+    presentationMode_.onChange([this]() { isReady_.update(); });
 
     outport_.setHandleResizeEvents(false);
 
@@ -183,14 +192,6 @@ void PresentationProcessor::updateSlideImage() {
     }
 }
 
-bool PresentationProcessor::isReady() const {
-    if (presentationMode_.get()) {
-        return ready_;
-    } else {
-        return Processor::isReady();
-    }
-}
-
 void PresentationProcessor::onFindFiles() {
     // this processor will only be ready if at least one matching file exists
     fileList_ = imageFilePattern_.getFileList();
@@ -210,7 +211,7 @@ void PresentationProcessor::onFindFiles() {
 }
 
 void PresentationProcessor::updateProperties() {
-    ready_ = !fileList_.empty();
+    isReady_.update();
     currentSlide_ = nullptr;
 
     slideIndex_.setReadOnly(fileList_.size() <= 1);

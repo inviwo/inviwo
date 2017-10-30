@@ -149,11 +149,17 @@ void ProcessorNetworkEvaluator::evaluate() {
     notifyObserversProcessorNetworkEvaluationEnd();
 }
 
-void ProcessorNetworkEvaluator::onProcessorNetworkDidAddProcessor(Processor*) {
+void ProcessorNetworkEvaluator::onProcessorSinkChange(Processor*) {
     processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 
-void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveProcessor(Processor*) {
+void ProcessorNetworkEvaluator::onProcessorNetworkDidAddProcessor(Processor* p) {
+    p->ProcessorObservable::addObserver(this);
+    processorsSorted_ = util::topologicalSort(processorNetwork_);
+}
+
+void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveProcessor(Processor* p) {
+    p->ProcessorObservable::removeObserver(this);
     processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 

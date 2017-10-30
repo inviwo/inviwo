@@ -74,9 +74,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     DrawLines();
-    ~DrawLines();
-
-    bool isReady() const override { return true; }
+    virtual ~DrawLines();
 
 protected:
     void addPoint(vec2);

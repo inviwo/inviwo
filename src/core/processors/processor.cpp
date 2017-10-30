@@ -48,31 +48,37 @@ Processor::Processor()
     : PropertyOwner()
     , ProcessorObservable()
     , processorWidget_(nullptr)
+    , isReady_{true, [this](const bool&) { notifyObserversReadyChange(this); },
+               [this]() { return allInportsAreReady(); }}
+    , isSink_{true, [this](const bool&) { notifyObserversSinkChange(this); },
+              [this]() { return outports_.empty(); }}
+    , isSource_{true, [this](const bool&) { notifyObserversSourceChange(this); },
+                [this]() { return inports_.empty(); }}
     , identifier_("")
     , network_(nullptr) {
     createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 }
 
-Processor::~Processor() {
-    usedIdentifiers_.erase(util::stripIdentifier(identifier_));
-}
+Processor::~Processor() { usedIdentifiers_.erase(util::stripIdentifier(identifier_)); }
 
 void Processor::addPort(Inport* port, const std::string& portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
         throw Exception("Processor \"" + getIdentifier() + "\" Can't add inport, identifier \"" +
-                        port->getIdentifier() + "\" already exist.",
+                            port->getIdentifier() + "\" already exist.",
                         IvwContext);
     }
     if (port->getIdentifier().empty()) {
         throw Exception("Adding port with empty identifier", IvwContext);
     }
     util::validateIdentifier(port->getIdentifier(), "Port", IvwContext);
-    
+
     port->setProcessor(this);
     inports_.push_back(port);
     addPortToGroup(port, portGroup);
 
     notifyObserversProcessorPortAdded(this, port);
+    isSource_.update();
+    isReady_.update();
 }
 
 void Processor::addPort(Inport& port, const std::string& portGroup) { addPort(&port, portGroup); }
@@ -84,7 +90,7 @@ void Processor::addPort(std::unique_ptr<Inport> port, const std::string& portGro
 void Processor::addPort(Outport* port, const std::string& portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
         throw Exception("Processor \"" + getIdentifier() + "\" Can't add outport, identifier \"" +
-                        port->getIdentifier() + "\" already exist.",
+                            port->getIdentifier() + "\" already exist.",
                         IvwContext);
     }
     if (port->getIdentifier().empty()) {
@@ -97,6 +103,8 @@ void Processor::addPort(Outport* port, const std::string& portGroup) {
     addPortToGroup(port, portGroup);
 
     notifyObserversProcessorPortAdded(this, port);
+    isSink_.update();
+    isReady_.update();
 }
 
 void Processor::addPort(Outport& port, const std::string& portDependencySet) {
@@ -116,7 +124,7 @@ Port* Processor::removePort(const std::string& identifier) {
     return nullptr;
 }
 
-Inport* Processor::removePort(Inport* port) {   
+Inport* Processor::removePort(Inport* port) {
     notifyObserversProcessorPortRemoved(this, port);
     port->setProcessor(nullptr);
     util::erase_remove(inports_, port);
@@ -131,7 +139,8 @@ Inport* Processor::removePort(Inport* port) {
             return false;
         }
     });
-
+    isSource_.update();
+    isReady_.update();
     return port;
 }
 
@@ -150,7 +159,8 @@ Outport* Processor::removePort(Outport* port) {
             return false;
         }
     });
-
+    isSink_.update();
+    isReady_.update();
     return port;
 }
 
@@ -162,17 +172,25 @@ void Processor::addPortToGroup(Port* port, const std::string& portGroup) {
 void Processor::removePortFromGroups(Port* port) {
     auto group = portGroups_[port];
     util::erase_remove(groupPorts_[group], port);
-    if(groupPorts_[group].empty()) groupPorts_.erase(group);
+    if (groupPorts_[group].empty()) groupPorts_.erase(group);
     portGroups_.erase(port);
-    
 }
+
+std::string Processor::getClassIdentifier() const { return getProcessorInfo().classIdentifier; }
+
+std::string Processor::getDisplayName() const { return getProcessorInfo().displayName; }
+
+std::string Processor::getCategory() const { return getProcessorInfo().category; }
+
+CodeState Processor::getCodeState() const { return getProcessorInfo().codeState; }
+
+Tags Processor::getTags() const { return getProcessorInfo().tags; }
 
 std::string Processor::setIdentifier(const std::string& identifier) {
     if (identifier == identifier_) return identifier_;  // nothing changed
 
-
     util::validateIdentifier(identifier, "Processor", IvwContext, " ()=&");
-    
+
     usedIdentifiers_.erase(util::stripIdentifier(identifier_));  // remove old identifier
 
     std::string baseIdentifier = identifier;
@@ -217,18 +235,22 @@ bool Processor::hasProcessorWidget() const { return (processorWidget_ != nullptr
 void Processor::setNetwork(ProcessorNetwork* network) { network_ = network; }
 
 Port* Processor::getPort(const std::string& identifier) const {
-    for (auto port : inports_) if (port->getIdentifier() == identifier) return port;
-    for (auto port : outports_) if (port->getIdentifier() == identifier) return port;
+    for (auto port : inports_)
+        if (port->getIdentifier() == identifier) return port;
+    for (auto port : outports_)
+        if (port->getIdentifier() == identifier) return port;
     return nullptr;
 }
 
 Inport* Processor::getInport(const std::string& identifier) const {
-    for (auto port : inports_) if (port->getIdentifier() == identifier) return port;
+    for (auto port : inports_)
+        if (port->getIdentifier() == identifier) return port;
     return nullptr;
 }
 
 Outport* Processor::getOutport(const std::string& identifier) const {
-    for (auto port : outports_) if (port->getIdentifier() == identifier) return port;
+    for (auto port : outports_)
+        if (port->getIdentifier() == identifier) return port;
     return nullptr;
 }
 
@@ -259,7 +281,7 @@ const std::vector<Port*>& Processor::getPortsInGroup(const std::string& portGrou
     if (it != groupPorts_.end()) {
         return it->second;
     } else {
-        throw Exception("Can't find port group: \"" + portGroup  + "\".", IvwContext);
+        throw Exception("Can't find port group: \"" + portGroup + "\".", IvwContext);
     }
 }
 
@@ -274,23 +296,19 @@ void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifi
         for (auto& port : outports_) port->invalidate(InvalidationLevel::InvalidOutput);
     }
     notifyObserversInvalidationEnd(this);
-
-    if (!isValid() && isSink()) {
-        performEvaluateRequest();
-    }
 }
 
-bool Processor::isSource() const { return inports_.empty(); }
+bool Processor::isSource() const { return isSource_; }
 
-bool Processor::isSink() const { return outports_.empty(); }
+bool Processor::isSink() const { return isSink_; }
 
-bool Processor::isReady() const { return allInportsAreReady(); }
+bool Processor::isReady() const { return isReady_; }
+
+void Processor::readyUpdate() { isReady_.update(); }
 
 bool Processor::allInportsAreReady() const {
-    return util::all_of(
-        inports_, [](Inport* p) { return (p->isOptional() && !p->isConnected()) || p->isReady(); });
+    return util::all_of(inports_, [](Inport* p) { return p->isReady(); });
 }
-
 
 bool Processor::allInportsConnected() const {
     return util::all_of(inports_, [](Inport* p) { return p->isConnected(); });
@@ -332,7 +350,7 @@ void Processor::serialize(Serializer& s) const {
     s.serialize("OutPorts", outports_, "OutPort");
 
     PropertyOwner::serialize(s);
-    MetaDataOwner::serialize(s); 
+    MetaDataOwner::serialize(s);
 }
 
 void Processor::deserialize(Deserializer& d) {
@@ -404,24 +422,22 @@ void Processor::setValid() {
     for (auto outport : outports_) outport->setValid();
 }
 
-void Processor::performEvaluateRequest() { notifyObserversRequestEvaluate(this); }
-
 void Processor::invokeEvent(Event* event) {
     if (event->hash() == PickingEvent::chash()) {
         static_cast<PickingEvent*>(event)->invoke(this);
     }
     if (event->hasBeenUsed()) return;
-    
+
     PropertyOwner::invokeEvent(event);
     if (event->hasBeenUsed()) return;
-    
+
     for (auto elem : interactionHandlers_) elem->invokeEvent(event);
 }
 
 void Processor::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
     event->markAsVisited(this);
-    
+
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
@@ -436,16 +452,10 @@ void Processor::propagateEvent(Event* event, Outport* source) {
     if (used) event->markAsUsed();
 }
 
-const std::string Processor::getCodeStateString(CodeState state) {
-    std::stringstream ss;
-    ss << state;
-    return ss.str();
-}
-
 std::vector<std::string> Processor::getPath() const {
     std::vector<std::string> path;
     path.push_back(util::stripIdentifier(identifier_));
     return path;
 }
 
-}  // namespace
+}  // namespace inviwo

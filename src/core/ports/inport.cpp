@@ -35,22 +35,38 @@
 namespace inviwo {
 
 Inport::Inport(std::string identifier)
-    : Port(identifier), changed_(false), optional_(false), lastInvalidationLevel_(InvalidationLevel::Valid) {}
+    : Port(identifier)
+    , isReady_{false,
+               [this](const bool& isReady) {
+                   if (processor_) processor_->readyUpdate();
+               },
+               [this]() {
+                   return (!isConnected() && isOptional()) ||
+                          (isConnected() && util::all_of(connectedOutports_,
+                                                         [](Outport* p) { return p->isReady(); }));
+               }}
+    , changed_(false)
+    , optional_(false)
+    , lastInvalidationLevel_(InvalidationLevel::Valid) {}
 
-Inport::~Inport() {}
+Inport::~Inport() = default;
 
 bool Inport::isConnected() const { return !connectedOutports_.empty(); }
 
-bool Inport::isReady() const {
-    return isConnected() &&
-           util::all_of(connectedOutports_, [](Outport* p) { return p->isReady(); });
-}
+bool Inport::isReady() const { return isReady_; }
+
+void Inport::readyUpdate() { isReady_.update(); }
 
 bool Inport::isOptional() const { return optional_; }
-void Inport::setOptional(bool optional) { optional_ = optional; }
+
+void Inport::setOptional(bool optional) {
+    optional_ = optional;
+    isReady_.update();
+}
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
-    if (lastInvalidationLevel_ == InvalidationLevel::Valid && invalidationLevel >= InvalidationLevel::InvalidOutput)
+    if (lastInvalidationLevel_ == InvalidationLevel::Valid &&
+        invalidationLevel >= InvalidationLevel::InvalidOutput)
         onInvalidCallback_.invokeAll();
     lastInvalidationLevel_ = std::max(lastInvalidationLevel_, invalidationLevel);
 
@@ -99,6 +115,7 @@ void Inport::connectTo(Outport* outport) {
         setChanged(true, outport);  // mark that we should call onChange.
         onConnectCallback_.invokeAll();
         invalidate(InvalidationLevel::InvalidOutput);
+        isReady_.update();
     }
 }
 
@@ -110,6 +127,7 @@ void Inport::disconnectFrom(Outport* outport) {
         setChanged(true, outport);      // mark that we should call onChange.
         onDisconnectCallback_.invokeAll();
         invalidate(InvalidationLevel::InvalidOutput);
+        isReady_.update();
     }
 }
 
@@ -138,23 +156,17 @@ const BaseCallBack* Inport::onChange(std::function<void()> lambda) {
     return onChangeCallback_.addLambdaCallback(lambda);
 }
 
-void Inport::removeOnChange(const BaseCallBack* callback) {
-    onChangeCallback_.remove(callback);
-}
+void Inport::removeOnChange(const BaseCallBack* callback) { onChangeCallback_.remove(callback); }
 
 const BaseCallBack* Inport::onInvalid(std::function<void()> lambda) {
     return onInvalidCallback_.addLambdaCallback(lambda);
 }
-void Inport::removeOnInvalid(const BaseCallBack* callback) {
-    onInvalidCallback_.remove(callback);
-}
+void Inport::removeOnInvalid(const BaseCallBack* callback) { onInvalidCallback_.remove(callback); }
 
 const BaseCallBack* Inport::onConnect(std::function<void()> lambda) {
     return onConnectCallback_.addLambdaCallback(lambda);
 }
-void Inport::removeOnConnect(const BaseCallBack* callback) {
-    onConnectCallback_.remove(callback);
-}
+void Inport::removeOnConnect(const BaseCallBack* callback) { onConnectCallback_.remove(callback); }
 const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) {
     return onDisconnectCallback_.addLambdaCallback(lambda);
 }
@@ -162,4 +174,4 @@ void Inport::removeOnDisconnect(const BaseCallBack* callback) {
     onDisconnectCallback_.remove(callback);
 }
 
-}  // namespace
+}  // namespace inviwo

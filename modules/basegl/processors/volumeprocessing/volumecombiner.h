@@ -80,7 +80,6 @@ public:
     virtual ~VolumeCombiner() = default;
 
     virtual void process() override;
-    virtual bool isReady() const override;
 
 private:
     std::string buildEquation() const;

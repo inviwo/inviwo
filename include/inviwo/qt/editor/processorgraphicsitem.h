@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORGRAPHICSITEM_H
@@ -59,7 +59,7 @@ class IVW_QTEDITOR_API ProcessorGraphicsItem : public EditorGraphicsItem,
                                                public ProcessorMetaDataObserver {
 public:
     ProcessorGraphicsItem(Processor* processor);
-    ~ProcessorGraphicsItem();
+    virtual ~ProcessorGraphicsItem();
 
     Processor* getProcessor() const;
     std::string getIdentifier() const;
@@ -81,15 +81,9 @@ public:
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* event) override;
 
-    // ProcessorObserver overrides
-    virtual void onProcessorIdentifierChange(Processor*) override;
-    virtual void onProcessorPortAdded(Processor*, Port*) override;
-    virtual void onProcessorPortRemoved(Processor*, Port*) override;
-    #if IVW_PROFILING
-    virtual void onProcessorAboutToProcess(Processor*) override;
-    virtual void onProcessorFinishedProcess(Processor*) override;
+#if IVW_PROFILING
     void resetTimeMeasurements();
-    #endif
+#endif
 
     void setHighlight(bool val);
 
@@ -102,13 +96,24 @@ protected:
 
     void updateWidgets();
 
-    enum class PortType {In, Out};
+    enum class PortType { In, Out };
     QPointF portPosition(PortType type, size_t index);
-    void addInport(Inport *port);
-    void addOutport(Outport *port);
-    void removeInport(Inport *port);
-    void removeOutport(Outport *port);
+    void addInport(Inport* port);
+    void addOutport(Outport* port);
+    void removeInport(Inport* port);
+    void removeOutport(Outport* port);
 
+    // ProcessorObserver overrides
+    virtual void onProcessorIdentifierChange(Processor*) override;
+    virtual void onProcessorReadyChange(Processor*) override;
+    virtual void onProcessorPortAdded(Processor*, Port*) override;
+    virtual void onProcessorPortRemoved(Processor*, Port*) override;
+#if IVW_PROFILING
+    virtual void onProcessorAboutToProcess(Processor*) override;
+    virtual void onProcessorFinishedProcess(Processor*) override;
+#endif
+
+    // ProcessorMetaDataObserver overrides
     virtual void onProcessorMetaDataPositionChange() override;
     virtual void onProcessorMetaDataVisibilityChange() override;
     virtual void onProcessorMetaDataSelectionChange() override;
@@ -125,19 +130,19 @@ private:
 
     std::map<Inport*, ProcessorInportGraphicsItem*> inportItems_;
     std::map<Outport*, ProcessorOutportGraphicsItem*> outportItems_;
-    
+
     bool highlight_;
 
-    #if IVW_PROFILING 
+#if IVW_PROFILING
     size_t processCount_;
     LabelGraphicsItem* countLabel_;
     double maxEvalTime_;
     double evalTime_;
     double totEvalTime_;
     Clock clock_;
-    #endif
+#endif
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORGRAPHICSITEM_H

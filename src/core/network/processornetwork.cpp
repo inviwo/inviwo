@@ -303,10 +303,6 @@ void ProcessorNetwork::onProcessorInvalidationEnd(Processor* p) {
     }
 }
 
-void ProcessorNetwork::onProcessorRequestEvaluate(Processor*) {
-    notifyObserversProcessorNetworkEvaluateRequest();
-}
-
 void ProcessorNetwork::onProcessorIdentifierChange(Processor* processor) {
     util::map_erase_remove_if(processors_, [processor](ProcessorMap::const_reference elem) {
         return elem.second == processor;

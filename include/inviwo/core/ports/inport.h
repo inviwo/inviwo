@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/util/callback.h>
+#include <inviwo/core/util/statecoordinator.h>
 
 namespace inviwo {
 
@@ -59,12 +60,13 @@ public:
     virtual bool isConnected() const override;
     
     /**
-     * A inport is ready when it is connected, and it's outports are ready.
+     * An inport is ready when it is connected, and it's outports are ready.
+     * An optional inport is considered ready when disconnected.
      */
     virtual bool isReady() const override;
     
     /**
-     * A inport can be optional in a processor, in which case the processor will be ready even
+     * An inport can be optional in a processor, in which case the processor will be ready even
      * if the port is not;
      */
     bool isOptional() const;
@@ -136,6 +138,8 @@ protected:
      *    Processor:process. From above in the network.
      */
     virtual void setValid(const Outport* source);
+
+    void readyUpdate();
     
     // Usually called with false (reset) by Processor::setValid after the Processor::process
     virtual void setChanged(bool changed = true, const Outport* source = nullptr);
@@ -143,6 +147,7 @@ protected:
     // Called by the processor network.
     void callOnChangeIfChanged() const;
 
+    StateCoordinator<bool> isReady_;
     std::vector<Outport*> connectedOutports_;
     
 private:

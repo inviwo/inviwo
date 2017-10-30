@@ -243,7 +243,6 @@ private:
     virtual void onAboutPropertyChange(Property*) override;
     virtual void onProcessorInvalidationBegin(Processor*) override;
     virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorRequestEvaluate(Processor* p = nullptr) override;
     virtual void onProcessorIdentifierChange(Processor*) override;
     virtual void onProcessorPortRemoved(Processor*, Port* port) override;
 

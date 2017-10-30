@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/port.h>
+#include <inviwo/core/util/statecoordinator.h>
 
 namespace inviwo {
 
@@ -55,7 +56,7 @@ public:
     /**
      * An outport is ready if it has data and is valid.
      */
-    virtual bool isReady() const override = 0;
+    virtual bool isReady() const override;
 
     /**
      *    Called by Processor::invalidate, will invalidate its connected inports.
@@ -93,6 +94,7 @@ protected:
     virtual void connectTo(Inport* port);
     virtual void disconnectFrom(Inport* port);
 
+    StateCoordinator<bool> isReady_;
     InvalidationLevel invalidationLevel_;
     std::vector<Inport*> connectedInports_;
 

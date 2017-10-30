@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -60,20 +60,17 @@ QPoint EditorGraphicsItem::mapPosToSceen(QPointF inPos) const {
         && !scene()->views().isEmpty()                      // that scene is displayed in a view...
         && scene()->views().first() != nullptr              // ... which is not null...
         && scene()->views().first()->viewport() != nullptr  // ... and has a viewport
-        ) {
+    ) {
         QPointF sceneP = mapToScene(inPos);
         QGraphicsView* v = scene()->views().first();
         QPoint viewP = v->mapFromScene(sceneP);
         return v->viewport()->mapToGlobal(viewP);
     } else {
-        return QPoint(0,0);
+        return QPoint(0, 0);
     }
-
 }
 
-void EditorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    showToolTipHelper(e, QString("Test"));
-}
+void EditorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {}
 
 void EditorGraphicsItem::showToolTipHelper(QGraphicsSceneHelpEvent* e, QString string) const {
     QGraphicsView* v = scene()->views().first();
@@ -99,90 +96,93 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
     auto t = doc.append("html").append("body").append("table");
-    
+
+    auto inport = dynamic_cast<const Inport*>(port);
+    auto outport = dynamic_cast<Outport*>(port);
+    if (!outport && inport) {
+        outport = inport->getConnectedOutport();
+    }
 
     if (portinfo) {
         auto pi = t.append("tr").append("td");
         pi.append("b", port->getClassIdentifier(), {{"style", "color:white;"}});
         utildoc::TableBuilder tb(pi, P::end());
-        if (auto inport = dynamic_cast<const Inport*>(port)) {
-            if (inport->isOptional()) {
-                tb(H("Optional Port"));
-            }
-        }
         tb(H("Identifier"), port->getIdentifier());
-        
-    }
+        tb(H("Ready"), port->isReady());
+        tb(H("Connected"), port->isConnected());
 
-    if (inspector) {
-        const std::string imageType = "raw";
-
-        if (auto outport = dynamic_cast<Outport*>(port)) {
-            if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
-
-                bool isImagePort = (dynamic_cast<ImageOutport*>(port) != nullptr);
-
-                std::vector<std::pair<std::string, const Layer*>> layers;
-                if (isImagePort) {
-                    // register all color layers
-                    for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
-                        const auto layer = image->getColorLayer(i);
-                        std::stringstream ss;
-                        ss << "Color Layer " << i << " " << layer->getDataFormat()->getString();
-                        layers.push_back({ss.str(), layer});
-                    }
-
-                    // register picking layer
-                    {
-                        std::stringstream ss;
-                        ss << "Picking Layer "
-                           << image->getPickingLayer()->getDataFormat()->getString();
-                        layers.push_back({ss.str(), image->getPickingLayer()});
-                    }
-                    // register depth layer
-                    {
-                        std::stringstream ss;
-                        ss << "Depth Layer "
-                           << image->getDepthLayer()->getDataFormat()->getString();
-                        layers.push_back({ss.str(), image->getDepthLayer()});
-                    }
-                } else {
-                    // outport is not an ImageOutport, show only first color layer
-                    layers.push_back({"", image->getColorLayer(0)});
-                }
-
-                // add all layer images into the same row
-                auto tableCell = t.append("tr").append("td").append("table").append("tr");
-                size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
-                size_t rowCount = 0;
-                for (auto item : layers) {
-                    if (rowCount >= perRow) {
-                        rowCount = 0;
-                        tableCell = t.append("tr").append("td").append("table").append("tr");
-                    }
-                    auto name = item.first;
-                    auto layer = item.second;
-
-                    auto imgbuf = layer->getAsCodedBuffer("png");
-                    QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()), static_cast<int>(imgbuf->size()));
-
-                    auto table = tableCell.append("td").append("table");
-
-                    table.append("tr").append("td").append(
-                        "img", "",
-                        {{"width", std::to_string(portInspectorSize)},
-                         {"height", std::to_string(portInspectorSize)},
-                         {"src",
-                          "data:image/png;base64," + std::string(byteArray.toBase64().data())}});
-                    if (!name.empty()) {
-                        table.append("tr").append("td", name);
-                    }
-                    ++rowCount;
-                }
-            }
+        if (inport) {
+            std::stringstream ss;
+            ss << inport->getNumberOfConnections() << " (" << inport->getMaxNumberOfConnections()
+               << ")";
+            tb(H("Connections"), ss.str());
+            tb(H("Optional"), inport->isOptional());
         }
     }
 
+    if (inspector && outport) {
+        if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
+
+            bool isImagePort = (dynamic_cast<ImageOutport*>(port) != nullptr);
+
+            std::vector<std::pair<std::string, const Layer*>> layers;
+            if (isImagePort) {
+                // register all color layers
+                for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
+                    const auto layer = image->getColorLayer(i);
+                    std::stringstream ss;
+                    ss << "Color Layer " << i << " " << layer->getDataFormat()->getString();
+                    layers.push_back({ss.str(), layer});
+                }
+
+                // register picking layer
+                {
+                    std::stringstream ss;
+                    ss << "Picking Layer "
+                       << image->getPickingLayer()->getDataFormat()->getString();
+                    layers.push_back({ss.str(), image->getPickingLayer()});
+                }
+                // register depth layer
+                {
+                    std::stringstream ss;
+                    ss << "Depth Layer " << image->getDepthLayer()->getDataFormat()->getString();
+                    layers.push_back({ss.str(), image->getDepthLayer()});
+                }
+            } else {
+                // outport is not an ImageOutport, show only first color layer
+                layers.push_back({"", image->getColorLayer(0)});
+            }
+
+            // add all layer images into the same row
+            auto tableCell = t.append("tr").append("td").append("table").append("tr");
+            size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
+            size_t rowCount = 0;
+            for (auto item : layers) {
+                if (rowCount >= perRow) {
+                    rowCount = 0;
+                    tableCell = t.append("tr").append("td").append("table").append("tr");
+                }
+                auto name = item.first;
+                auto layer = item.second;
+
+                auto imgbuf = layer->getAsCodedBuffer("png");
+                QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()),
+                                     static_cast<int>(imgbuf->size()));
+
+                auto table = tableCell.append("td").append("table");
+
+                table.append("tr").append("td").append(
+                    "img", "",
+                    {{"width", std::to_string(portInspectorSize)},
+                     {"height", std::to_string(portInspectorSize)},
+                     {"src", "data:image/png;base64," + std::string(byteArray.toBase64().data())}});
+                if (!name.empty()) {
+                    table.append("tr").append("td", name);
+                }
+                ++rowCount;
+            }
+        }
+    }
 
     if (portinfo) {
         t.append("tr").append("td", port->getContentInfo());
@@ -195,5 +195,4 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     showToolTipHelper(e, utilqt::toLocalQString(doc));
 }
 
-} // namespace
-
+}  // namespace inviwo

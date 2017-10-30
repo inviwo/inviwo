@@ -31,17 +31,17 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/util/shuntingyard.h>
+#include <inviwo/core/util/zip.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
 
-
 namespace {
-    std::string idToString (const size_t& id){
-        if (id == 0) return "";
-        return inviwo::toString(id);
-    }
+std::string idToString(const size_t& id) {
+    if (id == 0) return "";
+    return inviwo::toString(id);
 }
+}  // namespace
 
 namespace inviwo {
 
@@ -52,9 +52,7 @@ const ProcessorInfo VolumeCombiner::processorInfo_{
     CodeState::Experimental,      // Code state
     Tags::GL,                     // Tags
 };
-const ProcessorInfo VolumeCombiner::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeCombiner::getProcessorInfo() const { return processorInfo_; }
 
 VolumeCombiner::VolumeCombiner()
     : Processor()
@@ -77,6 +75,8 @@ VolumeCombiner::VolumeCombiner()
     description_.setSemantics(PropertySemantics::Multiline);
     description_.setReadOnly(true);
     description_.setCurrentStateAsDefault();
+
+    isReady_.setUpdate([this]() { return allInportsAreReady() && (valid_ || dirty_); });
 
     addPort(inport_);
     addPort(outport_);
@@ -101,42 +101,39 @@ VolumeCombiner::VolumeCombiner()
         if (scales_.size() > 0) {
             dirty_ = true;
             delete scales_.removeProperty(scales_.getProperties().back());
+            isReady_.update();
         }
     });
 
-    eqn_.onChange([&]() { 
-        dirty_ = true; 
+    eqn_.onChange([&]() {
+        dirty_ = true;
+        isReady_.update();
     });
 
     inport_.onConnect([&]() {
         dirty_ = true;
         updateProperties();
+        isReady_.update();
     });
     inport_.onDisconnect([&]() {
         dirty_ = true;
         updateProperties();
+        isReady_.update();
     });
 
     useWorldSpace_.onChange([this]() {
         dirty_ = true;
+        isReady_.update();
     });
 }
 
-bool VolumeCombiner::isReady() const {
-    return Processor::isReady() && (valid_ || dirty_);
-}
-
-#include <warn/push>
-#include <warn/ignore/unused-variable>
 std::string VolumeCombiner::buildEquation() const {
     std::map<std::string, double> vars = {};
     std::map<std::string, std::string> symbols;
 
-    size_t i = 0;
-    for (const auto& dummy : inport_) {
-        symbols["s" + toString(i + 1)] = "scale" + toString(i);
-        symbols["v" + toString(i + 1)] = "vol" + toString(i);
-        ++i;
+    for (auto&& i : util::enumerate(inport_)) {
+        symbols["s" + toString(i.first() + 1)] = "scale" + toString(i.first());
+        symbols["v" + toString(i.first() + 1)] = "vol" + toString(i.first());
     }
 
     return shuntingyard::Calculator::shaderCode(eqn_.get(), vars, symbols);
@@ -149,26 +146,23 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
     ss << "in vec4 texCoord_;\n";
 
     ss << "uniform vec4 " << borderValue_.getIdentifier() << ";\n";
-    
-    size_t id = 0;
-    for (const auto& dummy : inport_) {
-        ss << "uniform sampler3D volume" << idToString(id) << ";\n";
-        ss << "uniform VolumeParameters volume" << idToString(id) << "Parameters;\n";
-        ++id;
+
+    for (auto&& i : util::enumerate(inport_)) {
+        ss << "uniform sampler3D volume" << idToString(i.first()) << ";\n";
+        ss << "uniform VolumeParameters volume" << idToString(i.first()) << "Parameters;\n";
     }
     for (auto prop : scales_.getProperties()) {
         ss << "uniform float " << prop->getIdentifier() << ";\n";
     }
-          
+
     ss << "\nvoid main() {\n";
 
-    id = 0;
-    for (const auto& dummy : inport_) {
-        const std::string vol = "vol" + toString(id);
-        const std::string v = "volume" + idToString(id);
-        const std::string vp = "volume" + idToString(id) + "Parameters";
+    for (auto&& i : util::enumerate(inport_)) {
+        const std::string vol = "vol" + toString(i.first());
+        const std::string v = "volume" + idToString(i.first());
+        const std::string vp = "volume" + idToString(i.first()) + "Parameters";
         if (useWorldSpace_) {
-            const std::string coord = "coord" + toString(id);
+            const std::string coord = "coord" + toString(i.first());
             // Retrieve data from world space and use border value if outside of volume
             ss << "    vec3 " << coord << " = (" << vp << ".worldToTexture * "
                << "volumeParameters.textureToWorld * texCoord_).xyz;\n";
@@ -184,7 +178,6 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
             ss << "    vec4 " << vol << " = getNormalizedVoxel(" << v << ", " << vp
                << ", texCoord_.xyz);\n";
         }
-        ++id;
     }
 
     ss << "    FragData0 = " << eqn << ";\n";
@@ -196,16 +189,14 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 }
 
 void VolumeCombiner::updateProperties() {
-    size_t i = 0;
     std::stringstream desc;
-    for (const auto& port : inport_.getConnectedOutports()) {
-        desc << "v" + toString(i + 1) + ": " + port->getProcessor()->getIdentifier() << "\n";       
-        i++;
+    for (const auto& p : util::enumerate(inport_.getConnectedOutports())) {
+        desc << "v" + toString(p.first() + 1) + ": " + p.second()->getProcessor()->getIdentifier()
+             << "\n";
     }
     description_.set(desc.str());
 }
 
-#include <warn/pop>
 
 void VolumeCombiner::process() {
     if (inport_.isChanged()) {
@@ -226,8 +217,9 @@ void VolumeCombiner::process() {
             valid_ = true;
         } catch (Exception& e) {
             valid_ = false;
+            isReady_.update();
             throw Exception(e.getMessage() + ": " + eqn_.get(), IvwContext);
-        }     
+        }
     }
 
     shader_.activate();
@@ -259,9 +251,7 @@ void VolumeCombiner::process() {
 
     shader_.deactivate();
     fbo_.deactivate();
+    isReady_.update();
 }
 
-
-
-}  // namespace
-
+}  // namespace inviwo

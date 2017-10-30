@@ -64,13 +64,12 @@ ImageSource::ImageSource()
 
     imageDimension_.setReadOnly(true);
     addProperty(imageDimension_);
+
+    isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
+    file_.onChange([this]() { isReady_.update(); });
 }
 
-bool ImageSource::isReady() const {
-    return Processor::isReady() && filesystem::fileExists(file_.get());
-}
-
-void ImageSource::process() { 
+void ImageSource::process() {
     if (file_.get().empty()) return;
 
     std::string ext = filesystem::getFileExtension(file_.get());
@@ -110,4 +109,4 @@ void ImageSource::deserialize(Deserializer& d) {
     file_.addNameFilters(rf->getExtensionsForType<Layer>());
 }
 
-}  // namespace
+}  // namespace inviwo

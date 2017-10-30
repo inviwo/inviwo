@@ -102,14 +102,6 @@ private:
 
 }  // namespace
 
-struct IVW_CORE_API ProcessorStates {
-    bool hasBeenVisited(Processor* processor) const;
-    void setProcessorVisited(Processor* processor);
-    void clear();
-
-private:
-    std::unordered_set<Processor*> visited_;
-};
 
 IVW_CORE_API std::unordered_set<Processor*> getDirectPredecessors(Processor* processor);
 IVW_CORE_API std::unordered_set<Processor*> getDirectSuccessors(Processor* processor);
@@ -123,9 +115,9 @@ enum class VisitPattern {Pre, Post};
 #include <warn/push>
 #include <warn/ignore/constant-conditional>
 template <TraversalDirection D, VisitPattern V, typename Func>
-void traverseNetwork(ProcessorStates& state, Processor* processor, Func f) {
-    if (!state.hasBeenVisited(processor)) {
-        state.setProcessorVisited(processor);
+void traverseNetwork(std::unordered_set<Processor*>& state, Processor* processor, Func f) {
+    if (state.count(processor) == 0) {
+        state.insert(processor);
 
         if (V == VisitPattern::Pre) f(processor);
 

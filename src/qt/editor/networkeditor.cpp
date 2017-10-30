@@ -117,8 +117,6 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
     ProcessorGraphicsItem* ret = addProcessorGraphicsItem(processor);
 
     if (auto processorWidget = processor->getProcessorWidget()){
-        processorWidget->addObserver(ret->getStatusItem());
-
         if (auto md = processor->getMetaData<BoolMetaData>("PortInspector")) {
             if (md->get()) {
                 if (auto widget = dynamic_cast<QWidget*>(processorWidget)) {
