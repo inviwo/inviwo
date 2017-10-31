@@ -120,6 +120,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     auto triggerUpdate = [this]() {update(); };
     forceOpaque_.onChange(triggerRecompilation);
     alphaSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
+    faceSettings_[1].frontPart_ = &faceSettings_[0];
 
     //DEBUG, to be removed
     propDebugFragmentLists_.onChange([this]() {debugFragmentLists_ = true; });
@@ -197,6 +198,7 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     {
         container_.addProperty(sameAsFrontFace_);
         container_.addProperty(copyFrontToBack_);
+        copyFrontToBack_.onChange([this]() {copyFrontToBack(); });
     }
 	container_.addProperty(colorSource_);
 	container_.addProperty(transferFunction_);
@@ -205,6 +207,18 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	container_.addProperty(uniformAlpha_);
 	container_.addProperty(normalSource_);
 	container_.addProperty(shadingMode_);
+}
+
+void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
+{
+    transferFunction_.set(frontPart_->transferFunction_.get());
+    externalColor_.set(frontPart_->externalColor_.get());
+    externalColor_.set(frontPart_->externalColor_.get());
+    colorSource_.set(frontPart_->colorSource_.get());
+    separateUniformAlpha_.set(frontPart_->separateUniformAlpha_.get());
+    uniformAlpha_.set(frontPart_->uniformAlpha_.get());
+    normalSource_.set(frontPart_->normalSource_.get());
+    shadingMode_.set(frontPart_->shadingMode_.get());
 }
     
 void FancyMeshRenderer::initializeResources() {
@@ -496,11 +510,6 @@ void FancyMeshRenderer::updateDrawers()
 	auto changed = inport_.getChangedOutports();
 	auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
 	drawer_ = factory->create(inport_.getData().get());
-}
-
-void FancyMeshRenderer::copyFrontToBackSettings()
-{
-	//TODO:
 }
 
 } // namespace

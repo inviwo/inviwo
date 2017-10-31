@@ -88,7 +88,6 @@ protected:
 
 	void setNearFarPlane();
 	void updateDrawers();
-	void copyFrontToBackSettings();
 
     void update();
 	void compileShader();
@@ -166,6 +165,10 @@ protected:
 
 		TemplateOptionProperty<NormalSource> normalSource_;
 		TemplateOptionProperty<ShadingMode> shadingMode_;
+
+        //to copy front to back:
+        FaceRenderSettings* frontPart_;
+        void copyFrontToBack();
 
 		FaceRenderSettings(bool frontFace);
 	} faceSettings_[2];
