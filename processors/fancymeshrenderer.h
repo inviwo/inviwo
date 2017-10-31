@@ -144,7 +144,7 @@ protected:
 	struct FaceRenderSettings
 	{
 		CompositeProperty container_;
-		BoolProperty cull_;
+		BoolProperty show_;
 		
 		TransferFunctionProperty transferFunction_;
 		FloatVec4Property externalColor_;

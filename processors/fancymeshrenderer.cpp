@@ -74,7 +74,7 @@ FancyMeshRenderer::FancyMeshRenderer()
 		InvalidationLevel::InvalidResources)
 	, separateFaceSettings_("separateFaceSettings", "Separate Face Settings", false)
 	, copyFrontToBack_("copyFrontToBack", "Copy Front to Back")
-    , forceOpaque_("forceOpaque", "Force Opaque", false)
+    , forceOpaque_("forceOpaque", "Shade Opaque", false)
 	, faceSettings_{"front_", "back_"}
 	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.frag", false)
 	, needsRecompilation_(true)
@@ -128,9 +128,9 @@ FancyMeshRenderer::FancyMeshRenderer()
 }
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& prefix)
 	: container_(prefix + "container", "Foo")
-	, cull_(prefix + "cull", "Cull", false)
+	, show_(prefix + "show", "Show", true)
 	, transferFunction_(prefix + "tf", "Transfer Function")
-	, externalColor_(prefix + "extraColor", "Color Overwrite")
+	, externalColor_(prefix + "extraColor", "Color")
 	, colorSource_(prefix + "colorSource", "Color Source")
 	, alphaMode_(prefix + "alphaMode", "Alpha Mode")
 	, alphaScale_(prefix + "alphaScale", "Alpha Scale", 1, 0, 10)
@@ -139,7 +139,7 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& pre
 {
 	colorSource_.addOption("vertexColor", "VertexColor", ColorSource::VertexColor);
 	colorSource_.addOption("tf", "Transfer Function", ColorSource::TransferFunction);
-	colorSource_.addOption("external", "Color Overwrite", ColorSource::ExternalColor);
+	colorSource_.addOption("external", "Constant Color", ColorSource::ExternalColor);
 	colorSource_.set(ColorSource::ExternalColor);
 	colorSource_.setCurrentStateAsDefault();
 	externalColor_.setSemantics(PropertySemantics::Color);
@@ -163,7 +163,7 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& pre
 	shadingMode_.set(ShadingMode::Off);
 	shadingMode_.setCurrentStateAsDefault();
 
-	container_.addProperty(cull_);
+	container_.addProperty(show_);
 	container_.addProperty(colorSource_);
 	container_.addProperty(transferFunction_);
 	container_.addProperty(externalColor_);
@@ -265,7 +265,7 @@ void FancyMeshRenderer::process() {
 		utilgl::activateAndClearTarget(outport_);
 	}
 
-    if (faceSettings_[0].cull_ && faceSettings_[1].cull_)
+    if (!faceSettings_[0].show_ && !faceSettings_[1].show_)
     {
         utilgl::deactivateCurrentTarget();
         return; //everything is culled
@@ -296,8 +296,8 @@ void FancyMeshRenderer::process() {
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, opaque);
         utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
         utilgl::CullFaceState culling(
-            faceSettings_[0].cull_ && !faceSettings_[1].cull_ ? GL_FRONT :
-            !faceSettings_[0].cull_ && faceSettings_[1].cull_ ? GL_BACK :
+            !faceSettings_[0].show_ && faceSettings_[1].show_ ? GL_FRONT :
+            faceSettings_[0].show_ && !faceSettings_[1].show_ ? GL_BACK :
             GL_NONE);
         utilgl::BlendModeState blendModeStateGL(
             opaque ? GL_ONE : GL_SRC_ALPHA,
