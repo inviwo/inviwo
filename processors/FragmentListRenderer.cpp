@@ -88,7 +88,7 @@ namespace inviwo
         glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), v); LGL_ERROR;
         glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0); LGL_ERROR;
 
-        //create unix index for index texture
+        //create unit index for index texture
         abufferIdxUnit_ = new TextureUnit();
 
         //clear textures

@@ -91,9 +91,10 @@ vec4 performShading()
     float alpha = 1;
     if (settings.alphaMode==1) {
         //angle-based
-        alpha = acos(abs(dot(normal, toCameraDir))) * 2 / M_PI;
+        alpha = pow(acos(abs(dot(normal, toCameraDir))) * 2 / M_PI, settings.alphaScale);
     }
-    color.a *= alpha * settings.alphaScale;
+    //color.a *= alpha * settings.alphaScale;
+    color.a *= alpha;
 
     // shading
     if (settings.shadingMode==1) {
