@@ -46,7 +46,7 @@ public:
     static std::shared_ptr<Mesh> apply(
         std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
         bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>()
-        , std::function<bool(size3_t)> maskingCallback = [](size3_t p) { return false; });
+        , std::function<bool(size3_t)> maskingCallback = std::function<bool(size3_t)>());
 };
 
 namespace detail {
@@ -129,7 +129,7 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
                 y = dy * j;
                 z = dz * k;
 
-                if (maskingCallback && maskingCallback({i,j,k})) continue;
+                if (maskingCallback && !maskingCallback({i, j, k})) continue;
 
                 p[0] = glm::vec3(x, y, z);
                 p[1] = glm::vec3(x + dx, y, z);
