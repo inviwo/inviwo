@@ -374,7 +374,7 @@ void ProcessorGraphicsItem::onProcessorIdentifierChange(Processor* processor) {
     if (processorWidgetQt) processorWidgetQt->setWindowTitle(QString::fromStdString(newIdentifier));
 }
 
-void ProcessorGraphicsItem::onProcessorReadyChange(Processor*) {
+void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) {
     statusItem_->update();
 }
 

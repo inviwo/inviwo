@@ -105,7 +105,7 @@ protected:
 
     // ProcessorObserver overrides
     virtual void onProcessorIdentifierChange(Processor*) override;
-    virtual void onProcessorReadyChange(Processor*) override;
+    virtual void onProcessorReadyChanged(Processor*) override;
     virtual void onProcessorPortAdded(Processor*, Port*) override;
     virtual void onProcessorPortRemoved(Processor*, Port*) override;
 #if IVW_PROFILING

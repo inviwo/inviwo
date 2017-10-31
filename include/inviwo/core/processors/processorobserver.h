@@ -66,9 +66,21 @@ public:
     virtual void onProcessorAboutToProcess(Processor*){};
     virtual void onProcessorFinishedProcess(Processor*){};
 
-    virtual void onProcessorSourceChange(Processor*){};
-    virtual void onProcessorSinkChange(Processor*){};
-    virtual void onProcessorReadyChange(Processor*){};
+    /**
+     * Called after the processor has changed its source state.
+     * The processor argument is the modified processor
+     */
+    virtual void onProcessorSourceChanged(Processor*){};
+    /**
+     * Called after the processor has changed its sink state.
+     * The processor argument is the modified processor
+     */
+    virtual void onProcessorSinkChanged(Processor*){};
+    /**
+     * Called after the processor has changed its ready state.
+     * The processor argument is the modified processor
+     */
+    virtual void onProcessorReadyChanged(Processor*){};
 };
 
 /** \class ProcessorObservable
@@ -113,13 +125,13 @@ protected:
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorFinishedProcess(p); });
     }
     void notifyObserversSourceChange(Processor* p) {
-        forEachObserver([&](ProcessorObserver* o) { o->onProcessorSourceChange(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorSourceChanged(p); });
     }
     void notifyObserversSinkChange(Processor* p) {
-        forEachObserver([&](ProcessorObserver* o) { o->onProcessorSinkChange(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorSinkChanged(p); });
     }
     void notifyObserversReadyChange(Processor* p) {
-        forEachObserver([&](ProcessorObserver* o) { o->onProcessorReadyChange(p); });
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorReadyChanged(p); });
     }
 };
 

@@ -229,25 +229,18 @@ public:
      * Returns whether the processor is a sink. I.e. whether it pulls data from the network.
      * By default a processor is a sink if it has no outports. This behavior can be customized by
      * setting the isSink_ update functor. For a processor to be evaluated there have to be a sink
-     * among its decedents.
+     * among its decendants.
      * @see StateCoordinator
      */
     bool isSink() const;
 
     /**
-     * Returns whether the processor is ready to be processed. By default this will depends on
+     * Returns whether the processor is ready to be processed. By default this will depend on
      * whether all inports are ready. This behavior can be customized by setting the isReady_
      * update functor.
      * @see StateCoordinator
      */
     bool isReady() const;
-
-    /**
-     * Let the processor know that it should update its isReady_ StateCoordinator. Usually called by
-     * the inports whenever they change isReady status.
-     * @see StateCoordinator
-     */
-    void readyUpdate();
 
     /**
      * Called when the network is evaluated and the processor is ready and not valid.

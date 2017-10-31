@@ -41,7 +41,7 @@ class Inport;
 class Processor;
 
 /**
- * \class Outport 
+ * \class Outport
  * \brief Abstract base class for all outports
  * The Outport can be connected to an arbitrary number of Inports.
  */
@@ -54,18 +54,20 @@ public:
     virtual bool isConnected() const override;
 
     /**
-     * An outport is ready if it has data and is valid.
+     * An outport is ready if it has data and is valid. The port is set valid after its
+     * processor successfully finishes processing.
+     * @see invalidate @see setValid
      */
     virtual bool isReady() const override;
 
     /**
-     *    Called by Processor::invalidate, will invalidate its connected inports.
+     * Called by Processor::invalidate, will invalidate its connected inports.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
     virtual InvalidationLevel getInvalidationLevel() const;
-    
+
     /**
-     *  Propagate events upwards, i.e. to the owning processor.
+     * Propagate events upwards, i.e. to the owning processor.
      */
     virtual void propagateEvent(Event* event);
 
@@ -76,15 +78,15 @@ public:
      * Called each time connected to an inport.
      */
     const BaseCallBack* onConnect(std::function<void()> lambda);
-    /** 
+    /**
      * Called each time disconnected from an inport.
      */
     const BaseCallBack* onDisconnect(std::function<void()> lambda);
     void removeOnConnect(const BaseCallBack* callback);
     void removeOnDisconnect(const BaseCallBack* callback);
     /**
-    *    Called by Processor::setValid, will call setValid its connected inports.
-    */
+     * Called by Processor::setValid, will call setValid its connected inports.
+     */
     virtual void setValid();
 
 protected:
@@ -102,6 +104,6 @@ protected:
     CallBackList onDisconnectCallback_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_OUTPORT_H

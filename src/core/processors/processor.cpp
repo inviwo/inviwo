@@ -78,6 +78,7 @@ void Processor::addPort(Inport* port, const std::string& portGroup) {
 
     notifyObserversProcessorPortAdded(this, port);
     isSource_.update();
+    port->isReady_.setNotify([this](const bool&) { isReady_.update(); });
     isReady_.update();
 }
 
@@ -126,6 +127,7 @@ Port* Processor::removePort(const std::string& identifier) {
 
 Inport* Processor::removePort(Inport* port) {
     notifyObserversProcessorPortRemoved(this, port);
+    port->isReady_.setNotify([](const bool&) {});
     port->setProcessor(nullptr);
     util::erase_remove(inports_, port);
     removePortFromGroups(port);
@@ -303,8 +305,6 @@ bool Processor::isSource() const { return isSource_; }
 bool Processor::isSink() const { return isSink_; }
 
 bool Processor::isReady() const { return isReady_; }
-
-void Processor::readyUpdate() { isReady_.update(); }
 
 bool Processor::allInportsAreReady() const {
     return util::all_of(inports_, [](Inport* p) { return p->isReady(); });

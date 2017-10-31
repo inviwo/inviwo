@@ -62,7 +62,7 @@ private:
     virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) override;
 
     // ProcessorObserver overrides
-    virtual void onProcessorSinkChange(Processor*) override;
+    virtual void onProcessorSinkChanged(Processor*) override;
 
     void requestEvaluate();
     void evaluate();

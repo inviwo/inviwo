@@ -124,12 +124,7 @@ bool operator<=(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
 
 template <typename... Ts>
 void swap(proxy<Ts...>&& a, proxy<Ts...>&& b) {
-    for_each_in_tuple(
-        [](auto&& i, auto&& j) {
-            using std::swap;
-            swap(i, j);
-        },
-        a.data, b.data);
+    std::swap(a.data, b.data);
 }
 
 template <typename T, std::size_t... I>
@@ -218,7 +213,7 @@ struct zipIterator {
     using reference = typename detailzip::iterator_tools<Iterables>::reference;
 
     static_assert(std::is_base_of<std::input_iterator_tag, iterator_category>::value,
-                  "All iterator has to be at least input iterators");
+                  "All iterators have to be at least input iterators");
 
     template <typename Tag, typename IterTuple>
     using require_t = detailzip::require_t<Tag, IterTuple>;

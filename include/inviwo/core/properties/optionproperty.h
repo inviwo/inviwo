@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-/** 
+/**
  *  Base class for the option properties
  *  @see TemplateOptionProperty
  */
@@ -88,8 +88,8 @@ public:
         : id_(id), name_(name), value_(id) {}
 
     template <typename U = T,
-        class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
-        OptionPropertyOption(const T& val)
+              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    OptionPropertyOption(const T& val)
         : id_(toString(val)), name_(camelCaseToHeader(toString(val))), value_(val) {}
 
     std::string id_;
@@ -168,6 +168,10 @@ public:
     virtual TemplateOptionProperty<T>* clone() const override;
     virtual ~TemplateOptionProperty() = default;
 
+    /**
+     * Implicit conversion operator. The OptionProperty will implicitly be converted to T when
+     * possible.
+     */
     operator const T&() const;
 
     /**
@@ -255,7 +259,7 @@ std::string getClassIdentifierForWidget() {
     using ET = typename std::underlying_type<T>::type;
     return getOptionPropertyClassIdentifier<ET>();
 }
-}
+}  // namespace detail
 
 template <typename T>
 PropertyClassIdentifier(TemplateOptionProperty<T>, detail::getOptionPropertyClassIdentifier<T>());
@@ -264,7 +268,6 @@ template <typename T>
 std::string TemplateOptionProperty<T>::getClassIdentifierForWidget() const {
     return detail::getClassIdentifierForWidget<T>();
 }
-
 
 using OptionPropertyUInt = TemplateOptionProperty<unsigned int>;
 using OptionPropertyInt = TemplateOptionProperty<int>;
@@ -466,8 +469,8 @@ bool TemplateOptionProperty<T>::setSelectedValue(T val) {
 
 template <typename T>
 void TemplateOptionProperty<T>::replaceOptions(std::vector<std::string> ids,
-                                                           std::vector<std::string> displayNames,
-                                                           std::vector<T> values) {
+                                               std::vector<std::string> displayNames,
+                                               std::vector<T> values) {
     std::string selectId{};
     if (!options_.empty()) selectId = getSelectedIdentifier();
 
@@ -485,8 +488,7 @@ void TemplateOptionProperty<T>::replaceOptions(std::vector<std::string> ids,
 }
 
 template <typename T>
-void TemplateOptionProperty<T>::replaceOptions(
-    std::vector<OptionPropertyOption<T>> options) {
+void TemplateOptionProperty<T>::replaceOptions(std::vector<OptionPropertyOption<T>> options) {
     std::string selectId{};
     if (!options_.empty()) selectId = getSelectedIdentifier();
 
@@ -601,7 +603,7 @@ void TemplateOptionProperty<T>::deserialize(Deserializer& d) {
     } else {
         selectedIndex_ = 0;
     }
-    
+
     if (oldIndex != selectedIndex_ || oldOptions != options_) propertyModified();
 }
 
@@ -613,7 +615,7 @@ Document TemplateOptionProperty<T>::getDescription() const {
     Document doc = BaseOptionProperty::getDescription();
 
     if (options_.size() > 0) {
-        auto table = doc.get({ P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}}) });
+        auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
         utildoc::TableBuilder tb(table);
         tb(H("Selected Index"), selectedIndex_);
         tb(H("Selected Name"), options_[selectedIndex_].name_);

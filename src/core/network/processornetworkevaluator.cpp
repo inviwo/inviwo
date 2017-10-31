@@ -149,7 +149,7 @@ void ProcessorNetworkEvaluator::evaluate() {
     notifyObserversProcessorNetworkEvaluationEnd();
 }
 
-void ProcessorNetworkEvaluator::onProcessorSinkChange(Processor*) {
+void ProcessorNetworkEvaluator::onProcessorSinkChanged(Processor*) {
     processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 

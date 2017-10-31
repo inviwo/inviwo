@@ -39,17 +39,18 @@ namespace inviwo {
 /**
  * \class StateCoordinator
  * A utility class for keeping track of changes to some state, and delivering notifications when it
- * changes. The uses two functors one for updating the state (updater), and one for delivering a
- * notification (notifier) when the result of the updater changes. Moreover there is an update
- * function which the user should call whenever the result of the updater might change.
- * For example in Processor the isSink StateCoordinator updater depends on the number of outports,
- * hence we call update after each call to addPort and removePort.
+ * changes. The StateCoordinator uses two functors one for updating the state (updater), and one for
+ * delivering a notification (notifier) when the result of the updater changes. Moreover there is an
+ * update function which the user should call whenever the result of the updater might change. For
+ * example in Processor the isSink StateCoordinator updater depends on the number of outports, hence
+ * we call update after each call to addPort and removePort.
  */
 template <typename T>
 class StateCoordinator {
 public:
     /**
-     * Construct a StateCoordinator with a initial value, a notification functor, and a update functor.
+     * Construct a StateCoordinator with a initial value, a notification functor, and a update
+     * functor.
      */
     StateCoordinator(const T& value, std::function<void(const T&)> notifyer,
                      std::function<T()> updater)
@@ -77,7 +78,7 @@ public:
     /**
      * Set the notifier functor
      */
-    void setNotify(std::function<void(const T&)> notifyer) { notifyer_ = std::move(notifyer); }
+    void setNotify(std::function<void(const T&)> notifier) { notifyer_ = std::move(notifier); }
 
     /**
      *	Implicit conversion to value.

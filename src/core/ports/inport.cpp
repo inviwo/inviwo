@@ -37,9 +37,7 @@ namespace inviwo {
 Inport::Inport(std::string identifier)
     : Port(identifier)
     , isReady_{false,
-               [this](const bool& isReady) {
-                   if (processor_) processor_->readyUpdate();
-               },
+               [this](const bool& isReady) {},
                [this]() {
                    return (!isConnected() && isOptional()) ||
                           (isConnected() && util::all_of(connectedOutports_,
