@@ -69,8 +69,6 @@ public:
 
     virtual void process() override;
 
-    virtual bool isReady() const override;
-
 protected:
     virtual void onFindFiles();
     bool isValidImageFile(std::string);

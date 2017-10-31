@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORPORTGRAPHICSITEM_H
@@ -70,21 +70,15 @@ public:
     void removeConnection(ConnectionGraphicsItem* connection);
     std::vector<ConnectionGraphicsItem*>& getConnections();
     ProcessorGraphicsItem* getProcessor();
-    virtual void showToolTip(QGraphicsSceneHelpEvent* e);
+    virtual void showToolTip(QGraphicsSceneHelpEvent* e) = 0;
 
 protected:
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
-    // events
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-
-    // Members
-    std::vector<ConnectionGraphicsItem*> connections_;
-
-private:
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual void updateConnectionPositions() = 0;
+
+    std::vector<ConnectionGraphicsItem*> connections_;
     ProcessorGraphicsItem* processor_;
     ProcessorPortConnectionIndicator* connectionIndicator_;
-    Port* port_;
     float size_;
     float lineWidth_;
 };
@@ -99,15 +93,14 @@ public:
     enum { Type = UserType + ProcessorInportGraphicsType };
     int type() const { return Type; }
 
-    virtual void showToolTip(QGraphicsSceneHelpEvent* e);
+    virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
 
-protected:   
-    // events
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e);
-
-private:
-    virtual void updateConnectionPositions();
-    Inport* port_;
+protected:
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void updateConnectionPositions() override;
+    Inport* inport_;
 };
 
 class IVW_QTEDITOR_API ProcessorOutportGraphicsItem : public ProcessorPortGraphicsItem {
@@ -120,16 +113,17 @@ public:
     enum { Type = UserType + ProcessorOutportGraphicsType };
     int type() const { return Type; }
 
-protected:
-    // events
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e);
+    virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
 
-private:
-    virtual void updateConnectionPositions();
-    Outport* port_;
+protected:
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+
+    virtual void updateConnectionPositions() override;
+    Outport* outport_;
 };
 
-
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORPORTGRAPHICSITEM_H

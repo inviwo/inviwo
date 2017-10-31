@@ -45,6 +45,7 @@
 
 namespace inviwo {
 
+class Canvas;
 class CanvasProcessorWidget;
 class ProcessorNetworkEvaluator;
 template<typename T>
@@ -70,8 +71,6 @@ public:
 
     std::shared_ptr<const Image> getImage() const;
     
-    void triggerQueuedEvaluation();
-    virtual bool isReady() const override;
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
     virtual void propagateEvent(Event* event, Outport* source) override;
 
@@ -83,9 +82,9 @@ public:
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
+    virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) override;
 
-    void performEvaluationAtNextShow();
-    virtual void performEvaluateRequest() override;
+    Canvas* getCanvas() const;
 
     ImageInport inport_;
 
@@ -111,12 +110,10 @@ private:
     void sizeChanged();
     ivec2 calcSize();
 
-    ivec2 previousImageSize_;
-    
+    ivec2 previousImageSize_;   
     ProcessorWidgetMetaData* widgetMetaData_;
-
     CanvasProcessorWidget* canvasWidget_;   //< non-owning reference
-    bool queuedRequest_;
+
 };
 
 }  // namespace

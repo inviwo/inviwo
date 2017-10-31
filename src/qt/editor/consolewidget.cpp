@@ -475,6 +475,8 @@ QModelIndex ConsoleWidget::mapFromSource(int row, int col) {
 
 void ConsoleWidget::copy() {
     const auto& inds = tableView_->selectionModel()->selectedIndexes();
+    if (inds.isEmpty()) return;
+
     int prevrow = inds.first().row();
     bool first = true;
     QString text;

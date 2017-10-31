@@ -52,22 +52,6 @@ public:
 
     virtual void process() override;
 
-    virtual bool isReady() const override {
-        if (Processor::isReady()) {
-            return true;
-        }
-
-        if (!seedPoints_.isReady()) return false;
-
-        if (sampler_.isConnected()) {
-            return sampler_.isReady();
-        }
-        if (volume_.isConnected()) {
-            return volume_.isReady();
-        }
-        return false;
-    }
-
 protected:
     DataInport<SpatialSampler<3, 3, double>> sampler_;
     SeedPoints3DInport seedPoints_;
@@ -84,6 +68,6 @@ protected:
     BoolProperty useOpenMP_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_STREAMLINES_H

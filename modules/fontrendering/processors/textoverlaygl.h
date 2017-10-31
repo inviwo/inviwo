@@ -86,8 +86,6 @@ public:
 
     virtual void deserialize(Deserializer& d) override;
 
-    virtual bool isReady() const override;
-
 protected:
     virtual void process() override;
 

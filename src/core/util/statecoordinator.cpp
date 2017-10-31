@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORSTATUSGRAPHICSITEM_H
-#define IVW_PROCESSORSTATUSGRAPHICSITEM_H
-
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/editorgrapicsitem.h>
-#include <inviwo/core/processors/activityindicator.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QEvent>
-#include <QRectF>
-#include <warn/pop>
+#include <inviwo/core/util/statecoordinator.h>
 
 namespace inviwo {
 
-class Processor;
+} // namespace
 
-class IVW_QTEDITOR_API ProcessorStatusGraphicsItem : public EditorGraphicsItem,
-                                                     public ActivityIndicatorObserver {
-public:
-    ProcessorStatusGraphicsItem(QGraphicsRectItem* parent, Processor* processor);
-    virtual ~ProcessorStatusGraphicsItem() = default;
-
-    void setRunning(bool);
-
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorStatusGraphicsType };
-    int type() const override { return Type; }
-
-    virtual void update(const QRectF& rect = QRectF());
-
-protected:
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
-    virtual void activityIndicatorChanged(bool active) override;
-
-private:
-    enum class State {Invalid, Running, Ready};
-
-    Processor* processor_;
-    float size_;
-    float lineWidth_;
-
-    State state_;
-    State current_;
-};
-
-}  // namespace
-
-#endif  // IVW_PROCESSORSTATUSGRAPHICSITEM_H

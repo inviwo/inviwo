@@ -116,10 +116,6 @@ void DistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, Prope
         for (auto& port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
     }
     notifyObserversInvalidationEnd(this);
-
-    if (!isValid() && isSink()) {
-        performEvaluateRequest();
-    }
 }
 
 void DistanceTransformRAM::process() {

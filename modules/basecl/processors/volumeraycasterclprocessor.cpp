@@ -47,9 +47,7 @@ const ProcessorInfo VolumeRaycasterCLProcessor::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CL,                        // Tags
 };
-const ProcessorInfo VolumeRaycasterCLProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeRaycasterCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     : Processor()
@@ -65,6 +63,11 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
     , lighting_("lighting", "Lighting")
     , camera_("camera", "Camera") {
+
+    backgroundPort_.setOptional(true);
+
+    isReady_.setUpdate([this]() { return allInportsAreReady() && volumeRaycaster_.isValid(); });
+
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -93,11 +96,6 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     onParameterChanged();
 }
 
-bool VolumeRaycasterCLProcessor::isReady() const {
-    return volumePort_.isReady() && entryPort_.isReady() && exitPort_.isReady() &&
-           volumeRaycaster_.isValid();
-}
-
 void VolumeRaycasterCLProcessor::process() {
     try {
         // This macro will create an event called profilingEvent if IVW_PROFILING is enabled,
@@ -120,6 +118,7 @@ void VolumeRaycasterCLProcessor::process() {
 }
 
 void VolumeRaycasterCLProcessor::onKernelCompiled(const cl::Kernel*) {
+    isReady_.update();
     invalidate(InvalidationLevel::InvalidResources);
 }
 
@@ -130,5 +129,4 @@ void VolumeRaycasterCLProcessor::onParameterChanged() {
     volumeRaycaster_.useGLSharing(useGLSharing_.get());
 }
 
-}  // namespace
-
+}  // namespace inviwo

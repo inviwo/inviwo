@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
 #include <inviwo/core/network/evaluationerrorhandler.h>
 
@@ -42,6 +43,7 @@ class Processor;
 class ProcessorNetwork;
 
 class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
+                                               public ProcessorObserver,
                                                public ProcessorNetworkEvaluationObservable {
     friend class Processor;
 
@@ -51,12 +53,16 @@ public:
     void setExceptionHandler(EvaluationErrorHandler handler);
 
 private:
+    // ProcessorNetworkObserver overrides
     virtual void onProcessorNetworkEvaluateRequest() override;
     virtual void onProcessorNetworkUnlocked() override;
     virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
     virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
     virtual void onProcessorNetworkDidAddConnection(const PortConnection& connection) override;
     virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& connection) override;
+
+    // ProcessorObserver overrides
+    virtual void onProcessorSinkChanged(Processor*) override;
 
     void requestEvaluate();
     void evaluate();

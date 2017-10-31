@@ -64,6 +64,9 @@ VolumeSource::VolumeSource()
     , information_("Information", "Data information")
     , volumeSequence_("Sequence", "Sequence") {
     
+    // make sure that we always process even if not connected
+    isSink_.setUpdate([]() { return true; });
+
     file_.setContentType("volume");
     file_.setDisplayName("Volume file");
 
@@ -118,10 +121,6 @@ void VolumeSource::addFileNameFilters() {
     file_.addNameFilter(FileExtension("*", "All Files"));
     file_.addNameFilters(rf->getExtensionsForType<Volume>());
     file_.addNameFilters(rf->getExtensionsForType<VolumeSequence>());
-}
-
-bool VolumeSource::isSink() const {
-    return true;
 }
 
 void VolumeSource::process() {

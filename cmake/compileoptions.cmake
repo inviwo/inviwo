@@ -90,6 +90,14 @@ macro(ivw_define_standard_definitions project_name target)
     ivw_to_macro_name(u_project_name ${project_name})
     set_target_properties(${target} PROPERTIES DEFINE_SYMBOL ${u_project_name}_EXPORTS)
 
+    if(IVW_PROFILING)
+        target_compile_definitions(${target} PRIVATE IVW_PROFILING)
+    endif()
+
+    if(BUILD_SHARED_LIBS)
+        target_compile_definitions(${target} PRIVATE INVIWO_ALL_DYN_LINK)
+    endif()
+
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         # Large memory support
         if(CMAKE_SIZEOF_VOID_P MATCHES 4)

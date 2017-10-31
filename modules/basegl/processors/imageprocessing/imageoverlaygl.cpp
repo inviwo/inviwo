@@ -210,7 +210,7 @@ ImageOverlayGL::ImageOverlayGL()
     , currentDim_(0u, 0u) 
 {
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
+    overlayPort_.setOptional(true);
     addPort(inport_);
     addPort(overlayPort_);
 
@@ -275,8 +275,6 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         }
     }
 }
-
-bool ImageOverlayGL::isReady() const { return inport_.isReady(); }
 
 void ImageOverlayGL::onStatusChange() {
     if (overlayPort_.isConnected()) {

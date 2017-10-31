@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/editor/processorgraphicsitem.h>
@@ -52,38 +52,83 @@ namespace inviwo {
 
 ProcessorPortGraphicsItem::ProcessorPortGraphicsItem(ProcessorGraphicsItem* parent,
                                                      const QPointF& pos, bool up, Port* port)
-    : EditorGraphicsItem(parent)
-    , processor_(parent)
-    , port_(port)
-    , size_(9.0f)
-    , lineWidth_(1.0f) {
-    
+    : EditorGraphicsItem(parent), processor_(parent), size_(9.0f), lineWidth_(1.0f) {
+
     setRect(-(0.5f * size_ + lineWidth_), -(0.5f * size_ + lineWidth_), size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
     setPos(pos);
     setFlags(ItemSendsScenePositionChanges);
 
-    auto color = port_->getColorCode();
+    auto color = port->getColorCode();
     connectionIndicator_ =
         new ProcessorPortConnectionIndicator(this, up, QColor(color.r, color.g, color.b));
     connectionIndicator_->setVisible(false);
 }
 
-void ProcessorPortGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
+void ProcessorPortGraphicsItem::addConnection(ConnectionGraphicsItem* connection) {
+    connections_.push_back(connection);
+    connectionIndicator_->setVisible(true);
+    updateConnectionPositions();
+    update();  // we need to repaint the connection
+}
+void ProcessorPortGraphicsItem::removeConnection(ConnectionGraphicsItem* connection) {
+    connections_.erase(std::find(connections_.begin(), connections_.end(), connection));
+    connectionIndicator_->setVisible(!connections_.empty());
+    update();  // we need to repaint the connection
+}
+
+QVariant ProcessorPortGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
+    if (change == QGraphicsItem::ItemScenePositionHasChanged) {
+        updateConnectionPositions();
+    }
+    return EditorGraphicsItem::itemChange(change, value);
+}
+
+std::vector<ConnectionGraphicsItem*>& ProcessorPortGraphicsItem::getConnections() {
+    return connections_;
+}
+
+ProcessorGraphicsItem* ProcessorPortGraphicsItem::getProcessor() { return processor_; }
+
+ProcessorPortGraphicsItem::~ProcessorPortGraphicsItem() = default;
+
+ProcessorInportGraphicsItem::ProcessorInportGraphicsItem(ProcessorGraphicsItem* parent,
+                                                         const QPointF& pos, Inport* inport)
+    : ProcessorPortGraphicsItem(parent, pos, true, inport), inport_(inport) {}
+
+Inport* ProcessorInportGraphicsItem::getPort() { return inport_; }
+
+void ProcessorInportGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
+    if (e->buttons() == Qt::LeftButton && inport_->isConnected()) {
+        getNetworkEditor()->releaseConnection(this);
+    }
+    e->accept();
+}
+
+void ProcessorInportGraphicsItem::updateConnectionPositions() {
+    for (auto& elem : connections_) {
+        elem->updateShape();
+    }
+}
+
+void ProcessorInportGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
+    showPortInfo(e, inport_);
+}
+
+void ProcessorInportGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setRenderHint(QPainter::SmoothPixmapTransform, true);
 
     QColor borderColor(40, 40, 40);
 
-    uvec3 color = port_->getColorCode();
+    uvec3 color = inport_->getColorCode();
 
     QRectF portRect(QPointF(-size_, size_) / 2.0f, QPointF(size_, -size_) / 2.0f);
     p->setBrush(QColor(color.r, color.g, color.b));
     p->setPen(QPen(borderColor, lineWidth_));
 
-    auto inport = dynamic_cast<const Inport*>(port_);
-    if (inport && inport->isOptional()) {
+    if (inport_->isOptional()) {
         // Use a different shape for optional ports (rounded at the bottom)
         QPainterPath path;
         auto start = (portRect.topRight() + portRect.bottomRight()) * 0.5;
@@ -108,72 +153,14 @@ void ProcessorPortGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsIte
     p->restore();
 }
 
-void ProcessorPortGraphicsItem::addConnection(ConnectionGraphicsItem* connection) {
-    connections_.push_back(connection);
-    connectionIndicator_->setVisible(true);
-    updateConnectionPositions();
-    update(); // we need to repaint the connection
-}
-void ProcessorPortGraphicsItem::removeConnection(ConnectionGraphicsItem* connection) {
-    connections_.erase(std::find(connections_.begin(), connections_.end(), connection));
-    connectionIndicator_->setVisible(!connections_.empty());
-    update(); // we need to repaint the connection
-}
-
-QVariant ProcessorPortGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
-    if (change == QGraphicsItem::ItemScenePositionHasChanged) {
-        updateConnectionPositions();
-    }
-    return EditorGraphicsItem::itemChange(change, value);
-}
-
-std::vector<ConnectionGraphicsItem*>& ProcessorPortGraphicsItem::getConnections() {
-    return connections_;
-}
-
-ProcessorGraphicsItem* ProcessorPortGraphicsItem::getProcessor() { return processor_; }
-
-ProcessorPortGraphicsItem::~ProcessorPortGraphicsItem() {}
-
-void ProcessorPortGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    showPortInfo(e, port_);
-}
-
-ProcessorInportGraphicsItem::ProcessorInportGraphicsItem(ProcessorGraphicsItem* parent,
-                                                         const QPointF& pos, Inport* port)
-    : ProcessorPortGraphicsItem(parent, pos, true, port), port_(port) {}
-
-Inport* ProcessorInportGraphicsItem::getPort() { return port_; }
-
-void ProcessorInportGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-    if(e->buttons() == Qt::LeftButton && port_->isConnected()) {
-        getNetworkEditor()->releaseConnection(this);
-    }
-    e->accept();
-}
-
-void ProcessorInportGraphicsItem::updateConnectionPositions() {
-    for (auto& elem : connections_) {
-        elem->updateShape();
-    }
-}
-
-void ProcessorInportGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    if (port_->isConnected()) {
-        showPortInfo(e, port_->getConnectedOutport());
-    } else {
-        showPortInfo(e, port_);
-    }
-}
-
 ProcessorOutportGraphicsItem::ProcessorOutportGraphicsItem(ProcessorGraphicsItem* parent,
-                                                           const QPointF& pos, Outport* port)
-    : ProcessorPortGraphicsItem(parent, pos, false, port), port_(port) {}
+                                                           const QPointF& pos, Outport* outport)
+    : ProcessorPortGraphicsItem(parent, pos, false, outport), outport_(outport) {}
 
-Outport* ProcessorOutportGraphicsItem::getPort() { return port_; }
+Outport* ProcessorOutportGraphicsItem::getPort() { return outport_; }
 
 void ProcessorOutportGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-    if(e->buttons() == Qt::LeftButton) {
+    if (e->buttons() == Qt::LeftButton) {
         getNetworkEditor()->initiateConnection(this);
     }
     e->accept();
@@ -185,12 +172,31 @@ void ProcessorOutportGraphicsItem::updateConnectionPositions() {
     }
 }
 
+void ProcessorOutportGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
+    showPortInfo(e, outport_);
+}
+
+void ProcessorOutportGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
+    p->save();
+    p->setRenderHint(QPainter::Antialiasing, true);
+    p->setRenderHint(QPainter::SmoothPixmapTransform, true);
+
+    QColor borderColor(40, 40, 40);
+    uvec3 color = outport_->getColorCode();
+
+    QRectF portRect(QPointF(-size_, size_) / 2.0f, QPointF(size_, -size_) / 2.0f);
+    p->setBrush(QColor(color.r, color.g, color.b));
+    p->setPen(QPen(borderColor, lineWidth_));
+    p->drawRect(portRect);
+    p->restore();
+}
+
 ProcessorPortConnectionIndicator::ProcessorPortConnectionIndicator(
     ProcessorPortGraphicsItem* parent, bool up, QColor color)
     : EditorGraphicsItem(parent), portConnectionItem_(parent), up_(up), color_(color) {
 
-    setRect(-2.0f,-8.0f,4.0f,16.0f);
-    setPos(0.0f,0.0f);
+    setRect(-2.0f, -8.0f, 4.0f, 16.0f);
+    setPos(0.0f, 0.0f);
 }
 
 void ProcessorPortConnectionIndicator::paint(QPainter* p, const QStyleOptionGraphicsItem*,
@@ -219,7 +225,7 @@ void ProcessorPortConnectionIndicator::paint(QPainter* p, const QStyleOptionGrap
     QPainterPath closedPath(path);
     closedPath.closeSubpath();
 
-    QLinearGradient gradBrush(QPointF(0.0f,0.0f), QPointF(0.0,up_?-length:length));
+    QLinearGradient gradBrush(QPointF(0.0f, 0.0f), QPointF(0.0, up_ ? -length : length));
     gradBrush.setColorAt(0.0f, color_);
     gradBrush.setColorAt(0.75f, color_);
     gradBrush.setColorAt(1.0f, QColor(color_.red(), color_.green(), color_.blue(), 0));
@@ -241,4 +247,4 @@ void ProcessorPortConnectionIndicator::paint(QPainter* p, const QStyleOptionGrap
     p->restore();
 }
 
-}  // namespace
+}  // namespace inviwo

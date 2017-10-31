@@ -149,7 +149,7 @@ class IVW_CORE_API DataFormatBase {
 public:
     DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min,
                    double lowest, NumericType nt, const std::string& s);
-    virtual ~DataFormatBase() = default;
+    virtual ~DataFormatBase();
 
     static const DataFormatBase* get();
     static const DataFormatBase* get(DataFormatId id);

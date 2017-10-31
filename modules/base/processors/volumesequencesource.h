@@ -84,8 +84,6 @@ private:
     void loadFolder(bool deserialize = false);
     void addFileNameFilters();
 
-    virtual bool isSink() const override;
-
     std::shared_ptr<VolumeSequence> volumes_;
 
     VolumeSequenceOutport outport_;
