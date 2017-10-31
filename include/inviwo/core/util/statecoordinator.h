@@ -90,8 +90,8 @@ public:
     const T& get() const { return value_; }
 
 private:
-    std::function<T()> updater_ = []() { return {}; };
-    std::function<void(const T&)> notifyer_ = [][]{};
+    std::function<T()> updater_;
+    std::function<void(const T&)> notifyer_;
     T value_;
 };
 
