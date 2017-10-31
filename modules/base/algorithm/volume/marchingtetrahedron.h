@@ -45,7 +45,8 @@ class IVW_MODULE_BASE_API MarchingTetrahedron {
 public:
     static std::shared_ptr<Mesh> apply(
         std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
-        bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>());
+        bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>()
+        , std::function<bool(size3_t)> maskingCallback = [](size3_t p) { return false; });
 };
 
 namespace detail {
@@ -54,7 +55,7 @@ struct IVW_MODULE_BASE_API MarchingTetrahedronDispatcher {
     template <class T>
     std::shared_ptr<Mesh> dispatch(std::shared_ptr<const Volume> volume, double iso,
                                    const vec4 &color, bool invert, bool enclose,
-                                   std::function<void(float)> progressCallback);
+                                   std::function<void(float)> progressCallback, std::function<bool(size3_t)> maskingCallback);
 };
 
 template <typename T>
@@ -84,7 +85,7 @@ glm::vec3 interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1, doubl
 template <class DataType>
 std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     std::shared_ptr<const Volume> baseVolume, double iso, const vec4 &color, bool invert,
-    bool enclose, std::function<void(float)> progressCallback) {
+    bool enclose, std::function<void(float)> progressCallback, std::function<bool(size3_t)> maskingCallback) {
     if (progressCallback) progressCallback(0.0f);
 
     using T = typename DataType::type;
@@ -127,6 +128,8 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
                 x = dx * i;
                 y = dy * j;
                 z = dz * k;
+
+                if (maskingCallback && maskingCallback({i,j,k})) continue;
 
                 p[0] = glm::vec3(x, y, z);
                 p[1] = glm::vec3(x + dx, y, z);

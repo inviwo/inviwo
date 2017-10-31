@@ -32,10 +32,10 @@ namespace inviwo {
 
 std::shared_ptr<Mesh> MarchingTetrahedron::apply(
     std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
-    bool enclose, std::function<void(float)> progressCallback) {
+    bool enclose, std::function<void(float)> progressCallback, std::function<bool(size3_t)> maskingCallback) {
     detail::MarchingTetrahedronDispatcher disp;
     return volume->getDataFormat()->dispatch(disp, volume, iso, color, invert, enclose,
-                                             progressCallback);
+                                             progressCallback, maskingCallback);
 }
 
 void detail::evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
