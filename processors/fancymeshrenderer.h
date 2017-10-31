@@ -90,6 +90,7 @@ protected:
 	void updateDrawers();
 	void copyFrontToBackSettings();
 
+    void update();
 	void compileShader();
 
 	MeshInport inport_;
@@ -112,17 +113,26 @@ protected:
 	ButtonProperty copyFrontToBack_;
     BoolProperty forceOpaque_;
 
+    struct AlphaSettings
+    {
+        CompositeProperty container_;
+        BoolProperty enableUniform_;
+        FloatProperty uniformScaling_;
+        BoolProperty enableAngleBased_;
+        FloatProperty angleBasedExponent_;
+        BoolProperty enableNormalVariation_;
+        FloatProperty normalVariationExponent_;
+
+        AlphaSettings();
+        void setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation);
+    };
+    AlphaSettings alphaSettings_;
+
 	enum ColorSource
 	{
 		VertexColor,
 		TransferFunction,
 		ExternalColor
-	};
-	enum AlphaMode
-	{
-		Uniform,
-		AngleBased,
-		NormalBased
 	};
 	enum NormalSource
 	{
@@ -150,8 +160,8 @@ protected:
 		FloatVec4Property externalColor_;
 		TemplateOptionProperty<ColorSource> colorSource_;
 
-		TemplateOptionProperty<AlphaMode> alphaMode_;
-		FloatProperty alphaScale_;
+		BoolProperty separateUniformAlpha_;
+		FloatProperty uniformAlpha_;
 
 		TemplateOptionProperty<NormalSource> normalSource_;
 		TemplateOptionProperty<ShadingMode> shadingMode_;

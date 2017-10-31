@@ -39,27 +39,48 @@ smooth in vec4 position_;
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 #endif
 
-//GLSL does not support samplers within structures
-uniform sampler1D transferFunction0; //front
-uniform sampler1D transferFunction1; //back
+//per-face settings
 struct FaceRenderSettings
 {
 	vec4 externalColor;
 	int colorSource;
 
-	int alphaMode;
-	float alphaScale;
+    bool separateUniformAlpha;
+    float uniformAlpha;
 
 	int normalSource;
 
 	int shadingMode;
 };
 uniform FaceRenderSettings renderSettings[2];
+//GLSL does not support samplers within structures
+uniform sampler1D transferFunction0; //front
+uniform sampler1D transferFunction1; //back
+
+//global alpha construction
+struct AlphaSettings
+{
+    float uniformScale;
+    float angleExp;
+    float normalExp;
+};
+uniform AlphaSettings alphaSettings;
 
 in vec4 worldPosition_;
 in vec3 normal_;
 in vec3 viewNormal_;
 in vec4 color_;
+
+// In GLSL 4.5, we have better versions for derivatives
+// use them if available
+#ifdef GLSL_VERSION_450
+#define dFdxFinest dFdxFine
+#define dFdyFinest dFdyFine
+#else
+// fallback to the possible less precise dFdx / dFdy
+#define dFdxFinest dFdx
+#define dFdyFinest dFdy
+#endif
 
 #define M_PI 3.1415926535897932384626433832795
 vec4 performShading()
@@ -89,12 +110,27 @@ vec4 performShading()
 
     // alpha
     float alpha = 1;
-    if (settings.alphaMode==1) {
-        //angle-based
-        alpha = pow(acos(abs(dot(normal, toCameraDir))) * 2 / M_PI, settings.alphaScale);
+    if (settings.separateUniformAlpha) {
+        //use per-face uniform alpha
+        alpha = settings.uniformAlpha;
+    } else {
+        //custom alpha
+#ifdef ALPHA_UNIFORM
+        alpha *= alphaSettings.uniformScale;
+#endif
+#ifdef ALPHA_ANGLE_BASED
+        alpha *= pow(acos(abs(dot(normal, toCameraDir))) * 2 / M_PI, alphaSettings.angleExp);
+#endif
+#ifdef ALPHA_NORMAL_VARIATION
+        float nv_dzi = dFdxFinest (normal.z);
+        float nv_dzj = dFdyFinest (normal.z);
+        float nv_curvature = min(1, nv_dzi*nv_dzi + nv_dzj*nv_dzj);
+        alpha *= pow(nv_curvature, alphaSettings.normalExp * 0.5);
+#endif
     }
-    //color.a *= alpha * settings.alphaScale;
     color.a *= alpha;
+
+    if (!gl_FrontFacing) normal = -normal; //backface -> invert normal
 
     // shading
     if (settings.shadingMode==1) {

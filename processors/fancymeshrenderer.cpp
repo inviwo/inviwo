@@ -105,35 +105,69 @@ FancyMeshRenderer::FancyMeshRenderer()
 	faceSettings_[1].container_.setDisplayName("Back Face");
 	faceSettings_[1].container_.setCollapsed(true);
 	addProperty(separateFaceSettings_);
-	addProperty(copyFrontToBack_);
+	//addProperty(copyFrontToBack_);
     addProperty(forceOpaque_);
     addProperty(propDebugFragmentLists_);
+    addProperty(alphaSettings_.container_);
 	addProperty(faceSettings_[0].container_);
 	addProperty(faceSettings_[1].container_);
 
-	addProperty(layers_);
-	layers_.addProperty(colorLayer_);
-	layers_.addProperty(normalsLayer_);
-	layers_.addProperty(viewNormalsLayer_);
+	//addProperty(layers_);
+	//layers_.addProperty(colorLayer_);
+	//layers_.addProperty(normalsLayer_);
+	//layers_.addProperty(viewNormalsLayer_);
 
 	camera_.setCollapsed(true);
 	lightingProperty_.setCollapsed(true);
 	trackball_.setCollapsed(true);
 
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    auto triggerRecompilation = [this]() {needsRecompilation_ = true; };
+    auto triggerRecompilation = [this]()
+    {
+        needsRecompilation_ = true;
+        update();
+    };
+    auto triggerUpdate = [this]() {update(); };
     forceOpaque_.onChange(triggerRecompilation);
+    alphaSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
 
     propDebugFragmentLists_.onChange([this]() {debugFragmentLists_ = true; });
+
+    update();
 }
+
+FancyMeshRenderer::AlphaSettings::AlphaSettings()
+    : container_("alphaContainer", "Alpha")
+    , enableUniform_("alphaUniform", "Uniform", true)
+    , uniformScaling_("alphaUniformScaling", "Scaling", 0.5, 0, 1, 0.01)
+    , enableAngleBased_("alphaAngleBased", "Angle-based", false)
+    , angleBasedExponent_("alphaAngleBasedExponent", "Exponent", 1, 0, 5, 0.01)
+    , enableNormalVariation_("alphaNormalVariation", "Normal variation", false)
+    , normalVariationExponent_("alphaNormalVariationExponent", "Exponent", 1, 0, 5, 0.01)
+{
+    container_.addProperty(enableUniform_);
+    container_.addProperty(uniformScaling_);
+    container_.addProperty(enableAngleBased_);
+    container_.addProperty(angleBasedExponent_);
+    container_.addProperty(enableNormalVariation_);
+    container_.addProperty(normalVariationExponent_);
+}
+
+void FancyMeshRenderer::AlphaSettings::setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation)
+{
+    enableUniform_.onChange(triggerRecompilation);
+    enableAngleBased_.onChange(triggerRecompilation);
+    enableNormalVariation_.onChange(triggerRecompilation);
+}
+
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& prefix)
 	: container_(prefix + "container", "Foo")
 	, show_(prefix + "show", "Show", true)
 	, transferFunction_(prefix + "tf", "Transfer Function")
 	, externalColor_(prefix + "extraColor", "Color")
 	, colorSource_(prefix + "colorSource", "Color Source")
-	, alphaMode_(prefix + "alphaMode", "Alpha Mode")
-	, alphaScale_(prefix + "alphaScale", "Alpha Scale", 1, 0, 10)
+	, separateUniformAlpha_(prefix + "separateUniformAlpha", "Separate Uniform Alpha")
+	, uniformAlpha_(prefix + "uniformAlpha", "Uniform Alpha", 0.5, 0, 1, 0.01)
 	, normalSource_(prefix + "normalSource", "Normal Source")
 	, shadingMode_(prefix + "shadingMode", "Shading Mode")
 {
@@ -143,12 +177,6 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& pre
 	colorSource_.set(ColorSource::ExternalColor);
 	colorSource_.setCurrentStateAsDefault();
 	externalColor_.setSemantics(PropertySemantics::Color);
-
-	alphaMode_.addOption("uniform", "Uniform", AlphaMode::Uniform);
-	alphaMode_.addOption("angle", "Angle-Based", AlphaMode::AngleBased);
-	alphaMode_.addOption("normal", "Normal-Based", AlphaMode::NormalBased);
-	alphaMode_.set(AlphaMode::Uniform);
-	alphaMode_.setCurrentStateAsDefault();
 
 	normalSource_.addOption("inputVertex", "Input: Vertex", NormalSource::InputVertex);
 	normalSource_.addOption("inputTriangle", "Input: Triangle", NormalSource::InputTriangle);
@@ -167,8 +195,8 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& pre
 	container_.addProperty(colorSource_);
 	container_.addProperty(transferFunction_);
 	container_.addProperty(externalColor_);
-	container_.addProperty(alphaMode_);
-	container_.addProperty(alphaScale_);
+	container_.addProperty(separateUniformAlpha_);
+	container_.addProperty(uniformAlpha_);
 	container_.addProperty(normalSource_);
 	container_.addProperty(shadingMode_);
 }
@@ -203,6 +231,10 @@ void FancyMeshRenderer::initializeResources() {
     {
         LogProcessorWarn("requesting alpha blending, but no color layer attached -> no output will be produced");
     }
+}
+
+void FancyMeshRenderer::update()
+{
 }
 
 void FancyMeshRenderer::compileShader()
@@ -250,6 +282,20 @@ void FancyMeshRenderer::compileShader()
             LogProcessorWarn("requesting alpha blending, but no color layer attached -> no output will be produced");
         }
     }
+
+    auto SendBoolean = [this] (const BoolProperty& prob, const std::string& define)
+	{
+	    if (prob.get())
+	    {
+            this->shader_.getFragmentShaderObject()->addShaderDefine(define);
+	    } else
+	    {
+            this->shader_.getFragmentShaderObject()->removeShaderDefine(define);
+	    }
+    };
+    SendBoolean(alphaSettings_.enableUniform_, "ALPHA_UNIFORM");
+    SendBoolean(alphaSettings_.enableAngleBased_, "ALPHA_ANGLE_BASED");
+    SendBoolean(alphaSettings_.enableNormalVariation_, "ALPHA_NORMAL_VARIATION");
 
 	shader_.build();
 
@@ -316,8 +362,8 @@ void FancyMeshRenderer::process() {
             std::string prefix = ss.str();
             shader_.setUniform(prefix + "externalColor", faceSettings_[i].externalColor_.get());
             shader_.setUniform(prefix + "colorSource", static_cast<int>(faceSettings_[i].colorSource_.get()));
-            shader_.setUniform(prefix + "alphaMode", static_cast<int>(faceSettings_[i].alphaMode_.get()));
-            shader_.setUniform(prefix + "alphaScale", faceSettings_[i].alphaScale_.get());
+            shader_.setUniform(prefix + "separateUniformAlpha", faceSettings_[i].separateUniformAlpha_.get());
+            shader_.setUniform(prefix + "uniformAlpha", faceSettings_[i].uniformAlpha_.get());
             shader_.setUniform(prefix + "normalSource", static_cast<int>(faceSettings_[i].normalSource_.get()));
             shader_.setUniform(prefix + "shadingMode", static_cast<int>(faceSettings_[i].shadingMode_.get()));
 
@@ -329,6 +375,11 @@ void FancyMeshRenderer::process() {
             ss << "transferFunction" << i;
             shader_.setUniform(ss.str(), transFuncUnit[i].getUnitNumber());
         }
+
+        //update alpha settings
+        shader_.setUniform("alphaSettings.uniformScale", alphaSettings_.uniformScaling_.get());
+        shader_.setUniform("alphaSettings.angleExp", alphaSettings_.angleBasedExponent_.get());
+        shader_.setUniform("alphaSettings.normalExp", alphaSettings_.normalVariationExponent_.get());
 
         if (fragmentLists)
         {
@@ -439,5 +490,6 @@ void FancyMeshRenderer::copyFrontToBackSettings()
 {
 	//TODO:
 }
+
 } // namespace
 
