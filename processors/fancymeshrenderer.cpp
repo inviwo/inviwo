@@ -72,21 +72,24 @@ FancyMeshRenderer::FancyMeshRenderer()
 		InvalidationLevel::InvalidResources)
 	, viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false,
 		InvalidationLevel::InvalidResources)
-	, separateFaceSettings_("separateFaceSettings", "Separate Face Settings", false)
-	, copyFrontToBack_("copyFrontToBack", "Copy Front to Back")
     , forceOpaque_("forceOpaque", "Shade Opaque", false)
-	, faceSettings_{"front_", "back_"}
+	, faceSettings_{true, false}
 	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.frag", false)
 	, needsRecompilation_(true)
     , debugFragmentLists_(false)
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
 {
+    //Copied from the standard MeshRenderer
+
+    //input and output ports
 	addPort(inport_);
 	addPort(imageInport_);
 	addPort(outport_);
-
 	imageInport_.setOptional(true);
+    outport_.addResizeEventListener(&camera_);
+    inport_.onChange(this, &FancyMeshRenderer::updateDrawers);
 
+    //camera, light, 
 	addProperty(camera_);
 	centerViewOnGeometry_.onChange(this, &FancyMeshRenderer::centerViewOnGeometry);
 	addProperty(centerViewOnGeometry_);
@@ -94,33 +97,20 @@ FancyMeshRenderer::FancyMeshRenderer()
 	addProperty(setNearFarPlane_);
 	resetViewParams_.onChange([this]() { camera_.resetCamera(); });
 	addProperty(resetViewParams_);
-	outport_.addResizeEventListener(&camera_);
-	inport_.onChange(this, &FancyMeshRenderer::updateDrawers);
-
 	addProperty(lightingProperty_);
 	addProperty(trackball_);
+    camera_.setCollapsed(true);
+    lightingProperty_.setCollapsed(true);
+    trackball_.setCollapsed(true);
 
-	copyFrontToBack_.onChange(this, &FancyMeshRenderer::copyFrontToBackSettings);
-	faceSettings_[0].container_.setDisplayName("Front Face");
-	faceSettings_[1].container_.setDisplayName("Back Face");
-	faceSettings_[1].container_.setCollapsed(true);
-	addProperty(separateFaceSettings_);
-	//addProperty(copyFrontToBack_);
+    //New properties
     addProperty(forceOpaque_);
-    addProperty(propDebugFragmentLists_);
+    addProperty(propDebugFragmentLists_); //DEBUG, to be removed
     addProperty(alphaSettings_.container_);
 	addProperty(faceSettings_[0].container_);
 	addProperty(faceSettings_[1].container_);
 
-	//addProperty(layers_);
-	//layers_.addProperty(colorLayer_);
-	//layers_.addProperty(normalsLayer_);
-	//layers_.addProperty(viewNormalsLayer_);
-
-	camera_.setCollapsed(true);
-	lightingProperty_.setCollapsed(true);
-	trackball_.setCollapsed(true);
-
+	//Callbacks
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     auto triggerRecompilation = [this]()
     {
@@ -131,8 +121,16 @@ FancyMeshRenderer::FancyMeshRenderer()
     forceOpaque_.onChange(triggerRecompilation);
     alphaSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
 
+    //DEBUG, to be removed
     propDebugFragmentLists_.onChange([this]() {debugFragmentLists_ = true; });
 
+    //Will this be used in any scenario=
+    //addProperty(layers_);
+    //layers_.addProperty(colorLayer_);
+    //layers_.addProperty(normalsLayer_);
+    //layers_.addProperty(viewNormalsLayer_);
+
+    //update visibility of properties
     update();
 }
 
@@ -160,16 +158,19 @@ void FancyMeshRenderer::AlphaSettings::setCallbacks(const std::function<void()>&
     enableNormalVariation_.onChange(triggerRecompilation);
 }
 
-FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& prefix)
-	: container_(prefix + "container", "Foo")
-	, show_(prefix + "show", "Show", true)
-	, transferFunction_(prefix + "tf", "Transfer Function")
-	, externalColor_(prefix + "extraColor", "Color")
-	, colorSource_(prefix + "colorSource", "Color Source")
-	, separateUniformAlpha_(prefix + "separateUniformAlpha", "Separate Uniform Alpha")
-	, uniformAlpha_(prefix + "uniformAlpha", "Uniform Alpha", 0.5, 0, 1, 0.01)
-	, normalSource_(prefix + "normalSource", "Normal Source")
-	, shadingMode_(prefix + "shadingMode", "Shading Mode")
+FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
+    : prefix_(frontFace ? "front" : "back")
+	, container_(prefix_ + "container", frontFace ? "Front Face" : "Back Face")
+	, show_(prefix_ + "show", "Show", true)
+    , sameAsFrontFace_(prefix_ + "same", "Same as Front Face")
+    , copyFrontToBack_(prefix_ + "copy", "Copy Front to Back")
+	, transferFunction_(prefix_ + "tf", "Transfer Function")
+	, externalColor_(prefix_ + "extraColor", "Color", {1, 0.3, 0.01, 1})
+	, colorSource_(prefix_ + "colorSource", "Color Source")
+	, separateUniformAlpha_(prefix_ + "separateUniformAlpha", "Separate Uniform Alpha")
+	, uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5, 0, 1, 0.01)
+	, normalSource_(prefix_ + "normalSource", "Normal Source")
+	, shadingMode_(prefix_ + "shadingMode", "Shading Mode")
 {
 	colorSource_.addOption("vertexColor", "VertexColor", ColorSource::VertexColor);
 	colorSource_.addOption("tf", "Transfer Function", ColorSource::TransferFunction);
@@ -192,6 +193,11 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(const std::string& pre
 	shadingMode_.setCurrentStateAsDefault();
 
 	container_.addProperty(show_);
+    if (!frontFace)
+    {
+        container_.addProperty(sameAsFrontFace_);
+        container_.addProperty(copyFrontToBack_);
+    }
 	container_.addProperty(colorSource_);
 	container_.addProperty(transferFunction_);
 	container_.addProperty(externalColor_);
@@ -355,10 +361,16 @@ void FancyMeshRenderer::process() {
 
         //update face render settings
         TextureUnit transFuncUnit[2];
-        for (int i = 0; i < 2; ++i)
+        for (int j = 0; j < 2; ++j)
         {
+            int i = j;
+            if (j==1 && faceSettings_[1].sameAsFrontFace_.get())
+            { //use settings from font face also for back face
+                i = 0;
+            }
+
             std::stringstream ss;
-            ss << "renderSettings[" << i << "].";
+            ss << "renderSettings[" << j << "].";
             std::string prefix = ss.str();
             shader_.setUniform(prefix + "externalColor", faceSettings_[i].externalColor_.get());
             shader_.setUniform(prefix + "colorSource", static_cast<int>(faceSettings_[i].colorSource_.get()));
@@ -370,10 +382,10 @@ void FancyMeshRenderer::process() {
             const auto& tf = faceSettings_[i].transferFunction_.get();
             const Layer* tfLayer = tf.getData();
             const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-            transferFunctionGL->bindTexture(transFuncUnit[i].getEnum());
+            transferFunctionGL->bindTexture(transFuncUnit[j].getEnum());
             ss = std::stringstream();
-            ss << "transferFunction" << i;
-            shader_.setUniform(ss.str(), transFuncUnit[i].getUnitNumber());
+            ss << "transferFunction" << j;
+            shader_.setUniform(ss.str(), transFuncUnit[j].getUnitNumber());
         }
 
         //update alpha settings

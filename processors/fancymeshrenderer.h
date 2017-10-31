@@ -109,8 +109,6 @@ protected:
 	BoolProperty normalsLayer_;
 	BoolProperty viewNormalsLayer_;
 
-	BoolProperty separateFaceSettings_;
-	ButtonProperty copyFrontToBack_;
     BoolProperty forceOpaque_;
 
     struct AlphaSettings
@@ -153,8 +151,11 @@ protected:
 	 */
 	struct FaceRenderSettings
 	{
+        std::string prefix_;
 		CompositeProperty container_;
 		BoolProperty show_;
+        BoolProperty sameAsFrontFace_;
+        ButtonProperty copyFrontToBack_;
 		
 		TransferFunctionProperty transferFunction_;
 		FloatVec4Property externalColor_;
@@ -166,7 +167,7 @@ protected:
 		TemplateOptionProperty<NormalSource> normalSource_;
 		TemplateOptionProperty<ShadingMode> shadingMode_;
 
-		FaceRenderSettings(const std::string& prefix);
+		FaceRenderSettings(bool frontFace);
 	} faceSettings_[2];
 
 
