@@ -56,6 +56,8 @@ public:
     IntVec4Property glslGlslBuiltinsColor_;
     IntVec4Property glslCommentColor_;
     IntVec4Property glslPreProcessorColor_;
+    IntVec4Property glslConstantsColor_;
+    IntVec4Property glslVoidMainColor_;
 
     CompositeProperty pythonSyntax_;
     IntProperty pyFontSize_;

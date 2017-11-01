@@ -59,8 +59,10 @@ static const char* glsl_types[] = {"\\bfloat", "\\b[bi]?vec[2-4]\\b", "\\bint", 
                                    "\\bsamplerCube\\b", "\\bsampler[1-2]DShadow\\b", nullptr};
 
 static const char* glsl_qualifiers[] = {
-    "\\bstruct\\b", "\\buniform\\b", "\\battribute\\b", "\\bvarying\\b", "\\bconst\\b",
-    "\\bin\\b",     "\\bout\\b",     "\\binout\\b",     "\\bconst\\b",   nullptr};
+    "\\bstruct\\b", "\\buniform\\b", "\\battribute\\b", "\\bvarying\\b",
+    "\\bin\\b", "\\bout\\b", "\\binout\\b", "\\bconst\\b", "\\bdiscard\\b",
+    "\\bif\\b", "\\bconst\\b", "\\bwhile\\b", "\\bcontinue\\b", "\\bbreak\\b",
+    "\\breturn\\b", "\\blayout\\b", "\\bflat\\b", nullptr};
 static const char* glsl_builtins_var[] = {
     "gl_ModelViewMatrix\\b", "\\bgl_ModelViewProjectionMatrix\\b", "\\bgl_ProjectionMatrix\\b",
     "\\bgl_TextureMatrix\\b", "\\bgl_ModelViewMatrixInverse\\b",
@@ -110,6 +112,12 @@ static const char* glsl_builtins_func[] = {
     "\\bshadow[1-2]DLod\\b"
     "\\bshadow1DProjLod\\b",
     "\\bshadow2DProjLod\\b", "\\bnoise[1-4]\\b", nullptr};
+static const char* constants[] = {
+        "\\b0\\b", "\\b1\\b", "\\b2\\b", "\\b3\\b", "\\b4\\b", "\\b5\\b", "\\b6\\b",
+        "\\b7\\b", "\\b8\\b", "\\b9\\b", "\\b0.\\b", "\\b1.\\b", "\\b2.\\b", "\\b3.\\b",
+        "\\b4.\\b", "\\b5.\\b", "\\b6.\\b", "\\b7.\\b", "\\b8.\\b", "\\b9.\\b", nullptr
+};
+static const char* voidmain[] = {"\\bmain\\b", nullptr};
 //static const char* glsl_preprocessor[] = {"#","#define","#include","#if","#ifdef","#ifdef","#else","#elif","#endif","#error","#pragma","#line","__LINE__","__FILE__","__VERSION__",0};
 
 
@@ -244,7 +252,7 @@ void SyntaxHighligther::loadConfig<GLSL>() {
 
     defaultFormat_.setBackground(bgColor);
     defaultFormat_.setForeground(textColor);
-    QTextCharFormat typeformat,qualifiersformat,builtins_varformat,glsl_builtins_funcformat,commentformat,preprocessorformat;
+    QTextCharFormat typeformat,qualifiersformat,builtins_varformat,glsl_builtins_funcformat,commentformat,preprocessorformat,constantsformat,mainformat;
     typeformat.setBackground(bgColor);
     typeformat.setForeground(ivec4toQtColor(sysSettings->glslTypeColor_.get()));
     qualifiersformat.setBackground(bgColor);
@@ -257,6 +265,10 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     commentformat.setForeground(ivec4toQtColor(sysSettings->glslCommentColor_.get()));
     preprocessorformat.setBackground(bgColor);
     preprocessorformat.setForeground(ivec4toQtColor(sysSettings->glslPreProcessorColor_.get()));
+    constantsformat.setBackground(bgColor);
+    constantsformat.setForeground(ivec4toQtColor(sysSettings->glslConstantsColor_.get()));
+    mainformat.setBackground(bgColor);
+    mainformat.setForeground(ivec4toQtColor(sysSettings->glslVoidMainColor_.get()));
 
     if (formaters_.empty()) {
         sysSettings->glslSyntax_.onChange(this, &SyntaxHighligther::loadConfig<GLSL>);
@@ -271,6 +283,8 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     formaters_.push_back(new GLSLKeywordFormater(qualifiersformat,glsl_qualifiers));
     formaters_.push_back(new GLSLKeywordFormater(builtins_varformat,glsl_builtins_var));
     formaters_.push_back(new GLSLKeywordFormater(glsl_builtins_funcformat,glsl_builtins_func));
+    formaters_.push_back(new GLSLKeywordFormater(constantsformat,constants));
+    formaters_.push_back(new GLSLKeywordFormater(mainformat,voidmain));
     formaters_.push_back(new GLSLPreProcessorFormater(preprocessorformat));
     formaters_.push_back(new GLSLCommentFormater(commentformat));
 }
