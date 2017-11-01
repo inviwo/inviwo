@@ -48,43 +48,44 @@ InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) 
         auto cutAction = addAction(tr("Cu&t"));
         actions_[MenuItemType::cut] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
-        cutAction->setEnabled(false);
+        cutAction->setEnabled(true);
     }
     {
         auto copyAction = addAction(tr("&Copy"));
         actions_[MenuItemType::copy] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
-        copyAction->setEnabled(false);
+        copyAction->setEnabled(true);
     }
     {
         auto pasteAction = addAction(tr("&Paste"));
         actions_[MenuItemType::paste] = pasteAction;
         pasteAction->setShortcut(QKeySequence::Paste);
-        pasteAction->setEnabled(false);
+        pasteAction->setEnabled(true);
     }
     {
         auto deleteAction = addAction(tr("&Delete"));
         actions_[MenuItemType::del] = deleteAction;
         deleteAction->setShortcuts(QList<QKeySequence>(
             {QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace)}));
-        deleteAction->setEnabled(false);
+        deleteAction->setEnabled(true);
     }
     {
         auto selectAllAction = addAction(tr("&Select All"));
         actions_[MenuItemType::select] = selectAllAction;
         selectAllAction->setShortcut(QKeySequence::SelectAll);
-        selectAllAction->setEnabled(false);
+        selectAllAction->setEnabled(true);
     }
-    
-    for(auto& action : actions_) {
-        connect(action.second, &QAction::triggered, this, [this, type = action.first](){
+
+    for (auto& action : actions_) {
+        connect(action.second, &QAction::triggered, this, [ this, type = action.first ]() {
             if (auto item = getFocusItem()) {
                 item->invoke(type);
             }
         });
     }
-    
-    connect(this, &QMenu::aboutToShow, this, [this](){
+
+    // enable the actions currently supported by the item in focus
+    connect(this, &QMenu::aboutToShow, this, [this]() {
         if (auto item = getFocusItem()) {
             for (auto& action : actions_) {
                 action.second->setEnabled(item->enabled(action.first));
@@ -95,12 +96,18 @@ InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) 
             }
         }
     });
-    
+
+    // need to enable all for potential shortcut use to function
+    connect(this, &QMenu::aboutToHide, this, [this]() {
+        for (auto& action : actions_) {
+            action.second->setEnabled(true);
+        }
+    });
 }
 
 std::shared_ptr<MenuItem> InviwoEditMenu::getFocusItem() {
     QObject* focus = QApplication::focusWidget();
-    while(focus) {
+    while (focus) {
         auto it = items_.find(focus);
         if (it != items_.end()) {
             if (auto item = it->second.lock()) {
@@ -130,5 +137,4 @@ MenuItem::MenuItem(QObject* owner_, std::function<bool(MenuItemType)> enabled_,
                    std::function<void(MenuItemType)> invoke_)
     : owner{owner_}, enabled{std::move(enabled_)}, invoke(std::move(invoke_)) {}
 
-} // namespace
-
+}  // namespace inviwo

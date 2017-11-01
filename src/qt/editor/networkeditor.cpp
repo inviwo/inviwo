@@ -602,7 +602,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     {
         menu.addSeparator();
         auto cutAction = menu.addAction(tr("Cu&t"));
-        cutAction->setShortcut(QKeySequence::Cut);
         cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(cutAction, &QAction::triggered, this, [this](){       
             auto data = cut();
@@ -613,7 +612,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         });
 
         auto copyAction = menu.addAction(tr("&Copy"));
-        copyAction->setShortcut(QKeySequence::Copy);
         copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(copyAction, &QAction::triggered, this, [this](){
             auto data = copy();
@@ -625,7 +623,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
 
         auto pasteAction = menu.addAction(tr("&Paste"));
-        pasteAction->setShortcut(QKeySequence::Paste);
         auto clipboard = QApplication::clipboard();
         auto mimeData = clipboard->mimeData();
         if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
@@ -648,8 +645,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         menu.addSeparator();
 
         auto deleteAction = menu.addAction(tr("&Delete"));
-        deleteAction->setShortcuts(QList<QKeySequence>(
-        { QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace) }));
         deleteAction->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
         connect(deleteAction, &QAction::triggered, this, [this](){
             deleteSelection();
