@@ -87,7 +87,11 @@ BufferToMeshProcessor::BufferToMeshProcessor()
     
 void BufferToMeshProcessor::process() {
     auto mesh = std::make_shared<Mesh>(drawType_.get(), connectivity_.get());
-
+    
+    // Note on const_cast of input buffers when adding them to mesh: 
+    // The buffers are not modified and the mesh will be const in all connected ports,  
+    // making it ok to use const_cast in this particular case. 
+    // Be aware that, in general, you should not use const cast on inport data! 
     mesh->addBuffer(BufferType::PositionAttrib, std::const_pointer_cast<BufferBase>(vertices_.getData()));
     if (textureCoordinates_.isConnected()) {
         if (textureCoordinates_.getData()->getSize() != vertices_.getData()->getSize()) {
@@ -124,7 +128,6 @@ void BufferToMeshProcessor::process() {
         mesh->addIndicies(Mesh::MeshInfo(drawType_.get(), connectivity_.get()), std::const_pointer_cast<IndexBuffer>(indexBuffer));
     }
    
-
     outport_.setData(mesh);
 }
 
