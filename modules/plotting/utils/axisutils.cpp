@@ -181,8 +181,8 @@ std::vector<double> getMinorTickPositions(const AxisProperty& property) {
     }
 
     // Minor ticks fill the entire axis, except where a major tick is supposed to be.
-    const size_t totalTicks =
-        static_cast<size_t>((stopMinor - startMinor + glm::epsilon<double>()) / minorTickDelta) + 1;
+    const size_t totalTicks = minorTickDelta > 0 ?
+        static_cast<size_t>((stopMinor - startMinor + glm::epsilon<double>()) / minorTickDelta) + 1 : 0;
 
     std::vector<double> tickPositions;
     tickPositions.reserve(totalTicks);
