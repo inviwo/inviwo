@@ -30,9 +30,10 @@
 #include "marchingtetrahedron.h"
 namespace inviwo {
 
-std::shared_ptr<Mesh> MarchingTetrahedron::apply(
-    std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
-    bool enclose, std::function<void(float)> progressCallback, std::function<bool(size3_t)> maskingCallback) {
+std::shared_ptr<Mesh> MarchingTetrahedron::apply(std::shared_ptr<const Volume> volume, double iso,
+                                                 const vec4 &color, bool invert, bool enclose,
+                                                 std::function<void(float)> progressCallback,
+                                                 std::function<bool(size3_t)> maskingCallback) {
     detail::MarchingTetrahedronDispatcher disp;
     return volume->getDataFormat()->dispatch(disp, volume, iso, color, invert, enclose,
                                              progressCallback, maskingCallback);
@@ -40,9 +41,8 @@ std::shared_ptr<Mesh> MarchingTetrahedron::apply(
 
 void detail::evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
                            std::vector<vec3> &positions, std::vector<vec3> &normals,
-                           const glm::vec3 &p0, double v0, const glm::vec3 &p1,
-                           double v1, const glm::vec3 &p2, double v2,
-                           const glm::vec3 &p3, double v3) {
+                           const glm::vec3 &p0, double v0, const glm::vec3 &p1, double v1,
+                           const glm::vec3 &p2, double v2, const glm::vec3 &p3, double v3) {
     int index = 0;
     if (v0 >= 0) index += 1;
     if (v1 >= 0) index += 2;
@@ -216,8 +216,7 @@ void detail::addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *ind
     normals[i2] += n;
 }
 
-glm::vec3 detail::interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1,
-                              double v1) {
+glm::vec3 detail::interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1, double v1) {
     double t = 0;
 
     if (v0 != v1) t = v0 / (v0 - v1);
@@ -226,4 +225,4 @@ glm::vec3 detail::interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p
     return tF * p1 + (1.f - tF) * p0;
 }
 
-}  // namespace
+}  // namespace inviwo

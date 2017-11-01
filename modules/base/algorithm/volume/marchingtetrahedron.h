@@ -55,7 +55,8 @@ struct IVW_MODULE_BASE_API MarchingTetrahedronDispatcher {
     template <class T>
     std::shared_ptr<Mesh> dispatch(std::shared_ptr<const Volume> volume, double iso,
                                    const vec4 &color, bool invert, bool enclose,
-                                   std::function<void(float)> progressCallback, std::function<bool(size3_t)> maskingCallback);
+                                   std::function<void(float)> progressCallback,
+                                   std::function<bool(size3_t)> maskingCallback);
 };
 
 template <typename T>
@@ -66,8 +67,8 @@ double getValue(const T *src, size3_t pos, size3_t dim, double iso, bool invert 
 
 void evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
                    std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
-                   double v0, const glm::vec3 &p1, double v1, const glm::vec3 &p2,
-                   double v2, const glm::vec3 &p3, double v3);
+                   double v0, const glm::vec3 &p1, double v1, const glm::vec3 &p2, double v2,
+                   const glm::vec3 &p3, double v3);
 
 void evaluateTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
                       std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
@@ -85,7 +86,8 @@ glm::vec3 interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1, doubl
 template <class DataType>
 std::shared_ptr<Mesh> MarchingTetrahedronDispatcher::dispatch(
     std::shared_ptr<const Volume> baseVolume, double iso, const vec4 &color, bool invert,
-    bool enclose, std::function<void(float)> progressCallback, std::function<bool(size3_t)> maskingCallback) {
+    bool enclose, std::function<void(float)> progressCallback,
+    std::function<bool(size3_t)> maskingCallback) {
     if (progressCallback) progressCallback(0.0f);
 
     if (!maskingCallback) {
@@ -205,15 +207,14 @@ std::shared_ptr<Mesh> MarchingTetrahedronDispatcher::dispatch(
 
                         if (k == 0) {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[3], v[3], p[1], v[1]);
+                                             v[0], p[3], v[3], p[1], v[1]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[1],
-                                v[1], p[3], v[3], p[2], v[2]);
-                        }
-                        else {
+                                             v[1], p[3], v[3], p[2], v[2]);
+                        } else {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[1], v[1], p[3], v[3]);
+                                             v[0], p[1], v[1], p[3], v[3]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[1],
-                                v[1], p[2], v[2], p[3], v[3]);
+                                             v[1], p[2], v[2], p[3], v[3]);
                         }
                     }
                 }
@@ -241,15 +242,14 @@ std::shared_ptr<Mesh> MarchingTetrahedronDispatcher::dispatch(
 
                         if (j == 0) {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[1], v[1], p[2], v[2]);
+                                             v[0], p[1], v[1], p[2], v[2]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[2], v[2], p[3], v[3]);
-                        }
-                        else {
+                                             v[0], p[2], v[2], p[3], v[3]);
+                        } else {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[2], v[2], p[1], v[1]);
+                                             v[0], p[2], v[2], p[1], v[1]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[3], v[3], p[2], v[2]);
+                                             v[0], p[3], v[3], p[2], v[2]);
                         }
                     }
                 }
@@ -277,15 +277,14 @@ std::shared_ptr<Mesh> MarchingTetrahedronDispatcher::dispatch(
 
                         if (i == 0) {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[3], v[3], p[1], v[1]);
+                                             v[0], p[3], v[3], p[1], v[1]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[1],
-                                v[1], p[3], v[3], p[2], v[2]);
-                        }
-                        else {
+                                             v[1], p[3], v[3], p[2], v[2]);
+                        } else {
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[0],
-                                v[0], p[1], v[1], p[3], v[3]);
+                                             v[0], p[1], v[1], p[3], v[3]);
                             evaluateTriangle(sideVertexTree, indexBuffer, positions, normals, p[1],
-                                v[1], p[2], v[2], p[3], v[3]);
+                                             v[1], p[2], v[2], p[3], v[3]);
                         }
                     }
                 }
@@ -309,8 +308,8 @@ std::shared_ptr<Mesh> MarchingTetrahedronDispatcher::dispatch(
     return mesh;
 }
 
-}  // namespace
+}  // namespace detail
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MARCHINGTETRAHEDRON_H
