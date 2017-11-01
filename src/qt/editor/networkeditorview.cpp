@@ -103,20 +103,22 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
         [this](MenuItemType t) -> void {
             switch (t) {
                 case MenuItemType::cut: {
+                    if (networkEditor_->selectedItems().empty()) return;
                     auto data = networkEditor_->cut();
                     auto mimedata = util::make_unique<QMimeData>();
                     mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
                     mimedata->setData(QString("text/plain"), data);
                     QApplication::clipboard()->setMimeData(mimedata.release());
-                    break;
+                    return;
                 }
                 case MenuItemType::copy: {
+                    if (networkEditor_->selectedItems().empty()) return;
                     auto data = networkEditor_->copy();
                     auto mimedata = util::make_unique<QMimeData>();
                     mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
                     mimedata->setData(QString("text/plain"), data);
                     QApplication::clipboard()->setMimeData(mimedata.release());
-                    break;
+                    return;
                 }
                 case MenuItemType::paste: {
                     auto clipboard = QApplication::clipboard();
@@ -128,16 +130,17 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                     } else if (mimeData->formats().contains(QString("text/plain"))) {
                         networkEditor_->paste(mimeData->data(QString("text/plain")));
                     }
-                    break;
+                    return;
                 }
                 case MenuItemType::del:
+                    if (networkEditor_->selectedItems().empty()) return;
                     networkEditor_->deleteSelection();
-                    break;
+                    return;
                 case MenuItemType::select:
                     networkEditor_->selectAll();
-                    break;
+                    return;
                 default:
-                    break;
+                    return;
             }
 
         }));

@@ -273,7 +273,6 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     };
 
     auto copyAction = new QAction(tr("&Copy"), this);
-    copyAction->setShortcut(QKeySequence::Copy);
     copyAction->setEnabled(true);
     connect(copyAction, &QAction::triggered, this, &ConsoleWidget::copy);
 
@@ -337,36 +336,38 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     settings.endGroup();
 
     auto editmenu = mainwindow_->getInviwoEditMenu();
-    editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
-        this,
-        [this](MenuItemType t) -> bool {
-            switch (t) {
-                case MenuItemType::copy:
-                    return tableView_->selectionModel()->hasSelection();
-                case MenuItemType::cut:
-                case MenuItemType::paste: 
-                case MenuItemType::del:
-                case MenuItemType::select:
-                default:
-                    return false;
-            }
+    editActionsHandle_ = editmenu->registerItem(
+        std::make_shared<MenuItem>(this,
+                                   [this](MenuItemType t) -> bool {
+                                       switch (t) {
+                                           case MenuItemType::copy:
+                                               return tableView_->selectionModel()->hasSelection();
+                                           case MenuItemType::cut:
+                                           case MenuItemType::paste:
+                                           case MenuItemType::del:
+                                           case MenuItemType::select:
+                                           default:
+                                               return false;
+                                       }
 
-        },
-        [this](MenuItemType t) -> void {
-            switch (t) {
-                case MenuItemType::copy: {
-                    copy();
-                    break;
-                }
-                case MenuItemType::cut:
-                case MenuItemType::paste: 
-                case MenuItemType::del:
-                case MenuItemType::select:
-                default:
-                    break;
-            }
+                                   },
+                                   [this](MenuItemType t) -> void {
+                                       switch (t) {
+                                           case MenuItemType::copy: {
+                                               if (tableView_->selectionModel()->hasSelection()) {
+                                                   copy();
+                                               }
+                                               break;
+                                           }
+                                           case MenuItemType::cut:
+                                           case MenuItemType::paste:
+                                           case MenuItemType::del:
+                                           case MenuItemType::select:
+                                           default:
+                                               break;
+                                       }
 
-        }));
+                                   }));
 }
 
 ConsoleWidget::~ConsoleWidget() = default;
@@ -650,4 +651,4 @@ Qt::ItemFlags LogModel::flags(const QModelIndex& index) const {
     return flags;
 }
 
-}  // namespace
+}  // namespace inviwo

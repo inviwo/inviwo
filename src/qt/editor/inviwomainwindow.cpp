@@ -201,6 +201,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
         exampleMenu_->clear();
         testMenu_->clear();
     });
+    networkEditorView_->setFocus();
 }
 
 InviwoMainWindow::~InviwoMainWindow() = default;
