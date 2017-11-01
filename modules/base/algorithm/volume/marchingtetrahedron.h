@@ -45,8 +45,8 @@ class IVW_MODULE_BASE_API MarchingTetrahedron {
 public:
     static std::shared_ptr<Mesh> apply(
         std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
-        bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>()
-        , std::function<bool(size3_t)> maskingCallback = std::function<bool(size3_t)>());
+        bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>(),
+        std::function<bool(size3_t)> maskingCallback = [](size3_t) { return true; });
 };
 
 namespace detail {
@@ -83,10 +83,15 @@ void addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer
 glm::vec3 interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1, double v1);
 
 template <class DataType>
-std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
+std::shared_ptr<Mesh> MarchingTetrahedronDispatcher::dispatch(
     std::shared_ptr<const Volume> baseVolume, double iso, const vec4 &color, bool invert,
     bool enclose, std::function<void(float)> progressCallback, std::function<bool(size3_t)> maskingCallback) {
     if (progressCallback) progressCallback(0.0f);
+
+    if (!maskingCallback) {
+        LogWarn("Masking callback not set, falling back to default mask");
+        maskingCallback = [](size3_t) { return true; };
+    }
 
     using T = typename DataType::type;
 
@@ -125,11 +130,10 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     for (size_t k = 0; k < dim.z - 1; k++) {
         for (size_t j = 0; j < dim.y - 1; j++) {
             for (size_t i = 0; i < dim.x - 1; i++) {
+                if (!maskingCallback({i, j, k})) continue;
                 x = dx * i;
                 y = dy * j;
                 z = dz * k;
-
-                if (maskingCallback && !maskingCallback({i, j, k})) continue;
 
                 p[0] = glm::vec3(x, y, z);
                 p[1] = glm::vec3(x + dx, y, z);
@@ -173,8 +177,9 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
                 }
             }
         }
-        if (progressCallback)
-            progressCallback(static_cast<float>(k) / static_cast<float>(dim.z - 1));
+        if (progressCallback) {
+            progressCallback(static_cast<float>(k + 1) / static_cast<float>(dim.z - 1));
+        }
     }
 
     if (enclose) {
