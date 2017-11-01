@@ -50,6 +50,9 @@ QDockWidget#PythonInfoWidget > .QWidget QScrollArea {
     /*border: none;*/
 }
 
+QWidget#NetworkSearch {
+    background-color: #323235;
+}
 
 QStatusBar {
     background-color: #252527;

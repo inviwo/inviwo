@@ -79,6 +79,11 @@ public:
      * @param filePath Full path to file
      */
     bool stopFileObservation(const std::string& fileName);
+    
+    /**
+     * Stop observation of all observed files
+     */
+    void stopAllObservation();
 
     const std::unordered_set<std::string>& getFiles() const;
     bool isObserved(const std::string& fileName) const;

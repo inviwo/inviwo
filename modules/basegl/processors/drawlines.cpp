@@ -62,6 +62,7 @@ DrawLines::DrawLines()
     , lines_(DrawType::Lines, ConnectivityType::Strip)
     , lineDrawer_(&lines_)
     , lineShader_("img_color.frag") {
+
     addPort(inport_);
     addPort(outport_);
 

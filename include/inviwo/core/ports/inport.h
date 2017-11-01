@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/util/callback.h>
+#include <inviwo/core/util/statecoordinator.h>
 
 namespace inviwo {
 
@@ -55,21 +56,25 @@ public:
     friend class ProcessorNetworkEvaluator;
 
     virtual ~Inport();
-    
+
     virtual bool isConnected() const override;
-    
+
     /**
-     * A inport is ready when it is connected, and it's outports are ready.
+     * An inport is ready when it is connected, and it's outports are ready.
+     * An optional inport is considered ready also when no outports are connected.
      */
     virtual bool isReady() const override;
-    
+
     /**
-     * A inport can be optional in a processor, in which case the processor will be ready even
-     * if the port is not;
+     * An inport can be set optional, in which case the port and hence the processor will
+     * be ready even if no outport is connected. This means that an optional inport may not have any
+     * connected outports when evaluating the @ProcessorNetwork, i.e. when Processor::process() is
+     * called.
+     * @seealso isReady()
      */
-    bool isOptional() const;
     void setOptional(bool optional);
-    
+    bool isOptional() const;
+
     /**
      * An inport is changed when it has new data, and it's processor has not been processed.
      */
@@ -119,42 +124,50 @@ public:
     void removeOnInvalid(const BaseCallBack* callback);
     template <typename T>
     void removeOnInvalid(T* o);
-    
+
     void removeOnConnect(const BaseCallBack* callback);
     void removeOnDisconnect(const BaseCallBack* callback);
 
 protected:
     Inport(std::string identifier = "");
-    
+
     /**
-     *    Called by Outport::invalidate on its connected inports, which is call by
-     *    Processor::invalidate. Will by default invalidate its processor. From above in the network.
+     * Called by Outport::invalidate on its connected inports, which is call by
+     * Processor::invalidate. Will by default invalidate its processor. From above in the
+     * network.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
     /**
-     *    Called by Outport::setValid, which is call by Processor::setValid, which is called after
-     *    Processor:process. From above in the network.
+     * Called by Outport::setValid, which is call by Processor::setValid, which is called after
+     * Processor:process. From above in the network.
      */
     virtual void setValid(const Outport* source);
-    
+
+    /**
+     * Called by the connected outports to let the inport know that their ready status has
+     * changed.
+     */
+    void readyUpdate();
+
     // Usually called with false (reset) by Processor::setValid after the Processor::process
     virtual void setChanged(bool changed = true, const Outport* source = nullptr);
 
     // Called by the processor network.
     void callOnChangeIfChanged() const;
 
+    StateCoordinator<bool> isReady_;
     std::vector<Outport*> connectedOutports_;
-    
+
 private:
     bool changed_;
     bool optional_;
-    
+
     CallBackList onChangeCallback_;
     std::vector<const Outport*> changedSources_;
-    
+
     CallBackList onInvalidCallback_;
     InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
-    
+
     CallBackList onConnectCallback_;
     CallBackList onDisconnectCallback_;
 };
@@ -179,6 +192,6 @@ void Inport::removeOnInvalid(T* o) {
     onInvalidCallback_.removeMemberFunction(o);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INPORT_H

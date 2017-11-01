@@ -107,8 +107,6 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
 
     // The default BSP tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
-    
-    connect(this, &QGraphicsScene::selectionChanged, [&](){updateActionStates();});
 }
 
 ////////////////////////////////////////////////////////
@@ -119,8 +117,6 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
     ProcessorGraphicsItem* ret = addProcessorGraphicsItem(processor);
 
     if (auto processorWidget = processor->getProcessorWidget()){
-        processorWidget->addObserver(ret->getStatusItem());
-
         if (auto md = processor->getMetaData<BoolMetaData>("PortInspector")) {
             if (md->get()) {
                 if (auto widget = dynamic_cast<QWidget*>(processorWidget)) {
@@ -303,6 +299,10 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItem(const ProcessorPa
 LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItem(Processor* processor1,
                                                                Processor* processor2) const {
     return getLinkGraphicsItem(ProcessorPair(processor1, processor2));
+}
+
+std::string NetworkEditor::getMimeTag() {
+    return "application/x.vnd.inviwo.network+xml";
 }
 
 ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItemAt(const QPointF pos) const {
@@ -597,31 +597,65 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         });
     }
 
-    menu.addSeparator();
-    auto actions = mainwindow_->getActions();
-    menu.addAction(actions["Copy"]);
-    menu.addAction(actions["Cut"]);
-    menu.addAction(actions["Paste"]);
-    menu.addSeparator();
-    
     clickedOnItems_.append(items(e->scenePos()));
-    clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
-    
-    bool enable = clickedProcessor || selectedItems().size() > 0;
-    actions["Copy"]->setEnabled(enable);
-    actions["Cut"]->setEnabled(enable);
+    clickedPosition_ = { true, utilqt::toGLM(e->scenePos()) };
+    {
+        menu.addSeparator();
+        auto cutAction = menu.addAction(tr("Cu&t"));
+        cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
+        connect(cutAction, &QAction::triggered, this, [this](){       
+            auto data = cut();
+            auto mimedata = util::make_unique<QMimeData>();
+            mimedata->setData(utilqt::toQString(getMimeTag()), data);
+            mimedata->setData(QString("text/plain"), data);
+            QApplication::clipboard()->setMimeData(mimedata.release());
+        });
 
-    QAction* deleteAction = actions["Delete"];
-    menu.addAction(deleteAction);
+        auto copyAction = menu.addAction(tr("&Copy"));
+        copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
+        connect(copyAction, &QAction::triggered, this, [this](){
+            auto data = copy();
+            auto mimedata = util::make_unique<QMimeData>();
+            mimedata->setData(utilqt::toQString(getMimeTag()), data);
+            mimedata->setData(QString("text/plain"), data);
+            QApplication::clipboard()->setMimeData(mimedata.release()); 
+        });
+
+
+        auto pasteAction = menu.addAction(tr("&Paste"));
+        auto clipboard = QApplication::clipboard();
+        auto mimeData = clipboard->mimeData();
+        if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
+            pasteAction->setEnabled(true);
+        } else if (mimeData->formats().contains(QString("text/plain"))) {
+            pasteAction->setEnabled(true);
+        } else {
+            pasteAction->setEnabled(false);
+        }
+        connect(pasteAction, &QAction::triggered, this, [this](){
+            auto clipboard = QApplication::clipboard();
+            auto mimeData = clipboard->mimeData();
+            if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
+                paste(mimeData->data(utilqt::toQString(getMimeTag())));
+            } else if (mimeData->formats().contains(QString("text/plain"))) {
+                paste(mimeData->data(QString("text/plain")));
+            }
+        });
+
+        menu.addSeparator();
+
+        auto deleteAction = menu.addAction(tr("&Delete"));
+        deleteAction->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
+        connect(deleteAction, &QAction::triggered, this, [this](){
+            deleteSelection();
+        });
+    }  
     
-    actions["Delete"]->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
     
-    doingContextMenu_ = true;
     menu.exec(QCursor::pos());
     e->accept();
     clickedOnItems_.clear();
     clickedPosition_ = {false, ivec2{0,0}};
-    doingContextMenu_ = false;
 }
 
 void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
@@ -631,18 +665,6 @@ void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool r
         if (!help->isVisible()) help->show();
         help->raise();
     }
-}
-
-bool NetworkEditor::doingContextMenu() const {
-    return doingContextMenu_;
-}
-
-void NetworkEditor::updateActionStates() {
-    auto actions = mainwindow_->getActions();
-    auto enable = selectedItems().size() > 0;
-    actions["Copy"]->setEnabled(enable);
-    actions["Cut"]->setEnabled(enable);
-    actions["Delete"]->setEnabled(enable);
 }
 
 void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent) {
@@ -748,9 +770,11 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
                 QString className;
                 ProcessorDragObject::decode(e->mimeData(), className);
                 processorItem->setHighlight(true);
+                processorItem->setSelected(true);
                 oldProcessorTarget_ = processorItem;
             } else if (!processorItem && oldProcessorTarget_) {  // processor no longer targeted
                 oldProcessorTarget_->setHighlight(false);
+                oldProcessorTarget_->setSelected(false);
                 oldProcessorTarget_ = nullptr;
             }
         }
@@ -951,31 +975,37 @@ QByteArray NetworkEditor::cut() {
 }
 
 void NetworkEditor::paste(QByteArray mimeData) {
-    std::stringstream ss;
-    for (auto d : mimeData) ss << d;
-    RenderContext::getPtr()->activateDefaultRenderContext();
-    auto added = util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
-    
-    ivec2 top{std::numeric_limits<int>::max()};
-    
-    for (auto p : added) {
-        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        top = glm::min(top, m->getPosition());
-    }
+    try {
+        std::stringstream ss;
+        for (auto d : mimeData) ss << d;
+        // Activate the default context, might be needed in processor constructors.
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        auto added =
+            util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
 
-    ivec2 pos =
-        clickedPosition_.first
-            ? clickedPosition_.second - top
-            : ivec2(++pasteCount_) * ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
+        ivec2 top{std::numeric_limits<int>::max()};
 
-    for (auto p : added) {
-        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        m->setPosition(m->getPosition() + pos);
+        for (auto p : added) {
+            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            top = glm::min(top, m->getPosition());
+        }
+
+        ivec2 pos = clickedPosition_.first
+                        ? clickedPosition_.second - top
+                        : ivec2(++pasteCount_) *
+                              ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
+
+        for (auto p : added) {
+            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            m->setPosition(m->getPosition() + pos);
+        }
+    } catch (const Exception&) {
+        LogWarn("Paste operation failed");
     }
 }
 
 void NetworkEditor::selectAll() {
-    for(auto i : items()) i->setSelected(true);
+    for (auto i : items()) i->setSelected(true);
 }
 
 void NetworkEditor::saveNetworkImage(const std::string& filename) {

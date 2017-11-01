@@ -7,8 +7,6 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanagerwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialog.h
@@ -22,6 +20,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiongraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgrapicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/helpwidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoeditmenu.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoqteditordefine.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h
@@ -30,8 +30,10 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorview.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networksearch.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlinkgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorportgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorpreview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorprogressgraphicsitem.h
@@ -48,6 +50,7 @@ set(SOURCE_FILES
     consolewidget.cpp
     editorgrapicsitem.cpp
     helpwidget.cpp
+    inviwoeditmenu.cpp
     inviwomainwindow.cpp
     linkdialog/linkdialog.cpp
     linkdialog/linkdialogcurvegraphicsitems.cpp
@@ -58,6 +61,7 @@ set(SOURCE_FILES
     linkgraphicsitem.cpp
     networkeditor.cpp
     networkeditorview.cpp
+    networksearch.cpp
     processorgraphicsitem.cpp
     processorlinkgraphicsitem.cpp
     processorlistwidget.cpp

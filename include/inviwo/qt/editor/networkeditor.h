@@ -68,6 +68,7 @@ class LinkConnectionDragGraphicsItem;
 class LinkDialog;
 class InviwoMainWindow;
 class Image;
+class MenuItem;
 
 /**
  * The NetworkEditor supports interactive editing of a ProcessorNetwork. Processors can be added
@@ -118,10 +119,16 @@ public:
     std::shared_ptr<const Image> renderPortInspectorImage(Outport* port);
 
     void updateLeds();
-    bool doingContextMenu() const;
     
     void saveNetworkImage(const std::string& filename);
 
+    ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
+    ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
+    LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
+    LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
+                                                    Processor* processor2) const;
+
+    static std::string getMimeTag();
 public slots:
     void contextMenuShowInspector(EditorGraphicsItem*);
     void resetAllTimeMeasurements();
@@ -165,8 +172,6 @@ private:
 
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
-
-    void updateActionStates();
     
     // Processors
     ProcessorGraphicsItem* addProcessorRepresentations(Processor* processor);
@@ -184,12 +189,6 @@ private:
     LinkConnectionGraphicsItem* addLinkGraphicsItem(Processor* processor1, Processor* processor2);
     void removeLinkGraphicsItem(LinkConnectionGraphicsItem* linkGraphicsItem);
     void showLinkDialog(Processor* processor1, Processor* processor2);
-
-    ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
-    ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
-    LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
-    LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
-                                                    Processor* processor2) const;
 
     // Get QGraphicsItems
     template <typename T>
@@ -227,11 +226,9 @@ private:
 
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;
-
     static const int gridSpacing_;
     std::string filename_;
     bool modified_;
-    bool doingContextMenu_ = false;
 };
 
 template <typename T>

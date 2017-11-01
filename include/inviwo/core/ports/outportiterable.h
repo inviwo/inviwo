@@ -42,17 +42,20 @@ namespace inviwo {
 
 template <typename T>
 struct OutportIterable {
-    OutportIterable() {}
-    virtual ~OutportIterable() {}
+    OutportIterable() = default;
+    virtual ~OutportIterable() = default;
 
-    class const_iterator
-        : public std::iterator<std::forward_iterator_tag, T, std::ptrdiff_t,
-                               std::shared_ptr<const T>, std::shared_ptr<const T>> {
+    class const_iterator {
     public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = std::shared_ptr<const T>;
+        using reference = std::shared_ptr<const T>;
+        using iterator_category = std::forward_iterator_tag;
+
         const_iterator() : self_(nullptr){};
         template <typename Wrapper>
-        const_iterator(Wrapper wrapper)
-            : self_(util::make_unique<Model<Wrapper>>(wrapper)) {}
+        const_iterator(Wrapper wrapper) : self_(util::make_unique<Model<Wrapper>>(wrapper)) {}
         const_iterator(const const_iterator& rhs)
             : self_(rhs.self_ ? rhs.self_->clone() : nullptr) {}
         const_iterator& operator=(const const_iterator& that) {
@@ -349,8 +352,12 @@ private:
             if (iter_ == iterEnd_) end_ = true;
         };
 
-        std::shared_ptr<const T> getref() { return std::shared_ptr<const T>(data_, (*iter_).get()); };
-        std::shared_ptr<const T> getptr() { return std::shared_ptr<const T>(data_, (*iter_).get()); };
+        std::shared_ptr<const T> getref() {
+            return std::shared_ptr<const T>(data_, (*iter_).get());
+        };
+        std::shared_ptr<const T> getptr() {
+            return std::shared_ptr<const T>(data_, (*iter_).get());
+        };
 
         bool equal(const Wrapper& rhs) {
             if (end_ && rhs.end_)
@@ -371,6 +378,6 @@ private:
     DataOutport<container>* port_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_OUTPORTITERATOR_H

@@ -38,16 +38,6 @@
 
 namespace inviwo {
 
-bool util::ProcessorStates::hasBeenVisited(Processor* processor) const {
-    return visited_.find(processor) != visited_.end();
-}
-
-void util::ProcessorStates::setProcessorVisited(Processor* processor) {
-    visited_.insert(processor);
-}
-
-void util::ProcessorStates::clear() { visited_.clear(); }
-
 std::unordered_set<Processor*> util::getDirectPredecessors(Processor* processor) {
     std::unordered_set<Processor*> predecessors;
     for (auto port : processor->getInports()) {
@@ -70,7 +60,7 @@ std::unordered_set<Processor*> util::getDirectSuccessors(Processor* processor) {
 
 std::unordered_set<Processor*> util::getPredecessors(Processor* processor) {
     std::unordered_set<Processor*> predecessors;
-    ProcessorStates state;
+    std::unordered_set<Processor*> state;
     traverseNetwork<TraversalDirection::Up, VisitPattern::Post>(
         state, processor, [&predecessors](Processor* p) { predecessors.insert(p); });
 
@@ -79,7 +69,7 @@ std::unordered_set<Processor*> util::getPredecessors(Processor* processor) {
 
 std::unordered_set<Processor*> util::getSuccessors(Processor* processor) {
     std::unordered_set<Processor*> successors;
-    ProcessorStates state;
+    std::unordered_set<Processor*> state;
     traverseNetwork<TraversalDirection::Down, VisitPattern::Post>(
         state, processor, [&successors](Processor* p) { successors.insert(p); });
 
@@ -93,7 +83,7 @@ std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
     util::copy_if(network->getProcessors(), std::back_inserter(sinkProcessors),
                   [](Processor* p) { return p->isSink(); });
 
-    ProcessorStates state;
+    std::unordered_set<Processor*> state;
     std::vector<Processor*> sorted;
     for (auto processor : sinkProcessors) {
         traverseNetwork<TraversalDirection::Up, VisitPattern::Post>(

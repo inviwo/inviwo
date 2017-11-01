@@ -56,6 +56,9 @@ public:
     UndoManager(InviwoMainWindow* mainWindow);
     virtual ~UndoManager() = default;
 
+    void pushStateIfDirty();
+    void markDirty();
+
     void pushState();
     void undoState();
     void redoState();
@@ -63,9 +66,6 @@ public:
 
     QAction* getUndoAction() const;
     QAction* getRedoAction() const;
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     using DiffType = std::vector<std::string>::iterator::difference_type;

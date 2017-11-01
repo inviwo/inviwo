@@ -131,12 +131,11 @@ private:
 class IVW_MODULE_BASEGL_API ImageOverlayGL : public Processor {
 public:
     ImageOverlayGL();
-    ~ImageOverlayGL();
+    virtual ~ImageOverlayGL();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    bool isReady() const override;
     virtual void propagateEvent(Event*, Outport* source) override;
 
 protected:
@@ -155,7 +154,6 @@ private:
                                        //the source image will receive interaction events
     BoolProperty passThroughEvent_;
 
-    // TODO: replace this with std::vector to match multi-inport
     OverlayProperty overlayProperty_;
 
     BoolCompositeProperty border_;

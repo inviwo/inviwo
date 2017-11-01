@@ -39,7 +39,7 @@ namespace inviwo {
 class CompositeProperty;
 
 class IVW_MODULE_QTWIDGETS_API CompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
-                                                    public CompositePropertyObserver {
+                                                           public CompositePropertyObserver {
 public:
     CompositePropertyWidgetQt(CompositeProperty* property);
     virtual void updateFromProperty() override;
@@ -47,7 +47,7 @@ public:
     virtual bool isCollapsed() const override;
     virtual void onSetCollapsed(bool value) override;
 
-    virtual void initState() override; 
+    virtual void initState() override;
 
 protected:
     // override from CollapsibleGroupBoxWidgetQt
@@ -57,6 +57,6 @@ private:
     CompositeProperty* compProperty_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_COMPOSITEPROPERTYWIDGETQT_H

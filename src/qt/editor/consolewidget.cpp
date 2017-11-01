@@ -61,6 +61,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/qt/editor/inviwoeditmenu.h>
 
 namespace inviwo {
 
@@ -271,7 +272,11 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return separator;
     };
 
-    // add separator at the beginning as the "copy" action will be inserted later at the front
+    auto copyAction = new QAction(tr("&Copy"), this);
+    copyAction->setEnabled(true);
+    connect(copyAction, &QAction::triggered, this, &ConsoleWidget::copy);
+
+    tableView_->addAction(copyAction);
     tableView_->addAction(createSeparator());
     tableView_->addAction(visibleColumnsAction);
     tableView_->addAction(viewAction);
@@ -290,7 +295,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     QWidget* w = new QWidget();
     w->setLayout(layout);
     setWidget(w);
-    tableView_->installEventFilter(this);
+
     tableView_->setAttribute(Qt::WA_Hover);
     tableView_->setItemDelegateForColumn(static_cast<int>(LogTableModelEntry::ColumnID::Message),
                                          textSelectionDelegate_);
@@ -329,6 +334,40 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     filterPattern_->setText(filterText.toString());
 
     settings.endGroup();
+
+    auto editmenu = mainwindow_->getInviwoEditMenu();
+    editActionsHandle_ = editmenu->registerItem(
+        std::make_shared<MenuItem>(this,
+                                   [this](MenuItemType t) -> bool {
+                                       switch (t) {
+                                           case MenuItemType::copy:
+                                               return tableView_->selectionModel()->hasSelection();
+                                           case MenuItemType::cut:
+                                           case MenuItemType::paste:
+                                           case MenuItemType::del:
+                                           case MenuItemType::select:
+                                           default:
+                                               return false;
+                                       }
+
+                                   },
+                                   [this](MenuItemType t) -> void {
+                                       switch (t) {
+                                           case MenuItemType::copy: {
+                                               if (tableView_->selectionModel()->hasSelection()) {
+                                                   copy();
+                                               }
+                                               break;
+                                           }
+                                           case MenuItemType::cut:
+                                           case MenuItemType::paste:
+                                           case MenuItemType::del:
+                                           case MenuItemType::select:
+                                           default:
+                                               break;
+                                       }
+
+                                   }));
 }
 
 ConsoleWidget::~ConsoleWidget() = default;
@@ -423,60 +462,6 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* keyEvent) {
     }
 }
 
-bool ConsoleWidget::eventFilter(QObject* /*object*/, QEvent* event) {
-    if (event->type() == QEvent::FocusIn) {
-        focus_ = true;
-
-        auto enable = tableView_->selectionModel()->hasSelection();
-        auto action = mainwindow_->getActions().find("Copy")->second;
-
-        if (!connections_["Copy"]) {
-            connections_["Copy"] = connect(action, &QAction::triggered, [&]() {
-                const auto& inds = tableView_->selectionModel()->selectedIndexes();
-                int prevrow = inds.first().row();
-                bool first = true;
-                QString text;
-                for (const auto& ind : inds) {
-                    if (!tableView_->isColumnHidden(ind.column())) {
-                        if (!first && ind.row() == prevrow) {
-                            text.append('\t');
-                        } else if (!first) {
-                            text.append('\n');
-                        }
-                        text.append(ind.data(Qt::DisplayRole).toString());
-                        first = false;
-                    }
-                    prevrow = ind.row();
-                }
-                auto mimedata = util::make_unique<QMimeData>();
-                mimedata->setData(QString("text/plain"), text.toUtf8());
-                QApplication::clipboard()->setMimeData(mimedata.release());
-            });
-        }
-        action->setEnabled(enable);
-
-    } else if (event->type() == QEvent::FocusOut) {
-        focus_ = false;
-        auto action = mainwindow_->getActions().find("Copy")->second;
-        disconnect(connections_["Copy"]);
-        action->setEnabled(focus_ || hover_);
-    } else if (event->type() == QEvent::HoverEnter) {
-        hover_ = true;
-        auto enable = tableView_->selectionModel()->hasSelection();
-        auto action = mainwindow_->getActions().find("Copy")->second;
-        action->setEnabled(enable);
-        mainwindow_->getActions().find("Paste")->second->setEnabled(false);
-        mainwindow_->getActions().find("Cut")->second->setEnabled(false);
-        mainwindow_->getActions().find("Delete")->second->setEnabled(false);
-
-    } else if (event->type() == QEvent::HoverLeave) {
-        hover_ = false;
-        auto action = mainwindow_->getActions().find("Copy")->second;
-        action->setEnabled(focus_ || hover_);
-    }
-    return false;
-}
-
 QModelIndex ConsoleWidget::mapToSource(int row, int col) {
     auto ind = levelFilter_->index(row, col);
     auto lind = levelFilter_->mapToSource(ind);
@@ -487,6 +472,30 @@ QModelIndex ConsoleWidget::mapFromSource(int row, int col) {
     auto mind = model_.model()->index(row, col);
     auto lind = filter_->mapFromSource(mind);
     return levelFilter_->mapFromSource(lind);
+}
+
+void ConsoleWidget::copy() {
+    const auto& inds = tableView_->selectionModel()->selectedIndexes();
+    if (inds.isEmpty()) return;
+
+    int prevrow = inds.first().row();
+    bool first = true;
+    QString text;
+    for (const auto& ind : inds) {
+        if (!tableView_->isColumnHidden(ind.column())) {
+            if (!first && ind.row() == prevrow) {
+                text.append('\t');
+            } else if (!first) {
+                text.append('\n');
+            }
+            text.append(ind.data(Qt::DisplayRole).toString());
+            first = false;
+        }
+        prevrow = ind.row();
+    }
+    auto mimedata = util::make_unique<QMimeData>();
+    mimedata->setData(QString("text/plain"), text.toUtf8());
+    QApplication::clipboard()->setMimeData(mimedata.release());
 }
 
 void ConsoleWidget::closeEvent(QCloseEvent* event) {
@@ -642,4 +651,4 @@ Qt::ItemFlags LogModel::flags(const QModelIndex& index) const {
     return flags;
 }
 
-}  // namespace
+}  // namespace inviwo

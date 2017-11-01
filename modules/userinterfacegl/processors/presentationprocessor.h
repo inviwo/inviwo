@@ -75,8 +75,6 @@ public:
 
     virtual void process() override;
 
-    virtual bool isReady() const override;
-
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -114,8 +112,6 @@ private:
     std::vector<std::string> fileList_;
 
     std::shared_ptr<Image> currentSlide_;
-
-    bool ready_; //!< flag for isReady state depending on existing file matching the pattern
 };
 
 }  // namespace inviwo

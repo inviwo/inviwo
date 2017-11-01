@@ -42,22 +42,20 @@
 
 namespace inviwo {
 /**
- * A base class for simple source processors. 
- * Two funtions to constomize the behaviour are avaliable, dataLoaded and dataDeserialized.
- */ 
+ * A base class for simple source processors.
+ * Two functions to customize the behavior are available, dataLoaded and dataDeserialized.
+ */
 template <typename DataType, typename PortType>
 class DataSource : public Processor {
 public:
     DataSource();
     virtual ~DataSource() = default;
 
-    virtual bool isReady() const override;
     virtual void process() override;
     virtual void deserialize(Deserializer& d) override;
 
 protected:
     void load(bool deserialized);
-    virtual bool isSink() const override;
 
     // Called when we load new data.
     virtual void dataLoaded(std::shared_ptr<DataType> data){};
@@ -75,10 +73,12 @@ private:
 
 template <typename DataType, typename PortType>
 DataSource<DataType, PortType>::DataSource()
-    : Processor()
-    , port_("data")
-    , file_("filename", "File")
-    , reload_("reload", "Reload data") {
+    : Processor(), port_("data"), file_("filename", "File"), reload_("reload", "Reload data") {
+
+    // make sure that we always process even if not connected
+    isSink_.setUpdate([]() { return true; });
+    isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
+    file_.onChange([this]() { isReady_.update(); });
 
     addPort(port_);
 
@@ -92,7 +92,7 @@ DataSource<DataType, PortType>::DataSource()
 }
 
 template <typename DataType, typename PortType>
-void inviwo::DataSource<DataType, PortType>::process() {
+void DataSource<DataType, PortType>::process() {
     if (file_.isModified() || reload_.isModified()) {
         load(deserialized_);
         deserialized_ = false;
@@ -100,19 +100,9 @@ void inviwo::DataSource<DataType, PortType>::process() {
 }
 
 template <typename DataType, typename PortType>
-bool inviwo::DataSource<DataType, PortType>::isSink() const {
-    return true;
-}
-
-template <typename DataType, typename PortType>
-bool DataSource<DataType, PortType>::isReady() const {
-    return filesystem::fileExists(file_.get());
-}
-
-template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::load(bool deserialized) {
-    if (file_.get().empty() ) return;
-   
+    if (file_.get().empty()) return;
+
     std::string ext = filesystem::getFileExtension(file_.get());
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     if (auto reader = rf->template getReaderForTypeAndExtension<DataType>(ext)) {
@@ -134,7 +124,7 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
 }
 
 template <typename DataType, typename PortType>
-void inviwo::DataSource<DataType, PortType>::deserialize(Deserializer& d) {
+void DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     file_.clearNameFilters();
@@ -143,6 +133,6 @@ void inviwo::DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     deserialized_ = true;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATASOURCE_H

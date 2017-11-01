@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/links/linkevaluator.h>
 #include <inviwo/core/util/observer.h>
@@ -66,7 +67,8 @@ class InviwoApplication;
 class IVW_CORE_API ProcessorNetwork : public Serializable,
                                       public ProcessorNetworkObservable,
                                       public ProcessorObserver,
-                                      public PropertyOwnerObserver {
+                                      public PropertyOwnerObserver,
+                                      public ProcessorMetaDataObserver {
 public:
     using ProcessorMap = std::unordered_map<std::string, Processor*>;
     using PortConnections = std::unordered_set<PortConnection>;
@@ -241,9 +243,13 @@ private:
     virtual void onAboutPropertyChange(Property*) override;
     virtual void onProcessorInvalidationBegin(Processor*) override;
     virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorRequestEvaluate(Processor* p = nullptr) override;
     virtual void onProcessorIdentifierChange(Processor*) override;
     virtual void onProcessorPortRemoved(Processor*, Port* port) override;
+
+    // ProcessorMeteDataObserver overrides
+    virtual void onProcessorMetaDataPositionChange() override;
+    virtual void onProcessorMetaDataVisibilityChange() override;
+    virtual void onProcessorMetaDataSelectionChange() override;
 
     void addPropertyOwnerObservation(PropertyOwner*);
     void removePropertyOwnerObservation(PropertyOwner*);

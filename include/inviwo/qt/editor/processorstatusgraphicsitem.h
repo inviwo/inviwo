@@ -32,10 +32,7 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
-#include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/processors/activityindicator.h>
-#include <inviwo/core/processors/processorobserver.h>
-#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -48,12 +45,10 @@ namespace inviwo {
 class Processor;
 
 class IVW_QTEDITOR_API ProcessorStatusGraphicsItem : public EditorGraphicsItem,
-                                                     public ProcessorWidgetObserver,
-                                                     public ProcessorNetworkEvaluationObserver,
                                                      public ActivityIndicatorObserver {
 public:
     ProcessorStatusGraphicsItem(QGraphicsRectItem* parent, Processor* processor);
-    virtual ~ProcessorStatusGraphicsItem() {}
+    virtual ~ProcessorStatusGraphicsItem() = default;
 
     void setRunning(bool);
 
@@ -61,17 +56,11 @@ public:
     enum { Type = UserType + ProcessorStatusGraphicsType };
     int type() const override { return Type; }
 
-    // ProcessorWidgetObserver overrides
-    virtual void onProcessorWidgetShow(ProcessorWidget*) override;
-    virtual void onProcessorWidgetHide(ProcessorWidget*) override;
-
     virtual void update(const QRectF& rect = QRectF());
 
 protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual void activityIndicatorChanged(bool active) override;
-
-    virtual void onProcessorNetworkEvaluationEnd() override;
 
 private:
     enum class State {Invalid, Running, Ready};

@@ -88,7 +88,7 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     lineEdit_->setPlaceholderText("Filter processor list...");
     lineEdit_->setClearButtonEnabled(true);
 
-    connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(addProcessorsToTree()));
+    connect(lineEdit_, &QLineEdit::textChanged, this, &ProcessorTreeWidget::addProcessorsToTree);
     vLayout->addWidget(lineEdit_);
     QHBoxLayout* listViewLayout = new QHBoxLayout();
     listViewLayout->addWidget(new QLabel("Group by", centralWidget));
@@ -98,7 +98,8 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     listView_->addItem("Code State");
     listView_->addItem("Module");
     listView_->setCurrentIndex(1);
-    connect(listView_, SIGNAL(currentIndexChanged(int)), this, SLOT(addProcessorsToTree()));
+    connect(listView_, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+            &ProcessorTreeWidget::addProcessorsToTree);
     listView_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
     listViewLayout->addWidget(listView_);
     vLayout->addLayout(listViewLayout);
@@ -118,8 +119,8 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
 
     processorTree_->header()->setDefaultSectionSize(40);
 
-    connect(processorTree_, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this,
-            SLOT(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(processorTree_, &ProcessorTree::currentItemChanged, this,
+            &ProcessorTreeWidget::currentItemChanged);
 
     addProcessorsToTree();
     vLayout->addWidget(processorTree_);
@@ -261,7 +262,7 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
         tb(H("Module"), moduleId);
         tb(H("Identifier"), processor->getClassIdentifier());
         tb(H("Category"), processor->getCategory());
-        tb(H("Code"), Processor::getCodeStateString(processor->getCodeState()));
+        tb(H("Code"), processor->getCodeState());
         tb(H("Tags"), processor->getTags().getString());
 
         newItem->setToolTip(0, utilqt::toQString(doc));
@@ -308,7 +309,7 @@ void ProcessorTreeWidget::addProcessorsToTree() {
                         categoryDesc = "";
                         break;
                     case 2:  // By Code State
-                        categoryName = Processor::getCodeStateString(processor->getCodeState());
+                        categoryName = toString(processor->getCodeState());
                         categoryDesc = "";
                         break;
                     case 3:  // By Module

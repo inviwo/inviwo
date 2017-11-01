@@ -48,39 +48,14 @@ namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamRibbons : public Processor {
 public:
-    enum class ColoringMethod {
-        Velocity,
-        Vorticity,
-        ColorPort
-    };
+    enum class ColoringMethod { Velocity, Vorticity, ColorPort };
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     StreamRibbons();
-    virtual ~StreamRibbons() {}
+    virtual ~StreamRibbons() = default;
 
 protected:
     virtual void process() override;
-
-
-    virtual bool isReady() const override {
-        if (Processor::isReady()) {
-            return true;
-        }
-
-        if (!seedPoints_.isReady()) return false;
-        if (colors_.isConnected() && !colors_.isReady()) return false;
-
-        bool velocitiesReady = false;
-        bool vorticitiesReady = false;
-
-        velocitiesReady |= sampler_.isConnected() && sampler_.isReady();
-        velocitiesReady |= volume_.isConnected() && volume_.isReady();
-
-        vorticitiesReady |= vorticitySampler_.isConnected() && vorticitySampler_.isReady();
-        vorticitiesReady |= vorticityVolume_.isConnected() && vorticityVolume_.isReady();
-
-        return velocitiesReady && vorticitiesReady;
-    }
 
 private:
     DataInport<SpatialSampler<3, 3, double>> sampler_;
@@ -90,7 +65,6 @@ private:
 
     VolumeInport volume_;
     VolumeInport vorticityVolume_;
-
 
     StreamLineProperties streamLineProperties_;
 
@@ -105,6 +79,6 @@ private:
     MeshOutport mesh_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_STREAMRIBBONS_H

@@ -27,89 +27,63 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/core/io/datvolumewriter.h>
+#include <modules/base/io/ivfvolumewriter.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
-
 namespace inviwo {
 
-DatVolumeWriter::DatVolumeWriter() : DataWriterType<Volume>() {
-    addExtension(FileExtension("dat","Inviwo dat file format"));
+IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {
+    addExtension(FileExtension("ivf","Inviwo ivf file format"));
 }
 
-DatVolumeWriter::DatVolumeWriter(const DatVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {
+IvfVolumeWriter::IvfVolumeWriter(const IvfVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {
 }
 
-DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) {
+IvfVolumeWriter& IvfVolumeWriter::operator=(const IvfVolumeWriter& that) {
     if (this != &that)
         DataWriterType<Volume>::operator=(that);
 
     return *this;
 }
 
-DatVolumeWriter* DatVolumeWriter::clone() const {
-    return new DatVolumeWriter(*this);
+IvfVolumeWriter* IvfVolumeWriter::clone() const {
+    return new IvfVolumeWriter(*this);
 }
 
-void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) const {
+void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath) const {
     std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
-    if (filesystem::fileExists(filePath)  && !overwrite_)
+    if (filesystem::fileExists(filePath) && !overwrite_)
         throw DataWriterException("Error: Output file: " + filePath + " already exists", IvwContext);
 
     if (filesystem::fileExists(rawPath) && !overwrite_)
         throw DataWriterException("Error: Output file: " + rawPath + " already exists", IvwContext);
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
-    //Write the .dat file content
-    std::stringstream ss;
-    const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
-    glm::mat3 basis = glm::transpose(data->getBasis());
-    glm::vec3 offset = data->getOffset();
-    glm::mat4 wtm = glm::transpose(data->getWorldMatrix());
-    writeKeyToString(ss, "RawFile",  fileName + ".raw");
-    writeKeyToString(ss, "Resolution", vr->getDimensions());
-    writeKeyToString(ss, "Format",  vr->getDataFormatString());
-    writeKeyToString(ss, "BasisVector1", basis[0]);
-    writeKeyToString(ss, "BasisVector2", basis[1]);
-    writeKeyToString(ss, "BasisVector3", basis[2]);
-    writeKeyToString(ss, "Offset", offset);
-    writeKeyToString(ss, "WorldVector1", wtm[0]);
-    writeKeyToString(ss, "WorldVector2", wtm[1]);
-    writeKeyToString(ss, "WorldVector3", wtm[2]);
-    writeKeyToString(ss, "WorldVector4", wtm[3]);
-    writeKeyToString(ss, "DataRange", data->dataMap_.dataRange);
-    writeKeyToString(ss, "ValueRange", data->dataMap_.valueRange);
-    writeKeyToString(ss, "Unit", data->dataMap_.valueUnit);
+    const VolumeRAM* vr = volume->getRepresentation<VolumeRAM>();
+    Serializer s(filePath);
+    s.serialize("RawFile", fileName + ".raw");
+    s.serialize("Format", vr->getDataFormatString());
+    s.serialize("BasisAndOffset", volume->getModelMatrix());
+    s.serialize("WorldTransform", volume->getWorldMatrix());
+    s.serialize("Dimension", volume->getDimensions());
+    s.serialize("DataRange", volume->dataMap_.dataRange);
+    s.serialize("ValueRange", volume->dataMap_.valueRange);
+    s.serialize("Unit", volume->dataMap_.valueUnit);
 
-    std::vector<std::string> keys = data->getMetaDataMap()->getKeys();
-
-    for (auto& key : keys) {
-        auto m = data->getMetaDataMap()->get(key);
-        if (auto sm = dynamic_cast<const StringMetaData*>(m)) writeKeyToString(ss, key, sm->get());
-    }
-
-    std::ofstream f(filePath.c_str());
-
-    if (f.good())
-        f << ss.str();
-    else
-        throw DataWriterException("Error: Could not write to dat file: " + filePath, IvwContext);
-
-    f.close();
+    volume->getMetaDataMap()->serialize(s);
+    s.writeFile();
     std::fstream fout(rawPath.c_str(), std::ios::out | std::ios::binary);
 
     if (fout.good()) {
-        fout.write((char*)vr->getData(), vr->getNumberOfBytes());
+        fout.write((char*)vr->getData(),
+                   vr->getDimensions().x*vr->getDimensions().y*vr->getDimensions().z
+                   * vr->getDataFormat()->getSize());
     } else
         throw DataWriterException("Error: Could not write to raw file: " + rawPath, IvwContext);
 
     fout.close();
-}
-
-void DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key, const std::string& str) const {
-    ss << key << ": " << str << std::endl;
 }
 
 } // namespace

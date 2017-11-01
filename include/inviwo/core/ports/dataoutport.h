@@ -60,10 +60,6 @@ public:
     virtual void setData(std::shared_ptr<const T> data);
     virtual void setData(const T* data); // will assume ownership of data.
 
-    /**
-     * An outport is ready if it has data and is valid.
-     */
-    virtual bool isReady() const override;
     bool hasData() const;
 
     virtual std::string getContentInfo() const override;
@@ -76,7 +72,12 @@ template <typename T>
 DataOutport<T>::DataOutport(std::string identifier)
     : Outport(identifier)
     , OutportIterableImpl<T>(this)
-    , data_() {}
+    , data_() {
+
+    isReady_.setUpdate([this](){
+        return invalidationLevel_ == InvalidationLevel::Valid && data_.get() != nullptr;
+    });
+}
 
 template <typename T>
 std::string inviwo::DataOutport<T>::getClassIdentifier() const {
@@ -96,28 +97,26 @@ std::shared_ptr<const T> DataOutport<T>::getData() const {
 template <typename T>
 void DataOutport<T>::setData(std::shared_ptr<const T> data) {
     data_ = data;
+    isReady_.update();
 }
 
 template <typename T>
 void DataOutport<T>::setData(const T* data) {
     data_.reset(data);
+    isReady_.update();
 }
 
 template <typename T>
 std::shared_ptr<const T> DataOutport<T>::detachData() {
     std::shared_ptr<const T> data(data_);
     data_.reset();
+    isReady_.update();
     return data;
 }
 
 template <typename T>
 bool DataOutport<T>::hasData() const {
     return data_.get() != nullptr;
-}
-
-template <typename T>
-bool DataOutport<T>::isReady() const {
-    return hasData() && invalidationLevel_ == InvalidationLevel::Valid;
 }
 
 template <typename T>

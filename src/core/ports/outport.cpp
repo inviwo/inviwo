@@ -33,11 +33,21 @@
 namespace inviwo {
 
 Outport::Outport(std::string identifier)
-    : Port(identifier), invalidationLevel_(InvalidationLevel::Valid) {}
+    : Port(identifier)
+    , isReady_{false,
+               [this](const bool&) {
+                   for (auto inport : connectedInports_) {
+                       inport->readyUpdate();
+                   }
+               },
+               [this]() { return false; }}
+    , invalidationLevel_(InvalidationLevel::Valid) {}
 
-Outport::~Outport() {}
+Outport::~Outport() = default;
 
 bool Outport::isConnected() const { return !(connectedInports_.empty()); }
+
+bool Outport::isReady() const { return isReady_; }
 
 bool Outport::isConnectedTo(const Inport* port) const {
     return util::contains(connectedInports_, port);
@@ -47,31 +57,29 @@ const std::vector<Inport*>& Outport::getConnectedInports() const { return connec
 
 void Outport::invalidate(InvalidationLevel invalidationLevel) {
     invalidationLevel_ = invalidationLevel;
-    for (auto port : connectedInports_) port->invalidate(invalidationLevel);
+    for (auto inport : connectedInports_) inport->invalidate(invalidationLevel);
+    isReady_.update();
 }
 
-void Outport::propagateEvent(Event* event) {
-    processor_->propagateEvent(event, this);
+InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }
+
+void Outport::setValid() {
+    invalidationLevel_ = InvalidationLevel::Valid;
+    for (auto inport : connectedInports_) inport->setValid(this);
+    isReady_.update();
 }
 
-inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }
+void Outport::propagateEvent(Event* event) { processor_->propagateEvent(event, this); }
 
 const BaseCallBack* Outport::onConnect(std::function<void()> lambda) {
     return onConnectCallback_.addLambdaCallback(lambda);
 }
-void Outport::removeOnConnect(const BaseCallBack* callback) {
-    onConnectCallback_.remove(callback);
-}
+void Outport::removeOnConnect(const BaseCallBack* callback) { onConnectCallback_.remove(callback); }
 const BaseCallBack* Outport::onDisconnect(std::function<void()> lambda) {
     return onDisconnectCallback_.addLambdaCallback(lambda);
 }
 void Outport::removeOnDisconnect(const BaseCallBack* callback) {
     onDisconnectCallback_.remove(callback);
-}
-
-void Outport::setValid() {
-    invalidationLevel_ = InvalidationLevel::Valid;
-    for (auto inport : connectedInports_) inport->setValid(this);
 }
 
 // Is called exclusively by Inport, which means a connection has been made.
@@ -86,4 +94,4 @@ void Outport::disconnectFrom(Inport* inport) {
     onDisconnectCallback_.invokeAll();
 }
 
-}  // namespace
+}  // namespace inviwo

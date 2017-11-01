@@ -62,6 +62,11 @@ private:
     HelpBrowser* helpBrowser_;
     std::string current_;
     std::unique_ptr<QCHFileObserver> fileObserver_;
+    
+    // Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
+    // Called before modules have been unregistered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
 }  // namespace

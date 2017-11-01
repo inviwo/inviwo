@@ -77,15 +77,20 @@ CanvasProcessor::CanvasProcessor()
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)}
-    , canvasWidget_(nullptr)
-    , queuedRequest_(false) {
+    , canvasWidget_(nullptr) {
     widgetMetaData_->addObserver(this);
-    
+
+    // No need to evaluate when canvas is hidden.
+    isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
+    isReady_.setUpdate([this]() {
+        return allInportsAreReady() && processorWidget_ && processorWidget_->isVisible();
+    });
+
     addPort(inport_);
     addProperty(inputSize_);
-    
+
     dimensions_.setSerializationMode(PropertySerializationMode::None);
-    dimensions_.onChange([this](){widgetMetaData_->setDimensions(dimensions_.get());});
+    dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
     inputSize_.addProperty(dimensions_);
 
     enableCustomInputDimensions_.onChange(this, &CanvasProcessor::sizeChanged);
@@ -103,7 +108,7 @@ CanvasProcessor::CanvasProcessor()
     aspectRatioScaling_.setVisible(false);
     inputSize_.addProperty(aspectRatioScaling_);
 
-    position_.onChange([this]() {widgetMetaData_->setPosition(position_.get()); });
+    position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
     addProperty(position_);
 
     visibleLayer_.addOption("color", "Color layer", LayerType::Color);
@@ -164,9 +169,7 @@ CanvasProcessor::CanvasProcessor()
         colorLayer_.setMaxValue(layers - 1);
     });
 
-    inport_.onConnect([&](){
-       sizeChanged();
-    });
+    inport_.onConnect([&]() { sizeChanged(); });
 
     setAllPropertiesCurrentStateAsDefault();
 }
@@ -183,11 +186,12 @@ void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> proces
         canvasWidget_ = cw;
     }
     Processor::setProcessorWidget(std::move(processorWidget));
+    isSink_.update();
 }
 
 void CanvasProcessor::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getPosition() != position_.get()) {
-        Property::OnChangeBlocker blocker{ position_ };
+        Property::OnChangeBlocker blocker{position_};
         position_.set(widgetMetaData_->getPosition());
     }
 }
@@ -199,13 +203,18 @@ void CanvasProcessor::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*)
     }
 }
 
+void CanvasProcessor::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
+    isSink_.update();
+    invalidate(InvalidationLevel::InvalidOutput);
+}
+
 void CanvasProcessor::setCanvasSize(ivec2 dim) {
     NetworkLock lock(this);
     dimensions_.set(dim);
     sizeChanged();
 }
 
-ivec2 CanvasProcessor::getCanvasSize() const { return dimensions_.get(); }
+ivec2 CanvasProcessor::getCanvasSize() const { return dimensions_; }
 
 bool CanvasProcessor::getUseCustomDimensions() const { return enableCustomInputDimensions_; }
 ivec2 CanvasProcessor::getCustomDimensions() const { return customInputDimensions_; }
@@ -218,7 +227,7 @@ void CanvasProcessor::sizeChanged() {
     keepAspectRatio_.setVisible(enableCustomInputDimensions_);
     aspectRatioScaling_.setVisible(enableCustomInputDimensions_ && keepAspectRatio_);
 
-    if (keepAspectRatio_) customInputDimensions_.get() = calcSize(); // avoid triggering on change
+    if (keepAspectRatio_) customInputDimensions_.get() = calcSize();  // avoid triggering on change
     ResizeEvent resizeEvent(uvec2(0));
     if (enableCustomInputDimensions_) {
         resizeEvent.setSize(static_cast<uvec2>(customInputDimensions_.get()));
@@ -273,66 +282,32 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath, const FileExtensi
 
 const Layer* CanvasProcessor::getVisibleLayer() const {
     if (auto image = inport_.getData()) {
-        if (visibleLayer_.get() == LayerType::Color) {
-            return image->getColorLayer(colorLayer_.get());
-        } else {
-            return image->getLayer(visibleLayer_.get());
-        }
+        return image->getLayer(visibleLayer_, colorLayer_);
     } else {
         return nullptr;
     }
 }
 
-std::shared_ptr<const Image> CanvasProcessor::getImage() const {
-    if (inport_.hasData()) {
-        return inport_.getData();
-    }
-    else {
+std::shared_ptr<const Image> CanvasProcessor::getImage() const { return inport_.getData(); }
+
+Canvas* CanvasProcessor::getCanvas() const {
+    if (canvasWidget_) {
+        return canvasWidget_->getCanvas();
+    } else {
         return nullptr;
     }
 }
 
 void CanvasProcessor::process() {
-    if (canvasWidget_ && canvasWidget_->getCanvas()) {
-        LayerType layerType = visibleLayer_.get();
-        if (visibleLayer_.get() == LayerType::Color) {
-            canvasWidget_->getCanvas()->render(inport_.getData(), LayerType::Color,
-                                               colorLayer_.get());
-        } else {
-            canvasWidget_->getCanvas()->render(inport_.getData(), layerType, 0);
-        }
+    if (auto c = getCanvas()) {
+        c->render(inport_.getData(), visibleLayer_, colorLayer_);
     }
 }
 
 void CanvasProcessor::doIfNotReady() {
-    if (canvasWidget_ && canvasWidget_->getCanvas()) {
-        canvasWidget_->getCanvas()->render(nullptr, visibleLayer_.get());
+    if (auto c = getCanvas()) {
+        c->render(nullptr, visibleLayer_, colorLayer_);
     }
-}
-
-void CanvasProcessor::triggerQueuedEvaluation() {
-    if (queuedRequest_) {
-        performEvaluateRequest();
-        queuedRequest_ = false;
-    }
-}
-
-void CanvasProcessor::performEvaluationAtNextShow() { queuedRequest_ = true; }
-
-void CanvasProcessor::performEvaluateRequest() {
-    if (processorWidget_) {
-        if (processorWidget_->isVisible()) {
-            notifyObserversRequestEvaluate(this);
-        } else {
-            performEvaluationAtNextShow();
-        }
-    } else {
-        notifyObserversRequestEvaluate(this);
-    }
-}
-
-bool CanvasProcessor::isReady() const {
-    return Processor::isReady() && processorWidget_ && processorWidget_->isVisible();
 }
 
 void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
@@ -369,18 +344,18 @@ void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
 }
 
 bool CanvasProcessor::isFullScreen() const {
-    if(canvasWidget_) {
-        return canvasWidget_->getCanvas()->isFullScreen();
+    if (auto c = getCanvas()) {
+        return c->isFullScreen();
     }
     return false;
 }
 
 void CanvasProcessor::setFullScreen(bool fullscreen) {
-    if (canvasWidget_) {
-        return canvasWidget_->getCanvas()->setFullScreen(fullscreen);
+    if (auto c = getCanvas()) {
+        c->setFullScreen(fullscreen);
     }
 }
 
-bool CanvasProcessor::isContextMenuAllowed() const { return allowContextMenu_.get(); }
+bool CanvasProcessor::isContextMenuAllowed() const { return allowContextMenu_; }
 
-}  // namespace
+}  // namespace inviwo

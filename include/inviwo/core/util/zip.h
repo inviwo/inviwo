@@ -37,7 +37,6 @@
 #include <limits>
 #include <inviwo/core/util/stdextensions.h>
 
-
 namespace inviwo {
 
 namespace util {
@@ -51,30 +50,50 @@ struct proxy {
     proxy& operator=(const proxy&) = default;
     proxy& operator=(proxy&&) = default;
 
-    template <typename... Us> 
+    template <typename... Us>
     proxy(Us&&... args) : data{std::forward<Us>(args)...} {}
-    
-    template <typename... Us> 
+
+    template <typename... Us>
     proxy<Ts...>(const proxy<Us...>& rhs) : data(rhs.data) {}
-    template <typename... Us> 
+    template <typename... Us>
     proxy<Ts...>(proxy<Us...>&& rhs) : data(std::move(rhs.data)) {}
-    
-    template <typename... Us> 
+
+    template <typename... Us>
     proxy& operator=(const proxy<Us...>& rhs) {
         data = rhs.data;
         return this;
     }
-    template <typename... Us> 
+    template <typename... Us>
     proxy& operator=(proxy<Us...>&& rhs) {
         data = std::move(rhs.data);
         return *this;
     }
-    
+
     operator std::tuple<Ts...>&() { return data; }
-    
+
     template <std::size_t N>
-    decltype(auto) get() const { return std::get<N>(data); } 
-      
+    decltype(auto) get() const {
+        return std::get<N>(data);
+    }
+
+    template <typename Us = std::tuple<Ts...>,
+              class = typename std::enable_if<1 <= std::tuple_size<Us>::value, void>::type>
+    decltype(auto) first() const {
+        return std::get<0>(data);
+    }
+
+    template <typename Us = std::tuple<Ts...>,
+              class = typename std::enable_if<2 <= std::tuple_size<Us>::value, void>::type>
+    decltype(auto) second() const {
+        return std::get<1>(data);
+    }
+
+    template <typename Us = std::tuple<Ts...>,
+        class = typename std::enable_if<3 <= std::tuple_size<Us>::value, void>::type>
+        decltype(auto) third() const {
+        return std::get<2>(data);
+    }
+
     std::tuple<Ts...> data;
 };
 
@@ -103,15 +122,11 @@ bool operator<=(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
     return lhs.data <= rhs.data;
 }
 
-template <typename... Ts >
+template <typename... Ts>
 void swap(proxy<Ts...>&& a, proxy<Ts...>&& b) {
-    for_each_in_tuple([](auto&& i, auto&& j){
-        using std::swap;
-        swap(i,j);  
-    }, a.data, b.data);
+    std::swap(a.data, b.data);
 }
-    
-    
+
 template <typename T, std::size_t... I>
 auto beginImpl(T& t, std::index_sequence<I...>) {
     return std::make_tuple(std::begin(std::get<I>(t))...);
@@ -166,8 +181,7 @@ struct get_iterator {
 };
 template <typename T>
 using get_iterator_t = typename get_iterator<T>::type;
-   
-    
+
 template <typename T>
 struct iterator_tools;
 
@@ -176,12 +190,9 @@ struct iterator_tools<std::tuple<Ts...>> {
     using difference_type = std::ptrdiff_t;
     using iterator_category = typename std::common_type<
         typename std::iterator_traits<get_iterator_t<Ts>>::iterator_category...>::type;
-    using value_type =
-        proxy<typename std::iterator_traits<get_iterator_t<Ts>>::value_type...>;
-    using pointer =
-        std::tuple<typename std::iterator_traits<get_iterator_t<Ts>>::pointer...>;
-    using reference =
-        proxy<typename std::iterator_traits<get_iterator_t<Ts>>::reference...>;
+    using value_type = proxy<typename std::iterator_traits<get_iterator_t<Ts>>::value_type...>;
+    using pointer = std::tuple<typename std::iterator_traits<get_iterator_t<Ts>>::pointer...>;
+    using reference = proxy<typename std::iterator_traits<get_iterator_t<Ts>>::reference...>;
     using iterators = std::tuple<get_iterator_t<Ts>...>;
 };
 
@@ -202,7 +213,7 @@ struct zipIterator {
     using reference = typename detailzip::iterator_tools<Iterables>::reference;
 
     static_assert(std::is_base_of<std::input_iterator_tag, iterator_category>::value,
-                      "All iterator has to be at least input iterators");
+                  "All iterators have to be at least input iterators");
 
     template <typename Tag, typename IterTuple>
     using require_t = detailzip::require_t<Tag, IterTuple>;
@@ -257,7 +268,7 @@ struct zipIterator {
         auto i = *this;
         return i -= rhs;
     }
-    
+
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
     reference operator[](difference_type rhs) {
         return detailzip::index(iterators_, rhs);
@@ -265,13 +276,12 @@ struct zipIterator {
 
     reference operator*() { return detailzip::ref(iterators_); }
 
-    pointer operator->()  { return detailzip::pointer(iterators_); }
+    pointer operator->() { return detailzip::pointer(iterators_); }
 
     template <size_t N>
     typename std::tuple_element<N, Iterators>::type& get() {
         return std::get<N>(iterators_);
     }
-
 
     /**
      * Should be true if __all__ underlaying iterators are equal.
@@ -314,7 +324,7 @@ struct zipIterator {
 
 template <typename Iterables, typename = require_t<std::random_access_iterator_tag, Iterables>>
 zipIterator<Iterables> operator+(typename detailzip::iterator_tools<Iterables>::difference_type lhs,
-                              const zipIterator<Iterables>& rhs) {
+                                 const zipIterator<Iterables>& rhs) {
     return rhs + lhs;
 }
 
@@ -332,8 +342,6 @@ struct zipper {
 };
 
 }  // namespace detailzip
-
-
 
 /**
  * Iterate over containers in sync.
@@ -406,9 +414,9 @@ struct sequence {
         friend iterator operator+(difference_type lhs, const iterator& rhs) { return rhs + lhs; }
 
         value_type operator[](difference_type rhs) const { return val_ + rhs * inc_; }
-        
+
         reference operator*() { return val_; }
-        
+
         pointer operator->() { return &val_; }
 
         bool operator==(const iterator& rhs) const { return val_ == rhs.val_; }
@@ -437,7 +445,6 @@ auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
     return sequence<T>(begin, end, inc);
 }
 
-
 /**
  * Enumerate element in a container.
  * Example use case:
@@ -449,7 +456,7 @@ auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
  *
  * with C++17 structured bindings
  * for (auto&& [ind, elem] : util::enumerate(vec)) {
- *     
+ *
  * }
  */
 template <typename T, typename... Ts>
@@ -459,7 +466,6 @@ auto enumerate(T&& cont, Ts&&... conts) {
 }
 
 }  // namespace util
-
 
 // Get function for the proxy class. std::get is not a customization point
 template <std::size_t N, typename... Ts>

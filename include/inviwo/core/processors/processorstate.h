@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORSTATE_H
@@ -35,11 +35,7 @@
 
 namespace inviwo {
 
-enum class CodeState {
-    Broken,
-    Experimental,
-    Stable
-};
+enum class CodeState { Broken, Experimental, Stable };
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, CodeState cs) {
@@ -59,6 +55,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROCESSORSTATE_H
+#endif  // IVW_PROCESSORSTATE_H

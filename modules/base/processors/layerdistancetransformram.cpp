@@ -99,10 +99,6 @@ void LayerDistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, 
         for (auto& port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
     }
     notifyObserversInvalidationEnd(this);
-
-    if (!isValid() && isSink()) {
-        performEvaluateRequest();
-    }
 }
 
 void LayerDistanceTransformRAM::process() {

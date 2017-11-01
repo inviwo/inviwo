@@ -50,11 +50,12 @@ ImageSourceSeries::ImageSourceSeries()
     : Processor()
     , outport_("outputImage", DataVec4UInt8::get(), false)
     , findFilesButton_("findFiles", "Update File List")
-    , imageFilePattern_("imageFilePattern", "File Pattern", filesystem::getPath(PathType::Images, "/*"), "")
+    , imageFilePattern_("imageFilePattern", "File Pattern",
+                        filesystem::getPath(PathType::Images, "/*"), "")
     , currentImageIndex_("currentImageIndex", "Image Index", 1, 1, 1, 1)
-    , imageFileName_("imageFileName", "Image File Name")
-    , ready_(false) {
-    
+    , imageFileName_("imageFileName", "Image File Name") {
+
+    isReady_.setUpdate([this]() { return !fileList_.empty(); });
 
     addPort(outport_);
     addProperty(imageFilePattern_);
@@ -68,7 +69,7 @@ ImageSourceSeries::ImageSourceSeries()
 
     imageFilePattern_.onChange([&]() { onFindFiles(); });
     findFilesButton_.onChange([&]() { onFindFiles(); });
-    
+
     imageFileName_.setReadOnly(true);
 }
 
@@ -76,7 +77,7 @@ void ImageSourceSeries::process() {
     if (fileList_.empty()) return;
 
     if (imageFilePattern_.isModified()) {
-        // check all matching files whether they have a supported file extension, 
+        // check all matching files whether they have a supported file extension,
         // i.e. a data reader exists
         fileList_ = imageFilePattern_.getFileList();
         const auto numElems = fileList_.size();
@@ -127,32 +128,25 @@ void ImageSourceSeries::process() {
     }
 }
 
-bool ImageSourceSeries::isReady() const {
-    return ready_;
-}
-
 void ImageSourceSeries::onFindFiles() {
     // this processor will only be ready if at least one matching file exists
     fileList_ = imageFilePattern_.getFileList();
     if (fileList_.empty() && !imageFilePattern_.getFilePattern().empty()) {
         if (imageFilePattern_.hasOutOfRangeMatches()) {
             LogError("All matching files are outside the specified range (\""
-                        << imageFilePattern_.getFilePattern() << "\", "
-                        << imageFilePattern_.getMinRange() << " - "
-                        << imageFilePattern_.getMaxRange()
-                        << ").");
-        }
-        else {
-            LogError("No images found matching \"" << imageFilePattern_.getFilePattern() << "\" in " 
-                     << imageFilePattern_.getFilePatternPath() << ".");
+                     << imageFilePattern_.getFilePattern() << "\", "
+                     << imageFilePattern_.getMinRange() << " - " << imageFilePattern_.getMaxRange()
+                     << ").");
+        } else {
+            LogError("No images found matching \"" << imageFilePattern_.getFilePattern() << "\" in "
+                                                   << imageFilePattern_.getFilePatternPath()
+                                                   << ".");
         }
     }
     updateProperties();
 }
 
 void ImageSourceSeries::updateProperties() {
-    ready_ = !fileList_.empty();
-
     currentImageIndex_.setReadOnly(fileList_.size() <= 1);
 
     if (fileList_.size() < static_cast<std::size_t>(currentImageIndex_.get())) {
@@ -160,6 +154,7 @@ void ImageSourceSeries::updateProperties() {
     }
     currentImageIndex_.setMaxValue(std::max(static_cast<const int>(fileList_.size()), 1));
     updateFileName();
+    isReady_.update();
 }
 
 void ImageSourceSeries::updateFileName() {
@@ -173,8 +168,8 @@ void ImageSourceSeries::updateFileName() {
 
 bool ImageSourceSeries::isValidImageFile(std::string fileName) {
     std::string fileExtension = filesystem::getFileExtension(fileName);
-    return util::contains_if(validExtensions_, [&](const FileExtension& f){
-        return f.extension_ == fileExtension;});
+    return util::contains_if(validExtensions_,
+                             [&](const FileExtension& f) { return f.extension_ == fileExtension; });
 }
 
-}  // namespace
+}  // namespace inviwo

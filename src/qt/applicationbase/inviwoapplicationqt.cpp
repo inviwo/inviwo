@@ -41,6 +41,10 @@
 #include <QDesktopWidget>
 #include <QFile>
 #include <QCursor>
+#include <QMouseEvent>
+#include <QTouchEvent>
+#include <QEvent>
+#include <QMessageBox>
 #include <warn/pop>
 
 #ifdef WIN32
@@ -207,6 +211,7 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
     #endif
 
     QByteArray localMsg = msg.toLocal8Bit();
+    
     switch (type) {
         case QtDebugMsg:
             inviwo::LogCentral::getPtr()->log("Qt Debug", LogLevel::Info, LogAudience::Developer,
@@ -239,6 +244,7 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
 
             fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
+            QMessageBox::critical(nullptr, "Fatal Error", msg);
             abort();
             break;
 
@@ -264,6 +270,42 @@ bool InviwoApplicationQt::event(QEvent* e) {
     } else {
         return QApplication::event(e);
     }
+}
+
+
+#include <warn/push>
+#include <warn/ignore/switch-enum>
+bool InviwoApplicationQt::notify(QObject *receiver, QEvent *e) {
+    auto res = QApplication::notify(receiver, e);
+    
+    switch (e->type()) {
+        case QEvent::MouseButtonRelease: {
+            undoTrigger_();
+            break;
+        }
+        case QEvent::TouchEnd: {
+            auto te = static_cast<QTouchEvent *>(e);
+            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint &tp) {
+                return tp.state() == Qt::TouchPointReleased;
+            })) {
+                undoTrigger_();
+                break;
+            }
+            break;
+        }
+        case QEvent::KeyRelease: {
+            undoTrigger_();
+            break;
+        }
+        default:
+            break;
+    }
+    return res;
+}
+#include <warn/pop>
+
+void InviwoApplicationQt::setUndoTrigger(std::function<void()> func) {
+    undoTrigger_ = func;
 }
 
 std::locale InviwoApplicationQt::getCurrentStdLocale() {

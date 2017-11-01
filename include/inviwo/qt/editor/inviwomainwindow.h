@@ -38,10 +38,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMainWindow>
-#include <QDockWidget>
-#include <QListWidget>
-#include <QToolBar>
-#include <QToolButton>
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
@@ -60,12 +56,10 @@ class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
 class InviwoApplicationQt;
+class NetworkSearch;
+class InviwoEditMenu;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     static const unsigned int maxNumRecentFiles_ = 10;
 
@@ -83,16 +77,17 @@ public:
     void visibilityModeChangedInSettings();
 
     NetworkEditor* getNetworkEditor() const;
-    SettingsWidget*  getSettingsWidget() const;
-    ProcessorTreeWidget*  getProcessorTreeWidget() const;
-    PropertyListWidget*  getPropertyListWidget() const;
-    ConsoleWidget*  getConsoleWidget() const;
-    ResourceManagerWidget*  getResourceManagerWidget() const;
-    HelpWidget*  getHelpWidget() const;
+    SettingsWidget* getSettingsWidget() const;
+    ProcessorTreeWidget* getProcessorTreeWidget() const;
+    PropertyListWidget* getPropertyListWidget() const;
+    ConsoleWidget* getConsoleWidget() const;
+    ResourceManagerWidget* getResourceManagerWidget() const;
+    HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
-    const std::unordered_map<std::string, QAction*>& getActions() const;
+    InviwoApplicationQt* getInviwoApplicationQt() const;
 
-public slots:
+    InviwoEditMenu* getInviwoEditMenu() const;
+
     void newWorkspace();
     void openWorkspace();
     void openRecentWorkspace();
@@ -156,12 +151,10 @@ private:
     void fillTestWorkspaceMenu();
 
     InviwoApplicationQt* app_;
-    std::shared_ptr<NetworkEditor> networkEditor_;
+    std::unique_ptr<NetworkEditor> networkEditor_;
     NetworkEditorView* networkEditorView_;
     TemplateOptionProperty<UsageMode>* appUsageModeProp_;
 
-    // toolbar
-    QToolBar* basicToolbar_;
 
     // dock widgets
     SettingsWidget* settingsWidget_;
@@ -170,14 +163,13 @@ private:
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     ResourceManagerWidget* resourceManagerWidget_;
     HelpWidget* helpWidget_;
-
-    // menu actions
-    std::unordered_map<std::string, QAction*> actions_;
+    NetworkSearch* networkSearch_;
     
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
 
+    InviwoEditMenu* editMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;
     QMenu* testMenu_ = nullptr;
 
@@ -198,8 +190,10 @@ private:
     
     UndoManager undoManager_;
 
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_; ///< Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_; ///< Called before modules have been unregistered
+    ///< Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
+    ///< Called before modules have been unregistered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
 }  // namespace

@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/undomanager.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -40,8 +41,6 @@
 #include <QEvent>
 #include <QApplication>
 #include <QGuiApplication>
-#include <QMouseEvent>
-#include <QTouchEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -51,6 +50,7 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
     , manager_{mainWindow_->getInviwoApplication()->getWorkspaceManager()}
     , refPath_{filesystem::findBasePath()} {
 
+    mainWindow_->getInviwoApplicationQt()->setUndoTrigger([this](){pushStateIfDirty();});
     mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);
 
     undoAction_ = new QAction(QAction::tr("&Undo"), mainWindow_);
@@ -73,6 +73,13 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
 
     updateActions();
     pushState();
+}
+
+void UndoManager::pushStateIfDirty() {
+    if(dirty_) pushState();
+}
+void UndoManager::markDirty() {
+    dirty_ = true;
 }
 
 void UndoManager::pushState() {
@@ -131,39 +138,6 @@ QAction* UndoManager::getUndoAction() const {
 QAction* UndoManager::getRedoAction() const {
     return redoAction_;
 }
-
-#include <warn/push>
-#include <warn/ignore/switch-enum>
-bool UndoManager::eventFilter(QObject *obj, QEvent *event) {
-    auto res = QObject::eventFilter(obj, event);
-
-    // https://bugreports.qt.io/browse/QTBUG-39592 we get the same event multiple times.
-    if (!obj->isWindowType()) return res;
-
-    switch (event->type()) {
-        case QEvent::MouseButtonRelease: {
-            if (dirty_) pushState(); 
-            break;
-        }
-        case QEvent::TouchEnd: {
-            auto te = static_cast<QTouchEvent *>(event);
-            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint &tp) {
-                return tp.state() == Qt::TouchPointReleased;
-            })) {
-                if (dirty_) pushState(); 
-                break;
-            }
-            break;
-        }
-        case QEvent::KeyRelease: {
-            if (dirty_) pushState(); 
-        }
-        default:
-            break;
-    }
-    return res;
-}
-#include <warn/pop>
 
 void UndoManager::updateActions() {
     undoAction_->setEnabled(head_>0);

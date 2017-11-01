@@ -93,13 +93,12 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
     }
     if (!columnIdForDataTypeErrors.empty()) {
         std::stringstream errStr;
-        errStr << "DataFrame: data type mismatch for columns: (";
-        std::copy(columnIdForDataTypeErrors.begin(),columnIdForDataTypeErrors.end(), 
-             std::ostream_iterator<size_t>(errStr,", "));
+        errStr << "Data type mismatch for columns: (";
+        auto joiner = util::make_ostream_joiner(errStr, ", ");
+        std::copy(columnIdForDataTypeErrors.begin(), columnIdForDataTypeErrors.end(), joiner);
         errStr << ") with values: (";
-        std::copy(data.begin(),data.end(), 
-             std::ostream_iterator<std::string>(errStr,", "));
-        errStr << ")";
+        std::copy(data.begin(), data.end(), joiner);
+        errStr << ")" << std::endl << " DataFrame will be in an invalid state since since all columns must be of equal size.";
         throw DataTypeMismatch(errStr.str());
     }
 }
@@ -126,7 +125,9 @@ void DataFrame::updateIndexBuffer() {
     }
 }
 
-size_t DataFrame::getSize() const {
+size_t DataFrame::getNumberOfColumns() const { return columns_.size(); }
+
+size_t DataFrame::getNumberOfRows() const {
     size_t size = 0;
     if (columns_.size() > 1) {
         for (size_t i = 1; i < columns_.size(); i++) {
@@ -135,10 +136,6 @@ size_t DataFrame::getSize() const {
     }
     return size;
 }
-
-size_t DataFrame::getNumberOfColumns() const { return columns_.size(); }
-
-size_t DataFrame::getNumberOfRows() const { return getSize(); }
 
 DataFrame::DataFrame(const DataFrame &df) {
     for (const auto &col : df.columns_) {
@@ -180,24 +177,41 @@ std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::begin() const {
 
 std::vector<std::shared_ptr<Column>>::iterator DataFrame::end() { return columns_.end(); }
 
-std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::string> &exampleData,
-                                         const std::vector<std::string> &colHeaders) {
+std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::string>> &exampleRows,
+    const std::vector<std::string> &colHeaders) {
 
-    if (!colHeaders.empty() && (colHeaders.size() != exampleData.size())) {
-        throw InvalidColCount("Number of headers does not match column count");
+    if (exampleRows.empty()) {
+        throw InvalidColCount("No example data to derive columns from");
+    }
+
+    // Guess type of each column, ordinal or nominal
+    std::vector<std::pair<unsigned int, unsigned int>> columnTypeStatistics(colHeaders.size(), std::make_pair(0, 0));
+    for (size_t i = 0; i < exampleRows.size(); ++i) {
+        const auto& rowData = exampleRows[i];
+        if (rowData.size() != colHeaders.size()) {
+            throw InvalidColCount("Number of headers does not match column count");
+        }
+        for (auto column = 0u; column < rowData.size(); ++column) {
+            std::istringstream iss(rowData[column]);
+            float d;
+            if (iss >> d) {  // ordinal buffer
+                columnTypeStatistics[column].first++;
+            }
+            else {  // nominal buffer
+                columnTypeStatistics[column].second++;
+            }
+        }
     }
 
     auto dataFrame = std::make_shared<DataFrame>(0u);
-    for (size_t i = 0; i < exampleData.size(); ++i) {
+    for (size_t column = 0; column < exampleRows.front().size(); ++column) {
         const auto header =
-            (!colHeaders.empty() ? colHeaders[i] : std::string("Column ") + std::to_string(i + 1));
-
-        std::istringstream iss(exampleData[i]);
-
-        float d;
-        if (iss >> d) {  // ordinal buffer
+            (!colHeaders.empty() ? colHeaders[column] : std::string("Column ") + std::to_string(column + 1));
+        if (columnTypeStatistics[column].first > columnTypeStatistics[column].second) {
+            // ordinal buffer
             dataFrame->addColumn<float>(header, 0u);
-        } else {  // nominal buffer
+        }
+        else { // nominal buffer
             dataFrame->addCategoricalColumn(header, 0);
         }
     }

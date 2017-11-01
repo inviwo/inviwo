@@ -107,11 +107,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/datvolumereader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/datvolumewriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumereader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumewriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
@@ -290,6 +286,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatial4dsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatialsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stacktrace.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/statecoordinator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
@@ -381,11 +378,7 @@ set(SOURCE_FILES
     io/datareaderfactory.cpp
     io/datawriter.cpp
     io/datawriterfactory.cpp
-    io/datvolumereader.cpp
-    io/datvolumewriter.cpp
     io/imagewriterutil.cpp
-    io/ivfvolumereader.cpp
-    io/ivfvolumewriter.cpp
     io/rawvolumeramloader.cpp
     io/rawvolumereader.cpp
     io/serialization/deserializer.cpp
@@ -497,6 +490,7 @@ set(SOURCE_FILES
     util/formatconversion.cpp
     util/formatdispatching.cpp
     util/formats.cpp
+    util/glm.cpp
     util/imagecache.cpp
     util/imageramutils.cpp
     util/imagesampler.cpp
@@ -515,6 +509,7 @@ set(SOURCE_FILES
     util/singlefileobserver.cpp
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
+    util/statecoordinator.cpp
     util/stringconversion.cpp
     util/systemcapabilities.cpp
     util/threadpool.cpp

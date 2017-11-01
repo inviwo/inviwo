@@ -76,6 +76,8 @@ public:
     void updateFromProperty();
     TransferFunctionEditorView* getEditorView() const;
 
+     virtual void setReadOnly(bool readonly) override;
+
     virtual void onControlPointAdded(TransferFunctionDataPoint* p);
     virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
     virtual void onControlPointChanged(const TransferFunctionDataPoint* p);

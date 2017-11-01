@@ -29,9 +29,6 @@
 
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,12 +50,6 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
     , current_(State::Invalid) {
     setRect(-0.5f * size_ - lineWidth_, -0.5f * size_ - lineWidth_, size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
-
-    if (processor && processor->getNetwork() && processor->getNetwork()->getApplication() &&
-        processor->getNetwork()->getApplication()->getProcessorNetworkEvaluator()) {
-        processor->getNetwork()->getApplication()->getProcessorNetworkEvaluator()->addObserver(
-            this);
-    }
 }
 
 void ProcessorStatusGraphicsItem::setRunning(bool running) {
@@ -103,13 +94,6 @@ void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
 void ProcessorStatusGraphicsItem::activityIndicatorChanged(bool active) {
     setRunning(active);
 }
-
-void ProcessorStatusGraphicsItem::onProcessorNetworkEvaluationEnd() {
-    update();
-}
-
-void ProcessorStatusGraphicsItem::onProcessorWidgetShow(ProcessorWidget*) { update(); }
-void ProcessorStatusGraphicsItem::onProcessorWidgetHide(ProcessorWidget*) { update(); }
 
 void ProcessorStatusGraphicsItem::update(const QRectF& rect) {
     if (state_ != State::Running) {

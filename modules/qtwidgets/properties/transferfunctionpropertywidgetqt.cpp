@@ -57,8 +57,6 @@ TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
         tfwidget->setVisibility(!tfwidget->isVisible());
     });
 
-    btnOpenTF_->setEnabled(!property_->getReadOnly());
-
     {
         QWidget* widget = new QWidget(this);
         QSizePolicy sliderPol = widget->sizePolicy();
@@ -95,11 +93,17 @@ TransferFunctionPropertyDialog* TransferFunctionPropertyWidgetQt::getEditorWidge
         transferFunctionDialog_ = util::make_unique<TransferFunctionPropertyDialog>(
             static_cast<TransferFunctionProperty*>(property_), mainWindow);
     }
+    transferFunctionDialog_->setReadOnly(property_->getReadOnly());
     return transferFunctionDialog_.get();
 }
 
 bool TransferFunctionPropertyWidgetQt::hasEditorWidget() const {
     return true;
+}
+
+void TransferFunctionPropertyWidgetQt::setReadOnly(bool readonly) {
+    if (transferFunctionDialog_) transferFunctionDialog_->setReadOnly(readonly);
+    label_->setDisabled(readonly);
 }
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)

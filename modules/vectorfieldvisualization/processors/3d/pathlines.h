@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PATHLINES_H
@@ -56,42 +56,21 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor {
 public:
-    enum class ColoringMethod{
-        Velocity, 
-        Timestamp,
-        ColorPort
-    };
+    enum class ColoringMethod { Velocity, Timestamp, ColorPort };
     PathLines();
     virtual ~PathLines() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-     
-    virtual void process() override; 
 
-    virtual bool isReady() const override {
-        if (Processor::isReady()) {
-            return true;
-        }
-
-        if (seedPoints_.isConnected() && !seedPoints_.isReady()) return false;
-        if (colors_.isConnected() && !colors_.isReady()) return false;
-
-        if (sampler_.isConnected()) {
-            return sampler_.isReady();
-        }
-        if (volume_.isConnected()) {
-            return volume_.isReady();
-        }
-        return false;
-    }
+    virtual void process() override;
 
     virtual void deserialize(Deserializer& d) override;
 
@@ -102,13 +81,10 @@ private:
     VolumeSequenceInport volume_;
     IntegralLineSetOutport lines_;
 
-
     MeshOutport linesStripsMesh_;
-
 
     PathLineProperties pathLineProperties_;
 
-   
     TransferFunctionProperty tf_;
     TemplateOptionProperty<ColoringMethod> coloringMethod_;
     FloatProperty velocityScale_;
@@ -117,7 +93,6 @@ private:
     BoolProperty allowLooping_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PATHLINES_H
-
+#endif  // IVW_PATHLINES_H

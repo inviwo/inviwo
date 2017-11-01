@@ -38,6 +38,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/network/processornetworkconverter.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/metadata/processormetadata.h>
 
 #include <algorithm>
 
@@ -63,6 +64,9 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
     addPropertyOwnerObservation(processor);
+    
+    auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    meta->addObserver(this);
     
     if (auto widget = application_->getProcessorWidgetFactory()->create(processor)) {
         processor->setProcessorWidget(std::move(widget));
@@ -299,10 +303,6 @@ void ProcessorNetwork::onProcessorInvalidationEnd(Processor* p) {
     }
 }
 
-void ProcessorNetwork::onProcessorRequestEvaluate(Processor*) {
-    notifyObserversProcessorNetworkEvaluateRequest();
-}
-
 void ProcessorNetwork::onProcessorIdentifierChange(Processor* processor) {
     util::map_erase_remove_if(processors_, [processor](ProcessorMap::const_reference elem) {
         return elem.second == processor;
@@ -324,6 +324,16 @@ void ProcessorNetwork::onAboutPropertyChange(Property* modifiedProperty) {
     if (modifiedProperty) linkEvaluator_.evaluateLinksFromProperty(modifiedProperty);
     notifyObserversProcessorNetworkChanged();
 }
+
+void ProcessorNetwork::onProcessorMetaDataPositionChange() {
+    notifyObserversProcessorNetworkChanged();
+};
+void ProcessorNetwork::onProcessorMetaDataVisibilityChange() {
+    notifyObserversProcessorNetworkChanged();
+};
+void ProcessorNetwork::onProcessorMetaDataSelectionChange() {
+    notifyObserversProcessorNetworkChanged();
+};
 
 void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);
@@ -401,16 +411,29 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Connections
     try {
-        auto toDelete = connections_;
         std::vector<PortConnection> connections;
         d.deserialize("Connections", connections, "Connection");
-
-        for (auto& con : connections) {
-            if (!isConnected(con)) addConnection(con);
-            toDelete.erase(con);
-        }
-        for (auto& con : toDelete) removeConnection(con);
-
+        
+        // remove any already existing connections.
+        PortConnections save;
+        util::erase_remove_if(connections, [&](auto& c) {
+            if(connections_.count(c) != 0) {
+                save.insert(c);
+                return true;
+            } else {
+                return false;
+            }
+        });
+        
+        // remove any no longer used connections
+        auto remove = util::copy_if(connections_, [&](auto& c) {
+            return save.count(c) == 0;
+        });
+        for(auto& c : remove) removeConnection(c);
+        
+        // Add the new connections
+        for (auto& c : connections) addConnection(c);
+        
     } catch (const Exception& exception) {
         clear();
         throw IgnoreException("Deserialization error: " + exception.getMessage(),
@@ -425,15 +448,28 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Links
     try {
-        auto toDelete = links_;
         std::vector<PropertyLink> links;
         d.deserialize("PropertyLinks", links, "PropertyLink");
 
-        for (auto& link : links) {
-            if (!isLinked(link)) addLink(link);
-            toDelete.erase(link);
-        }
-        for (auto& link : toDelete) removeLink(link);
+        // remove any already existing links.
+        PropertyLinks save;
+        util::erase_remove_if(links, [&](auto& l) {
+            if(links_.count(l) != 0) {
+                save.insert(l);
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        // remove any no longer used links
+        auto remove = util::copy_if(links_, [&](auto& l) {
+            return save.count(l) == 0;
+        });
+        for(auto& l : remove) removeLink(l);
+        
+        // Add the new links
+        for (auto& link : links) addLink(link);
 
     } catch (const Exception& exception) {
         clear();

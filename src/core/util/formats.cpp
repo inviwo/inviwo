@@ -45,6 +45,8 @@ DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max
     , lowest_(lowest)
     , formatStr_(s) {}
 
+DataFormatBase::~DataFormatBase() = default;
+
 const DataFormatBase* DataFormatBase::get() {
     if (!instance_[static_cast<size_t>(DataFormatId::NotSpecialized)])
         instance_[static_cast<size_t>(DataFormatId::NotSpecialized)] =

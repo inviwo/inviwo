@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,40 +24,68 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IVFVOLUMEREADER_H
-#define IVW_IVFVOLUMEREADER_H
+#ifndef IVW_INVIWOEDITMENU_H
+#define IVW_INVIWOEDITMENU_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+
+#include <functional>
+#include <unordered_map>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMenu>
+#include <warn/pop>
+
+class QAction;
+class QWidget;
+class QMenu;
 
 namespace inviwo {
-/**
- * \ingroup dataio
- */
-class IVW_CORE_API IvfVolumeReader : public DataReaderType<Volume> {
+
+class InviwoMainWindow;
+
+enum class MenuItemType {
+    cut,
+    copy,
+    paste,
+    del,
+    select
+};
+
+class IVW_QTEDITOR_API MenuItem {
 public:
+    MenuItem(QObject* owner, std::function<bool(MenuItemType)> enabled,
+             std::function<void(MenuItemType)> invoke);
+    QObject* owner;
+    std::function<bool(MenuItemType)> enabled;
+    std::function<void(MenuItemType)> invoke;
+};
 
-    IvfVolumeReader();
-    IvfVolumeReader(const IvfVolumeReader& rhs) = default;
-    IvfVolumeReader& operator=(const IvfVolumeReader& that) = default;
-    virtual IvfVolumeReader* clone() const override;
-    virtual ~IvfVolumeReader() = default;
-
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
-
+/**
+ * Manage menu entries for the main window.
+ * Map the action to the focused widget
+ */
+class IVW_QTEDITOR_API InviwoEditMenu : public QMenu {
+public:
+    InviwoEditMenu(InviwoMainWindow* win);
+    virtual ~InviwoEditMenu() = default;
+    
+    std::shared_ptr<MenuItem> registerItem(std::shared_ptr<MenuItem> item);
+    
 private:
-    std::string rawFile_;
-    size_t filePos_;
-    bool littleEndian_;
-    size3_t dimensions_;
-    const DataFormatBase* format_;
+    std::shared_ptr<MenuItem> getFocusItem();
+
+    std::unordered_map<QObject*, std::weak_ptr<MenuItem>> items_;
+    std::map<MenuItemType, QAction*> actions_; 
+    std::weak_ptr<MenuItem> lastItem_;
 };
 
 } // namespace
 
-#endif // IVW_IVFVOLUMEREADER_H
+#endif // IVW_INVIWOEDITMENU_H
+

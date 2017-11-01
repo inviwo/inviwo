@@ -40,17 +40,19 @@ template <typename T, bool Flat>
 class InportIterable {
 public:
     InportIterable(std::vector<Outport*>* connections) : connections_(connections) {}
-    virtual ~InportIterable() {}
+    virtual ~InportIterable() = default;
 
-    class const_iterator
-        : public std::iterator<std::forward_iterator_tag, T, std::ptrdiff_t,
-                               std::shared_ptr<const T>, std::shared_ptr<const T>> {
-                               
+    class const_iterator {
         using self = const_iterator;
         using PortIter = typename std::vector<Outport*>::const_iterator;
-        using DataIter = typename OutportIterable<T>::const_iterator;
+        using DataIter = typename OutportIterable<T>::const_iterator; 
+    public: 
+        using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = std::shared_ptr<const T>;
+        using reference = std::shared_ptr<const T>;
+        using iterator_category = std::forward_iterator_tag;
 
-    public:
         explicit const_iterator(PortIter pIterBegin, PortIter pIterEnd)
             : pIter_(pIterBegin), pEnd_(pIterEnd), dIter_(), dEnd_() {
             if (pIter_ != pEnd_) {
@@ -79,10 +81,10 @@ public:
             incrementIter();
             return i;
         }
-        
+
         std::shared_ptr<const T> operator*() { return *dIter_; }
         std::shared_ptr<const T> operator->() { return *dIter_; }
-        
+
         bool operator==(const self& rhs) const {
             return pIter_ == rhs.pIter_ && dIter_ == rhs.dIter_;
         }
@@ -125,13 +127,19 @@ template <typename T>
 class InportIterable<T, false> {
 public:
     InportIterable(std::vector<Outport*>* connections) : connections_(connections) {}
-    virtual ~InportIterable() {}
+    virtual ~InportIterable() = default;
 
-    class const_iterator : public std::iterator<std::forward_iterator_tag, T> {
+    class const_iterator {
         using self = const_iterator;
         using PortIter = typename std::vector<Outport*>::const_iterator;
 
     public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = std::shared_ptr<const T>;
+        using reference = std::shared_ptr<const T>;
+        using iterator_category = std::forward_iterator_tag;
+
         explicit const_iterator(PortIter pIterBegin) : pIter_(pIterBegin) {}
         self& operator++() {
             pIter_++;
@@ -162,6 +170,6 @@ private:
     std::vector<Outport*>* connections_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INPORTITERABLE_H

@@ -116,12 +116,13 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     QSizePolicy labelPol = label_->sizePolicy();
     labelPol.setHorizontalStretch(10);
     label_->setSizePolicy(labelPol);
-    connect(label_, &EditableLabelQt::textChanged, this, [&](){setDisplayName(label_->getText());});
+    connect(label_, &EditableLabelQt::textChanged, this,
+            [&]() { setDisplayName(label_->getText()); });
 
-    QToolButton* resetButton = new QToolButton(this);
-    resetButton->setIconSize(QSize(20, 20));
-    resetButton->setObjectName("resetButton");
-    connect(resetButton, &QToolButton::clicked, this, [&]() {
+    resetButton_ = new QToolButton(this);
+    resetButton_->setIconSize(QSize(20, 20));
+    resetButton_->setObjectName("resetButton");
+    connect(resetButton_, &QToolButton::clicked, this, [&]() {
         if (property_) {
             property_->resetToDefaultState();
         } else if (propertyOwner_) {
@@ -129,7 +130,7 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
         }
     });
 
-    resetButton->setToolTip(tr("Reset the group of properties to its default state"));
+    resetButton_->setToolTip(tr("Reset the group of properties to its default state"));
 
     checkBox_ = new QCheckBox(this);
     checkBox_->setMinimumSize(5, 5);
@@ -147,7 +148,7 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     heading->addWidget(label_);
     heading->addStretch(1);
     heading->addWidget(checkBox_);
-    heading->addWidget(resetButton);
+    heading->addWidget(resetButton_);
 
     QVBoxLayout* layout = new QVBoxLayout();
     setSpacingAndMargins(layout);
@@ -169,7 +170,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
     if (propertyOwner_ && !property_) {
         menu->addAction(QString::fromStdString(displayName_));
         menu->addSeparator();
-    
+
         auto resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&RReset the group of properties to its default state"));
         connect(resetAction, &QAction::triggered, this,
@@ -189,6 +190,12 @@ QSize CollapsibleGroupBoxWidgetQt::minimumSizeHint() const {
     QSize minSize = layout()->minimumSize();
     size.setWidth(std::max(PropertyWidgetQt::minimumWidth, minSize.width()));
     return size;
+}
+
+void CollapsibleGroupBoxWidgetQt::setReadOnly(bool readonly) {
+    label_->setDisabled(readonly);
+    checkBox_->setDisabled(readonly);
+    resetButton_->setDisabled(readonly);
 }
 
 void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
@@ -229,7 +236,7 @@ void CollapsibleGroupBoxWidgetQt::setDisplayName(const std::string& displayName)
         if (Processor* p = dynamic_cast<Processor*>(propertyOwner_)) {
             try {
                 p->setIdentifier(displayName);
-            } catch(Exception& e) {
+            } catch (Exception& e) {
                 label_->setText(p->getIdentifier());
                 LogWarn(e.getMessage());
             }
@@ -318,7 +325,7 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
             *wit = newWidget;
 
             connect(newWidget, &PropertyWidgetQt::updateSemantics, this,
-                &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
+                    &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
 
             newWidget->setNestedDepth(this->getNestedDepth());
             newWidget->setParentPropertyWidget(this, getBaseContainer());
@@ -395,4 +402,4 @@ const std::vector<PropertyWidgetQt*>& CollapsibleGroupBoxWidgetQt::getPropertyWi
 }
 
 void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) { showIfEmpty_ = val; }
-}  // namespace
+}  // namespace inviwo
