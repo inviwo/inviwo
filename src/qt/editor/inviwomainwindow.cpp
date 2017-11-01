@@ -154,7 +154,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     networkSearch_ = new NetworkSearch(this);
     grid->addWidget(networkSearch_, 0, 0, Qt::AlignTop | Qt::AlignRight);
 
-
     setCentralWidget(networkEditorView_);
 
     resourceManagerWidget_ = new ResourceManagerWidget(this);
@@ -191,16 +190,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     // initialize menus
     addActions();
-    updateRecentWorkspaceMenu();
-
-    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([&]() {
-        fillExampleWorkspaceMenu();
-        fillTestWorkspaceMenu();
-    });
-    onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([&]() {
-        exampleMenu_->clear();
-        testMenu_->clear();
-    });
     networkEditorView_->setFocus();
 }
 
@@ -332,28 +321,104 @@ void InviwoMainWindow::addActions() {
             action = new QAction(this);
             action->setVisible(false);
             recentWorkspaceMenu->addAction(action);
-            QObject::connect(action, &QAction::triggered, this,
-                             &InviwoMainWindow::openRecentWorkspace);
+            connect(action, &QAction::triggered, this, [this, action]() {
+                if (askToSaveWorkspaceChanges()) openWorkspace(action->data().toString());
+            });
         }
         // action for clearing the recent file menu
         clearRecentWorkspaces_ = recentWorkspaceMenu->addAction("Clear Recent Workspace List");
         clearRecentWorkspaces_->setEnabled(false);
-        QObject::connect(clearRecentWorkspaces_, &QAction::triggered, this,
-                         &InviwoMainWindow::clearRecentWorkspaceMenu);
+        connect(clearRecentWorkspaces_, &QAction::triggered, this, [this]() {
+            for (auto elem : workspaceActionRecent_) {
+                elem->setVisible(false);
+            }
+            // save empty list
+            saveRecentWorkspaceList(QStringList());
+            clearRecentWorkspaces_->setEnabled(false);
+        });
+
+        connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [this]() {
+            for (auto elem : workspaceActionRecent_) {
+                elem->setVisible(false);
+            }
+
+            QStringList recentFiles{getRecentWorkspaceList()};
+            for (int i = 0; i < recentFiles.size(); ++i) {
+                if (!recentFiles[i].isEmpty()) {
+                    workspaceActionRecent_[i]->setVisible(true);
+                    if (QFileInfo(recentFiles[i]).exists()) {
+                        QString menuEntry = tr("&%1 %2").arg(i + 1).arg(recentFiles[i]);
+                        workspaceActionRecent_[i]->setText(menuEntry);
+                        workspaceActionRecent_[i]->setEnabled(true);
+                    } else {
+                        QString menuEntry = tr("&%1 %2 (missing)").arg(i + 1).arg(recentFiles[i]);
+                        workspaceActionRecent_[i]->setText(menuEntry);
+                        workspaceActionRecent_[i]->setEnabled(false);
+                    }
+                    workspaceActionRecent_[i]->setData(recentFiles[i]);
+                }
+            }
+            clearRecentWorkspaces_->setEnabled(!recentFiles.isEmpty());
+        });
     }
 
     {
         // create list of all example workspaces
         exampleMenu_ = fileMenuItem->addMenu(tr("&Example Workspaces"));
-        fillExampleWorkspaceMenu();
+        connect(exampleMenu_, &QMenu::aboutToShow, this, [this]() {
+            exampleMenu_->clear();
+            for (const auto& module : app_->getModules()) {
+                auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
+                if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
+                QMenu* moduleMenu = nullptr;
+                for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+                    // only accept inviwo workspace files
+                    if (filesystem::getFileExtension(item) != "inv") continue;
+                    if (!moduleMenu) {
+                        moduleMenu =
+                            exampleMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
+                    }
+                    auto action = moduleMenu->addAction(QString::fromStdString(item));
+                    auto path = QString::fromStdString(moduleWorkspacePath + "/" + item);
+                    connect(action, &QAction::triggered, this, [this, path]() {
+                        if (askToSaveWorkspaceChanges()) openWorkspace(path, true);
+                    });
+                }
+            }
+            exampleMenu_->menuAction()->setVisible(!exampleMenu_->isEmpty());
+        });
     }
 
     {
-        // TODO: need a DEVELOPER flag here!
-        // create list of all test workspaces, inviwo-dev and other external modules, i.e.
-        // "research"
+        // create list of all test workspaces
         testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
-        fillTestWorkspaceMenu();
+        connect(testMenu_, &QMenu::aboutToShow, this, [this]() {
+            testMenu_->clear();
+            for (const auto& module : app_->getModules()) {
+                auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
+                if (!filesystem::directoryExists(moduleTestPath)) continue;
+                QMenu* moduleMenu = nullptr;
+                for (auto test : filesystem::getDirectoryContents(
+                         moduleTestPath, filesystem::ListMode::Directories)) {
+                    std::string testdir = moduleTestPath + "/" + test;
+                    // only accept inviwo workspace files
+                    if (!filesystem::directoryExists(testdir)) continue;
+                    for (auto item : filesystem::getDirectoryContents(testdir)) {
+                        if (filesystem::getFileExtension(item) != "inv") continue;
+                        if (!moduleMenu) {
+                            moduleMenu =
+                                testMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
+                        }
+                        QAction* action = moduleMenu->addAction(QString::fromStdString(item));
+                        auto path = QString::fromStdString(testdir + "/" + item);
+                        connect(action, &QAction::triggered, this, [this, path]() {
+                            if (askToSaveWorkspaceChanges()) openWorkspace(path);
+                        });
+                    }
+                }
+            }
+            testMenu_->menuAction()->setVisible(!testMenu_->isEmpty());
+        });
     }
     {
         if (app_->getModuleManager().isRuntimeModuleReloadingEnabled()) {
@@ -513,40 +578,6 @@ void InviwoMainWindow::updateWindowTitle() {
     setWindowTitle(windowTitle);
 }
 
-void InviwoMainWindow::updateRecentWorkspaceMenu() {
-    QStringList recentFiles{getRecentWorkspaceList()};
-
-    for (auto elem : workspaceActionRecent_) {
-        elem->setVisible(false);
-    }
-
-    for (int i = 0; i < recentFiles.size(); ++i) {
-        workspaceActionRecent_[i]->setVisible(!recentFiles[i].isEmpty());
-        if (!recentFiles[i].isEmpty()) {
-            if(QFileInfo(recentFiles[i]).exists()) {
-                QString menuEntry = tr("&%1 %2").arg(i + 1).arg(recentFiles[i]);
-                workspaceActionRecent_[i]->setText(menuEntry);
-            } else {
-                QString menuEntry = tr("&%1 %2 (missing)").arg(i + 1).arg(recentFiles[i]);
-                workspaceActionRecent_[i]->setText(menuEntry);
-                workspaceActionRecent_[i]->setEnabled(false);
-            }
-            workspaceActionRecent_[i]->setData(recentFiles[i]);
-        }
-    }
-    clearRecentWorkspaces_->setEnabled(!recentFiles.isEmpty());
-}
-
-void InviwoMainWindow::clearRecentWorkspaceMenu() {
-    for (auto elem : workspaceActionRecent_) {
-        elem->setVisible(false);
-    }
-    // save empty list
-    saveRecentWorkspaceList(QStringList());
-    clearRecentWorkspaces_->setEnabled(false);
-    updateRecentWorkspaceMenu();
-}
-
 void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
     QStringList recentFiles{getRecentWorkspaceList()};
 
@@ -555,8 +586,6 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
 
     if (recentFiles.size() > static_cast<int>(maxNumRecentFiles_)) recentFiles.removeLast();
     saveRecentWorkspaceList(recentFiles);
-
-    updateRecentWorkspaceMenu();
 }
 
 QStringList InviwoMainWindow::getRecentWorkspaceList() const {
@@ -579,159 +608,6 @@ void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
     workspaceFileDir_ = QFileInfo(workspaceFileName).absolutePath();
     currentWorkspaceFileName_ = workspaceFileName;
     updateWindowTitle();
-}
-
-void InviwoMainWindow::fillExampleWorkspaceMenu() {
-    exampleMenu_->clear();
-    for (const auto& module : app_->getModules()) {
-        QMenu* moduleMenu = nullptr;
-        auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
-        if (filesystem::directoryExists(moduleWorkspacePath)) {
-            for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
-                // only accept inviwo workspace files
-                if (filesystem::getFileExtension(item) == "inv") {
-                    if (!moduleMenu)
-                        moduleMenu =
-                            exampleMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
-
-                    QString filename(QString::fromStdString(item));
-                    QAction* action = moduleMenu->addAction(filename);
-                    QString path(QString("%1/%2")
-                                     .arg(QString::fromStdString(moduleWorkspacePath))
-                                     .arg(filename));
-                    action->setData(path);
-
-                    QObject::connect(action, &QAction::triggered, this,
-                                     &InviwoMainWindow::openExampleWorkspace);
-                }
-            }
-        }
-    }
-    exampleMenu_->menuAction()->setVisible(!exampleMenu_->isEmpty());
-}
-
-void InviwoMainWindow::fillTestWorkspaceMenu() {
-    testMenu_->clear();
-    for (const auto& module : app_->getModules()) {
-        auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
-        if (filesystem::directoryExists(moduleTestPath)) {
-            QMenu* moduleMenu = nullptr;
-
-            for (auto test : filesystem::getDirectoryContents(moduleTestPath,
-                                                              filesystem::ListMode::Directories)) {
-                std::string testdir = moduleTestPath + "/" + test;
-                // only accept inviwo workspace files
-                if (filesystem::directoryExists(testdir)) {
-                    for (auto item : filesystem::getDirectoryContents(testdir)) {
-                        if (filesystem::getFileExtension(item) == "inv") {
-                            if (!moduleMenu) {
-                                moduleMenu = testMenu_->addMenu(
-                                    QString::fromStdString(module->getIdentifier()));
-                            }
-                            QAction* action = moduleMenu->addAction(QString::fromStdString(item));
-                            action->setData(QString::fromStdString(testdir + "/" + item));
-                            QObject::connect(action, &QAction::triggered, this,
-                                             &InviwoMainWindow::openRecentWorkspace);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // store path and extracted module name
-    std::vector<std::pair<std::string, std::string> > paths;  // we need to keep the order...
-
-    // add default workspace path
-    std::string coreWorkspacePath = app_->getPath(PathType::Workspaces) + "/tests";
-    if (filesystem::directoryExists(coreWorkspacePath)) {
-        // check whether path contains at least one workspace
-        bool workspaceExists = false;
-        for (auto item : filesystem::getDirectoryContents(coreWorkspacePath)) {
-            // only accept inviwo workspace files
-            workspaceExists = (filesystem::getFileExtension(item) == "inv");
-            if (workspaceExists) {
-                break;
-            }
-        }
-        if (workspaceExists) {
-            paths.push_back({coreWorkspacePath, "core"});
-        }
-    }
-
-    // add paths of inviwo modules, avoid duplicates
-    for (auto directory : inviwoModulePaths_) {
-        std::string moduleName;
-        // remove "/modules" from given path
-        std::size_t endpos = directory.rfind('/');
-        if (endpos != std::string::npos) {
-            directory = directory.substr(0, endpos);
-            std::size_t pos = directory.rfind('/', endpos - 1);
-            // extract module name from, e.g., "e:/projects/inviwo/inviwo-dev/modules" ->
-            // "inviwo-dev"
-            if (pos != std::string::npos) {
-                moduleName = directory.substr(pos + 1, endpos - pos - 1);
-            }
-        }
-        // TODO: remove hard-coded path to test workspaces
-        directory += "/data/workspaces/tests";
-        if (!filesystem::directoryExists(directory)) {
-            continue;
-        }
-
-        // TODO: use cannoncial/absolute paths for comparison
-        bool duplicate = false;
-        for (auto item : paths) {
-            if (item.first == directory) {
-                duplicate = true;
-                break;
-            }
-        }
-        if (duplicate) {
-            continue;
-        }
-
-        // check whether path contains at least one workspace
-        bool workspaceExists = false;
-        for (auto item : filesystem::getDirectoryContents(directory)) {
-            // only accept inviwo workspace files
-            workspaceExists = (filesystem::getFileExtension(item) == "inv");
-            if (workspaceExists) {
-                break;
-            }
-        }
-
-        if (workspaceExists) {
-            // at least one workspace could be found
-            paths.push_back({directory, moduleName});
-        }
-    }
-
-    // add menu entries
-    for (auto& elem : paths) {
-        QMenu* baseMenu = testMenu_;
-        // add module name as submenu folder for better organization, if it exists
-        if (!elem.second.empty()) {
-            baseMenu = testMenu_->addMenu(QString::fromStdString(elem.second));
-        }
-
-        // add test workspaces to submenu
-        auto fileList = filesystem::getDirectoryContents(elem.first);
-        for (auto item : fileList) {
-            // only accept inviwo workspace files
-            if (filesystem::getFileExtension(item) == "inv") {
-                QString filename(QString::fromStdString(item));
-                QAction* action = baseMenu->addAction(filename);
-                QString path(
-                    QString("%1/%2").arg(QString::fromStdString(elem.first)).arg(filename));
-                action->setData(path);
-
-                QObject::connect(action, &QAction::triggered, this,
-                                 &InviwoMainWindow::openRecentWorkspace);
-            }
-        }
-    }
-    testMenu_->menuAction()->setVisible(!testMenu_->isEmpty());
 }
 
 std::string InviwoMainWindow::getCurrentWorkspace() {
@@ -795,12 +671,6 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
     saveWindowState();
     getNetworkEditor()->setModified(false);
 }
-void InviwoMainWindow::openExampleWorkspace() {
-    QAction* action = qobject_cast<QAction*>(sender());
-    if (action && askToSaveWorkspaceChanges()) {
-        openWorkspace(action->data().toString(), true);
-    }
-}
 
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     workspace = filesystem::cleanupPath(workspace);
@@ -825,18 +695,6 @@ void InviwoMainWindow::openWorkspace() {
             QString path = openFileDialog.selectedFiles().at(0);
             openWorkspace(path);
         }
-    }
-}
-
-void InviwoMainWindow::openRecentWorkspace() {
-    if (QAction* action = qobject_cast<QAction*>(sender())) {
-        std::string fileName(utilqt::fromQString(action->data().toString()));
-
-        if (!filesystem::fileExists(fileName)) {
-            LogError("Failed to load the requested file: " << fileName);
-            return;
-        }
-        if (askToSaveWorkspaceChanges()) openWorkspace(action->data().toString());
     }
 }
 
@@ -1142,9 +1000,6 @@ HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_; }
 InviwoApplicationQt* InviwoMainWindow::getInviwoApplicationQt() const { return app_; }
 
-InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const {
-    return editMenu_;
-}
-
+InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const { return editMenu_; }
 
 }  // namespace inviwo
