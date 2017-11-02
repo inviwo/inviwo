@@ -43,7 +43,6 @@
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <inviwo/core/resources/resource.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/settings.h>
@@ -215,7 +214,6 @@ InviwoModule::getRepresentationConverterFactories() const {
 }
 
 const std::vector<MeshDrawer*> InviwoModule::getDrawers() const { return uniqueToPtr(drawers_); }
-const std::vector<Resource*> InviwoModule::getResources() const { return uniqueToPtr(resources_); }
 const std::vector<Settings*> InviwoModule::getSettings() const { return uniqueToPtr(settings_); }
 
 std::string InviwoModule::getDescription() const {
@@ -264,9 +262,6 @@ void InviwoModule::registerRepresentationConverterFactory(
     }
 }
 
-void InviwoModule::registerResource(std::unique_ptr<Resource> resource) {
-    resources_.push_back(std::move(resource));
-}
 void InviwoModule::registerSettings(std::unique_ptr<Settings> settings) {
     settings_.push_back(std::move(settings));
 }

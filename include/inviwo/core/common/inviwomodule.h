@@ -62,7 +62,6 @@ namespace inviwo {
 class Settings;
 class MetaData;
 class Capabilities;
-class Resource;
 class DataReader;
 class DataWriter;
 class PortInspectorFactoryObject;
@@ -160,7 +159,6 @@ public:
     const std::vector<BaseRepresentationConverter*> getRepresentationConverters() const;
     const std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories()
         const;
-    const std::vector<Resource*> getResources() const;
     const std::vector<Settings*> getSettings() const;
 
 protected:
@@ -203,7 +201,6 @@ protected:
     void registerRepresentationConverterFactory(
         std::unique_ptr<BaseRepresentationConverterFactory> converterFactory);
 
-    void registerResource(std::unique_ptr<Resource> resource);
     void registerSettings(std::unique_ptr<Settings> settings);
 
     InviwoApplication* app_;  // reference to the app that we belong to
@@ -259,10 +256,7 @@ private:
     std::vector<std::function<void()>> representationConvertersUnRegFunctors_;
     std::vector<std::unique_ptr<BaseRepresentationConverterFactory>>
         representationConverterFactories_;
-    std::vector<std::unique_ptr<Resource>> resources_;
     std::vector<std::unique_ptr<Settings>> settings_;
-
-
 };
 
 

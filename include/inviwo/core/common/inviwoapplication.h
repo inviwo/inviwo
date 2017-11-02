@@ -218,7 +218,6 @@ public:
     void postProgress(std::string progress);
 
 protected:
-    void cleanupSingletons();
     virtual void resizePool(size_t newSize);
 
     struct Queue {
