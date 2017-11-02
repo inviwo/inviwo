@@ -28,8 +28,6 @@
  *********************************************************************************/
 
 #include "volumesource.h"
-#include <inviwo/core/resources/resourcemanager.h>
-#include <inviwo/core/resources/templateresource.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -40,7 +38,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datareaderexception.h>
 
-#include <math.h>
+#include <cmath>
 
 namespace inviwo {
 

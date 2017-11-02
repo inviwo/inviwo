@@ -51,7 +51,6 @@ class NetworkEditorView;
 class NetworkEditor;
 class PropertyListWidget;
 class ProcessorTreeWidget;
-class ResourceManagerWidget;
 class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
@@ -81,7 +80,6 @@ public:
     ProcessorTreeWidget* getProcessorTreeWidget() const;
     PropertyListWidget* getPropertyListWidget() const;
     ConsoleWidget* getConsoleWidget() const;
-    ResourceManagerWidget* getResourceManagerWidget() const;
     HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
     InviwoApplicationQt* getInviwoApplicationQt() const;
@@ -143,7 +141,6 @@ private:
     ProcessorTreeWidget* processorTreeWidget_;
     PropertyListWidget* propertyListWidget_;
     std::shared_ptr<ConsoleWidget> consoleWidget_;
-    ResourceManagerWidget* resourceManagerWidget_;
     HelpWidget* helpWidget_;
     NetworkSearch* networkSearch_;
     

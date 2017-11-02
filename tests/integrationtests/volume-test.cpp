@@ -29,9 +29,7 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/resources/resourcemanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/resources/templateresource.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <inviwo/core/common/inviwoapplication.h>

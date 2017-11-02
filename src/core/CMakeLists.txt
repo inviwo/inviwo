@@ -223,10 +223,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawerfactory.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/resources/resource.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanager.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanagerobserver.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/resources/templateresource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/assertion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/buildinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
@@ -469,7 +465,6 @@ set(SOURCE_FILES
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
     rendering/meshdrawerfactory.cpp
-    resources/resourcemanager.cpp
     util/assertion.cpp
     util/canvas.cpp
     util/capabilities.cpp

@@ -44,7 +44,6 @@
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>
 #include <inviwo/qt/editor/processorlistwidget.h>
-#include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/editor/networksearch.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
@@ -155,10 +154,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     grid->addWidget(networkSearch_, 0, 0, Qt::AlignTop | Qt::AlignRight);
 
     setCentralWidget(networkEditorView_);
-
-    resourceManagerWidget_ = new ResourceManagerWidget(this);
-    addDockWidget(Qt::LeftDockWidgetArea, resourceManagerWidget_);
-    resourceManagerWidget_->hide();
 
     settingsWidget_ = new SettingsWidget(this);
     addDockWidget(Qt::LeftDockWidgetArea, settingsWidget_);
@@ -473,8 +468,6 @@ void InviwoMainWindow::addActions() {
         viewMenuItem->addAction(consoleWidget_->toggleViewAction());
         helpWidget_->toggleViewAction()->setText(tr("&Help"));
         viewMenuItem->addAction(helpWidget_->toggleViewAction());
-        // Disabled until we figure out what we want to use it for //Peter
-        // viewMenuItem->addAction(resourceManagerWidget_->toggleViewAction());
     }
 
     {
@@ -893,7 +886,6 @@ void InviwoMainWindow::saveWindowState() {
     settings.setValue("processorwidgetSticky", processorTreeWidget_->isSticky());
     settings.setValue("propertywidgetSticky", propertyListWidget_->isSticky());
     settings.setValue("consolewidgetSticky", consoleWidget_->isSticky());
-    settings.setValue("resourcemanagerwidgetSticky", resourceManagerWidget_->isSticky());
     settings.setValue("helpwidgetSticky", helpWidget_->isSticky());
     settings.endGroup();  // dialogs
 
@@ -913,7 +905,6 @@ void InviwoMainWindow::loadWindowState() {
     processorTreeWidget_->setSticky(settings.value("processorwidgetSticky", true).toBool());
     propertyListWidget_->setSticky(settings.value("propertywidgetSticky", true).toBool());
     consoleWidget_->setSticky(settings.value("consolewidgetSticky", true).toBool());
-    resourceManagerWidget_->setSticky(settings.value("resourcemanagerwidgetSticky", true).toBool());
     helpWidget_->setSticky(settings.value("helpwidgetSticky", true).toBool());
 }
 
@@ -982,10 +973,6 @@ ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
 PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return propertyListWidget_; }
 
 ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_.get(); }
-
-ResourceManagerWidget* InviwoMainWindow::getResourceManagerWidget() const {
-    return resourceManagerWidget_;
-}
 
 HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 

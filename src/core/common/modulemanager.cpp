@@ -30,7 +30,6 @@
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/version.h>
-#include <inviwo/core/resources/resourcemanager.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/sharedlibrary.h>
@@ -262,7 +261,6 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
 void ModuleManager::unregisterModules() {
     onModulesWillUnregister_.invoke();
     app_->getProcessorNetwork()->clear();
-    ResourceManager::getPtr()->clearAllResources();
     // Need to clear the modules in reverse order since the might depend on each other.
     // The destruction order of vector is undefined.
     util::reverse_erase_if(

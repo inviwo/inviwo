@@ -50,7 +50,6 @@
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
-#include <inviwo/core/resources/resourcemanager.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/fileobserver.h>
@@ -63,7 +62,6 @@
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/util/timer.h>
-
 
 namespace inviwo {
 
@@ -78,14 +76,15 @@ namespace util {
  *
  */
 void dataFormatDummyInitialization() {
-    #include <warn/push>
-    #include <warn/ignore/unused-variable>
-    #define DataFormatIdMacro(i) {const DataFormatBase* dummyInitialization =  Data##i::get();}
-    #include <inviwo/core/util/formatsdefinefunc.h>
-    #include <warn/pop>
+#include <warn/push>
+#include <warn/ignore/unused-variable>
+#define DataFormatIdMacro(i) \
+    { const DataFormatBase* dummyInitialization = Data##i::get(); }
+#include <inviwo/core/util/formatsdefinefunc.h>
+#include <warn/pop>
 }
-    
-} // namespace util
+
+}  // namespace util
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
@@ -93,8 +92,10 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , commandLineParser_(argc, argv)
     , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
     , queue_()
-    , clearAllSingeltons_{[this]() { cleanupSingletons(); }}
-
+    , clearAllSingeltons_{[]() {
+        PickingManager::deleteInstance();
+        RenderContext::deleteInstance();
+    }}
     , cameraFactory_{util::make_unique<CameraFactory>()}
     , dataReaderFactory_{util::make_unique<DataReaderFactory>()}
     , dataWriterFactory_{util::make_unique<DataWriterFactory>()}
@@ -127,8 +128,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     if (commandLineParser_.getLogToFile()) {
         auto filename = commandLineParser_.getLogToFileFileName();
         auto dir = filesystem::getFileDirectory(filename);
-        if (dir.empty() || !filesystem::directoryExists(dir)){
-            if(!commandLineParser_.getOutputPath().empty()){
+        if (dir.empty() || !filesystem::directoryExists(dir)) {
+            if (!commandLineParser_.getOutputPath().empty()) {
                 filename = commandLineParser_.getOutputPath() + "/" + filename;
             }
         }
@@ -140,7 +141,6 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     // initialize singletons
     RenderContext::init();
-    ResourceManager::init();
     PickingManager::init();
 
     // Create and register core
@@ -153,9 +153,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     if (sys && !commandLineParser_.getQuitApplicationAfterStartup()) {
         resizePool(static_cast<size_t>(sys->poolSize_.get()));
 
-        sys->poolSize_.onChange([this, sys]() { 
-            resizePool(static_cast<size_t>(sys->poolSize_.get()));
-        });
+        sys->poolSize_.onChange(
+            [this, sys]() { resizePool(static_cast<size_t>(sys->poolSize_.get())); });
     }
 
     workspaceManager_->registerFactory(getProcessorFactory());
@@ -164,9 +163,9 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     workspaceManager_->registerFactory(getInportFactory());
     workspaceManager_->registerFactory(getOutportFactory());
 
-    networkClearHandle_ = workspaceManager_->onClear([&]() { 
+    networkClearHandle_ = workspaceManager_->onClear([&]() {
         portInspectorManager_->clear();
-        processorNetwork_->clear(); 
+        processorNetwork_->clear();
     });
     networkSerializationHandle_ = workspaceManager_->onSave([&](Serializer& s) {
         s.serialize("ProcessorNetwork", *processorNetwork_);
@@ -198,10 +197,7 @@ InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo")
 InviwoApplication::InviwoApplication(std::string displayName)
     : InviwoApplication(0, nullptr, displayName) {}
 
-InviwoApplication::~InviwoApplication() {
-    resizePool(0);
-    ResourceManager::getPtr()->clearAllResources();
-}
+InviwoApplication::~InviwoApplication() { resizePool(0); }
 
 void InviwoApplication::registerModules(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
@@ -219,13 +215,9 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
     return filesystem::getPath(pathType, suffix, createFolder);
 }
 
-ModuleManager& InviwoApplication::getModuleManager() {
-    return moduleManager_;
-}
+ModuleManager& InviwoApplication::getModuleManager() { return moduleManager_; }
 
-const ModuleManager& InviwoApplication::getModuleManager() const {
-    return moduleManager_;
-}
+const ModuleManager& InviwoApplication::getModuleManager() const { return moduleManager_; }
 
 const std::vector<std::unique_ptr<InviwoModule>>& InviwoApplication::getModules() const {
     return moduleManager_.getModules();
@@ -255,13 +247,11 @@ const CommandLineParser& InviwoApplication::getCommandLineParser() const {
     return commandLineParser_;
 }
 
-CommandLineParser& InviwoApplication::getCommandLineParser() {
-    return commandLineParser_;
-}
+CommandLineParser& InviwoApplication::getCommandLineParser() { return commandLineParser_; }
 
 void InviwoApplication::printApplicationInfo() {
     auto caps = this->getModuleByType<InviwoCore>()->getCapabilities();
-    
+
     LogInfoCustom("InviwoInfo", "Inviwo Version: " << IVW_VERSION);
     if (auto syscap = getTypeFromVector<SystemCapabilities>(caps)) {
         if (syscap->getBuildTimeYear() != 0) {
@@ -312,12 +302,6 @@ std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
     return allModuleSettings;
 }
 
-void InviwoApplication::cleanupSingletons() {
-    PickingManager::deleteInstance();
-    ResourceManager::deleteInstance();
-    RenderContext::deleteInstance();
-}
-
 void InviwoApplication::resizePool(size_t newSize) {
     size_t size = pool_.trySetSize(newSize);
     while (size != newSize) {
@@ -353,9 +337,8 @@ void InviwoApplication::waitForPool() {
     resizePool(old_size);
 }
 
-
 TimerThread& InviwoApplication::getTimerThread() {
-    if(!timerThread_) {
+    if (!timerThread_) {
         timerThread_ = util::make_unique<TimerThread>();
     }
     return *timerThread_;
@@ -367,13 +350,11 @@ void InviwoApplication::closeInviwoApplication() {
 void InviwoApplication::registerFileObserver(FileObserver*) {
     LogWarn("this application have not implemented the registerFileObserver function");
 }
-void InviwoApplication::unRegisterFileObserver(FileObserver*) {
-}
+void InviwoApplication::unRegisterFileObserver(FileObserver*) {}
 void InviwoApplication::startFileObservation(std::string) {
     LogWarn("this application have not implemented the startFileObservation function");
 }
-void InviwoApplication::stopFileObservation(std::string) {
-}
+void InviwoApplication::stopFileObservation(std::string) {}
 void InviwoApplication::playSound(Message) {
     LogWarn("this application have not implemented the playSound function");
 }
@@ -384,4 +365,4 @@ InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); 
 
 }  // namespace util
 
-}  // namespace
+}  // namespace inviwo

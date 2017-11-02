@@ -7,7 +7,6 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanagerwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
@@ -69,7 +68,6 @@ set(SOURCE_FILES
     processorpreview.cpp
     processorprogressgraphicsitem.cpp
     processorstatusgraphicsitem.cpp
-    resourcemanagerwidget.cpp
     settingswidget.cpp
     undomanager.cpp
 )
