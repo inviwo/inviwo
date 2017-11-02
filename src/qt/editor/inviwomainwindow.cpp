@@ -345,16 +345,14 @@ void InviwoMainWindow::addActions() {
             QStringList recentFiles{getRecentWorkspaceList()};
             for (int i = 0; i < recentFiles.size(); ++i) {
                 if (!recentFiles[i].isEmpty()) {
+                    const bool exists = QFileInfo(recentFiles[i]).exists();
+                    const auto menuEntry = QString("&%1 %2%3")
+                                               .arg(i + 1)
+                                               .arg(recentFiles[i])
+                                               .arg(exists ? "" : " (missing)");
                     workspaceActionRecent_[i]->setVisible(true);
-                    if (QFileInfo(recentFiles[i]).exists()) {
-                        QString menuEntry = tr("&%1 %2").arg(i + 1).arg(recentFiles[i]);
-                        workspaceActionRecent_[i]->setText(menuEntry);
-                        workspaceActionRecent_[i]->setEnabled(true);
-                    } else {
-                        QString menuEntry = tr("&%1 %2 (missing)").arg(i + 1).arg(recentFiles[i]);
-                        workspaceActionRecent_[i]->setText(menuEntry);
-                        workspaceActionRecent_[i]->setEnabled(false);
-                    }
+                    workspaceActionRecent_[i]->setText(menuEntry);
+                    workspaceActionRecent_[i]->setEnabled(exists);
                     workspaceActionRecent_[i]->setData(recentFiles[i]);
                 }
             }
@@ -362,73 +360,67 @@ void InviwoMainWindow::addActions() {
         });
     }
 
-    {
-        // create list of all example workspaces
-        exampleMenu_ = fileMenuItem->addMenu(tr("&Example Workspaces"));
-        connect(exampleMenu_, &QMenu::aboutToShow, this, [this]() {
-            exampleMenu_->clear();
-            for (const auto& module : app_->getModules()) {
-                auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
-                if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
-                QMenu* moduleMenu = nullptr;
-                for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+    // create list of all example workspaces
+    exampleMenu_ = fileMenuItem->addMenu(tr("&Example Workspaces"));
+    connect(exampleMenu_, &QMenu::aboutToShow, this, [this]() {
+        exampleMenu_->clear();
+        for (const auto& module : app_->getModules()) {
+            auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
+            if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
+            auto menu = util::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+                // only accept inviwo workspace files
+                if (filesystem::getFileExtension(item) != "inv") continue;
+                auto action = menu->addAction(QString::fromStdString(item));
+                auto path = QString::fromStdString(moduleWorkspacePath + "/" + item);
+                connect(action, &QAction::triggered, this, [this, path]() {
+                    if (askToSaveWorkspaceChanges()) openWorkspace(path, true);
+                });
+            }
+            if (!menu->isEmpty()) exampleMenu_->addMenu(menu.release());
+        }
+        if (exampleMenu_->isEmpty()) {
+            exampleMenu_->addAction("No example workspaces found")->setEnabled(false);
+        }
+    });
+
+    // create list of all test workspaces
+    testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
+    connect(testMenu_, &QMenu::aboutToShow, this, [this]() {
+        testMenu_->clear();
+        for (const auto& module : app_->getModules()) {
+            auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
+            if (!filesystem::directoryExists(moduleTestPath)) continue;
+            auto menu = util::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            for (auto test : filesystem::getDirectoryContents(moduleTestPath,
+                                                              filesystem::ListMode::Directories)) {
+                std::string testdir = moduleTestPath + "/" + test;
+                if (!filesystem::directoryExists(testdir)) continue;
+                for (auto item : filesystem::getDirectoryContents(testdir)) {
                     // only accept inviwo workspace files
                     if (filesystem::getFileExtension(item) != "inv") continue;
-                    if (!moduleMenu) {
-                        moduleMenu =
-                            exampleMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
-                    }
-                    auto action = moduleMenu->addAction(QString::fromStdString(item));
-                    auto path = QString::fromStdString(moduleWorkspacePath + "/" + item);
+                    auto action = menu->addAction(QString::fromStdString(item));
+                    auto path = QString::fromStdString(testdir + "/" + item);
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        if (askToSaveWorkspaceChanges()) openWorkspace(path, true);
+                        if (askToSaveWorkspaceChanges()) openWorkspace(path);
                     });
                 }
             }
-            exampleMenu_->menuAction()->setVisible(!exampleMenu_->isEmpty());
-        });
+            if (!menu->isEmpty()) testMenu_->addMenu(menu.release());
+        }
+        if (testMenu_->isEmpty()) {
+            testMenu_->addAction("No test workspaces found")->setEnabled(false);
+        }
+    });
+
+    if (app_->getModuleManager().isRuntimeModuleReloadingEnabled()) {
+        fileMenuItem->addSeparator();
+        auto reloadAction = new QAction(tr("&Reload modules"), this);
+        connect(reloadAction, &QAction::triggered, this,
+                [&]() { app_->getModuleManager().reloadModules(); });
+        fileMenuItem->addAction(reloadAction);
     }
 
-    {
-        // create list of all test workspaces
-        testMenu_ = fileMenuItem->addMenu(tr("&Test Workspaces"));
-        connect(testMenu_, &QMenu::aboutToShow, this, [this]() {
-            testMenu_->clear();
-            for (const auto& module : app_->getModules()) {
-                auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
-                if (!filesystem::directoryExists(moduleTestPath)) continue;
-                QMenu* moduleMenu = nullptr;
-                for (auto test : filesystem::getDirectoryContents(
-                         moduleTestPath, filesystem::ListMode::Directories)) {
-                    std::string testdir = moduleTestPath + "/" + test;
-                    // only accept inviwo workspace files
-                    if (!filesystem::directoryExists(testdir)) continue;
-                    for (auto item : filesystem::getDirectoryContents(testdir)) {
-                        if (filesystem::getFileExtension(item) != "inv") continue;
-                        if (!moduleMenu) {
-                            moduleMenu =
-                                testMenu_->addMenu(QString::fromStdString(module->getIdentifier()));
-                        }
-                        QAction* action = moduleMenu->addAction(QString::fromStdString(item));
-                        auto path = QString::fromStdString(testdir + "/" + item);
-                        connect(action, &QAction::triggered, this, [this, path]() {
-                            if (askToSaveWorkspaceChanges()) openWorkspace(path);
-                        });
-                    }
-                }
-            }
-            testMenu_->menuAction()->setVisible(!testMenu_->isEmpty());
-        });
-    }
-    {
-        if (app_->getModuleManager().isRuntimeModuleReloadingEnabled()) {
-            fileMenuItem->addSeparator();
-            auto reloadAction = new QAction(tr("&Reload modules"), this);
-            connect(reloadAction, &QAction::triggered, this,
-                    [&]() { app_->getModuleManager().reloadModules(); });
-            fileMenuItem->addAction(reloadAction);
-        }
-    }
     {
         fileMenuItem->addSeparator();
         auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
