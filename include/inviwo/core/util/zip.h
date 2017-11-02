@@ -89,8 +89,8 @@ struct proxy {
     }
 
     template <typename Us = std::tuple<Ts...>,
-        class = typename std::enable_if<3 <= std::tuple_size<Us>::value, void>::type>
-        decltype(auto) third() const {
+              class = typename std::enable_if<3 <= std::tuple_size<Us>::value, void>::type>
+    decltype(auto) third() const {
         return std::get<2>(data);
     }
 
@@ -373,32 +373,38 @@ struct sequence {
         using reference = const T&;
         using iterator_category = std::random_access_iterator_tag;
 
-        iterator(T& val, T& inc) : val_(val), inc_(inc) {}
+        iterator(const T& val, const T& end, const T& inc) : val_{val}, end_{end}, inc_{inc} {}
         iterator& operator++() {
             val_ += inc_;
+            clamp();
             return *this;
         }
         iterator operator++(int) {
             auto i = *this;
             val_ += inc_;
+            clamp();
             return i;
         }
         iterator& operator--() {
             val_ -= inc_;
+            clamp();
             return *this;
         }
         iterator operator--(int) {
             auto i = *this;
             val_ -= inc_;
+            clamp();
             return i;
         }
 
         iterator& operator+=(difference_type rhs) {
             val_ += rhs * inc_;
+            clamp();
             return *this;
         }
         iterator& operator-=(difference_type rhs) {
             val_ -= rhs * inc_;
+            clamp();
             return *this;
         }
 
@@ -427,12 +433,18 @@ struct sequence {
         bool operator<=(const iterator& rhs) const { return val_ <= rhs.val_; }
 
     private:
+        void clamp() { 
+            using std::min;
+            using std::max;
+            val_ = inc_ > 0 ? min(val_, end_) : max(val_, end_); 
+        }
         T val_;
+        T end_;
         T inc_;
     };
 
-    iterator begin() { return iterator(begin_, inc_); }
-    iterator end() { return iterator(end_, inc_); }
+    iterator begin() { return iterator(begin_, end_, inc_); }
+    iterator end() { return iterator(end_, end_, inc_); }
 
 private:
     T begin_;
