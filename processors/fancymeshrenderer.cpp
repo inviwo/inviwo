@@ -159,8 +159,16 @@ void FancyMeshRenderer::AlphaSettings::setCallbacks(const std::function<void()>&
     enableNormalVariation_.onChange(triggerRecompilation);
 }
 
+void FancyMeshRenderer::AlphaSettings::update()
+{
+    uniformScaling_.setVisible(enableUniform_.get());
+    angleBasedExponent_.setVisible(enableAngleBased_.get());
+    normalVariationExponent_.setVisible(enableNormalVariation_.get());
+}
+
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
-    : prefix_(frontFace ? "front" : "back")
+    : frontFace_(frontFace)
+    , prefix_(frontFace ? "front" : "back")
 	, container_(prefix_ + "container", frontFace ? "Front Face" : "Back Face")
 	, show_(prefix_ + "show", "Show", true)
     , sameAsFrontFace_(prefix_ + "same", "Same as Front Face")
@@ -173,6 +181,7 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	, normalSource_(prefix_ + "normalSource", "Normal Source")
 	, shadingMode_(prefix_ + "shadingMode", "Shading Mode")
 {
+    //initialize combo boxes
 	colorSource_.addOption("vertexColor", "VertexColor", ColorSource::VertexColor);
 	colorSource_.addOption("tf", "Transfer Function", ColorSource::TransferFunction);
 	colorSource_.addOption("external", "Constant Color", ColorSource::ExternalColor);
@@ -193,6 +202,7 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	shadingMode_.set(ShadingMode::Off);
 	shadingMode_.setCurrentStateAsDefault();
 
+    //layouting, add the properties
 	container_.addProperty(show_);
     if (!frontFace)
     {
@@ -207,6 +217,15 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	container_.addProperty(uniformAlpha_);
 	container_.addProperty(normalSource_);
 	container_.addProperty(shadingMode_);
+
+    //set callbacks that will trigger update()
+    auto triggerUpdate = [this]() {update(lastOpaque_); };
+    show_.onChange(triggerUpdate);
+    sameAsFrontFace_.onChange(triggerUpdate);
+    colorSource_.onChange(triggerUpdate);
+    separateUniformAlpha_.onChange(triggerUpdate);
+    normalSource_.onChange(triggerUpdate);
+    shadingMode_.onChange(triggerUpdate);
 }
 
 void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
@@ -220,7 +239,28 @@ void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
     normalSource_.set(frontPart_->normalSource_.get());
     shadingMode_.set(frontPart_->shadingMode_.get());
 }
-    
+
+void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
+{
+    lastOpaque_ = opaque;
+    //fetch properties
+    bool show = show_.get();
+    bool show2 = show && !sameAsFrontFace_.get();
+    ColorSource colorSource = colorSource_.get();
+    bool separateUniformAlpha = separateUniformAlpha_.get();
+
+    //set visibility
+    sameAsFrontFace_.setVisible(show);
+    copyFrontToBack_.setVisible(show);
+    colorSource_.setVisible(show2);
+    transferFunction_.setVisible(show2 && colorSource == ColorSource::TransferFunction);
+    externalColor_.setVisible(show2 && colorSource == ColorSource::ExternalColor);
+    separateUniformAlpha_.setVisible(show2 && !opaque);
+    uniformAlpha_.setVisible(show2 && !opaque && separateUniformAlpha);
+    normalSource_.setVisible(show2);
+    shadingMode_.setVisible(show2);
+}
+
 void FancyMeshRenderer::initializeResources() {
 	
 	//get number of layers, see compileShader()
@@ -255,6 +295,16 @@ void FancyMeshRenderer::initializeResources() {
 
 void FancyMeshRenderer::update()
 {
+    //fetch all booleans
+    boolean opaque = forceOpaque_.get();
+
+    //set top-level visibility
+    alphaSettings_.container_.setVisible(!opaque);
+
+    //update alpha and face settings
+    alphaSettings_.update();
+    faceSettings_[0].update(opaque);
+    faceSettings_[1].update(opaque);
 }
 
 void FancyMeshRenderer::compileShader()
@@ -324,6 +374,8 @@ void FancyMeshRenderer::compileShader()
 }
 
 void FancyMeshRenderer::process() {
+    update();
+
 	if (imageInport_.isConnected()) {
 		utilgl::activateTargetAndCopySource(outport_, imageInport_);
 	}

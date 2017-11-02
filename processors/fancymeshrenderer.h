@@ -122,6 +122,7 @@ protected:
 
         AlphaSettings();
         void setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation);
+        void update();
     };
     AlphaSettings alphaSettings_;
 
@@ -150,6 +151,7 @@ protected:
 	 */
 	struct FaceRenderSettings
 	{
+        bool frontFace_;
         std::string prefix_;
 		CompositeProperty container_;
 		BoolProperty show_;
@@ -171,6 +173,8 @@ protected:
         void copyFrontToBack();
 
 		FaceRenderSettings(bool frontFace);
+        void update(bool opaque);
+        bool lastOpaque_;
 	} faceSettings_[2];
 
 
