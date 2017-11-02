@@ -326,25 +326,26 @@ void CropWidget::renderAxis(const CropAxis &axis) {
         // apply custom transformation
         const mat4 m = glm::scale(vec3(scale_.get()));
 
-        auto draw = [&](auto &drawObject, int elemID, float value, const mat4 &rot) {
+        auto draw = [&](auto &drawObject, int pickID, float value, const mat4 &rot) {
             mat4 worldMatrix(glm::translate(axis.info.pos + axis.info.axis * value) * m * rot);
             mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
             shader_.setUniform("geometry.dataToWorld", worldMatrix);
             shader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
-            unsigned int pickID =
-                static_cast<unsigned int>(picking_.getPickingId(axisIDOffset + elemID));
             shader_.setUniform("pickId", pickID);
 
             drawObject.draw();
         };
 
+        const int pickID =
+            static_cast<int>(picking_.getPickingId(axisIDOffset));
+
         {
             // lower bound
             auto drawObject = MeshDrawerGL::getDrawObject(interactionHandleMesh_[0].get());
-            draw(drawObject, 0, lowerBound, axis.info.rotMatrix);
+            draw(drawObject, pickID, lowerBound, axis.info.rotMatrix);
 
             // upper bound
-            draw(drawObject, 1, upperBound, axis.info.flipMatrix);
+            draw(drawObject, pickID + 1, upperBound, axis.info.flipMatrix);
         }
 
         {
@@ -353,7 +354,7 @@ void CropWidget::renderAxis(const CropAxis &axis) {
                 (property.get().y < property.getRangeMax())) {
                 auto drawObject = MeshDrawerGL::getDrawObject(interactionHandleMesh_[1].get());
                 if (std::fabs(upperBound - lowerBound) > minSeparationPercentage) {
-                    draw(drawObject, 2, (upperBound + lowerBound) * 0.5f, axis.info.rotMatrix);
+                    draw(drawObject, pickID + 2, (upperBound + lowerBound) * 0.5f, axis.info.rotMatrix);
                 }
             }
         }
