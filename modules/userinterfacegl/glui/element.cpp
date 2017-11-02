@@ -32,6 +32,8 @@
 
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/moduleutils.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/opengl/openglutils.h>
 
