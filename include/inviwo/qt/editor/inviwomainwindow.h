@@ -90,12 +90,7 @@ public:
 
     void newWorkspace();
     void openWorkspace();
-    void openRecentWorkspace();
-    /**
-    * \brief clear the recent file list in the menu
-    */
-    void clearRecentWorkspaceMenu();
-    void openExampleWorkspace();
+
     void saveWorkspace();
     void saveWorkspaceAs();
 
@@ -124,10 +119,7 @@ private:
     bool askToSaveWorkspaceChanges();
 
     void addToRecentWorkspaces(QString workspaceFileName);
-    /**
-    * \brief update the recent file list in the menu based on the internal status
-    */
-    void updateRecentWorkspaceMenu();
+
     /**
     * \brief query the Qt settings for recent workspaces and update internal status
     */
@@ -139,16 +131,6 @@ private:
     void setCurrentWorkspace(QString workspaceFileName);
 
     void updateWindowTitle();
-
-    /**
-     * \brief compile a list of example workspaces and update the menu
-     */
-    void fillExampleWorkspaceMenu();
-    /**
-    * \brief compile a list of test workspaces from inviwo-dev and external
-    * modules and update the menu
-    */
-    void fillTestWorkspaceMenu();
 
     InviwoApplicationQt* app_;
     std::unique_ptr<NetworkEditor> networkEditor_;
@@ -189,11 +171,6 @@ private:
     TCLAP::SwitchArg updateWorkspaces_;
     
     UndoManager undoManager_;
-
-    ///< Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    ///< Called before modules have been unregistered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
 }  // namespace
