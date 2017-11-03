@@ -53,6 +53,7 @@ enum GLSLSyntaxThins {  // rename
 };
 }
 
+// define GLSL types and keywords using regular expressions. \b indicates word boundaries.
 static const char* glsl_types[] = {"\\bfloat",
                                    "\\b[bi]?vec[2-4]\\b",
                                    "\\bint",
@@ -70,7 +71,7 @@ static const char* glsl_qualifiers[] = {"\\bstruct\\b",   "\\buniform\\b", "\\ba
                                         "\\bif\\b",       "\\bconst\\b",   "\\bwhile\\b",
                                         "\\bcontinue\\b", "\\bbreak\\b",   "\\breturn\\b",
                                         "\\blayout\\b",   "\\bflat\\b",    nullptr};
-static const char* glsl_builtins_var[] = {"gl_ModelViewMatrix\\b",
+static const char* glsl_builtins_var[] = {"\\bgl_ModelViewMatrix\\b",
                                           "\\bgl_ModelViewProjectionMatrix\\b",
                                           "\\bgl_ProjectionMatrix\\b",
                                           "\\bgl_TextureMatrix\\b",
