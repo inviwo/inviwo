@@ -56,6 +56,8 @@ public:
     IntVec4Property glslGlslBuiltinsColor_;
     IntVec4Property glslCommentColor_;
     IntVec4Property glslPreProcessorColor_;
+    IntVec4Property glslConstantsColor_;
+    IntVec4Property glslVoidMainColor_;
 
     CompositeProperty pythonSyntax_;
     IntProperty pyFontSize_;
@@ -65,7 +67,6 @@ public:
     IntVec4Property pyCommentsColor_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_QTWIDGETSSETTINGS_H
-
+#endif  // IVW_QTWIDGETSSETTINGS_H
