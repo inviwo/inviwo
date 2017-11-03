@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/exception.h>
 
 #include <modules/base/datastructures/kdtree.h>
 
@@ -46,7 +47,9 @@ public:
     static std::shared_ptr<Mesh> apply(
         std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
         bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>(),
-        std::function<bool(size3_t)> maskingCallback = [](size3_t) { return true; });
+        std::function<bool(const size3_t &)> maskingCallback = [](const size3_t &) {
+            return true;
+        });
 };
 
 namespace detail {
@@ -56,7 +59,8 @@ struct IVW_MODULE_BASE_API MarchingTetrahedronDispatcher {
     std::shared_ptr<Mesh> dispatch(std::shared_ptr<const Volume> volume, double iso,
                                    const vec4 &color, bool invert, bool enclose,
                                    std::function<void(float)> progressCallback,
-                                   std::function<bool(size3_t)> maskingCallback);
+                                   std::function<bool(const size3_t &)> maskingCallback =
+                                       [](const size3_t &) { return true; });
 };
 
 template <typename T>
@@ -87,12 +91,11 @@ template <class DataType>
 std::shared_ptr<Mesh> MarchingTetrahedronDispatcher::dispatch(
     std::shared_ptr<const Volume> baseVolume, double iso, const vec4 &color, bool invert,
     bool enclose, std::function<void(float)> progressCallback,
-    std::function<bool(size3_t)> maskingCallback) {
+    std::function<bool(const size3_t &)> maskingCallback) {
     if (progressCallback) progressCallback(0.0f);
 
     if (!maskingCallback) {
-        LogWarn("Masking callback not set, falling back to default mask");
-        maskingCallback = [](size3_t) { return true; };
+        throw Exception("masking callback not set", IvwContext);
     }
 
     using T = typename DataType::type;
