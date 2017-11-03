@@ -178,9 +178,6 @@ namespace inviwo
         //render fragment list (even if incomplete)
         displayShader_.activate();
         assignUniforms(displayShader_);
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
-        utilgl::DepthMaskState depthMask(GL_FALSE);
-        utilgl::CullFaceState culling(GL_NONE);
         utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         drawQuad();
         displayShader_.deactivate();
@@ -276,6 +273,9 @@ namespace inviwo
 
     void FragmentListRenderer::drawQuad() const
     {
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
+        utilgl::DepthMaskState depthMask(GL_FALSE);
+        utilgl::CullFaceState culling(GL_NONE);
         auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
         utilgl::Enable<MeshGL> enable(rect);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

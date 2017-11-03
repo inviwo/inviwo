@@ -33,6 +33,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/clearABufferLinkedList.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dispABufferLinkedList.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/simpleQuad.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthOnly.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

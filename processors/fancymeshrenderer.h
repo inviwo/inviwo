@@ -179,6 +179,7 @@ protected:
 
 
 	Shader shader_;
+    Shader depthShader_;
 	bool needsRecompilation_;
 	std::unique_ptr<MeshDrawer> drawer_;
     FragmentListRenderer flr_;

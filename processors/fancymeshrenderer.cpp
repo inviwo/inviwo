@@ -75,6 +75,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     , forceOpaque_("forceOpaque", "Shade Opaque", false)
 	, faceSettings_{true, false}
 	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.frag", false)
+    , depthShader_("geometryrendering.vert", "depthOnly.frag", false)
 	, needsRecompilation_(true)
     , debugFragmentLists_(false)
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
@@ -133,6 +134,10 @@ FancyMeshRenderer::FancyMeshRenderer()
 
     //update visibility of properties
     update();
+
+    //Compile depth-only shader
+    //Why this is needed, see the end of process()
+    depthShader_.build();
 }
 
 FancyMeshRenderer::AlphaSettings::AlphaSettings()
@@ -341,7 +346,6 @@ void FancyMeshRenderer::compileShader()
 	}
 
 	//Settings
-	//shader_.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
     if (forceOpaque_) {
         shader_.getFragmentShaderObject()->removeShaderDefine("USE_FRAGMENT_LIST");
     } 
@@ -396,6 +400,7 @@ void FancyMeshRenderer::process() {
         return;
     }
 
+    //Loop: fragment list may need another try if not enough space for the pixels was available
     bool retry;
     do {
         retry = false;
@@ -472,7 +477,7 @@ void FancyMeshRenderer::process() {
 
         shader_.deactivate();
 
-        if (!opaque)
+        if (fragmentLists)
         {
             //final processing of fragment list rendering
             //LogProcessorInfo("fragment-list: post pass");
@@ -486,6 +491,27 @@ void FancyMeshRenderer::process() {
         }
 
     } while (retry);
+
+    //Workaround for a problem with the fragment lists:
+    //The camera interaction requires the depth buffer for some reason to work,
+    // otherwise, the rotation does not work.
+    //My first idea was to set the depth in the fragment list's 'dispABufferLinkedList.frag'
+    // using gl_FragDepth, but this don't work (yet).
+    if (fragmentLists)
+    {
+        depthShader_.activate();
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+        utilgl::DepthMaskState depthMask(GL_TRUE);
+        utilgl::CullFaceState culling(
+            !faceSettings_[0].show_ && faceSettings_[1].show_ ? GL_FRONT :
+            faceSettings_[0].show_ && !faceSettings_[1].show_ ? GL_BACK :
+            GL_NONE);
+        utilgl::BlendModeState blendModeStateGL(GL_ZERO, GL_ZERO);
+        utilgl::setUniforms(depthShader_, camera_);
+        utilgl::setShaderUniforms(depthShader_, *(drawer_->getMesh()), "geometry");
+        drawer_->draw();
+        depthShader_.deactivate();
+    }
 
 	utilgl::deactivateCurrentTarget();
 }
