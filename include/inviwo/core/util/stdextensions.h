@@ -52,12 +52,12 @@ namespace inviwo {
 namespace util {
 // Since make_unique is a c++14 feature, roll our own in the mean time.
 template <class T, class... Args>
-typename std::enable_if<!std::is_array<T>::value, std::unique_ptr<T> >::type make_unique(
+typename std::enable_if<!std::is_array<T>::value, std::unique_ptr<T>>::type make_unique(
     Args&&... args) {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 template <class T>
-typename std::enable_if<std::is_array<T>::value, std::unique_ptr<T> >::type make_unique(
+typename std::enable_if<std::is_array<T>::value, std::unique_ptr<T>>::type make_unique(
     std::size_t n) {
     typedef typename std::remove_extent<T>::type RT;
     return std::unique_ptr<T>(new RT[n]());
@@ -89,20 +89,19 @@ std::unique_ptr<Derived> dynamic_unique_ptr_cast(
 }
 
 // Default construct if possible otherwise return nullptr;
-template <typename T, typename std::enable_if<
-    !std::is_abstract<T>::value && std::is_default_constructible<T>::value,
-    int>::type = 0>
-    T* defaultConstructType() {
+template <typename T, typename std::enable_if<!std::is_abstract<T>::value &&
+                                                  std::is_default_constructible<T>::value,
+                                              int>::type = 0>
+T* defaultConstructType() {
     return new T();
 }
 
-template <typename T, typename std::enable_if<
-    std::is_abstract<T>::value || !std::is_default_constructible<T>::value,
-    int>::type = 0>
-    T* defaultConstructType() {
+template <typename T, typename std::enable_if<std::is_abstract<T>::value ||
+                                                  !std::is_default_constructible<T>::value,
+                                              int>::type = 0>
+T* defaultConstructType() {
     return nullptr;
 }
-
 
 // type trait to check if T is derived from std::basic_string
 namespace detail {
@@ -120,7 +119,7 @@ struct is_string<T, typename void_helper<typename T::value_type, typename T::tra
     : std::is_base_of<std::basic_string<typename T::value_type, typename T::traits_type,
                                         typename T::allocator_type>,
                       T> {};
-}
+}  // namespace detail
 template <typename T>
 struct is_string : detail::is_string<T> {};
 
@@ -140,25 +139,42 @@ auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType&& t) {
 template <typename F, typename TupleType1, typename TupleType2, size_t... Is>
 auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType1&& t1, TupleType2&& t2) {
     return (void)std::initializer_list<int>{0, (f(std::get<Is>(t1), std::get<Is>(t2)), 0)...},
-        std::forward<F>(f);
+           std::forward<F>(f);
 }
 
 }  // namespace detail
 
 template <typename F, typename TupleType>
 void for_each_in_tuple(F&& f, TupleType&& t) {
-    detail::for_each_in_tuple_impl(std::forward<F>(f),
-                                   std::make_index_sequence<std::tuple_size<typename std::remove_reference<TupleType>::type>::value>{},
-                                   std::forward<TupleType>(t));
+    detail::for_each_in_tuple_impl(
+        std::forward<F>(f),
+        std::make_index_sequence<
+            std::tuple_size<typename std::remove_reference<TupleType>::type>::value>{},
+        std::forward<TupleType>(t));
 }
 template <typename F, typename TupleType1, typename TupleType2>
 void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
-    detail::for_each_in_tuple_impl(std::forward<F>(f),
-                                   std::make_index_sequence<std::min(std::tuple_size<typename std::remove_reference<TupleType1>::type>::value,
-                                                                     std::tuple_size<typename std::remove_reference<TupleType2>::type>::value)>{},
-                                   std::forward<TupleType1>(t1),
-                                   std::forward<TupleType2>(t2));
+    detail::for_each_in_tuple_impl(
+        std::forward<F>(f),
+        std::make_index_sequence<std::min(
+            std::tuple_size<typename std::remove_reference<TupleType1>::type>::value,
+            std::tuple_size<typename std::remove_reference<TupleType2>::type>::value)>{},
+        std::forward<TupleType1>(t1), std::forward<TupleType2>(t2));
 }
+
+/**
+ * A utility for iterating over types in a list.
+ * Example: 
+ *     struct Functor {
+ *         template <typename T>
+ *         auto operator()(std::vector<Property*>& properties) {
+ *             properties.push_pack(new OrdinalProperty<T>());
+ *         }
+ *     };
+ *     std::vector<Property*>& properties;
+ *     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
+ *     util::for_each_type<Vec4s>{}(Functor{}, properties);
+ */
 template <class... Types>
 struct for_each_type;
 
@@ -186,6 +202,54 @@ struct for_each_type<std::tuple<T, Types...>> {
 #endif
         return for_each_type<std::tuple<Types...>>{}(std::forward<F>(f),
                                                      std::forward<Args>(args)...);
+    }
+};
+
+/**
+ * A utility for iterating over all permutations of pairs from two lists of types.
+ * Example: 
+ *     struct Functor {
+ *         template <typename T, typename U>
+ *         auto operator()(std::vector<Converter*>& converters) {
+ *             properties.push_pack(new TypeConverter<T, U>());
+ *         }
+ *     };
+ *     std::vector<Converter*>& converters;
+ *     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
+ *     util::for_each_typ_paire<Vec4s, Vec4s>{}(Functor{}, converters);
+ */
+template <class ATypes, class BTypes>
+struct for_each_type_pair;
+
+template <class... ATypes, class... BTypes>
+struct for_each_type_pair<std::tuple<ATypes...>, std::tuple<BTypes...>> {
+private:
+    template <typename AType>
+    struct nestedhelper {
+        template <typename BType, class F, class... Args>
+        auto operator()(F&& f, Args&&... args) {
+#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
+            f.operator()<AType, BType>(std::forward<Args>(args)...);
+#else
+            f.template operator()<AType, BType>(std::forward<Args>(args)...);
+#endif
+        }
+    };
+
+    template <typename BTypes>
+    struct helper {
+        template <typename AType, class F, class... Args>
+        auto operator()(F&& f, Args&&... args) {
+            util::for_each_type<BTypes>{}(nestedhelper<AType>{}, std::forward<F>(f),
+                                          std::forward<Args>(args)...);
+        }
+    };
+
+public:
+    template <class F, class... Args>
+    auto operator()(F&& f, Args&&... args) {
+        for_each_type<std::tuple<ATypes...>>{}(helper<std::tuple<BTypes...>>{}, std::forward<F>(f),
+                                               std::forward<Args>(args)...);
     }
 };
 
@@ -321,7 +385,6 @@ auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
     }
 }
 
-
 template <typename T, typename V>
 auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
     using std::begin;
@@ -336,7 +399,7 @@ auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
 }
 
 template <typename T, typename V, typename Callable>
-auto find_or_null(T& cont, const V& elem, Callable f) ->  typename T::value_type {
+auto find_or_null(T& cont, const V& elem, Callable f) -> typename T::value_type {
     using std::begin;
     using std::end;
 
@@ -368,8 +431,8 @@ auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
 }
 
 template <typename T, typename V, typename Callable>
-auto map_find_or_null(T& cont, const V& elem, Callable f)
-    -> typename std::result_of<Callable(typename T::mapped_type)>::type {
+auto map_find_or_null(T& cont, const V& elem, Callable f) ->
+    typename std::result_of<Callable(typename T::mapped_type)>::type {
     auto it = cont.find(elem);
     if (it != end(cont)) {
         return f(it->second);
@@ -415,7 +478,7 @@ inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
 }
 
 template <typename T, typename OutIt, typename P>
-OutIt copy_if(const T& cont, OutIt out, P pred) { 
+OutIt copy_if(const T& cont, OutIt out, P pred) {
     using std::begin;
     using std::end;
     return std::copy_if(begin(cont), end(cont), out, pred);
@@ -444,13 +507,12 @@ template <typename T, typename Pred>
 auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
     using std::begin;
     using std::end;
-    
+
     std::vector<size_t> res(cont.size());
     std::iota(res.begin(), res.end(), 0);
-    std::sort(res.begin(), res.end(), [&](const size_t& a, const size_t& b){
-        return pred(cont[a], cont[b]);
-    });
-    
+    std::sort(res.begin(), res.end(),
+              [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
+
     return res;
 }
 
@@ -459,26 +521,23 @@ auto ordering(T& cont) -> std::vector<size_t> {
     return ordering(cont, std::less<typename T::value_type>());
 }
 
-
 template <typename Generator>
-auto table(Generator gen, int start, int end, int step = 1) -> 
-std::vector<decltype(gen(std::declval<int>()))> {
+auto table(Generator gen, int start, int end, int step = 1)
+    -> std::vector<decltype(gen(std::declval<int>()))> {
     using type = decltype(gen(std::declval<int>()));
-    std::vector<type> res((end-start)/step);
+    std::vector<type> res((end - start) / step);
     size_t count = 0;
-    for(int i = start; i < end; i+=step){
+    for (int i = start; i < end; i += step) {
         res[count] = gen(i);
         count++;
     }
     return res;
 }
 
-
 template <typename T>
 bool is_future_ready(const std::future<T>& future) {
-    return (future.valid() &&
-            future.wait_for(std::chrono::duration<int, std::milli>(0)) ==
-                std::future_status::ready);
+    return (future.valid() && future.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+                                  std::future_status::ready);
 }
 
 /**
@@ -492,7 +551,7 @@ bool is_future_ready(const std::future<T>& future) {
  *     T::iterator = T::end();
  *     T::const_iterator = T::begin() const;
  *     T::const_iterator = T::end() const;
- * 
+ *
  *     *T::iterator = T::value_type &
  *     *T::const_iterator = T::value_type const &
  * \endcode
@@ -502,26 +561,18 @@ template <typename T>
 class is_container {
     using test_type = typename std::remove_const<T>::type;
 
-    template <
-        typename A, class = typename std::enable_if<
-            std::is_same<
-                decltype(std::declval<A>().begin()),
-                typename A::iterator>::value &&
-            std::is_same<
-                decltype(std::declval<A>().end()),
-                typename A::iterator>::value &&
-            std::is_same<
-                decltype(std::declval<const A>().begin()),
-                typename A::const_iterator>::value &&
-            std::is_same<
-                decltype(std::declval<const A>().end()),
-                typename A::const_iterator>::value &&
-            std::is_same<
-                decltype(*std::declval<typename A::iterator>()),
-                typename A::value_type&>::value &&
-            std::is_same<
-                decltype(*std::declval<const typename A::iterator>()),
-                typename A::value_type const&>::value>::type>
+    template <typename A,
+              class = typename std::enable_if<
+                  std::is_same<decltype(std::declval<A>().begin()), typename A::iterator>::value &&
+                  std::is_same<decltype(std::declval<A>().end()), typename A::iterator>::value &&
+                  std::is_same<decltype(std::declval<const A>().begin()),
+                               typename A::const_iterator>::value &&
+                  std::is_same<decltype(std::declval<const A>().end()),
+                               typename A::const_iterator>::value &&
+                  std::is_same<decltype(*std::declval<typename A::iterator>()),
+                               typename A::value_type&>::value &&
+                  std::is_same<decltype(*std::declval<const typename A::iterator>()),
+                               typename A::value_type const&>::value>::type>
     static std::true_type test(int);
 
     template <class>
@@ -575,18 +626,17 @@ struct hash<std::pair<T, U>> {
         return h;
     }
 };
-    
-template <typename ... TT>
+
+template <typename... TT>
 struct hash<std::tuple<TT...>> {
-    size_t
-        operator()(std::tuple<TT...> const& tt) const {
+    size_t operator()(std::tuple<TT...> const& tt) const {
         size_t seed = 0;
-        inviwo::util::hashtuple::HashValueImpl<std::tuple<TT...> >::apply(seed, tt);
+        inviwo::util::hashtuple::HashValueImpl<std::tuple<TT...>>::apply(seed, tt);
         return seed;
     }
 };
 
-template <class ForwardIt> 
+template <class ForwardIt>
 ForwardIt rotateRetval(ForwardIt first, ForwardIt n_first, ForwardIt last) {
 #if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 9)
     // gcc 4.8.x has no implementation for std::rotate with a return value
@@ -596,7 +646,6 @@ ForwardIt rotateRetval(ForwardIt first, ForwardIt n_first, ForwardIt last) {
     return std::rotate(first, n_first, last);
 #endif
 }
-
 
 }  // namespace std
 
