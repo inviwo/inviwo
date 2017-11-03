@@ -36,6 +36,32 @@
 #include <type_traits>
 #include <limits>
 #include <inviwo/core/util/stdextensions.h>
+/**
+ * This file contains convenience functions for iterating.
+ * Examples:
+ *
+ * Iterate over containers in sync (@see inviwo::util::zip).
+ * std::vector<int> a(10);
+ * std::vector<int> b(10);
+ * for (auto&& i : util::zip(a, b)) {
+ *      std::cout << get<0>(i) << " " << get<1>(i) << std::endl;
+ * }
+ *
+ * Enumerate element in a container (@see inviwo::util::enumerate) . 
+ * std::vector<int> vec(10);
+ * for (auto&& item : util::enumerate(vec)) {
+ *      auto&& ind = get<0>(item);
+ *      auto&& elem = get<1>(item);
+ * }
+ *
+ * Iterate over sequence (@see inviwo::util::make_sequence).
+ * size_t end = 3;
+ * size_t inc = 2;
+ * for (auto&& i : util::make_sequence(0, end, inc)) {
+ *      // iterates over 0 and 2
+ * }
+ * 
+ */
 
 namespace inviwo {
 
@@ -345,13 +371,13 @@ struct zipper {
 
 /**
  * Iterate over containers in sync.
- * Example use case:
+ * Example use case 1:
  * std::vector<int> a(10);
  * std::vector<int> b(10);
  * for (auto&& i : util::zip(a, b)) {
  *      std::cout << get<0>(i) << " " << get<1>(i) << std::endl;
  * }
-
+ *
  * with C++17 structured bindings:
  * for (auto&& [i, j] : util::enumerate(vec)) {
  *      std::cout << i << " " << j << std::endl;
@@ -451,7 +477,14 @@ private:
     T end_;
     T inc_;
 };
-
+ /** 
+  * Convenvience function for creating a sequence.
+  * Use case example:
+  * auto inc = 2; auto end = 3;
+  * for (auto&& i : util::make_sequence(0, end, inc)) { 
+  *   // Iterates over 0 and 2
+  * }
+  */ 
 template <typename T>
 auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
     return sequence<T>(begin, end, inc);
