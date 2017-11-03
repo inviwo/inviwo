@@ -53,6 +53,9 @@ public:
     void hideNetwork(bool);
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
+    void exportCurrentViewToFile(const QString &filename, bool backgroundVisible);
+    void exportSceneToFile(const QString &filename, bool backgroundVisible);
+
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent* e) override;
     virtual void resizeEvent(QResizeEvent* re) override;

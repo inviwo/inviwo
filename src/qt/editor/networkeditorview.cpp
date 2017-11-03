@@ -34,6 +34,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
+#include <inviwo/core/util/filesystem.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
@@ -44,6 +45,8 @@
 #include <QScrollBar>
 #include <QApplication>
 #include <QClipboard>
+#include <QPdfWriter>
+#include <QImage>
 #include <qmath.h>
 #include <warn/pop>
 
@@ -241,11 +244,66 @@ void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
 
 void NetworkEditorView::zoom(double dz) {
     if ((dz > 1.0 && matrix().m11() > 8.0) || (dz < 1.0 && matrix().m11() < 0.125)) return;
-    scale(dz, dz);
+    
+    setTransform(QTransform::fromScale(dz, dz), true);
 }
 
 void NetworkEditorView::onNetworkEditorFileChanged(const std::string& /*newFilename*/) {
     fitNetwork();
+}
+
+void NetworkEditorView::exportCurrentViewToFile(const QString &filename, bool backgroundVisible) {
+    const QRectF rect(viewport()->rect());
+    QRect destRect(QPoint(0, 0), rect.size().toSize());
+
+    networkEditor_->setBackgroundVisible(backgroundVisible);
+
+    if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "pdf") {
+        QPdfWriter pdfwriter(filename);
+        pdfwriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
+        pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
+        pdfwriter.setResolution(72);
+        QPainter painter(&pdfwriter);
+        render(&painter, destRect, rect.toRect());
+        painter.end();
+    } else {
+        QImage image(destRect.size(), QImage::Format_ARGB32);
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+        render(&painter, destRect, rect.toRect());
+        painter.end();
+        image.save(filename);
+    }
+
+    networkEditor_->setBackgroundVisible(true);
+}
+
+void NetworkEditorView::exportSceneToFile(const QString &filename, bool backgroundVisible) {
+    QRectF rect(scene()->itemsBoundingRect());
+    QMargins margins(10, 10, 10, 10);
+    rect += margins;
+    QRect destRect(QPoint(0, 0), rect.size().toSize());
+
+    networkEditor_->setBackgroundVisible(backgroundVisible);
+
+    if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "pdf") {
+        QPdfWriter pdfwriter(filename);
+        pdfwriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
+        pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
+        pdfwriter.setResolution(72);
+        QPainter painter(&pdfwriter);
+        scene()->render(&painter, destRect, rect.toRect());
+        painter.end();
+    } else {
+        QImage image(destRect.size(), QImage::Format_ARGB32);
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+        scene()->render(&painter, destRect, rect.toRect());
+        painter.end();
+        image.save(filename);
+    }
+
+    networkEditor_->setBackgroundVisible(true);
 }
 
 }  // namespace inviwo

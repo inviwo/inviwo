@@ -283,28 +283,47 @@ void InviwoMainWindow::addActions() {
     }
 
     {
-        connect(fileMenuItem->addAction("Save Network Image"), &QAction::triggered,
-                [&](bool /*state*/) {
-                    InviwoFileDialog saveFileDialog(this, "Save Network Image ...", "image");
-                    saveFileDialog.setFileMode(FileMode::AnyFile);
-                    saveFileDialog.setAcceptMode(AcceptMode::Save);
-                    saveFileDialog.setConfirmOverwrite(true);
+        auto exportNetworkMenu = fileMenuItem->addMenu("&Export Network");
 
-                    saveFileDialog.addSidebarPath(PathType::Workspaces);
-                    saveFileDialog.addSidebarPath(workspaceFileDir_);
+        backgroundVisibleAction_ = exportNetworkMenu->addAction("Background Visible");
+        backgroundVisibleAction_->setCheckable(true);
+        backgroundVisibleAction_->setChecked(true);
+        exportNetworkMenu->addSeparator();
 
-                    saveFileDialog.addExtension("png", "PNG");
-                    saveFileDialog.addExtension("jpg", "JPEG");
-                    saveFileDialog.addExtension("bmp", "BMP");
-                    saveFileDialog.addExtension("pdf", "PDF");
+        auto exportNetworkImageFunc = [&](bool entireScene) {
+            return [&](bool /*state*/) {
+                InviwoFileDialog saveFileDialog(this, "Export Network ...", "image");
+                saveFileDialog.setFileMode(FileMode::AnyFile);
+                saveFileDialog.setAcceptMode(AcceptMode::Save);
+                saveFileDialog.setConfirmOverwrite(true);
 
-                    if (saveFileDialog.exec()) {
-                        QString path = saveFileDialog.selectedFiles().at(0);
-                        networkEditor_->saveNetworkImage(path.toStdString());
-                        LogInfo("Saved image of network as " << path.toStdString());
+                saveFileDialog.addSidebarPath(PathType::Workspaces);
+                saveFileDialog.addSidebarPath(workspaceFileDir_);
+
+                saveFileDialog.addExtension("png", "PNG");
+                saveFileDialog.addExtension("jpg", "JPEG");
+                saveFileDialog.addExtension("bmp", "BMP");
+                saveFileDialog.addExtension("pdf", "PDF");
+
+                if (saveFileDialog.exec()) {
+                    QString path = saveFileDialog.selectedFiles().at(0);
+                    if (entireScene) {
+                        networkEditorView_->exportSceneToFile(
+                            path, backgroundVisibleAction_->isChecked());
+                    } else {
+                        networkEditorView_->exportCurrentViewToFile(
+                            path, backgroundVisibleAction_->isChecked());
                     }
+                    LogInfo("Exported network to \"" << utilqt::fromQString(path) << "\"");
+                }
+            };
+        };
 
-                });
+        connect(exportNetworkMenu->addAction("Entire Network ..."), &QAction::triggered,
+                exportNetworkImageFunc(true));
+
+        connect(exportNetworkMenu->addAction("Current View ..."), &QAction::triggered,
+                exportNetworkImageFunc(false));
     }
 
     {
