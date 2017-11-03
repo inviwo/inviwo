@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/exception.h>
 
 #include <modules/base/datastructures/kdtree.h>
 
@@ -45,7 +46,10 @@ class IVW_MODULE_BASE_API MarchingTetrahedron {
 public:
     static std::shared_ptr<Mesh> apply(
         std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
-        bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>());
+        bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>(),
+        std::function<bool(const size3_t &)> maskingCallback = [](const size3_t &) {
+            return true;
+        });
 };
 
 namespace detail {
@@ -54,7 +58,9 @@ struct IVW_MODULE_BASE_API MarchingTetrahedronDispatcher {
     template <class T>
     std::shared_ptr<Mesh> dispatch(std::shared_ptr<const Volume> volume, double iso,
                                    const vec4 &color, bool invert, bool enclose,
-                                   std::function<void(float)> progressCallback);
+                                   std::function<void(float)> progressCallback,
+                                   std::function<bool(const size3_t &)> maskingCallback =
+                                       [](const size3_t &) { return true; });
 };
 
 template <typename T>
@@ -82,10 +88,15 @@ void addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer
 glm::vec3 interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1, double v1);
 
 template <class DataType>
-std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
+std::shared_ptr<Mesh> MarchingTetrahedronDispatcher::dispatch(
     std::shared_ptr<const Volume> baseVolume, double iso, const vec4 &color, bool invert,
-    bool enclose, std::function<void(float)> progressCallback) {
+    bool enclose, std::function<void(float)> progressCallback,
+    std::function<bool(const size3_t &)> maskingCallback) {
     if (progressCallback) progressCallback(0.0f);
+
+    if (!maskingCallback) {
+        throw Exception("masking callback not set", IvwContext);
+    }
 
     using T = typename DataType::type;
 
@@ -124,6 +135,7 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     for (size_t k = 0; k < dim.z - 1; k++) {
         for (size_t j = 0; j < dim.y - 1; j++) {
             for (size_t i = 0; i < dim.x - 1; i++) {
+                if (!maskingCallback({i, j, k})) continue;
                 x = dx * i;
                 y = dy * j;
                 z = dz * k;
@@ -170,8 +182,9 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
                 }
             }
         }
-        if (progressCallback)
-            progressCallback(static_cast<float>(k) / static_cast<float>(dim.z - 1));
+        if (progressCallback) {
+            progressCallback(static_cast<float>(k + 1) / static_cast<float>(dim.z - 1));
+        }
     }
 
     if (enclose) {
