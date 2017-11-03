@@ -115,10 +115,18 @@ protected:
         CompositeProperty container_;
         BoolProperty enableUniform_;
         FloatProperty uniformScaling_;
+        //IRIS
         BoolProperty enableAngleBased_;
         FloatProperty angleBasedExponent_;
         BoolProperty enableNormalVariation_;
         FloatProperty normalVariationExponent_;
+        //Smoke surfaces
+        BoolProperty enableDensity_;
+        FloatProperty baseDensity_; //k in the paper
+        FloatProperty densityExponent_;
+        BoolProperty enableShape_;
+        FloatProperty shapeExponent_; //s in the paper
+        //TODO: curvature
 
         AlphaSettings();
         void setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation);

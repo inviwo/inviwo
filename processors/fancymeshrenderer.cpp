@@ -74,7 +74,7 @@ FancyMeshRenderer::FancyMeshRenderer()
 		InvalidationLevel::InvalidResources)
     , forceOpaque_("forceOpaque", "Shade Opaque", false)
 	, faceSettings_{true, false}
-	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.frag", false)
+	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
     , depthShader_("geometryrendering.vert", "depthOnly.frag", false)
 	, needsRecompilation_(true)
     , debugFragmentLists_(false)
@@ -148,6 +148,11 @@ FancyMeshRenderer::AlphaSettings::AlphaSettings()
     , angleBasedExponent_("alphaAngleBasedExponent", "Exponent", 1, 0, 5, 0.01)
     , enableNormalVariation_("alphaNormalVariation", "Normal variation", false)
     , normalVariationExponent_("alphaNormalVariationExponent", "Exponent", 1, 0, 5, 0.01)
+    , enableDensity_("alphaDensity", "Density-based", false)
+    , baseDensity_("alphaBaseDensity", "Base density", 1, 0, 2, 0.01)
+    , densityExponent_("alphaDensityExponent", "Exponent", 1, 0, 5, 0.01)
+    , enableShape_("alphaShape", "Shape-based", false)
+    , shapeExponent_("alphaShapeExponent", "Exponent", 1, 0, 5, 0.01)
 {
     container_.addProperty(enableUniform_);
     container_.addProperty(uniformScaling_);
@@ -155,6 +160,11 @@ FancyMeshRenderer::AlphaSettings::AlphaSettings()
     container_.addProperty(angleBasedExponent_);
     container_.addProperty(enableNormalVariation_);
     container_.addProperty(normalVariationExponent_);
+    container_.addProperty(enableDensity_);
+    container_.addProperty(baseDensity_);
+    container_.addProperty(densityExponent_);
+    container_.addProperty(enableShape_);
+    container_.addProperty(shapeExponent_);
 }
 
 void FancyMeshRenderer::AlphaSettings::setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation)
@@ -162,6 +172,8 @@ void FancyMeshRenderer::AlphaSettings::setCallbacks(const std::function<void()>&
     enableUniform_.onChange(triggerRecompilation);
     enableAngleBased_.onChange(triggerRecompilation);
     enableNormalVariation_.onChange(triggerRecompilation);
+    enableDensity_.onChange(triggerRecompilation);
+    enableShape_.onChange(triggerRecompilation);
 }
 
 void FancyMeshRenderer::AlphaSettings::update()
@@ -169,6 +181,9 @@ void FancyMeshRenderer::AlphaSettings::update()
     uniformScaling_.setVisible(enableUniform_.get());
     angleBasedExponent_.setVisible(enableAngleBased_.get());
     normalVariationExponent_.setVisible(enableNormalVariation_.get());
+    baseDensity_.setVisible(enableDensity_.get());
+    densityExponent_.setVisible(enableDensity_.get());
+    shapeExponent_.setVisible(enableShape_.get());
 }
 
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
@@ -362,15 +377,18 @@ void FancyMeshRenderer::compileShader()
 	    if (prob.get())
 	    {
             this->shader_.getFragmentShaderObject()->addShaderDefine(define);
+            this->shader_.getGeometryShaderObject()->addShaderDefine(define);
 	    } else
 	    {
             this->shader_.getFragmentShaderObject()->removeShaderDefine(define);
+            this->shader_.getGeometryShaderObject()->removeShaderDefine(define);
 	    }
     };
     SendBoolean(alphaSettings_.enableUniform_, "ALPHA_UNIFORM");
     SendBoolean(alphaSettings_.enableAngleBased_, "ALPHA_ANGLE_BASED");
     SendBoolean(alphaSettings_.enableNormalVariation_, "ALPHA_NORMAL_VARIATION");
-
+    SendBoolean(alphaSettings_.enableDensity_, "ALPHA_DENSITY");
+    SendBoolean(alphaSettings_.enableShape_, "ALPHA_SHAPE");
 	shader_.build();
 
 	LogProcessorInfo("shader compiled");
@@ -463,6 +481,9 @@ void FancyMeshRenderer::process() {
         shader_.setUniform("alphaSettings.uniformScale", alphaSettings_.uniformScaling_.get());
         shader_.setUniform("alphaSettings.angleExp", alphaSettings_.angleBasedExponent_.get());
         shader_.setUniform("alphaSettings.normalExp", alphaSettings_.normalVariationExponent_.get());
+        shader_.setUniform("alphaSettings.baseDensity", alphaSettings_.baseDensity_.get());
+        shader_.setUniform("alphaSettings.densityExp", alphaSettings_.densityExponent_.get());
+        shader_.setUniform("alphaSettings.shapeExp", alphaSettings_.shapeExponent_.get());
 
         if (fragmentLists)
         {

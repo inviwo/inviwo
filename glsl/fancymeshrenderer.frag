@@ -32,7 +32,18 @@
 uniform LightParameters lighting;
 uniform CameraParameters camera;
 
-smooth in vec4 position_;
+in fData
+{
+    vec4 worldPosition;
+    vec4 position;
+    vec3 normal;
+    vec3 viewNormal;
+    vec4 color;
+    float area;
+#ifdef ALPHA_SHAPE
+    vec3 sideLengths;
+#endif
+} frag;
 
 #ifdef USE_FRAGMENT_LIST
 #include "ABufferLinkedList.hglsl"
@@ -63,13 +74,11 @@ struct AlphaSettings
     float uniformScale;
     float angleExp;
     float normalExp;
+    float baseDensity;
+    float densityExp;
+    float shapeExp;
 };
 uniform AlphaSettings alphaSettings;
-
-in vec4 worldPosition_;
-in vec3 normal_;
-in vec3 viewNormal_;
-in vec4 color_;
 
 // In GLSL 4.5, we have better versions for derivatives
 // use them if available
@@ -86,7 +95,7 @@ in vec4 color_;
 vec4 performShading()
 {
     FaceRenderSettings settings = renderSettings[gl_FrontFacing ? 0 : 1];
-    vec3 toCameraDir = normalize(camera.position - worldPosition_.xyz);
+    vec3 toCameraDir = normalize(camera.position - frag.worldPosition.xyz);
 
     // base color
     vec4 color = vec4(1.0);
@@ -103,7 +112,7 @@ vec4 performShading()
     }
 
     // normal vector
-    vec3 normal = normal_;
+    vec3 normal = frag.normal;
     //TODO: switch on settings.normalSource. For now, assume ==0
     normal = normalize(normal);
     if (!gl_FrontFacing) normal = -normal; //backface -> invert normal
@@ -115,11 +124,12 @@ vec4 performShading()
         alpha = settings.uniformAlpha;
     } else {
         //custom alpha
+        float angle = abs(dot(normal, toCameraDir));
 #ifdef ALPHA_UNIFORM
         alpha *= alphaSettings.uniformScale;
 #endif
 #ifdef ALPHA_ANGLE_BASED
-        alpha *= pow(acos(abs(dot(normal, toCameraDir))) * 2 / M_PI, alphaSettings.angleExp);
+        alpha *= pow(acos(angle) * 2 / M_PI, alphaSettings.angleExp);
 #endif
 #ifdef ALPHA_NORMAL_VARIATION
         float nv_dzi = dFdxFinest (normal.z);
@@ -127,15 +137,24 @@ vec4 performShading()
         float nv_curvature = min(1, nv_dzi*nv_dzi + nv_dzj*nv_dzj);
         alpha *= pow(nv_curvature, alphaSettings.normalExp * 0.5);
 #endif
+#ifdef ALPHA_DENSITY
+        float density_alpha = alphaSettings.baseDensity / (frag.area * angle * 100);
+        alpha *= pow(min(1, density_alpha), alphaSettings.densityExp);
+#endif
+#ifdef ALPHA_SHAPE
+        float shape_alpha = 4 * frag.area / 
+            (sqrt(3) * max(max(frag.sideLengths.x * frag.sideLengths.y,
+                frag.sideLengths.x*frag.sideLengths.z),
+                frag.sideLengths.y*frag.sideLengths.z));
+        alpha *= pow(min(1, shape_alpha), alphaSettings.shapeExp);
+#endif
     }
     color.a *= alpha;
-
-    if (!gl_FrontFacing) normal = -normal; //backface -> invert normal
 
     // shading
     if (settings.shadingMode==1) {
         //Phong
-        color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
+        color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), frag.worldPosition.xyz,
                                    normal, toCameraDir);
     } else if (settings.shadingMode==2) {
         //PBR
@@ -152,7 +171,7 @@ void main() {
 
     //fragment list rendering
     ivec2 coords=ivec2(gl_FragCoord.xy);
-    //float depth = position_.z / position_.w;
+    //float depth = frag.position.z / frag.position.w;
     float depth = gl_FragCoord.z;
     abufferRender(coords, depth, fragColor);
     discard;

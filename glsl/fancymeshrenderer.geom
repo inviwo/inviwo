@@ -27,14 +27,60 @@
  *
  *********************************************************************************/
 
-#ifndef GLSL_VERSION_150
-#extension GL_EXT_gpu_shader4 : enable
-#extension GL_EXT_geometry_shader4 : enable
-#endif
-
 layout(triangles) in;
-layout(triangle_strip, max_vertices = 10) out;
+layout(triangle_strip, max_vertices = 3) out;
 
-void main(void) {
-        
+in vData
+{
+    vec4 worldPosition;
+    vec4 position;
+    vec3 normal;
+    vec3 viewNormal;
+    vec4 color;
+} vertices[];
+
+out fData
+{
+    vec4 worldPosition;
+    vec4 position;
+    vec3 normal;
+    vec3 viewNormal;
+    vec4 color;
+    float area;
+#ifdef ALPHA_SHAPE
+    vec3 sideLengths;
+#endif
+} frag;
+
+void main(void) 
+{
+    //compute the area of the triangle,
+    //needed for several shading computations
+    float area = length(cross(vertices[1].position.xyz-vertices[0].position.xyz,
+                  vertices[2].position.xyz-vertices[0].position.xyz)) * 0.5f;
+    
+    //compute side lengths of the triangles
+#ifdef ALPHA_SHAPE
+    vec3 sideLengths;
+    sideLengths.x = length(vertices[1].position.xyz - vertices[0].position.xyz);
+    sideLengths.y = length(vertices[2].position.xyz - vertices[0].position.xyz);
+    sideLengths.z = length(vertices[2].position.xyz - vertices[1].position.xyz);
+#endif
+    
+    //pass-through other parameters
+    for (int i=0; i<3; ++i)
+    {
+        frag.worldPosition = vertices[i].worldPosition;
+        frag.position = vertices[i].position;
+        frag.normal = vertices[i].normal;
+        frag.viewNormal = vertices[i].viewNormal;
+        frag.color = vertices[i].color;
+        frag.area = area;
+#ifdef ALPHA_SHAPE
+        frag.sideLengths = sideLengths;
+#endif
+        gl_Position = vertices[i].position;
+        EmitVertex();
+    }
+    EndPrimitive();
 }

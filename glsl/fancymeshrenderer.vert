@@ -32,17 +32,20 @@
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-out vec4 worldPosition_;
-out vec4 position_;
-out vec3 normal_;
-out vec3 viewNormal_;
-out vec4 color_;
+out vData
+{
+    vec4 worldPosition;
+    vec4 position;
+    vec3 normal;
+    vec3 viewNormal;
+    vec4 color;
+} vertex;
  
 void main() {
-    color_ = in_Color;
-    worldPosition_ = geometry.dataToWorld * in_Vertex;
-    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
-    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
-    position_ = camera.worldToClip * worldPosition_;
-    gl_Position = position_;
+    vertex.color = in_Color;
+    vertex.worldPosition = geometry.dataToWorld * in_Vertex;
+    vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
+    vertex.viewNormal = (camera.worldToView * vec4(vertex.normal,0)).xyz;
+    vertex.position = camera.worldToClip * vertex.worldPosition;
+    gl_Position = vertex.position;
 }
