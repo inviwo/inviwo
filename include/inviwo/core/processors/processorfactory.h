@@ -37,13 +37,26 @@
 
 namespace inviwo {
 
-class IVW_CORE_API ProcessorFactory : public StandardFactory<Processor, ProcessorFactoryObject> {
+class InviwoApplication;
+
+class IVW_CORE_API ProcessorFactory
+    : public Factory<Processor>,
+      public StandardFactory<Processor, ProcessorFactoryObject, const std::string&,
+                             InviwoApplication*> {
+    using Parent =
+        StandardFactory<Processor, ProcessorFactoryObject, const std::string&, InviwoApplication*>;
+
 public:
-    ProcessorFactory() = default;
+    ProcessorFactory(InviwoApplication* app);
     virtual ~ProcessorFactory() = default;
     bool registerObject(ProcessorFactoryObject* processor) override;
+    virtual std::unique_ptr<Processor> create(const std::string& key) const override;
+    virtual bool hasKey(const std::string& key) const override;
+
+private:
+    InviwoApplication* app_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORFACTORY_H

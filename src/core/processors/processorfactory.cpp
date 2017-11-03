@@ -35,8 +35,10 @@
 
 namespace inviwo {
 
+ProcessorFactory::ProcessorFactory(InviwoApplication* app) : Parent(), app_{app} {}
+
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
-    if (!StandardFactory<Processor, ProcessorFactoryObject>::registerObject(processor)) {
+    if (!Parent::registerObject(processor)) {
         LogWarn("Processor with class name: " << processor->getClassIdentifier()
                                               << " is already registered");
         return false;
@@ -50,8 +52,7 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     }
     if (processor->getCategory().empty()) {
         LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no category");
-    }
-    else if (processor->getCategory() == "Undefined") {
+    } else if (processor->getCategory() == "Undefined") {
         LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has category \"Undefined\"")
     }
     if (processor->getDisplayName().empty()) {
@@ -61,4 +62,13 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     return true;
 }
 
-}  // namespace
+std::unique_ptr<Processor> ProcessorFactory::create(const std::string& key) const {
+    return Parent::create(key, app_);
+}
+
+bool ProcessorFactory::hasKey(const std::string& key) const {
+    return Parent::hasKey(key);
+
+}
+
+}  // namespace inviwo

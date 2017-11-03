@@ -36,6 +36,8 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processortraits.h>
 
+#include <inviwo/core/util/introspection.h>
+
 #include <string>
 
 namespace inviwo {
@@ -45,9 +47,9 @@ class Processor;
 class IVW_CORE_API ProcessorFactoryObject {
 public:
     ProcessorFactoryObject(const ProcessorInfo info) : info_(info) {}
-    virtual ~ProcessorFactoryObject() {}
+    virtual ~ProcessorFactoryObject() = default;
 
-    virtual std::unique_ptr<Processor> create() = 0;
+    virtual std::unique_ptr<Processor> create(InviwoApplication* app) = 0;
 
     ProcessorInfo getProcessorInfo() const { return info_; }
     std::string getClassIdentifier() const { return info_.classIdentifier; }
@@ -59,17 +61,33 @@ public:
 private:
     const ProcessorInfo info_;
 };
+namespace detail {
+
+template <typename T, typename std::enable_if<util::is_constructible<T, InviwoApplication*>::value,
+                                              std::size_t>::type = 0>
+std::unique_ptr<Processor> makeProcessor(InviwoApplication* app) {
+    return util::make_unique<T>(app);
+}
+template <typename T, typename std::enable_if<!util::is_constructible<T, InviwoApplication*>::value,
+                                              std::size_t>::type = 0>
+std::unique_ptr<Processor> makeProcessor(InviwoApplication*) {
+    return util::make_unique<T>();
+}
+
+}  // namespace detail
 
 template <typename T>
 class ProcessorFactoryObjectTemplate : public ProcessorFactoryObject {
 public:
     ProcessorFactoryObjectTemplate()
         : ProcessorFactoryObject(ProcessorTraits<T>::getProcessorInfo()) {}
-    virtual ~ProcessorFactoryObjectTemplate() {}
+    virtual ~ProcessorFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Processor> create() { return util::make_unique<T>(); }
+    virtual std::unique_ptr<Processor> create(InviwoApplication* app) {
+        return detail::makeProcessor<T>(app);
+    }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORFACTORYOBJECT_H

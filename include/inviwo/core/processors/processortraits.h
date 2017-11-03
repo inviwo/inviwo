@@ -67,8 +67,8 @@ ProcessorInfo processorInfo() {
  * by specializing the traits for your kind of processor:
  *
  *     template <typename T>
- *     struct processor_traits<MyProcessor<T>> {
- *        static ProcessorInfo get_processor_info() {
+ *     struct ProcessorTraits<MyProcessor<T>> {
+ *        static ProcessorInfo getProcessorInfo() {
  *           return generateMyProcessorInfo<T>();
  *        } 
  *     };

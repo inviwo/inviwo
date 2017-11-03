@@ -1030,7 +1030,7 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
                     "Could not create " + error.toString(0) + ". Reason: \"" + type_attr +
-                        "\"Not found in factory",
+                        "\" Not found in factory.",
                     IvwContext, key, type_attr, error[0].identifier, keyNode);
             }
 
@@ -1046,7 +1046,7 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
             if (!data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException("Could not create " + error.toString(0) +
-                                                 ". Reason: No default constructor found",
+                                                 ". Reason: No default constructor found.",
                                              IvwContext, key, type_attr, error[0].identifier,
                                              keyNode);
             }
