@@ -67,7 +67,6 @@ public:
     IntVec4Property pyCommentsColor_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_QTWIDGETSSETTINGS_H
-
+#endif  // IVW_QTWIDGETSSETTINGS_H
