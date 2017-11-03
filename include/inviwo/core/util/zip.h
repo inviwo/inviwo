@@ -36,6 +36,32 @@
 #include <type_traits>
 #include <limits>
 #include <inviwo/core/util/stdextensions.h>
+/**
+ * This file contains convenience functions for iterating.
+ * Examples:
+ *
+ * Iterate over containers in sync (@see inviwo::util::zip).
+ * std::vector<int> a(10);
+ * std::vector<int> b(10);
+ * for (auto&& i : util::zip(a, b)) {
+ *      std::cout << get<0>(i) << " " << get<1>(i) << std::endl;
+ * }
+ *
+ * Enumerate element in a container (@see inviwo::util::enumerate) . 
+ * std::vector<int> vec(10);
+ * for (auto&& item : util::enumerate(vec)) {
+ *      auto&& ind = get<0>(item);
+ *      auto&& elem = get<1>(item);
+ * }
+ *
+ * Iterate over sequence (@see inviwo::util::make_sequence).
+ * size_t end = 3;
+ * size_t inc = 2;
+ * for (auto&& i : util::make_sequence(0, end, inc)) {
+ *      // iterates over 0 and 2
+ * }
+ * 
+ */
 
 namespace inviwo {
 
@@ -89,8 +115,8 @@ struct proxy {
     }
 
     template <typename Us = std::tuple<Ts...>,
-        class = typename std::enable_if<3 <= std::tuple_size<Us>::value, void>::type>
-        decltype(auto) third() const {
+              class = typename std::enable_if<3 <= std::tuple_size<Us>::value, void>::type>
+    decltype(auto) third() const {
         return std::get<2>(data);
     }
 
@@ -345,13 +371,13 @@ struct zipper {
 
 /**
  * Iterate over containers in sync.
- * Example use case:
+ * Example use case 1:
  * std::vector<int> a(10);
  * std::vector<int> b(10);
  * for (auto&& i : util::zip(a, b)) {
  *      std::cout << get<0>(i) << " " << get<1>(i) << std::endl;
  * }
-
+ *
  * with C++17 structured bindings:
  * for (auto&& [i, j] : util::enumerate(vec)) {
  *      std::cout << i << " " << j << std::endl;
@@ -373,32 +399,38 @@ struct sequence {
         using reference = const T&;
         using iterator_category = std::random_access_iterator_tag;
 
-        iterator(T& val, T& inc) : val_(val), inc_(inc) {}
+        iterator(const T& val, const T& end, const T& inc) : val_{val}, end_{end}, inc_{inc} {}
         iterator& operator++() {
             val_ += inc_;
+            clamp();
             return *this;
         }
         iterator operator++(int) {
             auto i = *this;
             val_ += inc_;
+            clamp();
             return i;
         }
         iterator& operator--() {
             val_ -= inc_;
+            clamp();
             return *this;
         }
         iterator operator--(int) {
             auto i = *this;
             val_ -= inc_;
+            clamp();
             return i;
         }
 
         iterator& operator+=(difference_type rhs) {
             val_ += rhs * inc_;
+            clamp();
             return *this;
         }
         iterator& operator-=(difference_type rhs) {
             val_ -= rhs * inc_;
+            clamp();
             return *this;
         }
 
@@ -427,19 +459,32 @@ struct sequence {
         bool operator<=(const iterator& rhs) const { return val_ <= rhs.val_; }
 
     private:
+        void clamp() { 
+            using std::min;
+            using std::max;
+            val_ = inc_ > 0 ? min(val_, end_) : max(val_, end_); 
+        }
         T val_;
+        T end_;
         T inc_;
     };
 
-    iterator begin() { return iterator(begin_, inc_); }
-    iterator end() { return iterator(end_, inc_); }
+    iterator begin() { return iterator(begin_, end_, inc_); }
+    iterator end() { return iterator(end_, end_, inc_); }
 
 private:
     T begin_;
     T end_;
     T inc_;
 };
-
+ /** 
+  * Convenvience function for creating a sequence.
+  * Use case example:
+  * auto inc = 2; auto end = 3;
+  * for (auto&& i : util::make_sequence(0, end, inc)) { 
+  *   // Iterates over 0 and 2
+  * }
+  */ 
 template <typename T>
 auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
     return sequence<T>(begin, end, inc);

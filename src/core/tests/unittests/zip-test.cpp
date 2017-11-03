@@ -419,4 +419,32 @@ TEST(SequencerTest, Temporaries) {
     }
 }
 
+#include <iostream>
+
+TEST(SequencerTest, increments1) {
+    int count = 0;
+    for (auto&& i : util::make_sequence(0, 20, 2)) {
+        std::cout << i << "\n";
+        EXPECT_EQ(count, i);
+        count+=2;
+    }
+}
+
+TEST(SequencerTest, increments2) {
+    int count = 0;
+    for (auto&& i : util::make_sequence(0, 19, 2)) {
+        std::cout << i << "\n";
+        EXPECT_EQ(count, i);
+        count += 2;
+    }
+}
+
+TEST(SequencerTest, increments3) {
+    int count = 0;
+    for (auto&& i : util::make_sequence(0, -19, -2)) {
+        std::cout << i << "\n";
+        EXPECT_EQ(count, i);
+        count -= 2;
+    }
+}
 }  // namespace
