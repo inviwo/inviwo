@@ -120,13 +120,14 @@ public:
 
     void updateLeds();
     
-    void saveNetworkImage(const std::string& filename);
-
     ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
     ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
                                                     Processor* processor2) const;
+
+    void setBackgroundVisible(bool visible);
+    bool isBackgroundVisible() const;
 
     static std::string getMimeTag();
 public slots:
@@ -229,6 +230,7 @@ private:
     static const int gridSpacing_;
     std::string filename_;
     bool modified_;
+    bool backgroundVisible_;
 };
 
 template <typename T>

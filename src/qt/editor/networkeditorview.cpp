@@ -34,6 +34,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
+#include <inviwo/core/util/filesystem.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
@@ -44,6 +45,8 @@
 #include <QScrollBar>
 #include <QApplication>
 #include <QClipboard>
+#include <QPdfWriter>
+#include <QImage>
 #include <qmath.h>
 #include <warn/pop>
 
@@ -241,11 +244,53 @@ void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
 
 void NetworkEditorView::zoom(double dz) {
     if ((dz > 1.0 && matrix().m11() > 8.0) || (dz < 1.0 && matrix().m11() < 0.125)) return;
-    scale(dz, dz);
+
+    setTransform(QTransform::fromScale(dz, dz), true);
 }
 
 void NetworkEditorView::onNetworkEditorFileChanged(const std::string& /*newFilename*/) {
     fitNetwork();
+}
+
+void NetworkEditorView::exportViewToFile(const QString& filename, bool entireScene,
+                                         bool backgroundVisible) {
+    QRectF rect;
+    if (entireScene) {
+        rect = scene()->itemsBoundingRect() + QMargins(10, 10, 10, 10);
+
+    } else {
+        rect = viewport()->rect();
+    }
+    const QRect destRect(QPoint(0, 0), rect.size().toSize());
+
+    networkEditor_->setBackgroundVisible(backgroundVisible);
+
+    auto renderCall = [&, entireScene](QPainter& painter) {
+        if (entireScene) {
+            scene()->render(&painter, destRect, rect.toRect());
+        } else {
+            render(&painter, destRect, rect.toRect());
+        }
+    };
+
+    if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "pdf") {
+        QPdfWriter pdfwriter(filename);
+        pdfwriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
+        pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
+        pdfwriter.setResolution(72);
+        QPainter painter(&pdfwriter);
+        renderCall(painter);
+        painter.end();
+    } else {
+        QImage image(destRect.size(), QImage::Format_ARGB32);
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+        renderCall(painter);
+        painter.end();
+        image.save(filename);
+    }
+
+    networkEditor_->setBackgroundVisible(true);
 }
 
 }  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_NETWORKEDITORVIEW_H
@@ -53,14 +53,16 @@ public:
     void hideNetwork(bool);
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
+    void exportViewToFile(const QString& filename, bool entireScene, bool backgroundVisible);
+
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent* e) override;
     virtual void resizeEvent(QResizeEvent* re) override;
     virtual void wheelEvent(QWheelEvent* e) override;
 
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
-    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;  
-    virtual void focusOutEvent(QFocusEvent *) override;
+    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
+    virtual void focusOutEvent(QFocusEvent*) override;
 
 private:
     void zoom(double dz);
@@ -73,6 +75,6 @@ private:
     std::shared_ptr<MenuItem> editActionsHandle_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NETWORKEDITORVIEW_H

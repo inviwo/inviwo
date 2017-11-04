@@ -83,7 +83,6 @@
 #include <QPainter>
 #include <QMimeData>
 #include <QMargins>
-#include <QPdfWriter>
 #include <warn/pop>
 
 namespace inviwo {
@@ -100,7 +99,8 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , mainwindow_(mainwindow)
     , network_(mainwindow->getInviwoApplication()->getProcessorNetwork())
     , filename_("")
-    , modified_(false) {
+    , modified_(false)
+    , backgroundVisible_(true) {
 
     network_->addObserver(this);
 
@@ -115,7 +115,7 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
     // generate GUI representations (graphics item, property widget, processor widget)
     ProcessorGraphicsItem* ret = addProcessorGraphicsItem(processor);
 
-    if (auto processorWidget = processor->getProcessorWidget()){
+    if (auto processorWidget = processor->getProcessorWidget()) {
         if (auto md = processor->getMetaData<BoolMetaData>("PortInspector")) {
             if (md->get()) {
                 if (auto widget = dynamic_cast<QWidget*>(processorWidget)) {
@@ -263,7 +263,7 @@ bool NetworkEditor::addPortInspector(Outport* outport, QPointF pos) {
 }
 
 void NetworkEditor::removePortInspector(Outport* outport) {
-     mainwindow_->getInviwoApplication()->getPortInspectorManager()->removePortInspector(outport);
+    mainwindow_->getInviwoApplication()->getPortInspectorManager()->removePortInspector(outport);
 }
 
 std::shared_ptr<const Image> NetworkEditor::renderPortInspectorImage(Outport* outport) {
@@ -278,7 +278,6 @@ void NetworkEditor::setModified(const bool modified) {
         forEachObserver([&](NetworkEditorObserver* o) { o->onModifiedStatusChanged(modified); });
     }
 }
-
 
 ////////////////////////////////////////////
 //   OBTAIN GRAPHICS ITEMS FROM NETWORK   //
@@ -300,9 +299,17 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItem(Processor* proces
     return getLinkGraphicsItem(ProcessorPair(processor1, processor2));
 }
 
-std::string NetworkEditor::getMimeTag() {
-    return "application/x.vnd.inviwo.network+xml";
+void NetworkEditor::setBackgroundVisible(bool visible) {
+    if (visible == backgroundVisible_) {
+        return;
+    }
+    backgroundVisible_ = visible;
+    invalidate(QRectF(), SceneLayer::BackgroundLayer);
 }
+
+bool NetworkEditor::isBackgroundVisible() const { return backgroundVisible_; }
+
+std::string NetworkEditor::getMimeTag() { return "application/x.vnd.inviwo.network+xml"; }
 
 ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItemAt(const QPointF pos) const {
     return getGraphicsItemAt<ProcessorGraphicsItem>(pos);
@@ -470,7 +477,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             clickedProcessor = processor;
-            
+
             QAction* renameAction = menu.addAction(tr("Rename &Processor"));
             connect(renameAction, &QAction::triggered, [this, processor]() {
                 clearSelection();
@@ -532,7 +539,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 network_->removeAndDeleteProcessor(p);
             });
 
-
             menu.addSeparator();
             QAction* invalidateOutputAction = menu.addAction(tr("Invalidate &Output"));
             connect(invalidateOutputAction, &QAction::triggered, [this, processor]() {
@@ -550,8 +556,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 showProecssorHelp(processor->getProcessor()->getClassIdentifier(), true);
             });
 
-
-
             break;
         }
 
@@ -561,8 +565,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             if (pim->hasPortInspector(connection->getOutportGraphicsItem()->getPort())) {
                 showPortInsector->setChecked(true);
             }
-            connect(showPortInsector, &QAction::triggered,
-                    [this, connection]() { contextMenuShowInspector(connection->getOutportGraphicsItem()); });
+            connect(showPortInsector, &QAction::triggered, [this, connection]() {
+                contextMenuShowInspector(connection->getOutportGraphicsItem());
+            });
 
             if (auto imgPort =
                     dynamic_cast<ImageOutport*>(connection->getOutportGraphicsItem()->getPort())) {
@@ -597,12 +602,12 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     }
 
     clickedOnItems_.append(items(e->scenePos()));
-    clickedPosition_ = { true, utilqt::toGLM(e->scenePos()) };
+    clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
     {
         menu.addSeparator();
         auto cutAction = menu.addAction(tr("Cu&t"));
         cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
-        connect(cutAction, &QAction::triggered, this, [this](){       
+        connect(cutAction, &QAction::triggered, this, [this]() {
             auto data = cut();
             auto mimedata = util::make_unique<QMimeData>();
             mimedata->setData(utilqt::toQString(getMimeTag()), data);
@@ -612,14 +617,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         auto copyAction = menu.addAction(tr("&Copy"));
         copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
-        connect(copyAction, &QAction::triggered, this, [this](){
+        connect(copyAction, &QAction::triggered, this, [this]() {
             auto data = copy();
             auto mimedata = util::make_unique<QMimeData>();
             mimedata->setData(utilqt::toQString(getMimeTag()), data);
             mimedata->setData(QString("text/plain"), data);
-            QApplication::clipboard()->setMimeData(mimedata.release()); 
+            QApplication::clipboard()->setMimeData(mimedata.release());
         });
-
 
         auto pasteAction = menu.addAction(tr("&Paste"));
         auto clipboard = QApplication::clipboard();
@@ -631,7 +635,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         } else {
             pasteAction->setEnabled(false);
         }
-        connect(pasteAction, &QAction::triggered, this, [this](){
+        connect(pasteAction, &QAction::triggered, this, [this]() {
             auto clipboard = QApplication::clipboard();
             auto mimeData = clipboard->mimeData();
             if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
@@ -645,16 +649,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         auto deleteAction = menu.addAction(tr("&Delete"));
         deleteAction->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
-        connect(deleteAction, &QAction::triggered, this, [this](){
-            deleteSelection();
-        });
-    }  
-    
-    
+        connect(deleteAction, &QAction::triggered, this, [this]() { deleteSelection(); });
+    }
+
     menu.exec(QCursor::pos());
     e->accept();
     clickedOnItems_.clear();
-    clickedPosition_ = {false, ivec2{0,0}};
+    clickedPosition_ = {false, ivec2{0, 0}};
 }
 
 void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
@@ -686,7 +687,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
     NetworkLock lock(network_);
 
     // Remove Connections
-    util::erase_remove_if(items, [&](QGraphicsItem* item){
+    util::erase_remove_if(items, [&](QGraphicsItem* item) {
         if (auto cgi = qgraphicsitem_cast<ConnectionGraphicsItem*>(item)) {
             removeConnection(cgi);
             return true;
@@ -695,7 +696,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
         }
     });
 
-     // Remove Links
+    // Remove Links
     util::erase_remove_if(items, [&](QGraphicsItem* item) {
         if (auto lgi = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
             removeLink(lgi);
@@ -716,8 +717,6 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
         }
     });
 }
-
-
 
 /////////////////////////////////////////
 //   PROCESSOR DRAG AND DROP METHODS   //
@@ -787,7 +786,7 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
         std::string className = name.toLocal8Bit().constData();
 
         NetworkLock lock(network_);
-        
+
         if (!className.empty()) {
             e->setAccepted(true);
             e->acceptProposedAction();
@@ -825,9 +824,10 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
                 if (oldConnectionTarget_) {
                     oldConnectionTarget_->resetBorderColors();
                 }
-                util::log(exception.getContext(), "Unable to create processor " + className +
-                                                      " due to " + exception.getMessage(),
-                          LogLevel::Error);
+                util::log(
+                    exception.getContext(),
+                    "Unable to create processor " + className + " due to " + exception.getMessage(),
+                    LogLevel::Error);
             }
 
             // clear oldDragTarget
@@ -955,15 +955,15 @@ QByteArray NetworkEditor::copy() const {
             }
         }
     }
-    
+
     util::serializeSelected(network_, ss, "");
     auto str = ss.str();
     QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
-    
+
     for (auto& item : items) item->setSelected(false);
-    
+
     pasteCount_ = 0;
-    
+
     return byteArray;
 }
 
@@ -1007,32 +1007,6 @@ void NetworkEditor::selectAll() {
     for (auto i : items()) i->setSelected(true);
 }
 
-void NetworkEditor::saveNetworkImage(const std::string& filename) {
-    QRectF rect(itemsBoundingRect());
-
-    QMargins margins(25, 25, 25, 25);
-    rect += margins;
-
-    QRect destRect(QPoint(0, 0), rect.size().toSize());
-
-    if (toLower(filesystem::getFileExtension(filename)) == "pdf") {
-        QPdfWriter pdfwriter(QString::fromStdString(filename));
-        pdfwriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
-        pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
-        pdfwriter.setResolution(72);
-        QPainter painter(&pdfwriter);
-        render(&painter, destRect, rect.toRect());
-        painter.end();
-    } else {
-        QImage image(destRect.size(), QImage::Format_ARGB32);
-        QPainter painter(&image);
-        painter.setRenderHint(QPainter::Antialiasing);
-        render(&painter, destRect, rect.toRect());
-        painter.end();
-        image.save(QString::fromStdString(filename));
-    }
-}
-
 ////////////////////////
 //   HELPER METHODS   //
 ////////////////////////
@@ -1048,9 +1022,13 @@ QPointF NetworkEditor::snapToGrid(QPointF pos) {
 }
 
 void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
+    if (!backgroundVisible_) {
+        return;
+    }
+
     painter->save();
     painter->setWorldMatrixEnabled(true);
-    painter->fillRect(rect, Qt::darkGray);
+    painter->fillRect(rect, QColor(0x7d, 0x80, 0x83));
     qreal left = int(rect.left()) - (int(rect.left()) % gridSpacing_);
     qreal top = int(rect.top()) - (int(rect.top()) % gridSpacing_);
     QVarLengthArray<QLineF, 100> linesX;
@@ -1107,7 +1085,6 @@ void NetworkEditor::initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos) {
     linkCurve_->setZValue(DRAGING_ITEM_DEPTH);
     linkCurve_->show();
 }
-
 
 void NetworkEditor::updateLeds() {
     // Update the status items
@@ -1214,19 +1191,16 @@ void NetworkEditor::onProcessorNetworkDidAddLink(const PropertyLink& propertyLin
 
 void NetworkEditor::onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) {
     setModified(true);
-    if (network_->getLinksBetweenProcessors(
-                    propertyLink.getSource()->getOwner()->getProcessor(),
-                    propertyLink.getDestination()->getOwner()->getProcessor())
+    if (network_
+            ->getLinksBetweenProcessors(propertyLink.getSource()->getOwner()->getProcessor(),
+                                        propertyLink.getDestination()->getOwner()->getProcessor())
             .size() == 0) {
-        removeLinkGraphicsItem(getLinkGraphicsItem(
-            propertyLink.getSource()->getOwner()->getProcessor(),
-            propertyLink.getDestination()->getOwner()->getProcessor()));
+        removeLinkGraphicsItem(
+            getLinkGraphicsItem(propertyLink.getSource()->getOwner()->getProcessor(),
+                                propertyLink.getDestination()->getOwner()->getProcessor()));
     }
 }
 
-void NetworkEditor::onProcessorNetworkChange() {
-    setModified();
-}
+void NetworkEditor::onProcessorNetworkChange() { setModified(); }
 
-
-}  // namespace
+}  // namespace inviwo
