@@ -285,13 +285,13 @@ void InviwoMainWindow::addActions() {
     {
         auto exportNetworkMenu = fileMenuItem->addMenu("&Export Network");
 
-        backgroundVisibleAction_ = exportNetworkMenu->addAction("Background Visible");
-        backgroundVisibleAction_->setCheckable(true);
-        backgroundVisibleAction_->setChecked(true);
+        auto backgroundVisibleAction = exportNetworkMenu->addAction("Background Visible");
+        backgroundVisibleAction->setCheckable(true);
+        backgroundVisibleAction->setChecked(true);
         exportNetworkMenu->addSeparator();
 
-        auto exportNetworkImageFunc = [&](bool entireScene) {
-            return [&](bool /*state*/) {
+        auto exportNetworkImageFunc = [this, backgroundVisibleAction](bool entireScene) {
+            return [this, backgroundVisibleAction, entireScene](bool /*state*/) {
                 InviwoFileDialog saveFileDialog(this, "Export Network ...", "image");
                 saveFileDialog.setFileMode(FileMode::AnyFile);
                 saveFileDialog.setAcceptMode(AcceptMode::Save);
@@ -307,13 +307,8 @@ void InviwoMainWindow::addActions() {
 
                 if (saveFileDialog.exec()) {
                     QString path = saveFileDialog.selectedFiles().at(0);
-                    if (entireScene) {
-                        networkEditorView_->exportSceneToFile(
-                            path, backgroundVisibleAction_->isChecked());
-                    } else {
-                        networkEditorView_->exportCurrentViewToFile(
-                            path, backgroundVisibleAction_->isChecked());
-                    }
+                    networkEditorView_->exportViewToFile(path, entireScene,
+                                                         backgroundVisibleAction->isChecked());
                     LogInfo("Exported network to \"" << utilqt::fromQString(path) << "\"");
                 }
             };

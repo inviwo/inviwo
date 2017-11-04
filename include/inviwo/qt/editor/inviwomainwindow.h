@@ -147,7 +147,6 @@ private:
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
-    QAction* backgroundVisibleAction_;
 
     InviwoEditMenu* editMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;

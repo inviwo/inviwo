@@ -244,7 +244,7 @@ void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
 
 void NetworkEditorView::zoom(double dz) {
     if ((dz > 1.0 && matrix().m11() > 8.0) || (dz < 1.0 && matrix().m11() < 0.125)) return;
-    
+
     setTransform(QTransform::fromScale(dz, dz), true);
 }
 
@@ -252,39 +252,26 @@ void NetworkEditorView::onNetworkEditorFileChanged(const std::string& /*newFilen
     fitNetwork();
 }
 
-void NetworkEditorView::exportCurrentViewToFile(const QString &filename, bool backgroundVisible) {
-    const QRectF rect(viewport()->rect());
-    QRect destRect(QPoint(0, 0), rect.size().toSize());
+void NetworkEditorView::exportViewToFile(const QString& filename, bool entireScene,
+                                         bool backgroundVisible) {
+    QRectF rect;
+    if (entireScene) {
+        rect = scene()->itemsBoundingRect() + QMargins(10, 10, 10, 10);
 
-    networkEditor_->setBackgroundVisible(backgroundVisible);
-
-    if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "pdf") {
-        QPdfWriter pdfwriter(filename);
-        pdfwriter.setPageSize(QPageSize(destRect.size(), QPageSize::Point));
-        pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
-        pdfwriter.setResolution(72);
-        QPainter painter(&pdfwriter);
-        render(&painter, destRect, rect.toRect());
-        painter.end();
     } else {
-        QImage image(destRect.size(), QImage::Format_ARGB32);
-        QPainter painter(&image);
-        painter.setRenderHint(QPainter::Antialiasing);
-        render(&painter, destRect, rect.toRect());
-        painter.end();
-        image.save(filename);
+        rect = viewport()->rect();
     }
-
-    networkEditor_->setBackgroundVisible(true);
-}
-
-void NetworkEditorView::exportSceneToFile(const QString &filename, bool backgroundVisible) {
-    QRectF rect(scene()->itemsBoundingRect());
-    QMargins margins(10, 10, 10, 10);
-    rect += margins;
-    QRect destRect(QPoint(0, 0), rect.size().toSize());
+    const QRect destRect(QPoint(0, 0), rect.size().toSize());
 
     networkEditor_->setBackgroundVisible(backgroundVisible);
+
+    auto renderCall = [&, entireScene](QPainter& painter) {
+        if (entireScene) {
+            scene()->render(&painter, destRect, rect.toRect());
+        } else {
+            render(&painter, destRect, rect.toRect());
+        }
+    };
 
     if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "pdf") {
         QPdfWriter pdfwriter(filename);
@@ -292,13 +279,13 @@ void NetworkEditorView::exportSceneToFile(const QString &filename, bool backgrou
         pdfwriter.setPageMargins(QMarginsF(), QPageLayout::Point);
         pdfwriter.setResolution(72);
         QPainter painter(&pdfwriter);
-        scene()->render(&painter, destRect, rect.toRect());
+        renderCall(painter);
         painter.end();
     } else {
         QImage image(destRect.size(), QImage::Format_ARGB32);
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
-        scene()->render(&painter, destRect, rect.toRect());
+        renderCall(painter);
         painter.end();
         image.save(filename);
     }
