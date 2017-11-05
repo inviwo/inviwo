@@ -90,6 +90,9 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> torus(const vec3& center,
                                                      const ivec2& subdivisions = ivec2(32, 8),
                                                      vec4 color = vec4(1, 1, 1, 1));
 
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> cameraFrustum(
+    const Camera& camera, vec4 color, std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>());
+
 }  // namespace util
 
 }  // namespace inviwo

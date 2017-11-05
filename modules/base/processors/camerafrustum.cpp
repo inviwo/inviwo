@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <modules/base/processors/camerafrustum.h>
-
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
+#include <modules/base/algorithm/meshutils.h>
 
 namespace inviwo {
 
@@ -55,26 +54,8 @@ CameraFrustum::CameraFrustum()
     addProperty(camera_);
 }
 
-void CameraFrustum::process() {
-
-    const static std::vector<vec3> corners{vec3(-1, -1, -1), vec3(-1, 1, -1), vec3(1, -1, -1),
-                                           vec3(1, 1, -1),   vec3(-1, -1, 1), vec3(-1, 1, 1),
-                                           vec3(1, -1, 1),   vec3(1, 1, 1)};
-
-    std::vector<BasicMesh::Vertex> vertices;
-    for (const auto &p : corners) {
-        vertices.push_back({p, {}, {}, color_.get()});
-    }
-
-    auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(glm::inverse(camera_.projectionMatrix() * camera_.viewMatrix()));
-    mesh->addVertices(vertices);
-    auto ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
-    ib->add({0, 1, 1, 3, 3, 2, 2, 0});  // front
-    ib->add({4, 5, 5, 7, 7, 6, 6, 4});  // back
-    ib->add({0, 4, 1, 5, 2, 6, 3, 7});  // sides
-
-    mesh_.setData(mesh);
+void CameraFrustum::process() { 
+    mesh_.setData(util::cameraFrustum(camera_, color_)); 
 }
 
 }  // namespace inviwo
