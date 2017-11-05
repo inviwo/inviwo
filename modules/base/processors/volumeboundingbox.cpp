@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "volumeboundingbox.h"
+#include <modules/base/algorithm/meshutils.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 
 namespace inviwo {
@@ -74,7 +75,7 @@ VolumeBoundingBox::VolumeBoundingBox()
 }
     
 void VolumeBoundingBox::process() {
-    auto mesh = BasicMesh::boundingBoxAdjacency(volume_.getData()->getModelMatrix(), color_);
+    auto mesh = util::boundingBoxAdjacency(volume_.getData()->getModelMatrix(), color_);
     
     mesh->setWorldMatrix(volume_.getData()->getWorldMatrix());
 

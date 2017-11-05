@@ -12,6 +12,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
@@ -101,6 +102,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
