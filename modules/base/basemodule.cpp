@@ -94,6 +94,7 @@
 #include <modules/base/io/ivfvolumewriter.h>
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
+#include <modules/base/processors/camerafrustum.h>
 
 namespace inviwo {
 
@@ -157,6 +158,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<RandomSphereGenerator>();
     registerProcessor<NoiseVolumeProcessor>();
     registerProcessor<BufferToMeshProcessor>();
+    registerProcessor<CameraFrustum>();
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
     registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();

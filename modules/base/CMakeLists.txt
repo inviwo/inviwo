@@ -32,6 +32,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/camerafrustum.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometryprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataexport.h
@@ -118,6 +119,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/camerafrustum.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometryprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.cpp
