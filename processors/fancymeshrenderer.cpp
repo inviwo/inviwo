@@ -108,6 +108,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     addProperty(forceOpaque_);
     addProperty(propDebugFragmentLists_); //DEBUG, to be removed
     addProperty(alphaSettings_.container_);
+    addProperty(edgeSettings_.container_);
 	addProperty(faceSettings_[0].container_);
 	addProperty(faceSettings_[1].container_);
 
@@ -121,6 +122,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     auto triggerUpdate = [this]() {update(); };
     forceOpaque_.onChange(triggerRecompilation);
     alphaSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
+    edgeSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
     faceSettings_[1].frontPart_ = &faceSettings_[0];
 
     //DEBUG, to be removed
@@ -186,20 +188,45 @@ void FancyMeshRenderer::AlphaSettings::update()
     shapeExponent_.setVisible(enableShape_.get());
 }
 
+FancyMeshRenderer::EdgeSettings::EdgeSettings()
+    : container_("edges", "Edges")
+    , edgeThickness_("edgesThickness", "Thickness", 2, 0.1, 10, 0.1)
+    , depthDependent_("edgesDepth", "Depth dependent", false)
+    , smoothEdges_("edgesSmooth", "Smooth edges", true)
+{
+    container_.addProperty(edgeThickness_);
+    container_.addProperty(depthDependent_);
+    container_.addProperty(smoothEdges_);
+}
+
+void FancyMeshRenderer::EdgeSettings::setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation)
+{
+    depthDependent_.onChange(triggerRecompilation);
+    smoothEdges_.onChange(triggerRecompilation);
+}
+
+void FancyMeshRenderer::EdgeSettings::update()
+{
+    //do nothing
+}
+
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     : frontFace_(frontFace)
     , prefix_(frontFace ? "front" : "back")
-	, container_(prefix_ + "container", frontFace ? "Front Face" : "Back Face")
-	, show_(prefix_ + "show", "Show", true)
+    , container_(prefix_ + "container", frontFace ? "Front Face" : "Back Face")
+    , show_(prefix_ + "show", "Show", true)
     , sameAsFrontFace_(prefix_ + "same", "Same as Front Face")
     , copyFrontToBack_(prefix_ + "copy", "Copy Front to Back")
-	, transferFunction_(prefix_ + "tf", "Transfer Function")
-	, externalColor_(prefix_ + "extraColor", "Color", {1, 0.3, 0.01, 1})
-	, colorSource_(prefix_ + "colorSource", "Color Source")
-	, separateUniformAlpha_(prefix_ + "separateUniformAlpha", "Separate Uniform Alpha")
-	, uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5, 0, 1, 0.01)
-	, normalSource_(prefix_ + "normalSource", "Normal Source")
-	, shadingMode_(prefix_ + "shadingMode", "Shading Mode")
+    , transferFunction_(prefix_ + "tf", "Transfer Function")
+    , externalColor_(prefix_ + "extraColor", "Color", { 1, 0.3, 0.01, 1 })
+    , colorSource_(prefix_ + "colorSource", "Color Source")
+    , separateUniformAlpha_(prefix_ + "separateUniformAlpha", "Separate Uniform Alpha")
+    , uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5, 0, 1, 0.01)
+    , normalSource_(prefix_ + "normalSource", "Normal Source")
+    , shadingMode_(prefix_ + "shadingMode", "Shading Mode")
+    , showEdges_(prefix_ + "showEdges", "Show Edges")
+    , edgeColor_(prefix_ + "edgeColor", "Edge color", { 0, 0, 0, 1 })
+    , edgeOpacity_(prefix_ + "edgeOpacity", "Edge Opacity", 0.5, 0, 2, 0.01)
 {
     //initialize combo boxes
 	colorSource_.addOption("vertexColor", "VertexColor", ColorSource::VertexColor);
@@ -222,6 +249,8 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	shadingMode_.set(ShadingMode::Off);
 	shadingMode_.setCurrentStateAsDefault();
 
+    edgeColor_.setSemantics(PropertySemantics::Color);
+
     //layouting, add the properties
 	container_.addProperty(show_);
     if (!frontFace)
@@ -237,6 +266,9 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	container_.addProperty(uniformAlpha_);
 	container_.addProperty(normalSource_);
 	container_.addProperty(shadingMode_);
+    container_.addProperty(showEdges_);
+    container_.addProperty(edgeColor_);
+    container_.addProperty(edgeOpacity_);
 
     //set callbacks that will trigger update()
     auto triggerUpdate = [this]() {update(lastOpaque_); };
@@ -245,7 +277,7 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     colorSource_.onChange(triggerUpdate);
     separateUniformAlpha_.onChange(triggerUpdate);
     normalSource_.onChange(triggerUpdate);
-    shadingMode_.onChange(triggerUpdate);
+    showEdges_.onChange(triggerUpdate);
 }
 
 void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
@@ -268,6 +300,7 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
     bool show2 = show && !sameAsFrontFace_.get();
     ColorSource colorSource = colorSource_.get();
     bool separateUniformAlpha = separateUniformAlpha_.get();
+    bool showEdges = showEdges_.get();
 
     //set visibility
     sameAsFrontFace_.setVisible(show);
@@ -279,6 +312,9 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
     uniformAlpha_.setVisible(show2 && !opaque && separateUniformAlpha);
     normalSource_.setVisible(show2);
     shadingMode_.setVisible(show2);
+    showEdges_.setVisible(show2);
+    edgeColor_.setVisible(show2 && showEdges);
+    edgeOpacity_.setVisible(show2 && showEdges);
 }
 
 void FancyMeshRenderer::initializeResources() {
@@ -320,9 +356,11 @@ void FancyMeshRenderer::update()
 
     //set top-level visibility
     alphaSettings_.container_.setVisible(!opaque);
+    edgeSettings_.container_.setVisible(faceSettings_[0].showEdges_.get() || faceSettings_[1].showEdges_.get());
 
-    //update alpha and face settings
+    //update nested settings
     alphaSettings_.update();
+    edgeSettings_.update();
     faceSettings_[0].update(opaque);
     faceSettings_[1].update(opaque);
 }
@@ -373,9 +411,9 @@ void FancyMeshRenderer::compileShader()
     }
 
     //helper function that sets shader defines based on a boolean property
-    auto SendBoolean = [this] (const BoolProperty& prob, const std::string& define)
+    auto SendBoolean = [this] (bool flag, const std::string& define)
 	{
-	    if (prob.get())
+	    if (flag)
 	    {
             this->shader_.getFragmentShaderObject()->addShaderDefine(define);
             this->shader_.getGeometryShaderObject()->addShaderDefine(define);
@@ -385,11 +423,14 @@ void FancyMeshRenderer::compileShader()
             this->shader_.getGeometryShaderObject()->removeShaderDefine(define);
 	    }
     };
-    SendBoolean(alphaSettings_.enableUniform_, "ALPHA_UNIFORM");
-    SendBoolean(alphaSettings_.enableAngleBased_, "ALPHA_ANGLE_BASED");
-    SendBoolean(alphaSettings_.enableNormalVariation_, "ALPHA_NORMAL_VARIATION");
-    SendBoolean(alphaSettings_.enableDensity_, "ALPHA_DENSITY");
-    SendBoolean(alphaSettings_.enableShape_, "ALPHA_SHAPE");
+    SendBoolean(alphaSettings_.enableUniform_.get(), "ALPHA_UNIFORM");
+    SendBoolean(alphaSettings_.enableAngleBased_.get(), "ALPHA_ANGLE_BASED");
+    SendBoolean(alphaSettings_.enableNormalVariation_.get(), "ALPHA_NORMAL_VARIATION");
+    SendBoolean(alphaSettings_.enableDensity_.get(), "ALPHA_DENSITY");
+    SendBoolean(alphaSettings_.enableShape_.get(), "ALPHA_SHAPE");
+    SendBoolean(faceSettings_[0].showEdges_.get() || faceSettings_[1].showEdges_.get(), "DRAW_EDGES");
+    SendBoolean(edgeSettings_.depthDependent_.get(), "DRAW_EDGES_DEPTH_DEPENDENT");
+    SendBoolean(edgeSettings_.smoothEdges_.get(), "DRAW_EDGES_SMOOTHING");
 	shader_.build();
 
 	LogProcessorInfo("shader compiled");
@@ -450,6 +491,7 @@ void FancyMeshRenderer::process() {
         utilgl::setUniforms(shader_, camera_, lightingProperty_);
         utilgl::setShaderUniforms(shader_, *(drawer_->getMesh()), "geometry");
         shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
+        shader_.setUniform("halfScreenSize", ivec2(outport_.getDimensions()) / ivec2(2));
 
         //update face render settings
         TextureUnit transFuncUnit[2];
@@ -470,6 +512,9 @@ void FancyMeshRenderer::process() {
             shader_.setUniform(prefix + "uniformAlpha", faceSettings_[i].uniformAlpha_.get());
             shader_.setUniform(prefix + "normalSource", static_cast<int>(faceSettings_[i].normalSource_.get()));
             shader_.setUniform(prefix + "shadingMode", static_cast<int>(faceSettings_[i].shadingMode_.get()));
+            shader_.setUniform(prefix + "showEdges", faceSettings_[i].showEdges_.get());
+            shader_.setUniform(prefix + "edgeColor", faceSettings_[i].edgeColor_.get());
+            shader_.setUniform(prefix + "edgeOpacity", faceSettings_[i].edgeOpacity_.get());
 
             const auto& tf = faceSettings_[i].transferFunction_.get();
             const Layer* tfLayer = tf.getData();
@@ -487,6 +532,9 @@ void FancyMeshRenderer::process() {
         shader_.setUniform("alphaSettings.baseDensity", alphaSettings_.baseDensity_.get());
         shader_.setUniform("alphaSettings.densityExp", alphaSettings_.densityExponent_.get());
         shader_.setUniform("alphaSettings.shapeExp", alphaSettings_.shapeExponent_.get());
+
+        //update geometry shader settings
+        shader_.setUniform("geomSettings.edgeWidth", edgeSettings_.edgeThickness_.get());
 
         if (fragmentLists)
         {

@@ -184,11 +184,34 @@ protected:
         void setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation);
         /**
         * \brief Update the visibility of the properties.
-        * Delegates to update() of AlphaSettings and FaceRenderSettings.
         */
         void update();
     };
     AlphaSettings alphaSettings_;
+
+    /**
+     * \brief Settings controlling how edges are highlighted.
+     */
+    struct EdgeSettings
+    {
+        CompositeProperty container_;
+        FloatProperty edgeThickness_;
+        BoolProperty depthDependent_;
+        BoolProperty smoothEdges_;
+
+        EdgeSettings();
+        /**
+        * \brief Set the callbacks that trigger property update and shader recompilation
+        * \param triggerUpdate triggers an update of the property visibility
+        * \param triggerRecompilation triggers shader recompilation
+        */
+        void setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation);
+        /**
+        * \brief Update the visibility of the properties.
+        */
+        void update();
+    };
+    EdgeSettings edgeSettings_;
 
 	enum ColorSource
 	{
@@ -232,6 +255,10 @@ protected:
 		TemplateOptionProperty<NormalSource> normalSource_;
 		TemplateOptionProperty<ShadingMode> shadingMode_;
 
+        BoolProperty showEdges_;
+        FloatVec4Property edgeColor_;
+        FloatProperty edgeOpacity_;
+
         //to copy front to back:
         FaceRenderSettings* frontPart_;
         void copyFrontToBack();
@@ -239,12 +266,10 @@ protected:
 		FaceRenderSettings(bool frontFace);
         /**
         * \brief Update the visibility of the properties.
-        * Delegates to update() of AlphaSettings and FaceRenderSettings.
         */
         void update(bool opaque);
         bool lastOpaque_;
 	} faceSettings_[2];
-
 
 	Shader shader_;
     Shader depthShader_;

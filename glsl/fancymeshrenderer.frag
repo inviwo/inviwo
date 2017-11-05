@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#define DRAW_EDGES
+
 #include "utils/shading.glsl"
 
 uniform LightParameters lighting;
@@ -42,6 +44,9 @@ in fData
     float area;
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
+#endif
+#ifdef DRAW_EDGES
+    vec3 edgeCoordinates;
 #endif
 } frag;
 
@@ -60,8 +65,11 @@ struct FaceRenderSettings
     float uniformAlpha;
 
 	int normalSource;
-
 	int shadingMode;
+
+    bool showEdges;
+    vec4 edgeColor;
+    float edgeOpacity;
 };
 uniform FaceRenderSettings renderSettings[2];
 //GLSL does not support samplers within structures
@@ -85,10 +93,12 @@ uniform AlphaSettings alphaSettings;
 #ifdef GLSL_VERSION_450
 #define dFdxFinest dFdxFine
 #define dFdyFinest dFdyFine
+#define fwidthFinest fwidthFine
 #else
 // fallback to the possible less precise dFdx / dFdy
 #define dFdxFinest dFdx
 #define dFdyFinest dFdy
+#define fwidthFinest fwidth
 #endif
 
 #define M_PI 3.1415926535897932384626433832795
@@ -150,6 +160,23 @@ vec4 performShading()
 #endif
     }
     color.a *= alpha;
+
+    //edges
+#ifdef DRAW_EDGES
+        if (settings.showEdges) {
+        float isEdge = any(greaterThan(frag.edgeCoordinates,vec3(1))) ? 1.0f : 0.0f;
+#ifdef DRAW_EDGES_SMOOTHING
+        //smoothing
+        float smoothing = min(1, fwidthFinest(isEdge)) * 0.5;
+        float isEdgeSmoothed = (isEdge - 0.5f) * (1-smoothing) + 0.5f;
+#else
+        float isEdgeSmoothed = isEdge;
+#endif
+        //blend in edge color
+        color.rgb = mix(color.rgb, settings.edgeColor.rgb, isEdgeSmoothed*min(1,settings.edgeOpacity));
+        color.a = mix(color.a, 1, isEdgeSmoothed*max(0, settings.edgeOpacity-1));
+    }
+#endif
 
     // shading
     if (settings.shadingMode==1) {

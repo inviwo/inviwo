@@ -30,6 +30,13 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
+#include "utils/structs.glsl"
+
+#define DRAW_EDGES
+
+uniform ivec2 halfScreenSize;
+uniform CameraParameters camera;
+
 in vData
 {
     vec4 worldPosition;
@@ -50,7 +57,14 @@ out fData
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
 #endif
+    vec3 edgeCoordinates;
 } frag;
+
+struct GeometrySettings
+{
+    float edgeWidth;
+};
+uniform GeometrySettings geomSettings;
 
 void main(void) 
 {
@@ -66,6 +80,43 @@ void main(void)
     sideLengths.y = length(vertices[2].position.xyz - vertices[0].position.xyz);
     sideLengths.z = length(vertices[2].position.xyz - vertices[1].position.xyz);
 #endif
+
+    //edge coordinates for edge highlighting
+#ifdef DRAW_EDGES
+    //side lengths in pixel coordinates
+    float ab = length(halfScreenSize * (vertices[1].position.xy / vertices[1].position.z - vertices[0].position.xy / vertices[0].position.z));
+    float ac = length(halfScreenSize * (vertices[2].position.xy / vertices[2].position.z - vertices[0].position.xy / vertices[0].position.z));
+    float bc = length(halfScreenSize * (vertices[1].position.xy / vertices[1].position.z - vertices[2].position.xy / vertices[2].position.z));
+    //desired edge width in pixels
+    float edgeWidthGlobal = geomSettings.edgeWidth;
+#ifdef DRAW_EDGES_DEPTH_DEPENDENT
+    float edgeWidthScale = 2; //experiments, this gives the most similar result to non-depth dependent thickness
+    vec3 edgeWidth = vec3(
+        edgeWidthGlobal*edgeWidthScale / length(vertices[0].worldPosition.xyz - camera.position.xyz),
+        edgeWidthGlobal*edgeWidthScale / length(vertices[1].worldPosition.xyz - camera.position.xyz),
+        edgeWidthGlobal*edgeWidthScale / length(vertices[2].worldPosition.xyz - camera.position.xyz)
+    );
+#else
+    vec3 edgeWidth = vec3(edgeWidthGlobal);
+#endif
+    //compute edge coordinates
+    vec3 edgeCoordinates[3];
+    edgeCoordinates[0] = vec3(
+        0,
+        1 / (1 - min(0.99, edgeWidth.x / ab)),
+        1 / (1 - min(0.99, edgeWidth.x / ac))
+    );
+    edgeCoordinates[1] = vec3(
+        1 / (1 - min(0.99, edgeWidth.y / ab)),
+        0,
+        1 / (1 - min(0.99, edgeWidth.y / bc))
+    );
+    edgeCoordinates[2] = vec3(
+        1 / (1 - min(0.99, edgeWidth.z / ac)),
+        1 / (1 - min(0.99, edgeWidth.z / bc)),
+        0
+    );
+#endif
     
     //pass-through other parameters
     for (int i=0; i<3; ++i)
@@ -78,6 +129,9 @@ void main(void)
         frag.area = area;
 #ifdef ALPHA_SHAPE
         frag.sideLengths = sideLengths;
+#endif
+#ifdef DRAW_EDGES
+        frag.edgeCoordinates = edgeCoordinates[i];
 #endif
         gl_Position = vertices[i].position;
         EmitVertex();
