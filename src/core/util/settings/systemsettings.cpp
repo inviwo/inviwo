@@ -58,7 +58,7 @@ SystemSettings::SystemSettings()
     , btnAllocTestProperty_("allocTest", "Perform Allocation Test")
     , btnSysInfoProperty_("printSysInfo", "Print System Info")
     , followObjectDuringRotation_("followObjectDuringRotation",
-                                  "Follow Object During Camera Rotation", true)
+                                  "Follow Object During Camera Rotation", false)
     , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
     , allocTest_(nullptr) {
 
