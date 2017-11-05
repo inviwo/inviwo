@@ -32,6 +32,8 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
 #include <memory>
@@ -48,17 +50,21 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> ellipse(
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> disk(
     const vec3& center, const vec3& normal, const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
     const float& radius = 1.0f, const size_t& segments = 16);
+
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> cone(
     const vec3& start, const vec3& stop, const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
     const float& radius = 1.0f, const size_t& segments = 16);
+
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> cylinder(
     const vec3& start, const vec3& stop, const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
     const float& radius = 1.0f, const size_t& segments = 16, bool caps = true,
     std::shared_ptr<BasicMesh> mesh = nullptr);
+
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> line(
     const vec3& start, const vec3& stop, const vec3& normal,
     const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f), const float& width = 1.0f,
     const ivec2& res = ivec2(1));
+
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> arrow(
     const vec3& start, const vec3& stop, const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
     const float& radius = 1.0f, const float& arrowfraction = 0.15f, const float& arrowRadius = 2.0f,
@@ -66,6 +72,7 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> arrow(
 
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> colorsphere(
     const vec3& center, const float& radius, std::shared_ptr<BasicMesh> mesh = nullptr);
+
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius,
                                                       const vec4& color,
                                                       std::shared_ptr<BasicMesh> mesh = nullptr);
