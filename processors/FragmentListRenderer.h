@@ -42,6 +42,24 @@ namespace inviwo {
 /**
  * \brief helper class for rendering perfect alpha-blended shapes using fragment lists.
  * Inspiration taken from http://blog.icare3d.org/2010/07/opengl-40-abuffer-v20-linked-lists-of.html.
+ * It requires OpenGL 4.2.
+ * 
+ * Any objects can be rendered with this framework in the following way:
+  <pre>
+  1. Render opaque objects normally
+  2. Call FragmentListRenderer::prePass(...)
+  3. For each transparent object:
+     a) Include ABufferLinkedList.hglsl in the fragment shader
+     b) Use the following snipped in the fragment shader:
+        abufferRender(ivec2(gl_FragCoord.xy), depth, fragColor);
+        discard;
+     c) Assign additional shader uniforms with FragmentListRenderer::setShaderUniforms(shader)
+     d) Render the object with depth test but without depth write
+  4. Call FragmetnListRenderer::postPass(...)
+     If this returns <code>false</code>, not enough space for all pixels
+     was available. Repeat from step 2.
+  </pre>
+ *
  */
 class IVW_MODULE_FANCYMESHRENDERER_API FragmentListRenderer
 {
@@ -49,10 +67,29 @@ public:
     FragmentListRenderer();
     ~FragmentListRenderer();
 
+    /**
+     * \brief Starts the rendering of transparent objects using fragment lists.
+     * It resets all counters and allocated the index textures of the given screen size.
+     * This has to be called each frame before objects can be rendered with the fragment lists.
+     * \param screenSize the current screen size
+     */
     void prePass(const size2_t& screenSize);
 
+    /**
+     * \brief Sets the shader uniforms required by the fragment list renderer.
+     * The uniforms are defined in <code>ABufferLinkedList.hglsl</code>
+     * \param shader the shader of the object to be rendered
+     */
     void setShaderUniforms(Shader& shader) const;
 
+    /**
+     * \brief Finishes the fragment list pass and renders the final result.
+     * This sorts the fragment lists per pixel and outputs the blended color.
+     * \param debug If set to true, debug output is printed to <code>cout</code>.
+     * Warning: very text heavy, use only for small screen sizes.
+     * \return <code>true</code> if successfull, <code>false</code> if not enough
+     * space for all fragments was available and the procedure should be repeated.
+     */
     bool postPass(bool debug=false);
 
 private:
@@ -67,8 +104,6 @@ private:
 
     Texture2D* abufferIdxImg_;
     TextureUnit* abufferIdxUnit_;
-    //Texture2D* abufferFragCountImg_;
-    //Texture2D* semaphoreImg_;
     GLuint atomicCounter_;
     GLuint pixelBuffer_;
     GLuint totalFragmentQuery_;

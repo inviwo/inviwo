@@ -44,8 +44,6 @@ namespace inviwo
         , oldFragmentSize_(0)
         , abufferIdxUnit_(nullptr)
         , abufferIdxImg_(nullptr)
-        //, abufferFragCountImg_(nullptr)
-        //, semaphoreImg_(nullptr)
         , atomicCounter_(0)
         , pixelBuffer_(0)
         , totalFragmentQuery_(0)
@@ -70,8 +68,6 @@ namespace inviwo
     {
         if (abufferIdxImg_) delete abufferIdxImg_;
         if (abufferIdxUnit_) delete abufferIdxUnit_;
-        //if (abufferFragCountImg_) delete abufferFragCountImg_;
-        //if (semaphoreImg_) delete semaphoreImg_;
         if (atomicCounter_) glDeleteBuffers(1, &atomicCounter_);
         if (pixelBuffer_) glDeleteBuffers(1, &pixelBuffer_);
         if (totalFragmentQuery_) glDeleteQueries(1, &totalFragmentQuery_);
@@ -113,8 +109,6 @@ namespace inviwo
 
     bool FragmentListRenderer::postPass(bool debug)
     {
-        //LogInfo("FLR: post pass entry");
-
         //memory barrier
         glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
         LGL_ERROR;
@@ -123,7 +117,6 @@ namespace inviwo
         GLuint numFrags = 0;
         glEndQuery(GL_SAMPLES_PASSED); LGL_ERROR;
         glGetQueryObjectuiv(totalFragmentQuery_, GL_QUERY_RESULT, &numFrags); LGL_ERROR;
-        //LogInfo("FLR: fragment query: " << numFrags);
 
         if (debug)
         {
@@ -186,7 +179,7 @@ namespace inviwo
         delete abufferIdxUnit_;
         abufferIdxUnit_ = nullptr;
 
-        //LogInfo("fragment lists resolved, pixels drawn: " << numFrags << ", available: " << fragmentSize_);
+        //check if enough space was available
         if (numFrags > fragmentSize_)
         {
             //we have to resize the fragment storage buffer
@@ -212,19 +205,14 @@ namespace inviwo
             screenSize_ = screenSize;
             //delete screen size textures
             if (abufferIdxImg_) delete abufferIdxImg_;
-            //if (abufferFragCountImg_) delete abufferFragCountImg_;
-            //if (semaphoreImg_) delete semaphoreImg_;
 
-            //reallocate them
+            //reallocate screen size texture that holds the pointer to the end of the fragment list at that pixel
             abufferIdxImg_ = new Texture2D(screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST, 0);
             abufferIdxImg_->bind();
-            //glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, screenSize.x, screenSize.y, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, nullptr);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, screenSize.x, screenSize.y, 0, GL_RED, GL_FLOAT, nullptr);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             LGL_ERROR;
-            //abufferFragCountImg_ = new Texture2D(screenSize, GL_RED, GL_R32UI, GL_UNSIGNED_INT, GL_NEAREST, 0);
-            //semaphoreImg_ = new Texture2D(screenSize, GL_RED, GL_R32UI, GL_UNSIGNED_INT, GL_NEAREST, 0);
 
             LogInfo("fragment-list: screen size buffers allocated of size " << screenSize);
         }
@@ -248,17 +236,12 @@ namespace inviwo
     void FragmentListRenderer::assignUniforms(Shader& shader) const
     {
         //screen size textures
-        //utilgl::bindTexture(*abufferIdxImg_, *abufferIdxUnit_);
         glActiveTexture(abufferIdxUnit_->getEnum());
         abufferIdxImg_->bind();
         glBindImageTexture(abufferIdxUnit_->getUnitNumber(), abufferIdxImg_->getID(), 0, false, 0, GL_READ_WRITE, GL_R32UI); LGL_ERROR;
         shader.setUniform("abufferIdxImg", abufferIdxUnit_->getUnitNumber());
         glActiveTexture(GL_TEXTURE0);
-        //glActiveTexture(GL_TEXTURE5);
-        //abufferIdxImg_->bind();
-        //glActiveTexture(GL_TEXTURE0);
         LGL_ERROR;
-        //shader.setUniform("abufferIdxImg", 5);
 
         //pixel storage
         glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 6, atomicCounter_);

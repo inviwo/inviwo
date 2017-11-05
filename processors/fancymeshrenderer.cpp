@@ -126,7 +126,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     //DEBUG, to be removed
     propDebugFragmentLists_.onChange([this]() {debugFragmentLists_ = true; });
 
-    //Will this be used in any scenario=
+    //Will this be used in any scenario?
     //addProperty(layers_);
     //layers_.addProperty(colorLayer_);
     //layers_.addProperty(normalsLayer_);
@@ -372,6 +372,7 @@ void FancyMeshRenderer::compileShader()
         }
     }
 
+    //helper function that sets shader defines based on a boolean property
     auto SendBoolean = [this] (const BoolProperty& prob, const std::string& define)
 	{
 	    if (prob.get())
@@ -396,6 +397,8 @@ void FancyMeshRenderer::compileShader()
 }
 
 void FancyMeshRenderer::process() {
+    //I have to call update here, otherwise, when you load a saved workspace,
+    //the visibility of the properties is not updated on startup.
     update();
 
 	if (imageInport_.isConnected()) {
@@ -426,14 +429,13 @@ void FancyMeshRenderer::process() {
         if (fragmentLists)
         {
             //prepare fragment list rendering
-            //LogProcessorInfo("fragment-list: pre pass");
             flr_.prePass(outport_.getDimensions());
-            //LogProcessorInfo("fragment-list: done");
         }
 
         compileShader();
         shader_.activate();
 
+        //various OpenGL states: depth, blending, culling
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, opaque);
         utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
         utilgl::CullFaceState culling(
@@ -444,6 +446,7 @@ void FancyMeshRenderer::process() {
             opaque ? GL_ONE : GL_SRC_ALPHA,
             opaque ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 
+        //general settings for camera, lighting, picking, mesh data
         utilgl::setUniforms(shader_, camera_, lightingProperty_);
         utilgl::setShaderUniforms(shader_, *(drawer_->getMesh()), "geometry");
         shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
@@ -488,12 +491,10 @@ void FancyMeshRenderer::process() {
         if (fragmentLists)
         {
             //set uniforms fragment list rendering
-            //LogProcessorInfo("fragment-list: set uniforms");
             flr_.setShaderUniforms(shader_);
         }
 
         //Finally, draw it
-        //LogProcessorInfo("draw");
         drawer_->draw();
 
         shader_.deactivate();
@@ -501,12 +502,9 @@ void FancyMeshRenderer::process() {
         if (fragmentLists)
         {
             //final processing of fragment list rendering
-            //LogProcessorInfo("fragment-list: post pass");
             bool success = flr_.postPass(debugFragmentLists_);
             debugFragmentLists_ = false;
-            //LogProcessorInfo("fragment-list: done, success="<<success);
             if (!success) {
-                std::cout << "retry" << std::endl;
                 retry = true;
             }
         }

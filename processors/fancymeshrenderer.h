@@ -51,24 +51,57 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.FancyMeshRenderer, Fancy Mesh Renderer}
  * ![](org.inviwo.FancyMeshRenderer.png?classIdentifier=org.inviwo.FancyMeshRenderer)
- * Explanation of how to use the processor.
+ * Mesh Renderer specialized for rendering highly layered and transparent surfaces.
+ * Example usages: stream surfaces, isosurfaces, separatrices.
+ * 
+ * Fragment lists are used to render the transparent pixels with correct alpha blending.
+ * Many different alpha modes, shading modes, coloring modes are available.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __geometry__ Input meshes
+ *   * __imageInport__ Optional background image
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __image__ output image containing the rendered mesh and the optional input image
  * 
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Camera__ Camera used for rendering the mesh
+ *   * __Center view on geometry__ Adjusts the camera so that the geometry is rendered in the center
+ *   * __Calculate Near and Far Plane__ Determine the near and far clip planes based on the mesh bounding box
+ *   * __Reset Camera__ Reset the camera to its default state
+ *   * __Lighting__ Standard lighting settings
+ *   * __Trackball__ Standard trackball settings
+ *   * __Shade Opaque__ Draw the mesh opaquly instead of transparent. Disables all transparency settings
+ *   * __Alpha__ Assemble construction of the alpha value out of many factors
+ *       + __Uniform__ uniform alpha value
+ *       + __Angle-based__ based on the angle between the pixel normal and the direction to the camera
+ *       + __Normal variation__ based on the variation (norm of the derivative) of the pixel normal
+ *       + __Density-based__ based on the size of the triangle / density of the smoke volume inside the triangle
+ *       + __Shape-based__ based on the shape of the triangle. The more stretched, the more transparent
+ *   * __Front Face__ Settings for the front face
+ *       + __Show__ Shows or hides that face (culling)
+ *       + __Color Source__ The source of the color: vertex color, transfer function, or external constant color
+ *       + __Separate Uniform Alpha__ Overwrite alpha settings from above with a constant alpha value
+ *       + __Normal Source__ Source of the pixel normal: interpolated or not
+ *       + __Shading Mode__ The shading that is applied to the pixel color
+ *   * __Back Face__ Settings for the back face
+ *       + __Show__ Shows or hides that face (culling)
+ *       + __Same as front face__ use the settings from the front face, disables all other settings for the back face
+ *       + __Copy Front to Back__ Copies all settings from the front face to the back face
+ *       + __Color Source__ The source of the color: vertex color, transfer function, or external constant color
+ *       + __Separate Uniform Alpha__ Overwrite alpha settings from above with a constant alpha value
+ *       + __Normal Source__ Source of the pixel normal: interpolated or not
+ *       + __Shading Mode__ The shading that is applied to the pixel color
  */
 
 
 /**
  * \class FancyMeshRenderer
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief Mesh Renderer specialized for rendering highly layered and transparent surfaces.
+ * 
+ * It uses the FragmentListRenderer for the rendering of the transparent mesh.
+ * Many alpha computation modes, shading modes, color modes can be combined 
+ * and even selected individually for the front- and back face.
  */
 class IVW_MODULE_FANCYMESHRENDERER_API FancyMeshRenderer : public Processor { 
 public:
@@ -79,6 +112,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
 	virtual void initializeResources() override;
+    /**
+	 * \brief Performs the rendering.
+	 */
 	virtual void process() override;
 
 protected:
@@ -89,7 +125,14 @@ protected:
 	void setNearFarPlane();
 	void updateDrawers();
 
+    /**
+     * \brief Update the visibility of the properties.
+     * Delegates to update() of AlphaSettings and FaceRenderSettings.
+     */
     void update();
+    /**
+	 * \brief (Re)compile the shader: set the shader defines based on the current settings
+	 */
 	void compileShader();
 
 	MeshInport inport_;
@@ -110,6 +153,10 @@ protected:
 
     BoolProperty forceOpaque_;
 
+    /**
+     * \brief Settings to assemble the equation for the alpha values.
+     * All individual factors are clamped to [0,1].
+     */
     struct AlphaSettings
     {
         CompositeProperty container_;
@@ -129,7 +176,16 @@ protected:
         //TODO: curvature
 
         AlphaSettings();
+        /**
+         * \brief Set the callbacks that trigger property update and shader recompilation
+         * \param triggerUpdate triggers an update of the property visibility
+         * \param triggerRecompilation triggers shader recompilation
+         */
         void setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation);
+        /**
+        * \brief Update the visibility of the properties.
+        * Delegates to update() of AlphaSettings and FaceRenderSettings.
+        */
         void update();
     };
     AlphaSettings alphaSettings_;
@@ -181,6 +237,10 @@ protected:
         void copyFrontToBack();
 
 		FaceRenderSettings(bool frontFace);
+        /**
+        * \brief Update the visibility of the properties.
+        * Delegates to update() of AlphaSettings and FaceRenderSettings.
+        */
         void update(bool opaque);
         bool lastOpaque_;
 	} faceSettings_[2];
