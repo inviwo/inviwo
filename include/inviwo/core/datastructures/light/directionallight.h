@@ -38,30 +38,30 @@ namespace inviwo {
 
 class DirectionalLight : public LightSource {
 public:
-    DirectionalLight() : LightSource() {}
-    virtual ~DirectionalLight(){};
+    DirectionalLight() = default;
+    virtual ~DirectionalLight() = default;
     virtual DirectionalLight* clone() const { return new DirectionalLight(*this); }
 
-    virtual float getArea() const { return size_.x * size_.y; }
+    virtual float getArea() const override { return size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const { return getIntensity() * getArea() * static_cast<float>(M_PI); }
+    virtual vec3 getPower() const override {
+        return getIntensity() * getArea() * static_cast<float>(M_PI);
+    }
 
-    LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_DIRECTIONAL; }
+    LightSourceType getLightSourceType() const override { return LightSourceType::directional; }
 
     /**
      * Get normalized general direction of light source.
-     *
      * @return Normalized direction of light source.
      */
     const vec3& getDirection() const { return direction_; }
 
     /**
      * Set normalized direction of light source.
-     *
      * @param direction Normalized direction of light source.
      */
     void setDirection(const vec3& direction) { direction_ = direction; }

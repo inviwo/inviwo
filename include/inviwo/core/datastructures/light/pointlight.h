@@ -39,7 +39,7 @@ namespace inviwo {
 class PointLight : public LightSource {
 public:
     PointLight() : LightSource() { setFieldOfView(static_cast<float>(2. * M_PI)); }
-    virtual ~PointLight(){};
+    virtual ~PointLight() = default;
     virtual PointLight* clone() const { return new PointLight(*this); }
 
     virtual float getArea() const { return 4.f * static_cast<float>(M_PI) * size_.x * size_.y; }
@@ -50,7 +50,7 @@ public:
      */
     virtual vec3 getPower() const { return getIntensity() * getArea(); }
 
-    LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_POINT; }
+    LightSourceType getLightSourceType() const override { return LightSourceType::point; }
 
     /**
      * Get world position of light source.
@@ -64,7 +64,7 @@ public:
      *
      * @param position World position of light source.
      */
-    void setPosition(const vec3& position) { 
+    void setPosition(const vec3& position) {
         worldMatrix_[3][0] = position[0];
         worldMatrix_[3][1] = position[1];
         worldMatrix_[3][2] = position[2];

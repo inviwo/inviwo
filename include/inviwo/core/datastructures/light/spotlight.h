@@ -39,8 +39,8 @@ namespace inviwo {
 
 class SpotLight : public LightSource {
 public:
-    SpotLight() : LightSource() {}
-    virtual ~SpotLight(){};
+    SpotLight() = default;
+    virtual ~SpotLight() = default;
     virtual SpotLight* clone() const { return new SpotLight(*this); }
 
     virtual float getArea() const { return size_.x * size_.y; }
@@ -51,12 +51,11 @@ public:
      */
     virtual vec3 getPower() const {
         return getIntensity() * 2.f * static_cast<float>(M_PI) *
-               (1.f -
-                5.f * (std::cos(glm::radians(coneRadiusAngle_)) +
-                       std::cos(glm::radians(coneFallOffAngle_))));
+               (1.f - 5.f * (std::cos(glm::radians(coneRadiusAngle_)) +
+                             std::cos(glm::radians(coneFallOffAngle_))));
     }
 
-    LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_CONE; }
+    LightSourceType getLightSourceType() const override { return LightSourceType::cone; }
 
     /**
      * Get world position of light source.
