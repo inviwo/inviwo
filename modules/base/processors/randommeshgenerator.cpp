@@ -240,14 +240,14 @@ void RandomMeshGenerator::process() {
         o = glm::rotate(o, box.rotation.y, vec3(0, 1, 0));
         o = glm::rotate(o, box.rotation.z, vec3(0, 0, 1));
         o = glm::scale(o, box.scale);
-        auto mesh2 = util::cube(o, box.color);
+        auto mesh2 = meshutil::cube(o, box.color);
         if (enablePicking_) addPickingBuffer(*mesh2, boxPicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
 
     i = 0;
     for (const auto& sphere : spheres_) {
-        auto mesh2 = util::sphere(sphere.center, sphere.radius, sphere.color);
+        auto mesh2 = meshutil::sphere(sphere.center, sphere.radius, sphere.color);
         if (enablePicking_) addPickingBuffer(*mesh2, spherePicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
@@ -255,21 +255,21 @@ void RandomMeshGenerator::process() {
     i = 0;
     for (const auto& cylinder : cylinders_) {
         auto mesh2 =
-            util::cylinder(cylinder.start, cylinder.end, cylinder.color, cylinder.radius);
+            meshutil::cylinder(cylinder.start, cylinder.end, cylinder.color, cylinder.radius);
         if (enablePicking_) addPickingBuffer(*mesh2, cylinderPicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
 
     i = 0;
     for (const auto& cone : cones_) {
-        auto mesh2 = util::cone(cone.start, cone.end, cone.color, cone.radius);
+        auto mesh2 = meshutil::cone(cone.start, cone.end, cone.color, cone.radius);
         if (enablePicking_) addPickingBuffer(*mesh2, conePicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
 
     i = 0;
     for (const auto& torus : toruses_) {
-        auto mesh2 = util::torus(torus.center, torus.up, torus.radius1, torus.radius2,
+        auto mesh2 = meshutil::torus(torus.center, torus.up, torus.radius1, torus.radius2,
                                       ivec2(32, 8), torus.color);
         if (enablePicking_) addPickingBuffer(*mesh2, torusPicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);

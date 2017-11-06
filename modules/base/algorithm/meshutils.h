@@ -41,7 +41,7 @@
 namespace inviwo {
 class BasicMesh;
 
-namespace util {
+namespace meshutil {
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> ellipse(
     const vec3& center, const vec3& majorAxis, const vec3& minorAxis,
     const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f), const float& radius = 0.001f,

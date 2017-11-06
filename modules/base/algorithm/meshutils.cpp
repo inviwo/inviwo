@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-namespace util {
+namespace meshutil {
 
 namespace detail {
 

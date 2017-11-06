@@ -140,10 +140,10 @@ void OrientationIndicator::updateMesh() {
     vec3 headradius = axisScale_.get() * radius_.get() * baseHeadradius;
 
     // build indicator using a sphere and three arrows
-    auto base = util::sphere(origin, radius_.get() * baseRadius * 2, baseColor_);
-    auto xArrow = util::arrow(origin, origin + basis[0], xColor_, radius.x, 0.25, headradius.x, 64);
-    auto yArrow = util::arrow(origin, origin + basis[1], yColor_, radius.y, 0.25, headradius.y, 64);
-    auto zArrow = util::arrow(origin, origin + basis[2], zColor_, radius.z, 0.25, headradius.z, 64);
+    auto base = meshutil::sphere(origin, radius_.get() * baseRadius * 2, baseColor_);
+    auto xArrow = meshutil::arrow(origin, origin + basis[0], xColor_, radius.x, 0.25, headradius.x, 64);
+    auto yArrow = meshutil::arrow(origin, origin + basis[1], yColor_, radius.y, 0.25, headradius.y, 64);
+    auto zArrow = meshutil::arrow(origin, origin + basis[2], zColor_, radius.z, 0.25, headradius.z, 64);
     base->append(xArrow.get());
     base->append(yArrow.get());
     base->append(zArrow.get());

@@ -75,7 +75,7 @@ VolumeBoundingBox::VolumeBoundingBox()
 }
     
 void VolumeBoundingBox::process() {
-    auto mesh = util::boundingBoxAdjacency(volume_.getData()->getModelMatrix(), color_);
+    auto mesh = meshutil::boundingBoxAdjacency(volume_.getData()->getModelMatrix(), color_);
     
     mesh->setWorldMatrix(volume_.getData()->getWorldMatrix());
 

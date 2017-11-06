@@ -121,8 +121,8 @@ void RBFVectorFieldGenerator3D::process() {
         for (auto &p : samples) {
             vec3 p0 = vec3(p.first);
             vec3 p1 = p0 + glm::normalize(vec3(p.second)) * arrowLength_.get();
-            auto sphere = util::colorsphere(p0, sphereRadius_.get());
-            auto arrow = util::arrow(p0, p1, arrowColor_.get(), sphereRadius_.get() * 0.5f,
+            auto sphere = meshutil::colorsphere(p0, sphereRadius_.get());
+            auto arrow = meshutil::arrow(p0, p1, arrowColor_.get(), sphereRadius_.get() * 0.5f,
                                           0.15f, sphereRadius_.get());
             mesh->append(sphere.get());
             mesh->append(arrow.get());
