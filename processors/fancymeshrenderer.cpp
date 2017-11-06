@@ -290,6 +290,9 @@ void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
     uniformAlpha_.set(frontPart_->uniformAlpha_.get());
     normalSource_.set(frontPart_->normalSource_.get());
     shadingMode_.set(frontPart_->shadingMode_.get());
+    showEdges_.set(frontPart_->showEdges_.get());
+    edgeColor_.set(frontPart_->edgeColor_.get());
+    edgeOpacity_.set(frontPart_->edgeOpacity_.get());
 }
 
 void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
