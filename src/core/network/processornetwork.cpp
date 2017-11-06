@@ -327,13 +327,13 @@ void ProcessorNetwork::onAboutPropertyChange(Property* modifiedProperty) {
 
 void ProcessorNetwork::onProcessorMetaDataPositionChange() {
     notifyObserversProcessorNetworkChanged();
-};
+}
 void ProcessorNetwork::onProcessorMetaDataVisibilityChange() {
     notifyObserversProcessorNetworkChanged();
-};
+}
 void ProcessorNetwork::onProcessorMetaDataSelectionChange() {
     notifyObserversProcessorNetworkChanged();
-};
+}
 
 void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);

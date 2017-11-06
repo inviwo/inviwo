@@ -49,7 +49,6 @@ public:
     TemplateOptionProperty<UsageMode> applicationUsageMode_;
     IntProperty poolSize_;
     BoolProperty txtEditor_;
-    BoolProperty enablePortInformation_;
     BoolProperty enablePortInspectors_;
     IntProperty portInspectorSize_;
     BoolProperty enableTouchProperty_;

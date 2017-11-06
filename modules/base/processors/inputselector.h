@@ -39,9 +39,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
@@ -66,56 +64,12 @@ namespace inviwo {
 template <typename Inport, typename Outport>
 class InputSelector : public Processor {
 public:
-    InputSelector()
-        : Processor()
-        , inport_("inport")
-        , outport_("outport")
-        , selectedPort_("selectedPort", "Select Inport") {
-
-        portSettings();
-
-        addPort(inport_);
-        addPort(outport_);
-
-        selectedPort_.setSerializationMode(PropertySerializationMode::All);
-
-        inport_.onChange([&]() {
-            std::string selectedID;
-            if (selectedPort_.size() != 0) {
-                selectedID = selectedPort_.getSelectedIdentifier();
-                selectedPort_.clearOptions();
-            }
-            int idx = 0;
-            for (auto port : inport_.getConnectedOutports()) {
-                auto p = port->getProcessor();
-                auto displayName = p->getIdentifier();
-                auto id = p->getDisplayName();
-                selectedPort_.addOption(displayName, displayName, idx++);
-            }
-
-            if (!selectedID.empty()) {
-                selectedPort_.setSelectedIdentifier(selectedID);
-            }
-
-            selectedPort_.setCurrentStateAsDefault();
-        });
-
-        addProperty(selectedPort_);
-
-        selectedPort_.setSerializationMode(PropertySerializationMode::All);
-
-        setAllPropertiesCurrentStateAsDefault();
-    }
+    InputSelector();
     virtual ~InputSelector() = default;
 
+    virtual const ProcessorInfo getProcessorInfo() const override;
 
-    virtual void process() override {
-        outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
-    }
-
-    virtual const ProcessorInfo getProcessorInfo() const override {
-        return ProcessorTraits<InputSelector<Inport, Outport>>::getProcessorInfo();
-    }
+    virtual void process() override;
 
 private:
     void portSettings();
@@ -126,28 +80,56 @@ private:
     OptionPropertyInt selectedPort_;
 };
 
-template <typename T>
-struct DataNamer {
-    static std::string getName() {
-        using DataType = typename T::type;
-        return port_traits<DataType>::class_identifier();
-    }
-};
+template <typename Inport, typename Outport>
+const ProcessorInfo InputSelector<Inport, Outport>::getProcessorInfo() const {
+    return ProcessorTraits<InputSelector<Inport, Outport>>::getProcessorInfo();
+}
 
-template <>
-struct DataNamer<Volume> {
-    static std::string getName() { return "Volume"; }
-};
+template <typename Inport, typename Outport>
+InputSelector<Inport, Outport>::InputSelector()
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , selectedPort_("selectedPort", "Select Inport") {
+    portSettings();
 
-template <>
-struct DataNamer<Image> {
-    static std::string getName() { return "Image"; }
-};
+    addPort(inport_);
+    addPort(outport_);
 
-template <>
-struct DataNamer<Mesh> {
-    static std::string getName() { return "Mesh"; }
-};
+    selectedPort_.setSerializationMode(PropertySerializationMode::All);
+
+    inport_.onChange([&]() {
+        std::string selectedID;
+        if (selectedPort_.size() != 0) {
+            selectedID = selectedPort_.getSelectedIdentifier();
+            selectedPort_.clearOptions();
+        }
+        int idx = 0;
+        for (auto port : inport_.getConnectedOutports()) {
+            auto p = port->getProcessor();
+            auto displayName = p->getIdentifier();
+            auto id = p->getDisplayName();
+            selectedPort_.addOption(displayName, displayName, idx++);
+        }
+
+        if (!selectedID.empty()) {
+            selectedPort_.setSelectedIdentifier(selectedID);
+        }
+
+        selectedPort_.setCurrentStateAsDefault();
+    });
+
+    addProperty(selectedPort_);
+
+    selectedPort_.setSerializationMode(PropertySerializationMode::All);
+
+    setAllPropertiesCurrentStateAsDefault();
+}
+
+template <typename Inport, typename Outport>
+void InputSelector<Inport, Outport>::process() {
+    outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
+}
 
 template <>
 void InputSelector<ImageMultiInport, ImageOutport>::portSettings();
@@ -160,11 +142,11 @@ struct ProcessorTraits<InputSelector<Inport, Outport>> {
     static ProcessorInfo getProcessorInfo() {
         using DataType = typename Inport::type;
         return {
-            port_traits<DataType>::class_identifier() + ".InputSelector",  // Class identifier
-            DataNamer<DataType>::getName() + " Input Selector",            // Display name
-            "Data Selector",                                               // Category
-            CodeState::Stable,                                             // Code state
-            Tags::CPU,                                                     // Tags
+            DataTraits<DataType>::classIdentifier() + ".InputSelector",  // Class identifier
+            DataTraits<DataType>::dataName() + " Input Selector",        // Display name
+            "Data Selector",                                             // Category
+            CodeState::Stable,                                           // Code state
+            Tags::CPU,                                                   // Tags
         };
     }
 };

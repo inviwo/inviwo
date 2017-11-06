@@ -33,16 +33,16 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/datatraits.h>
+
 
 namespace inviwo {
 
 class IVW_CORE_API Spatial4DSamplerBase {
 public:
     Spatial4DSamplerBase() = default;
-    virtual ~Spatial4DSamplerBase() = default; 
-    virtual std::string getDataInfo() const;
-    static uvec3 COLOR_CODE;
+    virtual ~Spatial4DSamplerBase() = default;
 };
 
 template <unsigned DataDims, typename T>
@@ -52,8 +52,6 @@ public:
 
     Spatial4DSampler(std::shared_ptr<const SpatialEntity<3>> spatialEntity);
     virtual ~Spatial4DSampler() = default;
-
-    virtual std::string getDataInfo() const override;
 
     virtual Vector<DataDims, T> sample(const dvec4 &pos, Space space = Space::Data) const;
     virtual Vector<DataDims, T> sample(const vec4 &pos, Space space = Space::Data) const;
@@ -73,18 +71,28 @@ protected:
 };
 
 template <unsigned DataDims, typename T>
-Spatial4DSampler<DataDims,T>::Spatial4DSampler(std::shared_ptr<const SpatialEntity<3>> spatialEntity)
+struct DataTraits<Spatial4DSampler<DataDims, T>> {
+    static std::string classIdentifier() {
+        return "org.inviwo.Spatial4DSampler." + DataFormat<Vector<DataDims, T>>::str();
+    }
+    static std::string dataName() {
+        return "Spatial4DSampler<" + DataFormat<Vector<DataDims, T>>::str() + ">";
+    }
+    static uvec3 colorCode() { return uvec3(153, 0, 76); }
+    static Document info(const Spatial4DSampler<DataDims, T> &) {
+        Document doc;
+        doc.append("p", dataName());
+        return doc;
+    }
+};
+
+template <unsigned DataDims, typename T>
+Spatial4DSampler<DataDims, T>::Spatial4DSampler(
+    std::shared_ptr<const SpatialEntity<3>> spatialEntity)
     : spatialEntity_(spatialEntity) {}
 
 template <unsigned DataDims, typename T>
-std::string Spatial4DSampler<DataDims,T>::getDataInfo() const {
-    return "Spatial4DSampler" + toString(DataDims) +
-           inviwo::parseTypeIdName(std::string(typeid(T).name()));
-}
-
-template <unsigned DataDims, typename T>
-Vector<DataDims, T> Spatial4DSampler<DataDims,T>::sample(const dvec4 &pos,
-                                                Space space /*= Space::Data*/) const {
+Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const dvec4 &pos, Space space) const {
     auto dataPos = dvec3(pos);
     if (space != Space::Data) {
         auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
@@ -96,13 +104,12 @@ Vector<DataDims, T> Spatial4DSampler<DataDims,T>::sample(const dvec4 &pos,
 }
 
 template <unsigned DataDims, typename T>
-Vector<DataDims, T> Spatial4DSampler<DataDims,T>::sample(const vec4 &pos,
-                                                Space space /*= Space::Data*/) const {
+Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const vec4 &pos, Space space) const {
     return sample(static_cast<dvec4>(pos), space);
 }
 
 template <unsigned DataDims, typename T>
-bool Spatial4DSampler<DataDims,T>::withinBounds(const dvec4 &pos, Space space /*= Space::Data*/) const {
+bool Spatial4DSampler<DataDims, T>::withinBounds(const dvec4 &pos, Space space) const {
     auto dataPos = dvec3(pos);
     if (space != Space::Data) {
         auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
@@ -114,25 +121,26 @@ bool Spatial4DSampler<DataDims,T>::withinBounds(const dvec4 &pos, Space space /*
 }
 
 template <unsigned DataDims, typename T>
-bool Spatial4DSampler<DataDims,T>::withinBounds(const vec4 &pos, Space space /*= Space::Data*/) const {
+bool Spatial4DSampler<DataDims, T>::withinBounds(const vec4 &pos, Space space) const {
     return withinBounds(static_cast<dvec4>(pos), space);
 }
 
 template <unsigned DataDims, typename T>
-const SpatialCoordinateTransformer<3> &Spatial4DSampler<DataDims,T>::getCoordinateTransformer() const {
+const SpatialCoordinateTransformer<3> &Spatial4DSampler<DataDims, T>::getCoordinateTransformer()
+    const {
     return spatialEntity_->getCoordinateTransformer();
 }
 
 template <unsigned DataDims, typename T>
-mat4 Spatial4DSampler<DataDims,T>::getModelMatrix() const {
+mat4 Spatial4DSampler<DataDims, T>::getModelMatrix() const {
     return spatialEntity_->getModelMatrix();
 }
 
 template <unsigned DataDims, typename T>
-mat4 Spatial4DSampler<DataDims,T>::getWorldMatrix() const {
+mat4 Spatial4DSampler<DataDims, T>::getWorldMatrix() const {
     return spatialEntity_->getWorldMatrix();
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SPATIALSAMPLER_H

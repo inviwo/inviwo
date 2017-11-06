@@ -27,22 +27,29 @@
  *
  *********************************************************************************/
 
-#include <modules/hdf5/hdf5module.h>
+#ifndef IVW_PORTTRAITS_H
+#define IVW_PORTTRAITS_H
 
-#include <modules/hdf5/ports/hdf5port.h>
-#include <modules/hdf5/processors/hdf5source.h>
-#include <modules/hdf5/processors/hdf5volumesource.h>
-#include <modules/hdf5/processors/hdf5pathselection.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/ports/port.h>
+#include <inviwo/core/util/introspection.h>
 
 namespace inviwo {
 
-HDF5Module::HDF5Module(InviwoApplication* app) : InviwoModule(app, "HDF5") {
-    registerPort<hdf5::Inport>();
-    registerPort<hdf5::Outport>();
+/**
+ * \class PortTraits
+ */
+template <typename T, typename = void>
+struct PortTraits {
+    static std::string classIdentifier() {
+        static_assert(util::HasClassIdentifier<T>::value,
+                      "T must have a class identifier, if not add it, "
+                      "or specialize DataTraits for T");
+        return util::classIdentifier<T>();
+    }
+};
 
-    registerProcessor<hdf5::Source>();
-    registerProcessor<hdf5::HDF5ToVolume>();
-    registerProcessor<hdf5::PathSelection>();
-}
+}  // namespace inviwo
 
-}  // namespace
+#endif  // IVW_PORTTRAITS_H

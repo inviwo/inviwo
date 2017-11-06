@@ -92,7 +92,11 @@ Handle* Handle::getHandleForPath(const std::string& path) const {
     return new Handle(this->filename_, path_ + path);
 }
 
-std::string Handle::getDataInfo() const { return "File: " + filename_ + path_; }
+Document Handle::getInfo() const { 
+    Document doc;
+    doc.append("p", "File: " + filename_ + path_);
+    return doc;
+}
 
 double Handle::getMin(const DataFormatBase* type) const {
     switch (type->getNumericType()) {
@@ -223,9 +227,11 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
     return volume;
 }
 
-uvec3 Handle::COLOR_CODE = uvec3(101, 101, 188);
+const uvec3 Handle::colorCode = uvec3(101, 101, 188);
 
-const std::string Handle::CLASS_IDENTIFIER = "org.inviwo.hdf5.handle";
+const std::string Handle::classIdentifier = "org.inviwo.hdf5.handle";
+
+const std::string Handle::dataName = "HDF";
 
 const H5::Group& Handle::getGroup() const { return data_; }
 

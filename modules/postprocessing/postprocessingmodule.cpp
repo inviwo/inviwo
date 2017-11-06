@@ -73,8 +73,8 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     // registerRepresentationConverter(util::make_unique<PostProcessingDisk2RAMConverter>());
 
     // Ports
-    // registerPort<PostProcessingOutport>("PostProcessingOutport");
-    // registerPort<PostProcessingInport>("PostProcessingInport");
+    // registerPort<PostProcessingOutport>();
+    // registerPort<PostProcessingInport>();
 
     // PropertyWidgets
     // registerPropertyWidget<PostProcessingPropertyWidget, PostProcessingProperty>("Default");

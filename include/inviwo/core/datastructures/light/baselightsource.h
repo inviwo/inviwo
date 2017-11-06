@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
@@ -111,7 +112,9 @@ public:
 
     virtual std::string getDataInfo() const { return "LightSource"; }
 
-    static uvec3 COLOR_CODE;
+    static const uvec3 colorCode;
+    static const std::string classIdentifier;
+    static const std::string dataName;
 
 protected:
     vec3 intensity_;     // Color of light source, flux density per solid angle (given in watt per

@@ -152,11 +152,11 @@ const SpatialCameraCoordinateTransformer<3>& Mesh::getCoordinateTransformer(
     return SpatialEntity<3>::getCoordinateTransformer(camera);
 }
 
-inviwo::uvec3 Mesh::COLOR_CODE = uvec3(188, 188, 101);
+uvec3 Mesh::colorCode = uvec3(188, 188, 101);
+const std::string Mesh::classIdentifier = "org.inviwo.Mesh";
+const std::string Mesh::dataName = "Mesh";
 
-const std::string Mesh::CLASS_IDENTIFIER = "org.inviwo.Mesh";
-
-std::string Mesh::getDataInfo() const {
+Document Mesh::getInfo() const {
     const int maxLines = 20;
 
     using P = Document::PathComponent;

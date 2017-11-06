@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <inviwo/core/properties/valuewrapper.h>
-#include <inviwo/core/util/introspection.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <unordered_map>
 #include <memory>

@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
 #include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
@@ -52,7 +53,7 @@ public:
     Image& operator=(const Image& that);
     virtual Image* clone() const;
     virtual ~Image() = default;
-    virtual std::string getDataInfo() const;
+    virtual Document getInfo() const;
 
     const Layer* getLayer(LayerType, size_t idx = 0) const;
     Layer* getLayer(LayerType, size_t idx = 0);
@@ -102,8 +103,9 @@ public:
      */
     dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
 
-    static uvec3 COLOR_CODE;
-    static const std::string CLASS_IDENTIFIER;
+    static uvec3 colorCode;
+    static const std::string classIdentifier;
+    static const std::string dataName;
 
 protected:
     static std::shared_ptr<Layer> createColorLayer(

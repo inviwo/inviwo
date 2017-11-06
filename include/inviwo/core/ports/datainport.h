@@ -34,14 +34,13 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/porttraits.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/inportiterable.h>
-#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/networkutils.h>
-#include <limits>
-#include <iterator>
 
 namespace inviwo {
 
@@ -60,9 +59,10 @@ public:
     DataInport(std::string identifier);
     virtual ~DataInport() = default;
 
-    virtual uvec3 getColorCode() const override;
     virtual std::string getClassIdentifier() const override;
-    virtual std::string getContentInfo() const override;
+    virtual uvec3 getColorCode() const override;
+    virtual Document getInfo() const override;
+
     virtual size_t getMaxNumberOfConnections() const override;
 
     virtual bool canConnectTo(const Port* port) const override;
@@ -75,7 +75,6 @@ public:
 
     bool hasData() const;
 };
-
 
 template <typename T>
 using MultiDataInport = DataInport<T, 0, false>;
@@ -148,25 +147,32 @@ struct CanConnectTo<T, true> {
 }  // namespace detail
 
 template <typename T, size_t N, bool Flat>
+struct PortTraits<DataInport<T, N, Flat>> {
+    static std::string classIdentifier() {
+        switch (N) {
+            case 0:
+                return DataTraits<T>::classIdentifier() + (Flat ? ".flat" : "") + ".multi.inport";
+            case 1:
+                return DataTraits<T>::classIdentifier() + (Flat ? ".flat" : "") + ".inport";
+            default:
+                return DataTraits<T>::classIdentifier() + (Flat ? ".flat." : ".") + toString(N) +
+                       ".inport";
+        }
+    }
+};
+
+template <typename T, size_t N, bool Flat>
 DataInport<T, N, Flat>::DataInport(std::string identifier)
     : Inport(identifier), InportIterable<T, Flat>(&connectedOutports_) {}
 
 template <typename T, size_t N, bool Flat>
 std::string DataInport<T, N, Flat>::getClassIdentifier() const {
-    switch (N) {
-        case 0:
-            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "MultiInport";
-        case 1:
-            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "Inport";
-        default:
-            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + toString(N) +
-                   "Inport";
-    }
+    return PortTraits<DataInport<T, N, Flat>>::classIdentifier();
 }
 
 template <typename T, size_t N, bool Flat>
 uvec3 DataInport<T, N, Flat>::getColorCode() const {
-    return port_traits<T>::color_code();
+    return DataTraits<T>::colorCode();
 }
 
 template <typename T, size_t N, bool Flat>
@@ -182,7 +188,7 @@ bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
     auto pd = util::getPredecessors(port->getProcessor());
     if (pd.find(getProcessor()) != pd.end()) return false;
 
-    return detail::CanConnectTo<T,Flat>::get(port);
+    return detail::CanConnectTo<T, Flat>::get(port);
 }
 
 template <typename T, size_t N, bool Flat>
@@ -252,19 +258,44 @@ inviwo::DataInport<T, N, Flat>::getSourceVectorData() const {
 }
 
 template <typename T, size_t N, bool Flat>
-std::string DataInport<T, N, Flat>::getContentInfo() const {
-    if (hasData()) {
-        std::string info = port_traits<T>::data_info(getData().get());
-        if (!info.empty()) {
-            return info;
-        } else {
-            return "No information available for: " + util::class_identifier<T>();
+Document DataInport<T, N, Flat>::getInfo() const {
+    auto name = []() {
+        switch (N) {
+            case 0:
+                return std::string(Flat ? " Flat" : "") + " Multi Inport";
+            case 1:
+                return std::string(Flat ? " Flat" : "") + " Inport";
+            default:
+                return std::string(Flat ? " Flat " : " ") + toString(N) + " Inport";
         }
+    };
+
+    Document doc;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    auto t = doc.append("html").append("body").append("table");
+    auto pi = t.append("tr").append("td");
+    pi.append("b", DataTraits<T>::dataName() + name(), {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(pi, P::end());
+    tb(H("Identifier"), getIdentifier());
+    tb(H("Class"), getClassIdentifier());
+    tb(H("Ready"), isReady());
+    tb(H("Connected"), isConnected());
+
+    std::stringstream ss;
+    ss << getNumberOfConnections() << " (" << getMaxNumberOfConnections() << ")";
+    tb(H("Connections"), ss.str());
+    tb(H("Optional"), isOptional());
+
+    if (hasData()) {
+        auto datadoc = DataTraits<T>::info(*getData());
+        doc.append("p", datadoc);
     } else {
-        return "Port has no data";
+        doc.append("p", "Port has no data");
     }
+    return doc;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATAINPORT_H

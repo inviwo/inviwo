@@ -46,7 +46,6 @@ namespace util {
 
 IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string filename);
 
-
 IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
                                   std::string name = "UPN", std::string ext = ".png");
 
@@ -55,7 +54,10 @@ IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = 
 IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
                                      ExceptionContext context, const std::string& extra = "");
 
-/** 
+IVW_CORE_API std::string cleanIdentifier(const std::string& identifier,
+                                         const std::string& extra = "");
+
+/**
  * \brief Removes inviwo-module from module library file name.
  * Turns "/path/to/inviwo-module-yourmodule.dll" into "yourmodule".
  * Returns filename without extension if inviwo-module was not found.
@@ -79,8 +81,7 @@ struct IVW_CORE_API Hideer {
     void operator()(ProcessorWidget& p);
 };
 
-
-} // detail namespace
+}  // namespace detail
 
 template <typename... Args>
 void show(Args&&... args) {
@@ -92,8 +93,8 @@ void hide(Args&&... args) {
     util::for_each_argument(detail::Hideer{}, std::forward<Args>(args)...);
 }
 
-} // util namespace
+}  // namespace util
 
-} // inviwo namespace
+}  // namespace inviwo
 
 #endif  // IVW_UTILITIES_H

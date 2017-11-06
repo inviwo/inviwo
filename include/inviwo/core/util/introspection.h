@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/document.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,16 +40,12 @@
 #include <iostream>
 #include <warn/pop>
 
-
 namespace inviwo {
 
 namespace util {
 
-template <class... >
-using void_t = void;
-
 template <class T>
-class has_class_identifier {
+class HasClassIdentifierUpper {
     template <class U, class = typename std::enable_if<
                            !std::is_member_pointer<decltype(&U::CLASS_IDENTIFIER)>::value>::type>
     static std::true_type check(int);
@@ -59,20 +56,63 @@ public:
     static const bool value = decltype(check<T>(0))::value;
 };
 
+template <class T>
+class HasClassIdentifierLower {
+    template <class U, class = typename std::enable_if<
+                           !std::is_member_pointer<decltype(&U::classIdentifier)>::value>::type>
+    static std::true_type check(int);
+    template <class>
+    static std::false_type check(...);
+
+public:
+    static const bool value = decltype(check<T>(0))::value;
+};
+
+template <class T>
+class HasClassIdentifier {
+public:
+    static const bool value =
+        HasClassIdentifierLower<T>::value || HasClassIdentifierUpper<T>::value;
+};
+
 template <typename T,
-          typename std::enable_if<util::has_class_identifier<T>::value, std::size_t>::type = 0>
-std::string class_identifier() {
+          typename std::enable_if<HasClassIdentifierUpper<T>::value, std::size_t>::type = 0>
+std::string classIdentifier() {
     return T::CLASS_IDENTIFIER;
 }
 template <typename T,
-          typename std::enable_if<!util::has_class_identifier<T>::value, std::size_t>::type = 0>
-std::string class_identifier() {
+          typename std::enable_if<HasClassIdentifierLower<T>::value, std::size_t>::type = 0>
+std::string classIdentifier() {
+    return T::classIdentifier;
+}
+template <typename T, typename std::enable_if<!HasClassIdentifier<T>::value, std::size_t>::type = 0>
+std::string classIdentifier() {
     return std::string{};
 }
 
+template <class T>
+class HasDataName {
+    template <class U, class = typename std::enable_if<
+                           !std::is_member_pointer<decltype(&U::dataName)>::value>::type>
+    static std::true_type check(int);
+    template <class>
+    static std::false_type check(...);
+
+public:
+    static const bool value = decltype(check<T>(0))::value;
+};
+
+template <typename T, typename std::enable_if<HasDataName<T>::value, std::size_t>::type = 0>
+std::string dataName() {
+    return T::dataName;
+}
+template <typename T, typename std::enable_if<!HasDataName<T>::value, std::size_t>::type = 0>
+std::string dataName() {
+    return std::string{};
+}
 
 template <class T>
-class has_color_code {
+class HasColorCodeUpper {
     template <class U, class = typename std::enable_if<
                            !std::is_member_pointer<decltype(&U::COLOR_CODE)>::value>::type>
     static std::true_type check(int);
@@ -82,46 +122,10 @@ class has_color_code {
 public:
     static const bool value = decltype(check<T>(0))::value;
 };
-
-template <typename T,
-          typename std::enable_if<util::has_color_code<T>::value, std::size_t>::type = 0>
-uvec3 color_code() {
-    return T::COLOR_CODE;
-}
-template <typename T,
-          typename std::enable_if<!util::has_color_code<T>::value, std::size_t>::type = 0>
-uvec3 color_code() {
-    return uvec3(0);
-}
-
-template <typename C>
-class has_data_info {
-    template <typename T>
-    static auto check(int) ->
-        typename std::is_same<decltype(std::declval<T>().getDataInfo()), std::string>::type;
-
-    template <typename T>
-    static std::false_type check(...);
-public:
-    static const bool value = decltype(check<C>(0))::value;
-};
-
-template <typename T,
-          typename std::enable_if<util::has_data_info<T>::value, std::size_t>::type = 0>
-std::string data_info(const T* data) {
-    return data->getDataInfo();
-}
-template <typename T,
-          typename std::enable_if<!util::has_data_info<T>::value, std::size_t>::type = 0>
-std::string data_info(const T*) {
-    return "";
-}
-
 template <class T>
-class is_stream_insertable {
-    template <typename U, class = typename std::enable_if<std::is_convertible<
-                              decltype(std::declval<std::ostream&>() << std::declval<U>()),
-                              std::ostream&>::value>::type>
+class HasColorCodeLower {
+    template <class U, class = typename std::enable_if<
+                           !std::is_member_pointer<decltype(&U::colorCode)>::value>::type>
     static std::true_type check(int);
     template <class>
     static std::false_type check(...);
@@ -129,33 +133,79 @@ class is_stream_insertable {
 public:
     static const bool value = decltype(check<T>(0))::value;
 };
+template <class T>
+class HasColorCode {
+public:
+    static const bool value = HasColorCodeLower<T>::value || HasColorCodeUpper<T>::value;
+};
+template <typename T, typename std::enable_if<HasColorCodeUpper<T>::value, std::size_t>::type = 0>
+uvec3 colorCode() {
+    return T::COLOR_CODE;
+}
+template <typename T, typename std::enable_if<HasColorCodeLower<T>::value, std::size_t>::type = 0>
+uvec3 colorCode() {
+    return T::colorCode;
+}
+template <typename T, typename std::enable_if<!HasColorCode<T>::value, std::size_t>::type = 0>
+uvec3 colorCode() {
+    return uvec3(0);
+}
 
-// primary template handles types that do not support dereferencing:
-template< class, class = void_t<> >
-struct is_dereferenceable : std::false_type { };
-// specialization recognizes types that do support dereferencing:
-template< class T >
-struct is_dereferenceable<T, void_t<decltype(*std::declval<T>())>> : std::true_type { };
+template <typename C>
+class HasDataInfo {
+    template <typename T>
+    static auto check(int) ->
+        typename std::is_same<decltype(std::declval<T>().getDataInfo()), std::string>::type;
 
-/**
- * A type trait to determine if type "Type" is constructible from arguments "Arguments...".
- * Example:
- *     util::is_constructible<MyType, FirstArg, SecondArg>::value
- */
-template <typename Type, typename... Arguments>
-struct is_constructible {
-    template <typename U, decltype(U(std::declval<Arguments>()...)) * = nullptr>
-    static std::true_type check(int);
-    template <class>
+    template <typename T>
     static std::false_type check(...);
 
 public:
-    static const bool value = decltype(check<Type>(0))::value;
+    static const bool value = decltype(check<C>(0))::value;
 };
 
-} // namespace
+template <typename C>
+class HasInfo {
+    template <typename T>
+    static auto check(int) ->
+        typename std::is_same<decltype(std::declval<T>().getInfo()), Document>::type;
 
-} // namespace
+    template <typename T>
+    static std::false_type check(...);
 
-#endif // IVW_INTROSPECTION_H
+public:
+    static const bool value = decltype(check<C>(0))::value;
+};
 
+template <typename T, typename std::enable_if<HasDataInfo<T>::value, std::size_t>::type = 0>
+std::string data_info(const T* data) {
+    return data->getDataInfo();
+}
+template <typename T, typename std::enable_if<!HasDataInfo<T>::value, std::size_t>::type = 0>
+std::string data_info(const T*) {
+    return "";
+}
+
+template <typename T, typename std::enable_if<!HasInfo<T>::value && HasDataInfo<T>::value,
+                                              std::size_t>::type = 0>
+Document info(const T& data) {
+    Document doc;
+    doc.append("p", data.getDataInfo());
+    return doc;
+}
+template <typename T, typename std::enable_if<HasInfo<T>::value && !HasDataInfo<T>::value,
+                                              std::size_t>::type = 0>
+Document info(const T& data) {
+    return data.getInfo();
+}
+template <typename T, typename std::enable_if<!HasInfo<T>::value && !HasDataInfo<T>::value,
+                                              std::size_t>::type = 0>
+Document info(const T&) {
+    return Document{};
+}
+
+}  // namespace util
+
+}  // namespace inviwo
+
+#endif  // IVW_INTROSPECTION_H

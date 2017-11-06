@@ -41,6 +41,8 @@
 
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portfactoryobject.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
@@ -68,7 +70,6 @@ class PortInspectorFactoryObject;
 class MeshDrawer;
 class PropertyConverter;
 class VersionConverter;
-
 
 enum class ModulePath {
     Data,               // /data
@@ -187,7 +188,10 @@ protected:
     void registerPortInspector(std::string portClassIdentifier, std::string inspectorPath);
 
     template <typename T>
-    void registerPort(std::string classIdentifier);
+    void registerPort();
+
+    template <typename T>
+    void registerStandardPortsForObject();
 
     template <typename T>
     void registerProperty();
@@ -219,8 +223,8 @@ private:
         return res;
     }
     template <typename T, typename std::enable_if<std::is_base_of<Inport, T>::value, int>::type = 0>
-    void registerPortInternal(std::string classIdentifier) {
-        auto port = util::make_unique<InportFactoryObjectTemplate<T>>(classIdentifier);
+    void registerPortInternal() {
+        auto port = util::make_unique<InportFactoryObjectTemplate<T>>();
         if (app_->getInportFactory()->registerObject(port.get())) {
             inports_.push_back(std::move(port));
         }
@@ -228,8 +232,8 @@ private:
 
     template <typename T,
         typename std::enable_if<std::is_base_of<Outport, T>::value, int>::type = 0>
-        void registerPortInternal(std::string classIdentifier) {
-        auto port = util::make_unique<OutportFactoryObjectTemplate<T>>(classIdentifier);
+    void registerPortInternal() {
+        auto port = util::make_unique<OutportFactoryObjectTemplate<T>>();
         if (app_->getOutportFactory()->registerObject(port.get())) {
             outports_.push_back(std::move(port));
         }
@@ -258,7 +262,6 @@ private:
         representationConverterFactories_;
     std::vector<std::unique_ptr<Settings>> settings_;
 };
-
 
 template <typename T>
 void InviwoModule::registerCamera(std::string classIdentifier) {
@@ -293,11 +296,20 @@ void InviwoModule::registerProcessorWidget() {
 }
 
 template <typename T>
-void InviwoModule::registerPort(std::string classIdentifier) {
+void InviwoModule::registerPort() {
     static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
                   "A port has to derive from either Inport of Outport");
 
-    registerPortInternal<T>(classIdentifier);
+    registerPortInternal<T>();
+}
+
+template <typename T>
+void InviwoModule::registerStandardPortsForObject() {
+    registerPort<DataInport<T>>();
+    registerPort<DataInport<T, 0>>();
+    registerPort<DataInport<T, 0, true>>();
+    registerPort<DataOutport<T>>();
+
 }
 
 template <typename T>
@@ -332,6 +344,6 @@ void InviwoModule::registerRepresentationConverter(
     }
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INVIWOMODULE_H

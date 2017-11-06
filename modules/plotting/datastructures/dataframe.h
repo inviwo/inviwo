@@ -36,6 +36,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/exception.h>
@@ -51,15 +52,13 @@ namespace plot {
 class IVW_MODULE_PLOTTING_API InvalidColCount : public Exception {
 public:
     InvalidColCount(const std::string &message = "", ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {
-    }
+        : Exception(message, context) {}
     virtual ~InvalidColCount() throw() {}
 };
 class IVW_MODULE_PLOTTING_API NoColumns : public Exception {
 public:
     NoColumns(const std::string &message = "", ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {
-    }
+        : Exception(message, context) {}
     virtual ~NoColumns() throw() {}
 };
 class IVW_MODULE_PLOTTING_API DataTypeMismatch : public Exception {
@@ -72,7 +71,7 @@ public:
  * \class DataFrame
  * Table of data for plotting where each column can have a header (title).
  * Missing float/double data is stored as Not a Number (NaN)
- * All columns must have the same number of elements for the 
+ * All columns must have the same number of elements for the
  * DataFrame to be valid.
  */
 class IVW_MODULE_PLOTTING_API DataFrame {
@@ -117,7 +116,8 @@ public:
 
     size_t getNumberOfColumns() const;
     /**
-     * Returns the number of rows of the largest column, excluding the header, or zero if no columns exist.
+     * Returns the number of rows of the largest column, excluding the header, or zero if no columns
+     * exist.
      */
     size_t getNumberOfRows() const;
 
@@ -138,12 +138,13 @@ using DataFrameInport = DataInport<DataFrame>;
 /**
  * \brief Create a new DataFrame by guessing the column types from a number of rows.
  *
- * @param exampleRows  Rows for guessing data type of each column. 
+ * @param exampleRows  Rows for guessing data type of each column.
  * @param colHeaders   Name of each column. If none are given, "Column 1", "Column 2", ... is used
  * @throws InvalidColCount  if column count between exampleRows and colHeaders does not match
  */
-std::shared_ptr<DataFrame> IVW_MODULE_PLOTTING_API createDataFrame(
-    const std::vector<std::vector<std::string>> &exampleRows, const std::vector<std::string> &colHeaders = {});
+std::shared_ptr<DataFrame> IVW_MODULE_PLOTTING_API
+createDataFrame(const std::vector<std::vector<std::string>> &exampleRows,
+                const std::vector<std::string> &colHeaders = {});
 
 template <typename T>
 std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &header, size_t size) {
@@ -156,24 +157,25 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &heade
 }  // namespace plot
 
 template <>
-struct port_traits<plot::DataFrame> {
-    static std::string class_identifier() { return "DataFrame"; }
-    static uvec3 color_code() { return uvec3(153, 76, 0); }
-    static std::string data_info(const plot::DataFrame *data) {
+struct DataTraits<plot::DataFrame> {
+    static std::string classIdentifier() { return "org.inviwo.DataFrame"; }
+    static std::string dataName() { return "DataFrame"; }
+    static uvec3 colorCode() { return uvec3(153, 76, 0); }
+    static Document info(const plot::DataFrame &data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;
         Document doc;
         doc.append("b", "DataFrame", {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Number of columns: "), data->getNumberOfColumns());
+        tb(H("Number of columns: "), data.getNumberOfColumns());
 
-        for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
+        for (size_t i = 0; i < data.getNumberOfColumns(); i++) {
             std::ostringstream oss;
-            oss << "Column " << (i + 1) << ": " << data->getHeader(i);
+            oss << "Column " << (i + 1) << ": " << data.getHeader(i);
             tb(H(oss.str()), "");
 
-            tb("size", data->getColumn(i)->getBuffer()->getSize());
-            tb("Dataformat", data->getColumn(i)->getBuffer()->getDataFormat()->getString());
+            tb("Size", data.getColumn(i)->getBuffer()->getSize());
+            tb("Dataformat", data.getColumn(i)->getBuffer()->getDataFormat()->getString());
         }
 
         return doc;

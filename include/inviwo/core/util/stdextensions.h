@@ -103,19 +103,17 @@ T* defaultConstructType() {
     return nullptr;
 }
 
+template <class...>
+using void_t = void;
+
 // type trait to check if T is derived from std::basic_string
 namespace detail {
 template <typename T, class Enable = void>
 struct is_string : std::false_type {};
 
-template <typename... T>
-struct void_helper {
-    typedef void type;
-};
-
 template <typename T>
-struct is_string<T, typename void_helper<typename T::value_type, typename T::traits_type,
-                                         typename T::allocator_type>::type>
+struct is_string<
+    T, void_t<typename T::value_type, typename T::traits_type, typename T::allocator_type>>
     : std::is_base_of<std::basic_string<typename T::value_type, typename T::traits_type,
                                         typename T::allocator_type>,
                       T> {};
@@ -580,6 +578,42 @@ class is_container {
 
 public:
     static const bool value = decltype(test<test_type>(0))::value;
+};
+
+template <class T>
+class is_stream_insertable {
+    template <typename U, class = typename std::enable_if<std::is_convertible<
+                              decltype(std::declval<std::ostream&>() << std::declval<U>()),
+                              std::ostream&>::value>::type>
+    static std::true_type check(int);
+    template <class>
+    static std::false_type check(...);
+
+public:
+    static const bool value = decltype(check<T>(0))::value;
+};
+
+// primary template handles types that do not support dereferencing:
+template <class, class = void_t<>>
+struct is_dereferenceable : std::false_type {};
+// specialization recognizes types that do support dereferencing:
+template <class T>
+struct is_dereferenceable<T, void_t<decltype(*std::declval<T>())>> : std::true_type {};
+
+/**
+ * A type trait to determine if type "Type" is constructible from arguments "Arguments...".
+ * Example:
+ *     util::is_constructible<MyType, FirstArg, SecondArg>::value
+ */
+template <typename Type, typename... Arguments>
+struct is_constructible {
+    template <typename U, decltype(U(std::declval<Arguments>()...)) * = nullptr>
+    static std::true_type check(int);
+    template <class>
+    static std::false_type check(...);
+
+public:
+    static const bool value = decltype(check<Type>(0))::value;
 };
 
 /**

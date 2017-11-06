@@ -33,10 +33,13 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/port.h>
+#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/callback.h>
 
 namespace inviwo {
 
+class Event;
 class Inport;
 class Processor;
 

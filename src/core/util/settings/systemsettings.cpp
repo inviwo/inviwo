@@ -43,7 +43,6 @@ SystemSettings::SystemSettings()
                             1)
     , poolSize_("poolSize", "Pool Size", 4, 0, 32)
     , txtEditor_("txtEditor", "Use system text editor", true)
-    , enablePortInformation_("enablePortInformation", "Enable port information", true)
     , enablePortInspectors_("enablePortInspectors", "Enable port inspectors", true)
     , portInspectorSize_("portInspectorSize", "Port inspector size", 128, 1, 1024)
 #if __APPLE__
@@ -65,7 +64,6 @@ SystemSettings::SystemSettings()
     addProperty(applicationUsageMode_);
     addProperty(poolSize_);
     addProperty(txtEditor_);
-    addProperty(enablePortInformation_);
     addProperty(enablePortInspectors_);
     addProperty(portInspectorSize_);
     addProperty(enableTouchProperty_);

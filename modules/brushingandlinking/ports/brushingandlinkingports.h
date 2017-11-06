@@ -38,6 +38,7 @@
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/events/filteringevent.h>
 #include <modules/brushingandlinking/events/selectionevent.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
@@ -57,6 +58,8 @@ public:
     const std::unordered_set<size_t> &getSelectedIndices()const;
     const std::unordered_set<size_t> &getFilteredIndices()const;
 
+    virtual std::string getClassIdentifier() const override;
+
     std::unordered_set<size_t> filterCache_;
     std::unordered_set<size_t> selctionCache_;
 };
@@ -66,17 +69,33 @@ class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport
 public:
     BrushingAndLinkingOutport(std::string identifier);
     virtual ~BrushingAndLinkingOutport() = default;
+
+    virtual std::string getClassIdentifier() const override;
+
 };
 
 template <>
-struct port_traits<BrushingAndLinkingManager> {
-    static std::string class_identifier() { return "BrushingAndLinkingManager"; }
-    static uvec3 color_code() { return uvec3(160, 182, 240); }
-    static std::string data_info(const BrushingAndLinkingManager *data) {
+struct PortTraits<BrushingAndLinkingInport> {
+    static std::string classIdentifier() { return "BrushingAndLinkingInport"; }
+};
+
+template <>
+struct PortTraits<BrushingAndLinkingOutport> {
+    static std::string classIdentifier() { return "BrushingAndLinkingOutport"; }
+};
+
+template <>
+struct DataTraits<BrushingAndLinkingManager> {
+    static std::string classIdentifier() { return "BrushingAndLinkingManager"; }
+    static std::string dataName() { return "BrushingAndLinkingManager"; }
+    static uvec3 colorCode() { return uvec3(160, 182, 240); }
+    static Document info(const BrushingAndLinkingManager& data) {
+        Document doc;
         std::ostringstream oss;
-        oss << "Number of selected indices: " << data->getNumberOfSelected() << std::endl;
-        oss << "Number of filtered indices: " << data->getNumberOfFiltered();
-        return oss.str();
+        oss << "Number of selected indices: " << data.getNumberOfSelected() << std::endl;
+        oss << "Number of filtered indices: " << data.getNumberOfFiltered();
+        doc.append("p", oss.str());
+        return doc;
     }
 };
 

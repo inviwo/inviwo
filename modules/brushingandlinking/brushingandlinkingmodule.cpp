@@ -41,8 +41,8 @@ BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
     registerProcessor<BrushingAndLinkingProcessor>();
 
     // Ports
-    registerPort<BrushingAndLinkingOutport>("BrushingAndLinkingOutport");
-    registerPort<BrushingAndLinkingInport>("BrushingAndLinkingInport");
+    registerPort<BrushingAndLinkingOutport>();
+    registerPort<BrushingAndLinkingInport>();
 
 }
 

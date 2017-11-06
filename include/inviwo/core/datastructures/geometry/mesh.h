@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 #include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/document.h>
 #include <utility>
 
 namespace inviwo {
@@ -74,7 +75,7 @@ public:
     Mesh& operator=(const Mesh& that);
     virtual Mesh* clone() const;
     virtual ~Mesh() = default;
-    virtual std::string getDataInfo() const;
+    virtual Document getInfo() const;
 
     /**
      * Add a buffer with rendering data, such as positions/colors/normals.
@@ -148,8 +149,9 @@ public:
         const Camera& camera) const;
     using SpatialEntity<3>::getCoordinateTransformer;
 
-    static uvec3 COLOR_CODE;
-    static const std::string CLASS_IDENTIFIER;
+    static uvec3 colorCode;
+    static const std::string classIdentifier;
+    static const std::string dataName;
 
 protected:
     BufferVector buffers_;

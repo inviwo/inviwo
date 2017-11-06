@@ -33,6 +33,9 @@
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/eigenutils/eigenutils.h>
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
@@ -40,13 +43,16 @@ using EigenMatrixOutport = DataOutport<Eigen::MatrixXf>;
 using EigenMatrixInport = DataInport<Eigen::MatrixXf>;
 
 template <>
-struct port_traits<Eigen::MatrixXf> {
-    static std::string class_identifier() { return "EigenMatrixXf"; }
-    static uvec3 color_code() { return uvec3(141, 211, 199); }
-    static std::string data_info(const Eigen::MatrixXf* data) {
+struct DataTraits<Eigen::MatrixXf> {
+    static std::string classIdentifier() { return "EigenMatrixXf"; }
+    static std::string dataName() { return "EigenMatrixXf"; }
+    static uvec3 colorCode() { return uvec3(141, 211, 199); }
+    static Document info(const Eigen::MatrixXf& data) {
+        Document doc;
         std::ostringstream oss;
-        oss << "Eigen MatrixXf " << data->rows() << "-by-" << data->cols();
-        return oss.str();
+        oss << "Eigen MatrixXf " << data.rows() << "-by-" << data.cols();
+        doc.append("p", oss.str());
+        return doc;
     }
 };
 

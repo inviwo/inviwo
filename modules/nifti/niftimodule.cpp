@@ -52,8 +52,8 @@ NiftiModule::NiftiModule(InviwoApplication* app) : InviwoModule(app, "Nifti") {
     // registerRepresentationConverter(util::make_unique<NiftiDisk2RAMConverter>());
 
     // Ports
-    // registerPort<NiftiOutport>("NiftiOutport"));
-    // registerPort<NiftiInport>("NiftiInport"));
+    // registerPort<NiftiOutport>());
+    // registerPort<NiftiInport>());
 
     // PropertyWidgets
     // registerPropertyWidget<NiftiPropertyWidget, NiftiProperty>("Default");

@@ -32,10 +32,10 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/outportiterable.h>
-#include <inviwo/core/util/introspection.h>
+#include <inviwo/core/ports/porttraits.h>
 
 namespace inviwo {
 
@@ -50,43 +50,44 @@ public:
     DataOutport(std::string identifier);
     virtual ~DataOutport() = default;
 
-    virtual uvec3 getColorCode() const override;
     virtual std::string getClassIdentifier() const override;
+    virtual uvec3 getColorCode() const override;
+    virtual Document getInfo() const override;
 
     virtual std::shared_ptr<const T> getData() const;
     // Return data and release ownership. Data in the port will be nullptr after call.
     virtual std::shared_ptr<const T> detachData();
 
     virtual void setData(std::shared_ptr<const T> data);
-    virtual void setData(const T* data); // will assume ownership of data.
-
+    virtual void setData(const T* data);  // will assume ownership of data.
     bool hasData() const;
-
-    virtual std::string getContentInfo() const override;
 
 protected:
     std::shared_ptr<const T> data_;
 };
 
 template <typename T>
-DataOutport<T>::DataOutport(std::string identifier)
-    : Outport(identifier)
-    , OutportIterableImpl<T>(this)
-    , data_() {
+struct PortTraits<DataOutport<T>> {
+    static std::string classIdentifier() { return DataTraits<T>::classIdentifier() + ".outport"; }
+};
 
-    isReady_.setUpdate([this](){
+template <typename T>
+DataOutport<T>::DataOutport(std::string identifier)
+    : Outport(identifier), OutportIterableImpl<T>(this), data_() {
+
+    isReady_.setUpdate([this]() {
         return invalidationLevel_ == InvalidationLevel::Valid && data_.get() != nullptr;
     });
 }
 
 template <typename T>
-std::string inviwo::DataOutport<T>::getClassIdentifier() const {
-    return port_traits<T>::class_identifier() + "Outport";
+std::string DataOutport<T>::getClassIdentifier() const {
+    return PortTraits<DataOutport<T>>::classIdentifier();
 }
 
 template <typename T>
-uvec3 inviwo::DataOutport<T>::getColorCode() const {
-    return port_traits<T>::color_code();
+uvec3 DataOutport<T>::getColorCode() const {
+    return DataTraits<T>::colorCode();
 }
 
 template <typename T>
@@ -120,19 +121,29 @@ bool DataOutport<T>::hasData() const {
 }
 
 template <typename T>
-std::string DataOutport<T>::getContentInfo() const {
+Document DataOutport<T>::getInfo() const {
+    Document doc;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    auto t = doc.append("html").append("body").append("table");
+    auto pi = t.append("tr").append("td");
+    pi.append("b", DataTraits<T>::dataName() + " Outport", { {"style", "color:white;"} });
+    utildoc::TableBuilder tb(pi, P::end());
+    tb(H("Identifier"), getIdentifier());
+    tb(H("Class"), getClassIdentifier());
+    tb(H("Ready"), isReady());
+    tb(H("Connected"), isConnected());
+    tb(H("Connections"), connectedInports_.size());
+
     if (hasData()) {
-        std::string info = port_traits<T>::data_info(data_.get());
-        if (!info.empty()) {
-            return info;
-        } else {
-            return "No information available for: " + util::class_identifier<T>();
-        }
+        auto datadoc = DataTraits<T>::info(*getData());
+        doc.append("p", datadoc);
     } else {
-        return port_traits<T>::class_identifier() + "Outport has no data";
+        doc.append("p", "Port has no data");
     }
+    return doc;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATAOUTPORT_H
