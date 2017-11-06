@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,40 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOCORE_H
-#define IVW_INVIWOCORE_H
+#ifndef IVW_COMPOSITEPROCESSORUTILS_H
+#define IVW_COMPOSITEPROCESSORUTILS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-class InviwoApplication;
+class ProcessorNetwork;
+class CompositeProcessor;
+
+namespace util {
 
 /**
- * \class InviwoCore
- * \brief Module which registers all module related functionality available in the core.
+ * Create a CompositeProcessor out of the currently selected processors and replace them with the
+ * composite processors. The selected processors are moved from the current network into the sub
+ * network of the composite processor. For each port connection between a selected and unselected
+ * processor a sink or source processor is added to the sub network and connections are made from
+ * the selected processor to the sink/source and from the composite processor to the unselected
+ * processor. For each link between a selected and unselected processor, a super property is added
+ * to the composite processor and the link added to it.
  */
-class IVW_CORE_API InviwoCore : public InviwoModule {
-public:
-    InviwoCore(InviwoApplication* app);
-    
-    virtual std::string getPath() const override;
+IVW_CORE_API void replaceSelectionWithCompositeProcessor(ProcessorNetwork& network);
 
-private:
-    class Observer : public FileObserver {
-    public:
-        Observer(InviwoCore& core, InviwoApplication* app);
-        virtual void fileChanged(const std::string& dir) override;
-    private:
-        InviwoCore& core_;
-    };
-    void scanDirForComposites(const std::string& dir);
+/**
+ * Expand a composite processors sub network into its network. Effectively reversing the actions of
+ * replaceSelectionWithCompositeProcessor. All processor except for sink and source processors are
+ * moved from the sub network into the network of the composite processor. Connections and links are
+ * the reestablished.
+ */
+IVW_CORE_API void expandCompositeProcessorIntoNetwork(CompositeProcessor& composite);
 
-    Observer compositeDirObserver_;
-    std::unordered_set<std::string> addedCompositeFiles_;
-};
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
-#endif  // IVW_INVIWOCORE_H
+#endif  // IVW_COMPOSITEPROCESSORUTILS_H

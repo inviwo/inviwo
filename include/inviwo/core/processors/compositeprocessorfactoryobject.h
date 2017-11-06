@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,33 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOCORE_H
-#define IVW_INVIWOCORE_H
+#ifndef IVW_COMPOSITEPROCESSORFACTORYOBJECT_H
+#define IVW_COMPOSITEPROCESSORFACTORYOBJECT_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/compositeprocessor.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
+
 
 namespace inviwo {
 
-class InviwoApplication;
-
 /**
- * \class InviwoCore
- * \brief Module which registers all module related functionality available in the core.
+ * \class CompositeProcessorFactoryObject
  */
-class IVW_CORE_API InviwoCore : public InviwoModule {
+class IVW_CORE_API CompositeProcessorFactoryObject
+    : public ProcessorFactoryObject {
 public:
-    InviwoCore(InviwoApplication* app);
-    
-    virtual std::string getPath() const override;
+    CompositeProcessorFactoryObject(const std::string& filen);
+    virtual ~CompositeProcessorFactoryObject() = default;
+
+    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
 
 private:
-    class Observer : public FileObserver {
-    public:
-        Observer(InviwoCore& core, InviwoApplication* app);
-        virtual void fileChanged(const std::string& dir) override;
-    private:
-        InviwoCore& core_;
-    };
-    void scanDirForComposites(const std::string& dir);
-
-    Observer compositeDirObserver_;
-    std::unordered_set<std::string> addedCompositeFiles_;
+    static ProcessorInfo makeProcessorInfo(const std::string& file);
+    std::string file_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif  // IVW_INVIWOCORE_H
+#endif  // IVW_COMPOSITEPROCESSORFACTORYOBJECT_H

@@ -339,11 +339,11 @@ protected:
     StateCoordinator<bool> isSink_;
     StateCoordinator<bool> isSource_;
 
+    void addPortToGroup(Port* port, const std::string& portGroup);
+    void removePortFromGroups(Port* port);
 private:
     void addPort(Inport* port, const std::string& portGroup);
     void addPort(Outport* port, const std::string& portGroup);
-    void addPortToGroup(Port* port, const std::string& portGroup);
-    void removePortFromGroups(Port* port);
 
     std::string identifier_;
     std::string displayName_;

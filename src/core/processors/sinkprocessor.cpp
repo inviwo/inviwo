@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOCORE_H
-#define IVW_INVIWOCORE_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/processors/sinkprocessor.h>
 
 namespace inviwo {
 
-class InviwoApplication;
+SinkProcessorBase::SinkProcessorBase() : Processor() {}
 
-/**
- * \class InviwoCore
- * \brief Module which registers all module related functionality available in the core.
- */
-class IVW_CORE_API InviwoCore : public InviwoModule {
-public:
-    InviwoCore(InviwoApplication* app);
-    
-    virtual std::string getPath() const override;
-
-private:
-    class Observer : public FileObserver {
-    public:
-        Observer(InviwoCore& core, InviwoApplication* app);
-        virtual void fileChanged(const std::string& dir) override;
-    private:
-        InviwoCore& core_;
-    };
-    void scanDirForComposites(const std::string& dir);
-
-    Observer compositeDirObserver_;
-    std::unordered_set<std::string> addedCompositeFiles_;
-};
-
-}  // namespace
-
-#endif  // IVW_INVIWOCORE_H
+}  // namespace inviwo

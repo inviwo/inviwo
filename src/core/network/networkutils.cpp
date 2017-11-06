@@ -93,6 +93,33 @@ std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
     return sorted;
 }
 
+ivec2 util::getCenterPosition(const std::vector<Processor*>& processors) {
+    ivec2 center{0};
+    if (processors.empty()) return center;
+
+    for (auto p : processors) {
+        if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+            center += meta->getPosition();
+        }
+    }
+    return center / static_cast<int>(processors.size());
+}
+
+void util::offsetPosition(const std::vector<Processor*>& processors, const ivec2& offset) {
+    for (auto p : processors) {
+        if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+            meta->setPosition(meta->getPosition() + offset);
+        }
+    }
+}
+
+ void util::setSelected(const std::vector<Processor*>& processors, bool selected) {
+     for (auto p : processors) {
+         if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+             meta->setSelected(selected);
+         }
+     }
+}
 
 util::PropertyDistanceSorter::PropertyDistanceSorter() {}
 void util::PropertyDistanceSorter::setTarget(const Property* target) { pos_ = getPosition(target); }
@@ -116,6 +143,8 @@ vec2 util::PropertyDistanceSorter::getPosition(const Processor* processor) {
     }
     return vec2(0, 0);
 }
+
+
 
 void util::autoLinkProcessor(ProcessorNetwork* network, Processor* processor) {
     auto app = network->getApplication();

@@ -46,6 +46,7 @@
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/editor/networksearch.h>
+#include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
@@ -54,6 +55,8 @@
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/network/workspaceutils.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/compositeprocessor.h>
+#include <inviwo/core/processors/compositeprocessorutils.h>
 
 #include <inviwomodulespaths.h>
 
@@ -224,15 +227,15 @@ void InviwoMainWindow::addActions() {
     auto fileMenuItem = menu->addMenu(tr("&File"));
     menu->addMenu(editMenu_);
     auto viewMenuItem = menu->addMenu(tr("&View"));
-    auto evalMenuItem = menu->addMenu(tr("&Evaluation"));
+    auto networkMenuItem = menu->addMenu(tr("&Network"));
     auto helpMenuItem = menu->addMenu(tr("&Help"));
 
     auto workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
     auto viewModeToolBar = addToolBar("View");
     viewModeToolBar->setObjectName("viewModeToolBar");
-    auto evalToolBar = addToolBar("Evaluation");
-    evalToolBar->setObjectName("evalToolBar");
+    auto networkToolBar = addToolBar("Network");
+    networkToolBar->setObjectName("networkToolBar");
 
     // file menu entries
     {
@@ -513,7 +516,7 @@ void InviwoMainWindow::addActions() {
         visibilityModeChangedInSettings();
     }
 
-    // Evaluation
+    // Network
     {
         QIcon enableDisableIcon;
         enableDisableIcon.addFile(":/icons/button_ok.png", QSize(), QIcon::Active, QIcon::Off);
@@ -524,14 +527,48 @@ void InviwoMainWindow::addActions() {
         lockNetworkAction->setToolTip("Enable/Disable Network Evaluation");
 
         lockNetworkAction->setShortcut(Qt::ControlModifier + Qt::Key_L);
-        evalMenuItem->addAction(lockNetworkAction);
-        evalToolBar->addAction(lockNetworkAction);
-        connect(lockNetworkAction, &QAction::triggered, [lockNetworkAction, this]() {
+        networkMenuItem->addAction(lockNetworkAction);
+        networkToolBar->addAction(lockNetworkAction);
+        connect(lockNetworkAction, &QAction::triggered, this, [lockNetworkAction, this]() {
             if (lockNetworkAction->isChecked()) {
                 app_->getProcessorNetwork()->lock();
             } else {
                 app_->getProcessorNetwork()->unlock();
             }
+        });
+
+        auto compAction = networkMenuItem->addAction(tr("&Create Composite"));
+        compAction->setShortcut(Qt::ControlModifier + Qt::Key_G);
+        connect(compAction, &QAction::triggered, this, [this]() {
+            util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
+        });
+
+        auto expandAction = networkMenuItem->addAction(tr("&Expand Composite"));
+        expandAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_G);
+        connect(expandAction, &QAction::triggered, this, [this]() {
+            std::unordered_set<CompositeProcessor*> selectedComposites;
+            for (auto item : networkEditor_->selectedItems()) {
+                if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                    if (auto comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
+                         util::expandCompositeProcessorIntoNetwork(*comp);
+                    }
+                }
+            }
+        });
+
+        connect(networkMenuItem, &QMenu::aboutToShow, this, [this, expandAction, compAction] {
+            std::unordered_set<CompositeProcessor*> selectedComposites;
+            std::unordered_set<Processor*> selectedProcessors;
+            for (auto item : networkEditor_->selectedItems()) {
+                if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                    selectedProcessors.insert(pgi->getProcessor());
+                    if (auto comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
+                        selectedComposites.insert(comp);
+                    }
+                }
+            }
+            expandAction->setDisabled(selectedComposites.empty());
+            compAction->setDisabled(selectedProcessors.empty());
         });
     }
 
@@ -544,8 +581,8 @@ void InviwoMainWindow::addActions() {
         connect(resetTimeMeasurementsAction, &QAction::triggered,
                 [&]() { networkEditor_->resetAllTimeMeasurements(); });
 
-        evalToolBar->addAction(resetTimeMeasurementsAction);
-        evalMenuItem->addAction(resetTimeMeasurementsAction);
+        networkToolBar->addAction(resetTimeMeasurementsAction);
+        networkMenuItem->addAction(resetTimeMeasurementsAction);
     }
 #endif
 

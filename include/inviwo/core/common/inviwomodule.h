@@ -48,6 +48,8 @@
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
+#include <inviwo/core/processors/sinkprocessor.h>
+#include <inviwo/core/processors/sourceprocessor.h>
 
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
@@ -182,6 +184,7 @@ protected:
 
     template <typename T>
     void registerProcessor();
+    void registerCompositeProcessor(const std::string& file);
 
     template <typename T, typename P>
     void registerProcessorWidget();
@@ -203,8 +206,14 @@ protected:
      *     DataInport<T, 0>        Multi Inport (accepts multiple input connections)
      *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with vector<T>)
      *     DataOutport<T>          Outport
+     * and Sink and Source Processors:
+     *     SinkProcessor<DataInport<T>, DataOutport<T>>
+     *     SourceProcessor<DataInport<T>, DataOutport<T>>
+     *
      * @see DataInport
      * @see DataOutport
+     * @see SourceProcessor
+     * @see SinkProcessor
      */
     template <typename T>
     void registerStandardPortsForObject();
@@ -330,6 +339,9 @@ void InviwoModule::registerStandardPortsForObject() {
     registerPort<DataInport<T, 0>>();
     registerPort<DataInport<T, 0, true>>();
     registerPort<DataOutport<T>>();
+    
+    registerProcessor<SinkProcessor<DataInport<T>, DataOutport<T>>>();
+    registerProcessor<SourceProcessor<DataInport<T>, DataOutport<T>>>();
 }
 
 template <typename T>

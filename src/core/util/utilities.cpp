@@ -130,15 +130,14 @@ std::string stripModuleFileNameDecoration(std::string filePath) {
     auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
     if (inviwoModulePos == std::string::npos) {
         inviwoModulePos = 0;
-    }
-    else {
+    } else {
         inviwoModulePos = decoration.size();
     }
     auto len = fileNameWithoutExtension.size() - inviwoModulePos;
 #ifdef DEBUG
     // Remove debug ending "d" at end of file name
     len -= 1;
-#endif 
+#endif
     auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
     return moduleName;
 }
@@ -151,7 +150,9 @@ std::string stripIdentifier(std::string identifier) {
 
     while (identifier.size() > 0) {
         const auto& c = identifier[0];
-        if (!testFirst(c)) { break; }
+        if (!testFirst(c)) {
+            break;
+        }
         if (std::isdigit(c)) {  // prepend an underscore if first char is a digit
             identifier = "_" + identifier;
             break;
@@ -165,11 +166,11 @@ std::string stripIdentifier(std::string identifier) {
 
 namespace detail {
 
-void Shower::operator()(Property& p) {p.setVisible(true);}
-void Hideer::operator()(Property& p) {p.setVisible(false);}
+void Shower::operator()(Property& p) { p.setVisible(true); }
+void Hideer::operator()(Property& p) { p.setVisible(false); }
 
-void Shower::operator()(ProcessorWidget& p) {p.setVisible(true);}
-void Hideer::operator()(ProcessorWidget& p) {p.setVisible(false);}
+void Shower::operator()(ProcessorWidget& p) { p.setVisible(true); }
+void Hideer::operator()(ProcessorWidget& p) { p.setVisible(false); }
 
 }  // namespace detail
 

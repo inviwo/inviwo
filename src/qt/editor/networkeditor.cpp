@@ -38,6 +38,7 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/compositeprocessorutils.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/inport.h>
@@ -45,6 +46,7 @@
 #include <inviwo/core/ports/portinspectormanager.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -486,7 +488,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 processor->editDisplayName();
             });
 
-
             auto editIdentifier = menu.addAction(tr("Edit Identifier"));
             connect(editIdentifier, &QAction::triggered, [this, processor]() {
                 clearSelection();
@@ -612,6 +613,52 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedOnItems_.append(items(e->scenePos()));
     clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
     {
+        menu.addSeparator();
+        auto compAction = menu.addAction(tr("&Create Composite"));
+        connect(compAction, &QAction::triggered, this,
+                [this]() { util::replaceSelectionWithCompositeProcessor(*network_); });
+        compAction->setEnabled(selectedProcessors.size() > 1);
+
+        auto expandAction = menu.addAction(tr("&Expand Composite"));
+        std::unordered_set<CompositeProcessor*> selectedComposites;
+        for (auto& p : selectedProcessors) {
+            if (auto comp = dynamic_cast<CompositeProcessor*>(p.first)) {
+                selectedComposites.insert(comp);
+            }
+        }
+        for (auto item : clickedOnItems_) {
+            if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                if (auto comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
+                    selectedComposites.insert(comp);
+                }
+            }
+        }
+        connect(expandAction, &QAction::triggered, this, [selectedComposites]() {
+            for (auto& p : selectedComposites) {
+                util::expandCompositeProcessorIntoNetwork(*p);
+            }
+        });
+        expandAction->setDisabled(selectedComposites.empty());
+
+        auto saveCompAction = menu.addAction(tr("&Save Composite"));
+        connect(saveCompAction, &QAction::triggered, this, [this, selectedComposites]() {
+            for (auto& p : selectedComposites) {
+                const auto compDir = mainwindow_->getInviwoApplication()->getPath(
+                    PathType::Settings, "/composites", true);
+                const auto filename = util::findUniqueIdentifier(
+                    util::stripIdentifier(p->getDisplayName()),
+                    [&](const std::string& name) {
+                        return !filesystem::fileExists(compDir + "/" + name + ".inv");
+                    },
+                    "");
+                filesystem::createDirectoryRecursively(compDir);
+                const auto path = compDir + "/" + filename + ".inv";
+                p->saveSubNetwork(path);
+                LogInfo("Saved Composite to \"" << path << "\"");
+            }
+        });
+        saveCompAction->setDisabled(selectedComposites.empty());
+
         menu.addSeparator();
         auto cutAction = menu.addAction(tr("Cu&t"));
         cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,39 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOCORE_H
-#define IVW_INVIWOCORE_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/processors/compositeprocessorfactoryobject.h>
+#include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
 
-class InviwoApplication;
+CompositeProcessorFactoryObject::CompositeProcessorFactoryObject(const std::string& file)
+    : ProcessorFactoryObject(makeProcessorInfo(file)), file_{file} {}
 
-/**
- * \class InviwoCore
- * \brief Module which registers all module related functionality available in the core.
- */
-class IVW_CORE_API InviwoCore : public InviwoModule {
-public:
-    InviwoCore(InviwoApplication* app);
-    
-    virtual std::string getPath() const override;
+std::unique_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplication* app) {
+    auto pi = getProcessorInfo();
+    return util::make_unique<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
+}
 
-private:
-    class Observer : public FileObserver {
-    public:
-        Observer(InviwoCore& core, InviwoApplication* app);
-        virtual void fileChanged(const std::string& dir) override;
-    private:
-        InviwoCore& core_;
+ProcessorInfo CompositeProcessorFactoryObject::makeProcessorInfo(const std::string& file) {
+
+    auto pi = ProcessorTraits<CompositeProcessor>::getProcessorInfo();
+    auto name = filesystem::getFileNameWithoutExtension(file);
+    auto id = pi.classIdentifier + util::stripIdentifier(file);
+
+    Deserializer d{file};
+    std::string tags;
+    d.deserialize("DisplayName", name);
+    d.deserialize("Tags", tags);
+
+    return {
+        id,                 // Class identifier
+        name,               // Display name
+        "Composites",       // Category
+        CodeState::Stable,  // Code state
+        tags,               // Tags
     };
-    void scanDirForComposites(const std::string& dir);
+}
 
-    Observer compositeDirObserver_;
-    std::unordered_set<std::string> addedCompositeFiles_;
-};
-
-}  // namespace
-
-#endif  // IVW_INVIWOCORE_H
+}  // namespace inviwo
