@@ -311,7 +311,6 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<VolumeIndicatorProperty>();
     registerProperty<BoolCompositeProperty>();
 
-    registerProcessor<CompositeProcessor>();
 
     std::function<void(std::unique_ptr<PropertyConverter>)> registerPC =
         [this](std::unique_ptr<PropertyConverter> propertyConverter) {
