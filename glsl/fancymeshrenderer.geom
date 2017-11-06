@@ -84,9 +84,9 @@ void main(void)
     //edge coordinates for edge highlighting
 #ifdef DRAW_EDGES
     //side lengths in pixel coordinates
-    float ab = length(halfScreenSize * (vertices[1].position.xy / vertices[1].position.z - vertices[0].position.xy / vertices[0].position.z));
-    float ac = length(halfScreenSize * (vertices[2].position.xy / vertices[2].position.z - vertices[0].position.xy / vertices[0].position.z));
-    float bc = length(halfScreenSize * (vertices[1].position.xy / vertices[1].position.z - vertices[2].position.xy / vertices[2].position.z));
+    float ab = length(halfScreenSize * (vertices[1].position.xy / vertices[1].position.w - vertices[0].position.xy / vertices[0].position.w));
+    float ac = length(halfScreenSize * (vertices[2].position.xy / vertices[2].position.w - vertices[0].position.xy / vertices[0].position.w));
+    float bc = length(halfScreenSize * (vertices[1].position.xy / vertices[1].position.w - vertices[2].position.xy / vertices[2].position.w));
     //desired edge width in pixels
     float edgeWidthGlobal = geomSettings.edgeWidth;
 #ifdef DRAW_EDGES_DEPTH_DEPENDENT
