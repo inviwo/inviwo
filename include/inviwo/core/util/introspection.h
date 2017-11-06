@@ -137,6 +137,21 @@ struct is_dereferenceable : std::false_type { };
 template< class T >
 struct is_dereferenceable<T, void_t<decltype(*std::declval<T>())>> : std::true_type { };
 
+/**
+ * A type trait to determine if type "Type" is constructible from arguments "Arguments...".
+ * Example:
+ *     util::is_constructible<MyType, FirstArg, SecondArg>::value
+ */
+template <typename Type, typename... Arguments>
+struct is_constructible {
+    template <typename U, decltype(U(std::declval<Arguments>()...)) * = nullptr>
+    static std::true_type check(int);
+    template <class>
+    static std::false_type check(...);
+
+public:
+    static const bool value = decltype(check<Type>(0))::value;
+};
 
 } // namespace
 

@@ -61,18 +61,25 @@ protected:
     }
 };
 
+/**
+ * A common factory base class
+ */
 class IVW_CORE_API FactoryBase {
 public:
-    FactoryBase() {}
-    virtual ~FactoryBase() {}
+    FactoryBase() = default;
+    virtual ~FactoryBase() = default;
     FactoryBase(const FactoryBase&) = delete;
     FactoryBase& operator=(const FactoryBase&) = delete;
     FactoryBase(FactoryBase&&) = default;
     FactoryBase& operator=(FactoryBase&&) = default;
 };
 
+/**
+ * An abstract factory interface. Inherits virtually from factory base, since an implementation
+ * might implement several factory interfaces
+ */
 template <typename T, typename K = const std::string&, typename... Args>
-class Factory : public FactoryBase {
+class Factory : public virtual FactoryBase {
 public:
     Factory() = default;
     virtual std::unique_ptr<T> create(K key, Args... args) const = 0;
@@ -109,8 +116,8 @@ inline bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
     if (util::insert_unique(map_, obj->getClassIdentifier(), obj)) {
         return true;
     } else {
-        LogWarn("Failed to register object " << obj->getClassIdentifier()
-                                             << ", already registered");
+        LogWarn("Failed to register object \"" << obj->getClassIdentifier()
+                                             << "\", already registered");
         return false;
     }
 }

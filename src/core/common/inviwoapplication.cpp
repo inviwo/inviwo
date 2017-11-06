@@ -105,7 +105,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , outportFactory_{util::make_unique<OutportFactory>()}
     , inportFactory_{util::make_unique<InportFactory>()}
     , portInspectorFactory_{util::make_unique<PortInspectorFactory>()}
-    , processorFactory_{util::make_unique<ProcessorFactory>()}
+    , processorFactory_{util::make_unique<ProcessorFactory>(this)}
     , processorWidgetFactory_{util::make_unique<ProcessorWidgetFactory>()}
     , propertyConverterManager_{util::make_unique<PropertyConverterManager>()}
     , propertyFactory_{util::make_unique<PropertyFactory>()}
