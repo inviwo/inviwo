@@ -236,12 +236,12 @@ private:
         }
     };
 
-    template <typename BTypes>
+    template <typename BTs>
     struct helper {
         template <typename AType, class F, class... Args>
         auto operator()(F&& f, Args&&... args) {
-            util::for_each_type<BTypes>{}(nestedhelper<AType>{}, std::forward<F>(f),
-                                          std::forward<Args>(args)...);
+           for_each_type<BTs>{}(nestedhelper<AType>{}, std::forward<F>(f),
+                                std::forward<Args>(args)...);
         }
     };
 
