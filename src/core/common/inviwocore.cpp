@@ -97,6 +97,10 @@ namespace inviwo {
 
 namespace {
 
+// Functors for registration of property converters
+// Can't use a regular lambda since we need the explicit template arguments.
+// We take a std::function to register the created converter since the registration function is
+// protected in the inviwo module
 struct ConverterRegFunctor {
     template <typename T, typename U>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
@@ -311,7 +315,8 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<VolumeIndicatorProperty>();
     registerProperty<BoolCompositeProperty>();
 
-
+    // We create a std::function to register the created converter since the registration function is
+    // protected in the inviwo module
     std::function<void(std::unique_ptr<PropertyConverter>)> registerPC =
         [this](std::unique_ptr<PropertyConverter> propertyConverter) {
             registerPropertyConverter(std::move(propertyConverter));
@@ -321,6 +326,8 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     using Vec3s = std::tuple<vec3, dvec3, ivec3, size3_t>;
     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
 
+    // for_each_type_pair will call the functor with all permutation of types, and supplied arguments
+    // like: ConverterRegFunctor<float, float>(registerPC), ConverterRegFunctor<float, double>(registerPC), ...
     util::for_each_type_pair<Scalars, Scalars>{}(ConverterRegFunctor{}, registerPC);
     util::for_each_type_pair<Vec2s, Vec2s>{}(ConverterRegFunctor{}, registerPC);
     util::for_each_type_pair<Vec3s, Vec3s>{}(ConverterRegFunctor{}, registerPC);
