@@ -86,56 +86,7 @@ public:
 
     void append(const BasicMesh* mesh);
 
-    static std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis,
-                                              const vec3& minorAxis,
-                                              const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                                              const float& radius = 0.001f,
-                                              const size_t& segments = 16);
-
-    static std::shared_ptr<BasicMesh> disk(const vec3& center, const vec3& normal,
-                                           const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                                           const float& radius = 1.0f, const size_t& segments = 16);
-    static std::shared_ptr<BasicMesh> cone(const vec3& start, const vec3& stop,
-                                           const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                                           const float& radius = 1.0f, const size_t& segments = 16);
-    static std::shared_ptr<BasicMesh> cylinder(const vec3& start, const vec3& stop,
-                                               const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                                               const float& radius = 1.0f,
-                                               const size_t& segments = 16,
-                                               bool caps = true, std::shared_ptr<BasicMesh> mesh  = nullptr);
-    static std::shared_ptr<BasicMesh> line(const vec3& start, const vec3& stop, const vec3& normal,
-                                           const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                                           const float& width = 1.0f, const ivec2& res = ivec2(1));
-    static std::shared_ptr<BasicMesh> arrow(const vec3& start, const vec3& stop,
-                                            const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                                            const float& radius = 1.0f,
-                                            const float& arrowfraction = 0.15f,
-                                            const float& arrowRadius = 2.0f,
-                                            const size_t& segments = 16);
-
-    static std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius, std::shared_ptr<BasicMesh> mesh = nullptr);
-    static std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const vec4 &color , std::shared_ptr<BasicMesh> mesh = nullptr);
-
-    static std::shared_ptr<BasicMesh> square(const vec3& center, const vec3& normal,
-                                             const vec2& extent,
-                                             const vec4& color = vec4(1, 1, 1, 1),
-                                             const ivec2& segments = ivec2(1));
-
-    static std::shared_ptr<BasicMesh> cube(const mat4& orientation,
-                                           const vec4& color = vec4(1, 1, 1, 1));
-
-    static std::shared_ptr<BasicMesh> coordindicator(const vec3& center, const float& size);
-
-    static std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& color);
-
-    static std::shared_ptr<BasicMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color);
-
-    static std::shared_ptr<BasicMesh> torus(const vec3 &center, const vec3 &up= vec3(0,1,0), float r1=1.f, float r2=.3f, const ivec2 &subdivisions = ivec2(32, 8), vec4 color = vec4(1, 1, 1, 1));
-
-
 protected:
-    static vec3 orthvec(const vec3& vec);
-    static vec3 tospherical(const vec2& v);
 
     const Vec3BufferRAM* getVerticesRAM() const;
     const Vec3BufferRAM* getTexCoordsRAM() const;

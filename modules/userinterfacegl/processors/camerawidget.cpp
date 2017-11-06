@@ -47,6 +47,8 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/glformats.h>
 
+#include <modules/base/algorithm/meshutils.h>
+
 #include <modules/assimp/assimpreader.h>
 
 namespace inviwo {
@@ -424,7 +426,7 @@ void CameraWidget::loadMesh() {
     const vec3 cubeScale(8.0f);
     mat4 transform(glm::scale(vec3(cubeScale)));
     transform[3] = vec4(-0.5f * cubeScale, 1.0f);
-    meshes_[3] = BasicMesh::cube(transform, vec4(0.6f, 0.42f, 0.42f, 1.0f));
+    meshes_[3] = meshutil::cube(transform, vec4(0.6f, 0.42f, 0.42f, 1.0f));
 
     for (std::size_t i = 0; i < meshes_.size(); ++i) {
         if (auto mesh = meshes_[i].get()) {

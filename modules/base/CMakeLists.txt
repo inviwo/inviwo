@@ -12,6 +12,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
@@ -32,6 +33,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/camerafrustum.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometryprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataexport.h
@@ -100,6 +102,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
@@ -118,6 +121,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/camerafrustum.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/convexhull2dprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cubeproxygeometryprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.cpp
