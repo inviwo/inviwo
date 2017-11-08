@@ -120,7 +120,7 @@ NetworkSearch::NetworkSearch(InviwoMainWindow *win)
            }},
           {"module", "m", "processor module", true,
            [this](Processor *p, const std::string &s) -> bool {
-               auto  moduleMap = getModuleMap(win_->getInviwoApplication());
+               auto moduleMap = getModuleMap(win_->getInviwoApplication());
                bool module = false;
                auto mit = moduleMap.find(p->getClassIdentifier());
                if (mit != moduleMap.end()) {
@@ -147,7 +147,8 @@ NetworkSearch::NetworkSearch(InviwoMainWindow *win)
     auto b = doc.append("html").append("body");
     b.append("b", "Search network", {{"style", "color:white;"}});
     b.append("p", "Example: \"tag:gl port:volume raycaster\".");
-    b.append("p", "Terms are intersecting. Double quotes are supported. "
+    b.append("p",
+             "Terms are intersecting. Double quotes are supported. "
              "Enter will confirm selection, escape will cancel.");
     b.append("p", "Supported keys (shortcut):");
     using H = utildoc::TableBuilder::Header;
@@ -180,8 +181,15 @@ NetworkSearch::NetworkSearch(InviwoMainWindow *win)
 
 void NetworkSearch::updateSearch(const QString &str) {
     auto app = win_->getInviwoApplication();
-    auto editor = win_->getNetworkEditor();
     auto network = app->getProcessorNetwork();
+    auto editor = win_->getNetworkEditor();
+
+    if (str.isEmpty()) {
+        // nothing selected
+        editor->clearSelection();
+        return;
+    }
+
     auto tokens = tokenize(utilqt::fromQString(str));
 
     network->forEachProcessor([&](Processor *p) {
