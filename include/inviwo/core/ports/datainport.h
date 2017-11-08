@@ -149,15 +149,19 @@ struct CanConnectTo<T, true> {
 template <typename T, size_t N, bool Flat>
 struct PortTraits<DataInport<T, N, Flat>> {
     static std::string classIdentifier() {
+        std::string postfix = +(Flat ? ".flat" : "");
         switch (N) {
             case 0:
-                return DataTraits<T>::classIdentifier() + (Flat ? ".flat" : "") + ".multi.inport";
+                postfix += ".multi.inport";
+                break;
             case 1:
-                return DataTraits<T>::classIdentifier() + (Flat ? ".flat" : "") + ".inport";
+                postfix += ".inport";
+                break;
             default:
-                return DataTraits<T>::classIdentifier() + (Flat ? ".flat." : ".") + toString(N) +
-                       ".inport";
+                postfix += "." + toString(N) + ".inport";
+                break;
         }
+        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), postfix);
     }
 };
 
@@ -238,7 +242,7 @@ std::vector<std::shared_ptr<const T>> DataInport<T, N, Flat>::getVectorData() co
 
 template <typename T, size_t N, bool Flat>
 std::vector<std::pair<Outport*, std::shared_ptr<const T>>>
-inviwo::DataInport<T, N, Flat>::getSourceVectorData() const {
+DataInport<T, N, Flat>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, std::shared_ptr<const T>>> res(N);
 
     for (auto outport : connectedOutports_) {

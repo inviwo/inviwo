@@ -68,7 +68,9 @@ protected:
 
 template <typename T>
 struct PortTraits<DataOutport<T>> {
-    static std::string classIdentifier() { return DataTraits<T>::classIdentifier() + ".outport"; }
+    static std::string classIdentifier() {
+        return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".outport");
+    }
 };
 
 template <typename T>
@@ -127,7 +129,7 @@ Document DataOutport<T>::getInfo() const {
     using H = utildoc::TableBuilder::Header;
     auto t = doc.append("html").append("body").append("table");
     auto pi = t.append("tr").append("td");
-    pi.append("b", DataTraits<T>::dataName() + " Outport", { {"style", "color:white;"} });
+    pi.append("b", DataTraits<T>::dataName() + " Outport", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(pi, P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());

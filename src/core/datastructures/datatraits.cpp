@@ -85,5 +85,13 @@ uvec3 util::getDataFormatColor(NumericType t, size_t comp, size_t size) {
     return color;
 }
 
+std::string util::appendIfNotEmpty(const std::string& a, const std::string& b) {
+    if (a.empty() || b.empty()) {
+        return a;
+    } else {
+        return a + b;
+    }
+}
+
 } // namespace
 

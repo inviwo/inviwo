@@ -56,7 +56,7 @@ template <typename T>
 class InportFactoryObjectTemplate : public InportFactoryObject {
 public:
     InportFactoryObjectTemplate() : InportFactoryObject(PortTraits<T>::classIdentifier()) {
-        static_assert(std::is_base_of<Port, T>::value, "All ports must derive from Port");
+        static_assert(std::is_base_of<Inport, T>::value, "All inports must derive from Inport");
     }
 
     virtual ~InportFactoryObjectTemplate() = default;
@@ -85,7 +85,7 @@ template <typename T>
 class OutportFactoryObjectTemplate : public OutportFactoryObject {
 public:
     OutportFactoryObjectTemplate() : OutportFactoryObject(PortTraits<T>::classIdentifier()) {
-        static_assert(std::is_base_of<Port, T>::value, "All ports must derive from Port");
+        static_assert(std::is_base_of<Outport, T>::value, "All outports must derive from Outport");
     }
 
     virtual ~OutportFactoryObjectTemplate() = default;

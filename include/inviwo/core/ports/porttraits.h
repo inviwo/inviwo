@@ -39,6 +39,18 @@ namespace inviwo {
 
 /**
  * \class PortTraits
+ * \brief A traits class for getting the class identifier from a Port.
+ * This provides a customization point if one wants to generate the class identifier dynamically,
+ * by specializing the traits for your kind of Port:
+ *
+ *     template <typename T>
+ *     struct PortTraits<MyPort<T>> {
+ *        static std::string classIdentifier() {
+ *           return generateMyPortClassIdentifier<T>();
+ *        }
+ *     };
+ *
+ * The default behavior returns the static member "classIdentifier";
  */
 template <typename T, typename = void>
 struct PortTraits {

@@ -87,7 +87,7 @@ std::string classIdentifier() {
 }
 template <typename T, typename std::enable_if<!HasClassIdentifier<T>::value, std::size_t>::type = 0>
 std::string classIdentifier() {
-    return std::string{};
+    return {};
 }
 
 template <class T>
@@ -108,7 +108,7 @@ std::string dataName() {
 }
 template <typename T, typename std::enable_if<!HasDataName<T>::value, std::size_t>::type = 0>
 std::string dataName() {
-    return std::string{};
+    return classIdentifier<T>();
 }
 
 template <class T>
@@ -201,7 +201,9 @@ Document info(const T& data) {
 template <typename T, typename std::enable_if<!HasInfo<T>::value && !HasDataInfo<T>::value,
                                               std::size_t>::type = 0>
 Document info(const T&) {
-    return Document{};
+    Document doc;
+    doc.append("p", dataName<T>());
+    return doc;
 }
 
 }  // namespace util
