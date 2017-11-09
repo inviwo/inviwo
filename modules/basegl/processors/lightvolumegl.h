@@ -128,7 +128,7 @@ private:
     vec3 lightDir_;
     vec3 lightPos_;
     vec4 lightColor_;
-    LightSourceType::Enum lightType_;
+    LightSourceType lightType_;
     bool calculatedOnes_;
 };
 

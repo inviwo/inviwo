@@ -38,19 +38,21 @@ namespace inviwo {
 
 class DiffuseLight : public LightSource {
 public:
-    DiffuseLight() : LightSource() {}
-    virtual ~DiffuseLight(){};
+    DiffuseLight() = default;
+    virtual ~DiffuseLight() = default;
     virtual DiffuseLight* clone() const { return new DiffuseLight(*this); }
 
-    virtual float getArea() const { return size_.x * size_.y; }
+    virtual float getArea() const override { return size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const { return getIntensity() * getArea() * static_cast<float>(M_PI); }
+    virtual vec3 getPower() const override {
+        return getIntensity() * getArea() * static_cast<float>(M_PI);
+    }
 
-    LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_AREA; }
+    LightSourceType getLightSourceType() const override { return LightSourceType::area; }
 
     /**
      * Get normal of area light.

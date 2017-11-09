@@ -35,7 +35,7 @@ PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float r
     PackedLightSource light;
     light.tm = lightsource->getCoordinateTransformer().getModelToWorldMatrix();
     light.radiance = vec4(radianceScale * lightsource->getIntensity(), 1.f);
-    light.type = lightsource->getLightSourceType();
+    light.type = static_cast<int>(lightsource->getLightSourceType());
     light.area = lightsource->getArea();
     light.cosFOV = std::cos(glm::radians(lightsource->getFieldOfView() / 2.f));
     light.size = lightsource->getSize();
@@ -48,7 +48,7 @@ PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float r
     PackedLightSource light;
     light.tm = transformLightMat * lightsource->getCoordinateTransformer().getModelToWorldMatrix();
     light.radiance = vec4(radianceScale * lightsource->getIntensity(), 1.f);
-    light.type = lightsource->getLightSourceType();
+    light.type = static_cast<int>(lightsource->getLightSourceType());
     light.area = lightsource->getArea();
     light.cosFOV = std::cos(glm::radians(lightsource->getFieldOfView() / 2.f));
     // Transform width and height.

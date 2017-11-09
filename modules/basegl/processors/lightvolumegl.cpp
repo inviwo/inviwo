@@ -220,7 +220,7 @@ void LightVolumeGL::process() {
             propagationShader_.setUniform("lightVolume_", lightVolUnit[i].getUnitNumber());
             propagationShader_.setUniform("permutationMatrix_", propParams_[i].axisPermutation);
 
-            if (lightSource_.getData()->getLightSourceType() == LightSourceType::LIGHT_POINT) {
+            if (lightSource_.getData()->getLightSourceType() == LightSourceType::point) {
                 propagationShader_.setUniform("lightPos_", lightPos_);
                 propagationShader_.setUniform("permutedLightMatrix_",
                                               propParams_[i].axisPermutationLight);
@@ -267,9 +267,9 @@ bool LightVolumeGL::lightSourceChanged() {
     vec3 lightDirection = vec3(0.f);
 
     switch (lightSource_.getData()->getLightSourceType()) {
-        case LightSourceType::LIGHT_DIRECTIONAL: {
-            if (lightType_ != LightSourceType::LIGHT_DIRECTIONAL) {
-                lightType_ = LightSourceType::LIGHT_DIRECTIONAL;
+        case LightSourceType::directional: {
+            if (lightType_ != LightSourceType::directional) {
+                lightType_ = LightSourceType::directional;
                 propagationShader_.getFragmentShaderObject()->removeShaderDefine("POINT_LIGHT");
                 propagationShader_.getFragmentShaderObject()->build();
                 propagationShader_.link();
@@ -290,9 +290,9 @@ bool LightVolumeGL::lightSourceChanged() {
             break;
         }
 
-        case LightSourceType::LIGHT_POINT: {
-            if (lightType_ != LightSourceType::LIGHT_POINT) {
-                lightType_ = LightSourceType::LIGHT_POINT;
+        case LightSourceType::point: {
+            if (lightType_ != LightSourceType::point) {
+                lightType_ = LightSourceType::point;
                 propagationShader_.getFragmentShaderObject()->addShaderDefine("POINT_LIGHT");
                 propagationShader_.getFragmentShaderObject()->build();
                 propagationShader_.link();
@@ -314,8 +314,8 @@ bool LightVolumeGL::lightSourceChanged() {
             break;
         }
 
-        case LightSourceType::LIGHT_CONE:
-        case LightSourceType::LIGHT_AREA:
+        case LightSourceType::cone:
+        case LightSourceType::area:
         default:
             LogWarn("Light source not supported, can only handle Directional or Point Light");
             break;

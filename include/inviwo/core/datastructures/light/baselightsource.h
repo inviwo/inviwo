@@ -37,15 +37,12 @@
 
 namespace inviwo {
 
-namespace LightSourceType {
-enum Enum { LIGHT_AREA = 0, LIGHT_CONE, LIGHT_POINT, LIGHT_DIRECTIONAL };
-}
-// TODO: Change/add transformation and size information to meters instead of texture space.
+enum class LightSourceType { area = 0, cone, point, directional };
 
 class IVW_CORE_API LightSource : public SpatialEntity<3> {
 public:
-    LightSource() : fieldOfView_(static_cast<float>(0.5 * M_PI)){};
-    virtual ~LightSource(){};
+    LightSource();
+    virtual ~LightSource() = default;
 
     virtual float getArea() const = 0;
 
@@ -57,60 +54,49 @@ public:
 
     /**
      * Get the intensity (color) from the light source given in watt per steradian (flux density per
-     *solid angle, W*s*r^-1).
-     *
+     * solid angle, W*s*r^-1).
      * @return Flux density per solid angle, W*s*r^-1
      */
-    const vec3 getIntensity() const { return intensity_; }
+    const vec3 getIntensity() const;
 
     /**
      * Set the intensity (color) from the light source given in watt per steradian (flux density per
-     *solid angle, W*s*r^-1).
-     *
+     * solid angle, W*s*r^-1).
      * @param intensity
      */
-    void setIntensity(const vec3& intensity) { intensity_ = intensity; }
+    void setIntensity(const vec3& intensity);
 
-    virtual LightSourceType::Enum getLightSourceType() const = 0;
+    virtual LightSourceType getLightSourceType() const = 0;
 
     /**
      * Return field of view in radians.
-     *
      * @return Field of view in radians
      */
-    float getFieldOfView() const { return fieldOfView_; }
+    float getFieldOfView() const;
 
-    void setFieldOfView(float FOVInRadians) { fieldOfView_ = FOVInRadians; }
+    void setFieldOfView(float FOVInRadians);
 
     /**
      * Get width and height in world space.
-     *
-     * @return
      */
-    const vec2& getSize() const { return size_; }
+    const vec2& getSize() const;
 
     /**
      * Set width and height in texture space.
-     *
-     * @param newSize
      */
-    void setSize(const vec2& newSize) { size_ = newSize; }
+    void setSize(const vec2& newSize);
 
     /**
      * Get is enabled.
-     *
-     * @return
      */
-    bool isEnabled() const { return enabled_; }
+    bool isEnabled() const;
 
     /**
      * Set if enabled.
-     *
-     * @param enable
      */
-    void setEnabled(bool enable) { enabled_ = enable; }
+    void setEnabled(bool enable);
 
-    virtual std::string getDataInfo() const { return "LightSource"; }
+    virtual Document getInfo() const;
 
     static const uvec3 colorCode;
     static const std::string classIdentifier;
@@ -124,11 +110,11 @@ protected:
     bool enabled_;
 };
 
-/** 
+/**
  * \brief Encodes the position and direction in a matrix.
- * 
+ *
  * Light source position is extracted using:
- * `p = M * vec4(0, 0, 0, 1)` 
+ * `p = M * vec4(0, 0, 0, 1)`
  * And the light source direction using:
  * `d = normalize(M * vec4(0, 0, 1, 0))`
  * @param pos Light source position.
