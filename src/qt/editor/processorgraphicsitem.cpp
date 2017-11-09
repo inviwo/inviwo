@@ -256,14 +256,17 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
     const float roundedCorners = 9.0f;
 
     p->save();
-    p->setPen(Qt::NoPen);
     p->setRenderHint(QPainter::Antialiasing, true);
-    QColor topColor(140, 140, 140);
-    QColor middleColor(59, 61, 61);
-    QColor bottomColor(40, 40, 40);
-
-    p->setBrush(middleColor);
-    p->setPen(QPen(QBrush(isSelected() ? Qt::darkRed : bottomColor), 2.0));
+    QColor selectionColor("#7a191b");
+    QColor backgroundColor("#3b3d3d");
+    QColor borderColor("#282828");
+        
+    if (isSelected()) {
+        p->setBrush(selectionColor);
+    } else {
+        p->setBrush(backgroundColor);
+    }
+    p->setPen(QPen(QBrush(borderColor), 2.0));
 
     p->drawRoundedRect(rect(), roundedCorners, roundedCorners);
 
