@@ -190,7 +190,8 @@ protected:
 
     /**
      * Register port type T, PortTraits<T>::classIdentifier has to be defined and return a non
-     * empty and unique string.
+     * empty and unique string. We use reverse DNS for class identifiers, i.e. org.inviwo.classname
+     * @see PortTraits
      */
     template <typename T>
     void registerPort();
@@ -199,9 +200,11 @@ protected:
      * Utility for register a standard set of ports for a data type T
      * Will register the following ports:
      *     DataInport<T>           Inport
-     *     DataInport<T, 0>        Multi Inport
-     *     DataInport<T, 0, true>  Flat Multi Inport
+     *     DataInport<T, 0>        Multi Inport (accepts multiple input connections)
+     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with vector<T>)
      *     DataOutport<T>          Outport
+     * @see DataInport
+     * @see DataOutport
      */
     template <typename T>
     void registerStandardPortsForObject();
