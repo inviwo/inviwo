@@ -34,6 +34,8 @@
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/util/document.h>
+
 #include <initializer_list>
 
 namespace inviwo {
@@ -62,8 +64,10 @@ public:
 
     virtual void append(const BufferBase&) = 0;
 
-    static uvec3 COLOR_CODE;
-    static const std::string CLASS_IDENTIFIER;
+    virtual Document getInfo() const = 0;
+    static uvec3 colorCode;
+    static const std::string classIdentifier;
+    static const std::string dataName;
 
 protected:
     size_t size_;
@@ -71,9 +75,8 @@ protected:
     BufferTarget target_;
 };
 
-
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class Buffer : public BufferBase {
@@ -89,9 +92,10 @@ public:
     BufferRAMPrecision<T, Target>* getEditableRAMRepresentation();
     const BufferRAMPrecision<T, Target>* getRAMRepresentation() const;
 
-
     virtual void append(const BufferBase&) override;
     void append(const Buffer<T, Target>&);
+
+    virtual Document getInfo() const override;
 
 protected:
     virtual std::shared_ptr<BufferRepresentation> createDefaultRepresentation() const override;
@@ -134,7 +138,7 @@ std::shared_ptr<Buffer<T, Target>> makeBuffer(std::vector<T>&& data) {
 }
 
 struct IVW_CORE_API BufferDispatcher {
-    using type = std::shared_ptr < BufferBase > ;
+    using type = std::shared_ptr<BufferBase>;
     template <class T>
     std::shared_ptr<BufferBase> dispatch(size_t size, BufferUsage usage, BufferTarget target) {
         typedef typename T::type F;
@@ -148,7 +152,7 @@ struct IVW_CORE_API BufferDispatcher {
     }
 };
 
-}  // namespace
+}  // namespace util
 
 template <typename T, BufferTarget Target>
 Buffer<T, Target>::Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr)
@@ -189,10 +193,17 @@ BufferRAMPrecision<T, Target>* Buffer<T, Target>::getEditableRAMRepresentation()
 }
 
 template <typename T, BufferTarget Target>
-std::shared_ptr<BufferRepresentation> inviwo::Buffer<T, Target>::createDefaultRepresentation() const {
+std::shared_ptr<BufferRepresentation> Buffer<T, Target>::createDefaultRepresentation() const {
     return std::make_shared<BufferRAMPrecision<T, Target>>(size_, usage_);
 }
 
-}  // namespace
+template <typename T, BufferTarget Target>
+Document Buffer<T, Target>::getInfo() const {
+    Document doc;
+    doc.append("b", "Buffer", {{"style", "color:white;"}});
+    return doc;
+}
+
+}  // namespace inviwo
 
 #endif  // IVW_BUFFER_H

@@ -86,7 +86,7 @@ void exposeMesh(py::module &m) {
 
     py::class_<Mesh>(m, "Mesh")
         .def(py::init<>())
-        .def_property_readonly("dataInfo", &Mesh::getDataInfo)
+        .def_property_readonly("dataInfo", &Mesh::getInfo)
         .def("addBuffer", [](Mesh *m, Mesh::BufferInfo info,
                              std::shared_ptr<BufferBase> att) { m->addBuffer(info, att); })
         .def("addBuffer", [](Mesh *m, BufferType type,

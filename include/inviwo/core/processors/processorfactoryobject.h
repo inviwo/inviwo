@@ -36,7 +36,7 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processortraits.h>
 
-#include <inviwo/core/util/introspection.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <string>
 

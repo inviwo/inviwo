@@ -35,6 +35,7 @@
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/porttraits.h>
 
 namespace inviwo {
 
@@ -54,15 +55,13 @@ protected:
 template <typename T>
 class InportFactoryObjectTemplate : public InportFactoryObject {
 public:
-    InportFactoryObjectTemplate(const std::string& className) : InportFactoryObject(className) {
-        static_assert(std::is_base_of<Port, T>::value, "All ports must derive from Port");
+    InportFactoryObjectTemplate() : InportFactoryObject(PortTraits<T>::classIdentifier()) {
+        static_assert(std::is_base_of<Inport, T>::value, "All inports must derive from Inport");
     }
 
     virtual ~InportFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Inport> create() override {
-        return util::make_unique<T>(className_);
-    }
+    virtual std::unique_ptr<Inport> create() override { return util::make_unique<T>(className_); }
 
     virtual std::unique_ptr<Inport> create(const std::string& identifier) override {
         return util::make_unique<T>(identifier);
@@ -85,21 +84,19 @@ protected:
 template <typename T>
 class OutportFactoryObjectTemplate : public OutportFactoryObject {
 public:
-    OutportFactoryObjectTemplate(const std::string& className) : OutportFactoryObject(className) {
-        static_assert(std::is_base_of<Port, T>::value, "All ports must derive from Port");
+    OutportFactoryObjectTemplate() : OutportFactoryObject(PortTraits<T>::classIdentifier()) {
+        static_assert(std::is_base_of<Outport, T>::value, "All outports must derive from Outport");
     }
 
     virtual ~OutportFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Outport> create() override {
-        return util::make_unique<T>(className_);
-    }
+    virtual std::unique_ptr<Outport> create() override { return util::make_unique<T>(className_); }
 
     virtual std::unique_ptr<Outport> create(const std::string& identifier) override {
         return util::make_unique<T>(identifier);
     }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PORTFACTORYOBJECT_H

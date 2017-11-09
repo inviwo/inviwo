@@ -24,26 +24,27 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/portfactoryobject.h>
 
 namespace inviwo {
 
-InportFactoryObject::InportFactoryObject(const std::string& className)
-    : className_(className) {}
-
-const std::string& InportFactoryObject::getClassIdentifier() const {
-    return className_;
+InportFactoryObject::InportFactoryObject(const std::string& className) : className_(className) {
+    if (className_.empty()) {
+        throw Exception("Port must have a non empty class identifier", IvwContext);
+    }
 }
 
-OutportFactoryObject::OutportFactoryObject(const std::string& className)
-    : className_(className) {}
+const std::string& InportFactoryObject::getClassIdentifier() const { return className_; }
 
-const std::string& OutportFactoryObject::getClassIdentifier() const {
-    return className_;
+OutportFactoryObject::OutportFactoryObject(const std::string& className) : className_(className) {
+    if (className_.empty()) {
+        throw Exception("Port must have a non empty class identifier", IvwContext);
+    }
 }
 
-} // namespace
+const std::string& OutportFactoryObject::getClassIdentifier() const { return className_; }
 
+}  // namespace inviwo

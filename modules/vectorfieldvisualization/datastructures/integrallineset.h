@@ -36,6 +36,7 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/port.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
@@ -84,13 +85,16 @@ using IntegralLineSetInport = DataInport<IntegralLineSet>;
 using IntegralLineSetOutport = DataOutport<IntegralLineSet>;
 
 template <>
-struct port_traits<IntegralLineSet> {
-    static std::string class_identifier() { return "IntegralLineSet"; }
-    static uvec3 color_code() { return uvec3(255, 150, 0); }
-    static std::string data_info(const IntegralLineSet* data) {
+struct DataTraits<IntegralLineSet> {
+    static std::string classIdentifier() { return "org.inviwo.IntegralLineSet"; }
+    static std::string dataName() { return "IntegralLineSet"; }
+    static uvec3 colorCode() { return uvec3(255, 150, 0); }
+    static Document info(const IntegralLineSet& data) {
         std::ostringstream oss;
-        oss << "Integral Line Set with " << data->size() << " lines";
-        return oss.str();
+        oss << "Integral Line Set with " << data.size() << " lines";
+        Document doc;
+        doc.append("p", oss.str());
+        return doc;
     }
 };
 

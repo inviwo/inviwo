@@ -24,49 +24,52 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 
-//Cameras
+// Cameras
 #include <inviwo/core/datastructures/camera.h>
 
-//Data Structures
+// Data Structures
 #include <inviwo/core/datastructures/volume/volumeramconverter.h>
 #include <inviwo/core/datastructures/image/layerramconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 
-//Meta Data
+// Meta Data
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/metadata/propertyeditorwidgetmetadata.h>
 
-//Utilizes
+// Utilizes
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/settings/linksettings.h>
 
-//Io
+// Io
 #include <inviwo/core/io/rawvolumereader.h>
 
-//Others
+// Others
 #include <inviwo/core/processors/canvasprocessor.h>
 
-//Ports
+// Ports
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/bufferport.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
 
-//PortInspectors
+
+// PortInspectors
 #include <inviwo/core/ports/portinspector.h>
 
-//Properties
+// Properties
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -164,24 +167,24 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerMetaData(util::make_unique<DoubleMat2MetaData>());
     registerMetaData(util::make_unique<DoubleMat4MetaData>());
     registerMetaData(util::make_unique<DoubleMat3MetaData>());
-    registerMetaData(util::make_unique<VectorMetaData<2,float>>());
-    registerMetaData(util::make_unique<VectorMetaData<3,float>>());
-    registerMetaData(util::make_unique<VectorMetaData<4,float>>());
-    registerMetaData(util::make_unique<VectorMetaData<2,double>>());
-    registerMetaData(util::make_unique<VectorMetaData<3,double>>());
-    registerMetaData(util::make_unique<VectorMetaData<4,double>>());
-    registerMetaData(util::make_unique<VectorMetaData<2,int>>());
-    registerMetaData(util::make_unique<VectorMetaData<3,int>>());
-    registerMetaData(util::make_unique<VectorMetaData<4,int>>());
-    registerMetaData(util::make_unique<VectorMetaData<2,unsigned int>>());
-    registerMetaData(util::make_unique<VectorMetaData<3,unsigned int>>());
-    registerMetaData(util::make_unique<VectorMetaData<4,unsigned int>>());
-    registerMetaData(util::make_unique<MatrixMetaData<2,float>>());
-    registerMetaData(util::make_unique<MatrixMetaData<3,float>>());
-    registerMetaData(util::make_unique<MatrixMetaData<4,float>>());
-    registerMetaData(util::make_unique<MatrixMetaData<2,double>>());
-    registerMetaData(util::make_unique<MatrixMetaData<3,double>>());
-    registerMetaData(util::make_unique<MatrixMetaData<4,double>>());
+    registerMetaData(util::make_unique<VectorMetaData<2, float>>());
+    registerMetaData(util::make_unique<VectorMetaData<3, float>>());
+    registerMetaData(util::make_unique<VectorMetaData<4, float>>());
+    registerMetaData(util::make_unique<VectorMetaData<2, double>>());
+    registerMetaData(util::make_unique<VectorMetaData<3, double>>());
+    registerMetaData(util::make_unique<VectorMetaData<4, double>>());
+    registerMetaData(util::make_unique<VectorMetaData<2, int>>());
+    registerMetaData(util::make_unique<VectorMetaData<3, int>>());
+    registerMetaData(util::make_unique<VectorMetaData<4, int>>());
+    registerMetaData(util::make_unique<VectorMetaData<2, unsigned int>>());
+    registerMetaData(util::make_unique<VectorMetaData<3, unsigned int>>());
+    registerMetaData(util::make_unique<VectorMetaData<4, unsigned int>>());
+    registerMetaData(util::make_unique<MatrixMetaData<2, float>>());
+    registerMetaData(util::make_unique<MatrixMetaData<3, float>>());
+    registerMetaData(util::make_unique<MatrixMetaData<4, float>>());
+    registerMetaData(util::make_unique<MatrixMetaData<2, double>>());
+    registerMetaData(util::make_unique<MatrixMetaData<3, double>>());
+    registerMetaData(util::make_unique<MatrixMetaData<4, double>>());
     registerMetaData(util::make_unique<PositionMetaData>());
     registerMetaData(util::make_unique<ProcessorMetaData>());
     registerMetaData(util::make_unique<ProcessorWidgetMetaData>());
@@ -193,77 +196,52 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerCamera<PerspectiveCamera>("PerspectiveCamera");
     registerCamera<OrthographicCamera>("OrthographicCamera");
     registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
-    
+
     // Register Capabilities
     auto syscap = util::make_unique<SystemCapabilities>();
     registerCapabilities(std::move(syscap));
-    
+
     // Register Data readers
     registerDataReader(util::make_unique<RawVolumeReader>());
     // Register Data writers
 
     // Register Ports
-    registerPort<MeshInport>("org.inviwo.MeshInport");
-    registerPort<MeshMultiInport>("org.inviwo.MeshMultiInport");
-    registerPort<MeshOutport>("org.inviwo.MeshOutport");
-    registerPort<ImageInport>("org.inviwo.ImageInport");
-    registerPort<ImageMultiInport>("org.inviwo.MultiImageInport");
-    registerPort<ImageOutport>("org.inviwo.ImageOutport");
-    registerPort<VolumeInport>("org.inviwo.VolumeInport");
-    registerPort<VolumeOutport>("org.inviwo.VolumeOutport");
+    registerPort<ImageInport>();
+    registerPort<ImageMultiInport>();
+    registerPort<ImageOutport>();
+    registerStandardPortsForObject<Mesh>();
+    registerStandardPortsForObject<Volume>();
+    registerStandardPortsForObject<BufferBase>();
+    registerStandardPortsForObject<LightSource>();
 
-    registerPort<DataInport<vec2>>("vec2Inport");
-    registerPort<DataInport<vec2, 0>>("vec2MutliInport");
-    registerPort<DataInport<vec2, 0, true>>("vec2FlatMultiInport");
-    registerPort<DataOutport<std::vector<vec2>>>("vec2VectorOutport");
-    registerPort<DataOutport<vec2>>("vec2Outport");
-    registerPort<DataInport<dvec2>>("dvec2Inport");
-    registerPort<DataInport<dvec2, 0>>("dvec2MutliInport");
-    registerPort<DataInport<dvec2, 0, true>>("dvec2FlatMultiInport");
-    registerPort<DataOutport<std::vector<dvec2>>>("dvec2VectorOutport");
-    registerPort<DataOutport<dvec2>>("dvec2Outport");
-    registerPort<DataInport<ivec2>>("ivec2Inport");
-    registerPort<DataInport<ivec2, 0>>("ivec2MutliInport");
-    registerPort<DataInport<ivec2, 0, true>>("ivec2FlatMultiInport");
-    registerPort<DataOutport<std::vector<ivec2>>>("ivec2VectorOutport");
-    registerPort<DataOutport<ivec2>>("ivec2Outport");
-    registerPort<DataInport<vec3>>("vec3Inport");
-    registerPort<DataInport<vec3, 0>>("vec3MutliInport");
-    registerPort<DataInport<vec3, 0, true>>("vec3FlatMultiInport");
-    registerPort<DataOutport<std::vector<vec3>>>("vec3VectorOutport");
-    registerPort<DataOutport<vec3>>("vec3Outport");
-    registerPort<DataInport<dvec3>>("dvec3Inport");
-    registerPort<DataInport<dvec3, 0>>("dvec3MutliInport");
-    registerPort<DataInport<dvec3, 0, true>>("dvec3FlatMultiInport");
-    registerPort<DataOutport<std::vector<dvec3>>>("dvec3VectorOutport");
-    registerPort<DataOutport<dvec3>>("dvec3Outport");
-    registerPort<DataInport<ivec3>>("ivec3Inport");
-    registerPort<DataInport<ivec3, 0>>("ivec3MutliInport");
-    registerPort<DataInport<ivec3, 0, true>>("ivec3FlatMultiInport");
-    registerPort<DataOutport<std::vector<ivec3>>>("ivec3VectorOutport");
-    registerPort<DataOutport<ivec3>>("ivec3Outport");
-    registerPort<DataInport<vec4>>("vec4Inport");
-    registerPort<DataInport<vec4, 0>>("vec4MutliInport");
-    registerPort<DataInport<vec4, 0, true>>("vec4FlatMultiInport");
-    registerPort<DataOutport<std::vector<vec4>>>("vec4VectorOutport");
-    registerPort<DataOutport<vec4>>("vec4Outport");
-    registerPort<DataInport<dvec4>>("dvec4Inport");
-    registerPort<DataInport<dvec4, 0>>("dvec4MutliInport");
-    registerPort<DataInport<dvec4, 0, true>>("dvec4FlatMultiInport");
-    registerPort<DataOutport<std::vector<dvec4>>>("dvec4VectorOutport");
-    registerPort<DataOutport<dvec4>>("dvec4Outport");
-    registerPort<DataInport<ivec4>>("ivec4Inport");
-    registerPort<DataInport<ivec4, 0>>("ivec4MutliInport");
-    registerPort<DataInport<ivec4, 0, true>>("ivec4FlatMultiInport");
-    registerPort<DataOutport<std::vector<ivec4>>>("ivec4VectorOutport");
-    registerPort<DataOutport<ivec4>>("ivec4Outport");
+    registerStandardPortsForObject<vec2>();
+    registerStandardPortsForObject<dvec2>();
+    registerStandardPortsForObject<ivec2>();
+    registerStandardPortsForObject<vec3>();
+    registerStandardPortsForObject<dvec3>();
+    registerStandardPortsForObject<ivec3>();
+    registerStandardPortsForObject<vec4>();
+    registerStandardPortsForObject<dvec4>();
+    registerStandardPortsForObject<ivec4>();
+
+    registerStandardPortsForObject<std::vector<vec2>>();
+    registerStandardPortsForObject<std::vector<dvec2>>();
+    registerStandardPortsForObject<std::vector<ivec2>>();
+    registerStandardPortsForObject<std::vector<vec3>>();
+    registerStandardPortsForObject<std::vector<dvec3>>();
+    registerStandardPortsForObject<std::vector<ivec3>>();
+    registerStandardPortsForObject<std::vector<vec4>>();
+    registerStandardPortsForObject<std::vector<dvec4>>();
+    registerStandardPortsForObject<std::vector<ivec4>>();
 
     // Register PortInspectors
-    registerPortInspector("org.inviwo.ImageOutport", app->getPath(PathType::PortInspectors, "/imageportinspector.inv"));
-    registerPortInspector("org.inviwo.VolumeOutport", app->getPath(PathType::PortInspectors, "/volumeportinspector.inv"));
-    registerPortInspector("org.inviwo.MeshOutport", app->getPath(PathType::PortInspectors, "/geometryportinspector.inv"));
-    
-    //registerProperty<EventProperty>(); TODO fix "default" contructor with 2 args...
+    registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),
+                          app->getPath(PathType::PortInspectors, "/imageportinspector.inv"));
+    registerPortInspector(PortTraits<VolumeOutport>::classIdentifier(),
+                          app->getPath(PathType::PortInspectors, "/volumeportinspector.inv"));
+    registerPortInspector(PortTraits<MeshOutport>::classIdentifier(),
+                          app->getPath(PathType::PortInspectors, "/geometryportinspector.inv"));
+
     registerProperty<CompositeProperty>();
     registerProperty<AdvancedMaterialProperty>();
     registerProperty<BoolProperty>();

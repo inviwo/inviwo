@@ -84,40 +84,20 @@ NetworkEditor* EditorGraphicsItem::getNetworkEditor() const {
 }
 
 void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const {
-    SystemSettings* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    bool portinfo = settings->enablePortInformation_.get();
+    auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     bool inspector = settings->enablePortInspectors_.get();
-
-    if (!inspector && !portinfo) return;
-
     size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
-    Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
-    auto t = doc.append("html").append("body").append("table");
+
+    auto doc = port->getInfo();
+    auto t = doc.get({P("html"), P("body"), P("table")});
 
     auto inport = dynamic_cast<const Inport*>(port);
     auto outport = dynamic_cast<Outport*>(port);
     if (!outport && inport) {
         outport = inport->getConnectedOutport();
-    }
-
-    if (portinfo) {
-        auto pi = t.append("tr").append("td");
-        pi.append("b", port->getClassIdentifier(), {{"style", "color:white;"}});
-        utildoc::TableBuilder tb(pi, P::end());
-        tb(H("Identifier"), port->getIdentifier());
-        tb(H("Ready"), port->isReady());
-        tb(H("Connected"), port->isConnected());
-
-        if (inport) {
-            std::stringstream ss;
-            ss << inport->getNumberOfConnections() << " (" << inport->getMaxNumberOfConnections()
-               << ")";
-            tb(H("Connections"), ss.str());
-            tb(H("Optional"), inport->isOptional());
-        }
     }
 
     if (inspector && outport) {
@@ -153,7 +133,6 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 layers.push_back({"", image->getColorLayer(0)});
             }
 
-            // add all layer images into the same row
             auto tableCell = t.append("tr").append("td").append("table").append("tr");
             size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
             size_t rowCount = 0;
@@ -182,10 +161,6 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 ++rowCount;
             }
         }
-    }
-
-    if (portinfo) {
-        t.append("tr").append("td", port->getContentInfo());
     }
 
     // Need to make sure that we have not pending qt stuff before showing tooltip

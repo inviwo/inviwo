@@ -53,6 +53,8 @@ mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     return transformationMatrix;
 }
 
-inviwo::uvec3 LightSource::COLOR_CODE = uvec3(128,64,196);
+const uvec3 LightSource::colorCode = uvec3(128, 64, 196);
+const std::string LightSource::classIdentifier = "org.inviwo.LightSource";
+const std::string LightSource::dataName = "LightSource";
 
-}
+}  // namespace inviwo

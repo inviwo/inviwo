@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,45 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORTFACTORY_H
-#define IVW_PORTFACTORY_H
+#ifndef IVW_PORTTRAITS_H
+#define IVW_PORTTRAITS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/portfactoryobject.h>
-#include <inviwo/core/util/factory.h>
+#include <inviwo/core/ports/port.h>
+#include <inviwo/core/util/introspection.h>
 
 namespace inviwo {
 
-class IVW_CORE_API InportFactory : public Factory<Inport, const std::string&, const std::string&>,
-                                   public StandardFactory<Inport, InportFactoryObject> {
-public:
-    InportFactory() = default;
-    virtual ~InportFactory() = default;
-
-    using StandardFactory<Inport, InportFactoryObject>::create;
-    virtual bool hasKey(const std::string& key) const override;
-    virtual std::unique_ptr<Inport> create(const std::string& className,
-                                           const std::string& identifier) const override;
-};
-
-class IVW_CORE_API OutportFactory : public Factory<Outport, const std::string&, const std::string&>,
-                                    public StandardFactory<Outport, OutportFactoryObject> {
-public:
-    OutportFactory() = default;
-    virtual ~OutportFactory() = default;
-
-    using StandardFactory<Outport, OutportFactoryObject>::create;
-    virtual bool hasKey(const std::string& key) const override;
-    virtual std::unique_ptr<Outport> create(const std::string& className,
-                                            const std::string& identifier) const override;
+/**
+ * \class PortTraits
+ * \brief A traits class for getting the class identifier from a Port.
+ * This provides a customization point if one wants to generate the class identifier dynamically,
+ * by specializing the traits for your kind of Port:
+ *
+ *     template <typename T>
+ *     struct PortTraits<MyPort<T>> {
+ *        static std::string classIdentifier() {
+ *           return generateMyPortClassIdentifier<T>();
+ *        }
+ *     };
+ *
+ * The default behavior returns the static member "classIdentifier";
+ */
+template <typename T, typename = void>
+struct PortTraits {
+	 /**
+     * The Class Identifier has to be globally unique. Use a reverse DNS naming scheme.
+     * Example: "org.someorg.myporttype"
+     * The default implementation will look for a static std::string member T::classIdentifier.
+     * In case it is not found an empty string will be returned. An empty class identifier will be
+     * considered an error in various factories.
+     */
+    static std::string classIdentifier() {
+        return util::classIdentifier<T>();
+    }
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_PORTFACTORY_H
+#endif  // IVW_PORTTRAITS_H

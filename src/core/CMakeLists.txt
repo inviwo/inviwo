@@ -31,6 +31,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datagrouprepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datamapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datarepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datatraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/basicmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/edge.h
@@ -161,6 +162,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectorfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectorfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectormanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/ports/porttraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/volumeport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/activityindicator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessor.h
@@ -318,6 +320,7 @@ set(SOURCE_FILES
     datastructures/camera.cpp
     datastructures/camerafactoryobject.cpp
     datastructures/datamapper.cpp
+    datastructures/datatraits.cpp
     datastructures/geometry/basicmesh.cpp
     datastructures/geometry/mesh.cpp
     datastructures/geometry/meshram.cpp
@@ -417,6 +420,7 @@ set(SOURCE_FILES
     ports/portinspectorfactory.cpp
     ports/portinspectorfactoryobject.cpp
     ports/portinspectormanager.cpp
+    ports/porttraits.cpp
     processors/activityindicator.cpp
     processors/canvasprocessor.cpp
     processors/processor.cpp

@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
@@ -57,7 +58,7 @@ public:
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();
-    std::string getDataInfo() const;
+    Document getInfo() const;
 
     size3_t getDimensions() const override;
     
@@ -117,8 +118,9 @@ public:
     vec3 getWorldSpaceGradientSpacing() const;
     DataMapper dataMap_;
 
-    static uvec3 COLOR_CODE;
-    static const std::string CLASS_IDENTIFIER;
+    static uvec3 colorCode;
+    static const std::string classIdentifier;
+    static const std::string dataName;
 
 
     template<typename Kind>

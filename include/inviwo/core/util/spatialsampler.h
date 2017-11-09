@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
@@ -65,9 +66,6 @@ public:
 
     const SpatialCoordinateTransformer<SpatialDims> &getCoordinateTransformer() const;
 
-    virtual std::string getDataInfo() const;
-    static uvec3 COLOR_CODE;
-
 protected:
     virtual Vector<DataDims, T> sampleDataSpace(const Vector<SpatialDims, double> &pos) const = 0;
     virtual bool withinBoundsDataSpace(const Vector<SpatialDims, double> &pos) const = 0;
@@ -75,6 +73,24 @@ protected:
     Space space_;
     const SpatialEntity<SpatialDims> &spatialEntity_;
     Matrix<SpatialDims + 1, double> transform_;
+};
+
+template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+struct DataTraits<SpatialSampler<SpatialDims, DataDims, T>> {
+    static std::string classIdentifier() {
+        return "org.inviwo.SpatialSampler." + toString(SpatialDims) + "D." +
+               DataFormat<Vector<DataDims, T>>::str();
+    }
+    static std::string dataName() {
+        return "SpatialSampler<" + toString(SpatialDims) + "D" +
+               DataFormat<Vector<DataDims, T>>::str() + ">";
+    }
+    static uvec3 colorCode() { return uvec3(153, 0, 76); }
+    static Document info(const SpatialSampler<SpatialDims, DataDims, T>&) {
+        Document doc;
+        doc.append("p", dataName());
+        return doc;
+    }
 };
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
@@ -173,14 +189,6 @@ template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 Matrix<SpatialDims, float> SpatialSampler<SpatialDims, DataDims, T>::getBasis() const {
     return spatialEntity_.getBasis();
 }
-
-template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-std::string SpatialSampler<SpatialDims, DataDims, T>::getDataInfo() const {
-    return "SpatialSampler" + toString(SpatialDims) + toString(DataDims) +
-           parseTypeIdName(std::string(typeid(T).name()));
-}
-template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-uvec3 SpatialSampler<SpatialDims, DataDims, T>::COLOR_CODE = uvec3(153, 0, 76);
 
 }  // namespace inviwo
 

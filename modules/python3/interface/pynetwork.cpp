@@ -154,7 +154,7 @@ void exposeNetwork(py::module &m) {
         .def_property_readonly("identifier", &Port::getIdentifier)
         .def_property_readonly("processor", &Port::getProcessor, py::return_value_policy::reference)
         .def_property_readonly("classIdentifier", &Port::getClassIdentifier)
-        .def_property_readonly("contentInfo", &Port::getContentInfo)
+        .def_property_readonly("contentInfo", &Port::getInfo)
         .def("isConnected", &Port::isConnected)
         .def("isReady", &Port::isReady);
 

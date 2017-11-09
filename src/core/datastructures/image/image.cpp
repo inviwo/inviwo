@@ -271,11 +271,11 @@ dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
     return dvec4(0.0);
 }
 
-inviwo::uvec3 Image::COLOR_CODE = uvec3(90, 127, 183);
+uvec3 Image::colorCode = uvec3(90, 127, 183);
+const std::string Image::classIdentifier = "org.inviwo.Image";
+const std::string Image::dataName = "Image";
 
-const std::string Image::CLASS_IDENTIFIER = "org.inviwo.Image";
-
-std::string Image::getDataInfo() const {
+Document Image::getInfo() const {
     using H = utildoc::TableBuilder::Header;
     using P = Document::PathComponent;
     Document doc;

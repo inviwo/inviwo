@@ -40,7 +40,6 @@
 
 #include <unordered_map>
 
-                                                                                                                                                                                                                                                               
 namespace inviwo {
 
 class ImageOutport;
@@ -93,10 +92,11 @@ class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
 public:
     BaseImageInport(std::string identifier, bool outportDeterminesSize = false);
     virtual ~BaseImageInport();
+    virtual std::string getClassIdentifier() const override;
 
     /**
      * Connects this inport to the Outport. Propagates the inport size to the Outport, if the
-     * Processor is a Processor::sink Processor, or any of the dependent Outports of this 
+     * Processor is a Processor::sink Processor, or any of the dependent Outports of this
      * Inport are connected.
      *
      * @note Does not check if the outport is an ImageOutport
@@ -108,7 +108,6 @@ public:
     virtual std::vector<std::shared_ptr<const Image>> getVectorData() const override;
     virtual std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> getSourceVectorData()
         const override;
-    virtual std::string getContentInfo() const override;
 
     virtual size2_t getRequestedDimensions(Outport* outport) const override;
 
@@ -136,16 +135,29 @@ using ImageInport = BaseImageInport<1>;
  */
 using ImageMultiInport = BaseImageInport<0>;
 
+template <>
+struct PortTraits<BaseImageInport<1>> {
+    static std::string classIdentifier() {
+        return DataTraits<Image>::classIdentifier() + ".inport";
+    }
+};
+template <>
+struct PortTraits<BaseImageInport<0>> {
+    static std::string classIdentifier() {
+        return DataTraits<Image>::classIdentifier() + ".multi.inport";
+    }
+};
+
 /**
  * \ingroup ports
  * ImageOutport extends  DataOutport<Image> with extra functionality for handing
  * ResizeEvents. The following table explains the behaviors:
- * 
+ *
  * \verbatim
- *                                                 ImageOutport                              
- *                                           isHandlingResizeEvents()                        
- *                                                                                           
- *                               True (default)                          False               
+ *                                                 ImageOutport
+ *                                           isHandlingResizeEvents()
+ *
+ *                               True (default)                          False
  *                    ┌──────────────────────────────────┬──────────────────────────────────┐
  *                    │ Outport::Size = max(Inports      │ Outport::Size = Outport::size    │
  *                    │ requested sizes)                 │ (no resize of data)              │
@@ -169,21 +181,23 @@ using ImageMultiInport = BaseImageInport<0>;
  *                    │                                  │                                  │
  *                    └──────────────────────────────────┴──────────────────────────────────┘
  * \endverbatim
- */  
+ */
 class IVW_CORE_API ImageOutport : public DataOutport<Image>, public EventHandler {
-    template <size_t N> friend class BaseImageInport;
+    template <size_t N>
+    friend class BaseImageInport;
 
 public:
     ImageOutport(std::string identifier, const DataFormatBase* format = DataVec4UInt8::get(),
-        bool handleResizeEvents = true);
+                 bool handleResizeEvents = true);
     ImageOutport(std::string identifier, bool handleResizeEvents);
 
     virtual ~ImageOutport() = default;
-
+    virtual std::string getClassIdentifier() const override;
+ 
     virtual void setData(std::shared_ptr<const Image>) override;
-    virtual void setData(const Image* data) override; // will assume ownership of data.
+    virtual void setData(const Image* data) override;  // will assume ownership of data.
     void setData(std::shared_ptr<Image>);
-    void setData(Image* data); // will assume ownership of data.
+    void setData(Image* data);  // will assume ownership of data.
 
     bool hasEditableData() const;
     std::shared_ptr<Image> getEditableData() const;
@@ -194,7 +208,7 @@ public:
      */
     void propagateEvent(Event* event) override;
     const DataFormatBase* getDataFormat() const;
-    size2_t getDimensions() const;   
+    size2_t getDimensions() const;
     /**
      * Set the dimensions of this port without propagating the size
      * through the network. Will call setDimensions on the image contained within the port.
@@ -227,17 +241,28 @@ private:
     ImageCache cache_;
 };
 
+template <>
+struct PortTraits<ImageOutport> {
+    static std::string classIdentifier() {
+        return DataTraits<Image>::classIdentifier() + ".outport";
+    }
+};
+
 // Image Inport
 template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string identifier, bool outportDeterminesSize)
-    : DataInport<Image, N>(identifier)
-    , outportDeterminesSize_(outportDeterminesSize) {
-        // A default size
-        requestedDimensionsMap_[nullptr] = size2_t(0); 
-    }
+    : DataInport<Image, N>(identifier), outportDeterminesSize_(outportDeterminesSize) {
+    // A default size
+    requestedDimensionsMap_[nullptr] = size2_t(0);
+}
 
 template <size_t N>
 BaseImageInport<N>::~BaseImageInport() = default;
+
+template <size_t N>
+std::string BaseImageInport<N>::getClassIdentifier() const {
+    return PortTraits<BaseImageInport<N>>::classIdentifier();
+}
 
 template <size_t N>
 void BaseImageInport<N>::connectTo(Outport* outport) {
@@ -318,7 +343,8 @@ std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() co
 }
 
 template <size_t N>
-std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> BaseImageInport<N>::getSourceVectorData() const {
+std::vector<std::pair<Outport*, std::shared_ptr<const Image>>>
+BaseImageInport<N>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> res(N);
 
     for (auto outport : this->connectedOutports_) {
@@ -354,14 +380,6 @@ void BaseImageInport<N>::setOutportDeterminesSize(bool outportDeterminesSize) {
 }
 
 template <size_t N>
-std::string BaseImageInport<N>::getContentInfo() const {
-    if (this->hasData())
-        return getData()->getDataInfo();
-    else
-        return this->getClassIdentifier() + " has no data.";
-}
-
-template <size_t N>
 void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
     if (this->hasData()) {
         std::shared_ptr<const Image> img = getData();
@@ -370,6 +388,6 @@ void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
     }
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGEPORT_H

@@ -37,8 +37,8 @@
 namespace inviwo {
 
 HDF5Module::HDF5Module(InviwoApplication* app) : InviwoModule(app, "HDF5") {
-    registerPort<hdf5::Inport>("org.inviwo.HDFInPort");
-    registerPort<hdf5::Outport>("org.inviwo.HDFOutPort");
+    registerPort<hdf5::Inport>();
+    registerPort<hdf5::Outport>();
 
     registerProcessor<hdf5::Source>();
     registerProcessor<hdf5::HDF5ToVolume>();

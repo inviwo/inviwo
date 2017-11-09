@@ -44,9 +44,9 @@ BufferUsage BufferBase::getBufferUsage() const { return usage_; }
 
 BufferTarget BufferBase::getBufferTarget() const { return target_; }
 
-inviwo::uvec3 BufferBase::COLOR_CODE = uvec3(255, 113, 0);
-
-const std::string BufferBase::CLASS_IDENTIFIER = "org.inviwo.Buffer";
+uvec3 BufferBase::colorCode = uvec3(255, 113, 0);
+const std::string BufferBase::classIdentifier = "org.inviwo.Buffer";
+const std::string BufferBase::dataName = "Buffer";
 
 void BufferBase::setSize(size_t size) {
     if (size != size_) {

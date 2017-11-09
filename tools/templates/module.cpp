@@ -51,8 +51,8 @@ namespace inviwo {
     // registerRepresentationConverter(util::make_unique<<name>Disk2RAMConverter>());
 
     // Ports
-    // registerPort<<name>Outport>("<name>Outport");
-    // registerPort<<name>Inport>("<name>Inport");
+    // registerPort<<name>Outport>();
+    // registerPort<<name>Inport>();
 
     // PropertyWidgets
     // registerPropertyWidget<<name>PropertyWidget, <name>Property>("Default");

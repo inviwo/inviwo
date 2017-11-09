@@ -50,19 +50,19 @@
 
 namespace inviwo {
 
-    using LineSetSelector = InputSelector<DataInport<IntegralLineSet,0>,IntegralLineSetOutport>;
-    template <>
-    struct ProcessorTraits<LineSetSelector> {
-        static ProcessorInfo getProcessorInfo() {
-            return {
-                "org.inviwo.IntegralLineSetSelector",  // Class identifier
-                "Integral Line Set Selector",          // Display name
-                "Data Selector",                           // Category
-                CodeState::Experimental,                   // Code state
-                Tags::CPU                                  // Tags
-            };
-        }
-    };
+using LineSetSelector = InputSelector<DataInport<IntegralLineSet, 0>, IntegralLineSetOutport>;
+template <>
+struct ProcessorTraits<LineSetSelector> {
+    static ProcessorInfo getProcessorInfo() {
+        return {
+            "org.inviwo.IntegralLineSetSelector",  // Class identifier
+            "Integral Line Set Selector",          // Display name
+            "Data Selector",                       // Category
+            CodeState::Experimental,               // Code state
+            Tags::CPU                              // Tags
+        };
+    }
+};
 
 VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
     : InviwoModule(app, "VectorFieldVisualization") {
@@ -82,15 +82,9 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
 
     registerProcessor<LineSetSelector>();
 
-    registerPort < SeedPoints3DOutport>("SeedPointsOutport");
-    registerPort < SeedPoints3DInport>("SeedPointsInport");
-    registerPort < SeedPoints4DOutport>("SeedPoints4DOutport");
-    registerPort < SeedPoints4DInport>("SeedPoints4DInport");
-
     registerProperty<StreamLineProperties>();
     registerProperty<PathLineProperties>();
 }
-
 
 int VectorFieldVisualizationModule::getVersion() const { return 1; }
 
@@ -109,21 +103,19 @@ bool VectorFieldVisualizationModule::Converter::traverseNodes(TxElement* node, u
     return res;
 }
 
-bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* node)
-{
+bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* node) {
     std::string key;
     node->GetValue(&key);
-
 
     if (key == "Processor") {
         std::string type = node->GetAttributeOrDefault("type", "");
         if (type == "org.inviwo.PathLines") {
 
-            TxElement *propertiesNode = nullptr;
-            TxElement *pathLinePropertiesNode = nullptr;
+            TxElement* propertiesNode = nullptr;
+            TxElement* pathLinePropertiesNode = nullptr;
 
-            TxElement *pathLinePropertiesPropertiesNode = nullptr;
-            TxElement *allowLoopingNode = nullptr;
+            TxElement* pathLinePropertiesPropertiesNode = nullptr;
+            TxElement* allowLoopingNode = nullptr;
 
             ticpp::Iterator<ticpp::Element> child;
             for (child = child.begin(node); child != child.end(); child++) {
@@ -166,16 +158,16 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
                 return false;
             }
 
-
-
-            for (child = child.begin(pathLinePropertiesPropertiesNode); child != child.end(); child++) {
+            for (child = child.begin(pathLinePropertiesPropertiesNode); child != child.end();
+                 child++) {
                 std::string childkey;
                 child->GetValue(&childkey);
                 if (childkey == "Property") {
                     std::string childType = child->GetAttributeOrDefault("type", "");
                     std::string childIdentifier = child->GetAttributeOrDefault("identifier", "");
 
-                    if (childType == "org.inviwo.BoolProperty" && childIdentifier == "allowLooping") {
+                    if (childType == "org.inviwo.BoolProperty" &&
+                        childIdentifier == "allowLooping") {
                         allowLoopingNode = child.Get();
                         break;
                     }
@@ -189,7 +181,6 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
             pathLinePropertiesPropertiesNode->RemoveChild(allowLoopingNode);
             return true;
         }
-
     }
     return false;
 }
@@ -198,31 +189,26 @@ VectorFieldVisualizationModule::Converter::Converter(int version) : version_(ver
 
 bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
     std::vector<xml::IdentifierReplacement> repl = {
-        { { xml::Kind::processor("org.inviwo.StreamRibbons")
-        , xml::Kind::inport("Inport") },
-        "vectorVolume",
-        "sampler" },
-        { { xml::Kind::processor("org.inviwo.StreamRibbons")
-        , xml::Kind::inport("Inport") },
-        "vorticityVolume",
-        "vorticitySampler" }
-    };
+        {{xml::Kind::processor("org.inviwo.StreamRibbons"), xml::Kind::inport("Inport")},
+         "vectorVolume",
+         "sampler"},
+        {{xml::Kind::processor("org.inviwo.StreamRibbons"), xml::Kind::inport("Inport")},
+         "vorticityVolume",
+         "vorticitySampler"}};
 
     bool res = false;
     switch (version_) {
-    case 0: {
-        res |= traverseNodes(root, &VectorFieldVisualizationModule::Converter::updateAllowLooping);
-        res |= xml::changeIdentifiers(root, repl);
-        return res;
-    }
+        case 0: {
+            res |=
+                traverseNodes(root, &VectorFieldVisualizationModule::Converter::updateAllowLooping);
+            res |= xml::changeIdentifiers(root, repl);
+            return res;
+        }
 
-    default:
-        return false;  // No changes
+        default:
+            return false;  // No changes
     }
     return true;
-
-
 }
 
-
-}  // namespace
+}  // namespace inviwo

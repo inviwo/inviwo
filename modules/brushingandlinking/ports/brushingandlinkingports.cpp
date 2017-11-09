@@ -88,7 +88,15 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices()
     }
 }
 
+std::string BrushingAndLinkingInport::getClassIdentifier() const {
+    return PortTraits<BrushingAndLinkingInport>::classIdentifier();
+}
+
 BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string identifier)
     : DataOutport<BrushingAndLinkingManager>(identifier) {}
+
+std::string BrushingAndLinkingOutport::getClassIdentifier() const {
+    return PortTraits<BrushingAndLinkingOutport>::classIdentifier();
+}
 
 }  // namespace

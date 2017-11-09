@@ -52,7 +52,7 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
 
-std::string Volume::getDataInfo() const {
+Document Volume::getInfo() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
     Document doc;
@@ -168,8 +168,9 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     return ds;
 }
 
-uvec3 Volume::COLOR_CODE = uvec3(188, 101, 101);
-const std::string Volume::CLASS_IDENTIFIER = "org.inviwo.Volume";
+uvec3 Volume::colorCode = uvec3(188, 101, 101);
+const std::string Volume::classIdentifier = "org.inviwo.Volume";
+const std::string Volume::dataName = "Volume";
 
 const StructuredCameraCoordinateTransformer<3>& Volume::getCoordinateTransformer(
     const Camera& camera) const {

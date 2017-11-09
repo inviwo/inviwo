@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/document.h>
 
 #include <H5Cpp.h>
 
@@ -71,7 +72,7 @@ public:
 
     ~Handle();
 
-    std::string getDataInfo() const;
+    Document getInfo() const;
 
     const H5::Group& getGroup() const;
 
@@ -87,8 +88,9 @@ public:
     template <typename T>
     std::vector<glm::tvec3<T, glm::defaultp>> getVectorOfVec3AtPath(const Path& path) const;
 
-    static uvec3 COLOR_CODE;
-    static const std::string CLASS_IDENTIFIER;
+    static const uvec3 colorCode;
+    static const std::string classIdentifier;
+    static const std::string dataName;
 
 private:
     double getMin(const DataFormatBase* type) const;

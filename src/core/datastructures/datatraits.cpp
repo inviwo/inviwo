@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,71 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORTFACTORY_H
-#define IVW_PORTFACTORY_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/portfactoryobject.h>
-#include <inviwo/core/util/factory.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
-class IVW_CORE_API InportFactory : public Factory<Inport, const std::string&, const std::string&>,
-                                   public StandardFactory<Inport, InportFactoryObject> {
-public:
-    InportFactory() = default;
-    virtual ~InportFactory() = default;
+uvec3 util::getDataFormatColor(NumericType t, size_t comp, size_t size) {
+    uvec3 color;
+    switch (t) {
+        case NumericType::Float:
+            color.r = 30;
+            break;
+        case NumericType::SignedInteger:
+            color.r = 60;
+            break;
+        case NumericType::UnsignedInteger:
+            color.r = 90;
+            break;
+        default:
+            color.r = 0;
+            break;
+    }
 
-    using StandardFactory<Inport, InportFactoryObject>::create;
-    virtual bool hasKey(const std::string& key) const override;
-    virtual std::unique_ptr<Inport> create(const std::string& className,
-                                           const std::string& identifier) const override;
-};
+    switch (comp) {
+        case 1:
+            color.g = 30;
+            break;
+        case 2:
+            color.g = 60;
+            break;
+        case 3:
+            color.g = 90;
+            break;
+        case 4:
+            color.g = 120;
+            break;
+        default:
+            color.g = 0;
+            break;
+    }
+    switch (size) {
+        case 1:
+            color.b = 30;
+            break;
+        case 2:
+            color.b = 60;
+            break;
+        case 3:
+            color.b = 90;
+            break;
+        case 4:
+            color.b = 120;
+            break;
+        default:
+            color.b = 0;
+            break;
+    }
+    return color;
+}
 
-class IVW_CORE_API OutportFactory : public Factory<Outport, const std::string&, const std::string&>,
-                                    public StandardFactory<Outport, OutportFactoryObject> {
-public:
-    OutportFactory() = default;
-    virtual ~OutportFactory() = default;
+std::string util::appendIfNotEmpty(const std::string& a, const std::string& b) {
+    if (a.empty() || b.empty()) {
+        return a;
+    } else {
+        return a + b;
+    }
+}
 
-    using StandardFactory<Outport, OutportFactoryObject>::create;
-    virtual bool hasKey(const std::string& key) const override;
-    virtual std::unique_ptr<Outport> create(const std::string& className,
-                                            const std::string& identifier) const override;
-};
+} // namespace
 
-}  // namespace inviwo
-
-#endif  // IVW_PORTFACTORY_H
