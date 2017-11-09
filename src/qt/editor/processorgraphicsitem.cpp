@@ -258,8 +258,8 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
     QColor selectionColor("#244b68");
-    QColor backgroundColor(59, 61, 61);
-    QColor borderColor(40, 40, 40);
+    QColor backgroundColor("#3b3d3d");
+    QColor borderColor("#282828");
         
     if (isSelected()) {
         p->setBrush(selectionColor);
