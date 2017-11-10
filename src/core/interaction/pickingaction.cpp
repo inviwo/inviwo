@@ -41,20 +41,20 @@ size_t PickingAction::getPickingId(size_t id) const {
         return start_ + id;
     } else {
         throw RangeException(
-            "local picking ID " + toString(id) + " not in range (0 - " + toString(size_) + ")",
+            "Local picking ID " + toString(id) + " not in range (0 - " + toString(size_) + ")",
             IvwContext);
     }
 }
 
 size_t PickingAction::getLocalPickingId(size_t id) const {
     if (id < start_) {
-        throw RangeException("global picking ID " + toString(id) + " not in range (" +
+        throw RangeException("Global picking ID " + toString(id) + " not in range (" +
                                  toString(start_) + " - " + toString(start_ + size_) + ")",
                              IvwContext);
     }
     auto localID = id - start_;
     if (localID >= size_) {
-        throw RangeException("global picking ID " + toString(id) + " not in range (" +
+        throw RangeException("Global picking ID " + toString(id) + " not in range (" +
                                  toString(start_) + " - " + toString(start_ + size_) + ")",
                              IvwContext);
     }
@@ -85,7 +85,7 @@ void PickingAction::setSize(size_t size) {
     if (size <= capacity_) {
         size_ = size;
     } else {
-        throw Exception("trying to set size (" + toString(size) + ") larger than capacity (" +
+        throw Exception("Trying to set size (" + toString(size) + ") larger than capacity (" +
                             toString(capacity_) + ")",
                         IvwContext);
     }
