@@ -57,7 +57,13 @@ out fData
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
 #endif
+#ifdef DRAW_EDGES
+#ifdef DRAW_EDGES_DEPTH_DEPENDENT
+    noperspective vec3 edgeCoordinates;
+#else
     vec3 edgeCoordinates;
+#endif
+#endif
 } frag;
 
 struct GeometrySettings
@@ -83,12 +89,25 @@ void main(void)
 
     //edge coordinates for edge highlighting
 #ifdef DRAW_EDGES
+    //vertices coordinates in pixel space
+    vec2 screenA = halfScreenSize * vertices[0].position.xy;
+    vec2 screenB = halfScreenSize * vertices[1].position.xy;
+    vec2 screenC = halfScreenSize * vertices[2].position.xy;
     //side lengths in pixel coordinates
-    float ab = length(halfScreenSize * (vertices[1].position.xy / vertices[1].position.w - vertices[0].position.xy / vertices[0].position.w));
-    float ac = length(halfScreenSize * (vertices[2].position.xy / vertices[2].position.w - vertices[0].position.xy / vertices[0].position.w));
-    float bc = length(halfScreenSize * (vertices[1].position.xy / vertices[1].position.w - vertices[2].position.xy / vertices[2].position.w));
+    float ab = length(screenB - screenA);
+    float ac = length(screenC - screenA);
+    float bc = length(screenC - screenB);
+    //cosines angles at the vertices
+    float angleACos = dot((screenB - screenA) / ab, (screenC - screenA) / ac);
+    float angleBCos = dot((screenA - screenB) / ab, (screenC - screenB) / bc);
+    float angleCCos = dot((screenA - screenC) / ac, (screenB - screenC) / bc);
+    //sines at the vertices
+    float angleASin = sqrt(1 - angleACos*angleACos);
+    float angleBSin = sqrt(1 - angleBCos*angleBCos);
+    float angleCSin = sqrt(1 - angleCCos*angleCCos);
+
     //desired edge width in pixels
-    float edgeWidthGlobal = geomSettings.edgeWidth;
+    float edgeWidthGlobal = geomSettings.edgeWidth * 4;
 #ifdef DRAW_EDGES_DEPTH_DEPENDENT
     float edgeWidthScale = 2; //experiments, this gives the most similar result to non-depth dependent thickness
     vec3 edgeWidth = vec3(
@@ -103,17 +122,17 @@ void main(void)
     vec3 edgeCoordinates[3];
     edgeCoordinates[0] = vec3(
         0,
-        1 / (1 - min(0.99, edgeWidth.x / ab)),
-        1 / (1 - min(0.99, edgeWidth.x / ac))
+        1 / (1 - min(0.99999, edgeWidth.x / (ab * angleASin))),
+        1 / (1 - min(0.99999, edgeWidth.x / (ac * angleASin)))
     );
     edgeCoordinates[1] = vec3(
-        1 / (1 - min(0.99, edgeWidth.y / ab)),
+        1 / (1 - min(0.99999, edgeWidth.y / (ab * angleBSin))),
         0,
-        1 / (1 - min(0.99, edgeWidth.y / bc))
+        1 / (1 - min(0.99999, edgeWidth.y / (bc * angleBSin)))
     );
     edgeCoordinates[2] = vec3(
-        1 / (1 - min(0.99, edgeWidth.z / ac)),
-        1 / (1 - min(0.99, edgeWidth.z / bc)),
+        1 / (1 - min(0.99999, edgeWidth.z / (ac * angleCSin))),
+        1 / (1 - min(0.99999, edgeWidth.z / (bc * angleCSin))),
         0
     );
 #endif
