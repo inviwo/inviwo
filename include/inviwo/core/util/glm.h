@@ -930,7 +930,20 @@ VECTORIZE_MAT_MAT(min)
 VECTORIZE_MAT_MAT(max)
 VECTORIZE_MAT_MAT(mod)
 
-} // namespace
+namespace detail {
+#ifdef DARWIN
+// Adding missing template specialization for size_t
+// Needed in inviwo/dev/ext/glm/gtx/string_cast.inl
+// when size_t is a unsigned long
+template <>
+struct prefix<size_t>
+{
+    GLM_FUNC_QUALIFIER static char const * value() {return "u64";};
+};
+#endif
+} // namespace detail
+
+} // namespace glm
 
 #endif // IVW_GLM_H
 
