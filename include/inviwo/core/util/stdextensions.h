@@ -558,6 +558,7 @@ bool is_future_ready(const std::future<T>& future) {
 template <typename T>
 class is_container {
     using test_type = typename std::remove_const<T>::type;
+    using iterator_traits = typename std::iterator_traits<T>;
 
     template <typename A,
               class = typename std::enable_if<
