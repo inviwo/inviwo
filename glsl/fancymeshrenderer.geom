@@ -70,6 +70,9 @@ uniform GeometrySettings geomSettings;
 
 void main(void) 
 {
+    //==================================================
+    // MEASURES ON THE TRIANGLES
+    //==================================================
     //compute the area of the triangle,
     //needed for several shading computations
     float area = length(cross(vertices[1].position.xyz-vertices[0].position.xyz,
@@ -83,6 +86,9 @@ void main(void)
     sideLengths.z = length(vertices[2].position.xyz - vertices[1].position.xyz);
 #endif
 
+    //==================================================
+    // EDGES
+    //==================================================
     //edge coordinates for edge highlighting
 #ifdef DRAW_EDGES
     //vertices coordinates in pixel space
@@ -133,7 +139,9 @@ void main(void)
     );
 #endif
     
-    //pass-through other parameters
+    //==================================================
+    // pass-through other parameters
+    //==================================================
     for (int i=0; i<3; ++i)
     {
         frag.worldPosition = vertices[i].worldPosition;

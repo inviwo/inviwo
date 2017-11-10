@@ -124,7 +124,9 @@ vec4 performShading()
     FaceRenderSettings settings = renderSettings[gl_FrontFacing ? 0 : 1];
     vec3 toCameraDir = normalize(camera.position - frag.worldPosition.xyz);
 
-    // base color
+    //==================================================
+    // BASE COLOR
+    //==================================================
     vec4 color = vec4(1.0);
     if (settings.colorSource == 0) {
         // vertex color
@@ -138,13 +140,17 @@ vec4 performShading()
         color.a = 1;
     }
 
-    // normal vector
+    //==================================================
+    // NORMAL VECTOR
+    //==================================================
     vec3 normal = frag.normal;
     //TODO: switch on settings.normalSource. For now, assume ==0
     normal = normalize(normal);
     if (!gl_FrontFacing) normal = -normal; //backface -> invert normal
 
-    // alpha
+    //==================================================
+    // ALPHA
+    //==================================================
     float alpha = 1;
     if (settings.separateUniformAlpha) {
         //use per-face uniform alpha
@@ -178,7 +184,9 @@ vec4 performShading()
     }
     color.a *= alpha;
 
-    //edges
+    //==================================================
+    // EDGES
+    //==================================================
 #ifdef DRAW_EDGES
     if (settings.showEdges) {
         float isEdge = any(greaterThan(frag.edgeCoordinates,vec3(1))) ? 1.0f : 0.0f;
@@ -195,7 +203,9 @@ vec4 performShading()
     }
 #endif
 
-    //stripes
+    //==================================================
+    // HATChING
+    //==================================================
     if (settings.hatchingMode > 0) {
         float stripeStrength = 1;
         vec2 texCoord = frag.texCoord;
@@ -236,7 +246,9 @@ vec4 performShading()
         }
     }
 
-    // shading
+    //==================================================
+    // SHADING
+    //==================================================
     if (settings.shadingMode==1) {
         //Phong
         color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), frag.worldPosition.xyz,

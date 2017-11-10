@@ -257,6 +257,9 @@ protected:
         Multiplicative,
         Additive
     };
+    /**
+     * \brief Hatching settings. These are exactly the parameters from the IRIS-paper
+     */
     struct HatchingSettings
     {
         TemplateOptionProperty<HatchingMode> mode_;
