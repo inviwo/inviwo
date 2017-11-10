@@ -27,8 +27,6 @@
  *
  *********************************************************************************/
 
-#define DRAW_EDGES
-
 #include "utils/shading.glsl"
 
 uniform LightParameters lighting;
@@ -41,6 +39,7 @@ in fData
     vec3 normal;
     vec3 viewNormal;
     vec4 color;
+    vec2 texCoord;
     float area;
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
@@ -70,6 +69,13 @@ struct FaceRenderSettings
     bool showEdges;
     vec4 edgeColor;
     float edgeOpacity;
+
+    int hatchingMode;
+    int hatchingSteepness;
+    int hatchingFreqU;
+    int hatchingFreqV;
+    vec4 hatchingColor;
+    int hatchingBlending;
 };
 uniform FaceRenderSettings renderSettings[2];
 //GLSL does not support samplers within structures
@@ -102,6 +108,17 @@ uniform AlphaSettings alphaSettings;
 #endif
 
 #define M_PI 3.1415926535897932384626433832795
+
+float smoothPattern(float s, float t, int ls, int lt, int steepness)
+{
+    s *= pow(2, -ls);
+    t *= pow(2, -lt);
+    float c = 1;
+    c *= 1 - pow(0.5f + 0.5f * cos(s * 2 * M_PI), steepness);
+    c *= 1 - pow(0.5f + 0.5f * cos(t * 2 * M_PI), steepness);
+    return c;
+}
+
 vec4 performShading()
 {
     FaceRenderSettings settings = renderSettings[gl_FrontFacing ? 0 : 1];
@@ -163,7 +180,6 @@ vec4 performShading()
 
     //edges
 #ifdef DRAW_EDGES
-
     if (settings.showEdges) {
         float isEdge = any(greaterThan(frag.edgeCoordinates,vec3(1))) ? 1.0f : 0.0f;
 #ifdef DRAW_EDGES_SMOOTHING
@@ -178,6 +194,47 @@ vec4 performShading()
         color.a = mix(color.a, 1, isEdgeSmoothed*max(0, settings.edgeOpacity-1));
     }
 #endif
+
+    //stripes
+    if (settings.hatchingMode > 0) {
+        float stripeStrength = 1;
+        vec2 texCoord = frag.texCoord;
+        //compute frequencies
+        float ls = 0;
+        if (settings.hatchingMode == 1 || settings.hatchingMode == 3) {
+            //hatching in u-direction
+            float lambdaS = length(vec2(dFdxFinest(texCoord.x), dFdyFinest(texCoord.x)));
+            ls = log(lambdaS) / log(2);
+            ls += settings.hatchingFreqU;
+        }
+        float lt = 0;
+        if (settings.hatchingMode >= 2) {
+            //hatching in v-direction
+            float lambdaT = length(vec2(dFdxFinest(texCoord.y), dFdyFinest(texCoord.y)));
+            lt = log(lambdaT) / log(2);
+            lt += settings.hatchingFreqV;
+        }
+        //compute pattern value with interpolation
+        int lsInt = int(floor(ls));
+        int ltInt = int(floor(lt));
+        float lsFrac = ls - lsInt;
+        float ltFrac = lt - ltInt;
+        stripeStrength = mix(
+            mix(
+                smoothPattern(texCoord.x, texCoord.y, lsInt, ltInt, settings.hatchingSteepness),
+                smoothPattern(texCoord.x, texCoord.y, lsInt, ltInt+1, settings.hatchingSteepness),
+                ltFrac),
+            mix(
+                smoothPattern(texCoord.x, texCoord.y, lsInt+1, ltInt, settings.hatchingSteepness),
+                smoothPattern(texCoord.x, texCoord.y, lsInt+1, ltInt+1, settings.hatchingSteepness),
+                ltFrac),
+            lsFrac);
+        //blend into color
+        color.rgb = mix(settings.hatchingColor.rgb, color.rgb, stripeStrength);
+        if (settings.hatchingBlending == 1) {
+            color.a = mix(1, color.a, stripeStrength); //additive alpha
+        }
+    }
 
     // shading
     if (settings.shadingMode==1) {

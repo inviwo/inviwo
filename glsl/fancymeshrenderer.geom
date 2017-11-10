@@ -32,8 +32,6 @@ layout(triangle_strip, max_vertices = 3) out;
 
 #include "utils/structs.glsl"
 
-#define DRAW_EDGES
-
 uniform ivec2 halfScreenSize;
 uniform CameraParameters camera;
 
@@ -44,6 +42,7 @@ in vData
     vec3 normal;
     vec3 viewNormal;
     vec4 color;
+    vec2 texCoord;
 } vertices[];
 
 out fData
@@ -53,6 +52,7 @@ out fData
     vec3 normal;
     vec3 viewNormal;
     vec4 color;
+    vec2 texCoord;
     float area;
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
@@ -141,6 +141,7 @@ void main(void)
         frag.normal = vertices[i].normal;
         frag.viewNormal = vertices[i].viewNormal;
         frag.color = vertices[i].color;
+        frag.texCoord = vertices[i].texCoord;
         frag.area = area;
 #ifdef ALPHA_SHAPE
         frag.sideLengths = sideLengths;

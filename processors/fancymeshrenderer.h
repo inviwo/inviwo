@@ -228,25 +228,46 @@ protected:
     };
     EdgeSettings edgeSettings_;
 
-	enum ColorSource
+	enum class ColorSource : int
 	{
 		VertexColor,
 		TransferFunction,
 		ExternalColor
 	};
-	enum NormalSource
+	enum class NormalSource : int
 	{
 		InputVertex,
 		InputTriangle,
 		GenerateVertex,
 		GenerateTriangle
 	};
-	enum ShadingMode
+	enum class ShadingMode : int
 	{
 		Off, //no light, no reflection, just diffuse
 		Phong,
 		Pbr
 	};
+    enum class HatchingMode : int
+    {
+        Off,
+        U, V, UV
+    };
+    enum class HatchingBlendingMode : int
+    {
+        Multiplicative,
+        Additive
+    };
+    struct HatchingSettings
+    {
+        TemplateOptionProperty<HatchingMode> mode_;
+        CompositeProperty container_;
+        IntProperty steepness_;
+        IntProperty baseFrequencyU_;
+        IntProperty baseFrequencyV_;
+        FloatVec4Property color_;
+        TemplateOptionProperty<HatchingBlendingMode> blendingMode_;
+        HatchingSettings(const std::string& prefix);
+    };
 	/**
 	 * \brief The render settings per face.
 	 * faceSettings_[0]=front face, faceSettings_[1]=back face
@@ -273,6 +294,8 @@ protected:
         BoolProperty showEdges_;
         FloatVec4Property edgeColor_;
         FloatProperty edgeOpacity_;
+
+        HatchingSettings hatching_;
 
         //to copy front to back:
         FaceRenderSettings* frontPart_;

@@ -210,6 +210,34 @@ void FancyMeshRenderer::EdgeSettings::update()
     //do nothing
 }
 
+FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
+    : mode_(prefix + "hatchingMode", "Hatching")
+    , container_(prefix + "hatchingContainer", "Hatching Settings")
+    , steepness_(prefix + "hatchingSteepness", "Steepness", 5, 1, 10)
+    , baseFrequencyU_(prefix + "hatchingFrequencyU", "U-Frequency", 3, 1, 10)
+    , baseFrequencyV_(prefix + "hatchingFrequencyV", "V-Frequency", 3, 1, 10)
+    , color_(prefix + "hatchingColor", "Color", {0,0,0,1})
+    , blendingMode_(prefix + "hatchingBlending", "Blending")
+{
+    //init properties
+    mode_.addOption("off", "Off", HatchingMode::Off);
+    mode_.addOption("u", "U", HatchingMode::U);
+    mode_.addOption("v", "V", HatchingMode::V);
+    mode_.addOption("uv", "UV", HatchingMode::UV);
+    mode_.set(HatchingMode::Off);
+    mode_.setCurrentStateAsDefault();
+    color_.setSemantics(PropertySemantics::Color);
+    blendingMode_.addOption("mult", "Multiplicative", HatchingBlendingMode::Multiplicative);
+    blendingMode_.addOption("add", "Additive", HatchingBlendingMode::Additive);
+
+    //add to container
+    container_.addProperty(steepness_);
+    container_.addProperty(baseFrequencyU_);
+    container_.addProperty(baseFrequencyV_);
+    container_.addProperty(color_);
+    container_.addProperty(blendingMode_);
+}
+
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     : frontFace_(frontFace)
     , prefix_(frontFace ? "front" : "back")
@@ -227,6 +255,7 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     , showEdges_(prefix_ + "showEdges", "Show Edges")
     , edgeColor_(prefix_ + "edgeColor", "Edge color", { 0, 0, 0, 1 })
     , edgeOpacity_(prefix_ + "edgeOpacity", "Edge Opacity", 0.5, 0, 2, 0.01)
+    , hatching_(prefix_)
 {
     //initialize combo boxes
 	colorSource_.addOption("vertexColor", "VertexColor", ColorSource::VertexColor);
@@ -269,6 +298,8 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     container_.addProperty(showEdges_);
     container_.addProperty(edgeColor_);
     container_.addProperty(edgeOpacity_);
+    container_.addProperty(hatching_.mode_);
+    container_.addProperty(hatching_.container_);
 
     //set callbacks that will trigger update()
     auto triggerUpdate = [this]() {update(lastOpaque_); };
@@ -278,6 +309,12 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     separateUniformAlpha_.onChange(triggerUpdate);
     normalSource_.onChange(triggerUpdate);
     showEdges_.onChange(triggerUpdate);
+    hatching_.mode_.onChange(triggerUpdate);
+    hatching_.steepness_.onChange(triggerUpdate);
+    hatching_.baseFrequencyU_.onChange(triggerUpdate);
+    hatching_.baseFrequencyV_.onChange(triggerUpdate);
+    hatching_.color_.onChange(triggerUpdate);
+    hatching_.blendingMode_.onChange(triggerUpdate);
 }
 
 void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
@@ -293,6 +330,12 @@ void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
     showEdges_.set(frontPart_->showEdges_.get());
     edgeColor_.set(frontPart_->edgeColor_.get());
     edgeOpacity_.set(frontPart_->edgeOpacity_.get());
+    hatching_.mode_.set(frontPart_->hatching_.mode_.get());
+    hatching_.steepness_.set(frontPart_->hatching_.steepness_.get());
+    hatching_.baseFrequencyU_.set(frontPart_->hatching_.baseFrequencyU_.get());
+    hatching_.baseFrequencyV_.set(frontPart_->hatching_.baseFrequencyV_.get());
+    hatching_.color_.set(frontPart_->hatching_.color_.get());
+    hatching_.blendingMode_.set(frontPart_->hatching_.blendingMode_.get());
 }
 
 void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
@@ -304,6 +347,7 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
     ColorSource colorSource = colorSource_.get();
     bool separateUniformAlpha = separateUniformAlpha_.get();
     bool showEdges = showEdges_.get();
+    bool hatching = hatching_.mode_.get() != HatchingMode::Off;
 
     //set visibility
     sameAsFrontFace_.setVisible(show);
@@ -318,6 +362,9 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
     showEdges_.setVisible(show2);
     edgeColor_.setVisible(show2 && showEdges);
     edgeOpacity_.setVisible(show2 && showEdges);
+    hatching_.container_.setVisible(show2 && hatching);
+    hatching_.baseFrequencyU_.setVisible(hatching_.mode_.get() != HatchingMode::V);
+    hatching_.baseFrequencyV_.setVisible(hatching_.mode_.get() != HatchingMode::U);
 }
 
 void FancyMeshRenderer::initializeResources() {
@@ -518,6 +565,12 @@ void FancyMeshRenderer::process() {
             shader_.setUniform(prefix + "showEdges", faceSettings_[i].showEdges_.get());
             shader_.setUniform(prefix + "edgeColor", faceSettings_[i].edgeColor_.get());
             shader_.setUniform(prefix + "edgeOpacity", faceSettings_[i].edgeOpacity_.get());
+            shader_.setUniform(prefix + "hatchingMode", static_cast<int>(faceSettings_[i].hatching_.mode_.get()));
+            shader_.setUniform(prefix + "hatchingSteepness", faceSettings_[i].hatching_.steepness_.get());
+            shader_.setUniform(prefix + "hatchingFreqU", faceSettings_[i].hatching_.baseFrequencyU_.getMaxValue() - faceSettings_[i].hatching_.baseFrequencyU_.get());
+            shader_.setUniform(prefix + "hatchingFreqV", faceSettings_[i].hatching_.baseFrequencyV_.getMaxValue() - faceSettings_[i].hatching_.baseFrequencyV_.get());
+            shader_.setUniform(prefix + "hatchingColor", faceSettings_[i].hatching_.color_.get());
+            shader_.setUniform(prefix + "hatchingBlending", static_cast<int>(faceSettings_[i].hatching_.blendingMode_.get()));
 
             const auto& tf = faceSettings_[i].transferFunction_.get();
             const Layer* tfLayer = tf.getData();

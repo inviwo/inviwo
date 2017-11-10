@@ -39,10 +39,12 @@ out vData
     vec3 normal;
     vec3 viewNormal;
     vec4 color;
+    vec2 texCoord;
 } vertex;
  
 void main() {
     vertex.color = in_Color;
+    vertex.texCoord = in_TexCoord.xy;
     vertex.worldPosition = geometry.dataToWorld * in_Vertex;
     vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
     vertex.viewNormal = (camera.worldToView * vec4(vertex.normal,0)).xyz;
