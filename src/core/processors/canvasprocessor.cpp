@@ -80,7 +80,7 @@ CanvasProcessor::CanvasProcessor()
     , canvasWidget_(nullptr) {
     widgetMetaData_->addObserver(this);
 
-    resetCoordinators();
+    setEvaluateWhenHidden(false);
 
     addPort(inport_);
     addProperty(inputSize_);
@@ -354,17 +354,18 @@ void CanvasProcessor::setFullScreen(bool fullscreen) {
 
 bool CanvasProcessor::isContextMenuAllowed() const { return allowContextMenu_; }
 
-void CanvasProcessor::resetCoordinators() {
-    // No need to evaluate when canvas is hidden.
-    isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
-    isReady_.setUpdate([this]() {
-        return allInportsAreReady() && processorWidget_ && processorWidget_->isVisible();
-    });
+void CanvasProcessor::setEvaluateWhenHidden(bool value) {
+    if (value) {
+        isSink_.setUpdate([]() { return true; });
+        isReady_.setUpdate([this]() { return allInportsAreReady(); });
+    } else {
+        isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
+        isReady_.setUpdate([this]() {
+            return allInportsAreReady() && processorWidget_ && processorWidget_->isVisible();
+        });
+    
+    }
 }
 
-void CanvasProcessor::setCoordinatorsAlwaysOn() {
-    isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() { return allInportsAreReady(); });
-}
 
 }  // namespace inviwo
