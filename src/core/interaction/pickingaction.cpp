@@ -32,11 +32,7 @@
 
 namespace inviwo {
 
-PickingAction::PickingAction(size_t id, size_t size)
-    : start_(id)
-    , size_(size)
-    , capacity_(size) {
-}
+PickingAction::PickingAction(size_t id, size_t size) : start_(id), size_(size), capacity_(size) {}
 
 PickingAction::~PickingAction() = default;
 
@@ -44,17 +40,23 @@ size_t PickingAction::getPickingId(size_t id) const {
     if (id < size_) {
         return start_ + id;
     } else {
-        throw Exception("Out of range", IvwContext);
+        throw RangeException(
+            "Local picking ID " + toString(id) + " not in range (0 - " + toString(size_) + ")",
+            IvwContext);
     }
 }
 
 size_t PickingAction::getLocalPickingId(size_t id) const {
     if (id < start_) {
-        throw Exception("Out of range", IvwContext);
+        throw RangeException("Global picking ID " + toString(id) + " not in range (" +
+                                 toString(start_) + " - " + toString(start_ + size_) + ")",
+                             IvwContext);
     }
     auto localID = id - start_;
     if (localID >= size_) {
-        throw Exception("Out of range", IvwContext);
+        throw RangeException("Global picking ID " + toString(id) + " not in range (" +
+                                 toString(start_) + " - " + toString(start_ + size_) + ")",
+                             IvwContext);
     }
     return localID;
 }
@@ -63,44 +65,30 @@ vec3 PickingAction::getColor(size_t id) const {
     return vec3(PickingManager::indexToColor(getPickingId(id))) / 255.0f;
 }
 
-size_t PickingAction::getSize() const {
-    return size_;
-}
+size_t PickingAction::getSize() const { return size_; }
 
-bool PickingAction::isEnabled() const {
-    return enabled_;
-}
+bool PickingAction::isEnabled() const { return enabled_; }
 
-void PickingAction::setEnabled(bool enabled) {
-    enabled_ = enabled;
-}
+void PickingAction::setEnabled(bool enabled) { enabled_ = enabled; }
 
-void PickingAction::setAction(Callback action) {
-    action_ = action;
-}
+void PickingAction::setAction(Callback action) { action_ = action; }
 
-void PickingAction::operator()(PickingEvent* event) const {
-    action_(event);
-}
+void PickingAction::operator()(PickingEvent* event) const { action_(event); }
 
-void PickingAction::setProcessor(Processor* processor) {
-    processor_ = processor;
-}
+void PickingAction::setProcessor(Processor* processor) { processor_ = processor; }
 
-Processor* PickingAction::getProcessor() const {
-    return processor_;
-}
+Processor* PickingAction::getProcessor() const { return processor_; }
 
-size_t PickingAction::getCapacity() const {
-    return capacity_;
-}
+size_t PickingAction::getCapacity() const { return capacity_; }
 
 void PickingAction::setSize(size_t size) {
-    if (size <= capacity_)
+    if (size <= capacity_) {
         size_ = size;
-    else
-        throw Exception("Out of range", IvwContext);
+    } else {
+        throw Exception("Trying to set size (" + toString(size) + ") larger than capacity (" +
+                            toString(capacity_) + ")",
+                        IvwContext);
+    }
 }
 
-} // namespace
-
+}  // namespace inviwo
