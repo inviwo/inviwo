@@ -78,6 +78,8 @@ public:
     void setFullScreen(bool fullscreen);
 
     bool isContextMenuAllowed() const;
+    void setCoordinatorsAlwaysOn();
+    void resetCoordinators();
 
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;

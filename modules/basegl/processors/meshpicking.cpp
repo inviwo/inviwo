@@ -171,8 +171,9 @@ void MeshPicking::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-
-    compositor_.composite(imageInport_,outport_, ImageType::ColorDepthPicking);
+    if (imageInport_.hasData()) {
+        compositor_.composite(imageInport_,outport_, ImageType::ColorDepthPicking);
+    }
 }
 
 }  // namespace

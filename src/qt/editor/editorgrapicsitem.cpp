@@ -145,6 +145,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 auto layer = item.second;
 
                 auto imgbuf = layer->getAsCodedBuffer("png");
+                if(!imgbuf) continue;
+
                 QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()),
                                      static_cast<int>(imgbuf->size()));
 
