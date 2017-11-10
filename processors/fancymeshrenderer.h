@@ -78,12 +78,22 @@ namespace inviwo {
  *       + __Normal variation__ based on the variation (norm of the derivative) of the pixel normal
  *       + __Density-based__ based on the size of the triangle / density of the smoke volume inside the triangle
  *       + __Shape-based__ based on the shape of the triangle. The more stretched, the more transparent
+ *   * __Edges__ Settings for the display of triangle edges
+ *       + __Thickness__ The thickness of the edges
+ *       + __Depth dependent__ If checked, the thickness also depends on the depth. 
+ *           If unchecked, every edge has the same size in screen space regardless of the distance to the camera
+ *       + __Smooth edges__ If checked, a simple anti-alising is used
  *   * __Front Face__ Settings for the front face
  *       + __Show__ Shows or hides that face (culling)
  *       + __Color Source__ The source of the color: vertex color, transfer function, or external constant color
  *       + __Separate Uniform Alpha__ Overwrite alpha settings from above with a constant alpha value
  *       + __Normal Source__ Source of the pixel normal: interpolated or not
  *       + __Shading Mode__ The shading that is applied to the pixel color
+ *       + __Show Edges__ Show triangle edges
+ *       + __Edge Color__ The color of the edges
+ *       + __Edge Opacity__ Blending of the edge color: 
+ *           0-1: blending factor of the edge color into the triangle color, alpha unmodified;
+ *           1-2: full edge color and alpha is increased to fully opaque
  *   * __Back Face__ Settings for the back face
  *       + __Show__ Shows or hides that face (culling)
  *       + __Same as front face__ use the settings from the front face, disables all other settings for the back face
@@ -92,6 +102,11 @@ namespace inviwo {
  *       + __Separate Uniform Alpha__ Overwrite alpha settings from above with a constant alpha value
  *       + __Normal Source__ Source of the pixel normal: interpolated or not
  *       + __Shading Mode__ The shading that is applied to the pixel color
+ *       + __Show Edges__ Show triangle edges
+ *       + __Edge Color__ The color of the edges
+ *       + __Edge Opacity__ Blending of the edge color: 
+ *           0-1: blending factor of the edge color into the triangle color, alpha unmodified;
+ *           1-2: full edge color and alpha is increased to fully opaque
  */
 
 
