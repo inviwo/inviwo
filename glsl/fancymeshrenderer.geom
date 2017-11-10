@@ -58,11 +58,7 @@ out fData
     vec3 sideLengths;
 #endif
 #ifdef DRAW_EDGES
-#ifdef DRAW_EDGES_DEPTH_DEPENDENT
-    noperspective vec3 edgeCoordinates;
-#else
     vec3 edgeCoordinates;
-#endif
 #endif
 } frag;
 
@@ -90,9 +86,9 @@ void main(void)
     //edge coordinates for edge highlighting
 #ifdef DRAW_EDGES
     //vertices coordinates in pixel space
-    vec2 screenA = halfScreenSize * vertices[0].position.xy;
-    vec2 screenB = halfScreenSize * vertices[1].position.xy;
-    vec2 screenC = halfScreenSize * vertices[2].position.xy;
+    vec2 screenA = halfScreenSize * vertices[0].position.xy / vertices[0].position.w;
+    vec2 screenB = halfScreenSize * vertices[1].position.xy / vertices[1].position.w;
+    vec2 screenC = halfScreenSize * vertices[2].position.xy / vertices[2].position.w;
     //side lengths in pixel coordinates
     float ab = length(screenB - screenA);
     float ac = length(screenC - screenA);

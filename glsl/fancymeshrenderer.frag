@@ -46,11 +46,7 @@ in fData
     vec3 sideLengths;
 #endif
 #ifdef DRAW_EDGES
-#ifdef DRAW_EDGES_DEPTH_DEPENDENT
-    noperspective vec3 edgeCoordinates;
-#else
     vec3 edgeCoordinates;
-#endif
 #endif
 } frag;
 
@@ -167,6 +163,7 @@ vec4 performShading()
 
     //edges
 #ifdef DRAW_EDGES
+
     if (settings.showEdges) {
         float isEdge = any(greaterThan(frag.edgeCoordinates,vec3(1))) ? 1.0f : 0.0f;
 #ifdef DRAW_EDGES_SMOOTHING
