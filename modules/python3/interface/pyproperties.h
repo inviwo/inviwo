@@ -49,8 +49,6 @@ struct HasOwnerDeleter {
 template <typename T>
 using PropertyPtr = std::unique_ptr<T, HasOwnerDeleter<T>>;
 
-
-
 template <typename T, typename P, typename C>
 void pyTemplateProperty(C &prop) {
     prop.def_property("value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
@@ -120,8 +118,9 @@ void addOrdinalPropertyIterator(M &m, PC &pc, std::false_type) {}
 template <typename T, typename P, typename M, typename PC>
 void addOrdinalPropertyIterator(M &m, PC &pc) {
     addOrdinalPropertyIterator<T, P>(
-        m, pc, typename std::conditional<util::rank<T>::value == 0, std::true_type,
-                                         std::false_type>::type());
+        m, pc,
+        typename std::conditional<util::rank<T>::value == 0, std::true_type,
+                                  std::false_type>::type());
 }
 
 struct OrdinalPropertyHelper {
@@ -203,28 +202,28 @@ struct OptionPropertyHelper {
 
         pybind11::class_<O>(m, optionclassname.c_str())
             .def(pybind11::init<>())
-            .def(pybind11::init<std::string, std::string, T>())
+            .def(pybind11::init<const std::string &, const std::string &, const T &>())
             .def_readwrite("id", &O::id_)
             .def_readwrite("name", &O::name_)
             .def_readwrite("value", &O::value_);
 
         pybind11::class_<P, BaseOptionProperty, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOption(
             m, classname.c_str());
-        pyOption.def(pybind11::init<std::string, std::string>())
-            .def("addOption", [](P *p, std::string id, std::string displayName,
-                                 T t) { p->addOption(id, displayName, t); })
+        pyOption.def(pybind11::init<const std::string &, const std::string &>())
+            .def("addOption", [](P *p, const std::string &id, const std::string &displayName,
+                                 const T &t) { p->addOption(id, displayName, t); })
 
             .def_property_readonly("values", &P::getValues)
-            .def("removeOption", &P::removeOption)
+            .def("removeOption", static_cast<void(P::*)(size_t)>(&P::removeOption))
+            .def("removeOption", static_cast<void(P::*)(const std::string&)>(&P::removeOption))
 
             .def_property("value", [](P *p) { return p->get(); }, [](P *p, T &t) { p->set(t); })
-
-            //     .def_property("selectedOption", &P::getSelectedOption, &P::setSelectedOption)
             .def_property("selectedValue", &P::getSelectedValue, &P::setSelectedValue)
 
             .def("replaceOptions",
-                 [](P *p, std::vector<std::string> ids, std::vector<std::string> displayNames,
-                    std::vector<T> values) { p->replaceOptions(ids, displayNames, values); })
+                 [](P *p, const std::vector<std::string> &ids,
+                    const std::vector<std::string> &displayNames,
+                    const std::vector<T> &values) { p->replaceOptions(ids, displayNames, values); })
 
             .def("replaceOptions",
                  [](P *p, std::vector<OptionPropertyOption<T>> options) {
@@ -238,6 +237,6 @@ struct OptionPropertyHelper {
 };
 
 void exposeProperties(pybind11::module &m);
-}
+}  // namespace inviwo
 
 #endif  // IVW_PYPROPERTIES_H

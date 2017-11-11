@@ -31,20 +31,20 @@
 
 namespace inviwo {
 
-BaseOptionProperty::BaseOptionProperty(std::string identifier, std::string displayName,
+BaseOptionProperty::BaseOptionProperty(const std::string& identifier,
+                                       const std::string& displayName,
                                        InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics) {}
 
-
 void BaseOptionProperty::set(const Property* srcProperty) {
     if (auto optionSrcProp = dynamic_cast<const BaseOptionProperty*>(srcProperty)) {
-        size_t option = std::min(optionSrcProp->getSelectedIndex(), size() -1);
-        if (option != getSelectedIndex()) {      
+        size_t option = std::min(optionSrcProp->getSelectedIndex(), size() - 1);
+        if (option != getSelectedIndex()) {
             setSelectedIndex(option);
             propertyModified();
-        }      
+        }
     }
 }
 
-}  // namespace
+}  // namespace inviwo
