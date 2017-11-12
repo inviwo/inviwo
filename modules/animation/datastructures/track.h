@@ -45,15 +45,26 @@ namespace inviwo {
 
 namespace animation {
 
-/**
- * A Animation base Track interface, provides access to a list of KeyframeSequence,
- * and track metadata: Identifier, Name, Enabled, Priority. 
+/** \class Track
+ * Interface for tracks in an animation. 
+ * A track usually represent a value to be animated over time and 
+ * contains a list of KeyFrameSequence.
+ * The value will only be animated when the time in the animation 
+ * is within a KeyFrameSequence in the Track.
+ *
+ * A Track has additional metadata information, 
+ * such as (display) Name, Enabled, Priority.
+ * Tracks are listed in order based on their priority.
+ * @see KeyFrameSequence
  */
 class IVW_MODULE_ANIMATION_API Track : public Serializable,
                                        public TrackObservable,
                                        public KeyframeSequenceObserver {
 public:
     Track() = default;
+    /**
+     * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
+     */
     virtual ~Track() = default;
     Track(const Track&) = delete;
     Track& operator=(const Track&) = delete;
@@ -65,30 +76,51 @@ public:
 
     virtual void setIdentifier(const std::string& identifier) = 0;
     virtual const std::string& getIdentifier() const = 0;
-
+    /**
+     * Set Track name. Used when displaying the track.
+     */
     virtual void setName(const std::string& name) = 0;
     virtual const std::string& getName() const = 0;
-
+    /**
+     * Set priority (0 is highest).
+     * The Track with highest priority is evaluated first 
+     * at a given time by Animation.
+     */
     virtual void setPriority(size_t priority) = 0;
+    /**
+     * Return Track priority (0 is highest)
+     */
     virtual size_t getPriority() const = 0;
 
     virtual Seconds firstTime() const = 0;
     virtual Seconds lastTime() const = 0;
-
+    /**
+     * Return the number of KeyframeSequences in the track.
+     */
     virtual size_t size() const = 0;
 
     virtual AniamtionTimeState operator()(Seconds from, Seconds to, AnimationState state) const = 0;
 
     virtual KeyframeSequence& operator[](size_t i) = 0;
     virtual const KeyframeSequence& operator[](size_t i) const = 0;
-
+    /**
+     * Add KeyframeSequence and call TrackObserver::notifyKeyframeSequenceAdded
+     */
     virtual void add(const KeyframeSequence& sequence) = 0;
+    /**
+     * Remove KeyframeSequence at index i and call TrackObserver::notifyKeyframeSequenceRemoved
+     */
     virtual void remove(size_t i) = 0;
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
 
+/** \class TrackTyped
+ * Track containing KeyFrameSequence of a given KeyFrame type.
+ * @see Track
+ * @see KeyframeSequenceTyped
+ */
 template <typename Key>
 class TrackTyped : public Track {
 public:
@@ -103,9 +135,9 @@ public:
 
 
 
-} // namespace
+} // namespace animation
 
-} // namespace
+} // namespace inviwo
 
 #endif // IVW_TRACK_H
 

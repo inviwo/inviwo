@@ -40,9 +40,13 @@ namespace inviwo {
 
 namespace animation {
 
-/**
- * The Keyframe is a element of a KeyframeSequence. The base interface Keyframe only provied
- * a Time property.
+/** \class Keyframe
+ * Interface for keyframes in an animation Track.
+ * A keyframe usually contain a snapshot of a value at a given time,
+ * which will used for interpolation in a KeyFrameSequence.
+ * Note that a keyframe could also be a script to be executed.
+ * @see KeyFrameSequence
+ * @see Track
  */
 class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObservable {
 public:
@@ -63,6 +67,11 @@ IVW_MODULE_ANIMATION_API bool operator<=(const Keyframe& a, const Keyframe& b);
 IVW_MODULE_ANIMATION_API bool operator>(const Keyframe& a, const Keyframe& b);
 IVW_MODULE_ANIMATION_API bool operator>=(const Keyframe& a, const Keyframe& b);
 
+/** \class ValueKeyframe
+ * Keyframe of a given value type (float, integer, vec3 and so on).
+ * Stores the KeyFrame value at a given time.
+ * @see Keyframe
+ */
 template <typename T>
 class ValueKeyframe : public Keyframe {
 public:
