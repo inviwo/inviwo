@@ -193,6 +193,7 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
             auto network = app_->getProcessorNetwork();
 
             auto canvasProcessor = portInspector->getCanvasProcessor();
+            canvasProcessor->setEvaluateWhenHidden(true);
             canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(false);
             auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
                 ProcessorWidgetMetaData::CLASS_IDENTIFIER);
@@ -214,7 +215,9 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
                 // remove the network...
                 NetworkLock lock(network);
                 removeNetwork(portInspector, network);
+                canvasProcessor->setEvaluateWhenHidden(false);
             }
+
         }
     } catch (Exception& exception) {
         util::log(exception.getContext(), exception.getMessage(), LogLevel::Error);

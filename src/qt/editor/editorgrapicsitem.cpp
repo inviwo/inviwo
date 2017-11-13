@@ -103,7 +103,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     if (inspector && outport) {
         if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
 
-            bool isImagePort = (dynamic_cast<ImageOutport*>(port) != nullptr);
+            bool isImagePort = (dynamic_cast<ImageOutport*>(port) != nullptr ||
+                                dynamic_cast<ImageInport*>(port) != nullptr);
 
             std::vector<std::pair<std::string, const Layer*>> layers;
             if (isImagePort) {
@@ -145,6 +146,10 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 auto layer = item.second;
 
                 auto imgbuf = layer->getAsCodedBuffer("png");
+                // imgbuf might be null, if we don't have a data writer factory function to save 
+                // the layer. Happens if cimg not used, and no other data writer is registered.
+                if (!imgbuf) continue;
+
                 QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()),
                                      static_cast<int>(imgbuf->size()));
 

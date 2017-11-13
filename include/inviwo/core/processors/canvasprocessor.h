@@ -79,6 +79,12 @@ public:
 
     bool isContextMenuAllowed() const;
 
+    /**
+     * By default the processor will only evaluate when its canvas is visible.
+     * By setting setEvaluateWhenHidden to true, it will be evaluated regardless.
+     */
+    void setEvaluateWhenHidden(bool option);
+
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;

@@ -141,7 +141,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
 
         {   // View mode actions (Developer / Application)
-            auto usageModeItem = new QMenu(tr("&Usage mode"), menu.get());
+            auto usageModeItem = menu->addMenu(tr("&Usage mode"));
             auto developerUsageModeAction = usageModeItem->addAction(tr("&Developer"));
             developerUsageModeAction->setCheckable(true);
             auto applicationUsageModeAction = usageModeItem->addAction(tr("&Application"));
