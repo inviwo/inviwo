@@ -316,7 +316,7 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
             propertyWidgetGroupLayout_->removeWidget(widget);
             propertyWidgetGroupLayout_->addWidget(newWidget, layoutPosition, 0);
 #endif  // QT_VERSION >= 5.2
-            widget->deleteLater();
+            delete widget;
 
             // Replace the item in propertyWidgets_;
             *wit = newWidget;
@@ -379,7 +379,7 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
     propertyWidgetGroupLayout_->removeWidget(propertyWidget);
     propertyWidgets_.erase(propertyWidgets_.begin() + index);
     properties_.erase(properties_.begin() + index);
-    propertyWidget->deleteLater();
+    delete propertyWidget;
 }
 
 void CollapsibleGroupBoxWidgetQt::onProcessorIdentifierChange(Processor* processor) {
