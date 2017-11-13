@@ -216,7 +216,6 @@ void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
         }
 
         propertyWidgets_.push_back(propertyWidget);
-        prop->registerWidget(propertyWidget);
         connect(propertyWidget, &PropertyWidgetQt::updateSemantics, this,
                 &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
 
@@ -308,7 +307,6 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
     if (pit != properties_.end() && wit != propertyWidgets_.end()) {
         auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
         if (auto newWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
-            prop->deregisterWidget(widget);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
             propertyWidgetGroupLayout_->replaceWidget(widget, newWidget,
@@ -320,7 +318,6 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
 #endif  // QT_VERSION >= 5.2
             widget->deleteLater();
 
-            prop->registerWidget(newWidget);
             // Replace the item in propertyWidgets_;
             *wit = newWidget;
 
@@ -364,7 +361,6 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
         if (widgetInsertPoint != propertyWidgets_.end()) ++widgetInsertPoint;
 
         propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
-        prop->registerWidget(propertyWidget);
         connect(propertyWidget, &PropertyWidgetQt::updateSemantics, this,
                 &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
 

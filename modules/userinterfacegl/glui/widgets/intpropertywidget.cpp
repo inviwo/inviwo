@@ -40,7 +40,6 @@ IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor
     , PropertyWidget(&property)
     , property_(&property) {
     property_->addObserver(this);
-    property_->registerWidget(this);
 
     moveAction_ = [&](const dvec2 &delta) {
         bool triggerUpdate = false;

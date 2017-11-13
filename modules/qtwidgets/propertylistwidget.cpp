@@ -138,14 +138,6 @@ void PropertyListWidget::removeAndDeleteProcessorProperties(Processor* processor
     if (it != widgetMap_.end()) {
         it->second->hide();
         listLayout_->removeWidget(it->second);
-
-        const auto& propertyWidgets = it->second->getPropertyWidgets();
-        for (auto& propertyWidget : propertyWidgets) {
-            if (Property* prop = propertyWidget->getProperty()) {
-                prop->deregisterWidget(propertyWidget);
-            }
-        }
-
         delete it->second;
         widgetMap_.erase(it);
     }

@@ -44,7 +44,7 @@ public:
     PropertyWidget();
     PropertyWidget(Property* property);
 
-    virtual ~PropertyWidget() = default;
+    virtual ~PropertyWidget();
 
     // Overload this function to update the widget after property modified has been called.
     virtual void updateFromProperty() = 0;
