@@ -362,6 +362,7 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
     showEdges_.setVisible(show2);
     edgeColor_.setVisible(show2 && showEdges);
     edgeOpacity_.setVisible(show2 && showEdges);
+    hatching_.mode_.setVisible(show2);
     hatching_.container_.setVisible(show2 && hatching);
     hatching_.baseFrequencyU_.setVisible(hatching_.mode_.get() != HatchingMode::V);
     hatching_.baseFrequencyV_.setVisible(hatching_.mode_.get() != HatchingMode::U);
