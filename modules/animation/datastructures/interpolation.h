@@ -44,8 +44,8 @@ namespace inviwo {
 namespace animation {
 
 
-/**
- *	Base class for keyframe interpolations.
+/** \class Interpolation
+ *	Interface for keyframe interpolations.
  */
 class IVW_MODULE_ANIMATION_API Interpolation : public Serializable {
 public:
@@ -59,7 +59,13 @@ public:
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
-
+/** \class InterpolationTyped
+ *	Base class for interpolation between key frames.
+ *  Interpolation will always be performed between at least two key frames.
+ *
+ *  @see KeyFrame
+ *  @see KeyFrameSequence
+ */
 template <typename Key>
 class InterpolationTyped : public Interpolation {
 public:
@@ -72,69 +78,14 @@ public:
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 
-    // keys should be sorted by time
+    // Override this function to interpolate between key frames
     virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t) const ->
         typename Key::value_type = 0;
 };
 
-template <typename Key>
-class LinearInterpolation : public InterpolationTyped<Key> {
-public:
-    LinearInterpolation() = default;
-    virtual ~LinearInterpolation() = default;
+} // namespace animation
 
-    virtual LinearInterpolation* clone() const override { return new LinearInterpolation(*this); };
-
-    static std::string classIdentifier() {
-        auto keyid = Key::classIdentifier();
-        std::string id = "org.inviwo.animation.linearinterpolation.";
-        auto res = std::mismatch(id.begin(), id.end(), keyid.begin(), keyid.end());
-        id.append(res.second, keyid.end());
-        return id;
-    };
-    virtual std::string getClassIdentifier() const override { return classIdentifier(); }
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-    // keys should be sorted by time
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t) const ->
-        typename Key::value_type override {
-        auto it = std::upper_bound(
-            keys.begin(), keys.end(), t,
-            [](const auto& time, const auto& key) { return time < key->getTime(); });
-
-        const auto& v1 = (*std::prev(it))->getValue();
-        const auto& t1 = (*std::prev(it))->getTime();
-
-        const auto& v2 = (*it)->getValue();
-        const auto& t2 = (*it)->getTime();
-
-        return glm::mix(v1, v2,
-                        Easing::Ease((t - t1) / (t2 - t1), Easing::EEasingType::InOutCubic));
-    }
-};
-
-template <typename Key>
-void LinearInterpolation<Key>::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-}
-
-template <typename Key>
-void LinearInterpolation<Key>::deserialize(Deserializer& d) {
-    std::string className;
-    d.deserialize("type", className, SerializationTarget::Attribute);
-    if (className != getClassIdentifier()) {
-        throw SerializationException(
-            "Deserialized interpolation: " + getClassIdentifier() +
-                " from a serialized interpolation with a different class identifier: " + className,
-            IvwContext);
-    }
-}
-
-} // namespace
-
-} // namespace
+} // namespace inviwo
 
 #endif // IVW_KEYFRAME_INTERPOLATION_H
 

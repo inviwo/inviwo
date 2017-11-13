@@ -43,10 +43,13 @@ namespace inviwo {
 
 namespace animation {
 
-/**
- * The KeyframeSequence is a part of a Track and owns Keyframes. KeyframeSequence provides the
- * base interface giving access to a list of Keyframes. And a interpolation method used to
- * interpolate between Keyframes.
+/** \class KeyframeSequence
+ * Interface for a sequence of keyframes, which will be evaluated during an animation.
+ * The KeyframeSequence is a part of a Track and owns Keyframes. 
+ * All keyframes in the sequence are interpolated using the same Interpolation method.
+ * @note Interpolation will only be performed if more than two key frames exist.
+ * @see KeyFrame
+ * @see Interpolation
  */
 class IVW_MODULE_ANIMATION_API KeyframeSequence : public Serializable,
                                                   public KeyframeSequenceObserverble,
@@ -54,8 +57,13 @@ class IVW_MODULE_ANIMATION_API KeyframeSequence : public Serializable,
 
 public:
     KeyframeSequence() = default;
+    /**
+     * Remove all keyframes and call KeyframeObserver::notifyKeyframeRemoved
+     */
     virtual ~KeyframeSequence() = default;
-
+    /**
+     * Return number of keyframes in the sequence.
+     */
     virtual size_t size() const = 0;
 
     virtual const Keyframe& operator[](size_t i) const = 0;
@@ -65,8 +73,13 @@ public:
     virtual Keyframe& getFirst() = 0;
     virtual const Keyframe& getLast() const = 0;
     virtual Keyframe& getLast() = 0;
-
+    /**
+     * Remove Keyframe and call KeyframeObserver::notifyKeyframeRemoved
+     */
     virtual void remove(size_t i) = 0;
+    /**
+     * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
+     */
     virtual void add(const Keyframe& key) = 0;
 
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) = 0;
@@ -75,7 +88,10 @@ public:
     virtual void deserialize(Deserializer& d) override = 0;
 };
 
-// A sequence should always have at least two keyframes.
+/** \class KeyframeSequenceTyped
+ * KeyframeSequence for a given type of KeyFames.
+ * @see KeyframeSequence
+ */
 template <typename Key>
 class KeyframeSequenceTyped : public KeyframeSequence {
 public:
@@ -87,10 +103,14 @@ public:
                           std::unique_ptr<InterpolationTyped<Key>> interpolation);
     KeyframeSequenceTyped(const KeyframeSequenceTyped& rhs);
     KeyframeSequenceTyped& operator=(const KeyframeSequenceTyped& that);
-
-    virtual ~KeyframeSequenceTyped() = default;
-
-    virtual size_t size() const override;
+    /**
+     * Remove all keyframes and call KeyframeObserver::notifyKeyframeRemoved
+     */
+    virtual ~KeyframeSequenceTyped();
+    /**
+     * Return number of keyframes in the sequence.
+     */
+    virtual size_t size() const override { return keyframes_.size(); }
 
     virtual const Key& operator[](size_t i) const override;
     virtual Key& operator[](size_t i) override;
@@ -99,9 +119,17 @@ public:
     virtual Key& getFirst() override;
     virtual const Key& getLast() const override;
     virtual Key& getLast() override;
-
+    /**
+     * Remove Keyframe and call KeyframeObserver::notifyKeyframeRemoved
+     */
     virtual void remove(size_t i) override;
+    /**
+     * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
+     */
     virtual void add(const Keyframe& key) override;
+    /**
+     * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
+     */
     void add(const Key& key);
 
     virtual auto operator()(Seconds from, Seconds to) const -> typename Key::value_type;
@@ -178,6 +206,14 @@ KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(
         }
     }
     return *this;
+}
+
+template <typename Key>
+KeyframeSequenceTyped<Key>::~KeyframeSequenceTyped() {
+    while (size() > 0) {
+        // Remove and notify that keyframe is removed.
+        remove(size() - 1);
+    }
 }
 
 template <typename Key>
@@ -276,11 +312,6 @@ Key& KeyframeSequenceTyped<Key>::operator[](size_t i) {
 template <typename Key>
 const Key& KeyframeSequenceTyped<Key>::operator[](size_t i) const {
     return *keyframes_[i];
-}
-
-template <typename Key>
-size_t KeyframeSequenceTyped<Key>::size() const {
-    return keyframes_.size();
 }
 
 template <typename Key>

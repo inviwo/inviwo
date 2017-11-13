@@ -59,24 +59,38 @@ public:
     ~AnimationSupplier();
 
     /**
-     *	Register a Track with the Track Factory
+     * Register a Track with the Track Factory
      */
     template <typename T>
     void registerTrack();
 
     /**
-     *	Register a Interpolation with the Interpolation Factory
+     * Register a Interpolation with the Interpolation Factory
      */
     template <typename T>
     void registerInterpolation();
 
 
     /**
-     *	Register a Property Track class identifier for a property class identifier.
+     * Register connection between a property and a track.
+     * Used to create typed tracks for a property.
+     * @param propertyClassID Property::getClassIdentifier
+     * @param trackClassID PropertyTrack::getIdentifier()
+     * @see AnimationManager
      */
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
 
+    /**
+     * Register connection between a property and an interpolation.
+     * Used to get the preferred interpolation method for a property.
+     * @param propertyClassID Property::getClassIdentifier
+     * @param interpolationClassID Interpolation::getIdentifier()
+     * @see AnimationManager
+     */
+    void registerPropertyInterpolationConnection(const std::string& propertyClassID,
+                                                 const std::string& interpolationClassID);
+    
     void unRegisterAll();
 private:
     AnimationManager& manager_;

@@ -44,8 +44,9 @@ namespace inviwo {
 
 namespace animation {
 
-/**
- *	Animation data structure, owns a list of tracks.
+/** \class Animation
+ * Animation data structure, owns a list of tracks. 
+ * Each Track usually represents a value to be animated.
  */
 class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,
                                            public Serializable,
@@ -63,16 +64,44 @@ public:
     const Track& operator[](size_t i) const;
 
     void add(std::unique_ptr<Track> track);
+    /**
+     * Remove tracks at index i, indicating the order in which the track was added, 
+     * not the order in which they are sorted by Track priority.
+     * No range check is done.
+     * Calls TrackObserver::notifyTrackRemoved after removing track.
+     */
     void removeTrack(size_t i);
+    /**
+     * Remove tracks based on Track::getIdentifier
+     * Does nothing if no match was found.
+     * Calls TrackObserver::notifyTrackRemoved after removing track.
+     */
     void removeTrack(const std::string& id);
 
+    /**
+     * Remove Keyframe if matching any of the Keyframes in the tracks.
+     * Calls TrackObserver::notifyKeyframeRemoved after removing Keyframe.
+     * Removes the KeyFrameSequence owning the Keyframe if it does not contain any Keyframe after removal,
+     * thereby calling KeyFrameSequenceObserver::notifyKeyframeSequenceRemoved
+     * Does nothing if no match was found.
+     * @note Keyframe will be deleted if removed so do not use pointer after calling this function.
+     */
     void removeKeyframe(Keyframe* key);
-
+    /**
+     * Remove all tracks. Calls TrackObserver::notifyTrackRemoved for each removed track.
+     */
     void clear();
-
+    /**
+     * Return a sorted list, in ascending order, of all Keyframe times existing in the animation.
+     */
     std::vector<Seconds> getAllTimes() const;
-
+    /**
+     * Return time of first Keyframe in all tracks, or 0 if no track exist.
+     */
     Seconds firstTime() const;
+    /**
+     * Return time of last Keyframe in all tracks, or 0 if no track exist.
+     */
     Seconds lastTime() const;
 
     virtual void serialize(Serializer& s) const override;

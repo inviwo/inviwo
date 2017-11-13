@@ -39,6 +39,7 @@
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/datastructures/interpolation.h>
 #include <modules/animation/animationcontroller.h>
 
 #include <modules/animation/factories/interpolationfactory.h>
@@ -55,15 +56,19 @@ class BasePropertyTrack;
 
 /**
  * The AnimationManager is responsible for managing the factories related to animations as well as
- * owning the currently used animation and controller. The AnumationSuppliers will register
- * FactoryObjects with the factories here.
- * The AnimationManager owns the current Animation and a AnimationController for that Animation, it 
- * is also responsible for clearing, saving, and loading the animation when ever the workspace is 
- * cleared, saved, or loaded. 
+ * owning the currently used Animation and AnimationController. It is also responsible for 
+ * clearing, saving, and loading the animation when ever the workspace is cleared, saved, or loaded.
  * The AnimationManager also manages the ModuleCallback actions that are used to facilitate
  * the creation of property track from the context menu of properties. 
  * To be able to do this is has a map of track class identifiers to map to property class 
  * identifiers.
+ * 
+ * The modules that wish to extend the Animation with a new functionality ( Track or Interpolation )
+ * will do so through the AnimationSuppliers and will register those with the factories here.
+ *
+ * @see Animation
+ * @see AnimationController
+ * @see Track
  */
 class IVW_MODULE_ANIMATION_API AnimationManager : public AnimationObserver, 
                                                   public PropertyOwnerObserver,
@@ -83,27 +88,40 @@ public:
     AnimationController& getAnimationController();
     const AnimationController& getAnimationController() const;
 
-
-
     /**
-     *	Register a Property Track class identifier for a property class identifier.
+     * Register connection between a property and a track.
+     * Used to create typed tracks for a property.
+     * @param propertyClassID Property::getClassIdentifier
+     * @param trackClassID PropertyTrack::getIdentifier()
      */
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
-
+    
+    /**
+     * Register connection between a property and an interpolation.
+     * Used to get the preferred interpolation method for a property.
+     * @param propertyClassID Property::getClassIdentifier
+     * @param interpolationClassID Interpolation::getIdentifier()
+     */
+    void registerPropertyInterpolationConnection(const std::string& propertyClassID,
+                                         const std::string& interpolationClassID);
 
     /**
-     *	Callback for the module action callbacks. 
+     * Callback for the module action callbacks.
      */
     void addKeyframeCallback(Property* property);
     /**
-     *	Callback for the module action callbacks. 
+     * Callback for the module action callbacks.
      */
     void addSequenceCallback(Property* property);
 
 private:
     BasePropertyTrack* addNewTrack(Property* property);
-
+    /** 
+     * Lookup the default interpolation to use for a property.
+     * @throw Exception if none is found.
+     */
+    std::unique_ptr<Interpolation> getDefaultInterpolation(Property* property);
 
     // PropertyOwnerObserver overload
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
@@ -122,6 +140,7 @@ private:
     InterpolationFactory interpolationFactory_;
 
     std::unordered_map<std::string, std::string> propertyToTrackMap_;
+    std::unordered_map<std::string, std::string> propertyToInterpolationMap_;
     std::unordered_map<const Property*, BasePropertyTrack*> trackMap_;
 
     Animation animation_;
@@ -132,9 +151,9 @@ private:
     WorkspaceManager::DeserializationHandle animationDeserializationHandle_;
 };
 
-} // namespace
+} // namespace animation
 
-} // namespace
+} // namespace inviwo
 
 #endif // IVW_ANIMATIONMANAGER_H
 
