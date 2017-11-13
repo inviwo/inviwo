@@ -192,8 +192,19 @@ vec4 performShading()
         float isEdge = any(greaterThan(frag.edgeCoordinates,vec3(1))) ? 1.0f : 0.0f;
 #ifdef DRAW_EDGES_SMOOTHING
         //smoothing
-        float smoothing = min(1, fwidthFinest(isEdge)) * 0.5;
-        float isEdgeSmoothed = (isEdge - 0.5f) * (1-smoothing) + 0.5f;
+        //float smoothing = min(1, fwidthFinest(isEdge)) * 0.5;
+        //float isEdgeSmoothed = (isEdge - 0.5f) * (1-smoothing) + 0.5f;
+
+        float isEdgeSmoothed = 1;
+        vec3 dx = dFdxFinest(frag.edgeCoordinates);
+        vec3 dy = dFdyFinest(frag.edgeCoordinates);
+        for (int i=0; i<3; ++i) {
+            //Distance to the line
+            float d = abs(frag.edgeCoordinates[i]-1) / length(vec2(dx[i], dy[i]));
+            float fraction = frag.edgeCoordinates[i]<1 ? (1-(0.5*d + 0.5)) : (0.5*d+0.5);
+            isEdgeSmoothed *= 1 - clamp(fraction, 0, 1);
+        }
+        isEdgeSmoothed = 1 - isEdgeSmoothed;
 #else
         float isEdgeSmoothed = isEdge;
 #endif
