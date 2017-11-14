@@ -139,9 +139,26 @@ public:
     PropertyOwner* getOwner();
     const PropertyOwner* getOwner() const;
 
-    // Widget calls
+    /**
+     * Register a widget for the property. Registered widgets will receive updateFromProperty calls
+     * when the value state of the property changes. One Property can have multiple widgets.
+     * The property does not take ownership of the widget.
+     * @see deregisterProperty 
+     * @see PropertyWidget
+     */
     void registerWidget(PropertyWidget* propertyWidget);
+
+    /**
+     * Deregister a widget, the widget will no longer receive updateFromProperty calls. 
+     * @see registerProperty
+     * @see PropertyWidget
+     */
     void deregisterWidget(PropertyWidget* propertyWidget);
+
+    /**
+     * Retrieve all registered widgets.
+     * @see registerProperty
+     */
     const std::vector<PropertyWidget*>& getWidgets() const;
 
     /**
@@ -149,10 +166,20 @@ public:
      * change. This is needed because when the property is modified it needs to update all
      * of its widgets. And since it won't know if the change started in one of them we will
      * update the property widget that started the change
+     * @see registerProperty
+     * @see PropertyWidget
      */
-    void setInitiatingWidget(PropertyWidget*);
+    void setInitiatingWidget(PropertyWidget* propertyWidget);
+    /**
+     * Clear the initiatingWidget
+     * @see setInitiatingWidget
+     */
     void clearInitiatingWidget();
-    void updateWidgets();
+
+    /**
+     * Does the property have any registered widgets.
+     * @see registerProperty
+     */
     bool hasWidgets() const;
 
     /**
@@ -223,6 +250,7 @@ protected:
     Property(const Property& rhs);
     Property& operator=(const Property& that);
 
+    void updateWidgets();
     void notifyAboutChange();
 
     CallBackList onChangeCallback_;
