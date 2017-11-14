@@ -265,10 +265,12 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
             if (format->getId() == DataFormatId::UInt16) {
                 // Try to make different UInt16 comparable
                 // by not modifying the range
-                if (dataRange.y < 4096.)
+                if (dataRange.y < 4096.) {
                     // All values within 12-bit range so we guess that this is a 12-bit data set
                     dataRange = dvec2(0., 4095.);
-                else {
+                    LogInfo("Guessing 12-bit data range in 16-bit data since all values are below 4096. "
+                            "Change data range in VolumeSource to [0 65535] if this is incorrect.");
+                } else {
                     // This was probably a 16-bit data set after all
                     dataRange = dvec2(0., format->getMax());
                 }
