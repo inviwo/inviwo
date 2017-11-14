@@ -34,7 +34,8 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareaderexception.h>
- 
+
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 
@@ -48,9 +49,7 @@ NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
     addExtension(FileExtension("img.gz", "ANALYZE file format"));
 }
 
-NiftiReader* NiftiReader::clone() const {
-    return new NiftiReader(*this);
-}
+NiftiReader* NiftiReader::clone() const { return new NiftiReader(*this); }
 
 const DataFormatBase* NiftiReader::niftiDataTypeToInviwoDataFormat(int niftiDataType) {
     switch (niftiDataType){
@@ -249,49 +248,50 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         volume->dataMap_.dataRange.y = niftiImage->cal_max;
         volume->dataMap_.valueRange.x = niftiImage->cal_min;
         volume->dataMap_.valueRange.y = niftiImage->cal_max;
-    } else if (niftiImage->scl_slope != 0) {
-        // If the scl_slope field is nonzero, then each voxel value in the dataset
-        // should be scaled as
-        //     y = scl_slope  x + scl_inter
-        // where x = voxel value stored
-        // y = "true" voxel value
-        // Note: Only tested on 8-bit data, other types might need to change data range as well.
-        volume->dataMap_.valueRange.x = static_cast<double>(niftiImage->scl_inter);
-        volume->dataMap_.valueRange.y =
-            volume->dataMap_.valueRange.x +
-            static_cast<double>(niftiImage->scl_slope) *
-                (volume->dataMap_.valueRange.y - volume->dataMap_.valueRange.x);
-    } else if (format->getId() == DataFormatId::Float32) {
-        // These formats do not contain information about data range
-        // so we need to compute it for valid display ranges
-        auto minmax = std::minmax_element(
-            reinterpret_cast<const DataFloat32::type*>(data),
-            reinterpret_cast<const DataFloat32::type*>(reinterpret_cast<const char*>(data) +
-                                                       volRAM->getNumberOfBytes()));
-        volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
-        volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
-    } else if (format->getId() == DataFormatId::Float64) {
-        auto minmax = std::minmax_element(
-            reinterpret_cast<const DataFloat64::type*>(data),
-            reinterpret_cast<const DataFloat64::type*>(reinterpret_cast<const char*>(data) +
-                                                       volRAM->getNumberOfBytes()));
-        volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
-        volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
-    } else if (format->getId() == DataFormatId::UInt16) {
-        // This might be 12-bit data
-        auto minmax = std::minmax_element(
-            reinterpret_cast<const DataUInt16::type*>(data),
-            reinterpret_cast<const DataUInt16::type*>(reinterpret_cast<const char*>(data) +
-                                                      volRAM->getNumberOfBytes()));
-        volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
-        volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
-    } else if (format->getId() == DataFormatId::Int16) {
-        auto minmax = std::minmax_element(
-            reinterpret_cast<const DataInt16::type*>(data),
-            reinterpret_cast<const DataInt16::type*>(reinterpret_cast<const char*>(data) +
-                                                     volRAM->getNumberOfBytes()));
-        volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
-        volume->dataMap_.valueRange = dvec2(*minmax.first, *minmax.second);
+    } else {
+        // No need to modify range for 8-bit formats since normalization will work well anyway
+        if (format->getPrecision() > 8) {
+            // These formats may have a tricky data range,
+            // so we need to compute it for valid display ranges
+            auto minmax = util::volumeMinMax(volRAM.get());
+            // minmax always have four components, unused components are set to zero.
+            // Hence, only consider components used by the data format
+            dvec2 dataRange(minmax.first[0], minmax.second[0]);
+            // min/max of all components
+            for (size_t component = 1; component < format->getComponents(); ++component) {
+                dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
+                                  glm::max(dataRange[1], minmax.second[component]));
+            }
+            if (format->getId() == DataFormatId::UInt16) {
+                // Try to make different UInt16 comparable
+                // by not modifying the range
+                if (dataRange.y < 4096.) {
+                    // All values within 12-bit range so we guess that this is a 12-bit data set
+                    dataRange = dvec2(0., 4095.);
+                    LogInfo("Guessing 12-bit data range in 16-bit data since all values are below 4096. "
+                            "Change data range in VolumeSource to [0 65535] if this is incorrect.");
+                } else {
+                    // This was probably a 16-bit data set after all
+                    dataRange = dvec2(0., format->getMax());
+                }
+            }
+            volume->dataMap_.dataRange = dataRange;
+            volume->dataMap_.valueRange = dataRange;
+        }
+
+        if (niftiImage->scl_slope != 0) {
+            // If the scl_slope field is nonzero, then each voxel value in the dataset
+            // should be scaled as
+            //     y = scl_slope  x + scl_inter
+            // where x = stored voxel value and
+            // y = "true" voxel value
+            volume->dataMap_.valueRange.x =
+                static_cast<double>(niftiImage->scl_slope) * volume->dataMap_.dataRange.x +
+                static_cast<double>(niftiImage->scl_inter);
+            volume->dataMap_.valueRange.y =
+                static_cast<double>(niftiImage->scl_slope) * volume->dataMap_.dataRange.y +
+                static_cast<double>(niftiImage->scl_inter);
+        }
     }
 
     auto volumes = std::make_shared<VolumeSequence>();
@@ -365,5 +365,4 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
     }
 }
 
-} // namespace
-
+}  // namespace inviwo
