@@ -64,13 +64,14 @@ public:
     Processor* getProcessor() const;
     std::string getIdentifier() const;
 
-    ProcessorInportGraphicsItem* getInportGraphicsItem(Inport* port);
-    ProcessorOutportGraphicsItem* getOutportGraphicsItem(Outport* port);
+    ProcessorInportGraphicsItem* getInportGraphicsItem(Inport* port) const;
+    ProcessorOutportGraphicsItem* getOutportGraphicsItem(Outport* port) const;
     ProcessorLinkGraphicsItem* getLinkGraphicsItem() const;
     ProcessorStatusGraphicsItem* getStatusItem() const;
 
-    void editProcessorName();
-    void onLabelGraphicsItemChange() override;
+    void editDisplayName();
+    void editIdentifier();
+
     bool isEditingProcessorName();
 
     void snapToGrid();
@@ -90,7 +91,6 @@ public:
     static const QSizeF size_;
 
 protected:
-    void setIdentifier(QString text);
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
@@ -103,8 +103,13 @@ protected:
     void removeInport(Inport* port);
     void removeOutport(Outport* port);
 
+    // LabelGraphicsItem overrides
+    void onLabelGraphicsItemChange(LabelGraphicsItem* item) override;
+    void onLabelGraphicsItemEdit(LabelGraphicsItem* item) override;
+
     // ProcessorObserver overrides
-    virtual void onProcessorIdentifierChange(Processor*) override;
+    virtual void onProcessorIdentifierChanged(Processor*, const std::string&) override;
+    virtual void onProcessorDisplayNameChanged(Processor*, const std::string&) override;
     virtual void onProcessorReadyChanged(Processor*) override;
     virtual void onProcessorPortAdded(Processor*, Port*) override;
     virtual void onProcessorPortRemoved(Processor*, Port*) override;
@@ -119,9 +124,12 @@ protected:
     virtual void onProcessorMetaDataSelectionChange() override;
 
 private:
+    void positionLablels();
+
     Processor* processor_;
-    LabelGraphicsItem* nameLabel_;
-    LabelGraphicsItem* classLabel_;
+    LabelGraphicsItem* displayNameLabel_;
+    LabelGraphicsItem* identifierLabel_;
+    LabelGraphicsItem* tagLabel_;
     ProcessorMetaData* processorMeta_;
 
     ProcessorProgressGraphicsItem* progressItem_;

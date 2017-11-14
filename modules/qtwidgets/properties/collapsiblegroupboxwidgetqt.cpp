@@ -232,13 +232,8 @@ std::string CollapsibleGroupBoxWidgetQt::getDisplayName() const { return display
 void CollapsibleGroupBoxWidgetQt::setDisplayName(const std::string& displayName) {
     displayName_ = displayName;
     if (propertyOwner_) {
-        if (Processor* p = dynamic_cast<Processor*>(propertyOwner_)) {
-            try {
-                p->setIdentifier(displayName);
-            } catch (Exception& e) {
-                label_->setText(p->getIdentifier());
-                LogWarn(e.getMessage());
-            }
+        if (auto p = dynamic_cast<Processor*>(propertyOwner_)) {
+            p->setDisplayName(displayName);
         }
     }
 }
@@ -382,9 +377,10 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
     delete propertyWidget;
 }
 
-void CollapsibleGroupBoxWidgetQt::onProcessorIdentifierChange(Processor* processor) {
-    displayName_ = processor->getIdentifier();
-    label_->setText(processor->getIdentifier());
+void CollapsibleGroupBoxWidgetQt::onProcessorDisplayNameChanged(Processor* processor,
+                                                               const std::string& old) {
+    displayName_ = processor->getDisplayName();
+    label_->setText(displayName_);
 }
 
 void CollapsibleGroupBoxWidgetQt::setPropertyOwner(PropertyOwner* propertyOwner) {

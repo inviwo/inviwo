@@ -59,6 +59,10 @@ ProcessorNetwork::~ProcessorNetwork() {
 bool ProcessorNetwork::addProcessor(Processor* processor) {
     NetworkLock lock(this);
 
+    processor->setIdentifier(util::findUniqueIdentifier(
+        processor->getIdentifier(),
+        [&](const std::string& id) { return getProcessorByIdentifier(id) == nullptr; }));
+
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
     processor->setNetwork(this);
@@ -303,11 +307,8 @@ void ProcessorNetwork::onProcessorInvalidationEnd(Processor* p) {
     }
 }
 
-void ProcessorNetwork::onProcessorIdentifierChange(Processor* processor) {
-    util::map_erase_remove_if(processors_, [processor](ProcessorMap::const_reference elem) {
-        return elem.second == processor;
-    });
-
+void ProcessorNetwork::onProcessorIdentifierChanged(Processor* processor, const std::string& old) {
+    processors_.erase(util::stripIdentifier(old));
     processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
 }
 

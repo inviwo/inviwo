@@ -58,7 +58,8 @@ public:
     virtual void onAboutPropertyChange(Property*){};
     virtual void onProcessorInvalidationBegin(Processor*){};
     virtual void onProcessorInvalidationEnd(Processor*){};
-    virtual void onProcessorIdentifierChange(Processor*){};
+    virtual void onProcessorIdentifierChanged(Processor*, const std::string& oldIdentifier){};
+    virtual void onProcessorDisplayNameChanged(Processor*, const std::string& oldDisplayNamr){};
 
     virtual void onProcessorPortAdded(Processor*, Port*){};
     virtual void onProcessorPortRemoved(Processor*, Port*){};
@@ -106,8 +107,13 @@ protected:
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorInvalidationEnd(p); });
     }
 
-    void notifyObserversIdentifierChange(Processor* p) {
-        forEachObserver([&](ProcessorObserver* o) { o->onProcessorIdentifierChange(p); });
+    void notifyObserversIdentifierChanged(Processor* p, const std::string& oldIdentifier) {
+        forEachObserver(
+            [&](ProcessorObserver* o) { o->onProcessorIdentifierChanged(p, oldIdentifier); });
+    }
+    void notifyObserversDisplayNameChanged(Processor* p, const std::string& oldDisplayName) {
+        forEachObserver(
+            [&](ProcessorObserver* o) { o->onProcessorDisplayNameChanged(p, oldDisplayName); });
     }
 
     void notifyObserversProcessorPortAdded(Processor* p, Port* port) {

@@ -54,6 +54,10 @@ IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = 
 IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
                                      ExceptionContext context, const std::string& extra = "");
 
+IVW_CORE_API std::string findUniqueIdentifier(const std::string& identifier,
+                                              std::function<bool(const std::string&)> isUnique,
+                                              const std::string& sep = " ");
+
 IVW_CORE_API std::string cleanIdentifier(const std::string& identifier,
                                          const std::string& extra = "");
 

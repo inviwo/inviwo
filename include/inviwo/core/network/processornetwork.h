@@ -243,7 +243,7 @@ private:
     virtual void onAboutPropertyChange(Property*) override;
     virtual void onProcessorInvalidationBegin(Processor*) override;
     virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorIdentifierChange(Processor*) override;
+    virtual void onProcessorIdentifierChanged(Processor*, const std::string& old) override;
     virtual void onProcessorPortRemoved(Processor*, Port* port) override;
 
     // ProcessorMeteDataObserver overrides

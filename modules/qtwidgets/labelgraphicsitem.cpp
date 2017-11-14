@@ -49,7 +49,7 @@ LabelGraphicsItem::LabelGraphicsItem(QGraphicsItem* parent, int width, Qt::Align
     , orgText_("")
     , alignment_(alignment) {
     font().setPixelSize(4);
-    document()->setDocumentMargin(0.0);
+    document()->setDocumentMargin(1.0);
 }
 
 QString LabelGraphicsItem::text() const {
@@ -111,6 +111,11 @@ bool LabelGraphicsItem::isCropped() const {
     return (orgText_ != toPlainText());
 }
 
+int LabelGraphicsItem::usedTextWidth() const {
+     QFontMetrics fm = QFontMetrics(font());
+     return fm.tightBoundingRect(croppedText()).width();
+}
+
 void LabelGraphicsItem::setNoFocusOut() {
     focusOut_ = false;
 }
@@ -132,6 +137,7 @@ void LabelGraphicsItem::keyPressEvent(QKeyEvent* keyEvent) {
         QGraphicsTextItem::keyPressEvent(keyEvent);
         keyEvent->accept();
     }
+    notifyObserversEdit(this);
 }
 
 void LabelGraphicsItem::focusInEvent(QFocusEvent*) {
@@ -146,8 +152,16 @@ void LabelGraphicsItem::focusOutEvent(QFocusEvent*) {
     cur.clearSelection();
     setTextCursor(cur);
     setText(toPlainText());
-    notifyLabelGraphicsItemObservers();
+    notifyObserversChange(this);
     focusOut_ = false;
+}
+
+void LabelGraphicsItemObservable::notifyObserversChange(LabelGraphicsItem* item) {
+    forEachObserver([&](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemChange(item); });
+}
+
+void LabelGraphicsItemObservable::notifyObserversEdit(LabelGraphicsItem* item) {
+     forEachObserver([&](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemEdit(item); });
 }
 
 } // namespace

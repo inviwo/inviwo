@@ -70,7 +70,7 @@ public:
     virtual void setDimensions(ivec2 dimensions) override;
 
     // Override ProcessorObserver
-    virtual void onProcessorIdentifierChange(Processor *) override;
+    virtual void onProcessorIdentifierChanged(Processor *p, const std::string& old) override;
 
 protected:
     // Override QWidget events

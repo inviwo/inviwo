@@ -192,7 +192,7 @@ void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
     QWidget::moveEvent(event);
 }
 
-void CanvasProcessorWidgetQt::onProcessorIdentifierChange(Processor*) {
+void CanvasProcessorWidgetQt::onProcessorIdentifierChanged(Processor*, const std::string&) {
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
     RenderContext::getPtr()->setContextName(canvas_->contextId(), processor_->getIdentifier());
 }

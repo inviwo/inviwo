@@ -42,9 +42,7 @@
 
 namespace inviwo {
 
-std::unordered_set<std::string> Processor::usedIdentifiers_;
-
-Processor::Processor()
+Processor::Processor(const std::string& identifier, const std::string& displayName)
     : PropertyOwner()
     , ProcessorObservable()
     , processorWidget_(nullptr)
@@ -54,12 +52,13 @@ Processor::Processor()
               [this]() { return outports_.empty(); }}
     , isSource_{true, [this](const bool&) { notifyObserversSourceChange(this); },
                 [this]() { return inports_.empty(); }}
-    , identifier_("")
+    , identifier_(identifier)
+    , displayName_{displayName}
     , network_(nullptr) {
     createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 }
 
-Processor::~Processor() { usedIdentifiers_.erase(util::stripIdentifier(identifier_)); }
+Processor::~Processor() = default;
 
 void Processor::addPort(Inport* port, const std::string& portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
@@ -180,50 +179,36 @@ void Processor::removePortFromGroups(Port* port) {
 
 std::string Processor::getClassIdentifier() const { return getProcessorInfo().classIdentifier; }
 
-std::string Processor::getDisplayName() const { return getProcessorInfo().displayName; }
-
 std::string Processor::getCategory() const { return getProcessorInfo().category; }
 
 CodeState Processor::getCodeState() const { return getProcessorInfo().codeState; }
 
 Tags Processor::getTags() const { return getProcessorInfo().tags; }
 
-std::string Processor::setIdentifier(const std::string& identifier) {
-    if (identifier == identifier_) return identifier_;  // nothing changed
-
-    util::validateIdentifier(identifier, "Processor", IvwContext, " ()=&");
-
-    usedIdentifiers_.erase(util::stripIdentifier(identifier_));  // remove old identifier
-
-    std::string baseIdentifier = identifier;
-    std::string newIdentifier = identifier;
-    int i = 2;
-
-    auto parts = splitString(identifier, ' ');
-    if (parts.size() > 1 &&
-        util::all_of(parts.back(), [](const char& c) { return std::isdigit(c); })) {
-        i = std::stoi(parts.back());
-        baseIdentifier = joinString(parts.begin(), parts.end() - 1, " ");
-        newIdentifier = baseIdentifier + " " + toString(i);
+void Processor::setIdentifier(const std::string& identifier) {
+    if (identifier != identifier_) {
+        util::validateIdentifier(identifier, "Processor", IvwContext, " ()=&");
+        if (network_ && network_->getProcessorByIdentifier(identifier) != nullptr) {
+            throw Exception("Processor identifier \"" + identifier + "\" already in use.",
+                            IvwContext);
+        }
+        auto old = identifier_;
+        identifier_ = identifier;
+        notifyObserversIdentifierChanged(this, old);
     }
+}
 
-    std::string stripedIdentifier = util::stripIdentifier(newIdentifier);
-
-    while (usedIdentifiers_.find(stripedIdentifier) != usedIdentifiers_.end()) {
-        newIdentifier = baseIdentifier + " " + toString(i++);
-        stripedIdentifier = util::stripIdentifier(newIdentifier);
-    }
-
-    usedIdentifiers_.insert(stripedIdentifier);
-    identifier_ = newIdentifier;
-
-    notifyObserversIdentifierChange(this);
+const std::string& Processor::getIdentifier() const {
     return identifier_;
 }
 
-std::string Processor::getIdentifier() {
-    if (identifier_.empty()) setIdentifier(getDisplayName());
-    return identifier_;
+const std::string& Processor::getDisplayName() const { return displayName_; }
+void Processor::setDisplayName(const std::string& displayName) {
+    if (displayName_ != displayName) {
+        auto old = displayName_;
+        displayName_ = displayName;
+        notifyObserversDisplayNameChanged(this, old);
+    }
 }
 
 void Processor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
@@ -331,6 +316,7 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
 void Processor::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("identifier", identifier_, SerializationTarget::Attribute);
+    s.serialize("displayName", displayName_, SerializationTarget::Attribute);
 
     s.serialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
 
@@ -354,9 +340,8 @@ void Processor::serialize(Serializer& s) const {
 }
 
 void Processor::deserialize(Deserializer& d) {
-    std::string identifier;
-    d.deserialize("identifier", identifier, SerializationTarget::Attribute);
-    setIdentifier(identifier);  // Need to use setIdentifier to make sure we get a unique id.
+    d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
+    d.deserialize("displayName", displayName_, SerializationTarget::Attribute);
 
     d.deserialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
 
