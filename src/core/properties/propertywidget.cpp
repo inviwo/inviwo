@@ -35,7 +35,13 @@ namespace inviwo {
 
 PropertyWidget::PropertyWidget() = default;
 
-PropertyWidget::PropertyWidget(Property* property) : property_(property) {}
+PropertyWidget::PropertyWidget(Property* property) : property_(property) {
+    if (property_) property_->registerWidget(this);
+}
+
+PropertyWidget::~PropertyWidget() {
+    if (property_) property_->deregisterWidget(this);
+}
 
 Property* PropertyWidget::getProperty() { return property_; }
 

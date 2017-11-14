@@ -89,7 +89,6 @@ void exposeProperties(py::module &m) {
         .def_property_readonly("path", &Property::getPath)
         .def_property_readonly("invalidationLevel", &Property::getInvalidationLevel)
         .def_property_readonly("widgets", &Property::getWidgets)
-        .def("updateWidgets", &Property::updateWidgets)
         .def("hasWidgets", &Property::hasWidgets)
         .def("setCurrentStateAsDefault", &Property::setCurrentStateAsDefault)
         .def("resetToDefaultState", &Property::resetToDefaultState);

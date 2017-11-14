@@ -125,11 +125,8 @@ void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
     auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release());
 
     if (propertyWidget) {
-        prop->deregisterWidget(widget);
-
         listLayout->removeWidget(widget);
         listLayout->insertWidget(layoutPosition, propertyWidget);
-        prop->registerWidget(propertyWidget);
 
         connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
                 SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));

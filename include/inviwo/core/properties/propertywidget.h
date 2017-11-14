@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYWIDGET_H
@@ -39,14 +39,28 @@ namespace inviwo {
 class Property;
 class PropertyEditorWidget;
 
+/**
+ * A PropertyWidget is a graphical representation of a Property.
+ * A widget will get updateFromProperty call to update its representation when ever the property
+ * changes and should update the property when ever the user modifies the widget.
+ */
 class IVW_CORE_API PropertyWidget {
 public:
     PropertyWidget();
+
+    /**
+     * The PropertyWidget will register it self with the property.
+     */
     PropertyWidget(Property* property);
 
-    virtual ~PropertyWidget() = default;
+    /**
+     * The PropertyWidget will deregister it self with the property.
+     */
+    virtual ~PropertyWidget();
 
-    // Overload this function to update the widget after property modified has been called.
+    /**
+     * Implement this function to update the widget after the property has been modified.
+     */ 
     virtual void updateFromProperty() = 0;
 
     virtual PropertyEditorWidget* getEditorWidget() const;
@@ -58,7 +72,6 @@ protected:
 };
 
 // Additional widget owned by property widget
-
 class IVW_CORE_API PropertyEditorWidget {
 public:
     PropertyEditorWidget(Property* property);
@@ -85,9 +98,9 @@ protected:
 
     // Non owning reference to a metadata that belongs to property.
     Property* property_;
-    PropertyEditorWidgetMetaData* metaData_;  
+    PropertyEditorWidgetMetaData* metaData_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYWIDGET_H
