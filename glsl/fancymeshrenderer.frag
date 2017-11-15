@@ -38,14 +38,18 @@ in fData
     vec4 position;
     vec3 normal;
     vec3 viewNormal;
+    vec3 triangleNormal;
     vec4 color;
     vec2 texCoord;
     float area;
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
 #endif
-#ifdef DRAW_EDGES
+#if defined(DRAW_EDGES) || defined(DRAW_SILHOUETTE)
     vec3 edgeCoordinates;
+#endif
+#ifdef DRAW_SILHOUETTE
+    flat bvec3 silhouettes;
 #endif
 } frag;
 
@@ -144,7 +148,12 @@ vec4 performShading()
     // NORMAL VECTOR
     //==================================================
     vec3 normal = frag.normal;
-    //TODO: switch on settings.normalSource. For now, assume ==0
+    //TODO: missing switches on the normal source
+    if (settings.normalSource == 3) 
+    {
+        //computed triangle-normal
+        normal = frag.triangleNormal;
+    }
     normal = normalize(normal);
     if (!gl_FrontFacing) normal = -normal; //backface -> invert normal
 
@@ -187,15 +196,20 @@ vec4 performShading()
     //==================================================
     // EDGES
     //==================================================
-#ifdef DRAW_EDGES
-    if (settings.showEdges) {
-        float isEdge = any(greaterThan(frag.edgeCoordinates,vec3(1))) ? 1.0f : 0.0f;
+#if defined(DRAW_EDGES) || defined(DRAW_SILHOUETTE)
+    {
+        //obtain silhouette flags
+#ifdef DRAW_SILHOUETTE
+        bvec3 silhouettes = frag.silhouettes;
+#else
+        bvec3 silhouettes = bvec3(false);
+#endif
+
+        //compute if we are on an edge or not
 #ifdef DRAW_EDGES_SMOOTHING
         //smoothing
-        //float smoothing = min(1, fwidthFinest(isEdge)) * 0.5;
-        //float isEdgeSmoothed = (isEdge - 0.5f) * (1-smoothing) + 0.5f;
-
         float isEdgeSmoothed = 1;
+        float isSilhouettesSmoothed = 1;
         vec3 dx = dFdxFinest(frag.edgeCoordinates);
         vec3 dy = dFdyFinest(frag.edgeCoordinates);
         for (int i=0; i<3; ++i) {
@@ -203,14 +217,26 @@ vec4 performShading()
             float d = abs(frag.edgeCoordinates[i]-1) / length(vec2(dx[i], dy[i]));
             float fraction = frag.edgeCoordinates[i]<1 ? (1-(0.5*d + 0.5)) : (0.5*d+0.5);
             isEdgeSmoothed *= 1 - clamp(fraction, 0, 1);
+            if (silhouettes[i]) isSilhouettesSmoothed *= 1 - clamp(fraction, 0, 1);
         }
         isEdgeSmoothed = 1 - isEdgeSmoothed;
+        isSilhouettesSmoothed = 1 - isSilhouettesSmoothed;
 #else
+        float isEdge = any(greaterThan(frag.edgeCoordinates,vec3(1))) ? 1.0f : 0.0f;
         float isEdgeSmoothed = isEdge;
+        float isSilhouettesSmoothed = any(greaterThan(frag.edgeCoordinates,vec3(1)) && silhouettes) ? 1.0f : 0.0f;
 #endif
         //blend in edge color
-        color.rgb = mix(color.rgb, settings.edgeColor.rgb, isEdgeSmoothed*min(1,settings.edgeOpacity));
-        color.a = mix(color.a, 1, isEdgeSmoothed*max(0, settings.edgeOpacity-1));
+        if (settings.showEdges) {
+            color.rgb = mix(color.rgb, settings.edgeColor.rgb, isEdgeSmoothed*min(1,settings.edgeOpacity));
+            color.a = mix(color.a, 1, isEdgeSmoothed*max(0, settings.edgeOpacity-1));
+        }
+#ifdef DRAW_SILHOUETTE
+        //blend in silhouette
+        vec4 silhouetteColor = vec4(1,1,1,1);
+        color.rgb = mix(color.rgb, silhouetteColor.rgb, isSilhouettesSmoothed*min(1,silhouetteColor.a));
+        color.a = mix(color.a, 1, isSilhouettesSmoothed*max(0, silhouetteColor.a-1));
+#endif
     }
 #endif
 

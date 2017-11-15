@@ -27,12 +27,26 @@
  *
  *********************************************************************************/
 
+#ifndef MESH_HAS_ADJACENCY
+//normal mode
 layout(triangles) in;
+#define IDX0 0
+#define IDX1 1
+#define IDX2 2
+#else
+//triangle adjacency
+layout(triangles_adjacency) in;
+#define IDX0 0
+#define IDX1 2
+#define IDX2 4
+#endif
+
 layout(triangle_strip, max_vertices = 3) out;
 
 #include "utils/structs.glsl"
 
 uniform ivec2 halfScreenSize;
+uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
 in vData
@@ -51,14 +65,18 @@ out fData
     vec4 position;
     vec3 normal;
     vec3 viewNormal;
+    vec3 triangleNormal;
     vec4 color;
     vec2 texCoord;
     float area;
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
 #endif
-#ifdef DRAW_EDGES
+#if defined(DRAW_EDGES) || defined(DRAW_SILHOUETTE)
     vec3 edgeCoordinates;
+#endif
+#ifdef DRAW_SILHOUETTE
+    flat bvec3 silhouettes;
 #endif
 } frag;
 
@@ -68,6 +86,28 @@ struct GeometrySettings
 };
 uniform GeometrySettings geomSettings;
 
+//Guard against missconfigurations
+#if defined(DRAW_SILHOUETTE) && !defined(MESH_HAS_ADJACENCY)
+#error "Silhouettes need adjacency information!"
+#endif
+
+bool isFront(int a, int b, int c)
+{
+    
+    vec3 A = vertices[a].position.xyz / vertices[a].position.w;
+    vec3 B = vertices[b].position.xyz / vertices[b].position.w;
+    vec3 C = vertices[c].position.xyz / vertices[c].position.w;
+    float area = (A.x * B.y - B.x * A.y) + (B.x * C.y - C.x * B.y) + (C.x * A.y - A.x * C.y);
+    return area > 0;
+    /*
+    vec3 A = vertices[a].worldPosition.xyz;
+    vec3 B = vertices[b].worldPosition.xyz;
+    vec3 C = vertices[c].worldPosition.xyz;
+    vec4 normal = camera.worldToClip * vec4(geometry.dataToWorldNormalMatrix * normalize(cross(B-A, C-A)), 0);
+    return normal.z < 0;
+    */
+}
+
 void main(void) 
 {
     //==================================================
@@ -75,26 +115,31 @@ void main(void)
     //==================================================
     //compute the area of the triangle,
     //needed for several shading computations
-    float area = length(cross(vertices[1].position.xyz-vertices[0].position.xyz,
-                  vertices[2].position.xyz-vertices[0].position.xyz)) * 0.5f;
+    float area = length(cross(vertices[IDX1].position.xyz-vertices[IDX0].position.xyz,
+                  vertices[IDX2].position.xyz-vertices[IDX0].position.xyz)) * 0.5f;
     
     //compute side lengths of the triangles
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
-    sideLengths.x = length(vertices[1].position.xyz - vertices[0].position.xyz);
-    sideLengths.y = length(vertices[2].position.xyz - vertices[0].position.xyz);
-    sideLengths.z = length(vertices[2].position.xyz - vertices[1].position.xyz);
+    sideLengths.x = length(vertices[IDX1].position.xyz - vertices[IDX0].position.xyz);
+    sideLengths.y = length(vertices[IDX2].position.xyz - vertices[IDX0].position.xyz);
+    sideLengths.z = length(vertices[IDX2].position.xyz - vertices[IDX1].position.xyz);
 #endif
+
+    //compute the per-triangle normal
+    vec3 triNormal = normalize(cross(vertices[IDX1].worldPosition.xyz-vertices[IDX0].worldPosition.xyz,
+                  vertices[IDX2].worldPosition.xyz-vertices[IDX0].worldPosition.xyz));
+    triNormal = geometry.dataToWorldNormalMatrix * triNormal;
 
     //==================================================
     // EDGES
     //==================================================
     //edge coordinates for edge highlighting
-#ifdef DRAW_EDGES
+#if defined(DRAW_EDGES) || defined(DRAW_SILHOUETTE)
     //vertices coordinates in pixel space
-    vec2 screenA = halfScreenSize * vertices[0].position.xy / vertices[0].position.w;
-    vec2 screenB = halfScreenSize * vertices[1].position.xy / vertices[1].position.w;
-    vec2 screenC = halfScreenSize * vertices[2].position.xy / vertices[2].position.w;
+    vec2 screenA = halfScreenSize * vertices[IDX0].position.xy / vertices[IDX0].position.w;
+    vec2 screenB = halfScreenSize * vertices[IDX1].position.xy / vertices[IDX1].position.w;
+    vec2 screenC = halfScreenSize * vertices[IDX2].position.xy / vertices[IDX2].position.w;
     //side lengths in pixel coordinates
     float ab = length(screenB - screenA);
     float ac = length(screenC - screenA);
@@ -109,13 +154,13 @@ void main(void)
     float angleCSin = sqrt(1 - angleCCos*angleCCos);
 
     //desired edge width in pixels
-    float edgeWidthGlobal = geomSettings.edgeWidth * 4;
+    float edgeWidthGlobal = geomSettings.edgeWidth;
 #ifdef DRAW_EDGES_DEPTH_DEPENDENT
     float edgeWidthScale = 2; //experiments, this gives the most similar result to non-depth dependent thickness
     vec3 edgeWidth = vec3(
-        edgeWidthGlobal*edgeWidthScale / length(vertices[0].worldPosition.xyz - camera.position.xyz),
-        edgeWidthGlobal*edgeWidthScale / length(vertices[1].worldPosition.xyz - camera.position.xyz),
-        edgeWidthGlobal*edgeWidthScale / length(vertices[2].worldPosition.xyz - camera.position.xyz)
+        edgeWidthGlobal*edgeWidthScale / length(vertices[IDX0].worldPosition.xyz - camera.position.xyz),
+        edgeWidthGlobal*edgeWidthScale / length(vertices[IDX1].worldPosition.xyz - camera.position.xyz),
+        edgeWidthGlobal*edgeWidthScale / length(vertices[IDX2].worldPosition.xyz - camera.position.xyz)
     );
 #else
     vec3 edgeWidth = vec3(edgeWidthGlobal);
@@ -137,25 +182,43 @@ void main(void)
         1 / (1 - min(0.99999, edgeWidth.z / (bc * angleCSin))),
         0
     );
+#ifdef DRAW_SILHOUETTE
+    //additionally compute which edge lies on a boundary
+    bool orientation = isFront(0, 2, 4);
+    bvec3 silhouettes = bvec3(
+        isFront(2,3,4) != orientation,
+        isFront(4,5,0) != orientation,
+        isFront(0,1,2) != orientation
+    );
+    //silhouettes.x = false;
+    //silhouettes.z = false;
+    //silhouettes = bvec3(any(silhouettes));
+#endif
 #endif
     
     //==================================================
     // pass-through other parameters
     //==================================================
-    for (int i=0; i<3; ++i)
+    ivec3 vIdx = ivec3(IDX0, IDX1, IDX2);
+    for (int j=0; j<3; ++j)
     {
+        int i = vIdx[j];
         frag.worldPosition = vertices[i].worldPosition;
         frag.position = vertices[i].position;
         frag.normal = vertices[i].normal;
         frag.viewNormal = vertices[i].viewNormal;
+        frag.triangleNormal = triNormal;
         frag.color = vertices[i].color;
         frag.texCoord = vertices[i].texCoord;
         frag.area = area;
 #ifdef ALPHA_SHAPE
         frag.sideLengths = sideLengths;
 #endif
-#ifdef DRAW_EDGES
-        frag.edgeCoordinates = edgeCoordinates[i];
+#if defined(DRAW_EDGES) || defined(DRAW_SILHOUETTE)
+        frag.edgeCoordinates = edgeCoordinates[j];
+#endif
+#ifdef DRAW_SILHOUETTE
+        frag.silhouettes = silhouettes;
 #endif
         gl_Position = vertices[i].position;
         EmitVertex();

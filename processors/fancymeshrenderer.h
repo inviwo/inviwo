@@ -31,6 +31,7 @@
 #define IVW_FANCYMESHRENDERER_H
 
 #include <fancymeshrenderer/fancymeshrenderermoduledefine.h>
+#include <fancymeshrenderer/HalfEdges.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -42,6 +43,8 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
 
@@ -138,6 +141,11 @@ protected:
 	std::pair<vec3, vec3> calcWorldBoundingBox() const;
 
 	void setNearFarPlane();
+    /**
+	 * \brief Update the mesh drawer.
+	 * This is called when the inport is changed or when a property requires preprocessing steps on the mesh,
+	 * e.g. for silhouettes or special alpha features.
+	 */
 	void updateDrawers();
 
     /**
@@ -167,6 +175,7 @@ protected:
 	BoolProperty viewNormalsLayer_;
 
     BoolProperty forceOpaque_;
+    BoolProperty drawSilhouette_;
 
     /**
      * \brief Settings to assemble the equation for the alpha values.
@@ -309,17 +318,32 @@ protected:
         * \brief Update the visibility of the properties.
         */
         void update(bool opaque);
+        /**
+        * \brief Set the callbacks that trigger property update and shader recompilation
+        * \param triggerUpdate triggers an update of the property visibility
+        * \param triggerRecompilation triggers shader recompilation
+        */
+        void setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation);
+
         bool lastOpaque_;
 	} faceSettings_[2];
 
-	Shader shader_;
-    Shader depthShader_;
-	bool needsRecompilation_;
+    ButtonProperty propDebugFragmentLists_;
+    bool debugFragmentLists_;
+
+    const Mesh* originalMesh_;
+    std::unique_ptr<Mesh> enhancedMesh_;
+    /**
+     * \brief This flag is set to true if adjacency information is available in the shader.
+     */
+    bool meshHasAdjacency_;
+    std::unique_ptr<HalfEdges> halfEdges_;
 	std::unique_ptr<MeshDrawer> drawer_;
     FragmentListRenderer flr_;
 
-    ButtonProperty propDebugFragmentLists_;
-    bool debugFragmentLists_;
+    Shader shader_;
+    Shader depthShader_;
+    bool needsRecompilation_;
 };
 
 } // namespace

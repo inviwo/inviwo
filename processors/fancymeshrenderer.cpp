@@ -73,10 +73,13 @@ FancyMeshRenderer::FancyMeshRenderer()
 	, viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false,
 		InvalidationLevel::InvalidResources)
     , forceOpaque_("forceOpaque", "Shade Opaque", false)
+    , drawSilhouette_("drawSilhouette", "Draw Silhouette")
 	, faceSettings_{true, false}
 	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
     , depthShader_("geometryrendering.vert", "depthOnly.frag", false)
 	, needsRecompilation_(true)
+    , originalMesh_(nullptr)
+    , meshHasAdjacency_(false)
     , debugFragmentLists_(false)
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
 {
@@ -106,6 +109,7 @@ FancyMeshRenderer::FancyMeshRenderer()
 
     //New properties
     addProperty(forceOpaque_);
+    addProperty(drawSilhouette_);
     addProperty(propDebugFragmentLists_); //DEBUG, to be removed
     addProperty(alphaSettings_.container_);
     addProperty(edgeSettings_.container_);
@@ -121,8 +125,16 @@ FancyMeshRenderer::FancyMeshRenderer()
     };
     auto triggerUpdate = [this]() {update(); };
     forceOpaque_.onChange(triggerRecompilation);
+    drawSilhouette_.onChange([this]()
+    {
+        needsRecompilation_ = true;
+        update();
+        updateDrawers();
+    });
     alphaSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
     edgeSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
+    faceSettings_[0].setCallbacks(triggerUpdate, triggerRecompilation);
+    faceSettings_[1].setCallbacks(triggerUpdate, triggerRecompilation);
     faceSettings_[1].frontPart_ = &faceSettings_[0];
 
     //DEBUG, to be removed
@@ -308,7 +320,6 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     colorSource_.onChange(triggerUpdate);
     separateUniformAlpha_.onChange(triggerUpdate);
     normalSource_.onChange(triggerUpdate);
-    showEdges_.onChange(triggerUpdate);
     hatching_.mode_.onChange(triggerUpdate);
     hatching_.steepness_.onChange(triggerUpdate);
     hatching_.baseFrequencyU_.onChange(triggerUpdate);
@@ -368,7 +379,12 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
     hatching_.baseFrequencyV_.setVisible(hatching_.mode_.get() != HatchingMode::U);
 }
 
-void FancyMeshRenderer::initializeResources() {
+void FancyMeshRenderer::FaceRenderSettings::setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation)
+{
+    showEdges_.onChange(triggerRecompilation);
+}
+
+    void FancyMeshRenderer::initializeResources() {
 	
 	//get number of layers, see compileShader()
 	// first two layers (color and picking) are reserved
@@ -403,11 +419,12 @@ void FancyMeshRenderer::initializeResources() {
 void FancyMeshRenderer::update()
 {
     //fetch all booleans
-    boolean opaque = forceOpaque_.get();
+    bool opaque = forceOpaque_.get();
 
     //set top-level visibility
     alphaSettings_.container_.setVisible(!opaque);
-    edgeSettings_.container_.setVisible(faceSettings_[0].showEdges_.get() || faceSettings_[1].showEdges_.get());
+    edgeSettings_.container_.setVisible(drawSilhouette_.get() ||
+        faceSettings_[0].showEdges_.get() || faceSettings_[1].showEdges_.get());
 
     //update nested settings
     alphaSettings_.update();
@@ -482,6 +499,8 @@ void FancyMeshRenderer::compileShader()
     SendBoolean(faceSettings_[0].showEdges_.get() || faceSettings_[1].showEdges_.get(), "DRAW_EDGES");
     SendBoolean(edgeSettings_.depthDependent_.get(), "DRAW_EDGES_DEPTH_DEPENDENT");
     SendBoolean(edgeSettings_.smoothEdges_.get(), "DRAW_EDGES_SMOOTHING");
+    SendBoolean(meshHasAdjacency_, "MESH_HAS_ADJACENCY");
+    SendBoolean(drawSilhouette_, "DRAW_SILHOUETTE");
 	shader_.build();
 
 	LogProcessorInfo("shader compiled");
@@ -709,9 +728,50 @@ void FancyMeshRenderer::setNearFarPlane()
 
 void FancyMeshRenderer::updateDrawers()
 {
+    //sometimes, this is null:
+    if (getNetwork() == nullptr) return;
+    //aquire mesh
 	auto changed = inport_.getChangedOutports();
 	auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
-	drawer_ = factory->create(inport_.getData().get());
+    const Mesh* mesh = inport_.getData().get();
+    if (mesh != originalMesh_)
+    {
+        //Delete old mesh
+        enhancedMesh_.reset();
+        halfEdges_.reset();
+    }
+    originalMesh_ = mesh;
+
+    //check if we need to preprocess it
+    if (drawSilhouette_.get())
+    {
+        if (mesh->getNumberOfIndicies() != 1)
+        {
+            LogProcessorWarn("Only meshes with exactly one index buffer are supported for adjacency information");
+        }
+        //create adjacency information
+        if (halfEdges_ == nullptr) {
+            halfEdges_ = std::make_unique<HalfEdges>(mesh->getIndices(0));
+            enhancedMesh_ = std::unique_ptr<Mesh>(mesh->clone());
+            while (enhancedMesh_->getNumberOfIndicies() > 0) enhancedMesh_->removeIndices(0);
+            enhancedMesh_->addIndicies({ DrawType::Triangles, ConnectivityType::Adjacency },
+                halfEdges_->createIndexBufferWithAdjacency());
+            LogProcessorInfo("Adjacency information created");
+        }
+        //send to drawer
+        meshHasAdjacency_ = true;
+        LogProcessorInfo("draw mesh with adjacency information");
+        drawer_ = factory->create(enhancedMesh_.get());
+    }
+    else {
+        //normal mode
+        meshHasAdjacency_ = false;
+        LogProcessorInfo("draw mesh without adjacency information");
+        drawer_ = factory->create(originalMesh_);
+    }
+    //trigger shader recompilation
+    //Geometry shader needs to know if it has adjacency or not
+    needsRecompilation_ = true;
 }
 
 } // namespace
