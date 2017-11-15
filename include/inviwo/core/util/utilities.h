@@ -54,6 +54,17 @@ IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = 
 IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
                                      ExceptionContext context, const std::string& extra = "");
 
+/**
+ * Utility to augment an identifier with a number to make it unique. Will add an increasing number
+ * to the end of the given identifier until the isUnique test returns true.
+ * Example for a processor identifier:
+ *     auto uniqueIdentifier = util::findUniqueIdentifier(
+ *         startIdentifier,
+ *         [&](const std::string& id) { 
+ *             return processorNetwork->getProcessorByIdentifier(id) == nullptr; },
+ *         ""
+ *     );
+ */
 IVW_CORE_API std::string findUniqueIdentifier(const std::string& identifier,
                                               std::function<bool(const std::string&)> isUnique,
                                               const std::string& sep = " ");

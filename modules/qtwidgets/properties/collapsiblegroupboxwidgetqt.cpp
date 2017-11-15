@@ -378,7 +378,7 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
 }
 
 void CollapsibleGroupBoxWidgetQt::onProcessorDisplayNameChanged(Processor* processor,
-                                                               const std::string& old) {
+                                                               const std::string&) {
     displayName_ = processor->getDisplayName();
     label_->setText(displayName_);
 }

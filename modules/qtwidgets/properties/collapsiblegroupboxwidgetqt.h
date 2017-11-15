@@ -82,7 +82,8 @@ public:
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
     // Override ProcessorObserver
-    void onProcessorDisplayNameChanged(Processor* processor, const std::string& old) override;
+    void onProcessorDisplayNameChanged(Processor* processor,
+                                       const std::string& oldIdentifier) override;
 
     // Overridden from PropertyWidgetQt/QWidget
     virtual QSize sizeHint() const override;

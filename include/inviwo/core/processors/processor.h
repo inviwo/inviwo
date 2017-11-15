@@ -188,13 +188,18 @@ public:
      * Sets the identifier of the Processor. Processor identifiers should only contain alpha numeric
      * characters, "-", "_" and " ". If there already exist a processor with that identifier or if
      * the identifier is invalid an Exception will be thrown. By default initialized to the
-     * ProcessorInfo displayName.
+     * ProcessorInfo displayName. 
+     * When adding the processor to a network the network will use util::findUniqueIdentifier
+     * to modify the identifier if it is already used in the network.
+     * @see ProcessorNetwork
+     * @see util::findUniqueIdentifier
      */
     void setIdentifier(const std::string& identifier);
     const std::string& getIdentifier() const;
 
     /**
      * Name of processor, arbitrary string. By default initialized to the ProcessorInfo displayName.
+     * This name will be shown on various graphical representations.
      */
     void setDisplayName(const std::string& displayName);
     const std::string& getDisplayName() const;

@@ -104,8 +104,8 @@ protected:
     void removeOutport(Outport* port);
 
     // LabelGraphicsItem overrides
-    void onLabelGraphicsItemChange(LabelGraphicsItem* item) override;
-    void onLabelGraphicsItemEdit(LabelGraphicsItem* item) override;
+    void onLabelGraphicsItemChanged(LabelGraphicsItem* item) override;
+    void onLabelGraphicsItemEdited(LabelGraphicsItem* item) override;
 
     // ProcessorObserver overrides
     virtual void onProcessorIdentifierChanged(Processor*, const std::string&) override;

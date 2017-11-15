@@ -358,7 +358,7 @@ void ProcessorGraphicsItem::updateWidgets() {
     }
 }
 
-void ProcessorGraphicsItem::onLabelGraphicsItemChange(LabelGraphicsItem* item) {
+void ProcessorGraphicsItem::onLabelGraphicsItemChanged(LabelGraphicsItem* item) {
     if (item == displayNameLabel_ && displayNameLabel_->isFocusOut()) {
         auto newName = utilqt::fromQString(displayNameLabel_->text());
         if (!newName.empty()) {
@@ -380,7 +380,7 @@ void ProcessorGraphicsItem::onLabelGraphicsItemChange(LabelGraphicsItem* item) {
     }
 }
 
-void ProcessorGraphicsItem::onLabelGraphicsItemEdit(LabelGraphicsItem* item) {
+void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem* item) {
     positionLablels();
 }
 

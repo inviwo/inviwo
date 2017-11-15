@@ -137,7 +137,7 @@ void LabelGraphicsItem::keyPressEvent(QKeyEvent* keyEvent) {
         QGraphicsTextItem::keyPressEvent(keyEvent);
         keyEvent->accept();
     }
-    notifyObserversEdit(this);
+    notifyObserversEdited(this);
 }
 
 void LabelGraphicsItem::focusInEvent(QFocusEvent*) {
@@ -152,16 +152,16 @@ void LabelGraphicsItem::focusOutEvent(QFocusEvent*) {
     cur.clearSelection();
     setTextCursor(cur);
     setText(toPlainText());
-    notifyObserversChange(this);
+    notifyObserversChanged(this);
     focusOut_ = false;
 }
 
-void LabelGraphicsItemObservable::notifyObserversChange(LabelGraphicsItem* item) {
-    forEachObserver([&](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemChange(item); });
+void LabelGraphicsItemObservable::notifyObserversChanged(LabelGraphicsItem* item) {
+    forEachObserver([&](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemChanged(item); });
 }
 
-void LabelGraphicsItemObservable::notifyObserversEdit(LabelGraphicsItem* item) {
-     forEachObserver([&](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemEdit(item); });
+void LabelGraphicsItemObservable::notifyObserversEdited(LabelGraphicsItem* item) {
+     forEachObserver([&](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemEdited(item); });
 }
 
 } // namespace

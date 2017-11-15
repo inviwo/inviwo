@@ -49,17 +49,17 @@ public:
      * This method will be called when observed object changes.
      * Override it to add behavior.
      */
-    virtual void onLabelGraphicsItemChange(LabelGraphicsItem*){};
+    virtual void onLabelGraphicsItemChanged(LabelGraphicsItem*){};
 
-    virtual void onLabelGraphicsItemEdit(LabelGraphicsItem*){};
+    virtual void onLabelGraphicsItemEdited(LabelGraphicsItem*){};
 };
 class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObservable
     : public Observable<LabelGraphicsItemObserver> {
 public:
     LabelGraphicsItemObservable() = default;
     virtual ~LabelGraphicsItemObservable() = default;
-    void notifyObserversChange(LabelGraphicsItem*);
-    void notifyObserversEdit(LabelGraphicsItem*);
+    void notifyObserversChanged(LabelGraphicsItem*);
+    void notifyObserversEdited(LabelGraphicsItem*);
 };
 
 class IVW_MODULE_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem,

@@ -95,28 +95,28 @@ public:
     void removeProcessor(Processor* processor);
 
     /**
-    * Removes and deletes a Processor from the ProcessorNetwork. To ensure that the network does not
-    * end up in a corrupt state, this method first removes and deletes all PortConnections and
-    * ProcessorLinks, which are related to the Processor to be removed.
-    * @param[in] processor The Processor to be removed.
-    * @see addProcessor()
-    */
+     * Removes and deletes a Processor from the ProcessorNetwork. To ensure that the network does
+     * not end up in a corrupt state, this method first removes and deletes all PortConnections and
+     * ProcessorLinks, which are related to the Processor to be removed.
+     * @param[in] processor The Processor to be removed.
+     * @see addProcessor()
+     */
     void removeAndDeleteProcessor(Processor* processor);
 
     /**
-    * Returns the Processor from the ProcessorNetwork, which has the given identifier.
-    * In case no Processor with the given identifier is contained in the network, a null
-    * pointer is returned.
-    * @param identifier Identifier of the Processor to be accessed.
-    * @see getProcessorsByType(), Processor::setIdentifier(), Processor::getIdentifier()
-    */
+     * Returns the Processor from the ProcessorNetwork, which has the given identifier.
+     * In case no Processor with the given identifier is contained in the network, a null
+     * pointer is returned.
+     * @param identifier Identifier of the Processor to be accessed.
+     * @see getProcessorsByType(), Processor::setIdentifier(), Processor::getIdentifier()
+     */
     Processor* getProcessorByIdentifier(std::string identifier) const;
 
     /**
-    * Returns a vector of Processors which are of type T. In case no Processors match T
-    * an empty vector is returned.
-    * @see getProcessorByIdentifier()
-    */
+     * Returns a vector of Processors which are of type T. In case no Processors match T
+     * an empty vector is returned.
+     * @see getProcessorByIdentifier()
+     */
     template <class T>
     std::vector<T*> getProcessorsByType() const;
 
@@ -125,15 +125,14 @@ public:
     void forEachProcessor(C callback);
 
     /**
-    * Adds a PortConnection to the ProcessorNetwork. This involves creating the connection
-    * between the two specified ports, as well as adding this connection to the ProcessorNetwork.
-    * @param[in] sourcePort The outport.
-    * @param[in] destPort The inport.
-    * @see removeConnection()
-    */
+     * Adds a PortConnection to the ProcessorNetwork. This involves creating the connection
+     * between the two specified ports, as well as adding this connection to the ProcessorNetwork.
+     * @param[in] sourcePort The outport.
+     * @param[in] destPort The inport.
+     * @see removeConnection()
+     */
     void addConnection(Outport* sourcePort, Inport* destPort);
     void addConnection(const PortConnection& connection);
-
 
     /**
      * Removes and deletes a PortConnection from the ProcessorNetwork. This involves resolving the
@@ -147,19 +146,18 @@ public:
     void removeConnection(const PortConnection& connection);
 
     /**
-    * Checks weather two port are connected
-    * @param[in] sourcePort The outport.
-    * @param[in] destPort The inport.
-    * @return Weather the two port are connected
-    * @see addConnection()
-    */
+     * Checks weather two port are connected
+     * @param[in] sourcePort The outport.
+     * @param[in] destPort The inport.
+     * @return Weather the two port are connected
+     * @see addConnection()
+     */
     bool isConnected(Outport* sourcePort, Inport* destPort) const;
     bool isConnected(const PortConnection& connection) const;
 
     const std::vector<PortConnection>& getConnections() const;
     template <typename C>
     void forEachConnection(C callback);
-
 
     bool isPortInNetwork(Port* port) const;
 
@@ -198,13 +196,13 @@ public:
     void forEachLink(C callback);
 
     /**
-      * Is Property Link bidirectional
-      * Searches for bidirectional link between start and end properties
-      * In other words property that goes from end to start
-      * @param[in] source Property at which link starts
-      * @param[in] destination Property at which link ends
-      * @return void
-      */
+     * Is Property Link bidirectional
+     * Searches for bidirectional link between start and end properties
+     * In other words property that goes from end to start
+     * @param[in] source Property at which link starts
+     * @param[in] destination Property at which link ends
+     * @return void
+     */
     bool isLinkedBidirectional(Property* source, Property* destination);
 
     std::vector<Property*> getPropertiesLinkedTo(Property* property);
@@ -231,8 +229,8 @@ public:
     bool isDeserializing() const;
 
     /**
-    * Clears the network objects processors, port connections, property links etc.,
-    */
+     * Clears the network objects processors, port connections, property links etc.,
+     */
     void clear();
 
 private:
@@ -243,7 +241,8 @@ private:
     virtual void onAboutPropertyChange(Property*) override;
     virtual void onProcessorInvalidationBegin(Processor*) override;
     virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorIdentifierChanged(Processor*, const std::string& old) override;
+    virtual void onProcessorIdentifierChanged(Processor*,
+                                              const std::string& oldIdentifier) override;
     virtual void onProcessorPortRemoved(Processor*, Port* port) override;
 
     // ProcessorMeteDataObserver overrides
@@ -304,6 +303,6 @@ inline void ProcessorNetwork::unlock() {
 }
 inline bool ProcessorNetwork::islocked() const { return (locked_ != 0); }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORNETWORK_H

@@ -61,21 +61,21 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
 
     processor->setIdentifier(util::findUniqueIdentifier(
         processor->getIdentifier(),
-        [&](const std::string& id) { return getProcessorByIdentifier(id) == nullptr; }));
+        [&](const std::string& id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
     addPropertyOwnerObservation(processor);
-    
+
     auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
     meta->addObserver(this);
-    
+
     if (auto widget = application_->getProcessorWidgetFactory()->create(processor)) {
         processor->setProcessorWidget(std::move(widget));
     }
-    
+
     processor->invalidate(InvalidationLevel::InvalidResources);
     notifyObserversProcessorNetworkDidAddProcessor(processor);
     return true;
@@ -85,7 +85,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
     if (!processor) return;
     NetworkLock lock(this);
 
-    // Remove all connections for this processor 
+    // Remove all connections for this processor
     for (auto outport : processor->getOutports()) {
         std::vector<Inport*> inports = outport->getConnectedInports();
         for (auto inport : inports) {
@@ -100,16 +100,15 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
     }
 
     // Remove all links for this processor
-    auto toDelete = util::copy_if(links_, [&](const PropertyLink& link) {
-        return link.involves(processor);
-    });
+    auto toDelete =
+        util::copy_if(links_, [&](const PropertyLink& link) { return link.involves(processor); });
     for (auto& link : toDelete) {
         removeLink(link.getSource(), link.getDestination());
     }
 
     // remove processor itself
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
-    processors_.erase( util::stripIdentifier(processor->getIdentifier()));
+    processors_.erase(util::stripIdentifier(processor->getIdentifier()));
     processor->ProcessorObservable::removeObserver(this);
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
@@ -139,7 +138,7 @@ void ProcessorNetwork::addConnection(const PortConnection& connection) {
 void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
     if (!isPortInNetwork(src)) throw Exception("Outport not found in network");
     if (!isPortInNetwork(dst)) throw Exception("Inport not found in network");
-    
+
     if (src && dst && !isConnected(src, dst) && dst->canConnectTo(src)) {
         NetworkLock lock(this);
 
@@ -148,14 +147,14 @@ void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
 
         connections_.emplace(src, dst);
         connectionsVec_.emplace_back(src, dst);
-        
+
         dst->connectTo(src);
 
         notifyObserversProcessorNetworkDidAddConnection(connection);
     }
 }
 
-void ProcessorNetwork::removeConnection(const PortConnection& connection){
+void ProcessorNetwork::removeConnection(const PortConnection& connection) {
     auto it = connections_.find(connection);
     if (it != connections_.end()) {
         NetworkLock lock(this);
@@ -175,7 +174,7 @@ void ProcessorNetwork::removeConnection(Outport* src, Inport* dst) {
 }
 
 bool ProcessorNetwork::isConnected(const PortConnection& connection) const {
-     return connections_.find(connection) != connections_.end();
+    return connections_.find(connection) != connections_.end();
 }
 bool ProcessorNetwork::isConnected(Outport* src, Inport* dst) const {
     return isConnected(PortConnection(src, dst));
@@ -264,7 +263,6 @@ std::vector<PropertyLink> ProcessorNetwork::getLinksBetweenProcessors(Processor*
     return linkEvaluator_.getLinksBetweenProcessors(p1, p2);
 }
 
-
 void ProcessorNetwork::evaluateLinksFromProperty(Property* source) {
     linkEvaluator_.evaluateLinksFromProperty(source);
 }
@@ -287,9 +285,7 @@ void ProcessorNetwork::clear() {
     }
 }
 
-bool ProcessorNetwork::isEmpty() const {
-    return processors_.empty();
-}
+bool ProcessorNetwork::isEmpty() const { return processors_.empty(); }
 
 bool ProcessorNetwork::isInvalidating() const { return !processorsInvalidating_.empty(); }
 
@@ -307,8 +303,9 @@ void ProcessorNetwork::onProcessorInvalidationEnd(Processor* p) {
     }
 }
 
-void ProcessorNetwork::onProcessorIdentifierChanged(Processor* processor, const std::string& old) {
-    processors_.erase(util::stripIdentifier(old));
+void ProcessorNetwork::onProcessorIdentifierChanged(Processor* processor,
+                                                    const std::string& oldIdentifier) {
+    processors_.erase(util::stripIdentifier(oldIdentifier));
     processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
 }
 
@@ -357,15 +354,13 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
     }
 }
 
-int ProcessorNetwork::getVersion() const {
-    return processorNetworkVersion_;
-}
+int ProcessorNetwork::getVersion() const { return processorNetworkVersion_; }
 
 const int ProcessorNetwork::processorNetworkVersion_ = 15;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     NetworkLock lock(this);
-    
+
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
     // and set it to false no matter how we leave the scope
     util::KeepTrueWhileInScope keepTrueWillAlive(&deserializing_);
@@ -387,7 +382,8 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
         auto des =
             util::MapDeserializer<std::string, Processor*>("Processors", "Processor", "identifier")
-                .setIdentifierTransform([](const std::string &id) { return util::stripIdentifier(id); })
+                .setIdentifierTransform(
+                    [](const std::string& id) { return util::stripIdentifier(id); })
                 .setMakeNew([]() {
                     RenderContext::getPtr()->activateDefaultRenderContext();
                     return nullptr;
@@ -414,31 +410,29 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
     try {
         std::vector<PortConnection> connections;
         d.deserialize("Connections", connections, "Connection");
-        
+
         // remove any already existing connections.
         PortConnections save;
         util::erase_remove_if(connections, [&](auto& c) {
-            if(connections_.count(c) != 0) {
+            if (connections_.count(c) != 0) {
                 save.insert(c);
                 return true;
             } else {
                 return false;
             }
         });
-        
+
         // remove any no longer used connections
-        auto remove = util::copy_if(connections_, [&](auto& c) {
-            return save.count(c) == 0;
-        });
-        for(auto& c : remove) removeConnection(c);
-        
+        auto remove = util::copy_if(connections_, [&](auto& c) { return save.count(c) == 0; });
+        for (auto& c : remove) removeConnection(c);
+
         // Add the new connections
         for (auto& c : connections) addConnection(c);
-        
+
     } catch (const Exception& exception) {
         clear();
         throw IgnoreException("Deserialization error: " + exception.getMessage(),
-                             exception.getContext());
+                              exception.getContext());
     } catch (const std::exception& exception) {
         clear();
         throw AbortException("Deserialization error: " + std::string(exception.what()), IvwContext);
@@ -455,7 +449,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         // remove any already existing links.
         PropertyLinks save;
         util::erase_remove_if(links, [&](auto& l) {
-            if(links_.count(l) != 0) {
+            if (links_.count(l) != 0) {
                 save.insert(l);
                 return true;
             } else {
@@ -464,18 +458,16 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         });
 
         // remove any no longer used links
-        auto remove = util::copy_if(links_, [&](auto& l) {
-            return save.count(l) == 0;
-        });
-        for(auto& l : remove) removeLink(l);
-        
+        auto remove = util::copy_if(links_, [&](auto& l) { return save.count(l) == 0; });
+        for (auto& l : remove) removeLink(l);
+
         // Add the new links
         for (auto& link : links) addLink(link);
 
     } catch (const Exception& exception) {
         clear();
         throw IgnoreException("Deserialization error: " + exception.getMessage(),
-                             exception.getContext());
+                              exception.getContext());
     } catch (const std::exception& exception) {
         clear();
         throw AbortException("Deserialization error: " + std::string(exception.what()), IvwContext);
@@ -510,8 +502,6 @@ bool ProcessorNetwork::isPropertyInNetwork(Property* prop) const {
     return false;
 }
 
-InviwoApplication* ProcessorNetwork::getApplication() const {
-    return application_;
-}
+InviwoApplication* ProcessorNetwork::getApplication() const { return application_; }
 
-}  // namespace
+}  // namespace inviwo

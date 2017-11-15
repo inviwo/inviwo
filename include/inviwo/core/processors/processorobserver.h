@@ -58,8 +58,15 @@ public:
     virtual void onAboutPropertyChange(Property*){};
     virtual void onProcessorInvalidationBegin(Processor*){};
     virtual void onProcessorInvalidationEnd(Processor*){};
+
+    /**
+     * Called after the identifier has been changed.
+     */
     virtual void onProcessorIdentifierChanged(Processor*, const std::string& oldIdentifier){};
-    virtual void onProcessorDisplayNameChanged(Processor*, const std::string& oldDisplayNamr){};
+    /**
+     * Called after the displayName has been changed.
+     */
+    virtual void onProcessorDisplayNameChanged(Processor*, const std::string& oldDisplayName){};
 
     virtual void onProcessorPortAdded(Processor*, Port*){};
     virtual void onProcessorPortRemoved(Processor*, Port*){};
