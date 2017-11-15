@@ -29,6 +29,8 @@
 
 #include <fancymeshrenderer/HalfEdges.h>
 
+#include <iostream>
+
 namespace inviwo {
 
 HalfEdges::HalfEdges(const IndexBuffer* const indexBuffer)
@@ -70,6 +72,9 @@ HalfEdges::HalfEdges(const IndexBuffer* const indexBuffer)
             {
                 edges_[i1].twin_ = &edges_[it->second];
                 edges_[it->second].twin_ = &edges_[i1];
+            } else
+            {
+                std::cout << "Missing twin edge" << std::endl;
             }
         }
     }
@@ -116,6 +121,7 @@ std::shared_ptr<IndexBuffer> HalfEdges::createIndexBufferWithAdjacency()
             {
                 //border! Add opposite vertex of own triangle (as if the tris is flipped)
                 indices->add(edges_[3 * tri + ((v + 2) % 3)].toVertex_);
+                std::cout << "Border edge" << std::endl;
             } else
             {
                 //add opposite vertex

@@ -43,7 +43,8 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/fancymeshrenderer-test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/fancymeshrenderer-unittest-main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/halfedges-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
