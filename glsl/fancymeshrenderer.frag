@@ -241,7 +241,7 @@ vec4 performShading()
 #endif
 
     //==================================================
-    // HATChING
+    // HATCHING
     //==================================================
     if (settings.hatchingMode > 0) {
         float stripeStrength = 1;

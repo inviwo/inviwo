@@ -1,0 +1,47 @@
+/**
+ * Extension to Fragment Lists to support post-processing effects on the fragments.
+ * This follows the ideas of the paper "Smart Transparency for Illustrative Visualization of Complex Flow Surfaces"
+ */
+
+#ifndef ILLUSTRATIONBUFFER_HGLSL
+#define ILLUSTRATIONBUFFER_HGLSL
+
+//screen size
+uniform ivec2 screenSize;
+
+// Buffers+Images
+
+//Head pointer to the entry in the list
+coherent uniform layout(size1x32) uimage2D illustrationBufferIdxImg;
+//Number of entries in the list
+coherent uniform layout(size1x32) uimage2D illustrationBufferCountImg;
+
+//data stored per fragment, 12*4=48 byte
+struct FragmentData
+{
+    //the fragment depth
+    float depth;
+    //the depth gradient, needed to determine neighbors
+    float depthGradient;
+    //the alpha value [0,1] + 2*b_alpha (bitfield as in the paper)
+    float alpha;
+    //the color in 10/10/10 rgb
+    uint colors;
+    //the neighbors + 1: -x, +x, -y, +y; 0 if not existing
+    ivec4 neighbors;
+    //silhouette highlight field beta + 2*b_beta, as in the paper
+    float silhouetteHighlight;
+    //halo highlight field (gamma) + 2*b_gamma, as in the paper
+    float haloHighlight;
+
+    //unused yet, TODO: use for normal comparison
+    int dummy1;
+    int dummy2;
+};
+
+layout(std430, binding=5) buffer illustrationBufferStorage
+{
+    FragmentData illustrationData[]; 
+};
+
+#endif

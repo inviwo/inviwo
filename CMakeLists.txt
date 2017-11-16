@@ -36,6 +36,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dispABufferLinkedList.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/simpleQuad.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthOnly.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/IllustrationBuffer.hglsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/SortAndFillIllustrationBuffer.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/DisplayIllustrationBuffer.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

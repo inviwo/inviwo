@@ -85,23 +85,32 @@ public:
     /**
      * \brief Finishes the fragment list pass and renders the final result.
      * This sorts the fragment lists per pixel and outputs the blended color.
+     * \param useIllustrationBuffer Set to true if the illustration buffer 
+     * should be enabled
      * \param debug If set to true, debug output is printed to <code>cout</code>.
      * Warning: very text heavy, use only for small screen sizes.
      * \return <code>true</code> if successfull, <code>false</code> if not enough
      * space for all fragments was available and the procedure should be repeated.
      */
-    bool postPass(bool debug=false);
+    bool postPass(bool useIllustrationBuffer, bool debug=false);
 
 private:
     void initShaders();
     void initBuffers(const size2_t& screenSize);
     void assignUniforms(Shader& shader) const;
     void drawQuad() const;
+    void debugFragmentLists(GLuint numFrags);
+    void initIllustrationBuffer();
+    void fillIllustrationBuffer();
+    void processIllustrationBuffer();
+    void drawIllustrationBuffer();
+    void assignIllustrationBufferUniforms(Shader& shader) const;
 
     size2_t screenSize_;
     size_t fragmentSize_;
     size_t oldFragmentSize_;
 
+    //basic fragment lists
     Texture2D* abufferIdxImg_;
     TextureUnit* abufferIdxUnit_;
     GLuint atomicCounter_;
@@ -109,6 +118,17 @@ private:
     GLuint totalFragmentQuery_;
     Shader clearShader_;
     Shader displayShader_;
+
+    //illustration buffers
+    bool enableIllustrationBuffer_;
+    size2_t illustrationBufferOldScreenSize_;
+    size_t illustrationBufferOldFragmentSize_;
+    Texture2D* illustrationBufferIdxImg_;
+    TextureUnit* illustrationBufferIdxUnit_;
+    Texture2D* illustrationBufferCountImg_;
+    TextureUnit* illustrationBufferCountUnit_;
+    GLuint illustrationBuffer_;
+    Shader fillIllustrationBufferShader_;
 };
 
 }

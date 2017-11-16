@@ -80,6 +80,7 @@ FancyMeshRenderer::FancyMeshRenderer()
 	, needsRecompilation_(true)
     , originalMesh_(nullptr)
     , meshHasAdjacency_(false)
+    , propUseIllustrationBuffer_("illustrationBuffer", "Use Illustration Buffer")
     , debugFragmentLists_(false)
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
 {
@@ -115,6 +116,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     addProperty(edgeSettings_.container_);
 	addProperty(faceSettings_[0].container_);
 	addProperty(faceSettings_[1].container_);
+    addProperty(propUseIllustrationBuffer_);
 
 	//Callbacks
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -626,7 +628,7 @@ void FancyMeshRenderer::process() {
         if (fragmentLists)
         {
             //final processing of fragment list rendering
-            bool success = flr_.postPass(debugFragmentLists_);
+            bool success = flr_.postPass(propUseIllustrationBuffer_.get(), debugFragmentLists_);
             debugFragmentLists_ = false;
             if (!success) {
                 retry = true;

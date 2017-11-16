@@ -328,6 +328,8 @@ protected:
         bool lastOpaque_;
 	} faceSettings_[2];
 
+    BoolProperty propUseIllustrationBuffer_;
+
     ButtonProperty propDebugFragmentLists_;
     bool debugFragmentLists_;
 
