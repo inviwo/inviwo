@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LABELGRAPHICSITEM_H
@@ -38,25 +38,28 @@
 #include <warn/pop>
 
 namespace inviwo {
+class LabelGraphicsItem;
 
 class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObserver : public Observer {
 public:
     LabelGraphicsItemObserver() = default;
+    virtual ~LabelGraphicsItemObserver() = default;
 
     /**
-    * This method will be called when observed object changes.
-    * Override it to add behavior.
-    */
-    virtual void onLabelGraphicsItemChange(){};
+     * This method will be called when observed object changes.
+     * Override it to add behavior.
+     */
+    virtual void onLabelGraphicsItemChanged(LabelGraphicsItem*){};
+
+    virtual void onLabelGraphicsItemEdited(LabelGraphicsItem*){};
 };
 class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObservable
     : public Observable<LabelGraphicsItemObserver> {
 public:
     LabelGraphicsItemObservable() = default;
-
-    void notifyLabelGraphicsItemObservers() {
-        forEachObserver([](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemChange(); });
-    }
+    virtual ~LabelGraphicsItemObservable() = default;
+    void notifyObserversChanged(LabelGraphicsItem*);
+    void notifyObserversEdited(LabelGraphicsItem*);
 };
 
 class IVW_MODULE_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem,
@@ -65,7 +68,7 @@ class IVW_MODULE_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem,
 public:
     LabelGraphicsItem(QGraphicsItem* parent, int width = 30,
                       Qt::Alignment alignment = Qt::AlignLeft | Qt::AlignTop);
-    ~LabelGraphicsItem() = default;
+    virtual ~LabelGraphicsItem() = default;
 
     QString text() const;
     void setText(const QString&);
@@ -74,6 +77,8 @@ public:
     QString croppedText() const;
     void setCrop(int width);
     bool isCropped() const;
+
+    int usedTextWidth() const;
 
     void setNoFocusOut();
     bool isFocusOut() const;
@@ -94,6 +99,6 @@ private:
     Qt::Alignment alignment_;  // Qt::AlignLeft/Right/HCenter | Qt::AlignTop/Bottom/VCenter
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LABELGRAPHICSITEM_H
+#endif  // IVW_LABELGRAPHICSITEM_H

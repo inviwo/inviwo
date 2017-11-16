@@ -77,6 +77,8 @@ public:
 /**
  * An abstract factory interface. Inherits virtually from factory base, since an implementation
  * might implement several factory interfaces
+ * T Models the object created, T will be constructed using Args...
+ * K Models a key used to look up T
  */
 template <typename T, typename K = const std::string&, typename... Args>
 class Factory : public virtual FactoryBase {
@@ -88,8 +90,10 @@ public:
 
 /**
  * T Models the object created
- * M Models a object with a function create(K key) that can create objects of type T
+ * M Models a object with a function create(K key, Args...) that can create objects of type T with
+ * constructor T(Args...) 
  * M would usually be a "factory object" type
+ * K Models a key used to look up T
  */
 template <typename T, typename M, typename K = const std::string&, typename... Args>
 class StandardFactory : public Factory<T, K, Args...> {

@@ -156,7 +156,7 @@ CollapsibleGroupBoxWidgetQt* PropertyListWidget::getPropertiesForProcessor(Proce
 CollapsibleGroupBoxWidgetQt* PropertyListWidget::createPropertiesForProcessor(
     Processor* processor) {
     // create property widget and store it in the map
-    auto widget = new CollapsibleGroupBoxWidgetQt(processor->getIdentifier());
+    auto widget = new CollapsibleGroupBoxWidgetQt(processor->getDisplayName());
     widget->setPropertyOwner(processor);
     widget->setParentPropertyWidget(nullptr, this);
     widget->setShowIfEmpty(true);

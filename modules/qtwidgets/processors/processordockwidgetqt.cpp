@@ -116,7 +116,7 @@ void ProcessorDockWidgetQt::moveEvent(QMoveEvent* event) {
     InviwoDockWidget::moveEvent(event);
 }
 
-void ProcessorDockWidgetQt::onProcessorIdentifierChange(Processor*) {
+void ProcessorDockWidgetQt::onProcessorIdentifierChanged(Processor*, const std::string&) {
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 }
 

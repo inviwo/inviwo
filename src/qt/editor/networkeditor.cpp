@@ -478,12 +478,19 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             clickedProcessor = processor;
 
-            QAction* renameAction = menu.addAction(tr("Rename &Processor"));
-            connect(renameAction, &QAction::triggered, [this, processor]() {
+            auto editName = menu.addAction(tr("Edit Name"));
+            connect(editName, &QAction::triggered, [this, processor]() {
                 clearSelection();
                 processor->setSelected(true);
-                processor->editProcessorName();
+                processor->editDisplayName();
+            });
 
+
+            auto editIdentifier = menu.addAction(tr("Edit Identifier"));
+            connect(editIdentifier, &QAction::triggered, [this, processor]() {
+                clearSelection();
+                processor->setSelected(true);
+                processor->editIdentifier();
             });
 
 #if IVW_PROFILING

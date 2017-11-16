@@ -166,27 +166,44 @@ class IVW_CORE_API Processor : public PropertyOwner,
                                public ProcessorObservable,
                                public EventPropagator {
 public:
-    Processor();
+    /**
+     * Processor constructor, takes two optional arguments.
+     * @param identifier Should only contain alpha numeric
+     *                   characters, "-", "_" and " ".
+     * @param displayName Name of processor, arbitrary string.
+     * If the parameters are not set, the processor factory will initiate the
+     * identifier and displayName with the ProcessorInfo displayName.
+     */
+    Processor(const std::string& identifier = "", const std::string& displayName = "");
     virtual ~Processor();
 
     // Should be implemented by all inheriting classes;
     virtual const ProcessorInfo getProcessorInfo() const = 0;
-
     std::string getClassIdentifier() const;
-    std::string getDisplayName() const;
     std::string getCategory() const;
     CodeState getCodeState() const;
     Tags getTags() const;
 
     /**
-     * Sets the identifier of the Processor. If there already exist a processor with that identifier
-     * it will append a number, starting at 2 to ensure uniqueness of identifiers.
-     * @param identifier the new identifier. Processor identifiers should only contain alpha
-              numeric characters, "-", "_" and " ".
-     * @return The identifier that was set including eventual appended number
+     * Sets the identifier of the Processor. Processor identifiers should only contain alpha numeric
+     * characters, "-", "_" and " ". If there already exist a processor with that identifier or if
+     * the identifier is invalid an Exception will be thrown. By default initialized to the
+     * ProcessorInfo displayName. 
+     * When adding the processor to a network the network will use util::findUniqueIdentifier
+     * to modify the identifier if it is already used in the network.
+     * @see ProcessorNetwork
+     * @see util::findUniqueIdentifier
      */
-    std::string setIdentifier(const std::string& identifier);
-    std::string getIdentifier();
+    void setIdentifier(const std::string& identifier);
+    const std::string& getIdentifier() const;
+
+    /**
+     * Name of processor, arbitrary string. By default initialized to the ProcessorInfo displayName.
+     * This name will be shown on various graphical representations.
+     */
+    void setDisplayName(const std::string& displayName);
+    const std::string& getDisplayName() const;
+
     virtual std::vector<std::string> getPath() const override;
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget);
@@ -329,6 +346,7 @@ private:
     void removePortFromGroups(Port* port);
 
     std::string identifier_;
+    std::string displayName_;
     std::vector<Inport*> inports_;
     std::vector<Outport*> outports_;
     std::vector<std::unique_ptr<Inport>> ownedInports_;
@@ -337,8 +355,6 @@ private:
 
     std::unordered_map<std::string, std::vector<Port*>> groupPorts_;
     std::unordered_map<Port*, std::string> portGroups_;
-
-    static std::unordered_set<std::string> usedIdentifiers_;
 
     ProcessorNetwork* network_;
 };
