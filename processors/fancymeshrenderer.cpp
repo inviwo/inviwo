@@ -117,6 +117,7 @@ FancyMeshRenderer::FancyMeshRenderer()
 	addProperty(faceSettings_[0].container_);
 	addProperty(faceSettings_[1].container_);
     addProperty(propUseIllustrationBuffer_);
+    addProperty(illustrationBufferSettings_.container_);
 
 	//Callbacks
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -386,7 +387,25 @@ void FancyMeshRenderer::FaceRenderSettings::setCallbacks(const std::function<voi
     showEdges_.onChange(triggerRecompilation);
 }
 
-    void FancyMeshRenderer::initializeResources() {
+FancyMeshRenderer::IllustrationBufferSettings::IllustrationBufferSettings()
+    : container_("illustrationBufferContainer", "Illustration Buffer Settings")
+    , edgeColor_("illustrationBufferEdgeColor", "Edge Color", vec3(0, 0, 0))
+    , edgeStrength_("illustrationBufferEdgeStrength", "Edge Strength", 0.5, 0, 1, 0.01)
+    , haloStrength_("illustrationBufferHaloStrength", "Halo Strength", 0.5, 0, 1, 0.01)
+    , smoothingSteps_("illustrationBufferSmoothingSteps", "Smoothing Steps", 3, 0, 50, 1)
+    , edgeSmoothing_("illustrationBufferEdgeSmoothing", "Edge Smoothing", 0.8, 0, 1, 0.01)
+    , haloSmoothing_("illustrationBufferHaloSmoothing", "Halo Smoothing", 0.8, 0, 1, 0.01)
+{
+    edgeColor_.setSemantics(PropertySemantics::Color);
+    container_.addProperty(edgeColor_);
+    container_.addProperty(edgeStrength_);
+    container_.addProperty(haloStrength_);
+    container_.addProperty(smoothingSteps_);
+    container_.addProperty(edgeSmoothing_);
+    container_.addProperty(haloSmoothing_);
+}
+
+void FancyMeshRenderer::initializeResources() {
 	
 	//get number of layers, see compileShader()
 	// first two layers (color and picking) are reserved
@@ -433,6 +452,8 @@ void FancyMeshRenderer::update()
     edgeSettings_.update();
     faceSettings_[0].update(opaque);
     faceSettings_[1].update(opaque);
+    propUseIllustrationBuffer_.setVisible(!opaque);
+    illustrationBufferSettings_.container_.setVisible(!opaque && propUseIllustrationBuffer_.get());
 }
 
 void FancyMeshRenderer::compileShader()
@@ -628,6 +649,17 @@ void FancyMeshRenderer::process() {
         if (fragmentLists)
         {
             //final processing of fragment list rendering
+            if (propUseIllustrationBuffer_.get())
+            {
+                FragmentListRenderer::IllustrationBufferSettings settings;
+                settings.edgeColor_ = illustrationBufferSettings_.edgeColor_.get();
+                settings.edgeStrength_ = illustrationBufferSettings_.edgeStrength_.get();
+                settings.haloStrength_ = illustrationBufferSettings_.haloStrength_.get();
+                settings.smoothingSteps_ = illustrationBufferSettings_.smoothingSteps_.get();
+                settings.edgeSmoothing_ = illustrationBufferSettings_.edgeSmoothing_.get();
+                settings.haloSmoothing_ = illustrationBufferSettings_.haloSmoothing_.get();
+                flr_.setIllustrationBufferSettings(settings);
+            }
             bool success = flr_.postPass(propUseIllustrationBuffer_.get(), debugFragmentLists_);
             debugFragmentLists_ = false;
             if (!success) {

@@ -52,11 +52,11 @@ void main(void) {
                 FragmentData data;
                 data.depth = fragmentList[i].y;
                 data.depthGradient = 0; //to be filled out
-                data.alpha = fragmentList[i].z + 2;
+                data.alpha = fragmentList[i].z;
                 data.colors = floatBitsToUint(fragmentList[i].w);
                 data.neighbors = ivec4(-1);
-                data.silhouetteHighlight = 2;
-                data.haloHighlight = 2;
+                data.silhouetteHighlight = 0;
+                data.haloHighlight = 0;
                 data.index = i;
                 data.dummy1 = 0;
                 illustrationDataOut[start + i] = data;

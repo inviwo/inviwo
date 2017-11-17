@@ -61,6 +61,7 @@ namespace inviwo
     , fillIllustrationBufferShader_("simpleQuad.vert", "SortAndFillIllustrationBuffer.frag", false)
     , resolveNeighborsIllustrationBufferShader_("simpleQuad.vert", "ResolveNeighborsIllustrationBuffer.frag", false)
     , drawIllustrationBufferShader_("simpleQuad.vert", "DisplayIllustrationBuffer.frag", false)
+    , smoothIllustrationBufferShader_("simpleQuad.vert", "SmoothIllustrationBuffer.frag", false)
     {
         initShaders();
 
@@ -149,7 +150,7 @@ namespace inviwo
         if (numFrags > fragmentSize_)
         {
             //we have to resize the fragment storage buffer
-            LogInfo("fragment lists resolved, pixels drawn: " << numFrags << ", available: " << fragmentSize_);
+            LogInfo("fragment lists resolved, pixels drawn: " << numFrags << ", available: " << fragmentSize_ << ", allocate space for " << int(1.1f * numFrags) << " pixels");
             fragmentSize_ = 1.1f * numFrags;
 
             //unbind texture
@@ -196,6 +197,7 @@ namespace inviwo
         fillIllustrationBufferShader_.build();
         drawIllustrationBufferShader_.build();
         resolveNeighborsIllustrationBufferShader_.build();
+        smoothIllustrationBufferShader_.build();
     }
 
     void FragmentListRenderer::initBuffers(const size2_t& screenSize)
@@ -390,8 +392,19 @@ namespace inviwo
         drawQuad();
         resolveNeighborsIllustrationBufferShader_.deactivate();
 
-        //TODO: perform the bluring
-
+        //perform the bluring
+        if (illustrationBufferSettings_.smoothingSteps_>0)
+        {
+            smoothIllustrationBufferShader_.activate();
+            smoothIllustrationBufferShader_.setUniform("lambdaBeta", float(1) - illustrationBufferSettings_.edgeSmoothing_);
+            smoothIllustrationBufferShader_.setUniform("lambdaGamma", float(1) - illustrationBufferSettings_.haloSmoothing_);
+            for (int i=0; i<illustrationBufferSettings_.smoothingSteps_; ++i)
+            {
+                assignIllustrationBufferUniforms(smoothIllustrationBufferShader_);
+                drawQuad();
+            }
+            smoothIllustrationBufferShader_.deactivate();
+        }
     }
 
     void FragmentListRenderer::drawIllustrationBuffer()
@@ -399,6 +412,9 @@ namespace inviwo
         //final blending
         drawIllustrationBufferShader_.activate();
         assignIllustrationBufferUniforms(drawIllustrationBufferShader_);
+        vec4 edgeColor = vec4(illustrationBufferSettings_.edgeColor_, illustrationBufferSettings_.edgeStrength_);
+        drawIllustrationBufferShader_.setUniform("edgeColor", edgeColor);
+        drawIllustrationBufferShader_.setUniform("haloStrength", illustrationBufferSettings_.haloStrength_);
         drawQuad();
         drawIllustrationBufferShader_.deactivate();
 
@@ -510,4 +526,5 @@ namespace inviwo
 
         printf("\n==================================================\n");
     }
+
 }

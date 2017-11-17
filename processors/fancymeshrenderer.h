@@ -329,6 +329,18 @@ protected:
 	} faceSettings_[2];
 
     BoolProperty propUseIllustrationBuffer_;
+    struct IllustrationBufferSettings
+    {
+        CompositeProperty container_;
+        FloatVec3Property edgeColor_;
+        FloatProperty edgeStrength_;
+        FloatProperty haloStrength_;
+        IntProperty smoothingSteps_;
+        FloatProperty edgeSmoothing_;
+        FloatProperty haloSmoothing_;
+        IllustrationBufferSettings();
+    };
+    IllustrationBufferSettings illustrationBufferSettings_;
 
     ButtonProperty propDebugFragmentLists_;
     bool debugFragmentLists_;

@@ -36,6 +36,10 @@
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/texture2d.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
@@ -94,6 +98,17 @@ public:
      */
     bool postPass(bool useIllustrationBuffer, bool debug=false);
 
+    struct IllustrationBufferSettings
+    {
+        vec3 edgeColor_;
+        float edgeStrength_;
+        float haloStrength_;
+        int smoothingSteps_;
+        float edgeSmoothing_;
+        float haloSmoothing_;
+    };
+    void setIllustrationBufferSettings(const IllustrationBufferSettings& settings) { illustrationBufferSettings_ = settings; }
+
 private:
     void initShaders();
     void initBuffers(const size2_t& screenSize);
@@ -133,6 +148,8 @@ private:
     Shader fillIllustrationBufferShader_;
     Shader resolveNeighborsIllustrationBufferShader_;
     Shader drawIllustrationBufferShader_;
+    Shader smoothIllustrationBufferShader_;
+    IllustrationBufferSettings illustrationBufferSettings_;
 };
 
 }
