@@ -30,6 +30,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/moduleaction.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datawriter.h>
@@ -108,6 +109,11 @@ InviwoModule::~InviwoModule() {
     for (auto& elem : representationConverterFactories_) {
         app_->getRepresentationConverterMetaFactory()->unRegisterObject(elem.get());
     }
+    // Remove any potential ModuleCallbackAction associated with this module
+    auto& callbackActions = app_->getCallbackActions();
+    util::erase_remove_if(callbackActions, [&](auto& a) {
+        return a->getModule() == this;
+    });
 
 }
 

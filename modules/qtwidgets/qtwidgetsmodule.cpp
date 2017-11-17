@@ -91,6 +91,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<ColorPropertyWidgetQt<ivec4>, IntVec4Property>("Color");
     registerPropertyWidget<ColorPropertyWidgetQt<vec3>, FloatVec3Property>("Color");
     registerPropertyWidget<ColorPropertyWidgetQt<vec4>, FloatVec4Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt<dvec3>, DoubleVec3Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt<dvec4>, DoubleVec4Property>("Color");
     registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>("Default");
     registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");

@@ -200,15 +200,21 @@ std::time_t fileModificationTime(const std::string& filePath) {
     // If it does, -1 will be returned and errno will be set to ENOENT.
     // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
     // We therefore check if path ends with a backslash
+    auto err = 0;
     if (filePath.size() > 1 && (filePath.back() == '/' || filePath.back() == '\\')) {
         // Remove trailing backslash
         std::string pathWithoutSlash = filePath.substr(0, filePath.size() - 1);
-        stat(pathWithoutSlash.c_str(), &buffer);
+        err = stat(pathWithoutSlash.c_str(), &buffer);
     } else {
         // No need to modify path
-        stat(filePath.c_str(), &buffer);
+        err = stat(filePath.c_str(), &buffer);
     }
-    return buffer.st_mtime;
+    if (err != -1) {
+        return buffer.st_mtime;
+    } else {
+        return 0;
+    }
+    
 }
 
 IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {

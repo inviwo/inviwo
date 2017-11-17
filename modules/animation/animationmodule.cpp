@@ -56,8 +56,11 @@ auto trackAndInterpolationRegHelper(AnimationModule& am) {
         PropertyType::CLASS_IDENTIFIER,
         PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
     // Interpolation for Keyframe
-    // note that factory will ignore duplicates
-    am.registerInterpolation<Interpolation>();
+    // Prevent log warnings when registering existing interpolation types
+    if (!am.getAnimationManager().getInterpolationFactory().hasKey(Interpolation::classIdentifier())) {
+        am.registerInterpolation<Interpolation>();
+    }
+    
     // Default interplation for this property
     am.registerPropertyInterpolationConnection(PropertyType::CLASS_IDENTIFIER,
                                                Interpolation::classIdentifier());
