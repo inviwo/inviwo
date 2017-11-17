@@ -93,6 +93,38 @@ template <>
 struct superset<bool, half_float::half> {
     typedef half_float::half type;
 };
+template <>
+struct superset<half_float::half, unsigned short> {
+    typedef float type;
+};
+template <>
+struct superset<half_float::half, short> {
+    typedef float type;
+};
+template <>
+struct superset<half_float::half, unsigned int> {
+    typedef float type;
+};
+template <>
+struct superset<half_float::half, int> {
+    typedef float type;
+};
+template <>
+struct superset<half_float::half, cimg_uint64> {
+    typedef float type;
+};
+template <>
+struct superset<half_float::half, cimg_int64> {
+    typedef float type;
+};
+template <>
+struct superset<half_float::half, float> {
+    typedef float type;
+};
+template <>
+struct superset<half_float::half, double> {
+    typedef double type;
+};
 
 }  // namespace cimg
 }  // namespace cimg_library
