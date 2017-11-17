@@ -79,6 +79,12 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
     }
 }
 
-AnimationQtModule::~AnimationQtModule() = default;
+AnimationQtModule::~AnimationQtModule() {
+    if (!utilqt::getApplicationMainWindow()) {
+        // Window has been removed along with and added Qt stuff. No need to to delete them.
+        editor_.release();
+        menu_.release();
+    }
+};
 
 } // namespace inviwo
