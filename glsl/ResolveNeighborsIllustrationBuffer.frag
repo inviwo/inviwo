@@ -36,11 +36,31 @@ void main(void) {
         if (count > 0) {
             int start = int(imageLoad(illustrationBufferIdxImg, coords).x);
             for (int i=0; i<count; ++i) {
-                illustrationDataOut[start + i] = illustrationDataIn[start + i];
-                illustrationDataOut[start + i].neighbors.x = findNeighbor(start + i, coords, ivec2(-1, 0), ivec2(count, start));
-                illustrationDataOut[start + i].neighbors.y = findNeighbor(start + i, coords, ivec2(+1, 0), ivec2(count, start));
-                illustrationDataOut[start + i].neighbors.z = findNeighbor(start + i, coords, ivec2(0, -1), ivec2(count, start));
-                illustrationDataOut[start + i].neighbors.w = findNeighbor(start + i, coords, ivec2(0, +1), ivec2(count, start));
+                FragmentData d = illustrationDataIn[start + i];
+                //find neighbors
+                d.neighbors.x = findNeighbor(start + i, coords, ivec2(-1, 0), ivec2(count, start));
+                d.neighbors.y = findNeighbor(start + i, coords, ivec2(+1, 0), ivec2(count, start));
+                d.neighbors.z = findNeighbor(start + i, coords, ivec2(0, -1), ivec2(count, start));
+                d.neighbors.w = findNeighbor(start + i, coords, ivec2(0, +1), ivec2(count, start));
+                ivec4 neighborIndices = ivec4(
+                    d.neighbors.x >= 0 ? illustrationDataIn[d.neighbors.x].index : i,
+                    d.neighbors.y >= 0 ? illustrationDataIn[d.neighbors.y].index : i,
+                    d.neighbors.z >= 0 ? illustrationDataIn[d.neighbors.z].index : i,
+                    d.neighbors.w >= 0 ? illustrationDataIn[d.neighbors.w].index : i
+                );
+                //initialize field for silhouette + halo
+                if (any(lessThan(d.neighbors, ivec4(0)))) {
+                    //red cell
+                    d.silhouetteHighlight = 1;
+                } else if (any(greaterThan(neighborIndices, ivec4(i)))) {
+                    //blue cell
+                    d.haloHighlight = 1;
+                } else if (any(lessThan(neighborIndices, ivec4(i)))) {
+                    //green cell
+                    d.silhouetteHighlight = 0;
+                }
+                //write out
+                illustrationDataOut[start + i] = d;
             }
         }
     }

@@ -52,13 +52,13 @@ void main(void) {
                 FragmentData data;
                 data.depth = fragmentList[i].y;
                 data.depthGradient = 0; //to be filled out
-                data.alpha = fragmentList[i].z + 1;
+                data.alpha = fragmentList[i].z + 2;
                 data.colors = floatBitsToUint(fragmentList[i].w);
                 data.neighbors = ivec4(-1);
-                data.silhouetteHighlight = 1;
-                data.haloHighlight = 1;
+                data.silhouetteHighlight = 2;
+                data.haloHighlight = 2;
+                data.index = i;
                 data.dummy1 = 0;
-                data.dummy2 = 0;
                 illustrationDataOut[start + i] = data;
             }
             imageStore(illustrationBufferIdxImg, coords, ivec4(start));
