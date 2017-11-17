@@ -34,6 +34,7 @@
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <algorithm>
+#include <limits>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -61,40 +62,40 @@
 #pragma warning(disable : 4267)
 #endif
 
-// Added in Cimg.h below struct type<float>...
-/*#include <limits>
-#include <half/half.hpp>
+// add CImg type specialization for half_float::half
+namespace cimg_library {
+namespace cimg {
 
-    template<> struct type < half_float::half > {
-        static const char* string() { static const char *const s = "half"; return s; }
-        static bool is_float() { return true; }
-        static bool is_inf(const half_float::half val) {
-#ifdef isinf
-            return (bool)isinf(val);
-#else
-            return !is_nan(val) && (val<cimg::type<half_float::half>::min() ||
-val>cimg::type<half_float::half>::max());
-#endif
-        }
-        static bool is_nan(const half_float::half val) {
-#ifdef isnan
-            return (bool)isnan(val);
-#else
-            return !(val == val);
-#endif
-        }
-        static half_float::half min() { return std::numeric_limits<half_float::half>::min(); }
-        static half_float::half max() { return std::numeric_limits<half_float::half>::max(); }
-        static half_float::half inf() { return (half_float::half)cimg::type<double>::inf(); }
-        static half_float::half nan() { return (half_float::half)cimg::type<double>::nan(); }
-        static half_float::half cut(const double val) { return val<(double)min() ? min() :
-val>(double)max() ? max() : (half_float::half)val; }
-        static const char* format() { return "%.16g"; }
-        static double format(const half_float::half val) { return (double)val; }
-    };
-*/
+template <>
+struct type<half_float::half> {
+    static const char* string() {
+        static const char* const s = "half";
+        return s;
+    }
+    static bool is_float() { return true; }
+    static bool is_inf(const long double val) {
+        return std::isinf(static_cast<half_float::half>(val));
+    }
+    static bool is_nan(const long double val) {
+        return std::isnan(static_cast<half_float::half>(val));
+    }
+    static half_float::half min() { return std::numeric_limits<half_float::half>::lowest(); }
+    static half_float::half max() { return std::numeric_limits<half_float::half>::max(); }
+    static half_float::half inf() { return std::numeric_limits<half_float::half>::infinity(); }
+    static half_float::half nan() { return std::numeric_limits<half_float::half>::quiet_NaN(); }
+    static half_float::half cut(const double val) { return static_cast<half_float::half>(val); }
+    static const char* format() { return "%.9g"; }
+    static const char* format_s() { return "%g"; }
+    static double format(const half_float::half val) { return static_cast<double>(val); }
+};
 
-using namespace cimg_library;
+template <>
+struct superset<bool, half_float::half> {
+    typedef half_float::half type;
+};
+
+}  // namespace cimg
+}  // namespace cimg_library
 
 namespace inviwo {
 
@@ -109,7 +110,7 @@ std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {
 // Single channel images
 template <typename T>
 struct CImgToVoidConvert {
-    static void* convert(void* dst, CImg<T>* img) {
+    static void* convert(void* dst, cimg_library::CImg<T>* img) {
         // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planer format
         // (RRRRGGGGBBBB).
         // Permute from planer to interleaved format, does we need to specify cxyz as input instead
@@ -133,9 +134,10 @@ struct CImgToVoidConvert {
 // Single channel images
 template <typename T>
 struct LayerToCImg {
-    static std::unique_ptr<CImg<T>> convert(const LayerRAM* inputLayerRAM, bool permute = true) {
+    static std::unique_ptr<cimg_library::CImg<T>> convert(const LayerRAM* inputLayerRAM,
+                                                          bool permute = true) {
         // Single channel means we can do xyzc, as no permutation is needed
-        auto img = util::make_unique<CImg<T>>(
+        auto img = util::make_unique<cimg_library::CImg<T>>(
             static_cast<const T*>(inputLayerRAM->getData()),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, 1, false);
@@ -147,7 +149,8 @@ struct LayerToCImg {
 // Multiple channel images
 template <typename T, template <typename, glm::precision> class G>
 struct LayerToCImg<G<T, glm::defaultp>> {
-    static std::unique_ptr<CImg<T>> convert(const LayerRAM* inputLayerRAM, bool permute = true) {
+    static std::unique_ptr<cimg_library::CImg<T>> convert(const LayerRAM* inputLayerRAM,
+                                                          bool permute = true) {
         auto dataFormat = inputLayerRAM->getDataFormat();
         auto typedDataPtr = static_cast<const G<T, glm::defaultp>*>(inputLayerRAM->getData());
 
@@ -155,7 +158,7 @@ struct LayerToCImg<G<T, glm::defaultp>> {
         // (RRRRGGGGBBBB).
         // Permute from interleaved to planer format, does we need to specify yzcx as input instead
         // of cxyz
-        auto img = util::make_unique<CImg<T>>(
+        auto img = util::make_unique<cimg_library::CImg<T>>(
             glm::value_ptr(*typedDataPtr), static_cast<unsigned int>(dataFormat->getComponents()),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1u, false);
@@ -173,7 +176,7 @@ struct CImgNormalizedLayerDispatcher {
         auto img = LayerToCImg<typename T::type>::convert(inputLayer, false);
 
         // TODO this does not work for signed char... 255 out of range
-        CImg<unsigned char> normalizedImg = img->get_normalize(0, 255);
+        cimg_library::CImg<unsigned char> normalizedImg = img->get_normalize(0, 255);
         normalizedImg.mirror('z');
 
         if (inputLayer->getDataFormat()->getComponents() == 1) {
@@ -195,7 +198,7 @@ struct CImgLoadLayerDispatcher {
         using P = typename T::primitive;
 
         try {
-            CImg<P> img(filePath);
+            cimg_library::CImg<P> img(filePath.c_str());
             size_t components = static_cast<size_t>(img.spectrum());
 
             if (rescaleToDim) {
@@ -217,7 +220,7 @@ struct CImgLoadLayerDispatcher {
             img.mirror('y');
 
             return CImgToVoidConvert<P>::convert(dst, &img);
-        } catch (CImgIOException& e) {
+        } catch (cimg_library::CImgIOException& e) {
             throw DataReaderException(std::string(e.what()), IvwContext);
         }
     }
@@ -270,7 +273,7 @@ struct CImgSaveLayerDispatcher {
         }
         try {
             img->save(filePath);
-        } catch (CImgIOException& e) {
+        } catch (cimg_library::CImgIOException& e) {
             throw DataWriterException("Failed to save image to: " + std::string(filePath) +
                                           " Reason: " + std::string(e.what()),
                                       IvwContext);
@@ -326,7 +329,7 @@ struct CImgSaveLayerToBufferDispatcher {
         try {
             return std::make_unique<std::vector<unsigned char>>(
                 std::move(cimgutil::saveCImgToBuffer(*img.get(), extension)));
-        } catch (CImgIOException& e) {
+        } catch (cimg_library::CImgIOException& e) {
             throw DataWriterException(
                 "Failed to save image to buffer. Reason: " + std::string(e.what()), IvwContext);
         }
@@ -350,7 +353,7 @@ struct CImgLoadVolumeDispatcher {
     template <typename T>
     void* dispatch(void* dst, const char* filePath, size3_t& dimensions, DataFormatId& formatId,
                    const DataFormatBase* dataFormat) {
-        CImg<typename T::primitive> img(filePath);
+        cimg_library::CImg<typename T::primitive> img(filePath);
 
         size_t components = static_cast<size_t>(img.spectrum());
         dimensions = size3_t(img.width(), img.height(), img.depth());
@@ -447,11 +450,11 @@ struct CImgRescaleLayerRamToLayerRamDispatcher {
         P* dstData = static_cast<P*>(target->getData());
 
         if (rank == 0) {
-            CImg<P> src(srcData, sourceDim.x, sourceDim.y, 1, 1, true);
+            cimg_library::CImg<P> src(srcData, sourceDim.x, sourceDim.y, 1, 1, true);
             auto resized = src.get_resize(resizeDim.x, resizeDim.y, -100, -100,
                                           static_cast<int>(InterpolationType::Linear));
 
-            CImg<P> dst(dstData, targetDim.x, targetDim.y, 1, 1, true);
+            cimg_library::CImg<P> dst(dstData, targetDim.x, targetDim.y, 1, 1, true);
             dst.fill(P{0});
             dst.draw_image(targetDim.x / 2 - resizeDim.x / 2, targetDim.y / 2 - resizeDim.y / 2,
                            resized);
@@ -463,13 +466,13 @@ struct CImgRescaleLayerRamToLayerRamDispatcher {
 
             size_t comp = util::extent<E>::value;
 
-            CImg<P> src(srcData, comp, sourceDim.x, sourceDim.y, 1, true);
+            cimg_library::CImg<P> src(srcData, comp, sourceDim.x, sourceDim.y, 1, true);
             auto temp = src.get_permute_axes("yzcx");  // put first index last
 
             temp.resize(resizeDim.x, resizeDim.y, -100, -100,
                         static_cast<int>(InterpolationType::Linear));
 
-            CImg<P> dst(dstData, targetDim.x, targetDim.y, 1, comp, true);
+            cimg_library::CImg<P> dst(dstData, targetDim.x, targetDim.y, 1, comp, true);
             dst.fill(P{0});
             dst.draw_image(targetDim.x / 2 - resizeDim.x / 2, targetDim.y / 2 - resizeDim.y / 2,
                            temp);
@@ -520,8 +523,8 @@ std::string getOpenEXRVesrion() {
 #endif
 }
 
-}  // namespace
+}  // namespace cimgutil
 
-}  // namespace
+}  // namespace inviwo
 
 #include <warn/pop>
