@@ -48,10 +48,27 @@ void main(void) {
 		    bubbleSort(numFrag);
             //3. write them back
             uint start = atomicAdd(illustrationBufferCounter, numFrag);
+            for (int i=0; i<numFrag; ++i) {
+                FragmentData data;
+                data.depth = fragmentList[i].y;
+                data.depthGradient = 0; //to be filled out
+                data.alpha = fragmentList[i].z + 1;
+                data.colors = floatBitsToUint(fragmentList[i].w);
+                data.neighbors = ivec4(-1);
+                data.silhouetteHighlight = 1;
+                data.haloHighlight = 1;
+                data.dummy1 = 0;
+                data.dummy2 = 0;
+                illustrationDataOut[start + i] = data;
+            }
+            imageStore(illustrationBufferIdxImg, coords, ivec4(start));
+            imageStore(illustrationBufferCountImg, coords, ivec4(numFrag));
         }
         else
         {
             //no fragments, clear texture
+            imageStore(illustrationBufferIdxImg, coords, ivec4(0));
+            imageStore(illustrationBufferCountImg, coords, ivec4(0));
         }
     }
     discard;

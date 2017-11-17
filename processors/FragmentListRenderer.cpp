@@ -56,8 +56,11 @@ namespace inviwo
     , illustrationBufferIdxUnit_(nullptr)
     , illustrationBufferCountImg_(nullptr)
     , illustrationBufferCountUnit_(nullptr)
-    , illustrationBuffer_(0)
+    , illustrationBuffer_{0,0}
+    , activeIllustrationBuffer_(0)
     , fillIllustrationBufferShader_("simpleQuad.vert", "SortAndFillIllustrationBuffer.frag", false)
+    , resolveNeighborsIllustrationBufferShader_("simpleQuad.vert", "ResolveNeighborsIllustrationBuffer.frag", false)
+    , drawIllustrationBufferShader_("simpleQuad.vert", "DisplayIllustrationBuffer.frag", false)
     {
         initShaders();
 
@@ -80,6 +83,7 @@ namespace inviwo
         if (atomicCounter_) glDeleteBuffers(1, &atomicCounter_);
         if (pixelBuffer_) glDeleteBuffers(1, &pixelBuffer_);
         if (totalFragmentQuery_) glDeleteQueries(1, &totalFragmentQuery_);
+        if (illustrationBuffer_[0]) glDeleteBuffers(2, illustrationBuffer_);
         LGL_ERROR;
     }
 
@@ -173,6 +177,11 @@ namespace inviwo
             //TODO: pass operation into this method as an enum plus optional parameters
             processIllustrationBuffer();
             drawIllustrationBuffer();
+
+            if (debug)
+            {
+                debugIllustrationBuffer(numFrags);
+            }
         }
 
         return true; //success, enough storage available
@@ -185,6 +194,8 @@ namespace inviwo
         clearShader_.build();
         fillIllustrationBufferShader_.getFragmentShaderObject()->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
         fillIllustrationBufferShader_.build();
+        drawIllustrationBufferShader_.build();
+        resolveNeighborsIllustrationBufferShader_.build();
     }
 
     void FragmentListRenderer::initBuffers(const size2_t& screenSize)
@@ -335,15 +346,17 @@ namespace inviwo
         {
             illustrationBufferOldFragmentSize_ = fragmentSize_;
             //reallocate SSBO for the illustration buffer storage
-            if (illustrationBuffer_) glDeleteBuffers(1, &illustrationBuffer_);
-            glGenBuffers(1, &illustrationBuffer_);
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationBuffer_);
-            glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 12 * sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-            LGL_ERROR;
+            if (illustrationBuffer_[0]) glDeleteBuffers(2, illustrationBuffer_);
+            glGenBuffers(2, illustrationBuffer_);
+            for (int i = 0; i < 2; ++i) {
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationBuffer_[i]);
+                glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 12 * sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+                LGL_ERROR;
+            }
 
             LogInfo("Illustration Buffers: additional pixel storage for " << fragmentSize_ << " pixels allocated, memory usage: "
-                << (fragmentSize_ * 12 * sizeof(GLfloat) / 1024 / 1024.0f) << " MB");
+                << (fragmentSize_ * 12 * 2 * sizeof(GLfloat) / 1024 / 1024.0f) << " MB");
         }
     }
 
@@ -370,19 +383,31 @@ namespace inviwo
 
     void FragmentListRenderer::processIllustrationBuffer()
     {
+        //resolve neighbors
+        //and set initial conditions for silhouettes+halos
+        resolveNeighborsIllustrationBufferShader_.activate();
+        assignIllustrationBufferUniforms(resolveNeighborsIllustrationBufferShader_);
+        drawQuad();
+        resolveNeighborsIllustrationBufferShader_.deactivate();
+
         //TODO: perform the bluring
+
     }
 
     void FragmentListRenderer::drawIllustrationBuffer()
     {
-
+        //final blending
+        drawIllustrationBufferShader_.activate();
+        assignIllustrationBufferUniforms(drawIllustrationBufferShader_);
+        drawQuad();
+        drawIllustrationBufferShader_.deactivate();
 
         //free unit for index textures
         delete illustrationBufferIdxUnit_; illustrationBufferIdxUnit_ = nullptr;
         delete illustrationBufferCountUnit_; illustrationBufferCountUnit_ = nullptr;
     }
 
-    void FragmentListRenderer::assignIllustrationBufferUniforms(Shader& shader) const
+    void FragmentListRenderer::assignIllustrationBufferUniforms(Shader& shader)
     {
         //screen size textures
         glActiveTexture(illustrationBufferIdxUnit_->getEnum());
@@ -402,10 +427,87 @@ namespace inviwo
         LGL_ERROR;
 
         //pixel storage
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, illustrationBuffer_);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, illustrationBuffer_[activeIllustrationBuffer_]); //in
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, illustrationBuffer_[1-activeIllustrationBuffer_]); //out
+        activeIllustrationBuffer_ = 1 - activeIllustrationBuffer_;
         LGL_ERROR;
 
         //other uniforms
         shader.setUniform("screenSize", ivec2(screenSize_.x, screenSize_.y));
+    }
+
+    void FragmentListRenderer::debugIllustrationBuffer(GLuint numFrags)
+    {
+        printf("========= Fragment List Renderer - DEBUG Illustration Buffers =========\n\n");
+
+        //read images
+        std::vector<GLuint> idxImg(screenSize_.x * screenSize_.y);
+        illustrationBufferIdxImg_->download(&idxImg[0]);
+        LGL_ERROR;
+        std::vector<GLuint> countImg(screenSize_.x * screenSize_.y);
+        illustrationBufferCountImg_->download(&countImg[0]);
+        LGL_ERROR;
+
+        //structure
+        struct FragmentData
+        {
+            float depth;
+            float depthGradient;
+            float alpha;
+            GLuint colors;
+            ivec4 neighbors;
+            float silhouetteHighlight;
+            float haloHighlight;
+            int dummy1;
+            int dummy2;
+        };
+        printf("Size of a fragment: %d bytes, expected 48 bytes\n", (int)sizeof(FragmentData));
+
+        //read pixel storage buffer
+        glBindBuffer(GL_ARRAY_BUFFER, illustrationBuffer_[1-activeIllustrationBuffer_]); LGL_ERROR;
+        size_t size = std::min((size_t)numFrags, fragmentSize_);
+        std::vector<FragmentData> pixelBuffer(size);
+        glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(FragmentData) * size, &pixelBuffer[0]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0); 
+        LGL_ERROR;
+
+        //print
+        for (int y = 0; y<screenSize_.y; ++y)
+        {
+            for (int x = 0; x < screenSize_.x; ++x)
+            {
+                int start = idxImg[x + screenSize_.x*y];
+                int count = countImg[x + screenSize_.x*y];
+                printf(" %4d:%4d:  start=%5d, count=%5d\n", x, y, start, count);
+                for (int i=0; i<count; ++i)
+                {
+                    const FragmentData& d = pixelBuffer[start + i];
+                    float r = float((d.colors >> 20) & 0x3ff) / 1023.0f;
+                    float g = float((d.colors >> 10) & 0x3ff) / 1023.0f;
+                    float b = float(d.colors & 0x3ff) / 1023.0f;
+                    printf("     depth=%5.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f, neighbors:",
+                        d.depth, d.alpha, r, g, b);
+                    if (d.neighbors.x >= 0)
+                        printf("(%d:%5.3f)", d.neighbors.x, pixelBuffer[d.neighbors.x].depth);
+                    else
+                        printf("(-1)");
+                    if (d.neighbors.y >= 0)
+                        printf("(%d:%5.3f)", d.neighbors.y, pixelBuffer[d.neighbors.y].depth);
+                    else
+                        printf("(-1)");
+                    if (d.neighbors.z >= 0)
+                        printf("(%d:%5.3f)", d.neighbors.z, pixelBuffer[d.neighbors.z].depth);
+                    else
+                        printf("(-1)");
+                    if (d.neighbors.w >= 0)
+                        printf("(%d:%5.3f)", d.neighbors.w, pixelBuffer[d.neighbors.w].depth);
+                    else
+                        printf("(-1)");
+                    printf("\n");
+                }
+            }
+        }
+
+        printf("\n==================================================\n");
     }
 }

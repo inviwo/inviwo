@@ -27,7 +27,7 @@ struct FragmentData
     float alpha;
     //the color in 10/10/10 rgb
     uint colors;
-    //the neighbors + 1: -x, +x, -y, +y; 0 if not existing
+    //the neighbors: -x, +x, -y, +y; -1 if not existing
     ivec4 neighbors;
     //silhouette highlight field beta + 2*b_beta, as in the paper
     float silhouetteHighlight;
@@ -39,9 +39,29 @@ struct FragmentData
     int dummy2;
 };
 
-layout(std430, binding=5) buffer illustrationBufferStorage
+layout(std430, binding=4) buffer illustrationBufferStorageIn
 {
-    FragmentData illustrationData[]; 
+    FragmentData illustrationDataIn[]; 
 };
+layout(std430, binding=5) buffer illustrationBufferStorageOut
+{
+    FragmentData illustrationDataOut[]; 
+};
+
+// Helpers
+
+uint compressColor(vec3 color) {
+    uint c = (int((color.r * 1023)) & 0x3ff) << 20;
+    c += (int((color.g * 1023)) & 0x3ff) << 10;
+    c += (int((color.b * 1023)) & 0x3ff);
+    return c;
+}
+vec3 uncompressColor(uint c) {
+    vec3 color;
+    color.r = float((c>>20) & 0x3ff) / 1023.0f;
+    color.g = float((c>>10) & 0x3ff) / 1023.0f;
+    color.b = float(c & 0x3ff) / 1023.0f;
+    return color;
+}
 
 #endif

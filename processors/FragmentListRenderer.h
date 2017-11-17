@@ -104,7 +104,8 @@ private:
     void fillIllustrationBuffer();
     void processIllustrationBuffer();
     void drawIllustrationBuffer();
-    void assignIllustrationBufferUniforms(Shader& shader) const;
+    void assignIllustrationBufferUniforms(Shader& shader);
+    void debugIllustrationBuffer(GLuint numFrags);
 
     size2_t screenSize_;
     size_t fragmentSize_;
@@ -127,8 +128,11 @@ private:
     TextureUnit* illustrationBufferIdxUnit_;
     Texture2D* illustrationBufferCountImg_;
     TextureUnit* illustrationBufferCountUnit_;
-    GLuint illustrationBuffer_;
+    GLuint illustrationBuffer_[2];
+    int activeIllustrationBuffer_;
     Shader fillIllustrationBufferShader_;
+    Shader resolveNeighborsIllustrationBufferShader_;
+    Shader drawIllustrationBufferShader_;
 };
 
 }
