@@ -23,7 +23,7 @@ uniform AbufferParameters AbufferParams;
 //Macros (maybe) changed from the C++ side
 
 //max depth of the chain, all others are discarded during the final rendering
-#define ABUFFER_SIZE 24
+#define ABUFFER_SIZE 32
 
 #define ABUFFER_USE_TEXTURES 1
 #define ABUFFER_SHAREDPOOL_USE_TEXTURES 1

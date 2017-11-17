@@ -177,7 +177,7 @@ vec4 performShading()
         float nv_dzi = dFdxFinest (normal.z);
         float nv_dzj = dFdyFinest (normal.z);
         float nv_curvature = min(1, nv_dzi*nv_dzi + nv_dzj*nv_dzj);
-        alpha *= pow(nv_curvature, alphaSettings.normalExp * 0.5);
+        alpha *= min(1, pow(nv_curvature, alphaSettings.normalExp * 0.5) * 10);
 #endif
 #ifdef ALPHA_DENSITY
         float density_alpha = alphaSettings.baseDensity / (frag.area * angle * 100);
