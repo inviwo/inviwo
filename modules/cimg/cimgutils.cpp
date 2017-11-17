@@ -193,8 +193,8 @@ struct CImgNormalizedLayerDispatcher {
 struct CImgLoadLayerDispatcher {
     using type = void*;
     template <typename T>
-    void* dispatch(void* dst, const char* filePath, uvec2& dimensions, DataFormatId& formatId,
-                   const DataFormatBase* dataFormat, bool rescaleToDim) {
+    void* dispatch(void* dst, const std::string& filePath, uvec2& dimensions,
+                   DataFormatId& formatId, const DataFormatBase* dataFormat, bool rescaleToDim) {
         using P = typename T::primitive;
 
         try {
@@ -229,7 +229,7 @@ struct CImgLoadLayerDispatcher {
 struct CImgSaveLayerDispatcher {
     using type = void;
     template <typename T>
-    void dispatch(const char* filePath, const LayerRAM* inputLayer) {
+    void dispatch(const std::string& filePath, const LayerRAM* inputLayer) {
         auto img = LayerToCImg<typename T::type>::convert(inputLayer);
 
         // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
@@ -272,11 +272,11 @@ struct CImgSaveLayerDispatcher {
             }
         }
         try {
-            img->save(filePath);
+            img->save(filePath.c_str());
         } catch (cimg_library::CImgIOException& e) {
-            throw DataWriterException("Failed to save image to: " + std::string(filePath) +
-                                          " Reason: " + std::string(e.what()),
-                                      IvwContext);
+            throw DataWriterException(
+                "Failed to save image to: " + filePath + " Reason: " + std::string(e.what()),
+                IvwContext);
         }
     }
 };
@@ -351,9 +351,9 @@ struct CImgRescaleLayerDispatcher {
 struct CImgLoadVolumeDispatcher {
     using type = void*;
     template <typename T>
-    void* dispatch(void* dst, const char* filePath, size3_t& dimensions, DataFormatId& formatId,
-                   const DataFormatBase* dataFormat) {
-        cimg_library::CImg<typename T::primitive> img(filePath);
+    void* dispatch(void* dst, const std::string& filePath, size3_t& dimensions,
+                   DataFormatId& formatId, const DataFormatBase* dataFormat) {
+        cimg_library::CImg<typename T::primitive> img(filePath.c_str());
 
         size_t components = static_cast<size_t>(img.spectrum());
         dimensions = size3_t(img.width(), img.height(), img.depth());
@@ -385,7 +385,7 @@ void* loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
     const DataFormatBase* dataFormat = DataFormatBase::get(formatId);
 
     CImgLoadLayerDispatcher disp;
-    return dataFormat->dispatch(disp, dst, filePath.c_str(), dimensions, formatId, dataFormat,
+    return dataFormat->dispatch(disp, dst, filePath, dimensions, formatId, dataFormat,
                                 rescaleToDim);
 }
 
@@ -400,13 +400,13 @@ void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions
     const DataFormatBase* dataFormat = DataFormatBase::get(formatId);
 
     CImgLoadVolumeDispatcher disp;
-    return dataFormat->dispatch(disp, dst, filePath.c_str(), dimensions, formatId, dataFormat);
+    return dataFormat->dispatch(disp, dst, filePath, dimensions, formatId, dataFormat);
 }
 
 void saveLayer(const std::string& filePath, const Layer* inputLayer) {
     CImgSaveLayerDispatcher disp;
     const LayerRAM* inputLayerRam = inputLayer->getRepresentation<LayerRAM>();
-    inputLayerRam->getDataFormat()->dispatch(disp, filePath.c_str(), inputLayerRam);
+    inputLayerRam->getDataFormat()->dispatch(disp, filePath, inputLayerRam);
 }
 
 std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(const std::string& extension,
