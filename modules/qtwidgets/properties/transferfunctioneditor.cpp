@@ -287,7 +287,7 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
             elem->setSelected(false);
         }
 
-    } else if (k == Qt::Key_Delete) {  // Delete selected
+    } else if (k == Qt::Key_Delete || k == Qt::Key_Backspace) {  // Delete selected
         QList<QGraphicsItem*> itemList = selectedItems();
         clearSelection();
         for (auto& elem : itemList) {
