@@ -27,16 +27,12 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QFile>
-#include <QMessageBox>
-#include <warn/pop>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/logerrorcounter.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -44,7 +40,12 @@
 #include <inviwo/core/util/filelogger.h>
 #include "inviwosplashscreen.h"
 #include <moduleregistration.h>
-#include <inviwo/core/util/logerrorcounter.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QFile>
+#include <QMessageBox>
+#include <warn/pop>
 
 int main(int argc, char** argv) {
     inviwo::LogCentral::init();
@@ -63,6 +64,7 @@ int main(int argc, char** argv) {
     auto& clp = inviwoApp.getCommandLineParser();
 
     inviwo::InviwoMainWindow mainWin(&inviwoApp);
+    inviwoApp.printApplicationInfo();
 
     // initialize and show splash screen
     inviwo::InviwoSplashScreen splashScreen(clp.getShowSplashScreen());

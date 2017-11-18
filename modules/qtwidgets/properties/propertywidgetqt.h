@@ -112,7 +112,6 @@ private:
     PropertyWidgetQt* parent_;
     InviwoDockWidget* baseContainer_;
 
-    TemplateOptionProperty<UsageMode>* applicationUsageMode_;
     const BaseCallBack* appModeCallback_;
 
     const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.

@@ -57,9 +57,11 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->registerLogger(logger);
 
     InviwoApplication inviwoApp(argc, argv, "Inviwo v" + IVW_VERSION + " - GLFWApp");
+    inviwoApp.printApplicationInfo();
     inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
     inviwoApp.setProgressCallback([](std::string m) {
-        LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
+        LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0,
+                                  m);
     });
 
     CanvasGLFW::setAlwaysOnTopByDefault(false);
@@ -73,21 +75,23 @@ int main(int argc, char** argv) {
         "Specify default name of each snapshot, or empty string for processor name.", false, "",
         "Snapshot default name: UPN=Use Processor name.");
 
-    cmdparser.add(&snapshotArg, [&]() {
-        std::string path = cmdparser.getOutputPath();
-        if (path.empty()) path = inviwoApp.getPath(PathType::Images);
-        util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
-    }, 1000);
+    cmdparser.add(&snapshotArg,
+                  [&]() {
+                      std::string path = cmdparser.getOutputPath();
+                      if (path.empty()) path = inviwoApp.getPath(PathType::Images);
+                      util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
+                                            snapshotArg.getValue());
+                  },
+                  1000);
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
 
     // Load simple scene
     inviwoApp.getProcessorNetwork()->lock();
-    const std::string workspace =
-        cmdparser.getLoadWorkspaceFromArg()
-            ? cmdparser.getWorkspacePath()
-            : inviwoApp.getPath(PathType::Workspaces, "/boron.inv");
+    const std::string workspace = cmdparser.getLoadWorkspaceFromArg()
+                                      ? cmdparser.getWorkspacePath()
+                                      : inviwoApp.getPath(PathType::Workspaces, "/boron.inv");
 
     try {
         if (!workspace.empty()) {
@@ -95,9 +99,10 @@ int main(int argc, char** argv) {
                 try {
                     throw;
                 } catch (const IgnoreException& e) {
-                    util::log(e.getContext(), "Incomplete network loading " + workspace +
-                                                  " due to " + e.getMessage(),
-                              LogLevel::Error);
+                    util::log(
+                        e.getContext(),
+                        "Incomplete network loading " + workspace + " due to " + e.getMessage(),
+                        LogLevel::Error);
                 }
             });
         }
@@ -119,7 +124,7 @@ int main(int argc, char** argv) {
 
     inviwoApp.getProcessorNetwork()->unlock();
 
-    cmdparser.processCallbacks(); // run any command line callbacks from modules.
+    cmdparser.processCallbacks();  // run any command line callbacks from modules.
 
     if (cmdparser.getQuitApplicationAfterStartup()) {
         glfwTerminate();

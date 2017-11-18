@@ -32,15 +32,17 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/property.h>
 
 namespace inviwo {
 
+class InviwoApplication;
+
 class IVW_CORE_API Settings : public PropertyOwner {
 
 public:
+    Settings(const std::string &id, InviwoApplication* app);
     Settings(const std::string &id = "");
     virtual ~Settings();
 
@@ -52,8 +54,7 @@ public:
      * constructor
      */
     void load();
-    
-    
+
     /**
      * Save is called automatically whenever a property changes.
      */
@@ -61,8 +62,10 @@ public:
 
     virtual std::string getIdentifier();
 protected:
+    std::string getFileName() const;
     std::string identifier_;
     bool isDeserializing_;
+    InviwoApplication* app_;
 };
 
 } // namespace

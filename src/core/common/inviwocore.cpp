@@ -47,9 +47,6 @@
 #include <inviwo/core/metadata/propertyeditorwidgetmetadata.h>
 
 // Utilizes
-#include <inviwo/core/util/systemcapabilities.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/settings/linksettings.h>
 
 // Io
@@ -64,7 +61,6 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/bufferport.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
-
 
 // PortInspectors
 #include <inviwo/core/ports/portinspector.h>
@@ -197,10 +193,6 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerCamera<OrthographicCamera>("OrthographicCamera");
     registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
 
-    // Register Capabilities
-    auto syscap = util::make_unique<SystemCapabilities>();
-    registerCapabilities(std::move(syscap));
-
     // Register Data readers
     registerDataReader(util::make_unique<RawVolumeReader>());
     // Register Data writers
@@ -293,8 +285,8 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerProperty<VolumeIndicatorProperty>();
     registerProperty<BoolCompositeProperty>();
 
-    // We create a std::function to register the created converter since the registration function is
-    // protected in the inviwo module
+    // We create a std::function to register the created converter since the registration function
+    // is protected in the inviwo module
     std::function<void(std::unique_ptr<PropertyConverter>)> registerPC =
         [this](std::unique_ptr<PropertyConverter> propertyConverter) {
             registerPropertyConverter(std::move(propertyConverter));
@@ -304,8 +296,9 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     using Vec3s = std::tuple<vec3, dvec3, ivec3, size3_t>;
     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
 
-    // for_each_type_pair will call the functor with all permutation of types, and supplied arguments
-    // like: ConverterRegFunctor<float, float>(registerPC), ConverterRegFunctor<float, double>(registerPC), ...
+    // for_each_type_pair will call the functor with all permutation of types, and supplied
+    // arguments like: ConverterRegFunctor<float, float>(registerPC), ConverterRegFunctor<float,
+    // double>(registerPC), ...
     util::for_each_type_pair<Scalars, Scalars>{}(ConverterRegFunctor{}, registerPC);
     util::for_each_type_pair<Vec2s, Vec2s>{}(ConverterRegFunctor{}, registerPC);
     util::for_each_type_pair<Vec3s, Vec3s>{}(ConverterRegFunctor{}, registerPC);
@@ -318,7 +311,6 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
 
     // Register Settings
     // Do this after the property registration since the settings use properties.
-    registerSettings(util::make_unique<SystemSettings>());
     registerSettings(util::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
 }
 

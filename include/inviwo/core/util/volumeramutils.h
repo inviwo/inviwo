@@ -34,7 +34,6 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
@@ -58,8 +57,7 @@ void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
     const auto dims = v.getDimensions();
 
     if (jobs == 0) {
-        auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-        jobs = 4 * settings->poolSize_.get();
+        jobs = 4 * InviwoApplication::getPtr()->getPoolSize();
         if (jobs == 0) { // if poolsize is zero
             forEachVoxel(v, callback);
             return;

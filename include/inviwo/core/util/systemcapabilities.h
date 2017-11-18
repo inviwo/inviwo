@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SYSTEMCAPABILITIES_H
@@ -42,7 +42,7 @@ struct sigar_t;
 
 namespace inviwo {
 
-class IVW_CORE_API SystemCapabilities : public Capabilities  {
+class IVW_CORE_API SystemCapabilities : public Capabilities {
 
 public:
     struct OSInfo {
@@ -57,21 +57,21 @@ public:
     };
 
     struct MemoryInfo {
-        glm::u64 total; //In Bytes
-        glm::u64 available; //In Bytes
+        glm::u64 total;      // In Bytes
+        glm::u64 available;  // In Bytes
     };
 
     struct DiskInfo {
         std::string diskName;
         std::string diskType;
-        glm::u64 total; //In Bytes
-        glm::u64 free; //In Bytes
+        glm::u64 total;  // In Bytes
+        glm::u64 free;   // In Bytes
     };
 
     struct ProcessMemoryInfo {
-        glm::u64 residentMem; //In Bytes
-        glm::u64 sharedMem; //In Bytes
-        glm::u64 virtualMem; //In Bytes
+        glm::u64 residentMem;  // In Bytes
+        glm::u64 sharedMem;    // In Bytes
+        glm::u64 virtualMem;   // In Bytes
     };
 
     SystemCapabilities();
@@ -82,7 +82,8 @@ public:
     int numberOfCores() const;
 
     virtual bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100) override;
-    virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes, glm::u8 percentageOfAvailableMemory = 100) override;
+    virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
+                                            glm::u8 percentageOfAvailableMemory = 100) override;
 
     glm::u64 getAvailableMemory();
     glm::u64 getCurrentResidentMemoryUsage();
@@ -121,10 +122,10 @@ private:
     bool successProcessMemoryInfo_;
 
 #ifdef IVW_SIGAR
-    sigar_t *sigar_;
+    sigar_t* sigar_;
 #endif
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SYSTEMCAPABILITIES_H
+#endif  // IVW_SYSTEMCAPABILITIES_H

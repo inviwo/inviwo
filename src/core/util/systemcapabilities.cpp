@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/systemcapabilities.h>
@@ -88,45 +88,28 @@ void SystemCapabilities::retrieveDynamicInfo() {
     successProcessMemoryInfo_ = lookupProcessMemoryInfo();
 }
 
-
-
 std::string SystemCapabilities::getBuildDateString() const {
     std::stringstream ss;
     ss << getBuildTimeYear() << "-" << std::setfill('0') << std::setw(2) << getBuildTimeMonth()
-        << "-" << std::setfill('0') << std::setw(2) << getBuildTimeDay() << " "
-        << std::setfill('0') << std::setw(2) << getBuildTimeHour() << ":" << std::setfill('0')
-        << std::setw(2) << getBuildTimeMinute() << ":" << std::setfill('0') << std::setw(2)
-        << getBuildTimeSecond();
+       << "-" << std::setfill('0') << std::setw(2) << getBuildTimeDay() << " " << std::setfill('0')
+       << std::setw(2) << getBuildTimeHour() << ":" << std::setfill('0') << std::setw(2)
+       << getBuildTimeMinute() << ":" << std::setfill('0') << std::setw(2) << getBuildTimeSecond();
     return ss.str();
 }
 
-int SystemCapabilities::getBuildTimeYear() const {
-    return buildInfo_.year;
-}
+int SystemCapabilities::getBuildTimeYear() const { return buildInfo_.year; }
 
-int SystemCapabilities::getBuildTimeMonth() const {
-    return buildInfo_.month;
-}
+int SystemCapabilities::getBuildTimeMonth() const { return buildInfo_.month; }
 
-int SystemCapabilities::getBuildTimeDay() const {
-    return buildInfo_.day;
-}
+int SystemCapabilities::getBuildTimeDay() const { return buildInfo_.day; }
 
-int SystemCapabilities::getBuildTimeHour() const {
-    return buildInfo_.hour;
-}
+int SystemCapabilities::getBuildTimeHour() const { return buildInfo_.hour; }
 
-int SystemCapabilities::getBuildTimeMinute() const {
-    return buildInfo_.minute;
-}
+int SystemCapabilities::getBuildTimeMinute() const { return buildInfo_.minute; }
 
-int SystemCapabilities::getBuildTimeSecond() const {
-    return buildInfo_.second;
-}
+int SystemCapabilities::getBuildTimeSecond() const { return buildInfo_.second; }
 
-std::size_t SystemCapabilities::getGitNumberOfHashes() const {
-    return buildInfo_.githashes.size();
-}
+std::size_t SystemCapabilities::getGitNumberOfHashes() const { return buildInfo_.githashes.size(); }
 
 const std::pair<std::string, std::string>& SystemCapabilities::getGitHash(std::size_t i) const {
     ivwAssert(i < getGitNumberOfHashes(), "index out of bounds");
@@ -154,7 +137,6 @@ bool SystemCapabilities::lookupOSInfo() {
 #else
     return false;
 #endif
-    
 }
 
 bool SystemCapabilities::lookupCPUInfo() {
@@ -167,7 +149,7 @@ bool SystemCapabilities::lookupCPUInfo() {
     if (success) {
         infoCPUs_.resize(cpulinfolist.number);
 
-        for (unsigned long i=0; i<cpulinfolist.number; i++) {
+        for (unsigned long i = 0; i < cpulinfolist.number; i++) {
             sigar_cpu_info_t cpu_info = cpulinfolist.data[i];
             infoCPUs_[i].vendor = std::string(cpu_info.vendor);
             infoCPUs_[i].model = std::string(cpu_info.model);
@@ -206,19 +188,22 @@ bool SystemCapabilities::lookupDiskInfo() {
     bool success = (status == SIGAR_OK);
 
     if (success) {
-        for (unsigned long i=0; i<diskinfolist.number; i++) {
+        for (unsigned long i = 0; i < diskinfolist.number; i++) {
             sigar_file_system_t disk_info = diskinfolist.data[i];
             status = sigar_file_system_usage_get(sigar_, disk_info.dir_name, &diskusageinfo);
 
             if (status == SIGAR_OK) {
                 DiskInfo currentDiskInfo;
                 currentDiskInfo.diskType = std::string(disk_info.type_name);
-                currentDiskInfo.diskType[0] = static_cast<char>(toupper(currentDiskInfo.diskType[0]));
+                currentDiskInfo.diskType[0] =
+                    static_cast<char>(toupper(currentDiskInfo.diskType[0]));
 
                 if (currentDiskInfo.diskType == "Local") {
                     currentDiskInfo.diskName = std::string(disk_info.dev_name);
-                    currentDiskInfo.total = util::kilobytes_to_bytes(static_cast<glm::u64>(diskusageinfo.total));
-                    currentDiskInfo.free = util::kilobytes_to_bytes(static_cast<glm::u64>(diskusageinfo.free));
+                    currentDiskInfo.total =
+                        util::kilobytes_to_bytes(static_cast<glm::u64>(diskusageinfo.total));
+                    currentDiskInfo.free =
+                        util::kilobytes_to_bytes(static_cast<glm::u64>(diskusageinfo.free));
                     infoDisks_.push_back(currentDiskInfo);
                 }
             }
@@ -254,8 +239,8 @@ void SystemCapabilities::printInfo() {
 
     // Try to retrieve operating system information
     if (successOSInfo_) {
-        LogInfoCustom("SystemInfo", "OS: " << infoOS_.description << " " << infoOS_.platform
-                                           << "-bit");
+        LogInfoCustom("SystemInfo",
+                      "OS: " << infoOS_.description << " " << infoOS_.platform << "-bit");
     } else {
         LogInfoCustom("SystemInfo", "OS: Info could not be retrieved");
     }
@@ -271,8 +256,8 @@ void SystemCapabilities::printInfo() {
             if (prevCPU != cpuStream.str()) {
                 if (!prevCPU.empty()) {
                     if (count > 0) {
-                        LogInfoCustom("SystemInfo", "CPU " << i + 1 << "-" << i + 1 + count << ": "
-                                                           << prevCPU);
+                        LogInfoCustom("SystemInfo",
+                                      "CPU " << i + 1 << "-" << i + 1 + count << ": " << prevCPU);
                     } else {
                         LogInfoCustom("SystemInfo", "CPU " << i + 1 << ": " << prevCPU);
                     }
@@ -329,11 +314,11 @@ void SystemCapabilities::printInfo() {
 }
 
 int SystemCapabilities::numberOfCores() const {
-     if (successCPUInfo_) {
+    if (successCPUInfo_) {
         return static_cast<int>(infoCPUs_.size());
-     } else {
+    } else {
         return -1;
-     }
+    }
 }
 
 glm::u64 SystemCapabilities::getAvailableMemory() {
@@ -356,4 +341,4 @@ glm::u64 SystemCapabilities::getCurrentResidentMemoryUsage() {
     }
 }
 
-} // namespace
+}  // namespace inviwo

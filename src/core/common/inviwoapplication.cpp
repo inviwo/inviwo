@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/moduleaction.h>
 #include <inviwo/core/datastructures/camerafactory.h>
@@ -56,12 +55,12 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/util/timer.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
@@ -111,6 +110,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , propertyFactory_{util::make_unique<PropertyFactory>()}
     , propertyWidgetFactory_{util::make_unique<PropertyWidgetFactory>()}
     , representationConverterMetaFactory_{util::make_unique<RepresentationConverterMetaFactory>()}
+    , systemSettings_{ std::make_unique<SystemSettings>(this) }
+    , systemCapabilities_{ std::make_unique<SystemCapabilities>() }
     , moduleManager_{this}
     , moudleCallbackActions_()
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
@@ -137,25 +138,15 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         LogCentral::getPtr()->registerLogger(filelogger_);
     }
 
-    init(this);
+    if (!commandLineParser_.getQuitApplicationAfterStartup()) {
+        resizePool(systemSettings_->poolSize_);
+        systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
+    }
 
     // initialize singletons
+    init(this);
     RenderContext::init();
     PickingManager::init();
-
-    // Create and register core
-    auto ivwCore = util::make_unique<InviwoCore>(this);
-    moduleManager_.addProtectedIdentifier(ivwCore->getIdentifier());
-
-    moduleManager_.registerModule(std::move(ivwCore));
-
-    auto sys = getSettingsByType<SystemSettings>();
-    if (sys && !commandLineParser_.getQuitApplicationAfterStartup()) {
-        resizePool(static_cast<size_t>(sys->poolSize_.get()));
-
-        sys->poolSize_.onChange(
-            [this, sys]() { resizePool(static_cast<size_t>(sys->poolSize_.get())); });
-    }
 
     workspaceManager_->registerFactory(getProcessorFactory());
     workspaceManager_->registerFactory(getMetaDataFactory());
@@ -250,15 +241,13 @@ const CommandLineParser& InviwoApplication::getCommandLineParser() const {
 CommandLineParser& InviwoApplication::getCommandLineParser() { return commandLineParser_; }
 
 void InviwoApplication::printApplicationInfo() {
-    auto caps = this->getModuleByType<InviwoCore>()->getCapabilities();
-
     LogInfoCustom("InviwoInfo", "Inviwo Version: " << IVW_VERSION);
-    if (auto syscap = getTypeFromVector<SystemCapabilities>(caps)) {
-        if (syscap->getBuildTimeYear() != 0) {
-            LogInfoCustom("InviwoInfo", "Build Date: " << syscap->getBuildDateString());
-        }
+    if (systemCapabilities_->getBuildTimeYear() != 0) {
+        LogInfoCustom("InviwoInfo", "Build Date: " << systemCapabilities_->getBuildDateString());
     }
     LogInfoCustom("InviwoInfo", "Base Path: " << getBasePath());
+    LogInfoCustom("InviwoInfo", "ThreadPool Worker Threads: " << pool_.getSize());
+
     std::string config = "";
 #ifdef CMAKE_GENERATOR
     config += std::string(CMAKE_GENERATOR);
@@ -268,13 +257,17 @@ void InviwoApplication::printApplicationInfo() {
 #elif defined(CMAKE_INTDIR)
     config += " [" + std::string(CMAKE_INTDIR) + "]";
 #endif
-
-    if (config != "") LogInfoCustom("InviwoInfo", "Config: " << config);
+    if (!config.empty()) {
+        LogInfoCustom("InviwoInfo", "Config: " << config); 
+    }
+    systemCapabilities_->printInfo();
 }
 
 void InviwoApplication::postProgress(std::string progress) {
     if (progressCallback_) progressCallback_(progress);
 }
+
+size_t InviwoApplication::getPoolSize() const { return pool_.getSize(); }
 
 void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
     queue_.postEnqueue = std::move(func);
@@ -290,24 +283,48 @@ std::vector<std::unique_ptr<ModuleCallbackAction>>& InviwoApplication::getCallba
     return moudleCallbackActions_;
 }
 
-std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
+std::vector<Settings*> InviwoApplication::getModuleSettings() {
     std::vector<Settings*> allModuleSettings;
-
-    auto& modules = moduleManager_.getModules();
-    for (size_t i = startIdx; i < modules.size(); i++) {
-        auto modSettings = modules[i]->getSettings();
+    allModuleSettings.push_back(systemSettings_.get());
+    for (auto& module : moduleManager_.getModules()) {
+        auto modSettings = module->getSettings();
         allModuleSettings.insert(allModuleSettings.end(), modSettings.begin(), modSettings.end());
     }
-
     return allModuleSettings;
 }
 
+SystemSettings& InviwoApplication::getSystemSettings() { return *systemSettings_; }
+
+std::vector<Capabilities*> InviwoApplication::getModuleCapabilities() {
+    std::vector<Capabilities*> allModuleCapabilities;
+    allModuleCapabilities.push_back(systemCapabilities_.get());
+    for (auto& module : moduleManager_.getModules()) {
+        auto modCapabilities = module->getCapabilities();
+        allModuleCapabilities.insert(allModuleCapabilities.end(), modCapabilities.begin(),
+                                     modCapabilities.end());
+    }
+    return allModuleCapabilities;
+}
+
+SystemCapabilities& InviwoApplication::getSystemCapabilities() {
+    return *systemCapabilities_;
+}
+
 void InviwoApplication::resizePool(size_t newSize) {
+    if (newSize == pool_.getSize()) return;
     size_t size = pool_.trySetSize(newSize);
     while (size != newSize) {
         size = pool_.trySetSize(newSize);
         processFront();
     }
+}
+
+UsageMode InviwoApplication::getApplicationUsageMode() const {
+    return systemSettings_->applicationUsageMode_;
+}
+
+void InviwoApplication::setApplicationUsageMode(UsageMode mode) {
+    systemSettings_->applicationUsageMode_.set(mode);
 }
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }

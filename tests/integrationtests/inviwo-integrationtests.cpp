@@ -74,11 +74,10 @@ int main(int argc, char** argv) {
 
         // Initialize all modules
         inviwoApp.registerModules(inviwo::getModuleList());
-
+        inviwoApp.resizePool(0);
+        inviwoApp.printApplicationInfo();
         
         auto& cmdparser = inviwoApp.getCommandLineParser();
-
-        inviwoApp.getSettingsByType<SystemSettings>()->poolSize_.set(0);
 
         cmdparser.processCallbacks();  // run any command line callbacks from modules.
 
