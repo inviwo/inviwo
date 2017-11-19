@@ -113,13 +113,13 @@ uniform AlphaSettings alphaSettings;
 
 #define M_PI 3.1415926535897932384626433832795
 
-float smoothPattern(float s, float t, int ls, int lt, int steepness)
+float smoothPattern(float s, float t, int ls, int lt, int steepness, bool hu, bool hv)
 {
     s *= pow(2, -ls);
     t *= pow(2, -lt);
     float c = 1;
-    c *= 1 - pow(0.5f + 0.5f * cos(s * 2 * M_PI), steepness);
-    c *= 1 - pow(0.5f + 0.5f * cos(t * 2 * M_PI), steepness);
+    if (hu) c *= 1 - pow(0.5f + 0.5f * sin(s * 2 * M_PI), steepness);
+    if (hv) c *= 1 - pow(0.5f + 0.5f * sin(t * 2 * M_PI), steepness);
     return c;
 }
 
@@ -176,7 +176,7 @@ vec4 performShading()
 #ifdef ALPHA_NORMAL_VARIATION
         float nv_dzi = dFdxFinest (normal.z);
         float nv_dzj = dFdyFinest (normal.z);
-        float nv_curvature = min(1, nv_dzi*nv_dzi + nv_dzj*nv_dzj);
+        float nv_curvature = min(1, nv_dzi*nv_dzi + nv_dzj*nv_dzj + 0.0000001);
         alpha *= min(1, pow(nv_curvature, alphaSettings.normalExp * 0.5) * 10);
 #endif
 #ifdef ALPHA_DENSITY
@@ -244,20 +244,22 @@ vec4 performShading()
     // HATCHING
     //==================================================
     if (settings.hatchingMode > 0) {
+        bool hu = settings.hatchingMode == 1 || settings.hatchingMode == 3;
+        bool hv = settings.hatchingMode >= 2;
         float stripeStrength = 1;
         vec2 texCoord = frag.texCoord;
         //compute frequencies
         float ls = 0;
-        if (settings.hatchingMode == 1 || settings.hatchingMode == 3) {
+        if (hu) {
             //hatching in u-direction
-            float lambdaS = length(vec2(dFdxFinest(texCoord.x), dFdyFinest(texCoord.x)));
+            float lambdaS = length(vec2(dFdxFinest(texCoord.x), dFdyFinest(texCoord.x))) + 0.00001;
             ls = log(lambdaS) / log(2);
             ls += settings.hatchingFreqU;
         }
         float lt = 0;
-        if (settings.hatchingMode >= 2) {
+        if (hv) {
             //hatching in v-direction
-            float lambdaT = length(vec2(dFdxFinest(texCoord.y), dFdyFinest(texCoord.y)));
+            float lambdaT = length(vec2(dFdxFinest(texCoord.y), dFdyFinest(texCoord.y))) + 0.00001;
             lt = log(lambdaT) / log(2);
             lt += settings.hatchingFreqV;
         }
@@ -268,12 +270,12 @@ vec4 performShading()
         float ltFrac = lt - ltInt;
         stripeStrength = mix(
             mix(
-                smoothPattern(texCoord.x, texCoord.y, lsInt, ltInt, settings.hatchingSteepness),
-                smoothPattern(texCoord.x, texCoord.y, lsInt, ltInt+1, settings.hatchingSteepness),
+                smoothPattern(texCoord.x, texCoord.y, lsInt, ltInt, settings.hatchingSteepness, hu, hv),
+                smoothPattern(texCoord.x, texCoord.y, lsInt, ltInt+1, settings.hatchingSteepness, hu, hv),
                 ltFrac),
             mix(
-                smoothPattern(texCoord.x, texCoord.y, lsInt+1, ltInt, settings.hatchingSteepness),
-                smoothPattern(texCoord.x, texCoord.y, lsInt+1, ltInt+1, settings.hatchingSteepness),
+                smoothPattern(texCoord.x, texCoord.y, lsInt+1, ltInt, settings.hatchingSteepness, hu, hv),
+                smoothPattern(texCoord.x, texCoord.y, lsInt+1, ltInt+1, settings.hatchingSteepness, hu, hv),
                 ltFrac),
             lsFrac);
         //blend into color
