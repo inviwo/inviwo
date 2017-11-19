@@ -34,6 +34,7 @@
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/ports/portinspector.h>
 #include <inviwo/core/ports/portinspectorfactory.h>

@@ -31,6 +31,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/metadata/metadatafactory.h>
 
 namespace inviwo {
 

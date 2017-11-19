@@ -88,7 +88,11 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
+class Property; 
+class PropertyOwner;
 class PropertyPresetManager;
+
+class Processor;
 
 class FileLogger;
 class ConsoleLogger;
@@ -403,7 +407,13 @@ inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() co
 }
 
 namespace util {
+
+IVW_CORE_API InviwoApplication* getInviwoApplication(ProcessorNetwork*);
+IVW_CORE_API InviwoApplication* getInviwoApplication(Processor*);
+IVW_CORE_API InviwoApplication* getInviwoApplication(PropertyOwner*);
+IVW_CORE_API InviwoApplication* getInviwoApplication(Property*);
 IVW_CORE_API InviwoApplication* getInviwoApplication();
+
 }  // namespace util
 
 }  // namespace inviwo

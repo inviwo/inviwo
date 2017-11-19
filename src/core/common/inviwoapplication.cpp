@@ -41,8 +41,11 @@
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portinspectorfactory.h>
 #include <inviwo/core/ports/portinspectormanager.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyfactory.h>
@@ -379,6 +382,22 @@ void InviwoApplication::playSound(Message) {
 namespace util {
 
 InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
+
+InviwoApplication* getInviwoApplication(ProcessorNetwork* network) {
+    return network ? network->getApplication() : nullptr;
+}
+
+InviwoApplication* getInviwoApplication(Processor* processor) {
+    return processor ? getInviwoApplication(processor->getNetwork()) : nullptr;
+}
+
+InviwoApplication* getInviwoApplication(Property* property) {
+    return property ? getInviwoApplication(property->getOwner()) : nullptr;
+}
+
+InviwoApplication* getInviwoApplication(PropertyOwner* owner) {
+    return owner ? getInviwoApplication(owner->getProcessor()) : nullptr;
+}
 
 }  // namespace util
 

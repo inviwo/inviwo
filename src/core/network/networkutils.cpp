@@ -33,6 +33,7 @@
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/workspacemanager.h>
 
 #include <iterator>
 
@@ -201,16 +202,9 @@ std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network, std:
                                                  const std::string& refPath,
                                                  InviwoApplication* app) {
     NetworkLock lock(network);
-
-    Deserializer deserializer(is, refPath);
-    deserializer.registerFactory(app->getProcessorFactory());
-    deserializer.registerFactory(app->getMetaDataFactory());
-    deserializer.registerFactory(app->getPropertyFactory());
-    deserializer.registerFactory(app->getInportFactory());
-    deserializer.registerFactory(app->getOutportFactory());
+    auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(is, refPath);
 
     detail::PartialProcessorNetwork ppc(network);
-
     deserializer.deserialize("ProcessorNetwork", ppc);
 
     return ppc.getAddedProcessors();
