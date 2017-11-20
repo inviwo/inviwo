@@ -72,9 +72,8 @@ InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) 
     }
 
     for (auto& action : actions_) {
-        action.second->setShortcutContext(Qt::ShortcutContext::WidgetWithChildrenShortcut);
+        action.second->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action.second->setEnabled(true);
-        win->addAction(action.second);
         connect(action.second, &QAction::triggered, this, [ this, type = action.first ]() {
             if (auto item = getFocusItem()) {
                 item->invoke(type);
@@ -128,6 +127,11 @@ std::shared_ptr<MenuItem> InviwoEditMenu::getFocusItem() {
 
 std::shared_ptr<MenuItem> InviwoEditMenu::registerItem(std::shared_ptr<MenuItem> item) {
     items_[item->owner] = item;
+    if (auto w = qobject_cast<QWidget*>(item->owner)) {
+        for (auto& action : actions_) {
+            w->addAction(action.second);
+        }      
+    }
     return item;
 }
 
