@@ -48,6 +48,10 @@
 #include <QPdfWriter>
 #include <QImage>
 #include <qmath.h>
+#include <QDropEvent>
+#include <QDragEnterEvent>
+#include <QMimeData>
+#include <QUrl>
 #include <warn/pop>
 
 namespace inviwo {
@@ -68,6 +72,8 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     setCacheMode(QGraphicsView::CacheBackground);
 
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+    setAcceptDrops(true);
 
     loadHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
         [this](Deserializer&) { fitNetwork(); });
@@ -292,5 +298,20 @@ void NetworkEditorView::exportViewToFile(const QString& filename, bool entireSce
 
     networkEditor_->setBackgroundVisible(true);
 }
+
+void NetworkEditorView::dropEvent(QDropEvent* event) {
+    const QMimeData* mimeData = event->mimeData();
+    if (mimeData->hasUrls()) {
+        QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+
+        // pick first url
+        auto filename = urlList.front().toLocalFile();
+        mainwindow_->openWorkspace(filename);
+        event->acceptProposedAction();
+    }
+}
+
+void NetworkEditorView::dragEnterEvent(QDragEnterEvent* event) { event->acceptProposedAction(); }
 
 }  // namespace inviwo

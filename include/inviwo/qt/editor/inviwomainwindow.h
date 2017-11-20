@@ -46,6 +46,9 @@
 
 #include <tclap/CmdLine.h>
 
+class QDropEvent;
+class QDragEnterEvent;
+
 namespace inviwo {
 
 class NetworkEditorView;
@@ -96,6 +99,10 @@ public:
     void saveWorkspaceAsCopy();
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
+
+protected:
+    virtual void dragEnterEvent(QDragEnterEvent* event) override;
+    virtual void dropEvent(QDropEvent* event) override;
 
 private:
     virtual void onModifiedStatusChanged(const bool& newStatus) override;

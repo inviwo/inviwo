@@ -74,9 +74,12 @@
 #include <QUrl>
 #include <QVariant>
 #include <QToolBar>
-#include <algorithm>
+#include <QDropEvent>
+#include <QDragEnterEvent>
 
 #include <warn/pop>
+
+#include <algorithm>
 
 namespace inviwo {
 
@@ -96,6 +99,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , undoManager_(this) {
 
     app_->setMainWindow(this);
+
+    setAcceptDrops(true);
 
     // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
@@ -620,9 +625,9 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
 }
 
 void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWorkspace) {
-    std::string fileName{workspaceFileName.toStdString()};
+    std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
-    workspaceFileName = QString::fromStdString(fileName);
+    workspaceFileName = utilqt::toQString(fileName);
 
     if (!filesystem::fileExists(fileName)) {
         LogError("Could not find workspace file: " << fileName);
@@ -981,5 +986,20 @@ InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_;
 InviwoApplicationQt* InviwoMainWindow::getInviwoApplicationQt() const { return app_; }
 
 InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const { return editMenu_; }
+
+void InviwoMainWindow::dropEvent(QDropEvent* event) {
+    const QMimeData* mimeData = event->mimeData();
+    if (mimeData->hasUrls()) {
+        QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+
+        // pick first url
+        auto filename = urlList.front().toLocalFile();
+        openWorkspace(filename);
+        event->acceptProposedAction();
+    }
+}
+
+void InviwoMainWindow::dragEnterEvent(QDragEnterEvent* event) { event->acceptProposedAction(); }
 
 }  // namespace inviwo
