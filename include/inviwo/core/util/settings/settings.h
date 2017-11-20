@@ -61,6 +61,7 @@ public:
     void save();
 
     virtual std::string getIdentifier();
+    virtual InviwoApplication* getInviwoApplication() override;
 protected:
     std::string getFileName() const;
     std::string identifier_;

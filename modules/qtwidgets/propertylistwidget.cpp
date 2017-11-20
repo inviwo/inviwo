@@ -24,15 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/util/clock.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/processors/processor.h>
@@ -77,8 +75,8 @@ void PropertyListFrame::paintEvent(QPaintEvent*) {
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
-PropertyListWidget::PropertyListWidget(QWidget* parent)
-    : InviwoDockWidget(tr("Properties"), parent) {
+PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
+    : InviwoDockWidget(tr("Properties"), parent), app_{app} {
     setObjectName("ProcessorListWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
@@ -119,7 +117,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent)
 
 PropertyListWidget::~PropertyListWidget() = default;
 
-void PropertyListWidget::addProcessorProperties(Processor* processor) {  
+void PropertyListWidget::addProcessorProperties(Processor* processor) {
     setUpdatesEnabled(false);
     if (auto widget = getPropertiesForProcessor(processor)) {
         widget->show();
@@ -156,24 +154,13 @@ CollapsibleGroupBoxWidgetQt* PropertyListWidget::getPropertiesForProcessor(Proce
 CollapsibleGroupBoxWidgetQt* PropertyListWidget::createPropertiesForProcessor(
     Processor* processor) {
     // create property widget and store it in the map
-    auto widget = new CollapsibleGroupBoxWidgetQt(processor->getDisplayName());
-    widget->setPropertyOwner(processor);
-    widget->setParentPropertyWidget(nullptr, this);
-    widget->setShowIfEmpty(true);
+    auto widget = new CollapsibleGroupBoxWidgetQt(processor);
     widget->hide();
-
     listLayout_->insertWidget(0, widget, 0, Qt::AlignTop);
-
     for (auto prop : processor->getProperties()) {
         widget->addProperty(prop);
-    }   
+    }
     widgetMap_[processor] = widget;
-
-    // add observer for onProcessorIdentifierChange
-    processor->ProcessorObservable::addObserver(widget);
-    // Add the widget as a property owner observer for dynamic property addition and removal
-    processor->PropertyOwnerObservable::addObserver(widget);
-
     return widget;
 }
 
@@ -183,10 +170,10 @@ bool PropertyListWidget::event(QEvent* e) {
         PropertyListEvent* ple = static_cast<PropertyListEvent*>(e);
         ple->accept();
 
-        auto nw = InviwoApplication::getPtr()->getProcessorNetwork();
+        auto nw = app_->getProcessorNetwork();
         Processor* p(nw->getProcessorByIdentifier(ple->processorId_));
         if (!p) return true;
-        
+
         switch (ple->action_) {
             case PropertyListEvent::Action::Add: {
                 addProcessorProperties(p);
@@ -204,6 +191,16 @@ bool PropertyListWidget::event(QEvent* e) {
     }
 }
 
+PropertyListEvent::PropertyListEvent(Action action, std::string processorId)
+    : QEvent(PropertyListEvent::type()), action_(action), processorId_(processorId) {}
+
+QEvent::Type PropertyListEvent::type() {
+    if (PropertyListEventType == QEvent::None) {
+        PropertyListEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
+    }
+    return PropertyListEventType;
+}
+
 QEvent::Type PropertyListEvent::PropertyListEventType = QEvent::None;
 
-}  // namespace
+}  // namespace inviwo

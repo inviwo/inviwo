@@ -58,6 +58,10 @@ std::string Settings::getFileName() const {
     return filesystem::getPath(PathType::Settings, "/" + filename + ".ivs", true);
 }
 
+InviwoApplication* Settings::getInviwoApplication() {
+    return app_;
+}
+
 void Settings::load() {
     util::KeepTrueWhileInScope guard{&isDeserializing_};
     const auto filename = getFileName();

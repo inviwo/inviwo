@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYLISTWIDGET_H
@@ -47,6 +47,7 @@ namespace inviwo {
 
 class CollapsibleGroupBoxWidgetQt;
 class Processor;
+class InviwoApplication;
 
 class IVW_MODULE_QTWIDGETS_API PropertyListFrame : public QWidget {
 public:
@@ -62,18 +63,9 @@ class IVW_MODULE_QTWIDGETS_API PropertyListEvent : public QEvent {
     Q_GADGET
 #include <warn/pop>
 public:
-    enum class Action { Add = 0, Remove = 1};
-
-    PropertyListEvent(Action action, std::string processorId)
-        : QEvent(PropertyListEvent::type()), action_(action), processorId_(processorId) {}
-
-    static QEvent::Type type() {
-        if (PropertyListEventType == QEvent::None) {
-            PropertyListEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
-        }
-        return PropertyListEventType;
-    }
-
+    enum class Action { Add = 0, Remove = 1 };
+    PropertyListEvent(Action action, std::string processorId);
+    static QEvent::Type type();
     Action action_;
     std::string processorId_;
 
@@ -82,23 +74,18 @@ private:
 };
 
 class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
 public:
-    typedef std::unordered_map<Processor*, CollapsibleGroupBoxWidgetQt*> WidgetMap;
+    using WidgetMap = std::unordered_map<Processor*, CollapsibleGroupBoxWidgetQt*>;
 
-    PropertyListWidget(QWidget* parent);
-    ~PropertyListWidget();
+    PropertyListWidget(QWidget* parent, InviwoApplication* app);
+    virtual ~PropertyListWidget();
 
     void addProcessorProperties(Processor* processor);
     void removeProcessorProperties(Processor* processor);
     void removeAndDeleteProcessorProperties(Processor* processor);
 
     // Override QWidget
-    virtual bool event(QEvent* e);
+    virtual bool event(QEvent* e) override;
 
 protected:
     WidgetMap widgetMap_;
@@ -107,11 +94,12 @@ private:
     CollapsibleGroupBoxWidgetQt* getPropertiesForProcessor(Processor* processor);
     CollapsibleGroupBoxWidgetQt* createPropertiesForProcessor(Processor* processor);
 
+    InviwoApplication* app_;
     QVBoxLayout* listLayout_;
     QWidget* listWidget_;
     QScrollArea* scrollArea_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYLISTWIDGET_H

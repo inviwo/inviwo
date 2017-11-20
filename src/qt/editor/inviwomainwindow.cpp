@@ -62,7 +62,7 @@
 
 #include <QScreen>
 #include <QStandardPaths>
-
+#include <QGridLayout>
 #include <QActionGroup>
 #include <QClipboard>
 #include <QDesktopWidget>
@@ -164,7 +164,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     processorTreeWidget_ = new ProcessorTreeWidget(this, helpWidget_);
     addDockWidget(Qt::LeftDockWidgetArea, processorTreeWidget_);
 
-    propertyListWidget_ = new PropertyListWidget(this);
+    propertyListWidget_ = new PropertyListWidget(this, app_);
     addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
 
     addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());

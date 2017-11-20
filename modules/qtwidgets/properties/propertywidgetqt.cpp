@@ -41,8 +41,6 @@
 #include <inviwo/core/common/moduleaction.h>
 #include <inviwo/core/common/inviwomodule.h>
 
-#include <modules/qtwidgets/propertylistwidget.h>
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
@@ -69,7 +67,6 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
     : QWidget()
     , PropertyWidget(property)
     , parent_(nullptr)
-    , baseContainer_(nullptr)
     , maxNumNestedShades_(4)
     , nestedDepth_(0) {
 
@@ -78,7 +75,7 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
         if (auto app = util::getInviwoApplication(property_)) {
             auto& settings = app->getSystemSettings();
             appModeCallback_ = settings.applicationUsageMode_.onChange(
-                [this]() { onSetUsageMode(property_->getUsageMode()); });
+                [this]() { onSetUsageMode(property_, property_->getUsageMode()); });
         }
     }
 
@@ -114,7 +111,7 @@ void PropertyWidgetQt::setVisible(bool visible) {
     if (visible != wasVisible && parent_) parent_->onChildVisibilityChange(this);
 }
 
-void PropertyWidgetQt::onSetVisible(bool visible) { setVisible(visible); }
+void PropertyWidgetQt::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
 void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* /*child*/) {
     if (property_) {
@@ -124,15 +121,11 @@ void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* /*child*/) {
 
 void PropertyWidgetQt::setReadOnly(bool readonly) { setDisabled(readonly); }
 
-void PropertyWidgetQt::onSetUsageMode(UsageMode /*usageMode*/) {
+void PropertyWidgetQt::onSetUsageMode(Property*, UsageMode) {
     setVisible(property_->getVisible());
 }
 
-void PropertyWidgetQt::onSetReadOnly(bool readonly) { setReadOnly(readonly); }
-
-void PropertyWidgetQt::onSetSemantics(const PropertySemantics& /*semantics*/) {
-    emit updateSemantics(this);
-}
+void PropertyWidgetQt::onSetReadOnly(Property*, bool readonly) { setReadOnly(readonly); }
 
 std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
     std::unique_ptr<QMenu> menu = std::make_unique<QMenu>();
@@ -458,11 +451,8 @@ int PropertyWidgetQt::getNestedDepth() const { return nestedDepth_; }
 
 PropertyWidgetQt* PropertyWidgetQt::getParentPropertyWidget() const { return parent_; }
 
-InviwoDockWidget* PropertyWidgetQt::getBaseContainer() const { return baseContainer_; }
-
-void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent, InviwoDockWidget* widget) {
+void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent) {
     parent_ = parent;
-    baseContainer_ = widget;
 }
 
 void PropertyWidgetQt::paintEvent(QPaintEvent*) {

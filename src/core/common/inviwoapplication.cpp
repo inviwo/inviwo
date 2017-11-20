@@ -113,8 +113,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , propertyFactory_{util::make_unique<PropertyFactory>()}
     , propertyWidgetFactory_{util::make_unique<PropertyWidgetFactory>()}
     , representationConverterMetaFactory_{util::make_unique<RepresentationConverterMetaFactory>()}
-    , systemSettings_{ std::make_unique<SystemSettings>(this) }
-    , systemCapabilities_{ std::make_unique<SystemCapabilities>() }
+    , systemSettings_{std::make_unique<SystemSettings>(this)}
+    , systemCapabilities_{std::make_unique<SystemCapabilities>()}
     , moduleManager_{this}
     , moudleCallbackActions_()
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
@@ -141,6 +141,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         LogCentral::getPtr()->registerLogger(filelogger_);
     }
 
+    // Keep the pool at size 0 if are quiting directly to make sure that we don't have unfinished
+    // results in the worker threads
     if (!commandLineParser_.getQuitApplicationAfterStartup()) {
         resizePool(systemSettings_->poolSize_);
         systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
@@ -261,7 +263,7 @@ void InviwoApplication::printApplicationInfo() {
     config += " [" + std::string(CMAKE_INTDIR) + "]";
 #endif
     if (!config.empty()) {
-        LogInfoCustom("InviwoInfo", "Config: " << config); 
+        LogInfoCustom("InviwoInfo", "Config: " << config);
     }
     systemCapabilities_->printInfo();
 }
@@ -309,9 +311,7 @@ std::vector<Capabilities*> InviwoApplication::getModuleCapabilities() {
     return allModuleCapabilities;
 }
 
-SystemCapabilities& InviwoApplication::getSystemCapabilities() {
-    return *systemCapabilities_;
-}
+SystemCapabilities& InviwoApplication::getSystemCapabilities() { return *systemCapabilities_; }
 
 void InviwoApplication::resizePool(size_t newSize) {
     if (newSize == pool_.getSize()) return;
@@ -396,7 +396,7 @@ InviwoApplication* getInviwoApplication(Property* property) {
 }
 
 InviwoApplication* getInviwoApplication(PropertyOwner* owner) {
-    return owner ? getInviwoApplication(owner->getProcessor()) : nullptr;
+    return owner ? owner->getInviwoApplication() : nullptr;
 }
 
 }  // namespace util

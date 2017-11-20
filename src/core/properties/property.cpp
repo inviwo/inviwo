@@ -99,7 +99,7 @@ void Property::setIdentifier(const std::string& identifier) {
 
         util::validateIdentifier(identifier, "Property", IvwContext);
 
-        notifyObserversOnSetIdentifier(identifier_);
+        notifyObserversOnSetIdentifier(this, identifier_);
         notifyAboutChange();
     }
 }
@@ -117,7 +117,7 @@ std::string Property::getDisplayName() const { return displayName_; }
 void Property::setDisplayName(const std::string& displayName) {
     if (displayName_ != displayName) {
         displayName_ = displayName;
-        notifyObserversOnSetDisplayName(displayName_);
+        notifyObserversOnSetDisplayName(this, displayName_);
         notifyAboutChange();
     }
 }
@@ -127,7 +127,7 @@ PropertySemantics Property::getSemantics() const { return semantics_; }
 void Property::setSemantics(const PropertySemantics& semantics) {
     if (semantics_ != semantics) {
         semantics_ = semantics;
-        notifyObserversOnSetSemantics(semantics_);
+        notifyObserversOnSetSemantics(this, semantics_);
         notifyAboutChange();
     }
 }
@@ -138,7 +138,7 @@ bool Property::getReadOnly() const { return readOnly_; }
 void Property::setReadOnly(bool readOnly) {
     if (readOnly_ != readOnly) {
         readOnly_ = readOnly;
-        notifyObserversOnSetReadOnly(readOnly_);
+        notifyObserversOnSetReadOnly(this, readOnly_);
         notifyAboutChange();
     }
 }
@@ -227,15 +227,26 @@ void Property::deserialize(Deserializer& d) {
     {
         auto old = identifier_;
         d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
-        if (old != identifier_) notifyObserversOnSetIdentifier(identifier_);
+        if (old != identifier_) {
+            notifyObserversOnSetIdentifier(this, identifier_);
+        }
     }
 
-    if (displayName_.deserialize(d, serializationMode_))
-        notifyObserversOnSetDisplayName(displayName_);
-    if (semantics_.deserialize(d, serializationMode_)) notifyObserversOnSetSemantics(semantics_);
-    if (usageMode_.deserialize(d, serializationMode_)) notifyObserversOnSetUsageMode(usageMode_);
-    if (visible_.deserialize(d, serializationMode_)) notifyObserversOnSetVisible(visible_);
-    if (readOnly_.deserialize(d, serializationMode_)) notifyObserversOnSetReadOnly(readOnly_);
+    if (displayName_.deserialize(d, serializationMode_)) {
+        notifyObserversOnSetDisplayName(this, displayName_);
+    }
+    if (semantics_.deserialize(d, serializationMode_)) {
+        notifyObserversOnSetSemantics(this, semantics_);
+    }
+    if (usageMode_.deserialize(d, serializationMode_)) {
+        notifyObserversOnSetUsageMode(this, usageMode_);
+    }
+    if (visible_.deserialize(d, serializationMode_)) {
+        notifyObserversOnSetVisible(this, visible_);
+    }
+    if (readOnly_.deserialize(d, serializationMode_)) {
+        notifyObserversOnSetReadOnly(this, readOnly_);
+    }
 
     MetaDataOwner::deserialize(d);
 }
@@ -244,7 +255,7 @@ inviwo::UsageMode Property::getUsageMode() const { return usageMode_; }
 void Property::setUsageMode(UsageMode usageMode) {
     if (usageMode_ != usageMode) {
         usageMode_ = usageMode;
-        notifyObserversOnSetUsageMode(usageMode_);
+        notifyObserversOnSetUsageMode(this, usageMode_);
         notifyAboutChange();
     }
 }
@@ -253,7 +264,7 @@ bool Property::getVisible() { return visible_; }
 void Property::setVisible(bool visible) {
     if (visible_ != visible) {
         visible_ = visible;
-        notifyObserversOnSetVisible(visible_);
+        notifyObserversOnSetVisible(this, visible_);
         notifyAboutChange();
     }
 }

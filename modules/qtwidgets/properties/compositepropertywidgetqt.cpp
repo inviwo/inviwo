@@ -38,13 +38,8 @@ CompositePropertyWidgetQt::CompositePropertyWidgetQt(CompositeProperty* property
     : CollapsibleGroupBoxWidgetQt(property)
     , compProperty_(property) {
     
-    setPropertyOwner(property);
-    compProperty_->PropertyOwnerObservable::addObserver(this);
     compProperty_->CompositePropertyObservable::addObserver(this);
 }                           
-
-void CompositePropertyWidgetQt::updateFromProperty() {
-}
 
 void CompositePropertyWidgetQt::setCollapsed(bool value) {
     compProperty_->setCollapsed(value);
