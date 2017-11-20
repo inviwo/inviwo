@@ -46,16 +46,23 @@ class QCheckBox;
 namespace inviwo {
 
 class Property;
+class CompositeProperty;
 class PropertyOwner;
 class EditableLabelQt;
+class Processor;
+class Settings;
 
 class IVW_MODULE_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
                                                              public PropertyOwnerObserver,
                                                              public ProcessorObserver {
 
 public:
-    CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable = false);
-    CollapsibleGroupBoxWidgetQt(std::string displayName = "", bool isCheckable = false);
+    CollapsibleGroupBoxWidgetQt(CompositeProperty* property, bool isCheckable = false);
+    CollapsibleGroupBoxWidgetQt(Processor* property, bool isCheckable = false);
+    CollapsibleGroupBoxWidgetQt(Settings* property, bool isCheckable = false);
+    CollapsibleGroupBoxWidgetQt(Property* property, PropertyOwner* owner, const std::string& displayName = "",
+                                bool isCheckable = false);
+
     virtual std::string getDisplayName() const;
     virtual void setDisplayName(const std::string& displayName);
 
@@ -74,17 +81,6 @@ public:
     bool isCheckable() const;
     void setCheckable(bool checkable);
 
-    // Overridden from PropertyWidget
-    virtual void updateFromProperty() override {}
-
-    // Overridden from PropertyOwnerObserver to add and remove properties dynamically
-    virtual void onDidAddProperty(Property* property, size_t index) override;
-    virtual void onWillRemoveProperty(Property* property, size_t index) override;
-
-    // Override ProcessorObserver
-    void onProcessorDisplayNameChanged(Processor* processor,
-                                       const std::string& oldIdentifier) override;
-
     // Overridden from PropertyWidgetQt/QWidget
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
@@ -95,12 +91,26 @@ public:
     virtual std::unique_ptr<QMenu> getContextMenu() override;
 
 protected:
-    void updatePropertyWidgetSemantics(PropertyWidgetQt*);
+    // Overridden from PropertyWidget
+    virtual void updateFromProperty() override;
+
+    // Overridden from PropertyOwnerObserver to add and remove properties dynamically
+    virtual void onDidAddProperty(Property* property, size_t index) override;
+    virtual void onWillRemoveProperty(Property* property, size_t index) override;
+
+    // Override ProcessorObserver
+    void onProcessorDisplayNameChanged(Processor* processor,
+                                       const std::string& oldIdentifier) override;
+
+    // PropertyObservable overrides
+    virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
+    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
+
     virtual void setVisible(bool visible) override;
     virtual void setCollapsed(bool value);
     virtual void setChecked(bool checked);
-
-    void generateWidget();
 
     std::string displayName_;
     bool collapsed_;
@@ -110,6 +120,7 @@ protected:
 
     std::vector<Property*> properties_;
     std::vector<PropertyWidgetQt*> propertyWidgets_;
+    std::vector<std::unique_ptr<PropertyWidgetQt>> oldWidgets_;
 
 private:
     QToolButton* btnCollapse_;

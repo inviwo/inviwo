@@ -75,7 +75,7 @@ public:
 
 protected:
     virtual void closeEvent(QCloseEvent*) override;
-    virtual void onSetDisplayName(const std::string& displayName) override {
+    virtual void onSetDisplayName(Property*, const std::string& displayName) override {
         QDockWidget::setWindowTitle(QString::fromStdString(displayName));
     }
 

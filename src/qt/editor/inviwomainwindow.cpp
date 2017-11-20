@@ -62,7 +62,7 @@
 
 #include <QScreen>
 #include <QStandardPaths>
-
+#include <QGridLayout>
 #include <QActionGroup>
 #include <QClipboard>
 #include <QDesktopWidget>
@@ -84,7 +84,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
     , networkEditor_(nullptr)
-    , appUsageModeProp_(nullptr)
     , snapshotArg_("s", "snapshot",
                    "Specify base name of each snapshot, or \"UPN\" string for processor name.",
                    false, "", "file name")
@@ -165,7 +164,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     processorTreeWidget_ = new ProcessorTreeWidget(this, helpWidget_);
     addDockWidget(Qt::LeftDockWidgetArea, processorTreeWidget_);
 
-    propertyListWidget_ = new PropertyListWidget(this);
+    propertyListWidget_ = new PropertyListWidget(this, app_);
     addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
 
     addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());
@@ -494,25 +493,18 @@ void InviwoMainWindow::addActions() {
         visibilityModeAction_ = new QAction(visibilityModeIcon, tr("&Application Mode"), this);
         visibilityModeAction_->setCheckable(true);
         visibilityModeAction_->setChecked(false);
-
         viewMenuItem->addAction(visibilityModeAction_);
         viewModeToolBar->addAction(visibilityModeAction_);
-
-        appUsageModeProp_ = &app_->getSettingsByType<SystemSettings>()->applicationUsageMode_;
-
-        appUsageModeProp_->onChange([&]() { visibilityModeChangedInSettings(); });
-
         connect(visibilityModeAction_, &QAction::triggered, [&](bool appView) {
-            auto selectedIdx = appUsageModeProp_->getSelectedValue();
             if (appView) {
-                if (selectedIdx != UsageMode::Application)
-                    appUsageModeProp_->setSelectedValue(UsageMode::Application);
+                app_->setApplicationUsageMode(UsageMode::Application);
             } else {
-                if (selectedIdx != UsageMode::Development)
-                    appUsageModeProp_->setSelectedValue(UsageMode::Development);
+                app_->setApplicationUsageMode(UsageMode::Development);
             }
         });
 
+        auto& appUsageModeProp_ = app_->getSystemSettings().applicationUsageMode_;
+        appUsageModeProp_.onChange([this]() { visibilityModeChangedInSettings(); });
         visibilityModeChangedInSettings();
     }
 
@@ -776,10 +768,8 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
 
 void InviwoMainWindow::showAboutBox() {
-    auto caps = app_->getModuleByType<InviwoCore>()->getCapabilities();
-    auto syscap = getTypeFromVector<SystemCapabilities>(caps);
-
-    const int buildYear = (syscap ? syscap->getBuildTimeYear() : 0);
+    auto& syscap = app_->getSystemCapabilities();
+    const int buildYear = syscap.getBuildTimeYear();
 
     std::stringstream aboutText;
     aboutText << "<html><head>\n"
@@ -807,18 +797,18 @@ void InviwoMainWindow::showAboutBox() {
 
               << "<p><b>Former Developers:</b><br>\n"
               << "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
-              << "Hans-Christian Helltegen, Viktor Axelsson</p>\n";
-    if (syscap) {
-        aboutText << "<p><b>Build Date: </b>\n" << syscap->getBuildDateString() << "</p>\n";
-        aboutText << "<p><b>Repos:</b>\n"
-                  << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
-        for (size_t i = 0; i < syscap->getGitNumberOfHashes(); ++i) {
-            auto item = syscap->getGitHash(i);
-            aboutText << "<tr><td style='padding-right:8px;'>" << item.first
-                      << "</td><td style='padding-right:8px;'>" << item.second << "</td></tr>\n";
-        }
-        aboutText << "</table></p>\n";
+              << "Hans-Christian Helltegen, Viktor Axelsson</p>\n"
+
+              << "<p><b>Build Date: </b>\n" << syscap.getBuildDateString() << "</p>\n"
+              << "<p><b>Repos:</b>\n"
+              << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
+    for (size_t i = 0; i < syscap.getGitNumberOfHashes(); ++i) {
+        auto item = syscap.getGitHash(i);
+        aboutText << "<tr><td style='padding-right:8px;'>" << item.first
+                  << "</td><td style='padding-right:8px;'>" << item.second << "</td></tr>\n";
     }
+    aboutText << "</table></p>\n";
+
     const auto& mfos = app_->getModuleManager().getModuleFactoryObjects();
     auto names = util::transform(
         mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name; });
@@ -841,41 +831,38 @@ void InviwoMainWindow::showAboutBox() {
 }
 
 void InviwoMainWindow::visibilityModeChangedInSettings() {
-    if (appUsageModeProp_) {
-        auto network = getInviwoApplication()->getProcessorNetwork();
-        switch (appUsageModeProp_->getSelectedValue()) {
-            case UsageMode::Development: {
-                for (auto& p : network->getProcessors()) {
-                    auto md =
-                        p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-                    if (md->isSelected()) {
-                        propertyListWidget_->addProcessorProperties(p);
-                    } else {
-                        propertyListWidget_->removeProcessorProperties(p);
-                    }
-                }
-
-                if (visibilityModeAction_->isChecked()) {
-                    visibilityModeAction_->setChecked(false);
-                }
-                networkEditorView_->hideNetwork(false);
-                break;
-            }
-            case UsageMode::Application: {
-                if (!visibilityModeAction_->isChecked()) {
-                    visibilityModeAction_->setChecked(true);
-                }
-                networkEditorView_->hideNetwork(true);
-
-                for (auto& p : network->getProcessors()) {
+    auto network = app_->getProcessorNetwork();
+    switch (app_->getApplicationUsageMode()) {
+        case UsageMode::Development: {
+            for (auto& p : network->getProcessors()) {
+                auto md = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                if (md->isSelected()) {
                     propertyListWidget_->addProcessorProperties(p);
+                } else {
+                    propertyListWidget_->removeProcessorProperties(p);
                 }
-                break;
             }
-        }
 
-        updateWindowTitle();
+            if (visibilityModeAction_->isChecked()) {
+                visibilityModeAction_->setChecked(false);
+            }
+            networkEditorView_->hideNetwork(false);
+            break;
+        }
+        case UsageMode::Application: {
+            if (!visibilityModeAction_->isChecked()) {
+                visibilityModeAction_->setChecked(true);
+            }
+            networkEditorView_->hideNetwork(true);
+
+            for (auto& p : network->getProcessors()) {
+                propertyListWidget_->addProcessorProperties(p);
+            }
+            break;
+        }
     }
+
+    updateWindowTitle();
 }
 
 NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_.get(); }

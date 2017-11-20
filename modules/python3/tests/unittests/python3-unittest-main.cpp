@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/common/inviwocore.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,6 +54,7 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->setLogLevel(LogLevel::Error);
     LogCentral::getPtr()->registerLogger(logger);
     InviwoApplication app(argc, argv, "inviwo");
+    app.getModuleManager().registerModule(std::make_unique<InviwoCore>(&app));
     app.getModuleManager().registerModule(std::make_unique<Python3Module>(&app));
 
 

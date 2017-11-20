@@ -30,7 +30,10 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -51,37 +54,38 @@
 
 namespace inviwo {
 
-CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName, bool isCheckable)
-    : PropertyWidgetQt()
+CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(CompositeProperty* property,
+                                                         bool isCheckable)
+    : CollapsibleGroupBoxWidgetQt(property, property, property->getDisplayName(), isCheckable) {
+}
+
+CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Processor* processor, bool isCheckable)
+    : CollapsibleGroupBoxWidgetQt(nullptr, processor, processor->getDisplayName(), isCheckable) {
+
+    // add observer for onProcessorIdentifierChange
+    processor->ProcessorObservable::addObserver(this);
+    setShowIfEmpty(true);
+}
+
+CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Settings* settings, bool isCheckable)
+    : CollapsibleGroupBoxWidgetQt(nullptr, settings, settings->getIdentifier(), isCheckable) {}
+
+CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, PropertyOwner* owner,
+                                                         const std::string& displayName,
+                                                         bool isCheckable)
+    : PropertyWidgetQt(property)
     , PropertyOwnerObserver()
     , displayName_(displayName)
     , collapsed_(false)
     , checked_(false)
-    , propertyOwner_(nullptr)
+    , propertyOwner_(owner)
     , showIfEmpty_(false)
     , checkable_(isCheckable) {
     setObjectName("CompositeWidget");
 
-    generateWidget();
-    updateFromProperty();
-}
+    // Add the widget as a property owner observer for dynamic property addition and removal
+    owner->addObserver(this);
 
-CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable)
-    : PropertyWidgetQt(property)
-    , PropertyOwnerObserver()
-    , displayName_(property->getDisplayName())
-    , collapsed_(false)
-    , checked_(false)
-    , propertyOwner_(nullptr)
-    , showIfEmpty_(false)
-    , checkable_(isCheckable) {
-    setObjectName("CompositeWidget");
-
-    generateWidget();
-    updateFromProperty();
-}
-
-void CollapsibleGroupBoxWidgetQt::generateWidget() {
     propertyWidgetGroupLayout_ = new QGridLayout();
     propertyWidgetGroupLayout_->setAlignment(Qt::AlignTop);
     propertyWidgetGroupLayout_->setContentsMargins(
@@ -162,6 +166,8 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     this->setContentsMargins(margin, margin, margin, margin);
 
     this->setLayout(layout);
+
+    updateFromProperty();
 }
 
 std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
@@ -200,6 +206,7 @@ void CollapsibleGroupBoxWidgetQt::setReadOnly(bool readonly) {
 
 void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
     properties_.push_back(prop);
+    PropertyObserver::addObservation(prop);
 
     auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
     if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
@@ -216,10 +223,8 @@ void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
         }
 
         propertyWidgets_.push_back(propertyWidget);
-        connect(propertyWidget, &PropertyWidgetQt::updateSemantics, this,
-                &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
 
-        propertyWidget->setParentPropertyWidget(this, getBaseContainer());
+        propertyWidget->setParentPropertyWidget(this);
         propertyWidget->initState();
 
     } else {
@@ -292,50 +297,15 @@ void CollapsibleGroupBoxWidgetQt::setCollapsed(bool collapse) {
     setUpdatesEnabled(true);
 }
 
-void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
-    setUpdatesEnabled(false);
-    Property* prop = widget->getProperty();
-
-    auto pit = std::find(properties_.begin(), properties_.end(), prop);
-    auto wit = std::find(propertyWidgets_.begin(), propertyWidgets_.end(), widget);
-
-    if (pit != properties_.end() && wit != propertyWidgets_.end()) {
-        auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
-        if (auto newWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-            propertyWidgetGroupLayout_->replaceWidget(widget, newWidget,
-                                                      Qt::FindDirectChildrenOnly);
-#else
-            int layoutPosition = propertyWidgetGroupLayout_->indexOf(widget);
-            propertyWidgetGroupLayout_->removeWidget(widget);
-            propertyWidgetGroupLayout_->addWidget(newWidget, layoutPosition, 0);
-#endif  // QT_VERSION >= 5.2
-            delete widget;
-
-            // Replace the item in propertyWidgets_;
-            *wit = newWidget;
-
-            connect(newWidget, &PropertyWidgetQt::updateSemantics, this,
-                    &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
-
-            newWidget->setNestedDepth(this->getNestedDepth());
-            newWidget->setParentPropertyWidget(this, getBaseContainer());
-            newWidget->initState();
-
-        } else {
-            LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());
-        }
-    }
-    setUpdatesEnabled(true);
-}
+void CollapsibleGroupBoxWidgetQt::updateFromProperty() { oldWidgets_.clear(); }
 
 void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index) {
     setUpdatesEnabled(false);
-    std::vector<Property*>::iterator insertPoint = properties_.begin() + index;
+    auto insertPoint = properties_.begin() + index;
     if (insertPoint != properties_.end()) ++insertPoint;
 
     properties_.insert(insertPoint, prop);
+    PropertyObserver::addObservation(prop);
 
     auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
     if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
@@ -356,10 +326,8 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
         if (widgetInsertPoint != propertyWidgets_.end()) ++widgetInsertPoint;
 
         propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
-        connect(propertyWidget, &PropertyWidgetQt::updateSemantics, this,
-                &CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics);
 
-        propertyWidget->setParentPropertyWidget(this, getBaseContainer());
+        propertyWidget->setParentPropertyWidget(this);
         propertyWidget->initState();
 
     } else {
@@ -378,9 +346,59 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
 }
 
 void CollapsibleGroupBoxWidgetQt::onProcessorDisplayNameChanged(Processor* processor,
-                                                               const std::string&) {
+                                                                const std::string&) {
     displayName_ = processor->getDisplayName();
     label_->setText(displayName_);
+}
+
+void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertySemantics&) {
+    auto app = util::getInviwoApplication(prop);
+    if (!app) return;
+    auto factory = app->getPropertyWidgetFactory();
+
+    setUpdatesEnabled(false);
+
+    auto pit = std::find(properties_.begin(), properties_.end(), prop);
+    auto wit = std::find_if(propertyWidgets_.begin(), propertyWidgets_.end(),
+                            [&](auto w) { return w->getProperty() == prop; });
+
+    if (pit != properties_.end() && wit != propertyWidgets_.end()) {
+        if (auto newWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
+            propertyWidgetGroupLayout_->replaceWidget(*wit, newWidget, Qt::FindDirectChildrenOnly);
+
+            oldWidgets_.emplace_back(*wit);
+            prop->deregisterWidget(*wit);
+            (*wit)->setParent(nullptr);
+            // Replace the item in propertyWidgets_;
+            *wit = newWidget;
+
+            newWidget->setNestedDepth(this->getNestedDepth());
+            newWidget->setParentPropertyWidget(this);
+            newWidget->initState();
+
+        } else {
+            LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());
+        }
+    }
+    setUpdatesEnabled(true);
+}
+
+void CollapsibleGroupBoxWidgetQt::onSetReadOnly(Property* property, bool readonly) {
+    if (property == property_) {
+        PropertyWidgetQt::onSetReadOnly(property, readonly);
+    }
+}
+
+void CollapsibleGroupBoxWidgetQt::onSetVisible(Property* property, bool visible) {
+    if (property == property_) {
+        PropertyWidgetQt::onSetVisible(property, visible);
+    }
+}
+
+void CollapsibleGroupBoxWidgetQt::onSetUsageMode(Property* property, UsageMode usageMode) {
+    if (property == property_) {
+        PropertyWidgetQt::onSetUsageMode(property, usageMode);
+    }
 }
 
 void CollapsibleGroupBoxWidgetQt::setPropertyOwner(PropertyOwner* propertyOwner) {

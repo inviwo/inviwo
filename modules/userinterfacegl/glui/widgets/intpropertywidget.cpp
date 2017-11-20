@@ -64,9 +64,9 @@ void IntPropertyWidget::updateFromProperty() {
     set(property_->get(), property_->getMinValue(), property_->getMaxValue());
 }
 
-void IntPropertyWidget::onSetVisible(bool visible) { setVisible(visible); }
+void IntPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void IntPropertyWidget::onSetDisplayName(const std::string &displayName) {
+void IntPropertyWidget::onSetDisplayName(Property*, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }

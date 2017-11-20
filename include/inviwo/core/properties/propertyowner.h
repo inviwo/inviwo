@@ -42,6 +42,7 @@ class Processor;
 class Event;
 class EventProperty;
 class CompositeProperty;
+class InviwoApplication;
 
 class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
                                    public Serializable,
@@ -100,6 +101,7 @@ public:
 
     virtual void invokeEvent(Event* event) override;
 
+    virtual InviwoApplication* getInviwoApplication();
 protected:
     // Add the properties belonging the the property owner
     // PropertyOwner do not assume owner ship here since in the most common case these are

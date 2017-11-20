@@ -42,9 +42,11 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/properties/propertyvisibility.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -79,11 +81,18 @@ class PortInspectorFactory;
 class PortInspectorManager;
 
 class Settings;
+class SystemSettings;
+class Capabilities;
+class SystemCapabilities;
 class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
+class Property; 
+class PropertyOwner;
 class PropertyPresetManager;
+
+class Processor;
 
 class FileLogger;
 class ConsoleLogger;
@@ -156,27 +165,54 @@ public:
     PropertyPresetManager* getPropertyPresetManager();
     PortInspectorManager* getPortInspectorManager();
 
-    template <class T>
-    T* getSettingsByType();
-
     CommandLineParser& getCommandLineParser();
     const CommandLineParser& getCommandLineParser() const;
 
     virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
     virtual std::vector<std::unique_ptr<ModuleCallbackAction>>& getCallbackActions();
-    std::vector<Settings*> getModuleSettings(size_t startIdx = 0);
+
+    /**
+     * Retrieve all Settings from all modules, and the system settings
+     * @see Settings
+     * @see InviwoModule
+     */
+    std::vector<Settings*> getModuleSettings();
+    SystemSettings& getSystemSettings();
+    template <class T>
+    T* getSettingsByType();
+
+    /**
+     * Retrieve all Capabilities from all modules, and the system capabilities
+     * @see Capabilities
+     * @see InviwoModule
+     */
+    std::vector<Capabilities*> getModuleCapabilities();
+    SystemCapabilities& getSystemCapabilities();
+    template <class T>
+    T* getCapabilitiesByType();
 
     virtual std::locale getUILocale() const;
 
     template <class F, class... Args>
-    auto dispatchPool(F&& f,
-                      Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
+    auto dispatchPool(F&& f, Args&&... args)
+        -> std::future<typename std::result_of<F(Args...)>::type>;
 
     template <class F, class... Args>
-    auto dispatchFront(F&& f,
-                       Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
+    auto dispatchFront(F&& f, Args&&... args)
+        -> std::future<typename std::result_of<F(Args...)>::type>;
 
     virtual void processFront();
+
+    /**
+     * Get the current number of worker threads in the thread pool
+     */
+    size_t getPoolSize() const;
+
+    /**
+     * Set the number of worker threads in the thread pool. This will block for working threads to
+     * finish
+     */
+    virtual void resizePool(size_t newSize);
 
     void waitForPool();
     void setPostEnqueueFront(std::function<void()> func);
@@ -217,9 +253,17 @@ public:
     virtual void printApplicationInfo();
     void postProgress(std::string progress);
 
-protected:
-    virtual void resizePool(size_t newSize);
+    /**
+     * Convenience method to get the current ApplicationUsageMode from the system settings
+     */
+    UsageMode getApplicationUsageMode() const;
 
+    /**
+     * Convenience method to set the current ApplicationUsageMode in the system settings
+     */
+    void setApplicationUsageMode(UsageMode mode);
+
+protected:
     struct Queue {
         // Task queue
         std::queue<std::function<void()>> tasks;
@@ -234,7 +278,6 @@ protected:
     std::shared_ptr<FileLogger> filelogger_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::function<void(std::string)> progressCallback_;
-
 
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
@@ -258,6 +301,8 @@ protected:
     std::unique_ptr<PropertyFactory> propertyFactory_;
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
+    std::unique_ptr<SystemSettings> systemSettings_;
+    std::unique_ptr<SystemCapabilities> systemCapabilities_;
     ModuleManager moduleManager_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
@@ -276,15 +321,56 @@ protected:
     std::unique_ptr<TimerThread> timerThread_;
 };
 
+template <class F, class... Args>
+auto dispatchFront(F&& f, Args&&... args)
+-> std::future<typename std::result_of<F(Args...)>::type> {
+    return InviwoApplication::getPtr()->dispatchFront(std::forward<F>(f),
+                                                      std::forward<Args>(args)...);
+}
+template <class F, class... Args>
+auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
+    return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),
+                                                     std::forward<Args>(args)...);
+}
+
+namespace util {
+
+/**
+ * Utility function to get the InviwoApplication from a ProcessorNetwork
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication(ProcessorNetwork*);
+/**
+ * Utility function to get the InviwoApplication from a Processor
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication(Processor*);
+/**
+ * Utility function to get the InviwoApplication from a PropertyOwner
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication(PropertyOwner*);
+/**
+ * Utility function to get the InviwoApplication from a Property
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication(Property*);
+/**
+ * Utility function to get the InviwoApplication
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication();
+
+}  // namespace util
+
 template <class T>
 T* InviwoApplication::getSettingsByType() {
-    auto settings = getModuleSettings();
-    return getTypeFromVector<T>(settings);
+    return getTypeFromVector<T>(getModuleSettings());
 }
 
 template <class T>
 T* InviwoApplication::getModuleByType() const {
     return moduleManager_.getModuleByType<T>();
+}
+
+template <class T>
+T* InviwoApplication::getCapabilitiesByType() {
+     return getTypeFromVector<T>(getModuleCapabilities());
 }
 
 template <class F, class... Args>
@@ -310,21 +396,8 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     if (queue_.postEnqueue) queue_.postEnqueue();
     return res;
 }
-template <class F, class... Args>
-auto dispatchFront(F&& f,
-                   Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
-    return InviwoApplication::getPtr()->dispatchFront(std::forward<F>(f),
-                                                      std::forward<Args>(args)...);
-}
-template <class F, class... Args>
-auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
-    return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),
-                                                     std::forward<Args>(args)...);
-}
 
-inline CameraFactory* InviwoApplication::getCameraFactory() const {
-    return cameraFactory_.get();
-}
+inline CameraFactory* InviwoApplication::getCameraFactory() const { return cameraFactory_.get(); }
 
 inline DataReaderFactory* InviwoApplication::getDataReaderFactory() const {
     return dataReaderFactory_.get();
@@ -384,10 +457,6 @@ InviwoApplication::getRepresentationConverterMetaFactory() const {
 inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() const {
     return processorWidgetFactory_.get();
 }
-
-namespace util {
-IVW_CORE_API InviwoApplication* getInviwoApplication();
-}  // namespace util
 
 }  // namespace inviwo
 

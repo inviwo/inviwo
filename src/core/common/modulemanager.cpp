@@ -29,6 +29,7 @@
 
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/version.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -70,19 +71,28 @@ ModuleManager::ModuleManager(InviwoApplication* app)
 ModuleManager::~ModuleManager() = default;
 
 bool ModuleManager::isRuntimeModuleReloadingEnabled() {
-    if (auto sys = app_->getSettingsByType<SystemSettings>()) {
-        return sys->runtimeModuleReloading_.get();
-    }
-    return false;
+    return app_->getSystemSettings().runtimeModuleReloading_;
 }
 
 void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo) {
-    app_->printApplicationInfo();
     factoryObjects_.insert(factoryObjects_.end(), std::make_move_iterator(mfo.begin()),
                            std::make_move_iterator(mfo.end()));
 
     // Topological sort to make sure that we load modules in correct order
     topologicalModuleFactoryObjectSort(std::begin(factoryObjects_), std::end(factoryObjects_));
+
+    // Add core first
+    factoryObjects_.emplace(factoryObjects_.begin(),
+                            new InviwoModuleFactoryObjectTemplate<InviwoCore>(
+                                "Core",              // Module name
+                                "1.0.0",             // Module version
+                                "",                  // Description
+                                IVW_VERSION,         // Inviwo core version when built
+                                {},                  // Dependencies
+                                {},                  // Version number of dependencies
+                                {},                  // List of aliases
+                                ProtectedModule::on  // protected
+                                ));
 
     for (auto& obj : factoryObjects_) {
         app_->postProgress("Loading module: " + obj->name);

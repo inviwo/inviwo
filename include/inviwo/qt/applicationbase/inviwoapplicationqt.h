@@ -95,9 +95,8 @@ public:
     
     virtual bool notify(QObject *receiver, QEvent *e) override;
     void setUndoTrigger(std::function<void()> func);
-protected:
-    virtual void printApplicationInfo() override;
     virtual void resizePool(size_t newSize) override;
+    virtual void printApplicationInfo() override;
 
 private:
     void fileChanged(QString fileName);

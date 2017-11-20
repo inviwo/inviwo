@@ -55,7 +55,7 @@ ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
     updateFromProperty();
 }
 
-void ButtonPropertyWidgetQt::onSetDisplayName(const std::string& displayName) {
+void ButtonPropertyWidgetQt::onSetDisplayName(Property*, const std::string& displayName) {
     button_->setText(QString::fromStdString(displayName));
 }
 

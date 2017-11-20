@@ -24,53 +24,46 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SETTINGSWIDGET_H
 #define IVW_SETTINGSWIDGET_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QVBoxLayout>
-#include <QTabWidget>
-#include <QString>
-#include <QScrollArea>
-#include <warn/pop>
+#include <memory>
+#include <functional>
+
+class QVBoxLayout;
+class QScrollArea;
+class QString;
+class QVBoxLayout;
 
 namespace inviwo {
-class PropertyWidgetQt;
+
+class InviwoMainWindow;
+
 class IVW_QTEDITOR_API SettingsWidget : public InviwoDockWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     SettingsWidget(InviwoMainWindow* parent);
-    SettingsWidget(QString title, InviwoMainWindow* parent);
-    ~SettingsWidget();
-  
-    virtual void updateSettingsWidget();
-    virtual void saveSettings();
+    SettingsWidget(const QString& title, InviwoMainWindow* parent);
+    virtual ~SettingsWidget();
 
-public slots:
-    void updatePropertyWidgetSemantics(PropertyWidgetQt*);
-    virtual void closeEvent(QCloseEvent *event) override;
+    virtual void updateSettingsWidget();
 
 protected:
     InviwoMainWindow* mainwindow_;
     QVBoxLayout* layout_ = nullptr;
     QWidget* mainWidget_ = nullptr;
     QScrollArea* scrollArea_ = nullptr;
-
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_; ///< Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_; ///< Called before modules have been unregistered
+    ///< Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
+    ///< Called before modules have been unregistered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SETTINGSWIDGET_H
+#endif  // IVW_SETTINGSWIDGET_H

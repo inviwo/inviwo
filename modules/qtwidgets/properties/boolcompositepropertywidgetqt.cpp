@@ -43,11 +43,6 @@ BoolCompositePropertyWidgetQt::BoolCompositePropertyWidgetQt(BoolCompositeProper
     boolCompProperty_->CompositePropertyObservable::addObserver(this);
 }          
 
-void BoolCompositePropertyWidgetQt::updateFromProperty() {
-    for (auto& elem : propertyWidgets_) elem->updateFromProperty();    
-    setChecked(boolCompProperty_->isChecked());
-}
-
 void BoolCompositePropertyWidgetQt::setCollapsed(bool value) {
     boolCompProperty_->setCollapsed(value);
 }
@@ -65,7 +60,7 @@ void BoolCompositePropertyWidgetQt::initState() {
     updateFromProperty();
 }
 
-void BoolCompositePropertyWidgetQt::onSetDisplayName(const std::string& displayName) {
+void BoolCompositePropertyWidgetQt::onSetDisplayName(Property*, const std::string& displayName) {
     displayName_ = displayName;
     label_->setText(displayName);
 }

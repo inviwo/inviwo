@@ -38,29 +38,31 @@
 
 namespace inviwo {
 
+class Property;
+
 class IVW_CORE_API PropertyObserver : public Observer {
 public:
     PropertyObserver() = default;
     virtual ~PropertyObserver() = default;
 
-    virtual void onSetIdentifier(const std::string& identifier);
-    virtual void onSetDisplayName(const std::string& displayName);
-    virtual void onSetSemantics(const PropertySemantics& semantics);
-    virtual void onSetReadOnly(bool readonly);
-    virtual void onSetVisible(bool visible);
-    virtual void onSetUsageMode(UsageMode usageMode);
+    virtual void onSetIdentifier(Property* property, const std::string& identifier);
+    virtual void onSetDisplayName(Property* property, const std::string& displayName);
+    virtual void onSetSemantics(Property* property, const PropertySemantics& semantics);
+    virtual void onSetReadOnly(Property* property, bool readonly);
+    virtual void onSetVisible(Property* property, bool visible);
+    virtual void onSetUsageMode(Property* property, UsageMode usageMode);
 };
 
 class IVW_CORE_API PropertyObservable : public Observable<PropertyObserver> {
 protected:
     PropertyObservable() = default;
 
-    void notifyObserversOnSetIdentifier(const std::string& identifier);
-    void notifyObserversOnSetDisplayName(const std::string& displayName);
-    void notifyObserversOnSetSemantics(const PropertySemantics& semantics);
-    void notifyObserversOnSetReadOnly(bool readonly);
-    void notifyObserversOnSetVisible(bool visible);
-    void notifyObserversOnSetUsageMode(UsageMode usageMode);
+    void notifyObserversOnSetIdentifier(Property* property, const std::string& identifier);
+    void notifyObserversOnSetDisplayName(Property* property, const std::string& displayName);
+    void notifyObserversOnSetSemantics(Property* property, const PropertySemantics& semantics);
+    void notifyObserversOnSetReadOnly(Property* property, bool readonly);
+    void notifyObserversOnSetVisible(Property* property, bool visible);
+    void notifyObserversOnSetUsageMode(Property* property, UsageMode usageMode);
 };
 
 }  // namespace

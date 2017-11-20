@@ -178,7 +178,8 @@ public:
     virtual bool setSelectedIdentifier(const std::string& identifier) override;
     virtual bool setSelectedDisplayName(const std::string& name) override;
     bool setSelectedValue(const T& val);
-    virtual void replaceOptions(const std::vector<std::string>& ids, const std::vector<std::string>& displayNames,
+    virtual void replaceOptions(const std::vector<std::string>& ids,
+                                const std::vector<std::string>& displayNames,
                                 const std::vector<T>& values);
     virtual void replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
@@ -310,6 +311,7 @@ void TemplateOptionProperty<T>::addOption(const std::string& identifier,
 
 template <typename T>
 void TemplateOptionProperty<T>::removeOption(size_t index) {
+    if (options_.empty()) return;
     std::string id = getSelectedIdentifier();
     options_.erase(options_.begin() + index);
     if (!setSelectedIdentifier(id)) {
@@ -320,6 +322,7 @@ void TemplateOptionProperty<T>::removeOption(size_t index) {
 
 template <typename T>
 void TemplateOptionProperty<T>::removeOption(const std::string& identifier) {
+    if (options_.empty()) return;
     std::string id = getSelectedIdentifier();
     util::erase_remove_if(
         options_, [&](const OptionPropertyOption<T>& opt) { return opt.id_ == identifier; });

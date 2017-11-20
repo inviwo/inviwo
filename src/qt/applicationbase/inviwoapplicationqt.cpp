@@ -48,10 +48,10 @@
 #include <warn/pop>
 
 #ifdef WIN32
-#  define NOMINMAX
-#  define WIN32_LEAN_AND_MEAN
-#  include <windows.h>
-#endif // WIN32
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif  // WIN32
 
 namespace inviwo {
 
@@ -79,7 +79,7 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, cha
     //
     // query system font and font size, then set the QApplication font (Win7: Segoe UI, 9pt)
     //
-    NONCLIENTMETRICS metrics ={ sizeof(NONCLIENTMETRICS) };
+    NONCLIENTMETRICS metrics = {sizeof(NONCLIENTMETRICS)};
     SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &metrics, 0);
     int pointSize = metrics.lfMessageFont.lfHeight;
     if (pointSize < 0) {
@@ -90,14 +90,14 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc, cha
     }
 
     setFont(QFont(QString::fromWCharArray(metrics.lfMessageFont.lfFaceName), pointSize));
-#endif // WIN32
+#endif  // WIN32
 
     // Make qt write errors in the console;
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
 }
 
-void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) { 
-    mainWindow_ = mainWindow; 
+void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) {
+    mainWindow_ = mainWindow;
     // Enable widgets to find the main window using the object name
     mainWindow_->setObjectName("InviwoMainWindow");
 }
@@ -159,6 +159,8 @@ void InviwoApplicationQt::printApplicationInfo() {
 }
 
 void InviwoApplicationQt::resizePool(size_t newSize) {
+    if (pool_.getSize() == newSize) return;
+
     auto start = std::chrono::system_clock::now();
     std::chrono::milliseconds timelimit(250);
     auto timeout = [&timelimit, &start]() {
@@ -200,64 +202,64 @@ void InviwoApplicationQt::resizePool(size_t newSize) {
 void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext& context,
                                         const QString& msg) {
 #ifdef IVW_DEBUG
-   
-    
-    #if defined(__APPLE__) 
+
+#if defined(__APPLE__)
     // There is some weird bug on mac that sets complains about
     // QWidgetWindow(...) Attempt to set a screen on a child window
     // Does not seem to be a real problem lets, ignore it.
-    //http://stackoverflow.com/questions/33545006/qt5-attempt-to-set-a-screen-on-a-child-window-many-runtime-warning-messages
+    // http://stackoverflow.com/questions/33545006/qt5-attempt-to-set-a-screen-on-a-child-window-many-runtime-warning-messages
     if (msg.contains("Attempt to set a screen on a child window")) return;
-    #endif
+#endif
 
     QByteArray localMsg = msg.toLocal8Bit();
-    
+
     switch (type) {
         case QtDebugMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Debug", LogLevel::Info, LogAudience::Developer,
-                                              context.file, context.function, context.line,
-                                              msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Debug", LogLevel::Info, LogAudience::Developer,
+                                      context.file, context.function, context.line,
+                                      msg.toUtf8().constData());
 
             fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtWarningMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Warning", LogLevel::Info, LogAudience::Developer,
-                                              context.file, context.function, context.line,
-                                              msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Warning", LogLevel::Info, LogAudience::Developer,
+                                      context.file, context.function, context.line,
+                                      msg.toUtf8().constData());
 
             fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtCriticalMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Critical", LogLevel::Info, LogAudience::Developer,
-                                              context.file, context.function, context.line,
-                                              msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Critical", LogLevel::Info, LogAudience::Developer,
+                                      context.file, context.function, context.line,
+                                      msg.toUtf8().constData());
 
             fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtFatalMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Fatal", LogLevel::Info, LogAudience::Developer,
-                                              context.file, context.function, context.line,
-                                              msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Fatal", LogLevel::Info, LogAudience::Developer,
+                                      context.file, context.function, context.line,
+                                      msg.toUtf8().constData());
 
             fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             QMessageBox::critical(nullptr, "Fatal Error", msg);
+            util::debugBreak();
             abort();
             break;
 
-        #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
         case QtInfoMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Info", LogLevel::Info, LogAudience::Developer,
-                                              context.file, context.function, context.line,
-                                              msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Info", LogLevel::Info, LogAudience::Developer,
+                                      context.file, context.function, context.line,
+                                      msg.toUtf8().constData());
 
             fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
-        #endif
+#endif
     }
 #endif
 }
@@ -272,22 +274,21 @@ bool InviwoApplicationQt::event(QEvent* e) {
     }
 }
 
-
 #include <warn/push>
 #include <warn/ignore/switch-enum>
-bool InviwoApplicationQt::notify(QObject *receiver, QEvent *e) {
+bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
     auto res = QApplication::notify(receiver, e);
-    
+
     switch (e->type()) {
         case QEvent::MouseButtonRelease: {
             undoTrigger_();
             break;
         }
         case QEvent::TouchEnd: {
-            auto te = static_cast<QTouchEvent *>(e);
-            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint &tp) {
-                return tp.state() == Qt::TouchPointReleased;
-            })) {
+            auto te = static_cast<QTouchEvent*>(e);
+            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint& tp) {
+                    return tp.state() == Qt::TouchPointReleased;
+                })) {
                 undoTrigger_();
                 break;
             }
@@ -304,9 +305,7 @@ bool InviwoApplicationQt::notify(QObject *receiver, QEvent *e) {
 }
 #include <warn/pop>
 
-void InviwoApplicationQt::setUndoTrigger(std::function<void()> func) {
-    undoTrigger_ = func;
-}
+void InviwoApplicationQt::setUndoTrigger(std::function<void()> func) { undoTrigger_ = func; }
 
 std::locale InviwoApplicationQt::getCurrentStdLocale() {
     std::locale loc;
@@ -321,8 +320,7 @@ std::locale InviwoApplicationQt::getCurrentStdLocale() {
         std::string localeName(QLocale::system().name().toStdString());
 #endif
         loc = std::locale(localeName.c_str());
-    }
-    catch (std::exception &e) {
+    } catch (std::exception& e) {
         LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());
     }
     return loc;
@@ -330,4 +328,4 @@ std::locale InviwoApplicationQt::getCurrentStdLocale() {
 
 QEvent::Type InviwoQtEvent::InviwoQtEventType = QEvent::None;
 
-}  // namespace
+}  // namespace inviwo

@@ -49,7 +49,7 @@ private:
     ButtonProperty* property_;
     QPushButton* button_;
 
-    virtual void onSetDisplayName(const std::string& displayName) override;
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
 
 };
 

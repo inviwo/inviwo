@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <iterator>
 
 namespace inviwo {
@@ -303,6 +304,8 @@ void PropertyOwner::invokeEvent(Event* event) {
     }
 }
 
-
+InviwoApplication* PropertyOwner::getInviwoApplication() {
+    return util::getInviwoApplication(getProcessor());
+}
 
 } // namespace

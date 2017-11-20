@@ -31,7 +31,6 @@
 #define EDITABLELABELQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/propertyobserver.h>
 
 #include <warn/push>
@@ -48,6 +47,9 @@ class QAction;
 
 namespace inviwo {
 
+class Property;
+class PropertyWidgetQt;
+
 class IVW_MODULE_QTWIDGETS_API EditableLabelQt : public QWidget, public PropertyObserver {
     #include <warn/push>
     #include <warn/ignore/all>
@@ -55,7 +57,7 @@ class IVW_MODULE_QTWIDGETS_API EditableLabelQt : public QWidget, public Property
     #include <warn/pop>
 public:
     EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText = true);
-    EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText = true);
+    EditableLabelQt(PropertyWidgetQt* parent, const std::string& text, bool shortenText = true);
     std::string getText();
     void setText(const std::string& txt);
     void setShortenText(bool shorten);
@@ -72,7 +74,7 @@ protected:
 private:
     void updateLabel(const std::string& text);
     void mouseDoubleClickEvent(QMouseEvent* e) override;
-    virtual void onSetDisplayName(const std::string& displayName) override;
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
     QString shortenText(const std::string& text);
 
     QLineEdit* getLineEdit();
