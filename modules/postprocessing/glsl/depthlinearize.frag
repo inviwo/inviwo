@@ -58,7 +58,7 @@ uniform sampler2D inputTexture;
 uniform float minD = 0;
 uniform float maxD = 1;
 
-layout(location=0,index=0) out float out_Color;
+//layout(location=0) out vec4 out_Color;
 
 float reconstructCSZ(float d, vec4 clipInfo) {
   if (clipInfo[3] != 0) {
@@ -79,5 +79,5 @@ void main() {
   float maxDD = reconstructCSZ(maxD, clipInfo);
   linDepth = clamp((linDepth - minDD) / (maxDD - minDD),0,1);
 #endif
-  out_Color = linDepth;
+  FragData0 = vec4(linDepth);
 }

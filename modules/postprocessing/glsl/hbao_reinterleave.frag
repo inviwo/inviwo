@@ -58,8 +58,6 @@
 
 layout(binding=0)  uniform sampler2DArray texResultsArray;
 
-layout(location=0,index=0) out vec4 out_Color;
-
 //----------------------------------------------------------------------------------
 
 void main() {
@@ -69,9 +67,9 @@ void main() {
   ivec2 QuarterResPos = FullResPos >> 2;
   
 #if AO_BLUR
-  out_Color = vec4(texelFetch( texResultsArray, ivec3(QuarterResPos, SliceId), 0).xy,0,0);
+  FragData0 = vec4(texelFetch( texResultsArray, ivec3(QuarterResPos, SliceId), 0).xy,0,0);
 #else
-  out_Color = vec4(texelFetch( texResultsArray, ivec3(QuarterResPos, SliceId), 0).x);
+  FragData0 = vec4(texelFetch( texResultsArray, ivec3(QuarterResPos, SliceId), 0).x);
 #endif
   
 }
