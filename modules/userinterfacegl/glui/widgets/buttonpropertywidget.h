@@ -58,8 +58,8 @@ public:
     virtual void updateFromProperty() override;
 
     // PropertyObservable overrides
-    virtual void onSetVisible(bool visible) override;
-    virtual void onSetDisplayName(const std::string &displayName) override;
+    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetDisplayName(Property* property, const std::string &displayName) override;
 
 private:
     ButtonProperty *property_;

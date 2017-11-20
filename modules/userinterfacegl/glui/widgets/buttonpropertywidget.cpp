@@ -50,9 +50,9 @@ ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty &property, Processor &
 
 void ButtonPropertyWidget::updateFromProperty() { setLabel(property_->getDisplayName()); }
 
-void ButtonPropertyWidget::onSetVisible(bool visible) { setVisible(visible); }
+void ButtonPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void ButtonPropertyWidget::onSetDisplayName(const std::string &displayName) {
+void ButtonPropertyWidget::onSetDisplayName(Property*, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
