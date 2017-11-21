@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 /** \ Widget for containing the TransferFunctionEditor QGraphicsScene
@@ -64,11 +64,6 @@ class TransferFunctionPropertyWidgetQt;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
                                                                 public TransferFunctionObserver {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
 public:
     TransferFunctionPropertyDialog(TransferFunctionProperty* property, QWidget* parent);
     ~TransferFunctionPropertyDialog();
@@ -76,38 +71,38 @@ public:
     void updateFromProperty();
     TransferFunctionEditorView* getEditorView() const;
 
-     virtual void setReadOnly(bool readonly) override;
+    virtual void setReadOnly(bool readonly) override;
 
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p);
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p);
+protected:
+    virtual void onControlPointAdded(TransferFunctionDataPoint* p) override;
+    virtual void onControlPointRemoved(TransferFunctionDataPoint* p) override;
+    virtual void onControlPointChanged(const TransferFunctionDataPoint* p) override;
 
-public slots:
     void changeMask(int maskMin, int maskMax);
-
     void changeVerticalZoom(int zoomMin, int zoomMax);
     void changeHorizontalZoom(int zoomMin, int zoomMax);
-
     void importTransferFunction();
     void exportTransferFunction();
     void showHistogram(int type);
     void changeMoveMode(int i);
 
-protected:
-    virtual void resizeEvent(QResizeEvent*);
-    virtual void showEvent(QShowEvent*);
+    virtual void resizeEvent(QResizeEvent*) override;
+    virtual void showEvent(QShowEvent*) override;
 
 private:
+    void generateWidget();
+    void updateTFPreview();
+
     const int sliderRange_;
 
     std::unique_ptr<ColorWheel> colorWheel_;
 
     // Pointer to property, for get and invalidation in the widget
     TransferFunctionProperty* tfProperty_;
-    
+
     // TransferFunctionEditor inherited from QGraphicsScene
     std::unique_ptr<TransferFunctionEditor> tfEditor_;
-    
+
     TransferFunctionEditorView* tfEditorView_;  ///< View that contains the editor
     QPushButton* btnClearTF_;
     QPushButton* btnImportTF_;
@@ -124,11 +119,8 @@ private:
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
     RangeSliderQt* maskSlider_;
-
-    void generateWidget();
-    void updateTFPreview();
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H

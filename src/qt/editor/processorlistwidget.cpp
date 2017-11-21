@@ -367,7 +367,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
     }
 
     QString category = QString::fromStdString(categoryName);
-    auto& items = processorTree_->findItems(category, Qt::MatchFixedString, 0);
+    auto items = processorTree_->findItems(category, Qt::MatchFixedString, 0);
 
     if (items.empty()) items.push_back(addToplevelItemTo(category, categoryDesc));
     addProcessorItemTo(items[0], processor, elem ? elem->getIdentifier() : "Unknown");

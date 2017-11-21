@@ -115,8 +115,8 @@ void TransferFunctionPropertyDialog::generateWidget() {
     zoomVSlider_->setValue(
         sliderRange_ - static_cast<int>(tfProperty_->getZoomV().y * sliderRange_),
         sliderRange_ - static_cast<int>(tfProperty_->getZoomV().x * sliderRange_));
-    connect(zoomVSlider_, SIGNAL(valuesChanged(int, int)), this,
-            SLOT(changeVerticalZoom(int, int)));
+    connect(zoomVSlider_, &RangeSliderQt::valuesChanged, this,
+            &TransferFunctionPropertyDialog::changeVerticalZoom);
 
     zoomVSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(1.0f - static_cast<float>(val) / range);
@@ -127,8 +127,8 @@ void TransferFunctionPropertyDialog::generateWidget() {
     zoomHSlider_->setMinSeparation(5);
     zoomHSlider_->setValue(static_cast<int>(tfProperty_->getZoomH().x * sliderRange_),
                            static_cast<int>(tfProperty_->getZoomH().y * sliderRange_));
-    connect(zoomHSlider_, SIGNAL(valuesChanged(int, int)), this,
-            SLOT(changeHorizontalZoom(int, int)));
+    connect(zoomHSlider_, &RangeSliderQt::valuesChanged, this,
+            &TransferFunctionPropertyDialog::changeHorizontalZoom);
 
     zoomHSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(static_cast<float>(val) / range);
@@ -138,7 +138,8 @@ void TransferFunctionPropertyDialog::generateWidget() {
     maskSlider_->setRange(0, sliderRange_);
     maskSlider_->setValue(static_cast<int>(tfProperty_->getMask().x * sliderRange_),
                           static_cast<int>(tfProperty_->getMask().y * sliderRange_));
-    connect(maskSlider_, SIGNAL(valuesChanged(int, int)), this, SLOT(changeMask(int, int)));
+    connect(maskSlider_, &RangeSliderQt::valuesChanged, this,
+            &TransferFunctionPropertyDialog::changeMask);
     maskSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(static_cast<float>(val) / range);
     });
@@ -173,14 +174,17 @@ void TransferFunctionPropertyDialog::generateWidget() {
     chkShowHistogram_->addItem("Histogram: 90%");
     chkShowHistogram_->addItem("Histogram: Log");
     chkShowHistogram_->setCurrentIndex(static_cast<int>(tfProperty_->getHistogramMode()));
-    connect(chkShowHistogram_, SIGNAL(currentIndexChanged(int)), this, SLOT(showHistogram(int)));
+    connect(chkShowHistogram_,
+            static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+            &TransferFunctionPropertyDialog::showHistogram);
 
     pointMoveMode_ = new QComboBox();
     pointMoveMode_->addItem("Point Movement: Free");
     pointMoveMode_->addItem("Point Movement: Restrict");
     pointMoveMode_->addItem("Point Movement: Push");
     pointMoveMode_->setCurrentIndex(0);
-    connect(pointMoveMode_, SIGNAL(currentIndexChanged(int)), this, SLOT(changeMoveMode(int)));
+    connect(pointMoveMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &TransferFunctionPropertyDialog::changeMoveMode);
 
     QFrame* leftPanel = new QFrame(this);
     QGridLayout* leftLayout = new QGridLayout();

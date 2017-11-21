@@ -40,15 +40,17 @@ class PointLight : public LightSource {
 public:
     PointLight() : LightSource() { setFieldOfView(static_cast<float>(2. * M_PI)); }
     virtual ~PointLight() = default;
-    virtual PointLight* clone() const { return new PointLight(*this); }
+    virtual PointLight* clone() const override { return new PointLight(*this); }
 
-    virtual float getArea() const { return 4.f * static_cast<float>(M_PI) * size_.x * size_.y; }
+    virtual float getArea() const override {
+        return 4.f * static_cast<float>(M_PI) * size_.x * size_.y;
+    }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const { return getIntensity() * getArea(); }
+    virtual vec3 getPower() const override { return getIntensity() * getArea(); }
 
     LightSourceType getLightSourceType() const override { return LightSourceType::point; }
 
