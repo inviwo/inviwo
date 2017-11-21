@@ -786,8 +786,18 @@ void FancyMeshRenderer::updateDrawers()
         //create adjacency information
         if (halfEdges_ == nullptr) {
             halfEdges_ = std::make_unique<HalfEdges>(mesh->getIndices(0));
-            enhancedMesh_ = std::unique_ptr<Mesh>(mesh->clone());
-            while (enhancedMesh_->getNumberOfIndicies() > 0) enhancedMesh_->removeIndices(0);
+
+            //enhancedMesh_ = std::unique_ptr<Mesh>(mesh->clone());
+            //while (enhancedMesh_->getNumberOfIndicies() > 0) enhancedMesh_->removeIndices(0);
+
+            //duplication of mesh->clone() that does not include the index buffer
+            //enhancedMesh_ = std::make_unique<Mesh>(mesh->getDefaultMeshInfo().dt, mesh->getDefaultMeshInfo().ct);
+            enhancedMesh_ = std::make_unique<Mesh>(DrawType::Triangles, ConnectivityType::Adjacency); //we directly force the new mesh type
+            for (const auto& elem : mesh->getBuffers()) {
+                enhancedMesh_->addBuffer(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
+            }
+
+            //add new index buffer with adjacency information
             enhancedMesh_->addIndicies({ DrawType::Triangles, ConnectivityType::Adjacency },
                 halfEdges_->createIndexBufferWithAdjacency());
             LogProcessorInfo("Adjacency information created");
