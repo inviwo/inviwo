@@ -47,7 +47,7 @@
  *      std::cout << get<0>(i) << " " << get<1>(i) << std::endl;
  * }
  *
- * Enumerate element in a container (@see inviwo::util::enumerate) . 
+ * Enumerate element in a container (@see inviwo::util::enumerate) .
  * std::vector<int> vec(10);
  * for (auto&& item : util::enumerate(vec)) {
  *      auto&& ind = get<0>(item);
@@ -60,7 +60,7 @@
  * for (auto&& i : util::make_sequence(0, end, inc)) {
  *      // iterates over 0 and 2
  * }
- * 
+ *
  */
 
 namespace inviwo {
@@ -459,10 +459,10 @@ struct sequence {
         bool operator<=(const iterator& rhs) const { return val_ <= rhs.val_; }
 
     private:
-        void clamp() { 
-            using std::min;
+        void clamp() {
             using std::max;
-            val_ = inc_ > 0 ? min(val_, end_) : max(val_, end_); 
+            using std::min;
+            val_ = inc_ > 0 ? min(val_, end_) : max(val_, end_);
         }
         T val_;
         T end_;
@@ -477,14 +477,14 @@ private:
     T end_;
     T inc_;
 };
- /** 
-  * Convenvience function for creating a sequence.
-  * Use case example:
-  * auto inc = 2; auto end = 3;
-  * for (auto&& i : util::make_sequence(0, end, inc)) { 
-  *   // Iterates over 0 and 2
-  * }
-  */ 
+/**
+ * Convenvience function for creating a sequence.
+ * Use case example:
+ * auto inc = 2; auto end = 3;
+ * for (auto&& i : util::make_sequence(0, end, inc)) {
+ *   // Iterates over 0 and 2
+ * }
+ */
 template <typename T>
 auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
     return sequence<T>(begin, end, inc);
@@ -526,12 +526,11 @@ namespace std {
 // enables for(auto&& [i, j] : zip(a, b)) std::cout << i << " " << j << std::endl;
 // in C++17
 template <typename... Ts>
-class tuple_size<::inviwo::util::detailzip::proxy<Ts...>>
-    : public std::integral_constant<std::size_t, sizeof...(Ts)> {};
+struct tuple_size<::inviwo::util::detailzip::proxy<Ts...>>
+    : std::integral_constant<std::size_t, sizeof...(Ts)> {};
 
 template <std::size_t N, typename... Ts>
-class tuple_element<N, ::inviwo::util::detailzip::proxy<Ts...>> {
-public:
+struct tuple_element<N, ::inviwo::util::detailzip::proxy<Ts...>> {
     using type =
         decltype(std::declval<::inviwo::util::detailzip::proxy<Ts...>>().template get<N>());
 };

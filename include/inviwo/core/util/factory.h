@@ -118,7 +118,7 @@ protected:
 template <typename T, typename M, typename K, typename... Args>
 bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
     if (util::insert_unique(map_, obj->getClassIdentifier(), obj)) {
-        notifyObserversOnRegister(obj);
+        this->notifyObserversOnRegister(obj);
         return true;
     } else {
         LogWarn("Failed to register object \"" << obj->getClassIdentifier()
@@ -132,7 +132,7 @@ bool StandardFactory<T, M, K, Args...>::unRegisterObject(M* obj) {
     size_t removed = util::map_erase_remove_if(
         map_, [obj](typename Map::value_type& elem) { return elem.second == obj; });
     if (removed > 0) {
-        notifyObserversOnRegister(obj);
+        this->notifyObserversOnRegister(obj);
         return true;
     } else {
         return false;
