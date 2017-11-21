@@ -58,8 +58,6 @@ uniform sampler2D inputTexture;
 uniform float minD = 0;
 uniform float maxD = 1;
 
-//layout(location=0) out vec4 out_Color;
-
 float reconstructCSZ(float d, vec4 clipInfo) {
   if (clipInfo[3] != 0) {
     return (clipInfo[0] / (clipInfo[1] * d + clipInfo[2]));
