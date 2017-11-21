@@ -74,6 +74,7 @@
 #include <warn/ignore/is-defined-to-be>
 #include <warn/ignore/layout-changed>
 #include <warn/ignore/misleading-indentation>
+#include <warn/ignore/mismatched-tags>
 #include <warn/ignore/missing-braces>
 #include <warn/ignore/missing-field-initializers>
 #include <warn/ignore/missing-noreturn>
