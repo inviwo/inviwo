@@ -145,10 +145,9 @@ void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
         PortConnection connection(src, dst);
         notifyObserversProcessorNetworkWillAddConnection(connection);
 
+        dst->connectTo(src);
         connections_.emplace(src, dst);
         connectionsVec_.emplace_back(src, dst);
-
-        dst->connectTo(src);
 
         notifyObserversProcessorNetworkDidAddConnection(connection);
     }
@@ -427,7 +426,13 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         for (auto& c : remove) removeConnection(c);
 
         // Add the new connections
-        for (auto& c : connections) addConnection(c);
+        for (auto& c : connections) {
+            try {
+                addConnection(c);
+            } catch (...) {
+                d.handleError(IvwContext);
+            }
+        }
 
     } catch (const Exception& exception) {
         clear();
@@ -462,7 +467,13 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         for (auto& l : remove) removeLink(l);
 
         // Add the new links
-        for (auto& link : links) addLink(link);
+        for (auto& link : links) {
+            try {
+                addLink(link);
+            } catch (...) {
+                d.handleError(IvwContext);
+            }
+        }
 
     } catch (const Exception& exception) {
         clear();

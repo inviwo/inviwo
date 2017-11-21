@@ -263,7 +263,7 @@ void ProcessorGraphicsItem::editDisplayName() {
     displayNameLabel_->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
 
     QTextCursor cur = displayNameLabel_->textCursor();
-    cur.select(QTextCursor::Document);
+    cur.movePosition(QTextCursor::End);
     displayNameLabel_->setTextCursor(cur);
     displayNameLabel_->setTextInteractionFlags(Qt::TextEditorInteraction);
     displayNameLabel_->setFocus();
@@ -275,7 +275,7 @@ void ProcessorGraphicsItem::editIdentifier() {
     identifierLabel_->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
 
     QTextCursor cur = identifierLabel_->textCursor();
-    cur.select(QTextCursor::Document);
+    cur.movePosition(QTextCursor::End);
     identifierLabel_->setTextCursor(cur);
     identifierLabel_->setTextInteractionFlags(Qt::TextEditorInteraction);
     identifierLabel_->setFocus();

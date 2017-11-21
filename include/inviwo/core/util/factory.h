@@ -96,7 +96,7 @@ public:
  * K Models a key used to look up T
  */
 template <typename T, typename M, typename K = const std::string&, typename... Args>
-class StandardFactory : public Factory<T, K, Args...> {
+class StandardFactory : public Factory<T, K, Args...>, public FactoryObservable<M> {
 public:
     using Key = typename std::remove_cv<typename std::remove_reference<K>::type>::type;
     using Map = std::unordered_map<Key, M*>;
@@ -116,8 +116,9 @@ protected:
 };
 
 template <typename T, typename M, typename K, typename... Args>
-inline bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
+bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
     if (util::insert_unique(map_, obj->getClassIdentifier(), obj)) {
+        notifyObserversOnRegister(obj);
         return true;
     } else {
         LogWarn("Failed to register object \"" << obj->getClassIdentifier()
@@ -127,11 +128,15 @@ inline bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
 }
 
 template <typename T, typename M, typename K, typename... Args>
-inline bool StandardFactory<T, M, K, Args...>::unRegisterObject(M* obj) {
+bool StandardFactory<T, M, K, Args...>::unRegisterObject(M* obj) {
     size_t removed = util::map_erase_remove_if(
         map_, [obj](typename Map::value_type& elem) { return elem.second == obj; });
-
-    return removed > 0;
+    if (removed > 0) {
+        notifyObserversOnRegister(obj);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 template <typename T, typename M, typename K, typename... Args>

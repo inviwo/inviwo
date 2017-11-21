@@ -50,6 +50,7 @@ public:
     ProcessorFactory(InviwoApplication* app);
     virtual ~ProcessorFactory() = default;
     bool registerObject(ProcessorFactoryObject* processor) override;
+    using Parent::create;
     virtual std::unique_ptr<Processor> create(const std::string& key) const override;
     virtual bool hasKey(const std::string& key) const override;
 

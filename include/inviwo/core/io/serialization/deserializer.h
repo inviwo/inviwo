@@ -234,6 +234,7 @@ public:
     void deserializeAs(const std::string& key, std::unique_ptr<T, D>& data);
 
     void setExceptionHandler(ExceptionHandler handler);
+    void handleError(const ExceptionContext& context);
 
     void convertVersion(VersionConverter* converter);
     
@@ -274,7 +275,7 @@ private:
 
     void storeReferences(TxElement* node);
 
-    void handleError(const ExceptionContext& context);
+
 
     ExceptionHandler exceptionHandler_;
     std::map<std::string, TxElement*> referenceLookup_;

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORLISTWIDGET_H
@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/processors/processorfactory.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -48,13 +49,14 @@ namespace inviwo {
 
 class HelpWidget;
 class InviwoMainWindow;
+class InviwoApplication;
 
 class IVW_QTEDITOR_API ProcessorTree : public QTreeWidget {
 
 public:
     ProcessorTree(QWidget* parent);
-    ~ProcessorTree() {};
-    
+    ~ProcessorTree(){};
+
     static const int IDENTIFIER_ROLE;
 
 protected:
@@ -65,14 +67,15 @@ private:
     QPoint dragStartPosition_;
 };
 
-class IVW_QTEDITOR_API ProcessorTreeWidget : public InviwoDockWidget {
+class IVW_QTEDITOR_API ProcessorTreeWidget : public InviwoDockWidget,
+                                             public FactoryObserver<ProcessorFactoryObject> {
 public:
     ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget);
     ~ProcessorTreeWidget();
 
     void focusSearch();
     void addSelectedProcessor();
-    void addProcessorsToTree();
+    void addProcessorsToTree(ProcessorFactoryObject* item = nullptr);
 
 protected:
     bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
@@ -81,12 +84,16 @@ protected:
 private:
     void currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void addProcessor(std::string className);
-    
-    
+
+    void extractInfoAndAddProcessor(ProcessorFactoryObject* processor, InviwoModule* elem);
     QTreeWidgetItem* addToplevelItemTo(QString title, const std::string& desc);
-    QTreeWidgetItem* addProcessorItemTo(QTreeWidgetItem* item,
-                                        ProcessorFactoryObject* processor,
+    QTreeWidgetItem* addProcessorItemTo(QTreeWidgetItem* item, ProcessorFactoryObject* processor,
                                         std::string moduleId);
+
+    virtual void onRegister(ProcessorFactoryObject* item) override;
+    virtual void onUnRegister(ProcessorFactoryObject*) override;
+
+    InviwoApplication* app_;
     ProcessorTree* processorTree_;
     QComboBox* listView_;
     QLineEdit* lineEdit_;
@@ -113,6 +120,6 @@ public:
     static bool decode(const QMimeData* mimeData, QString& className);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROCESSORLISTWIDGET_H
+#endif  // IVW_PROCESSORLISTWIDGET_H
