@@ -47,6 +47,7 @@ invalid-offsetof                 | *same* (3.2)       | *same* (3.4)         | *
 is-defined-to-be                 | *no*               | *no*                 | C4574 (16)   
 layout-changed                   | *no*               | *no*                 | C4371 (13)   
 misleading-indentation           | *no*               | *same* (6)           | *no*         
+mismatched-tags                  | *same* (3.2)       | *no*                 | C4099 (13)   
 missing-braces                   | *same* (3.2)       | *same* (3.4)         | *no*         
 missing-field-initializers       | *same* (3.2)       | *same* (4.0)         | *no*         
 missing-noreturn                 | *same* (3.3)       | *same* (3.4)         | *no*         

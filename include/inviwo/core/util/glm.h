@@ -37,6 +37,11 @@
 #define GLM_FORCE_SIZE_T_LENGTH
 #endif
 
+// Fix for clang, solved in never versions https://github.com/g-truc/glm/issues/604
+#ifdef __clang__
+#define GLM_LANG_STL11_FORCED
+#endif
+
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <warn/push>
@@ -44,6 +49,7 @@
 #include <warn/ignore/sign-compare>
 #include <warn/ignore/conversion>
 #include <warn/ignore/misleading-indentation>
+#include <warn/ignore/mismatched-tags>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
