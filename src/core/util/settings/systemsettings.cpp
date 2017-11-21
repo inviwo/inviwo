@@ -27,21 +27,18 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/core/util/systemcapabilities.h>
-#include <inviwo/core/util/formatconversion.h>
-#include <inviwo/core/common/inviwocore.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
-SystemSettings::SystemSettings()
-    : Settings("System Settings")
+SystemSettings::SystemSettings(InviwoApplication* app)
+    : Settings("System Settings", app)
     , applicationUsageMode_("applicationUsageMode", "Application usage mode",
                             {{"applicationMode", "Application Mode", UsageMode::Application},
                              {"developerMode", "Developer Mode", UsageMode::Development}},
                             1)
-    , poolSize_("poolSize", "Pool Size", 4, 0, 32)
+    , poolSize_("poolSize", "Pool Size", defaultPoolSize(), 0, 32)
     , txtEditor_("txtEditor", "Use system text editor", true)
     , enablePortInspectors_("enablePortInspectors", "Enable port inspectors", true)
     , portInspectorSize_("portInspectorSize", "Port inspector size", 128, 1, 1024)
@@ -52,14 +49,10 @@ SystemSettings::SystemSettings()
 #endif
     , enablePickingProperty_("enablePicking", "Enable picking", true)
     , enableSoundProperty_("enableSound", "Enable sound", true)
-    , useRAMPercentProperty_("useRAMPercent", "Max memory usage (%)", 50, 1, 100)
     , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
-    , btnAllocTestProperty_("allocTest", "Perform Allocation Test")
-    , btnSysInfoProperty_("printSysInfo", "Print System Info")
     , followObjectDuringRotation_("followObjectDuringRotation",
                                   "Follow Object During Camera Rotation", false)
-    , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
-    , allocTest_(nullptr) {
+    , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false) {
 
     addProperty(applicationUsageMode_);
     addProperty(poolSize_);
@@ -69,61 +62,23 @@ SystemSettings::SystemSettings()
     addProperty(enableTouchProperty_);
     addProperty(enablePickingProperty_);
     addProperty(enableSoundProperty_);
-    addProperty(useRAMPercentProperty_);
     addProperty(logStackTraceProperty_);
     addProperty(followObjectDuringRotation_);
     addProperty(runtimeModuleReloading_);
 
-    logStackTraceProperty_.onChange(this, &SystemSettings::logStacktraceCallback);
-    // btnAllocTestProperty_.onChange(this, &SystemSettings::allocationTest);
-    // addProperty(&btnAllocTestProperty_);
+    logStackTraceProperty_.onChange(
+        [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
 
-    runtimeModuleReloading_.onChange([this](){
-       LogInfo("Inviwo needs to be restarted for Runtime Module Reloading change to take effect");
+    runtimeModuleReloading_.onChange([this]() {
+        if (isDeserializing_) return;
+        LogInfo("Inviwo needs to be restarted for Runtime Module Reloading change to take effect");
     });
 
-    auto cores = std::thread::hardware_concurrency();
-    if (cores > 0) {
-        isDeserializing_ = true;
-        poolSize_.setMaxValue(cores);
-        poolSize_.set(static_cast<int>(0.5 * cores));
-        poolSize_.setCurrentStateAsDefault();
-        isDeserializing_ = false;
-    }
     load();
 }
 
-void SystemSettings::logStacktraceCallback() {
-    LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get());
+size_t SystemSettings::defaultPoolSize() {
+    return std::thread::hardware_concurrency() / 2;
 }
-
-void SystemSettings::allocationTest() {
-    auto module = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
-    if (!module) return;
-
-    auto sysInfo = getTypeFromVector<SystemCapabilities>(module->getCapabilities());
-
-    if (sysInfo) {
-        IntProperty* useRAMPercent =
-            dynamic_cast<IntProperty*>(getPropertyByIdentifier("useRAMPercent"));
-        glm::u64 memBytesAlloc = sysInfo->getAvailableMemory();  // In Bytes
-        LogInfo("Maximum Available Memory is " << util::formatBytesToString(memBytesAlloc));
-        memBytesAlloc /= 100;                   // 1% of total available memory
-        memBytesAlloc *= useRAMPercent->get();  //?% of total available memory
-
-        try {
-            allocTest_ = new glm::u32[static_cast<glm::u32>(memBytesAlloc / 4)];
-            LogInfo("Allocated " << util::formatBytesToString(memBytesAlloc) << ", which is "
-                                 << useRAMPercent->get() << "% of available memory");
-            delete allocTest_;
-        } catch (std::bad_alloc&) {
-            LogError("Failed allocation of " << util::formatBytesToString(memBytesAlloc)
-                                             << ", which is " << useRAMPercent->get()
-                                             << "% of available memory");
-        }
-    }
-}
-
-UsageMode SystemSettings::getApplicationUsageMode() const { return applicationUsageMode_.get(); }
 
 }  // namespace inviwo

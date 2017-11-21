@@ -42,8 +42,6 @@ class IVW_MODULE_QTWIDGETS_API CompositePropertyWidgetQt : public CollapsibleGro
                                                            public CompositePropertyObserver {
 public:
     CompositePropertyWidgetQt(CompositeProperty* property);
-    virtual void updateFromProperty() override;
-
     virtual bool isCollapsed() const override;
     virtual void onSetCollapsed(bool value) override;
 

@@ -36,10 +36,10 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/common/moduleaction.h>
-
-#include <modules/qtwidgets/propertylistwidget.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -67,28 +67,30 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
     : QWidget()
     , PropertyWidget(property)
     , parent_(nullptr)
-    , baseContainer_(nullptr)
-    , applicationUsageMode_(nullptr)
-    , appModeCallback_(nullptr)
     , maxNumNestedShades_(4)
     , nestedDepth_(0) {
 
-    applicationUsageMode_ =
-        &(InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->applicationUsageMode_);
-    
     if (property_) {
         property_->addObserver(this);
-        appModeCallback_ =
-            applicationUsageMode_->onChange([this]() { onSetUsageMode(property_->getUsageMode()); });
+        if (auto app = util::getInviwoApplication(property_)) {
+            auto& settings = app->getSystemSettings();
+            appModeCallback_ = settings.applicationUsageMode_.onChange(
+                [this]() { onSetUsageMode(property_, property_->getUsageMode()); });
+        }
     }
 
     setNestedDepth(nestedDepth_);
     setObjectName("PropertyWidget");
-
     setContextMenuPolicy(Qt::PreventContextMenu);
 }
 
-PropertyWidgetQt::~PropertyWidgetQt() { applicationUsageMode_->removeOnChange(appModeCallback_); }
+PropertyWidgetQt::~PropertyWidgetQt() {
+    if (property_) {
+        if (auto app = util::getInviwoApplication(property_)) {
+            app->getSystemSettings().applicationUsageMode_.removeOnChange(appModeCallback_);
+        }
+    }
+}
 
 void PropertyWidgetQt::initState() {
     if (property_) {
@@ -109,7 +111,7 @@ void PropertyWidgetQt::setVisible(bool visible) {
     if (visible != wasVisible && parent_) parent_->onChildVisibilityChange(this);
 }
 
-void PropertyWidgetQt::onSetVisible(bool visible) { setVisible(visible); }
+void PropertyWidgetQt::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
 void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* /*child*/) {
     if (property_) {
@@ -117,30 +119,22 @@ void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* /*child*/) {
     }
 }
 
-void PropertyWidgetQt::setReadOnly(bool readonly) {
-    setDisabled(readonly);
-}
+void PropertyWidgetQt::setReadOnly(bool readonly) { setDisabled(readonly); }
 
-void PropertyWidgetQt::onSetUsageMode(UsageMode /*usageMode*/) {
+void PropertyWidgetQt::onSetUsageMode(Property*, UsageMode) {
     setVisible(property_->getVisible());
 }
 
-void PropertyWidgetQt::onSetReadOnly(bool readonly) { setReadOnly(readonly); }
-
-void PropertyWidgetQt::onSetSemantics(const PropertySemantics& /*semantics*/) {
-    emit updateSemantics(this);
-}
+void PropertyWidgetQt::onSetReadOnly(Property*, bool readonly) { setReadOnly(readonly); }
 
 std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
     std::unique_ptr<QMenu> menu = std::make_unique<QMenu>();
-    auto app = InviwoApplication::getPtr();
 
-    if (property_) {
+    if (auto app = util::getInviwoApplication(property_)) {
         menu->addAction(QString::fromStdString(property_->getDisplayName()));
         menu->addSeparator();
 
-
-        {   // View mode actions (Developer / Application)
+        {  // View mode actions (Developer / Application)
             auto usageModeItem = menu->addMenu(tr("&Usage mode"));
             auto developerUsageModeAction = usageModeItem->addAction(tr("&Developer"));
             developerUsageModeAction->setCheckable(true);
@@ -164,18 +158,18 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                                                    UsageMode::Development);
 
             connect(developerUsageModeAction, &QAction::triggered, this,
-                    [&]() { property_->setUsageMode(UsageMode::Development); });
+                    [this]() { property_->setUsageMode(UsageMode::Development); });
 
             connect(applicationUsageModeAction, &QAction::triggered, this,
-                    [&]() { property_->setUsageMode(UsageMode::Application); });
+                    [this]() { property_->setUsageMode(UsageMode::Application); });
         }
         {
             auto copyAction = menu->addAction("&Copy");
-            connect(copyAction, &QAction::triggered, this, [&]() {
+            connect(copyAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
 
                 Serializer serializer("");
-                std::vector<Property*> properties = { property_ };
+                std::vector<Property*> properties = {property_};
                 serializer.serialize("Properties", properties, "Property");
 
                 std::stringstream ss;
@@ -191,13 +185,14 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
             auto pasteAction = menu->addAction("&Paste");
             if (property_->getReadOnly()) pasteAction->setEnabled(false);
-            connect(pasteAction, &QAction::triggered, this, [&]() {
+            connect(pasteAction, &QAction::triggered, this, [this, app]() {
                 if (!property_) return;
 
                 auto clipboard = QApplication::clipboard();
                 auto mimeData = clipboard->mimeData();
                 QByteArray data;
-                if (mimeData->formats().contains(QString("application/x.vnd.inviwo.property+xml"))) {
+                if (mimeData->formats().contains(
+                        QString("application/x.vnd.inviwo.property+xml"))) {
                     data = mimeData->data(QString("application/x.vnd.inviwo.property+xml"));
                 } else if (mimeData->formats().contains(QString("text/plain"))) {
                     data = mimeData->data(QString("text/plain"));
@@ -206,12 +201,9 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                 for (auto d : data) ss << d;
 
                 try {
-                    Deserializer deserializer(ss, "");
-                    auto app = InviwoApplication::getPtr();
-                    deserializer.registerFactory(app->getPropertyFactory());
-                    deserializer.registerFactory(app->getMetaDataFactory());
+                    auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
                     std::vector<std::unique_ptr<Property>> properties;
-                    deserializer.deserialize("Properties", properties, "Property");
+                    d.deserialize("Properties", properties, "Property");
                     if (!properties.empty() && properties.front()) {
                         NetworkLock lock(property_);
                         property_->set(properties.front().get());
@@ -221,7 +213,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
             });
 
             auto copyPathAction = menu->addAction("Copy Path");
-            connect(copyPathAction, &QAction::triggered, this, [&]() {
+            connect(copyPathAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
                 std::string path = joinString(property_->getPath(), ".");
                 QApplication::clipboard()->setText(path.c_str());
@@ -237,31 +229,34 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
                 for (auto& semantic : semantics) {
                     auto action =
-                        semanicsMenu->addAction(QString::fromStdString(semantic.getString()));
+                        semanicsMenu->addAction(utilqt::toQString(semantic.getString()));
                     semanticsGroup->addAction(action);
                     action->setCheckable(true);
                     action->setChecked(semantic == property_->getSemantics());
-                    action->setData(QString::fromStdString(semantic.getString()));
+                    action->setData(utilqt::toQString(semantic.getString()));
                 }
 
-                connect(semanticsGroup, &QActionGroup::triggered, this, [&](QAction* action) {
-                    PropertySemantics semantics(action->data().toString().toUtf8().constData());
-                    if (property_) property_->setSemantics(semantics);
-                });
+                connect(
+                    semanticsGroup, &QActionGroup::triggered,
+                    this, [prop = property_](QAction* action) {
+                        PropertySemantics semantics(utilqt::fromQString(action->data().toString()));
+                        prop->setSemantics(semantics);
+                    });
             }
         }
 
         menu->addSeparator();
         addPresetMenuActions(menu.get(), app);
         menu->addSeparator();
-        
+
         auto resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the property back to it's initial state"));
         connect(resetAction, &QAction::triggered, this,
-                [&]() { property_->resetToDefaultState(); });
+                [this]() { property_->resetToDefaultState(); });
+
+        // Module actions.
+        addModuleMenuActions(menu.get(), app);
     }
-    // Module actions.
-    addModuleMenuActions(menu.get(), app);
 
     return menu;
 }
@@ -313,7 +308,8 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                 presetManager->loadPreset(name, property, type);
             });
         };
-        auto savePreset = [presetManager, property = property_](QMenu* menu, PropertyPresetType type) {
+        auto savePreset =
+            [ presetManager, property = property_ ](QMenu * menu, PropertyPresetType type) {
             // will prompt the user to enter a preset name.
             // returns false if a preset with the same name already exits
             // and the user does not want to overwrite it.
@@ -342,7 +338,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             }
             return true;
         };
-        auto clearPresets = [presetManager, property = property_](PropertyPresetType type) {
+        auto clearPresets = [ presetManager, property = property_ ](PropertyPresetType type) {
             switch (type) {
                 case PropertyPresetType::Property:
                     presetManager->clearPropertyPresets(property);
@@ -410,13 +406,14 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
     }
 }
 
-UsageMode PropertyWidgetQt::getApplicationUsageMode() { return applicationUsageMode_->get(); }
+UsageMode PropertyWidgetQt::getApplicationUsageMode() {
+    return InviwoApplication::getPtr()->getApplicationUsageMode();
+}
 
 bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip && property_) {
         auto helpEvent = static_cast<QHelpEvent*>(event);
-        QToolTip::showText(helpEvent->globalPos(),
-                           utilqt::toQString(property_->getDescription()));
+        QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(property_->getDescription()));
         return true;
     } else if (event->type() == QEvent::MouseButtonRelease) {
         auto mouseEvent = static_cast<QMouseEvent*>(event);
@@ -454,11 +451,8 @@ int PropertyWidgetQt::getNestedDepth() const { return nestedDepth_; }
 
 PropertyWidgetQt* PropertyWidgetQt::getParentPropertyWidget() const { return parent_; }
 
-InviwoDockWidget* PropertyWidgetQt::getBaseContainer() const { return baseContainer_; }
-
-void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent, InviwoDockWidget* widget) {
+void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent) {
     parent_ = parent;
-    baseContainer_ = widget;
 }
 
 void PropertyWidgetQt::paintEvent(QPaintEvent*) {
@@ -468,4 +462,4 @@ void PropertyWidgetQt::paintEvent(QPaintEvent*) {
     style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 }
 
-}  // namespace
+}  // namespace inviwo

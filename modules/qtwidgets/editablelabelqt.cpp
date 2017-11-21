@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <inviwo/core/properties/property.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFontMetrics>
@@ -41,7 +44,8 @@
 
 namespace inviwo {
 
-EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText)
+EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, const std::string& text,
+                                 bool shortenText)
     : QWidget(parent)
     , label_{new QLabel(this)}
     , lineEdit_{nullptr}
@@ -49,11 +53,11 @@ EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string text, boo
     , property_(nullptr)
     , propertyWidget_(parent)
     , shortenText_(shortenText) {
-   
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
-    
+
     updateLabel(text_);
 
     hLayout->addWidget(label_);
@@ -74,9 +78,7 @@ EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, Property* property, b
     property->addObserver(this);
 }
 
-std::string EditableLabelQt::getText() {
-    return text_;
-}
+std::string EditableLabelQt::getText() { return text_; }
 
 QLineEdit* EditableLabelQt::getLineEdit() {
     if (!lineEdit_) {
@@ -89,7 +91,7 @@ QLineEdit* EditableLabelQt::getLineEdit() {
         lineEdit_->setSizePolicy(sizePolicy());
         layout()->addWidget(lineEdit_);
 
-        connect(lineEdit_, &QLineEdit::editingFinished, this,[&](){
+        connect(lineEdit_, &QLineEdit::editingFinished, this, [&]() {
             text_ = getLineEdit()->text().toStdString();
             updateLabel(text_);
 
@@ -99,7 +101,7 @@ QLineEdit* EditableLabelQt::getLineEdit() {
             if (property_) property_->setDisplayName(text_);
 
             emit textChanged();
-        
+
         });
     }
     return lineEdit_;
@@ -135,7 +137,7 @@ void EditableLabelQt::updateLabel(const std::string& text) {
     label_->setText(shortenText_ ? shortenText(text) : QString::fromStdString(text));
 }
 
-void EditableLabelQt::onSetDisplayName(const std::string& displayName) {
+void EditableLabelQt::onSetDisplayName(Property*, const std::string& displayName) {
     text_ = displayName;
     updateLabel(text_);
 }
@@ -161,5 +163,4 @@ bool EditableLabelQt::event(QEvent* event) {
     return QWidget::event(event);
 }
 
-
-}  // namespace
+}  // namespace inviwo

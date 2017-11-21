@@ -62,8 +62,6 @@ layout(binding=1) uniform sampler2D texLinearDepth;
 
 in vec2 texCoord;
 
-layout(location=0,index=0) out vec4 out_Color;
-
 
 //-------------------------------------------------------------------------
 
@@ -102,5 +100,5 @@ void main()
     c_total += BlurFunction(uv, r, center_c, center_d, w_total);  
   }
 
-  out_Color = c_total/w_total;
+  FragData0 = c_total/w_total;
 }

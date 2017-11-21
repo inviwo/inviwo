@@ -34,16 +34,20 @@
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/settings.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QVBoxLayout>
+#include <QString>
+#include <QScrollArea>
 #include <QLayout>
 #include <QFrame>
 #include <warn/pop>
 
 namespace inviwo {
 
-SettingsWidget::SettingsWidget(QString title, InviwoMainWindow* mainwindow)
+SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindow)
     : InviwoDockWidget(title, mainwindow), mainwindow_(mainwindow) {
     setObjectName("SettingsWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -83,22 +87,13 @@ SettingsWidget::~SettingsWidget() = default;
 void SettingsWidget::updateSettingsWidget() {
     auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
 
-    for (auto& setting : settings) {
-        CollapsibleGroupBoxWidgetQt* settingsGroup =
-            new CollapsibleGroupBoxWidgetQt(setting->getIdentifier());
-        settingsGroup->setParentPropertyWidget(nullptr, this);
+    for (auto setting : settings) {
+        auto settingsGroup = new CollapsibleGroupBoxWidgetQt(setting);
         layout_->addWidget(settingsGroup);
         settingsGroup->initState();
 
-        std::vector<Property*> props = setting->getProperties();
-
-        for (auto& prop : props) {
+        for (auto prop : setting->getProperties()) {
             settingsGroup->addProperty(prop);
-            for (auto p : prop->getWidgets()) {
-                connect(static_cast<PropertyWidgetQt*>(p),
-                        SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
-                        SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
-            }
         }
 
         if (!settingsGroup->isCollapsed()) {
@@ -106,41 +101,6 @@ void SettingsWidget::updateSettingsWidget() {
         }
     }
     layout_->addStretch();
-}
-
-void SettingsWidget::saveSettings() {
-    const auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
-    for (auto& setting : settings) {
-        setting->save();
-    }
-}
-
-void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
-    Property* prop = widget->getProperty();
-
-    QVBoxLayout* listLayout = static_cast<QVBoxLayout*>(widget->parentWidget()->layout());
-    int layoutPosition = listLayout->indexOf(widget);
-
-    auto factory = mainwindow_->getInviwoApplication()->getPropertyWidgetFactory();
-    auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release());
-
-    if (propertyWidget) {
-        listLayout->removeWidget(widget);
-        listLayout->insertWidget(layoutPosition, propertyWidget);
-
-        connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
-                SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
-
-        propertyWidget->initState();
-
-    } else {
-        LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());
-    }
-}
-
-void SettingsWidget::closeEvent(QCloseEvent *event) {
-    saveSettings();
-    InviwoDockWidget::closeEvent(event);
 }
 
 }  // namespace

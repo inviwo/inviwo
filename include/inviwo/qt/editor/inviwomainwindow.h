@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/qt/editor/undomanager.h>
 
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMainWindow>
@@ -44,6 +45,9 @@
 #include <warn/pop>
 
 #include <tclap/CmdLine.h>
+
+class QDropEvent;
+class QDragEnterEvent;
 
 namespace inviwo {
 
@@ -71,10 +75,6 @@ public:
     void openWorkspace(QString workspaceFileName);
     std::string getCurrentWorkspace();
 
-    virtual void onModifiedStatusChanged(const bool& newStatus) override;
-
-    void visibilityModeChangedInSettings();
-
     NetworkEditor* getNetworkEditor() const;
     SettingsWidget* getSettingsWidget() const;
     ProcessorTreeWidget* getProcessorTreeWidget() const;
@@ -100,7 +100,15 @@ public:
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
 
+protected:
+    virtual void dragEnterEvent(QDragEnterEvent* event) override;
+    virtual void dropEvent(QDropEvent* event) override;
+
 private:
+    virtual void onModifiedStatusChanged(const bool& newStatus) override;
+
+    void visibilityModeChangedInSettings();
+
     void openWorkspace(QString workspaceFileName, bool exampleWorkspace);
     void saveWorkspace(QString workspaceFileName);
 
@@ -133,9 +141,7 @@ private:
     InviwoApplicationQt* app_;
     std::unique_ptr<NetworkEditor> networkEditor_;
     NetworkEditorView* networkEditorView_;
-    TemplateOptionProperty<UsageMode>* appUsageModeProp_;
-
-
+ 
     // dock widgets
     SettingsWidget* settingsWidget_;
     ProcessorTreeWidget* processorTreeWidget_;

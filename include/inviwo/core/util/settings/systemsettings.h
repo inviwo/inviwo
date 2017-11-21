@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SYSTEMSETTINGS_H
@@ -34,40 +34,33 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
+class InviwoApplication;
+
+/**
+ * System settings, owned by the application, loaded before all the factories so we can't use any
+ * dynamic properties here
+ */
 class IVW_CORE_API SystemSettings : public Settings {
-
 public:
-    SystemSettings();
-
-    UsageMode getApplicationUsageMode() const;
-
+    SystemSettings(InviwoApplication* app);
     TemplateOptionProperty<UsageMode> applicationUsageMode_;
-    IntProperty poolSize_;
+    IntSizeTProperty poolSize_;
     BoolProperty txtEditor_;
     BoolProperty enablePortInspectors_;
     IntProperty portInspectorSize_;
     BoolProperty enableTouchProperty_;
     BoolProperty enablePickingProperty_;
     BoolProperty enableSoundProperty_;
-    IntProperty  useRAMPercentProperty_;
-    BoolProperty  logStackTraceProperty_;
-    ButtonProperty btnAllocTestProperty_;
-    ButtonProperty btnSysInfoProperty_;
-
+    BoolProperty logStackTraceProperty_;
     BoolProperty followObjectDuringRotation_;
     BoolProperty runtimeModuleReloading_;
 
-protected:
-    void logStacktraceCallback();
-    void allocationTest();
-    glm::u32* allocTest_;
+    static size_t defaultPoolSize();
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SYSTEMSETTINGS_H
+#endif  // IVW_SYSTEMSETTINGS_H

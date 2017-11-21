@@ -61,8 +61,6 @@ uniform sampler2D texSource;
 
 in vec2 texCoord;
 
-layout(location=0,index=0) out vec4 out_Color;
-
 #ifndef AO_BLUR_PRESENT
 #define AO_BLUR_PRESENT 1
 #endif
@@ -108,8 +106,8 @@ void main()
   }
   
 #if AO_BLUR_PRESENT
-  out_Color = vec4(vec3(c_total/w_total), 1);
+  FragData0 = vec4(vec3(c_total/w_total), 1);
 #else
-  out_Color = vec4(c_total/w_total, center_d, 0, 1);
+  FragData0 = vec4(c_total/w_total, center_d, 0, 1);
 #endif
 }

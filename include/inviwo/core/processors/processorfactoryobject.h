@@ -61,17 +61,66 @@ public:
 private:
     const ProcessorInfo info_;
 };
+
 namespace detail {
 
-template <typename T, typename std::enable_if<util::is_constructible<T, InviwoApplication*>::value,
-                                              std::size_t>::type = 0>
-std::unique_ptr<Processor> makeProcessor(InviwoApplication* app) {
-    return util::make_unique<T>(app);
+struct empty_constructor {};
+struct app_constructor {};
+struct id_name_constructor {};
+struct id_name_app_constructor {};
+
+template <typename T>
+struct constructor_picker {
+private:
+    using app = util::is_constructible<T, InviwoApplication*>;
+    using id_name = util::is_constructible<T, const std::string&, const std::string&>;
+    using id_name_app =
+        util::is_constructible<T, const std::string&, const std::string&, InviwoApplication*>;
+
+    using app_cond =
+        typename std::conditional<app::value, app_constructor, empty_constructor>::type;
+    using id_name_cond =
+        typename std::conditional<id_name::value, id_name_constructor, app_cond>::type;
+
+public:
+    using type =
+        typename std::conditional<id_name_app::value, id_name_app_constructor, id_name_cond>::type;
+};
+
+template <typename T>
+std::unique_ptr<Processor> makeProcessor(const std::string& id, const std::string& name,
+                                         InviwoApplication* app) {
+    return makeProcessor<T>(typename constructor_picker<T>::type{}, id, name, app);
 }
-template <typename T, typename std::enable_if<!util::is_constructible<T, InviwoApplication*>::value,
-                                              std::size_t>::type = 0>
-std::unique_ptr<Processor> makeProcessor(InviwoApplication*) {
-    return util::make_unique<T>();
+
+template <typename T>
+std::unique_ptr<Processor> makeProcessor(empty_constructor, const std::string& id,
+                                         const std::string& name, InviwoApplication*) {
+    auto p = util::make_unique<T>();
+    if (p->getIdentifier().empty()) p->setIdentifier(id);
+    if (p->getDisplayName().empty()) p->setDisplayName(name);
+    return std::move(p);
+}
+
+template <typename T>
+std::unique_ptr<Processor> makeProcessor(app_constructor, const std::string& id,
+                                         const std::string& name, InviwoApplication* app) {
+    auto p = util::make_unique<T>(app);
+    if (p->getIdentifier().empty()) p->setIdentifier(id);
+    if (p->getDisplayName().empty()) p->setDisplayName(name);
+    return std::move(p);
+}
+
+template <typename T>
+std::unique_ptr<Processor> makeProcessor(id_name_constructor, const std::string& id,
+                                         const std::string& name, InviwoApplication*) {
+    return util::make_unique<T>(id, name);
+}
+
+template <typename T>
+std::unique_ptr<Processor> makeProcessor(id_name_app_constructor, const std::string& id,
+                                         const std::string& name, InviwoApplication* app) {
+    return util::make_unique<T>(id, name, app);
 }
 
 }  // namespace detail
@@ -84,7 +133,7 @@ public:
     virtual ~ProcessorFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) {
-        return detail::makeProcessor<T>(app);
+        return detail::makeProcessor<T>(getDisplayName(), getDisplayName(), app);
     }
 };
 

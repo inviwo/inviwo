@@ -53,6 +53,7 @@ namespace inviwo {
 
 TEST(CImgUtils, cimgToBuffer) {
     // load source image
+
     const auto filename = filesystem::getPath(PathType::Tests, "/images/swirl.png");
     CImgLayerReader reader;
     auto layer = reader.readData(filename);

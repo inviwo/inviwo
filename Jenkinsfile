@@ -173,6 +173,7 @@ node {
             def color = res2color.containsKey(currentBuild.result) ? res2color[currentBuild.result] : 'warning'
             slackSend(
                 color: color, 
+                channel: "#jenkins-branch-pr", 
                 message: "Inviwo branch: ${env.BRANCH_NAME}\n" + \
                          "Status: ${currentBuild.result}\n" + \
                          "Job: ${env.BUILD_URL} \n" + \

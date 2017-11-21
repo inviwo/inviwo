@@ -36,6 +36,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
@@ -59,6 +60,7 @@
 #include <QTextCursor>
 #include <QGraphicsView>
 #include <QGraphicsSceneMouseEvent>
+#include <QFontMetrics>
 #include <warn/pop>
 
 namespace inviwo {
@@ -87,36 +89,45 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , totEvalTime_(0.0)
 #endif
 {
-    static constexpr int labelHeight_ = 8;
-    static constexpr int labelMargin_ = 8;
+    static constexpr int labelHeight = 8;
+    auto width = static_cast<int>(size_.width());
 
     setZValue(PROCESSORGRAPHICSITEM_DEPTH);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setRect(-size_.width() / 2, -size_.height() / 2, size_.width(), size_.height());
 
     {
-        nameLabel_ = new LabelGraphicsItem(
-            this, static_cast<int>(size_.width() - 2 * labelHeight_ - 10), Qt::AlignBottom);
-        nameLabel_->setPos(QPointF(rect().left() + labelMargin_, -3));
-        nameLabel_->setDefaultTextColor(Qt::white);
-        QFont nameFont("Segoe", labelHeight_, QFont::Black, false);
-        nameFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
-        nameLabel_->setFont(nameFont);
-        nameLabel_->setText(QString::fromStdString(processor_->getIdentifier()));
-        LabelGraphicsItemObserver::addObservation(nameLabel_);
+        displayNameLabel_ =
+            new LabelGraphicsItem(this, width - 2 * labelHeight - 10, Qt::AlignBottom);
+        displayNameLabel_->setDefaultTextColor(Qt::white);
+        QFont nameFont("Segoe", labelHeight, QFont::Black, false);
+        nameFont.setPixelSize(pointSizeToPixelSize(labelHeight));
+        displayNameLabel_->setFont(nameFont);
+        displayNameLabel_->setText(utilqt::toQString(processor_->getDisplayName()));
+        LabelGraphicsItemObserver::addObservation(displayNameLabel_);
     }
     {
-        classLabel_ = new LabelGraphicsItem(
-            this, static_cast<int>(size_.width() - 2 * labelHeight_), Qt::AlignTop);
-        classLabel_->setPos(QPointF(rect().left() + labelMargin_, -3));
-        classLabel_->setDefaultTextColor(Qt::lightGray);
-        QFont classFont("Segoe", labelHeight_, QFont::Normal, true);
-        classFont.setPixelSize(pointSizeToPixelSize(labelHeight_));
-        classLabel_->setFont(classFont);
-        classLabel_->setText(
-            QString::fromStdString(processor_->getDisplayName() + " " +
-                                   util::getPlatformTags(processor_->getTags()).getString()));
+        identifierLabel_ = new LabelGraphicsItem(this, width - 2 * labelHeight, Qt::AlignTop);
+        identifierLabel_->setDefaultTextColor(Qt::lightGray);
+        QFont classFont("Segoe", labelHeight, QFont::Normal, false);
+        classFont.setPixelSize(pointSizeToPixelSize(labelHeight));
+        identifierLabel_->setFont(classFont);
+        identifierLabel_->setText(utilqt::toQString(processor_->getIdentifier()));
+        LabelGraphicsItemObserver::addObservation(identifierLabel_);
     }
+    {
+        tagLabel_ = new LabelGraphicsItem(this, width/2, Qt::AlignTop);
+        tagLabel_->setDefaultTextColor(Qt::lightGray);
+        QFont classFont("Segoe", labelHeight, QFont::Bold, false);
+        classFont.setPixelSize(pointSizeToPixelSize(labelHeight));
+        tagLabel_->setFont(classFont);
+        tagLabel_->setText(
+            utilqt::toQString(util::getPlatformTags(processor_->getTags()).getString()));
+    }
+    auto tagSize = tagLabel_->usedTextWidth();
+    identifierLabel_->setCrop(width - 2 * labelHeight - (tagSize > 0 ? tagSize + 4 : 0));
+    positionLablels();
+
     processor_->ProcessorObservable::addObserver(this);
 
     processorMeta_ = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
@@ -151,8 +162,8 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         countLabel_ = new LabelGraphicsItem(this, 100, Qt::AlignRight | Qt::AlignBottom);
         countLabel_->setPos(rect().bottomRight() + QPointF(-5.0, 0.0));
         countLabel_->setDefaultTextColor(Qt::lightGray);
-        QFont font("Segoe", labelHeight_, QFont::Normal, false);
-        font.setPixelSize(pointSizeToPixelSize(labelHeight_));
+        QFont font("Segoe", labelHeight, QFont::Normal, false);
+        font.setPixelSize(pointSizeToPixelSize(labelHeight));
         countLabel_->setFont(font);
     }
 #endif
@@ -160,6 +171,16 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     setVisible(processorMeta_->isVisible());
     setSelected(processorMeta_->isSelected());
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
+}
+
+void ProcessorGraphicsItem::positionLablels() {
+    static constexpr int labelMargin = 7;
+
+    displayNameLabel_->setPos(QPointF(rect().left() + labelMargin, -2));
+    identifierLabel_->setPos(QPointF(rect().left() + labelMargin, -3));
+
+    auto offset = identifierLabel_->usedTextWidth();
+    tagLabel_->setPos(QPointF(rect().left() + labelMargin + offset + 4, -3));
 }
 
 QPointF ProcessorGraphicsItem::portPosition(PortType type, size_t index) {
@@ -226,27 +247,39 @@ void ProcessorGraphicsItem::onProcessorMetaDataSelectionChange() {
     }
 }
 
-ProcessorInportGraphicsItem* ProcessorGraphicsItem::getInportGraphicsItem(Inport* port) {
-    return inportItems_[port];
+ProcessorInportGraphicsItem* ProcessorGraphicsItem::getInportGraphicsItem(Inport* port) const {
+    return util::map_find_or_null(inportItems_, port);
 }
-ProcessorOutportGraphicsItem* ProcessorGraphicsItem::getOutportGraphicsItem(Outport* port) {
-    return outportItems_[port];
+ProcessorOutportGraphicsItem* ProcessorGraphicsItem::getOutportGraphicsItem(Outport* port) const {
+    return util::map_find_or_null(outportItems_, port);
 }
 
 ProcessorGraphicsItem::~ProcessorGraphicsItem() = default;
 
-inviwo::Processor* ProcessorGraphicsItem::getProcessor() const { return processor_; }
+Processor* ProcessorGraphicsItem::getProcessor() const { return processor_; }
 
-void ProcessorGraphicsItem::editProcessorName() {
+void ProcessorGraphicsItem::editDisplayName() {
     setFocus();
-    nameLabel_->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    displayNameLabel_->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
 
-    QTextCursor cur = nameLabel_->textCursor();
+    QTextCursor cur = displayNameLabel_->textCursor();
     cur.select(QTextCursor::Document);
-    nameLabel_->setTextCursor(cur);
-    nameLabel_->setTextInteractionFlags(Qt::TextEditorInteraction);
-    nameLabel_->setFocus();
-    nameLabel_->setSelected(true);
+    displayNameLabel_->setTextCursor(cur);
+    displayNameLabel_->setTextInteractionFlags(Qt::TextEditorInteraction);
+    displayNameLabel_->setFocus();
+    displayNameLabel_->setSelected(true);
+}
+
+void ProcessorGraphicsItem::editIdentifier() {
+    setFocus();
+    identifierLabel_->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+
+    QTextCursor cur = identifierLabel_->textCursor();
+    cur.select(QTextCursor::Document);
+    identifierLabel_->setTextCursor(cur);
+    identifierLabel_->setTextInteractionFlags(Qt::TextEditorInteraction);
+    identifierLabel_->setFocus();
+    identifierLabel_->setSelected(true);
 }
 
 void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
@@ -260,7 +293,7 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
     QColor selectionColor("#7a191b");
     QColor backgroundColor("#3b3d3d");
     QColor borderColor("#282828");
-        
+
     if (isSelected()) {
         p->setBrush(selectionColor);
     } else {
@@ -274,35 +307,7 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
 }
 
 bool ProcessorGraphicsItem::isEditingProcessorName() {
-    return (nameLabel_->textInteractionFlags() == Qt::TextEditorInteraction);
-}
-
-void ProcessorGraphicsItem::setIdentifier(QString text) {
-    std::string oldName = getProcessor()->getIdentifier();
-    std::string newName = text.toLocal8Bit().constData();
-
-    if (oldName == newName) return;
-
-    if (newName.size() == 0) {
-        nameLabel_->setText(oldName.c_str());
-        return;
-    }
-    std::string updatedNewName;
-    try {
-        updatedNewName = getProcessor()->setIdentifier(newName);
-    } catch (Exception& e) {
-        updatedNewName = getProcessor()->getIdentifier();
-        nameLabel_->setText(updatedNewName.c_str());
-        LogWarn(e.getMessage());
-        return;
-    }
-    if (updatedNewName != newName) {
-        nameLabel_->setText(updatedNewName.c_str());
-    }
-
-    if (auto* widget = dynamic_cast<ProcessorWidgetQt*>(getProcessor()->getProcessorWidget())) {
-        widget->setWindowTitle(updatedNewName.c_str());
-    }
+    return (displayNameLabel_->textInteractionFlags() == Qt::TextEditorInteraction);
 }
 
 void ProcessorGraphicsItem::snapToGrid() {
@@ -341,62 +346,78 @@ void ProcessorGraphicsItem::updateWidgets() {
         setZValue(SELECTED_PROCESSORGRAPHICSITEM_DEPTH);
         if (!highlight_) {
             if (auto editor = getNetworkEditor()) {
-                editor->addPropertyWidgets(getProcessor());
-                editor->showProecssorHelp(getProcessor()->getClassIdentifier());
+                editor->addPropertyWidgets(processor_);
+                editor->showProecssorHelp(processor_->getClassIdentifier());
             }
         }
     } else {
         setZValue(PROCESSORGRAPHICSITEM_DEPTH);
         if (auto editor = getNetworkEditor()) {
-            editor->removePropertyWidgets(getProcessor());
+            editor->removePropertyWidgets(processor_);
         }
     }
 }
 
-void ProcessorGraphicsItem::onLabelGraphicsItemChange() {
-    if (nameLabel_->isFocusOut()) {
-        setIdentifier(nameLabel_->text());
-        nameLabel_->setNoFocusOut();
+void ProcessorGraphicsItem::onLabelGraphicsItemChanged(LabelGraphicsItem* item) {
+    if (item == displayNameLabel_ && displayNameLabel_->isFocusOut()) {
+        auto newName = utilqt::fromQString(displayNameLabel_->text());
+        if (!newName.empty()) {
+            processor_->setDisplayName(newName);
+            displayNameLabel_->setNoFocusOut();
+        }
+    } else if (item == identifierLabel_ && identifierLabel_->isFocusOut()) {
+        auto newId = utilqt::fromQString(identifierLabel_->text());
+        if (!newId.empty()) {
+            try {
+                processor_->setIdentifier(newId);
+                identifierLabel_->setNoFocusOut();
+            } catch (Exception& e) {
+                identifierLabel_->setText(utilqt::toQString(processor_->getIdentifier()));
+                LogWarn(e.getMessage());
+            }
+            positionLablels();
+        }
     }
+}
+
+void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem* item) {
+    positionLablels();
 }
 
 std::string ProcessorGraphicsItem::getIdentifier() const { return processor_->getIdentifier(); }
 
 ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { return linkItem_; }
 
-void ProcessorGraphicsItem::onProcessorIdentifierChange(Processor* processor) {
-    std::string newIdentifier = processor->getIdentifier();
-
-    if (newIdentifier != nameLabel_->text().toUtf8().constData()) {
-        nameLabel_->setText(QString::fromStdString(newIdentifier));
+void ProcessorGraphicsItem::onProcessorIdentifierChanged(Processor* processor, const std::string&) {
+    auto newIdentifier = utilqt::toQString(processor->getIdentifier());
+    if (newIdentifier != displayNameLabel_->text()) {
+        identifierLabel_->setText(newIdentifier);
     }
-
-    ProcessorWidgetQt* processorWidgetQt =
-        dynamic_cast<ProcessorWidgetQt*>(getProcessor()->getProcessorWidget());
-
-    if (processorWidgetQt) processorWidgetQt->setWindowTitle(QString::fromStdString(newIdentifier));
 }
 
-void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) {
-    statusItem_->update();
+void ProcessorGraphicsItem::onProcessorDisplayNameChanged(Processor*, const std::string&) {
+    auto newDisplayName = utilqt::toQString(processor_->getDisplayName());
+    if (newDisplayName != displayNameLabel_->text()) {
+        displayNameLabel_->setText(newDisplayName);
+    }
 }
+
+void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) { statusItem_->update(); }
 
 void ProcessorGraphicsItem::onProcessorPortAdded(Processor*, Port* port) {
-    Inport* inport = dynamic_cast<Inport*>(port);
-    Outport* outport = dynamic_cast<Outport*>(port);
-    if (inport)
+    if (auto inport = dynamic_cast<Inport*>(port)) {
         addInport(inport);
-    else if (outport)
+    } else if (auto outport = dynamic_cast<Outport*>(port)) {
         addOutport(outport);
+    }
 }
 
 void ProcessorGraphicsItem::onProcessorPortRemoved(Processor*, Port* port) {
-    Inport* inport = dynamic_cast<Inport*>(port);
-    Outport* outport = dynamic_cast<Outport*>(port);
-    if (inport)
+    if (auto inport = dynamic_cast<Inport*>(port)) {
         removeInport(inport);
-    else if (outport)
+    } else if (auto outport = dynamic_cast<Outport*>(port)) {
         removeOutport(outport);
+    }
 }
 
 #if IVW_PROFILING
@@ -438,9 +459,9 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Category"), processor_->getCategory());
     tb(H("Code"), processor_->getCodeState());
     tb(H("Tags"), processor_->getTags().getString());
+    tb(H("Ready"), processor_->isReady() ? "Yes" : "No");
 
 #if IVW_PROFILING
-    tb(H("Ready"), processor_->isReady() ? "Yes" : "No");
     tb(H("Eval Count"), processCount_);
     tb(H("Eval Time"), msToString(evalTime_, true, true));
     tb(H("Mean Time"),
@@ -451,8 +472,6 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     showToolTipHelper(e, utilqt::toLocalQString(doc));
 }
 
-void ProcessorGraphicsItem::setHighlight(bool val) {
-    highlight_ = val;
-}
+void ProcessorGraphicsItem::setHighlight(bool val) { highlight_ = val; }
 
 }  // namespace inviwo

@@ -60,8 +60,6 @@ layout(location=2) uniform vec2 InvFullResolution;
 
 layout(binding=0)  uniform sampler2D texLinearDepth;
 
-layout(location=0,index=0) out vec4 out_Color;
-
 //----------------------------------------------------------------------------------
 
 vec3 UVToView(vec2 uv, float eye_z)
@@ -97,5 +95,5 @@ void main() {
   vec3 P  = FetchViewPos(texCoord);
   vec3 N  = ReconstructNormal(texCoord, P);
   
-  out_Color = vec4(N*0.5 + 0.5,0);
+  FragData0 = vec4(N*0.5 + 0.5,0);
 }

@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
-#include <inviwo/core/properties/optionproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,22 +41,14 @@
 #include <warn/pop>
 
 class QMenu;
-class QAction;
-class QActionGroup;
 
 namespace inviwo {
 
-class PropertyListWidget;
 class Property;
-class InviwoDockWidget;
 
 class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
                                                   public PropertyWidget,
                                                   public PropertyObserver {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     using BaseCallBack = std::function<void()>;
 
@@ -76,12 +67,6 @@ public:
 
     virtual void setReadOnly(bool readonly);
 
-    // PropertyObservable overrides
-    virtual void onSetSemantics(const PropertySemantics& semantics) override;
-    virtual void onSetReadOnly(bool readonly) override;
-    virtual void onSetVisible(bool visible) override;
-    virtual void onSetUsageMode(UsageMode usageMode) override;
-
     // QWidget overrides
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
@@ -90,15 +75,16 @@ public:
     int getNestedDepth() const;
 
     PropertyWidgetQt* getParentPropertyWidget() const;
-    InviwoDockWidget* getBaseContainer() const;
-    void setParentPropertyWidget(PropertyWidgetQt* parent, InviwoDockWidget* widget);
+    void setParentPropertyWidget(PropertyWidgetQt* parent);
 
     virtual std::unique_ptr<QMenu> getContextMenu();
 
-signals:
-    void updateSemantics(PropertyWidgetQt*);
-
 protected:
+    // PropertyObservable overrides
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
+    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
+
     virtual void setVisible(bool visible) override;
     UsageMode getApplicationUsageMode();
 
@@ -110,9 +96,7 @@ private:
     void addPresetMenuActions(QMenu* menu, InviwoApplication* app);
 
     PropertyWidgetQt* parent_;
-    InviwoDockWidget* baseContainer_;
 
-    TemplateOptionProperty<UsageMode>* applicationUsageMode_;
     const BaseCallBack* appModeCallback_;
 
     const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.

@@ -91,6 +91,35 @@ void validateIdentifier(const std::string& identifier, const std::string& type,
     }
 }
 
+std::string findUniqueIdentifier(const std::string& identifier,
+                                 std::function<bool(const std::string&)> isUnique,
+                                 const std::string& sep) {
+
+    int i = 2;
+    std::string newIdentifier = identifier;
+    auto it = std::find_if(identifier.rbegin(), identifier.rend(), [](char c) {return !std::isdigit(c); });
+    std::string baseIdentifier = trim(std::string{identifier.begin(), it.base()});
+    std::string number(it.base(), identifier.end());
+    if(!number.empty()) i = std::stoi(number);
+
+    while (!isUnique(newIdentifier)) {
+        newIdentifier = baseIdentifier + sep + toString(i++);
+    }
+    return newIdentifier;
+}
+
+std::string cleanIdentifier(const std::string& identifier, const std::string& extra) {
+    std::string str{identifier};
+    std::replace_if(str.begin(), str.end(),
+                    [&](char c) { return !util::isValidIdentifierCharacter(c, extra); }, ' ');
+    util::erase_remove_if(str, [s = false](char c) mutable {
+        if (s && c == ' ') return true;
+        s = c == ' ';
+        return false;
+    });
+    return str;
+}
+
 std::string stripModuleFileNameDecoration(std::string filePath) {
     auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
 #if defined(WIN32)

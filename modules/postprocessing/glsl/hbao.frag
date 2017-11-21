@@ -95,10 +95,8 @@ layout(std140) uniform controlBuffer {
 uniform sampler2D texLinearDepth;
 uniform sampler2D texRandom;
 
-layout(location=0,index=0) out vec4 out_Color;
-
 void outputColor(vec4 color) {
-  out_Color = color;
+  FragData0 = color;
 }
 
 in vec2 texCoord;

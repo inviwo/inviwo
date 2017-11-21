@@ -49,9 +49,11 @@ BoolPropertyWidget::BoolPropertyWidget(BoolProperty &property, Processor &proces
 
 void BoolPropertyWidget::updateFromProperty() { setValue(property_->get()); }
 
-void BoolPropertyWidget::onSetVisible(bool visible) { setVisible(visible); }
+void BoolPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
 
-void BoolPropertyWidget::onSetDisplayName(const std::string &displayName) { setLabel(displayName); }
+void BoolPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+    setLabel(displayName);
+}
 
 }  // namespace glui
 

@@ -34,6 +34,7 @@
 #include <unordered_set>
 #include <functional>
 #include <algorithm>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -96,6 +97,7 @@ private:
  */
 class IVW_CORE_API ObservableInterface {
     friend class Observer;
+
 public:
     virtual ~ObservableInterface() = default;
 
@@ -115,8 +117,8 @@ protected:
 private:
     // The internal ones will not call observer->add/remove
     // Should only be called by Observer.
-    virtual void addObserverInternal(Observer* observer) = 0;
-    virtual void removeObserverInternal(Observer* observer) = 0;
+    virtual bool addObserverInternal(Observer* observer) = 0;
+    virtual bool removeObserverInternal(Observer* observer) = 0;
 };
 
 /** \class Observable
@@ -144,7 +146,7 @@ private:
  *     };
  * @endcode
  *
- * Usage: 
+ * Usage:
  * @code
  *     class Button : public ButtonObservable {
  *         ...
@@ -188,7 +190,7 @@ public:
 
     void addObserver(T* observer);
     void removeObserver(T* observer);
-    
+
     virtual void startBlockingNotifications() override final;
     virtual void stopBlockingNotifications() override final;
 
@@ -197,34 +199,32 @@ protected:
     void forEachObserver(C callback);
 
 private:
-    using ObserverSet = std::unordered_set<T*> ;
-    ObserverSet observers_;
+    std::vector<T*> observers_;
 
     // invocationCount counts how may time we have called forEachObserver
     // Add we will only add and remove observers when that it is zero to avoid
     // Invalidation the iterators. This is needed since a observer might remove it
     // self in the on... callback.
     size_t invocationCount_ = 0;
-    ObserverSet toAdd_;
-    ObserverSet toRemove_;
+    std::vector<T*> toAdd_;
 
     size_t notificationsBlocked_ = 0;
 
     virtual void addObserver(Observer* observer) override;
     virtual void removeObserver(Observer* observer) override;
     virtual void removeObservers() override;
-    virtual void addObserverInternal(Observer* observer) override;
-    virtual void removeObserverInternal(Observer* observer) override;
+    virtual bool addObserverInternal(Observer* observer) override;
+    virtual bool removeObserverInternal(Observer* observer) override;
 };
 
 template <typename T>
 Observable<T>::Observable(const Observable<T>& rhs) {
-    for (auto elem : rhs.observers_) addObserver(elem);
+    for (auto& elem : rhs.observers_) addObserver(elem);
 }
 
 template <typename T>
 Observable<T>::Observable(Observable<T>&& rhs) {
-    for (auto elem : rhs.observers_) addObserver(elem);
+    for (auto& elem : rhs.observers_) addObserver(elem);
     rhs.removeObservers();
 }
 
@@ -232,7 +232,7 @@ template <typename T>
 Observable<T>& inviwo::Observable<T>::operator=(const Observable<T>& that) {
     if (this != &that) {
         removeObservers();
-        for (auto elem : that.observers_) addObserver(elem);
+        for (auto& elem : that.observers_) addObserver(elem);
     }
     return *this;
 }
@@ -241,7 +241,7 @@ template <typename T>
 Observable<T>& inviwo::Observable<T>::operator=(Observable<T>&& that) {
     if (this != &that) {
         removeObservers();
-        for (auto elem : that.observers_) addObserver(elem);
+        for (auto& elem : that.observers_) addObserver(elem);
         that.removeObservers();
     }
     return *this;
@@ -260,21 +260,14 @@ void Observable<T>::removeObservers() {
 
 template <typename T>
 void Observable<T>::addObserver(T* observer) {
-    if (invocationCount_ == 0) {
-        auto inserted = observers_.insert(observer);
-        if (inserted.second) addObservationHelper(observer);
-    } else {
-        toAdd_.insert(observer);
+    if (addObserverInternal(observer)) {
         addObservationHelper(observer);
     }
 }
 
 template <typename T>
 void Observable<T>::removeObserver(T* observer) {
-    if (invocationCount_ == 0) {
-        if (observers_.erase(observer) > 0) removeObservationHelper(observer);
-    } else {
-        toRemove_.insert(observer);
+    if (removeObserverInternal(observer)) {
         removeObservationHelper(observer);
     }
 }
@@ -288,21 +281,26 @@ void Observable<T>::stopBlockingNotifications() {
     --notificationsBlocked_;
 }
 
-
 template <typename T>
 template <typename C>
 void Observable<T>::forEachObserver(C callback) {
     if (notificationsBlocked_ > 0) return;
+    bool toRemove = false;
     ++invocationCount_;
-    for (auto o : observers_) callback(o);
+    for (auto& o : observers_) {
+        if (o) {
+            callback(o);
+        } else {
+            toRemove = true;
+        }
+    }
     --invocationCount_;
 
     // Add and Remove any observers that was added/removed while we invoked the callbacks.
     if (invocationCount_ == 0) {
-        for (auto o : toAdd_) observers_.insert(o);
+        if (toRemove) util::erase_remove(observers_, nullptr);
+        observers_.insert(observers_.end(), toAdd_.begin(), toAdd_.end());
         toAdd_.clear();
-        for (auto o : toRemove_) observers_.erase(o);
-        toRemove_.clear();
     }
 }
 
@@ -317,20 +315,33 @@ void Observable<T>::removeObserver(Observer* observer) {
 }
 
 template <typename T>
-void inviwo::Observable<T>::addObserverInternal(Observer* observer) {
-    if (invocationCount_ == 0) {
-        observers_.insert(static_cast<T*>(observer));
+bool Observable<T>::addObserverInternal(Observer* aObserver) {
+    auto observer = static_cast<T*>(aObserver);
+    if (!util::contains(observers_, observer)) {
+        if (invocationCount_ == 0) {
+            observers_.push_back(observer);
+        } else {
+            toAdd_.push_back(observer);
+        }
+        return true;
     } else {
-        toAdd_.insert(static_cast<T*>(observer));
+        return false;
     }
 }
 
 template <typename T>
-void inviwo::Observable<T>::removeObserverInternal(Observer* observer) {
-    if (invocationCount_ == 0) {
-        observers_.erase(static_cast<T*>(observer));
+bool Observable<T>::removeObserverInternal(Observer* aObserver) {
+    auto observer = static_cast<T*>(aObserver);
+    auto it = util::find(observers_, observer);
+    if (it != observers_.end()) {
+        if (invocationCount_ == 0) {
+            observers_.erase(it);
+        } else {
+            *it = nullptr;
+        }
+        return true;
     } else {
-        toRemove_.insert(static_cast<T*>(observer));
+        return false;
     }
 }
 
@@ -343,15 +354,13 @@ public:
     NotificationBlocker(NotificationBlocker&&) = delete;
     NotificationBlocker& operator=(NotificationBlocker) = delete;
     ~NotificationBlocker();
+
 private:
     ObservableInterface& observable_;
 };
 
-}  // namespace
+}  // namespace util
 
-
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_OBSERVER_H
-
-

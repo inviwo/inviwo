@@ -48,35 +48,32 @@ InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) 
         auto cutAction = addAction(tr("Cu&t"));
         actions_[MenuItemType::cut] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
-        cutAction->setEnabled(true);
     }
     {
         auto copyAction = addAction(tr("&Copy"));
         actions_[MenuItemType::copy] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
-        copyAction->setEnabled(true);
     }
     {
         auto pasteAction = addAction(tr("&Paste"));
         actions_[MenuItemType::paste] = pasteAction;
         pasteAction->setShortcut(QKeySequence::Paste);
-        pasteAction->setEnabled(true);
     }
     {
         auto deleteAction = addAction(tr("&Delete"));
         actions_[MenuItemType::del] = deleteAction;
         deleteAction->setShortcuts(QList<QKeySequence>(
             {QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace)}));
-        deleteAction->setEnabled(true);
     }
     {
         auto selectAllAction = addAction(tr("&Select All"));
         actions_[MenuItemType::select] = selectAllAction;
         selectAllAction->setShortcut(QKeySequence::SelectAll);
-        selectAllAction->setEnabled(true);
     }
 
     for (auto& action : actions_) {
+        action.second->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action.second->setEnabled(true);
         connect(action.second, &QAction::triggered, this, [ this, type = action.first ]() {
             if (auto item = getFocusItem()) {
                 item->invoke(type);
@@ -130,6 +127,11 @@ std::shared_ptr<MenuItem> InviwoEditMenu::getFocusItem() {
 
 std::shared_ptr<MenuItem> InviwoEditMenu::registerItem(std::shared_ptr<MenuItem> item) {
     items_[item->owner] = item;
+    if (auto w = qobject_cast<QWidget*>(item->owner)) {
+        for (auto& action : actions_) {
+            w->addAction(action.second);
+        }      
+    }
     return item;
 }
 
