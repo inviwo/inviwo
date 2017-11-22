@@ -628,7 +628,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
     std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
     workspaceFileName = utilqt::toQString(fileName);
-
+    
     if (!filesystem::fileExists(fileName)) {
         LogError("Could not find workspace file: " << fileName);
         return;
@@ -671,7 +671,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     workspace = filesystem::cleanupPath(workspace);
     if (!workspace.empty()) {
-        openWorkspace(QString::fromStdString(workspace));
+        openWorkspace(utilqt::toQString(workspace));
     } else if (!workspaceOnLastSuccessfulExit_.isEmpty()) {
         openWorkspace(workspaceOnLastSuccessfulExit_);
     } else {
@@ -695,7 +695,7 @@ void InviwoMainWindow::openWorkspace() {
 }
 
 void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
-    std::string fileName{workspaceFileName.toStdString()};
+    std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
 
     try {
