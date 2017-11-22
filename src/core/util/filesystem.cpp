@@ -30,6 +30,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/tinydirinterface.h>
+#include <inviwo/core/util/stringconversion.h>
 
 // For directory exists
 #include <sys/types.h>
@@ -66,6 +67,21 @@
 #include <algorithm>
 
 namespace inviwo {
+
+namespace detail {
+
+// If path contains the location of a directory, it cannot contain a trailing backslash.
+// If it does, stat will return -1 and errno will be set to ENOENT.
+// https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
+std::string removeTrailingSlash(const std::string& path) {
+    // Remove trailing backslash or slash
+    if (path.size() > 1 && (path.back() == '/' || path.back() == '\\')) {
+        return path.substr(0, path.size() - 1);
+    }
+    return path;
+}
+
+}  // namespace detail
 
 namespace filesystem {
 
@@ -151,7 +167,7 @@ IVW_CORE_API std::string getInviwoUserSettingsPath() {
 #elif defined(__APPLE__)
     // Taken from:
     // http://stackoverflow.com/questions/5123361/finding-library-application-support-from-c?rq=1
-    // A depricated solution, but a solution...
+    // A deprecated solution, but a solution...
 
     FSRef ref;
     OSType folderType = kApplicationSupportFolderType;
@@ -174,47 +190,49 @@ IVW_CORE_API std::string getInviwoUserSettingsPath() {
 
 bool fileExists(const std::string& filePath) {
     // http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
+#if defined(_WIN32)
+    struct _stat buffer;
+    return (_wstat(util::toWstring(filePath).c_str(), &buffer) == 0);
+#else
     struct stat buffer;
     return (stat(filePath.c_str(), &buffer) == 0);
+#endif
 }
 
 bool directoryExists(const std::string& path) {
-    struct stat buffer;
     // If path contains the location of a directory, it cannot contain a trailing backslash.
     // If it does, -1 will be returned and errno will be set to ENOENT.
     // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
     // We therefore check if path ends with a backslash
-    if (path.size() > 1 && (path.back() == '/' || path.back() == '\\')) {
-        // Remove trailing backslash
-        std::string pathWithoutSlash = path.substr(0, path.size() - 1);
-        return (stat(pathWithoutSlash.c_str(), &buffer) == 0 && (buffer.st_mode & S_IFDIR));
-    } else {
-        // No need to modify path
-        return (stat(path.c_str(), &buffer) == 0 && (buffer.st_mode & S_IFDIR));
-    }
+#if defined(_WIN32)
+    struct _stat buffer;
+    int retVal = _wstat(util::toWstring(detail::removeTrailingSlash(path)).c_str(), &buffer);
+    return (retVal == 0 && (buffer.st_mode & S_IFDIR));
+#else
+    struct stat buffer;
+    return (stat(detail::removeTrailingSlash(path).c_str(), &buffer) == 0 &&
+            (buffer.st_mode & S_IFDIR));
+#endif
 }
 
 std::time_t fileModificationTime(const std::string& filePath) {
-    struct stat buffer;
     // If path contains the location of a directory, it cannot contain a trailing backslash.
     // If it does, -1 will be returned and errno will be set to ENOENT.
     // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
     // We therefore check if path ends with a backslash
     auto err = 0;
-    if (filePath.size() > 1 && (filePath.back() == '/' || filePath.back() == '\\')) {
-        // Remove trailing backslash
-        std::string pathWithoutSlash = filePath.substr(0, filePath.size() - 1);
-        err = stat(pathWithoutSlash.c_str(), &buffer);
-    } else {
-        // No need to modify path
-        err = stat(filePath.c_str(), &buffer);
-    }
+#if defined(_WIN32)
+    struct _stat buffer;
+    err = _wstat(util::toWstring(detail::removeTrailingSlash(filePath)).c_str(), &buffer);
+#else
+    struct stat buffer;
+    err = stat(detail::removeTrailingSlash(filePath).c_str(), &buffer);
+#endif
     if (err != -1) {
         return buffer.st_mtime;
     } else {
         return 0;
-    }
-    
+    }    
 }
 
 IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {

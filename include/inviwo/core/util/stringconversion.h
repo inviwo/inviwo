@@ -59,6 +59,20 @@ T stringTo(const std::string& str) {
     return result;
 }
 
+namespace util {
+
+/** 
+ * \brief convert the given std::string to std::wstring. 
+ * On Windows, MultiByteToWideChar is used for this conversion assuming utf8 encoding. 
+ * Otherwise, std::mbsrtowcs is used.
+ * 
+ * @param str   multibyte character string
+ * @return input converted to std::wstring
+ */
+std::wstring toWstring(const std::string& str);
+
+} // namespace util
+
 /** 
  * \brief Split string into substrings based on separating delimiter character.
  * Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.
