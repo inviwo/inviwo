@@ -35,10 +35,33 @@
 #include <inviwo/core/util/pathtype.h>
 
 #include <vector>
+#include <fstream>
 
 namespace inviwo {
 
 namespace filesystem {
+
+/**
+ * opens and returns a std::fstream for the given file name. On Windows the file name is first
+ * converted from multibyte string to std::wstring.
+ */
+IVW_CORE_API std::fstream fstream(const std::string& filename,
+                                  std::ios_base::openmode mode = std::ios_base::in |
+                                                                 std::ios_base::out);
+
+/**
+* opens and returns a std::ifstream for the given file name. On Windows the file name is first
+* converted from multibyte string to std::wstring.
+*/
+IVW_CORE_API std::ifstream ifstream(const std::string& filename,
+                                    std::ios_base::openmode mode = std::ios_base::in);
+
+/**
+* opens and returns a std::ofstream for the given file name. On Windows the file name is first
+* converted from multibyte string to std::wstring.
+*/
+IVW_CORE_API std::ofstream ofstream(const std::string& filename,
+                                    std::ios_base::openmode mode = std::ios_base::out);
 
 /**
  * Get the working directory of the application.

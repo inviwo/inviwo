@@ -85,6 +85,30 @@ std::string removeTrailingSlash(const std::string& path) {
 
 namespace filesystem {
 
+std::fstream fstream(const std::string& filename, std::ios_base::openmode mode) {
+#if defined(_WIN32)
+    return std::move(std::fstream(util::toWstring(filename), mode));
+#else
+    return std::move(std::fstream(filename, mode));
+#endif
+}
+
+std::ifstream ifstream(const std::string& filename, std::ios_base::openmode mode) {
+#if defined(_WIN32)
+    return std::move(std::ifstream(util::toWstring(filename), mode));
+#else
+    return std::move(std::ifstream(filename, mode));
+#endif
+}
+
+std::ofstream ofstream(const std::string& filename, std::ios_base::openmode mode) {
+#if defined(_WIN32)
+    return std::move(std::ofstream(util::toWstring(filename), mode));
+#else
+    return std::move(std::ofstream(filename, mode));
+#endif
+}
+
 std::string getWorkingDirectory() {
     std::array<char, FILENAME_MAX> workingDir;
 #ifdef WIN32
