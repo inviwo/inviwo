@@ -167,12 +167,29 @@ public:
 
     CommandLineParser& getCommandLineParser();
     const CommandLineParser& getCommandLineParser() const;
-
+    /**
+     * \brief Add an action that can be shown in for example property widget context menu.
+     * Will be shown when right clicking on a property in the NetworkEditor.
+     * Added callbacks will be removed in ~InviwoModule when your module is destroyed.
+     * Example if you want to do it earlier:
+     * @code
+     * auto& callbackActions = app_->getCallbackActions();
+     * util::erase_remove_if(callbackActions, [&](auto& a) { return a->getModule() == this; });
+     * @endcode
+     * @see getCallbackActions
+     */
     virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
+
+    /**
+     * \brief Get list of ModuleCallbackAction shown in for example property widget context menu.
+     * Do not keep references to elements in the list around since you cannot be notified when 
+     * they will be removed.
+     * @see addCallbackAction
+     */
     virtual std::vector<std::unique_ptr<ModuleCallbackAction>>& getCallbackActions();
 
     /**
-     * Retrieve all Settings from all modules, and the system settings
+     * Retrieve all Settings from all modules including the SystemSettings
      * @see Settings
      * @see InviwoModule
      */

@@ -31,9 +31,12 @@
 #define IVW_ANIMATIONQTMODULE_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/animationeditordockwidgetqt.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/datastructures/animation.h>
+
+#include <QMenu>
 
 namespace inviwo {
 
@@ -41,6 +44,10 @@ class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule {
 public:
     AnimationQtModule(InviwoApplication* app);
     virtual ~AnimationQtModule();
+private:
+    // Keep references to added widgets so that they can be removed in destructor
+    std::unique_ptr<animation::AnimationEditorDockWidgetQt> editor_;
+    std::unique_ptr<QMenu> menu_; // Show/hide animation editor 
 };
 
 } // namespace

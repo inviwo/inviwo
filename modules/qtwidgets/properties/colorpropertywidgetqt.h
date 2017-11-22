@@ -199,6 +199,26 @@ struct ColorConverter<vec4> {
         return vec4(color.red(), color.green(), color.blue(), color.alpha()) / 255.0f;
     }
 };
+template <>
+struct ColorConverter<dvec3> {
+    static QColor toQColor(const dvec3& color) {
+        auto c = ivec3{255.0 * glm::clamp(color, dvec3(0.0), dvec3(1.0))};
+        return QColor(c.r, c.g, c.b);
+    }
+    static vec3 toGLM(const QColor& color) {
+        return dvec3(color.red(), color.green(), color.blue()) / 255.0;
+    }
+};
+template <>
+struct ColorConverter<dvec4> {
+    static QColor toQColor(const dvec4& color) {
+    auto c = ivec4{255.0 * glm::clamp(color, dvec4(0.0), dvec4(1.0))};
+        return QColor(c.r, c.g, c.b, c.a);
+    }
+    static vec4 toGLM(const QColor& color) {
+        return dvec4(color.red(), color.green(), color.blue(), color.alpha()) / 255.0;
+    }
+};
 }  // namespace detail
 
 template <typename T>

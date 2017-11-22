@@ -65,17 +65,26 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
             menu = (*viewMenuIt);
         } else {
             // Add new menu if not found
-            menu = win->menuBar()->addMenu(animationMenuName);
+            // To be removed when module is destroyed
+            menu_ = std::make_unique<QMenu>(animationMenuName);
+            win->menuBar()->addMenu(menu_.get());
+            menu = menu_.get();
+            // Release pointer if destroyed by Qt before module is destroyed
+            QObject::connect(menu_.get(), &QObject::destroyed,
+                             [&](QObject *obj) { menu_.release(); });
         }
         auto& controller =
             app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
-        auto editor =
-            new animation::AnimationEditorDockWidgetQt(controller, "Animation Editor", win);
-        menu->addAction(editor->toggleViewAction());
-        editor->hide();
+        editor_ = std::make_unique<animation::AnimationEditorDockWidgetQt>(controller,
+                                                                           "Animation Editor", win);
+        menu->addAction(editor_->toggleViewAction());
+        editor_->hide();
+        // Release pointer if destroyed by Qt before module is destroyed
+        QObject::connect(editor_.get(), &QObject::destroyed, [&](QObject *obj) { editor_.release(); });
+
     }
 }
 
 AnimationQtModule::~AnimationQtModule() = default;
 
-} // namespace
+} // namespace inviwo

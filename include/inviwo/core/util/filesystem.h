@@ -86,8 +86,9 @@ IVW_CORE_API bool directoryExists(const std::string& path);
 
 /**
  * \brief Get last time file was modified.
+ * Error can occur if the file does not exist for example.
  * @param filePath The path to the file
- * @return Time of last modification
+ * @return Time of last modification, or 0 if an error occured (00:00, Jan 1 1970 UTC).
  */
 IVW_CORE_API std::time_t fileModificationTime(const std::string& filePath);
 
