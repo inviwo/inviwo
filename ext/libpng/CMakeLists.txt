@@ -13,6 +13,7 @@ ivw_group("Source Files" ${SOURCE_FILES} )
 #--------------------------------------------------------------------
 # Create library
 add_library(libpng ${SOURCE_FILES} ${HEADER_FILES})
+add_library(inviwo::libpng ALIAS libpng)
 
 #--------------------------------------------------------------------
 # Define definitions for build on windows
@@ -31,12 +32,8 @@ target_include_directories(libpng INTERFACE
 
 #--------------------------------------------------------------------
 # libpng depends on zlib
-target_link_libraries(libpng PRIVATE zlib1)
-
-#find_package(ZLIB REQUIRED)
-#target_include_directories(libpng PRIVATE ${ZLIB_INCLUDE_DIR})
-#target_link_libraries(libpng PRIVATE ${ZLIB_LIBRARIES})
-#add_dependencies(libpng zlib1)
+#find_package(ZLIB REQUIRED) # already done in inviwo/CmakeLists.txt
+target_link_libraries(libpng PRIVATE ZLIB::ZLIB)
 
 #--------------------------------------------------------------------
 # Supress warnings

@@ -127,7 +127,11 @@ endif()
 # Add external libraries.
 # 
 # Dependencies between libraries are solved using the given order
-add_subdirectory(ext/zlib-1.2.11)
+find_package(ZLIB QUIET) # Defines imported target ZLIB::ZLIB if found
+if (NOT ZLIB_FOUND)
+    # Need to build zlib. Defines target ZLIB::ZLIB
+    add_subdirectory(ext/zlib-1.2.11)
+endif()
 add_subdirectory(ext/libpng)
 add_subdirectory(ext/libjpeg)
 add_subdirectory(ext/openexr)

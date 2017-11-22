@@ -50,9 +50,11 @@ INCLUDE_DIRECTORIES (
   # IlmImfFuzzTest
 )
 
-#FIND_PACKAGE(ZLIB REQUIRED)
-get_target_property(ZLIB_INCLUDE_DIRS inviwo::zlib1 INTERFACE_INCLUDE_DIRECTORIES)
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+#FIND_PACKAGE(ZLIB REQUIRED) # already done in inviwo/CmakeLists.txt
+# No need for this, 
+# directories will be included when setting target dependency
+#get_target_property(ZLIB_INCLUDE_DIRS ZLIB::ZLIB INTERFACE_INCLUDE_DIRECTORIES)
+#INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
 
 IF (NOT WIN32)
   SET ( PTHREAD_LIB pthread )

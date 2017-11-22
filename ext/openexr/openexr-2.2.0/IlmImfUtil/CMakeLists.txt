@@ -32,7 +32,7 @@ TARGET_LINK_LIBRARIES ( openexr-ilmimfutil PUBLIC
   openexr-imath
   openexr-ilmthread
   openexr-ilmimf
-  inviwo::zlib1
+  ZLIB::ZLIB
   # Half 
   # Iex${ILMBASE_LIBSUFFIX}
   # Imath${ILMBASE_LIBSUFFIX}
