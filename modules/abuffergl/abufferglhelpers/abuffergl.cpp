@@ -641,7 +641,7 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
                     LogWarn(ss.str());
                 } else {
                     std::string basePath = inviwo::filesystem::findBasePath();
-                    std::ofstream fs((basePath + "abuffer_currentPixelInfo.txt").c_str());
+                    auto fs = filesystem::ofstream((basePath + "abuffer_currentPixelInfo.txt"));
                     fs << ss.str() << "\n";
                     fs.close();
                 }
@@ -717,7 +717,7 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
         if (ABUFFER_PAGE_INDEX_INFO) {
             // std::sort(allFragmentPageCounts.begin(), allFragmentPageCounts.end());
             std::string basePath = inviwo::filesystem::findBasePath();
-            std::ofstream fstream((basePath + rndInt + "abuffer_sortedPage.txt").c_str());
+            auto fstream = filesystem::ofstream((basePath + rndInt + "abuffer_sortedPage.txt"));
             for (size_t i = 0; i < allFragmentPageCounts.size(); i++) {
                 if (allFragmentPageCounts[i] > 0) {
                     fstream << allFragmentPageCounts[i] << " ";
@@ -731,7 +731,7 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
         if (ABUFFER_FRAGMENT_COUNT_INFO) {
             // std::sort(allFragmentPageCounts.begin(), allFragmentPageCounts.end());
             std::string basePath = inviwo::filesystem::findBasePath();
-            std::ofstream fstream((basePath + rndInt + "abuffer_linklistnodecount.txt").c_str());
+            auto fstream = filesystem::ofstream((basePath + rndInt + "abuffer_linklistnodecount.txt"));
             for (size_t i = 0; i < allFragementCounts.size(); i++) {
                 fstream << allFragementCounts[i] << "\n";
             }
@@ -757,7 +757,7 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
             if (gldata && DUMP_TO_FILE) {
                 // GLuint64* data64 = (GLuint64*) data;
                 std::string basePath = inviwo::filesystem::findBasePath();
-                std::ofstream fs((basePath + rndInt + "abuffer_linkListBuffer.txt").c_str());
+                auto fs = filesystem::ofstream((basePath + rndInt + "abuffer_linkListBuffer.txt"));
                 for (size_t i = 0; i < settings_.sharedPoolSize_; i++) {
                     fs << data[i] << "\n";
                 }

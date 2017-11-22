@@ -48,7 +48,7 @@ void StlWriter::writeData(const Mesh* data, const std::string filePath) const {
     if (filesystem::fileExists(filePath) && !getOverwrite()) {
         throw DataWriterException("File already exists: " + filePath, IvwContext);
     }
-    std::ofstream f(filePath, std::ios_base::out);
+    auto f = filesystem::ofstream(filePath);
     writeData(data, f);
 }
 

@@ -33,6 +33,7 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/exception.h>
 #include "ext/tidds/ddsbase.h"
 #include "pvmvolumereader.h"
 
@@ -63,7 +64,11 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     std::string textLine;
     std::vector<std::string> files;
     {
-        std::ifstream f(fileName.c_str());
+        auto f = filesystem::ifstream(fileName);
+        if (!f.is_open()) {
+            throw FileException("Could not open input file: " + fileName, IvwContext);
+        }
+
         while (!f.eof()) {
             getline(f, textLine);
             textLine = trim(textLine);

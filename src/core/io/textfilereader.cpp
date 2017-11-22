@@ -28,6 +28,8 @@
  *********************************************************************************/
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>
 #include <warn/ignore/non-virtual-dtor>
@@ -46,29 +48,28 @@ std::string TextFileReader::read(const std::string& filePath) {
 std::string TextFileReader::read() {
     using iter = std::istreambuf_iterator<char>;
 
-    std::ifstream file;
-    // Make ifstream throw exception if file could not be opened
-    file.exceptions(std::ifstream::failbit);
-
-    try {
-        file.open(filePath_.c_str());
-        std::string data(iter(file), (iter()));
-
-        // When editing files using Visual Studio it may happen that the file is empty.
-        // Wait a bit and hope that the content is there later.
-        if (data.empty()) {
-            file.close();
-            std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(400));  
-            file.open(filePath_.c_str());
-            data = std::string(iter(file), (iter()));
-        }
-
-        return data;
-
-    } catch (std::ifstream::failure& ex) {
-        LogError("Error opening file " << filePath_);
-        throw ex;
+    auto file = filesystem::ifstream(filePath_);
+    if (!file.is_open()) {
+        throw FileException("Could not open file: " + filePath_);
     }
+
+    file.open(filePath_.c_str());
+    std::string data(iter(file), (iter()));
+
+    // When editing files using Visual Studio it may happen that the file is empty.
+    // Wait a bit and hope that the content is there later.
+    if (data.empty()) {
+        file.close();
+        std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(400));
+        
+        file = filesystem::ifstream(filePath_);
+        if (!file.is_open()) {
+            throw FileException("Could not open file: " + filePath_);
+        }
+        data = std::string(iter(file), (iter()));
+    }
+
+    return data;
 }
 
-}  // namespace
+}  // namespace inviwo

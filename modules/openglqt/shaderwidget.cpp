@@ -32,6 +32,7 @@
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/qtwidgets/properties/syntaxhighlighter.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -78,7 +79,7 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     mainWindow->addAction(save);
     connect(save, &QAction::triggered,[=]() {
         if (auto fr = dynamic_cast<const FileShaderResource*>(obj->getResource().get())) {
-            std::ofstream file(fr->file());
+            auto file = filesystem::ofstream(fr->file());
             file << shadercode->toPlainText().toLocal8Bit().constData();
             file.close();
         } else if (auto sr = dynamic_cast<const StringShaderResource*>(obj->getResource().get())) {

@@ -30,6 +30,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/shader/shaderresource.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
@@ -45,7 +46,7 @@ std::string FileShaderResource::key() const { return key_; }
 
 std::string FileShaderResource::source() const {
     if (!cache_.empty()) return cache_;
-    std::ifstream stream(fileName_);
+    auto stream = filesystem::ifstream(fileName_);
     std::stringstream buffer;
     buffer << stream.rdbuf();
     cache_ = buffer.str();

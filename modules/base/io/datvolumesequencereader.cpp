@@ -93,7 +93,13 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
     std::string fileDirectory = filesystem::getFileDirectory(fileName);
     std::string fileExtension = filesystem::getFileExtension(fileName);
     // Read the dat file content
-    std::ifstream f(fileName.c_str());
+
+    auto f = filesystem::ifstream(fileName);
+
+    if (!f.is_open()) {
+        throw DataReaderException("Error could open file: " + fileName, IvwContext);
+    }
+
     std::string textLine;
     std::string formatFlag = "";
     glm::mat3 basis(2.0f);
