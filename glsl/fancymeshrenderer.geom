@@ -55,8 +55,15 @@ in vData
     vec4 position;
     vec3 normal;
     vec3 viewNormal;
+#ifdef SEND_COLOR
     vec4 color;
+#endif
+#ifdef SEND_TEX_COORD
     vec2 texCoord;
+#endif
+#ifdef SEND_SCALAR
+    float scalar;
+#endif
 } vertices[];
 
 out fData
@@ -66,8 +73,15 @@ out fData
     vec3 normal;
     vec3 viewNormal;
     vec3 triangleNormal;
+#ifdef SEND_COLOR
     vec4 color;
+#endif
+#ifdef SEND_TEX_COORD
     vec2 texCoord;
+#endif
+#ifdef SEND_SCALAR
+    float scalar;
+#endif
     float area;
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
@@ -208,8 +222,15 @@ void main(void)
         frag.normal = vertices[i].normal;
         frag.viewNormal = vertices[i].viewNormal;
         frag.triangleNormal = triNormal;
+#ifdef SEND_COLOR
         frag.color = vertices[i].color;
+#endif
+#ifdef SEND_TEX_COORD
         frag.texCoord = vertices[i].texCoord;
+#endif
+#ifdef SEND_SCALAR
+        frag.scalar = vertices[i].scalar;
+#endif
         frag.area = area;
 #ifdef ALPHA_SHAPE
         frag.sideLengths = sideLengths;

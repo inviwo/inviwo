@@ -385,6 +385,8 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
 void FancyMeshRenderer::FaceRenderSettings::setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation)
 {
     showEdges_.onChange(triggerRecompilation);
+    colorSource_.onChange(triggerRecompilation);
+    hatching_.mode_.onChange(triggerRecompilation);
 }
 
 FancyMeshRenderer::IllustrationBufferSettings::IllustrationBufferSettings()
@@ -508,10 +510,12 @@ void FancyMeshRenderer::compileShader()
 	    {
             this->shader_.getFragmentShaderObject()->addShaderDefine(define);
             this->shader_.getGeometryShaderObject()->addShaderDefine(define);
+            this->shader_.getVertexShaderObject()->addShaderDefine(define);
 	    } else
 	    {
             this->shader_.getFragmentShaderObject()->removeShaderDefine(define);
             this->shader_.getGeometryShaderObject()->removeShaderDefine(define);
+            this->shader_.getVertexShaderObject()->removeShaderDefine(define);
 	    }
     };
     SendBoolean(alphaSettings_.enableUniform_.get(), "ALPHA_UNIFORM");
@@ -524,6 +528,12 @@ void FancyMeshRenderer::compileShader()
     SendBoolean(edgeSettings_.smoothEdges_.get(), "DRAW_EDGES_SMOOTHING");
     SendBoolean(meshHasAdjacency_, "MESH_HAS_ADJACENCY");
     SendBoolean(drawSilhouette_, "DRAW_SILHOUETTE");
+    SendBoolean(faceSettings_[0].hatching_.mode_.get() != HatchingMode::Off
+        || faceSettings_[1].hatching_.mode_.get() != HatchingMode::Off, "SEND_TEX_COORD");
+    SendBoolean(faceSettings_[0].colorSource_.get() == ColorSource::TransferFunction
+        || faceSettings_[1].colorSource_.get() == ColorSource::TransferFunction, "SEND_SCALAR");
+    SendBoolean(faceSettings_[0].colorSource_.get() == ColorSource::VertexColor
+        || faceSettings_[1].colorSource_.get() == ColorSource::VertexColor, "SEND_COLOR");
 	shader_.build();
 
 	LogProcessorInfo("shader compiled");

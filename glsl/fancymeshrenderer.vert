@@ -38,13 +38,27 @@ out vData
     vec4 position;
     vec3 normal;
     vec3 viewNormal;
+#ifdef SEND_COLOR
     vec4 color;
+#endif
+#ifdef SEND_TEX_COORD
     vec2 texCoord;
+#endif
+#ifdef SEND_SCALAR
+    float scalar;
+#endif
 } vertex;
  
 void main() {
+#ifdef SEND_COLOR
     vertex.color = in_Color;
+#endif
+#ifdef SEND_TEX_COORD
     vertex.texCoord = in_TexCoord.xy;
+#endif
+#ifdef SEND_SCALAR
+    vertex.scalar = in_Color.x; //TODO: specify source of scalar value
+#endif
     vertex.worldPosition = geometry.dataToWorld * in_Vertex;
     vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
     vertex.viewNormal = (camera.worldToView * vec4(vertex.normal,0)).xyz;

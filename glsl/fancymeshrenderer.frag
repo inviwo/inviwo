@@ -39,8 +39,15 @@ in fData
     vec3 normal;
     vec3 viewNormal;
     vec3 triangleNormal;
+#ifdef SEND_COLOR
     vec4 color;
+#endif
+#ifdef SEND_TEX_COORD
     vec2 texCoord;
+#endif
+#ifdef SEND_SCALAR
+    float scalar;
+#endif
     float area;
 #ifdef ALPHA_SHAPE
     vec3 sideLengths;
@@ -83,8 +90,8 @@ struct FaceRenderSettings
 };
 uniform FaceRenderSettings renderSettings[2];
 //GLSL does not support samplers within structures
-uniform sampler1D transferFunction0; //front
-uniform sampler1D transferFunction1; //back
+uniform sampler2D transferFunction0; //front
+uniform sampler2D transferFunction1; //back
 
 //global alpha construction
 struct AlphaSettings
@@ -134,10 +141,18 @@ vec4 performShading()
     vec4 color = vec4(1.0);
     if (settings.colorSource == 0) {
         // vertex color
-        // TODO
+#ifdef SEND_COLOR
+        color = frag.color;
+#endif
     } else if (settings.colorSource == 1) {
         // transfer function
-        // TODO
+#ifdef SEND_SCALAR
+        if (gl_FrontFacing) {
+            color = texture(transferFunction0, vec2(frag.scalar));
+        } else {
+            color = texture(transferFunction1, vec2(frag.scalar));
+        }
+#endif
     } else if (settings.colorSource == 2) {
         // external color
         color = settings.externalColor;
@@ -243,6 +258,7 @@ vec4 performShading()
     //==================================================
     // HATCHING
     //==================================================
+#ifdef SEND_TEX_COORD
     if (settings.hatchingMode > 0) {
         bool hu = settings.hatchingMode == 1 || settings.hatchingMode == 3;
         bool hv = settings.hatchingMode >= 2;
@@ -284,6 +300,7 @@ vec4 performShading()
             color.a = mix(1, color.a, stripeStrength); //additive alpha
         }
     }
+#endif
 
     //==================================================
     // SHADING
