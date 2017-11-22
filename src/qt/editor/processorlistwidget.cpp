@@ -161,13 +161,13 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     {
         auto useCounts = settings.value("useCounts", QVariant(QMap<QString, QVariant>{})).toMap();
         for (auto it = useCounts.constBegin(); it != useCounts.constEnd(); ++it) {
-            useCounts_[utilqt::fromQString(it.key())] = it.value().toInt();
+            useCounts_[utilqt::fromQString(it.key())] = it.value().toLongLong();
         }
     }
     {
         auto useTimes = settings.value("useTimes", QVariant(QMap<QString, QVariant>{})).toMap();
         for (auto it = useTimes.constBegin(); it != useTimes.constEnd(); ++it) {
-            useTimes_[utilqt::fromQString(it.key())] = it.value().toInt();
+            useTimes_[utilqt::fromQString(it.key())] = std::time_t(it.value().toLongLong());
         }
     }
 
@@ -287,14 +287,14 @@ void ProcessorTreeWidget::closeEvent(QCloseEvent* event) {
     {
         QMap<QString, QVariant> useCounts;
         for (const auto& i : useCounts_) {
-            useCounts[utilqt::toQString(i.first)] = QVariant(i.second);
+            useCounts[utilqt::toQString(i.first)] = QVariant::fromValue<qint64>(i.second);
         }
         settings.setValue("useCounts", QVariant(useCounts));
     }
     {
         QMap<QString, QVariant> useTimes;
         for (const auto& i : useTimes_) {
-            useTimes[utilqt::toQString(i.first)] = QVariant(i.second);
+            useTimes[utilqt::toQString(i.first)] = QVariant::fromValue<qint64>(i.second);
         }
         settings.setValue("useTimes", QVariant(useTimes));
     }
@@ -381,7 +381,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
         case 4: {  // Last Used
             auto it = useTimes_.find(processor->getClassIdentifier());
             if (it != useTimes_.end()) {
-                sortVal.prepend(-it->second);
+                sortVal.prepend(QVariant::fromValue<qint64>(-it->second));
             } else {
                 sortVal.prepend(0);
             }
@@ -392,7 +392,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
         case 5: {  // Most Used
             auto it = useCounts_.find(processor->getClassIdentifier());
             if (it != useCounts_.end()) {
-                sortVal.prepend(-it->second);
+                sortVal.prepend(QVariant::fromValue<qint64>(-it->second));
             } else {
                 sortVal.prepend(0);
             }
@@ -543,11 +543,11 @@ bool ProcessorTreeItem::operator<(const QTreeWidgetItem& other) const {
 
         case 4:  // Last used
         case 5:  // Most Used
-            if (a.toList().front().toInt() == b.toList().front().toInt()) {
+            if (a.toList().front().toLongLong() == b.toList().front().toLongLong()) {
                 return QString::compare(a.toList()[1].toString(), b.toList()[1].toString(),
                                         Qt::CaseInsensitive) < 0;
             } else {
-                return a.toList().front().toInt() < b.toList().front().toInt();
+                return a.toList().front().toLongLong() < b.toList().front().toLongLong();
             }
         default:
             return QString::compare(a.toList().front().toString(), b.toList().front().toString(),
