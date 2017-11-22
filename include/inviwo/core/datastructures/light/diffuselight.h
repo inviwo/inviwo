@@ -40,7 +40,7 @@ class DiffuseLight : public LightSource {
 public:
     DiffuseLight() = default;
     virtual ~DiffuseLight() = default;
-    virtual DiffuseLight* clone() const { return new DiffuseLight(*this); }
+    virtual DiffuseLight* clone() const override { return new DiffuseLight(*this); }
 
     virtual float getArea() const override { return size_.x * size_.y; }
     /**

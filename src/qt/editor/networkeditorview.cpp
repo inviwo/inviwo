@@ -300,7 +300,7 @@ void NetworkEditorView::exportViewToFile(const QString& filename, bool entireSce
 }
 
 void NetworkEditorView::dropEvent(QDropEvent* event) {
-    const QMimeData* mimeData = event->mimeData();
+    auto mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
         QStringList pathList;
         QList<QUrl> urlList = mimeData->urls();
@@ -309,9 +309,18 @@ void NetworkEditorView::dropEvent(QDropEvent* event) {
         auto filename = urlList.front().toLocalFile();
         mainwindow_->openWorkspace(filename);
         event->acceptProposedAction();
+    } else {
+        QGraphicsView::dropEvent(event);
     }
 }
 
-void NetworkEditorView::dragEnterEvent(QDragEnterEvent* event) { event->acceptProposedAction(); }
+void NetworkEditorView::dragEnterEvent(QDragEnterEvent* event) {
+    auto mimeData = event->mimeData();
+    if (mimeData->hasUrls()) {
+        event->acceptProposedAction();
+    } else {
+        QGraphicsView::dragEnterEvent(event);
+    }
+}
 
 }  // namespace inviwo

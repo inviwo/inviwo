@@ -70,7 +70,7 @@ public:
     void removeConnection(ConnectionGraphicsItem* connection);
     std::vector<ConnectionGraphicsItem*>& getConnections();
     ProcessorGraphicsItem* getProcessor();
-    virtual void showToolTip(QGraphicsSceneHelpEvent* e) = 0;
+    virtual void showToolTip(QGraphicsSceneHelpEvent* e) override = 0;
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
@@ -91,7 +91,7 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ProcessorInportGraphicsType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
 
@@ -111,7 +111,7 @@ public:
     Outport* getPort();
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ProcessorOutportGraphicsType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
 

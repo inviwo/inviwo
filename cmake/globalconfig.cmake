@@ -300,7 +300,7 @@ endif(DEBUG_POSTFIX)
 #--------------------------------------------------------------------
 # Add option to enable include-what-you-use 
 # https://github.com/include-what-you-use/include-what-you-use
-if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
+if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles" OR ${CMAKE_GENERATOR} STREQUAL "Ninja")
     find_program(iwyu_path NAMES include-what-you-use iwyu)
     if(iwyu_path)
         option(IVW_ENABLE_INCLUDE_WHAT_YOU_USE "Enable include-what-you-use" OFF)
@@ -308,6 +308,13 @@ if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
             set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
         endif()
     endif()
+endif()
+
+#--------------------------------------------------------------------
+# force colors when using clang and ninja https://github.com/ninja-build/ninja/wiki/FAQ
+if (${CMAKE_GENERATOR} STREQUAL "Ninja" AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
 endif()
 
 #--------------------------------------------------------------------

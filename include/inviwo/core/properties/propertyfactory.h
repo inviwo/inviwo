@@ -31,33 +31,29 @@
 #define IVW_PROPERTYFACTORY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/factory.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 
 namespace inviwo {
 
-class IVW_CORE_API PropertyFactory : public Factory<Property>,
-                                     public FactoryObservable<PropertyFactoryObject> {
+class IVW_CORE_API PropertyFactory
+    : public StandardFactory<Property, PropertyFactoryObject, const std::string & /*key*/,
+                             const std::string & /*identifier*/,
+                             const std::string & /*displayName*/>,
+      public Factory<Property, const std::string & /*key*/> {
 public:
-    using Map = std::unordered_map<std::string, PropertyFactoryObject *>;
+    using Parent = StandardFactory<Property, PropertyFactoryObject, const std::string &,
+                                   const std::string &, const std::string &>;
 
     PropertyFactory() = default;
     virtual ~PropertyFactory() = default;
 
-    virtual bool registerObject(PropertyFactoryObject *property);
-    virtual bool unRegisterObject(PropertyFactoryObject *property);
+    using Parent::create;
     virtual std::unique_ptr<Property> create(const std::string &className) const override;
-    virtual std::unique_ptr<Property> create(const std::string &className,
-                                             const std::string &identifier,
-                                             const std::string &displayName) const;
-    virtual bool hasKey(const std::string &className) const override;
-    virtual std::vector<std::string> getKeys() const;
-
-protected:
-    Map map_;
+    virtual bool hasKey(const std::string& key) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYFACTORY_H

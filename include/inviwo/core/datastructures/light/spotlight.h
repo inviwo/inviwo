@@ -41,15 +41,15 @@ class SpotLight : public LightSource {
 public:
     SpotLight() = default;
     virtual ~SpotLight() = default;
-    virtual SpotLight* clone() const { return new SpotLight(*this); }
+    virtual SpotLight* clone() const override { return new SpotLight(*this); }
 
-    virtual float getArea() const { return size_.x * size_.y; }
+    virtual float getArea() const override { return size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const {
+    virtual vec3 getPower() const override {
         return getIntensity() * 2.f * static_cast<float>(M_PI) *
                (1.f - 5.f * (std::cos(glm::radians(coneRadiusAngle_)) +
                              std::cos(glm::radians(coneFallOffAngle_))));

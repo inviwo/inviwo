@@ -40,7 +40,7 @@ class DirectionalLight : public LightSource {
 public:
     DirectionalLight() = default;
     virtual ~DirectionalLight() = default;
-    virtual DirectionalLight* clone() const { return new DirectionalLight(*this); }
+    virtual DirectionalLight* clone() const override { return new DirectionalLight(*this); }
 
     virtual float getArea() const override { return size_.x * size_.y; }
     /**

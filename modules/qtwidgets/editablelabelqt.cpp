@@ -110,7 +110,10 @@ QLineEdit* EditableLabelQt::getLineEdit() {
 void EditableLabelQt::edit() {
     getLineEdit()->setText(QString::fromStdString(text_));
     label_->hide();
-    getLineEdit()->show();
+    auto le = getLineEdit();
+    le->show();     
+    le->setCursorPosition(le->text().size());   
+    le->setFocus();
 }
 
 QSize EditableLabelQt::sizeHint() const { return QSize(18, 18); }

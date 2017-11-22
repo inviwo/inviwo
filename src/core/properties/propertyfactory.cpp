@@ -33,48 +33,12 @@
 
 namespace inviwo {
 
-bool PropertyFactory::registerObject(PropertyFactoryObject *property) {
-    if (!util::insert_unique(map_, property->getClassIdentifier(), property)) {
-        LogWarn("Property with class name: " << property->getClassIdentifier()
-                                             << " already registed");
-        return false;
-    }
-    notifyObserversOnRegister(property);
-    return true;
-}
-
-bool PropertyFactory::unRegisterObject(PropertyFactoryObject *property) {
-    size_t removed = map_.erase(property->getClassIdentifier());
-    if (removed > 0) {
-        notifyObserversOnUnRegister(property);
-        return true;
-    }
-    LogWarn("Property with class name: " << property->getClassIdentifier()
-                                         << " could not be unregisted");
-    return false;
-}
-
 std::unique_ptr<Property> PropertyFactory::create(const std::string &className) const {
-    return create(className, "", "");
+    return Parent::create(className, "", "");
 }
 
-std::unique_ptr<Property> PropertyFactory::create(const std::string &className,
-                                                  const std::string &identifier,
-                                                  const std::string &displayName) const {
-    return util::map_find_or_null(map_, className,
-                                  [&identifier, &displayName](PropertyFactoryObject *o) {
-                                      return o->create(identifier, displayName);
-                                  });
+bool PropertyFactory::hasKey(const std::string& key) const {
+    return Parent::hasKey(key);
 }
 
-bool PropertyFactory::hasKey(const std::string &className) const {
-    return util::has_key(map_, className);
-}
-
-std::vector<std::string> PropertyFactory::getKeys() const {
-    auto res = std::vector<std::string>();
-    for (auto &elem : map_) res.push_back(elem.first);
-    return res;
-}
-
-}  // namespace
+}  // namespace inviwo

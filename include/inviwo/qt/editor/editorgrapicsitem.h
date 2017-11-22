@@ -61,10 +61,10 @@ enum IVW_QTEDITOR_API InviwoUserGraphicsItemType {
 
 // Z value for various graphics items.
 static const qreal DRAGING_ITEM_DEPTH = 4.0f;
-static const qreal PROCESSORGRAPHICSITEM_DEPTH = 2.0f;
 static const qreal SELECTED_PROCESSORGRAPHICSITEM_DEPTH = 3.0f;
+static const qreal PROCESSORGRAPHICSITEM_DEPTH = 2.0f;
 static const qreal CONNECTIONGRAPHICSITEM_DEPTH = 1.0f;
-static const qreal LINKGRAPHICSITEM_DEPTH = 1.0f;
+static const qreal LINKGRAPHICSITEM_DEPTH = 0.0f;
 
 class Port;
 
