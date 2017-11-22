@@ -105,6 +105,9 @@ void TouchPoint::setCanvasSize(uvec2 size) { canvasSize_ = size; }
 dvec3 TouchPoint::ndc() const {
     return dvec3(2.0 * posNormalized_.x - 1.0, 2.0 * posNormalized_.y - 1.0, depth_);
 }
+    
+TouchDevice::TouchDevice(DeviceType type, std::string name)
+    : type_(type), name_(name) {};
 
 TouchEvent::TouchEvent() = default;
 

@@ -155,7 +155,7 @@ public:
         TouchScreen = 0, ///< Touch points are physically located on screen
         TouchPad, ///< Touch points are not on the screen. More similar to mouse
     };
-    TouchDevice(DeviceType type = DeviceType::TouchScreen, std::string name = "") : type_(type), name_(name) {};
+    TouchDevice(DeviceType type = DeviceType::TouchScreen, std::string name = "");
     
     DeviceType getType() const { return type_; }
     void setType(DeviceType type) { type_ = type; }
