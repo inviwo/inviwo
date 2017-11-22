@@ -733,9 +733,10 @@ void NetworkEditor::dragEnterEvent(QGraphicsSceneDragDropEvent* e) { dragMoveEve
 
 void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
     if (ProcessorDragObject::canDecode(e->mimeData())) {
-        e->setAccepted(true);
+        //e->setAccepted(true);
         e->acceptProposedAction();
-        ConnectionGraphicsItem* connectionItem = getConnectionGraphicsItemAt(e->scenePos());
+
+        auto connectionItem = getConnectionGraphicsItemAt(e->scenePos());
 
         if (connectionItem && !oldConnectionTarget_) {  //< New connection found
             QString className;
@@ -770,11 +771,8 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
             oldConnectionTarget_ = nullptr;
 
         } else if (!connectionItem) {  // processor replacement
-            ProcessorGraphicsItem* processorItem = getProcessorGraphicsItemAt(e->scenePos());
-
+            auto processorItem = getProcessorGraphicsItemAt(e->scenePos());
             if (processorItem && !oldProcessorTarget_) {  //< New processor found
-                QString className;
-                ProcessorDragObject::decode(e->mimeData(), className);
                 processorItem->setHighlight(true);
                 processorItem->setSelected(true);
                 oldProcessorTarget_ = processorItem;
