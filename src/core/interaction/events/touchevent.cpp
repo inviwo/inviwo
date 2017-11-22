@@ -42,6 +42,20 @@ dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth)
     , canvasSize_(canvasSize)
     , depth_(depth) {}
 
+bool TouchPoint::operator ==(const TouchPoint& b) const {
+    return id_ == b.id_ && state_ == b.state_ &&
+    posNormalized_ == b.posNormalized_ &&
+    prevPosNormalized_ == b.prevPosNormalized_ &&
+    pressedPosNormalized_ == b.pressedPosNormalized_ &&
+    pressure_ == b.pressure_ &&
+    canvasSize_ == b.canvasSize_ &&
+    depth_ == b.depth_;
+}
+    
+bool TouchPoint::operator !=(const TouchPoint& b) const {
+    return !(*this == b);
+}
+
 TouchState TouchPoint::state() const { return state_; }
 
 int TouchPoint::id() const { return id_; }
@@ -94,8 +108,8 @@ dvec3 TouchPoint::ndc() const {
 
 TouchEvent::TouchEvent() = default;
 
-TouchEvent::TouchEvent(const std::vector<TouchPoint>& touchPoints)
-    : InteractionEvent(), touchPoints_(touchPoints) {}
+TouchEvent::TouchEvent(const std::vector<TouchPoint>& touchPoints, const TouchDevice* source)
+    : InteractionEvent(), touchPoints_(touchPoints), device_(source) {}
 
 TouchEvent* TouchEvent::clone() const { return new TouchEvent(*this); }
 

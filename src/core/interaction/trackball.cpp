@@ -548,13 +548,38 @@ void Trackball::stepPan(Direction dir) {
 }
 
 void Trackball::touchGesture(Event* event) {
+
     TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
 
     // Use the two closest points to extract translation, scaling and rotation
     const auto& touchPoints = touchEvent->touchPoints();
-
-    if (touchPoints.size() == 1) {
-        const auto& point = touchPoints[0];
+    if (touchPoints.empty()) return;
+    
+    TouchDevice::DeviceType type = touchEvent->getDevice() ? touchEvent->getDevice()->getType() : TouchDevice::DeviceType::TouchScreen;
+    bool rotation = false;
+    bool panZoom = false;
+    // Use different approaches depending on device
+    switch (type) {
+        case TouchDevice::DeviceType::TouchScreen:
+            // Rotate when using one touch point
+            rotation = touchPoints.size() == 1;
+            // Pan/zoom when multiple touch points
+            panZoom = touchPoints.size() > 1;
+            break;
+        case TouchDevice::DeviceType::TouchPad:
+            // Rotate using two touch points similar to mouse
+            // Stationary touch point is similar to mouse press
+            rotation = touchPoints.size() > 1 && touchPoints[0].state() == TouchState::Stationary;
+            // Is pinching/panning. Do not pan/zoom when rotating
+            panZoom = touchPoints.size() > 1 && !rotation;
+            break;
+    }
+    if (rotation) {
+        // Assume that We require two touches when using trackpad since the first one will occur when
+        // sweeping over the canvas
+        size_t rotateBasedOnIndex = (type == TouchDevice::DeviceType::TouchScreen) ? 0 : 1;
+        const auto& point = touchPoints[rotateBasedOnIndex];
+        
         if (point.state() == TouchState::Finished) return reset(event);
 
         if (!allowHorizontalRotation_ && !allowVerticalRotation_) return;
@@ -569,7 +594,7 @@ void Trackball::touchGesture(Event* event) {
         const auto& up = getLookUp();
 
         // disable movements on first press
-        if (!isMouseBeingPressedAndHold_) {
+        if (!isMouseBeingPressedAndHold_ || point.state() == TouchState::Started) {
             isMouseBeingPressedAndHold_ = true;
             gestureStartNDCDepth_ = curNDC.z;
             trackBallWorldSpaceRadius_ =
@@ -595,8 +620,8 @@ void Trackball::touchGesture(Event* event) {
         // update mouse positions
         lastNDC_ = curNDC;
         event->markAsUsed();
-
-    } else if (touchPoints.size() > 1) {
+    }
+    if (panZoom) {
         const auto& touchPoint1 = touchPoints[0];
         const auto& touchPoint2 = touchPoints[1];
 
@@ -628,8 +653,8 @@ void Trackball::touchGesture(Event* event) {
         const auto prevCenterPoint = glm::mix(prevPos1, prevPos2, 0.5);
         const auto centerPoint = glm::mix(pos1, pos2, 0.5);
 
-        if (touchPoint1.state() == TouchState::Stationary ||
-            touchPoint2.state() == TouchState::Stationary) {
+        if (touchPoint1.state() & TouchState::Started ||
+            touchPoint2.state() & TouchState::Started) {
             gestureStartNDCDepth_ = std::min(touchPoint1.depth(), touchPoint2.depth());
             if (gestureStartNDCDepth_ >= 1.) {
                 gestureStartNDCDepth_ =
