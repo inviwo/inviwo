@@ -34,7 +34,7 @@
 
 #include <inviwo/core/processors/sourceprocessor.h>
 #include <inviwo/core/processors/sinkprocessor.h>
-
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/network/workspacemanager.h>
 
 #include <inviwo/core/util/filesystem.h>
