@@ -56,8 +56,10 @@ namespace inviwo
     , illustrationBufferIdxUnit_(nullptr)
     , illustrationBufferCountImg_(nullptr)
     , illustrationBufferCountUnit_(nullptr)
-    , illustrationBuffer_{0,0}
-    , activeIllustrationBuffer_(0)
+    , illustrationColorBuffer_(0)
+    , illustrationSurfaceInfoBuffer_(0)
+    , illustrationSmoothingBuffer_{0,0}
+    , activeIllustrationSmoothingBuffer_(0)
     , fillIllustrationBufferShader_("simpleQuad.vert", "SortAndFillIllustrationBuffer.frag", false)
     , resolveNeighborsIllustrationBufferShader_("simpleQuad.vert", "ResolveNeighborsIllustrationBuffer.frag", false)
     , drawIllustrationBufferShader_("simpleQuad.vert", "DisplayIllustrationBuffer.frag", false)
@@ -84,7 +86,9 @@ namespace inviwo
         if (atomicCounter_) glDeleteBuffers(1, &atomicCounter_);
         if (pixelBuffer_) glDeleteBuffers(1, &pixelBuffer_);
         if (totalFragmentQuery_) glDeleteQueries(1, &totalFragmentQuery_);
-        if (illustrationBuffer_[0]) glDeleteBuffers(2, illustrationBuffer_);
+        if (illustrationColorBuffer_) glDeleteBuffers(1, &illustrationColorBuffer_);
+        if (illustrationSurfaceInfoBuffer_) glDeleteBuffers(1, &illustrationSurfaceInfoBuffer_);
+        if (illustrationSmoothingBuffer_[0]) glDeleteBuffers(2, illustrationSmoothingBuffer_);
         LGL_ERROR;
     }
 
@@ -137,15 +141,6 @@ namespace inviwo
             debugFragmentLists(numFrags);
         }
 
-        if (!useIllustrationBuffer) {
-            //render fragment list (even if incomplete)
-            displayShader_.activate();
-            assignUniforms(displayShader_);
-            utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            drawQuad();
-            displayShader_.deactivate();
-        }
-
         //check if enough space was available
         if (numFrags > fragmentSize_)
         {
@@ -157,6 +152,15 @@ namespace inviwo
             delete abufferIdxUnit_;
             abufferIdxUnit_ = nullptr;
             return false;
+        }
+
+        if (!useIllustrationBuffer) {
+            //render fragment list
+            displayShader_.activate();
+            assignUniforms(displayShader_);
+            utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            drawQuad();
+            displayShader_.deactivate();
         }
 
         //Note: illustration buffers are only called when enough space was available.
@@ -202,11 +206,12 @@ namespace inviwo
 
     void FragmentListRenderer::initBuffers(const size2_t& screenSize)
     {
-        if (screenSize != screenSize_)
+        if (screenSize != screenSize_ || abufferIdxImg_==0)
         {
             screenSize_ = screenSize;
             //delete screen size textures
             if (abufferIdxImg_) delete abufferIdxImg_;
+            abufferIdxImg_ = 0;
 
             //reallocate screen size texture that holds the pointer to the end of the fragment list at that pixel
             abufferIdxImg_ = new Texture2D(screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST, 0);
@@ -219,11 +224,12 @@ namespace inviwo
             LogInfo("fragment-list: screen size buffers allocated of size " << screenSize);
         }
 
-        if (oldFragmentSize_ != fragmentSize_)
+        if (oldFragmentSize_ != fragmentSize_ || pixelBuffer_==0)
         {
             oldFragmentSize_ = fragmentSize_;
             //create new SSBO for the pixel storage
             if (pixelBuffer_) glDeleteBuffers(1, &pixelBuffer_);
+            pixelBuffer_ = 0;
             glGenBuffers(1, &pixelBuffer_);
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, pixelBuffer_);
             glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ *4*sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
@@ -348,17 +354,35 @@ namespace inviwo
         {
             illustrationBufferOldFragmentSize_ = fragmentSize_;
             //reallocate SSBO for the illustration buffer storage
-            if (illustrationBuffer_[0]) glDeleteBuffers(2, illustrationBuffer_);
-            glGenBuffers(2, illustrationBuffer_);
+            //color: alpha+rgb
+            if (illustrationColorBuffer_) glDeleteBuffers(1, &illustrationColorBuffer_);
+            glGenBuffers(1, &illustrationColorBuffer_);
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationColorBuffer_);
+            glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 2 * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+            LGL_ERROR;
+            //surface info: depth, gradient, compressed normal (not yet)
+            if (illustrationSurfaceInfoBuffer_) glDeleteBuffers(1, &illustrationSurfaceInfoBuffer_);
+            glGenBuffers(1, &illustrationSurfaceInfoBuffer_);
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationSurfaceInfoBuffer_);
+            glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 2 * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+            LGL_ERROR;
+            //smoothing: beta + gamma
+            if (illustrationSmoothingBuffer_[0]) glDeleteBuffers(2, illustrationSmoothingBuffer_);
+            glGenBuffers(2, illustrationSmoothingBuffer_);
             for (int i = 0; i < 2; ++i) {
-                glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationBuffer_[i]);
-                glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 12 * sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationSmoothingBuffer_[i]);
+                glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 2 * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
                 glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
                 LGL_ERROR;
             }
+            //reuse fragment lists as neighborhood storage
 
+            //log size
+            int sizePerFragment = 6 * sizeof(GLfloat);
             LogInfo("Illustration Buffers: additional pixel storage for " << fragmentSize_ << " pixels allocated, memory usage: "
-                << (fragmentSize_ * 12 * 2 * sizeof(GLfloat) / 1024 / 1024.0f) << " MB");
+                << (fragmentSize_ * sizePerFragment / 1024 / 1024.0f) << " MB");
         }
     }
 
@@ -378,6 +402,8 @@ namespace inviwo
         fillIllustrationBufferShader_.activate();
         assignUniforms(fillIllustrationBufferShader_);
         assignIllustrationBufferUniforms(fillIllustrationBufferShader_);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, illustrationColorBuffer_);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, illustrationSurfaceInfoBuffer_);
         glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 6, atomicCounter_);
         drawQuad();
         fillIllustrationBufferShader_.deactivate();
@@ -389,6 +415,10 @@ namespace inviwo
         //and set initial conditions for silhouettes+halos
         resolveNeighborsIllustrationBufferShader_.activate();
         assignIllustrationBufferUniforms(resolveNeighborsIllustrationBufferShader_);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, illustrationSurfaceInfoBuffer_); //in: depth+gradient
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, pixelBuffer_); //out: neighbors
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, illustrationSmoothingBuffer_[1-activeIllustrationSmoothingBuffer_]); //out: beta+gamma
+        activeIllustrationSmoothingBuffer_ = 1 - activeIllustrationSmoothingBuffer_;
         drawQuad();
         resolveNeighborsIllustrationBufferShader_.deactivate();
 
@@ -401,6 +431,10 @@ namespace inviwo
             for (int i=0; i<illustrationBufferSettings_.smoothingSteps_; ++i)
             {
                 assignIllustrationBufferUniforms(smoothIllustrationBufferShader_);
+                glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, pixelBuffer_); //in: neighbors
+                glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, illustrationSmoothingBuffer_[activeIllustrationSmoothingBuffer_]); //in: beta+gamma
+                glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, illustrationSmoothingBuffer_[1 - activeIllustrationSmoothingBuffer_]); //out: beta+gamma
+                activeIllustrationSmoothingBuffer_ = 1 - activeIllustrationSmoothingBuffer_;
                 drawQuad();
             }
             smoothIllustrationBufferShader_.deactivate();
@@ -412,6 +446,8 @@ namespace inviwo
         //final blending
         drawIllustrationBufferShader_.activate();
         assignIllustrationBufferUniforms(drawIllustrationBufferShader_);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, illustrationColorBuffer_);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, illustrationSmoothingBuffer_[activeIllustrationSmoothingBuffer_]); //in: beta+gamma
         vec4 edgeColor = vec4(illustrationBufferSettings_.edgeColor_, illustrationBufferSettings_.edgeStrength_);
         drawIllustrationBufferShader_.setUniform("edgeColor", edgeColor);
         drawIllustrationBufferShader_.setUniform("haloStrength", illustrationBufferSettings_.haloStrength_);
@@ -442,12 +478,6 @@ namespace inviwo
         glActiveTexture(GL_TEXTURE0);
         LGL_ERROR;
 
-        //pixel storage
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, illustrationBuffer_[activeIllustrationBuffer_]); //in
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, illustrationBuffer_[1-activeIllustrationBuffer_]); //out
-        activeIllustrationBuffer_ = 1 - activeIllustrationBuffer_;
-        LGL_ERROR;
-
         //other uniforms
         shader.setUniform("screenSize", ivec2(screenSize_.x, screenSize_.y));
     }
@@ -464,26 +494,30 @@ namespace inviwo
         illustrationBufferCountImg_->download(&countImg[0]);
         LGL_ERROR;
 
-        //structure
-        struct FragmentData
-        {
-            float depth;
-            float depthGradient;
-            float alpha;
-            GLuint colors;
-            ivec4 neighbors;
-            float silhouetteHighlight;
-            float haloHighlight;
-            int dummy1;
-            int dummy2;
-        };
-        printf("Size of a fragment: %d bytes, expected 48 bytes\n", (int)sizeof(FragmentData));
-
         //read pixel storage buffer
-        glBindBuffer(GL_ARRAY_BUFFER, illustrationBuffer_[1-activeIllustrationBuffer_]); LGL_ERROR;
         size_t size = std::min((size_t)numFrags, fragmentSize_);
-        std::vector<FragmentData> pixelBuffer(size);
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(FragmentData) * size, &pixelBuffer[0]);
+
+        glBindBuffer(GL_ARRAY_BUFFER, illustrationColorBuffer_); LGL_ERROR;
+        std::vector<glm::tvec2<GLfloat>> colorBuffer(size);
+        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 2 * sizeof(GLfloat) * size, &colorBuffer[0]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        LGL_ERROR;
+
+        glBindBuffer(GL_ARRAY_BUFFER, illustrationSurfaceInfoBuffer_); LGL_ERROR;
+        std::vector<glm::tvec2<GLfloat>> surfaceInfoBuffer(size);
+        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 2 * sizeof(GLfloat) * size, &surfaceInfoBuffer[0]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        LGL_ERROR;
+
+        glBindBuffer(GL_ARRAY_BUFFER, pixelBuffer_); LGL_ERROR;
+        std::vector<glm::tvec4<GLint>> neighborBuffer(size);
+        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 4 * sizeof(GLint) * size, &neighborBuffer[0]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        LGL_ERROR;
+
+        glBindBuffer(GL_ARRAY_BUFFER, illustrationSmoothingBuffer_[1-activeIllustrationSmoothingBuffer_]); LGL_ERROR;
+        std::vector<glm::tvec2<GLfloat>> smoothingBuffer(size);
+        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 2 * sizeof(GLfloat) * size, &smoothingBuffer[0]);
         glBindBuffer(GL_ARRAY_BUFFER, 0); 
         LGL_ERROR;
 
@@ -497,26 +531,31 @@ namespace inviwo
                 printf(" %4d:%4d:  start=%5d, count=%5d\n", x, y, start, count);
                 for (int i=0; i<count; ++i)
                 {
-                    const FragmentData& d = pixelBuffer[start + i];
-                    float r = float((d.colors >> 20) & 0x3ff) / 1023.0f;
-                    float g = float((d.colors >> 10) & 0x3ff) / 1023.0f;
-                    float b = float(d.colors & 0x3ff) / 1023.0f;
-                    printf("     depth=%5.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f, neighbors:",
-                        d.depth, d.alpha, r, g, b);
-                    if (d.neighbors.x >= 0)
-                        printf("(%d:%5.3f)", d.neighbors.x, pixelBuffer[d.neighbors.x].depth);
+                    float alpha = colorBuffer[start + i].x;
+                    int rgb = *reinterpret_cast<int*>(&colorBuffer[start + i].y);
+                    float depth = surfaceInfoBuffer[start + i].x;
+                    glm::tvec4<GLint> neighbors = neighborBuffer[start + i];
+                    float beta = smoothingBuffer[start + i].x;
+                    float gamma = smoothingBuffer[start + i].y;
+                    float r = float((rgb >> 20) & 0x3ff) / 1023.0f;
+                    float g = float((rgb >> 10) & 0x3ff) / 1023.0f;
+                    float b = float(rgb & 0x3ff) / 1023.0f;
+                    printf("     depth=%5.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f, beta=%5.3f, gamma=%5.3f, neighbors:",
+                        depth, alpha, r, g, b, beta, gamma);
+                    if (neighbors.x >= 0)
+                        printf("(%d:%5.3f)", neighbors.x, surfaceInfoBuffer[neighbors.x].x);
                     else
                         printf("(-1)");
-                    if (d.neighbors.y >= 0)
-                        printf("(%d:%5.3f)", d.neighbors.y, pixelBuffer[d.neighbors.y].depth);
+                    if (neighbors.y >= 0)
+                        printf("(%d:%5.3f)", neighbors.y, surfaceInfoBuffer[neighbors.y].x);
                     else
                         printf("(-1)");
-                    if (d.neighbors.z >= 0)
-                        printf("(%d:%5.3f)", d.neighbors.z, pixelBuffer[d.neighbors.z].depth);
+                    if (neighbors.z >= 0)
+                        printf("(%d:%5.3f)", neighbors.z, surfaceInfoBuffer[neighbors.z].x);
                     else
                         printf("(-1)");
-                    if (d.neighbors.w >= 0)
-                        printf("(%d:%5.3f)", d.neighbors.w, pixelBuffer[d.neighbors.w].depth);
+                    if (neighbors.w >= 0)
+                        printf("(%d:%5.3f)", neighbors.w, surfaceInfoBuffer[neighbors.w].x);
                     else
                         printf("(-1)");
                     printf("\n");

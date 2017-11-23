@@ -16,6 +16,8 @@ coherent uniform layout(size1x32) uimage2D illustrationBufferIdxImg;
 //Number of entries in the list
 coherent uniform layout(size1x32) uimage2D illustrationBufferCountImg;
 
+/*
+
 //data stored per fragment, 12*4=48 byte
 struct FragmentData
 {
@@ -48,6 +50,8 @@ layout(std430, binding=5) buffer illustrationBufferStorageOut
 {
     FragmentData illustrationDataOut[]; 
 };
+
+*/
 
 // Helpers
 

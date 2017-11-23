@@ -143,8 +143,10 @@ private:
     TextureUnit* illustrationBufferIdxUnit_;
     Texture2D* illustrationBufferCountImg_;
     TextureUnit* illustrationBufferCountUnit_;
-    GLuint illustrationBuffer_[2];
-    int activeIllustrationBuffer_;
+    GLuint illustrationColorBuffer_;
+    GLuint illustrationSurfaceInfoBuffer_;
+    GLuint illustrationSmoothingBuffer_[2];
+    int activeIllustrationSmoothingBuffer_;
     Shader fillIllustrationBufferShader_;
     Shader resolveNeighborsIllustrationBufferShader_;
     Shader drawIllustrationBufferShader_;

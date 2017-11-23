@@ -39,6 +39,7 @@
 #include <modules/opengl/image/layergl.h>
 
 #include <sstream>
+#include <chrono>
 
 namespace inviwo {
 
@@ -565,6 +566,12 @@ void FancyMeshRenderer::process() {
         return;
     }
 
+    compileShader();
+
+    //time measures
+    glFinish();
+    auto start = std::chrono::steady_clock::now();
+
     //Loop: fragment list may need another try if not enough space for the pixels was available
     bool retry;
     do {
@@ -576,7 +583,6 @@ void FancyMeshRenderer::process() {
             flr_.prePass(outport_.getDimensions());
         }
 
-        compileShader();
         shader_.activate();
 
         //various OpenGL states: depth, blending, culling
@@ -678,6 +684,12 @@ void FancyMeshRenderer::process() {
         }
 
     } while (retry);
+
+    //report elapsed time
+    glFinish();
+    auto finish = std::chrono::steady_clock::now();
+    double elapsed = std::chrono::duration_cast<std::chrono::duration<double> >(finish - start).count() * 1000;
+    LogProcessorInfo("Time: " << elapsed << "ms");
 
     //Workaround for a problem with the fragment lists:
     //The camera interaction requires the depth buffer for some reason to work,

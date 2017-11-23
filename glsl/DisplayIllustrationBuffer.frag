@@ -9,6 +9,15 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 //Input interpolated fragment position
 smooth in vec4 fragPos;
 
+layout(std430, binding=0) buffer colorBufferIn
+{
+    vec2 colorIn[]; //alpha+rgb
+};
+layout(std430, binding=1) buffer smoothingBufferIn
+{
+    vec2 smoothingIn[]; //beta + gamma
+};
+
 uniform vec4 edgeColor = vec4(0, 0, 0, 1);
 uniform float haloStrength = 0.4;
 
@@ -25,19 +34,11 @@ void main(void) {
             uint start = imageLoad(illustrationBufferIdxImg, coords).x;
             for (int i=0; i<count; ++i) {
                 //fetch properties from the scalar fields
-                vec3 baseColor = uncompressColor(illustrationDataIn[i+start].colors);
-                float alpha = illustrationDataIn[i+start].alpha;
-                //bool bAlpha = alpha>=1.5;
-                //if (bAlpha) alpha = alpha-2;
+                vec3 baseColor = uncompressColor(floatBitsToInt(colorIn[i+start].y));
+                float alpha = colorIn[i+start].x;
                 alpha = clamp(alpha, 0, 1);
-                float beta = illustrationDataIn[i+start].silhouetteHighlight;
-                //bool bBeta = beta>=1.5;
-                //if (bBeta) beta = beta-2;
-                beta = clamp(beta, 0, 1);
-                float gamma = illustrationDataIn[i+start].haloHighlight;
-                //bool bGamma = gamma>=1.5;
-                //if (bGamma) gamma = gamma-2;
-                gamma = clamp(gamma, 0, 1);
+                float beta = smoothingIn[i+start].x;
+                float gamma = smoothingIn[i+start].y;
 
                 //blend them together
                 float alphaHat = (1-gamma*haloStrength*(1-beta))*(alpha+(1-alpha)*beta*edgeColor.a);

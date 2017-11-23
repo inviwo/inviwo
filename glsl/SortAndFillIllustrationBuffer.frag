@@ -27,6 +27,15 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 //Input interpolated fragment position
 smooth in vec4 fragPos;
 
+layout(std430, binding=0) buffer colorBufferOut
+{
+    vec2 colorOut[]; 
+};
+layout(std430, binding=1) buffer surfaceInfoBufferOut
+{
+    vec2 surfaceInfoOut[]; //depth+gradient 
+};
+
 //Fill local memory array of fragments
 void fillFragmentArray(uint idx, out int numFrag);
 
@@ -49,17 +58,8 @@ void main(void) {
             //3. write them back
             uint start = atomicAdd(illustrationBufferCounter, numFrag);
             for (int i=0; i<numFrag; ++i) {
-                FragmentData data;
-                data.depth = fragmentList[i].y;
-                data.depthGradient = 0; //to be filled out
-                data.alpha = fragmentList[i].z;
-                data.colors = floatBitsToUint(fragmentList[i].w);
-                data.neighbors = ivec4(-1);
-                data.silhouetteHighlight = 0;
-                data.haloHighlight = 0;
-                data.index = i;
-                data.dummy1 = 0;
-                illustrationDataOut[start + i] = data;
+                colorOut[start + i] = vec2(fragmentList[i].z, fragmentList[i].w);
+                surfaceInfoOut[start + i] = vec2(fragmentList[i].y, 0); //TODO: gradient
             }
             imageStore(illustrationBufferIdxImg, coords, ivec4(start));
             imageStore(illustrationBufferCountImg, coords, ivec4(numFrag));
