@@ -74,10 +74,10 @@ struct type<half_float::half> {
     }
     static bool is_float() { return true; }
     static bool is_inf(const long double val) {
-        return std::isinf(static_cast<half_float::half>(val));
+        return half_float::isinf(static_cast<half_float::half>(val));
     }
     static bool is_nan(const long double val) {
-        return std::isnan(static_cast<half_float::half>(val));
+        return half_float::isnan(static_cast<half_float::half>(val));
     }
     static half_float::half min() { return std::numeric_limits<half_float::half>::lowest(); }
     static half_float::half max() { return std::numeric_limits<half_float::half>::max(); }
