@@ -48,12 +48,12 @@ class SourceProcessorBase;
 
 /**
  * \class CompositeProcessor
- * A processor wrapping its own processor network, called sub network.
- * We call the network the CompositeProcessor the super network from the context of the dub network.
- * The CompositeProcessor will evaluate its sub network when it itself gets processed. It will look
- * into the sub network for any SinkProcessors, which acts as data inputs in the sub network, and
- * ask for its super inport and add it to itself. Then it will look for all SinkProseccors, which
- * acts as data outputs, and ask for its super outport and add it to it self.
+ * A processor having its own processor network, called sub network.
+ * We call the network of the CompositeProcessor the super network from the context of the sub
+ * network. The CompositeProcessor will evaluate its sub network when it itself gets processed. It
+ * will look into the sub network for any SinkProcessors, which acts as data inputs in the sub
+ * network, and ask for its super inport and add it to itself. Then it will look for all
+ * SinkProseccors, which acts as data outputs, and ask for its super outport and add it to it self.
  * When the SourceProcessor gets evaluated in the sub network it will take the data from its super
  * inport and put in its outport, moving the data from the super network to the sub network.
  * At the end of the sub network evaluation the SinkProcessors will be evaluated and take the data
@@ -76,8 +76,8 @@ class IVW_CORE_API CompositeProcessor : public Processor,
                                         public PropertyObserver {
 public:
     /**
-     * Construct a CompositeProcessor, an optional workspace file can be supplied in which case it is
-     * deserialized as the CompositeProcessors sub network. otherwise the network is left empty.
+     * Construct a CompositeProcessor, an optional workspace file can be supplied in which case it
+     * is deserialized as the CompositeProcessors sub network. otherwise the network is left empty.
      * getSubNetwork can then be use to add processors etc.
      */
     CompositeProcessor(const std::string& identifier, const std::string& displayName,

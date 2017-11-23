@@ -32,10 +32,12 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/porttraits.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/utilities.h>
 
