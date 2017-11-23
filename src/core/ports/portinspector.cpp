@@ -34,6 +34,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
@@ -45,7 +46,7 @@ PortInspector::PortInspector(std::string portClassIdentifier,
     , portClassIdentifier_(portClassIdentifier) {
 
     // Deserialize the network
-    if (auto istream = std::ifstream(inspectorNetworkFileName_)) {
+    if (auto istream = filesystem::ifstream(inspectorNetworkFileName_)) {
         auto app = InviwoApplication::getPtr();
         auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(
             istream, inspectorNetworkFileName_);

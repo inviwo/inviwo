@@ -24,53 +24,49 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/base/io/datvolumewriter.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
-
 namespace inviwo {
 
 DatVolumeWriter::DatVolumeWriter() : DataWriterType<Volume>() {
-    addExtension(FileExtension("dat","Inviwo dat file format"));
+    addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
-DatVolumeWriter::DatVolumeWriter(const DatVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {
-}
+DatVolumeWriter::DatVolumeWriter(const DatVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {}
 
 DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) {
-    if (this != &that)
-        DataWriterType<Volume>::operator=(that);
+    if (this != &that) DataWriterType<Volume>::operator=(that);
 
     return *this;
 }
 
-DatVolumeWriter* DatVolumeWriter::clone() const {
-    return new DatVolumeWriter(*this);
-}
+DatVolumeWriter* DatVolumeWriter::clone() const { return new DatVolumeWriter(*this); }
 
 void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) const {
     std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
-    if (filesystem::fileExists(filePath)  && !overwrite_)
-        throw DataWriterException("Error: Output file: " + filePath + " already exists", IvwContext);
+    if (filesystem::fileExists(filePath) && !overwrite_)
+        throw DataWriterException("Error: Output file: " + filePath + " already exists",
+                                  IvwContext);
 
     if (filesystem::fileExists(rawPath) && !overwrite_)
         throw DataWriterException("Error: Output file: " + rawPath + " already exists", IvwContext);
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
-    //Write the .dat file content
+    // Write the .dat file content
     std::stringstream ss;
     const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
     glm::mat3 basis = glm::transpose(data->getBasis());
     glm::vec3 offset = data->getOffset();
     glm::mat4 wtm = glm::transpose(data->getWorldMatrix());
-    writeKeyToString(ss, "RawFile",  fileName + ".raw");
+    writeKeyToString(ss, "RawFile", fileName + ".raw");
     writeKeyToString(ss, "Resolution", vr->getDimensions());
-    writeKeyToString(ss, "Format",  vr->getDataFormatString());
+    writeKeyToString(ss, "Format", vr->getDataFormatString());
     writeKeyToString(ss, "BasisVector1", basis[0]);
     writeKeyToString(ss, "BasisVector2", basis[1]);
     writeKeyToString(ss, "BasisVector3", basis[2]);
@@ -90,26 +86,22 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
         if (auto sm = dynamic_cast<const StringMetaData*>(m)) writeKeyToString(ss, key, sm->get());
     }
 
-    std::ofstream f(filePath.c_str());
-
-    if (f.good())
+    if (auto f = filesystem::ofstream(filePath)) {
         f << ss.str();
-    else
+    } else {
         throw DataWriterException("Error: Could not write to dat file: " + filePath, IvwContext);
+    }
 
-    f.close();
-    std::fstream fout(rawPath.c_str(), std::ios::out | std::ios::binary);
-
-    if (fout.good()) {
-        fout.write((char*)vr->getData(), vr->getNumberOfBytes());
-    } else
+    if (auto f = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
+        f.write((char*)vr->getData(), vr->getNumberOfBytes());
+    } else {
         throw DataWriterException("Error: Could not write to raw file: " + rawPath, IvwContext);
-
-    fout.close();
+    }
 }
 
-void DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key, const std::string& str) const {
+void DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key,
+                                       const std::string& str) const {
     ss << key << ": " << str << std::endl;
 }
 
-} // namespace
+}  // namespace inviwo

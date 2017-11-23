@@ -41,6 +41,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/tempfilehandle.h>
+#include <inviwo/core/util/filesystem.h>
 #include <modules/cimg/cimgutils.h>
 #include <modules/cimg/cimglayerreader.h>
 
@@ -67,7 +68,7 @@ TEST(CImgUtils, cimgToBuffer) {
 
     // read file contents
     std::vector<unsigned char> fileContents;
-    std::ifstream in(tmpFile.getFileName().c_str(), std::ifstream::binary);
+    auto in = filesystem::ifstream(tmpFile.getFileName(), std::ios::binary);
     if (in.is_open()) {
         in.seekg(0, in.end);
         size_t fileLen = in.tellg();

@@ -309,7 +309,7 @@ void PythonEditorWidget::save() {
         saveAs();
     } else if (unsavedChanges_) {
         stopFileObservation(scriptFileName_);
-        std::ofstream file(scriptFileName_.c_str());
+        auto file = filesystem::ofstream(scriptFileName_);
         file << pythonCode_->toPlainText().toLocal8Bit().constData();
         file.close();
         startFileObservation(scriptFileName_);
@@ -320,7 +320,7 @@ void PythonEditorWidget::save() {
 }
 
 void PythonEditorWidget::readFile() {
-    std::ifstream file(scriptFileName_.c_str());
+    auto file = filesystem::ifstream(scriptFileName_);
     std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
     replaceInString(text, "\t", "    ");

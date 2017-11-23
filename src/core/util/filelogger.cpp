@@ -34,9 +34,9 @@ namespace inviwo {
 
 FileLogger::FileLogger(std::string logPath) : Logger() {
     if (filesystem::getFileExtension(logPath) != "") {
-        fileStream_ = std::ofstream(logPath.c_str());
+        fileStream_ = filesystem::ofstream(logPath);
     } else {
-        fileStream_ = std::ofstream(logPath.append("/inviwo-log.html").c_str());
+        fileStream_ = filesystem::ofstream(logPath.append("/inviwo-log.html"));
     }
 
     fileStream_ << "<style>" << std::endl

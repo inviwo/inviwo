@@ -35,10 +35,75 @@
 #include <inviwo/core/util/pathtype.h>
 
 #include <vector>
+#include <fstream>
 
 namespace inviwo {
 
 namespace filesystem {
+
+/**
+ * Creates and returns a std::fstream for the given file name (utf-8 encoded). The call
+ * `auto f = filesystem::fstream(filename, mode);` is functionally equivalent to the
+ * statement `std::fstream f(filename, mode);`.
+ * No checks whether the file exists or was successfully opened are performed. That is the caller
+ * has to check it. For more details check the documentation of std::fstream.
+ *
+ * Since all strings within Inviwo are utf-8 encoded, this function should be used to create a
+ * stream when reading from/writing to files using streams.
+ *
+ * On Windows, the file name is first converted from a utf-8 string to std::wstring and then the
+ * stream is created using the std::wstring as std::fstream(std::string) does not support utf-8.
+ *
+ * @param filename   utf-8 encoded string
+ * @return stream for the given file, i.e. `std::fstream(filename, mode);`
+ *
+ * \see std::fstream
+ */
+IVW_CORE_API std::fstream fstream(const std::string& filename,
+                                  std::ios_base::openmode mode = std::ios_base::in |
+                                                                 std::ios_base::out);
+
+/**
+ * Creates and returns a std::ifstream for the given file name (utf-8 encoded). The call
+ * `auto in = filesystem::ifstream(filename, mode);` is functionally equivalent to the
+ * statement `std::ifstream in(filename, mode);`.
+ * No checks whether the file exists or was successfully opened are performed. That is the caller
+ * has to check it. For more details check the documentation of std::ifstream.
+ *
+ * Since all strings within Inviwo are utf-8 encoded, this function should be used to create a
+ * stream when reading from files using streams.
+ *
+ * On Windows, the file name is first converted from a utf-8 string to std::wstring and then the
+ * stream is created using the std::wstring as std::ifstream(std::string) does not support utf-8.
+ *
+ * @param filename   utf-8 encoded string
+ * @return stream for the given file, i.e. `std::ifstream(filename, mode);`
+ *
+ * \see std::ifstream
+ */
+IVW_CORE_API std::ifstream ifstream(const std::string& filename,
+                                    std::ios_base::openmode mode = std::ios_base::in);
+
+/**
+ * Creates and returns a std::ofstream for the given file name (utf-8 encoded). The call
+ * `auto out = filesystem::ofstream(filename, mode);` is functionally equivalent to the
+ * statement `std::ofstream out(filename, mode);`.
+ * No checks whether the file exists or was successfully opened are performed. That is the caller
+ * has to check it. For more details check the documentation of std::ofstream.
+ *
+ * Since all strings within Inviwo are utf-8 encoded, this function should be used to create a
+ * stream when writing to files using streams.
+ *
+ * On Windows, the file name is first converted from a utf-8 string to std::wstring and then the
+ * stream is created using the std::wstring as std::ofstream(std::string) does not support utf-8.
+ *
+ * @param filename   utf-8 encoded string
+ * @return stream for the given file, i.e. `std::ofstream(filename, mode);`
+ *
+ * \see std::ofstream
+ */
+IVW_CORE_API std::ofstream ofstream(const std::string& filename,
+                                    std::ios_base::openmode mode = std::ios_base::out);
 
 /**
  * Get the working directory of the application.

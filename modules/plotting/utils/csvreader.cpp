@@ -48,7 +48,7 @@ void CSVReader::setFirstRowHeader(bool hasHeader) {
 }
 
 std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName) {
-    std::ifstream file(fileName);
+    auto file = filesystem::ifstream(fileName);
 
     if (!file.is_open()) {
         throw FileException(std::string("CSVReader: Could not open file \"" + fileName + "\"."));

@@ -49,7 +49,7 @@ void BinarySTLWriter::writeData(const Mesh* data, const std::string filePath) co
     if (filesystem::fileExists(filePath) && !getOverwrite()) {
         throw DataWriterException("File already exists: " + filePath, IvwContext);
     }
-    std::ofstream f(filePath, std::ios_base::out | std::ios_base::binary);
+    auto f = filesystem::ofstream(filePath, std::ios_base::out | std::ios_base::binary);
     writeData(data, f);
 }
 

@@ -237,7 +237,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
     }
 
     void PythonScriptDisk::readFileAndSetSource() {
-        std::ifstream inFile(getFilename());
+        auto inFile = filesystem::ifstream(getFilename());
         std::string src((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
         setSource(src);
     }

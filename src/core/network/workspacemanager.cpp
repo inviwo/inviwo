@@ -32,6 +32,7 @@
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/inviwosetupinfo.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
@@ -156,7 +157,8 @@ void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
 }
 
 void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler) {
-    if (auto ostream = std::ofstream(path.c_str())) {
+    auto ostream = filesystem::ofstream(path);
+    if (ostream.is_open()) {
         save(ostream, path, exceptionHandler);
     } else {
         throw AbortException("Could not open workspace file: " + path, IvwContext);
@@ -164,8 +166,8 @@ void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exc
 }
 
 void WorkspaceManager::load(const std::string& path, const ExceptionHandler& exceptionHandler) {
-
-    if (auto istream = std::ifstream(path.c_str())) {
+    auto istream = filesystem::ifstream(path);
+    if (istream.is_open()) {
         load(istream, path, exceptionHandler);
     } else {
         throw AbortException("Could not open workspace file: " + path, IvwContext);

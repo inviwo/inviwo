@@ -36,9 +36,37 @@
 #include <cstdlib>
 #include <memory>
 #include <cxxabi.h>
+#include <cwchar>
+#elif defined(WIN32)
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 
 namespace inviwo {
+
+
+namespace util {
+
+#if defined(_WIN32)
+std::wstring toWstring(const std::string& str) {
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
+    std::wstring result(size_needed, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), &result[0], size_needed);
+    return result;
+}
+#else 
+std::wstring toWstring(const std::string& str) {
+    auto state = std::mbstate_t();
+    const char* s = str.c_str();
+    size_t len = std::mbsrtowcs(nullptr, &s, 0, &state) + 1;
+    std::wstring result(len, 0);
+    std::mbsrtowcs(&result[0], &s, result.size(), &state);
+    return result;
+}
+#endif
+
+} // namespace util
 
 std::vector<std::string> splitString(const std::string& str, char delimeter) {
     std::vector<std::string> strings;

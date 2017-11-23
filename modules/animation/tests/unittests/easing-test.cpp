@@ -34,6 +34,8 @@
 
 
 #include <modules/animation/datastructures/easing.h>
+#include <inviwo/core/util/filesystem.h>
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -98,7 +100,7 @@ TEST(AnimationTests, Easing) {
         }
 
         // Open file and save
-        std::ofstream outfile(ThisEasing.second + ".py");
+        auto outfile = filesystem::ofstream(ThisEasing.second + ".py");
         if (outfile.is_open()) {
             outfile << "import numpy as np\nimport matplotlib.pyplot as plt\n\n";
 
