@@ -56,6 +56,7 @@
 #include <QKeyEvent>
 #include <QEvent>
 #include <QGestureEvent>
+#include <QTouchDevice>
 #include <QTouchEvent>
 #include <QThread>
 #include <QMenu>
@@ -105,7 +106,9 @@ private:
     bool mapGestureEvent(QGestureEvent*);
     bool mapPanTriggered(QPanGesture* );
     bool mapPinchTriggered(QPinchGesture* e);
-        
+    
+    std::map<QTouchDevice*, TouchDevice> touchDevices_; ///< Links QTouchDevice to inviwo::TouchDevice
+    std::vector<TouchPoint> prevTouchPoints_; ///< Compare with next touch event to prevent duplicates
     Qt::GestureType lastType_;
     int lastNumFingers_;
     vec2 screenPositionNormalized_;
@@ -403,7 +406,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
             default:
                 touchState = TouchState::None;
         }
-        touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos,pressedPos, screenSize,
+        touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos, pressedPos, screenSize,
                                  pressure, this->getDepthValueAtNormalizedCoord(pos));
     }
     // Ensure that the order to the touch points are the same as last touch event.
@@ -411,8 +414,39 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     // they are given can vary.
     std::sort(touchPoints.begin(), touchPoints.end(),
               [](const auto& a, const auto& b) { return a.id() < b.id(); });
-
-    TouchEvent touchEvent(touchPoints);
+    
+    // Touchpad on Mac sends one event per touch point. Prevent duplicate events from being sent.
+    // We consider an event to be a duplicate if all points in the event are the same as the last event.
+    if (std::equal(touchPoints.begin(), touchPoints.end(),
+                   prevTouchPoints_.begin(), prevTouchPoints_.end())) {
+        prevTouchPoints_ = touchPoints;
+        touch->accept();
+        return true;
+    }
+    // Store previous touch points
+    prevTouchPoints_ = touchPoints;
+    
+    // Get the device generating the event (touch screen or touch pad)
+    auto deviceIt = touchDevices_.find(touch->device());
+    TouchDevice* device = nullptr;
+    if (deviceIt != touchDevices_.end()) {
+        device = &(deviceIt->second);
+    } else {
+        // Insert device new device into map
+        TouchDevice::DeviceType deviceType;
+        switch (touch->device()->type()) {
+            case QTouchDevice::DeviceType::TouchScreen:
+                deviceType = TouchDevice::DeviceType::TouchScreen;
+                break;
+            case QTouchDevice::DeviceType::TouchPad:
+                deviceType = TouchDevice::DeviceType::TouchPad;
+                break;
+            default:
+                deviceType = TouchDevice::DeviceType::TouchScreen;
+        }
+        device = &(touchDevices_[touch->device()] = TouchDevice(deviceType, (touch->device()->name().toStdString())));
+    }
+    TouchEvent touchEvent(touchPoints, device);
     touch->accept();
 
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
