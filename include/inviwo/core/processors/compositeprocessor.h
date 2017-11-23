@@ -48,21 +48,27 @@ class SourceProcessorBase;
 
 /**
  * \class CompositeProcessor
- * A processor having its own processor network, called sub network.
- * We call the network of the CompositeProcessor the super network from the context of the sub
- * network. The CompositeProcessor will evaluate its sub network when it itself gets processed. It
- * will look into the sub network for any SinkProcessors, which acts as data inputs in the sub
- * network, and ask for its super inport and add it to itself. Then it will look for all
- * SinkProseccors, which acts as data outputs, and ask for its super outport and add it to it self.
- * When the SourceProcessor gets evaluated in the sub network it will take the data from its super
- * inport and put in its outport, moving the data from the super network to the sub network.
- * At the end of the sub network evaluation the SinkProcessors will be evaluated and take the data
- * on its inport and put on its super outport, moving the data from the sub network into the super
- * network.
+ * A processor containing a network of processors, i.e. it will act as a sub network within a
+ * processor network. A CompositeProcessor can be used to reduce cluttering in the network. Also
+ * makes it easy to reuse groups of processors inside of a network, and across network since they
+ * can be saved in the processor list. A CompositeProcessor is usually created by selecting a group
+ * of processors that are closely related in the network editor and then clicking "create
+ * composite" in the context menu.
  *
- * Properties in the sub network that are marked with application usage mode, or manually added,
- * will be cloned and added to the composite processor with mutual onChange callbacks to keep them
- * in sync.
+ * The network inside of the CompositeProcessors is called the sub network and the network of the
+ * CompositeProcessor the super network. The CompositeProcessor will evaluate its sub network when
+ * it itself gets processed. It will look into the sub network for any SinkProcessors, which acts as
+ * data inputs in the sub network, and ask for its super inport and add it to itself. Then it will
+ * look for all SinkProseccors, which acts as data outputs, and ask for its super outport and add it
+ * to it self. When the SourceProcessor gets evaluated in the sub network it will take the data from
+ * its super inport and put in its outport, moving the data from the super network to the sub
+ * network. At the end of the sub network evaluation the SinkProcessors will be evaluated and take
+ * the data on its inport and put on its super outport, moving the data from the sub network into
+ * the super network.
+ *
+ * Properties in the sub network that are marked with application usage mode, or added by calling
+ * addSuperProperty, will be cloned and added to the composite processor with mutual onChange
+ * callbacks to keep them in sync.
  *
  * Events are propagated through the sub network using the super inport and outports in the Source
  * and Sink Processors.
@@ -95,9 +101,9 @@ public:
     virtual void propagateEvent(Event* event, Outport* source) override;
 
     /**
-     * Save the current network to the user settings dir.
-     * Processors will automatically show up in the processor list. The current displayName will be
-     * used to name the new sub network.
+     * Save the current network into the composites folder of the user settings dir. The current
+     * display name will be used as filename. Saved networks will automatically appear as Processors
+     * in the processor list, with the same display name.
      */
     void saveSubNetwork(const std::string& file);
 

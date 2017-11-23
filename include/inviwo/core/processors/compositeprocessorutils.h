@@ -55,7 +55,7 @@ IVW_CORE_API void replaceSelectionWithCompositeProcessor(ProcessorNetwork& netwo
  * Expand a composite processors sub network into its network. Effectively reversing the actions of
  * replaceSelectionWithCompositeProcessor. All processor except for sink and source processors are
  * moved from the sub network into the network of the composite processor. Connections and links are
- * the reestablished.
+ * the reestablished. Sources and sinks are discarded.
  */
 IVW_CORE_API void expandCompositeProcessorIntoNetwork(CompositeProcessor& composite);
 

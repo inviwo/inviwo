@@ -112,7 +112,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                                "Probably need to register a Source Processor for the port:\n"
                                "registerProcessor<SourceProcessor<InportType, OutportType>>();\n"
                                "or use the convenience function:\n"
-                               "registerStandardPortsForObject<DataType>();");
+                               "registerDefaultsForDataType<DataType>();");
                 }
             } else {
                 LogErrorCustom(
@@ -123,7 +123,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                            "Probably need to register a Source Processor for the port:\n"
                            "registerProcessor<SourceProcessor<InportType, OutportType>>();\n"
                            "or use the convenience function:\n"
-                           "registerStandardPortsForObject<DataType>();");
+                           "registerDefaultsForDataType<DataType>();");
             }
         }
 
@@ -149,7 +149,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                                "Probably need to register a Sink Processor for the port:\n"
                                "registerProcessor<SinkProcessor<InportType, OutportType>>();\n"
                                "or use the convenience function:\n"
-                               "registerStandardPortsForObject<DataType>();");
+                               "registerDefaultsForDataType<DataType>();");
                 }
             } else {
                 LogErrorCustom(
@@ -160,7 +160,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                            "Probably need to register a Sink Processor for the port:\n"
                            "registerProcessor<SinkProcessor<InportType, OutportType>>();\n"
                            "or use the convenience function:\n"
-                           "registerStandardPortsForObject<DataType>();");
+                           "registerDefaultsForDataType<DataType>();");
             }
         }
 

@@ -184,6 +184,11 @@ protected:
 
     template <typename T>
     void registerProcessor();
+
+    /**
+     * Register a workspace file as a CompositeProcessor.
+     * The CompositeProcessor will load the file as its sub network on construction.
+     */
     void registerCompositeProcessor(const std::string& file);
 
     template <typename T, typename P>
@@ -200,7 +205,7 @@ protected:
     void registerPort();
 
     /**
-     * Utility for register a standard set of ports for a data type T
+     * Utility for register a standard set of ports and processors for a data type T
      * Will register the following ports:
      *     DataInport<T>           Inport
      *     DataInport<T, 0>        Multi Inport (accepts multiple input connections)
@@ -216,7 +221,7 @@ protected:
      * @see SinkProcessor
      */
     template <typename T>
-    void registerStandardPortsForObject();
+    void registerDefaultsForDataType();
 
     template <typename T>
     void registerProperty();
@@ -334,7 +339,7 @@ void InviwoModule::registerPort() {
 }
 
 template <typename T>
-void InviwoModule::registerStandardPortsForObject() {
+void InviwoModule::registerDefaultsForDataType() {
     registerPort<DataInport<T>>();
     registerPort<DataInport<T, 0>>();
     registerPort<DataInport<T, 0, true>>();

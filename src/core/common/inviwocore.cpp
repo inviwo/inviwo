@@ -216,30 +216,30 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProcessor<SourceProcessor<ImageInport, ImageOutport>>();
     registerProcessor<SinkProcessor<ImageInport, ImageOutport>>();
 
-    registerStandardPortsForObject<Mesh>();
-    registerStandardPortsForObject<Volume>();
-    registerStandardPortsForObject<BufferBase>();
-    registerStandardPortsForObject<LightSource>();
+    registerDefaultsForDataType<Mesh>();
+    registerDefaultsForDataType<Volume>();
+    registerDefaultsForDataType<BufferBase>();
+    registerDefaultsForDataType<LightSource>();
 
-    registerStandardPortsForObject<vec2>();
-    registerStandardPortsForObject<dvec2>();
-    registerStandardPortsForObject<ivec2>();
-    registerStandardPortsForObject<vec3>();
-    registerStandardPortsForObject<dvec3>();
-    registerStandardPortsForObject<ivec3>();
-    registerStandardPortsForObject<vec4>();
-    registerStandardPortsForObject<dvec4>();
-    registerStandardPortsForObject<ivec4>();
+    registerDefaultsForDataType<vec2>();
+    registerDefaultsForDataType<dvec2>();
+    registerDefaultsForDataType<ivec2>();
+    registerDefaultsForDataType<vec3>();
+    registerDefaultsForDataType<dvec3>();
+    registerDefaultsForDataType<ivec3>();
+    registerDefaultsForDataType<vec4>();
+    registerDefaultsForDataType<dvec4>();
+    registerDefaultsForDataType<ivec4>();
 
-    registerStandardPortsForObject<std::vector<vec2>>();
-    registerStandardPortsForObject<std::vector<dvec2>>();
-    registerStandardPortsForObject<std::vector<ivec2>>();
-    registerStandardPortsForObject<std::vector<vec3>>();
-    registerStandardPortsForObject<std::vector<dvec3>>();
-    registerStandardPortsForObject<std::vector<ivec3>>();
-    registerStandardPortsForObject<std::vector<vec4>>();
-    registerStandardPortsForObject<std::vector<dvec4>>();
-    registerStandardPortsForObject<std::vector<ivec4>>();
+    registerDefaultsForDataType<std::vector<vec2>>();
+    registerDefaultsForDataType<std::vector<dvec2>>();
+    registerDefaultsForDataType<std::vector<ivec2>>();
+    registerDefaultsForDataType<std::vector<vec3>>();
+    registerDefaultsForDataType<std::vector<dvec3>>();
+    registerDefaultsForDataType<std::vector<ivec3>>();
+    registerDefaultsForDataType<std::vector<vec4>>();
+    registerDefaultsForDataType<std::vector<dvec4>>();
+    registerDefaultsForDataType<std::vector<ivec4>>();
 
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),

@@ -134,7 +134,7 @@ template <typename InportType, typename OutportType>
 void SinkProcessor<InportType, OutportType>::serialize(Serializer& s) const {
     SinkProcessorBase::serialize(s);
     // Need to use pointers here, since the port will be serialized in portconnections etc and we
-    // what the serialization to know they are the same object.
+    // want the serialization to know they are the same object.
     auto ptr = &superOutport_;
     s.serialize("SuperOutport", ptr);
 }
@@ -143,7 +143,7 @@ template <typename InportType, typename OutportType>
 void SinkProcessor<InportType, OutportType>::deserialize(Deserializer& d) {
     SinkProcessorBase::deserialize(d);
     // Need to use pointers here, since the port will be deserialized in portconnections etc and we
-    // what the serialization to know they are the same object.
+    // want the serialization to know they are the same object.
     auto ptr = &superOutport_;
     d.deserialize("SuperOutport", ptr);
 }
