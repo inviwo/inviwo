@@ -143,7 +143,7 @@ SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
 
 #find_package(ZLIB REQUIRED)
 ADD_DEFINITIONS(-DASSIMP_BUILD_NO_OWN_ZLIB)
-#INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR}) # handled via inviwo::zlib1 instead
+#INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR}) # handled via target dependency ZLIB::ZLIB instead
 
 # Search for unzip
 if (PKG_CONFIG_FOUND)
