@@ -62,6 +62,8 @@ CompositeProcessor::CompositeProcessor(const std::string& identifier,
     , evaluator_{util::make_unique<ProcessorNetworkEvaluator>(network_.get())} {
 
     network_->addObserver(this);
+
+    // keep the network locked, only unlock in the process function.
     network_->lock();
 
     loadSubNetwork(file);
@@ -110,6 +112,8 @@ void CompositeProcessor::saveSubNetwork(const std::string& file) {
     Tags tags;
     network_->forEachProcessor([&](auto p) { tags.addTags(p->getTags()); });
 
+    // The CompositeProcessorFactoryObject will deserialize the DisplayName and Tags to use in the
+    // ProcessorInfo which will be displayed in the processor list
     InviwoSetupInfo info(app_);
     s.serialize("InviwoSetup", info);
     s.serialize("DisplayName", getDisplayName());
