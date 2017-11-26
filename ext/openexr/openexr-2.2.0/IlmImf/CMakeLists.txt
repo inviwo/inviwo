@@ -149,7 +149,7 @@ TARGET_LINK_LIBRARIES ( openexr-ilmimf PUBLIC
   openexr-iex
   openexr-imath
   openexr-ilmthread
-  inviwo::zlib1
+  ZLIB::ZLIB
   # Half 
   # Iex${ILMBASE_LIBSUFFIX}
   # Imath${ILMBASE_LIBSUFFIX}

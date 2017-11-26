@@ -1,3 +1,7 @@
+# Creates target ZLIB::ZLIB as defined in find_package(ZLIB)
+# Use the following to add dependency in your module:
+# target_link_libraries(inviwo-module-yourmodule PUBLIC ZLIB::ZLIB)
+
 #cmake_minimum_required(VERSION 2.4.4)
 #set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
@@ -193,7 +197,8 @@ else()
 	add_library(zlib1 STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
     ivw_suppress_compiler_warnings(zlib1)
 endif()
-add_library(inviwo::zlib1 ALIAS zlib1)
+# Define same target as find_package(ZLIB)
+add_library(ZLIB::ZLIB ALIAS zlib1)
 
 
 

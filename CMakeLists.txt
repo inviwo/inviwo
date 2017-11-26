@@ -127,9 +127,13 @@ endif()
 # Add external libraries.
 # 
 # Dependencies between libraries are solved using the given order
-add_subdirectory(ext/zlib-1.2.11)
-add_subdirectory(ext/libpng)
-add_subdirectory(ext/libjpeg)
+# Note: We prefer building dependencies our self to using find_library,
+# since it does not necessarily give you the dll for packaging. 
+# It also ensures that we are in control of the used version 
+# and is built using the same, Inviwo, settings.
+add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
+add_subdirectory(ext/libpng) # Defines target inviwo::libpng and libpng
+add_subdirectory(ext/libjpeg) # Defines target inviwo::libjpeg and libjpeg
 add_subdirectory(ext/openexr)
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)

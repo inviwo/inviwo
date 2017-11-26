@@ -36,9 +36,9 @@ ivw_add_unittest(${TEST_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 target_link_libraries(inviwo-module-cimg PUBLIC
-    inviwo::zlib1
-    libjpeg
-    libpng
+    ZLIB::ZLIB
+    inviwo::libjpeg
+    inviwo::libpng
 
     openexr-half
     openexr-iex
