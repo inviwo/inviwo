@@ -126,6 +126,10 @@ public:
     std::vector<std::shared_ptr<Column>>::const_iterator begin() const;
     std::vector<std::shared_ptr<Column>>::const_iterator end() const;
 
+    /**
+     * \brief update row indices. Needs to be called if the row count has changed, e.g. after
+     * removing rows from a column.
+     */
     void updateIndexBuffer();
 
 private:
@@ -167,15 +171,21 @@ struct DataTraits<plot::DataFrame> {
         Document doc;
         doc.append("b", "DataFrame", {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Number of columns: "), data.getNumberOfColumns());
+        tb(H("Number of Columns: "), data.getNumberOfColumns());
+        tb(H("Number of Rows: "), data.getNumberOfRows());
 
-        for (size_t i = 0; i < data.getNumberOfColumns(); i++) {
-            std::ostringstream oss;
-            oss << "Column " << (i + 1) << ": " << data.getHeader(i);
-            tb(H(oss.str()), "");
+        utildoc::TableBuilder tb2(doc.handle(), P::end());
+        tb2(H("Col"), H("Format"), H("Rows"), H("Name"));
+        // abbreviate list of columns if there are more than 20
+        const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
 
-            tb("Size", data.getColumn(i)->getBuffer()->getSize());
-            tb("Dataformat", data.getColumn(i)->getBuffer()->getDataFormat()->getString());
+        for (size_t i = 0; i < ncols; i++) {
+            tb2(std::to_string(i + 1), data.getColumn(i)->getBuffer()->getDataFormat()->getString(),
+                data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i));
+        }
+        if (ncols != data.getNumberOfColumns()) {
+            doc.append("span", "... (" + std::to_string(data.getNumberOfColumns() - ncols) +
+                " additional columns)");
         }
 
         return doc;
