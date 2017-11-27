@@ -70,6 +70,8 @@ public:
 template <typename InportType, typename OutportType>
 class SinkProcessor : public SinkProcessorBase {
 public:
+    static_assert(std::is_same<typename InportType::type, typename OutportType::type>::value,
+                  "InportType and OutportType must work with the same data type");
     SinkProcessor();
     virtual ~SinkProcessor() = default;
 

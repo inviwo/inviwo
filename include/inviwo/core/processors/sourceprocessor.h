@@ -70,6 +70,8 @@ public:
 template <typename InportType, typename OutportType>
 class SourceProcessor : public SourceProcessorBase {
 public:
+    static_assert(std::is_same<typename InportType::type, typename OutportType::type>::value,
+                  "InportType and OutportType must work with the same data type");
     SourceProcessor();
     virtual ~SourceProcessor() = default;
 

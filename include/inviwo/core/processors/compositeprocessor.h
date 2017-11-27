@@ -56,22 +56,33 @@ class SourceProcessorBase;
  * composite" in the context menu.
  *
  * The network inside of the CompositeProcessors is called the sub network and the network of the
- * CompositeProcessor the super network. The CompositeProcessor will evaluate its sub network when
- * it itself gets processed. It will look into the sub network for any SinkProcessors, which acts as
- * data inputs in the sub network, and ask for its super inport and add it to itself. Then it will
- * look for all SinkProseccors, which acts as data outputs, and ask for its super outport and add it
- * to it self. When the SourceProcessor gets evaluated in the sub network it will take the data from
- * its super inport and put in its outport, moving the data from the super network to the sub
- * network. At the end of the sub network evaluation the SinkProcessors will be evaluated and take
- * the data on its inport and put on its super outport, moving the data from the sub network into
- * the super network.
+ * CompositeProcessor the super network. The CompositeProcessor only will evaluate its sub network
+ * when it itself gets processed, and otherwise keep it locked.
+ *
+ * The CompositeProcessor will observe its sub network and when a processor gets added to the sub
+ * network the CompositeProcessor will check if it's a SourceProcessor or a SinkProcessor. In the
+ * case it's a SourceProcessor, which acts as data inputs in the sub network, in will get the
+ * special "super" inport and add it to it self. If it's a SinkProcessor, which acts as data
+ * outputs, it will get the "super" outport and add it to it self.
+ *
+ * When the SourceProcessor gets evaluated in the sub network it will take the data from its super
+ * inport and put in its outport, moving the data from the super network to the sub network. At the
+ * end of the sub network evaluation the SinkProcessors will be evaluated and take the data on its
+ * inport and put on its super outport, moving the data from the sub network into the super network.
  *
  * Properties in the sub network that are marked with application usage mode, or added by calling
  * addSuperProperty, will be cloned and added to the composite processor with mutual onChange
- * callbacks to keep them in sync.
+ * callbacks to keep them in sync, exposing the sub property's state to the super network.
  *
  * Events are propagated through the sub network using the super inport and outports in the Source
  * and Sink Processors.
+ *
+ * Many designs for composite processors were considered, including implementing it as a pure GUI
+ * feature having all the processors in the same network. The current design of completely
+ * encapsulating the sub network was chosen since it minimizes the amount of logic in the GUI. Hence
+ * keeping the simple mapping from processor network to GUI. It also completely hides the sub
+ * network from the super network making it possible to compose sub network in several layers out of
+ * the box.
  *
  * @see SourceProcessor
  * @see SinkProcessor
@@ -113,24 +124,24 @@ public:
     ProcessorNetwork& getSubNetwork();
 
     /**
-     * Add a corresponding property in the CompositeProcessor for the sub property subProperty in
+     * Add a corresponding property in the CompositeProcessor for the sub property 'subProperty' in
      * the sub network. Changes in the subProperty will be reflected in the superProperty and vice
      * versa.
      */
     Property* addSuperProperty(Property* subProperty);
 
     /**
-     * Get the super property for sub property subProperty given there is one, nullptr otherwise.
+     * Get the super property for sub property 'subProperty' given there is one, nullptr otherwise.
      */
     Property* getSuperProperty(Property* subProperty);
 
     /**
-     * Remove the super property for sub property subProperty.
+     * Remove the super property for sub property 'subProperty'.
      */
     void removeSuperProperty(Property* subProperty);
 
     /**
-     * Get the sub property for super property superProperty
+     * Get the sub property for super property 'superProperty'.
      */
     Property* getSubProperty(Property* superProperty);
 
@@ -181,7 +192,7 @@ private:
     std::unordered_map<Property*, std::unique_ptr<PropertyHandler>> handlers_;
     std::vector<SinkProcessorBase*> sinks_;
     std::vector<SourceProcessorBase*> sources_;
-    std::unique_ptr<ProcessorNetwork> network_;
+    std::unique_ptr<ProcessorNetwork> subNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> evaluator_;
 };
 

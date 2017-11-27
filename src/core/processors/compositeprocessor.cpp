@@ -58,13 +58,13 @@ CompositeProcessor::CompositeProcessor(const std::string& identifier,
                                        const std::string& file)
     : Processor(identifier, displayName)
     , app_{app}
-    , network_{util::make_unique<ProcessorNetwork>(app)}
-    , evaluator_{util::make_unique<ProcessorNetworkEvaluator>(network_.get())} {
+    , subNetwork_{util::make_unique<ProcessorNetwork>(app)}
+    , evaluator_{util::make_unique<ProcessorNetworkEvaluator>(subNetwork_.get())} {
 
-    network_->addObserver(this);
+    subNetwork_->addObserver(this);
 
     // keep the network locked, only unlock in the process function.
-    network_->lock();
+    subNetwork_->lock();
 
     loadSubNetwork(file);
 }
@@ -73,13 +73,13 @@ CompositeProcessor::~CompositeProcessor() = default;
 
 void CompositeProcessor::process() {
     util::KeepTrueWhileInScope processing{&isProcessing_};
-    util::OnScopeExit lock{[this]() { network_->lock(); }};
     for (auto& source : sources_) {
         if (source->getSuperInport().isChanged()) {
             source->invalidate(InvalidationLevel::InvalidOutput);
         }
     }
-    network_->unlock();
+    util::OnScopeExit lock{[this]() { subNetwork_->lock(); }};
+    subNetwork_->unlock(); // This will trigger an evaluation of the sub network.
 }
 
 void CompositeProcessor::propagateEvent(Event* event, Outport* source) {
@@ -97,12 +97,12 @@ void CompositeProcessor::propagateEvent(Event* event, Outport* source) {
 }
 
 void CompositeProcessor::serialize(Serializer& s) const {
-    s.serialize("ProcessorNetwork", *network_);
+    s.serialize("ProcessorNetwork", *subNetwork_);
     Processor::serialize(s);
 }
 
 void CompositeProcessor::deserialize(Deserializer& d) {
-    d.deserialize("ProcessorNetwork", *network_);
+    d.deserialize("ProcessorNetwork", *subNetwork_);
     Processor::deserialize(d);
 }
 
@@ -110,7 +110,7 @@ void CompositeProcessor::saveSubNetwork(const std::string& file) {
     Serializer s(app_->getPath(PathType::Workspaces));
 
     Tags tags;
-    network_->forEachProcessor([&](auto p) { tags.addTags(p->getTags()); });
+    subNetwork_->forEachProcessor([&](auto p) { tags.addTags(p->getTags()); });
 
     // The CompositeProcessorFactoryObject will deserialize the DisplayName and Tags to use in the
     // ProcessorInfo which will be displayed in the processor list
@@ -118,24 +118,24 @@ void CompositeProcessor::saveSubNetwork(const std::string& file) {
     s.serialize("InviwoSetup", info);
     s.serialize("DisplayName", getDisplayName());
     s.serialize("Tags", tags.getString());
-    s.serialize("ProcessorNetwork", *network_);
+    s.serialize("ProcessorNetwork", *subNetwork_);
 
     auto ofs = filesystem::ofstream(file);
     s.writeFile(ofs, true);
 }
 
-ProcessorNetwork& CompositeProcessor::getSubNetwork() { return *network_; }
+ProcessorNetwork& CompositeProcessor::getSubNetwork() { return *subNetwork_; }
 
 void CompositeProcessor::loadSubNetwork(const std::string& file) {
     if (filesystem::fileExists(file)) {
-        network_->clear();
+        subNetwork_->clear();
         auto wm = app_->getWorkspaceManager();
         auto ifs = filesystem::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(ifs, app_->getPath(PathType::Workspaces));
         auto name = getDisplayName();
         d.deserialize("DisplayName", name);
         setDisplayName(name);
-        d.deserialize("ProcessorNetwork", *network_);
+        d.deserialize("ProcessorNetwork", *subNetwork_);
     }
 }
 
@@ -158,7 +158,7 @@ Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
     if (it != handlers_.end()) {
         return it->second->superProperty;
     } else {
-        if (orgProp->getOwner()->getProcessor()->getNetwork() == network_.get()) {
+        if (orgProp->getOwner()->getProcessor()->getNetwork() == subNetwork_.get()) {
             handlers_[orgProp] = std::make_unique<PropertyHandler>(*this, orgProp);
             orgProp->setMetaData<BoolMetaData>("CompositeProcessorExposed", true);
             return handlers_[orgProp]->superProperty;
