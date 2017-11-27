@@ -85,6 +85,16 @@ size3_t getVolumeDimensions(const std::shared_ptr<const Volume> &volume) {
     return dims;
 }
 
+double voxelVolume(const Volume &volume) {
+    auto basis = volume.getBasis();
+    auto dims = volume.getDimensions();
+    auto h = glm::length(basis[0])/dims.x;
+    auto w = glm::length(basis[1])/dims.y;
+    auto d = glm::length(basis[2])/dims.z;
+    return h*w*d;
+
+}
+
 } // namespace util
 
 }  // namespace inviwo
