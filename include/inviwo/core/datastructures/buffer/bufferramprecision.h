@@ -63,6 +63,9 @@ public:
 
     virtual void reserve(size_t size) override;
 
+    virtual void reverse() override;
+
+
     virtual double getAsDouble(const size_t& pos) const override;
     virtual dvec2 getAsDVec2(const size_t& pos) const override;
     virtual dvec3 getAsDVec3(const size_t& pos) const override;
@@ -170,6 +173,12 @@ const std::vector<T>& BufferRAMPrecision<T, Target>::getDataContainer() const {
 template <typename T, BufferTarget Target>
 void BufferRAMPrecision<T, Target>::reserve(size_t size){
     data_.reserve(size);
+}
+
+
+template <typename T, BufferTarget Target>
+void BufferRAMPrecision<T, Target>::reverse() {
+    std::reverse(data_.begin(), data_.end());
 }
 
 template <typename T, BufferTarget Target>
