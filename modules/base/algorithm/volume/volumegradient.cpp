@@ -75,7 +75,7 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
         data[index(pos)] = g;
     };
 
-    util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
+    util::forEachVoxelParallel(*volume->getRepresentation<VolumeRAM>(), func);
 
     return newVolume;
 }
