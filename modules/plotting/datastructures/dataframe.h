@@ -84,16 +84,32 @@ public:
     DataFrame(std::uint32_t size = 0);
     virtual ~DataFrame() = default;
 
+    /**
+     * \brief add column based on the contents of the given buffer
+     * updateIndexBuffer() needs to be called after all columns have been added before 
+     * the DataFrame can be used
+     */
     std::shared_ptr<Column> addColumnFromBuffer(const std::string &identifier,
                                                 std::shared_ptr<const BufferBase> buffer);
 
+    /**
+     * \brief add column of type T
+     * updateIndexBuffer() needs to be called after all columns have been added before 
+     * the DataFrame can be used
+     */
     template <typename T>
     std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header, size_t size = 0);
 
+    /**
+     * \brief add a categorical column 
+     * updateIndexBuffer() needs to be called after all columns have been added before 
+     * the DataFrame can be used
+     */
     std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string &header,
                                                             size_t size = 0);
     /**
-     * \brief add a new row given a vector of strings
+     * \brief add a new row given a vector of strings.
+     * updateIndexBuffer() needs to be called after the last row has been added.
      *
      * @param data  data for each column
      * @throws NoColumns        if the data frame has no columns defined
@@ -108,6 +124,10 @@ public:
     const std::vector<std::pair<std::string, const DataFormatBase *>> getHeaders() const;
     std::string getHeader(size_t idx) const;
 
+    /**
+     * \brief access individual columns
+     * updateIndexBuffer() needs to be called if the size of the column, i.e. the row count, was changed
+     */
     std::shared_ptr<Column> getColumn(size_t index);
     std::shared_ptr<const Column> getColumn(size_t index) const;
 
@@ -127,8 +147,9 @@ public:
     std::vector<std::shared_ptr<Column>>::const_iterator end() const;
 
     /**
-     * \brief update row indices. Needs to be called if the row count has changed, e.g. after
-     * removing rows from a column.
+     * \brief update row indices. Needs to be called if the row count has changed, i.e. 
+     * after adding rows from the DataFrame or adding or removing rows from a particular 
+     * column.
      */
     void updateIndexBuffer();
 
