@@ -109,6 +109,7 @@ protected:
     CompositeProperty inputSize_;
     ButtonProperty toggleFullscreen_;
     EventProperty fullscreen_;
+    EventProperty saveLayerEvent_;
 
     BoolProperty allowContextMenu_;
 
