@@ -259,46 +259,38 @@ vec4 performShading()
     // HATCHING
     //==================================================
 #ifdef SEND_TEX_COORD
-    if (settings.hatchingMode > 0) {
-        bool hu = settings.hatchingMode == 1 || settings.hatchingMode == 3;
-        bool hv = settings.hatchingMode >= 2;
-        float stripeStrength = 1;
-        vec2 texCoord = frag.texCoord;
-        //compute frequencies
-        float ls = 0;
-        if (hu) {
-            //hatching in u-direction
-            float lambdaS = length(vec2(dFdxFinest(texCoord.x), dFdyFinest(texCoord.x))) + 0.00001;
-            ls = log(lambdaS) / log(2);
-            ls += settings.hatchingFreqU;
-        }
-        float lt = 0;
-        if (hv) {
-            //hatching in v-direction
-            float lambdaT = length(vec2(dFdxFinest(texCoord.y), dFdyFinest(texCoord.y))) + 0.00001;
-            lt = log(lambdaT) / log(2);
-            lt += settings.hatchingFreqV;
-        }
-        //compute pattern value with interpolation
+    vec2 texCoord = frag.texCoord;
+    float stripeStrength = 1;
+    if (settings.hatchingMode == 1 || settings.hatchingMode == 3) {
+        //hatch in u-direction
+        float lambdaS = length(vec2(dFdxFinest(texCoord.x), dFdyFinest(texCoord.x))) + 0.00001;
+        float ls = log(lambdaS) / log(2);
+        ls += settings.hatchingFreqU;
         int lsInt = int(floor(ls));
-        int ltInt = int(floor(lt));
         float lsFrac = ls - lsInt;
+        stripeStrength *= mix(
+            1 - pow(0.5f + 0.5f * sin(texCoord.x * pow(2, -lsInt) * 2 * M_PI), settings.hatchingSteepness),
+            1 - pow(0.5f + 0.5f * sin(texCoord.x * pow(2, -lsInt-1) * 2 * M_PI), settings.hatchingSteepness),
+            lsFrac
+        );
+    }
+    if (settings.hatchingMode == 2 || settings.hatchingMode == 3) {
+        //hatch in v-direction
+        float lambdaT = length(vec2(dFdxFinest(texCoord.y), dFdyFinest(texCoord.y))) + 0.00001;
+        float lt = log(lambdaT) / log(2);
+        lt += settings.hatchingFreqV;
+        int ltInt = int(floor(lt));
         float ltFrac = lt - ltInt;
-        stripeStrength = mix(
-            mix(
-                smoothPattern(texCoord.x, texCoord.y, lsInt, ltInt, settings.hatchingSteepness, hu, hv),
-                smoothPattern(texCoord.x, texCoord.y, lsInt, ltInt+1, settings.hatchingSteepness, hu, hv),
-                ltFrac),
-            mix(
-                smoothPattern(texCoord.x, texCoord.y, lsInt+1, ltInt, settings.hatchingSteepness, hu, hv),
-                smoothPattern(texCoord.x, texCoord.y, lsInt+1, ltInt+1, settings.hatchingSteepness, hu, hv),
-                ltFrac),
-            lsFrac);
-        //blend into color
-        color.rgb = mix(settings.hatchingColor.rgb, color.rgb, stripeStrength);
-        if (settings.hatchingBlending == 1) {
-            color.a = mix(1, color.a, stripeStrength); //additive alpha
-        }
+        stripeStrength *= mix(
+            1 - pow(0.5f + 0.5f * sin(texCoord.y * pow(2, -ltInt) * 2 * M_PI), settings.hatchingSteepness),
+            1 - pow(0.5f + 0.5f * sin(texCoord.y * pow(2, -ltInt-1) * 2 * M_PI), settings.hatchingSteepness),
+            ltFrac
+        );
+    }
+    //blend into color
+    color.rgb = mix(settings.hatchingColor.rgb, color.rgb, stripeStrength);
+    if (settings.hatchingBlending == 1) {
+        color.a = mix(1, color.a, stripeStrength); //additive alpha
     }
 #endif
 
