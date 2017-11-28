@@ -292,7 +292,7 @@ void Serializer::serialize(const std::string& key, const Mat& data) {
 
 template <unsigned N>
 void Serializer::serialize(const std::string& key, const std::bitset<N>& bits) {
-    serialize(key, bits.to_ullong());
+    serialize(key, bits.to_string());
 }
 
 }  // namespace

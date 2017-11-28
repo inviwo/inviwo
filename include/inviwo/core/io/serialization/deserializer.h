@@ -728,11 +728,11 @@ void Deserializer::deserialize(const std::string& key, Mat& data) {
     }
 }
 
-template<unsigned N>
-void Deserializer::deserialize(const std::string& key, std::bitset<N>& bits){
-    auto t = bits.to_ullong();
-    deserialize(key,t);
-    bits = t;
+template <unsigned N>
+void Deserializer::deserialize(const std::string& key, std::bitset<N>& bits) {
+    std::string value = bits.to_string();
+    deserialize(key, value);
+    bits = std::bitset<N>(value);
 }
 
 template <typename T>
