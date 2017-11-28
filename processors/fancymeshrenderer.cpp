@@ -232,6 +232,9 @@ FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
     , steepness_(prefix + "hatchingSteepness", "Steepness", 5, 1, 10)
     , baseFrequencyU_(prefix + "hatchingFrequencyU", "U-Frequency", 3, 1, 10)
     , baseFrequencyV_(prefix + "hatchingFrequencyV", "V-Frequency", 3, 1, 10)
+    , modulationMode_(prefix + "hatchingModulationMode", "Modulation")
+    , modulationAnisotropy_(prefix + "hatchingModulationAnisotropy", "Anisotropy", 0.5, -1, 1, 0.01)
+    , modulationOffset_(prefix + "hatchingModulationOffset", "Offset", 0, 0, 1, 0.01)
     , color_(prefix + "hatchingColor", "Color", {0,0,0,1})
     , blendingMode_(prefix + "hatchingBlending", "Blending")
 {
@@ -242,6 +245,11 @@ FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
     mode_.addOption("uv", "UV", HatchingMode::UV);
     mode_.set(HatchingMode::Off);
     mode_.setCurrentStateAsDefault();
+    modulationMode_.addOption("off", "Off", HatchingMode::Off);
+    modulationMode_.addOption("u", "U", HatchingMode::U);
+    modulationMode_.addOption("v", "V", HatchingMode::V);
+    modulationMode_.set(HatchingMode::Off);
+    modulationMode_.setCurrentStateAsDefault();
     color_.setSemantics(PropertySemantics::Color);
     blendingMode_.addOption("mult", "Multiplicative", HatchingBlendingMode::Multiplicative);
     blendingMode_.addOption("add", "Additive", HatchingBlendingMode::Additive);
@@ -250,6 +258,9 @@ FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
     container_.addProperty(steepness_);
     container_.addProperty(baseFrequencyU_);
     container_.addProperty(baseFrequencyV_);
+    container_.addProperty(modulationMode_);
+    container_.addProperty(modulationAnisotropy_);
+    container_.addProperty(modulationOffset_);
     container_.addProperty(color_);
     container_.addProperty(blendingMode_);
 }
@@ -330,6 +341,7 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     hatching_.baseFrequencyV_.onChange(triggerUpdate);
     hatching_.color_.onChange(triggerUpdate);
     hatching_.blendingMode_.onChange(triggerUpdate);
+    hatching_.modulationMode_.onChange(triggerUpdate);
 }
 
 void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
@@ -349,6 +361,9 @@ void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
     hatching_.steepness_.set(frontPart_->hatching_.steepness_.get());
     hatching_.baseFrequencyU_.set(frontPart_->hatching_.baseFrequencyU_.get());
     hatching_.baseFrequencyV_.set(frontPart_->hatching_.baseFrequencyV_.get());
+    hatching_.modulationMode_.set(frontPart_->hatching_.modulationMode_.get());
+    hatching_.modulationAnisotropy_.set(frontPart_->hatching_.modulationAnisotropy_.get());
+    hatching_.modulationOffset_.set(frontPart_->hatching_.modulationOffset_.get());
     hatching_.color_.set(frontPart_->hatching_.color_.get());
     hatching_.blendingMode_.set(frontPart_->hatching_.blendingMode_.get());
 }
@@ -381,6 +396,9 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
     hatching_.container_.setVisible(show2 && hatching);
     hatching_.baseFrequencyU_.setVisible(hatching_.mode_.get() != HatchingMode::V);
     hatching_.baseFrequencyV_.setVisible(hatching_.mode_.get() != HatchingMode::U);
+    hatching_.modulationMode_.setVisible(hatching_.mode_.get() == HatchingMode::UV);
+    hatching_.modulationAnisotropy_.setVisible(hatching_.mode_.get() == HatchingMode::UV && hatching_.modulationMode_.get() != HatchingMode::Off);
+    hatching_.modulationOffset_.setVisible(hatching_.mode_.get() == HatchingMode::UV && hatching_.modulationMode_.get() != HatchingMode::Off);
 }
 
 void FancyMeshRenderer::FaceRenderSettings::setCallbacks(const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation)
@@ -624,10 +642,15 @@ void FancyMeshRenderer::process() {
             shader_.setUniform(prefix + "showEdges", faceSettings_[i].showEdges_.get());
             shader_.setUniform(prefix + "edgeColor", faceSettings_[i].edgeColor_.get());
             shader_.setUniform(prefix + "edgeOpacity", faceSettings_[i].edgeOpacity_.get());
-            shader_.setUniform(prefix + "hatchingMode", static_cast<int>(faceSettings_[i].hatching_.mode_.get()));
+            if (faceSettings_[i].hatching_.mode_.get() == HatchingMode::UV)
+                shader_.setUniform(prefix + "hatchingMode", 3 + static_cast<int>(faceSettings_[i].hatching_.modulationMode_.get()));
+            else
+                shader_.setUniform(prefix + "hatchingMode", static_cast<int>(faceSettings_[i].hatching_.mode_.get()));
             shader_.setUniform(prefix + "hatchingSteepness", faceSettings_[i].hatching_.steepness_.get());
             shader_.setUniform(prefix + "hatchingFreqU", faceSettings_[i].hatching_.baseFrequencyU_.getMaxValue() - faceSettings_[i].hatching_.baseFrequencyU_.get());
             shader_.setUniform(prefix + "hatchingFreqV", faceSettings_[i].hatching_.baseFrequencyV_.getMaxValue() - faceSettings_[i].hatching_.baseFrequencyV_.get());
+            shader_.setUniform(prefix + "hatchingModulationAnisotropy", faceSettings_[i].hatching_.modulationAnisotropy_.get());
+            shader_.setUniform(prefix + "hatchingModulationOffset", faceSettings_[i].hatching_.modulationOffset_.get());
             shader_.setUniform(prefix + "hatchingColor", faceSettings_[i].hatching_.color_.get());
             shader_.setUniform(prefix + "hatchingBlending", static_cast<int>(faceSettings_[i].hatching_.blendingMode_.get()));
 

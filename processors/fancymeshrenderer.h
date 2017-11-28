@@ -276,6 +276,9 @@ protected:
         IntProperty steepness_;
         IntProperty baseFrequencyU_;
         IntProperty baseFrequencyV_;
+        TemplateOptionProperty<HatchingMode> modulationMode_;
+        FloatProperty modulationAnisotropy_;
+        FloatProperty modulationOffset_;
         FloatVec4Property color_;
         TemplateOptionProperty<HatchingBlendingMode> blendingMode_;
         HatchingSettings(const std::string& prefix);

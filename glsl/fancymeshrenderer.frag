@@ -85,6 +85,8 @@ struct FaceRenderSettings
     int hatchingSteepness;
     int hatchingFreqU;
     int hatchingFreqV;
+    float hatchingModulationAnisotropy;
+    float hatchingModulationOffset;
     vec4 hatchingColor;
     int hatchingBlending;
 };
@@ -120,6 +122,7 @@ uniform AlphaSettings alphaSettings;
 
 #define M_PI 3.1415926535897932384626433832795
 
+//Deprecated, unused, included directly into the code
 float smoothPattern(float s, float t, int ls, int lt, int steepness, bool hu, bool hv)
 {
     s *= pow(2, -ls);
@@ -128,6 +131,16 @@ float smoothPattern(float s, float t, int ls, int lt, int steepness, bool hu, bo
     if (hu) c *= 1 - pow(0.5f + 0.5f * sin(s * 2 * M_PI), steepness);
     if (hv) c *= 1 - pow(0.5f + 0.5f * sin(t * 2 * M_PI), steepness);
     return c;
+}
+
+//x in [0,1]: phase
+//k in [-1,1]: anisotropy
+float hatchingModulation(float x, float k)
+{
+    x = fract(x);
+    float e = tan(abs(k)*0.45*M_PI) + 1;
+    float b = 0.5 + (k>=0 ? -1 : 1) * (x - 0.5);
+    return 0.5 * (1 - cos(pow(b, e) * 2*M_PI));
 }
 
 vec4 performShading()
@@ -261,7 +274,7 @@ vec4 performShading()
 #ifdef SEND_TEX_COORD
     vec2 texCoord = frag.texCoord;
     float stripeStrength = 1;
-    if (settings.hatchingMode == 1 || settings.hatchingMode == 3) {
+    if (settings.hatchingMode == 1 || settings.hatchingMode == 3 || settings.hatchingMode == 4) {
         //hatch in u-direction
         float lambdaS = length(vec2(dFdxFinest(texCoord.x), dFdyFinest(texCoord.x))) + 0.00001;
         float ls = log(lambdaS) / log(2);
@@ -274,7 +287,7 @@ vec4 performShading()
             lsFrac
         );
     }
-    if (settings.hatchingMode == 2 || settings.hatchingMode == 3) {
+    if (settings.hatchingMode == 2 || settings.hatchingMode == 3 || settings.hatchingMode == 5) {
         //hatch in v-direction
         float lambdaT = length(vec2(dFdxFinest(texCoord.y), dFdyFinest(texCoord.y))) + 0.00001;
         float lt = log(lambdaT) / log(2);
@@ -286,6 +299,15 @@ vec4 performShading()
             1 - pow(0.5f + 0.5f * sin(texCoord.y * pow(2, -ltInt-1) * 2 * M_PI), settings.hatchingSteepness),
             ltFrac
         );
+    }
+    if (settings.hatchingMode == 4) {
+        //modulation in u-direction
+        float s = texCoord.y * pow(2, settings.hatchingFreqV);
+        stripeStrength = 1 - (1-stripeStrength) * hatchingModulation(s + settings.hatchingModulationOffset, settings.hatchingModulationAnisotropy);
+    } else if (settings.hatchingMode == 5) {
+        //modulation in v-direction
+        float t = texCoord.x * pow(2, settings.hatchingFreqU);
+        stripeStrength = 1 - (1-stripeStrength) * hatchingModulation(t + settings.hatchingModulationOffset, settings.hatchingModulationAnisotropy);
     }
     //blend into color
     color.rgb = mix(settings.hatchingColor.rgb, color.rgb, stripeStrength);
