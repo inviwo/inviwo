@@ -128,7 +128,7 @@ public:
     virtual void deserialize(Deserializer& d);
 
     /**
-     * sample the transfer function at position v and return the respective color and 
+     * Sample the transfer function at position v and return the respective color and 
      * opacity (rgba). The range of the transfer function is [0,1].
      *
      * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
@@ -136,7 +136,7 @@ public:
      */
     vec4 sample(double v) const;
     /**
-     * sample the transfer function at position v and return the respective color and 
+     * Sample the transfer function at position v and return the respective color and 
      * opacity (rgba). The range of the transfer function is [0,1].
      *
      * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
