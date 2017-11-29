@@ -48,6 +48,7 @@
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/meshexport.h>
+#include <modules/base/processors/meshmapping.h>
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/meshsource.h>
 #include <modules/base/processors/noiseprocessor.h>
@@ -120,6 +121,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshCreator>();
+    registerProcessor<MeshMapping>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
     registerProcessor<PointLightSourceProcessor>();

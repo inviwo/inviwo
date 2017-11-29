@@ -101,7 +101,7 @@ void Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase
 }
 
 void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att) {
-    LogWarn("Mesh::setBuffer() is deprecated, consider using Mesh::replaceBuffer() instead");
+    LogWarn("Deprecated: Mesh::setBuffer() has been renamed to Mesh::replaceBuffer()");
     replaceBuffer(idx, info, att);
 }
 

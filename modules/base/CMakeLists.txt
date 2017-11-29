@@ -53,6 +53,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshmapping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.h
@@ -139,6 +140,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshmapping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.cpp
