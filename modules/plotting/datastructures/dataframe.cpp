@@ -79,9 +79,12 @@ std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::st
 
 void DataFrame::addRow(const std::vector<std::string> &data) {
     if (columns_.size() <= 1) {
-        throw NoColumns("DataFrame: DataFrame has no columns");
+        throw NoColumns("DataFrame: DataFrame has no columns", IvwContext);
     } else if (columns_.size() != data.size() + 1) {  // consider index column of DataFrame
-        throw InvalidColCount("DataFrame: data does not match column count");
+        std::ostringstream oss;
+        oss << "Data does not match column count, DataFrame has " << (columns_.size() - 1)
+            << " columns and input data has " << data.size();
+        throw InvalidColCount(oss.str(), IvwContext);
     }
     // Try to match up input data with columns.
     std::vector<size_t> columnIdForDataTypeErrors;
@@ -102,7 +105,7 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
         errStr << ")" << std::endl
                << " DataFrame will be in an invalid state since since all columns must be of equal "
                   "size.";
-        throw DataTypeMismatch(errStr.str());
+        throw DataTypeMismatch(errStr.str(), IvwContext);
     }
 }
 
@@ -179,7 +182,8 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
                                            const std::vector<std::string> &colHeaders) {
 
     if (exampleRows.empty()) {
-        throw InvalidColCount("No example data to derive columns from");
+        throw InvalidColCount("No example data to derive columns from",
+                              IvwContextCustom("DataFrame::createDataFrame"));
     }
 
     // Guess type of each column, ordinal or nominal
@@ -188,7 +192,10 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
     for (size_t i = 0; i < exampleRows.size(); ++i) {
         const auto &rowData = exampleRows[i];
         if (rowData.size() != colHeaders.size()) {
-            throw InvalidColCount("Number of headers does not match column count");
+            std::ostringstream oss;
+            oss << "Number of headers does not match column count, number of headers: "
+                << colHeaders.size() << ", number of columns: " << rowData.size();
+            throw InvalidColCount(oss.str(), IvwContextCustom("DataFrame::createDataFrame"));
         }
         for (auto column = 0u; column < rowData.size(); ++column) {
             std::istringstream iss(rowData[column]);
