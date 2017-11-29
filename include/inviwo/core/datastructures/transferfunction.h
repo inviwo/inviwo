@@ -58,8 +58,8 @@ protected:
 
 /** 
  * \ingroup datastructures 
- * \brief for holding transfer function data.
- *  This class holds transfer function data, currently one parameter in the variable data_.
+ * \brief for holding 1D transfer function data.
+ *  This class holds 1D transfer function data, currently one parameter in the variable data_.
  */
 class IVW_CORE_API TransferFunction : public Serializable,
                                       public TransferFunctionObservable,
@@ -104,7 +104,7 @@ public:
     void addPoints(const std::vector<Point>& points);
 
     /**
-     * Depricated. Add a transfer function point at pos.x() with value color, pos.y is not used.
+     * Deprecated. Add a transfer function point at pos.x() with value color, pos.y is not used.
      */
     void addPoint(const vec2& pos, const vec4& color);
 
@@ -127,7 +127,21 @@ public:
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
+    /**
+     * sample the transfer function at position v and return the respective color and 
+     * opacity (rgba). The range of the transfer function is [0,1].
+     *
+     * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
+     * @return color and opacity at position v
+     */
     vec4 sample(double v) const;
+    /**
+     * sample the transfer function at position v and return the respective color and 
+     * opacity (rgba). The range of the transfer function is [0,1].
+     *
+     * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
+     * @return color and opacity at position v
+     */
     vec4 sample(float v) const;
 
     friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
