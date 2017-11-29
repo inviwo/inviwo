@@ -46,7 +46,7 @@
 namespace inviwo {
 
 TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(
-    TransferFunctionDataPoint* datapoint, const DataMapper& dataMap, float size)
+    TransferFunctionDataPoint* datapoint, QGraphicsScene* scene, const DataMapper& dataMap, float size)
     : QGraphicsItem()
     , left_(nullptr)
     , right_(nullptr)
@@ -61,6 +61,14 @@ TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(
              ItemSendsGeometryChanges);
     setZValue(1);
     setAcceptHoverEvents(true);
+    scene->addItem(this);
+
+    auto pos = QPointF(datapoint->getPos() * scene->sceneRect().width(),
+                       datapoint->getRGBA().a * scene->sceneRect().height());
+
+    currentPos_ = pos;
+    setPos(pos);
+
     datapoint->addObserver(this);
 }
 

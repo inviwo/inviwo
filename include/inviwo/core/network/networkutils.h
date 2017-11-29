@@ -161,6 +161,7 @@ private:
 };
 
 IVW_CORE_API ivec2 getCenterPosition(const std::vector<Processor*>& processors);
+IVW_CORE_API std::pair<ivec2, ivec2> getBoundingBox(const std::vector<Processor*>& processors);
 IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, const ivec2& offset);
 IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
 

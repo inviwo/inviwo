@@ -37,7 +37,7 @@
 #include <flags/flags.h>
 
 namespace inviwo {
-
+class InviwoApplication;
 class Property;
 
 enum class PropertyPresetType { Property = 1, Workspace = 2, Application = 4 };
@@ -51,7 +51,7 @@ using PropertyPresetTypes = flags::flags<PropertyPresetType>;
  */
 class IVW_CORE_API PropertyPresetManager {
 public:
-    PropertyPresetManager();
+    PropertyPresetManager(InviwoApplication* app);
     virtual ~PropertyPresetManager() = default;
 
     bool loadPreset(const std::string& name, Property* property, PropertyPresetType type) const;
@@ -62,12 +62,15 @@ public:
     std::vector<std::string> getAvailablePresets(Property* property,
                                                  PropertyPresetTypes types) const;
 
-    void clearPropertyPresets(Property *property);
+    void clearPropertyPresets(Property* property);
 
     // clear load and save workspace presets
     void clearWorkspacePresets();
     void loadWorkspacePresets(Deserializer& d);
     void saveWorkspacePresets(Serializer& s);
+
+    static void appendPropertyPresets(Property* target, Property* source);
+    static util::OnScopeExit temporarilySetPropertySerializationModeAll(Property* property);;
 
 private:
     void loadApplicationPresets();
@@ -87,10 +90,36 @@ private:
         virtual void deserialize(Deserializer& d) override;
     };
 
+    InviwoApplication* app_;
     std::vector<Preset> appPresets_;
     std::vector<Preset> workspacePresets_;
 };
 
-}  // namespace
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             PropertyPresetType p) {
+    switch (p) {
+        case PropertyPresetType::Property:
+            ss << "Property";
+            break;
+        case PropertyPresetType::Workspace:
+            ss << "Workspace";
+            break;
+        case PropertyPresetType::Application:
+            ss << "Application";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             PropertyPresetTypes ps) {
+    std::copy(ms.begin(), ms.end(), util::make_ostream_joiner(ps, ", "));
+    return ss;
+}
+
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYPRESETMANAGER_H

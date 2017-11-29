@@ -215,14 +215,8 @@ void ProcessorTreeWidget::addProcessor(std::string className) {
         if (auto p = app_->getProcessorFactory()->create(className)) {
             auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 
-            auto pos = util::transform(network->getProcessors(), [](Processor* elem) {
-                return elem->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                    ->getPosition();
-            });
-            pos.push_back(ivec2(0, 0));
-            auto min = std::min_element(pos.begin(), pos.end(),
-                                        [](const ivec2& a, const ivec2& b) { return a.y > b.y; });
-            meta->setPosition(*min + ivec2(0, 75));
+            auto bb = util::getBoundingBox(network->getProcessors());
+            meta->setPosition(ivec2{bb.first.x, bb.second.y} + ivec2(0, 75));
 
             network->addProcessor(p.get());
             util::autoLinkProcessor(network, p.get());

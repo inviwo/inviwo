@@ -121,9 +121,7 @@ void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* /*child*/) {
 
 void PropertyWidgetQt::setReadOnly(bool readonly) { setDisabled(readonly); }
 
-void PropertyWidgetQt::onSetUsageMode(Property*, UsageMode) {
-    setVisible(property_->getVisible());
-}
+void PropertyWidgetQt::onSetUsageMode(Property*, UsageMode) { setVisible(property_->getVisible()); }
 
 void PropertyWidgetQt::onSetReadOnly(Property*, bool readonly) { setReadOnly(readonly); }
 
@@ -134,44 +132,21 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
         menu->addAction(QString::fromStdString(property_->getDisplayName()));
         menu->addSeparator();
 
-        {  // View mode actions (Developer / Application)
-            auto usageModeItem = menu->addMenu(tr("&Usage mode"));
-            auto developerUsageModeAction = usageModeItem->addAction(tr("&Developer"));
-            developerUsageModeAction->setCheckable(true);
-            auto applicationUsageModeAction = usageModeItem->addAction(tr("&Application"));
-            applicationUsageModeAction->setCheckable(true);
-            auto usageModeActionGroup = new QActionGroup(usageModeItem);
-            usageModeActionGroup->addAction(developerUsageModeAction);
-            usageModeActionGroup->addAction(applicationUsageModeAction);
-
-            // Set the current selection.
-            if (property_->getUsageMode() == UsageMode::Development) {
-                developerUsageModeAction->setChecked(true);
-            } else if (property_->getUsageMode() == UsageMode::Application) {
-                applicationUsageModeAction->setChecked(true);
-            }
-
-            // Disable the view mode buttons in Application mode
-            developerUsageModeAction->setEnabled(getApplicationUsageMode() ==
-                                                 UsageMode::Development);
-            applicationUsageModeAction->setEnabled(getApplicationUsageMode() ==
-                                                   UsageMode::Development);
-
-            connect(developerUsageModeAction, &QAction::triggered, this,
-                    [this]() { property_->setUsageMode(UsageMode::Development); });
-
-            connect(applicationUsageModeAction, &QAction::triggered, this,
-                    [this]() { property_->setUsageMode(UsageMode::Application); });
-        }
         {
             auto copyAction = menu->addAction("&Copy");
             connect(copyAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
 
                 Serializer serializer("");
-                std::vector<Property*> properties = {property_};
-                serializer.serialize("Properties", properties, "Property");
-
+                {   
+                    // Need to set the serialization mode to all temporarily to be able to copy the
+                    // property.
+                    auto toReset =
+                        PropertyPresetManager::temporarilySetPropertySerializationModeAll(
+                            property_);
+                    std::vector<Property*> properties = {property_};
+                    serializer.serialize("Properties", properties, "Property");
+                }
                 std::stringstream ss;
                 serializer.writeFile(ss);
                 auto str = ss.str();
@@ -207,6 +182,8 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                     if (!properties.empty() && properties.front()) {
                         NetworkLock lock(property_);
                         property_->set(properties.front().get());
+                        PropertyPresetManager::appendPropertyPresets(property_,
+                                                                     properties.front().get());
                     }
                 } catch (AbortException&) {
                 }
@@ -220,6 +197,38 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
             });
         }
 
+        menu->addSeparator();
+
+        {  // View mode actions (Developer / Application)
+            auto usageModeItem = menu->addMenu(tr("&Usage mode"));
+            auto developerUsageModeAction = usageModeItem->addAction(tr("&Developer"));
+            developerUsageModeAction->setCheckable(true);
+            auto applicationUsageModeAction = usageModeItem->addAction(tr("&Application"));
+            applicationUsageModeAction->setCheckable(true);
+            auto usageModeActionGroup = new QActionGroup(usageModeItem);
+            usageModeActionGroup->addAction(developerUsageModeAction);
+            usageModeActionGroup->addAction(applicationUsageModeAction);
+
+            // Set the current selection.
+            if (property_->getUsageMode() == UsageMode::Development) {
+                developerUsageModeAction->setChecked(true);
+            } else if (property_->getUsageMode() == UsageMode::Application) {
+                applicationUsageModeAction->setChecked(true);
+            }
+
+            // Disable the view mode buttons in Application mode
+            developerUsageModeAction->setEnabled(getApplicationUsageMode() ==
+                                                 UsageMode::Development);
+            applicationUsageModeAction->setEnabled(getApplicationUsageMode() ==
+                                                   UsageMode::Development);
+
+            connect(developerUsageModeAction, &QAction::triggered, this,
+                    [this]() { property_->setUsageMode(UsageMode::Development); });
+
+            connect(applicationUsageModeAction, &QAction::triggered, this,
+                    [this]() { property_->setUsageMode(UsageMode::Application); });
+        }
+
         {
             auto factory = app->getPropertyWidgetFactory();
             auto semantics = factory->getSupportedSemanicsForProperty(property_);
@@ -228,8 +237,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                 auto semanticsGroup = new QActionGroup(semanicsMenu);
 
                 for (auto& semantic : semantics) {
-                    auto action =
-                        semanicsMenu->addAction(utilqt::toQString(semantic.getString()));
+                    auto action = semanicsMenu->addAction(utilqt::toQString(semantic.getString()));
                     semanticsGroup->addAction(action);
                     action->setCheckable(true);
                     action->setChecked(semantic == property_->getSemantics());
@@ -238,16 +246,14 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
                 connect(
                     semanticsGroup, &QActionGroup::triggered,
-                    this, [prop = property_](QAction* action) {
+                    this, [prop = property_](QAction * action) {
                         PropertySemantics semantics(utilqt::fromQString(action->data().toString()));
                         prop->setSemantics(semantics);
                     });
             }
         }
 
-        menu->addSeparator();
         addPresetMenuActions(menu.get(), app);
-        menu->addSeparator();
 
         auto resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the property back to it's initial state"));
@@ -293,10 +299,7 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
 void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app) {
     if (!property_) return;
 
-    auto propertyPresetMenu = menu->addMenu("Property Presets");
-    auto workspacePresetMenu = menu->addMenu("Workspace Presets");
-    auto appPresetMenu = menu->addMenu("Application Presets");
-
+    auto presetMenu = menu->addMenu("Presets");
     auto presetManager = app->getPropertyPresetManager();
 
     {
@@ -304,17 +307,18 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                                                      Property* property, PropertyPresetType type) {
             auto action = menu->addAction(QString::fromStdString(name));
             if (property->getReadOnly()) action->setEnabled(false);
+            action->setToolTip(utilqt::toQString(toString(type) + " Preset"));
             connect(action, &QAction::triggered, menu, [presetManager, name, property, type]() {
                 presetManager->loadPreset(name, property, type);
             });
         };
         auto savePreset =
-            [ presetManager, property = property_ ](QMenu * menu, PropertyPresetType type) {
+            [ presetManager, property = property_ ](QWidget * parent, PropertyPresetType type) {
             // will prompt the user to enter a preset name.
             // returns false if a preset with the same name already exits
             // and the user does not want to overwrite it.
             bool ok;
-            QString text = QInputDialog::getText(menu, tr("Save Preset"), tr("Name:"),
+            QString text = QInputDialog::getText(parent, tr("Save Preset"), tr("Name:"),
                                                  QLineEdit::Normal, "", &ok);
             if (ok && !text.isEmpty()) {
                 const auto presetName = text.toStdString();
@@ -327,7 +331,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                 }
                 if (actionExists) {
                     if (QMessageBox::question(
-                            menu, "Overwrite Preset?",
+                            parent, "Overwrite Preset?",
                             QString("Preset named \"%1\" already exists.<br><br>Overwrite?")
                                 .arg(text)) == QMessageBox::No) {
                         return false;
@@ -352,55 +356,32 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                     return;
             }
         };
-
-        {
-            // application presets
-            auto saveAction = appPresetMenu->addAction("Save...");
+        std::array<PropertyPresetType, 3> types = {PropertyPresetType::Property,
+                                                   PropertyPresetType::Workspace,
+                                                   PropertyPresetType::Application};
+        auto saveMenu = presetMenu->addMenu("Save");
+        for (auto& type : types) {
+            auto saveAction = saveMenu->addAction(utilqt::toQString(toString(type) + " Preset..."));
+            std::stringstream ss;
+            ss << "Save preset in " << type << ". " << type << " presets are local to this "
+               << type;
+            saveAction->setToolTip(utilqt::toQString(ss.str()));
             connect(saveAction, &QAction::triggered, [=]() {
-                while (!savePreset(appPresetMenu, PropertyPresetType::Application))
+                while (!savePreset(saveMenu, type))
                     ;
             });
-            appPresetMenu->addSeparator();
-            for (auto preset :
-                 presetManager->getAvailablePresets(property_, PropertyPresetType::Application)) {
-                addPresetToMenu(appPresetMenu, preset, property_, PropertyPresetType::Application);
-            }
         }
-        {
-            // workspace presets
-            auto saveAction = workspacePresetMenu->addAction("Save...");
-            connect(saveAction, &QAction::triggered, [=]() {
-                while (!savePreset(workspacePresetMenu, PropertyPresetType::Workspace))
-                    ;
-            });
 
-            auto clearAction = workspacePresetMenu->addAction("Clear");
-            connect(clearAction, &QAction::triggered,
-                    [=]() { clearPresets(PropertyPresetType::Workspace); });
-            workspacePresetMenu->addSeparator();
-            for (auto preset :
-                 presetManager->getAvailablePresets(property_, PropertyPresetType::Workspace)) {
-                addPresetToMenu(workspacePresetMenu, preset, property_,
-                                PropertyPresetType::Workspace);
-            }
+        auto clearMenu = presetMenu->addMenu("Clear");
+        for (auto& type : {PropertyPresetType::Property, PropertyPresetType::Workspace}) {
+            auto clearAction = clearMenu->addAction(utilqt::toQString(toString(type) + " Presets"));
+            connect(clearAction, &QAction::triggered, [=]() { clearPresets(type); });
         }
-        {
-            // property presets
-            auto saveAction = propertyPresetMenu->addAction("Save...");
-            connect(saveAction, &QAction::triggered, [=]() {
-                while (!savePreset(propertyPresetMenu, PropertyPresetType::Property))
-                    ;
-            });
-            auto clearAction = propertyPresetMenu->addAction("Clear");
-            connect(clearAction, &QAction::triggered,
-                    [=]() { clearPresets(PropertyPresetType::Property); });
-            propertyPresetMenu->addSeparator();
 
-            // add menu entries for already existing presets
-            for (auto preset :
-                 presetManager->getAvailablePresets(property_, PropertyPresetType::Property)) {
-                addPresetToMenu(propertyPresetMenu, preset, property_,
-                                PropertyPresetType::Property);
+        presetMenu->addSeparator();
+        for (auto& type : types) {
+            for (auto preset : presetManager->getAvailablePresets(property_, type)) {
+                addPresetToMenu(presetMenu, preset, property_, type);
             }
         }
     }
@@ -451,9 +432,7 @@ int PropertyWidgetQt::getNestedDepth() const { return nestedDepth_; }
 
 PropertyWidgetQt* PropertyWidgetQt::getParentPropertyWidget() const { return parent_; }
 
-void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent) {
-    parent_ = parent;
-}
+void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent) { parent_ = parent; }
 
 void PropertyWidgetQt::paintEvent(QPaintEvent*) {
     QStyleOption o;

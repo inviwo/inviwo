@@ -74,6 +74,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
     setAcceptDrops(true);
+    setSceneRect(QRectF());
 
     loadHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
         [this](Deserializer&) { fitNetwork(); });
@@ -185,7 +186,7 @@ void NetworkEditorView::mouseDoubleClickEvent(QMouseEvent* e) {
 void NetworkEditorView::resizeEvent(QResizeEvent* e) { QGraphicsView::resizeEvent(e); }
 
 void NetworkEditorView::fitNetwork() {
-    const ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
+    const auto network = mainwindow_->getInviwoApplication()->getProcessorNetwork();
     if (network) {
         if (network->getProcessors().size() > 0) {
             QRectF br = networkEditor_->itemsBoundingRect().adjusted(-50, -50, 50, 50);
@@ -203,6 +204,9 @@ void NetworkEditorView::fitNetwork() {
 
             setSceneRect(br);
             fitInView(br, Qt::KeepAspectRatio);
+        } else {
+            centerOn(0.0, 0.0);
+            setTransform(QTransform::fromScale(1.0, 1.0), true);
         }
     }
 }
