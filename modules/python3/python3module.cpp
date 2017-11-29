@@ -49,9 +49,8 @@ Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
     , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-                       "Path to the file containing the script") 
-    , inviwopyPyModule_(nullptr) 
-{
+                       "Path to the file containing the script")
+    , inviwopyPyModule_(nullptr) {
 
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();
@@ -71,34 +70,29 @@ Python3Module::Python3Module(InviwoApplication* app)
         },
         100);
 
-    app->dispatchFront([&]() {
-        pythonInterpreter_->runString("import inviwopy");  // we need to import inviwopy to trigger
-                                                           // the initialization code in
-                                                           // inviwopy.cpp, this is needed to be
-                                                           // able to cast cpp/inviwo objects to
-                                                           // python objects
-        //PythonScriptDisk(getPath() + "/scripts/documentgenerator.py").run();
-    });
+    // We need to import inviwopy to trigger the initialization code in inviwopy.cpp, this is needed
+    // to be able to cast cpp/inviwo objects to python objects. Needs to be called after the module
+    // is loaded since inviwopy.cpp will try to find the python3 module using the InviwoApplication.
+    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister(
+        [this]() { pythonInterpreter_->runString("import inviwopy"); });
 }
 
 Python3Module::~Python3Module() {
-    pythonInterpreter_->removeObserver(&pythonLogger_); 
+    pythonInterpreter_->removeObserver(&pythonLogger_);
     app_->getCommandLineParser().remove(&pythonScriptArg_);
 }
 
-PythonInterpreter* Python3Module::getPythonInterpreter() {
-    return pythonInterpreter_.get();
-}
+PythonInterpreter* Python3Module::getPythonInterpreter() { return pythonInterpreter_.get(); }
 
-std::shared_ptr<pybind11::module> Python3Module::getInviwopyModule() { 
-    if(!inviwopyPyModule_){
+std::shared_ptr<pybind11::module> Python3Module::getInviwopyModule() {
+    if (!inviwopyPyModule_) {
         pythonInterpreter_->runString("import inviwopy");
     }
-    return inviwopyPyModule_; 
+    return inviwopyPyModule_;
 }
 
-void Python3Module::setInviwopyModule(std::shared_ptr<pybind11::module> m) { 
-    inviwopyPyModule_ = m; 
+void Python3Module::setInviwopyModule(std::shared_ptr<pybind11::module> m) {
+    inviwopyPyModule_ = m;
 }
 
-}  // namespace
+}  // namespace inviwo
