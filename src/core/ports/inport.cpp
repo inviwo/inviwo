@@ -36,15 +36,13 @@ namespace inviwo {
 
 Inport::Inport(std::string identifier)
     : Port(identifier)
-    , isReady_{false,
-               [this](const bool& isReady) {},
+    , isReady_{false, [this](const bool& isReady) {},
                [this]() {
-                   return (!isConnected() && isOptional()) ||
-                          (isConnected() && util::all_of(connectedOutports_,
+                   return (isConnected() && util::all_of(connectedOutports_,
                                                          [](Outport* p) { return p->isReady(); }));
                }}
     , changed_(false)
-    , optional_(false)
+    , isOptional_(false, [this](const bool& isOptional) {}, []() { return false; })
     , lastInvalidationLevel_(InvalidationLevel::Valid) {}
 
 Inport::~Inport() = default;
@@ -55,11 +53,10 @@ bool Inport::isReady() const { return isReady_; }
 
 void Inport::readyUpdate() { isReady_.update(); }
 
-bool Inport::isOptional() const { return optional_; }
+bool Inport::isOptional() const { return isOptional_; }
 
 void Inport::setOptional(bool optional) {
-    optional_ = optional;
-    isReady_.update();
+    isOptional_.setUpdate([optional]() { return optional; });
 }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {

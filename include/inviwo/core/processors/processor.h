@@ -188,7 +188,7 @@ public:
      * Sets the identifier of the Processor. Processor identifiers should only contain alpha numeric
      * characters, "-", "_" and " ". If there already exist a processor with that identifier or if
      * the identifier is invalid an Exception will be thrown. By default initialized to the
-     * ProcessorInfo displayName. 
+     * ProcessorInfo displayName.
      * When adding the processor to a network the network will use util::findUniqueIdentifier
      * to modify the identifier if it is already used in the network.
      * @see ProcessorNetwork
@@ -235,6 +235,11 @@ public:
     const std::vector<Port*>& getPortsInSameGroup(Port* port) const;
 
     bool allInportsConnected() const;
+
+    /**
+     * The default function for checking whether all inports are ready. Will return true if all non
+     * optional inports are ready.
+     */
     bool allInportsAreReady() const;
 
     /**
@@ -249,27 +254,34 @@ public:
      * Returns whether the processor is a sink. I.e. whether it pulls data from the network.
      * By default a processor is a sink if it has no outports. This behavior can be customized by
      * setting the isSink_ update functor. For a processor to be evaluated there have to be a sink
-     * among its decendants.
+     * among its descendants.
      * @see StateCoordinator
      */
     bool isSink() const;
 
     /**
-     * Returns whether the processor is ready to be processed. By default this will depend on
-     * whether all inports are ready. This behavior can be customized by setting the isReady_
-     * update functor.
+     * Returns whether the processor is ready to be processed. By default this will call
+     * allInportsAreReady. This behavior can be customized by setting the isReady_ update functor.
      * @see StateCoordinator
+     * @see allInportsAreReady
      */
     bool isReady() const;
 
     /**
-     * Called when the network is evaluated and the processor is ready and not valid.
-     * The work of the processor should be done here.
+     * Deriving classes should override this function to do the main work of the processor.
+     * This function is called by the ProcessorNetworkEvaluator when the network is evaluated and
+     * the processor is invalid, i.e. some of its inports or properties has been modified, and is
+     * ready i.e. all non optional inports have valid data.
+     * @see ProcessorNetworkEvaluator
+     * @see Inport
+     * @see Property
      */
     virtual void process() {}
 
     /**
-     * Called when the network is evaluated and the processor is neither ready or valid.
+     * This function is called by the ProcessorNetworkEvaluator when the network is evaluated and
+     * the processor is neither ready or valid.
+     * @see ProcessorNetworkEvaluator
      */
     virtual void doIfNotReady() {}
 
@@ -366,6 +378,7 @@ protected:
      * @see addPort
      */
     void removePortFromGroups(Port* port);
+
 private:
     void addPort(Inport* port, const std::string& portGroup);
     void addPort(Outport* port, const std::string& portGroup);

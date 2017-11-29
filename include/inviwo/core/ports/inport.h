@@ -63,16 +63,16 @@ public:
 
     /**
      * An inport is ready when it is connected, and it's outports are ready.
-     * An optional inport is considered ready also when no outports are connected.
+     * @see Outport::isReady
      */
     virtual bool isReady() const override;
 
     /**
-     * An inport can be set optional, in which case the port and hence the processor will
-     * be ready even if no outport is connected. This means that an optional inport may not have any
-     * connected outports when evaluating the @ProcessorNetwork, i.e. when Processor::process() is
-     * called.
-     * @seealso isReady()
+     * An inport can be set optional, in which case the processor will by default be ready even if
+     * no outport is connected. This means that an optional inport may not have any connected
+     * outports when evaluating the @ProcessorNetwork, i.e. when Processor::process() is called.
+     * Hence one needs to check manually that the port isReady before using it.
+     * @see isReady
      */
     void setOptional(bool optional);
     bool isOptional() const;
@@ -158,11 +158,11 @@ protected:
     void callOnChangeIfChanged() const;
 
     StateCoordinator<bool> isReady_;
+    StateCoordinator<bool> isOptional_;
     std::vector<Outport*> connectedOutports_;
 
 private:
     bool changed_;
-    bool optional_;
 
     CallBackList onChangeCallback_;
     std::vector<const Outport*> changedSources_;
