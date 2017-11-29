@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/processors/sinkprocessor.h>
+#include <inviwo/core/processors/compositesource.h>
 
 namespace inviwo {
 
-SinkProcessorBase::SinkProcessorBase() : Processor() {}
+CompositeSourceBase::CompositeSourceBase() : Processor() {}
 
 }  // namespace inviwo

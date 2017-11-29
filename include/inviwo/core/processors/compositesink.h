@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SOURCEPROCESSOR_H
-#define IVW_SOURCEPROCESSOR_H
+#ifndef IVW_COMPOSITESINK_H
+#define IVW_COMPOSITESINK_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -44,125 +44,113 @@
 namespace inviwo {
 
 /**
- * Base class for all Source processors
- * @see SourceProcessor
+ * Base class for all Sink processors
+ * @see CompositeSink
  */
-class IVW_CORE_API SourceProcessorBase : public Processor {
+class IVW_CORE_API CompositeSinkBase : public Processor {
 public:
-    SourceProcessorBase();
-    virtual ~SourceProcessorBase() = default;
+    CompositeSinkBase();
+    virtual ~CompositeSinkBase() = default;
 
     /**
-     * Inport to be used by the CompositeProcessor to put data into its sub network.
+     * Outport to be used by the CompositeProcessor to get data from its sub network.
      */
-    virtual Inport& getSuperInport() = 0;
+    virtual Outport& getSuperOutport() = 0;
 };
 
 /**
- * Processor used to connect inports in a sub network inside of a CompositeProcessor to outports in
- * the super network. The CompositeProcessor will find all SourceProcessors in its sub network and
- * add the SourceProcessors super inports to it self. Whenever the sub network gets evaluated the
- * SourceProcessors will get data from its super inport and put in its output. Making the data
- * available to the sub network.
+ * Processor used to connect outports in a sub network inside of a CompositeProcessor to inports in
+ * the super network. The CompositeProcessor will find all SinkProcessors in its sub network and add
+ * the SinkProcessors super outports to it self. Whenever the sub network gets evaluated the
+ * CompositeSink will get data from its inport and put in its super output. Making the data
+ * available to the super network.
  * @see CompositeProcessor
- * @see SinkProcessor
+ * @see CompositeSource
  */
 template <typename InportType, typename OutportType>
-class SourceProcessor : public SourceProcessorBase {
+class CompositeSink : public CompositeSinkBase {
 public:
     static_assert(std::is_same<typename InportType::type, typename OutportType::type>::value,
                   "InportType and OutportType must work with the same data type");
-    SourceProcessor();
-    virtual ~SourceProcessor() = default;
+    CompositeSink();
+    virtual ~CompositeSink() = default;
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-
     /**
-     * Inport to be used by the CompositeProcessor to put data into its sub network.
+     * Outport to be used by the CompositeProcessor to get data from its sub network.
      */
-    virtual Inport& getSuperInport() override;
+    virtual Outport& getSuperOutport() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual void propagateEvent(Event* event, Outport* source) override;
+    virtual const ProcessorInfo getProcessorInfo() const override;
 
 private:
-    InportType superInport_;
-    OutportType outport_;
+    InportType inport_;
+    OutportType superOutport_;
 };
 
 template <typename InportType, typename OutportType>
-struct ProcessorTraits<SourceProcessor<InportType, OutportType>> {
+struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
     static ProcessorInfo getProcessorInfo() {
         using intype = typename InportType::type;
         using outtype = typename InportType::type;
         static_assert(std::is_same<intype, outtype>::value, "type mismatch");
-        auto name = util::cleanIdentifier(DataTraits<intype>::dataName() + " Meta Source", " ");
-        auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(), ".metasource");
+        auto name = util::cleanIdentifier(DataTraits<intype>::dataName() + " Meta Sink", " ");
+        auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(), ".metasink");
         return {
             id,                 // Class identifier
             name,               // Display name
             "Meta",             // Category
             CodeState::Stable,  // Code state
             "Meta",             // Tags
+            false               // Visible
         };
     }
 };
 
 template <typename InportType, typename OutportType>
-const ProcessorInfo SourceProcessor<InportType, OutportType>::getProcessorInfo() const {
-    return ProcessorTraits<SourceProcessor<InportType, OutportType>>::getProcessorInfo();
+const ProcessorInfo CompositeSink<InportType, OutportType>::getProcessorInfo() const {
+    return ProcessorTraits<CompositeSink<InportType, OutportType>>::getProcessorInfo();
 }
 
 template <typename InportType, typename OutportType>
-SourceProcessor<InportType, OutportType>::SourceProcessor()
-    : SourceProcessorBase(), superInport_{"inport"}, outport_{"outport"} {
-    addPort(outport_);
-    addPortToGroup(&superInport_, "default");
+void CompositeSink<InportType, OutportType>::process() {
+    superOutport_.setData(inport_.getData());
 }
 
 template <typename InportType, typename OutportType>
-void SourceProcessor<InportType, OutportType>::process() {
-    outport_.setData(superInport_.getData());
+CompositeSink<InportType, OutportType>::CompositeSink()
+    : CompositeSinkBase(), inport_{"inport"}, superOutport_{"outport"} {
+    addPort(inport_);
+    addPortToGroup(&superOutport_, "default");
 }
 
 template <typename InportType, typename OutportType>
-Inport& SourceProcessor<InportType, OutportType>::getSuperInport() {
-    return superInport_;
+Outport& CompositeSink<InportType, OutportType>::getSuperOutport() {
+    return superOutport_;
 }
 
 template <typename InportType, typename OutportType>
-void SourceProcessor<InportType, OutportType>::serialize(Serializer& s) const {
-    SourceProcessorBase::serialize(s);
+void CompositeSink<InportType, OutportType>::serialize(Serializer& s) const {
+    CompositeSinkBase::serialize(s);
     // Need to use pointers here, since the port will be serialized in portconnections etc and we
     // want the serialization to know they are the same object.
-    auto ptr = &superInport_;
-    s.serialize("SuperInport", ptr);
+    auto ptr = &superOutport_;
+    s.serialize("SuperOutport", ptr);
 }
 
 template <typename InportType, typename OutportType>
-void SourceProcessor<InportType, OutportType>::deserialize(Deserializer& d) {
-    SourceProcessorBase::deserialize(d);
+void CompositeSink<InportType, OutportType>::deserialize(Deserializer& d) {
+    CompositeSinkBase::deserialize(d);
     // Need to use pointers here, since the port will be deserialized in portconnections etc and we
     // want the serialization to know they are the same object.
-    auto ptr = &superInport_;
-    d.deserialize("SuperInport", ptr);
-}
-
-template <typename InportType, typename OutportType>
-void SourceProcessor<InportType, OutportType>::propagateEvent(Event* event, Outport* source) {
-    if (event->hasVisitedProcessor(this)) return;
-    event->markAsVisited(this);
-    invokeEvent(event);
-    if (event->hasBeenUsed()) return;
-    if (event->shouldPropagateTo(&superInport_, this, source)) {
-        superInport_.propagateEvent(event);
-    }
+    auto ptr = &superOutport_;
+    d.deserialize("SuperOutport", ptr);
 }
 
 }  // namespace inviwo
 
-#endif  // IVW_SOURCEPROCESSOR_H
+#endif  // IVW_COMPOSITESINK_H

@@ -43,8 +43,8 @@ namespace inviwo {
 class InviwoApplication;
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
-class SinkProcessorBase;
-class SourceProcessorBase;
+class CompositeSinkBase;
+class CompositeSourceBase;
 
 /**
  * \class CompositeProcessor
@@ -60,12 +60,12 @@ class SourceProcessorBase;
  * when it itself gets processed, and otherwise keep it locked.
  *
  * The CompositeProcessor will observe its sub network and when a processor gets added to the sub
- * network the CompositeProcessor will check if it's a SourceProcessor or a SinkProcessor. In the
- * case it's a SourceProcessor, which acts as data inputs in the sub network, in will get the
- * special "super" inport and add it to it self. If it's a SinkProcessor, which acts as data
+ * network the CompositeProcessor will check if it's a CompositeSource or a CompositeSink. In the
+ * case it's a CompositeSource, which acts as data inputs in the sub network, in will get the
+ * special "super" inport and add it to it self. If it's a CompositeSink, which acts as data
  * outputs, it will get the "super" outport and add it to it self.
  *
- * When the SourceProcessor gets evaluated in the sub network it will take the data from its super
+ * When the CompositeSource gets evaluated in the sub network it will take the data from its super
  * inport and put in its outport, moving the data from the super network to the sub network. At the
  * end of the sub network evaluation the SinkProcessors will be evaluated and take the data on its
  * inport and put on its super outport, moving the data from the sub network into the super network.
@@ -84,8 +84,8 @@ class SourceProcessorBase;
  * network from the super network making it possible to compose sub network in several layers out of
  * the box.
  *
- * @see SourceProcessor
- * @see SinkProcessor
+ * @see CompositeSource
+ * @see CompositeSink
  */
 class IVW_CORE_API CompositeProcessor : public Processor,
                                         public ProcessorNetworkObserver,
@@ -190,8 +190,8 @@ private:
 
     bool isProcessing_ = false;
     std::unordered_map<Property*, std::unique_ptr<PropertyHandler>> handlers_;
-    std::vector<SinkProcessorBase*> sinks_;
-    std::vector<SourceProcessorBase*> sources_;
+    std::vector<CompositeSinkBase*> sinks_;
+    std::vector<CompositeSourceBase*> sources_;
     std::unique_ptr<ProcessorNetwork> subNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> evaluator_;
 };

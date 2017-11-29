@@ -32,11 +32,13 @@
 namespace inviwo {
 
 ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
-                             std::string aCategory, CodeState aCodeState, Tags someTags)
+                             std::string aCategory, CodeState aCodeState, Tags someTags,
+                             bool isVisible)
     : classIdentifier(aClassIdentifier)
     , displayName(aDisplayName)
     , category(aCategory)
     , codeState(aCodeState)
-    , tags(someTags) {}
+    , tags(someTags)
+    , visible(isVisible) {}
 
-}  // namespace
+}  // namespace inviwo

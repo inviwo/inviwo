@@ -320,7 +320,8 @@ void ProcessorTreeWidget::addProcessorsToTree(ProcessorFactoryObject* item) {
 
     for (auto& elem : app_->getModules()) {
         for (auto& processor : elem->getProcessors()) {
-            if (lineEdit_->text().isEmpty() || processorFits(processor, lineEdit_->text())) {
+            if (processor->isVisible() &&
+                (lineEdit_->text().isEmpty() || processorFits(processor, lineEdit_->text()))) {
                 extractInfoAndAddProcessor(processor, elem.get());
             }
         }

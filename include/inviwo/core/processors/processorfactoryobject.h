@@ -57,6 +57,7 @@ public:
     Tags getTags() const { return info_.tags; }
     std::string getCategory() const { return info_.category; }
     CodeState getCodeState() const { return info_.codeState; }
+    bool isVisible() { return info_.visible; }
 
 private:
     const ProcessorInfo info_;

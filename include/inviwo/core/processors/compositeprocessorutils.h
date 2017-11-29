@@ -44,18 +44,18 @@ namespace util {
  * Create a CompositeProcessor out of the currently selected processors and replace them with the
  * composite processors. The selected processors are moved from the current network into the sub
  * network of the composite processor. For each port connection between a selected and unselected
- * processor a sink or source processor is added to the sub network and connections are made from
- * the selected processor to the sink/source and from the composite processor to the unselected
- * processor. For each link between a selected and unselected processor, a super property is added
- * to the composite processor and the link added to it.
+ * processor a composite sink or composite source processor is added to the sub network and
+ * connections are made from the selected processor to the sink/source and from the composite
+ * processor to the unselected processor. For each link between a selected and unselected processor,
+ * a super property is added to the composite processor and the link added to it.
  */
 IVW_CORE_API void replaceSelectionWithCompositeProcessor(ProcessorNetwork& network);
 
 /**
  * Expand a composite processors sub network into its network. Effectively reversing the actions of
- * replaceSelectionWithCompositeProcessor. All processor except for sink and source processors are
- * moved from the sub network into the network of the composite processor. Connections and links are
- * the reestablished. Sources and sinks are discarded.
+ * replaceSelectionWithCompositeProcessor. All processor except for composite sink and composite
+ * source processors are moved from the sub network into the network of the composite processor.
+ * Connections and links are the reestablished. Sources and sinks are discarded.
  */
 IVW_CORE_API void expandCompositeProcessorIntoNetwork(CompositeProcessor& composite);
 

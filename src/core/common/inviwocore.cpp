@@ -92,8 +92,8 @@
 
 // Processors
 #include <inviwo/core/processors/compositeprocessor.h>
-#include <inviwo/core/processors/sinkprocessor.h>
-#include <inviwo/core/processors/sourceprocessor.h>
+#include <inviwo/core/processors/compositesink.h>
+#include <inviwo/core/processors/compositesource.h>
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -213,8 +213,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerPort<ImageInport>();
     registerPort<ImageMultiInport>();
     registerPort<ImageOutport>();
-    registerProcessor<SourceProcessor<ImageInport, ImageOutport>>();
-    registerProcessor<SinkProcessor<ImageInport, ImageOutport>>();
+    registerProcessor<CompositeSource<ImageInport, ImageOutport>>();
+    registerProcessor<CompositeSink<ImageInport, ImageOutport>>();
 
     registerDefaultsForDataType<Mesh>();
     registerDefaultsForDataType<Volume>();

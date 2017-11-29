@@ -185,8 +185,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbar.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbarowner.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/sinkprocessor.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/sourceprocessor.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesink.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolcompositeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolproperty.h
@@ -441,8 +441,8 @@ set(SOURCE_FILES
     processors/processorwidgetfactoryobject.cpp
     processors/processorwidgetobserver.cpp
     processors/progressbar.cpp
-    processors/sinkprocessor.cpp
-    processors/sourceprocessor.cpp
+    processors/compositesink.cpp
+    processors/compositesource.cpp
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp

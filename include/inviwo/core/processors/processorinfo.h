@@ -44,12 +44,13 @@ namespace inviwo {
 struct IVW_CORE_API ProcessorInfo {
 public:
     ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
-                  CodeState aCodeState, Tags someTags);
+                  CodeState aCodeState, Tags someTags, bool visible = true);
     const std::string classIdentifier;
     const std::string displayName;
     const std::string category;
     const CodeState codeState;
     const Tags tags;
+    const bool visible;
 };
 
 }  // namespace

@@ -30,8 +30,8 @@
 #include <inviwo/core/processors/compositeprocessorutils.h>
 
 #include <inviwo/core/processors/compositeprocessor.h>
-#include <inviwo/core/processors/sourceprocessor.h>
-#include <inviwo/core/processors/sinkprocessor.h>
+#include <inviwo/core/processors/compositesource.h>
+#include <inviwo/core/processors/compositesink.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -93,11 +93,14 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
             auto portId = c.first->getClassIdentifier();
 
             if (auto source = pf->create(portId + ".metasource")) {
-                if (auto metasouce = dynamic_cast<SourceProcessorBase*>(source.get())) {
+                if (auto metasouce = dynamic_cast<CompositeSourceBase*>(source.get())) {
                     subNetwork.addProcessor(source.release());
+                    bool optional = true;
                     for (auto inport : c.second) {
+                        optional &= inport->isOptional();
                         subNetwork.addConnection(metasouce->getOutports().front(), inport);
                     }
+                    metasouce->getSuperInport().setOptional(optional);
                     auto id =
                         util::stripIdentifier(c.second.front()->getProcessor()->getDisplayName() +
                                               "." + c.second.front()->getIdentifier());
@@ -106,22 +109,22 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                 } else {
                     LogErrorCustom(
                         "CompositeProcessor",
-                        "Unable to find a Source Processor for outport: \""
+                        "Unable to find a Composite Source Processor for outport: \""
                             << portId
                             << "\"\n"
-                               "Probably need to register a Source Processor for the port:\n"
-                               "registerProcessor<SourceProcessor<InportType, OutportType>>();\n"
+                               "Probably need to register a Composite Source Processor for the port:\n"
+                               "registerProcessor<CompositeSource<InportType, OutportType>>();\n"
                                "or use the convenience function:\n"
                                "registerDefaultsForDataType<DataType>();");
                 }
             } else {
                 LogErrorCustom(
                     "CompositeProcessor",
-                    "Unable to find a Source Processor for outport: \""
+                    "Unable to find a Composite Source Processor for outport: \""
                         << portId
                         << "\"\n"
-                           "Probably need to register a Source Processor for the port:\n"
-                           "registerProcessor<SourceProcessor<InportType, OutportType>>();\n"
+                           "Probably need to register a Composite Source Processor for the port:\n"
+                           "registerProcessor<CompositeSource<InportType, OutportType>>();\n"
                            "or use the convenience function:\n"
                            "registerDefaultsForDataType<DataType>();");
             }
@@ -131,7 +134,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
             auto portId = c.first->getClassIdentifier();
 
             if (auto sink = pf->create(portId + ".metasink")) {
-                if (auto metasink = dynamic_cast<SinkProcessorBase*>(sink.get())) {
+                if (auto metasink = dynamic_cast<CompositeSinkBase*>(sink.get())) {
                     subNetwork.addProcessor(sink.release());
                     subNetwork.addConnection(c.first, metasink->getInports().front());
                     for (auto inport : c.second) {
@@ -143,22 +146,22 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                 } else {
                     LogErrorCustom(
                         "CompositeProcessor",
-                        "Unable to find a Sink Processor for outport: \""
+                        "Unable to find a Composite Sink Processor for outport: \""
                             << portId
                             << "\"\n"
-                               "Probably need to register a Sink Processor for the port:\n"
-                               "registerProcessor<SinkProcessor<InportType, OutportType>>();\n"
+                               "Probably need to register a Composite Sink Processor for the port:\n"
+                               "registerProcessor<CompositeSink<InportType, OutportType>>();\n"
                                "or use the convenience function:\n"
                                "registerDefaultsForDataType<DataType>();");
                 }
             } else {
                 LogErrorCustom(
                     "CompositeProcessor",
-                    "Unable to find a Sink Processor for outport: \""
+                    "Unable to find a Composite Sink Processor for outport: \""
                         << portId
                         << "\"\n"
-                           "Probably need to register a Sink Processor for the port:\n"
-                           "registerProcessor<SinkProcessor<InportType, OutportType>>();\n"
+                           "Probably need to register a Composite Sink Processor for the port:\n"
+                           "registerProcessor<CompositeSink<InportType, OutportType>>();\n"
                            "or use the convenience function:\n"
                            "registerDefaultsForDataType<DataType>();");
             }
@@ -227,8 +230,8 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
 
         // Move Processors
         for (auto p : subProcessors) {
-            auto sink = dynamic_cast<SinkProcessorBase*>(p);
-            auto source = dynamic_cast<SourceProcessorBase*>(p);
+            auto sink = dynamic_cast<CompositeSinkBase*>(p);
+            auto source = dynamic_cast<CompositeSourceBase*>(p);
             if (!sink && !source) {
                 subNetwork.removeProcessor(p);
                 network.addProcessor(p);
@@ -241,7 +244,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
 
         // Connections
         for (auto& c : subConnections) {
-            if (auto sink = dynamic_cast<SinkProcessorBase*>(c.getInport()->getProcessor())) {
+            if (auto sink = dynamic_cast<CompositeSinkBase*>(c.getInport()->getProcessor())) {
                 for (auto& con : connections) {
                     if (con.getOutport() == &sink->getSuperOutport()) {
                         network.removeConnection(con);
@@ -249,7 +252,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
                     }
                 }
             } else if (auto source =
-                           dynamic_cast<SourceProcessorBase*>(c.getOutport()->getProcessor())) {
+                           dynamic_cast<CompositeSourceBase*>(c.getOutport()->getProcessor())) {
                 for (auto& con : connections) {
                     if (con.getInport() == &source->getSuperInport()) {
                         network.removeConnection(con);

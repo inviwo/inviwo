@@ -32,8 +32,8 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 
-#include <inviwo/core/processors/sourceprocessor.h>
-#include <inviwo/core/processors/sinkprocessor.h>
+#include <inviwo/core/processors/compositesource.h>
+#include <inviwo/core/processors/compositesink.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/network/workspacemanager.h>
 
@@ -79,7 +79,7 @@ void CompositeProcessor::process() {
         }
     }
     util::OnScopeExit lock{[this]() { subNetwork_->lock(); }};
-    subNetwork_->unlock(); // This will trigger an evaluation of the sub network.
+    subNetwork_->unlock();  // This will trigger an evaluation of the sub network.
 }
 
 void CompositeProcessor::propagateEvent(Event* event, Outport* source) {
@@ -211,14 +211,14 @@ void CompositeProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
     };
     observe(p);
 
-    if (auto sink = dynamic_cast<SinkProcessorBase*>(p)) {
+    if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
         auto& port = sink->getSuperOutport();
         port.setIdentifier(util::findUniqueIdentifier(
             port.getIdentifier(), [&](const std::string& id) { return getPort(id) == nullptr; },
             ""));
         addPort(port);
         sinks_.push_back(sink);
-    } else if (auto source = dynamic_cast<SourceProcessorBase*>(p)) {
+    } else if (auto source = dynamic_cast<CompositeSourceBase*>(p)) {
         auto& port = source->getSuperInport();
         port.setIdentifier(util::findUniqueIdentifier(
             port.getIdentifier(), [&](const std::string& id) { return getPort(id) == nullptr; },
@@ -240,10 +240,10 @@ void CompositeProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
     };
     unObserve(p);
 
-    if (auto sink = dynamic_cast<SinkProcessorBase*>(p)) {
+    if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
         removePort(&sink->getSuperOutport());
         util::erase_remove(sinks_, sink);
-    } else if (auto source = dynamic_cast<SourceProcessorBase*>(p)) {
+    } else if (auto source = dynamic_cast<CompositeSourceBase*>(p)) {
         removePort(&source->getSuperInport());
         util::erase_remove(sources_, source);
     }
