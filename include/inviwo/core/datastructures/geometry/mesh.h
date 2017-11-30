@@ -93,6 +93,14 @@ public:
     * @param att   buffer data used during rendering
     */
     void addBuffer(BufferType type, std::shared_ptr<BufferBase> att);
+    
+    /**
+    * Removes buffer at given position, all subsequent buffers will be moved.
+    * Does nothing if index is out of range.
+    *
+    * @param idx   position of buffer to be removed
+    */
+    void removeBuffer(size_t idx);
 
     /**
      * Replaces buffer at index with new buffer
@@ -100,6 +108,17 @@ public:
      * @param idx   Index of buffer to replace
      * @param info  information about the buffer contents (e.g. buffer type and shader location)
      * @param att   new buffer data used during rendering
+     */
+    void replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
+
+    /**
+     * Deprecated: Mesh::setBuffer() has been renamed to Mesh::replaceBuffer()
+     *
+     * @param idx   Index of buffer to replace
+     * @param info  information about the buffer contents (e.g. buffer type and shader location)
+     * @param att   new buffer data used during rendering
+     *
+     * \see replaceBuffer
      */
     void setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
 
@@ -111,6 +130,14 @@ public:
      * @param ind Index buffer, will be owned by mesh.
      */
     void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
+
+    /**
+    * Removes index buffer at given position, all subsequent index buffers will be moved.
+    * Does nothing if index is out of range.
+    *
+    * @param idx   position of index buffer to be removed
+    */
+    void removeIndexBuffer(size_t idx);
 
     /**
      * Reserve memory for a given number of vertices in each buffer.
@@ -129,6 +156,7 @@ public:
     const IndexVector& getIndexBuffers() const;
 
     const BufferBase* getBuffer(size_t idx) const;
+    BufferInfo getBufferInfo(size_t idx) const;
     const IndexBuffer* getIndices(size_t idx) const;
 
     BufferBase* getBuffer(size_t idx);
