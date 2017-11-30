@@ -60,6 +60,8 @@ private:
     TCLAP::ValueArg<std::string> pythonScriptArg_;
     PythonLogger pythonLogger_;
 
+    // Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
     std::shared_ptr<pybind11::module> inviwopyPyModule_;
 
     void setInviwopyModule(std::shared_ptr<pybind11::module> m);
