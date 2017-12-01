@@ -186,6 +186,7 @@ void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> proces
     }
     Processor::setProcessorWidget(std::move(processorWidget));
     isSink_.update();
+    isReady_.update();
 }
 
 void CanvasProcessor::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
@@ -204,6 +205,7 @@ void CanvasProcessor::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*)
 
 void CanvasProcessor::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
     isSink_.update();
+    isReady_.update();
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
