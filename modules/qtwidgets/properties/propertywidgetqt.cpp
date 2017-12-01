@@ -142,7 +142,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                     // Need to set the serialization mode to all temporarily to be able to copy the
                     // property.
                     auto toReset =
-                        PropertyPresetManager::temporarilySetPropertySerializationModeAll(
+                        PropertyPresetManager::scopedSerializationModeAll(
                             property_);
                     std::vector<Property*> properties = {property_};
                     serializer.serialize("Properties", properties, "Property");

@@ -69,8 +69,19 @@ public:
     void loadWorkspacePresets(Deserializer& d);
     void saveWorkspacePresets(Serializer& s);
 
+    /**
+     * Append all Presets in property source to property target.
+     * If the Preset already exists in target it will be overwritten.
+     * The properties should be of the same type.
+     */
     static void appendPropertyPresets(Property* target, Property* source);
-    static util::OnScopeExit temporarilySetPropertySerializationModeAll(Property* property);;
+
+    /**
+     * Set PropertySerializationMode to All on property and all its sub properties.
+     * The returned guard will reset the PropertySerializationModes to their original values when
+     * it goes out of scope. This is useful when copying properties.
+     */
+    static util::OnScopeExit scopedSerializationModeAll(Property* property);
 
 private:
     void loadApplicationPresets();
@@ -116,7 +127,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              PropertyPresetTypes ps) {
-    std::copy(ms.begin(), ms.end(), util::make_ostream_joiner(ps, ", "));
+    std::copy(ps.begin(), ps.end(), util::make_ostream_joiner(ps, ", "));
     return ss;
 }
 

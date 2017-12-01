@@ -100,7 +100,7 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
 
     Serializer serializer("");
     {
-        auto reset = temporarilySetPropertySerializationModeAll(property);
+        auto reset = scopedSerializationModeAll(property);
         property->serialize(serializer);
     }
     std::stringstream ss;
@@ -170,7 +170,7 @@ void PropertyPresetManager::appendPropertyPresets(Property* target, Property* so
     }
 }
 
-inviwo::util::OnScopeExit PropertyPresetManager::temporarilySetPropertySerializationModeAll(
+inviwo::util::OnScopeExit PropertyPresetManager::scopedSerializationModeAll(
     Property* property) {
     std::vector<std::pair<Property*, PropertySerializationMode>> toReset;
     std::function<void(Property*)> setPSM = [&](Property* p) {
