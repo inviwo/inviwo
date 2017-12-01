@@ -357,19 +357,14 @@ function(ivw_mod_name_to_class retval)
 endfunction()
 
 #--------------------------------------------------------------------
-# ivw_mod_name_to_class(retval item1 item2 ...)
-# Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
+# ivw_mod_name_to_alias(retval item1 item2 ...)
+# Convert module name to alias name, i.e. InviwoOpenGLModule -> inviwo::module::alias
+# using module data
 function(ivw_mod_name_to_alias retval)
     set(the_list "")
     foreach(item ${ARGN})
-        string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
-        if(found_item)
-            string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
-            string(TOLOWER ${new_item} l_new_item)
-            list(APPEND the_list inviwo::module::${l_new_item})
-        else()
-            message(FATAL_ERROR "Error argument format error: ${item}, should be in the form Inviwo<Name>Module")
-        endif()
+        ivw_mod_name_to_mod_dep(mod ${item})
+        list(APPEND the_list ${${mod}_alias})
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()

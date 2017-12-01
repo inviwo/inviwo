@@ -561,6 +561,12 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
+set(GEN_FILES
+    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.h
+    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.cpp
+)
+source_group("Source Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.cpp)
+source_group("Header Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.h)
 
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
@@ -572,7 +578,7 @@ add_definitions(-DCMAKE_GENERATOR="${CMAKE_GENERATOR}")
 
 #--------------------------------------------------------------------
 # Create library
-add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES})
+add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES})
 add_library(inviwo::core ALIAS inviwo-core)
 
 #--------------------------------------------------------------------

@@ -123,15 +123,22 @@ std::string cleanIdentifier(const std::string& identifier, const std::string& ex
 std::string stripModuleFileNameDecoration(std::string filePath) {
     auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
 #if defined(WIN32)
-    auto decoration = std::string("inviwo-module-");
+    auto decoration1 = std::string("inviwo-module-");
+    auto decoration2 = std::string("inviwo-");
 #else
-    auto decoration = std::string("libinviwo-module-");
+    auto decoration1 = std::string("libinviwo-module-");
+    auto decoration1 = std::string("libinviwo-");
 #endif
-    auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
+    auto inviwoModulePos = fileNameWithoutExtension.find(decoration1);
     if (inviwoModulePos == std::string::npos) {
-        inviwoModulePos = 0;
+        inviwoModulePos = fileNameWithoutExtension.find(decoration2);
+        if (inviwoModulePos == std::string::npos) {
+            inviwoModulePos = 0;
+        } else {
+            inviwoModulePos = decoration2.size();
+        }
     } else {
-        inviwoModulePos = decoration.size();
+        inviwoModulePos = decoration1.size();
     }
     auto len = fileNameWithoutExtension.size() - inviwoModulePos;
 #ifdef DEBUG

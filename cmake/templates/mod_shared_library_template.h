@@ -32,12 +32,12 @@
 #ifndef IVW_@U_MODULE@_SHARED_LIBRARY
 #define IVW_@U_MODULE@_SHARED_LIBRARY
 
-#include <modules/@L_MODULE@/@L_MODULE@moduledefine.h>
+#include <@API_HEADER@>
 
 namespace inviwo {
 class InviwoModuleFactoryObject;
 
-IVW_MODULE_@U_MODULE@_API InviwoModuleFactoryObject* create@MODULE@Module();
+@API_DEFINE@ InviwoModuleFactoryObject* create@MODULE@Module();
 
 }
 

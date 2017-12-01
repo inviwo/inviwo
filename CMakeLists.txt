@@ -157,10 +157,6 @@ if(WIN32)
 endif()
 
 #--------------------------------------------------------------------
-# Add Core
-add_subdirectory(src/core)
-
-#--------------------------------------------------------------------
 # Add default modules
 set(ivw_default_modules
     "Assimp" 

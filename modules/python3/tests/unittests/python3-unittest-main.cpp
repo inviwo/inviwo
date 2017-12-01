@@ -35,8 +35,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
-#include <inviwo/core/common/inviwocore.h>
-
+#include <inviwo/core/common/coremodulesharedlibrary.h>
 #include <modules/python3/python3modulesharedlibrary.h>
 
 #include <warn/push>
@@ -44,7 +43,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <modules/python3/python3module.h>
+
 
 using namespace inviwo;
 
@@ -58,6 +57,7 @@ int main(int argc, char** argv) {
 
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+        modules.emplace_back(createCoreModule());
         modules.emplace_back(createPython3Module());
         app.registerModules(std::move(modules));
     }

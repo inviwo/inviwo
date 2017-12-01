@@ -29,7 +29,6 @@
 
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/version.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -80,19 +79,6 @@ void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFact
 
     // Topological sort to make sure that we load modules in correct order
     topologicalModuleFactoryObjectSort(std::begin(factoryObjects_), std::end(factoryObjects_));
-
-    // Add core first
-    factoryObjects_.emplace(factoryObjects_.begin(),
-                            new InviwoModuleFactoryObjectTemplate<InviwoCore>(
-                                "Core",              // Module name
-                                "1.0.0",             // Module version
-                                "",                  // Description
-                                IVW_VERSION,         // Inviwo core version when built
-                                {},                  // Dependencies
-                                {},                  // Version number of dependencies
-                                {},                  // List of aliases
-                                ProtectedModule::on  // protected
-                                ));
 
     for (auto& obj : factoryObjects_) {
         app_->postProgress("Loading module: " + obj->name);
@@ -193,8 +179,9 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
     // Remove unsupported files and files belonging to already loaded modules.
     util::map_erase_remove_if(libraryFiles, [&](const auto& file) {
         return libraryTypes.count(filesystem::getFileExtension(file)) == 0 ||
-               file.find("inviwo-module") == std::string::npos || isModuleLibraryLoaded(file) ||
-               !isEnabled(file);
+               (file.find("inviwo-module") == std::string::npos &&
+                file.find("inviwo-core") == std::string::npos) ||
+               isModuleLibraryLoaded(file) || !isEnabled(file);
     });
 
     const auto tmpDir = [&]() -> std::string {

@@ -30,14 +30,14 @@
 // Automatically generated file do not change!
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/common/version.h>
-#include <modules/@L_MODULE@/@L_MODULE@modulesharedlibrary.h>
-#include <modules/@L_MODULE@/@L_MODULE@module.h>
+#include <@LIBRARY_HEADER@>
+#include <@MODULE_HEADER@>
 
 namespace inviwo {
 extern "C" {
 
-IVW_MODULE_@U_MODULE@_API InviwoModuleFactoryObject* createModule() {
-    return new InviwoModuleFactoryObjectTemplate<@MODULE@Module>(
+@API_DEFINE@ InviwoModuleFactoryObject* createModule() {
+    return new InviwoModuleFactoryObjectTemplate<@MODULE_NAME@>(
 @MODULE_ARGS@
     );
 }

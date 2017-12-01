@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/common/inviwocore.h>
+#include <inviwo/core/common/coremodulesharedlibrary.h>
 #include <modules/cimg/cimgmodule.h>
 #include <modules/cimg/cimgmodulesharedlibrary.h>
 
@@ -53,6 +53,7 @@ int main(int argc, char** argv) {
     InviwoApplication app(argc, argv, "inviwo");
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+        modules.emplace_back(createCoreModule());
         modules.emplace_back(createCImgModule());
         app.registerModules(std::move(modules));
     }
