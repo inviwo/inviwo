@@ -100,7 +100,6 @@ public:
      */
     void unregisterModules();
 
-    void registerModule(std::unique_ptr<InviwoModule> module);
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
     const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
     template <class T>
@@ -136,6 +135,7 @@ public:
     void reloadModules();
 
 private:
+    void registerModule(std::unique_ptr<InviwoModule> module);
     bool checkDependencies(const InviwoModuleFactoryObject& obj) const;
     std::vector<std::string> deregisterDependetModules(
         const std::vector<std::string>& toDeregister);

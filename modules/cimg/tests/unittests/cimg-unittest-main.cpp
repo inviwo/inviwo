@@ -36,6 +36,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <modules/cimg/cimgmodule.h>
+#include <modules/cimg/cimgmodulesharedlibrary.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -47,9 +48,14 @@ using namespace inviwo;
 int main(int argc, char** argv) {
 
     inviwo::LogCentral::init();
+
+
     InviwoApplication app(argc, argv, "inviwo");
-    app.getModuleManager().registerModule(std::make_unique<InviwoCore>(&app));
-    app.getModuleManager().registerModule(std::make_unique<CImgModule>(&app));
+    {
+        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+        modules.emplace_back(createCImgModule());
+        app.registerModules(std::move(modules));
+    }
 
     int ret = -1;
     {

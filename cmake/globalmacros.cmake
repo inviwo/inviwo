@@ -116,10 +116,14 @@ function(ivw_private_generate_module_registration_file modules_var)
     # For static loading generate function for creating modules in a single function
     # Requires all modules to be linked to the application
 
-    set(static_headers "#include <inviwo/core/common/version.h>\n")
+    set(static_headers "")
     set(static_functions "")
 
     foreach(mod ${${modules_var}})
+        if(NOT ${${mod}_opt})
+            continue()
+        endif()
+        
         ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
         list_to_stringvector(module_depends_vector ${module_dependencies})
         list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
@@ -131,15 +135,15 @@ function(ivw_private_generate_module_registration_file modules_var)
             set(module_protected "ProtectedModule::off")
         endif()
 
-        set(runtime_header
-            "#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
-            "#include <inviwo/core/common/version.h>\n"
-        )   
-
         list(APPEND static_headers
             "#ifdef REG_${mod}\n"
-            "#include <${${mod}_dir}/${${mod}_dir}module.h>\n"
+            "#include <modules/${${mod}_dir}/${${mod}_dir}modulesharedlibrary.h>\n"
             "#endif\n"
+        )
+        list(APPEND static_functions
+            "    #ifdef REG_${mod}\n" 
+            "    modules.emplace_back(create${${mod}_class}Module())__SEMICOLON__\n"
+            "    #endif\n"
         )
 
         set(fuction_args
@@ -150,38 +154,25 @@ function(ivw_private_generate_module_registration_file modules_var)
             "        ${module_depends_vector}, // Dependencies\n" 
             "        ${module_depends_version_vector}, // Version number of dependencies\n"
             "        ${module_alias_vector}, // List of aliases\n"
-            "        ${module_protected} // protected\n"
+            "        ${module_protected} // protected"
         )
 
-        set(runtime_function
-            "IVW_MODULE_${u_module}_API InviwoModuleFactoryObject* createModule() {\n"
-            "    return new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-            ${fuction_args}
-            "    )__SEMICOLON__\n"
-            "}\n"
-            "\n"
-        )
+        join(";" "" fuction_args ${fuction_args})
+        string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" fuction_args "${fuction_args}")
+        string(REPLACE "__SEMICOLON__" ";" fuction_args "${fuction_args}")
 
-        list(APPEND static_functions
-            "    #ifdef REG_${mod}\n" 
-            "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${${mod}_class}Module>(\n"
-            ${fuction_args}
-            "        )\n"
-            "    )__SEMICOLON__\n"
-            "    #endif\n"
-            "\n"
-        )
-
-        join(";" "" runtime_header ${runtime_header})
-        join(";" "" runtime_function ${runtime_function})
-        string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" runtime_function "${runtime_function}")
-        string(REPLACE "__SEMICOLON__" ";" runtime_function "${runtime_function}")
-
-        set(MODULE_DEFINE_HEADER "${runtime_header}")
-        set(CREATE_MODULE_FUNCTION "${runtime_function}")
+        set(MODULE ${${mod}_class})
+        set(U_MODULE ${u_module})
+        set(L_MODULE ${${mod}_dir})
+        set(MODULE_ARGS ${fuction_args})
         configure_file(
             ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
             ${CMAKE_BINARY_DIR}/modules/_generated/modules/${${mod}_dir}/${${mod}_dir}modulesharedlibrary.cpp 
+            @ONLY
+        )
+        configure_file(
+            ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.h
+            ${CMAKE_BINARY_DIR}/modules/_generated/modules/${${mod}_dir}/${${mod}_dir}modulesharedlibrary.h 
             @ONLY
         )
     endforeach()
@@ -229,6 +220,23 @@ function(ivw_private_filter_dependency_list retval module)
                     "which is not an Inviwo module in depends.cmake for module: \"${module}\". "
                     "Incorporate non Inviwo module dependencies using regular target_link_libraries. "
                     "For example: target_link_libraries(inviwo-module-${l_module} PUBLIC ${item})")
+            endif()
+        endforeach()
+    endif()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+function(ivw_private_check_dependency_list retval modules_var module)
+    set(the_list "")
+    if(ARGN)
+        foreach(item ${ARGN})
+            string(TOUPPER ${item} u_item)
+            list(FIND ${modules_var} ${u_item} found)
+            if(NOT ${found} EQUAL -1)
+                list(APPEND the_list ${item})
+            else()
+                message(WARNING "Found dependency: \"${item}\", in depends.cmake for"
+                    " module: \"${module}\". But no such Inviwo module was registered.")
             endif()
         endforeach()
     endif()
@@ -362,6 +370,7 @@ function(ivw_register_modules retval)
         endforeach()
         # Validate that there only are module dependencies
         ivw_private_filter_dependency_list(new_dependencies ${${mod}_class} ${new_dependencies})
+        ivw_private_check_dependency_list(new_dependencies modules ${${mod}_class} ${new_dependencies})
         set("${mod}_dependencies" ${new_dependencies} CACHE INTERNAL "Module dependencies")
         ivw_mod_name_to_mod_dep(udependencies ${new_dependencies})
         set("${mod}_udependencies" ${udependencies} CACHE INTERNAL "Module uppercase dependencies")
@@ -504,6 +513,8 @@ function(ivw_create_module)
     else()
         list(APPEND mod_class_files 
             "${CMAKE_BINARY_DIR}/modules/_generated/modules/${l_project_name}/${l_project_name}modulesharedlibrary.cpp")
+        list(APPEND mod_class_files 
+            "${CMAKE_BINARY_DIR}/modules/_generated/modules/${l_project_name}/${l_project_name}modulesharedlibrary.h")
     endif()
     remove_duplicates(ivw_unique_mod_files ${ARGN} ${mod_class_files} ${cmake_files})
 

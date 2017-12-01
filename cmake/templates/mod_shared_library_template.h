@@ -28,24 +28,18 @@
  *********************************************************************************/
 
 // Automatically generated file do not change!
-#include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <inviwo/core/common/version.h>
-#include <modules/@L_MODULE@/@L_MODULE@modulesharedlibrary.h>
-#include <modules/@L_MODULE@/@L_MODULE@module.h>
+
+#ifndef IVW_@U_MODULE@_SHARED_LIBRARY
+#define IVW_@U_MODULE@_SHARED_LIBRARY
+
+#include <modules/@L_MODULE@/@L_MODULE@moduledefine.h>
 
 namespace inviwo {
-extern "C" {
+class InviwoModuleFactoryObject;
 
-IVW_MODULE_@U_MODULE@_API InviwoModuleFactoryObject* createModule() {
-    return new InviwoModuleFactoryObjectTemplate<@MODULE@Module>(
-@MODULE_ARGS@
-    );
-}
+IVW_MODULE_@U_MODULE@_API InviwoModuleFactoryObject* create@MODULE@Module();
 
 }
 
-InviwoModuleFactoryObject* create@MODULE@Module() {
-    return createModule();
-}
 
-}  //namespace
+#endif // IVW_@U_MODULE@_SHARED_LIBRARY

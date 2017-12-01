@@ -9,6 +9,7 @@ RuntimeModuleLoading getModuleList() { return RuntimeModuleLoading{}; }
 #else
 
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
+
 @MODULE_HEADERS@
 
 namespace inviwo {
@@ -20,9 +21,9 @@ namespace inviwo {
  */
 std::vector<std::unique_ptr<InviwoModuleFactoryObject>> getModuleList() {
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-        
-    @MODULE_CLASS_FUNCTIONS@
-        
+
+@MODULE_CLASS_FUNCTIONS@
+
     return modules;
 }
 
