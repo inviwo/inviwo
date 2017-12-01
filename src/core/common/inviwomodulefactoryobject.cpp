@@ -38,6 +38,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_, V
                                                      std::vector<std::string> dependencies_,
                                                      std::vector<Version> dependenciesVersion_,
                                                      std::vector<std::string> aliases_,
+                                                     std::vector<LicenseInfo> licenses_,
                                                      ProtectedModule protectedModule_)
     : name(name_)
     , version(version_)
@@ -54,6 +55,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_, V
         return deps;
     }())
     , aliases(aliases_)
+    , licenses(licenses_)
     , protectedModule(protectedModule_) {}
 
 /**

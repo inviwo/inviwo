@@ -169,6 +169,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesink.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactoryobject.h
@@ -184,8 +186,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbar.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbarowner.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesink.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolcompositeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolproperty.h
@@ -272,6 +272,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
@@ -432,6 +433,8 @@ set(SOURCE_FILES
     processors/compositeprocessor.cpp
     processors/compositeprocessorfactoryobject.cpp
     processors/compositeprocessorutils.cpp
+    processors/compositesink.cpp
+    processors/compositesource.cpp
     processors/processor.cpp
     processors/processorfactory.cpp
     processors/processorinfo.cpp
@@ -442,8 +445,6 @@ set(SOURCE_FILES
     processors/processorwidgetfactoryobject.cpp
     processors/processorwidgetobserver.cpp
     processors/progressbar.cpp
-    processors/compositesink.cpp
-    processors/compositesource.cpp
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp
@@ -507,6 +508,7 @@ set(SOURCE_FILES
     util/imageramutils.cpp
     util/imagesampler.cpp
     util/inviwosetupinfo.cpp
+    util/licenseinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
     util/memoryfilehandle.cpp
@@ -648,8 +650,66 @@ if(IVW_UNITTESTS)
     ivw_make_unittest_target(core inviwo-core)
 endif()
 
-
 #--------------------------------------------------------------------
+# register license files
+ivw_register_license_file(ID flags NAME "Flags" VERSION 0.0.0 MODULE Core
+    URL "http://grisumbras.github.io/enum-flags/"
+    FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
+)
+ivw_register_license_file(ID glm NAME "OpenGL Mathematics (GLM)" VERSION 0.9.8.4 MODULE Core
+    URL "http://ghttps://glm.g-truc.net"
+    FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
+)
+ivw_register_license_file(ID gtest NAME "Google C++ Testing Framework" VERSION 1.7.0 MODULE Core
+    URL "http://code.google.com/p/googletest/"
+    FILES ${IVW_EXTENSIONS_DIR}/gtest/LICENSE
+)
+ivw_register_license_file(ID half NAME "half" VERSION 1.11.0 MODULE Core
+    URL "http://half.sourceforge.net"
+    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
+)
+#Todo libjpeg
+#Todo libpng
+ivw_register_license_file(ID openexr NAME "OpenEXR" VERSION 2.2.0 MODULE Core
+    URL "http://www.openexr.com"
+    FILES ${IVW_EXTENSIONS_DIR}/openexr/openexr-2.2.0/LICENSE
+)
+ivw_register_license_file(ID pybind11 NAME "PyBind11" VERSION 2.1.1 MODULE Core
+    URL "https://github.com/pybind/pybind11"
+    FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE
+)
+ivw_register_license_file(ID sigar NAME "Sigar" VERSION 1.6.4 MODULE Core
+    URL "http://sigar.hyperic.com"
+    FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
+)
+#Todo stackwalker
+#Todo tclap
+ivw_register_license_file(ID ticpp NAME "TiCPP" VERSION 0.0.4 MODULE Core
+    URL https://github.com/wxFormBuilder/ticpp
+    FILES ${IVW_EXTENSIONS_DIR}/ticpp/LICENSE
+)
+ivw_register_license_file(ID tinydir NAME "TinyDir" VERSION 0.0.0.0 MODULE Core
+    URL https://github.com/cxong/tinydir
+    FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
+)
+ivw_register_license_file(ID utf NAME "UTF8-CPP" VERSION 2.3.5 MODULE Core
+    URL "https://github.com/nemtrif/utfcpp"
+    FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
+)
+ivw_register_license_file(ID vld NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core
+    URL "https://kinddragon.github.io/vld/"
+    FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
+)
+ivw_register_license_file(ID warn NAME "warn" VERSION 0.0.0.0 MODULE Core
+    URL "https://github.com/petersteneteg/warn"
+    FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
+)
+ivw_register_license_file(ID zlib NAME "zlib" VERSION 1.2.11 MODULE Core
+    URL "http://zlib.net/"
+    FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
+)
+
+#----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation
 
 # make a clean help script

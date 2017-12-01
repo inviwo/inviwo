@@ -61,6 +61,7 @@ class HelpWidget;
 class InviwoApplicationQt;
 class NetworkSearch;
 class InviwoEditMenu;
+class InviwoAboutWindow;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -149,6 +150,7 @@ private:
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     HelpWidget* helpWidget_;
     NetworkSearch* networkSearch_;
+    InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
     
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;

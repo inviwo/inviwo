@@ -19,6 +19,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiongraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgrapicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/helpwidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoaboutwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoeditmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoqteditordefine.h
@@ -49,6 +50,7 @@ set(SOURCE_FILES
     consolewidget.cpp
     editorgrapicsitem.cpp
     helpwidget.cpp
+    inviwoaboutwindow.cpp
     inviwoeditmenu.cpp
     inviwomainwindow.cpp
     linkdialog/linkdialog.cpp

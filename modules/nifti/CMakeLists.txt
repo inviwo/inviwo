@@ -24,4 +24,8 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 target_link_libraries(inviwo-module-nifti PRIVATE inviwo::niftiio inviwo::znz)
 
+ivw_register_license_file(ID niftilib NAME "Niftilib" VERSION 2.0.0 MODULE Nifti
+    URL http://niftilib.sourceforge.net/
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/nifticlib-2.0.0/LICENSE
+)
 ivw_make_package(InviwoNiftiModule inviwo-module-nifti)
