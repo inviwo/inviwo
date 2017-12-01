@@ -45,12 +45,13 @@ struct IVW_CORE_API ProcessorInfo {
 public:
     ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
                   CodeState aCodeState, Tags someTags, bool visible = true);
+    /// Identifier must be unique for all processors, example org.inviwo.yourprocessor
     const std::string classIdentifier;
-    const std::string displayName;
-    const std::string category;
+    const std::string displayName; ///< Processor::getDisplayName
+    const std::string category;  ///< Used for grouping processors in ProcessorTreeWidget
     const CodeState codeState;
-    const Tags tags;
-    const bool visible;
+    const Tags tags;     ///< Searchable tags, platform tags are shown in ProcessorTreeWidget
+    const bool visible;  ///< Show in processor list (ProcessorTreeWidget), enabling drag&drop
 };
 
 }  // namespace

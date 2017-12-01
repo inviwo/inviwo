@@ -654,7 +654,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 filesystem::createDirectoryRecursively(compDir);
                 const auto path = compDir + "/" + filename + ".inv";
                 p->saveSubNetwork(path);
-                LogInfo("Saved Composite to \"" << path << "\"");
+                LogInfo("Saved Composite to \"" << path
+                                                << "\". \nComposite is now available in the "
+                                                   "Processor list (restart may be required).");
             }
         });
         saveCompAction->setDisabled(selectedComposites.empty());

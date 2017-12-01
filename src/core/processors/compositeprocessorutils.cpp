@@ -101,9 +101,15 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                         subNetwork.addConnection(metasouce->getOutports().front(), inport);
                     }
                     metasouce->getSuperInport().setOptional(optional);
-                    auto id =
-                        util::stripIdentifier(c.second.front()->getProcessor()->getDisplayName() +
-                                              "." + c.second.front()->getIdentifier());
+                    auto portIdentifier = c.second.front()->getIdentifier();
+                    // Make first letter uppercase for reability when combined with processor
+                    // display name
+                    if (!portIdentifier.empty()) {
+                        portIdentifier.front() = ::toupper(portIdentifier.front());
+                    }
+
+                    auto id = util::stripIdentifier(
+                        c.second.front()->getProcessor()->getDisplayName() + portIdentifier);
                     metasouce->getSuperInport().setIdentifier(id);
                     network.addConnection(c.first, &metasouce->getSuperInport());
                 } else {
@@ -140,8 +146,14 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                     for (auto inport : c.second) {
                         network.addConnection(&metasink->getSuperOutport(), inport);
                     }
+                    auto portIdentifier = c.first->getIdentifier();
+                    // Make first letter uppercase for reability when combined with processor
+                    // display name
+                    if (!portIdentifier.empty()) {
+                        portIdentifier.front() = ::toupper(portIdentifier.front());
+                    }
                     auto id = util::stripIdentifier(c.first->getProcessor()->getDisplayName() +
-                                                    "." + c.first->getIdentifier());
+                                                    portIdentifier);
                     metasink->getSuperOutport().setIdentifier(id);
                 } else {
                     LogErrorCustom(

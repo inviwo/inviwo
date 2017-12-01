@@ -44,8 +44,9 @@
 namespace inviwo {
 
 /**
- * Base class for all Sink processors
+ * Base class for all sink processors inside the sub network of a CompositeProcessor.
  * @see CompositeSink
+ * @see CompositeProcessor
  */
 class IVW_CORE_API CompositeSinkBase : public Processor {
 public:
@@ -60,10 +61,11 @@ public:
 
 /**
  * Processor used to connect outports in a sub network inside of a CompositeProcessor to inports in
- * the super network. The CompositeProcessor will find all SinkProcessors in its sub network and add
- * the SinkProcessors super outports to it self. Whenever the sub network gets evaluated the
- * CompositeSink will get data from its inport and put in its super output. Making the data
- * available to the super network.
+ * the network it is in (referred as the super network). The CompositeProcessor will find all
+ * SinkProcessors in its sub network and add the SinkProcessors super outports to it self. Whenever
+ * the sub network gets evaluated the CompositeSink will pass through inport data to its super
+ * outport, thus making the data available to the super network. Note that the actual data will not
+ * be copied since shared pointers are used.
  * @see CompositeProcessor
  * @see CompositeSource
  */
@@ -89,7 +91,7 @@ public:
 
 private:
     InportType inport_;
-    OutportType superOutport_;
+    OutportType superOutport_; ///< To be added to CompositeProcessor, not itself
 };
 
 template <typename InportType, typename OutportType>
@@ -103,9 +105,9 @@ struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
         return {
             id,                 // Class identifier
             name,               // Display name
-            "Meta",             // Category
+            "Composite",             // Category
             CodeState::Stable,  // Code state
-            "Meta",             // Tags
+            "Composite",             // Tags
             false               // Visible
         };
     }

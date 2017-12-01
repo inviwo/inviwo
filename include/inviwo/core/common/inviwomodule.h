@@ -199,7 +199,10 @@ protected:
     /**
      * Register port type T, PortTraits<T>::classIdentifier has to be defined and return a non
      * empty and unique string. We use reverse DNS for class identifiers, i.e. org.inviwo.classname
+     * Prefer using registerDefaultsForDataType to registerPort since it adds support for
+     * CompositeProcessor
      * @see PortTraits
+     * @see registerDefaultsForDataType
      */
     template <typename T>
     void registerPort();
@@ -209,7 +212,7 @@ protected:
      * Will register the following ports:
      *     DataInport<T>           Inport
      *     DataInport<T, 0>        Multi Inport (accepts multiple input connections)
-     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with vector<T>)
+     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with vector<shared_ptr<T>>)
      *     DataOutport<T>          Outport
      * and Sink and Source Processors:
      *     CompositeSink<DataInport<T>, DataOutport<T>>

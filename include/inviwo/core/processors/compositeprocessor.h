@@ -48,17 +48,19 @@ class CompositeSourceBase;
 
 /**
  * \class CompositeProcessor
- * A processor containing a network of processors, i.e. it will act as a sub network within a
+ * \brief A processor containing a network of processors, i.e. it will act as a sub network within a
  * processor network. A CompositeProcessor can be used to reduce cluttering in the network. Also
  * makes it easy to reuse groups of processors inside of a network, and across network since they
  * can be saved in the processor list. A CompositeProcessor is usually created by selecting a group
  * of processors that are closely related in the network editor and then clicking "create
- * composite" in the context menu.
+ * composite" in the context menu.  Use InviwoModule::registerCompositeProcessor to register a saved
+ * composite in your module.
  *
  * The network inside of the CompositeProcessors is called the sub network and the network of the
- * CompositeProcessor the super network. The CompositeProcessor only will evaluate its sub network
- * when it itself gets processed, and otherwise keep it locked.
+ * CompositeProcessor the super network. The CompositeProcessor will only evaluate its sub network
+ * when its process function is called, and otherwise keep it locked.
  *
+ * <b>How it works</b>
  * The CompositeProcessor will observe its sub network and when a processor gets added to the sub
  * network the CompositeProcessor will check if it's a CompositeSource or a CompositeSink. In the
  * case it's a CompositeSource, which acts as data inputs in the sub network, in will get the
@@ -77,6 +79,7 @@ class CompositeSourceBase;
  * Events are propagated through the sub network using the super inport and outports in the Source
  * and Sink Processors.
  *
+ * <b>Design considerations</b>
  * Many designs for composite processors were considered, including implementing it as a pure GUI
  * feature having all the processors in the same network. The current design of completely
  * encapsulating the sub network was chosen since it minimizes the amount of logic in the GUI. Hence
