@@ -66,7 +66,7 @@ public:
     virtual Canvas* getCanvas() const override;
 
     // Override ProcessorObserver
-    virtual void onProcessorIdentifierChanged(Processor*, const std::string&) override;
+    virtual void onProcessorDisplayNameChanged(Processor*, const std::string&) override;
 
 protected:
     virtual void updateVisible(bool visible) override;
