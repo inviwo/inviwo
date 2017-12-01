@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,18 +27,33 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/processors/processorinfo.h>
+#ifndef IVW_COMPOSITEPROCESSORFACTORYOBJECT_H
+#define IVW_COMPOSITEPROCESSORFACTORYOBJECT_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/compositeprocessor.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
+
 
 namespace inviwo {
 
-ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
-                             std::string aCategory, CodeState aCodeState, Tags someTags,
-                             bool isVisible)
-    : classIdentifier(aClassIdentifier)
-    , displayName(aDisplayName)
-    , category(aCategory)
-    , codeState(aCodeState)
-    , tags(someTags)
-    , visible(isVisible) {}
+/**
+ * \class CompositeProcessorFactoryObject
+ */
+class IVW_CORE_API CompositeProcessorFactoryObject
+    : public ProcessorFactoryObject {
+public:
+    CompositeProcessorFactoryObject(const std::string& filen);
+    virtual ~CompositeProcessorFactoryObject() = default;
+
+    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
+
+private:
+    static ProcessorInfo makeProcessorInfo(const std::string& file);
+    std::string file_;
+};
 
 }  // namespace inviwo
+
+#endif  // IVW_COMPOSITEPROCESSORFACTORYOBJECT_H

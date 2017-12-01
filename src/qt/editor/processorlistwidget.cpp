@@ -320,7 +320,8 @@ void ProcessorTreeWidget::addProcessorsToTree(ProcessorFactoryObject* item) {
 
     for (auto& elem : app_->getModules()) {
         for (auto& processor : elem->getProcessors()) {
-            if (lineEdit_->text().isEmpty() || processorFits(processor, lineEdit_->text())) {
+            if (processor->isVisible() &&
+                (lineEdit_->text().isEmpty() || processorFits(processor, lineEdit_->text()))) {
                 extractInfoAndAddProcessor(processor, elem.get());
             }
         }
@@ -392,7 +393,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
         case 5: {  // Most Used
             auto it = useCounts_.find(processor->getClassIdentifier());
             if (it != useCounts_.end()) {
-                sortVal.prepend(QVariant::fromValue<qint64>(-it->second));
+                sortVal.prepend(QVariant::fromValue<qint64>(-static_cast<qint64>(it->second)));
             } else {
                 sortVal.prepend(0);
             }

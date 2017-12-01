@@ -40,6 +40,7 @@
 #include <inviwo/core/ports/portinspectorfactory.h>
 #include <inviwo/core/ports/portinspectorfactoryobject.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
+#include <inviwo/core/processors/compositeprocessorfactoryobject.h>
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/rendering/meshdrawer.h>
@@ -270,6 +271,13 @@ void InviwoModule::registerRepresentationConverterFactory(
 
 void InviwoModule::registerSettings(std::unique_ptr<Settings> settings) {
     settings_.push_back(std::move(settings));
+}
+
+void InviwoModule::registerCompositeProcessor(const std::string& file) {
+    auto processor = util::make_unique<CompositeProcessorFactoryObject>(file);
+    if (app_->getProcessorFactory()->registerObject(processor.get())) {
+        processors_.push_back(std::move(processor));
+    }
 }
 
 void InviwoModule::registerPortInspector(std::string portClassIdentifier,

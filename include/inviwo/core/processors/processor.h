@@ -225,7 +225,10 @@ public:
 
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
-
+    /**
+     * Concept for event propagation. Currently only used for
+     * ResizeEvents, which only propagate from outports to inports in the same port group
+     */
     const std::string& getPortGroup(Port* port) const;
     std::vector<std::string> getPortGroups() const;
     const std::vector<Port*>& getPortsInGroup(const std::string& portGroup) const;
@@ -322,7 +325,21 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    /**
+     * Add inport to processor.
+     * @note Port group is a concept for event propagation. Currently only used for
+     * ResizeEvents, which only propagate from outports to inports in the same port group
+     * @param port to add
+     * @param portGroup name of group to propagate events through (defaults to "default")
+     */
     void addPort(Inport& port, const std::string& portGroup = "default");
+    /**
+    * Add outport to processor.
+    * @note Port group is a concept for event propagation. Currently only used for
+    * ResizeEvents, which only propagate from outports to inports in the same port group
+    * @param port to add
+    * @param portGroup name of group to propagate events through (defaults to "default")
+    */
     void addPort(Outport& port, const std::string& portGroup = "default");
 
     // Assume ownership of port, needed for dynamic ports
@@ -338,12 +355,20 @@ protected:
     StateCoordinator<bool> isReady_;
     StateCoordinator<bool> isSink_;
     StateCoordinator<bool> isSource_;
-
+    /**
+     * Overwrites current port group, if any. 
+     * @note Port group will be overwritten by addPort. 
+     * @see addPort
+     */
+    void addPortToGroup(Port* port, const std::string& portGroup);
+    /**
+     * Removes port from its group, even if it is the default one.
+     * @see addPort
+     */
+    void removePortFromGroups(Port* port);
 private:
     void addPort(Inport* port, const std::string& portGroup);
     void addPort(Outport* port, const std::string& portGroup);
-    void addPortToGroup(Port* port, const std::string& portGroup);
-    void removePortFromGroups(Port* port);
 
     std::string identifier_;
     std::string displayName_;

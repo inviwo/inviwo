@@ -167,6 +167,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/activityindicator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessorwidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessor.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactoryobject.h
@@ -182,6 +185,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbar.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbarowner.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesink.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolcompositeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolproperty.h
@@ -423,6 +428,9 @@ set(SOURCE_FILES
     ports/porttraits.cpp
     processors/activityindicator.cpp
     processors/canvasprocessor.cpp
+    processors/compositeprocessor.cpp
+    processors/compositeprocessorfactoryobject.cpp
+    processors/compositeprocessorutils.cpp
     processors/processor.cpp
     processors/processorfactory.cpp
     processors/processorinfo.cpp
@@ -433,6 +441,8 @@ set(SOURCE_FILES
     processors/processorwidgetfactoryobject.cpp
     processors/processorwidgetobserver.cpp
     processors/progressbar.cpp
+    processors/compositesink.cpp
+    processors/compositesource.cpp
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp

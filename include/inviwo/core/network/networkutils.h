@@ -100,8 +100,7 @@ private:
     std::vector<Processor*> addedProcessors_;
 };
 
-}  // namespace
-
+}  // namespace detail
 
 IVW_CORE_API std::unordered_set<Processor*> getDirectPredecessors(Processor* processor);
 IVW_CORE_API std::unordered_set<Processor*> getDirectSuccessors(Processor* processor);
@@ -109,8 +108,8 @@ IVW_CORE_API std::unordered_set<Processor*> getDirectSuccessors(Processor* proce
 IVW_CORE_API std::unordered_set<Processor*> getPredecessors(Processor* processor);
 IVW_CORE_API std::unordered_set<Processor*> getSuccessors(Processor* processor);
 
-enum class TraversalDirection {Up, Down};
-enum class VisitPattern {Pre, Post};
+enum class TraversalDirection { Up, Down };
+enum class VisitPattern { Pre, Post };
 
 #include <warn/push>
 #include <warn/ignore/constant-conditional>
@@ -161,7 +160,12 @@ private:
     std::map<const Property*, vec2> cache_;
 };
 
+IVW_CORE_API ivec2 getCenterPosition(const std::vector<Processor*>& processors);
+IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, const ivec2& offset);
+IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
+
 IVW_CORE_API void autoLinkProcessor(ProcessorNetwork* network, Processor* processor);
+
 
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::string& refPath);
@@ -171,8 +175,8 @@ IVW_CORE_API std::vector<Processor*> appendDeserialized(ProcessorNetwork* networ
                                                         const std::string& refPath,
                                                         InviwoApplication* app);
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NETWORKUTILS_H

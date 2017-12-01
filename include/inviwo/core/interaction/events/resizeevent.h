@@ -41,6 +41,12 @@ class Inport;
 class Processor;
 class Outport;
 
+/** \class ResizeEvent
+ * Event propagating image/canvas size changes upwards in the network.
+ * Image inports and outports within a processor must be in the same group for the event to be
+ * propagated.
+ * @see Processor::addPort
+ */
 class IVW_CORE_API ResizeEvent : public Event {
 public:
     ResizeEvent(size2_t newSize);

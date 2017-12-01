@@ -32,8 +32,10 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/fileobserver.h>
 
 namespace inviwo {
+
 class InviwoApplication;
 
 /**
@@ -45,6 +47,19 @@ public:
     InviwoCore(InviwoApplication* app);
     
     virtual std::string getPath() const override;
+
+private:
+    class Observer : public FileObserver {
+    public:
+        Observer(InviwoCore& core, InviwoApplication* app);
+        virtual void fileChanged(const std::string& dir) override;
+    private:
+        InviwoCore& core_;
+    };
+    void scanDirForComposites(const std::string& dir);
+
+    Observer compositeDirObserver_;
+    std::unordered_set<std::string> addedCompositeFiles_;
 };
 
 }  // namespace

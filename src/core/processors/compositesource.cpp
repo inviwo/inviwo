@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,18 +27,10 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/compositesource.h>
 
 namespace inviwo {
 
-ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
-                             std::string aCategory, CodeState aCodeState, Tags someTags,
-                             bool isVisible)
-    : classIdentifier(aClassIdentifier)
-    , displayName(aDisplayName)
-    , category(aCategory)
-    , codeState(aCodeState)
-    , tags(someTags)
-    , visible(isVisible) {}
+CompositeSourceBase::CompositeSourceBase() : Processor() {}
 
 }  // namespace inviwo
