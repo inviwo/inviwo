@@ -357,6 +357,8 @@ protected:
     std::unique_ptr<HalfEdges> halfEdges_;
 	std::unique_ptr<MeshDrawer> drawer_;
     FragmentListRenderer flr_;
+    bool supportsFragmentLists_;
+    bool supportedIllustrationBuffer_;
 
     Shader shader_;
     Shader depthShader_;

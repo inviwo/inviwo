@@ -109,6 +109,19 @@ public:
     };
     void setIllustrationBufferSettings(const IllustrationBufferSettings& settings) { illustrationBufferSettings_ = settings; }
 
+    /**
+     * \brief Tests if fragment lists are supported by the current opengl context.
+     * Fragment lists require OpenGL 4.3
+     * \return true iff they are supported
+     */
+    static bool supportsFragmentLists();
+    /**
+     * \brief Tests if the illustration buffer are supported and can therefore be enabled.
+     * The Illustration Buffer requires OpenGL 4.6 or OpenGL 4.5 with the extension "GL_ARB_shader_atomic_counter_ops".
+     * \return true iff they are supported
+     */
+    static bool supportsIllustrationBuffer();
+
 private:
     void initShaders();
     void initBuffers(const size2_t& screenSize);

@@ -37,6 +37,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/base/algorithm/dataminmax.h>
 #include <modules/opengl/image/layergl.h>
+#include <modules/opengl/openglcapabilities.h>
 
 #include <sstream>
 #include <chrono>
@@ -85,6 +86,18 @@ FancyMeshRenderer::FancyMeshRenderer()
     , debugFragmentLists_(false)
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
 {
+    //query OpenGL Capability
+    supportsFragmentLists_ = FragmentListRenderer::supportsFragmentLists();
+    supportedIllustrationBuffer_ = FragmentListRenderer::supportsIllustrationBuffer();
+    if (!supportsFragmentLists_)
+    {
+        LogProcessorWarn("Fragment lists are not supported by the hardware -> use blending without sorting, may lead to errors");
+    }
+    if (!supportedIllustrationBuffer_)
+    {
+        LogProcessorWarn("Illustration Buffer not supported by the hardware, screen-space silhouettes not available");
+    }
+
     //Copied from the standard MeshRenderer
 
     //input and output ports
@@ -117,8 +130,10 @@ FancyMeshRenderer::FancyMeshRenderer()
     addProperty(edgeSettings_.container_);
 	addProperty(faceSettings_[0].container_);
 	addProperty(faceSettings_[1].container_);
-    addProperty(propUseIllustrationBuffer_);
-    addProperty(illustrationBufferSettings_.container_);
+    if (supportedIllustrationBuffer_) {
+        addProperty(propUseIllustrationBuffer_);
+        addProperty(illustrationBufferSettings_.container_);
+    }
 
 	//Callbacks
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -577,7 +592,7 @@ void FancyMeshRenderer::process() {
         return; //everything is culled
     }
     bool opaque = forceOpaque_.get();
-    bool fragmentLists = !opaque; // or maybe add an option to use regular alpha blending
+    bool fragmentLists = !opaque && supportsFragmentLists_;
     if (fragmentLists && !colorLayer_.get())
     {
         //fragment lists can only render to color layer, but no color layer is available
@@ -688,7 +703,8 @@ void FancyMeshRenderer::process() {
         if (fragmentLists)
         {
             //final processing of fragment list rendering
-            if (propUseIllustrationBuffer_.get())
+            bool illustrationBuffer = propUseIllustrationBuffer_.get() && supportedIllustrationBuffer_;
+            if (illustrationBuffer)
             {
                 FragmentListRenderer::IllustrationBufferSettings settings;
                 settings.edgeColor_ = illustrationBufferSettings_.edgeColor_.get();
@@ -699,7 +715,7 @@ void FancyMeshRenderer::process() {
                 settings.haloSmoothing_ = illustrationBufferSettings_.haloSmoothing_.get();
                 flr_.setIllustrationBufferSettings(settings);
             }
-            bool success = flr_.postPass(propUseIllustrationBuffer_.get(), debugFragmentLists_);
+            bool success = flr_.postPass(illustrationBuffer, debugFragmentLists_);
             debugFragmentLists_ = false;
             if (!success) {
                 retry = true;

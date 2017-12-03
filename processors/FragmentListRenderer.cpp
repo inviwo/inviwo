@@ -33,6 +33,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/openglcapabilities.h>
 
 #include <cstdio>
 
@@ -190,6 +191,21 @@ namespace inviwo
         }
 
         return true; //success, enough storage available
+    }
+
+    bool FragmentListRenderer::supportsFragmentLists()
+    {
+        return OpenGLCapabilities::getOpenGLVersion() >= 430;
+    }
+
+    bool FragmentListRenderer::supportsIllustrationBuffer()
+    {
+        if (OpenGLCapabilities::getOpenGLVersion() >= 460)
+            return true;
+        else if (OpenGLCapabilities::getOpenGLVersion() >= 450)
+            return OpenGLCapabilities::isExtensionSupported("GL_ARB_shader_atomic_counter_ops");
+        else
+            return false;
     }
 
     void FragmentListRenderer::initShaders()
