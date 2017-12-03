@@ -34,6 +34,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fancymeshrenderer.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fancymeshrenderer.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fancymeshrenderer.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferCommons.hglsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferLinkedList.hglsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/ABufferSort.hglsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/clearABufferLinkedList.frag

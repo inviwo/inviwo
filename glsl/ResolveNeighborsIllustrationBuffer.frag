@@ -4,13 +4,6 @@
 
 #include "IllustrationBuffer.hglsl"
 
-//The host defines the following macro
-//#define PROCESSING_STEP
-//Which is:
-// 1=Find initial neighbors
-// 2=Check for mutual relation
-// 
-
 //Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 //Input interpolated fragment position

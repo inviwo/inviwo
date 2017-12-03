@@ -42,13 +42,13 @@ void main(void) {
                 //smooth beta;
                 float beta = smoothing.x;
                 for (int j=0; j<4; ++j) {
-                    if (neighbors[j]>=0) beta = max(beta, smoothingIn[neighbors[j]].x - lambdaBeta);
+                    if (neighbors[j]>=0) beta = max(beta, smoothingIn[neighbors[j]].x * (1-lambdaBeta));
                 }
                 smoothing.x = beta;
                 //smooth gamma;
                 float gamma = smoothing.y;
                 for (int j=0; j<4; ++j) {
-                    if (neighbors[j]>=0) gamma = max(gamma, smoothingIn[neighbors[j]].y - lambdaGamma);
+                    if (neighbors[j]>=0) gamma = max(gamma, smoothingIn[neighbors[j]].y * (1-lambdaGamma));
                 }
                 smoothing.y = gamma;
                 //write back
