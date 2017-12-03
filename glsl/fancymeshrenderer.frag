@@ -79,7 +79,6 @@ struct FaceRenderSettings
 
     bool showEdges;
     vec4 edgeColor;
-    float edgeOpacity;
 
     int hatchingMode;
     int hatchingSteepness;
@@ -256,8 +255,8 @@ vec4 performShading()
 #endif
         //blend in edge color
         if (settings.showEdges) {
-            color.rgb = mix(color.rgb, settings.edgeColor.rgb, isEdgeSmoothed*min(1,settings.edgeOpacity));
-            color.a = mix(color.a, 1, isEdgeSmoothed*max(0, settings.edgeOpacity-1));
+            color.rgb = mix(color.rgb, settings.edgeColor.rgb, isEdgeSmoothed*min(1,settings.edgeColor.a));
+            color.a = mix(color.a, 1, isEdgeSmoothed*max(0, settings.edgeColor.a-1));
         }
 #ifdef DRAW_SILHOUETTE
         //blend in silhouette
@@ -310,9 +309,9 @@ vec4 performShading()
         stripeStrength = 1 - (1-stripeStrength) * hatchingModulation(t + settings.hatchingModulationOffset, settings.hatchingModulationAnisotropy);
     }
     //blend into color
-    color.rgb = mix(settings.hatchingColor.rgb, color.rgb, stripeStrength);
+    color.rgb = mix(color.rgb, settings.hatchingColor.rgb, (1-stripeStrength)*settings.hatchingColor.a);
     if (settings.hatchingBlending == 1) {
-        color.a = mix(1, color.a, stripeStrength); //additive alpha
+        color.a = mix(color.a, 1, (1-stripeStrength)*settings.hatchingColor.a); //additive alpha
     }
 #endif
 

@@ -250,7 +250,8 @@ FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
     , modulationMode_(prefix + "hatchingModulationMode", "Modulation")
     , modulationAnisotropy_(prefix + "hatchingModulationAnisotropy", "Anisotropy", 0.5, -1, 1, 0.01)
     , modulationOffset_(prefix + "hatchingModulationOffset", "Offset", 0, 0, 1, 0.01)
-    , color_(prefix + "hatchingColor", "Color", {0,0,0,1})
+    , color_(prefix + "hatchingColor", "Color", {0,0,0})
+    , strength_(prefix + "hatchingStrength", "Strength", 0.5, 0, 1, 0.01)
     , blendingMode_(prefix + "hatchingBlending", "Blending")
 {
     //init properties
@@ -277,6 +278,7 @@ FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
     container_.addProperty(modulationAnisotropy_);
     container_.addProperty(modulationOffset_);
     container_.addProperty(color_);
+    container_.addProperty(strength_);
     container_.addProperty(blendingMode_);
 }
 
@@ -288,14 +290,14 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     , sameAsFrontFace_(prefix_ + "same", "Same as Front Face")
     , copyFrontToBack_(prefix_ + "copy", "Copy Front to Back")
     , transferFunction_(prefix_ + "tf", "Transfer Function")
-    , externalColor_(prefix_ + "extraColor", "Color", { 1, 0.3, 0.01, 1 })
+    , externalColor_(prefix_ + "extraColor", "Color", { 1, 0.3, 0.01 })
     , colorSource_(prefix_ + "colorSource", "Color Source")
     , separateUniformAlpha_(prefix_ + "separateUniformAlpha", "Separate Uniform Alpha")
     , uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5, 0, 1, 0.01)
     , normalSource_(prefix_ + "normalSource", "Normal Source")
     , shadingMode_(prefix_ + "shadingMode", "Shading Mode")
     , showEdges_(prefix_ + "showEdges", "Show Edges")
-    , edgeColor_(prefix_ + "edgeColor", "Edge color", { 0, 0, 0, 1 })
+    , edgeColor_(prefix_ + "edgeColor", "Edge color", { 0, 0, 0 })
     , edgeOpacity_(prefix_ + "edgeOpacity", "Edge Opacity", 0.5, 0, 2, 0.01)
     , hatching_(prefix_)
 {
@@ -646,15 +648,14 @@ void FancyMeshRenderer::process() {
             std::stringstream ss;
             ss << "renderSettings[" << j << "].";
             std::string prefix = ss.str();
-            shader_.setUniform(prefix + "externalColor", faceSettings_[i].externalColor_.get());
+            shader_.setUniform(prefix + "externalColor", vec4(faceSettings_[i].externalColor_.get(), 1.0));
             shader_.setUniform(prefix + "colorSource", static_cast<int>(faceSettings_[i].colorSource_.get()));
             shader_.setUniform(prefix + "separateUniformAlpha", faceSettings_[i].separateUniformAlpha_.get());
             shader_.setUniform(prefix + "uniformAlpha", faceSettings_[i].uniformAlpha_.get());
             shader_.setUniform(prefix + "normalSource", static_cast<int>(faceSettings_[i].normalSource_.get()));
             shader_.setUniform(prefix + "shadingMode", static_cast<int>(faceSettings_[i].shadingMode_.get()));
             shader_.setUniform(prefix + "showEdges", faceSettings_[i].showEdges_.get());
-            shader_.setUniform(prefix + "edgeColor", faceSettings_[i].edgeColor_.get());
-            shader_.setUniform(prefix + "edgeOpacity", faceSettings_[i].edgeOpacity_.get());
+            shader_.setUniform(prefix + "edgeColor", vec4(faceSettings_[i].edgeColor_.get(), faceSettings_[i].edgeOpacity_.get()));
             if (faceSettings_[i].hatching_.mode_.get() == HatchingMode::UV)
                 shader_.setUniform(prefix + "hatchingMode", 3 + static_cast<int>(faceSettings_[i].hatching_.modulationMode_.get()));
             else
@@ -664,7 +665,7 @@ void FancyMeshRenderer::process() {
             shader_.setUniform(prefix + "hatchingFreqV", faceSettings_[i].hatching_.baseFrequencyV_.getMaxValue() - faceSettings_[i].hatching_.baseFrequencyV_.get());
             shader_.setUniform(prefix + "hatchingModulationAnisotropy", faceSettings_[i].hatching_.modulationAnisotropy_.get());
             shader_.setUniform(prefix + "hatchingModulationOffset", faceSettings_[i].hatching_.modulationOffset_.get());
-            shader_.setUniform(prefix + "hatchingColor", faceSettings_[i].hatching_.color_.get());
+            shader_.setUniform(prefix + "hatchingColor", vec4(faceSettings_[i].hatching_.color_.get(), faceSettings_[i].hatching_.strength_.get()));
             shader_.setUniform(prefix + "hatchingBlending", static_cast<int>(faceSettings_[i].hatching_.blendingMode_.get()));
 
             const auto& tf = faceSettings_[i].transferFunction_.get();

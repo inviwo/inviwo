@@ -277,7 +277,8 @@ protected:
         TemplateOptionProperty<HatchingMode> modulationMode_;
         FloatProperty modulationAnisotropy_;
         FloatProperty modulationOffset_;
-        FloatVec4Property color_;
+        FloatVec3Property color_;
+        FloatProperty strength_;
         TemplateOptionProperty<HatchingBlendingMode> blendingMode_;
         HatchingSettings(const std::string& prefix);
     };
@@ -295,7 +296,7 @@ protected:
         ButtonProperty copyFrontToBack_;
 		
 		TransferFunctionProperty transferFunction_;
-		FloatVec4Property externalColor_;
+		FloatVec3Property externalColor_;
 		TemplateOptionProperty<ColorSource> colorSource_;
 
 		BoolProperty separateUniformAlpha_;
@@ -305,7 +306,7 @@ protected:
 		TemplateOptionProperty<ShadingMode> shadingMode_;
 
         BoolProperty showEdges_;
-        FloatVec4Property edgeColor_;
+        FloatVec3Property edgeColor_;
         FloatProperty edgeOpacity_;
 
         HatchingSettings hatching_;
