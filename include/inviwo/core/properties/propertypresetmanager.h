@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <flags/flags.h>
 
 namespace inviwo {
