@@ -121,7 +121,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , processorNetworkEvaluator_{util::make_unique<ProcessorNetworkEvaluator>(
           processorNetwork_.get())}
     , workspaceManager_{util::make_unique<WorkspaceManager>(this)}
-    , propertyPresetManager_{util::make_unique<PropertyPresetManager>()}
+    , propertyPresetManager_{util::make_unique<PropertyPresetManager>(this)}
     , portInspectorManager_{util::make_unique<PortInspectorManager>(this)} {
 
     if (commandLineParser_.getLogToConsole()) {

@@ -508,12 +508,10 @@ TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraph
 }
 
 void TransferFunctionEditor::onControlPointAdded(TransferFunctionDataPoint* p) {
-    auto newpoint = new TransferFunctionEditorControlPoint(p, dataMap_, controlPointSize_);
-    auto it = std::lower_bound(points_.begin(), points_.end(), newpoint, comparePtr{});
+    auto newpoint = new TransferFunctionEditorControlPoint(p, this, dataMap_, controlPointSize_);
+    auto it = std::upper_bound(points_.begin(), points_.end(), newpoint, comparePtr{});
     it = points_.insert(it, newpoint);
-
     updateConnections();
-    addItem(newpoint);
 }
 
 void TransferFunctionEditor::onControlPointRemoved(TransferFunctionDataPoint* p) {

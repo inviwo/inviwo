@@ -117,8 +117,6 @@ public:
     bool addPortInspector(Outport* port, QPointF pos);
     void removePortInspector(Outport* port);
     std::shared_ptr<const Image> renderPortInspectorImage(Outport* port);
-
-    void updateLeds();
     
     ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
     ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
@@ -219,7 +217,7 @@ private:
 
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};
-    mutable int pasteCount_ = 0;
+    mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0,0}};
 
     // Connection and link state
     ConnectionDragGraphicsItem* connectionCurve_;

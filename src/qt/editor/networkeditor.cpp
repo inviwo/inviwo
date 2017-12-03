@@ -86,6 +86,7 @@
 #include <QPainter>
 #include <QMimeData>
 #include <QMargins>
+#include <QGraphicsView>
 #include <warn/pop>
 
 namespace inviwo {
@@ -109,6 +110,21 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
 
     // The default BSP tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
+    setSceneRect(QRectF());
+
+    // If selection contains processors don't select any other items
+    connect(this, &QGraphicsScene::selectionChanged, this, [this]() {
+        auto selection = selectedItems();
+        if (util::contains_if(selection, [](auto i) {
+                return qgraphicsitem_cast<ProcessorGraphicsItem*>(i) != nullptr;
+            })) {
+            for (auto i : selection) {
+                if (qgraphicsitem_cast<ProcessorGraphicsItem*>(i) == nullptr) {
+                    i->setSelected(false);
+                }
+            }
+        }
+    });
 }
 
 ////////////////////////////////////////////////////////
@@ -145,6 +161,10 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
     auto processorGraphicsItem = new ProcessorGraphicsItem(processor);
     processorGraphicsItems_[processor] = processorGraphicsItem;
     addItem(processorGraphicsItem);
+    for (auto v : views()) {
+        v->setSceneRect(QRectF{});
+        v->ensureVisible(processorGraphicsItem);
+    }
     return processorGraphicsItem;
 }
 
@@ -782,7 +802,7 @@ void NetworkEditor::dragEnterEvent(QGraphicsSceneDragDropEvent* e) { dragMoveEve
 
 void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
     if (ProcessorDragObject::canDecode(e->mimeData())) {
-        //e->setAccepted(true);
+        // e->setAccepted(true);
         e->acceptProposedAction();
 
         auto connectionItem = getConnectionGraphicsItemAt(e->scenePos());
@@ -856,7 +876,7 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
 
                 clearSelection();
 
-                ProcessorMetaData* meta =
+                auto meta =
                     processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 
                 if (oldProcessorTarget_) {
@@ -1017,7 +1037,7 @@ QByteArray NetworkEditor::copy() const {
 
     for (auto& item : items) item->setSelected(false);
 
-    pasteCount_ = 0;
+    pastePos_.first = false;
 
     return byteArray;
 }
@@ -1030,6 +1050,8 @@ QByteArray NetworkEditor::cut() {
 
 void NetworkEditor::paste(QByteArray mimeData) {
     try {
+        auto orgBounds = util::getBoundingBox(network_->getProcessors());
+
         std::stringstream ss;
         for (auto d : mimeData) ss << d;
         // Activate the default context, might be needed in processor constructors.
@@ -1037,22 +1059,43 @@ void NetworkEditor::paste(QByteArray mimeData) {
         auto added =
             util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
 
-        ivec2 top{std::numeric_limits<int>::max()};
+        auto center = util::getCenterPosition(added);
+        auto bounds = util::getBoundingBox(added);
 
-        for (auto p : added) {
-            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            top = glm::min(top, m->getPosition());
+        if (clickedPosition_.first) {  // center on clicked pos
+            util::offsetPosition(added, clickedPosition_.second - center);
+        } else if (pastePos_.first) {
+            pastePos_.second.x += (bounds.second.x - bounds.first.x) +
+                                  ProcessorGraphicsItem::size_.width() + gridSpacing_;
+            util::offsetPosition(added, pastePos_.second - center);
+        } else {  // add to bottom left
+            pastePos_.first = true;
+            pastePos_.second = ivec2{orgBounds.first.x, orgBounds.second.y} +
+                               ivec2{(bounds.second.x - bounds.first.x) / 2,
+                                     (bounds.second.y - bounds.first.y) / 2} +
+                               ivec2{0, gridSpacing_} +
+                               ivec2{0, ProcessorGraphicsItem::size_.height()};
+            util::offsetPosition(added, pastePos_.second - center);
         }
 
-        ivec2 pos = clickedPosition_.first
-                        ? clickedPosition_.second - top
-                        : ivec2(++pasteCount_) *
-                              ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
+        // Make sure the pasted processors are in the view
+        auto selection = selectedItems();
+        util::erase_remove_if(selection, [](auto i) {
+            return qgraphicsitem_cast<ProcessorGraphicsItem*>(i) == nullptr;
+        });
+        if (!selection.empty()) {
+            auto rect =
+                selection.front()->mapToScene(selection.front()->boundingRect()).boundingRect();
 
-        for (auto p : added) {
-            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            m->setPosition(m->getPosition() + pos);
+            for (auto item : selection) {
+                rect = rect.united(item->mapToScene(item->boundingRect()).boundingRect());
+            }
+            for (auto v : views()) {
+                v->setSceneRect(QRectF{});
+                v->ensureVisible(rect);
+            }
         }
+
     } catch (const Exception&) {
         LogWarn("Paste operation failed");
     }
@@ -1141,13 +1184,6 @@ void NetworkEditor::initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos) {
     linkCurve_->show();
 }
 
-void NetworkEditor::updateLeds() {
-    // Update the status items
-    for (auto& elem : processorGraphicsItems_) {
-        elem.second->getStatusItem()->update();
-    }
-}
-
 void NetworkEditor::resetAllTimeMeasurements() {
 #if IVW_PROFILING
     // Update the status items
@@ -1225,12 +1261,10 @@ void NetworkEditor::onProcessorNetworkWillRemoveProcessor(Processor* processor) 
 
 void NetworkEditor::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
     addConnectionGraphicsItem(connection);
-    updateLeds();
     setModified(true);
 }
 void NetworkEditor::onProcessorNetworkWillRemoveConnection(const PortConnection& connection) {
     removeConnectionGraphicsItem(connection);
-    updateLeds();
     setModified(true);
 }
 

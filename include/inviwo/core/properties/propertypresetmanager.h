@@ -33,11 +33,12 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializable.h>
-
+#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <flags/flags.h>
 
 namespace inviwo {
-
+class InviwoApplication;
 class Property;
 
 enum class PropertyPresetType { Property = 1, Workspace = 2, Application = 4 };
@@ -51,7 +52,7 @@ using PropertyPresetTypes = flags::flags<PropertyPresetType>;
  */
 class IVW_CORE_API PropertyPresetManager {
 public:
-    PropertyPresetManager();
+    PropertyPresetManager(InviwoApplication* app);
     virtual ~PropertyPresetManager() = default;
 
     bool loadPreset(const std::string& name, Property* property, PropertyPresetType type) const;
@@ -62,12 +63,26 @@ public:
     std::vector<std::string> getAvailablePresets(Property* property,
                                                  PropertyPresetTypes types) const;
 
-    void clearPropertyPresets(Property *property);
+    void clearPropertyPresets(Property* property);
 
     // clear load and save workspace presets
     void clearWorkspacePresets();
     void loadWorkspacePresets(Deserializer& d);
     void saveWorkspacePresets(Serializer& s);
+
+    /**
+     * Append all Presets in property source to property target.
+     * If the Preset already exists in target it will be overwritten.
+     * The properties should be of the same type.
+     */
+    static void appendPropertyPresets(Property* target, Property* source);
+
+    /**
+     * Set PropertySerializationMode to All on property and all its sub properties.
+     * The returned guard will reset the PropertySerializationModes to their original values when
+     * it goes out of scope. This is useful when copying properties.
+     */
+    static util::OnScopeExit scopedSerializationModeAll(Property* property);
 
 private:
     void loadApplicationPresets();
@@ -87,10 +102,36 @@ private:
         virtual void deserialize(Deserializer& d) override;
     };
 
+    InviwoApplication* app_;
     std::vector<Preset> appPresets_;
     std::vector<Preset> workspacePresets_;
 };
 
-}  // namespace
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             PropertyPresetType p) {
+    switch (p) {
+        case PropertyPresetType::Property:
+            ss << "Property";
+            break;
+        case PropertyPresetType::Workspace:
+            ss << "Workspace";
+            break;
+        case PropertyPresetType::Application:
+            ss << "Application";
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             PropertyPresetTypes ps) {
+    std::copy(ps.begin(), ps.end(), util::make_ostream_joiner(ss, ", "));
+    return ss;
+}
+
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYPRESETMANAGER_H

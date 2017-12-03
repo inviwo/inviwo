@@ -105,6 +105,20 @@ ivec2 util::getCenterPosition(const std::vector<Processor*>& processors) {
     return center / static_cast<int>(processors.size());
 }
 
+std::pair<ivec2, ivec2> util::getBoundingBox(const std::vector<Processor*>& processors) {
+    if (processors.empty()) return {ivec2{0}, ivec2{0}};
+    ivec2 minPos{std::numeric_limits<int>::max()};
+    ivec2 maxPos{std::numeric_limits<int>::lowest()};
+
+    for (auto p : processors) {
+        if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+            minPos = glm::min(minPos, meta->getPosition());
+            maxPos = glm::max(maxPos, meta->getPosition());
+        }
+    }
+    return {minPos, maxPos};
+}
+
 void util::offsetPosition(const std::vector<Processor*>& processors, const ivec2& offset) {
     for (auto p : processors) {
         if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {

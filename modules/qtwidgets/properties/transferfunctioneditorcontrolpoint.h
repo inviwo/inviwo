@@ -41,6 +41,7 @@
 #include <QPainterPath>
 #include <warn/pop>
 
+class QGraphicsScene;
 class QGraphicsSceneHoverEvent;
 class QPainter;
 
@@ -58,7 +59,7 @@ public:
         Number_of_InviwoWidgetGraphicsItemTypes
     };
 
-    TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint,
+    TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint, QGraphicsScene* scene,
                                        const DataMapper& dataMap, float size = 14.0f);
     ~TransferFunctionEditorControlPoint() = default;
 
