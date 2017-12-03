@@ -127,7 +127,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              PropertyPresetTypes ps) {
-    std::copy(ps.begin(), ps.end(), util::make_ostream_joiner(ps, ", "));
+    std::copy(ps.begin(), ps.end(), util::make_ostream_joiner(ss, ", "));
     return ss;
 }
 
