@@ -261,7 +261,7 @@ vec4 performShading()
         }
 #ifdef DRAW_SILHOUETTE
         //blend in silhouette
-        vec4 silhouetteColor = vec4(1,1,1,1);
+        vec4 silhouetteColor = vec4(0,0,0,1);
         color.rgb = mix(color.rgb, silhouetteColor.rgb, isSilhouettesSmoothed*min(1,silhouetteColor.a));
         color.a = mix(color.a, 1, isSilhouettesSmoothed*max(0, silhouetteColor.a-1));
 #endif
@@ -276,7 +276,7 @@ vec4 performShading()
     float stripeStrength = 1;
     if (settings.hatchingMode == 1 || settings.hatchingMode == 3 || settings.hatchingMode == 4) {
         //hatch in u-direction
-        float lambdaS = length(vec2(dFdxFinest(texCoord.x), dFdyFinest(texCoord.x))) + 0.00001;
+        float lambdaS = length(vec2(dFdxFinest(texCoord.x), dFdyFinest(texCoord.x))) + 0.000000001;
         float ls = log(lambdaS) / log(2);
         ls += settings.hatchingFreqU;
         int lsInt = int(floor(ls));
@@ -289,7 +289,7 @@ vec4 performShading()
     }
     if (settings.hatchingMode == 2 || settings.hatchingMode == 3 || settings.hatchingMode == 5) {
         //hatch in v-direction
-        float lambdaT = length(vec2(dFdxFinest(texCoord.y), dFdyFinest(texCoord.y))) + 0.00001;
+        float lambdaT = length(vec2(dFdxFinest(texCoord.y), dFdyFinest(texCoord.y))) + 0.000000001;
         float lt = log(lambdaT) / log(2);
         lt += settings.hatchingFreqV;
         int ltInt = int(floor(lt));

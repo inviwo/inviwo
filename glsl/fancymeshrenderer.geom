@@ -129,8 +129,8 @@ void main(void)
     //==================================================
     //compute the area of the triangle,
     //needed for several shading computations
-    float area = length(cross(vertices[IDX1].position.xyz-vertices[IDX0].position.xyz,
-                  vertices[IDX2].position.xyz-vertices[IDX0].position.xyz)) * 0.5f;
+    float area = length(cross(vertices[IDX1].worldPosition.xyz-vertices[IDX0].worldPosition.xyz,
+                  vertices[IDX2].worldPosition.xyz-vertices[IDX0].worldPosition.xyz)) * 0.5f;
     
     //compute side lengths of the triangles
 #ifdef ALPHA_SHAPE

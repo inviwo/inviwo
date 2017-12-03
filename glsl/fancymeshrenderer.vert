@@ -57,7 +57,7 @@ void main() {
     vertex.texCoord = in_TexCoord.xy;
 #endif
 #ifdef SEND_SCALAR
-    vertex.scalar = in_TexCoord.y; //TODO: specify source of scalar value
+    vertex.scalar = in_TexCoord.x; //TODO: specify source of scalar value
 #endif
     vertex.worldPosition = geometry.dataToWorld * in_Vertex;
     vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
