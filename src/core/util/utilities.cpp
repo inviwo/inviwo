@@ -127,7 +127,7 @@ std::string stripModuleFileNameDecoration(std::string filePath) {
     auto decoration2 = std::string("inviwo-");
 #else
     auto decoration1 = std::string("libinviwo-module-");
-    auto decoration1 = std::string("libinviwo-");
+    auto decoration2 = std::string("libinviwo-");
 #endif
     auto inviwoModulePos = fileNameWithoutExtension.find(decoration1);
     if (inviwoModulePos == std::string::npos) {
