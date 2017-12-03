@@ -34,18 +34,19 @@
 #include <@MODULE_HEADER@>
 
 namespace inviwo {
-extern "C" {
 
-@API_DEFINE@ InviwoModuleFactoryObject* createModule() {
+InviwoModuleFactoryObject* create@MODULE@Module() {
     return new InviwoModuleFactoryObjectTemplate<@MODULE_NAME@>(
 @MODULE_ARGS@
     );
 }
 
+extern "C" {
+
+@API_DEFINE@ InviwoModuleFactoryObject* createModule() {
+    return create@MODULE@Module();
 }
 
-InviwoModuleFactoryObject* create@MODULE@Module() {
-    return createModule();
 }
 
 }  //namespace
