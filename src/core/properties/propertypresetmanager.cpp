@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
