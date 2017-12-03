@@ -6,9 +6,11 @@ ivw_module(FancyMeshRenderer)
 # Add header files
 set(HEADER_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/fancymeshrendererprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/fancymeshrenderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/FragmentListRenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/HalfEdges.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/calcnormals.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/calcnormalsprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/FragmentListRenderer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/fancymeshrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -16,9 +18,11 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/fancymeshrendererprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/fancymeshrenderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/FragmentListRenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/HalfEdges.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/calcnormals.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/calcnormalsprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/FragmentListRenderer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/fancymeshrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

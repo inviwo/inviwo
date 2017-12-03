@@ -30,6 +30,7 @@
 #include <fancymeshrenderer/fancymeshrenderermodule.h>
 #include <fancymeshrenderer/processors/fancymeshrenderer.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <fancymeshrenderer/processors/calcnormalsprocessor.h>
 
 namespace inviwo {
 
@@ -42,6 +43,7 @@ FancyMeshRendererModule::FancyMeshRendererModule(InviwoApplication* app) : Inviw
     
     // Processors
 	registerProcessor<FancyMeshRenderer>();
+    registerProcessor<CalcNormalsProcessor>();
     
     // Properties
     // registerProperty<fancymeshrendererProperty>();

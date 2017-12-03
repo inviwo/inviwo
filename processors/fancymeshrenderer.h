@@ -246,8 +246,6 @@ protected:
 	enum class NormalSource : int
 	{
 		InputVertex,
-		InputTriangle,
-		GenerateVertex,
 		GenerateTriangle
 	};
 	enum class ShadingMode : int

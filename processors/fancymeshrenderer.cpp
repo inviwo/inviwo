@@ -308,8 +308,6 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	externalColor_.setSemantics(PropertySemantics::Color);
 
 	normalSource_.addOption("inputVertex", "Input: Vertex", NormalSource::InputVertex);
-	normalSource_.addOption("inputTriangle", "Input: Triangle", NormalSource::InputTriangle);
-	normalSource_.addOption("generateVertex", "Generate: Vertex", NormalSource::GenerateVertex);
 	normalSource_.addOption("generateTriangle", "Generate: Triangle", NormalSource::GenerateTriangle);
 	normalSource_.set(NormalSource::InputVertex);
 	normalSource_.setCurrentStateAsDefault();

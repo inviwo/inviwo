@@ -177,7 +177,7 @@ vec4 performShading()
     //==================================================
     vec3 normal = frag.normal;
     //TODO: missing switches on the normal source
-    if (settings.normalSource == 3) 
+    if (settings.normalSource == 1) 
     {
         //computed triangle-normal
         normal = frag.triangleNormal;
