@@ -91,8 +91,7 @@ public:
     void addPoint(const float& pos, const vec4& color);
 
     /**
-     * Add a transfer function point, the color will be obtained by interpolating existing
-     * TF points before and after the given position.
+     * Add a transfer function point
      *
      * @param point   TF point to be added
      * @throws RangeException if position of point is outside [0,1]
