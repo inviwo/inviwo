@@ -116,7 +116,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         LabelGraphicsItemObserver::addObservation(identifierLabel_);
     }
     {
-        tagLabel_ = new LabelGraphicsItem(this, width/2, Qt::AlignTop);
+        tagLabel_ = new LabelGraphicsItem(this, width / 2, Qt::AlignTop);
         tagLabel_->setDefaultTextColor(Qt::lightGray);
         QFont classFont("Segoe", labelHeight, QFont::Bold, false);
         classFont.setPixelSize(pointSizeToPixelSize(labelHeight));
@@ -323,6 +323,11 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
     switch (change) {
         case QGraphicsItem::ItemPositionHasChanged:
             if (processorMeta_) processorMeta_->setPosition(ivec2(x(), y()));
+            if (auto s = scene()) {
+                for (auto v : s->views()) {
+                    v->setSceneRect(QRectF{});
+                }
+            }
             break;
         case QGraphicsItem::ItemSelectedHasChanged:
             updateWidgets();
