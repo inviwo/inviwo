@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/transferfunction.h>
@@ -59,7 +59,7 @@ TransferFunction::TransferFunction(const std::vector<Point>& points, size_t text
 
 TransferFunction::TransferFunction(size_t textureSize) : TransferFunction({}, textureSize) {}
 
-TransferFunction::TransferFunction(const TransferFunction& rhs) 
+TransferFunction::TransferFunction(const TransferFunction& rhs)
     : maskMin_(rhs.maskMin_)
     , maskMax_(rhs.maskMax_)
     , invalidData_(rhs.invalidData_)
@@ -110,6 +110,9 @@ void TransferFunction::addPoint(const vec2& pos) {
 }
 
 void TransferFunction::addPoint(const vec2& pos, const vec4& color) {
+    LogWarn(
+        "TransferFunction::addPoint(const vec2& pos, const vec4& color) is deprecated. Use "
+        "addPoint(const float& pos, const vec4& color) instead");
     addPoint(util::make_unique<TransferFunctionDataPoint>(pos.x, color));
 }
 
@@ -128,6 +131,12 @@ void TransferFunction::addPoints(const std::vector<Point>& points) {
 }
 
 void TransferFunction::addPoint(std::unique_ptr<TransferFunctionDataPoint> dataPoint) {
+    if ((dataPoint->getPos() < 0.0f) || (dataPoint->getPos() > 1.0f)) {
+        throw RangeException("Adding transfer function point at " +
+                                 std::to_string(dataPoint->getPos()) + " outside of range [0,1]",
+                             IvwContext);
+    }
+
     dataPoint->addObserver(this);
     auto it = std::upper_bound(sorted_.begin(), sorted_.end(), dataPoint.get(), comparePtr{});
     sorted_.insert(it, dataPoint.get());
@@ -157,9 +166,7 @@ void TransferFunction::removePoint(
     }
 }
 
-void TransferFunction::sort() {
-    std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{});
-}
+void TransferFunction::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }
 
 void TransferFunction::clearPoints() {
     while (points_.size() > 0) {
@@ -254,16 +261,14 @@ void TransferFunction::deserialize(Deserializer& d) {
     invalidate();
 }
 
-vec4 TransferFunction::sample(double v) const {
-    return sample(static_cast<float>(v));
-}
+vec4 TransferFunction::sample(double v) const { return sample(static_cast<float>(v)); }
 
 vec4 TransferFunction::sample(float v) const {
-    if (sorted_.empty()) return vec4(1.0);
+    if (sorted_.empty()) return vec4(1.0f);
 
-    if (v <= 0) {
+    if (v <= 0.0f) {
         return points_.front()->getRGBA();
-    } else if (v >= 1) {
+    } else if (v >= 1.0f) {
         return points_.back()->getRGBA();
     }
 
@@ -286,22 +291,16 @@ const Layer* TransferFunction::getData() const {
     return data_.get();
 }
 
-void TransferFunction::invalidate() {
-    invalidData_ = true;
-}
+void TransferFunction::invalidate() { invalidData_ = true; }
 
-float TransferFunction::getMaskMin() const {
-    return maskMin_;
-}
+float TransferFunction::getMaskMin() const { return maskMin_; }
 
 void TransferFunction::setMaskMin(float maskMin) {
     maskMin_ = maskMin;
     invalidate();
 }
 
-float TransferFunction::getMaskMax() const {
-    return maskMax_;
-}
+float TransferFunction::getMaskMax() const { return maskMax_; }
 
 void TransferFunction::setMaskMax(float maskMax) {
     maskMax_ = maskMax;
@@ -313,15 +312,15 @@ size_t TransferFunction::getTextureSize() { return dataRepr_->getDimensions().x;
 size_t TransferFunction::getNumPoints() const { return points_.size(); }
 
 void TransferFunctionObservable::notifyControlPointAdded(TransferFunctionDataPoint* p) {
-    forEachObserver([&](TransferFunctionObserver* o){o->onControlPointAdded(p);});
+    forEachObserver([&](TransferFunctionObserver* o) { o->onControlPointAdded(p); });
 }
 
 void TransferFunctionObservable::notifyControlPointRemoved(TransferFunctionDataPoint* p) {
-    forEachObserver([&](TransferFunctionObserver* o){o->onControlPointRemoved(p);});
+    forEachObserver([&](TransferFunctionObserver* o) { o->onControlPointRemoved(p); });
 }
 
 void TransferFunctionObservable::notifyControlPointChanged(const TransferFunctionDataPoint* p) {
-    forEachObserver([&](TransferFunctionObserver* o){o->onControlPointChanged(p);});
+    forEachObserver([&](TransferFunctionObserver* o) { o->onControlPointChanged(p); });
 }
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs) {
@@ -342,14 +341,14 @@ bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs) {
 
 void TransferFunction::save(const std::string& filename, const FileExtension& ext) const {
     std::string extension = toLower(filesystem::getFileExtension(filename));
-    
+
     if (ext.extension_ == "itf" || (ext.empty() && extension == "itf")) {
         Serializer serializer(filename);
         serialize(serializer);
         serializer.writeFile();
     } else {
         if (invalidData_) calcTransferValues();
-        
+
         // Convert layer to UINT8
         auto uint8DataRepr =
             std::make_shared<LayerRAMPrecision<glm::u8vec4>>(dataRepr_->getDimensions());
@@ -412,14 +411,15 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             for (auto p = points.begin(), c = std::next(points.begin()),
                       n = std::next(points.begin(), 2);
                  n != points.end(); ++p, ++c, ++n) {
-                if (!glm::all(glm::lessThan(glm::abs(*c - 0.5f * (*p + *n)), vec4(1.0f/255.0f)))) {
+                if (!glm::all(
+                        glm::lessThan(glm::abs(*c - 0.5f * (*p + *n)), vec4(1.0f / 255.0f)))) {
                     uniquePoints.emplace_back(std::distance(points.begin(), c), *c);
                 }
             }
             uniquePoints.emplace_back(std::ptrdiff_t(size - 1), points.back());
 
-            for (const auto &p : uniquePoints ) {
-                this->addPoint(float(p.first)/(size-1), p.second);
+            for (const auto& p : uniquePoints) {
+                this->addPoint(float(p.first) / (size - 1), p.second);
             }
         });
     }
@@ -431,4 +431,4 @@ void TransferFunctionObserver::onControlPointRemoved(TransferFunctionDataPoint*)
 
 void TransferFunctionObserver::onControlPointChanged(const TransferFunctionDataPoint*) {}
 
-}  // namespace
+}  // namespace inviwo

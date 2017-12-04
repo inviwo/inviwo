@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTION_H
@@ -34,7 +34,6 @@
 #include <inviwo/core/datastructures/transferfunctiondatapoint.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/fileextension.h>
-
 
 namespace inviwo {
 
@@ -56,8 +55,8 @@ protected:
     void notifyControlPointChanged(const TransferFunctionDataPoint* p);
 };
 
-/** 
- * \ingroup datastructures 
+/**
+ * \ingroup datastructures
  * \brief for holding 1D transfer function data.
  *  This class holds 1D transfer function data, currently one parameter in the variable data_.
  */
@@ -74,7 +73,7 @@ public:
     TransferFunction& operator=(const TransferFunction& rhs);
 
     virtual ~TransferFunction();
-    
+
     const Layer* getData() const;
     size_t getNumPoints() const;
     size_t getTextureSize();
@@ -84,22 +83,36 @@ public:
 
     /**
      * Add a transfer function point at pos with value color
+     *
+     * @param pos     position of TF point in range [0,1]
+     * @param color   color and opacity, i.e. rgba, of the TF point
+     * @throws RangeException if pos is outside [0,1]
      */
     void addPoint(const float& pos, const vec4& color);
 
     /**
-     * Add a transfer function point
+     * Add a transfer function point, the color will be obtained by interpolating existing
+     * TF points before and after the given position.
+     *
+     * @param point   TF point to be added
+     * @throws RangeException if position of point is outside [0,1]
      */
     void addPoint(const Point& point);
 
     /**
-     * Add a transfer function point at pos.x() with alpha from pos.y and color interpolated from
-     * neighbors
+     * Add a transfer function point at pos.x() where pos.y is used as alpha and the color is
+     * interpolated from existing TF points before and after the given position
+     *
+     * @param pos     pos.x refers to the position of TF point in range [0,1], pos.y will be mapped
+     *                to alpha
+     * @throws RangeException if pos.x is outside [0,1]
      */
     void addPoint(const vec2& pos);
 
     /**
      * Add a transfer function points
+     *
+     * @throws RangeException if any of the given points is outside [0,1]
      */
     void addPoints(const std::vector<Point>& points);
 
@@ -128,7 +141,7 @@ public:
     virtual void deserialize(Deserializer& d);
 
     /**
-     * Sample the transfer function at position v and return the respective color and 
+     * Sample the transfer function at position v and return the respective color and
      * opacity (rgba). The range of the transfer function is [0,1].
      *
      * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
@@ -136,7 +149,7 @@ public:
      */
     vec4 sample(double v) const;
     /**
-     * Sample the transfer function at position v and return the respective color and 
+     * Sample the transfer function at position v and return the respective color and
      * opacity (rgba). The range of the transfer function is [0,1].
      *
      * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
@@ -169,5 +182,5 @@ private:
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
 
-} // namespace
-#endif // IVW_TRANSFERFUNCTION_H
+}  // namespace inviwo
+#endif  // IVW_TRANSFERFUNCTION_H
