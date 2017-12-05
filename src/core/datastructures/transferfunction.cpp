@@ -106,7 +106,7 @@ void TransferFunction::addPoint(const vec2& pos) {
     // determine color
     const vec4 color{vec3(sample(pos.x)), pos.y};
 
-    addPoint(pos, color);
+    addPoint(util::make_unique<TransferFunctionDataPoint>(pos.x, color));
 }
 
 void TransferFunction::addPoint(const vec2& pos, const vec4& color) {
@@ -267,9 +267,9 @@ vec4 TransferFunction::sample(float v) const {
     if (sorted_.empty()) return vec4(1.0f);
 
     if (v <= 0.0f) {
-        return points_.front()->getRGBA();
+        return sorted_.front()->getRGBA();
     } else if (v >= 1.0f) {
-        return points_.back()->getRGBA();
+        return sorted_.back()->getRGBA();
     }
 
     auto it = std::upper_bound(sorted_.begin(), sorted_.end(), v,
