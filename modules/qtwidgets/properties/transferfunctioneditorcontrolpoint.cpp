@@ -79,7 +79,7 @@ void TransferFunctionEditorControlPoint::paint(QPainter* painter,
     IVW_UNUSED_PARAM(widget);
     painter->setRenderHint(QPainter::Antialiasing, true);
     QPen pen = QPen();
-    pen.setWidthF(3);
+    pen.setWidthF(3.0);
     pen.setCosmetic(true);
     pen.setCapStyle(Qt::RoundCap);
     pen.setStyle(Qt::SolidLine);
@@ -89,9 +89,8 @@ void TransferFunctionEditorControlPoint::paint(QPainter* painter,
                                            dataPoint_->getRGBA().b));
     painter->setPen(pen);
     painter->setBrush(brush);
-    int c = static_cast<int>(-getSize() * 0.5f);
-    int s = static_cast<int>(getSize());
-    painter->drawEllipse(c, c, s, s);
+    const auto radius = getSize() * 0.5;
+    painter->drawEllipse(QPointF(0.0, 0.0), radius, radius);
 
     if (showLabel_) {
         auto label(QString("a(%1)=%2")
@@ -117,8 +116,8 @@ void TransferFunctionEditorControlPoint::paint(QPainter* painter,
 }
 
 QRectF TransferFunctionEditorControlPoint::boundingRect() const {
-    float bBoxSize = getSize() + 5.0f;
-    auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0f, bBoxSize, bBoxSize);
+    double bBoxSize = getSize() + 5.0; //<! consider size of pen 
+    auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0, bBoxSize, bBoxSize);
     if (showLabel_) {
         QRectF rect = calculateLabelRect();
         return rect.united(bRect);
@@ -129,8 +128,8 @@ QRectF TransferFunctionEditorControlPoint::boundingRect() const {
 
 QPainterPath TransferFunctionEditorControlPoint::shape() const {
     QPainterPath path;
-    const auto size = getSize();
-    path.addEllipse(QRectF(-size / 2.0, -size / 2.0f, size, size));
+    const auto radius = getSize() * 0.5 + 1.5; //<! consider size of pen 
+    path.addEllipse(QPointF(0.0, 0.0), radius, radius);
     return path;
 }
 
