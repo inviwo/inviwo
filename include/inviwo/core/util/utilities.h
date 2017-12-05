@@ -123,12 +123,12 @@ constexpr can_call<F, A...> is_callable_with(F&&) {
 }
 
 template <typename Callback, typename IT>
-void foreach (std::false_type, IT a, IT b, Callback callback, size_t = 0) {
+void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t = 0) {
     std::for_each(a, b, callback);
 }
 
 template <typename Callback, typename IT>
-void foreach (std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
+void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
     std::for_each(a, b, [&](auto v) { callback(v, start++); });
 }
 
@@ -150,13 +150,13 @@ void hide(Args&&... args) {
 template <typename Iterable, typename Callback>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& vector, Callback callback,
                                                     size_t jobs = 0) {
-    using T = Iterable::value_type;
+    using T = typename Iterable::value_type;
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     auto poolSize = settings->poolSize_.get();
     auto includeIndex = typename std::conditional<detail::is_callable_with<T, size_t>(callback),
                                                   std::true_type, std::false_type>::type();
     if (poolSize == 0) {
-        detail::foreach (includeIndex, vector.begin(), vector.end(), callback);
+        detail::foreach_helper(includeIndex, vector.begin(), vector.end(), callback);
         return {};
     }
 
@@ -170,8 +170,8 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& vector, Call
         auto start = (s * job) / jobs;
         auto end = (s * (job + 1)) / jobs;
         futures.push_back(dispatchPool([&callback, &vector, start, end, &includeIndex]() {
-            detail::foreach (includeIndex, vector.begin() + start,
-                             vector.begin() + static_cast<size_t>(end), callback, start);
+            detail::foreach_helper(includeIndex, vector.begin() + start,
+                                   vector.begin() + static_cast<size_t>(end), callback, start);
         }));
     }
     return futures;

@@ -39,6 +39,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/util/interpolation.h>
 
 namespace inviwo {
@@ -74,7 +75,7 @@ public:
 
     using SpatialSampler<2, DataDims, T>::sample;
 
-    Vector<DataDims, T> sample(double x, double y, Space space) const {
+    Vector<DataDims, T> sample(double x, double y, CoordinateSpace space) const {
         return SpatialSampler<2, DataDims, T>::sample(dvec2(x, y), space);
     }
 

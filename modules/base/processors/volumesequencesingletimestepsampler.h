@@ -34,7 +34,10 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
 
