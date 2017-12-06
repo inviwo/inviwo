@@ -76,6 +76,9 @@ FancyMeshRenderer::FancyMeshRenderer()
 		InvalidationLevel::InvalidResources)
     , forceOpaque_("forceOpaque", "Shade Opaque", false)
     , drawSilhouette_("drawSilhouette", "Draw Silhouette")
+    , silhouetteColor_("silhouetteColor", "Silhouette Color", {0,0,0,1})
+    , normalSource_("normalSource", "Normals Source")
+    , normalComputationMode_("normalComputationMode", "Normals Computation")
 	, faceSettings_{true, false}
 	, shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
     , depthShader_("geometryrendering.vert", "depthOnly.frag", false)
@@ -123,8 +126,24 @@ FancyMeshRenderer::FancyMeshRenderer()
     trackball_.setCollapsed(true);
 
     //New properties
+    silhouetteColor_.setSemantics(PropertySemantics::Color);
+    normalSource_.addOption("inputVertex", "Input: Vertex", NormalSource::InputVertex);
+    normalSource_.addOption("generateVertex", "Generate: Vertex", NormalSource::GenerateVertex);
+    normalSource_.addOption("generateTriangle", "Generate: Triangle", NormalSource::GenerateTriangle);
+    normalSource_.set(NormalSource::InputVertex);
+    normalSource_.setCurrentStateAsDefault();
+    normalComputationMode_.addOption("noWeighting", "No Weighting", CalcNormals::Mode::NoWeighting);
+    normalComputationMode_.addOption("area", "Area-weighting", CalcNormals::Mode::WeightArea);
+    normalComputationMode_.addOption("angle", "Angle-weighting", CalcNormals::Mode::WeightAngle);
+    normalComputationMode_.addOption("nmax", "Based on N.Max", CalcNormals::Mode::WeightNMax);
+    normalComputationMode_.setSelectedValue(CalcNormals::preferredMode());
+    normalComputationMode_.setCurrentStateAsDefault();
+
     addProperty(forceOpaque_);
     addProperty(drawSilhouette_);
+    addProperty(silhouetteColor_);
+    addProperty(normalSource_);
+    addProperty(normalComputationMode_);
     addProperty(propDebugFragmentLists_); //DEBUG, to be removed
     addProperty(alphaSettings_.container_);
     addProperty(edgeSettings_.container_);
@@ -143,13 +162,16 @@ FancyMeshRenderer::FancyMeshRenderer()
         update();
     };
     auto triggerUpdate = [this]() {update(); };
-    forceOpaque_.onChange(triggerRecompilation);
-    drawSilhouette_.onChange([this]()
+    auto triggerMeshUpdate = [this]()
     {
         needsRecompilation_ = true;
         update();
         updateDrawers();
-    });
+    };
+    forceOpaque_.onChange(triggerRecompilation);
+    drawSilhouette_.onChange(triggerMeshUpdate);
+    normalSource_.onChange(triggerMeshUpdate);
+    normalComputationMode_.onChange(triggerMeshUpdate);
     alphaSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
     edgeSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
     faceSettings_[0].setCallbacks(triggerUpdate, triggerRecompilation);
@@ -294,7 +316,6 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     , colorSource_(prefix_ + "colorSource", "Color Source")
     , separateUniformAlpha_(prefix_ + "separateUniformAlpha", "Separate Uniform Alpha")
     , uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5, 0, 1, 0.01)
-    , normalSource_(prefix_ + "normalSource", "Normal Source")
     , shadingMode_(prefix_ + "shadingMode", "Shading Mode")
     , showEdges_(prefix_ + "showEdges", "Show Edges")
     , edgeColor_(prefix_ + "edgeColor", "Edge color", { 0, 0, 0 })
@@ -308,11 +329,6 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	colorSource_.set(ColorSource::ExternalColor);
 	colorSource_.setCurrentStateAsDefault();
 	externalColor_.setSemantics(PropertySemantics::Color);
-
-	normalSource_.addOption("inputVertex", "Input: Vertex", NormalSource::InputVertex);
-	normalSource_.addOption("generateTriangle", "Generate: Triangle", NormalSource::GenerateTriangle);
-	normalSource_.set(NormalSource::InputVertex);
-	normalSource_.setCurrentStateAsDefault();
 
 	shadingMode_.addOption("off", "Off", ShadingMode::Off);
 	shadingMode_.addOption("phong", "Phong", ShadingMode::Phong);
@@ -335,7 +351,6 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
 	container_.addProperty(externalColor_);
 	container_.addProperty(separateUniformAlpha_);
 	container_.addProperty(uniformAlpha_);
-	container_.addProperty(normalSource_);
 	container_.addProperty(shadingMode_);
     container_.addProperty(showEdges_);
     container_.addProperty(edgeColor_);
@@ -349,7 +364,6 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     sameAsFrontFace_.onChange(triggerUpdate);
     colorSource_.onChange(triggerUpdate);
     separateUniformAlpha_.onChange(triggerUpdate);
-    normalSource_.onChange(triggerUpdate);
     hatching_.mode_.onChange(triggerUpdate);
     hatching_.steepness_.onChange(triggerUpdate);
     hatching_.baseFrequencyU_.onChange(triggerUpdate);
@@ -367,7 +381,6 @@ void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack()
     colorSource_.set(frontPart_->colorSource_.get());
     separateUniformAlpha_.set(frontPart_->separateUniformAlpha_.get());
     uniformAlpha_.set(frontPart_->uniformAlpha_.get());
-    normalSource_.set(frontPart_->normalSource_.get());
     shadingMode_.set(frontPart_->shadingMode_.get());
     showEdges_.set(frontPart_->showEdges_.get());
     edgeColor_.set(frontPart_->edgeColor_.get());
@@ -402,7 +415,6 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque)
     externalColor_.setVisible(show2 && colorSource == ColorSource::ExternalColor);
     separateUniformAlpha_.setVisible(show2 && !opaque);
     uniformAlpha_.setVisible(show2 && !opaque && separateUniformAlpha);
-    normalSource_.setVisible(show2);
     shadingMode_.setVisible(show2);
     showEdges_.setVisible(show2);
     edgeColor_.setVisible(show2 && showEdges);
@@ -490,6 +502,10 @@ void FancyMeshRenderer::update()
     faceSettings_[1].update(opaque);
     propUseIllustrationBuffer_.setVisible(!opaque);
     illustrationBufferSettings_.container_.setVisible(!opaque && propUseIllustrationBuffer_.get());
+
+    //update other
+    silhouetteColor_.setVisible(drawSilhouette_.get());
+    normalComputationMode_.setVisible(normalSource_.get() == NormalSource::GenerateVertex);
 }
 
 void FancyMeshRenderer::compileShader()
@@ -652,7 +668,6 @@ void FancyMeshRenderer::process() {
             shader_.setUniform(prefix + "colorSource", static_cast<int>(faceSettings_[i].colorSource_.get()));
             shader_.setUniform(prefix + "separateUniformAlpha", faceSettings_[i].separateUniformAlpha_.get());
             shader_.setUniform(prefix + "uniformAlpha", faceSettings_[i].uniformAlpha_.get());
-            shader_.setUniform(prefix + "normalSource", static_cast<int>(faceSettings_[i].normalSource_.get()));
             shader_.setUniform(prefix + "shadingMode", static_cast<int>(faceSettings_[i].shadingMode_.get()));
             shader_.setUniform(prefix + "showEdges", faceSettings_[i].showEdges_.get());
             shader_.setUniform(prefix + "edgeColor", vec4(faceSettings_[i].edgeColor_.get(), faceSettings_[i].edgeOpacity_.get()));
@@ -685,8 +700,12 @@ void FancyMeshRenderer::process() {
         shader_.setUniform("alphaSettings.densityExp", alphaSettings_.densityExponent_.get());
         shader_.setUniform("alphaSettings.shapeExp", alphaSettings_.shapeExponent_.get());
 
+        //update other global fragment shader settings
+        shader_.setUniform("silhouetteColor", silhouetteColor_.get());
+
         //update geometry shader settings
         shader_.setUniform("geomSettings.edgeWidth", edgeSettings_.edgeThickness_.get());
+        shader_.setUniform("geomSettings.triangleNormal", normalSource_.get() == NormalSource::GenerateTriangle);
 
         if (fragmentLists)
         {
@@ -828,51 +847,53 @@ void FancyMeshRenderer::updateDrawers()
 	auto changed = inport_.getChangedOutports();
 	auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
     const Mesh* mesh = inport_.getData().get();
-    if (mesh != originalMesh_)
-    {
-        //Delete old mesh
-        enhancedMesh_.reset();
-        halfEdges_.reset();
-    }
     originalMesh_ = mesh;
+    
+    //copy the mesh
+    enhancedMesh_ = std::unique_ptr<Mesh>(mesh->clone());
 
-    //check if we need to preprocess it
+    //check if we have to compute the normals
+    if (normalSource_.get() == NormalSource::GenerateVertex)
+    {
+        enhancedMesh_ = std::unique_ptr<Mesh>(CalcNormals().processMesh(enhancedMesh_.get(), normalComputationMode_.get()));
+        LogProcessorInfo("normals computed");
+    }
+
+    //check if we need to create adjacency information
     if (drawSilhouette_.get())
     {
-        if (mesh->getNumberOfIndicies() != 1)
+        if (enhancedMesh_->getNumberOfIndicies() != 1)
         {
             LogProcessorWarn("Only meshes with exactly one index buffer are supported for adjacency information");
         }
         //create adjacency information
-        if (halfEdges_ == nullptr) {
-            halfEdges_ = std::make_unique<HalfEdges>(mesh->getIndices(0));
+        halfEdges_ = std::make_unique<HalfEdges>(enhancedMesh_->getIndices(0));
 
-            //enhancedMesh_ = std::unique_ptr<Mesh>(mesh->clone());
-            //while (enhancedMesh_->getNumberOfIndicies() > 0) enhancedMesh_->removeIndices(0);
-
-            //duplication of mesh->clone() that does not include the index buffer
-            //enhancedMesh_ = std::make_unique<Mesh>(mesh->getDefaultMeshInfo().dt, mesh->getDefaultMeshInfo().ct);
-            enhancedMesh_ = std::make_unique<Mesh>(DrawType::Triangles, ConnectivityType::Adjacency); //we directly force the new mesh type
-            for (const auto& elem : mesh->getBuffers()) {
-                enhancedMesh_->addBuffer(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
-            }
-
-            //add new index buffer with adjacency information
-            enhancedMesh_->addIndicies({ DrawType::Triangles, ConnectivityType::Adjacency },
-                halfEdges_->createIndexBufferWithAdjacency());
-            LogProcessorInfo("Adjacency information created");
+        //duplication of mesh->clone() that does not include the index buffer
+        //enhancedMesh_ = std::make_unique<Mesh>(mesh->getDefaultMeshInfo().dt, mesh->getDefaultMeshInfo().ct);
+        std::unique_ptr<Mesh> enhancedMesh2 = std::make_unique<Mesh>(DrawType::Triangles, ConnectivityType::Adjacency); //we directly force the new mesh type
+        for (const auto& elem : enhancedMesh_->getBuffers()) {
+            enhancedMesh2->addBuffer(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
         }
-        //send to drawer
+
+        //add new index buffer with adjacency information
+        enhancedMesh2->addIndicies({ DrawType::Triangles, ConnectivityType::Adjacency },
+            halfEdges_->createIndexBufferWithAdjacency());
+        std::swap(enhancedMesh_, enhancedMesh2);
+        LogProcessorInfo("Adjacency information created");
+        //done
         meshHasAdjacency_ = true;
         LogProcessorInfo("draw mesh with adjacency information");
-        drawer_ = factory->create(enhancedMesh_.get());
     }
     else {
         //normal mode
         meshHasAdjacency_ = false;
         LogProcessorInfo("draw mesh without adjacency information");
-        drawer_ = factory->create(originalMesh_);
     }
+
+    //create drawer
+    drawer_ = factory->create(enhancedMesh_.get());
+
     //trigger shader recompilation
     //Geometry shader needs to know if it has adjacency or not
     needsRecompilation_ = true;

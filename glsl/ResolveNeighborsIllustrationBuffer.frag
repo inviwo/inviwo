@@ -22,6 +22,11 @@ layout(std430, binding=2) buffer smoothingBufferOut
     vec2 smoothingOut[]; //beta + gamma
 };
 
+//Temporal buffer for storing the intermediate results to avoid buffer access
+vec2 fragmentsCurrent[ABUFFER_SIZE];
+vec2 fragmentsNeighbor[ABUFFER_SIZE];
+
+
 //Computes the likelihood that fragment i and j are neighbors
 //  direction = pixel_coordinate[i] - pixel_coordinate[j]
 float continuityMeasure(int i, int j, ivec2 direction);
@@ -30,6 +35,13 @@ float continuityMeasure(int i, int j, ivec2 direction);
 ivec2 getCountAndStart(ivec2 pos);
 //finds the neighbor of fragment i at the given neighbor pixel
 int findNeighbor(int i, ivec2 pos, ivec2 dir, ivec2 csA, out int neighborIndex);
+
+const ivec2 neighborPositions[4] = ivec2[4](
+    ivec2(-1, 0),
+    ivec2(+1, 0),
+    ivec2(0, -1),
+    ivec2(0, +1)
+);
 
 void main(void) {
 	ivec2 coords=ivec2(gl_FragCoord.xy);
@@ -41,6 +53,26 @@ void main(void) {
         int count = int(imageLoad(illustrationBufferCountImg, coords).x);
         if (count > 0) {
             int start = int(imageLoad(illustrationBufferIdxImg, coords).x);
+
+            //Load fragments of the current pixel
+            for (int i=0; i<count; ++i) {
+                fragmentsCurrent[i] = surfaceInfoIn[start + i];
+            }
+
+            //the flags for the initial smoothing values
+            bool silhouette = false;
+            bool halo = false;
+            ivec4 neighbors = ivec4(-1);
+
+            //now process the four neighbors
+            for (int n=0; n<4; ++n) {
+                //load that neighbor
+                ivec2 cb = getCountAndStart(coords + neighborPositions[n]);
+                if (cb.x == 0) continue;
+                for (int i=0; i<cb.x; ++i) {
+                }
+            }
+
             for (int i=0; i<count; ++i) {
                 //find neighbors
                 ivec4 neighbors;

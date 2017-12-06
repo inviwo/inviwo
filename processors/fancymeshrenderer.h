@@ -49,6 +49,7 @@
 #include <modules/opengl/shader/shader.h>
 
 #include <fancymeshrenderer/processors/FragmentListRenderer.h>
+#include <fancymeshrenderer/calcnormals.h>
 
 namespace inviwo {
 
@@ -175,7 +176,18 @@ protected:
 	BoolProperty viewNormalsLayer_;
 
     BoolProperty forceOpaque_;
+
     BoolProperty drawSilhouette_;
+    FloatVec4Property silhouetteColor_;
+
+    enum class NormalSource : int
+    {
+        InputVertex,
+        GenerateVertex,
+        GenerateTriangle
+    };
+    TemplateOptionProperty<NormalSource> normalSource_;
+    TemplateOptionProperty<CalcNormals::Mode> normalComputationMode_;
 
     /**
      * \brief Settings to assemble the equation for the alpha values.
@@ -243,11 +255,6 @@ protected:
 		TransferFunction,
 		ExternalColor
 	};
-	enum class NormalSource : int
-	{
-		InputVertex,
-		GenerateTriangle
-	};
 	enum class ShadingMode : int
 	{
 		Off, //no light, no reflection, just diffuse
@@ -301,8 +308,6 @@ protected:
 
 		BoolProperty separateUniformAlpha_;
 		FloatProperty uniformAlpha_;
-
-		TemplateOptionProperty<NormalSource> normalSource_;
 		TemplateOptionProperty<ShadingMode> shadingMode_;
 
         BoolProperty showEdges_;

@@ -37,7 +37,6 @@ out vData
     vec4 worldPosition;
     vec4 position;
     vec3 normal;
-    vec3 viewNormal;
 #ifdef SEND_COLOR
     vec4 color;
 #endif
@@ -61,7 +60,6 @@ void main() {
 #endif
     vertex.worldPosition = geometry.dataToWorld * in_Vertex;
     vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
-    vertex.viewNormal = (camera.worldToView * vec4(vertex.normal,0)).xyz;
     vertex.position = camera.worldToClip * vertex.worldPosition;
     gl_Position = vertex.position;
 }

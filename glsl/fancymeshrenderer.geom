@@ -54,7 +54,6 @@ in vData
     vec4 worldPosition;
     vec4 position;
     vec3 normal;
-    vec3 viewNormal;
 #ifdef SEND_COLOR
     vec4 color;
 #endif
@@ -71,8 +70,6 @@ out fData
     vec4 worldPosition;
     vec4 position;
     vec3 normal;
-    vec3 viewNormal;
-    vec3 triangleNormal;
 #ifdef SEND_COLOR
     vec4 color;
 #endif
@@ -97,6 +94,7 @@ out fData
 struct GeometrySettings
 {
     float edgeWidth;
+    bool triangleNormal;
 };
 uniform GeometrySettings geomSettings;
 
@@ -219,9 +217,11 @@ void main(void)
         int i = vIdx[j];
         frag.worldPosition = vertices[i].worldPosition;
         frag.position = vertices[i].position;
-        frag.normal = vertices[i].normal;
-        frag.viewNormal = vertices[i].viewNormal;
-        frag.triangleNormal = triNormal;
+        if (geomSettings.triangleNormal) {
+            frag.normal = triNormal;
+        }  else {
+            frag.normal = vertices[i].normal;
+        }
 #ifdef SEND_COLOR
         frag.color = vertices[i].color;
 #endif

@@ -37,8 +37,6 @@ in fData
     vec4 worldPosition;
     vec4 position;
     vec3 normal;
-    vec3 viewNormal;
-    vec3 triangleNormal;
 #ifdef SEND_COLOR
     vec4 color;
 #endif
@@ -73,8 +71,6 @@ struct FaceRenderSettings
 
     bool separateUniformAlpha;
     float uniformAlpha;
-
-	int normalSource;
 	int shadingMode;
 
     bool showEdges;
@@ -105,6 +101,9 @@ struct AlphaSettings
     float shapeExp;
 };
 uniform AlphaSettings alphaSettings;
+
+//other global uniform settings
+uniform vec4 silhouetteColor;
 
 // In GLSL 4.5, we have better versions for derivatives
 // use them if available
@@ -175,12 +174,6 @@ vec4 performShading()
     // NORMAL VECTOR
     //==================================================
     vec3 normal = frag.normal;
-    //TODO: missing switches on the normal source
-    if (settings.normalSource == 1) 
-    {
-        //computed triangle-normal
-        normal = frag.triangleNormal;
-    }
     normal = normalize(normal);
     if (!gl_FrontFacing) normal = -normal; //backface -> invert normal
 
@@ -260,7 +253,6 @@ vec4 performShading()
         }
 #ifdef DRAW_SILHOUETTE
         //blend in silhouette
-        vec4 silhouetteColor = vec4(0,0,0,1);
         color.rgb = mix(color.rgb, silhouetteColor.rgb, isSilhouettesSmoothed*min(1,silhouetteColor.a));
         color.a = mix(color.a, 1, isSilhouettesSmoothed*max(0, silhouetteColor.a-1));
 #endif
