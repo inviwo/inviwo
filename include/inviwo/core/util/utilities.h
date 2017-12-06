@@ -103,7 +103,7 @@ struct IVW_CORE_API Hideer {
 
 
 // https://stackoverflow.com/a/22882504/600633
-struct can_call_test {
+struct IsCallableTest {
     template <typename F, typename... A>
     static decltype(std::declval<F>()(std::declval<A>()...), std::true_type()) f(int);
 
@@ -112,14 +112,14 @@ struct can_call_test {
 };
 
 template <typename F, typename... A>
-struct can_call : decltype(can_call_test::f<F, A...>(0)) {};
+struct IsCallable : decltype(IsCallableTest::f<F, A...>(0)) {};
 
 template <typename F, typename... A>
-struct can_call<F(A...)> : can_call<F, A...> {};
+struct IsCallable<F(A...)> : IsCallable<F, A...> {};
 
 template <typename... A, typename F>
-constexpr can_call<F, A...> is_callable_with(F&&) {
-    return can_call<F(A...)>{};
+constexpr IsCallable<F, A...> is_callable_with(F&&) {
+    return IsCallable<F(A...)>{};
 }
 
 template <typename Callback, typename IT>
@@ -151,15 +151,15 @@ void hide(Args&&... args) {
  * Use multiple threads to iterate over all elements in an iterable data structure (such as
  * std::vector). If the Inviwo pool size is zero it will be executed directly in the same thread as
  * the caller.
- * The function will return once all jobs as has been created.
+ * The function will return once all jobs as has been created and queued.
  *
  * @param iterable the data structure to iterate over
  * @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
  * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
  * the data structure
- * @param jobs optinal parameter specifying how many jobs to create, if jobs==0 (default) it will
+ * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
  * create pool size * 4 jobs
- * @return a vector of futures, once for each job created. 
+ * @return a vector of futures, one for each job created. 
  */
 template <typename Iterable, typename Callback>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
@@ -202,7 +202,7 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
 * @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
 * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
 * the data structure
-* @param jobs optinal parameter specifying how many jobs to create, if jobs==0 (default) it will
+* @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
 * create pool size * 4 jobs
 */
 template <typename Iterable, typename Callback>

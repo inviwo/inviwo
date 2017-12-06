@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGETOSPATIALSAMPLER_H
@@ -39,35 +39,35 @@
 
 namespace inviwo {
 
-    /** \docpage{org.inviwo.ImageToSpatialSampler, Image To Spatial Sampler}
-    * ![](org.inviwo.ImageToSpatialSampler.png?classIdentifier=org.inviwo.ImageToSpatialSampler)
-    * 
-    * Creates a Spatial Sampler for the given input image. 
-    * 
-    * 
-    * ### Inports
-    *   * __image__ The input image.
-    * 
-    * ### Outports
-    *   * __sampler__ The created sampler.
-    * 
-    */
+/** \docpage{org.inviwo.ImageToSpatialSampler, Image To Spatial Sampler}
+ * ![](org.inviwo.ImageToSpatialSampler.png?classIdentifier=org.inviwo.ImageToSpatialSampler)
+ *
+ * Creates a Spatial Sampler for the given input image.
+ *
+ *
+ * ### Inports
+ *   * __image__ The input image.
+ *
+ * ### Outports
+ *   * __sampler__ The created sampler.
+ *
+ */
 
-class IVW_MODULE_BASE_API ImageToSpatialSampler : public Processor { 
+class IVW_MODULE_BASE_API ImageToSpatialSampler : public Processor {
 public:
     ImageToSpatialSampler();
     virtual ~ImageToSpatialSampler() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     ImageInport image_;
     DataOutport<SpatialSampler<2, 2, double>> sampler_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGETOSPATIALSAMPLER_H
-
+#endif  // IVW_IMAGETOSPATIALSAMPLER_H

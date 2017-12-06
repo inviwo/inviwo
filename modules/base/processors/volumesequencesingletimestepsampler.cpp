@@ -60,7 +60,7 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
     volumeSequence_.onChange([&]() {
         if (!sampler_.hasData()) return;
         auto seq = volumeSequence_.getData();
-        if(!util::hasTimestamps(*seq,false)){
+        if (!util::hasTimestamps(*seq, false)) {
             LogWarn("Input volume Sequence does not have timestamps, behaviour is undefined");
         }
 
@@ -80,17 +80,18 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
 void VolumeSequenceSingleTimestepSamplerProcessor::process() {
 
     float t = 0;
-    auto vols = util::getVolumesForTimestep(*volumeSequence_.getData() , timestamp_.get());
+    auto vols = util::getVolumesForTimestep(*volumeSequence_.getData(), timestamp_.get());
 
-    if(util::hasTimestamp(vols.first) && util::hasTimestamp(vols.second)){
+    if (util::hasTimestamp(vols.first) && util::hasTimestamp(vols.second)) {
         auto t0 = util::getTimestamp(vols.first);
         auto t1 = util::getTimestamp(vols.second);
-        if(t0!=t1){
-            t = (  timestamp_.get()  - t0) / ( t1 - t0 );
+        if (t0 != t1) {
+            t = (timestamp_.get() - t0) / (t1 - t0);
         }
     }
 
-    auto sampler = std::make_shared< VolumeSequenceSingleTimestepSampler>(t,vols.first, vols.second);
+    auto sampler =
+        std::make_shared<VolumeSequenceSingleTimestepSampler>(t, vols.first, vols.second);
     sampler_.setData(sampler);
 }
 
