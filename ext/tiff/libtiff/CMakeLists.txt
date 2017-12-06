@@ -130,10 +130,10 @@ if(HAVE_LD_VERSION_SCRIPT)
                         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiff.map")
 endif()
 
-install(TARGETS tiff
-        RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
+#install(TARGETS tiff
+#        RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+#        LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
+#        ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
 install(FILES ${tiff_HEADERS} ${nodist_tiff_HEADERS}
         DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
@@ -162,4 +162,28 @@ if(cxx)
   install(FILES ${tiffxx_HEADERS}
           DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 
+endif()
+
+#--------------------------------------------------------------------
+# Inviwo modifications
+target_include_directories(tiff INTERFACE 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>
+)
+
+add_library(inviwo::tiff ALIAS tiff)
+#--------------------------------------------------------------------
+# Install library into target folder
+ivw_default_install_comp_targets(core tiff)
+
+#--------------------------------------------------------------------
+# Create folder structure
+ivw_folder(tiff ext)
+if(cxx)
+  ivw_folder(tiffxx ext)
+  target_include_directories(tiffxx INTERFACE 
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>
+  )
+  add_library(inviwo::tiffxx ALIAS tiffxx)
 endif()

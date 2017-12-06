@@ -62,10 +62,10 @@ math(EXPR SO_MAJOR "${LIBTIFF_CURRENT} - ${LIBTIFF_AGE}")
 set(SO_MINOR "${LIBTIFF_AGE}")
 set(SO_REVISION "${LIBTIFF_REVISION}")
 
-message(STATUS "Building tiff version ${LIBTIFF_MAJOR_VERSION}.${LIBTIFF_MINOR_VERSION}.${LIBTIFF_MICRO_VERSION}${LIBTIFF_ALPHA_VERSION}")
-message(STATUS "libtiff library version ${SO_MAJOR}.${SO_MINOR}.${SO_REVISION}")
+#message(STATUS "Building tiff version ${LIBTIFF_MAJOR_VERSION}.${LIBTIFF_MINOR_VERSION}.${LIBTIFF_MICRO_VERSION}${LIBTIFF_ALPHA_VERSION}")
+#message(STATUS "libtiff library version ${SO_MAJOR}.${SO_MINOR}.${SO_REVISION}")
 
-set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
+#set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
 # Project version
 project(tiff C)
@@ -125,10 +125,11 @@ set(EXTRA_DIST
 # These are annoyingly verbose, produce false positives or don't work
 # nicely with all supported compiler versions, so are disabled unless
 # explicitly enabled.
-option(extra-warnings "Enable extra compiler warnings" OFF)
-
+#option(extra-warnings "Enable extra compiler warnings" OFF)
+set(extra-warnings OFF)
 # This will cause the compiler to fail when an error occurs.
-option(fatal-warnings "Compiler warnings are errors" OFF)
+#option(fatal-warnings "Compiler warnings are errors" OFF)
+set(fatal-warnings OFF)
 
 # Check if the compiler supports each of the following additional
 # flags, and enable them if supported.  This greatly improves the
@@ -184,7 +185,7 @@ if(MSVC)
     set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 
-option(ld-version-script "Enable linker version script" ON)
+#option(ld-version-script "Enable linker version script" ON)
 # Check if LD supports linker scripts.
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/conftest.map" "VERS_1 {
         global: sym;
@@ -199,11 +200,11 @@ set(CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS} "-Wl,--version-script=${CMAKE_C
 check_c_source_compiles("int main(void){return 0;}" HAVE_LD_VERSION_SCRIPT)
 set(CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS_SAVE})
 file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/conftest.map")
-if (ld-version-script AND HAVE_LD_VERSION_SCRIPT)
-  set(HAVE_LD_VERSION_SCRIPT TRUE)
-else()
+#if (ld-version-script AND HAVE_LD_VERSION_SCRIPT) #compile error on mac/xcode
+#  set(HAVE_LD_VERSION_SCRIPT TRUE)
+#else()
   set(HAVE_LD_VERSION_SCRIPT FALSE)
-endif()
+#endif()
 
 # Find libm, if available
 find_library(M_LIBRARY m)
@@ -452,7 +453,7 @@ else()
   set(bigendian OFF)
 endif()
 set(HOST_BIG_ENDIAN ${bigendian} CACHE STRING "Native CPU bit order")
-mark_as_advanced(HOST_BIG_ENDIAN)
+#mark_as_advanced(HOST_BIG_ENDIAN)
 if (HOST_BIG_ENDIAN)
   set(HOST_BIG_ENDIAN 1)
 else()
@@ -479,69 +480,80 @@ set(LIBTIFF_DOCDIR "${CMAKE_INSTALL_FULL_DOCDIR}")
 
 # Options to enable and disable internal codecs
 
-option(ccitt "support for CCITT Group 3 & 4 algorithms" ON)
-set(CCITT_SUPPORT ${ccitt})
+#option(ccitt "support for CCITT Group 3 & 4 algorithms" ON)
+#set(CCITT_SUPPORT ${ccitt})
 
-option(packbits "support for Macintosh PackBits algorithm" ON)
-set(PACKBITS_SUPPORT ${packbits})
+#option(packbits "support for Macintosh PackBits algorithm" ON)
+#set(PACKBITS_SUPPORT ${packbits})
 
-option(lzw "support for LZW algorithm" ON)
-set(LZW_SUPPORT ${lzw})
+#option(lzw "support for LZW algorithm" ON)
+#set(LZW_SUPPORT ${lzw})
 
-option(thunder "support for ThunderScan 4-bit RLE algorithm" ON)
-set(THUNDER_SUPPORT ${thunder})
+#option(thunder "support for ThunderScan 4-bit RLE algorithm" ON)
+#set(THUNDER_SUPPORT ${thunder})
 
-option(next "support for NeXT 2-bit RLE algorithm" ON)
-set(NEXT_SUPPORT ${next})
+#option(next "support for NeXT 2-bit RLE algorithm" ON)
+#set(NEXT_SUPPORT ${next})
 
-option(logluv "support for LogLuv high dynamic range algorithm" ON)
-set(LOGLUV_SUPPORT ${logluv})
+#option(logluv "support for LogLuv high dynamic range algorithm" ON)
+#set(LOGLUV_SUPPORT ${logluv})
 
 # Option for Microsoft Document Imaging
-option(mdi "support for Microsoft Document Imaging" ON)
-set(MDI_SUPPORT ${mdi})
+#option(mdi "support for Microsoft Document Imaging" ON)
+#set(MDI_SUPPORT ${mdi})
+
+# INVIWO CHANGES, don't clutter with options in cmake 
+set(CCITT_SUPPORT ON)
+set(PACKBITS_SUPPORT ON)
+set(LZW_SUPPORT ON)
+set(THUNDER_SUPPORT ON)
+set(NEXT_SUPPORT ON)
+set(LOGLUV_SUPPORT ON)
+set(MDI_SUPPORT ON)
 
 # ZLIB
-option(zlib "use zlib (required for Deflate compression)" ON)
-if (zlib)
-  find_package(ZLIB)
-endif()
-set(ZLIB_SUPPORT 0)
-if(ZLIB_FOUND)
+#option(zlib "use zlib (required for Deflate compression)" ON)
+#if (zlib)
+  #find_package(ZLIB)
+  set(ZLIB_LIBRARIES ZLIB::ZLIB)
+#endif()
+#set(ZLIB_SUPPORT 0)
+#if(ZLIB_FOUND)
   set(ZLIB_SUPPORT 1)
-endif()
+#endif()
 set(ZIP_SUPPORT ${ZLIB_SUPPORT})
 # Option for Pixar log-format algorithm
 
 # Pixar log format
-option(pixarlog "support for Pixar log-format algorithm (requires Zlib)" ON)
-set(PIXARLOG_SUPPORT FALSE)
-if (ZLIB_SUPPORT)
-  if(pixarlog)
+#option(pixarlog "support for Pixar log-format algorithm (requires Zlib)" ON)
+#set(PIXARLOG_SUPPORT FALSE)
+#if (ZLIB_SUPPORT)
+#  if(pixarlog)
     set(PIXARLOG_SUPPORT TRUE)
-  endif()
-endif()
+#  endif()
+#endif()
 
 # JPEG
-option(jpeg "use libjpeg (required for JPEG compression)" ON)
-if (jpeg)
-  find_package(JPEG)
-endif()
-set(JPEG_SUPPORT FALSE)
-if(JPEG_FOUND)
+#option(jpeg "use libjpeg (required for JPEG compression)" ON)
+#if (jpeg)
+#  find_package(JPEG)
+  set(JPEG_LIBRARIES libjpeg)
+#endif()
+#set(JPEG_SUPPORT FALSE)
+#if(JPEG_FOUND)
   set(JPEG_SUPPORT TRUE)
-endif()
+#endif()
 
-option(old-jpeg "support for Old JPEG compression (read-only)" ON)
-set(OJPEG_SUPPORT FALSE)
-if (JPEG_SUPPORT)
-  if (old-jpeg)
+#option(old-jpeg "support for Old JPEG compression (read-only)" ON)
+#set(OJPEG_SUPPORT FALSE)
+#if (JPEG_SUPPORT)
+#  if (old-jpeg)
     set(OJPEG_SUPPORT TRUE)
-  endif()
-endif()
+#  endif()
+#endif()
 
 # JBIG-KIT
-option(jbig "use ISO JBIG compression (requires JBIT-KIT library)" ON)
+#option(jbig "use ISO JBIG compression (requires JBIT-KIT library)" ON)
 if (jbig)
   set(JBIG_FOUND 0)
   find_path(JBIG_INCLUDE_DIR jbig.h)
@@ -579,10 +591,10 @@ if(LIBLZMA_FOUND)
 endif()
 
 # 8/12-bit jpeg mode
-option(jpeg12 "enable libjpeg 8/12-bit dual mode (requires separate
-12-bit libjpeg build)" ON)
-set(JPEG12_INCLUDE_DIR JPEG12_INCLUDE_DIR-NOTFOUND CACHE PATH "Include directory for 12-bit libjpeg")
-set(JPEG12_LIBRARY JPEG12_LIBRARY-NOTFOUND CACHE FILEPATH "12-bit libjpeg library")
+#option(jpeg12 "enable libjpeg 8/12-bit dual mode (requires separate
+#12-bit libjpeg build)" ON)
+#set(JPEG12_INCLUDE_DIR JPEG12_INCLUDE_DIR-NOTFOUND CACHE PATH "Include directory for 12-bit libjpeg")
+#set(JPEG12_LIBRARY JPEG12_LIBRARY-NOTFOUND CACHE FILEPATH "12-bit libjpeg library")
 set(JPEG12_FOUND FALSE)
 if (JPEG12_INCLUDE_DIR AND JPEG12_LIBRARY)
   set(JPEG12_LIBRARIES ${JPEG12_LIBRARY})
@@ -594,27 +606,27 @@ if (JPEG12_FOUND)
 endif()
 
 # C++ support
-option(cxx "Enable C++ stream API building (requires C++ compiler)" ON)
-set(CXX_SUPPORT FALSE)
-if (cxx)
+#option(cxx "Enable C++ stream API building (requires C++ compiler)" ON)
+#set(CXX_SUPPORT FALSE)
+#if (cxx)
   enable_language(CXX)
   set(CXX_SUPPORT TRUE)
-endif()
+#endif()
 
 # OpenGL and GLUT
-find_package(OpenGL)
-find_package(GLUT)
+#find_package(OpenGL) # only used by tools, not needed for inviwo
+#find_package(GLUT)   # only used by tools, not needed for inviwo
 set(HAVE_OPENGL FALSE)
 if(OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND)
   set(HAVE_OPENGL TRUE)
 endif()
 # Purely to satisfy the generated headers:
-check_include_file(GL/gl.h HAVE_GL_GL_H)
-check_include_file(GL/glu.h HAVE_GL_GLU_H)
-check_include_file(GL/glut.h HAVE_GL_GLUT_H)
-check_include_file(GLUT/glut.h HAVE_GLUT_GLUT_H)
-check_include_file(OpenGL/gl.h HAVE_OPENGL_GL_H)
-check_include_file(OpenGL/glu.h HAVE_OPENGL_GLU_H)
+#check_include_file(GL/gl.h HAVE_GL_GL_H)
+#check_include_file(GL/glu.h HAVE_GL_GLU_H)
+#check_include_file(GL/glut.h HAVE_GL_GLUT_H)
+#check_include_file(GLUT/glut.h HAVE_GLUT_GLUT_H)
+#check_include_file(OpenGL/gl.h HAVE_OPENGL_GL_H)
+#check_include_file(OpenGL/glu.h HAVE_OPENGL_GLU_H)
 
 # Win32 IO
 set(win32_io FALSE)
@@ -631,7 +643,8 @@ endif()
 # Orthogonal features
 
 # Strip chopping
-option(strip-chopping "strip chopping (whether or not to convert single-strip uncompressed images to mutiple strips of specified size to reduce memory usage)" ON)
+#option(strip-chopping "strip chopping (whether or not to convert single-strip uncompressed images to mutiple strips of specified size to reduce memory usage)" ON)
+set(strip-chopping ON)
 set(TIFF_DEFAULT_STRIP_SIZE 8192 CACHE STRING "default size of the strip in bytes (when strip chopping is enabled)")
 
 set(STRIPCHOP_DEFAULT)
@@ -643,25 +656,29 @@ if(strip-chopping)
 endif()
 
 # Defer loading of strip/tile offsets
-option(defer-strile-load "enable deferred strip/tile offset/size loading (experimental)" OFF)
+#option(defer-strile-load "enable deferred strip/tile offset/size loading (experimental)" OFF)
+set(defer-strile-load OFF)
 set(DEFER_STRILE_LOAD ${defer-strile-load})
 
 # CHUNKY_STRIP_READ_SUPPORT
-option(chunky-strip-read "enable reading large strips in chunks for TIFFReadScanline() (experimental)" OFF)
+#option(chunky-strip-read "enable reading large strips in chunks for TIFFReadScanline() (experimental)" OFF)
+set(chunky-strip-read OFF)
 set(CHUNKY_STRIP_READ_SUPPORT ${chunky-strip-read})
 
 # SUBIFD support
 set(SUBIFD_SUPPORT 1)
 
 # Default handling of ASSOCALPHA support.
-option(extrasample-as-alpha "the RGBA interface will treat a fourth sample with no EXTRASAMPLE_ value as being ASSOCALPHA. Many packages produce RGBA files but don't mark the alpha properly" ON)
+#option(extrasample-as-alpha "the RGBA interface will treat a fourth sample with no EXTRASAMPLE_ value as being ASSOCALPHA. Many packages produce RGBA files but don't mark the alpha properly" ON)
+set(extrasample-as-alpha ON)
 if(extrasample-as-alpha)
   set(DEFAULT_EXTRASAMPLE_AS_ALPHA 1)
 endif()
 
 # Default handling of YCbCr subsampling support.
 # See Bug 168 in Bugzilla, and JPEGFixupTestSubsampling() for details.
-option(check-ycbcr-subsampling "enable picking up YCbCr subsampling info from the JPEG data stream to support files lacking the tag" ON)
+#option(check-ycbcr-subsampling "enable picking up YCbCr subsampling info from the JPEG data stream to support files lacking the tag" ON)
+set(check-ycbcr-subsampling ON)
 if (check-ycbcr-subsampling)
   set(CHECK_JPEG_YCBCR_SUBSAMPLING 1)
 endif()
@@ -717,17 +734,17 @@ endif()
 #report_values(TIFF_INCLUDES TIFF_LIBRARY_DEPS)
 
 # Process subdirectories
-add_subdirectory(port)
+#add_subdirectory(port)
 add_subdirectory(libtiff)
-add_subdirectory(tools)
-add_subdirectory(test)
-add_subdirectory(contrib)
-add_subdirectory(build)
-add_subdirectory(man)
-add_subdirectory(html)
+#add_subdirectory(tools)
+#add_subdirectory(test)
+#add_subdirectory(contrib)
+#add_subdirectory(build)
+#add_subdirectory(man)
+#add_subdirectory(html)
 
 #message(STATUS "EXTRA_DIST: ${EXTRA_DIST}")
-
+#[[ Disable messages 
 message(STATUS "")
 message(STATUS "Libtiff is now configured for ${host}")
 message(STATUS "")
@@ -762,3 +779,4 @@ message(STATUS "")
 # message(STATUS "  X Athena Widgets support:           ${HAVE_XAW}")
 message(STATUS "  OpenGL support:                     ${HAVE_OPENGL}")
 message(STATUS "")
+]]
