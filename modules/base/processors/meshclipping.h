@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHCLIPPING_H
@@ -46,24 +46,30 @@ namespace inviwo {
 /** \docpage{org.inviwo.MeshClipping, Mesh Clipping}
  * ![](org.inviwo.MeshClipping.png?classIdentifier=org.inviwo.MeshClipping)
  *
- * Basic mesh plane clipping 
- * 
+ * Remove parts of a mesh that is on the back side of a plane.
+ * Replaces removed parts with triangles aligned with the plane.
+ * Link the camera property to move the camera along the plane, or to align plane with view direction.
+ * Coordinates are specified in world space.
+ *
+ * Supports SimpleMesh and BasicMesh 
+ *
  * ### Inports
- *   * __geometry.input__ Input geometry
- * 
+ *   * __inputMesh__ Input mesh
+ *
  * ### Outports
- *   * __geometry.output__ Clipped output geometry
- * 
+ *   * __clippedMesh__ Clipped output mesh
+ *   * __clippingPlane__ Plane used for clipping the mesh in world space coordinate system
+ *
  * ### Properties
- *   * __Move Camera Along Normal__ ...
- *   * __Plane Point__ ...
- *   * __Render As Points by Default__ ...
- *   * __Move Plane Point Along Normal__ ...
- *   * __Camera__ ...
- *   * __Plane Normal__ ...
- *   * __Align Plane Normal To Camera Normal__ ...
- *   * __Enable clipping__ ...
- *   * __Plane Point Along Normal Move__ ...
+ *   * __Move Plane Point Along Normal__ Enable slider for adjusting plane position
+ *   * __Plane Point Along Normal Move__ Offset plane along its normal
+ *   * __Move Camera Along Normal__ Moves camera along with plane movement.
+ *   * __Plane Point__ World space space position of plane
+ *   * __Plane Normal__ ... World space space normal of plane
+ *   * __Camera__ Camera used for moving or aligning plane.
+ *   * __Align Plane Normal To Camera Normal__ Aligns plane normal with camera
+ *   * __Enable clipping__ Pass through mesh if disabled.
+
  *
  */
 class IVW_MODULE_BASE_API MeshClipping : public Processor {
@@ -77,30 +83,35 @@ public:
 protected:
     virtual void process() override;
 
+    /**
+     * Clip mesh againts plane. Replaces removed parts with triangles aligned with the plane.
+     * @thows Exception if mesh is not a SimpleMesh or BasicMesh
+     * @param Mesh to clip
+     * @param Plane in world space coordinate system.
+     */
+    std::shared_ptr<Mesh> clipGeometryAgainstPlane(const Mesh*, const Plane&);
+
+private:
     void onMovePointAlongNormalToggled();
     void onAlignPlaneNormalToCameraNormalPressed();
 
-    std::shared_ptr<Mesh> clipGeometryAgainstPlane(const Mesh*, Plane);
-    float degreeToRad(float);
-
-private:
     MeshInport inport_;
     MeshOutport outport_;
+    DataOutport<Plane> clippingPlane_;
 
     BoolProperty clippingEnabled_;
     BoolProperty movePointAlongNormal_;
     BoolProperty moveCameraAlongNormal_;
     FloatProperty pointPlaneMove_;
-    FloatVec3Property planePoint_;
-    FloatVec3Property planeNormal_;
+    FloatVec3Property planePoint_; ///< World space plane position
+    FloatVec3Property planeNormal_; ///< World space plane normal
     ButtonProperty alignPlaneNormalToCameraNormal_;
-    BoolProperty renderAsPoints_;
     CameraProperty camera_;
 
     float previousPointPlaneMove_;
 
     static const float EPSILON;
 };
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MESHCLIPPING_H
+#endif  // IVW_MESHCLIPPING_H
