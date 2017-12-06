@@ -147,8 +147,22 @@ void hide(Args&&... args) {
 
 
 
+/**
+ * Use multiple threads to iterate over all elements in an iterable data structure (such as
+ * std::vector). If the Inviwo pool size is zero it will be executed directly in the same thread as
+ * the caller.
+ * The function will return once all jobs as has been created.
+ *
+ * @param iterable the data structure to iterate over
+ * @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
+ * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
+ * the data structure
+ * @param jobs optinal parameter specifying how many jobs to create, if jobs==0 (default) it will
+ * create pool size * 4 jobs
+ * @return a vector of futures, once for each job created. 
+ */
 template <typename Iterable, typename Callback>
-std::vector<std::future<void>> forEachParallelAsync(const Iterable& vector, Callback callback,
+std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
                                                     size_t jobs = 0) {
     using T = typename Iterable::value_type;
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
@@ -156,7 +170,7 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& vector, Call
     auto includeIndex = typename std::conditional<detail::is_callable_with<T, size_t>(callback),
                                                   std::true_type, std::false_type>::type();
     if (poolSize == 0) {
-        detail::foreach_helper(includeIndex, vector.begin(), vector.end(), callback);
+        detail::foreach_helper(includeIndex, iterable.begin(), iterable.end(), callback);
         return {};
     }
 
@@ -164,22 +178,36 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& vector, Call
         jobs = 4 * poolSize;
     }
 
-    auto s = vector.size();
+    auto s = iterable.size();
     std::vector<std::future<void>> futures;
     for (size_t job = 0; job < jobs; ++job) {
         auto start = (s * job) / jobs;
         auto end = (s * (job + 1)) / jobs;
-        futures.push_back(dispatchPool([&callback, &vector, start, end, &includeIndex]() {
-            detail::foreach_helper(includeIndex, vector.begin() + start,
-                                   vector.begin() + static_cast<size_t>(end), callback, start);
+        futures.push_back(dispatchPool([&callback, &iterable, start, end, &includeIndex]() {
+            detail::foreach_helper(includeIndex, iterable.begin() + start,
+                                   iterable.begin() + static_cast<size_t>(end), callback, start);
         }));
     }
     return futures;
 }
 
+
+/**
+* Use multiple threads to iterate over all elements in an iterable data structure (such as
+* std::vector). If the Inviwo pool size is zero it will be executed directly in the same thread as
+* the caller.
+* The function will return once all jobs as has finished processing.
+*
+* @param iterable the data structure to iterate over
+* @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
+* size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
+* the data structure
+* @param jobs optinal parameter specifying how many jobs to create, if jobs==0 (default) it will
+* create pool size * 4 jobs
+*/
 template <typename Iterable, typename Callback>
-void forEachParallel(const Iterable& vector, Callback callback, size_t jobs = 0) {
-    auto futures = forEachParallelAsync(vector, callback, jobs);
+void forEachParallel(const Iterable& iterable, Callback callback, size_t jobs = 0) {
+    auto futures = forEachParallelAsync(iterable, callback, jobs);
 
     for (const auto& e : futures) {
         e.wait();
