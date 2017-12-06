@@ -65,7 +65,7 @@ set(SO_REVISION "${LIBTIFF_REVISION}")
 #message(STATUS "Building tiff version ${LIBTIFF_MAJOR_VERSION}.${LIBTIFF_MINOR_VERSION}.${LIBTIFF_MICRO_VERSION}${LIBTIFF_ALPHA_VERSION}")
 #message(STATUS "libtiff library version ${SO_MAJOR}.${SO_MINOR}.${SO_REVISION}")
 
-#set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
 
 # Project version
 project(tiff C)
@@ -441,8 +441,9 @@ if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "i.*86.*" OR
    CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "x86_64.*")
   set(fillorder FILLORDER_LSB2MSB)
 endif()
-set(HOST_FILLORDER ${fillorder} CACHE STRING "Native CPU bit order")
-mark_as_advanced(HOST_FILLORDER)
+#set(HOST_FILLORDER ${fillorder} CACHE STRING "Native CPU bit order")
+#mark_as_advanced(HOST_FILLORDER)
+set(HOST_FILLORDER ${fillorder})
 
 # CPU endianness
 include(TestBigEndian)
@@ -452,7 +453,8 @@ if (bigendian)
 else()
   set(bigendian OFF)
 endif()
-set(HOST_BIG_ENDIAN ${bigendian} CACHE STRING "Native CPU bit order")
+#set(HOST_BIG_ENDIAN ${bigendian} CACHE STRING "Native CPU bit order")
+set(HOST_BIG_ENDIAN ${bigendian})
 #mark_as_advanced(HOST_BIG_ENDIAN)
 if (HOST_BIG_ENDIAN)
   set(HOST_BIG_ENDIAN 1)
@@ -461,11 +463,12 @@ else()
 endif()
 
 # IEEE floating point
-set(HAVE_IEEEFP 1 CACHE STRING "IEEE floating point is available")
-mark_as_advanced(HAVE_IEEEFP)
+#set(HAVE_IEEEFP 1 CACHE STRING "IEEE floating point is available")
+set(HAVE_IEEEFP 1)
+#mark_as_advanced(HAVE_IEEEFP)
 
-report_values(CMAKE_HOST_SYSTEM_PROCESSOR HOST_FILLORDER
-              HOST_BIG_ENDIAN HAVE_IEEEFP)
+#report_values(CMAKE_HOST_SYSTEM_PROCESSOR HOST_FILLORDER
+#              HOST_BIG_ENDIAN HAVE_IEEEFP)
 
 # Large file support
 if (UNIX OR MINGW)
@@ -537,7 +540,7 @@ set(ZIP_SUPPORT ${ZLIB_SUPPORT})
 #option(jpeg "use libjpeg (required for JPEG compression)" ON)
 #if (jpeg)
 #  find_package(JPEG)
-  set(JPEG_LIBRARIES libjpeg)
+  set(JPEG_LIBRARIES inviwo::libjpeg)
 #endif()
 #set(JPEG_SUPPORT FALSE)
 #if(JPEG_FOUND)
@@ -633,7 +636,8 @@ set(win32_io FALSE)
 if(WIN32)
   set(win32_io TRUE)
 endif()
-set(USE_WIN32_FILEIO ${win32_io} CACHE BOOL "Use win32 IO system (Microsoft Windows only)")
+#set(USE_WIN32_FILEIO ${win32_io} CACHE BOOL "Use win32 IO system (Microsoft Windows only)")
+set(USE_WIN32_FILEIO ${win32_io})
 if (USE_WIN32_FILEIO)
   set(USE_WIN32_FILEIO TRUE)
 else()
@@ -645,7 +649,8 @@ endif()
 # Strip chopping
 #option(strip-chopping "strip chopping (whether or not to convert single-strip uncompressed images to mutiple strips of specified size to reduce memory usage)" ON)
 set(strip-chopping ON)
-set(TIFF_DEFAULT_STRIP_SIZE 8192 CACHE STRING "default size of the strip in bytes (when strip chopping is enabled)")
+#set(TIFF_DEFAULT_STRIP_SIZE 8192 CACHE STRING "default size of the strip in bytes (when strip chopping is enabled)")
+set(TIFF_DEFAULT_STRIP_SIZE 8192)
 
 set(STRIPCHOP_DEFAULT)
 if(strip-chopping)
