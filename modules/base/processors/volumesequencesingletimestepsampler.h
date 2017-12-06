@@ -65,6 +65,26 @@ private:
     VolumeDoubleSampler<3> v1_;
 };
 
+/** \docpage{org.inviwo.VolumeSequenceSingleTimestepSampler, Volume Sequence Single Timestep
+ * Sampler}
+ * ![](org.inviwo.VolumeSequenceSingleTimestepSampler.png?classIdentifier=org.inviwo.VolumeSequenceSingleTimestepSampler)
+ *
+ * Creates a spatial sampler for a given timestamp from a VolumeSequence. Will use linear
+ * interpolation to sample between two volume in the sequence. 
+ * Useful for streamline visualization of a specific timestep 
+ *
+ *
+ * ### Inports
+ *   * __volumeSequence__ The input sequence of volumes
+ *
+ * ### Outports
+ *   * __sampler__ The created sampler
+ *
+ * ### Properties
+ *   * __Timestamp__ the timestamp to sample at
+ *
+ */
+
 class IVW_MODULE_BASE_API VolumeSequenceSingleTimestepSamplerProcessor : public Processor {
 public:
     VolumeSequenceSingleTimestepSamplerProcessor();

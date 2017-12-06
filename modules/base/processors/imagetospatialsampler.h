@@ -39,27 +39,20 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageToSpatialSampler, Image To Spatial Sampler}
- * ![](org.inviwo.ImageToSpatialSampler.png?classIdentifier=org.inviwo.ImageToSpatialSampler)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
+    /** \docpage{org.inviwo.ImageToSpatialSampler, Image To Spatial Sampler}
+    * ![](org.inviwo.ImageToSpatialSampler.png?classIdentifier=org.inviwo.ImageToSpatialSampler)
+    * 
+    * Creates a Spatial Sampler for the given input image. 
+    * 
+    * 
+    * ### Inports
+    *   * __image__ The input image.
+    * 
+    * ### Outports
+    *   * __sampler__ The created sampler.
+    * 
+    */
 
-
-/**
- * \class ImageToSpatialSampler
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_BASE_API ImageToSpatialSampler : public Processor { 
 public:
     ImageToSpatialSampler();
