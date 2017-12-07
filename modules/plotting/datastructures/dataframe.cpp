@@ -83,8 +83,8 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
     } else if (columns_.size() != data.size() + 1) {  // consider index column of DataFrame
         std::ostringstream oss;
         oss << "Data does not match column count, DataFrame has " << (columns_.size() - 1)
-            << " columns and input data has " << data.size();
-        oss << "Input data is : " << joinString(data," | ");
+            << " columns while input data has " << data.size();
+        oss << ". Input data is : " << joinString(data," | ");
         throw InvalidColCount(oss.str(), IvwContext);
     }
     // Try to match up input data with columns.
