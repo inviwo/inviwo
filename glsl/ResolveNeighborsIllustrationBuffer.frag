@@ -22,9 +22,9 @@ layout(std430, binding=2) buffer smoothingBufferOut
     vec2 smoothingOut[]; //beta + gamma
 };
 
-//Temporal buffer for storing the intermediate results to avoid buffer access
-vec2 fragmentsCurrent[ABUFFER_SIZE];
-vec2 fragmentsNeighbor[ABUFFER_SIZE];
+//Temporal buffer for storing the depths to avoid buffer access
+float fragmentsCurrent[ABUFFER_SIZE];
+float fragmentsNeighbor[ABUFFER_SIZE];
 
 
 //Computes the likelihood that fragment i and j are neighbors
@@ -55,23 +55,65 @@ void main(void) {
             int start = int(imageLoad(illustrationBufferIdxImg, coords).x);
 
             //Load fragments of the current pixel
+            //init the flags for the initial smoothing values
             for (int i=0; i<count; ++i) {
-                fragmentsCurrent[i] = surfaceInfoIn[start + i];
+                fragmentsCurrent[i] = surfaceInfoIn[start + i].x;
+                smoothingOut[start + i] = vec2(0);
             }
-
-            //the flags for the initial smoothing values
-            bool silhouette = false;
-            bool halo = false;
-            ivec4 neighbors = ivec4(-1);
 
             //now process the four neighbors
             for (int n=0; n<4; ++n) {
                 //load that neighbor
                 ivec2 cb = getCountAndStart(coords + neighborPositions[n]);
-                if (cb.x == 0) continue;
+                if (cb.x == 0) {
+                    //no neighbors at all, all current fragments are silhouette
+                    for (int i=0; i<count; ++i) {
+                        neighborsOut[start + i][n] = -1;
+                        smoothingOut[start + i].x = 1;
+                    }
+                    continue;
+                }
+                //load the neighbors
                 for (int i=0; i<cb.x; ++i) {
+                    fragmentsNeighbor[i] = surfaceInfoIn[cb.y + i].x;
+                }
+                //front propagation
+                int a = 0;
+                int b = 0;
+                float eNeighbor = abs(fragmentsCurrent[0] - fragmentsNeighbor[0]);
+                while (a<count && b<cb.x) {
+                    float e;
+                    if (b+1 < cb.x) {
+                        e = abs(fragmentsCurrent[a] - fragmentsNeighbor[b+1]);
+                        if (e < eNeighbor) {
+                            //next neighbor is better
+                            b++;
+                            eNeighbor = e;
+                            continue;
+                        }
+                    }
+                    if (a+1 < count) {
+                        e = abs(fragmentsCurrent[a+1] - fragmentsNeighbor[b]);
+                        if (e < eNeighbor) {
+                            //next neighbor wants to connect to next current -> current is silhouette
+                            neighborsOut[start + a][n] = -1;
+                            smoothingOut[start + a].x = 1;
+                            a++;
+                            eNeighbor = e;
+                            continue;
+                        }
+                    }
+                    //this is the best connection
+                    neighborsOut[start + a][n] = b + cb.y;
+                    if (b > a) smoothingOut[start + a].y = 1; //halo
+                    //advance to next pair
+                    a++;
+                    b++;
+                    eNeighbor = abs(fragmentsCurrent[a] - fragmentsNeighbor[b]);
                 }
             }
+
+            /*
 
             for (int i=0; i<count; ++i) {
                 //find neighbors
@@ -99,6 +141,8 @@ void main(void) {
                 neighborsOut[start + i] = neighbors;
                 smoothingOut[start + i] = smoothing;
             }
+
+            */
         }
     }
     discard;
