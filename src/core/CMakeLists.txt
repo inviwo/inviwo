@@ -231,6 +231,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawerfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/assertion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/bufferutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/buildinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/canvas.h
@@ -481,6 +482,7 @@ set(SOURCE_FILES
     properties/volumeindicatorproperty.cpp
     rendering/meshdrawerfactory.cpp
     util/assertion.cpp
+    util/bufferutils.cpp
     util/canvas.cpp
     util/capabilities.cpp
     util/clock.cpp
