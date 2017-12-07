@@ -62,6 +62,11 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API SurfaceExtraction : public Processor, public ProgressBarOwner {
 public:
+    enum class Method{
+        MarchingCubes,
+        MarchingTetrahedron,
+    };
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -102,6 +107,7 @@ protected:
     DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
     std::shared_ptr<std::vector<std::shared_ptr<Mesh>>> meshes_;
 
+    TemplateOptionProperty<Method> method_;
     FloatProperty isoValue_;
     BoolProperty invertIso_;
     BoolProperty encloseSurface_;

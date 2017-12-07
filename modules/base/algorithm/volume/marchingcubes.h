@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MARCHINGTETRAHEDRON_H
-#define IVW_MARCHINGTETRAHEDRON_H
+#ifndef IVW_MARCHINGCUBES_H
+#define IVW_MARCHINGCUBES_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -42,27 +42,12 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API MarchingTetrahedron {
-public:
-    /**
-     * Extracts a isosurface mesh from a volume:
-     * DEPRICATED, use util::marchingtetrahedron
-     * @see util::marchingtetrahedron
-     */
-    static std::shared_ptr<Mesh> apply(
-        std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
-        bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>(),
-        std::function<bool(const size3_t &)> maskingCallback = [](const size3_t &) {
-            return true;
-        });
-};
-
 namespace util {
 
 /**
- * Extracts an isosurface from a volume using the Marching Tetrahedron algorithm
+ * Extracts an isosurface from a volume using the Marching Cubes algorithm
  *
- * Note: Share interface with util::marchingcubes
+ * Note: Share interface with util::marchingtetrahedron
  *
  * @param volume the scalar volume
  * @param iso iso-value for the extracted surface
@@ -75,9 +60,9 @@ namespace util {
  * @param maskingCallback optional callback to test whether current cell should be evaluated or not
  * (return true to include current cell)
  */
-std::shared_ptr<Mesh> marchingtetrahedron(
-    std::shared_ptr<const Volume> volume, double iso, const vec4 &color = vec4(1.0f),
-    bool invert = false, bool enclose = true,
+
+std::shared_ptr<Mesh> marchingcubes(
+    std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert, bool enclose,
     std::function<void(float)> progressCallback = std::function<void(float)>(),
     std::function<bool(const size3_t &)> maskingCallback = [](const size3_t &) { return true; });
 }  // namespace util

@@ -31,6 +31,7 @@
 
 #include <inviwo/core/properties/propertysemantics.h>
 #include <modules/base/algorithm/volume/marchingtetrahedron.h>
+#include <modules/base/algorithm/volume/marchingcubes.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <numeric>
@@ -42,13 +43,11 @@ namespace inviwo {
 const ProcessorInfo SurfaceExtraction::processorInfo_{
     "org.inviwo.SurfaceExtraction",  // Class identifier
     "Surface Extraction",            // Display name
-    "Mesh Creation",             // Category
+    "Mesh Creation",                 // Category
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo SurfaceExtraction::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo SurfaceExtraction::getProcessorInfo() const { return processorInfo_; }
 
 // TODO make changing color not rerun extraction but only change the color, (and run only
 // extraction when volume change or iso change)
@@ -57,6 +56,9 @@ SurfaceExtraction::SurfaceExtraction()
     : Processor()
     , volume_("volume")
     , outport_("mesh")
+    , method_("method", "Method",
+              {{"marchingtetrahedron", "MarchingTetrahedron", Method::MarchingTetrahedron},
+               {"marchingcubes", "MarchingCubes", Method::MarchingCubes}})
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
     , invertIso_("invert", "Invert ISO", false)
     , encloseSurface_("enclose", "Enclose Surface", true)
@@ -66,6 +68,7 @@ SurfaceExtraction::SurfaceExtraction()
     addPort(volume_);
     addPort(outport_);
 
+    addProperty(method_);
     addProperty(isoValue_);
     addProperty(invertIso_);
     addProperty(encloseSurface_);
@@ -108,22 +111,35 @@ void SurfaceExtraction::process() {
             result_[i].set(iso, color, invert, enclose, 0.0f,
                            dispatchPool([this, vol, iso, color, invert, enclose,
                                          i]() -> std::shared_ptr<Mesh> {
-                               auto m = MarchingTetrahedron::apply(
-                                   vol, iso, color, invert, enclose, [this, i](float s) {
-                                       this->result_[i].status = s;
-                                       float status = 0;
-                                       for (const auto& e : this->result_) status += e.status;
-                                       status /= result_.size();
-                                       dispatchFront(
-                                           [status](ProgressBar& pb) {
-                                               pb.updateProgress(status);
-                                               if (status < 1.0f)
-                                                   pb.show();
-                                               else
-                                                   pb.hide();
-                                           },
-                                           std::ref(this->getProgressBar()));
-                                   });
+
+                               auto progressCallBack = [this, i](float s) {
+                                   this->result_[i].status = s;
+                                   float status = 0;
+                                   for (const auto& e : this->result_) status += e.status;
+                                   status /= result_.size();
+                                   dispatchFront(
+                                       [status](ProgressBar& pb) {
+                                           pb.updateProgress(status);
+                                           if (status < 1.0f)
+                                               pb.show();
+                                           else
+                                               pb.hide();
+                                       },
+                                       std::ref(this->getProgressBar()));
+                               };
+
+                               std::shared_ptr<Mesh> m;
+                               switch (method_.get()) {
+                                   case Method::MarchingCubes:
+                                       m = util::marchingcubes(vol, iso, color, invert, enclose,
+                                                                progressCallBack);
+                                       break;
+                                   case Method::MarchingTetrahedron:
+                                   default:
+                                       m = util::marchingtetrahedron(vol, iso, color, invert, enclose,
+                                           progressCallBack);
+                                       break;
+                               }
 
                                dispatchFront([this]() {
                                    dirty_ = true;
@@ -190,7 +206,6 @@ void SurfaceExtraction::updateColors() {
 }
 #include <warn/pop>
 
-
 // This will stop the invalidation of the network unless the dirty flag is set.
 void SurfaceExtraction::invalidate(InvalidationLevel invalidationLevel,
                                    Property* modifiedProperty) {
@@ -208,7 +223,9 @@ SurfaceExtraction::task::task(task&& rhs)
     , color(std::move(rhs.color))
     , status(rhs.status) {}
 
-bool SurfaceExtraction::task::isSame(float i, vec4 c, bool inv, bool enc) const { return iso == i && color == c && inv == invert && enc == enclose; }
+bool SurfaceExtraction::task::isSame(float i, vec4 c, bool inv, bool enc) const {
+    return iso == i && color == c && inv == invert && enc == enclose;
+}
 
 void SurfaceExtraction::task::set(float i, vec4 c, bool inv, bool enc, float s,
                                   std::future<std::shared_ptr<Mesh>>&& r) {
@@ -233,5 +250,4 @@ SurfaceExtraction::task& SurfaceExtraction::task::operator=(task&& that) {
     return *this;
 }
 
-}  // namespace
-
+}  // namespace inviwo
