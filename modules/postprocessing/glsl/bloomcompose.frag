@@ -40,7 +40,6 @@ uniform float bloomFactors[5] = float[5](1.0, 0.8, 0.6, 0.4, 0.2);
 
 in vec2 texCoord;
 
-layout(location = 0, index = 0) out vec4 outColor;
 
 //-------------------------------------------------------------------------
 
@@ -50,10 +49,10 @@ float lerpBloomFactor(const in float factor) {
 }
 
 void main() {
-    outColor = bloomStrength * (lerpBloomFactor(bloomFactors[0]) * texture(tex0, texCoord) +
-                                lerpBloomFactor(bloomFactors[1]) * texture(tex1, texCoord) +
-                                lerpBloomFactor(bloomFactors[2]) * texture(tex2, texCoord) +
-                                lerpBloomFactor(bloomFactors[3]) * texture(tex3, texCoord) +
-                                lerpBloomFactor(bloomFactors[4]) * texture(tex4, texCoord));
-    outColor.a = clamp(outColor.a, 0.0, 1.0);
+    FragData0 = bloomStrength * (lerpBloomFactor(bloomFactors[0]) * texture(tex0, texCoord) +
+                                 lerpBloomFactor(bloomFactors[1]) * texture(tex1, texCoord) +
+                                 lerpBloomFactor(bloomFactors[2]) * texture(tex2, texCoord) +
+                                 lerpBloomFactor(bloomFactors[3]) * texture(tex3, texCoord) +
+                                 lerpBloomFactor(bloomFactors[4]) * texture(tex4, texCoord));
+    FragData0.a = clamp(FragData0.a, 0.0, 1.0);
 }

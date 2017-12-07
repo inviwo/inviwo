@@ -35,7 +35,6 @@ uniform vec2 direction;
 uniform sampler2D texSource;
 
 in vec2 texCoord;
-layout(location = 0, index = 0) out vec4 outColor;
 
 //-------------------------------------------------------------------------
 
@@ -58,5 +57,5 @@ void main() {
         weightSum += 2.0 * w;
     }
 
-    outColor = diffuseSum / weightSum;
+    FragData0 = diffuseSum / weightSum;
 }
