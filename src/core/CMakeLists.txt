@@ -256,6 +256,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filelogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/foreach.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatdispatching.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h

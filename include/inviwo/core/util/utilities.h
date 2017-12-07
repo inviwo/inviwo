@@ -37,7 +37,6 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <string>
 
-
 namespace inviwo {
 
 class ProcessorNetwork;
@@ -48,7 +47,6 @@ class ProcessorWidget;
 namespace util {
 
 IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string filename);
-
 
 IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
                                   std::string name = "UPN", std::string ext = ".png");
@@ -64,7 +62,7 @@ IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::s
  * Example for a processor identifier:
  *     auto uniqueIdentifier = util::findUniqueIdentifier(
  *         startIdentifier,
- *         [&](const std::string& id) { 
+ *         [&](const std::string& id) {
  *             return processorNetwork->getProcessorByIdentifier(id) == nullptr; },
  *         ""
  *     );
@@ -76,7 +74,7 @@ IVW_CORE_API std::string findUniqueIdentifier(const std::string& identifier,
 IVW_CORE_API std::string cleanIdentifier(const std::string& identifier,
                                          const std::string& extra = "");
 
-/** 
+/**
  * \brief Removes inviwo-module from module library file name.
  * Turns "/path/to/inviwo-module-yourmodule.dll" into "yourmodule".
  * Returns filename without extension if inviwo-module was not found.
@@ -100,40 +98,7 @@ struct IVW_CORE_API Hideer {
     void operator()(ProcessorWidget& p);
 };
 
-
-
-// https://stackoverflow.com/a/22882504/600633
-struct IsCallableTest {
-    template <typename F, typename... A>
-    static decltype(std::declval<F>()(std::declval<A>()...), std::true_type()) f(int);
-
-    template <typename F, typename... A>
-    static std::false_type f(...);
-};
-
-template <typename F, typename... A>
-struct IsCallable : decltype(IsCallableTest::f<F, A...>(0)) {};
-
-template <typename F, typename... A>
-struct IsCallable<F(A...)> : IsCallable<F, A...> {};
-
-template <typename... A, typename F>
-constexpr IsCallable<F, A...> is_callable_with(F&&) {
-    return IsCallable<F(A...)>{};
-}
-
-template <typename Callback, typename IT>
-void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t = 0) {
-    std::for_each(a, b, callback);
-}
-
-template <typename Callback, typename IT>
-void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
-    std::for_each(a, b, [&](auto v) { callback(v, start++); });
-}
-
-
-} // detail namespace
+}  // namespace detail
 
 template <typename... Args>
 void show(Args&&... args) {
@@ -145,79 +110,8 @@ void hide(Args&&... args) {
     util::for_each_argument(detail::Hideer{}, std::forward<Args>(args)...);
 }
 
+}  // namespace util
 
-
-/**
- * Use multiple threads to iterate over all elements in an iterable data structure (such as
- * std::vector). If the Inviwo pool size is zero it will be executed directly in the same thread as
- * the caller.
- * The function will return once all jobs as has been created and queued.
- *
- * @param iterable the data structure to iterate over
- * @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
- * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
- * the data structure
- * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
- * create pool size * 4 jobs
- * @return a vector of futures, one for each job created. 
- */
-template <typename Iterable, typename Callback>
-std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
-                                                    size_t jobs = 0) {
-    using T = typename Iterable::value_type;
-    auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    auto poolSize = settings->poolSize_.get();
-    auto includeIndex = typename std::conditional<detail::is_callable_with<T, size_t>(callback),
-                                                  std::true_type, std::false_type>::type();
-    if (poolSize == 0) {
-        detail::foreach_helper(includeIndex, iterable.begin(), iterable.end(), callback);
-        return {};
-    }
-
-    if (jobs == 0) {  // If jobs is zero, set to 4 times the pool size
-        jobs = 4 * poolSize;
-    }
-
-    auto s = iterable.size();
-    std::vector<std::future<void>> futures;
-    for (size_t job = 0; job < jobs; ++job) {
-        auto start = (s * job) / jobs;
-        auto end = (s * (job + 1)) / jobs;
-        futures.push_back(dispatchPool([&callback, &iterable, start, end, &includeIndex]() {
-            detail::foreach_helper(includeIndex, iterable.begin() + start,
-                                   iterable.begin() + static_cast<size_t>(end), callback, start);
-        }));
-    }
-    return futures;
-}
-
-
-/**
-* Use multiple threads to iterate over all elements in an iterable data structure (such as
-* std::vector). If the Inviwo pool size is zero it will be executed directly in the same thread as
-* the caller.
-* The function will return once all jobs as has finished processing.
-*
-* @param iterable the data structure to iterate over
-* @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
-* size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
-* the data structure
-* @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
-* create pool size * 4 jobs
-*/
-template <typename Iterable, typename Callback>
-void forEachParallel(const Iterable& iterable, Callback callback, size_t jobs = 0) {
-    auto futures = forEachParallelAsync(iterable, callback, jobs);
-
-    for (const auto& e : futures) {
-        e.wait();
-    }
-}
-
-
-
-} // util namespace
-
-} // inviwo namespace
+}  // namespace inviwo
 
 #endif  // IVW_UTILITIES_H

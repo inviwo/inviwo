@@ -616,6 +616,38 @@ public:
     static const bool value = decltype(check<Type>(0))::value;
 };
 
+namespace detail {
+
+// https://stackoverflow.com/a/22882504/600633
+struct is_callable_test {
+    template <typename F, typename... A>
+    static decltype(std::declval<F>()(std::declval<A>()...), std::true_type()) f(int);
+
+    template <typename F, typename... A>
+    static std::false_type f(...);
+};
+
+template <typename F, typename... A>
+struct is_callable : decltype(is_callable_test::f<F, A...>(0)) {};
+
+template <typename F, typename... A>
+struct is_callable<F(A...)> : is_callable<F, A...> {};
+
+}  // namespace detail
+
+/**
+ * A type trait to determine if type "callback" cann be called with certain arguments.
+ * Example:
+ *     util::is_callable_with<float>(callback)
+ *     where
+ *        callback = [](float){}  -> true
+ *        callback = [](std::string){}  -> false
+ */
+template <typename... A, typename F>
+constexpr detail::is_callable<F, A...> is_callable_with(F&&) {
+    return detail::is_callable<F(A...)>{};
+}
+
 /**
  *    Function to combine several hash values
  *    http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
