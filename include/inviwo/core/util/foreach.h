@@ -40,6 +40,19 @@
 namespace inviwo {
 
 namespace util {
+    namespace detail{
+        template <typename Callback, typename IT>
+        void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t = 0) {
+            std::for_each(a, b, callback);
+        }
+
+        template <typename Callback, typename IT>
+        void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
+            std::for_each(a, b, [&](auto v) { callback(v, start++); });
+        }
+
+    }
+
 
 /**
  * Use multiple threads to iterate over all elements in an iterable data structure (such as
@@ -55,10 +68,9 @@ namespace util {
  * create pool size * 4 jobs
  * @return a vector of futures, one for each job created.
  */
-template <typename Iterable, typename Callback>
+template <typename Iterable, typename Callback, typename T = typename Iterable::value_type>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
                                                     size_t jobs = 0) {
-    using T = typename Iterable::value_type;
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     auto poolSize = settings->poolSize_.get();
     auto includeIndex = typename std::conditional<util::is_callable_with<T, size_t>(callback),
@@ -98,9 +110,9 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
  * create pool size * 4 jobs
  */
-template <typename Iterable, typename Callback>
+template <typename Iterable, typename Callback, typename T = typename Iterable::value_type>
 void forEachParallel(const Iterable& iterable, Callback callback, size_t jobs = 0) {
-    auto futures = forEachParallelAsync(iterable, callback, jobs);
+    auto futures = forEachParallelAsync<Iterable,Callback,T>(iterable, callback, jobs);
 
     for (const auto& e : futures) {
         e.wait();
