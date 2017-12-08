@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "meshclipping.h"
@@ -52,23 +52,25 @@ MeshClipping::MeshClipping()
     : Processor()
     , inport_("inputMesh")
     , outport_("clippedMesh")
+    , clippingPlane_("clippingPlane")
     , clippingEnabled_("clippingEnabled", "Enable clipping", false)
     , movePointAlongNormal_("movePointAlongNormal", "Move Plane Point Along Normal", false,
                             InvalidationLevel::Valid)
     , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true,
                              InvalidationLevel::Valid)
     , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, -2.f, 2.f, 0.01f)
-    , planePoint_("planePoint", "Plane Point", vec3(0.0f), vec3(-10.0f), vec3(10.0f), vec3(0.1f))
+    , planePoint_("planePoint", "Plane Point", vec3(0.0f), vec3(-10000.0f), vec3(10000.0f),
+                  vec3(0.1f))
     , planeNormal_("planeNormal", "Plane Normal", vec3(0.0f, 0.0f, -1.0f), vec3(-1.0f), vec3(1.0f),
                    vec3(0.1f))
     , alignPlaneNormalToCameraNormal_("alignPlaneNormalToCameraNormal",
                                       "Align Plane Normal To Camera Normal",
                                       InvalidationLevel::Valid)
-    , renderAsPoints_("renderAsPoints", "Render As Points by Default", false)
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid) {
     addPort(inport_);
     addPort(outport_);
+    addPort(clippingPlane_);
     addProperty(clippingEnabled_);
     addProperty(movePointAlongNormal_);
     movePointAlongNormal_.onChange(this, &MeshClipping::onMovePointAlongNormalToggled);
@@ -82,8 +84,6 @@ MeshClipping::MeshClipping()
     alignPlaneNormalToCameraNormal_.onChange(
         this, &MeshClipping::onAlignPlaneNormalToCameraNormalPressed);
 
-    addProperty(renderAsPoints_);
-
     addProperty(camera_);
 
     onMovePointAlongNormalToggled();
@@ -91,34 +91,31 @@ MeshClipping::MeshClipping()
 
 MeshClipping::~MeshClipping() = default;
 
-/** Process overview
- *   - Take axis-aligned bounding box (AABB) mesh as input.
- *   - Call clipGeometryAgainstPlane(...) with input and plane_ as arguments
- *   - Extract and store an edge list from the input mesh's triangle list
- *   - Start with an empty outputList and empty outputEdgeList. Iterate over the edge list
- *     extracted from the triangle list and check each edge against the clip plane. Store verts
- *     and edges in outputList and outputEdgeList as you go.
- *   - Use outputEdgeList and, indirectly, outputList to rebuild a correctly sorted
- *     triangle strip list.
- *   - Build new mesh from the triangle strip list and return it.
- */
 void MeshClipping::process() {
+    /** Process overview
+     *   - Take axis-aligned bounding box (AABB) mesh as input.
+     *   - Call clipGeometryAgainstPlane(...) with input and plane_ as arguments
+     *   - Extract and store an edge list from the input mesh's triangle list
+     *   - Start with an empty outputList and empty outputEdgeList. Iterate over the edge list
+     *     extracted from the triangle list and check each edge against the clip plane. Store verts
+     *     and edges in outputList and outputEdgeList as you go.
+     *   - Use outputEdgeList and, indirectly, outputList to rebuild a correctly sorted
+     *     triangle strip list.
+     *   - Build new mesh from the triangle strip list and return it.
+     */
+    auto plane = std::make_shared<Plane>(planePoint_.get(), planeNormal_.get());
 
     if (clippingEnabled_.get()) {
-        auto geom = inport_.getData();
 
-        vec3 point = planePoint_.get();
-        vec3 normal = planeNormal_.get();
         if (movePointAlongNormal_.get()) {
             // Set new plane position based on offset
-            vec3 offsetPlaneDiff = normal * pointPlaneMove_.get();
-            point += offsetPlaneDiff;
+            vec3 offsetPlaneDiff = plane->getNormal() * pointPlaneMove_.get();
+            plane->setPoint(plane->getPoint() + offsetPlaneDiff);
             // Move camera along the offset as well
             if (moveCameraAlongNormal_.get()) {
-                vec3 offsetGeometryABS = glm::abs(geom->getOffset());
+
                 float planeMoveDiff = pointPlaneMove_.get() - previousPointPlaneMove_;
-                vec3 offsetDiff = normal * planeMoveDiff;
-                vec3 lookOffset = offsetDiff * offsetGeometryABS * 0.5f;
+                vec3 lookOffset = plane->getNormal() * planeMoveDiff;
                 camera_.setLook(camera_.getLookFrom() + lookOffset,
                                 camera_.getLookTo() + lookOffset, camera_.getLookUp());
             }
@@ -126,13 +123,12 @@ void MeshClipping::process() {
 
             // If pointPlaneMove_ zero i.e. no clipping, so output same mesh
             if (pointPlaneMove_ <= 0.f + EPSILON) {
+                clippingPlane_.setData(plane);
                 outport_.setData(inport_.getData());
                 return;
             }
         }
-
-        if (auto clippedPlaneGeom =
-                clipGeometryAgainstPlane(geom.get(), Plane(point, normal))) {
+        if (auto clippedPlaneGeom = clipGeometryAgainstPlane(inport_.getData().get(), *plane)) {
             clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
             clippedPlaneGeom->setWorldMatrix(inport_.getData()->getWorldMatrix());
             outport_.setData(clippedPlaneGeom);
@@ -142,6 +138,7 @@ void MeshClipping::process() {
     } else {
         outport_.setData(inport_.getData());
     }
+    clippingPlane_.setData(plane);
 }
 
 void MeshClipping::onMovePointAlongNormalToggled() {
@@ -172,9 +169,10 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
             const auto& vertexList = pb->getDataContainer();
 
             auto closestVertex = vertexList[0];
+            auto farVertex = vertexList[0];
             decltype(closestVertex) lookFrom{camera_.getLookFrom()};
             auto minDist = glm::distance(lookFrom, closestVertex);
-
+            auto maxDist = minDist;
             for (const auto& vertex : vertexList) {
                 // Calculate distance to camera
                 auto dist = glm::distance(lookFrom, vertex);
@@ -182,16 +180,26 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
                     minDist = dist;
                     closestVertex = vertex;
                 }
+                if (dist > maxDist) {
+                    maxDist = dist;
+                    farVertex = vertex;
+                }
             }
-            planePoint_.set(closestVertex);
+            auto closestWorldSpacePos = vec3(
+                geom->getCoordinateTransformer().getDataToWorldMatrix() * vec4(closestVertex, 1.f));
+            auto farWorldSpacePos = vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
+                                         vec4(farVertex, 1.f));
+            auto range = glm::abs((farWorldSpacePos - closestWorldSpacePos));
+            auto minVal = glm::min(closestWorldSpacePos, farWorldSpacePos);
+            auto maxVal = glm::max(closestWorldSpacePos, farWorldSpacePos);
+            planePoint_.set(closestWorldSpacePos, minVal, maxVal, range * 0.1f);
+            pointPlaneMove_.setMaxValue(glm::compMax(range));
         });
+
     } else {
         LogError("Unsupported mesh, only 3D meshes supported");
     }
 }
-
-// Convert degrees to radians
-float MeshClipping::degreeToRad(float degree) { return degree * (glm::pi<float>() / 180.f); }
 
 // Check point equality with threshold
 inline bool equal(vec3 v1, vec3 v2, float eps) {
@@ -263,7 +271,16 @@ inline vec3 barycentricTriangle(vec3 p, vec3 a, vec3 b, vec3 c) {
     return bary;
 }
 
-std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in, Plane plane) {
+std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
+                                                             const Plane& worldSpacePlane) {
+    // Perform clipping in data space
+    auto worldToData = in->getCoordinateTransformer().getWorldToDataMatrix();
+    auto worldToDataNormal = glm::transpose(glm::inverse(worldToData));
+    auto dataSpacePos = vec3(worldToData * vec4(worldSpacePlane.getPoint(), 1.0));
+    auto dataSpaceNormal =
+        glm::normalize(vec3(worldToDataNormal * vec4(worldSpacePlane.getNormal(), 0.0)));
+    Plane plane(dataSpacePos, dataSpaceNormal);
+
     ConnectivityType indexAttrInfo;
     const std::vector<vec3>* vertexList;
     const std::vector<vec3>* texcoordlist;
@@ -691,4 +708,4 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in, Pla
     return outputMesh;
 }
 
-} // namespace
+}  // namespace inviwo
