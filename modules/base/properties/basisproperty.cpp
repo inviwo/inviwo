@@ -34,8 +34,7 @@ namespace inviwo {
 PropertyClassIdentifier(BasisProperty, "org.inviwo.VolumeBasisProperty");
 
 BasisProperty::BasisProperty(std::string identifier, std::string displayName,
-                                         InvalidationLevel invalidationLevel,
-                                         PropertySemantics semantics)
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , overRideDefaults_("override", "Override", false)
     , a_("a", "A", vec3(1.0f, 0.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
@@ -46,7 +45,8 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
     , overrideA_("overrideA", "A (override)", vec3(1.0f, 0.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , overrideB_("overrideB", "B (override)", vec3(0.0f, 1.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , overrideC_("overrideC", "C (override)", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
-    , overrideOffset_("overrideOffset", "Offset (override)", vec3(0.0f), vec3(-10.0f), vec3(10.0f)) {
+    , overrideOffset_("overrideOffset", "Offset (override)", vec3(0.0f), vec3(-10.0f),
+                      vec3(10.0f)) {
     a_.setReadOnly(true);
     a_.setSerializationMode(PropertySerializationMode::None);
     b_.setReadOnly(true);
@@ -102,32 +102,34 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
 }
 
-BasisProperty* BasisProperty::clone() const {
-    return new BasisProperty(*this);
-}
+BasisProperty* BasisProperty::clone() const { return new BasisProperty(*this); }
 
 void BasisProperty::updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize) {
     // Set basis properties to the values from the new volume
-    // Heuristics: Use the same min/max of basis vector, 
+    // Heuristics: Use the same min/max of basis vector,
     // since basis is often zero in two dimensions, i.e. when axis-aligned and orthogonal.
 
     // Set min/max range to be an order of magnitude larger
     const auto boundsScale = 5.f;
     const auto incrementScale = 0.1f;
 
-    auto minBounds = volume.getModelMatrix() - boundsScale* glm::abs(volume.getModelMatrix());
-    auto maxBounds = volume.getModelMatrix() + boundsScale* glm::abs(volume.getModelMatrix());
+    auto minBounds = volume.getModelMatrix() - boundsScale * glm::abs(volume.getModelMatrix());
+    auto maxBounds = volume.getModelMatrix() + boundsScale * glm::abs(volume.getModelMatrix());
     // Min/max for basis vectors (cannot do compMin/compMax on matrices)
     auto minBound = glm::compMin(minBounds[0]);
-    for (auto i = 1; i < 3; i++) { minBound = glm::min(minBound, glm::compMin(minBounds[i])); }
+    for (auto i = 1; i < 3; i++) {
+        minBound = glm::min(minBound, glm::compMin(minBounds[i]));
+    }
     auto maxBound = glm::compMax(maxBounds[0]);
-    for (auto i = 1; i < 3; i++) { maxBound = glm::max(maxBound, glm::compMax(maxBounds[i])); }
-    auto increment = incrementScale*glm::abs(maxBound - minBound);
+    for (auto i = 1; i < 3; i++) {
+        maxBound = glm::max(maxBound, glm::compMax(maxBounds[i]));
+    }
+    auto increment = incrementScale * glm::abs(maxBound - minBound);
 
     // Min/max/increment for offset
     auto minOffset = glm::compMin(minBounds[3]);
     auto maxOffset = glm::compMax(maxBounds[3]);
-    auto offsetIncrement = incrementScale*glm::abs(maxOffset - minOffset);
+    auto offsetIncrement = incrementScale * glm::abs(maxOffset - minOffset);
 
     a_.set(volume.getBasis()[0], vec3(minBound), vec3(maxBound), vec3(increment));
     b_.set(volume.getBasis()[1], vec3(minBound), vec3(maxBound), vec3(increment));
@@ -145,10 +147,11 @@ void BasisProperty::updateForNewEntity(const SpatialEntity<3>& volume, bool dese
         Property::setStateAsDefault(overrideC_, volume.getBasis()[2]);
         Property::setStateAsDefault(overrideOffset_, volume.getOffset());
     } else {
-        overrideA_.set(volume.getBasis()[0]);
-        overrideB_.set(volume.getBasis()[1]);
-        overrideC_.set(volume.getBasis()[2]);
-        overrideOffset_.set(volume.getOffset());
+        overrideA_.set(volume.getBasis()[0], vec3(minBound), vec3(maxBound), vec3(increment));
+        overrideB_.set(volume.getBasis()[1], vec3(minBound), vec3(maxBound), vec3(increment));
+        overrideC_.set(volume.getBasis()[2], vec3(minBound), vec3(maxBound), vec3(increment));
+        overrideOffset_.set(volume.getOffset(), vec3(minOffset), vec3(maxOffset),
+                            vec3(offsetIncrement));
         overrideA_.setCurrentStateAsDefault();
         overrideB_.setCurrentStateAsDefault();
         overrideC_.setCurrentStateAsDefault();
@@ -210,11 +213,10 @@ mat4 BasisProperty::getBasisAndOffset() const {
         basisAndOffset[3] = offset;
         return basisAndOffset;
     }
-
 }
 
 void BasisProperty::updateEntity(SpatialEntity<3>& volume) {
     volume.setModelMatrix(getBasisAndOffset());
 }
 
-}  // namespace
+}  // namespace inviwo
