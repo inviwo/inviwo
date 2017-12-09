@@ -321,21 +321,31 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (change) {
-        case QGraphicsItem::ItemPositionHasChanged:
-            if (processorMeta_) processorMeta_->setPosition(ivec2(x(), y()));
-            if (auto s = scene()) {
-                for (auto v : s->views()) {
-                    v->setSceneRect(QRectF{});
-                }
+        case QGraphicsItem::ItemPositionHasChanged: {
+            QPointF newPos = value.toPointF();
+            newPos.setX(round(newPos.x()));
+            newPos.setY(round(newPos.y()));
+            if (processorMeta_) {
+                processorMeta_->setPosition(ivec2(newPos.x(), newPos.y()));
             }
-            break;
+            if (auto editor = qobject_cast<NetworkEditor*>(scene())) {
+                editor->updateSceneSize();
+            }
+            return newPos;
+        }
         case QGraphicsItem::ItemSelectedHasChanged:
             updateWidgets();
             if (!highlight_ && processorMeta_) processorMeta_->setSelected(isSelected());
             break;
-        case QGraphicsItem::ItemVisibleHasChanged:
-            if (processorMeta_) processorMeta_->setVisible(isVisible());
+        case QGraphicsItem::ItemVisibleHasChanged: {
+            if (processorMeta_) {
+                processorMeta_->setVisible(isVisible());
+            }
+            if (auto editor = qobject_cast<NetworkEditor*>(scene())) {
+                editor->updateSceneSize();
+            }
             break;
+        }
         case QGraphicsItem::ItemSceneHasChanged:
             updateWidgets();
             break;
