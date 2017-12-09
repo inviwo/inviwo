@@ -128,7 +128,7 @@ public:
     bool isBackgroundVisible() const;
 
     void updateSceneSize();
-    const QRectF& getProcessorsBoundingRect() const;
+    QRectF getProcessorsBoundingRect() const;
 
     static std::string getMimeTag();
 public slots:

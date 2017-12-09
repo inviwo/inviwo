@@ -342,7 +342,7 @@ void NetworkEditor::updateSceneSize() {
     }
 }
 
-const QRectF& NetworkEditor::getProcessorsBoundingRect() const {
+QRectF NetworkEditor::getProcessorsBoundingRect() const {
     QRectF rect;
     for (const auto& item : processorGraphicsItems_) {
         if (item.second->isVisible()) {
