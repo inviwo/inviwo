@@ -89,11 +89,10 @@ ProcessorTree::ProcessorTree(ProcessorTreeWidget* parent)
     : QTreeWidget(parent), processorTreeWidget_{parent} {}
 
 ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget)
-    : InviwoDockWidget(tr("Processors"), parent)
+    : InviwoDockWidget(tr("Processors"), parent, "ProcessorTreeWidget")
     , app_{parent->getInviwoApplication()}
     , helpWidget_{helpWidget} {
 
-    setObjectName("ProcessorTreeWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
@@ -153,8 +152,8 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
             app_->getProcessorFactory()->removeObserver(this);
         });
 
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("processorlist");
+    QSettings settings;
+    settings.beginGroup(objectName());
     lineEdit_->setText(settings.value("filterText", "").toString());
     listView_->setCurrentIndex(settings.value("currentView", 1).toInt());
 
@@ -273,8 +272,8 @@ void ProcessorTreeWidget::onRegister(ProcessorFactoryObject* item) { addProcesso
 void ProcessorTreeWidget::onUnRegister(ProcessorFactoryObject*) { addProcessorsToTree(); }
 
 void ProcessorTreeWidget::closeEvent(QCloseEvent* event) {
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("processorlist");
+    QSettings settings;
+    settings.beginGroup(objectName());
     settings.setValue("filterText", QVariant(lineEdit_->text()));
     settings.setValue("currentView", QVariant(listView_->currentIndex()));
 

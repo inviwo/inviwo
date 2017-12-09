@@ -57,8 +57,6 @@ protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
 
-    virtual void closeEvent(QCloseEvent *event) override;
-
     virtual void onPlaybackModeChanged(AnimationController* controller, PlaybackMode prevMode,
                                        PlaybackMode newMode) override;
 
