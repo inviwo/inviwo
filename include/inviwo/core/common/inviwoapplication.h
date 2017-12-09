@@ -320,8 +320,8 @@ protected:
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::unique_ptr<SystemSettings> systemSettings_;
     std::unique_ptr<SystemCapabilities> systemCapabilities_;
+    std::vector<std::unique_ptr<ModuleCallbackAction>> moduleCallbackActions_;
     ModuleManager moduleManager_;
-    std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
     std::unique_ptr<WorkspaceManager> workspaceManager_;
