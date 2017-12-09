@@ -119,10 +119,10 @@ PortInspectorManager::PortInspectorManager(InviwoApplication* app) : app_(app) {
 PortInspectorManager::~PortInspectorManager() { clear(); }
 
 bool PortInspectorManager::hasPortInspector(Outport* outport) const {
-    
+
     return std::find_if(portInspectors_.begin(), portInspectors_.end(), [&](const auto& item) {
-        return item.first == getPortId(outport); 
-    }) != portInspectors_.end();
+               return item.first == getPortId(outport);
+           }) != portInspectors_.end();
 }
 
 ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 pos) {
@@ -166,9 +166,8 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
 
 void PortInspectorManager::removePortInspector(Outport* outport) {
 
-    auto it = std::find_if(portInspectors_.begin(), portInspectors_.end(), [&](const auto& item) {
-        return item.first == getPortId(outport);
-    });
+    auto it = std::find_if(portInspectors_.begin(), portInspectors_.end(),
+                           [&](const auto& item) { return item.first == getPortId(outport); });
     if (it != portInspectors_.end()) {
         auto network = app_->getProcessorNetwork();
         NetworkLock lock(network);
@@ -191,34 +190,35 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
 
     try {
         if (auto portInspector = borrow(outport)) {
-            auto network = app_->getProcessorNetwork();
+            if (auto canvasProcessor = portInspector->getCanvasProcessor()) {
+                canvasProcessor->setEvaluateWhenHidden(true);
+                canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(false);
+                auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
+                    ProcessorWidgetMetaData::CLASS_IDENTIFIER);
+                auto size = app_->getSystemSettings().portInspectorSize_.get();
+                widgetMeta->setDimensions(ivec2(size, size));
+                widgetMeta->setVisibile(false);
 
-            auto canvasProcessor = portInspector->getCanvasProcessor();
-            canvasProcessor->setEvaluateWhenHidden(true);
-            canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(false);
-            auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
-                ProcessorWidgetMetaData::CLASS_IDENTIFIER);
-            auto size = app_->getSettingsByType<SystemSettings>()->portInspectorSize_.get();
-            widgetMeta->setDimensions(ivec2(size, size));
-            widgetMeta->setVisibile(false);
+                auto network = app_->getProcessorNetwork();
+                {
+                    // Add processors to the network
+                    NetworkLock lock(network);
+                    insertNetwork(portInspector, network, outport);
+                }  // Network will unlock and evaluate here.
 
-            {
-                // Add processors to the network
-                NetworkLock lock(network);
-                insertNetwork(portInspector, network, outport);
-            }  // Network will unlock and evaluate here.
+                // clone the image since removing the port inspector processors from the network
+                // will cause a re-evaluation and thus resize this image to 8x8 pixel
+                if (auto img = canvasProcessor->getImage()) {
+                    image.reset(img->clone());
+                }
 
-            // clone the image since removing the port inspector processors from the network
-            // will cause a re-evaluation and thus resize this image to 8x8 pixel
-            image.reset(canvasProcessor->getImage()->clone());
-
-            {
-                // remove the network...
-                NetworkLock lock(network);
-                removeNetwork(portInspector, network);
-                canvasProcessor->setEvaluateWhenHidden(false);
+                {
+                    // remove the network...
+                    NetworkLock lock(network);
+                    removeNetwork(portInspector, network);
+                    canvasProcessor->setEvaluateWhenHidden(false);
+                }
             }
-
         }
     } catch (Exception& exception) {
         util::log(exception.getContext(), exception.getMessage(), LogLevel::Error);
@@ -244,7 +244,7 @@ void PortInspectorManager::onProcessorNetworkWillRemoveProcessor(Processor* proc
 }
 
 void PortInspectorManager::serialize(Serializer& s) const {
-     s.serialize("PortInsectors", portInspectors_, "PortInspector");
+    s.serialize("PortInsectors", portInspectors_, "PortInspector");
 }
 
 void PortInspectorManager::deserialize(Deserializer& d) {
@@ -257,5 +257,4 @@ std::string PortInspectorManager::getPortId(Outport* outport) {
     return outport->getProcessor()->getIdentifier() + "." + outport->getIdentifier();
 }
 
-} // namespace
-
+}  // namespace inviwo

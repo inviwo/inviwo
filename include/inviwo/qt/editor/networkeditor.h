@@ -127,6 +127,9 @@ public:
     void setBackgroundVisible(bool visible);
     bool isBackgroundVisible() const;
 
+    void updateSceneSize();
+    const QRectF& getProcessorsBoundingRect() const;
+
     static std::string getMimeTag();
 public slots:
     void contextMenuShowInspector(EditorGraphicsItem*);
@@ -220,6 +223,7 @@ private:
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0,0}};
 
     // Connection and link state
+    ProcessorGraphicsItem* processorItem_;
     ConnectionDragGraphicsItem* connectionCurve_;
     LinkConnectionDragGraphicsItem* linkCurve_;
 

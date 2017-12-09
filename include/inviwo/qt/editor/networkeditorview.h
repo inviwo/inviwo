@@ -74,10 +74,13 @@ private:
     void zoom(double dz);
     void fitNetwork();
 
+    virtual void onSceneSizeChanged() override;
+
     InviwoMainWindow* mainwindow_;
     NetworkEditor* networkEditor_;
     ivec2 scrollPos_;
     WorkspaceManager::DeserializationHandle loadHandle_;
+    WorkspaceManager::ClearHandle clearHandle_;
     std::shared_ptr<MenuItem> editActionsHandle_;
 };
 

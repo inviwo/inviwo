@@ -74,10 +74,12 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
     setAcceptDrops(true);
-    setSceneRect(QRectF());
 
     loadHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
         [this](Deserializer&) { fitNetwork(); });
+
+    clearHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onClear(
+        [this]() { fitNetwork(); });
 
     auto editmenu = mainwindow_->getInviwoEditMenu();
 
@@ -189,7 +191,7 @@ void NetworkEditorView::fitNetwork() {
     const auto network = mainwindow_->getInviwoApplication()->getProcessorNetwork();
     if (network) {
         if (network->getProcessors().size() > 0) {
-            QRectF br = networkEditor_->itemsBoundingRect().adjusted(-50, -50, 50, 50);
+            QRectF br = networkEditor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
             QSizeF viewsize = size();
             QSizeF brsize = br.size();
 
@@ -205,10 +207,30 @@ void NetworkEditorView::fitNetwork() {
             setSceneRect(br);
             fitInView(br, Qt::KeepAspectRatio);
         } else {
-            centerOn(0.0, 0.0);
-            setTransform(QTransform::fromScale(1.0, 1.0), true);
+            QRectF r{rect()};
+            r.moveCenter(QPointF(0, 0));
+            setSceneRect(rect());
+            fitInView(rect(), Qt::KeepAspectRatio);
         }
     }
+}
+
+void NetworkEditorView::onSceneSizeChanged() {
+    auto br = networkEditor_->getProcessorsBoundingRect();
+    if (sceneRect().contains(br)) return;
+
+    QSizeF viewsize = viewport()->size();
+    QSizeF brsize = br.size();
+
+    if (brsize.width() < viewsize.width()) {
+        br.setLeft(br.left() - 0.5 * (viewsize.width() - brsize.width()));
+        br.setRight(br.right() + 0.5 * (viewsize.width() - brsize.width()));
+    }
+    if (brsize.height() < viewsize.height()) {
+        br.setTop(br.top() - 0.5 * (viewsize.height() - brsize.height()));
+        br.setBottom(br.bottom() + 0.5 * (viewsize.height() - brsize.height()));
+    }
+    setSceneRect(br);
 }
 
 void NetworkEditorView::focusOutEvent(QFocusEvent* e) {

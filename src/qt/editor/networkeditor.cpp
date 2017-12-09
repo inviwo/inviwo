@@ -98,6 +98,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , oldConnectionTarget_(nullptr)
     , oldProcessorTarget_(nullptr)
     , validConnectionTarget_(false)
+    , processorItem_(nullptr)
     , connectionCurve_(nullptr)
     , linkCurve_(nullptr)
     , mainwindow_(mainwindow)
@@ -161,8 +162,8 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
     auto processorGraphicsItem = new ProcessorGraphicsItem(processor);
     processorGraphicsItems_[processor] = processorGraphicsItem;
     addItem(processorGraphicsItem);
+    updateSceneSize();
     for (auto v : views()) {
-        v->setSceneRect(QRectF{});
         v->ensureVisible(processorGraphicsItem);
     }
     return processorGraphicsItem;
@@ -178,6 +179,8 @@ void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
     processorGraphicsItems_.erase(processor);
     // delete processor graphics item
     delete processorGraphicsItem;
+
+    updateSceneSize();
 }
 
 void NetworkEditor::addPropertyWidgets(Processor* processor) {
@@ -332,6 +335,23 @@ void NetworkEditor::setBackgroundVisible(bool visible) {
 
 bool NetworkEditor::isBackgroundVisible() const { return backgroundVisible_; }
 
+void NetworkEditor::updateSceneSize() {
+    if (!processorItem_) {
+        setSceneRect(getProcessorsBoundingRect());
+        forEachObserver([&](auto o) { o->onSceneSizeChanged(); });
+    }
+}
+
+const QRectF& NetworkEditor::getProcessorsBoundingRect() const {
+    QRectF rect;
+    for (const auto& item : processorGraphicsItems_) {
+        if (item.second->isVisible()) {
+            rect = rect.united(item.second->sceneBoundingRect());
+        }
+    }
+    return rect;
+}
+
 std::string NetworkEditor::getMimeTag() { return "application/x.vnd.inviwo.network+xml"; }
 
 ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItemAt(const QPointF pos) const {
@@ -352,6 +372,9 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItemAt(const QPointF p
 //   EVENT HANDLING METHODS   //
 ////////////////////////////////
 void NetworkEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
+    if (auto p = getProcessorGraphicsItemAt(e->scenePos())) {
+        processorItem_ = p;
+    }
     QGraphicsScene::mousePressEvent(e);
 }
 
@@ -413,6 +436,9 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
             }
         }
         e->accept();
+    } else if (processorItem_) {
+        processorItem_ = nullptr;
+        updateSceneSize();
     }
 
     QGraphicsScene::mouseReleaseEvent(e);
@@ -1084,14 +1110,11 @@ void NetworkEditor::paste(QByteArray mimeData) {
             return qgraphicsitem_cast<ProcessorGraphicsItem*>(i) == nullptr;
         });
         if (!selection.empty()) {
-            auto rect =
-                selection.front()->mapToScene(selection.front()->boundingRect()).boundingRect();
-
+            QRectF rect;
             for (auto item : selection) {
-                rect = rect.united(item->mapToScene(item->boundingRect()).boundingRect());
+                rect = rect.united(item->sceneBoundingRect());
             }
             for (auto v : views()) {
-                v->setSceneRect(QRectF{});
                 v->ensureVisible(rect);
             }
         }
