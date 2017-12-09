@@ -116,7 +116,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , systemCapabilities_{std::make_unique<SystemCapabilities>()}
     , moduleManager_{this}
-    , moudleCallbackActions_()
+    , moduleCallbackActions_()
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{util::make_unique<ProcessorNetworkEvaluator>(
           processorNetwork_.get())}
@@ -281,11 +281,11 @@ void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
 const std::string& InviwoApplication::getDisplayName() const { return displayName_; }
 
 void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
-    moudleCallbackActions_.emplace_back(callbackAction);
+    moduleCallbackActions_.emplace_back(callbackAction);
 }
 
 std::vector<std::unique_ptr<ModuleCallbackAction>>& InviwoApplication::getCallbackActions() {
-    return moudleCallbackActions_;
+    return moduleCallbackActions_;
 }
 
 std::vector<Settings*> InviwoApplication::getModuleSettings() {
