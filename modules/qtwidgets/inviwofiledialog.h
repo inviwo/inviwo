@@ -122,8 +122,6 @@ protected:
 
     using FileExtMap = std::unordered_map<std::string, FileExtension>;
     FileExtMap extmap_;
-
-    static QSettings globalSettings_;
 };
 }  // namespace
 

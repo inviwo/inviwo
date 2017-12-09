@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3qt/pythonmenu.h>
@@ -45,17 +45,17 @@ namespace inviwo {
 PythonMenu::PythonMenu(InviwoApplication* app) {
     if (auto win = utilqt::getApplicationMainWindow()) {
         menu_ = utilqt::addMenu("&Python");
-        QAction* pythonEditorOpen =
-            menu_->addAction(QIcon(":/icons/python.png"), "&Python Editor");
+        auto pythonEditorOpen = menu_->addAction(QIcon(":/icons/python.png"), "&Python Editor");
         editor_ = new PythonEditorWidget(win, app);
-        win->connect(pythonEditorOpen, SIGNAL(triggered(bool)), editor_, SLOT(show(void)));
+        editor_->setVisible(false);
+        editor_->loadState();
+        win->connect(pythonEditorOpen, &QAction::triggered, editor_, &PythonEditorWidget::show);
 
         auto pyPropertoes = menu_->addAction("&List unexposed properties");
         win->connect(pyPropertoes, &QAction::triggered, [app]() {
             auto mod = app->getModuleByType<Python3Module>();
             PythonScriptDisk(mod->getPath() + "/scripts/list_not_exposed_properties.py").run();
         });
-
     }
 }
 
@@ -69,9 +69,6 @@ PythonMenu::~PythonMenu() {
     }
 }
 
-PythonEditorWidget* PythonMenu::getEditor() const {
-    return editor_;
-}
+PythonEditorWidget* PythonMenu::getEditor() const { return editor_; }
 
-} // namespace
-
+}  // namespace inviwo

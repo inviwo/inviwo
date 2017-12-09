@@ -101,6 +101,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                         "Go through and update all workspaces the the latest versions")
     , undoManager_(this) {
 
+    setObjectName("InviwoMainWindow");
+
     app_->setMainWindow(this);
 
     setAcceptDrops(true);
@@ -163,30 +165,40 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     setCentralWidget(networkEditorView_);
 
     settingsWidget_ = new SettingsWidget(this);
-    addDockWidget(Qt::LeftDockWidgetArea, settingsWidget_);
-    settingsWidget_->hide();
+    addDockWidget(Qt::RightDockWidgetArea, settingsWidget_);
+    settingsWidget_->setVisible(false);
+    settingsWidget_->loadState();
 
     helpWidget_ = new HelpWidget(this);
     addDockWidget(Qt::RightDockWidgetArea, helpWidget_);
+    helpWidget_->setVisible(true);
+    helpWidget_->loadState();
 
     processorTreeWidget_ = new ProcessorTreeWidget(this, helpWidget_);
     addDockWidget(Qt::LeftDockWidgetArea, processorTreeWidget_);
+    processorTreeWidget_->setVisible(true);
+    processorTreeWidget_->loadState();
 
     propertyListWidget_ = new PropertyListWidget(this, app_);
     addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
+    propertyListWidget_->setVisible(true);
+    propertyListWidget_->loadState();
 
     addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());
+    consoleWidget_->setVisible(true);
+    consoleWidget_->loadState();
+
     // load settings and restore window state
     loadWindowState();
 
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("mainwindow");
+    QSettings settings;
+    settings.beginGroup(objectName());
     QString firstWorkspace = filesystem::getPath(PathType::Workspaces, "/boron.inv").c_str();
     workspaceOnLastSuccessfulExit_ =
-        settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
-            .toString();
+        settings.value("workspaceOnLastSuccessfulExit", firstWorkspace).toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
+
     rootDir_ = QString::fromStdString(filesystem::getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
 
@@ -622,8 +634,8 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
 }
 
 QStringList InviwoMainWindow::getRecentWorkspaceList() const {
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("mainwindow");
+    QSettings settings;
+    settings.beginGroup(objectName());
     QStringList list{settings.value("recentFileList").toStringList()};
     settings.endGroup();
 
@@ -631,8 +643,8 @@ QStringList InviwoMainWindow::getRecentWorkspaceList() const {
 }
 
 void InviwoMainWindow::saveRecentWorkspaceList(const QStringList& list) {
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("mainwindow");
+    QSettings settings;
+    settings.beginGroup(objectName());
     settings.setValue("recentFileList", list);
     settings.endGroup();
 }
@@ -916,39 +928,21 @@ void InviwoMainWindow::exitInviwo(bool saveIfModified) {
 }
 
 void InviwoMainWindow::saveWindowState() {
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("mainwindow");
+    QSettings settings;
+    settings.beginGroup(objectName());
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", saveState());
     settings.setValue("maximized", isMaximized());
-    // settings.setValue("recentFileList", recentFileList_);
-
-    // save sticky flags for main dock widgets
-    settings.beginGroup("dialogs");
-    settings.setValue("settingswidgetSticky", settingsWidget_->isSticky());
-    settings.setValue("processorwidgetSticky", processorTreeWidget_->isSticky());
-    settings.setValue("propertywidgetSticky", propertyListWidget_->isSticky());
-    settings.setValue("consolewidgetSticky", consoleWidget_->isSticky());
-    settings.setValue("helpwidgetSticky", helpWidget_->isSticky());
-    settings.endGroup();  // dialogs
-
-    settings.endGroup();  // mainwindow
+    settings.endGroup();
 }
+
 void InviwoMainWindow::loadWindowState() {
-    // load settings and restore window state
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("mainwindow");
+    QSettings settings;
+    settings.beginGroup(objectName());
     restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
     restoreState(settings.value("state", saveState()).toByteArray());
     maximized_ = settings.value("maximized", false).toBool();
-
-    // restore sticky flags for main dock widgets
-    settings.beginGroup("dialogs");
-    settingsWidget_->setSticky(settings.value("settingswidgetSticky", true).toBool());
-    processorTreeWidget_->setSticky(settings.value("processorwidgetSticky", true).toBool());
-    propertyListWidget_->setSticky(settings.value("propertywidgetSticky", true).toBool());
-    consoleWidget_->setSticky(settings.value("consolewidgetSticky", true).toBool());
-    helpWidget_->setSticky(settings.value("helpwidgetSticky", true).toBool());
+    settings.endGroup();
 }
 
 void InviwoMainWindow::closeEvent(QCloseEvent* event) {
@@ -961,8 +955,8 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
 
     saveWindowState();
 
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("mainwindow");
+    QSettings settings;
+    settings.beginGroup(objectName());
     if (!currentWorkspaceFileName_.contains("untitled.inv")) {
         settings.setValue("workspaceOnLastSuccessfulExit", currentWorkspaceFileName_);
     } else {

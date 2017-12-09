@@ -101,7 +101,6 @@ private:
     void setFileName(const std::string filename);
     void updateTitleBar();
 
-    QSettings settings_;
     PythonTextEditor* pythonCode_;
     QTextEdit* pythonOutput_;
 

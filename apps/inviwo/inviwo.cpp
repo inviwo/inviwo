@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
     inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
     auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     inviwo::LogCentral::getPtr()->registerLogger(logCounter);
-    inviwo::InviwoApplicationQt inviwoApp("Inviwo v" + IVW_VERSION, argc, argv);
+    inviwo::InviwoApplicationQt inviwoApp("Inviwo", argc, argv);
     inviwoApp.setWindowIcon(QIcon(":/icons/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
     QFile styleSheetFile(":/stylesheets/inviwo.qss");

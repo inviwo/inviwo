@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWODOCKWIDGET_H
@@ -44,13 +44,14 @@ namespace inviwo {
 class InviwoDockWidgetTitleBar;
 
 class IVW_MODULE_QTWIDGETS_API InviwoDockWidget : public QDockWidget {
-    #include <warn/push>
-    #include <warn/ignore/all>
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
+#include <warn/pop>
 
 public:
     InviwoDockWidget(QString title, QWidget* parent);
+    InviwoDockWidget(QString title, QWidget* parent, QString objname);
     virtual ~InviwoDockWidget();
     virtual void showEvent(QShowEvent* showEvent) override;
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
@@ -58,16 +59,32 @@ public:
     void setSticky(bool sticky);
     bool isSticky() const;
 
-    void setContents(QWidget *widget);
-    void setContents(QLayout *layout);
+    void setContents(QWidget* widget);
+    void setContents(QLayout* layout);
+
+    /**
+     * Save state related to the dock widget, called in the close event.
+     * Uses the objectName as settings group
+     */
+    virtual void saveState();
+
+    /**
+     * Load state related to the dock widget, called in the constructor. If you overload this
+     * function you must also call it in your constructor.
+     * Uses the objectName as settings group
+     */
+    virtual void loadState();
 
 signals:
     void stickyFlagChanged(bool sticky);
+
+protected:
+    virtual void closeEvent(QCloseEvent* event) override;
 
 private:
     InviwoDockWidgetTitleBar* dockWidgetTitleBar_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INVIWODOCKWIDGET_H
+#endif  // IVW_INVIWODOCKWIDGET_H

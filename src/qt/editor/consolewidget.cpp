@@ -89,7 +89,7 @@ void TextSelectionDelegate::setModelData(QWidget* editor, QAbstractItemModel* mo
 }
 
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
-    : InviwoDockWidget(tr("Console"), parent)
+    : InviwoDockWidget(tr("Console"), parent, "ConsoleWidget")
     , tableView_(new QTableView(this))
     , model_()
     , filter_(new QSortFilterProxyModel(this))
@@ -98,7 +98,6 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , filterPattern_(new QLineEdit(this))
     , mainwindow_(parent) {
 
-    setObjectName("ConsoleWidget");
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
     qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
@@ -304,8 +303,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     connect(this, &ConsoleWidget::clearSignal, this, &ConsoleWidget::clear);
 
     // Restore State
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("console");
+    QSettings settings;
+    settings.beginGroup(objectName());
 
     {
         auto columnsActive = settings.value("columnsActive", QVariant(QList<QVariant>()));
@@ -499,9 +498,8 @@ void ConsoleWidget::copy() {
 }
 
 void ConsoleWidget::closeEvent(QCloseEvent* event) {
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("console");
-    settings.setValue("geometry", saveGeometry());
+    QSettings settings;
+    settings.beginGroup(objectName());
 
     const auto cols = tableView_->horizontalHeader()->count();
     QList<QVariant> columnsActive;

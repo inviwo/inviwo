@@ -48,8 +48,8 @@
 namespace inviwo {
 
 SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindow)
-    : InviwoDockWidget(title, mainwindow), mainwindow_(mainwindow) {
-    setObjectName("SettingsWidget");
+    : InviwoDockWidget(title, mainwindow, "SettingsWidget"), mainwindow_(mainwindow) {
+
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
     scrollArea_ = new QScrollArea();
