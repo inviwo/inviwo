@@ -60,7 +60,7 @@ IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::s
  * Example for a processor identifier:
  *     auto uniqueIdentifier = util::findUniqueIdentifier(
  *         startIdentifier,
- *         [&](const std::string& id) { 
+ *         [&](const std::string& id) {
  *             return processorNetwork->getProcessorByIdentifier(id) == nullptr; },
  *         ""
  *     );

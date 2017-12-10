@@ -138,6 +138,8 @@ const typename representation_traits<Volume, Kind>::type *Volume::getRep() const
     return getRepresentation<typename representation_traits<Volume, Kind>::type>();
 }
 
+using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
+
 }  // namespace
 
 #endif  // IVW_VOLUME_H

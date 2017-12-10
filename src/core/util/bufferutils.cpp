@@ -27,35 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef KERNEL_RADIUS
-#define KERNEL_RADIUS 3
-#endif
+#include <inviwo/core/util/bufferutils.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
-uniform vec2 direction;
-uniform sampler2D texSource;
+namespace inviwo {
 
-in vec2 texCoord;
+namespace util {
 
-//-------------------------------------------------------------------------
-
-float gaussianPdf(in float x) {
-    const float sigma = float(KERNEL_RADIUS);
-    return 0.39894 * exp(-0.5 * x * x / (sigma * sigma)) / sigma;
+void reverse(BufferBase &b) {
+    b.getEditableRepresentation<BufferRAM>()->dispatch<void>([](auto bufRam) {
+        std::reverse(bufRam->getDataContainer().begin(), bufRam->getDataContainer().end());
+    });
 }
 
-void main() {
-    float weightSum = gaussianPdf(0.0);
-    vec4 diffuseSum = texture(texSource, texCoord) * weightSum;
+}  // namespace util
 
-    for (int i = 1; i < KERNEL_RADIUS; i++) {
-        float x = float(i);
-        float w = gaussianPdf(x);
-        vec2 offset = direction * x;
-        vec4 sample1 = texture(texSource, texCoord + offset);
-        vec4 sample2 = texture(texSource, texCoord - offset);
-        diffuseSum += (sample1 + sample2) * w;
-        weightSum += 2.0 * w;
-    }
-
-    FragData0 = diffuseSum / weightSum;
-}
+}  // namespace inviwo

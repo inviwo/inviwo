@@ -138,12 +138,16 @@ void VectorElementSelectorProcessor<T, OutportType>::process() {
     if (!inport_.isReady()) return;
 
     if (auto data = inport_.getData()) {
+        if (data->size() == 0) {
+            outport_.detachData();
+            return;
+        }
         size_t index = std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
 
         outport_.setData((*data)[index]);
     }
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VECTORELEMENTSELECTORPROCESSOR_H

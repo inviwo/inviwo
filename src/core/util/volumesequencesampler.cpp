@@ -88,10 +88,6 @@ VolumeSequenceSampler::VolumeSequenceSampler(
         for (size_t i = 0; i < dataSize1 && firstAndLastAreSame; i++) {
             firstAndLastAreSame &= firstData[i] == lastData[i];
         }
-        if (firstAndLastAreSame) {
-            //   prob not pop yet
-            wrappers_.pop_back();
-        }
     }
 
     auto prev = wrappers_.begin();
@@ -118,12 +114,18 @@ VolumeSequenceSampler::VolumeSequenceSampler(
 
         if (infsDuration == size) {  // we do not have durations
             for (auto &w : wrappers_) {
-                if (w->next_.expired()) {
-                    w->duration_ = w->next_.lock()->timestamp_ - w->timestamp_;
+                if (auto next = w->next_.lock()) {
+                    w->duration_ = next->timestamp_ - w->timestamp_;
                 }
             }
         }
     }
+
+
+    if (firstAndLastAreSame && wrappers_.size() > 1) {
+        wrappers_.pop_back();
+    }
+
     totDuration_ = 0;
     for (auto &w : wrappers_) {
         totDuration_ += w->duration_;

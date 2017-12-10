@@ -27,35 +27,23 @@
  *
  *********************************************************************************/
 
-#ifndef KERNEL_RADIUS
-#define KERNEL_RADIUS 3
-#endif
+#ifndef IVW_BUFFERUTILS_H
+#define IVW_BUFFERUTILS_H
 
-uniform vec2 direction;
-uniform sampler2D texSource;
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-in vec2 texCoord;
+#include <inviwo/core/datastructures/buffer/buffer.h>
 
-//-------------------------------------------------------------------------
 
-float gaussianPdf(in float x) {
-    const float sigma = float(KERNEL_RADIUS);
-    return 0.39894 * exp(-0.5 * x * x / (sigma * sigma)) / sigma;
-}
+namespace inviwo {
 
-void main() {
-    float weightSum = gaussianPdf(0.0);
-    vec4 diffuseSum = texture(texSource, texCoord) * weightSum;
+namespace util {
 
-    for (int i = 1; i < KERNEL_RADIUS; i++) {
-        float x = float(i);
-        float w = gaussianPdf(x);
-        vec2 offset = direction * x;
-        vec4 sample1 = texture(texSource, texCoord + offset);
-        vec4 sample2 = texture(texSource, texCoord - offset);
-        diffuseSum += (sample1 + sample2) * w;
-        weightSum += 2.0 * w;
-    }
+void reverse(BufferBase &b);
 
-    FragData0 = diffuseSum / weightSum;
-}
+}  // namespace util
+
+}  // namespace inviwo
+
+#endif  // IVW_VOLUMEUTILS_H

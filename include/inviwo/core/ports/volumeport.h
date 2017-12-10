@@ -50,11 +50,6 @@ using VolumeOutport = DataOutport<Volume>;
 /**
  * \ingroup ports
  */
-using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
-
-/**
- * \ingroup ports
- */
 using VolumeSequenceInport = DataInport<VolumeSequence>;
 
 /**

@@ -61,6 +61,14 @@ std::pair<vec3, vec3> IVW_CORE_API getVolumeMargins(const std::shared_ptr<const 
 */
 size3_t IVW_CORE_API getVolumeDimensions(const std::shared_ptr<const Volume> &volume);
 
+/**
+* \brief calculates the volume of a single voxel, taking the basis and the dimensions into account
+* The units of the result is in the unit as the basis vectors ^3 
+*
+* @return volume of one voxel 
+*/
+double IVW_CORE_API voxelVolume(const Volume &volume);
+
 } // namespace util
 
 }  // namespace inviwo

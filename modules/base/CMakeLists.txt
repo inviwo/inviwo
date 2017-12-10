@@ -80,6 +80,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesingletimestepsampler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.h
@@ -167,6 +168,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesingletimestepsampler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.cpp

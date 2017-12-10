@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>

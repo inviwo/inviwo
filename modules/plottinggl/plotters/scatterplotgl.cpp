@@ -78,8 +78,8 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     minRadius_.setVisible(false);
 
     tf_.get().clearPoints();
-    tf_.get().addPoint(vec2(0, 1), vec4(1));
-    tf_.get().addPoint(vec2(1, 1), vec4(1));
+    tf_.get().addPoint(0.0f, vec4(1));
+    tf_.get().addPoint(1.0f, vec4(1));
     tf_.setCurrentStateAsDefault();
 }
 

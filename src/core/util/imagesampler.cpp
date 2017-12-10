@@ -28,47 +28,4 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/imagesampler.h>
-
-#include <inviwo/core/util/interpolation.h>
-
-namespace inviwo {
-
-ImageSampler::ImageSampler(const LayerRAM *ram)
-    : layer_(ram), dims_(layer_->getDimensions()), sharedImage_(nullptr) {}
-
-ImageSampler::ImageSampler(const Layer *layer)
-    : ImageSampler(layer->getRepresentation<LayerRAM>()) {}
-
-ImageSampler::ImageSampler(const Image *img) : ImageSampler(img->getColorLayer()) {}
-
-ImageSampler::ImageSampler(std::shared_ptr<const Image> sharedImage)
-    : ImageSampler(sharedImage->getColorLayer()) {
-    sharedImage_ = sharedImage;
-}
-
-ImageSampler::~ImageSampler() {}
-
-dvec4 ImageSampler::sample(const dvec2 &pos) const {
-    dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
-    size2_t indexPos = size2_t(samplePos);
-    dvec2 interpolants = samplePos - dvec2(indexPos);
-
-    dvec4 samples[4];
-    samples[0] = getPixel(indexPos);
-    samples[1] = getPixel(indexPos + size2_t(1, 0));
-    samples[2] = getPixel(indexPos + size2_t(0, 1));
-    samples[3] = getPixel(indexPos + size2_t(1, 1));
-
-    return Interpolation<dvec4>::bilinear(samples, interpolants);
-}
-
-inviwo::dvec4 ImageSampler::sample(double x, double y) const { return sample(dvec2(x, y)); }
-
-inviwo::dvec4 ImageSampler::sample(const vec2 &pos) const { return sample(dvec2(pos)); }
-
-dvec4 ImageSampler::getPixel(const size2_t &pos) const {
-    auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
-    return layer_->getAsDVec4(p);
-}
-
-}  // namespace
+namespace inviwo {}  // namespace inviwo

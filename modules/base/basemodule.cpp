@@ -80,6 +80,9 @@
 #include <modules/base/processors/volumelaplacianprocessor.h>
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
 #include <modules/base/processors/worldtransform.h>
+#include <modules/base/processors/camerafrustum.h>
+#include <modules/base/processors/imagetospatialsampler.h>
+#include <modules/base/processors/volumesequencesingletimestepsampler.h>
 
 // Properties
 #include <modules/base/properties/basisproperty.h>
@@ -95,7 +98,7 @@
 #include <modules/base/io/ivfvolumewriter.h>
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
-#include <modules/base/processors/camerafrustum.h>
+
 
 namespace inviwo {
 
@@ -161,6 +164,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<NoiseVolumeProcessor>();
     registerProcessor<BufferToMeshProcessor>();
     registerProcessor<CameraFrustum>();
+    registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
     registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
