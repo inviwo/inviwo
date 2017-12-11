@@ -35,12 +35,15 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
-
 namespace inviwo {
 
 namespace util {
 
-void reverse(BufferBase &b);
+/**
+ * Utility function to reverse the orders of the elements in a buffer.
+ * @param b the buffer to reverse
+ */
+IVW_CORE_API void reverse(BufferBase &b);
 
 }  // namespace util
 
