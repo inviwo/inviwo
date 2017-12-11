@@ -62,22 +62,24 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     }
 
     std::string fileDirectory = filesystem::getFileDirectory(fileName);
-    auto volume = std::make_shared<Volume>();
+
     Deserializer d(fileName);
+
     d.registerFactory(InviwoApplication::getPtr()->getMetaDataFactory());
     d.deserialize("RawFile", rawFile_);
     rawFile_ = fileDirectory + "/" + rawFile_;
-    std::string formatFlag("");
+    std::string formatFlag;
     d.deserialize("Format", formatFlag);
     format_ = DataFormatBase::get(formatFlag);
-    mat4 basisAndOffset;
-    d.deserialize("BasisAndOffset", basisAndOffset);
-    volume->setModelMatrix(basisAndOffset);
-    mat4 worldTransform;
-    d.deserialize("WorldTransform", worldTransform);
-    volume->setWorldMatrix(worldTransform);
     d.deserialize("Dimension", dimensions_);
-    volume->setDimensions(dimensions_);
+
+    auto volume = std::make_shared<Volume>(dimensions_, format_);
+    mat4 basisAndOffset = volume->getModelMatrix();
+    mat4 worldTransform = volume->getWorldMatrix();
+    d.deserialize("BasisAndOffset", basisAndOffset);
+    d.deserialize("WorldTransform", worldTransform);
+    volume->setModelMatrix(basisAndOffset);
+    volume->setWorldMatrix(worldTransform);
 
     d.deserialize("DataRange", volume->dataMap_.dataRange);
     d.deserialize("ValueRange", volume->dataMap_.valueRange);
@@ -95,4 +97,4 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     return volume;
 }
 
-}  // namespace
+}  // namespace inviwo
