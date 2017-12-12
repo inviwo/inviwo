@@ -1,1 +1,0 @@
-OpenGL module with wrappers and utilities 
