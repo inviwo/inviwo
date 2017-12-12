@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/introspection.h>
+#include <inviwo/core/util/assertion.h>
 #include <type_traits>
 #include <iterator>
 
@@ -351,21 +352,33 @@ size_t TemplateOptionProperty<T>::getSelectedIndex() const {
 
 template <typename T>
 const std::string& TemplateOptionProperty<T>::getSelectedIdentifier() const {
+    ivwAssert(selectedIndex_ < options_.size(),
+              "Index out of range (number of options: " << options_.size()
+                                                        << ", index: " << selectedIndex_ << ")");
     return options_[selectedIndex_].id_;
 }
 
 template <typename T>
 const std::string& TemplateOptionProperty<T>::getSelectedDisplayName() const {
+    ivwAssert(selectedIndex_ < options_.size(),
+              "Index out of range (number of options: " << options_.size()
+                                                        << ", index: " << selectedIndex_ << ")");
     return options_[selectedIndex_].name_;
 }
 
 template <typename T>
 const T& TemplateOptionProperty<T>::getSelectedValue() const {
+    ivwAssert(selectedIndex_ < options_.size(),
+              "Index out of range (number of options: " << options_.size()
+                                                        << ", index: " << selectedIndex_ << ")");
     return options_[selectedIndex_].value_;
 }
 
 template <typename T>
 TemplateOptionProperty<T>::operator const T&() const {
+    ivwAssert(selectedIndex_ < options_.size(),
+              "Index out of range (number of options: " << options_.size()
+                                                        << ", index: " << selectedIndex_ << ")");
     return options_[selectedIndex_].value_;
 }
 
