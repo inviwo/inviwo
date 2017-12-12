@@ -174,6 +174,14 @@ node {
                 reportFiles: 'report.html',
                 reportName: 'Regression Report'
             ])
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: false,
+                reportDir: 'build/doc/inviwo/html',
+                reportFiles: 'index.html',
+                reportName: 'Doxygen Documentation'
+            ])
         }
         currentBuild.result = 'SUCCESS'
     } catch (e) {
