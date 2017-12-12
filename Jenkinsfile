@@ -134,6 +134,18 @@ node {
             }
         }
 
+        
+        stage('Doxygen') {
+            dir('build') {
+                nicelog {
+                    sh '''
+                        export DISPLAY=:0
+                        ninja DOXY-ALL
+                    '''
+                }
+            }
+        }
+        
         try {
             stage('Regression tests') {
                 dir('regress') {
