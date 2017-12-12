@@ -79,6 +79,7 @@ node {
                               -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ \
                               -DCMAKE_PREFIX_PATH=/opt/Qt/5.6/gcc_64 \
                               -DIVW_CMAKE_DEBUG=ON \
+                              -DIVW_DOXYGEN_PROJECT=ON \
                               -DBUILD_SHARED_LIBS=ON \
                               -DIVW_MODULE_GLFW=ON \
                               -DIVW_TINY_GLFW_APPLICATION=ON \
