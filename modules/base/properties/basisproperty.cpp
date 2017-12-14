@@ -111,7 +111,7 @@ void BasisProperty::updateForNewEntity(const SpatialEntity<3>& volume, bool dese
 
     // Set min/max range to be an order of magnitude larger
     const auto boundsScale = 5.f;
-    const auto incrementScale = 0.1f;
+    const auto incrementScale = 0.001f;
 
     auto minBounds = volume.getModelMatrix() - boundsScale * glm::abs(volume.getModelMatrix());
     auto maxBounds = volume.getModelMatrix() + boundsScale * glm::abs(volume.getModelMatrix());
