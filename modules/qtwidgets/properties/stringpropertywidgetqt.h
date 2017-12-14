@@ -38,6 +38,7 @@ namespace inviwo {
 class StringProperty;
 class LineEditQt;
 class EditableLabelQt;
+class TextEditorDockWidget;
 
 class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
 public:
@@ -46,10 +47,14 @@ public:
     void updateFromProperty();
     void setPropertyValue();
 
+    virtual PropertyEditorWidget* getEditorWidget() const override;
+    virtual bool hasEditorWidget() const override;
+
 private:
     StringProperty* property_;
     LineEditQt* lineEdit_;
     EditableLabelQt* label_;
+    std::unique_ptr<TextEditorDockWidget> editor_;
 };
 
 }  // namespace

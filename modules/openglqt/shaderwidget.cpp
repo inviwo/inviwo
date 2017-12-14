@@ -32,6 +32,7 @@
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/qtwidgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>
@@ -68,7 +69,7 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     auto shadercode = new QTextEdit(nullptr);
     shadercode->setObjectName("shaderwidgetcode");
     shadercode->setReadOnly(false);
-    shadercode->setText(obj->print(false, false).c_str());
+    shadercode->setText(utilqt::toQString(obj->print(false, false)));
     shadercode->setStyleSheet("font: 10pt \"Courier\";");
     shadercode->setWordWrapMode(QTextOption::NoWrap);
     SyntaxHighligther::createSyntaxHighligther<GLSL>(shadercode->document());
@@ -80,13 +81,13 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     connect(save, &QAction::triggered,[=]() {
         if (auto fr = dynamic_cast<const FileShaderResource*>(obj->getResource().get())) {
             auto file = filesystem::ofstream(fr->file());
-            file << shadercode->toPlainText().toLocal8Bit().constData();
+            file << utilqt::fromQString(shadercode->toPlainText());
             file.close();
         } else if (auto sr = dynamic_cast<const StringShaderResource*>(obj->getResource().get())) {
             // get the non-const version from the manager.
             auto res = ShaderManager::getPtr()->getShaderResource(sr->key());
             if (auto editable = dynamic_cast<StringShaderResource*>(res.get())) {
-                editable->setSource(shadercode->toPlainText().toLocal8Bit().constData());
+                editable->setSource(utilqt::fromQString(shadercode->toPlainText()));
             }
         }
     });
@@ -112,11 +113,14 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     connect(preprocess, &QAction::triggered, update);
 
     mainWindow->setCentralWidget(shadercode);
+
+    loadState();
 }
 
-ShaderWidget::~ShaderWidget() {}
+ShaderWidget::~ShaderWidget() = default;
 
 void ShaderWidget::closeEvent(QCloseEvent* event) {
+    saveState();
     event->accept();
     emit widgetClosed();
     this->deleteLater();

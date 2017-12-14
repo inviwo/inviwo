@@ -57,7 +57,6 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget
                      &InviwoDockWidget::stickyFlagChanged);
     QObject::connect(this, &QDockWidget::allowedAreasChanged, dockWidgetTitleBar_,
                      &InviwoDockWidgetTitleBar::allowedAreasChanged);
-    resize(QSize(500, 700)); // default size
 }
 
 InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent, QString objName)
@@ -110,26 +109,36 @@ void InviwoDockWidget::setContents(QLayout *layout) {
 void InviwoDockWidget::saveState() {
     QSettings settings;
     settings.beginGroup(objectName());
-    settings.setValue("visible", isVisible());
-    settings.setValue("floating", isFloating());
     settings.setValue("sticky", isSticky());
+    settings.setValue("floating", isFloating());
+    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+        settings.setValue("dockarea", static_cast<int>(mainWindow->dockWidgetArea(this)));
+    }
     settings.setValue("size", size());
     settings.setValue("pos", pos());
+    settings.setValue("visible", isVisible());
     settings.endGroup();
 }
 
 void InviwoDockWidget::loadState() {
     QSettings settings;
     settings.beginGroup(objectName());
-    if (settings.contains("visible")) {
-        setVisible(settings.value("visible").toBool());
-    }
-    if (settings.contains("floating")) {
-        setFloating(settings.value("floating").toBool());
-    }
+
     if (settings.contains("sticky")) {
         setSticky(settings.value("sticky").toBool());
     }
+
+    if (settings.contains("floating")) {
+        setFloating(settings.value("floating").toBool());
+    }
+
+    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+        if (settings.contains("dockarea")) {
+            auto dockarea = static_cast<Qt::DockWidgetArea>(settings.value("dockarea").toInt());
+            mainWindow->addDockWidget(dockarea, this);
+        }
+    }
+
     if (settings.contains("size")) {
         resize(settings.value("size").toSize());
     }
@@ -143,6 +152,10 @@ void InviwoDockWidget::loadState() {
         auto newPos = ivwMW->pos();
         newPos += utilqt::offsetWidget();
         move(newPos);
+    }
+
+    if (settings.contains("visible")) {
+        setVisible(settings.value("visible").toBool());
     }
     settings.endGroup();
 }

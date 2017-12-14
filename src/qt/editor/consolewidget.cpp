@@ -99,7 +99,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , mainwindow_(parent) {
 
     setAllowedAreas(Qt::BottomDockWidgetArea);
-
+    resize(QSize(500, 300)); // default size
     qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
 
     filter_->setSourceModel(model_.model());

@@ -61,6 +61,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
 
     setFloating(true);
     setSticky(false);
+    resize(QSize(500, 500)); // default size
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 

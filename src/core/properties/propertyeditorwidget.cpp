@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,25 +27,11 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/propertywidget.h>
-#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyeditorwidget.h>
 
 namespace inviwo {
 
-PropertyWidget::PropertyWidget() = default;
+PropertyEditorWidget::PropertyEditorWidget() = default;
+PropertyEditorWidget::~PropertyEditorWidget() = default;
 
-PropertyWidget::PropertyWidget(Property* property) : property_(property) {
-    if (property_) property_->registerWidget(this);
-}
-
-PropertyWidget::~PropertyWidget() {
-    if (property_) property_->deregisterWidget(this);
-}
-
-Property* PropertyWidget::getProperty() { return property_; }
-
-PropertyEditorWidget* PropertyWidget::getEditorWidget() const { return nullptr; }
-
-bool PropertyWidget::hasEditorWidget() const { return false; }
-
-}  // namespace
+}  // namespace inviwo

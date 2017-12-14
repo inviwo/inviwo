@@ -89,11 +89,9 @@ void TransferFunctionPropertyWidgetQt::updateFromProperty() {
 
 TransferFunctionPropertyDialog* TransferFunctionPropertyWidgetQt::getEditorWidget() const {
     if (!transferFunctionDialog_) {
-        auto mainWindow = utilqt::getApplicationMainWindow();
         transferFunctionDialog_ = util::make_unique<TransferFunctionPropertyDialog>(
-            static_cast<TransferFunctionProperty*>(property_), mainWindow);
+            static_cast<TransferFunctionProperty*>(property_));
     }
-    transferFunctionDialog_->setReadOnly(property_->getReadOnly());
     return transferFunctionDialog_.get();
 }
 
@@ -102,7 +100,6 @@ bool TransferFunctionPropertyWidgetQt::hasEditorWidget() const {
 }
 
 void TransferFunctionPropertyWidgetQt::setReadOnly(bool readonly) {
-    if (transferFunctionDialog_) transferFunctionDialog_->setReadOnly(readonly);
     label_->setDisabled(readonly);
 }
 

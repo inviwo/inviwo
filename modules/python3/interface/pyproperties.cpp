@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/propertyeditorwidget.h>
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -74,10 +75,7 @@ void exposeProperties(py::module &m) {
         .def_property("dimensions", &PropertyEditorWidget::getDimensions,
                       &PropertyEditorWidget::setDimensions)
         .def_property("position", &PropertyEditorWidget::getPosition,
-                      &PropertyEditorWidget::setPosition)
-        //.def_property("dockStatus", &PropertyEditorWidget::getDockStatus,
-        //&PropertyEditorWidget::setDockStatus) //TODO expose dock status
-        .def_property("sticky", &PropertyEditorWidget::isSticky, &PropertyEditorWidget::setSticky);
+                      &PropertyEditorWidget::setPosition);
 
     py::class_<Property, PropertyPtr<Property>>(m, "Property")
         .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)

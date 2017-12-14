@@ -94,6 +94,8 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     , helpWidget_{helpWidget} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    resize(QSize(500, 500)); // default size
+
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
     vLayout->setSpacing(7);
