@@ -166,6 +166,21 @@ endif()
 
 #--------------------------------------------------------------------
 # Inviwo modifications
+if (DARWIN)
+  # Resolve runtime issue on macOS (tested on High Sierra 10.13.1): 
+  # dyld: Symbol not found: __cg_TIFFClientOpen
+  # Referenced from: /System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO
+  # Expected in: /inviwo/build/lib/Debug/libtiff.5.dylib
+  # in /System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO
+  #
+  # Our version of tiff does not do name mangling (_cg), but the macOS-shipped
+  # tiff version seem to do that. Dependencies (Qt?) built using the shipped library 
+  # will expect name mangled tiff functions, but they won't be loaded if 
+  # a library with the same name is already loaded.
+  # Thus, rename the output library to make both libraries load.
+  set_target_properties(tiff PROPERTIES OUTPUT_NAME inviwo-tiff)
+endif()
+
 target_include_directories(tiff INTERFACE 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>

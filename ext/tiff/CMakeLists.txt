@@ -62,6 +62,7 @@ math(EXPR SO_MAJOR "${LIBTIFF_CURRENT} - ${LIBTIFF_AGE}")
 set(SO_MINOR "${LIBTIFF_AGE}")
 set(SO_REVISION "${LIBTIFF_REVISION}")
 
+# Inviwo: Reduce verbose info
 #message(STATUS "Building tiff version ${LIBTIFF_MAJOR_VERSION}.${LIBTIFF_MINOR_VERSION}.${LIBTIFF_MICRO_VERSION}${LIBTIFF_ALPHA_VERSION}")
 #message(STATUS "libtiff library version ${SO_MAJOR}.${SO_MINOR}.${SO_REVISION}")
 
@@ -125,9 +126,11 @@ set(EXTRA_DIST
 # These are annoyingly verbose, produce false positives or don't work
 # nicely with all supported compiler versions, so are disabled unless
 # explicitly enabled.
+# Inviwo: Hide option and then set default value
 #option(extra-warnings "Enable extra compiler warnings" OFF)
 set(extra-warnings OFF)
 # This will cause the compiler to fail when an error occurs.
+# Inviwo: Hide option and then set default value
 #option(fatal-warnings "Compiler warnings are errors" OFF)
 set(fatal-warnings OFF)
 
@@ -184,8 +187,9 @@ endforeach(flag ${test_flags})
 if(MSVC)
     set(CMAKE_DEBUG_POSTFIX "d")
 endif()
-
+# Inviwo: Hide option and then set default value
 #option(ld-version-script "Enable linker version script" ON)
+set(ld-version-script ON)
 # Check if LD supports linker scripts.
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/conftest.map" "VERS_1 {
         global: sym;
@@ -200,11 +204,16 @@ set(CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS} "-Wl,--version-script=${CMAKE_C
 check_c_source_compiles("int main(void){return 0;}" HAVE_LD_VERSION_SCRIPT)
 set(CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS_SAVE})
 file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/conftest.map")
-#if (ld-version-script AND HAVE_LD_VERSION_SCRIPT) #compile error on mac/xcode
-#  set(HAVE_LD_VERSION_SCRIPT TRUE)
-#else()
+if (ld-version-script AND HAVE_LD_VERSION_SCRIPT) 
+  set(HAVE_LD_VERSION_SCRIPT TRUE)
+else()
   set(HAVE_LD_VERSION_SCRIPT FALSE)
-#endif()
+endif()
+
+# Inviwo: XCode does not support LD_VERSION_SCRIPT, generates compile error.
+if(CMAKE_GENERATOR MATCHES "Xcode" AND HAVE_LD_VERSION_SCRIPT)
+  set(HAVE_LD_VERSION_SCRIPT FALSE)
+endif()
 
 # Find libm, if available
 find_library(M_LIBRARY m)
@@ -378,6 +387,7 @@ else()
   set(TIFF_PTRDIFF_FORMAT "%ld")
 endif()
 
+# Inviwo: Reduce logging
 #report_values(TIFF_INT8_T TIFF_INT8_FORMAT
 #              TIFF_UINT8_T TIFF_UINT8_FORMAT
 #              TIFF_INT16_T TIFF_INT16_FORMAT
@@ -463,10 +473,11 @@ else()
 endif()
 
 # IEEE floating point
+# Inviwo: Hide option and then set default value
 #set(HAVE_IEEEFP 1 CACHE STRING "IEEE floating point is available")
 set(HAVE_IEEEFP 1)
 #mark_as_advanced(HAVE_IEEEFP)
-
+# Inviwo: Reduce logging
 #report_values(CMAKE_HOST_SYSTEM_PROCESSOR HOST_FILLORDER
 #              HOST_BIG_ENDIAN HAVE_IEEEFP)
 
@@ -482,7 +493,7 @@ endif()
 set(LIBTIFF_DOCDIR "${CMAKE_INSTALL_FULL_DOCDIR}")
 
 # Options to enable and disable internal codecs
-
+# Inviwo: Hide following options and then set them to default values
 #option(ccitt "support for CCITT Group 3 & 4 algorithms" ON)
 #set(CCITT_SUPPORT ${ccitt})
 
@@ -505,7 +516,7 @@ set(LIBTIFF_DOCDIR "${CMAKE_INSTALL_FULL_DOCDIR}")
 #option(mdi "support for Microsoft Document Imaging" ON)
 #set(MDI_SUPPORT ${mdi})
 
-# INVIWO CHANGES, don't clutter with options in cmake 
+# Inviwo: Don't clutter with options in cmake 
 set(CCITT_SUPPORT ON)
 set(PACKBITS_SUPPORT ON)
 set(LZW_SUPPORT ON)
@@ -515,6 +526,7 @@ set(LOGLUV_SUPPORT ON)
 set(MDI_SUPPORT ON)
 
 # ZLIB
+# Inviwo: Hide option, always use ZLIB::ZLIB since it is built in inviwo
 #option(zlib "use zlib (required for Deflate compression)" ON)
 #if (zlib)
   #find_package(ZLIB)
@@ -528,6 +540,7 @@ set(ZIP_SUPPORT ${ZLIB_SUPPORT})
 # Option for Pixar log-format algorithm
 
 # Pixar log format
+# Inviwo: Hide option, always use since zlib exist
 #option(pixarlog "support for Pixar log-format algorithm (requires Zlib)" ON)
 #set(PIXARLOG_SUPPORT FALSE)
 #if (ZLIB_SUPPORT)
@@ -537,6 +550,7 @@ set(ZIP_SUPPORT ${ZLIB_SUPPORT})
 #endif()
 
 # JPEG
+# Inviwo: Hide option, always use inviwo::libjpeg since it is built in inviwo
 #option(jpeg "use libjpeg (required for JPEG compression)" ON)
 #if (jpeg)
 #  find_package(JPEG)
@@ -546,7 +560,7 @@ set(ZIP_SUPPORT ${ZLIB_SUPPORT})
 #if(JPEG_FOUND)
   set(JPEG_SUPPORT TRUE)
 #endif()
-
+# Inviwo: Hide option, always use since JPEG exist
 #option(old-jpeg "support for Old JPEG compression (read-only)" ON)
 #set(OJPEG_SUPPORT FALSE)
 #if (JPEG_SUPPORT)
@@ -556,6 +570,7 @@ set(ZIP_SUPPORT ${ZLIB_SUPPORT})
 #endif()
 
 # JBIG-KIT
+# Inviwo: Hide option, don't uses since JBIT-KIT is not included in inviwo
 #option(jbig "use ISO JBIG compression (requires JBIT-KIT library)" ON)
 if (jbig)
   set(JBIG_FOUND 0)
@@ -594,6 +609,7 @@ if(LIBLZMA_FOUND)
 endif()
 
 # 8/12-bit jpeg mode
+# Inviwo: Hide option, don't uses since jpeg12 is not included in inviwo
 #option(jpeg12 "enable libjpeg 8/12-bit dual mode (requires separate
 #12-bit libjpeg build)" ON)
 #set(JPEG12_INCLUDE_DIR JPEG12_INCLUDE_DIR-NOTFOUND CACHE PATH "Include directory for 12-bit libjpeg")
@@ -609,6 +625,7 @@ if (JPEG12_FOUND)
 endif()
 
 # C++ support
+# Inviwo: Hide option and set to default value
 #option(cxx "Enable C++ stream API building (requires C++ compiler)" ON)
 #set(CXX_SUPPORT FALSE)
 #if (cxx)
@@ -617,8 +634,9 @@ endif()
 #endif()
 
 # OpenGL and GLUT
-#find_package(OpenGL) # only used by tools, not needed for inviwo
-#find_package(GLUT)   # only used by tools, not needed for inviwo
+# Inviwo: Don't find since OpenGL and GLUT are only used for tools
+#find_package(OpenGL) 
+#find_package(GLUT)   
 set(HAVE_OPENGL FALSE)
 if(OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND)
   set(HAVE_OPENGL TRUE)
@@ -647,8 +665,10 @@ endif()
 # Orthogonal features
 
 # Strip chopping
+# Inviwo: Hide option and set to default value
 #option(strip-chopping "strip chopping (whether or not to convert single-strip uncompressed images to mutiple strips of specified size to reduce memory usage)" ON)
 set(strip-chopping ON)
+# Inviwo: Hide option and set to default value
 #set(TIFF_DEFAULT_STRIP_SIZE 8192 CACHE STRING "default size of the strip in bytes (when strip chopping is enabled)")
 set(TIFF_DEFAULT_STRIP_SIZE 8192)
 
@@ -661,11 +681,13 @@ if(strip-chopping)
 endif()
 
 # Defer loading of strip/tile offsets
+# Inviwo: Hide option and set to default value
 #option(defer-strile-load "enable deferred strip/tile offset/size loading (experimental)" OFF)
 set(defer-strile-load OFF)
 set(DEFER_STRILE_LOAD ${defer-strile-load})
 
 # CHUNKY_STRIP_READ_SUPPORT
+# Inviwo: Hide option and set to default value
 #option(chunky-strip-read "enable reading large strips in chunks for TIFFReadScanline() (experimental)" OFF)
 set(chunky-strip-read OFF)
 set(CHUNKY_STRIP_READ_SUPPORT ${chunky-strip-read})
@@ -674,6 +696,7 @@ set(CHUNKY_STRIP_READ_SUPPORT ${chunky-strip-read})
 set(SUBIFD_SUPPORT 1)
 
 # Default handling of ASSOCALPHA support.
+# Inviwo: Hide option and set to default value
 #option(extrasample-as-alpha "the RGBA interface will treat a fourth sample with no EXTRASAMPLE_ value as being ASSOCALPHA. Many packages produce RGBA files but don't mark the alpha properly" ON)
 set(extrasample-as-alpha ON)
 if(extrasample-as-alpha)
@@ -682,6 +705,7 @@ endif()
 
 # Default handling of YCbCr subsampling support.
 # See Bug 168 in Bugzilla, and JPEGFixupTestSubsampling() for details.
+# Inviwo: Hide option and set to default value
 #option(check-ycbcr-subsampling "enable picking up YCbCr subsampling info from the JPEG data stream to support files lacking the tag" ON)
 set(check-ycbcr-subsampling ON)
 if (check-ycbcr-subsampling)
@@ -739,6 +763,7 @@ endif()
 #report_values(TIFF_INCLUDES TIFF_LIBRARY_DEPS)
 
 # Process subdirectories
+# Inviwo: Only include libtiff directory
 #add_subdirectory(port)
 add_subdirectory(libtiff)
 #add_subdirectory(tools)
@@ -749,7 +774,7 @@ add_subdirectory(libtiff)
 #add_subdirectory(html)
 
 #message(STATUS "EXTRA_DIST: ${EXTRA_DIST}")
-#[[ Disable messages 
+#[[ Inviwo: Disable messages 
 message(STATUS "")
 message(STATUS "Libtiff is now configured for ${host}")
 message(STATUS "")
