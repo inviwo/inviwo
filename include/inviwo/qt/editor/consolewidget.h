@@ -153,6 +153,9 @@ public:
     virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                             const char* function, int line) override;
 
+    virtual void logAssertion(const char* fileName, const char* functionName, long lineNumber,
+                              std::string message) override;
+
     QAction* getClearAction();
     QTableView* view() { return tableView_; }
 

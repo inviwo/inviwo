@@ -46,6 +46,11 @@ void Logger::logNetwork(LogLevel level, LogAudience audience, std::string msg, c
     log("ProcessorNetwork", level, audience, file, function, line, msg);
 }
 
+void Logger::logAssertion(const char* fileName, const char* functionName, long lineNumber,
+                          std::string message) {
+    log("Assertion failed", LogLevel::Error, LogAudience::Developer, fileName, functionName,
+        lineNumber, message);
+}
 
 LogCentral::LogCentral() : logLevel_(LogLevel::Info), logStacktrace_(false) {}
 
@@ -111,6 +116,18 @@ void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string ms
     }
 }
 
+void LogCentral::logAssertion(const char* fileName, const char* functionName, long lineNumber,
+                              std::string message) {
+    util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+        if (auto l = logger.lock()) {
+            l->logAssertion(fileName, functionName, lineNumber, message);
+            return false;
+        } else {
+            return true;
+        }
+    });
+}
+
 void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = logStacktrace; }
 
 bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
@@ -121,4 +138,4 @@ void util::log(ExceptionContext context, std::string message, LogLevel level,
                               context.getFunction().c_str(), context.getLine(), message);
 }
 
-}  // namespace
+}  // namespace inviwo

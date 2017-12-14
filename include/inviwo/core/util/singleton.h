@@ -93,6 +93,10 @@ public:
         instance_ = nullptr;
     };
 
+    static bool isInitialized() {
+        return instance_ != nullptr;
+    }
+
     virtual ~Singleton() { Singleton<T>::resetInstance(); };
 
 private:
