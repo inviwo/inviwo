@@ -51,10 +51,11 @@
 namespace inviwo {
 
 ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
-    : InviwoDockWidget(QString::fromStdString(obj->getFileName()), parent), obj_(obj) {
-    setObjectName("ShaderEditor");
+    : InviwoDockWidget(utilqt::toQString(obj->getFileName()), parent, "ShaderEditorWidget")
+    , obj_(obj) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    resize(QSize(500, 700));  // default size
     setFloating(true);
     setSticky(false);
 
@@ -75,10 +76,10 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     SyntaxHighligther::createSyntaxHighligther<GLSL>(shadercode->document());
 
     auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save shader"));
-    save->setShortcut(QKeySequence::Save); 
+    save->setShortcut(QKeySequence::Save);
     save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mainWindow->addAction(save);
-    connect(save, &QAction::triggered,[=]() {
+    connect(save, &QAction::triggered, [=]() {
         if (auto fr = dynamic_cast<const FileShaderResource*>(obj->getResource().get())) {
             auto file = filesystem::ofstream(fr->file());
             file << utilqt::fromQString(shadercode->toPlainText());
@@ -99,7 +100,6 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     auto preprocess = toolBar->addAction("Show preprocess");
     preprocess->setChecked(false);
     preprocess->setCheckable(true);
-
 
     auto update = [=](int /*state*/) {
         shadercode->setText(obj->print(showSource->isChecked(), preprocess->isChecked()).c_str());
@@ -126,4 +126,4 @@ void ShaderWidget::closeEvent(QCloseEvent* event) {
     this->deleteLater();
 }
 
-}  // namespace
+}  // namespace inviwo

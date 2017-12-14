@@ -43,6 +43,8 @@ class QMoveEvent;
 
 namespace inviwo {
 
+class Property;
+
 // PropertyEditorWidget owned by PropertyWidget
 class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
                                                         public PropertyEditorWidget,
@@ -56,7 +58,7 @@ public:
     // PropertyEditorWidget overrides
     virtual Property* getProperty() const override;
     virtual bool isVisible() const override;
-    virtual void setVisibility(bool visible) override;
+    virtual void setVisible(bool visible) override;
 
     virtual ivec2 getPosition() const override;
     virtual void setPosition(const ivec2& pos) override;
@@ -77,6 +79,7 @@ protected:
     virtual void onSetReadOnly(Property* property, bool readonly) override;
 
     virtual void setReadOnly(bool readonly);
+
 
     static const std::string visibleKey;
     static const std::string floatingKey;

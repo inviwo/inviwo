@@ -50,7 +50,7 @@ public:
     virtual ivec2 getDimensions() const = 0;
 
     // set functions
-    virtual void setVisibility(bool visible) = 0;
+    virtual void setVisible(bool visible) = 0;
     virtual void setDimensions(const ivec2& dimensions) = 0;
     virtual void setPosition(const ivec2& pos) = 0;
 };

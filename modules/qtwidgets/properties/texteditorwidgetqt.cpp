@@ -61,7 +61,7 @@
 namespace inviwo {
 
 TextEditorDockWidget::TextEditorDockWidget(Property* property)
-    : PropertyEditorWidgetQt(property, property->getDisplayName(), "TextEditorDockWidget")
+    : PropertyEditorWidgetQt(property, "Edit " + property->getDisplayName(), "TextEditorDockWidget")
     , fileProperty_{dynamic_cast<FileProperty*>(property)}
     , stringProperty_{dynamic_cast<StringProperty*>(property)} {
 
@@ -125,12 +125,10 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
         reload->setToolTip("Discard changes");
         reload->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         mainWindow->addAction(reload);
-        connect(reload, &QAction::triggered, [=]() {
-            updateFromProperty();
-        });
+        connect(reload, &QAction::triggered, [this]() { updateFromProperty(); });
     }
 
-    resize(QSize(500, 500)); // default size
+    resize(QSize(500, 500));  // default size
     setVisible(false);
     updateFromProperty();
     loadState();
@@ -153,22 +151,20 @@ void TextEditorDockWidget::updateFromProperty() {
 }
 
 void TextEditorDockWidget::closeEvent(QCloseEvent* e) {
-    if (editor_->document()->isModified()) {
+    if (stringProperty_->get() != utilqt::fromQString(editor_->toPlainText())) {
         auto ret = QMessageBox::warning(
-            this, tr("Application"),
+            this, utilqt::toQString("Edit " + stringProperty_->getDisplayName()),
             tr("The document has been modified.\n"
                "Do you want to save your changes?"),
             QMessageBox::Save | QMessageBox::Discard);
 
         if (ret == QMessageBox::Save) {
-            if (editor_->document()->isModified()) {
-                if (fileProperty_) {
-                    if (auto f = filesystem::ofstream(fileProperty_->get())) {
-                        f << utilqt::fromQString(editor_->toPlainText());
-                    }
-                } else if (stringProperty_) {
-                    stringProperty_->set(utilqt::fromQString(editor_->toPlainText()));
+            if (fileProperty_) {
+                if (auto f = filesystem::ofstream(fileProperty_->get())) {
+                    f << utilqt::fromQString(editor_->toPlainText());
                 }
+            } else if (stringProperty_) {
+                stringProperty_->set(utilqt::fromQString(editor_->toPlainText()));
             }
         }
     }
@@ -179,8 +175,6 @@ void TextEditorDockWidget::onSetDisplayName(Property*, const std::string& displa
     setWindowTitle(QString::fromStdString(displayName));
 }
 
-void TextEditorDockWidget::setReadOnly(bool readonly) {
-    editor_->setReadOnly(readonly);
-}
+void TextEditorDockWidget::setReadOnly(bool readonly) { editor_->setReadOnly(readonly); }
 
 }  // namespace inviwo

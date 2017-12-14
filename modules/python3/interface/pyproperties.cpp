@@ -70,8 +70,8 @@ void exposeProperties(py::module &m) {
                                py::return_value_policy::reference);
 
     py::class_<PropertyEditorWidget>(m, "PropertyEditorWidget")
-        .def_property("visibility", &PropertyEditorWidget::isVisible,
-                      &PropertyEditorWidget::setVisibility)
+        .def_property("visible", &PropertyEditorWidget::isVisible,
+                      &PropertyEditorWidget::setVisible)
         .def_property("dimensions", &PropertyEditorWidget::getDimensions,
                       &PropertyEditorWidget::setDimensions)
         .def_property("position", &PropertyEditorWidget::getPosition,

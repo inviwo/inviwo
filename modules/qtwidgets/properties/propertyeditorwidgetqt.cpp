@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
+#include <inviwo/core/properties/property.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
@@ -59,6 +60,9 @@ PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, const std::st
         this, &InviwoDockWidget::dockLocationChanged, this, [this](Qt::DockWidgetArea dockArea) {
             property_->setMetaData<IntMetaData>(dockareaKey, static_cast<int>(dockArea));
         });
+    QObject::connect(this, &InviwoDockWidget::topLevelChanged, this, [this](bool floatimg) {
+        property_->setMetaData<BoolMetaData>(floatingKey, floatimg);
+    });
     QObject::connect(this, &InviwoDockWidget::stickyFlagChanged, this, [this](bool sticky) {
         property_->setMetaData<BoolMetaData>(stickyKey, sticky);
     });
@@ -71,7 +75,7 @@ PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, const std::st
 
 PropertyEditorWidgetQt::~PropertyEditorWidgetQt() = default;
 
-void PropertyEditorWidgetQt::setVisibility(bool visible) {
+void PropertyEditorWidgetQt::setVisible(bool visible) {
     InviwoDockWidget::setVisible(visible);
     property_->setMetaData<BoolMetaData>(visibleKey, visible);
 }
@@ -105,7 +109,6 @@ void PropertyEditorWidgetQt::closeEvent(QCloseEvent* e) {
 
 void PropertyEditorWidgetQt::moveEvent(QMoveEvent* event) {
     property_->setMetaData<IntVec2MetaData>(positionKey, utilqt::toGLM(event->pos()));
-    property_->setMetaData<BoolMetaData>(floatingKey, isFloating());
     InviwoDockWidget::moveEvent(event);
 }
 

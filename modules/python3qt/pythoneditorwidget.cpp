@@ -190,7 +190,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
             this, &PythonEditorWidget::updateStyle);
     }
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500)); // default size
+    resize(QSize(500, 700)); // default size
 
     {
         // Restore state

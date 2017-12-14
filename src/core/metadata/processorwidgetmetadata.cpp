@@ -40,24 +40,6 @@ ProcessorWidgetMetaData::ProcessorWidgetMetaData()
     , dimensions_(256, 256)
     , visibility_(true) {}
 
-ProcessorWidgetMetaData::ProcessorWidgetMetaData(const ProcessorWidgetMetaData& rhs)
-    : MetaData(rhs)
-    , Observable<ProcessorWidgetMetaDataObserver>(rhs)
-    , position_(rhs.position_)
-    , dimensions_(rhs.dimensions_)
-    , visibility_(rhs.visibility_) {}
-
-ProcessorWidgetMetaData& ProcessorWidgetMetaData::operator=(const ProcessorWidgetMetaData& that) {
-    if (this != &that) {
-        MetaData::operator=(that);
-        Observable<ProcessorWidgetMetaDataObserver>::operator=(that);
-        position_ = that.position_;
-        dimensions_ = that.dimensions_;
-        visibility_ = that.visibility_;
-    }
-
-    return *this;
-}
 
 ProcessorWidgetMetaData* ProcessorWidgetMetaData::clone() const {
     return new ProcessorWidgetMetaData(*this);

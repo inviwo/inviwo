@@ -35,6 +35,7 @@
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -54,9 +55,7 @@
 namespace inviwo {
 
 FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
-    : PropertyWidgetQt(property)
-    , property_(property) 
-    , lineEdit_{new FilePathLineEditQt(this)} {
+    : PropertyWidgetQt(property), property_(property), lineEdit_{new FilePathLineEditQt(this)} {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
@@ -97,7 +96,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
                            : filesystem::getFileDirectory(property_->get());
 
             QDesktopServices::openUrl(
-                QUrl(QString::fromStdString("file:///" + dir), QUrl::TolerantMode));
+                QUrl(utilqt::toQString("file:///" + dir), QUrl::TolerantMode));
         });
     }
 
@@ -119,7 +118,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
                 editor_ = std::make_unique<TextEditorDockWidget>(property_);
             }
             editor_->updateFromProperty();
-            editor_->show();
+            editor_->setVisible(true);
         });
     }
 
@@ -151,11 +150,11 @@ void FilePropertyWidgetQt::setPropertyValue() {
 }
 
 void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
-    auto mineData = drop->mimeData();
-    if (mineData->hasUrls()) {
-        if (mineData->urls().size() > 0) {
-            auto url = mineData->urls().first();
-            property_->set(url.toLocalFile().toStdString());
+    auto mimeData = drop->mimeData();
+    if (mimeData->hasUrls()) {
+        if (mimeData->urls().size() > 0) {
+            auto url = mimeData->urls().first();
+            property_->set(utilqt::fromQString(url.toLocalFile()));
 
             drop->accept();
         }

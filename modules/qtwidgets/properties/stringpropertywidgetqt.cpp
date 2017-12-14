@@ -96,7 +96,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
                 editor_ = std::make_unique<TextEditorDockWidget>(property_);
             }
             editor_->updateFromProperty();
-            editor_->show();
+            editor_->setVisible(true);
         });
     }
 

@@ -40,6 +40,10 @@ class LineEditQt;
 class EditableLabelQt;
 class TextEditorDockWidget;
 
+/**
+ * Widget representing a StringProperty.
+ * The following semantics are supported: Default, Password, TextEditor, ShaderEditor
+ */
 class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
 public:
     StringPropertyWidgetQt(StringProperty* property);
