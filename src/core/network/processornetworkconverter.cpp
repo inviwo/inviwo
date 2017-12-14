@@ -611,11 +611,12 @@ void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* nod
 //    </MetaDataItem>
 //</MetaDataMap>
 void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) {
-    const std::vector<std::tuple<std::string, std::string, std::string>> replacements = {
-        {{"position", "org.inviwo.IntVec2MetaData", "PropertyEditorWidgetPosition"},
-         {"dimensions", "org.inviwo.IntVec2MetaData", "PropertyEditorWidgetSize"},
-         {"visibility", "org.inviwo.BoolMetaData", "PropertyEditorWidgetVisible"},
-         {"stickyflag", "org.inviwo.BoolMetaData", "PropertyEditorWidgetSticky"}}};
+    using R = std::tuple<std::string, std::string, std::string>;
+    const std::vector<R> replacements = {
+        R{"position", "org.inviwo.IntVec2MetaData", "PropertyEditorWidgetPosition"},
+        R{"dimensions", "org.inviwo.IntVec2MetaData", "PropertyEditorWidgetSize"},
+        R{"visibility", "org.inviwo.BoolMetaData", "PropertyEditorWidgetVisible"},
+        R{"stickyflag", "org.inviwo.BoolMetaData", "PropertyEditorWidgetSticky"}};
 
     std::string key;
     parent->GetValue(&key);
