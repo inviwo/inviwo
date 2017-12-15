@@ -52,6 +52,7 @@
 #include <QScrollBar>
 #include <QResizeEvent>
 #include <QWheelEvent>
+#include <QMessageBox>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
@@ -100,6 +101,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     setAllowedAreas(Qt::BottomDockWidgetArea);
     resize(QSize(500, 300)); // default size
+      
     qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
 
     filter_->setSourceModel(model_.model());
@@ -426,6 +428,26 @@ void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string
                             function ? function : "",
                             msg};
     logEntry(std::move(e));
+}
+
+void ConsoleWidget::logAssertion(const char* file, const char* function, long line,
+                                 std::string msg) {
+    LogTableModelEntry e = {std::chrono::system_clock::now(),
+                            "Assertion",
+                            LogLevel::Error,
+                            LogAudience::Developer,
+                            file ? file : "",
+                            line,
+                            function ? function : "",
+                            msg};
+    logEntry(std::move(e));
+
+    auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
+                     .arg(file)
+                     .arg(line)
+                     .arg(function)
+                     .arg(utilqt::toQString(msg));
+    QMessageBox::critical(nullptr, "Assertion Failed", error);
 }
 
 void ConsoleWidget::logEntry(LogTableModelEntry e) {

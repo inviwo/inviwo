@@ -193,6 +193,9 @@ public:
 
     virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                             const char* function, int line);
+
+    virtual void logAssertion(const char* fileName, const char* functionName, long lineNumber,
+                      std::string message);
 };
 
 class IVW_CORE_API LogCentral : public Singleton<LogCentral> {
@@ -219,6 +222,10 @@ public:
 
     void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file = "",
                     const char* function = "", int line = 0);
+
+    void logAssertion(const char* fileName, const char* functionName, long lineNumber,
+                      std::string message);
+
 
     void setLogStacktrace(const bool& logStacktrace = true);
     bool getLogStacktrace() const;
