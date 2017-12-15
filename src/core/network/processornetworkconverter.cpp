@@ -622,12 +622,13 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
     parent->GetValue(&key);
 
     if (key == "MetaDataMap") {
+        std::vector<TxElement*> toRemove;
         ticpp::Iterator<TxElement> child;
         for (child = child.begin(parent); child != child.end(); child++) {
-            std::string propKey;
+            std::string childKey;
             TxElement* node = child.Get();
-            node->GetValue(&propKey);
-            if (key == "MetaDataItem") {
+            node->GetValue(&childKey);
+            if (childKey == "MetaDataItem") {
                 std::string nodeKey = node->GetAttributeOrDefault("key", "");
                 if (nodeKey == "org.inviwo.PropertyEditorWidgetMetaData") {
                     for (const auto& item : replacements) {
@@ -642,9 +643,12 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
                             parent->InsertEndChild(newNode);
                         }
                     }
-                    parent->RemoveChild(node);
+                    toRemove.push_back(node);
                 }
             }
+        }
+        for (auto item : toRemove) {
+            parent->RemoveChild(item);
         }
     }
 }
