@@ -166,7 +166,7 @@ endif()
 
 #--------------------------------------------------------------------
 # Inviwo modifications
-if (DARWIN)
+if (UNIX)
   # Resolve runtime issue on macOS (tested on High Sierra 10.13.1): 
   # dyld: Symbol not found: __cg_TIFFClientOpen
   # Referenced from: /System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO
