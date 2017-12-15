@@ -44,7 +44,6 @@
 #include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
-#include <inviwo/core/metadata/propertyeditorwidgetmetadata.h>
 
 // Utilizes
 #include <inviwo/core/util/settings/linksettings.h>
@@ -196,7 +195,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerMetaData(util::make_unique<PositionMetaData>());
     registerMetaData(util::make_unique<ProcessorMetaData>());
     registerMetaData(util::make_unique<ProcessorWidgetMetaData>());
-    registerMetaData(util::make_unique<PropertyEditorWidgetMetaData>());
     registerMetaData(util::make_unique<StdUnorderedMapMetaData<std::string, std::string>>());
     registerMetaData(util::make_unique<StdVectorMetaData<std::string>>());
 

@@ -202,7 +202,7 @@ private:
     std::shared_ptr<MenuItem> editActionsHandle_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 Q_DECLARE_METATYPE(inviwo::LogTableModelEntry)
 

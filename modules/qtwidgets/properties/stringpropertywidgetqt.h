@@ -38,7 +38,12 @@ namespace inviwo {
 class StringProperty;
 class LineEditQt;
 class EditableLabelQt;
+class TextEditorDockWidget;
 
+/**
+ * Widget representing a StringProperty.
+ * The following semantics are supported: Default, Password, TextEditor, ShaderEditor
+ */
 class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
 public:
     StringPropertyWidgetQt(StringProperty* property);
@@ -46,10 +51,14 @@ public:
     void updateFromProperty();
     void setPropertyValue();
 
+    virtual PropertyEditorWidget* getEditorWidget() const override;
+    virtual bool hasEditorWidget() const override;
+
 private:
     StringProperty* property_;
     LineEditQt* lineEdit_;
     EditableLabelQt* label_;
+    std::unique_ptr<TextEditorDockWidget> editor_;
 };
 
 }  // namespace

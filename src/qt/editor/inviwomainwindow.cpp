@@ -170,7 +170,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     settingsWidget_->loadState();
 
     helpWidget_ = new HelpWidget(this);
-    addDockWidget(Qt::RightDockWidgetArea, helpWidget_);
+    tabifyDockWidget(settingsWidget_, helpWidget_);
     helpWidget_->setVisible(true);
     helpWidget_->loadState();
 
@@ -180,7 +180,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     processorTreeWidget_->loadState();
 
     propertyListWidget_ = new PropertyListWidget(this, app_);
-    addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
+    tabifyDockWidget(helpWidget_, propertyListWidget_);
     propertyListWidget_->setVisible(true);
     propertyListWidget_->loadState();
 

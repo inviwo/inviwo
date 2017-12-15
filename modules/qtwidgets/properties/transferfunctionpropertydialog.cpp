@@ -53,9 +53,8 @@
 
 namespace inviwo {
 
-TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty,
-                                                               QWidget* parent)
-    : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", parent)
+TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty)
+    : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", "TransferFunctionEditorWidget")
     , TransferFunctionObserver()
     , sliderRange_(static_cast<int>(tfProperty->get().getTextureSize()))
     , tfProperty_(tfProperty)
@@ -63,43 +62,22 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     , tfEditorView_(nullptr)
     , tfPixmap_(nullptr)
     , gradient_(0, 0, 100, 20) {
+
     tfProperty_->get().addObserver(this);
-
-    std::stringstream ss;
-    ss << "Transfer Function Editor - " << tfProperty_->getDisplayName() << "("
-       << tfProperty_->getOwner()->getProcessor() << ")";
-    setWindowTitle(ss.str().c_str());
-
-    generateWidget();
-    if (!tfProperty_->getVolumeInport()) chkShowHistogram_->setVisible(false);
-
-    updateTFPreview();
-    updateFromProperty();
-
-    if (!tfProperty_->getVolumeInport()) chkShowHistogram_->setVisible(false);
-}
-
-TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
-    tfEditor_->disconnect();
-    hide();
-}
-
-void TransferFunctionPropertyDialog::generateWidget() {
-    ivec2 minEditorDims = vec2(255, 100);
 
     tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_, this);
 
-    auto updateColorWheel = [this](const QColor& color) {
-        colorWheel_->blockSignals(true);
-        colorWheel_->setColor(color);
-        colorWheel_->blockSignals(false);
-    };
-
-    connect(tfEditor_.get(), &TransferFunctionEditor::colorChanged, updateColorWheel);
+    connect(tfEditor_.get(), &TransferFunctionEditor::colorChanged, this,
+            [this](const QColor& color) {
+                colorWheel_->blockSignals(true);
+                colorWheel_->setColor(color);
+                colorWheel_->blockSignals(false);
+            });
 
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
 
     // put origin to bottom left corner
+    ivec2 minEditorDims = vec2(255, 100);
     tfEditorView_->setFocusPolicy(Qt::StrongFocus);
     tfEditorView_->scale(1.0, -1.0);
     tfEditorView_->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
@@ -223,6 +201,44 @@ void TransferFunctionPropertyDialog::generateWidget() {
     mainPanel->setLayout(mainLayout);
 
     setWidget(mainPanel);
+
+    updateFromProperty();
+    if (!tfProperty_->getVolumeInport()) {
+        chkShowHistogram_->setVisible(false);
+    }
+    loadState();
+}
+
+TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
+    tfEditor_->disconnect();
+    hide();
+}
+
+void TransferFunctionPropertyDialog::updateFromProperty() {
+    if (!tfProperty_->getOwner()) return;
+
+    auto processorName = tfProperty_->getOwner()->getProcessor()->getDisplayName();
+    auto windowTitle =
+        "Transfer Function Editor - " + tfProperty_->getDisplayName() + " (" + processorName + ")";
+    setWindowTitle(utilqt::toQString(windowTitle));
+
+    TransferFunction& transFunc = tfProperty_->get();
+    QVector<QGradientStop> gradientStops;
+
+    for (size_t i = 0; i < transFunc.getNumPoints(); i++) {
+        const auto curPoint = transFunc.getPoint(i);
+        vec4 curColor = curPoint->getRGBA();
+
+        // increase alpha to allow better visibility by 1 - (a - 1)^4
+        const float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
+        curColor.a = 1.0f - factor * factor;
+
+        gradientStops.append(QGradientStop(
+            curPoint->getPos(), QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
+    }
+
+    gradient_.setStops(gradientStops);
+    updateTFPreview();
 }
 
 void TransferFunctionPropertyDialog::updateTFPreview() {
@@ -263,33 +279,6 @@ void TransferFunctionPropertyDialog::updateTFPreview() {
     }
 
     tfPreview_->setPixmap(*tfPixmap_);
-}
-
-void TransferFunctionPropertyDialog::updateFromProperty() {
-    if (!tfProperty_->getOwner()) return;
-
-    std::string processorName = tfProperty_->getOwner()->getProcessor()->getIdentifier();
-    QString windowTitle = QString::fromStdString(tfProperty_->getDisplayName() + " (") +
-                          QString::fromStdString(processorName) + QString::fromStdString(")");
-    setWindowTitle(windowTitle);
-
-    TransferFunction& transFunc = tfProperty_->get();
-    QVector<QGradientStop> gradientStops;
-
-    for (size_t i = 0; i < transFunc.getNumPoints(); i++) {
-        const auto curPoint = transFunc.getPoint(i);
-        vec4 curColor = curPoint->getRGBA();
-
-        // increase alpha to allow better visibility by 1 - (a - 1)^4
-        const float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
-        curColor.a = 1.0f - factor * factor;
-
-        gradientStops.append(QGradientStop(
-            curPoint->getPos(), QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
-    }
-
-    gradient_.setStops(gradientStops);
-    updateTFPreview();
 }
 
 void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {

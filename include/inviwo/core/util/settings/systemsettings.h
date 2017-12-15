@@ -48,7 +48,6 @@ public:
     SystemSettings(InviwoApplication* app);
     TemplateOptionProperty<UsageMode> applicationUsageMode_;
     IntSizeTProperty poolSize_;
-    BoolProperty txtEditor_;
     BoolProperty enablePortInspectors_;
     IntProperty portInspectorSize_;
     BoolProperty enableTouchProperty_;

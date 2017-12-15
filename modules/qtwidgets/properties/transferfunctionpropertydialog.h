@@ -65,18 +65,18 @@ class TransferFunctionPropertyWidgetQt;
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
                                                                 public TransferFunctionObserver {
 public:
-    TransferFunctionPropertyDialog(TransferFunctionProperty* property, QWidget* parent);
+    TransferFunctionPropertyDialog(TransferFunctionProperty* property);
     ~TransferFunctionPropertyDialog();
 
     void updateFromProperty();
     TransferFunctionEditorView* getEditorView() const;
 
-    virtual void setReadOnly(bool readonly) override;
-
 protected:
     virtual void onControlPointAdded(TransferFunctionDataPoint* p) override;
     virtual void onControlPointRemoved(TransferFunctionDataPoint* p) override;
     virtual void onControlPointChanged(const TransferFunctionDataPoint* p) override;
+
+    virtual void setReadOnly(bool readonly) override;
 
     void changeMask(int maskMin, int maskMax);
     void changeVerticalZoom(int zoomMin, int zoomMax);
@@ -90,7 +90,6 @@ protected:
     virtual void showEvent(QShowEvent*) override;
 
 private:
-    void generateWidget();
     void updateTFPreview();
 
     const int sliderRange_;

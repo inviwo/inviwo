@@ -134,7 +134,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/positionmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processormetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processorwidgetmetadata.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/metadata/propertyeditorwidgetmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/evaluationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networklock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkutils.h
@@ -209,6 +208,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/property.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconvertermanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyeditorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyobserver.h
@@ -405,7 +405,6 @@ set(SOURCE_FILES
     metadata/positionmetadata.cpp
     metadata/processormetadata.cpp
     metadata/processorwidgetmetadata.cpp
-    metadata/propertyeditorwidgetmetadata.cpp
     network/evaluationerrorhandler.cpp
     network/networklock.cpp
     network/networkutils.cpp
@@ -464,6 +463,7 @@ set(SOURCE_FILES
     properties/property.cpp
     properties/propertyconverter.cpp
     properties/propertyconvertermanager.cpp
+    properties/propertyeditorwidget.cpp
     properties/propertyfactory.cpp
     properties/propertyfactoryobject.cpp
     properties/propertyobserver.cpp

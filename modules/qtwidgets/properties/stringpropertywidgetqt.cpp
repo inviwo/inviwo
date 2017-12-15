@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
@@ -33,46 +33,72 @@
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/lineeditqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QSignalBlocker>
+#include <QToolButton>
 #include <warn/pop>
-
 
 namespace inviwo {
 
 StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
-    : PropertyWidgetQt(property)
-    , property_(property)
-    , lineEdit_{new LineEditQt()}
-    , label_{new EditableLabelQt(this, property_)} {
+    : PropertyWidgetQt(property), property_(property), lineEdit_{new LineEditQt()} {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
-    hLayout->addWidget(label_);
+    hLayout->addWidget(new EditableLabelQt(this, property_));
 
-    if (property_->getSemantics().getString() == "Password") {
-        lineEdit_->setEchoMode(QLineEdit::PasswordEchoOnEdit);
+    auto hWidgetLayout = new QHBoxLayout();
+
+    {
+        hWidgetLayout->setContentsMargins(0, 0, 0, 0);
+        auto widget = new QWidget();
+        widget->setLayout(hWidgetLayout);
+        auto sp = widget->sizePolicy();
+        sp.setHorizontalStretch(3);
+        widget->setSizePolicy(sp);
+        hLayout->addWidget(widget);
     }
 
-    QSizePolicy sp = lineEdit_->sizePolicy();
-    sp.setHorizontalStretch(3);
-    lineEdit_->setSizePolicy(sp);
+    {
+        if (property_->getSemantics().getString() == "Password") {
+            lineEdit_->setEchoMode(QLineEdit::PasswordEchoOnEdit);
+        }
 
-    hLayout->addWidget(lineEdit_);
+        QSizePolicy sp = lineEdit_->sizePolicy();
+        sp.setHorizontalStretch(3);
+        lineEdit_->setSizePolicy(sp);
+        hWidgetLayout->addWidget(lineEdit_);
 
-    connect(lineEdit_, &LineEditQt::editingFinished, this,
-            &StringPropertyWidgetQt::setPropertyValue);
-    connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
-        // undo textual changes by resetting the contents of the line edit
-        QSignalBlocker blocker(lineEdit_);
-        updateFromProperty();
-        lineEdit_->clearFocus();
-    });
+        connect(lineEdit_, &LineEditQt::editingFinished, this,
+                &StringPropertyWidgetQt::setPropertyValue);
+        connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
+            // undo textual changes by resetting the contents of the line edit
+            QSignalBlocker blocker(lineEdit_);
+            updateFromProperty();
+            lineEdit_->clearFocus();
+        });
+    }
+
+    if (property_->getSemantics() == PropertySemantics::TextEditor ||
+        property_->getSemantics() == PropertySemantics::ShaderEditor) {
+        auto edit = new QToolButton();
+        edit->setIcon(QIcon(":/icons/edit.png"));
+        edit->setToolTip("Edit text");
+        hWidgetLayout->addWidget(edit);
+        connect(edit, &QToolButton::clicked, this, [this]() {
+            if (!editor_) {
+                editor_ = std::make_unique<TextEditorDockWidget>(property_);
+            }
+            editor_->updateFromProperty();
+            editor_->setVisible(true);
+        });
+    }
 
     updateFromProperty();
 }
@@ -84,10 +110,14 @@ void StringPropertyWidgetQt::setPropertyValue() {
     property_->clearInitiatingWidget();
 }
 
+PropertyEditorWidget* StringPropertyWidgetQt::getEditorWidget() const { return editor_.get(); }
+
+bool StringPropertyWidgetQt::hasEditorWidget() const { return editor_ != nullptr; }
+
 void StringPropertyWidgetQt::updateFromProperty() {
     QSignalBlocker blocker(lineEdit_);
     lineEdit_->setText(utilqt::toQString(property_->get()));
     lineEdit_->setCursorPosition(0);
 }
 
-} // namespace inviwo
+}  // namespace inviwo

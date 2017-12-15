@@ -34,6 +34,8 @@
 #include <modules/qtwidgets/filepathlineeditqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,66 +55,78 @@
 namespace inviwo {
 
 FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
-    : PropertyWidgetQt(property)
-    , property_(property)
-    , lineEdit_{new FilePathLineEditQt(this)}
-    , openButton_{new QToolButton(this)}
-    , label_{new EditableLabelQt(this, property_)} {
+    : PropertyWidgetQt(property), property_(property), lineEdit_{new FilePathLineEditQt(this)} {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     setAcceptDrops(true);
 
-    hLayout->addWidget(label_);
-    QHBoxLayout* hWidgetLayout = new QHBoxLayout();
-    hWidgetLayout->setContentsMargins(0, 0, 0, 0);
-    QWidget* widget = new QWidget();
-    widget->setLayout(hWidgetLayout);  
+    hLayout->addWidget(new EditableLabelQt(this, property_));
+    auto hWidgetLayout = new QHBoxLayout();
 
-    connect(lineEdit_, &FilePathLineEditQt::editingFinished, this, [&]() {
-        // editing is done, sync property with contents
-        property_->set(lineEdit_->getPath());
-    });
-#if defined(IVW_DEBUG)
-    QObject::connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
-        // undo textual changes by resetting the contents of the line edit
-        ivwAssert(lineEdit_->getPath() == property_->get(),
-                  "FilePropertyWidgetQt: paths not equal after canceling edit");
-    });
-#endif  // IVW_DEBUG
+    {
+        hWidgetLayout->setContentsMargins(0, 0, 0, 0);
+        auto widget = new QWidget();
+        widget->setLayout(hWidgetLayout);
+        auto sp = widget->sizePolicy();
+        sp.setHorizontalStretch(3);
+        widget->setSizePolicy(sp);
+        hLayout->addWidget(widget);
+    }
 
-    QSizePolicy sp = lineEdit_->sizePolicy();
-    sp.setHorizontalStretch(3);
-    lineEdit_->setSizePolicy(sp);
-    hWidgetLayout->addWidget(lineEdit_);
+    {
+        connect(lineEdit_, &FilePathLineEditQt::editingFinished, this, [this]() {
+            // editing is done, sync property with contents
+            property_->set(lineEdit_->getPath());
+        });
+        auto sp = lineEdit_->sizePolicy();
+        sp.setHorizontalStretch(3);
+        lineEdit_->setSizePolicy(sp);
+        hWidgetLayout->addWidget(lineEdit_);
+    }
 
-    auto revealButton = new QToolButton(this);
-    revealButton->setIcon(QIcon(":/icons/reveal.png"));
-    hWidgetLayout->addWidget(revealButton);
-    connect(revealButton, &QToolButton::pressed, [&]() {
-        auto dir = filesystem::directoryExists(property_->get())
-            ? property_->get()
-            : filesystem::getFileDirectory(property_->get());
+    {
+        auto revealButton = new QToolButton(this);
+        revealButton->setIcon(QIcon(":/icons/reveal.png"));
+        hWidgetLayout->addWidget(revealButton);
+        connect(revealButton, &QToolButton::pressed, [&]() {
+            auto dir = filesystem::directoryExists(property_->get())
+                           ? property_->get()
+                           : filesystem::getFileDirectory(property_->get());
 
-        QDesktopServices::openUrl(
-            QUrl(QString::fromStdString("file:///" + dir), QUrl::TolerantMode));
-    });
+            QDesktopServices::openUrl(
+                QUrl(utilqt::toQString("file:///" + dir), QUrl::TolerantMode));
+        });
+    }
 
-    openButton_->setIcon(QIcon(":/icons/open.png"));
-    hWidgetLayout->addWidget(openButton_);
-    connect(openButton_, &QToolButton::pressed, this, &FilePropertyWidgetQt::setPropertyValue);
+    {
+        auto openButton = new QToolButton(this);
+        openButton->setIcon(QIcon(":/icons/open.png"));
+        hWidgetLayout->addWidget(openButton);
+        connect(openButton, &QToolButton::pressed, this, &FilePropertyWidgetQt::setPropertyValue);
+    }
 
-    sp = widget->sizePolicy();
-    sp.setHorizontalStretch(3);
-    widget->setSizePolicy(sp);
-    hLayout->addWidget(widget);
+    if (property_->getSemantics() == PropertySemantics::TextEditor ||
+        property_->getSemantics() == PropertySemantics::ShaderEditor) {
+        auto edit = new QToolButton();
+        edit->setIcon(QIcon(":/icons/edit.png"));
+        edit->setToolTip("Edit String");
+        hWidgetLayout->addWidget(edit);
+        connect(edit, &QToolButton::clicked, this, [this]() {
+            if (!editor_) {
+                editor_ = std::make_unique<TextEditorDockWidget>(property_);
+            }
+            editor_->updateFromProperty();
+            editor_->setVisible(true);
+        });
+    }
 
     updateFromProperty();
 }
 
 void FilePropertyWidgetQt::setPropertyValue() {
-    const std::string filename{ property_->get() };
+    const std::string filename{property_->get()};
 
     // Setup Extensions
     std::vector<FileExtension> filters = property_->getNameFilters();
@@ -136,11 +150,11 @@ void FilePropertyWidgetQt::setPropertyValue() {
 }
 
 void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
-    auto mineData = drop->mimeData();
-    if (mineData->hasUrls()) {
-        if(mineData->urls().size()>0) {
-            auto url = mineData->urls().first();
-            property_->set(url.toLocalFile().toStdString());
+    auto mimeData = drop->mimeData();
+    if (mimeData->hasUrls()) {
+        if (mimeData->urls().size() > 0) {
+            auto url = mimeData->urls().first();
+            property_->set(utilqt::fromQString(url.toLocalFile()));
 
             drop->accept();
         }
@@ -193,18 +207,22 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
     }
 }
 
-void FilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent *event) {
-    if(event->mimeData()->hasUrls()) event->accept();
-    else event->ignore();
+void FilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent* event) {
+    if (event->mimeData()->hasUrls())
+        event->accept();
+    else
+        event->ignore();
 }
 
 bool FilePropertyWidgetQt::requestFile() {
-   setPropertyValue();
-   return !property_->get().empty();
+    setPropertyValue();
+    return !property_->get().empty();
 }
 
-void FilePropertyWidgetQt::updateFromProperty() {
-    lineEdit_->setPath(property_->get());
-}
+PropertyEditorWidget* FilePropertyWidgetQt::getEditorWidget() const { return editor_.get(); }
+
+bool FilePropertyWidgetQt::hasEditorWidget() const { return editor_ != nullptr; }
+
+void FilePropertyWidgetQt::updateFromProperty() { lineEdit_->setPath(property_->get()); }
 
 }  // namespace inviwo

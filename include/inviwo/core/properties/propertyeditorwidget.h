@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,25 +27,35 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/propertywidget.h>
-#include <inviwo/core/properties/property.h>
+#ifndef IVW_PROPERTYEDITORWIDGET_H
+#define IVW_PROPERTYEDITORWIDGET_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-PropertyWidget::PropertyWidget() = default;
+class Property;
 
-PropertyWidget::PropertyWidget(Property* property) : property_(property) {
-    if (property_) property_->registerWidget(this);
-}
+// Additional widget owned by property widget
+class IVW_CORE_API PropertyEditorWidget {
+public:
+    PropertyEditorWidget();
+    virtual ~PropertyEditorWidget();
 
-PropertyWidget::~PropertyWidget() {
-    if (property_) property_->deregisterWidget(this);
-}
+    // get functions
+    virtual Property* getProperty() const = 0;
+    virtual bool isVisible() const = 0;
+    virtual ivec2 getPosition() const = 0;
+    virtual ivec2 getDimensions() const = 0;
 
-Property* PropertyWidget::getProperty() { return property_; }
+    // set functions
+    virtual void setVisible(bool visible) = 0;
+    virtual void setDimensions(const ivec2& dimensions) = 0;
+    virtual void setPosition(const ivec2& pos) = 0;
+};
 
-PropertyEditorWidget* PropertyWidget::getEditorWidget() const { return nullptr; }
+} // namespace
 
-bool PropertyWidget::hasEditorWidget() const { return false; }
+#endif // IVW_PROPERTYEDITORWIDGET_H
 
-}  // namespace

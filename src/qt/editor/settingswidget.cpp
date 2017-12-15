@@ -51,6 +51,7 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
     : InviwoDockWidget(title, mainwindow, "SettingsWidget"), mainwindow_(mainwindow) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    resize(QSize(500, 500)); // default size
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
