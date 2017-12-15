@@ -34,15 +34,25 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
 #include <modules/plotting/datastructures/dataframe.h>
 
 namespace inviwo {
+
+
+class IVW_MODULE_PLOTTING_API CSVDataReaderException : public DataReaderException {
+public:
+    CSVDataReaderException(const std::string& message = "",
+                           ExceptionContext context = ExceptionContext());
+};
+
 
 /**
  * \class CSVReader
  * \ingroup dataio
  *
  * \brief A reader for comma separated value (CSV) files with customizable delimiters.
+ * The default delimiter is ',' and headers are included
  */
 class IVW_MODULE_PLOTTING_API CSVReader : public DataReaderType<plot::DataFrame> { 
 public:
@@ -57,7 +67,27 @@ public:
     void setDelimiters(const std::string &delim);
     void setFirstRowHeader(bool hasHeader);
 
+    /**
+     * read a CSV file from a file
+     *
+     * @param fileName   name of the input CSV file
+     * @return a plot::DataFrame containing the CSV data
+     * @throws FileException if the file cannot be accessed
+     */
     virtual std::shared_ptr<plot::DataFrame> readData(const std::string& fileName) override;
+
+    /**
+     * read a CSV file from a input stream, e.g. a std::ifstream. In case
+     * file streams are used, the file must have be opened prior calling this function.
+     *
+     * @param stream    input stream with the CSV data
+     * @return a plot::DataFrame containing the CSV data
+     * @throws CSVDataReaderException if the given stream is in a bad state,
+     *   the stream contains no data, the first row should hold column headers, 
+     *   but they cannot be found, or if quotes are not matched at the end of
+     *   the stream
+     */
+    std::shared_ptr<plot::DataFrame> readData(std::istream& stream) const;
 
 private:
     std::string delimiters_;
