@@ -632,7 +632,7 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
                 std::string nodeKey = node->GetAttributeOrDefault("key", "");
                 if (nodeKey == "org.inviwo.PropertyEditorWidgetMetaData") {
                     for (const auto& item : replacements) {
-                        if (auto n = node->FirstChild(std::get<0>(item))) {
+                        if (auto n = node->FirstChild(std::get<0>(item), false)) {
                             TxElement newNode;
                             newNode.SetValue("MetaDataItem");
                             newNode.SetAttribute("type", std::get<1>(item));
