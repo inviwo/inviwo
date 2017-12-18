@@ -54,7 +54,8 @@ ivw_group("Shader Files" ${SHADER_FILES})
 # Add Unittests
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/plotting-unittest-main.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/stats-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/stats-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/csvreader-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
