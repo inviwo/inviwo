@@ -130,6 +130,7 @@ FILE_PATTERNS          = *.c \\
                          *.frag \\
                          *.vert \\
                          *.geom \\
+                         *.dox \\
                          *.glsl
 
 RECURSIVE              = YES
@@ -222,7 +223,7 @@ ${additional_flags}
     file(WRITE ${ARG_OUTPUT_DIR}/${name_lower}.doxy ${doxyfile})
 endfunction()
 
- # Help, used for the help inside invowo
+ # Help, used for the help inside inviwo
 function(ivw_private_make_help)
     set(options "")
     set(oneValueArgs 

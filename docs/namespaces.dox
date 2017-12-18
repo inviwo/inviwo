@@ -1,0 +1,68 @@
+
+/**
+ * \namespace inviwo inviwo  
+ */
+
+/**
+ * \namespace inviwo::util util
+ */
+
+/**
+ * \namespace inviwo::utilqt utilqt
+ */
+
+/**
+ * \namespace inviwo::utilcl utilcl
+ */
+
+/**
+ * \namespace inviwo::utilgl utilgl
+ */
+
+/**
+ * \namespace inviwo::utildoc utildoc
+ */
+
+/**
+ * \namespace inviwo::cimgutil cimgutil
+ */
+
+/**
+ * \namespace inviwo::colorbrewer colorbrewer
+ */
+
+/**
+ * \namespace inviwo::eigenutil eigenutil
+ */
+
+/**
+ * \namespace inviwo::meshutil meshutil
+ */
+
+/**
+ * \namespace inviwo::plot plot
+ */
+
+/**
+ * \namespace inviwo::pyutil pyutil
+ */
+
+/**
+ * \namespace inviwo::inviwopy inviwopy
+ */
+
+/**
+ * \namespace inviwo::statsutil statsutil 
+ */
+
+/**
+ * \namespace inviwo::swizzlemasks swizzlemasks 
+ */
+
+/**
+ * \namespace inviwo::color color
+ */
+
+/**
+ * \namespace inviwo::filesystem filesystem
+ */
