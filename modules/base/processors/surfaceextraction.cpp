@@ -102,14 +102,15 @@ void SurfaceExtraction::process() {
             dirty_ = false;
         }
 
+        Method method = method_.get();
         float iso = isoValue_.get();
         vec4 color = static_cast<FloatVec4Property*>(colors_[i])->get();
         bool invert = invertIso_.get();
         bool enclose = encloseSurface_.get();
         if (!result_[i].result.valid() && (util::contains(changed, data[i].first) ||
-                                           !result_[i].isSame(iso, color, invert, enclose))) {
-            result_[i].set(iso, color, invert, enclose, 0.0f,
-                           dispatchPool([this, vol, iso, color, invert, enclose,
+                                           !result_[i].isSame(method, iso, color, invert, enclose))) {
+            result_[i].set(method, iso, color, invert, enclose, 0.0f,
+                           dispatchPool([this, vol, method, iso, color, invert, enclose,
                                          i]() -> std::shared_ptr<Mesh> {
 
                                auto progressCallBack = [this, i](float s) {
@@ -129,7 +130,7 @@ void SurfaceExtraction::process() {
                                };
 
                                std::shared_ptr<Mesh> m;
-                               switch (method_.get()) {
+                               switch (method) {
                                    case Method::MarchingCubes:
                                        m = util::marchingcubes(vol, iso, color, invert, enclose,
                                                                 progressCallBack);
@@ -219,16 +220,20 @@ void SurfaceExtraction::invalidate(InvalidationLevel invalidationLevel,
 
 SurfaceExtraction::task::task(task&& rhs)
     : result(std::move(rhs.result))
+    , method(rhs.method)
     , iso(rhs.iso)
     , color(std::move(rhs.color))
+    , invert(rhs.invert)
+    , enclose(rhs.enclose)
     , status(rhs.status) {}
 
-bool SurfaceExtraction::task::isSame(float i, vec4 c, bool inv, bool enc) const {
-    return iso == i && color == c && inv == invert && enc == enclose;
+bool SurfaceExtraction::task::isSame(Method m, float i, vec4 c, bool inv, bool enc) const {
+    return method == m && iso == i && color == c && inv == invert && enc == enclose;
 }
 
-void SurfaceExtraction::task::set(float i, vec4 c, bool inv, bool enc, float s,
+void SurfaceExtraction::task::set(Method m, float i, vec4 c, bool inv, bool enc, float s,
                                   std::future<std::shared_ptr<Mesh>>&& r) {
+    method = m;
     iso = i;
     color = c;
     invert = inv;
@@ -240,6 +245,7 @@ void SurfaceExtraction::task::set(float i, vec4 c, bool inv, bool enc, float s,
 SurfaceExtraction::task& SurfaceExtraction::task::operator=(task&& that) {
     if (this != &that) {
         result = std::move(that.result);
+        method = that.method;
         iso = that.iso;
         invert = that.invert;
         enclose = that.enclose;
