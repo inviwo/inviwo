@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/userinterfacegl/glui/widgets/button.h>
+#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
 #include <modules/userinterfacegl/glui/renderer.h>
 
 #include <inviwo/core/util/moduleutils.h>
@@ -43,29 +43,42 @@ namespace inviwo {
 
 namespace glui {
 
-Button::Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
-               const ivec2 &extent)
-    : AbstractButton(label, processor, uiRenderer, extent) {}
+AbstractButton::AbstractButton(const std::string &label, Processor &processor, Renderer &uiRenderer,
+                               const ivec2 &extent)
+    : Element(label, processor, uiRenderer) {
+    widgetExtent_ = extent;
+    setLabelBold(true);
 
-void Button::renderWidget(const ivec2 &origin, const size2_t &) {
-    TextureUnit texUnit;
-    texUnit.activate();
-    uiTextures_->bind();
+    std::vector<std::string> btnFiles = {"button-normal.png",  "button-pressed.png",
+                                         "button-checked.png", "button-halo.png",
+                                         "button-halo.png",    "button-halo.png"};
+    uiTextures_ = uiRenderer_->createUITextures(
+        "button", btnFiles, module::getModulePath("UserInterfaceGL", ModulePath::Images));
+}
 
-    // bind textures
-    auto &uiShader = uiRenderer_->getShader();
-    uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
+ivec2 AbstractButton::computeLabelPos(int descent) const {
+    // align label to be vertically and horizontally centered within the button
+    if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
+        vec2 labelSize(labelExtent_);
+        labelSize.y -= descent;
+        ivec2 labelOrigin(ivec2(glm::floor(vec2(widgetExtent_) * 0.5f + 0.5f)));
+        // compute offset for vertical alignment in the center
+        vec2 labelOffset(-labelSize.x * 0.5f, -labelSize.y * 0.5f);
 
-    uiShader.setUniform("origin", vec2(origin + widgetPos_));
-    uiShader.setUniform("extent", vec2(widgetExtent_));
+        return ivec2(labelOrigin + ivec2(labelOffset + 0.5f));
+    }
+    return ivec2(0);
+}
 
-    // set up picking color
-    uiShader.setUniform("pickingColor", pickingMapper_.getColor(0));
-    uiShader.setUniform("uiState", ivec2(uiState(), (hovered_ ? 1 : 0)));
-    uiShader.setUniform("marginScale", marginScale());
+Element::UIState AbstractButton::uiState() const {
+    return (checked_ ? UIState::Checked : pushed_ ? UIState::Pressed : UIState::Normal);
+}
 
-    // render quad
-    uiRenderer_->getMeshDrawer()->draw();
+vec2 AbstractButton::marginScale() const {
+    if (uiTextures_) {
+        return (vec2(uiTextures_->getDimensions()) / vec2(widgetExtent_));
+    }
+    return vec2(1.0f);
 }
 
 }  // namespace glui

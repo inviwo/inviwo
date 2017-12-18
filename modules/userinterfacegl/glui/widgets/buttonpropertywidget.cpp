@@ -50,9 +50,51 @@ ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty &property, Processor &
 
 void ButtonPropertyWidget::updateFromProperty() { setLabel(property_->getDisplayName()); }
 
-void ButtonPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
+void ButtonPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
 
-void ButtonPropertyWidget::onSetDisplayName(Property*, const std::string &displayName) {
+void ButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+    setLabel(displayName);
+    property_->propertyModified();
+}
+
+ToolButtonPropertyWidget::ToolButtonPropertyWidget(const std::string &imageFileName,
+                                                   ButtonProperty &property, Processor &processor,
+                                                   Renderer &uiRenderer, const ivec2 &extent)
+    : ToolButton(imageFileName, processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
+    property_->addObserver(this);
+    property_->registerWidget(this);
+    action_ = [&]() {
+        if (!property_->getReadOnly()) {
+            property_->pressButton();
+        }
+    };
+    updateFromProperty();
+}
+
+ToolButtonPropertyWidget::ToolButtonPropertyWidget(ButtonProperty &property,
+                                                   std::shared_ptr<Texture2D> image,
+                                                   Processor &processor, Renderer &uiRenderer,
+                                                   const ivec2 &extent)
+    : ToolButton(image, processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
+    property_->addObserver(this);
+    property_->registerWidget(this);
+    action_ = [&]() {
+        if (!property_->getReadOnly()) {
+            property_->pressButton();
+        }
+    };
+    updateFromProperty();
+}
+
+void ToolButtonPropertyWidget::updateFromProperty() { setLabel(property_->getDisplayName()); }
+
+void ToolButtonPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+
+void ToolButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }

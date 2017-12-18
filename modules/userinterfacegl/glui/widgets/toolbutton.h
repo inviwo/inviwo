@@ -27,47 +27,52 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUICHECKBOX_H
-#define IVW_GLUICHECKBOX_H
+#ifndef IVW_GLUITOOLBUTTON_H
+#define IVW_GLUITOOLBUTTON_H
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/userinterfacegl/glui/element.h>
+#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
 
 namespace inviwo {
 
 class Texture2DArray;
+class Texture2D;
 
 namespace glui {
 
 class Renderer;
 
 /**
- * \class Checkbox
- * \brief glui::Element representing a checkbox with the label positioned on the right side
+ * \class ToolButton
+ * \brief glui::Element representing a tool button with an image instead of a label
  */
-class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {
+class IVW_MODULE_USERINTERFACEGL_API ToolButton : public AbstractButton {
 public:
-    CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
-             const ivec2 &extent = ivec2(24, 24));
-    virtual ~CheckBox() = default;
+    ToolButton(const std::string &filename, Processor &processor, Renderer &uiRenderer,
+               const ivec2 &extent = ivec2(24, 24));
+    ToolButton(std::shared_ptr<Texture2D> labelImage, Processor &processor, Renderer &uiRenderer,
+               const ivec2 &extent = ivec2(24, 24));
+    virtual ~ToolButton() = default;
 
-    void setValue(bool value);
-    bool getValue() const;
+    void setImage(const std::string &filename);
+    void setImage(std::shared_ptr<Texture2D> texture);
+
+    void setMargins(int top, int left, int bottom, int right);
+    const ivec4 &getMargins() const;
 
 private:
     virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
 
-    virtual ivec2 computeLabelPos(int descent) const override;
-    virtual UIState uiState() const override;
-    virtual void updateState() override;
+    static std::shared_ptr<Texture2D> loadImage(const std::string &filename);
 
-    Texture2DArray *uiTextures_;
+    std::shared_ptr<Texture2D> labelImage_;
+    ivec4 margins_ = ivec4(6, 6, 6, 6);  //!< top, left, bottom, right
 };
 
 }  // namespace glui
 
 }  // namespace inviwo
 
-#endif  // IVW_GLUICHECKBOX_H
+#endif  // IVW_GLUITOOLBUTTON_H

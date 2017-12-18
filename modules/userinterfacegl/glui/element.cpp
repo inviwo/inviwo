@@ -51,6 +51,7 @@ Element::Element(const std::string &label, Processor &processor, Renderer &uiRen
     , checked_(false)
     , visible_(true)
     , boldLabel_(false)
+    , labelVisible_(true)
     , labelDirty_(true)
     , processor_(&processor)
     , uiRenderer_(&uiRenderer)
@@ -84,6 +85,15 @@ void Element::setVisible(bool visible) { visible_ = visible; }
 
 bool Element::isVisible() const { return visible_; }
 
+void Element::setLabelVisible(bool visible) {
+    if (labelVisible_ != visible) {
+        labelVisible_ = visible;
+        labelDirty_ = true;
+    }
+}
+
+bool Element::isLabelVisible() const { return labelVisible_; }
+
 void Element::setLabelBold(bool bold) {
     if (boldLabel_ != bold) {
         boldLabel_ = bold;
@@ -106,7 +116,7 @@ const ivec2 &Element::getExtent() {
     return extent_;
 }
 
-void Element::render(const ivec2 &origin, const ivec2 &canvasDim) {
+void Element::render(const ivec2 &origin, const size2_t &canvasDim) {
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -119,7 +129,7 @@ void Element::render(const ivec2 &origin, const ivec2 &canvasDim) {
     uiShader.setUniform("uiColor", uiRenderer_->getUIColor());
     uiShader.setUniform("haloColor", uiRenderer_->getHoverColor());
 
-    renderWidget(origin);
+    renderWidget(origin, canvasDim);
 
     uiShader.deactivate();
 
@@ -140,6 +150,12 @@ void Element::setPushedState(bool pushed) {
 }
 
 bool Element::isPushed() const { return pushed_; }
+
+void Element::setChecked(bool checked) {
+    checked_ = checked;
+}
+
+bool Element::isChecked() const { return checked_; }
 
 void Element::setAction(const std::function<void()> &action) { action_ = action; }
 
@@ -162,7 +178,11 @@ void Element::updateExtent() {
     if (labelDirty_) {
         updateLabelPos();
     }
-    extent_ = glm::max(widgetPos_ + widgetExtent_, labelPos_ + labelExtent_);
+    if (labelVisible_) {
+        extent_ = glm::max(widgetPos_ + widgetExtent_, labelPos_ + labelExtent_);
+    } else {
+        extent_ = widgetPos_ + widgetExtent_;
+    }
 }
 
 void Element::updateLabelPos() {
@@ -241,6 +261,9 @@ void Element::handlePickingEvent(PickingEvent *e) {
 }
 
 void Element::renderLabel(const ivec2 &origin, const size2_t &canvasDim) {
+    if (!labelVisible_) {
+        return;
+    }
     if (labelDirty_) {
         updateLabel();
     }

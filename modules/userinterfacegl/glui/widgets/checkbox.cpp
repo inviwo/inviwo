@@ -55,7 +55,7 @@ CheckBox::CheckBox(const std::string &label, Processor &processor, Renderer &uiR
                                   module::getModulePath("UserInterfaceGL", ModulePath::Images));
 }
 
-void CheckBox::renderWidget(const ivec2 &origin) {
+void CheckBox::renderWidget(const ivec2 &origin, const size2_t &) {
     TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();

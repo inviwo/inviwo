@@ -87,7 +87,7 @@ int Slider::getMinValue() const { return min_; }
 
 int Slider::getMaxValue() const { return max_; }
 
-void Slider::renderWidget(const ivec2 &origin) {
+void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
     TextureUnit texUnit;
     texUnit.activate();
 

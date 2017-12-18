@@ -65,7 +65,7 @@ public:
      * @param topLeft         defines the top left corner where the UI is positioned
      * @param canvasDim      dimensions of the output canvas
      */
-    virtual void render(const ivec2 &topLeft, const ivec2 &canvasDim) = 0;
+    virtual void render(const ivec2 &topLeft, const size2_t &canvasDim) = 0;
 
     /**
      * \brief add a UI element to the layout at the end of the layout

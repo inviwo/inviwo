@@ -69,7 +69,7 @@ public:
      * @param topLeft         defines the top left corner where the UI is positioned
      * @param canvasDim      dimensions of the output canvas
      */
-    virtual void render(const ivec2 &topLeft, const ivec2 &canvasDim);
+    virtual void render(const ivec2 &topLeft, const size2_t &canvasDim) override;
 
     /**
      * \brief add a glui::Element to the layout at the end of the layout

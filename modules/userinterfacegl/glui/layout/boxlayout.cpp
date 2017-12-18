@@ -79,7 +79,7 @@ void BoxLayout::setSpacing(int spacing) { spacing_ = spacing; }
 
 int BoxLayout::getSpacing() const { return spacing_; }
 
-void BoxLayout::render(const ivec2 &topLeft, const ivec2 &canvasDim) {
+void BoxLayout::render(const ivec2 &topLeft, const size2_t &canvasDim) {
     ivec2 pos(topLeft + ivec2(margins_.y, -margins_.x));
 
     if (direction_ == LayoutDirection::Vertical) {

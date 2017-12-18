@@ -27,47 +27,51 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUICHECKBOX_H
-#define IVW_GLUICHECKBOX_H
+#ifndef IVW_GLUIFLOATPROPERTYWIDGET_H
+#define IVW_GLUIFLOATPROPERTYWIDGET_H
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/userinterfacegl/glui/element.h>
+#include <modules/userinterfacegl/glui/widgets/slider.h>
+
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/properties/propertyobserver.h>
 
 namespace inviwo {
 
-class Texture2DArray;
-
 namespace glui {
 
-class Renderer;
-
 /**
- * \class Checkbox
- * \brief glui::Element representing a checkbox with the label positioned on the right side
+ * \class BoolPropertyWidget
+ * \brief glui property widget for a bool property using glui::Slider
  */
-class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {
+class IVW_MODULE_USERINTERFACEGL_API FloatPropertyWidget : public Slider,
+                                                           public PropertyWidget,
+                                                           public PropertyObserver {
 public:
-    CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
-             const ivec2 &extent = ivec2(24, 24));
-    virtual ~CheckBox() = default;
+    FloatPropertyWidget(FloatProperty &property, Processor &processor, Renderer &uiRenderer,
+                        const ivec2 &extent = ivec2(24, 24));
+    virtual ~FloatPropertyWidget() = default;
 
-    void setValue(bool value);
-    bool getValue() const;
+    virtual void updateFromProperty() override;
+
+    // PropertyObservable overrides
+    virtual void onSetVisible(Property *property, bool visible) override;
+    virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
 
 private:
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
+    float sliderToRepr(int val) const;
+    int reprToSlider(float val) const;
 
-    virtual ivec2 computeLabelPos(int descent) const override;
-    virtual UIState uiState() const override;
-    virtual void updateState() override;
+    const int sliderMax_;
 
-    Texture2DArray *uiTextures_;
+    FloatProperty *property_;
 };
 
 }  // namespace glui
 
 }  // namespace inviwo
 
-#endif  // IVW_GLUICHECKBOX_H
+#endif  // IVW_GLUIFLOATPROPERTYWIDGET_H

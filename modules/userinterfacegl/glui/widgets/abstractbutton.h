@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUICHECKBOX_H
-#define IVW_GLUICHECKBOX_H
+#ifndef IVW_GLUIABSTRACTBUTTON_H
+#define IVW_GLUIABSTRACTBUTTON_H
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,30 +38,28 @@
 namespace inviwo {
 
 class Texture2DArray;
+class Texture2D;
 
 namespace glui {
 
 class Renderer;
 
 /**
- * \class Checkbox
- * \brief glui::Element representing a checkbox with the label positioned on the right side
+ * \class AbstactButton
+ * \brief glui::Element representing a generic button
  */
-class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {
+class IVW_MODULE_USERINTERFACEGL_API AbstractButton : public Element {
 public:
-    CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
-             const ivec2 &extent = ivec2(24, 24));
-    virtual ~CheckBox() = default;
-
-    void setValue(bool value);
-    bool getValue() const;
-
-private:
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
+    AbstractButton(const std::string &label, Processor &processor, Renderer &uiRenderer,
+           const ivec2 &extent = ivec2(100, 24));
+    virtual ~AbstractButton() = default;
+    
+protected:
+    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override = 0;
 
     virtual ivec2 computeLabelPos(int descent) const override;
     virtual UIState uiState() const override;
-    virtual void updateState() override;
+    virtual vec2 marginScale() const override;
 
     Texture2DArray *uiTextures_;
 };
@@ -70,4 +68,4 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_GLUICHECKBOX_H
+#endif  // IVW_GLUIABSTRACTBUTTON_H

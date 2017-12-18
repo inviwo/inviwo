@@ -60,7 +60,7 @@ public:
     int getMaxValue() const;
 
 protected:
-    virtual void renderWidget(const ivec2 &origin) override;
+    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
 
     int getPreviousValue() const;
 

@@ -61,16 +61,19 @@ public:
     Element(const std::string &label, Processor &processor, Renderer &uiRenderer);
     virtual ~Element();
 
+    void setVisible(bool visible = true);
+    bool isVisible() const;
+
     void setLabel(const std::string &str);
     const std::string &getLabel() const;
 
     void setLabelBold(bool bold);
     bool isLabelBold() const;
 
-    bool isDirty() const;
+    void setLabelVisible(bool visible = true);
+    bool isLabelVisible() const;
 
-    void setVisible(bool visible = true);
-    bool isVisible() const;
+    bool isDirty() const;
 
     const ivec2 &getExtent();
 
@@ -80,13 +83,16 @@ public:
      * @param origin         defines the lower left corner where the widget is positioned
      * @param canvasDim      dimensions of the output canvas
      */
-    void render(const ivec2 &origin, const ivec2 &canvasDim);
+    void render(const ivec2 &origin, const size2_t &canvasDim);
 
     void setHoverState(bool enable);
     bool isHovered() const { return hovered_; }
 
     void setPushedState(bool pushed);
     bool isPushed() const;
+
+    void setChecked(bool checked);
+    bool isChecked() const;
 
     /**
      * \brief sets the callback action when the user releases the mouse button
@@ -138,7 +144,7 @@ protected:
      */
     virtual void pushStateChanged(){};
 
-    virtual void renderWidget(const ivec2 &origin) = 0;
+    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) = 0;
 
     void renderLabel(const ivec2 &origin, const size2_t &canvasDim);
 
@@ -157,6 +163,7 @@ protected:
     bool visible_;
 
     bool boldLabel_;
+    bool labelVisible_;
 
     // Layout of a UI element:
     //                                                         extent
