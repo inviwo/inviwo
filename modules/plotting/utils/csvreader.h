@@ -39,7 +39,13 @@
 
 namespace inviwo {
 
-
+/**
+ * \class CSVDataReaderException
+ *
+ * \brief This exception is thrown by the CSVReader in case the input is malformed.
+ * This includes empty sources, unmatched quotes, missing headers.
+ * \see CSVReader
+ */
 class IVW_MODULE_PLOTTING_API CSVDataReaderException : public DataReaderException {
 public:
     CSVDataReaderException(const std::string& message = "",
