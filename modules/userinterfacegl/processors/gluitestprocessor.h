@@ -111,6 +111,7 @@ private:
     glui::BoolPropertyWidget boolPropertyUI_;
     glui::IntPropertyWidget intPropertyUI_;
     glui::ButtonPropertyWidget buttonPropertyUI_;
+    glui::ToolButtonPropertyWidget toolButtonPropertyUI_;
 
     std::vector<std::unique_ptr<glui::Element>> widgets_;
 };

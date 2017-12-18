@@ -30,6 +30,7 @@
 #include <modules/userinterfacegl/processors/gluitestprocessor.h>
 #include <modules/userinterfacegl/glui/element.h>
 
+#include <inviwo/core/util/moduleutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
@@ -72,7 +73,8 @@ GLUITestProcessor::GLUITestProcessor()
     , layout_(glui::BoxLayout::LayoutDirection::Vertical)
     , boolPropertyUI_(boolProperty_, *this, uiRenderer_)
     , intPropertyUI_(intProperty_, *this, uiRenderer_, ivec2(100, 24))
-    , buttonPropertyUI_(buttonProperty_, *this, uiRenderer_, ivec2(150, 30)) {
+    , buttonPropertyUI_(buttonProperty_, *this, uiRenderer_, ivec2(150, 30))
+    , toolButtonPropertyUI_(buttonProperty_, nullptr, *this, uiRenderer_, ivec2(32, 32)) {
     inport_.setOptional(true);
 
     addPort(inport_);
@@ -107,6 +109,9 @@ GLUITestProcessor::GLUITestProcessor()
     propertyLayout_.addElement(boolPropertyUI_);
     propertyLayout_.addElement(intPropertyUI_);
     propertyLayout_.addElement(buttonPropertyUI_);
+    propertyLayout_.addElement(toolButtonPropertyUI_);
+
+    toolButtonPropertyUI_.setImage(module::getModulePath("UserInterfaceGL", ModulePath::Images) + "/home.png");
 
     // plain GLUI widgets w/o connection to any Inviwo property
     //
