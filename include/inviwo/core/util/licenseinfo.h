@@ -41,7 +41,7 @@ namespace inviwo {
 class IVW_CORE_API LicenseInfo {
 public:
     LicenseInfo(const std::string& id, const std::string& name, const Version& version,
-                const std::string& url, const std::string& module,
+                const std::string& url, const std::string& module, const std::string& type,
                 const std::vector<std::string>& files);
     ~LicenseInfo() = default;
 
@@ -50,6 +50,7 @@ public:
     const Version version;
     const std::string url;
     const std::string module;
+    const std::string type;
     const std::vector<std::string> files;
 };
 

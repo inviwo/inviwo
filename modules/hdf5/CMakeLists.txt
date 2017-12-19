@@ -111,8 +111,9 @@ endforeach()
 remove_duplicates(hdf_unique_inc_dirs ${hdf_inc_dirs})
 target_include_directories(inviwo-module-hdf5 PUBLIC ${hdf_unique_inc_dirs})
 
-ivw_register_license_file(ID hdf5 NAME HDF5 VERSION 1.10.0.1 MODULE HDF5
+ivw_register_license_file(NAME HDF5 VERSION 1.10.0.1 MODULE HDF5
     URL http://www.hdfgroup.org/HDF5/
+    TYPE "BSD-style"
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/hdf5/COPYING
 )
 ivw_make_package(InviwoHDF5Module inviwo-module-hdf5)

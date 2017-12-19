@@ -29,7 +29,7 @@ target_include_directories(inviwo-module-assimp PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/include>
     #$<INSTALL_INTERFACE:???>
 )
-ivw_register_license_file(ID assimp NAME Assimp VERSION 3.0 MODULE Assimp 
+ivw_register_license_file(NAME Assimp VERSION 3.0 MODULE Assimp 
     URL http://assimp.sf.net
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/LICENSE
 )

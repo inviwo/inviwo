@@ -652,60 +652,73 @@ endif()
 
 #--------------------------------------------------------------------
 # register license files
-ivw_register_license_file(ID flags NAME "Flags" VERSION 0.0.0 MODULE Core
+ivw_register_license_file(NAME "Flags" MODULE Core
     URL "http://grisumbras.github.io/enum-flags/"
+    TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
 )
-ivw_register_license_file(ID glm NAME "OpenGL Mathematics (GLM)" VERSION 0.9.8.4 MODULE Core
-    URL "http://ghttps://glm.g-truc.net"
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.8.4 MODULE Core
+    URL "https://glm.g-truc.net"
+    TYPE "The MIT License"
     FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
 )
-ivw_register_license_file(ID gtest NAME "Google C++ Testing Framework" VERSION 1.7.0 MODULE Core
+ivw_register_license_file(NAME "Google C++ Testing Framework" VERSION 1.7.0 MODULE Core
     URL "http://code.google.com/p/googletest/"
+    TYPE "BSD 3-clause"
     FILES ${IVW_EXTENSIONS_DIR}/gtest/LICENSE
 )
-ivw_register_license_file(ID half NAME "half" VERSION 1.11.0 MODULE Core
+ivw_register_license_file(NAME "half" VERSION 1.11.0 MODULE Core
     URL "http://half.sourceforge.net"
+    TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
 )
 #Todo libjpeg
 #Todo libpng
-ivw_register_license_file(ID openexr NAME "OpenEXR" VERSION 2.2.0 MODULE Core
+ivw_register_license_file(NAME "OpenEXR" VERSION 2.2.0 MODULE Core
     URL "http://www.openexr.com"
+    TYPE "Modified BSD License"
     FILES ${IVW_EXTENSIONS_DIR}/openexr/openexr-2.2.0/LICENSE
 )
-ivw_register_license_file(ID pybind11 NAME "PyBind11" VERSION 2.1.1 MODULE Core
+ivw_register_license_file(NAME "PyBind11" VERSION 2.1.1 MODULE Core
     URL "https://github.com/pybind/pybind11"
+    TYPE "BSD-style"
     FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE
 )
-ivw_register_license_file(ID sigar NAME "Sigar" VERSION 1.6.4 MODULE Core
+ivw_register_license_file(NAME "Sigar" VERSION 1.6.4 MODULE Core
     URL "http://sigar.hyperic.com"
+    TYPE "Apache License"
     FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
 )
 #Todo stackwalker
 #Todo tclap
-ivw_register_license_file(ID ticpp NAME "TiCPP" VERSION 0.0.4 MODULE Core
+ivw_register_license_file(NAME "TiCPP" VERSION 0.0.4 MODULE Core
     URL https://github.com/wxFormBuilder/ticpp
+    TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/ticpp/LICENSE
 )
-ivw_register_license_file(ID tinydir NAME "TinyDir" VERSION 0.0.0.0 MODULE Core
+ivw_register_license_file(NAME "TinyDir" MODULE Core
     URL https://github.com/cxong/tinydir
+    TYPE "Simplified BSD"
     FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
 )
-ivw_register_license_file(ID utf NAME "UTF8-CPP" VERSION 2.3.5 MODULE Core
+ivw_register_license_file(NAME "UTF8-CPP" VERSION 2.3.5 MODULE Core
     URL "https://github.com/nemtrif/utfcpp"
+    TYPE "Boost Software License"
     FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
 )
-ivw_register_license_file(ID vld NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core
+ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core
     URL "https://kinddragon.github.io/vld/"
+    TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
     FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
 )
-ivw_register_license_file(ID warn NAME "warn" VERSION 0.0.0.0 MODULE Core
+ivw_register_license_file(NAME "warn" MODULE Core
     URL "https://github.com/petersteneteg/warn"
+    TYPE "BSD 2-clause"
     FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
 )
-ivw_register_license_file(ID zlib NAME "zlib" VERSION 1.2.11 MODULE Core
+ivw_register_license_file(NAME "zlib" VERSION 1.2.11 MODULE Core
     URL "http://zlib.net/"
+    TYPE "The zlib/libpng License"
     FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
 )
 

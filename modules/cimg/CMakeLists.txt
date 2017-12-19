@@ -57,7 +57,7 @@ target_compile_definitions(inviwo-module-cimg PUBLIC
     cimg_use_openexr
 )
 
-ivw_register_license_file(ID cimg NAME CImg VERSION 2.1.5 MODULE CImg 
+ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
     URL http://cimg.eu
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
 )

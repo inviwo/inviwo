@@ -186,17 +186,18 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
                 query.addQueryItem("module", utilqt::toQString(mfo->name));
                 query.addQueryItem("id", utilqt::toQString(license.id));
                 url.setQuery(query);
-                dl.append("dt")
-                    .append("a", "", {{"href", utilqt::fromQString(url.url())}})
-                    .append("b", license.name);
-                auto dd = dl.append("dd");
+                auto dt = dl.append("dt");
+                dt.append("b", license.name);
+                dt += " ";
+                dt.append("a", license.type, {{"href", utilqt::fromQString(url.url())}});
+                auto dd = dl.append("dd", "", {{"style", "margin-bottom:10px;"}});
                 if (!license.url.empty()) {
                     dd.append("a", license.url, {{"href", license.url}});
-                    dd.append("br");
+                    dd += " ";
                 }
                 if (license.version != Version{0, 0, 0, 0}) {
                     dd += toString(license.version);
-                    dd.append("br");
+                    dd += " ";
                 }
                 dd += "(" + license.module + ")";
             }
