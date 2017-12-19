@@ -45,15 +45,15 @@ namespace inviwo {
  *
  * The expected structure of the ivfs sequence files is: 
  * \verbatim
- * <?xml version="1.0" ?>
- * <InviwoWorkspace version="2">
- *     <volumes>
- *         <volume content="./relative/path/to/volume00.ivf" />
- *         <volume content="./relative/path/to/volume01.ivf" />
- *         ...
- *         <volume content="./relative/path/to/volumeNN.ivf" />
- *     </volumes>
- * </InviwoWorkspace>
+<?xml version="1.0" ?>
+<InviwoWorkspace version="2">
+    <volumes>
+        <volume content="./relative/path/to/volume00.ivf" />
+        <volume content="./relative/path/to/volume01.ivf" />
+        ...
+        <volume content="./relative/path/to/volumeNN.ivf" />
+    </volumes>
+</InviwoWorkspace>
  * \endverbatim
  *
  * @see inviwo::IvfSequenceVolumeWriter

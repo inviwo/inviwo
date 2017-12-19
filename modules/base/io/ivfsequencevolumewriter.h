@@ -44,15 +44,15 @@ namespace inviwo {
  *
  * The output structure of the ivfs sequence files is:
  * \verbatim
- * <?xml version="1.0" ?>
- * <InviwoWorkspace version="2">
- *     <volumes>
- *         <volume content="./relative/path/to/volume00.ivf" />
- *         <volume content="./relative/path/to/volume01.ivf" />
- *         ...
- *         <volume content="./relative/path/to/volumeNN.ivf" />
- *     </volumes>
- * </InviwoWorkspace>
+<?xml version="1.0" ?>
+<InviwoWorkspace version="2">
+    <volumes>
+        <volume content="./relative/path/to/volume00.ivf" />
+        <volume content="./relative/path/to/volume01.ivf" />
+        ...
+        <volume content="./relative/path/to/volumeNN.ivf" />
+    </volumes>
+</InviwoWorkspace>
  * \endverbatim
  *
  * @see inviwo::IvfSequenceVolumeReader
@@ -115,7 +115,9 @@ namespace util {
  * @param reltivePathToElements relative path (from the path to the main file) to where the sequence
  * elements will be written
  * @param overwrite whether or not to overwrite existing files.
- * @return string path to the created main-file
+ * @return path to the created main-file
+ * @see inviwo::IvfSequenceVolumeWriter
+ * @see inviwo::IvfSequenceVolumeReader
  */
 
 IVW_MODULE_BASE_API std::string writeIvfVolumeSequence(const VolumeSequence& volumes,
