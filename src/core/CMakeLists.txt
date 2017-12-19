@@ -672,8 +672,6 @@ ivw_register_license_file(NAME "half" VERSION 1.11.0 MODULE Core
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
 )
-#Todo libjpeg
-#Todo libpng
 ivw_register_license_file(NAME "OpenEXR" VERSION 2.2.0 MODULE Core
     URL "http://www.openexr.com"
     TYPE "Modified BSD License"
@@ -689,8 +687,16 @@ ivw_register_license_file(NAME "Sigar" VERSION 1.6.4 MODULE Core
     TYPE "Apache License"
     FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
 )
-#Todo stackwalker
-#Todo tclap
+ivw_register_license_file(NAME "stackwalker" VERSION 14.0.0 MODULE Core
+    URL http://stackwalker.codeplex.com/
+    TYPE "BSD-License"
+    FILES ${IVW_EXTENSIONS_DIR}/stackwalker/LICENSE.txt
+)
+ivw_register_license_file(NAME "tclap" VERSION 1.2.1 MODULE Core
+    URL http://tclap.sourceforge.net/
+    TYPE "The MIT License"
+    FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
+)
 ivw_register_license_file(NAME "TiCPP" VERSION 0.0.4 MODULE Core
     URL https://github.com/wxFormBuilder/ticpp
     TYPE "The MIT License"
