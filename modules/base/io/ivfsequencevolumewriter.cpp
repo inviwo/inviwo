@@ -62,14 +62,7 @@ std::string writeIvfVolumeSequence(const VolumeSequence &volumes, std::string na
     Serializer serializer(ivfwFile);
 
     auto fillLength = static_cast<int>(log10(volumes.size())) + 1;
-    auto zfill = [](std::string s, auto l) {
-        while (s.size() < l) {
-            s = "0" + s;
-        }
-        return s;
-
-    };
-
+    
     filesystem::createDirectoryRecursively(path + "/" + reltivePathToTimesteps);
     IvfVolumeWriter writer;
     writer.setOverwrite(overwrite);
