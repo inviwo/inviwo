@@ -39,7 +39,7 @@
 namespace inviwo {
 /**
  * \ingroup dataio
- * \brief reader for *.ivfs sequnce files
+ * \brief Reader for *.ivfs sequnce files
  *
  * Supports reader a volume sequence from disk.
  *

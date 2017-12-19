@@ -37,7 +37,7 @@
 namespace inviwo {
 /**
  * \ingroup dataio
- * \brief writter for *.ivfs sequnce files
+ * \brief Writter for *.ivfs sequnce files
  *
  * Supports writing a volume sequence to disk. Will create one main file ([name].ivfs) and a series
  * of ivf volumes ([name]xx.ivf), one for each element in the sequence.
