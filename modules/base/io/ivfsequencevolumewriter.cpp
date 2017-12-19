@@ -33,7 +33,9 @@
 namespace inviwo {
 
 IvfSequenceVolumeWriter::IvfSequenceVolumeWriter() : overwrite_(false) {
-    //addExtension("ivfs", "Sequence of Inviwo ivf volumes");
+    // addExtension("ivfs", "Sequence of Inviwo ivf volumes");
+    // addExtension is defined in DataWriterType. Since deriving from DataWriterType<VolumeSequence> 
+    // it not yet supported we can't yet call addExtension here. 
 }
 
 void IvfSequenceVolumeWriter::writeData(const VolumeSequence *data,
@@ -47,7 +49,7 @@ void IvfSequenceVolumeWriter::writeData(const VolumeSequence *data, std::string 
                                         std::string path,
                                         std::string reltivePathToTimesteps) const {
 
-    util::writeIvfVolumeSequence(*data,name,path,reltivePathToTimesteps,overwrite_);
+    util::writeIvfVolumeSequence(*data, name, path, reltivePathToTimesteps, overwrite_);
 }
 
 namespace util {
@@ -78,15 +80,16 @@ std::string writeIvfVolumeSequence(const VolumeSequence &volumes, std::string na
     std::vector<std::string> filenames;
     size_t i = 0;
     for (const auto &vol : volumes) {
-        auto filename = path + "/" + reltivePathToTimesteps + "/" + name +
-                        zfill(std::to_string(i), fillLength) + ".ivf";
+        std::stringstream filepath;
+        filepath << reltivePathToTimesteps << "/" << name << std::setw(fillLength) << std::right
+                 << std::setfill('0') << i++ << ".ivf";
 
-        auto relFilename = "./" + reltivePathToTimesteps + "/" + name +
-                           zfill(std::to_string(i), fillLength) + ".ivf";
-        filename = filesystem::cleanupPath(filename);
-        writer.writeData(vol.get(), filename);
-        filenames.push_back(relFilename);
-        i++;
+        auto absFilepath = path + "/" + filepath.str();
+        auto relFilepath = "./" + filepath.str();
+
+        absFilepath = filesystem::cleanupPath(absFilepath);
+        writer.writeData(vol.get(), absFilepath);
+        filenames.push_back(relFilepath);
     }
 
     serializer.serialize("volumes", filenames, "volume");

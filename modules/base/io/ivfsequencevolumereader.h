@@ -39,9 +39,23 @@
 namespace inviwo {
 /**
  * \ingroup dataio
- * \brief reader for *.ivfs files
+ * \brief reader for *.ivfs sequnce files
  *
  * Supports reader a volume sequence from disk.
+ *
+ * The expected structure of the ivfs sequence files is: 
+ * \verbatim
+ * <?xml version="1.0" ?>
+ * <InviwoWorkspace version="2">
+ *     <volumes>
+ *         <volume content="./relative/path/to/volume00.ivf" />
+ *         <volume content="./relative/path/to/volume01.ivf" />
+ *         ...
+ *         <volume content="./relative/path/to/volumeNN.ivf" />
+ *     </volumes>
+ * </InviwoWorkspace>
+ * \endverbatim
+ *
  * @see inviwo::IvfSequenceVolumeWriter
  */
 

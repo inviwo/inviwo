@@ -37,14 +37,31 @@
 namespace inviwo {
 /**
  * \ingroup dataio
- * \brief writter for *.ivfs files
+ * \brief writter for *.ivfs sequnce files
  *
  * Supports writing a volume sequence to disk. Will create one main file ([name].ivfs) and a series
  * of ivf volumes ([name]xx.ivf), one for each element in the sequence.
+ *
+ * The output structure of the ivfs sequence files is: 
+ * \verbatim
+ * <?xml version="1.0" ?>
+ * <InviwoWorkspace version="2">
+ *     <volumes>
+ *         <volume content="./relative/path/to/volume00.ivf" />
+ *         <volume content="./relative/path/to/volume01.ivf" />
+ *         ...
+ *         <volume content="./relative/path/to/volumeNN.ivf" />
+ *     </volumes>
+ * </InviwoWorkspace>
+ * \endverbatim
+ *
+ * @see inviwo::IvfSequenceVolumeReader
+ *
  */
 class IVW_MODULE_BASE_API IvfSequenceVolumeWriter
-/*: public DataWriterType<VolumeSequence> */  // deriving from DataWriterType does not yet work for
-                                              // types not extending data
+/*: public DataWriterType<VolumeSequence> */  // Deriving from DataWriterType<VolumeSequence> is not
+                                              // yet supported for types not extending data (such as
+                                              // VolumeSequence)
 {
 public:
     IvfSequenceVolumeWriter();
