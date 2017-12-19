@@ -42,7 +42,7 @@ namespace inviwo {
  * Supports writing a volume sequence to disk. Will create one main file ([name].ivfs) and a series
  * of ivf volumes ([name]xx.ivf), one for each element in the sequence.
  *
- * The output structure of the ivfs sequence files is: 
+ * The output structure of the ivfs sequence files is:
  * \verbatim
  * <?xml version="1.0" ?>
  * <InviwoWorkspace version="2">
@@ -58,11 +58,7 @@ namespace inviwo {
  * @see inviwo::IvfSequenceVolumeReader
  *
  */
-class IVW_MODULE_BASE_API IvfSequenceVolumeWriter
-/*: public DataWriterType<VolumeSequence> */  // Deriving from DataWriterType<VolumeSequence> is not
-                                              // yet supported for types not extending data (such as
-                                              // VolumeSequence)
-{
+class IVW_MODULE_BASE_API IvfSequenceVolumeWriter {
 public:
     IvfSequenceVolumeWriter();
     IvfSequenceVolumeWriter(const IvfSequenceVolumeWriter& rhs) = default;

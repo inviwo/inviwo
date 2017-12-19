@@ -32,11 +32,7 @@
 
 namespace inviwo {
 
-IvfSequenceVolumeWriter::IvfSequenceVolumeWriter() : overwrite_(false) {
-    // addExtension("ivfs", "Sequence of Inviwo ivf volumes");
-    // addExtension is defined in DataWriterType. Since deriving from DataWriterType<VolumeSequence> 
-    // it not yet supported we can't yet call addExtension here. 
-}
+IvfSequenceVolumeWriter::IvfSequenceVolumeWriter() : overwrite_(false) {}
 
 void IvfSequenceVolumeWriter::writeData(const VolumeSequence *data,
                                         const std::string filePath) const {
