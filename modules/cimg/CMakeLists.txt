@@ -39,7 +39,7 @@ target_link_libraries(inviwo-module-cimg PUBLIC
     ZLIB::ZLIB
     inviwo::libjpeg
     inviwo::libpng
-
+    inviwo::tiff
     openexr-half
     openexr-iex
     openexr-iexmath
@@ -55,6 +55,7 @@ target_compile_definitions(inviwo-module-cimg PUBLIC
     cimg_use_jpeg
     cimg_use_zlib
     cimg_use_openexr
+    cimg_use_tiff
 )
 
 ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
