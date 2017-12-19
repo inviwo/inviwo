@@ -36,6 +36,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

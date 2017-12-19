@@ -143,8 +143,7 @@ public:
     ~ConsoleWidget();
 
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg) override;
+                     const char* file, const char* function, int line, std::string msg) override;
 
     virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                               std::string msg, const char* file, const char* function,
@@ -153,8 +152,8 @@ public:
     virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                             const char* function, int line) override;
 
-    virtual void logAssertion(const char* fileName, const char* functionName, long lineNumber,
-                              std::string message) override;
+    virtual void logAssertion(const char* file, const char* function, int line,
+                              std::string msg) override;
 
     QAction* getClearAction();
     QTableView* view() { return tableView_; }

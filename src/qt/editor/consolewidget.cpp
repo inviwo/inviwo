@@ -100,8 +100,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , mainwindow_(parent) {
 
     setAllowedAreas(Qt::BottomDockWidgetArea);
-    resize(QSize(500, 300)); // default size
-      
+    resize(QSize(500, 300));  // default size
+
     qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
 
     filter_->setSourceModel(model_.model());
@@ -430,7 +430,7 @@ void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string
     logEntry(std::move(e));
 }
 
-void ConsoleWidget::logAssertion(const char* file, const char* function, long line,
+void ConsoleWidget::logAssertion(const char* file, const char* function, int line,
                                  std::string msg) {
     LogTableModelEntry e = {std::chrono::system_clock::now(),
                             "Assertion",

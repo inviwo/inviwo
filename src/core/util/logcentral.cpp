@@ -46,10 +46,8 @@ void Logger::logNetwork(LogLevel level, LogAudience audience, std::string msg, c
     log("ProcessorNetwork", level, audience, file, function, line, msg);
 }
 
-void Logger::logAssertion(const char* fileName, const char* functionName, long lineNumber,
-                          std::string message) {
-    log("Assertion failed", LogLevel::Error, LogAudience::Developer, fileName, functionName,
-        lineNumber, message);
+void Logger::logAssertion(const char* file, const char* function, int line, std::string msg) {
+    log("Assertion failed", LogLevel::Error, LogAudience::Developer, file, function, line, msg);
 }
 
 LogCentral::LogCentral() : logLevel_(LogLevel::Info), logStacktrace_(false) {}
@@ -116,11 +114,10 @@ void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string ms
     }
 }
 
-void LogCentral::logAssertion(const char* fileName, const char* functionName, long lineNumber,
-                              std::string message) {
+void LogCentral::logAssertion(const char* file, const char* function, int line, std::string msg) {
     util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
         if (auto l = logger.lock()) {
-            l->logAssertion(fileName, functionName, lineNumber, message);
+            l->logAssertion(file, function, line, msg);
             return false;
         } else {
             return true;
