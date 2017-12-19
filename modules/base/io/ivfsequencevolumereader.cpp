@@ -30,6 +30,7 @@
 #include <modules/base/io/ivfsequencevolumereader.h>
 #include <modules/base/io/ivfvolumewriter.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 namespace inviwo {
 IvfSequenceVolumeReader::IvfSequenceVolumeReader() {
