@@ -29,6 +29,7 @@
 
 #include <modules/base/io/ivfsequencevolumereader.h>
 #include <modules/base/io/ivfvolumewriter.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 IvfSequenceVolumeReader::IvfSequenceVolumeReader() {
