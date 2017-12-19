@@ -33,7 +33,7 @@
 namespace inviwo {
 
 IvfSequenceVolumeWriter::IvfSequenceVolumeWriter() : overwrite_(false) {
-    /*addExtension("ivfs", "Sequence of Inviwo ivf volumes");*/
+    //addExtension("ivfs", "Sequence of Inviwo ivf volumes");
 }
 
 void IvfSequenceVolumeWriter::writeData(const VolumeSequence *data,

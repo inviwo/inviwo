@@ -48,6 +48,14 @@ public:
     }
     virtual ~IvfSequenceVolumeReader() = default;
 
+    /**
+     * Read a ivfs volume sequence from disk
+     *
+     * @param filePath path the the ivfs file
+     * @return The resulting sequence of volumes
+     * @see inviwo::IvfSequenceVolumeWriter::writeData(const VolumeSequence*, std::string ,
+     * std::string,std::string)
+     */
     virtual std::shared_ptr<VolumeSequence> readData(const std::string& filePath) override;
 
 private:
