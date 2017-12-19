@@ -32,6 +32,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumewriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumereader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumewriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.h
@@ -124,6 +126,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumewriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumereader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumewriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.cpp
