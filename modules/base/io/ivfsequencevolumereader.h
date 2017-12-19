@@ -37,6 +37,13 @@
 #include <modules/base/io/ivfvolumereader.h>
 
 namespace inviwo {
+/**
+ * \ingroup dataio
+ * \brief reader for *.ivfs files
+ *
+ * Supports reader a volume sequence from disk.
+ * @see inviwo::IvfSequenceVolumeWriter
+ */
 
 class IVW_MODULE_BASE_API IvfSequenceVolumeReader : public DataReaderType<VolumeSequence> {
 public:

@@ -35,7 +35,13 @@
 #include <modules/base/io/ivfvolumewriter.h>
 
 namespace inviwo {
-
+/**
+ * \ingroup dataio
+ * \brief writter for *.ivfs files
+ *
+ * Supports writing a volume sequence to disk. Will create one main file ([name].ivfs) and a series
+ * of ivf volumes ([name]xx.ivf), one for each element in the sequence.
+ */
 class IVW_MODULE_BASE_API IvfSequenceVolumeWriter
 /*: public DataWriterType<VolumeSequence> */  // deriving from DataWriterType does not yet work for
                                               // types not extending data
