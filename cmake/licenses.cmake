@@ -47,10 +47,11 @@ include(CMakeParseArguments)
 # * TYPE (optional):    The type of license
 #
 # Example usage: 
-# ivw_register_license_file(ID glew NAME "GLEW" VERSION 2.0.0 MODULE OpenGL
-#     URL http://glew.sourceforge.net
-#     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/license.txt
-# )
+#    ivw_register_license_file(NAME "GLFW" VERSION 3.1.0 MODULE GLFW
+#        URL http://www.glfw.org
+#        TYPE "The zlib/libpng License"
+#        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/COPYING.txt
+#    )
 function(ivw_register_license_file)
     set(options "")
     set(oneValueArgs ID NAME VERSION URL MODULE TYPE)
