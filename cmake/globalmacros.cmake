@@ -110,7 +110,70 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
-function(ivw_private_generate_module_registration_file modules_var)
+function(ivw_private_generate_module_registration_file mod)
+    ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
+    list_to_stringvector(module_depends_vector ${module_dependencies})
+    list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
+    list_to_stringvector(module_alias_vector ${${mod}_aliases})
+    string(TOUPPER "${${mod}_class}" u_module)
+    if(${${mod}_protected})
+        set(module_protected "ProtectedModule::on")
+    else()
+        set(module_protected "ProtectedModule::off")
+    endif()
+
+    get_filename_component(path ${${mod}_header} DIRECTORY)
+
+    ivw_private_generate_licence_header(MOD ${mod} RETVAL module_license_vector)
+
+    set(fuction_args
+        "        \"${${mod}_class}\", // Module name \n"
+        "        \"${${mod}_version}\", // Module version\n"
+        "        \"${${mod}_description}\", // Description\n" 
+        "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
+        "        ${module_depends_vector}, // Dependencies\n" 
+        "        ${module_depends_version_vector}, // Version number of dependencies\n"
+        "        ${module_alias_vector}, // List of aliases\n"
+        "        // List of license information\n"
+        "        ${module_license_vector},\n"
+        "        ${module_protected} // protected"
+    )
+
+    join(";" "" fuction_args ${fuction_args})
+    string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" fuction_args "${fuction_args}")
+    string(REPLACE "__SEMICOLON__" ";" fuction_args "${fuction_args}")
+
+    set(MODULE ${${mod}_class})
+    if(${${mod}_class} STREQUAL "Core")
+        set(MODULE_NAME "InviwoCore")
+        set(API_HEADER inviwo/core/common/inviwocoredefine.h)
+        set(API_DEFINE IVW_CORE_API)
+    else()
+        set(MODULE_NAME "${${mod}_class}Module")
+        set(API_HEADER modules/${${mod}_dir}/${${mod}_dir}moduledefine.h)
+        set(API_DEFINE IVW_MODULE_${u_module}_API)
+    endif()
+
+    set(U_MODULE ${u_module})
+    set(MODULE_HEADER ${${mod}_header})
+    set(MODULE_ARGS ${fuction_args})
+    set(LIBRARY_HEADER ${path}/${${mod}_dir}modulesharedlibrary.h)
+
+    configure_file(
+        ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
+        ${CMAKE_BINARY_DIR}/modules/_generated/${path}/${${mod}_dir}modulesharedlibrary.cpp 
+        @ONLY
+    )
+    configure_file(
+        ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.h
+        ${CMAKE_BINARY_DIR}/modules/_generated/${path}/${${mod}_dir}modulesharedlibrary.h 
+        @ONLY
+    )
+endfunction()
+
+#--------------------------------------------------------------------
+# Generate a module registration header files (with configure file etc)
+function(ivw_private_generate_module_registration_files modules_var)
     # For runtime loading export a module factory function for all modules.
     # Function will be requested by the application after loading the library (dll/so)
     # Does not require modules to be linked to the application
@@ -125,19 +188,7 @@ function(ivw_private_generate_module_registration_file modules_var)
             continue()
         endif()
 
-        ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
-        list_to_stringvector(module_depends_vector ${module_dependencies})
-        list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
-        list_to_stringvector(module_alias_vector ${${mod}_aliases})
-        string(TOUPPER "${${mod}_class}" u_module)
-        if(${${mod}_protected})
-            set(module_protected "ProtectedModule::on")
-        else()
-            set(module_protected "ProtectedModule::off")
-        endif()
-
         get_filename_component(path ${${mod}_header} DIRECTORY)
-
         list(APPEND static_headers
             "#ifdef REG_${mod}\n"
             "#include <${path}/${${mod}_dir}modulesharedlibrary.h>\n"
@@ -148,48 +199,7 @@ function(ivw_private_generate_module_registration_file modules_var)
             "    modules.emplace_back(create${${mod}_class}Module())__SEMICOLON__\n"
             "    #endif\n"
         )
-
-        set(fuction_args
-            "        \"${${mod}_class}\", // Module name \n"
-            "        \"${${mod}_version}\", // Module version\n"
-            "        \"${${mod}_description}\", // Description\n" 
-            "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
-            "        ${module_depends_vector}, // Dependencies\n" 
-            "        ${module_depends_version_vector}, // Version number of dependencies\n"
-            "        ${module_alias_vector}, // List of aliases\n"
-            "        ${module_protected} // protected"
-        )
-
-        join(";" "" fuction_args ${fuction_args})
-        string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" fuction_args "${fuction_args}")
-        string(REPLACE "__SEMICOLON__" ";" fuction_args "${fuction_args}")
-
-        set(MODULE ${${mod}_class})
-        if(${${mod}_class} STREQUAL "Core")
-            set(MODULE_NAME "InviwoCore")
-            set(API_HEADER inviwo/core/common/inviwocoredefine.h)
-            set(API_DEFINE IVW_CORE_API)
-        else()
-            set(MODULE_NAME "${${mod}_class}Module")
-            set(API_HEADER modules/${${mod}_dir}/${${mod}_dir}moduledefine.h)
-            set(API_DEFINE IVW_MODULE_${u_module}_API)
-        endif()
-
-        set(U_MODULE ${u_module})
-        set(MODULE_HEADER ${${mod}_header})
-        set(MODULE_ARGS ${fuction_args})
-        set(LIBRARY_HEADER ${path}/${${mod}_dir}modulesharedlibrary.h)
-
-        configure_file(
-            ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
-            ${CMAKE_BINARY_DIR}/modules/_generated/${path}/${${mod}_dir}modulesharedlibrary.cpp 
-            @ONLY
-        )
-        configure_file(
-            ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.h
-            ${CMAKE_BINARY_DIR}/modules/_generated/${path}/${${mod}_dir}modulesharedlibrary.h 
-            @ONLY
-        )
+        ivw_private_generate_module_registration_file(${mod})
     endforeach()
 
     join(";" "" static_headers ${static_headers})
@@ -199,6 +209,7 @@ function(ivw_private_generate_module_registration_file modules_var)
 
     set(MODULE_HEADERS "${static_headers}")
     set(MODULE_CLASS_FUNCTIONS "${static_functions}")
+    # uses: MODULE_HEADERS MODULE_CLASS_FUNCTIONS
     configure_file(
         ${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
         ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h 
@@ -281,16 +292,17 @@ function(ivw_private_setup_module_data)
     endif()
     # Get module version
     ivw_private_get_ivw_module_version(${module_path}/${dir}/CMakeLists.txt version)
-    set("${mod}_dir"    "${dir}"                CACHE INTERNAL "Module dir")
-    set("${mod}_base"   "${module_path}"        CACHE INTERNAL "Module base")
-    set("${mod}_path"   "${module_path}/${dir}" CACHE INTERNAL "Module path")
-    set("${mod}_opt"    "${opt}"                CACHE INTERNAL "Module cmake option")
-    set("${mod}_target" "${target}"             CACHE INTERNAL "Module target")
-    set("${mod}_alias"  "${alias}"              CACHE INTERNAL "Module alias")
-    set("${mod}_class"  "${name}"               CACHE INTERNAL "Module class")
-    set("${mod}_name"   "Inviwo${name}Module"   CACHE INTERNAL "Module name")
-    set("${mod}_version" "${version}"           CACHE INTERNAL "Module version")
-    set("${mod}_header"  "${header}"            CACHE INTERNAL "Module header")
+    set("${mod}_dir"      "${dir}"                CACHE INTERNAL "Module dir")
+    set("${mod}_base"     "${module_path}"        CACHE INTERNAL "Module base")
+    set("${mod}_path"     "${module_path}/${dir}" CACHE INTERNAL "Module path")
+    set("${mod}_opt"      "${opt}"                CACHE INTERNAL "Module cmake option")
+    set("${mod}_target"   "${target}"             CACHE INTERNAL "Module target")
+    set("${mod}_alias"    "${alias}"              CACHE INTERNAL "Module alias")
+    set("${mod}_class"    "${name}"               CACHE INTERNAL "Module class")
+    set("${mod}_name"     "Inviwo${name}Module"   CACHE INTERNAL "Module name")
+    set("${mod}_version"  "${version}"            CACHE INTERNAL "Module version")
+    set("${mod}_header"   "${header}"             CACHE INTERNAL "Module header")
+    set("${mod}_licenses" ""                      CACHE INTERNAL "License ids")
 
     # Check of there is a depends.cmake
     # Optionally defines: dependencies, aliases, protected
@@ -461,7 +473,7 @@ function(ivw_register_modules retval)
     endforeach()
     
     # Generate module registration file
-    ivw_private_generate_module_registration_file(sorted_modules)
+    ivw_private_generate_module_registration_files(sorted_modules)
     
     # Add enabled modules in sorted order
     set(ivw_module_names "")
@@ -469,6 +481,7 @@ function(ivw_register_modules retval)
         if(${${mod}_opt})
             add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
             list(APPEND ivw_module_names ${${mod}_name})
+            ivw_private_generate_module_registration_file(${mod})
         endif()
     endforeach()
 

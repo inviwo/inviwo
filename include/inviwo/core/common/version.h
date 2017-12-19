@@ -31,9 +31,10 @@
 #define IVW_VERSIONHELPER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
+#include <string>
 #include <ostream>
+#include <tuple>
 
 namespace inviwo {
 
@@ -48,35 +49,39 @@ namespace inviwo {
  * 2. MINOR version when you add functionality in a backwards-compatible manner, and
  * 3. PATCH version when you make backwards-compatible bug fixes.
  * 4. BUILD version can be used as metadata.
- * 
- * Major and minor versions are used during equal comparison since 
- * API changes should not exist in patch and build version changes 
+ *
+ * Major and minor versions are used during equal comparison since
+ * API changes should not exist in patch and build version changes
  * (unless major version is zero).
  *
  * @note Module versions are tied to the Inviwo core version, which means
- *       that there is no need to update module version if it is built for 
+ *       that there is no need to update module version if it is built for
  *       a new Inviwo core version.
  */
-class IVW_CORE_API Version { 
+class IVW_CORE_API Version {
 public:
-    /** 
+    /**
      * \brief Parses the version. Defaults to version 1.0.0.0
-     * 
+     *
      * @param std::string versionString Dot separated version string "Major.Minor.Patch.Build"
      */
     Version(std::string versionString);
     Version(const char* versionString);
+    Version(unsigned int major = 1, unsigned int minor = 0, unsigned int patch = 0,
+            unsigned int build = 0);
     ~Version() = default;
 
-    /** 
+    /**
      * \brief Compares major, minor, patch and build versions in order.
      * @return bool true if lhs is less than rhs, false otherwise.
      */
-    friend bool operator<(const Version& lhs, const Version& rhs) {
-        // Keep ordering using lexicographical comparison provided by std::tie:
-        return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build)
-            < std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
-    }
+    friend bool operator<(const Version& lhs, const Version& rhs);
+
+    /**
+     * \brief Compares major, minor, patch and build versions in order.
+     * @return bool true if lhs is exactly the same as rhs, false otherwise.
+     */
+    friend bool operator==(const Version& lhs, const Version& rhs);
 
     /**
      * Major version >= 1: Return true if major and minor versions are equal, false otherwise.
@@ -86,32 +91,28 @@ public:
      * Patch and build versions are ignored since API should not have changed in those cases.
      * @return bool true if major and minor versions are equal, false otherwise.
      */
-    bool semanticVersionEqual(const Version& other) const {
-        if (major < 1 || other.major < 1) {
-            // Each version increment is a breaking change
-            // when major version is 0
-            return std::tie(major, minor, patch) ==
-                   std::tie(other.major, other.minor, other.patch);
-        } else {
-            return std::tie(major, minor) == std::tie(other.major, other.minor);
-        }
-    }
+    bool semanticVersionEqual(const Version& other) const;
 
-    unsigned int major = 1; ///< Increases when you make incompatible API changes
-    unsigned int minor = 0; ///< Increases when you add functionality in a backwards-compatible manner
-    unsigned int patch = 0; ///< Increases when you make backwards-compatible bug fixes
-    unsigned int build = 0; ///< Version metadata
+    unsigned int major = 1;  ///< Increases when you make incompatible API changes
+    unsigned int minor =
+        0;  ///< Increases when you add functionality in a backwards-compatible manner
+    unsigned int patch = 0;  ///< Increases when you make backwards-compatible bug fixes
+    unsigned int build = 0;  ///< Version metadata
 private:
-
 };
 
+IVW_CORE_API bool operator!=(const Version& lhs, const Version& rhs);
+IVW_CORE_API bool operator>(const Version& lhs, const Version& rhs);
+IVW_CORE_API bool operator<=(const Version& lhs, const Version& rhs);
+IVW_CORE_API bool operator>=(const Version& lhs, const Version& rhs);
+
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, const Version& v) {
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const Version& v) {
     ss << v.major << "." << v.minor << "." << v.patch << "." << v.build;
     return ss;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VERSIONHELPER_H
-
+#endif  // IVW_VERSIONHELPER_H

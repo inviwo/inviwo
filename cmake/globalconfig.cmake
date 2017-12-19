@@ -99,6 +99,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 
 #--------------------------------------------------------------------
 # Add parameter for paths to external modules

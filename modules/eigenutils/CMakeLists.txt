@@ -31,4 +31,11 @@ target_include_directories(inviwo-module-eigenutils PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen>
 )
 
+ivw_register_license_file(NAME Eigen VERSION 3.3.90 MODULE EigenUtils
+    URL http://eigen.tuxfamily.org/
+    TYPE "Mozilla Public License Version 2.0"
+    FILES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen/COPYING.README
+        ${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen/COPYING.MPL2
+)
 ivw_make_package(InviwoEigenUtilsModule inviwo-module-eigenutils)

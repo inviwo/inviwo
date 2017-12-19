@@ -36,10 +36,12 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/systemcapabilities.h>
+#include <inviwo/core/util/licenseinfo.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
+#include <inviwo/qt/editor/inviwoaboutwindow.h>
 #include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>
@@ -822,66 +824,12 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
 
 void InviwoMainWindow::showAboutBox() {
-    auto& syscap = app_->getSystemCapabilities();
-    const int buildYear = syscap.getBuildTimeYear();
-
-    std::stringstream aboutText;
-    aboutText << "<html><head>\n"
-              << "<style>\n"
-              << "table { margin-top:0px;margin-bottom:0px; }\n"
-              << "table > tr > td { "
-              << "padding-left:0px; padding-right:0px;padding-top:0px; \n"
-              << "padding-bottom:0px;"
-              << "}\n"
-              << "</style>\n"
-              << "<head/>\n"
-              << "<body>\n"
-
-              << "<b>Inviwo v" << IVW_VERSION << "</b><br>\n"
-              << "Interactive Visualization Workshop<br>\n"
-              << "&copy; 2012-" << buildYear << " The Inviwo Foundation<br>\n"
-              << "<a href='http://www.inviwo.org/' style='color: #AAAAAA;'>"
-              << "http://www.inviwo.org/</a>\n"
-              << "<p>Inviwo is a rapid prototyping environment for interactive "
-              << "visualizations.<br>It is licensed under the Simplified BSD license.</p>\n"
-
-              << "<p><b>Core Team:</b><br>\n"
-              << "Peter Steneteg, Erik Sund&eacute;n, Daniel J&ouml;nsson, Martin Falk, "
-              << "Rickard Englund, Sathish Kottravel, Timo Ropinski</p>\n"
-
-              << "<p><b>Former Developers:</b><br>\n"
-              << "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
-              << "Hans-Christian Helltegen, Viktor Axelsson</p>\n"
-
-              << "<p><b>Build Date: </b>\n" << syscap.getBuildDateString() << "</p>\n"
-              << "<p><b>Repos:</b>\n"
-              << "<table border='0' cellspacing='0' cellpadding='0' style='margin: 0px;'>\n";
-    for (size_t i = 0; i < syscap.getGitNumberOfHashes(); ++i) {
-        auto item = syscap.getGitHash(i);
-        aboutText << "<tr><td style='padding-right:8px;'>" << item.first
-                  << "</td><td style='padding-right:8px;'>" << item.second << "</td></tr>\n";
+    if(!inviwoAboutWindow_) {
+        inviwoAboutWindow_ = new InviwoAboutWindow(this);
+        inviwoAboutWindow_->setVisible(false);
+        inviwoAboutWindow_->loadState();
     }
-    aboutText << "</table></p>\n";
-
-    const auto& mfos = app_->getModuleManager().getModuleFactoryObjects();
-    auto names = util::transform(
-        mfos, [](const std::unique_ptr<InviwoModuleFactoryObject>& mfo) { return mfo->name; });
-    std::sort(names.begin(), names.end());
-    aboutText << "<p><b>Modules:</b><br>\n" << joinString(names, ", ") << "</p>\n";
-    aboutText << "</body></html>";
-
-    aboutText << "<p><b>Qt:</b> Version " << QT_VERSION_STR << ".<br/>";
-
-    auto str = aboutText.str();
-
-    // Use custom dialog since in QMessageBox::about you can not select text
-    auto about =
-        new QMessageBox(QMessageBox::NoIcon, QString::fromStdString("Inviwo v" + IVW_VERSION),
-                        QString::fromStdString(aboutText.str()), QMessageBox::Ok, this);
-    auto icon = windowIcon();
-    about->setIconPixmap(icon.pixmap(256));
-    about->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    about->exec();
+    inviwoAboutWindow_->show();
 }
 
 void InviwoMainWindow::visibilityModeChangedInSettings() {
