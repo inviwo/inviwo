@@ -41,12 +41,12 @@ InviwoModuleFactoryObject* create@MODULE@Module() {
     );
 }
 
+#ifdef INVIWO_ALL_DYN_LINK
 extern "C" {
-
 @API_DEFINE@ InviwoModuleFactoryObject* createModule() {
     return create@MODULE@Module();
 }
-
 }
+#endif
 
 }  //namespace
