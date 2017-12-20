@@ -96,6 +96,7 @@
 #include <modules/base/io/datvolumewriter.h>
 #include <modules/base/io/ivfvolumereader.h>
 #include <modules/base/io/ivfvolumewriter.h>
+#include <modules/base/io/ivfsequencevolumereader.h>
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
 
@@ -180,6 +181,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     // Register Data readers
     registerDataReader(util::make_unique<DatVolumeSequenceReader>());
     registerDataReader(util::make_unique<IvfVolumeReader>());
+    registerDataReader(util::make_unique<IvfSequenceVolumeReader>());
     // Register Data writers
     registerDataWriter(util::make_unique<DatVolumeWriter>());
     registerDataWriter(util::make_unique<IvfVolumeWriter>());
