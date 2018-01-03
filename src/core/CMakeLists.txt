@@ -652,6 +652,12 @@ endif()
 
 #--------------------------------------------------------------------
 # register license files
+ivw_register_license_file(NAME "Inviwo" MODULE Core
+    URL http://www.inviwo.org
+    TYPE "The MIT License"
+    FILES ${IVW_ROOT_DIR}/LICENSE
+)
+
 ivw_register_license_file(NAME "Flags" MODULE Core
     URL "http://grisumbras.github.io/enum-flags/"
     TYPE "The MIT License"

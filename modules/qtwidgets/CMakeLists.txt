@@ -146,3 +146,8 @@ target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Wi
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
 ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets)
 
+ivw_register_license_file(NAME "Qt" VERSION ${Qt5Widgets_VERSION} MODULE QtWidgets TYPE "LGPLv3"
+    URL https://www.qt.io/
+    FILES ${IVW_EXTENSIONS_DIR}/qt/LICENSE.txt
+)
+
