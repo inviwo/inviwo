@@ -60,6 +60,8 @@ set(SIGAR_SRC ${SIGAR_SRC}
 
 add_library(sigar ${SIGAR_SRC} ${HEADER_FILES})
 add_library(inviwo::sigar ALIAS sigar)
+set_target_properties(sigar PROPERTIES VERSION 1.6.4 SOVERSION 1.6)
+
 target_include_directories(sigar PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include/ext/sigar>

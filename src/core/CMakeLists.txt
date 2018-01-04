@@ -663,72 +663,104 @@ ivw_register_license_file(NAME "Flags" MODULE Core
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
 )
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.8.4 MODULE Core
+
+get_target_property(glmVersion glm VERSION)
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION ${glmVersion} MODULE Core
     URL "https://glm.g-truc.net"
     TYPE "The MIT License"
     FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
 )
-ivw_register_license_file(NAME "Google C++ Testing Framework" VERSION 1.7.0 MODULE Core
+
+get_target_property(gtestVersion gtest VERSION)
+ivw_register_license_file(NAME "Google C++ Testing Framework" VERSION ${gtestVersion} MODULE Core
     URL "http://code.google.com/p/googletest/"
     TYPE "BSD 3-clause"
     FILES ${IVW_EXTENSIONS_DIR}/gtest/LICENSE
 )
-ivw_register_license_file(NAME "half" VERSION 1.11.0 MODULE Core
+
+get_target_property(halfVersion half VERSION)
+ivw_register_license_file(NAME "half" VERSION ${halfVersion} MODULE Core
     URL "http://half.sourceforge.net"
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
 )
-ivw_register_license_file(NAME "OpenEXR" VERSION 2.2.0 MODULE Core
+
+get_target_property(openexrVersion openexr-ilmimf VERSION)
+ivw_register_license_file(NAME "OpenEXR" VERSION ${openexrVersion} MODULE Core
     URL "http://www.openexr.com"
     TYPE "Modified BSD License"
     FILES ${IVW_EXTENSIONS_DIR}/openexr/openexr-2.2.0/LICENSE
 )
+
+# Cannot get pybind11::module version property since it is an INTERFACE target
 ivw_register_license_file(NAME "PyBind11" VERSION 2.1.1 MODULE Core
     URL "https://github.com/pybind/pybind11"
     TYPE "BSD-style"
     FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE
 )
-ivw_register_license_file(NAME "Sigar" VERSION 1.6.4 MODULE Core
-    URL "http://sigar.hyperic.com"
-    TYPE "Apache License"
-    FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
-)
-ivw_register_license_file(NAME "stackwalker" VERSION 14.0.0 MODULE Core
-    URL http://stackwalker.codeplex.com/
-    TYPE "BSD-License"
-    FILES ${IVW_EXTENSIONS_DIR}/stackwalker/LICENSE.txt
-)
-ivw_register_license_file(NAME "tclap" VERSION 1.2.1 MODULE Core
+
+if(TARGET inviwo::sigar)
+    get_target_property(sigarVersion inviwo::sigar VERSION)
+    ivw_register_license_file(NAME "Sigar" VERSION ${sigarVersion} MODULE Core
+        URL "http://sigar.hyperic.com"
+        TYPE "Apache License"
+        FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
+    )
+endif()
+
+if (TARGET inviwo::stackwalker)
+    get_target_property(stackWalkerVersion inviwo::stackwalker VERSION)
+    ivw_register_license_file(NAME "stackwalker" VERSION ${stackWalkerVersion} MODULE Core
+        URL http://stackwalker.codeplex.com/
+        TYPE "BSD-License"
+        FILES ${IVW_EXTENSIONS_DIR}/stackwalker/LICENSE.txt
+    )
+endif()
+
+get_target_property(tclapVersion tclap VERSION)
+ivw_register_license_file(NAME "tclap" VERSION ${tclapVersion} MODULE Core
     URL http://tclap.sourceforge.net/
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
 )
-ivw_register_license_file(NAME "TiCPP" VERSION 0.0.4 MODULE Core
+
+get_target_property(ticppVersion ticpp VERSION)
+ivw_register_license_file(NAME "TiCPP" VERSION ${ticppVersion} MODULE Core
     URL https://github.com/wxFormBuilder/ticpp
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/ticpp/LICENSE
 )
+
 ivw_register_license_file(NAME "TinyDir" MODULE Core
     URL https://github.com/cxong/tinydir
     TYPE "Simplified BSD"
     FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
 )
-ivw_register_license_file(NAME "UTF8-CPP" VERSION 2.3.5 MODULE Core
+
+get_target_property(utfcppVersion utfcpp VERSION)
+ivw_register_license_file(NAME "UTF8-CPP" VERSION ${utfcppVersion} MODULE Core
     URL "https://github.com/nemtrif/utfcpp"
     TYPE "Boost Software License"
     FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
 )
-ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core
-    URL "https://kinddragon.github.io/vld/"
-    TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
-    FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
-)
+
+if (TARGET vld-interface)
+    get_target_property(vldVersion vld-interface VERSION)
+    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION ${vldVersion} MODULE Core
+        URL "https://kinddragon.github.io/vld/"
+        TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
+        FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
+    )
+endif()
+
 ivw_register_license_file(NAME "warn" MODULE Core
     URL "https://github.com/petersteneteg/warn"
     TYPE "BSD 2-clause"
     FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
 )
-ivw_register_license_file(NAME "zlib" VERSION 1.2.11 MODULE Core
+
+get_target_property(zlibVersion ZLIB::ZLIB VERSION)
+ivw_register_license_file(NAME "zlib" VERSION ${zlibVersion} MODULE Core
     URL "http://zlib.net/"
     TYPE "The zlib/libpng License"
     FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE

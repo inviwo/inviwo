@@ -14,6 +14,7 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #  HACK: have the files showing in the IDE, under the name 'flags'
 add_custom_target(tclap SOURCES ${HEADER_FILES})
+set_target_properties(tclap PROPERTIES VERSION 1.2.1 SOVERSION 1.2)
 
 # Creates VS folder structure
 ivw_folder(tclap ext)

@@ -58,6 +58,7 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #  HACK: have the files showing in the IDE, under the name 'glm'
 add_custom_target(glm SOURCES ${HEADER_FILES})
+set_target_properties(glm PROPERTIES VERSION 0.9.8.4 SOVERSION 0.9)
 
 # Creates VS folder structure
 ivw_folder(glm ext)
