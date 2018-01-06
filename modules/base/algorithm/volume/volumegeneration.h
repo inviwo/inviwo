@@ -49,7 +49,7 @@ namespace util {
  * @param function Functor called for each volume voxel. T(const size3_t& ind).
  */
 template <typename Functor>
-std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat4& basisAndOffset,
+std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat3& basis,
                                        Functor&& function) {
     using T = decltype(function(dimensions));
 
@@ -59,10 +59,24 @@ std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat4& ba
 
     forEachVoxelParallel(*ram, [&](const size3_t& ind) { data[im(ind)] = function(ind); });
 
+    auto minmax = std::minmax_element(data, data + glm::compMul(dimensions));
+
     auto volume = std::make_unique<Volume>(ram);
-    volume->setModelMatrix(basisAndOffset);
+    volume->setBasis(basis);
+    volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
+    volume->dataMap_.dataRange.x = util::glm_convert<double>(*minmax.first);
+    volume->dataMap_.dataRange.y = util::glm_convert<double>(*minmax.second);
+    volume->dataMap_.valueRange = volume->dataMap_.dataRange;
     return volume;
 }
+
+IVW_MODULE_BASE_API std::unique_ptr<Volume> makeSingleVoxelVolume(const size3_t& size);
+
+IVW_MODULE_BASE_API std::unique_ptr<Volume> makeSphericalVolume(const size3_t& size);
+
+IVW_MODULE_BASE_API std::unique_ptr<Volume> makeRippleVolume(const size3_t& size);
+
+IVW_MODULE_BASE_API std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index);
 
 }  // namespace util
 
