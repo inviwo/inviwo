@@ -56,12 +56,13 @@ template <typename C>
 void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
     const auto dims = v.getDimensions();
 
-    if (jobs == 0) {
+    if (InviwoApplication::isInitialized() && jobs == 0) {
         jobs = 4 * InviwoApplication::getPtr()->getPoolSize();
-        if (jobs == 0) { // if poolsize is zero
-            forEachVoxel(v, callback);
-            return;
-        }
+    }
+
+    if (jobs == 0 || !InviwoApplication::isInitialized()) {
+        forEachVoxel(v, callback);
+        return;
     }
 
     std::vector<std::future<void>> futures;
