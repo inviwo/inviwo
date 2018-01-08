@@ -50,6 +50,20 @@ public:
         : Exception(message, context) {}
     virtual ~ColorBrewerException() throw() {}
 };
+class IVW_CORE_API ColorBrewerTooFewException : public Exception {
+public:
+    ColorBrewerTooFewException(const std::string &message = "Requested colormap does not support selected number of colors.",
+        ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~ColorBrewerTooFewException() throw() {}
+};
+class IVW_CORE_API ColorBrewerTooManyException : public Exception {
+public:
+    ColorBrewerTooManyException(const std::string &message = "Requested colormap does not support selected number of colors.",
+        ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~ColorBrewerTooManyException() throw() {}
+};
 
 enum class Colormap {
     Accent_3, Accent_4, Accent_5, Accent_6, Accent_7, Accent_8, 
@@ -406,6 +420,64 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     return os;
 }
 
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             Category category) {
+    switch (category) {
+        case Category::Diverging: os << "Diverging"; break;
+        case Category::Qualitative: os << "Qualitative"; break;
+        case Category::Sequential: os << "Sequential"; break;
+
+    }
+
+    return os;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             Family family) {
+    switch (family) {
+    case Family::Accent: os << "Accent"; break;
+    case Family::Blues: os << "Blues"; break;
+    case Family::BrBG: os << "BrBG"; break;
+    case Family::BuGn: os << "BuGn"; break;
+    case Family::BuPu: os << "BuPu"; break;
+    case Family::Dark2: os << "Dark2"; break;
+    case Family::GnBu: os << "GnBu"; break;
+    case Family::Greens: os << "Greens"; break;
+    case Family::Greys: os << "Greys"; break;
+    case Family::OrRd: os << "OrRd"; break;
+    case Family::Oranges: os << "Oranges"; break;
+    case Family::PRGn: os << "PRGn"; break;
+    case Family::Paired: os << "Paired"; break;
+    case Family::Pastel1: os << "Pastel1"; break;
+    case Family::Pastel2: os << "Pastel2"; break;
+    case Family::PiYG: os << "PiYG"; break;
+    case Family::PuBu: os << "PuBu"; break;
+    case Family::PuBuGn: os << "PuBuGn"; break;
+    case Family::PuOr: os << "PuOr"; break;
+    case Family::PuRd: os << "PuRd"; break;
+    case Family::Purples: os << "Purples"; break;
+    case Family::RdBu: os << "RdBu"; break;
+    case Family::RdGy: os << "RdGy"; break;
+    case Family::RdPu: os << "RdPu"; break;
+    case Family::RdYlBu: os << "RdYlBu"; break;
+    case Family::RdYlGn: os << "RdYlGn"; break;
+    case Family::Reds: os << "Reds"; break;
+    case Family::Set1: os << "Set1"; break;
+    case Family::Set2: os << "Set2"; break;
+    case Family::Set3: os << "Set3"; break;
+    case Family::Spectral: os << "Spectral"; break;
+    case Family::YlGn: os << "YlGn"; break;
+    case Family::YlGnBu: os << "YlGnBu"; break;
+    case Family::YlOrBr: os << "YlOrBr"; break;
+    case Family::YlOrRd: os << "YlOrRd"; break;
+
+    }
+
+    return os;
+}
+
 /**
  * Returns the specified colormap. For reference see http://colorbrewer2.org/
  **/
@@ -426,15 +498,15 @@ IVW_CORE_API std::vector<std::vector<dvec4>> getColormaps(const Family &family);
 
 /**
  * Returns all colormaps of a category. Returns a map with one entry per family storing all
- *colormaps for that family.
+ * colormaps for that family.
  **/
 IVW_CORE_API std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(
     const Category &category);
 
 /**
  * Returns all colormaps of a category with given number of colors. If a colormap is not available
- * for the given number of colors, it is omitted. If no colormaps is available for the whole
- * category and the given number of colors, a ColorBrewerException is thrown.
+ * for the given number of colors, it is omitted. If none of the colormaps are available for the
+ * whole category and the given number of colors, a ColorBrewerException is thrown.
  **/
 IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
                                                                glm::uint8 numberOfColors);

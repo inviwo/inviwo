@@ -42,13 +42,15 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
     switch (colormap) {
 ##PLACEHOLDER##
     }
-    throw Exception("invalid colorbrewer colormap");
+    throw ColorBrewerException("Invalid colorbrewer colormap");
 }
 
 const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors) {
-    if (getMinNumberOfColorsForFamily(family) > numberOfColors ||
-        getMaxNumberOfColorsForFamily(family) < numberOfColors) {
-        throw ColorBrewerException();
+    if (getMinNumberOfColorsForFamily(family) > numberOfColors){
+        throw ColorBrewerTooFewException();
+    } 
+    if(getMaxNumberOfColorsForFamily(family) < numberOfColors) {
+        throw ColorBrewerTooManyException();
     }
 
     // Calculate offset into the std::vector<dvec4> enum class
@@ -107,10 +109,23 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
     std::map<Family, std::vector<dvec4>> v;
 
     for (const auto &family : getFamiliesForCategory(category)) {
+        // We catch the exceptions here because otherwise, the method would just throw an
+        // exception if one of the requested colormaps is not available, even if the others were.
+        // This way, if 3 out of 4 requested colormaps exist, they are returned.
         try {
             v.emplace(family, getColormap(family, numberOfColors));
-        }
-        catch (ColorBrewerException&) {
+        } catch (ColorBrewerTooFewException &) {
+            LogWarnCustom(
+                "colorbrewer",
+                "Family " << family
+                          << " omitted because the number of colors was not supported (too few, "
+                          << std::to_string(numberOfColors) << ")");
+        } catch (ColorBrewerTooManyException &) {
+            LogWarnCustom(
+                "colorbrewer",
+                "Family " << family
+                          << " omitted because the number of colors was not supported (too many, "
+                          << std::to_string(numberOfColors) << ")");
         }
     }
 

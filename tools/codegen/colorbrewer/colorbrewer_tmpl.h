@@ -50,6 +50,20 @@ public:
         : Exception(message, context) {}
     virtual ~ColorBrewerException() throw() {}
 };
+class IVW_CORE_API ColorBrewerTooFewException : public Exception {
+public:
+    ColorBrewerTooFewException(const std::string &message = "Requested colormap does not support selected number of colors.",
+        ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~ColorBrewerTooFewException() throw() {}
+};
+class IVW_CORE_API ColorBrewerTooManyException : public Exception {
+public:
+    ColorBrewerTooManyException(const std::string &message = "Requested colormap does not support selected number of colors.",
+        ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~ColorBrewerTooManyException() throw() {}
+};
 
 ##PLACEHOLDER##
 
@@ -58,6 +72,26 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
                                              Colormap colormap) {
     switch (colormap) {
 ##PLACEHOLDER_NAMES##
+    }
+
+    return os;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             Category category) {
+    switch (category) {
+##PLACEHOLDER_CATEGORIES##
+    }
+
+    return os;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             Family family) {
+    switch (family) {
+##PLACEHOLDER_FAMILIES##
     }
 
     return os;
@@ -83,15 +117,15 @@ IVW_CORE_API std::vector<std::vector<dvec4>> getColormaps(const Family &family);
 
 /**
  * Returns all colormaps of a category. Returns a map with one entry per family storing all
- *colormaps for that family.
+ * colormaps for that family.
  **/
 IVW_CORE_API std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(
     const Category &category);
 
 /**
  * Returns all colormaps of a category with given number of colors. If a colormap is not available
- * for the given number of colors, it is omitted. If no colormaps is available for the whole
- * category and the given number of colors, a ColorBrewerException is thrown.
+ * for the given number of colors, it is omitted. If none of the colormaps are available for the
+ * whole category and the given number of colors, a ColorBrewerException is thrown.
  **/
 IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
                                                                glm::uint8 numberOfColors);
