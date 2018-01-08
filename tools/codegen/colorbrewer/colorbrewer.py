@@ -20,7 +20,6 @@ if __name__ == '__main__':
     else:
         ivwpath = args.ivwpath
 
-
     enum = "enum class Colormap {";
 
     cat = [];
@@ -42,7 +41,7 @@ if __name__ == '__main__':
     lastEnum = "";
     firstEnum = "";
 
-#colorbrewer.json is downlaoded from http://colorbrewer2.org/# 
+	#colorbrewer.json is downlaoded from http://colorbrewer2.org/# 
 
     with open('colorbrewer.json','r') as cb_file:
         cb = json.load(cb_file);
@@ -86,13 +85,11 @@ if __name__ == '__main__':
                     c = ', '.join([str(r),str(g),str(b),"1.0"]);
                     colors.append('dvec4('+c+')');
 
-#                vector = "std::vector<dvec4>({"+','.join(colors)+"});"
                 vector = "std::vector<dvec4> "+ enumname.lower()  +"(\n\t\t\t\t{"+',\n\t\t\t\t '.join(colors)+"});"
 
                 impls += "\n\t\t\tstatic const " + vector + "\n\t\t\treturn "+ enumname.lower() +";\n\t\t}\n"
 
-                #impls += " return "+vector+"\n"
-                names       += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
+                names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
                 
         families += "\tNumberOfColormapFamilies,\n\tUndefined" + "\n};"
         catset = set(cat);
@@ -135,9 +132,6 @@ if __name__ == '__main__':
     categories = categories.replace("div", "Diverging");
     categories = categories.replace("qual", "Qualitative");
 
-    #for c in categories:
-    	#categories_os += "\tcase Category::" + c + ": os << \"" + c + "\"; break;\n";
-
     enum += "\n\tFirstMap=" + firstEnum + ", LastMap=" + lastEnum + "\n};\n\n"
 
     header = ""
@@ -165,6 +159,3 @@ if __name__ == '__main__':
     with open(ivwpath + '/src/core/util/colorbrewer.cpp','w') as source_file:
         print(src,file=source_file);
         source_file.close();
-
-
-

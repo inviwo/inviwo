@@ -117,15 +117,15 @@ IVW_CORE_API std::vector<std::vector<dvec4>> getColormaps(const Family &family);
 
 /**
  * Returns all colormaps of a category. Returns a map with one entry per family storing all
- *colormaps for that family.
+ * colormaps for that family.
  **/
 IVW_CORE_API std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(
     const Category &category);
 
 /**
  * Returns all colormaps of a category with given number of colors. If a colormap is not available
- * for the given number of colors, it is omitted. If no colormaps is available for the whole
- * category and the given number of colors, a ColorBrewerException is thrown.
+ * for the given number of colors, it is omitted. If none of the colormaps are available for the
+ * whole category and the given number of colors, a ColorBrewerException is thrown.
  **/
 IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
                                                                glm::uint8 numberOfColors);

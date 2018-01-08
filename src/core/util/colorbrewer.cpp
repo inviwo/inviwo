@@ -2845,6 +2845,9 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
     std::map<Family, std::vector<dvec4>> v;
 
     for (const auto &family : getFamiliesForCategory(category)) {
+        // We catch the exceptions here because otherwise, the method would just throw an
+        // exception if one of the requested colormaps is not available, even if the others were.
+        // This way, if 3 out of 4 requested colormaps exist, they are returned.
         try {
             v.emplace(family, getColormap(family, numberOfColors));
         } catch (ColorBrewerTooFewException &) {
