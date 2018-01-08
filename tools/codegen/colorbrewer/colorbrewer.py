@@ -36,6 +36,8 @@ if __name__ == '__main__':
     
     impls = "";
     names = "";
+    families_os = "";
+    categories_os = "";
 
     lastEnum = "";
     firstEnum = "";
@@ -45,6 +47,7 @@ if __name__ == '__main__':
     with open('colorbrewer.json','r') as cb_file:
         cb = json.load(cb_file);
         for fam,arr in sorted(cb.items()):
+            families_os += "\tcase Family::" + fam + ": os << \"" + fam + "\"; break;\n";
             families += "\t" + fam + ",\n";
             arrs = {};
             for a,b in arr.items():
@@ -89,7 +92,8 @@ if __name__ == '__main__':
                 impls += "\n\t\t\tstatic const " + vector + "\n\t\t\treturn "+ enumname.lower() +";\n\t\t}\n"
 
                 #impls += " return "+vector+"\n"
-                names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
+                names       += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
+                
         families += "\tNumberOfColormapFamilies,\n\tUndefined" + "\n};"
         catset = set(cat);
         catlist = list(catset);
@@ -99,10 +103,13 @@ if __name__ == '__main__':
             getFamiliesForCategoryImpl += "\t\tcase Category::";
             if c == "div":
                 getFamiliesForCategoryImpl += "Diverging:\n"
+                categories_os += "\t\tcase Category::Diverging: os << \"Diverging\"; break;\n";
             if c == "qual":
                 getFamiliesForCategoryImpl += "Qualitative:\n"
+                categories_os += "\t\tcase Category::Qualitative: os << \"Qualitative\"; break;\n";
             if c == "seq":
                 getFamiliesForCategoryImpl += "Sequential:\n"
+                categories_os += "\t\tcase Category::Sequential: os << \"Sequential\"; break;\n";
             for f in sorted(familiesInCategory[c]):
                 getFamiliesForCategoryImpl += "\t\t\tv.emplace_back(Family::" + f + ");\n";
             getFamiliesForCategoryImpl += "\t\t\tbreak;\n";
@@ -128,6 +135,9 @@ if __name__ == '__main__':
     categories = categories.replace("div", "Diverging");
     categories = categories.replace("qual", "Qualitative");
 
+    #for c in categories:
+    	#categories_os += "\tcase Category::" + c + ": os << \"" + c + "\"; break;\n";
+
     enum += "\n\tFirstMap=" + firstEnum + ", LastMap=" + lastEnum + "\n};\n\n"
 
     header = ""
@@ -142,6 +152,8 @@ if __name__ == '__main__':
     src = src.replace("##GETFAMILIESIMPL##", getFamiliesForCategoryImpl);
     src = src.replace("##GETMAXIMPL##", getMaxNumberOfColorsForFamilyImpl);
     header = header.replace("##PLACEHOLDER_NAMES##",names);
+    header = header.replace("##PLACEHOLDER_FAMILIES##",families_os);
+    header = header.replace("##PLACEHOLDER_CATEGORIES##",categories_os);
 
     # replace tabs with spaces
     src = src.replace("\t","    ");

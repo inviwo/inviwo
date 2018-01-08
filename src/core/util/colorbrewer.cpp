@@ -2778,13 +2778,15 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
         }
 
     }
-    throw Exception("invalid colorbrewer colormap");
+    throw ColorBrewerException("Invalid colorbrewer colormap");
 }
 
 const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors) {
-    if (getMinNumberOfColorsForFamily(family) > numberOfColors ||
-        getMaxNumberOfColorsForFamily(family) < numberOfColors) {
-        throw ColorBrewerException();
+    if (getMinNumberOfColorsForFamily(family) > numberOfColors){
+        throw ColorBrewerTooFewException();
+    } 
+    if(getMaxNumberOfColorsForFamily(family) < numberOfColors) {
+        throw ColorBrewerTooManyException();
     }
 
     // Calculate offset into the std::vector<dvec4> enum class
@@ -2845,8 +2847,18 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
     for (const auto &family : getFamiliesForCategory(category)) {
         try {
             v.emplace(family, getColormap(family, numberOfColors));
-        }
-        catch (ColorBrewerException&) {
+        } catch (ColorBrewerTooFewException &) {
+            LogWarnCustom(
+                "colorbrewer",
+                "Family " << family
+                          << " omitted because the number of colors was not supported (too few, "
+                          << std::to_string(numberOfColors) << ")");
+        } catch (ColorBrewerTooManyException &) {
+            LogWarnCustom(
+                "colorbrewer",
+                "Family " << family
+                          << " omitted because the number of colors was not supported (too many, "
+                          << std::to_string(numberOfColors) << ")");
         }
     }
 

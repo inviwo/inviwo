@@ -50,6 +50,20 @@ public:
         : Exception(message, context) {}
     virtual ~ColorBrewerException() throw() {}
 };
+class IVW_CORE_API ColorBrewerTooFewException : public Exception {
+public:
+    ColorBrewerTooFewException(const std::string &message = "Requested colormap does not support selected number of colors.",
+        ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~ColorBrewerTooFewException() throw() {}
+};
+class IVW_CORE_API ColorBrewerTooManyException : public Exception {
+public:
+    ColorBrewerTooManyException(const std::string &message = "Requested colormap does not support selected number of colors.",
+        ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
+    virtual ~ColorBrewerTooManyException() throw() {}
+};
 
 ##PLACEHOLDER##
 
@@ -58,6 +72,26 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
                                              Colormap colormap) {
     switch (colormap) {
 ##PLACEHOLDER_NAMES##
+    }
+
+    return os;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             Category category) {
+    switch (category) {
+##PLACEHOLDER_CATEGORIES##
+    }
+
+    return os;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             Family family) {
+    switch (family) {
+##PLACEHOLDER_FAMILIES##
     }
 
     return os;
