@@ -171,7 +171,10 @@ void exposeProperties(py::module &m) {
              [](TransferFunctionProperty *tf, std::string filename) { tf->get().load(filename); })
         .def("clear", [](TransferFunctionProperty &tp) { tp.get().clearPoints(); })
         .def("addPoint", [](TransferFunctionProperty &tp, vec2 pos, vec3 color) {
-            tp.get().addPoint(pos, vec4(color, pos.y));
+            tp.get().addPoint(pos.x, vec4(color, pos.y));
+        })
+        .def("addPoint", [](TransferFunctionProperty &tp, float pos, vec4 color) {
+            tp.get().addPoint(pos, color);
         });
 
     py::class_<StringProperty, Property, PropertyPtr<StringProperty>> strProperty(m, "StringProperty");
