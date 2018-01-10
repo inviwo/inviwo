@@ -383,7 +383,7 @@ void CameraWidget::objectPicked(PickingEvent *p) {
         }
 
         auto pickedID = static_cast<int>(p->getPickedId());
-        if (pickedID < pickingIDs_.size()) {
+        if (pickedID < static_cast<int>(pickingIDs_.size())) {
             if (interactionBegin) {
                 activeWidgetID_ = pickedID;
             }

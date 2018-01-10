@@ -193,7 +193,7 @@ CropWidget::CropWidget()
 
     std::array<InteractionElement, 3> elem = {
         InteractionElement::LowerBound, InteractionElement::UpperBound, InteractionElement::Middle};
-    for (int i = 0; i < pickingIDs_.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(pickingIDs_.size()); ++i) {
         pickingIDs_[i] = {picking_.getPickingId(i), elem[i % numInteractionWidgets]};
     }
 }
@@ -448,7 +448,7 @@ void CropWidget::updateBoundingCube() {
 void CropWidget::objectPicked(PickingEvent *p) {
     if (auto me = p->getEventAs<MouseEvent>()) {
         if (me->buttonState() & MouseButton::Left) {
-            const int axisID = static_cast<int>(p->getPickedId()) / numInteractionWidgets;
+            const auto axisID = p->getPickedId() / static_cast<size_t>(numInteractionWidgets);
 
             if (axisID >= cropAxes_.size()) {
                 LogWarn("invalid picking ID");
@@ -622,12 +622,7 @@ void CropWidget::rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p,
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
 
-    auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-    auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
-
     vec3 axis(volumeBasis_[static_cast<int>(cropAxis.axis)]);
-
-    auto viewprojMatrix = camera_.get().getProjectionMatrix() * camera_.get().getViewMatrix();
 
     // project mouse delta onto axis
     vec2 delta(currNDC - prevNDC);

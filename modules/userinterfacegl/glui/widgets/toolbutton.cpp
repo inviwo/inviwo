@@ -34,11 +34,11 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/texture/texture2darray.h>
-#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 

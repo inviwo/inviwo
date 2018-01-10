@@ -115,7 +115,7 @@ void BoxLayout::render(const ivec2 &topLeft, const size2_t &canvasDim) {
 void BoxLayout::addElement(Element &element) { uiElements_.push_back(std::ref(element)); }
 
 void BoxLayout::insertElement(int index, Element &element) {
-    if ((index < 0) || (index >= uiElements_.size())) {
+    if ((index < 0) || (index >= static_cast<int>(uiElements_.size()))) {
         addElement(element);
     } else {
         uiElements_.insert(uiElements_.begin() + index, std::ref(element));
