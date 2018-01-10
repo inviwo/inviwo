@@ -113,6 +113,7 @@ macro(ivw_define_standard_definitions project_name target)
                                                      NOMINMAX
                                                      WIN32_LEAN_AND_MEAN
                                                      UNICODE
+													 _UNICODE
         )
     else()
         target_compile_definitions(${target} PRIVATE HAVE_CONFIG_H)
