@@ -70,3 +70,8 @@
 /**
  * \namespace inviwo::filesystem filesystem
  */
+ */
+
+/**
+ * \namespace inviwo::animation animation
+ */
