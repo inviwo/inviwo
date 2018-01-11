@@ -11,10 +11,11 @@ find_package(Qt5Widgets QUIET REQUIRED)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditordockwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditorqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationlabelviewqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyframeqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyframesequenceqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorpanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/trackqt.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -24,10 +25,11 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditordockwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditorqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationlabelviewqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/keyframeqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/keyframesequenceqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorpanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/trackqt.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
