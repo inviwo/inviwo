@@ -91,7 +91,7 @@ u8vec4 blendABufferArray(uint abNumFrag, uint offset) {
 		return u8vec4(BACKGROUND_COLOR_R*255, BACKGROUND_COLOR_G*255, BACKGROUND_COLOR_B*255, BACKGROUND_COLOR_A*255);;
     
     //what to do if it exceeds ABUFFER_SIZE ???
-	abNumFrag = clamp(abNumFrag, 1, ABUFFER_SIZE);
+	abNumFrag = clamp((int)abNumFrag, 1, ABUFFER_SIZE);
 
     vec4 finalColor= vec4(0.0);
 
