@@ -34,6 +34,7 @@
 #include <modules/animationqt/trackqt.h>
 #include <modules/animationqt/keyframesequenceqt.h>
 #include <modules/animationqt/keyframeqt.h>
+#include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
 
 #include <modules/animation/animationcontroller.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -60,8 +61,9 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     , controller_(controller) {
 
     setFloating(true);
-    setSticky(false);
-    resize(QSize(700, 400)); // default size
+    setSticky(true);
+    
+    resize(QSize(1200, 400)); // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
@@ -69,20 +71,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     // List widget of track labels
     animationLabelView_ = new AnimationLabelViewQt(*controller_.getAnimation());
 
-    // Entire right half
-    animationEditor_ = std::make_unique<AnimationEditorQt>(controller_);
-    animationView_ = new AnimationViewQt(controller_);
-
-    animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    {
-        animationView_->setMinimumSize(300, 200);
-        animationView_->setScene(animationEditor_.get());
-        auto policy = animationView_->sizePolicy();
-        policy.setHorizontalPolicy(QSizePolicy::Expanding);
-        policy.setHorizontalStretch(5);
-        animationView_->setSizePolicy(policy);
-    }
-
+    // Left part
     auto leftWidget = new QMainWindow();
     QToolBar* toolBar = new QToolBar();
     {
@@ -91,20 +80,48 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         toolBar->setFloatable(false);
         toolBar->setMovable(false);
         leftWidget->setCentralWidget(animationLabelView_);
-        auto policy = leftWidget->sizePolicy();
-        policy.setHorizontalPolicy(QSizePolicy::Fixed);
-        policy.setHorizontalStretch(0);
-        leftWidget->setSizePolicy(policy);
-        leftWidget->setMinimumWidth(160);
     }
 
-    auto splitter = new QSplitter();
-    splitter->setMidLineWidth(1);
-    splitter->setHandleWidth(1);
-    splitter->setLineWidth(1);
-    splitter->addWidget(leftWidget);
-    splitter->addWidget(animationView_);
-    setWidget(splitter);
+
+    // Entire mid part
+    animationEditor_ = std::make_unique<AnimationEditorQt>(controller_);
+    animationView_ = new AnimationViewQt(controller_);
+    animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        animationView_->setScene(animationEditor_.get());
+
+    // right part
+    sequenceEditorView_ = new SequenceEditorPanel(this);
+
+    auto splitter1 = new QSplitter();
+    splitter1->setMidLineWidth(1);
+    splitter1->setHandleWidth(1);
+    splitter1->setLineWidth(1);
+    splitter1->addWidget(leftWidget);
+    splitter1->addWidget(animationView_);
+    splitter1->addWidget(sequenceEditorView_);
+    setWidget(splitter1);
+
+    {
+        auto policy = leftWidget->sizePolicy();
+        policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
+        policy.setHorizontalStretch(0);
+        leftWidget->setSizePolicy(policy);
+        leftWidget->setMinimumWidth(270); // width of the tool bar on my (Rickard's) machine
+    }
+    {
+        auto policy = animationView_->sizePolicy();
+        policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
+        policy.setHorizontalStretch(5);
+        animationView_->setSizePolicy(policy);
+        animationView_->setMinimumWidth(600);
+    }
+    {
+        auto policy = sequenceEditorView_->sizePolicy();
+        policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
+        policy.setHorizontalStretch(0);
+        sequenceEditorView_->setSizePolicy(policy);
+        sequenceEditorView_->setMinimumWidth(320); // same as PropertyListWidget
+    }
 
     {
         auto begin = toolBar->addAction(
