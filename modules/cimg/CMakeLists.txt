@@ -63,21 +63,18 @@ ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
 )
 
-get_target_property(libpngVersion inviwo::libpng VERSION)
-ivw_register_license_file(NAME libpng VERSION ${libpngVersion} MODULE CImg TYPE "libpng (BSD-style)"
+ivw_register_license_file(NAME libpng TARGET inviwo::libpng MODULE CImg TYPE "libpng (BSD-style)"
     URL http://www.libpng.org/pub/png/libpng.html
     FILES ${IVW_EXTENSIONS_DIR}/libpng/LICENSE.txt
 )
 
-get_target_property(jpegVersion inviwo::libjpeg VERSION)
-ivw_register_license_file(NAME libjpeg-turbo VERSION ${jpegVersion} MODULE CImg
+ivw_register_license_file(NAME libjpeg-turbo TARGET inviwo::libjpeg MODULE CImg
     TYPE "BSD-style, acknowledgement: This software is based in part on the work of the Independent JPEG Group"
     URL www.ijg.org
     FILES ${IVW_EXTENSIONS_DIR}/libjpeg/README
 )
 
-get_target_property(tiffVersion inviwo::tiff VERSION)
-ivw_register_license_file(NAME tiff VERSION ${tiffVersion} MODULE CImg
+ivw_register_license_file(NAME tiff TARGET inviwo::tiff MODULE CImg
     TYPE "The MIT License"
     URL http://www.libtiff.org/ 
     FILES ${IVW_EXTENSIONS_DIR}/tiff/COPYRIGHT

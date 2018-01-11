@@ -664,29 +664,25 @@ ivw_register_license_file(NAME "Flags" MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
 )
 
-get_target_property(glmVersion glm VERSION)
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION ${glmVersion} MODULE Core
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm MODULE Core
     URL "https://glm.g-truc.net"
     TYPE "The MIT License"
     FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
 )
 
-get_target_property(gtestVersion gtest VERSION)
-ivw_register_license_file(NAME "Google C++ Testing Framework" VERSION ${gtestVersion} MODULE Core
+ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
     URL "http://code.google.com/p/googletest/"
     TYPE "BSD 3-clause"
     FILES ${IVW_EXTENSIONS_DIR}/gtest/LICENSE
 )
 
-get_target_property(halfVersion half VERSION)
-ivw_register_license_file(NAME "half" VERSION ${halfVersion} MODULE Core
+ivw_register_license_file(NAME "half" TARGET half MODULE Core
     URL "http://half.sourceforge.net"
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
 )
 
-get_target_property(openexrVersion openexr-ilmimf VERSION)
-ivw_register_license_file(NAME "OpenEXR" VERSION ${openexrVersion} MODULE Core
+ivw_register_license_file(NAME "OpenEXR" TARGET openexr-ilmimf MODULE Core
     URL "http://www.openexr.com"
     TYPE "Modified BSD License"
     FILES ${IVW_EXTENSIONS_DIR}/openexr/openexr-2.2.0/LICENSE
@@ -700,8 +696,7 @@ ivw_register_license_file(NAME "PyBind11" VERSION 2.1.1 MODULE Core
 )
 
 if(TARGET inviwo::sigar)
-    get_target_property(sigarVersion inviwo::sigar VERSION)
-    ivw_register_license_file(NAME "Sigar" VERSION ${sigarVersion} MODULE Core
+    ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core
         URL "http://sigar.hyperic.com"
         TYPE "Apache License"
         FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
@@ -709,23 +704,20 @@ if(TARGET inviwo::sigar)
 endif()
 
 if (TARGET inviwo::stackwalker)
-    get_target_property(stackWalkerVersion inviwo::stackwalker VERSION)
-    ivw_register_license_file(NAME "stackwalker" VERSION ${stackWalkerVersion} MODULE Core
+    ivw_register_license_file(NAME "stackwalker" TARGET inviwo::stackwalker MODULE Core
         URL http://stackwalker.codeplex.com/
         TYPE "BSD-License"
         FILES ${IVW_EXTENSIONS_DIR}/stackwalker/LICENSE.txt
     )
 endif()
 
-get_target_property(tclapVersion tclap VERSION)
-ivw_register_license_file(NAME "tclap" VERSION ${tclapVersion} MODULE Core
+ivw_register_license_file(NAME "tclap" TARGET tclap MODULE Core
     URL http://tclap.sourceforge.net/
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
 )
 
-get_target_property(ticppVersion ticpp VERSION)
-ivw_register_license_file(NAME "TiCPP" VERSION ${ticppVersion} MODULE Core
+ivw_register_license_file(NAME "TiCPP" TARGET ticpp MODULE Core
     URL https://github.com/wxFormBuilder/ticpp
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/ticpp/LICENSE
@@ -737,16 +729,14 @@ ivw_register_license_file(NAME "TinyDir" MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
 )
 
-get_target_property(utfcppVersion utfcpp VERSION)
-ivw_register_license_file(NAME "UTF8-CPP" VERSION ${utfcppVersion} MODULE Core
+ivw_register_license_file(NAME "UTF8-CPP" TARGET utfcpp MODULE Core
     URL "https://github.com/nemtrif/utfcpp"
     TYPE "Boost Software License"
     FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
 )
 
 if (TARGET vld-interface)
-    get_target_property(vldVersion vld-interface VERSION)
-    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION ${vldVersion} MODULE Core
+    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" TARGET vld-interface MODULE Core
         URL "https://kinddragon.github.io/vld/"
         TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
         FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
@@ -759,8 +749,7 @@ ivw_register_license_file(NAME "warn" MODULE Core
     FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
 )
 
-get_target_property(zlibVersion ZLIB::ZLIB VERSION)
-ivw_register_license_file(NAME "zlib" VERSION ${zlibVersion} MODULE Core
+ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
     URL "http://zlib.net/"
     TYPE "The zlib/libpng License"
     FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
