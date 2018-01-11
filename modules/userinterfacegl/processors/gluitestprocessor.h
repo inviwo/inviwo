@@ -47,6 +47,7 @@
 #include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
 #include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
 #include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>
 
 namespace inviwo {
 
@@ -90,12 +91,19 @@ private:
 
     BoolProperty boolProperty_;
     IntProperty intProperty_;
+    FloatProperty floatProperty_;
     ButtonProperty buttonProperty_;
+
+    BoolProperty readOnlyBoolProperty_;
+    IntProperty readOnlyIntProperty_;
+    ButtonProperty readOnlyButtonProperty_;
 
     CompositeProperty uiSettings_;
     BoolProperty uiVisible_;
     FloatVec4Property uiColor_;
-    FloatVec4Property uiModeColor_;
+    FloatVec4Property uiSecondaryColor_;
+    FloatVec4Property uiBorderColor_;
+    FloatVec4Property uiDisabledColor_;
     FloatVec4Property uiTextColor_;
     FloatVec4Property hoverColor_;
 
@@ -108,11 +116,19 @@ private:
     glui::BoxLayout layout_;
     glui::VBoxLayout propertyLayout_;
 
+    // GLUI widgets
     glui::BoolPropertyWidget boolPropertyUI_;
     glui::IntPropertyWidget intPropertyUI_;
+    glui::FloatPropertyWidget floatPropertyUI_;
     glui::ButtonPropertyWidget buttonPropertyUI_;
     glui::ToolButtonPropertyWidget toolButtonPropertyUI_;
 
+    // read-only widgets
+    glui::BoolPropertyWidget readOnlyBoolPropertyUI_;
+    glui::IntPropertyWidget readOnlyIntPropertyUI_;
+    glui::ButtonPropertyWidget readOnlyButtonPropertyUI_;
+
+    // container for holding arbitrary GLUI element not connected to any properties
     std::vector<std::unique_ptr<glui::Element>> widgets_;
 };
 

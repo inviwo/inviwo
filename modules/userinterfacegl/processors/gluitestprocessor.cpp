@@ -38,6 +38,8 @@
 #include <modules/userinterfacegl/glui/widgets/checkbox.h>
 #include <modules/userinterfacegl/glui/widgets/slider.h>
 
+#pragma optimize("", off)
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -54,14 +56,25 @@ GLUITestProcessor::GLUITestProcessor()
     : Processor()
     , inport_("inport")
     , outport_("outport")
+    // properties represented by GLUI
     , boolProperty_("boolProperty", "Bool Property", true)
     , intProperty_("intProperty", "Int Property", 20, 0, 100)
+    , floatProperty_("floatProperty", "Float Property", 0.5f, 0.0f, 1.0f)
     , buttonProperty_("buttonProperty", "Button Property")
+    , readOnlyBoolProperty_("readOnlyBoolProperty", "Read-Only Bool Property", true)
+    , readOnlyIntProperty_("readOnlyIntProperty", "Read-Only Int Property", 75, 0, 100)
+    , readOnlyButtonProperty_("readOnlyButtonProperty", "Read-Only Button")
+
+    // settings properties for GLUI
     , uiSettings_("uiSettings", "UI Settings")
     , uiVisible_("uiVisibility", "UI Visible", true)
-    , uiColor_("uiColor", "UI Color", vec4(vec3(1.0f), 1.0f), vec4(0.0f), vec4(1.0f))
-    , uiModeColor_("uiModeColor", "UI Interaction Color", vec4(0.4f, 0.6f, 1.0f, 1.0f), vec4(0.0f),
-                   vec4(1.0f))
+    , uiColor_("uiColor", "UI Color", vec4(0.51f, 0.64f, 0.91f, 1.0f), vec4(0.0f), vec4(1.0f))
+    , uiSecondaryColor_("uiSecondaryColor", "UI Secondary Color", vec4(0.4f, 0.4f, 0.45f, 1.0f),
+                        vec4(0.0f), vec4(1.0f))
+    , uiBorderColor_("uiBorderColor", "UI Border Color", vec4(vec3(0.1f), 1.0f), vec4(0.0f),
+                     vec4(1.0f))
+    , uiDisabledColor_("uiDisabledColor", "UI Disabled Color", vec4(0.6f, 0.6f, 0.63f, 1.0f),
+                       vec4(0.0f), vec4(1.0f))
     , uiTextColor_("uiTextColor", "Text Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 1.0f, 1.0f, 0.5f), vec4(0.0f), vec4(1.0f))
     , layoutDirection_("layoutDirection", "Layout Direction",
@@ -71,10 +84,17 @@ GLUITestProcessor::GLUITestProcessor()
     , layoutSpacing_("layoutSpacing", "Layout Spacing", 5, 0, 50)
     , layoutMargins_("layoutMargins", "Layout Margins", ivec4(10), ivec4(0), ivec4(50))
     , layout_(glui::BoxLayout::LayoutDirection::Vertical)
+    // GLUI property widgets
     , boolPropertyUI_(boolProperty_, *this, uiRenderer_)
     , intPropertyUI_(intProperty_, *this, uiRenderer_, ivec2(100, 24))
+    , floatPropertyUI_(floatProperty_, *this, uiRenderer_, ivec2(100, 24))
     , buttonPropertyUI_(buttonProperty_, *this, uiRenderer_, ivec2(150, 30))
-    , toolButtonPropertyUI_(buttonProperty_, nullptr, *this, uiRenderer_, ivec2(32, 32)) {
+    , toolButtonPropertyUI_(buttonProperty_, nullptr, *this, uiRenderer_, ivec2(32, 32))
+
+    , readOnlyBoolPropertyUI_(readOnlyBoolProperty_, *this, uiRenderer_)
+    , readOnlyIntPropertyUI_(readOnlyIntProperty_, *this, uiRenderer_, ivec2(100, 24))
+    , readOnlyButtonPropertyUI_(readOnlyButtonProperty_, *this, uiRenderer_, ivec2(150, 30)) {
+
     inport_.setOptional(true);
 
     addPort(inport_);
@@ -82,15 +102,19 @@ GLUITestProcessor::GLUITestProcessor()
 
     // UI specific settings
     uiColor_.setSemantics(PropertySemantics::Color);
-    uiModeColor_.setSemantics(PropertySemantics::Color);
+    uiSecondaryColor_.setSemantics(PropertySemantics::Color);
+    uiBorderColor_.setSemantics(PropertySemantics::Color);
+    uiDisabledColor_.setSemantics(PropertySemantics::Color);
     uiTextColor_.setSemantics(PropertySemantics::Color);
     hoverColor_.setSemantics(PropertySemantics::Color);
 
     uiSettings_.addProperty(uiVisible_);
     uiSettings_.addProperty(uiColor_);
+    uiSettings_.addProperty(uiSecondaryColor_);
+    uiSettings_.addProperty(uiBorderColor_);
     uiSettings_.addProperty(uiTextColor_);
     uiSettings_.addProperty(hoverColor_);
-    uiSettings_.addProperty(uiModeColor_);
+    uiSettings_.addProperty(uiDisabledColor_);
     uiSettings_.addProperty(layoutDirection_);
     uiSettings_.addProperty(layoutSpacing_);
     uiSettings_.addProperty(layoutMargins_);
@@ -100,18 +124,32 @@ GLUITestProcessor::GLUITestProcessor()
 
     addProperty(boolProperty_);
     addProperty(intProperty_);
+    addProperty(floatProperty_);
     addProperty(buttonProperty_);
+    // read-only properties
+    readOnlyBoolProperty_.setReadOnly(true);
+    readOnlyIntProperty_.setReadOnly(true);
+    readOnlyButtonProperty_.setReadOnly(true);
+    addProperty(readOnlyBoolProperty_);
+    addProperty(readOnlyIntProperty_);
+    addProperty(readOnlyButtonProperty_);
+    // settings
     addProperty(uiSettings_);
 
     setAllPropertiesCurrentStateAsDefault();
 
     // inviwo GLUI property widgets
     propertyLayout_.addElement(boolPropertyUI_);
+    propertyLayout_.addElement(readOnlyBoolPropertyUI_);
     propertyLayout_.addElement(intPropertyUI_);
+    propertyLayout_.addElement(readOnlyIntPropertyUI_);
+    propertyLayout_.addElement(floatPropertyUI_);
     propertyLayout_.addElement(buttonPropertyUI_);
+    propertyLayout_.addElement(readOnlyButtonPropertyUI_);
     propertyLayout_.addElement(toolButtonPropertyUI_);
 
-    toolButtonPropertyUI_.setImage(module::getModulePath("UserInterfaceGL", ModulePath::Images) + "/home.png");
+    toolButtonPropertyUI_.setImage(module::getModulePath("UserInterfaceGL", ModulePath::Images) +
+                                   "/home.png");
 
     // plain GLUI widgets w/o connection to any Inviwo property
     //
@@ -140,6 +178,8 @@ GLUITestProcessor::GLUITestProcessor()
 
     // initialize color states
     uiRenderer_.setUIColor(uiColor_.get());
+    uiRenderer_.setSecondaryUIColor(uiSecondaryColor_.get());
+    uiRenderer_.setBorderColor(uiBorderColor_.get());
     uiRenderer_.setTextColor(uiTextColor_.get());
     uiRenderer_.setHoverColor(hoverColor_.get());
 }
@@ -148,11 +188,20 @@ void GLUITestProcessor::process() {
     if (uiColor_.isModified()) {
         uiRenderer_.setUIColor(uiColor_.get());
     }
+    if (uiSecondaryColor_.isModified()) {
+        uiRenderer_.setSecondaryUIColor(uiSecondaryColor_.get());
+    }
+    if (uiBorderColor_.isModified()) {
+        uiRenderer_.setBorderColor(uiBorderColor_.get());
+    }
     if (uiTextColor_.isModified()) {
         uiRenderer_.setTextColor(uiTextColor_.get());
     }
     if (hoverColor_.isModified()) {
         uiRenderer_.setHoverColor(hoverColor_.get());
+    }
+    if (uiDisabledColor_.isModified()) {
+        uiRenderer_.setDisabledColor(uiDisabledColor_.get());
     }
     if (layoutDirection_.isModified()) {
         layout_.setDirection(layoutDirection_.get());
