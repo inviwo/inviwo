@@ -114,46 +114,43 @@ bool OpenCL::isOpenGLSharingEnabled() const {
                          })) != contextProperties.end();
 }
 
-/*! \brief Get the device that has most compute units.
-    *
-    *  @param bestDevice Set to found device, if found.
-    *  @param onPlatform Set to platform that device exist on, if found.
-    *  \return True if any device found, false otherwise.
-    */
 bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPlatform) {
     std::vector<cl::Platform> platforms;
     cl::Platform::get(&platforms);
     auto glVendor = std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
     std::vector<cl::Device> devices;
-    for(auto &platform : platforms) {
+    for (auto& platform : platforms) {
         try {
-            std::vector<cl::Device> platFOrmdevices;
-            platform.getDevices(CL_DEVICE_TYPE_ALL, &platFOrmdevices);
-            devices.insert(devices.end(), platFOrmdevices.begin(),platFOrmdevices.end());
+            std::vector<cl::Device> devicesTmp;
+            platform.getDevices(CL_DEVICE_TYPE_ALL, &devicesTmp);
+            devices.insert(devices.end(), devicesTmp.begin(), devicesTmp.end());
         } catch (cl::Error&) {
             // Error getting device, continue with others
         }
     }
 
-    if(devices.empty()) return false;
-        std::sort(devices.begin(),devices.end(),[&](cl::Device &a,cl::Device &b){
-            cl_int err;
-            std::string AVendor = a.getInfo<CL_DEVICE_VENDOR>(&err);
-            std::string BVendor = b.getInfo<CL_DEVICE_VENDOR>(&err);
+    if (devices.empty()) return false;
+    std::sort(devices.begin(), devices.end(), [&](cl::Device& a, cl::Device& b) {
+        cl_int err;
+        std::string AVendor = a.getInfo<CL_DEVICE_VENDOR>(&err);
+        std::string BVendor = b.getInfo<CL_DEVICE_VENDOR>(&err);
 
-            if(AVendor == glVendor && BVendor != glVendor) return true;
-            if(AVendor != glVendor && BVendor == glVendor) return false;
+        if (AVendor == glVendor && BVendor != glVendor) return true;
+        if (AVendor != glVendor && BVendor == glVendor) return false;
 
-            auto AType = a.getInfo<CL_DEVICE_TYPE>(&err);
-            auto BType = b.getInfo<CL_DEVICE_TYPE>(&err);
+        auto AType = a.getInfo<CL_DEVICE_TYPE>(&err);
+        auto BType = b.getInfo<CL_DEVICE_TYPE>(&err);
 
-            if(AType != BType){
-                if (AType == CL_DEVICE_TYPE_GPU) return true;
-                else if (BType == CL_DEVICE_TYPE_GPU) return false;
-            }
+        if (AType != BType) {
+            if (AType == CL_DEVICE_TYPE_GPU)
+                return true;
+            else if (BType == CL_DEVICE_TYPE_GPU)
+                return false;
+        }
 
-            return a.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err) > b.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err);
-        });
+        return a.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err) >
+               b.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err);
+    });
 
     bestDevice = devices.front();
     onPlatform = bestDevice.getInfo<CL_DEVICE_PLATFORM>();
