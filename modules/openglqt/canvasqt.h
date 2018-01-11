@@ -490,15 +490,16 @@ bool CanvasQtBase<T>::mapGestureEvent(QGestureEvent* ge) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
-    auto deltaPos =
-        dvec2((gesture->lastOffset().x() - gesture->offset().x()) / this->getCanvasDimensions().x,
-              (gesture->offset().y() - gesture->lastOffset().y()) / this->getCanvasDimensions().y);
+    // determine delta position, use canvas dimensions here for normalization
+    auto deltaPos = dvec2(
+        (gesture->lastOffset().x() - gesture->offset().x()) / (this->getCanvasDimensions().x - 1),
+        (gesture->offset().y() - gesture->lastOffset().y()) / (this->getCanvasDimensions().y - 1));
 
     if (deltaPos == dvec2(0.f)) return true;
 
     auto depth = this->getDepthValueAtNormalizedCoord(screenPositionNormalized_);
     GestureEvent ge(deltaPos, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
-                    lastNumFingers_, screenPositionNormalized_, this->getCanvasDimensions(), depth);
+                    lastNumFingers_, screenPositionNormalized_, this->getImageDimensions(), depth);
 
     Canvas::propagateEvent(&ge);
     return true;
@@ -510,7 +511,7 @@ bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
     GestureEvent ge(dvec2(gesture->centerPoint().x(), gesture->centerPoint().y()),
                     static_cast<double>(gesture->scaleFactor()) - 1.0, GestureType::Pinch,
                     utilqt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_,
-                    this->getCanvasDimensions(), depth);
+                    this->getImageDimensions(), depth);
 
     Canvas::propagateEvent(&ge);
     return true;
