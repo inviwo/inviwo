@@ -35,6 +35,7 @@
 #include <inviwo/core/util/volumeutils.h>
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/opengl/geometry/meshgl.h>
@@ -129,7 +130,8 @@ CropWidget::CropWidget()
             const auto rangeExtrema = elem.range.getRange();
             if (elem.enabled.get()) {
                 // sync the cropped range
-                elem.outputRange.set(ivec2(elem.range.getStart(), elem.range.getEnd()), rangeExtrema, 1, 1);
+                elem.outputRange.set(ivec2(elem.range.getStart(), elem.range.getEnd()),
+                                     rangeExtrema, 1, 1);
             } else {
                 // don't sync the crop range, use the full range instead
                 elem.outputRange.set(rangeExtrema, rangeExtrema, 1, 1);
@@ -336,8 +338,7 @@ void CropWidget::renderAxis(const CropAxis &axis) {
             drawObject.draw();
         };
 
-        const auto globalPickID =
-            static_cast<unsigned int>(picking_.getPickingId(axisIDOffset));
+        const auto globalPickID = static_cast<unsigned int>(picking_.getPickingId(axisIDOffset));
 
         {
             // lower bound
@@ -354,7 +355,8 @@ void CropWidget::renderAxis(const CropAxis &axis) {
                 (property.get().y < property.getRangeMax())) {
                 auto drawObject = MeshDrawerGL::getDrawObject(interactionHandleMesh_[1].get());
                 if (std::fabs(upperBound - lowerBound) > minSeparationPercentage) {
-                    draw(drawObject, globalPickID + 2, (upperBound + lowerBound) * 0.5f, axis.info.rotMatrix);
+                    draw(drawObject, globalPickID + 2, (upperBound + lowerBound) * 0.5f,
+                         axis.info.rotMatrix);
                 }
             }
         }
@@ -446,27 +448,48 @@ void CropWidget::updateBoundingCube() {
 }
 
 void CropWidget::objectPicked(PickingEvent *p) {
-    if (auto me = p->getEventAs<MouseEvent>()) {
+    const auto axisID = p->getPickedId() / static_cast<size_t>(numInteractionWidgets);
+    if (axisID >= cropAxes_.size()) {
+        LogWarn("invalid picking ID");
+        return;
+    }
+
+    if (p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = p->getEventAs<MouseEvent>();
         if (me->buttonState() & MouseButton::Left) {
-            const auto axisID = p->getPickedId() / static_cast<size_t>(numInteractionWidgets);
+            if (me->state() == MouseState::Press) {
+                isMouseBeingPressedAndHold_ = true;
+                lastState_ = cropAxes_[axisID].range.get();
+            } else if (me->state() == MouseState::Release) {
+                isMouseBeingPressedAndHold_ = false;
+                lastState_ = ivec2(-1);
+            } else if (me->state() == MouseState::Move) {
 
-            if (axisID >= cropAxes_.size()) {
-                LogWarn("invalid picking ID");
-            } else {
-                if (me->state() == MouseState::Press) {
-                    isMouseBeingPressedAndHold_ = true;
-                    lastState_ = cropAxes_[axisID].range.get();
-                } else if (me->state() == MouseState::Release) {
-                    isMouseBeingPressedAndHold_ = false;
-                    lastState_ = ivec2(-1);
-                } else if (me->state() == MouseState::Move) {
-
-                    InteractionElement element =
-                        static_cast<InteractionElement>(p->getPickedId() % numInteractionWidgets);
-                    rangePositionHandlePicked(cropAxes_[axisID], p, element);
-                }
+                InteractionElement element =
+                    static_cast<InteractionElement>(p->getPickedId() % numInteractionWidgets);
+                rangePositionHandlePicked(cropAxes_[axisID], p, element);
             }
             me->markAsUsed();
+        }
+    } else if (p->getEvent()->hash() == TouchEvent::chash()) {
+        auto touchEvent = p->getEventAs<TouchEvent>();
+
+        if (touchEvent->touchPoints().size() == 1) {
+            // allow interaction only for a single touch point
+            const auto &touchPoint = touchEvent->touchPoints().front();
+
+            if (touchPoint.state() == TouchState::Started) {
+                lastState_ = cropAxes_[axisID].range.get();
+            } else if (touchPoint.state() == TouchState::Finished) {
+                lastState_ = ivec2(-1);
+            } else if (touchPoint.state() == TouchState::Updated) {
+                const auto delta = touchPoint.pos() - touchPoint.pressedPos();
+
+                InteractionElement element =
+                    static_cast<InteractionElement>(p->getPickedId() % numInteractionWidgets);
+                rangePositionHandlePicked(cropAxes_[axisID], p, element);
+            }
+            p->markAsUsed();
         }
     }
 }
