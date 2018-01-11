@@ -682,12 +682,6 @@ ivw_register_license_file(NAME "half" TARGET half MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
 )
 
-ivw_register_license_file(NAME "OpenEXR" TARGET openexr-ilmimf MODULE Core
-    URL "http://www.openexr.com"
-    TYPE "Modified BSD License"
-    FILES ${IVW_EXTENSIONS_DIR}/openexr/openexr-2.2.0/LICENSE
-)
-
 # Cannot get pybind11::module version property since it is an INTERFACE target
 ivw_register_license_file(NAME "PyBind11" VERSION 2.1.1 MODULE Core
     URL "https://github.com/pybind/pybind11"

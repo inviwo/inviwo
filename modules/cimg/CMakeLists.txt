@@ -1,3 +1,6 @@
+# Add OpenEXR
+add_subdirectory(ext/openexr)
+
 #--------------------------------------------------------------------
 # CImg Module
 ivw_module(CImg)
@@ -61,6 +64,12 @@ target_compile_definitions(inviwo-module-cimg PUBLIC
 ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
     URL http://cimg.eu
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
+)
+
+ivw_register_license_file(NAME "OpenEXR" TARGET openexr-ilmimf MODULE CImg
+    URL "http://www.openexr.com"
+    TYPE "Modified BSD License"
+    FILES ext/openexr/openexr-2.2.0/LICENSE
 )
 
 ivw_register_license_file(NAME libpng TARGET inviwo::libpng MODULE CImg TYPE "libpng (BSD-style)"
