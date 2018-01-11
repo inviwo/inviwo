@@ -100,6 +100,7 @@ private:
 
     CompositeProperty uiSettings_;
     BoolProperty uiVisible_;
+    FloatProperty uiScaling_;
     FloatVec4Property uiColor_;
     FloatVec4Property uiSecondaryColor_;
     FloatVec4Property uiBorderColor_;

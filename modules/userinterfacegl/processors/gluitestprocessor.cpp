@@ -66,6 +66,7 @@ GLUITestProcessor::GLUITestProcessor()
     // settings properties for GLUI
     , uiSettings_("uiSettings", "UI Settings")
     , uiVisible_("uiVisibility", "UI Visible", true)
+    , uiScaling_("uiScaling", "UI Scaling", 1.0f, 0.0f, 4.0f)
     , uiColor_("uiColor", "UI Color", vec4(0.51f, 0.64f, 0.91f, 1.0f), vec4(0.0f), vec4(1.0f))
     , uiSecondaryColor_("uiSecondaryColor", "UI Secondary Color", vec4(0.4f, 0.4f, 0.45f, 1.0f),
                         vec4(0.0f), vec4(1.0f))
@@ -107,6 +108,7 @@ GLUITestProcessor::GLUITestProcessor()
     hoverColor_.setSemantics(PropertySemantics::Color);
 
     uiSettings_.addProperty(uiVisible_);
+    uiSettings_.addProperty(uiScaling_);
     uiSettings_.addProperty(uiColor_);
     uiSettings_.addProperty(uiSecondaryColor_);
     uiSettings_.addProperty(uiBorderColor_);
@@ -200,6 +202,12 @@ void GLUITestProcessor::process() {
     }
     if (uiDisabledColor_.isModified()) {
         uiRenderer_.setDisabledColor(uiDisabledColor_.get());
+    }
+    if (uiScaling_.isModified()) {
+        // inform the renderer about the change in size (will adjust label font size)
+        uiRenderer_.setUIScaling(uiScaling_.get());
+        // scaling will affect all glui elements, the change is propagated by the layouts
+        propertyLayout_.setScalingFactor(uiScaling_.get());
     }
     if (layoutDirection_.isModified()) {
         layout_.setDirection(layoutDirection_.get());

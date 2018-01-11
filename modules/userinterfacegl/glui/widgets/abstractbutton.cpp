@@ -63,7 +63,7 @@ ivec2 AbstractButton::computeLabelPos(int descent) const {
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
         vec2 labelSize(labelExtent_);
         labelSize.y -= descent;
-        ivec2 labelOrigin(ivec2(glm::floor(vec2(widgetExtent_) * 0.5f + 0.5f)));
+        ivec2 labelOrigin(ivec2(glm::floor(vec2(getWidgetExtent()) * 0.5f + 0.5f)));
         // compute offset for vertical alignment in the center
         vec2 labelOffset(-labelSize.x * 0.5f, -labelSize.y * 0.5f);
 
@@ -78,6 +78,7 @@ Element::UIState AbstractButton::uiState() const {
 
 vec2 AbstractButton::marginScale() const {
     if (uiTextures_) {
+        // use unscaled widgetExtent_ here so that corners are also scaled along with the widget
         return (vec2(uiTextures_->getDimensions()) / vec2(widgetExtent_));
     }
     return vec2(1.0f);

@@ -60,6 +60,14 @@ public:
     const ivec4 &getMargins() const;
 
     /**
+    * \brief apply the given scaling factor to all widgets
+    *
+    * @param factor   scaling factor for widget extents
+    * @see Element::setScalingFactor
+    */
+    virtual void setScalingFactor(double factor) = 0;
+
+    /**
      * \brief render the layout and all its UI elements at the given position
      *
      * @param topLeft         defines the top left corner where the UI is positioned
@@ -83,6 +91,7 @@ public:
 
 protected:
     ivec4 margins_ = ivec4(10, 10, 10, 10);  //!< top, left, bottom, right
+    double scaling_ = 1.0;
 };
 
 }  // namespace glui

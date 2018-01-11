@@ -84,7 +84,7 @@ void ToolButton::renderWidget(const ivec2 &origin, const size2_t &canvasDim) {
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
 
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
-    uiShader.setUniform("extent", vec2(widgetExtent_));
+    uiShader.setUniform("extent", vec2(getWidgetExtent()));
 
     // set up picking color
     uiShader.setUniform("pickingColor", pickingMapper_.getColor(0));
@@ -99,7 +99,7 @@ void ToolButton::renderWidget(const ivec2 &origin, const size2_t &canvasDim) {
         utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         const ivec2 imagePos(origin + ivec2(margins_.y, margins_.z));
         const ivec2 imageExtent =
-            widgetExtent_ - ivec2(margins_.y + margins_.w, margins_.x + margins_.z);
+            getWidgetExtent() - ivec2(margins_.y + margins_.w, margins_.x + margins_.z);
 
         auto &shader = quadRenderer_.getShader();
         shader.activate();

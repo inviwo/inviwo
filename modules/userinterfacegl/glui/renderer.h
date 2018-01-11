@@ -107,11 +107,17 @@ public:
     void setDisabledColor(const vec4& color);
     const vec4& getDisabledColor() const;
 
+    void setUIScaling(double scaleFactor);
+    double getUIScaling() const;
+
 protected:
     void setupRectangleMesh();
 
     std::shared_ptr<Texture2DArray> createUITextureObject(
         const std::vector<std::string>& textureFiles, const std::string& sourcePath) const;
+
+    const int defaultFontSize_ = 13;
+    const int defaultFontSizeBold_ = 15;
 
     Shader uiShader_;
     TextRenderer textRenderer_;
@@ -129,6 +135,8 @@ protected:
     vec4 colorText_;
     vec4 colorHover_;
     vec4 colorDisabled_;
+
+    double scaling_;
 };
 
 }  // namespace glui

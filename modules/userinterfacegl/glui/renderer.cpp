@@ -68,9 +68,10 @@ Renderer::Renderer()
     , colorBorder_(0.0f, 0.0f, 0.0f, 1.0f)
     , colorText_(0.0f, 0.0f, 0.0f, 1.0f)
     , colorHover_(0.0f, 0.0f, 0.0f, 1.0f)
-    , colorDisabled_(0.4f, 0.4f, 0.4f, 1.0f) {
-    textRenderer_.setFontSize(13);
-    textRendererBold_.setFontSize(15);
+    , colorDisabled_(0.4f, 0.4f, 0.4f, 1.0f)
+    , scaling_(1.0) {
+    textRenderer_.setFontSize(defaultFontSize_);
+    textRendererBold_.setFontSize(defaultFontSizeBold_);
 
     setupRectangleMesh();
 }
@@ -149,6 +150,18 @@ const vec4& Renderer::getHoverColor() const { return colorHover_; }
 void Renderer::setDisabledColor(const vec4& color) { colorDisabled_ = color; }
 
 const vec4& Renderer::getDisabledColor() const { return colorDisabled_; }
+
+void Renderer::setUIScaling(double scaleFactor) {
+    if (std::abs(scaling_ - scaleFactor) < glm::epsilon<double>()) {
+        return;
+    }
+    scaling_ = scaleFactor;
+    // adjust font size of text renderer
+    textRenderer_.setFontSize(std::max(1, static_cast<int>(scaling_ * defaultFontSize_)));
+    textRendererBold_.setFontSize(std::max(1, static_cast<int>(scaling_ * defaultFontSizeBold_)));
+}
+
+double Renderer::getUIScaling() const { return scaling_; }
 
 void Renderer::setupRectangleMesh() {
     // set up mesh for drawing a single quad from (0,0) to (1,1) with subdivisions at .45 and

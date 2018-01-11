@@ -41,14 +41,15 @@ IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor
     , property_(&property) {
     property_->addObserver(this);
 
-    moveAction_ = [&](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2 &delta) {
         bool triggerUpdate = false;
         if (!property_->getReadOnly()) {
             // delta in pixel (screen coords),
             // need to scale from graphical representation to slider
+            const ivec2 scaledExtent(getWidgetExtent());
             int newVal = static_cast<int>(
                 round(getPreviousValue() +
-                      delta.x / static_cast<double>(widgetExtent_.x - widgetExtent_.y) *
+                      delta.x / static_cast<double>(scaledExtent.x - scaledExtent.y) *
                           static_cast<double>(getMaxValue() - getMinValue())));
             if (newVal != property_->get()) {
                 property_->set(newVal);

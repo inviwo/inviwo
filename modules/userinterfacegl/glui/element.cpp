@@ -55,6 +55,7 @@ Element::Element(const std::string &label, Processor &processor, Renderer &uiRen
     , enabled_(true)
     , boldLabel_(false)
     , labelVisible_(true)
+    , scalingFactor_(1.0)
     , labelDirty_(true)
     , processor_(&processor)
     , uiRenderer_(&uiRenderer)
@@ -99,6 +100,24 @@ void Element::setLabelVisible(bool visible) {
 }
 
 bool Element::isLabelVisible() const { return labelVisible_; }
+
+void Element::setScalingFactor(double factor) {
+    if (std::abs(scalingFactor_ - factor) < glm::epsilon<double>()) {
+        return;
+    }
+    scalingFactor_ = factor;
+    // update label extent
+    if (!labelStr_.empty()) {
+        labelExtent_ =
+            ivec2(uiRenderer_->getTextRenderer(boldLabel_).computeTextSize(labelStr_));
+    } else {
+        labelExtent_ = ivec2(0, 0);
+    }
+    // label might need repositioning
+    labelDirty_ = true;
+}
+
+double Element::getScalingFactor() const { return scalingFactor_; }
 
 void Element::setLabelBold(bool bold) {
     if (boldLabel_ != bold) {
@@ -202,14 +221,22 @@ Element::UIState Element::uiState() const { return UIState::Normal; }
 
 vec2 Element::marginScale() const { return vec2(1.0f); }
 
+ivec2 Element::getWidgetExtent() const {
+    if (std::abs(1.0 - scalingFactor_) < glm::epsilon<double>()) {
+        return widgetExtent_;
+    } else {
+        return ivec2(dvec2(widgetExtent_) * scalingFactor_ + 0.5);
+    }
+}
+
 void Element::updateExtent() {
     if (labelDirty_) {
         updateLabelPos();
     }
     if (labelVisible_) {
-        extent_ = glm::max(widgetPos_ + widgetExtent_, labelPos_ + labelExtent_);
+        extent_ = glm::max(widgetPos_ + getWidgetExtent(), labelPos_ + labelExtent_);
     } else {
-        extent_ = widgetPos_ + widgetExtent_;
+        extent_ = widgetPos_ + getWidgetExtent();
     }
 }
 

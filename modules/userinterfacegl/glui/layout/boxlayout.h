@@ -64,6 +64,14 @@ public:
     int getSpacing() const;
 
     /**
+    * \brief apply the given scaling factor to all widgets
+    *
+    * @param factor   scaling factor for widget extents
+    * @see Element::setScalingFactor
+    */
+    virtual void setScalingFactor(double factor) override;
+
+    /**
      * \brief render the layout and all its glui::Elements at the given position
      *
      * @param topLeft         defines the top left corner where the UI is positioned

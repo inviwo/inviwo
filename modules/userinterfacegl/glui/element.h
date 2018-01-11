@@ -76,6 +76,9 @@ public:
     void setLabelVisible(bool visible = true);
     bool isLabelVisible() const;
 
+    void setScalingFactor(double factor);
+    double getScalingFactor() const;
+
     bool isDirty() const;
 
     const ivec2 &getExtent();
@@ -129,6 +132,12 @@ public:
     bool moveAction(const dvec2 &delta);
 
 protected:
+    /**
+    * \brief returns the true widget extent including scaling
+    * @return widget extent
+    */
+    ivec2 getWidgetExtent() const;
+
     void updateExtent();
     void updateLabelPos();
     void updateLabel();
@@ -194,6 +203,8 @@ protected:
     ivec2 widgetExtent_;
     ivec2 labelPos_;
     ivec2 labelExtent_;
+
+    double scalingFactor_;
 
     std::string labelStr_;
     bool labelDirty_;

@@ -51,11 +51,12 @@ Slider::Slider(const std::string &label, int value, int minValue, int maxValue,
     , max_(maxValue)
     , prevValue_(0) {
     widgetExtent_ = extent;
-    moveAction_ = [&](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2 &delta) {
         // delta in pixel (screen coords),
         // need to scale from graphical representation to slider
+        const ivec2 scaledExtent(getWidgetExtent());
         int newVal = static_cast<int>(
-            round(prevValue_ + delta.x / static_cast<double>(widgetExtent_.x - widgetExtent_.y) *
+            round(prevValue_ + delta.x / static_cast<double>(scaledExtent.x - scaledExtent.y) *
                                    static_cast<double>(max_ - min_)));
         bool triggerUpdate = (value_ != newVal);
         value_ = newVal;
@@ -102,10 +103,12 @@ void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
+    const ivec2 extent(getWidgetExtent());
+
     // render groove first
     grooveTextures_->bind();
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
-    uiShader.setUniform("extent", vec2(widgetExtent_));
+    uiShader.setUniform("extent", vec2(extent));
 
     uiShader.setUniform("pickingColor", vec3(0.0f));
     uiShader.setUniform("uiState", ivec2(0, (hovered_ ? 1 : 0)));
@@ -118,9 +121,9 @@ void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
 
     int sliderPos = static_cast<int>((glm::clamp(value_, min_, max_) - min_) /
                                      static_cast<double>(max_ - min_) *
-                                     static_cast<double>(widgetExtent_.x - widgetExtent_.y));
+                                     static_cast<double>(extent.x - extent.y));
     uiShader.setUniform("origin", vec2(origin + widgetPos_ + ivec2(sliderPos, 0)));
-    uiShader.setUniform("extent", vec2(widgetExtent_.y));
+    uiShader.setUniform("extent", vec2(extent.y));
 
     // set up picking color
     uiShader.setUniform("pickingColor", pickingMapper_.getColor(0));
@@ -137,9 +140,10 @@ ivec2 Slider::computeLabelPos(int descent) const {
     const int labelSpacing = 5;
 
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
+        const ivec2 extent(getWidgetExtent());
         vec2 labelSize(labelExtent_);
         labelSize.y -= descent;
-        ivec2 labelOrigin(widgetExtent_.x + labelSpacing, widgetExtent_.y / 2);
+        ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
         // compute offset for vertical alignment in the center
         vec2 labelOffset(0.0f, -labelSize.y * 0.5f);
 
@@ -152,6 +156,7 @@ Element::UIState Slider::uiState() const { return (pushed_ ? UIState::Pressed : 
 
 vec2 Slider::marginScale() const {
     if (uiTextures_) {
+        // use unscaled widgetExtent_ here so that corners are also scaled along with the widget
         return (vec2(uiTextures_->getDimensions()) / vec2(widgetExtent_));
     }
     return vec2(1.0f);
