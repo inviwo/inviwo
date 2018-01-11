@@ -45,7 +45,11 @@ namespace glui {
 
 Slider::Slider(const std::string &label, int value, int minValue, int maxValue,
                Processor &processor, Renderer &uiRenderer, const ivec2 &extent)
-    : Element(label, processor, uiRenderer), value_(value), min_(minValue), max_(maxValue), prevValue_(0) {
+    : Element(label, processor, uiRenderer)
+    , value_(value)
+    , min_(minValue)
+    , max_(maxValue)
+    , prevValue_(0) {
     widgetExtent_ = extent;
     moveAction_ = [&](const dvec2 &delta) {
         // delta in pixel (screen coords),
@@ -62,15 +66,17 @@ Slider::Slider(const std::string &label, int value, int minValue, int maxValue,
 
     const std::vector<std::string> sliderFiles = {
         "sliderhandle-normal.png", "sliderhandle-pressed.png", "sliderhandle-checked.png",
-        "sliderhandle-halo.png",   "sliderhandle-halo.png",    "sliderhandle-halo.png"};
+        "sliderhandle-halo.png", "sliderhandle-border.png"};
     uiTextures_ = uiRenderer_->createUITextures("Slider", sliderFiles, texSourcePath);
 
     const std::vector<std::string> sliderGrooveFiles = {
         "slidergroove-normal.png", "slidergroove-pressed.png", "slidergroove-checked.png",
-        "slidergroove-halo.png",   "slidergroove-halo.png",    "slidergroove-halo.png",
-    };
+        "slidergroove-halo.png", "slidergroove-border.png"};
     grooveTextures_ =
         uiRenderer_->createUITextures("SliderGroove", sliderGrooveFiles, texSourcePath);
+
+    // normal, pressed, checked, corresponding halo (3x) and border (3x)
+    uiTextureMap_ = {{0, 1, 2, 3, 3, 3, 4, 4, 4}};
 }
 
 void Slider::set(int value, int minValue, int maxValue) {
@@ -94,6 +100,7 @@ void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
     // bind textures
     auto &uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
+    uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
     // render groove first
     grooveTextures_->bind();

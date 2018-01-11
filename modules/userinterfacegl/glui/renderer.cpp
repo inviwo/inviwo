@@ -63,9 +63,12 @@ Renderer::Renderer()
     , textRenderer_(util::getDefaultFontPath() + "/OpenSans-Semibold.ttf")
     , textRendererBold_(util::getDefaultFontPath() + "/OpenSans-Bold.ttf")
     , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag"))
-    , colorUI_(0.0f, 0.0f, 0.0f, 1.0f)
+    , colorUI_(0.8f, 0.8f, 0.8f, 1.0f)
+    , colorSecondaryUI_(0.2f, 0.2f, 0.25f, 1.0f)
+    , colorBorder_(0.0f, 0.0f, 0.0f, 1.0f)
     , colorText_(0.0f, 0.0f, 0.0f, 1.0f)
-    , colorHover_(0.0f, 0.0f, 0.0f, 1.0f) {
+    , colorHover_(0.0f, 0.0f, 0.0f, 1.0f)
+    , colorDisabled_(0.4f, 0.4f, 0.4f, 1.0f) {
     textRenderer_.setFontSize(13);
     textRendererBold_.setFontSize(15);
 
@@ -116,11 +119,36 @@ Texture2DArray* Renderer::getUITextures(const std::string& name) const {
     }
 }
 
+void Renderer::setTextColor(const vec4& color) {
+    if (glm::any(glm::notEqual(color, colorText_))) {
+        colorText_ = color;
+        auto& shader = quadRenderer_.getShader();
+        shader.activate();
+        shader.setUniform("uiColor", color);
+    }
+}
+
 const vec4& Renderer::getTextColor() const { return colorText_; }
+
+void Renderer::setUIColor(const vec4& color) { colorUI_ = color; }
 
 const vec4& Renderer::getUIColor() const { return colorUI_; }
 
+void Renderer::setSecondaryUIColor(const vec4& color) { colorSecondaryUI_ = color; }
+
+const vec4& Renderer::getSecondaryUIColor() const { return colorSecondaryUI_; }
+
+void Renderer::setBorderColor(const vec4& color) { colorBorder_ = color; }
+
+const vec4& Renderer::getBorderColor() const { return colorBorder_; }
+
+void Renderer::setHoverColor(const vec4& color) { colorHover_ = color; }
+
 const vec4& Renderer::getHoverColor() const { return colorHover_; }
+
+void Renderer::setDisabledColor(const vec4& color) { colorDisabled_ = color; }
+
+const vec4& Renderer::getDisabledColor() const { return colorDisabled_; }
 
 void Renderer::setupRectangleMesh() {
     // set up mesh for drawing a single quad from (0,0) to (1,1) with subdivisions at .45 and

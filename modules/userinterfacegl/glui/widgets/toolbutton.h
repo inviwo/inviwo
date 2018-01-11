@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
 
 namespace inviwo {
 
@@ -69,6 +70,8 @@ private:
 
     std::shared_ptr<Texture2D> labelImage_;
     ivec4 margins_ = ivec4(6, 6, 6, 6);  //!< top, left, bottom, right
+
+    TextureQuadRenderer quadRenderer_;
 };
 
 }  // namespace glui

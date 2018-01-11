@@ -64,6 +64,9 @@ public:
     void setVisible(bool visible = true);
     bool isVisible() const;
 
+    void setEnabled(bool enable = true);
+    bool isEnabled() const;
+
     void setLabel(const std::string &str);
     const std::string &getLabel() const;
 
@@ -150,17 +153,21 @@ protected:
 
     void handlePickingEvent(PickingEvent *e);
 
+    // reduce saturation and darken color
+    static vec4 adjustColor(const vec4 &color);
+
     std::function<void()>
         action_;  //<! is called by triggerAction() after the internal state has been updated
     std::function<bool(const dvec2 &)> moveAction_;  //!< is called by mouseMoved()
 
     // UI interaction states
-    bool hovered_;  // true as long as the element is under the mouse
+    bool hovered_;  // true as long as the element is under the mouse and element is enabled
     bool pushed_;  // true as long as the mouse button is not released, mouse might not be on top of
                    // UI element any more
     bool checked_;
 
     bool visible_;
+    bool enabled_;  // UI elements will respond to mouse interactions only if enabled
 
     bool boldLabel_;
     bool labelVisible_;

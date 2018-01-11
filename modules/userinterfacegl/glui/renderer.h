@@ -89,21 +89,23 @@ public:
 
     Texture2DArray* getUITextures(const std::string& name) const;
 
-    void setTextColor(const vec4& color) {
-        if (glm::any(glm::notEqual(color, colorText_))) {
-            colorText_ = color;
-            auto& shader = quadRenderer_.getShader();
-            shader.activate();
-            shader.setUniform("uiColor", color);
-        }
-    }
+    void setTextColor(const vec4& color);
     const vec4& getTextColor() const;
 
-    void setUIColor(const vec4& color) { colorUI_ = color; }
+    void setUIColor(const vec4& color);
     const vec4& getUIColor() const;
 
-    void setHoverColor(const vec4& color) { colorHover_ = color; }
+    void setSecondaryUIColor(const vec4& color);
+    const vec4& getSecondaryUIColor() const;
+
+    void setBorderColor(const vec4& color);
+    const vec4& getBorderColor() const;
+
+    void setHoverColor(const vec4& color);
     const vec4& getHoverColor() const;
+
+    void setDisabledColor(const vec4& color);
+    const vec4& getDisabledColor() const;
 
 protected:
     void setupRectangleMesh();
@@ -122,8 +124,11 @@ protected:
     std::map<std::string, std::shared_ptr<Texture2DArray>> uiTextureMap_;
 
     vec4 colorUI_;
+    vec4 colorSecondaryUI_;
+    vec4 colorBorder_;
     vec4 colorText_;
     vec4 colorHover_;
+    vec4 colorDisabled_;
 };
 
 }  // namespace glui

@@ -29,9 +29,14 @@
 
 #include "utils/structs.glsl"
 
-uniform sampler2DArray arrayTexSampler; //!< normal, pressed, checked, halo normal, halo pressed, halo checked
+uniform sampler2DArray arrayTexSampler;
+// texture indices for normal, pressed, checked, 
+// halo normal, halo pressed, halo checked
+// border normal, border pressed, border checked
+uniform int arrayTexMap[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 uniform vec4 uiColor = vec4(0.0, 0.0, 0.0, 1.0);
+uniform vec4 uiBorderColor = vec4(0.0, 0.0, 0.0, 1.0);
 uniform vec4 haloColor = vec4(1.0, 1.0, 1.0, 1.0);
 uniform vec3 pickingColor = vec3(0.0);
 
@@ -44,19 +49,27 @@ void main() {
 
     // draw halo only if hovered
     if (uiState.y > 0) {
-        vec4 halo = texture(arrayTexSampler, vec3(texCoord.xy, uiState.x + 3));
+        vec4 halo = texture(arrayTexSampler, vec3(texCoord.xy, arrayTexMap[uiState.x + 3]));
         // front-to-back blending
         dstColor = vec4(haloColor.rgb, haloColor.a * halo.a);
     }
 
-    // sample UI color texture
-    vec4 uiTexColor = texture(arrayTexSampler, vec3(texCoord.xy, uiState.x));
-    dstColor = mix(dstColor, vec4(uiColor.rgb * uiTexColor.rgb, uiColor.a * uiTexColor.a), uiTexColor.a);
+    // sample UI color texture, first channel contains border, second channel filled areas, fourth channel alpha
+    // border dominates if non-zero
 
-    //dstColor = uiTexColor * uiColor;
+    // border color
+    vec4 fill = uiColor * texture(arrayTexSampler, vec3(texCoord.xy, arrayTexMap[uiState.x]));
+    vec4 border = uiBorderColor * texture(arrayTexSampler, vec3(texCoord.xy, arrayTexMap[uiState.x + 6]));
+
+    // blend border color with fill color
+    vec4 color = mix(fill, border, border.a);
+    color = fill * (1.0 - border.a) + border * border.a;
+
+    // mix color with optional halo
+    dstColor = mix(dstColor, color, color.a);
 
     FragData0 = dstColor;
     // prevent picking for transparent regions and if picking color alpha is negative
     // by setting the alpha to 0.
-    PickingData = vec4(pickingColor.rgb, step(0.0, (uiTexColor.a - 0.001)));
+    PickingData = vec4(pickingColor.rgb, step(0.0, (color.a - 0.001)));
 }

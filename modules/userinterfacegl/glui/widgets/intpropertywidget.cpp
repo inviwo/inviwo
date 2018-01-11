@@ -62,14 +62,17 @@ IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor
 
 void IntPropertyWidget::updateFromProperty() {
     set(property_->get(), property_->getMinValue(), property_->getMaxValue());
+    setEnabled(!property_->getReadOnly());
 }
 
-void IntPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
+void IntPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
 
-void IntPropertyWidget::onSetDisplayName(Property*, const std::string &displayName) {
+void IntPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
+
+void IntPropertyWidget::onSetReadOnly(Property *property, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

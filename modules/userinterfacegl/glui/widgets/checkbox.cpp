@@ -43,16 +43,21 @@ namespace inviwo {
 
 namespace glui {
 
-CheckBox::CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer, const ivec2 &extent)
+CheckBox::CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
+                   const ivec2 &extent)
     : Element(label, processor, uiRenderer) {
     widgetExtent_ = extent;
     action_ = [&]() { LogInfo("UI checkbox " << getLabel() << " toggled: " << getValue()); };
 
-    std::vector<std::string> textureFiles = {
-        "checkbox-unchecked.png",      "checkbox-checked.png",      "checkbox-checked.png",
-        "checkbox-unchecked-halo.png", "checkbox-checked-halo.png", "checkbox-checked-halo.png"};
-    uiTextures_ = uiRenderer_->createUITextures("checkbox", textureFiles,
-                                  module::getModulePath("UserInterfaceGL", ModulePath::Images));
+    std::vector<std::string> textureFiles = {"checkbox-fill.png", "checkbox-unchecked.png",
+                                             "checkbox-checked.png", "checkbox-unchecked-halo.png",
+                                             "checkbox-checked-halo.png"};
+    uiTextures_ = uiRenderer_->createUITextures(
+        "checkbox", textureFiles, module::getModulePath("UserInterfaceGL", ModulePath::Images));
+
+    // for a checkbox, the main UI components are stored in the border
+    // unchecked, checked, checked, corresponding halo (3x) and border (3x)
+    uiTextureMap_ = {{0, 0, 0, 3, 4, 4, 1, 2, 2}};
 }
 
 void CheckBox::renderWidget(const ivec2 &origin, const size2_t &) {
@@ -63,6 +68,7 @@ void CheckBox::renderWidget(const ivec2 &origin, const size2_t &) {
     // bind textures
     auto &uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
+    uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
     uiShader.setUniform("extent", vec2(widgetExtent_));

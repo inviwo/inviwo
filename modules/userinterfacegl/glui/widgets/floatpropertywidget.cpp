@@ -63,6 +63,7 @@ FloatPropertyWidget::FloatPropertyWidget(FloatProperty &property, Processor &pro
 
 void FloatPropertyWidget::updateFromProperty() {
     set(reprToSlider(property_->get()), 0, sliderMax_);
+    setEnabled(!property_->getReadOnly());
 }
 
 void FloatPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
@@ -70,6 +71,10 @@ void FloatPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(vi
 void FloatPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
+}
+
+void FloatPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+    setEnabled(!readonly);
 }
 
 float FloatPropertyWidget::sliderToRepr(int val) const {

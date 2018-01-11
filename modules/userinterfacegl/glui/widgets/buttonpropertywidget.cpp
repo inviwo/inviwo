@@ -48,13 +48,20 @@ ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty &property, Processor &
     updateFromProperty();
 }
 
-void ButtonPropertyWidget::updateFromProperty() { setLabel(property_->getDisplayName()); }
+void ButtonPropertyWidget::updateFromProperty() {
+    setLabel(property_->getDisplayName());
+    setEnabled(!property_->getReadOnly());
+}
 
 void ButtonPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
 
 void ButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
+}
+
+void ButtonPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+    setEnabled(!readonly);
 }
 
 ToolButtonPropertyWidget::ToolButtonPropertyWidget(const std::string &imageFileName,
@@ -90,13 +97,20 @@ ToolButtonPropertyWidget::ToolButtonPropertyWidget(ButtonProperty &property,
     updateFromProperty();
 }
 
-void ToolButtonPropertyWidget::updateFromProperty() { setLabel(property_->getDisplayName()); }
+void ToolButtonPropertyWidget::updateFromProperty() {
+    setLabel(property_->getDisplayName());
+    setEnabled(!property_->getReadOnly());
+}
 
 void ToolButtonPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
 
 void ToolButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
+}
+
+void ToolButtonPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+    setEnabled(!readonly);
 }
 
 }  // namespace glui

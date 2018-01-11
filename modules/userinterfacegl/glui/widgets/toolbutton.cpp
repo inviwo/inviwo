@@ -50,13 +50,17 @@ namespace glui {
 
 ToolButton::ToolButton(const std::string &filename, Processor &processor, Renderer &uiRenderer,
                        const ivec2 &extent)
-    : AbstractButton("", processor, uiRenderer, extent), labelImage_(loadImage(filename)) {
+    : AbstractButton("", processor, uiRenderer, extent)
+    , labelImage_(loadImage(filename))
+    , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag")) {
     setLabelVisible(false);
 }
 
 ToolButton::ToolButton(std::shared_ptr<Texture2D> labelImage, Processor &processor,
                        Renderer &uiRenderer, const ivec2 &extent)
-    : AbstractButton("", processor, uiRenderer, extent), labelImage_(labelImage) {
+    : AbstractButton("", processor, uiRenderer, extent)
+    , labelImage_(labelImage)
+    , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag")) {
     setLabelVisible(false);
 }
 
@@ -92,11 +96,19 @@ void ToolButton::renderWidget(const ivec2 &origin, const size2_t &canvasDim) {
 
     // render button image
     if (labelImage_) {
+        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         const ivec2 imagePos(origin + ivec2(margins_.y, margins_.z));
         const ivec2 imageExtent =
             widgetExtent_ - ivec2(margins_.y + margins_.w, margins_.x + margins_.z);
-        uiRenderer_->getTextureQuadRenderer().renderToRect(labelImage_, imagePos, imageExtent,
-                                                           canvasDim);
+
+        auto &shader = quadRenderer_.getShader();
+        shader.activate();
+        vec4 color(uiRenderer_->getSecondaryUIColor());
+        if (!isEnabled()) {
+            color = adjustColor(color);
+        }
+        shader.setUniform("uiColor", color);
+        quadRenderer_.renderToRect(labelImage_, imagePos, imageExtent, canvasDim);
     }
 }
 

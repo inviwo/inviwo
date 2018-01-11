@@ -55,6 +55,7 @@ void Button::renderWidget(const ivec2 &origin, const size2_t &) {
     // bind textures
     auto &uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
+    uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
     uiShader.setUniform("extent", vec2(widgetExtent_));

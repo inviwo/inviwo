@@ -32,6 +32,7 @@
 
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/moduleutils.h>
+#include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <modules/fontrendering/textrenderer.h>
@@ -50,6 +51,7 @@ Element::Element(const std::string &label, Processor &processor, Renderer &uiRen
     , pushed_(false)
     , checked_(false)
     , visible_(true)
+    , enabled_(true)
     , boldLabel_(false)
     , labelVisible_(true)
     , labelDirty_(true)
@@ -84,6 +86,9 @@ bool Element::isDirty() const { return labelDirty_; }
 void Element::setVisible(bool visible) { visible_ = visible; }
 
 bool Element::isVisible() const { return visible_; }
+
+void Element::setEnabled(bool enable) { enabled_ = enable; }
+bool Element::isEnabled() const { return enabled_; }
 
 void Element::setLabelVisible(bool visible) {
     if (labelVisible_ != visible) {
@@ -126,8 +131,17 @@ void Element::render(const ivec2 &origin, const size2_t &canvasDim) {
     uiShader.setUniform("outportParameters.dimensions", vec2(canvasDim));
     uiShader.setUniform("outportParameters.reciprocalDimensions", vec2(1.0f) / vec2(canvasDim));
 
-    uiShader.setUniform("uiColor", uiRenderer_->getUIColor());
-    uiShader.setUniform("haloColor", uiRenderer_->getHoverColor());
+    // set widget colors
+    if (enabled_) {
+        uiShader.setUniform("uiColor", uiRenderer_->getUIColor());
+        uiShader.setUniform("haloColor", uiRenderer_->getHoverColor());
+        uiShader.setUniform("uiBorderColor", uiRenderer_->getBorderColor());
+    } else {
+        uiShader.setUniform("uiColor", uiRenderer_->getDisabledColor());
+        // make halo invisible
+        uiShader.setUniform("haloColor", vec4(0.0f));
+        uiShader.setUniform("uiBorderColor", adjustColor(uiRenderer_->getBorderColor()));
+    }
 
     renderWidget(origin, canvasDim);
 
@@ -137,22 +151,28 @@ void Element::render(const ivec2 &origin, const size2_t &canvasDim) {
 }
 
 void Element::setHoverState(bool enable) {
-    hovered_ = enable;
-    if (!enable) {
-        // reset the pushed flag when hovering ends
-        pushed_ = false;
+    if (enabled_) {
+        hovered_ = enable;
+        if (!enable) {
+            // reset the pushed flag when hovering ends
+            pushed_ = false;
+        }
     }
 }
 
 void Element::setPushedState(bool pushed) {
-    pushed_ = pushed;
-    pushStateChanged();
+    if (enabled_) {
+        pushed_ = pushed;
+        pushStateChanged();
+    }
 }
 
 bool Element::isPushed() const { return pushed_; }
 
 void Element::setChecked(bool checked) {
-    checked_ = checked;
+    if (enabled_) {
+        checked_ = checked;
+    }
 }
 
 bool Element::isChecked() const { return checked_; }
@@ -160,15 +180,22 @@ bool Element::isChecked() const { return checked_; }
 void Element::setAction(const std::function<void()> &action) { action_ = action; }
 
 void Element::triggerAction() {
-    updateState();
-    action_();
+    if (enabled_) {
+        updateState();
+        action_();
+    }
 }
 
 void Element::setMouseMoveAction(const std::function<bool(const dvec2 &)> &action) {
     moveAction_ = action;
 }
 
-bool Element::moveAction(const dvec2 &delta) { return moveAction_(delta); }
+bool Element::moveAction(const dvec2 &delta) {
+    if (enabled_) {
+        return moveAction_(delta);
+    }
+    return false;
+}
 
 Element::UIState Element::uiState() const { return UIState::Normal; }
 
@@ -218,6 +245,8 @@ void Element::updateLabel() {
 }
 
 void Element::handlePickingEvent(PickingEvent *e) {
+    bool triggerUpdate = false;
+
     if (e->getEvent()->hash() == MouseEvent::chash()) {
         auto mouseEvent = e->getEventAs<MouseEvent>();
 
@@ -226,7 +255,6 @@ void Element::handlePickingEvent(PickingEvent *e) {
         bool mouseRelease = (mouseEvent->state() == MouseState::Release);
         bool mouseMove = (mouseEvent->state() == MouseState::Move);
 
-        bool triggerUpdate = false;
         if (e->getState() == PickingState::Started) {
             setHoverState(true);
             triggerUpdate = true;
@@ -237,27 +265,34 @@ void Element::handlePickingEvent(PickingEvent *e) {
             if (mouseMove && (mouseEvent->buttonState() & MouseButton::Left) == MouseButton::Left) {
                 auto delta = e->getDeltaPressedPosition();
                 triggerUpdate = moveAction(delta * dvec2(e->getCanvasSize()));
-
-                e->markAsUsed();
             } else if (leftMouseBtn) {
                 if (mousePress) {
                     // initial activation with mouse button press
                     setPushedState(true);
                     triggerUpdate = true;
-                    e->markAsUsed();
                 } else if (mouseRelease && isPushed()) {
                     // mouse button is release upon the active element
                     triggerAction();
                     setPushedState(false);
                     triggerUpdate = true;
-                    e->markAsUsed();
                 }
             }
-        }
-        if (triggerUpdate) {
-            processor_->invalidate(InvalidationLevel::InvalidOutput);
+            e->markAsUsed();
         }
     }
+    if (triggerUpdate) {
+        processor_->invalidate(InvalidationLevel::InvalidOutput);
+    }
+}
+
+vec4 Element::adjustColor(const vec4 &color) {
+    const float lumDiff = 0.15f;
+    vec3 hsv(color::rgb2hsv(color));
+    // darken color
+    hsv.z -= lumDiff;
+    // reduce saturation
+    hsv.y = std::max(0.0f, hsv.x - 0.15f);
+    return vec4(color::hsv2rgb(hsv), color.a);
 }
 
 void Element::renderLabel(const ivec2 &origin, const size2_t &canvasDim) {
@@ -268,6 +303,8 @@ void Element::renderLabel(const ivec2 &origin, const size2_t &canvasDim) {
         updateLabel();
     }
     if (labelTexture_) {
+        utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         uiRenderer_->getTextureQuadRenderer().renderToRect(labelTexture_, origin + labelPos_,
                                                            labelExtent_, canvasDim);
     }

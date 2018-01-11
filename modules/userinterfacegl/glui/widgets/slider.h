@@ -35,6 +35,8 @@
 
 #include <modules/userinterfacegl/glui/element.h>
 
+#include <array>
+
 namespace inviwo {
 
 class Texture2DArray;
@@ -72,6 +74,7 @@ private:
 
     Texture2DArray *uiTextures_;
     Texture2DArray *grooveTextures_;
+    std::array<int, 9> uiTextureMap_;
 
     int value_;
     int min_;
