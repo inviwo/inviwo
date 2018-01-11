@@ -35,6 +35,7 @@
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/opengl/openglutils.h>
 
@@ -276,6 +277,32 @@ void Element::handlePickingEvent(PickingEvent *e) {
                     setPushedState(false);
                     triggerUpdate = true;
                 }
+            }
+            e->markAsUsed();
+        }
+    } else if (e->getEvent()->hash() == TouchEvent::chash()) {
+        auto touchEvent = e->getEventAs<TouchEvent>();
+
+        if (touchEvent->touchPoints().size() == 1) {
+            // allow interaction only for a single touch point
+            const auto &touchPoint = touchEvent->touchPoints().front();
+
+            if (touchPoint.state() == TouchState::Started) {
+                // initial activation since touch event began
+                setPushedState(true);
+                setHoverState(true);
+                triggerUpdate = true;
+            } else if (touchPoint.state() == TouchState::Finished) {
+                if (isPushed()) {
+                    // touch event has finished
+                    triggerAction();
+                    setPushedState(false);
+                }
+                setHoverState(false);
+                triggerUpdate = true;
+            } else if (touchPoint.state() == TouchState::Updated) {
+                const auto delta = touchPoint.pos() - touchPoint.pressedPos();
+                triggerUpdate = moveAction(delta);
             }
             e->markAsUsed();
         }
