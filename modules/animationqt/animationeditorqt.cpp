@@ -82,7 +82,7 @@ void AnimationEditorQt::onTrackRemoved(Track* track) {
         }) > 0) {
 
         for (size_t i = 0; i < tracks_.size(); ++i) {
-            tracks_[i]->setY(TimelineHeight + TrackHeight * i);
+            tracks_[i]->setY(TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
         }
     }
     updateSceneRect();
