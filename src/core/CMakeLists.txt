@@ -682,13 +682,6 @@ ivw_register_license_file(NAME "half" TARGET half MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
 )
 
-# Cannot get pybind11::module version property since it is an INTERFACE target
-ivw_register_license_file(NAME "PyBind11" VERSION 2.1.1 MODULE Core
-    URL "https://github.com/pybind/pybind11"
-    TYPE "BSD-style"
-    FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE
-)
-
 if(TARGET inviwo::sigar)
     ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core
         URL "http://sigar.hyperic.com"
