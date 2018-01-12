@@ -244,5 +244,9 @@
 		<file>icons/current_location_map_maps_marker_note_pin_icon_64.png</file>
 		<file>icons/current_location_map_maps_marker_note_pin_icon_128.png</file>
 		<file>icons/current_location_map_maps_marker_note_pin_icon_128.svg</file>
+		<file>icons/basket_delete_garbage_trash_waste_icon_32.png</file>
+		<file>icons/basket_delete_garbage_trash_waste_icon_64.png</file>
+		<file>icons/basket_delete_garbage_trash_waste_icon_128.png</file>
+		<file>icons/basket_delete_garbage_trash_waste_icon_128.svg</file>
 	</qresource>
 </RCC>
