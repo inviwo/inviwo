@@ -71,7 +71,7 @@ void CheckBox::renderWidget(const ivec2 &origin, const size2_t &) {
     uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
-    uiShader.setUniform("extent", vec2(getWidgetExtent()));
+    uiShader.setUniform("extent", vec2(getWidgetExtentScaled()));
 
     // set up picking color
     uiShader.setUniform("pickingColor", pickingMapper_.getColor(0));
@@ -92,7 +92,7 @@ ivec2 CheckBox::computeLabelPos(int descent) const {
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
         vec2 labelSize(labelExtent_);
         labelSize.y -= descent;
-        const ivec2 extent(getWidgetExtent());
+        const ivec2 extent(getWidgetExtentScaled());
         ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
         // compute offset for vertical alignment in the center
         // add 1 pixel vertically since the texture is not centered

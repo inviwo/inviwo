@@ -108,14 +108,21 @@ public:
 
     /**
      * \brief sets the extent of the widget
-     * @param extent   new extent of the widget (including scaling)
+     * @param extent   new extent of the widget
      */
     void setWidgetExtent(const ivec2 &extent);
+    const ivec2& getWidgetExtent() const;
+
+    /**
+    * \brief sets the extent of the widget
+    * @param extent   new extent of the widget (including scaling)
+    */
+    void setWidgetExtentScaled(const ivec2 &extent);
     /**
      * \brief returns the true widget extent including scaling
      * @return widget extent
      */
-    ivec2 getWidgetExtent() const;
+    ivec2 getWidgetExtentScaled() const;
     /**
      * \brief return extent of the element, including both widget and label, and considering scaling
      *

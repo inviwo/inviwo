@@ -102,7 +102,7 @@ void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
-    const ivec2 extent(getWidgetExtent());
+    const ivec2 extent(getWidgetExtentScaled());
 
     // render groove first
     grooveTextures_->bind();
@@ -143,7 +143,7 @@ ivec2 Slider::computeLabelPos(int descent) const {
     const int labelSpacing = 5;
 
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
-        const ivec2 extent(getWidgetExtent());
+        const ivec2 extent(getWidgetExtentScaled());
         vec2 labelSize(labelExtent_);
         labelSize.y -= descent;
         ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
@@ -168,7 +168,7 @@ vec2 Slider::marginScale() const {
 void Slider::pushStateChanged() { prevValue_ = value_; }
 
 int Slider::getSliderPos() const {
-    const ivec2 extent(getWidgetExtent());
+    const ivec2 extent(getWidgetExtentScaled());
 
     // we need to subtract the second dimension from the first to account
     // for the width of the handle
@@ -180,7 +180,7 @@ int Slider::getSliderPos() const {
 }
 
 double Slider::convertDeltaToSlider(const dvec2 &delta) const {
-    const auto ext = getWidgetExtent();
+    const auto ext = getWidgetExtentScaled();
     // we need to subtract the second dimension from the first to account
     // for the width of the handle
     if (orientation_ == UIOrientation::Vertical) {

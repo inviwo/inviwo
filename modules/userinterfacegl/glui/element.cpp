@@ -165,6 +165,17 @@ const ivec2 &Element::getExtent() {
 bool Element::isDirty() const { return labelDirty_; }
 
 void Element::setWidgetExtent(const ivec2 &extent) {
+    if (extent != widgetExtent_) {
+        labelDirty_ = true;
+        // label might need repositioning
+        widgetExtent_ = extent;
+        processor_->invalidate(InvalidationLevel::InvalidOutput);
+    }
+}
+
+const ivec2& Element::getWidgetExtent() const { return widgetExtent_; }
+
+void Element::setWidgetExtentScaled(const ivec2 &extent) {
     ivec2 newExtent(extent);
     if (std::abs(1.0 - scalingFactor_) > glm::epsilon<double>()) {
         // consider scaling
@@ -178,7 +189,7 @@ void Element::setWidgetExtent(const ivec2 &extent) {
     }
 }
 
-ivec2 Element::getWidgetExtent() const {
+ivec2 Element::getWidgetExtentScaled() const {
     if (std::abs(1.0 - scalingFactor_) < glm::epsilon<double>()) {
         // no custom scaling
         return widgetExtent_;
@@ -280,9 +291,9 @@ void Element::updateExtent() {
         updateLabelPos();
     }
     if (labelVisible_) {
-        extent_ = glm::max(widgetPos_ + getWidgetExtent(), labelPos_ + labelExtent_);
+        extent_ = glm::max(widgetPos_ + getWidgetExtentScaled(), labelPos_ + labelExtent_);
     } else {
-        extent_ = widgetPos_ + getWidgetExtent();
+        extent_ = widgetPos_ + getWidgetExtentScaled();
     }
 }
 
