@@ -66,7 +66,8 @@ icons = [[925909, "arrow_direction_previous_right_icon"],
 [926647, "media_next_player_previous_song_track_icon"],
 [926643, "media_monitor_player_resize_screen_icon"],
 [925931, "alert_attention_danger_error_message_warning_icon"],
-[925915, "current_location_map_maps_marker_note_pin_icon"]
+[925915, "current_location_map_maps_marker_note_pin_icon"],
+[2625630, "basket_delete_garbage_trash_waste_icon"],
 ]
 
 types = [
