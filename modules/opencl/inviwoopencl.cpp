@@ -118,7 +118,27 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
     std::vector<cl::Platform> platforms;
     cl::Platform::get(&platforms);
     auto glVendor = std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-    std::vector<cl::Device> devices;
+
+    // Store found devices in a local struct to only have to query device info once
+    struct Device{
+        Device(cl::Device device) : 
+            device(device)
+        {
+            cl_int err;
+            vendor = device.getInfo<CL_DEVICE_VENDOR>(&err);
+            if(err != CL_SUCCESS ) throw cl::Error(err);
+            device_type = device.getInfo<CL_DEVICE_TYPE>(&err);
+            if(err != CL_SUCCESS ) throw cl::Error(err);
+            max_compute_units = device.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err);
+            if(err != CL_SUCCESS ) throw cl::Error(err);
+        }
+        cl::Device device;
+        std::string vendor;
+        cl_device_type device_type;
+        cl_uint max_compute_units;
+    };
+
+    std::vector<Device> devices;
     for (auto& platform : platforms) {
         try {
             std::vector<cl::Device> devicesTmp;
@@ -130,29 +150,23 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
     }
 
     if (devices.empty()) return false;
-    std::sort(devices.begin(), devices.end(), [&](cl::Device& a, cl::Device& b) {
-        cl_int err;
-        std::string AVendor = a.getInfo<CL_DEVICE_VENDOR>(&err);
-        std::string BVendor = b.getInfo<CL_DEVICE_VENDOR>(&err);
+    std::sort(devices.begin(), devices.end(), [&](Device& a, Device& b) {
 
-        if (AVendor == glVendor && BVendor != glVendor) return true;
-        if (AVendor != glVendor && BVendor == glVendor) return false;
+        if (a.vendor == glVendor && b.vendor != glVendor) return true;
+        if (a.vendor != glVendor && b.vendor == glVendor) return false;
 
-        auto AType = a.getInfo<CL_DEVICE_TYPE>(&err);
-        auto BType = b.getInfo<CL_DEVICE_TYPE>(&err);
-
-        if (AType != BType) {
-            if (AType == CL_DEVICE_TYPE_GPU)
+        if (a.device_type != b.device_type) {
+            if (a.device_type == CL_DEVICE_TYPE_GPU)
                 return true;
-            else if (BType == CL_DEVICE_TYPE_GPU)
+            else if (b.device_type == CL_DEVICE_TYPE_GPU)
                 return false;
         }
 
-        return a.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err) >
-               b.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err);
+        return a.max_compute_units > b.max_compute_units;
+
     });
 
-    bestDevice = devices.front();
+    bestDevice = devices.front().device;
     onPlatform = bestDevice.getInfo<CL_DEVICE_PLATFORM>();
     return true;
 }

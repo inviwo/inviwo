@@ -210,13 +210,12 @@ public:
 
     /**
      * /brief Get the device that has most compute units.
-     * Search heuristics:
-     * Tries to find the cl::Device with most compute units and OpenGL sharing. This is done by
-     * first partion the avaiable device into two groups, one group where the CL vendor and the GL
-     * vendor (e.g. NVidia) are the same, and one group where they differ.
-     * These groups are nternally sorted based on the number of compute units. If the ´same vendor´
-     * group has entries, we pick the device with most compute units, if it is empty, we pick the
-     * device with most compute unit from the other group.
+     * Search priority:
+     *  1. CL Devices from same vendor as GL 
+     *  2. GPU devices rather than CPU devices
+     *  3. Number of max compute units 
+     * (Some Intel CPU reports larger number of max compute units than some NVidia graphics cards) 
+     * 
      * @param bestDevice Set to found device, if found.
      * @param onPlatform Set to platform that device exist on, if found.
      * @return True if any device found, false otherwise.
