@@ -204,24 +204,24 @@ void RangeSlider::renderWidget(const ivec2 &origin, const size2_t &) {
 
         vec2 centerPos;
         vec2 centerExtent;
-        vec2 marginScale(marginScale());
+        vec2 margin(marginScale());
         const double handleWidth = uiTextures_->getDimensions().x * scalingFactor_;
         if (orientation_ == UIOrientation::Horizontal) {
             // offset left position of center piece by half the size of a handle
             centerPos = vec2(sliderPos.x + handleWidth / 2, 0);
             // extent of center piece corresponds to difference between the two handles
             centerExtent = vec2(sliderPos.y - sliderPos.x, extent.y);
-            marginScale.y =
+            margin.y =
                 centerTextures_->getDimensions().y / static_cast<float>(widgetExtent_.y);
         } else {
             // offset left position of center piece by half the size of a handle
             centerPos = vec2(0, sliderPos.x + handleWidth / 2);
             // extent of center piece corresponds to difference between the two handles
             centerExtent = vec2(extent.x, sliderPos.y - sliderPos.x);
-            marginScale.x =
+            margin.x =
                 centerTextures_->getDimensions().y / static_cast<float>(widgetExtent_.x);
         }
-        uiShader.setUniform("marginScale", marginScale);
+        uiShader.setUniform("marginScale", margin);
         uiShader.setUniform("origin", vec2(origin + widgetPos_) + centerPos);
         uiShader.setUniform("extent", centerExtent);
 
@@ -245,7 +245,7 @@ void RangeSlider::renderWidget(const ivec2 &origin, const size2_t &) {
         }
         uiShader.setUniform("marginScale", vec2(1.0f, aspectRatio));
 
-        auto drawHandle = [&uiShader, origin, positionMask, this](int pos, int id) {
+        auto drawHandle = [&uiShader, origin, positionMask, this](int pos, size_t id) {
             uiShader.setUniform("origin", vec2(origin + widgetPos_ + ivec2(pos) * positionMask));
             // set up picking color
             uiShader.setUniform("pickingColor", pickingMapper_.getColor(id));
