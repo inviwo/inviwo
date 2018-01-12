@@ -135,7 +135,6 @@ add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
 add_subdirectory(ext/libpng)  # Defines target inviwo::libpng and libpng
 add_subdirectory(ext/libjpeg) # Defines target inviwo::libjpeg and libjpeg
 add_subdirectory(ext/tiff)    # Defines target inviwo::tiff and tiff
-add_subdirectory(ext/openexr)
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)

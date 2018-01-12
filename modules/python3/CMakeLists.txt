@@ -147,3 +147,14 @@ ivw_default_install_comp_targets(python inviwopy)
 # Add scripts directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 ivw_make_package(InviwoPython3Module inviwo-module-python3)
+
+
+#--------------------------------------------------------------------
+# register license files
+
+# Cannot get pybind11::module version property since it is an INTERFACE target
+ivw_register_license_file(NAME "PyBind11" VERSION 2.1.1 MODULE Python3
+    URL "https://github.com/pybind/pybind11"
+    TYPE "BSD-style"
+    FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE
+)

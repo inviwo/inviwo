@@ -38,6 +38,9 @@ include(CMakeParseArguments)
 # Parameters:
 # * NAME (mandatory):   Name of the library to which the license belong.
 # * MODULE (mandatory): Inviwo Module to which the library is associated. 
+# * TARGET (optional):  Library target. Used to get library VERSION using  
+#                       get_target_property(ver target VERSION) if VERSION 
+#                       argument is not specified.
 # * ID (optional):      An internal id used to identify the license, should
 #                       only be lowercase letters and numbers. If not given
 #                       the name will be cleaned and used.
@@ -54,7 +57,7 @@ include(CMakeParseArguments)
 #    )
 function(ivw_register_license_file)
     set(options "")
-    set(oneValueArgs ID NAME VERSION URL MODULE TYPE)
+    set(oneValueArgs TARGET ID NAME VERSION URL MODULE TYPE)
     set(multiValueArgs FILES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     if(NOT ARG_NAME)
@@ -71,9 +74,13 @@ function(ivw_register_license_file)
     if(NOT ARG_TYPE)
         set(ARG_TYPE "License")
     endif()
+    if(ARG_TARGET AND NOT ARG_VERSION)
+        get_target_property(ARG_VERSION ${ARG_TARGET} VERSION)
+    endif()
     if(NOT ARG_VERSION)
         set(ARG_VERSION "0.0.0")
     endif()
+
 
     ivw_dir_to_mod_dep(mod ${ARG_MODULE})
     set("${mod}_licenses" "${${mod}_licenses};${ARG_ID}" CACHE INTERNAL "License ids")
