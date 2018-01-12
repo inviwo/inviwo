@@ -120,17 +120,15 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
     auto glVendor = std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
 
     // Store found devices in a local struct to only have to query device info once
-    struct Device{
-        Device(cl::Device device) : 
-            device(device)
-        {
+    struct Device {
+        Device(cl::Device device) : device(device) {
             cl_int err;
             vendor = device.getInfo<CL_DEVICE_VENDOR>(&err);
-            if(err != CL_SUCCESS ) throw cl::Error(err);
+            if (err != CL_SUCCESS) throw cl::Error(err);
             device_type = device.getInfo<CL_DEVICE_TYPE>(&err);
-            if(err != CL_SUCCESS ) throw cl::Error(err);
+            if (err != CL_SUCCESS) throw cl::Error(err);
             max_compute_units = device.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err);
-            if(err != CL_SUCCESS ) throw cl::Error(err);
+            if (err != CL_SUCCESS) throw cl::Error(err);
         }
         cl::Device device;
         std::string vendor;
