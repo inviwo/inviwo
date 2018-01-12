@@ -46,9 +46,11 @@ IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor
         if (!property_->getReadOnly()) {
             // delta in pixel (screen coords),
             // need to scale from graphical representation to slider
-            const int newVal = static_cast<int>(
-                round(getPreviousValue() + convertDeltaToSlider(delta) *
-                                               static_cast<double>(getMaxValue() - getMinValue())));
+            const int newVal = glm::clamp(
+                static_cast<int>(round(getPreviousValue() +
+                                       convertDeltaToSlider(delta) *
+                                           static_cast<double>(getMaxValue() - getMinValue()))),
+                getMinValue(), getMaxValue());
             if (newVal != property_->get()) {
                 property_->set(newVal);
                 triggerUpdate = true;

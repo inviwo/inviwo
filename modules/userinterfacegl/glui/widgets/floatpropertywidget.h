@@ -44,8 +44,8 @@ namespace inviwo {
 namespace glui {
 
 /**
- * \class BoolPropertyWidget
- * \brief glui property widget for a bool property using glui::Slider
+ * \class FloatPropertyWidget
+ * \brief glui property widget for a float property using glui::Slider
  */
 class IVW_MODULE_USERINTERFACEGL_API FloatPropertyWidget : public Slider,
                                                            public PropertyWidget,

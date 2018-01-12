@@ -44,8 +44,8 @@ namespace inviwo {
 namespace glui {
 
 /**
- * \class BoolPropertyWidget
- * \brief glui property widget for a bool property using glui::Slider
+ * \class IntPropertyWidget
+ * \brief glui property widget for an int property using glui::Slider
  */
 class IVW_MODULE_USERINTERFACEGL_API IntPropertyWidget : public Slider,
                                                          public PropertyWidget,

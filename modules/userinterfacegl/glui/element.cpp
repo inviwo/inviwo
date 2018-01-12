@@ -62,7 +62,8 @@ Element::Element(const std::string &label, Processor &processor, Renderer &uiRen
     , labelDirty_(true)
     , processor_(&processor)
     , uiRenderer_(&uiRenderer)
-    , pickingMapper_(&processor, 1, [&](PickingEvent *e) { handlePickingEvent(e); }) {
+    , pickingMapper_(&processor, 1, [&](PickingEvent *e) { handlePickingEvent(e); })
+    , currentPickingID_(0u) {
     setLabel(label);
 }
 
@@ -173,7 +174,7 @@ void Element::setWidgetExtent(const ivec2 &extent) {
     }
 }
 
-const ivec2& Element::getWidgetExtent() const { return widgetExtent_; }
+const ivec2 &Element::getWidgetExtent() const { return widgetExtent_; }
 
 void Element::setWidgetExtentScaled(const ivec2 &extent) {
     ivec2 newExtent(extent);
@@ -342,9 +343,12 @@ void Element::handlePickingEvent(PickingEvent *e) {
 
         if (e->getState() == PickingState::Started) {
             setHoverState(true);
+            currentPickingID_ = e->getPickedId();
             triggerUpdate = true;
         } else if (e->getState() == PickingState::Finished) {
             setHoverState(false);
+            setPushedState(false);
+            currentPickingID_ = 0u;
             triggerUpdate = true;
         } else if (e->getState() == PickingState::Updated) {
             if (mouseMove && (mouseEvent->buttonState() & MouseButton::Left) == MouseButton::Left) {
@@ -375,6 +379,7 @@ void Element::handlePickingEvent(PickingEvent *e) {
                 // initial activation since touch event began
                 setPushedState(true);
                 setHoverState(true);
+                currentPickingID_ = e->getPickedId();
                 triggerUpdate = true;
             } else if (touchPoint.state() == TouchState::Finished) {
                 if (isPushed()) {
@@ -383,6 +388,7 @@ void Element::handlePickingEvent(PickingEvent *e) {
                     setPushedState(false);
                 }
                 setHoverState(false);
+                currentPickingID_ = 0u;
                 triggerUpdate = true;
             } else if (touchPoint.state() == TouchState::Updated) {
                 const auto delta = touchPoint.pos() - touchPoint.pressedPos();

@@ -46,8 +46,8 @@ namespace glui {
 class Renderer;
 
 /**
- * \class Button
- * \brief glui::element representing a button with the label centered within
+ * \class Slider
+ * \brief glui::element representing a slider, the label is positioned to the right
  */
 class IVW_MODULE_USERINTERFACEGL_API Slider : public Element {
 public:

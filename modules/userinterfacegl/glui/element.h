@@ -111,12 +111,12 @@ public:
      * @param extent   new extent of the widget
      */
     void setWidgetExtent(const ivec2 &extent);
-    const ivec2& getWidgetExtent() const;
+    const ivec2 &getWidgetExtent() const;
 
     /**
-    * \brief sets the extent of the widget
-    * @param extent   new extent of the widget (including scaling)
-    */
+     * \brief sets the extent of the widget
+     * @param extent   new extent of the widget (including scaling)
+     */
     void setWidgetExtentScaled(const ivec2 &extent);
     /**
      * \brief returns the true widget extent including scaling
@@ -250,6 +250,7 @@ protected:
     Renderer *uiRenderer_;
 
     PickingMapper pickingMapper_;
+    size_t currentPickingID_;
 };
 
 }  // namespace glui
