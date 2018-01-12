@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/ports/imageport.h>
@@ -48,6 +49,7 @@
 #include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
 #include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
 #include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h>
 
 namespace inviwo {
 
@@ -92,6 +94,7 @@ private:
     BoolProperty boolProperty_;
     IntProperty intProperty_;
     FloatProperty floatProperty_;
+    IntMinMaxProperty intMinMaxProperty_;
     ButtonProperty buttonProperty_;
 
     BoolProperty readOnlyBoolProperty_;
@@ -123,6 +126,7 @@ private:
     glui::BoolPropertyWidget boolPropertyUI_;
     glui::IntPropertyWidget intPropertyUI_;
     glui::FloatPropertyWidget floatPropertyUI_;
+    glui::IntMinMaxPropertyWidget intMinMaxPropertyUI_;
     glui::ButtonPropertyWidget buttonPropertyUI_;
     glui::ToolButtonPropertyWidget toolButtonPropertyUI_;
 

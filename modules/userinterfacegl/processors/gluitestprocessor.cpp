@@ -37,6 +37,7 @@
 #include <modules/userinterfacegl/glui/widgets/button.h>
 #include <modules/userinterfacegl/glui/widgets/checkbox.h>
 #include <modules/userinterfacegl/glui/widgets/slider.h>
+#include <modules/userinterfacegl/glui/widgets/rangeslider.h>
 
 namespace inviwo {
 
@@ -58,6 +59,8 @@ GLUITestProcessor::GLUITestProcessor()
     , boolProperty_("boolProperty", "Bool Property", true)
     , intProperty_("intProperty", "Int Property", 20, 0, 100)
     , floatProperty_("floatProperty", "Float Property", 0.5f, 0.0f, 1.0f)
+    , intMinMaxProperty_("intMinMaxProperty", "Int Min Max Property", 10, 50, 0, 100,
+                         Defaultvalues<int>::getInc(), 30)
     , buttonProperty_("buttonProperty", "Button Property")
     , readOnlyBoolProperty_("readOnlyBoolProperty", "Read-Only Bool Property", true)
     , readOnlyIntProperty_("readOnlyIntProperty", "Read-Only Int Property", 75, 0, 100)
@@ -88,6 +91,7 @@ GLUITestProcessor::GLUITestProcessor()
     , boolPropertyUI_(boolProperty_, *this, uiRenderer_)
     , intPropertyUI_(intProperty_, *this, uiRenderer_, ivec2(100, 24))
     , floatPropertyUI_(floatProperty_, *this, uiRenderer_, ivec2(100, 24))
+    , intMinMaxPropertyUI_(intMinMaxProperty_, *this, uiRenderer_, ivec2(100, 24))
     , buttonPropertyUI_(buttonProperty_, *this, uiRenderer_, ivec2(150, 30))
     , toolButtonPropertyUI_(buttonProperty_, nullptr, *this, uiRenderer_, ivec2(32, 32))
 
@@ -127,6 +131,7 @@ GLUITestProcessor::GLUITestProcessor()
     addProperty(boolProperty_);
     addProperty(intProperty_);
     addProperty(floatProperty_);
+    addProperty(intMinMaxProperty_);
     addProperty(buttonProperty_);
     // read-only properties
     readOnlyBoolProperty_.setReadOnly(true);
@@ -146,6 +151,7 @@ GLUITestProcessor::GLUITestProcessor()
     propertyLayout_.addElement(intPropertyUI_);
     propertyLayout_.addElement(readOnlyIntPropertyUI_);
     propertyLayout_.addElement(floatPropertyUI_);
+    propertyLayout_.addElement(intMinMaxPropertyUI_);
     propertyLayout_.addElement(buttonPropertyUI_);
     propertyLayout_.addElement(readOnlyButtonPropertyUI_);
     propertyLayout_.addElement(toolButtonPropertyUI_);
@@ -166,6 +172,12 @@ GLUITestProcessor::GLUITestProcessor()
         std::make_unique<glui::Slider>("slider", 0, 0, 100, *this, uiRenderer_, ivec2(100, 24));
     slider->setAction([&, p = slider.get() ]() { LogInfo("UI slider changed: " << p->get()); });
     widgets_.emplace_back(std::move(slider));
+    // create a range slider
+    auto rangeslider = std::make_unique<glui::RangeSlider>("rangeslider", ivec2(10, 70), 0, 100, 40,
+                                                           *this, uiRenderer_, ivec2(100, 24));
+    rangeslider->setAction(
+        [&, p = rangeslider.get() ]() { LogInfo("UI range slider changed: " << p->get()); });
+    widgets_.emplace_back(std::move(rangeslider));
     // create a wide button
     auto button = std::make_unique<glui::Button>("button 1", *this, uiRenderer_, ivec2(100, 28));
     button->setAction([&]() { LogInfo("UI button pressed"); });
@@ -190,13 +202,19 @@ GLUITestProcessor::GLUITestProcessor()
             // vertical
             intPropertyUI_.setOrientation(glui::UIOrientation::Vertical);
             intPropertyUI_.setWidgetExtent(ivec2(24, 100));
+
+            intMinMaxPropertyUI_.setOrientation(glui::UIOrientation::Vertical);
+            intMinMaxPropertyUI_.setWidgetExtent(ivec2(24, 100));
         } else {
             // horizontal
             intPropertyUI_.setOrientation(glui::UIOrientation::Horizontal);
             intPropertyUI_.setWidgetExtent(ivec2(100, 24));
+
+            intMinMaxPropertyUI_.setOrientation(glui::UIOrientation::Horizontal);
+            intMinMaxPropertyUI_.setWidgetExtent(ivec2(100, 24));
         }
     };
-    
+
     intPropertyVertical_.onChange(updateSliderOrientation);
     updateSliderOrientation();
 }
