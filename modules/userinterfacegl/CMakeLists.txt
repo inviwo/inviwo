@@ -16,8 +16,11 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/button.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/buttonpropertywidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/checkbox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/floatminmaxpropertywidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/floatpropertywidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/intminmaxpropertywidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/intpropertywidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/rangeslider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/slider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/toolbutton.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/camerawidget.h
@@ -41,8 +44,11 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/button.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/buttonpropertywidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/checkbox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/floatminmaxpropertywidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/floatpropertywidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/intminmaxpropertywidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/intpropertywidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/rangeslider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/slider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/toolbutton.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/camerawidget.cpp
