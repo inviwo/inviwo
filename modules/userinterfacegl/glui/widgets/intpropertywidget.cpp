@@ -46,11 +46,9 @@ IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor
         if (!property_->getReadOnly()) {
             // delta in pixel (screen coords),
             // need to scale from graphical representation to slider
-            const ivec2 scaledExtent(getWidgetExtent());
-            int newVal = static_cast<int>(
-                round(getPreviousValue() +
-                      delta.x / static_cast<double>(scaledExtent.x - scaledExtent.y) *
-                          static_cast<double>(getMaxValue() - getMinValue())));
+            const int newVal = static_cast<int>(
+                round(getPreviousValue() + convertDeltaToSlider(delta) *
+                                               static_cast<double>(getMaxValue() - getMinValue())));
             if (newVal != property_->get()) {
                 property_->set(newVal);
                 triggerUpdate = true;

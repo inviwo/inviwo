@@ -52,7 +52,8 @@ class Renderer;
 class IVW_MODULE_USERINTERFACEGL_API Slider : public Element {
 public:
     Slider(const std::string &label, int value, int minValue, int maxValue, Processor &processor,
-           Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24));
+           Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24),
+           UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~Slider() = default;
 
     void set(int value);
@@ -66,11 +67,22 @@ protected:
 
     int getPreviousValue() const;
 
+    /**
+    * \brief transform mouse movements from pixel to normalized slider range while also
+    * considering the slider orientation
+    *
+    * @param delta   (in screen coords, i.e. pixel)
+    * @return delta movement normalized to slider range
+    */
+    double convertDeltaToSlider(const dvec2 &delta) const;
+
 private:
     virtual ivec2 computeLabelPos(int descent) const override;
     virtual UIState uiState() const override;
     virtual vec2 marginScale() const override;
     virtual void pushStateChanged() override;
+
+    int getSliderPos() const;
 
     Texture2DArray *uiTextures_;
     Texture2DArray *grooveTextures_;

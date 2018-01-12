@@ -45,7 +45,8 @@ namespace inviwo {
 
 namespace glui {
 
-Element::Element(const std::string &label, Processor &processor, Renderer &uiRenderer)
+Element::Element(const std::string &label, Processor &processor, Renderer &uiRenderer,
+                 UIOrientation orientation)
     : action_([]() {})
     , moveAction_([](const dvec2 &) { return false; })
     , hovered_(false)
@@ -56,6 +57,7 @@ Element::Element(const std::string &label, Processor &processor, Renderer &uiRen
     , boldLabel_(false)
     , labelVisible_(true)
     , labelFontSize_(uiRenderer.getDefaultFontSize())
+    , orientation_(orientation)
     , scalingFactor_(1.0)
     , labelDirty_(true)
     , processor_(&processor)
@@ -126,6 +128,19 @@ void Element::setScalingFactor(double factor) {
 
 double Element::getScalingFactor() const { return scalingFactor_; }
 
+void Element::setOrientation(UIOrientation orientation) {
+    if (orientation_ == orientation) {
+        return;
+    }
+    orientation_ = orientation;
+    // label might need repositioning
+    labelDirty_ = true;
+
+    processor_->invalidate(InvalidationLevel::InvalidOutput);
+}
+
+UIOrientation Element::getOrientation() const { return orientation_; }
+
 void Element::setLabelBold(bool bold) {
     if (boldLabel_ != bold) {
         boldLabel_ = bold;
@@ -192,6 +207,14 @@ void Element::render(const ivec2 &origin, const size2_t &canvasDim) {
         // make halo invisible
         uiShader.setUniform("haloColor", vec4(0.0f));
         uiShader.setUniform("uiBorderColor", adjustColor(uiRenderer_->getBorderColor()));
+    }
+
+    if (orientation_ == UIOrientation::Vertical) {
+        // perform a rotation by 90deg counter-clock wise
+        uiShader.setUniform("uiTextureMatrix",
+                            mat3(0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f));
+    } else {
+        uiShader.setUniform("uiTextureMatrix", mat3(1.0f));
     }
 
     renderWidget(origin, canvasDim);

@@ -110,6 +110,8 @@ private:
 
     TemplateOptionProperty<glui::BoxLayout::LayoutDirection> layoutDirection_;
 
+    BoolProperty intPropertyVertical_;
+
     IntProperty layoutSpacing_;
     IntVec4Property layoutMargins_;
 

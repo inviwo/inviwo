@@ -76,6 +76,7 @@ GLUITestProcessor::GLUITestProcessor()
                        vec4(0.0f), vec4(1.0f))
     , uiTextColor_("uiTextColor", "Text Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 1.0f, 1.0f, 0.5f), vec4(0.0f), vec4(1.0f))
+    , intPropertyVertical_("intPropertyVertical", "Int Property Vertical", false)
     , layoutDirection_("layoutDirection", "Layout Direction",
                        {{"horizontal", "Horizontal", glui::BoxLayout::LayoutDirection::Horizontal},
                         {"vertical", "Vertical", glui::BoxLayout::LayoutDirection::Vertical}},
@@ -115,6 +116,7 @@ GLUITestProcessor::GLUITestProcessor()
     uiSettings_.addProperty(uiTextColor_);
     uiSettings_.addProperty(hoverColor_);
     uiSettings_.addProperty(uiDisabledColor_);
+    uiSettings_.addProperty(intPropertyVertical_);
     uiSettings_.addProperty(layoutDirection_);
     uiSettings_.addProperty(layoutSpacing_);
     uiSettings_.addProperty(layoutMargins_);
@@ -182,6 +184,21 @@ GLUITestProcessor::GLUITestProcessor()
     uiRenderer_.setBorderColor(uiBorderColor_.get());
     uiRenderer_.setTextColor(uiTextColor_.get());
     uiRenderer_.setHoverColor(hoverColor_.get());
+
+    auto updateSliderOrientation = [this]() {
+        if (intPropertyVertical_.get()) {
+            // vertical
+            intPropertyUI_.setOrientation(glui::UIOrientation::Vertical);
+            intPropertyUI_.setWidgetExtent(ivec2(24, 100));
+        } else {
+            // horizontal
+            intPropertyUI_.setOrientation(glui::UIOrientation::Horizontal);
+            intPropertyUI_.setWidgetExtent(ivec2(100, 24));
+        }
+    };
+    
+    intPropertyVertical_.onChange(updateSliderOrientation);
+    updateSliderOrientation();
 }
 
 void GLUITestProcessor::process() {

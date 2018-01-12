@@ -48,6 +48,8 @@ class Texture2D;
 
 namespace glui {
 
+enum class UIOrientation { Vertical, Horizontal };
+
 /**
  * \class glui::Element
  * \brief graphical UI element for use in combination with glui::Layout
@@ -74,7 +76,8 @@ class IVW_MODULE_USERINTERFACEGL_API Element {
 public:
     enum class UIState { Normal, Pressed, Checked };
 
-    Element(const std::string &label, Processor &processor, Renderer &uiRenderer);
+    Element(const std::string &label, Processor &processor, Renderer &uiRenderer,
+            UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~Element();
 
     void setVisible(bool visible = true);
@@ -97,6 +100,9 @@ public:
 
     void setScalingFactor(double factor);
     double getScalingFactor() const;
+
+    void setOrientation(UIOrientation orientation);
+    UIOrientation getOrientation() const;
 
     bool isDirty() const;
 
@@ -218,6 +224,7 @@ protected:
     bool labelVisible_;
     int labelFontSize_;
 
+    UIOrientation orientation_;
 
     ivec2 extent_;
     ivec2 widgetPos_;

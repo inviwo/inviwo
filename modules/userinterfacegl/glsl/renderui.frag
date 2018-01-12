@@ -69,6 +69,9 @@ void main() {
     dstColor = mix(dstColor, color, color.a);
 
     FragData0 = dstColor;
+
+//FragData0 = vec4(texCoord, 1.0);
+
     // prevent picking for transparent regions and if picking color alpha is negative
     // by setting the alpha to 0.
     PickingData = vec4(pickingColor.rgb, step(0.0, (color.a - 0.001)));

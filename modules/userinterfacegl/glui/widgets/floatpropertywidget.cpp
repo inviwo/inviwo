@@ -48,10 +48,9 @@ FloatPropertyWidget::FloatPropertyWidget(FloatProperty &property, Processor &pro
             // delta in pixel (screen coords),
             // need to scale from graphical representation to slider
             const ivec2 scaledExtent(getWidgetExtent());
-            float newVal = sliderToRepr(static_cast<int>(
-                round(getPreviousValue() +
-                      delta.x / static_cast<double>(scaledExtent.x - scaledExtent.y) *
-                          static_cast<double>(getMaxValue() - getMinValue()))));
+            float newVal = sliderToRepr(static_cast<int>(round(
+                getPreviousValue() +
+                convertDeltaToSlider(delta) * static_cast<double>(getMaxValue() - getMinValue()))));
             if (std::fabs(newVal - property_->get()) > glm::epsilon<float>()) {
                 property_->set(newVal);
                 triggerUpdate = true;
