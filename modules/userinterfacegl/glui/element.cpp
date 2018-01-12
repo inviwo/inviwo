@@ -55,6 +55,7 @@ Element::Element(const std::string &label, Processor &processor, Renderer &uiRen
     , enabled_(true)
     , boldLabel_(false)
     , labelVisible_(true)
+    , labelFontSize_(uiRenderer.getDefaultFontSize())
     , scalingFactor_(1.0)
     , labelDirty_(true)
     , processor_(&processor)
@@ -71,8 +72,7 @@ void Element::setLabel(const std::string &str) {
 
         // update label extent
         if (!labelStr_.empty()) {
-            labelExtent_ =
-                ivec2(uiRenderer_->getTextRenderer(boldLabel_).computeTextSize(labelStr_));
+            labelExtent_ = ivec2(getCurrentTextRenderer().computeTextSize(labelStr_));
         } else {
             labelExtent_ = ivec2(0, 0);
         }
@@ -83,7 +83,15 @@ void Element::setLabel(const std::string &str) {
 
 const std::string &Element::getLabel() const { return labelStr_; }
 
-bool Element::isDirty() const { return labelDirty_; }
+void Element::setFontSize(int size) {
+    if (labelFontSize_ != size) {
+        labelFontSize_ = size;
+        labelDirty_ = true;
+        processor_->invalidate(InvalidationLevel::InvalidOutput);
+    }
+}
+
+int Element::getFontSize() const { return labelFontSize_; }
 
 void Element::setVisible(bool visible) { visible_ = visible; }
 
@@ -108,8 +116,7 @@ void Element::setScalingFactor(double factor) {
     scalingFactor_ = factor;
     // update label extent
     if (!labelStr_.empty()) {
-        labelExtent_ =
-            ivec2(uiRenderer_->getTextRenderer(boldLabel_).computeTextSize(labelStr_));
+        labelExtent_ = ivec2(getCurrentTextRenderer().computeTextSize(labelStr_));
     } else {
         labelExtent_ = ivec2(0, 0);
     }
@@ -124,8 +131,7 @@ void Element::setLabelBold(bool bold) {
         boldLabel_ = bold;
 
         if (!labelStr_.empty()) {
-            labelExtent_ =
-                ivec2(uiRenderer_->getTextRenderer(boldLabel_).computeTextSize(labelStr_));
+            labelExtent_ = ivec2(getCurrentTextRenderer().computeTextSize(labelStr_));
             labelDirty_ = true;
             processor_->invalidate(InvalidationLevel::InvalidOutput);
         }
@@ -139,6 +145,31 @@ const ivec2 &Element::getExtent() {
         updateExtent();
     }
     return extent_;
+}
+
+bool Element::isDirty() const { return labelDirty_; }
+
+void Element::setWidgetExtent(const ivec2 &extent) {
+    ivec2 newExtent(extent);
+    if (std::abs(1.0 - scalingFactor_) > glm::epsilon<double>()) {
+        // consider scaling
+        newExtent = ivec2(dvec2(extent) / scalingFactor_);
+    }
+    if (newExtent != widgetExtent_) {
+        labelDirty_ = true;
+        // label might need repositioning
+        widgetExtent_ = newExtent;
+        processor_->invalidate(InvalidationLevel::InvalidOutput);
+    }
+}
+
+ivec2 Element::getWidgetExtent() const {
+    if (std::abs(1.0 - scalingFactor_) < glm::epsilon<double>()) {
+        // no custom scaling
+        return widgetExtent_;
+    } else {
+        return ivec2(dvec2(widgetExtent_) * scalingFactor_ + 0.5);
+    }
 }
 
 void Element::render(const ivec2 &origin, const size2_t &canvasDim) {
@@ -221,14 +252,6 @@ Element::UIState Element::uiState() const { return UIState::Normal; }
 
 vec2 Element::marginScale() const { return vec2(1.0f); }
 
-ivec2 Element::getWidgetExtent() const {
-    if (std::abs(1.0 - scalingFactor_) < glm::epsilon<double>()) {
-        return widgetExtent_;
-    } else {
-        return ivec2(dvec2(widgetExtent_) * scalingFactor_ + 0.5);
-    }
-}
-
 void Element::updateExtent() {
     if (labelDirty_) {
         updateLabelPos();
@@ -244,7 +267,7 @@ void Element::updateLabelPos() {
     if (!labelStr_.empty()) {
         // compute label position
         // keep track of the font descent to account for proper centering
-        int fontDescent = uiRenderer_->getTextRenderer(boldLabel_).getBaseLineDescent();
+        int fontDescent = getCurrentTextRenderer().getBaseLineDescent();
         labelPos_ = computeLabelPos(fontDescent);
     } else {
         labelPos_ = ivec2(0, 0);
@@ -264,7 +287,7 @@ void Element::updateLabel() {
             texture->initialize(nullptr);
             labelTexture_ = texture;
         }
-        uiRenderer_->getTextRenderer(boldLabel_).renderToTexture(labelTexture_, labelStr_, black);
+        getCurrentTextRenderer().renderToTexture(labelTexture_, labelStr_, black);
     } else {
         labelTexture_ = nullptr;
     }
@@ -347,6 +370,13 @@ vec4 Element::adjustColor(const vec4 &color) {
     // reduce saturation
     hsv.y = std::max(0.0f, hsv.x - 0.15f);
     return vec4(color::hsv2rgb(hsv), color.a);
+}
+
+TextRenderer &Element::getCurrentTextRenderer() const {
+    // set font size first
+    auto &textRenderer = uiRenderer_->getTextRenderer(boldLabel_);
+    textRenderer.setFontSize(std::max(1, static_cast<int>(scalingFactor_ * labelFontSize_)));
+    return textRenderer;
 }
 
 void Element::renderLabel(const ivec2 &origin, const size2_t &canvasDim) {

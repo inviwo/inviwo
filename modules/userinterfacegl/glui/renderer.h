@@ -82,6 +82,8 @@ public:
     TextRenderer& getTextRenderer(bool bold = false);
     const TextRenderer& getTextRenderer(bool bold = false) const;
 
+    int getDefaultFontSize() const;
+
     TextureQuadRenderer& getTextureQuadRenderer();
     const TextureQuadRenderer& getTextureQuadRenderer() const;
 
@@ -107,9 +109,6 @@ public:
     void setDisabledColor(const vec4& color);
     const vec4& getDisabledColor() const;
 
-    void setUIScaling(double scaleFactor);
-    double getUIScaling() const;
-
 protected:
     void setupRectangleMesh();
 
@@ -117,7 +116,6 @@ protected:
         const std::vector<std::string>& textureFiles, const std::string& sourcePath) const;
 
     const int defaultFontSize_ = 13;
-    const int defaultFontSizeBold_ = 15;
 
     Shader uiShader_;
     TextRenderer textRenderer_;

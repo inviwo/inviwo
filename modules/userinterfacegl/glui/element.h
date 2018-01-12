@@ -52,6 +52,22 @@ namespace glui {
  * \class glui::Element
  * \brief graphical UI element for use in combination with glui::Layout
  *
+ * Layout of a UI element:
+ *                                                         extent
+ *   +----------------------------------------------------+
+ *   |                                                    |
+ *   |                 widgetExtent                       |
+ *   |     +----------+                      labelExtent  |
+ *   |     | rendered |        +-----------------+        |
+ *   |     | textures |        |  label          |        |
+ *   |     |    +     |        +-----------------+        |
+ *   |     | picking  |    labelPos                       |
+ *   |     +----------+                                   |
+ *   |  widgetPos                                         |
+ *   |                                                    |
+ *   +----------------------------------------------------+
+ * (0,0)
+ *
  * \see glui::Layout, glui::Renderer
  */
 class IVW_MODULE_USERINTERFACEGL_API Element {
@@ -70,6 +86,9 @@ public:
     void setLabel(const std::string &str);
     const std::string &getLabel() const;
 
+    void setFontSize(int size);
+    int getFontSize() const;
+
     void setLabelBold(bool bold);
     bool isLabelBold() const;
 
@@ -81,6 +100,21 @@ public:
 
     bool isDirty() const;
 
+    /**
+     * \brief sets the extent of the widget
+     * @param extent   new extent of the widget (including scaling)
+     */
+    void setWidgetExtent(const ivec2 &extent);
+    /**
+     * \brief returns the true widget extent including scaling
+     * @return widget extent
+     */
+    ivec2 getWidgetExtent() const;
+    /**
+     * \brief return extent of the element, including both widget and label, and considering scaling
+     *
+     * @return total element extent
+     */
     const ivec2 &getExtent();
 
     /**
@@ -132,12 +166,6 @@ public:
     bool moveAction(const dvec2 &delta);
 
 protected:
-    /**
-    * \brief returns the true widget extent including scaling
-    * @return widget extent
-    */
-    ivec2 getWidgetExtent() const;
-
     void updateExtent();
     void updateLabelPos();
     void updateLabel();
@@ -165,6 +193,14 @@ protected:
     // reduce saturation and darken color
     static vec4 adjustColor(const vec4 &color);
 
+    /**
+     * \brief set up text renderer for rendering the label using current settings,
+     * i.e. font size, widget scaling, and whether it should be rendered bold
+     *
+     * @return reference to the set-up text renderer
+     */
+    TextRenderer &getCurrentTextRenderer() const;
+
     std::function<void()>
         action_;  //<! is called by triggerAction() after the internal state has been updated
     std::function<bool(const dvec2 &)> moveAction_;  //!< is called by mouseMoved()
@@ -180,23 +216,8 @@ protected:
 
     bool boldLabel_;
     bool labelVisible_;
+    int labelFontSize_;
 
-    // Layout of a UI element:
-    //                                                         extent
-    //   +----------------------------------------------------+
-    //   |                                                    |
-    //   |                 widgetExtent                       |
-    //   |     +----------+                      labelExtent  |
-    //   |     | rendered |        +-----------------+        |
-    //   |     | textures |        |  label          |        |
-    //   |     |    +     |        +-----------------+        |
-    //   |     | picking  |    labelPos                       |
-    //   |     +----------+                                   |
-    //   |  widgetPos                                         |
-    //   |                                                    |
-    //   +----------------------------------------------------+
-    // (0,0)
-    //
 
     ivec2 extent_;
     ivec2 widgetPos_;

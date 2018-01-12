@@ -204,11 +204,11 @@ void GLUITestProcessor::process() {
         uiRenderer_.setDisabledColor(uiDisabledColor_.get());
     }
     if (uiScaling_.isModified()) {
-        // inform the renderer about the change in size (will adjust label font size)
-        uiRenderer_.setUIScaling(uiScaling_.get());
-        // scaling will affect all glui elements, the change is propagated by the layouts
+        // scaling will affect all glui elements, the change is propagated by the layout
         propertyLayout_.setScalingFactor(uiScaling_.get());
     }
+
+    // layout
     if (layoutDirection_.isModified()) {
         layout_.setDirection(layoutDirection_.get());
         propertyLayout_.setDirection(layoutDirection_.get());
