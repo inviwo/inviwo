@@ -114,6 +114,11 @@ ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 # Inviwo: CEF only provides release/debug configurations. Set RelWithDebInfo and MinSizeRel to use release 
 set(CEF_BINARY_DIR "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo>:Release>$<$<CONFIG:MinSizeRel>:Release>$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>")
 
+ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSION} MODULE WebBrowser
+    URL "https://bitbucket.org/chromiumembedded/cef"
+	TYPE "BSD-license"
+    FILES ${CEF_ROOT}/LICENSE.txt
+)
 
 #
 # Setup CEF helper executable. Started from the web browser module as a sub-process.
