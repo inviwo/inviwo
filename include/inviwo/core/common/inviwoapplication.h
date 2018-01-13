@@ -292,11 +292,11 @@ protected:
     };
 
     std::string displayName_;
+    CommandLineParser commandLineParser_;
     std::shared_ptr<FileLogger> filelogger_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::function<void(std::string)> progressCallback_;
 
-    CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
 

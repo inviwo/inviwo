@@ -53,11 +53,6 @@ public:
     Singleton<T>(Singleton<T> const&) = delete;
     void operator=(Singleton<T> const&) = delete;
 
-    /**
-     * For Singletons in the inviwo::core init should be called in
-     * void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc).
-     *
-     */
     static void init() {
         if (instance_ != nullptr) {
             throw SingletonException("Singleton already initialized", IvwContextCustom("Singleton"));
@@ -101,7 +96,6 @@ public:
 
 private:
     static void resetInstance() { instance_ = nullptr; };
-
     static T* instance_;
 };
 
