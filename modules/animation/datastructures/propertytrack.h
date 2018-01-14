@@ -138,6 +138,12 @@ public:
 
     virtual Seconds lastTime() const override;
 
+    virtual std::vector<Seconds> getAllTimes() const override;
+
+    /**
+    * Return the number of KeyframeSequences in the track.
+    */
+
     virtual AniamtionTimeState operator()(Seconds from, Seconds to,
                                           AnimationState state) const override;
 
@@ -392,6 +398,22 @@ Seconds PropertyTrack<Prop, Key>::firstTime() const {
     } else {
         return sequences_.front()->getFirst().getTime();
     }
+}
+
+template <typename Prop, typename Key>
+std::vector<Seconds> PropertyTrack<Prop, Key>::getAllTimes() const
+{
+    std::vector<Seconds> result;
+    for (size_t s = 0; s < sequences_.size(); ++s)
+    {
+        KeyframeSequenceTyped<Key>& seq = *sequences_[s];
+        for (size_t k = 0; k < seq.size(); ++k)
+        {
+            result.push_back(seq[k].getTime());
+        }
+    }
+    std::sort(result.begin(), result.end());
+    return result;
 }
 
 template <typename Prop, typename Key>
