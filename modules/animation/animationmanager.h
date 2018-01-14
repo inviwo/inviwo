@@ -107,21 +107,29 @@ public:
                                          const std::string& interpolationClassID);
 
     /**
-     * Callback for the module action callbacks.
+     * Add keyframe at current time given by AnimationController.
+     * @see addKeyframeCallback(Property* property, Seconds time)
      */
     void addKeyframeCallback(Property* property);
+    /**
+     * Add keyframe at specified time.
+     * Creates a new track if no track with the supplied property exists.
+     */
+    void addKeyframeCallback(Property* property, Seconds time);
     /**
      * Callback for the module action callbacks.
      */
     void addSequenceCallback(Property* property);
-
-private:
-    BasePropertyTrack* addNewTrack(Property* property);
-    /** 
+                                                      
+    /**
      * Lookup the default interpolation to use for a property.
      * @throw Exception if none is found.
      */
     std::unique_ptr<Interpolation> getDefaultInterpolation(Property* property);
+
+private:
+    BasePropertyTrack* addNewTrack(Property* property);
+
 
     // PropertyOwnerObserver overload
     virtual void onWillRemoveProperty(Property* property, size_t index) override;

@@ -30,6 +30,7 @@
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animationqt/trackqt.h>
 #include <modules/animationqt/keyframeqt.h>
+#include <modules/animation/animationmodule.h>
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/animationcontroller.h>
 
@@ -40,6 +41,10 @@
 #include <QPainter>
 #include <QGraphicsItem>
 #include <QKeyEvent>
+#include <QGraphicsSceneDragDropEvent>
+#include <QMimeData>
+#include <QDropEvent>
+#include <QWidget>
 #include <warn/pop>
 
 namespace inviwo {
@@ -107,6 +112,31 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
                 controller_.stop();
                 break;
         } 
+    }
+}
+
+void AnimationEditorQt::dragEnterEvent(QGraphicsSceneDragDropEvent *event) {
+    // For now only accept PropertyWidget
+    auto source = dynamic_cast<PropertyWidget*>(event->source());
+    event->setAccepted(source != nullptr && source->getProperty() != nullptr);
+}
+    
+void AnimationEditorQt::dragMoveEvent(QGraphicsSceneDragDropEvent *event) {
+    // Must override for drop events to occur. Do not call QGraphicsScene::dragMoveEvent
+    event->accept();
+}
+    
+void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent *event) {
+
+    auto source = dynamic_cast<PropertyWidget*>(event->source());
+    if (source) {
+        auto property = source->getProperty();
+        auto app = controller_.getInviwoApplication();
+        // Need AnimationManager for adding key frame.
+        auto& am = app->template getModuleByType<AnimationModule>()->getAnimationManager();
+        auto time = event->scenePos().x() / static_cast<double>(WidthPerSecond);
+        am.addKeyframeCallback(property, Seconds(time));
+        event->acceptProposedAction();
     }
 }
 
