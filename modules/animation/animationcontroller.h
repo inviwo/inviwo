@@ -80,6 +80,8 @@ public:
     Seconds getCurrentTime() const;
     Seconds getPlaySpeedTime() const;
     double getPlaySpeedFps() const;
+    
+    InviwoApplication* getInviwoApplication() { return app_; }
 
 protected:
     void setTime(Seconds time); // Use eval to set time in the public interface.

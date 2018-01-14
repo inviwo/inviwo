@@ -105,15 +105,19 @@ AnimationController& AnimationManager::getAnimationController() { return control
 const AnimationController& AnimationManager::getAnimationController() const { return controller_; }
 
 void AnimationManager::addKeyframeCallback(Property* property) {
+    addKeyframeCallback(property, controller_.getCurrentTime());
+}
+
+void AnimationManager::addKeyframeCallback(Property* property, Seconds time) {
     auto it = trackMap_.find(property);
     try {
         auto interpolation = getDefaultInterpolation(property);
         if (it != trackMap_.end()) {
             // Note: interpolation will only be used if a new sequence is created.
-            it->second->addKeyFrameUsingPropertyValue(controller_.getCurrentTime(),
+            it->second->addKeyFrameUsingPropertyValue(time,
                                                       std::move(interpolation));
         } else if (auto basePropertyTrack = addNewTrack(property)) {
-            basePropertyTrack->addKeyFrameUsingPropertyValue(controller_.getCurrentTime(),
+            basePropertyTrack->addKeyFrameUsingPropertyValue(time,
                                                              std::move(interpolation));
         } else {
             LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");

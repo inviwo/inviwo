@@ -60,8 +60,8 @@ public:
     virtual Property* getProperty() = 0;
     virtual const std::string& getIdentifier() const = 0;
     /*
-     * Add KeyFrame at specified time using the current value of the property.
-     * All keyframes in one sequence uses the same interpolation so the provided interpolation 
+     * Add KeyFrame at specified time using the current value of supplied property.
+     * All keyframes in one sequence uses the same interpolation so the provided interpolation
      * will only be used if a new sequence need to be created.
      *
      * See example below on which KeyFrameSequence the KeyFrame is added:
@@ -78,6 +78,16 @@ public:
      * Case 2b: Time is closest to Sequence 2, add it to this sequence.
      * Case 3: Time is in, or after, last sequence, add it to this sequence.
      *
+     * @param proprty Property to create key frame value from.
+     * @param time at which KeyFrame should be added.
+     * @param interpolation to use if a new sequence is created
+     * @throw Exception If supplied property is not of same type as BasePropertyTrack::getProperty
+     * @throw Exception If Interpolation type is invalid for property value.
+     */
+    virtual void addKeyFrameUsingPropertyValue(const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
+    /*
+     * Add KeyFrame at specified time using the current value of the property.
+     * @see addKeyFrameUsingPropertyValue(const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation)
      * @param time at which KeyFrame should be added.
      * @param interpolation to use if a new sequence is created
      */
@@ -167,6 +177,7 @@ public:
 
     virtual void setProperty(Property* property) override;
 
+    virtual void addKeyFrameUsingPropertyValue(const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) override;
     virtual void addKeyFrameUsingPropertyValue(Seconds time, std::unique_ptr<Interpolation> interpolation) override;
     virtual void addSequenceUsingPropertyValue(Seconds time, std::unique_ptr<Interpolation> interpolation) override;
 
@@ -434,7 +445,6 @@ void PropertyTrack<Prop, Key>::onKeyframeSequenceMoved(KeyframeSequence* key) {
         }
     }
 }
-
 /**
  * Track of sequences
  * ----------X======X====X-----------------X=========X-------X=====X--------
@@ -442,39 +452,48 @@ void PropertyTrack<Prop, Key>::onKeyframeSequenceMoved(KeyframeSequence* key) {
  *           |-case 2a-----------|-case 2b-|
  */
 template <typename Prop, typename Key>
-void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(Seconds time, std::unique_ptr<Interpolation> interpolation) {
+void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
+    auto prop = dynamic_cast<const Prop*>(property);
+    if (!prop) {
+        throw Exception("Cannot add key frame from property type " + property->getClassIdentifier() + " for " + property_->getClassIdentifier());
+    }
     if (sequences_.empty()) {
         // Use provided interpolation if we can
         auto typedInterpolation = dynamic_cast<InterpolationTyped<Key>*>(interpolation.get());
         if (typedInterpolation) {
             interpolation.release();
-            KeyframeSequenceTyped<Key> sequence({ {time, property_->get()} }, std::unique_ptr<InterpolationTyped<Key>>(typedInterpolation));
+            KeyframeSequenceTyped<Key> sequence({ {time, prop->get()} }, std::unique_ptr<InterpolationTyped<Key>>(typedInterpolation));
             addTyped(sequence);
         } else {
             throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() + " for " + getClassIdentifier());
         }
-
+        
     } else {
         // 'it' will be the first seq. with a first time larger then 'to'.
         auto it = std::upper_bound(
-            sequences_.begin(), sequences_.end(), time,
-            [](const auto& t, const auto& seq) { return t < seq->getFirst().getTime(); });
-
+                                   sequences_.begin(), sequences_.end(), time,
+                                   [](const auto& t, const auto& seq) { return t < seq->getFirst().getTime(); });
+        
         if (it == sequences_.begin()) {   // case 1
-            sequences_[0]->add(Key{time, property_->get()});
+            sequences_[0]->add(Key{time, prop->get()});
         } else if (it == sequences_.end()) { // case 3
             auto& seq1 = *std::prev(it);
-            seq1->add(Key{time, property_->get()});
+            seq1->add(Key{time, prop->get()});
         } else {                          // case 2
             auto& seq1 = *std::prev(it);
             auto& seq2 = *it;
             if ((time - seq1->getLast().getTime()) < (seq2->getFirst().getTime() - time)) {
-                seq1->add(Key{time, property_->get()});  // case 2a
+                seq1->add(Key{time, prop->get()});  // case 2a
             } else {
-                seq2->add(Key{time, property_->get()});  // case 2b
+                seq2->add(Key{time, prop->get()});  // case 2b
             }
         }
     }
+}
+
+template <typename Prop, typename Key>
+void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(Seconds time, std::unique_ptr<Interpolation> interpolation) {
+    addKeyFrameUsingPropertyValue(property_, time, std::move(interpolation));
 }
 
 template <typename Prop, typename Key>
