@@ -37,6 +37,7 @@
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <warn/pop>
+#include "animation/datastructures/propertytrack.h"
 
 namespace inviwo {
 
@@ -59,8 +60,8 @@ public:
     }
 };
 
-AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
-    : QListView(), animation_(animation) {
+AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
+    : QListView(), controller_(controller) {
     setMouseTracking(true);
     setSelectionBehavior(SelectItems);
     setMovement(Snap);
@@ -70,11 +71,12 @@ AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
     std::string style = "border: 0px;\n background-color: #323235;";
     setStyleSheet(style.c_str());
 
-    animation_.addObserver(this);
+    Animation& animation = *controller_.getAnimation();
+    animation.addObserver(this);
     model_ = new AnimationLabelModelQt(this);
 
-    for (size_t i = 0; i < animation_.size(); ++i) {
-        auto& track = animation_[i];
+    for (size_t i = 0; i < animation.size(); ++i) {
+        auto& track = animation[i];
         QList<QStandardItem*> row;
         auto item = new QStandardItem(QString::fromStdString(track.getName()));
         item->setData(QVariant::fromValue(static_cast<void*>(&track)), Qt::UserRole + 1);
