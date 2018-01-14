@@ -91,9 +91,10 @@ public:
      * Return Track priority (0 is highest)
      */
     virtual size_t getPriority() const = 0;
-
+    
     virtual Seconds firstTime() const = 0;
     virtual Seconds lastTime() const = 0;
+    virtual std::vector<Seconds> getAllTimes() const = 0;
     /**
      * Return the number of KeyframeSequences in the track.
      */
