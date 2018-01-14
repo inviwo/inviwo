@@ -69,7 +69,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 
     // List widget of track labels
-    animationLabelView_ = new AnimationLabelViewQt(*controller_.getAnimation());
+    animationLabelView_ = new AnimationLabelViewQt(controller_);
 
     // Left part
     auto leftWidget = new QMainWindow();

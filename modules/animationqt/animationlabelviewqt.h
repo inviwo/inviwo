@@ -39,6 +39,7 @@
 #include <QListView>
 #include <QStringList>
 #include <warn/pop>
+#include "animation/animationcontroller.h"
 
 class QStandardItemModel;
 
@@ -50,7 +51,7 @@ class Animation;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView, public AnimationObserver {
 public:
-    AnimationLabelViewQt(Animation& animation);
+    AnimationLabelViewQt(AnimationController& controller);
     virtual ~AnimationLabelViewQt() = default;
 
 protected:
@@ -61,7 +62,7 @@ protected:
     virtual void onTrackAdded(Track* track) override;
     virtual void onTrackRemoved(Track* track) override;
 
-    Animation& animation_;
+    AnimationController& controller_;
     QStandardItemModel* model_;
 };
 
