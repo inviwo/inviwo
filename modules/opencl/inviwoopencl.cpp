@@ -141,9 +141,16 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
         try {
             std::vector<cl::Device> devicesTmp;
             platform.getDevices(CL_DEVICE_TYPE_ALL, &devicesTmp);
-            devices.insert(devices.end(), devicesTmp.begin(), devicesTmp.end());
+            for (auto& d : devicesTmp) {
+                try {
+                    devices.emplace_back(d);
+                } catch (cl::Error&) {
+                    // Error getting device info, continue with other devices
+                }
+            }
+
         } catch (cl::Error&) {
-            // Error getting device, continue with others
+            // Error getting devices, continue with next platform
         }
     }
 
