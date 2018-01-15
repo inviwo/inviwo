@@ -45,6 +45,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationtime.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/easing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.cpp
