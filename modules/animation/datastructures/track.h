@@ -100,7 +100,7 @@ public:
      */
     virtual size_t size() const = 0;
 
-    virtual AniamtionTimeState operator()(Seconds from, Seconds to, AnimationState state) const = 0;
+    virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const = 0;
 
     virtual KeyframeSequence& operator[](size_t i) = 0;
     virtual const KeyframeSequence& operator[](size_t i) const = 0;

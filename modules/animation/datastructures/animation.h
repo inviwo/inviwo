@@ -56,7 +56,7 @@ public:
     Animation(const Animation&) = delete;
     Animation& operator=(const Animation& that) = delete;
 
-    AniamtionTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
+    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 
     bool empty() const;
     size_t size() const;

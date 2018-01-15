@@ -149,13 +149,9 @@ public:
     virtual Seconds lastTime() const override;
 
     virtual std::vector<Seconds> getAllTimes() const override;
+    
 
-    /**
-    * Return the number of KeyframeSequences in the track.
-    */
-
-    virtual AniamtionTimeState operator()(Seconds from, Seconds to,
-                                          AnimationState state) const override;
+    virtual AnimationTimeState operator()(Seconds from, Seconds to,AnimationState state) const override;
 
     virtual const Prop* getProperty() const override;
     virtual Prop* getProperty() override;
@@ -329,7 +325,7 @@ size_t PropertyTrack<Prop, Key>::size() const {
  *           |-case 2a---|-case 2b---|
  */
 template <typename Prop, typename Key>
-AniamtionTimeState PropertyTrack<Prop, Key>::operator()(Seconds from, Seconds to,
+AnimationTimeState PropertyTrack<Prop, Key>::operator()(Seconds from, Seconds to,
                                                         AnimationState state) const {
     if (!enabled_ || sequences_.empty()) return {to, state};
 
