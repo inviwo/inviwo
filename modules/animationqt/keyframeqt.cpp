@@ -114,7 +114,6 @@ QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value
         }
     }
     else if(change == ItemSelectedChange){
-        LogInfo(value.toBool());
         keyframe_.setSelected(value.toBool());
     }
 

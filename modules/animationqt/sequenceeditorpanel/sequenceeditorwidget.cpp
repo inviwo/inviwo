@@ -99,7 +99,6 @@ void SequenceEditorWidget::onKeyframeSequenceSelectionChanged(KeyframeSequence *
 }
 
 void SequenceEditorWidget::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
-    LogWarn("sadf");
     keyframesLayout_->addWidget(new KeyframeEditorWidget(*key,this) );
 }
 
