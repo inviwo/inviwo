@@ -28,24 +28,72 @@
  *********************************************************************************/
 
 #include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
+#include <modules/animationqt/sequenceeditorpanel/sequenceeditorwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QLabel>
 #include <QVBoxLayout>
 #include <warn/pop>
 
 namespace inviwo {
 
 namespace animation {
-SequenceEditorPanel::SequenceEditorPanel(QWidget* parent)
-    : QWidget(/*"Sequence Editor Panel" ,*/ parent)
-{
-    QVBoxLayout* layout = new QVBoxLayout();
-    setLayout(layout);
+SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidget* parent)
+    : QWidget(parent), controller_(controller) {
+    layout_ = new QVBoxLayout();
 
-    layout->addWidget( new QLabel("test")  );
+    setObjectName("SequenceEditorPanel");
+
+    setLayout(layout_);
+    
+
+    if (auto ani = controller.getAnimation()) {
+        for (size_t i = 0; i < ani->size(); i++) {
+            onTrackAdded(&(*ani)[i]);
+        }
+        ani->addObserver(this);
+    }
+
 }
+
+void SequenceEditorPanel::onAnimationChanged(AnimationController* controller, Animation* oldAnim,
+                                             Animation* newAnim) {
+    oldAnim->removeObserver(this);
+
+    for (size_t i = 0; i < newAnim->size(); i++) {
+        onTrackAdded(&(*newAnim)[i]);
+    }
+    newAnim->addObserver(this);
+}
+
+void SequenceEditorPanel::onTrackAdded(Track* track)
+{
+    for (size_t i = 0; i < track->size(); i++) {
+        onKeyframeSequenceAdded(track, &(*track)[i]  );
+    }
+    track->addObserver(this);
+}
+
+void SequenceEditorPanel::onTrackRemoved(Track* track)
+{
+    track->removeObserver(this);
+
+    LogWarn("Should probably do something here");
+}
+
+
+void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s)
+{
+    auto widget = new SequenceEditorWidget(*s,*t,this);
+    widgets_[s] = widget;
+    layout_->addWidget(widget);
+}
+
+void SequenceEditorPanel::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s)
+{
+    LogWarn("Should probably do something here");
+}
+
 }  // namespace animation
 
 }  // namespace inviwo

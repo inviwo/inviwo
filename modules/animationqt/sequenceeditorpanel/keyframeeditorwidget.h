@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,65 +27,41 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_KEYFRAME_INTERPOLATION_H
-#define IVW_KEYFRAME_INTERPOLATION_H
+#ifndef IVW_KEYFRAMEEDITORWIDGET_H
+#define IVW_KEYFRAMEEDITORWIDGET_H
 
-#include <modules/animation/animationmoduledefine.h>
+#include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
 #include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/easing.h>
-#include <inviwo/core/io/serialization/serializable.h>
 
-#include <algorithm>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWidget>
+#include <warn/pop>
 
 namespace inviwo {
-
+    class Property;
 namespace animation {
+class SequenceEditorWidget;
 
-
-/** \class Interpolation
- *	Interface for keyframe interpolations.
+/**
+ * \class KeyframeEditorWidget
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_ANIMATION_API Interpolation : public Serializable {
+class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget {
 public:
-    Interpolation() = default;
-    virtual ~Interpolation() = default;
+    KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
+    virtual ~KeyframeEditorWidget() = default;
 
-    virtual Interpolation* clone() const = 0;
+private:
+    Keyframe &keyframe_;
+    SequenceEditorWidget *sequenceEditorWidget_;
 
-    virtual std::string getClassIdentifier() const = 0;
-
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
-};
-/** \class InterpolationTyped
- *	Base class for interpolation between key frames.
- *  Interpolation will always be performed between at least two key frames.
- *
- *  @see KeyFrame
- *  @see KeyFrameSequence
- */
-template <typename Key>
-class InterpolationTyped : public Interpolation {
-public:
-    InterpolationTyped() = default;
-    virtual ~InterpolationTyped() = default;
-
-    virtual InterpolationTyped* clone() const override = 0;
-
-    virtual std::string getClassIdentifier() const override = 0;
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
-
-    // Override this function to interpolate between key frames
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t, easing::EasingType easing /*= easing::Linear*/) const ->
-        typename Key::value_type = 0;
+    std::unique_ptr<Property> property_;
 };
 
-} // namespace animation
+}  // namespace animation
+}  // namespace inviwo
 
-} // namespace inviwo
-
-#endif // IVW_KEYFRAME_INTERPOLATION_H
-
+#endif  // IVW_KEYFRAMEEDITORWIDGET_H

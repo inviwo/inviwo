@@ -45,7 +45,7 @@ namespace animation {
 
 /** \class KeyframeSequence
  * Interface for a sequence of keyframes, which will be evaluated during an animation.
- * The KeyframeSequence is a part of a Track and owns Keyframes. 
+ * The KeyframeSequence is a part of a Track and owns Keyframes.
  * All keyframes in the sequence are interpolated using the same Interpolation method.
  * @note Interpolation will only be performed if more than two key frames exist.
  * @see KeyFrame
@@ -84,8 +84,39 @@ public:
 
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) = 0;
 
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
+    virtual void serialize(Serializer& s) const override { 
+        s.serialize("selected", isSelected_); 
+        s.serialize("easing", easing_); 
+    };
+    virtual void deserialize(Deserializer& d) override { 
+        d.deserialize("selected", isSelected_); 
+        d.deserialize("easing", easing_); 
+    };
+
+    bool isSelected() const { return isSelected_; }
+    void setSelected(bool selected = true) {
+        if (selected != isSelected_) {
+            isSelected_ = selected;
+            notifyKeyframeSequenceSelectionChanged(this);
+        }
+    }
+
+    bool isAnyKeyframeSelected() const {
+        for (size_t i = 0; i < size(); i++) {
+            if (operator[](i).isSelected()) return true;
+        }
+        return false;
+    }
+
+
+
+
+    virtual easing::EasingType getEasingType() const { return easing_; }
+    virtual void setEasingType(easing::EasingType easing) { easing_ = easing; }
+
+protected:
+    bool isSelected_{false};
+    easing::EasingType easing_{easing::EasingType::Linear};
 };
 
 /** \class KeyframeSequenceTyped
@@ -140,6 +171,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+
+
 private:
     void addKeyFrame(std::unique_ptr<Key> key);
 
@@ -164,8 +197,7 @@ bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
-    : KeyframeSequence(), keyframes_(), interpolation_() {
-}
+    : KeyframeSequence(), keyframes_(), interpolation_() {}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
@@ -248,7 +280,7 @@ template <typename Key>
 auto KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to) const ->
     typename Key::value_type {
     if (interpolation_) {
-        return (*interpolation_)(keyframes_, to);
+        return (*interpolation_)(keyframes_, to , easing_);
     } else {
         return keyframes_.front()->getValue();
     }
@@ -316,12 +348,14 @@ const Key& KeyframeSequenceTyped<Key>::operator[](size_t i) const {
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::serialize(Serializer& s) const {
+    KeyframeSequence::serialize(s);
     s.serialize("keyframes", keyframes_, "keyframe");
     s.serialize("interpolation", interpolation_);
 }
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
+    KeyframeSequence::deserialize(d);
     using Elem = std::unique_ptr<Key>;
     util::IndexedDeserializer<Elem>("keyframes", "keyframe")
         .onNew([&](Elem& key) {
@@ -333,8 +367,8 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
     d.deserializeAs<Interpolation>("interpolation", interpolation_);
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_KEYFRAMESEQUENCE_H

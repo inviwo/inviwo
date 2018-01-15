@@ -67,7 +67,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     // keys should be sorted by time
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t) const ->
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t, easing::EasingType) const ->
         typename Key::value_type override {
         // Returns an iterator to the first element greater than t
         auto it = std::upper_bound(

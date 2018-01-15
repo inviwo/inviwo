@@ -113,6 +113,10 @@ QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value
             keyframe_.setTime(Seconds(value.toPointF().x() / static_cast<double>(WidthPerSecond)));
         }
     }
+    else if(change == ItemSelectedChange){
+        LogInfo(value.toBool());
+        keyframe_.setSelected(value.toBool());
+    }
 
     return QGraphicsItem::itemChange(change, value);
 }

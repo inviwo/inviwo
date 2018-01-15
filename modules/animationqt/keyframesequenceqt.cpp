@@ -25,6 +25,7 @@
 
 #include <modules/animationqt/keyframesequenceqt.h>
 #include <modules/animationqt/keyframeqt.h>
+#include <modules/animationqt/trackqt.h>
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/animationtime.h>
@@ -42,9 +43,11 @@ namespace inviwo {
 
 namespace animation {
 
-KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, QGraphicsItem* parent)
-    : QGraphicsItem(parent), keyframeSequence_(keyframeSequence) {
-    setFlags(ItemIsMovable | ItemSendsGeometryChanges);
+KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, TrackQt* parent)
+    : QGraphicsItem(parent), keyframeSequence_(keyframeSequence) , trackQt_(*parent) {
+    //setFlags(ItemIsMovable | ItemSendsGeometryChanges);
+    setFlags(ItemIgnoresTransformations | ItemIsMovable | ItemIsSelectable |
+        ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
 
     keyframeSequence.addObserver(this);
     auto firstKeyframePos = keyframeSequence_.getFirst().getTime().count() * WidthPerSecond;
@@ -134,9 +137,14 @@ QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVarian
         // Restrict vertical movement
         return QPointF(static_cast<float>(xV), y());
     }
+    else if(change == ItemSelectedChange){
+        LogInfo(value.toBool());
+        keyframeSequence_.setSelected(value.toBool());
+    }
     
     return QGraphicsItem::itemChange(change, value);
 }
+
 
 }  // namespace
 
