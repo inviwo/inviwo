@@ -103,68 +103,56 @@ void AnimationViewQt::zoom(double dz) { scale(dz, 1.0); }
 
 void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->fillRect(rect, QColor(89, 89, 89));
-
-    // overlay grid
     int gridSpacing = WidthPerSecond;
     QRectF sRect = frameRect();
     sRect.setWidth(std::max(sceneRect().width(), rect.width()));
+    
     qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
-    QVarLengthArray<QLineF, 100> lines;
 
-    for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
-        lines.append(QLineF(x, sRect.top(), x, sRect.bottom()));
-    }
-
-    QPen gridPen;
-    gridPen.setColor(QColor(102, 102, 102));
-    gridPen.setWidthF(LineWidth);
-    gridPen.setCosmetic(true);
-    painter->setPen(gridPen);
-    painter->drawLines(lines.data(), lines.size());
-}
-
-void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
-    QRectF sRect(0, 0, 0, 0);
-    sRect.setWidth(std::max(sceneRect().width(), rect.width()));
-    sRect.setHeight(TimelineHeight);
-
+    // ---- Timeline -----
     // Background rect
+    
     QPen pen;
     pen.setColor(QColor(102, 102, 102));
     pen.setWidthF(LineWidth);
     pen.setCosmetic(true);
     painter->setPen(pen);
-    painter->fillRect(sRect, QColor(180, 180, 180));
-
-    int gridSpacing = WidthPerSecond;
-    qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
-    QVarLengthArray<QLineF, 100> lines;
-    QVarLengthArray<QPointF, 100> points;
-
+    auto timelineRect = sRect;
+    timelineRect.setHeight(TimelineHeight);
+    painter->fillRect(timelineRect, QColor(180, 180, 180));
+    
+    
+    QVarLengthArray<QLineF, 100> lines; // overlay grid
+    QVarLengthArray<QRectF, 100> textBoxes; // Seconds
+    QFontMetrics fm(painter->font());
+    int textHeightInPixels = fm.height();
+    //auto textSize = painter->boundingRect(const QRectF &rectangle, int flags, const QString &text)
     for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
-        lines.append(QLineF(x, sRect.top(), x, sRect.bottom()));
-        points.append(QPointF(x, 30));
+        lines.append(QLineF(x, sRect.top() + textHeightInPixels, x, sRect.bottom()));
+        textBoxes.append(QRectF(x-0.5*gridSpacing, sRect.top(), gridSpacing, 30));
     }
-
-    // Grid
+    // Draw grid
     QPen gridPen;
     gridPen.setColor(QColor(102, 102, 102));
     gridPen.setWidthF(LineWidth);
     gridPen.setCosmetic(true);
     painter->setPen(gridPen);
     painter->drawLines(lines.data(), lines.size());
-
+    
+    // Render time at each grid line
     // Little hack to render text with correct scale
     painter->save();
     painter->resetTransform();
     // Time stamps
     char buf[32];
-    for (const auto& p : points) {
-        snprintf(buf, 32, "%.4f", p.x() / static_cast<double>(WidthPerSecond));
-        painter->drawText(mapFromScene(p.x(), p.y()), QString(buf));
+    for (const auto& p : textBoxes) {
+        snprintf(buf, 32, "%.1f", p.center().x() / static_cast<double>(WidthPerSecond));
+        painter->drawText(mapFromScene(p).boundingRect(), Qt::AlignHCenter | Qt::AlignTop, QString(buf));
     }
     painter->restore();
+}
 
+void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
     // Current time
     auto x = controller_.getCurrentTime().count() * WidthPerSecond;
     QPen timePen;
