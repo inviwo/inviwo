@@ -50,18 +50,15 @@ namespace animation {
 KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
     : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-    auto layout = new QVBoxLayout();
-    layout->addWidget(new QLabel("Keyframe"));
 
-    auto layout2 = new QHBoxLayout();
-    layout->addLayout(layout2);
-
+    layout = new QHBoxLayout();
+    
     auto timeSpinner = new QDoubleSpinBox();
     timeSpinner->setValue(keyframe.getTime().count());
     timeSpinner->setSuffix("s");
     timeSpinner->setSingleStep(0.1);
     timeSpinner->setDecimals(5);
-    layout2->addWidget(timeSpinner);
+    layout->addWidget(timeSpinner);
 
     if (auto track = dynamic_cast<BasePropertyTrack *>(&parent->getTrack())) {
         property_.reset(track->getProperty()->clone());
@@ -75,11 +72,18 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
             label->setVisible(false);
         }
 
-        layout2->addWidget(propertyWidget_);
+        layout->addWidget(propertyWidget_);
     }
 
     setLayout(layout);
 }
+
+KeyframeEditorWidget::~KeyframeEditorWidget()
+{
+    layout->removeWidget(propertyWidget_);
+    delete propertyWidget_;
+}
+
 }  // namespace animation
 
 }  // namespace inviwo

@@ -78,6 +78,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
         editor_ = std::make_unique<animation::AnimationEditorDockWidgetQt>(controller,
                                                                            "Animation Editor", win);
         menu->addAction(editor_->toggleViewAction());
+        win->addDockWidget(Qt::BottomDockWidgetArea, editor_.get());
         editor_->hide();
         editor_->loadState();
         // Release pointer if destroyed by Qt before module is destroyed
