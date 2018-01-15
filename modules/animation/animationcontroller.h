@@ -44,54 +44,87 @@ namespace inviwo {
 
 namespace animation {
 
-/**
- * The AnimationController is responsible for evaluating the animation and keeping track of the
- * animation time and state.
+/** The AnimationController is responsible for steering the animation.
+
+    It keeps track of the animation time and state.
+    When playing, it should adjust the step sizes to maintain a certain playback speed (frames per second).
+
+    Furthermore, it allows to render the animation into an image sequence.
  */
 class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable {
 public:
     AnimationController(Animation* animation, InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~AnimationController();
 
-    // Start animation
+    ///Play animation
     void play();
-    // Pause animation
+    ///Pause animation
     void pause();
+    ///Render the animation into an image sequence
+    void render();
     // Pause and reset to start
     void stop();
     
     void setState(AnimationState newState);
-    void setPlaybackMode(PlaybackMode mode);
 
-    /**
-     * Advances the animation to the next time step given by @setPlaySpeed if the animation is in
-     * a playing state and evaluates, otherwise does nothing. 
-     */
+    
+    ///Advances the animation to the next time step in playing state.
     void tick();
+
+    ///Advances the animation to the next time step in rendering state.
+    void tickRender();
+
+    ///Asks the animation to update the network to reflect the new time.
     void eval(Seconds oldTime, Seconds newTime);
 
     void setAnimation(Animation* animation);
     void setPlaySpeed(double framesPerSecond);
 
+    ///Returns mutable controlled animation.
     Animation* getAnimation();
+
+    ///Returns controlled animation.
     const Animation* getAnimation() const;
+
+    ///Returns the current state of the controller, whether it is playing, or pausing, and such.
     const AnimationState& getState() const;
-    const PlaybackMode& getPlaybackMode() const;
+
+    ///Returns playback mode such as loop or swing and such.
+    const AnimationPlaySettings& getPlaybackSettings() const {return settingsPlay_;}
+    AnimationPlaySettings& getPlaybackSettings() {return settingsPlay_;}
+    void setPlaybackSettings(const AnimationPlaySettings& newSettings);
+
+    const AnimationPlaySettings& getRenderingSettings() const {return settingsRendering_;}
     Seconds getCurrentTime() const;
-    Seconds getPlaySpeedTime() const;
-    double getPlaySpeedFps() const;
     
     InviwoApplication* getInviwoApplication() { return app_; }
 
 protected:
-    void setTime(Seconds time); // Use eval to set time in the public interface.
+    ///Low-level setting of @currentTime_. Use @eval() to set time in the public interface.
+    void setTime(Seconds time);
 
-    Animation* animation_;  ///< non-owning reference
+    ///The animation to control, non-owning reference.
+    Animation* animation_;
+
+    ///Host application
     InviwoApplication* app_;
+
+    ///State of the animation, such as paused or playing or rendering
     AnimationState state_;
-    PlaybackMode mode_;
+
+    ///If in playback state, how fast we play the animation and whether we loop, or swing, etc.
+    AnimationPlaySettings settingsPlay_;
+
+    ///If in rendering state, how many frames we render.
+    AnimationPlaySettings settingsRendering_;
+
+    ///Current time of the animation. This is an important variable to keep consistent!
     Seconds currentTime_;
+
+    ///Time span between two frames.
     Seconds deltaTime_;
+
+    ///Timer for calling the @tick function is regular intervals.
     Timer timer_;
 };
 
