@@ -223,7 +223,7 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
                     context.line, context.function);
             break;
         case QtWarningMsg:
-            LogCentral::getPtr()->log("Qt Warning", LogLevel::Info, LogAudience::Developer,
+            LogCentral::getPtr()->log("Qt Warning", LogLevel::Warn, LogAudience::Developer,
                                       context.file, context.function, context.line,
                                       msg.toUtf8().constData());
 
@@ -231,7 +231,7 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
                     context.line, context.function);
             break;
         case QtCriticalMsg:
-            LogCentral::getPtr()->log("Qt Critical", LogLevel::Info, LogAudience::Developer,
+            LogCentral::getPtr()->log("Qt Critical", LogLevel::Error, LogAudience::Developer,
                                       context.file, context.function, context.line,
                                       msg.toUtf8().constData());
 
@@ -239,7 +239,7 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
                     context.line, context.function);
             break;
         case QtFatalMsg:
-            LogCentral::getPtr()->log("Qt Fatal", LogLevel::Info, LogAudience::Developer,
+            LogCentral::getPtr()->log("Qt Fatal", LogLevel::Error, LogAudience::Developer,
                                       context.file, context.function, context.line,
                                       msg.toUtf8().constData());
 

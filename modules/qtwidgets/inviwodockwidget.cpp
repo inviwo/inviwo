@@ -135,7 +135,25 @@ void InviwoDockWidget::loadState() {
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         if (settings.contains("dockarea")) {
             auto dockarea = static_cast<Qt::DockWidgetArea>(settings.value("dockarea").toInt());
-            mainWindow->addDockWidget(dockarea, this);
+            if (dockarea == Qt::NoDockWidgetArea) {
+                // take care of special case where dock area is not set due to floating status
+                if (allowedAreas() & Qt::RightDockWidgetArea) {
+                    dockarea = Qt::RightDockWidgetArea;
+                } else if (allowedAreas() & Qt::LeftDockWidgetArea) {
+                    dockarea = Qt::LeftDockWidgetArea;
+                } else if (allowedAreas() & Qt::BottomDockWidgetArea) {
+                    dockarea = Qt::BottomDockWidgetArea;
+                } else if (allowedAreas() & Qt::TopDockWidgetArea) {
+                    dockarea = Qt::TopDockWidgetArea;
+                } else {
+                    // fall-back: dock to right
+                    dockarea = Qt::RightDockWidgetArea;
+                }
+                mainWindow->addDockWidget(dockarea, this);
+                setFloating(true);
+            } else {
+                mainWindow->addDockWidget(dockarea, this);
+            }
         }
     }
 
