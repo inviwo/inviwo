@@ -12,6 +12,7 @@ Note:
 - Disabled c++ version tiffxx since it is not used yet.
 - Disabled all subdirectories except libtiff
 - Added alias inviwo::tiff in libtiff/CmakeLists.txt
+- Suppress build warnings for MSVC builds (`_CRT_SECURE_NO_WARNINGS` and C4996)
 
 Examples of changes:
 
