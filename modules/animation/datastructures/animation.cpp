@@ -35,8 +35,8 @@ namespace animation {
 
 Animation::Animation() = default;
 
-AniamtionTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
-    AniamtionTimeState ts{to, state};
+AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
+    AnimationTimeState ts{to, state};
     for (const auto& track : priorityTracks_) {
         ts = (*track)(from, ts.time, ts.state);
     }

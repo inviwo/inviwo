@@ -38,7 +38,7 @@ enum class AnimationState { Paused = 0, Playing };
 
 enum class PlaybackMode { Once = 0, Loop, Swing };
 
-struct AniamtionTimeState {
+struct AnimationTimeState {
     Seconds time;
     AnimationState state;
 };
