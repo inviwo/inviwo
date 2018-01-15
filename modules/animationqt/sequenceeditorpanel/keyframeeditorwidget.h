@@ -41,6 +41,7 @@
 
 namespace inviwo {
     class Property;
+    class PropertyWidgetQt;
 namespace animation {
 class SequenceEditorWidget;
 
@@ -52,13 +53,16 @@ class SequenceEditorWidget;
 class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget {
 public:
     KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
-    virtual ~KeyframeEditorWidget() = default;
+    virtual ~KeyframeEditorWidget(){
+        property_.release();
+    }
 
 private:
     Keyframe &keyframe_;
-    SequenceEditorWidget *sequenceEditorWidget_;
+    SequenceEditorWidget *sequenceEditorWidget_{nullptr};
 
-    std::unique_ptr<Property> property_;
+    std::unique_ptr<Property> property_{nullptr};
+    PropertyWidgetQt* propertyWidget_ {nullptr};
 };
 
 }  // namespace animation

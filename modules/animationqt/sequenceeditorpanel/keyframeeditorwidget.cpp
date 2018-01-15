@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
 
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -64,15 +65,17 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
 
     if (auto track = dynamic_cast<BasePropertyTrack *>(&parent->getTrack())) {
         property_.reset(track->getProperty()->clone());
+        property_->setOwner(nullptr);
+        
         auto propWidget =
             util::getInviwoApplication()->getPropertyWidgetFactory()->create(property_.get());
-        auto propWidgetQt = static_cast<PropertyWidgetQt *>(propWidget.release());
+        propertyWidget_ = static_cast<PropertyWidgetQt *>(propWidget.release());
 
-        if (auto label = propWidgetQt->findChild<EditableLabelQt *>()) {
+        if (auto label = propertyWidget_->findChild<EditableLabelQt *>()) {
             label->setVisible(false);
         }
 
-        layout2->addWidget(propWidgetQt);
+        layout2->addWidget(propertyWidget_);
     }
 
     setLayout(layout);

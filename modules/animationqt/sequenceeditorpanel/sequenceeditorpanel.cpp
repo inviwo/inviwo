@@ -30,6 +30,10 @@
 #include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
 #include <modules/animationqt/sequenceeditorpanel/sequenceeditorwidget.h>
 
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/keyframesequence.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QVBoxLayout>
