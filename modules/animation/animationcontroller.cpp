@@ -108,6 +108,7 @@ void AnimationController::tick() {
     if (state_ == AnimationState::Playing) {
         auto newTime = currentTime_ + deltaTime_;
 
+        //Ping at the end of time
         if (newTime > animation_->lastTime()) {
             switch (mode_) {
                 case PlaybackMode::Once: {
@@ -117,6 +118,33 @@ void AnimationController::tick() {
                 }
                 case PlaybackMode::Loop: {
                     newTime = animation_->firstTime();
+                    break;
+                }
+                case PlaybackMode::Swing: {
+                    deltaTime_ = -deltaTime_;
+                    newTime = animation_->lastTime() + deltaTime_;
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        //Pong at the beginning of time
+        if (newTime < animation_->firstTime()) {
+            switch (mode_) {
+                case PlaybackMode::Once: {
+                    newTime = animation_->firstTime();
+                    setState(AnimationState::Paused);
+                    break;
+                }
+                case PlaybackMode::Loop: {
+                    newTime = animation_->lastTime();
+                    break;
+                }
+                case PlaybackMode::Swing: {
+                    deltaTime_ = -deltaTime_;
+                    newTime = animation_->firstTime() + deltaTime_;
                     break;
                 }
                 default:

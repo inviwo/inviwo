@@ -36,7 +36,7 @@ namespace animation {
 
 enum class AnimationState { Paused = 0, Playing };
 
-enum class PlaybackMode { Once = 0, Loop };
+enum class PlaybackMode { Once = 0, Loop, Swing };
 
 struct AniamtionTimeState {
     Seconds time;
