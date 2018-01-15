@@ -47,13 +47,31 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
     : QScrollArea(parent), controller_(controller) {
     setObjectName("SequenceEditorPanel");
 
-    auto layout = new QVBoxLayout();;
+    //auto scrollArea = new QScrollArea(this);
+    auto scrollArea = this;
+    scrollArea->setWidgetResizable(true);
+    //scrollArea->setMinimumWidth(320);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+#ifdef __APPLE__
+    // Scrollbars are overlayed in different way on mac...
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+#else
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+#endif
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setContentsMargins(0, 7, 0, /*PropertyWidgetQt::spacing*/ 7);
+
+
+    auto * widget = new QWidget();
+
+    auto layout = new QVBoxLayout();  
+    widget->setLayout(layout);
+    layout->setAlignment(Qt::AlignTop);
+
     sequenceEditors_ = new QVBoxLayout();
-
-    setLayout(layout);
     layout->addLayout(sequenceEditors_);
-    layout->addStretch();
 
+    scrollArea->setWidget(widget);
 
     if (auto ani = controller.getAnimation()) {
         for (size_t i = 0; i < ani->size(); i++) {
