@@ -50,7 +50,7 @@ namespace animation {
 KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
     : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-
+    setObjectName("KeyframeEditorWidget");
     layout = new QHBoxLayout();
     
     auto timeSpinner = new QDoubleSpinBox();

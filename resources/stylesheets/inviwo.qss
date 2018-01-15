@@ -878,3 +878,17 @@ QDockWidget#ResourceManager QTableView QHeaderView::section {
     background: transparent;
 }
 
+
+QWidget#SequenceEditorWidget {
+    background-color: #242428;
+}
+
+/*
+QWidget#SequenceEditorWidget QWidget{
+    border: 1px solid green;
+}
+
+QWidget#KeyframeEditorWidget QWidget{
+    border: 1px solid blue;
+}*/
+

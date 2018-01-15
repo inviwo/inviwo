@@ -34,6 +34,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QComboBox>
 #include <warn/pop>
@@ -49,12 +50,29 @@ namespace animation {
 SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence &sequence, Track &track,
                                            SequenceEditorPanel *panel)
     : QWidget(panel), sequence_(sequence), track_(track) {
+    setObjectName("SequenceEditorWidget");
     sequence_.addObserver(this);
 
     auto layout = new QVBoxLayout();
+    setLayout(layout);
+
+    // Sequence (track) Name
+    auto label = new QLabel(track_.getName().c_str());
+    auto font = label->font();
+    font.setBold(true);
+    label->setFont(font);
+    layout->addWidget(label);
+
+
     keyframesLayout_ = new QVBoxLayout();
+    layout->addLayout(keyframesLayout_);
+
+    auto easingLayout = new QHBoxLayout();
+    layout->addLayout(easingLayout);
 
     auto easing = new QComboBox();
+    easingLayout->addWidget(new QLabel("Easing: "));
+    easingLayout->addWidget(easing);
 
     auto currentEasing = sequence_.getEasingType();
 
@@ -72,21 +90,10 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence &sequence, Track &tr
         sequence_.setEasingType( static_cast<easing::EasingType>(index) );
     });
 
-    
-
-    layout->addWidget(new QLabel(track_.getName().c_str()));
-    layout->addLayout(keyframesLayout_);
-    layout->addWidget(easing);
-    layout->addStretch();
-
     for(size_t i = 0;i<sequence_.size();i++){
         onKeyframeAdded(&sequence_[i],&sequence_);
     }
     
-    setLayout(layout);
-
-    
-
     updateVisibility();
 }
 
