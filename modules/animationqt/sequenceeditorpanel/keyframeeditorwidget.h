@@ -39,6 +39,8 @@
 #include <QWidget>
 #include <warn/pop>
 
+class QHBoxLayout;
+
 namespace inviwo {
     class Property;
     class PropertyWidgetQt;
@@ -53,16 +55,15 @@ class SequenceEditorWidget;
 class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget {
 public:
     KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
-    virtual ~KeyframeEditorWidget(){
-        property_.release();
-    }
+    virtual ~KeyframeEditorWidget();
 
 private:
     Keyframe &keyframe_;
     SequenceEditorWidget *sequenceEditorWidget_{nullptr};
 
-    std::unique_ptr<Property> property_{nullptr};
+    std::unique_ptr<Property> property_ {nullptr};
     PropertyWidgetQt* propertyWidget_ {nullptr};
+    QHBoxLayout* layout {nullptr};
 };
 
 }  // namespace animation

@@ -60,11 +60,13 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     : InviwoDockWidget(QString(widgetName.c_str()), parent, "AnimationEditorWidget")
     , controller_(controller) {
 
-    setFloating(true);
-    setSticky(true);
 
     resize(QSize(1200, 400));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
+
+    setFloating(true);
+    setSticky(true);
+
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 

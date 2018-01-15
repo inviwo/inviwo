@@ -43,6 +43,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
+#include <QScrollArea>
 #include <warn/pop>
 
 class QVBoxLayout;
@@ -57,7 +58,7 @@ class SequenceEditorWidget;
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QWidget,
+class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
                                                        public AnimationControllerObserver,
                                                        public AnimationObserver,
                                                        public TrackObserver {
@@ -77,7 +78,7 @@ public:
 private:
     AnimationController& controller_;
 
-    QVBoxLayout* layout_;
+    QVBoxLayout* sequenceEditors_;
 
     std::unordered_map<KeyframeSequence*, SequenceEditorWidget*> widgets_;
 };

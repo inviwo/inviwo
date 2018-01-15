@@ -37,19 +37,23 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QVBoxLayout>
+#include <QScrollArea>
 #include <warn/pop>
 
 namespace inviwo {
 
 namespace animation {
 SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidget* parent)
-    : QWidget(parent), controller_(controller) {
-    layout_ = new QVBoxLayout();
-
+    : QScrollArea(parent), controller_(controller) {
     setObjectName("SequenceEditorPanel");
 
-    setLayout(layout_);
-    
+    auto layout = new QVBoxLayout();;
+    sequenceEditors_ = new QVBoxLayout();
+
+    setLayout(layout);
+    layout->addLayout(sequenceEditors_);
+    layout->addStretch();
+
 
     if (auto ani = controller.getAnimation()) {
         for (size_t i = 0; i < ani->size(); i++) {
@@ -57,7 +61,6 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
         }
         ani->addObserver(this);
     }
-
 }
 
 void SequenceEditorPanel::onAnimationChanged(AnimationController* controller, Animation* oldAnim,
@@ -90,7 +93,7 @@ void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s)
 {
     auto widget = new SequenceEditorWidget(*s,*t,this);
     widgets_[s] = widget;
-    layout_->addWidget(widget);
+    sequenceEditors_->addWidget(widget);
 }
 
 void SequenceEditorPanel::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s)

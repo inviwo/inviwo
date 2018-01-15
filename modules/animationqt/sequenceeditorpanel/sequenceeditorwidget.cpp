@@ -51,8 +51,8 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence &sequence, Track &tr
     : QWidget(panel), sequence_(sequence), track_(track) {
     sequence_.addObserver(this);
 
-    auto layout = new QVBoxLayout(this);
-    keyframesLayout_ = new QVBoxLayout(this);
+    auto layout = new QVBoxLayout();
+    keyframesLayout_ = new QVBoxLayout();
 
     auto easing = new QComboBox();
 
