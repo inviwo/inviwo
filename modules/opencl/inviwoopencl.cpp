@@ -124,11 +124,12 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
         Device(cl::Device device) : device(device) {
             cl_int err;
             vendor = device.getInfo<CL_DEVICE_VENDOR>(&err);
-            if (err != CL_SUCCESS) throw cl::Error(err);
+            if (err != CL_SUCCESS) throw cl::Error(err, "Failed to get the device vendor");
             device_type = device.getInfo<CL_DEVICE_TYPE>(&err);
-            if (err != CL_SUCCESS) throw cl::Error(err);
+            if (err != CL_SUCCESS) throw cl::Error(err, "Failed to get the device type");
             max_compute_units = device.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err);
-            if (err != CL_SUCCESS) throw cl::Error(err);
+            if (err != CL_SUCCESS)
+                throw cl::Error(err, "Failed to get the device max number of compute units ");
         }
         cl::Device device;
         std::string vendor;
@@ -144,8 +145,10 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
             for (auto& d : devicesTmp) {
                 try {
                     devices.emplace_back(d);
-                } catch (cl::Error&) {
+                } catch (cl::Error &e) {
                     // Error getting device info, continue with other devices
+                    LogWarn("Failed to get device info, skipping this device: (" << err.what()
+                                                                                 << ")");
                 }
             }
 
