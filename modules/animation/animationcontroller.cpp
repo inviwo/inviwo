@@ -39,11 +39,10 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     : animation_(animation)
     , app_(app)
     , state_(AnimationState::Paused)
-    , mode_(PlaybackMode::Once)
     , currentTime_(0)
     , deltaTime_(Seconds(1.0 / 60.0))
     , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_),
-             [this] { tick(); }} {}
+             [this] { if (state_ == AnimationState::Rendering) tickRender(); else tick(); }} {}
 
 AnimationController::~AnimationController() = default;
 
@@ -52,7 +51,8 @@ void AnimationController::setState(AnimationState newState) {
     auto oldState = state_;
     state_ = newState;
     switch (newState) {
-        case AnimationState::Playing: {
+        case AnimationState::Playing:
+        case AnimationState::Rendering: {
             timer_.start();
             break;
         }
@@ -67,13 +67,15 @@ void AnimationController::setState(AnimationState newState) {
     notifyStateChanged(this, oldState, state_);
 }
 
-void AnimationController::setPlaybackMode(PlaybackMode mode) {
-    if (mode_ != mode) {
-        auto oldmode = mode_;
-        mode_ = mode;
-        notifyPlaybackModeChanged(this, oldmode, mode_);
+
+void AnimationController::setPlaybackSettings(const AnimationPlaySettings& newSettings) {
+    if (settingsPlay_ != newSettings) {
+        auto oldSettings = settingsPlay_;
+        settingsPlay_ = newSettings;
+        notifyPlaybackSettingsChanged(this, oldSettings, settingsPlay_);
     }
 }
+
 
 void AnimationController::setTime(Seconds time) {
     // No upper boundary check since you might want to set the time after the last keyframe of
@@ -86,7 +88,30 @@ void AnimationController::setTime(Seconds time) {
 }
 
 void AnimationController::play() {
+    //For now, use the animation's firstTime and lastTime.
+    //It can be a feature later, to allow the user sub-windows.
+    settingsPlay_.setFirstTime(animation_->firstTime());
+    settingsPlay_.setLastTime(animation_->lastTime());
+
+    //Fixed FPS for now
+    settingsPlay_.setFramesPerSecond(25);
+
     setState(AnimationState::Playing);
+}
+
+void AnimationController::render() {
+    //For now, use the animation's firstTime and lastTime.
+    //It can be a feature later, to allow the user sub-windows.
+    settingsRendering_.setFirstTime(animation_->firstTime());
+    settingsRendering_.setLastTime(animation_->lastTime());
+
+    //Fixed number of frames for now
+    settingsRendering_.setNumFrames(100);
+
+    //Force Once-Mode
+    settingsRendering_.mode = PlaybackMode::Once;
+
+    setState(AnimationState::Rendering);
 }
 
 void AnimationController::pause() {
@@ -99,62 +124,80 @@ void AnimationController::stop() {
 }
 
 void AnimationController::tick() {
+    if (state_ != AnimationState::Playing) {
+        setState(AnimationState::Paused);
+        return;
+    }
+
     // TODO: Implement fully working solution for this.
     // What to do when network cannot be evaluated in the speed that is given by deltaTime?
     // Initial solution: Don't care about that, and let it evaluate fully in the speed that it can
-    // muster
-    // Since we probably want to generate an imagesequence or something for videos.
+    // muster.
+    auto newTime = currentTime_ + deltaTime_;
 
-    if (state_ == AnimationState::Playing) {
-        auto newTime = currentTime_ + deltaTime_;
-
-        //Ping at the end of time
-        if (newTime > animation_->lastTime()) {
-            switch (mode_) {
-                case PlaybackMode::Once: {
-                    newTime = animation_->lastTime();
-                    setState(AnimationState::Paused);
-                    break;
-                }
-                case PlaybackMode::Loop: {
-                    newTime = animation_->firstTime();
-                    break;
-                }
-                case PlaybackMode::Swing: {
-                    deltaTime_ = -deltaTime_;
-                    newTime = animation_->lastTime() + deltaTime_;
-                    break;
-                }
-                default:
-                    break;
+    //Ping at the end of time
+    if (newTime > settingsPlay_.getLastTime()) {
+        switch (settingsPlay_.mode) {
+            case PlaybackMode::Once: {
+                newTime = settingsPlay_.getLastTime();
+                setState(AnimationState::Paused);
+                break;
             }
-        }
-
-        //Pong at the beginning of time
-        if (newTime < animation_->firstTime()) {
-            switch (mode_) {
-                case PlaybackMode::Once: {
-                    newTime = animation_->firstTime();
-                    setState(AnimationState::Paused);
-                    break;
-                }
-                case PlaybackMode::Loop: {
-                    newTime = animation_->lastTime();
-                    break;
-                }
-                case PlaybackMode::Swing: {
-                    deltaTime_ = -deltaTime_;
-                    newTime = animation_->firstTime() + deltaTime_;
-                    break;
-                }
-                default:
-                    break;
+            case PlaybackMode::Loop: {
+                newTime = settingsPlay_.getFirstTime();
+                break;
             }
+            case PlaybackMode::Swing: {
+                deltaTime_ = -deltaTime_;
+                newTime = settingsPlay_.getLastTime() + deltaTime_;
+                break;
+            }
+            default:
+                break;
         }
-
-        // Evaluate animation
-        eval(currentTime_, newTime);
     }
+
+    //Pong at the beginning of time
+    if (newTime < settingsPlay_.getFirstTime()) {
+        switch (settingsPlay_.mode) {
+            case PlaybackMode::Once: {
+                newTime = settingsPlay_.getFirstTime();
+                setState(AnimationState::Paused);
+                break;
+            }
+            case PlaybackMode::Loop: {
+                newTime = settingsPlay_.getLastTime();
+                break;
+            }
+            case PlaybackMode::Swing: {
+                deltaTime_ = -deltaTime_;
+                newTime = settingsPlay_.getFirstTime() + deltaTime_;
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    // Evaluate animation
+    eval(currentTime_, newTime);
+}
+
+void AnimationController::tickRender() {
+    if (state_ != AnimationState::Rendering) {
+        setState(AnimationState::Paused);
+        return;
+    }
+
+    //We render with equidistant steps
+    auto newTime = currentTime_ + deltaTime_;
+
+    //To be implemented.
+
+    setState(AnimationState::Paused);
+
+    // Evaluate animation
+    eval(currentTime_, newTime);
 }
 
 void AnimationController::eval(Seconds oldTime, Seconds newTime) {
@@ -184,15 +227,7 @@ Animation* AnimationController::getAnimation() { return animation_; }
 
 const AnimationState& AnimationController::getState() const { return state_; }
 
-const inviwo::animation::PlaybackMode& AnimationController::getPlaybackMode() const {
-    return mode_;
-}
-
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }
-
-Seconds AnimationController::getPlaySpeedTime() const { return deltaTime_; }
-
-double AnimationController::getPlaySpeedFps() const { return 1.0 / deltaTime_.count(); }
 
 } // namespace
 

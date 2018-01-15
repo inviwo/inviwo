@@ -58,8 +58,8 @@ protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
 
-    virtual void onPlaybackModeChanged(AnimationController* controller, PlaybackMode prevMode,
-                                       PlaybackMode newMode) override;
+    virtual void onPlaybackSettingsChanged(AnimationController* controller, AnimationPlaySettings prevSettings,
+                                           AnimationPlaySettings newSettings) override;
 
     AnimationController& controller_;
 

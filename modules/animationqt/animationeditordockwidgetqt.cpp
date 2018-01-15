@@ -178,7 +178,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         btnStop_->setToolTip("Stop");
         leftWidget->addAction(btnStop_);
 
-        connect(btnStop_, &QAction::triggered, [&]() { controller_.stop(); });
+        connect(btnStop_, &QAction::triggered, [&]() { controller_.stop();/* controller_.render();*/});
     }
 
     {
@@ -221,15 +221,13 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         loop_ = toolBar->addAction(icon, "Loop");
         loop_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         loop_->setCheckable(true);
-        loop_->setChecked(controller_.getPlaybackMode() == PlaybackMode::Loop);
+        loop_->setChecked(controller_.getPlaybackSettings().mode == PlaybackMode::Loop);
         loop_->setToolTip("Loop");
         leftWidget->addAction(loop_);
         connect(loop_, &QAction::triggered, [&](bool checked) {
-            if (checked) {
-                controller_.setPlaybackMode(PlaybackMode::Loop);
-            } else {
-                controller_.setPlaybackMode(PlaybackMode::Once);
-            }
+            AnimationPlaySettings settings = controller_.getPlaybackSettings();
+            settings.mode = checked ? PlaybackMode::Loop : PlaybackMode::Once;
+            controller_.setPlaybackSettings(settings);
         });
     }
 
@@ -250,11 +248,11 @@ void AnimationEditorDockWidgetQt::onStateChanged(AnimationController* controller
     }
 }
 
-void AnimationEditorDockWidgetQt::onPlaybackModeChanged(AnimationController* controller,
-                                                        PlaybackMode prevMode,
-                                                        PlaybackMode newMode) {
+void AnimationEditorDockWidgetQt::onPlaybackSettingsChanged(AnimationController* controller,
+                                                            AnimationPlaySettings prevSettings,
+                                                            AnimationPlaySettings newSettings) {
     QSignalBlocker block(btnPlayPause_);
-    loop_->setChecked(newMode == PlaybackMode::Loop);
+    loop_->setChecked(newSettings.mode == PlaybackMode::Loop);
 }
 
 }  // namespace animation
