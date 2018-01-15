@@ -62,8 +62,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
 
     setFloating(true);
     setSticky(true);
-    
-    resize(QSize(1200, 400)); // default size
+
+    resize(QSize(1200, 400));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
@@ -82,15 +82,14 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         leftWidget->setCentralWidget(animationLabelView_);
     }
 
-
     // Entire mid part
     animationEditor_ = std::make_unique<AnimationEditorQt>(controller_);
     animationView_ = new AnimationViewQt(controller_);
     animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        animationView_->setScene(animationEditor_.get());
+    animationView_->setScene(animationEditor_.get());
 
     // right part
-    sequenceEditorView_ = new SequenceEditorPanel(this);
+    sequenceEditorView_ = new SequenceEditorPanel(controller_, this);
 
     auto splitter1 = new QSplitter();
     splitter1->setMidLineWidth(1);
@@ -106,7 +105,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
         policy.setHorizontalStretch(0);
         leftWidget->setSizePolicy(policy);
-        leftWidget->setMinimumWidth(270); // width of the tool bar on my (Rickard's) machine
+        leftWidget->setMinimumWidth(270);  // width of the tool bar on my (Rickard's) machine
     }
     {
         auto policy = animationView_->sizePolicy();
@@ -120,7 +119,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
         policy.setHorizontalStretch(0);
         sequenceEditorView_->setSizePolicy(policy);
-        sequenceEditorView_->setMinimumWidth(320); // same as PropertyListWidget
+        sequenceEditorView_->setMinimumWidth(320);  // same as PropertyListWidget
     }
 
     {

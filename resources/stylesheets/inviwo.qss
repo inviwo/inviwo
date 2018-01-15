@@ -858,6 +858,10 @@ QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBo
 }
 
 
+QWidget#SequenceEditorPanel {
+    background-color: #323235;
+}
+
 
 QDockWidget#ResourceManager QTableView {
     border: none;

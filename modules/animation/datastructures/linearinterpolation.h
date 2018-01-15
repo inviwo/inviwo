@@ -69,7 +69,7 @@ public:
     /*
      * Returns linear interpolation of keyframe values at time t.
      */
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t) const ->
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t, easing::EasingType easing) const ->
         typename Key::value_type override {
         auto it = std::upper_bound(
             keys.begin(), keys.end(), t,
@@ -82,7 +82,7 @@ public:
         const auto& t2 = (*it)->getTime();
 
         return glm::mix(v1, v2,
-                        Easing::Ease((t - t1) / (t2 - t1), Easing::EEasingType::InOutCubic));
+                        Easing::Ease((t - t1) / (t2 - t1), easing));
     }
 };
 

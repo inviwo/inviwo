@@ -56,10 +56,22 @@ public:
     virtual void setTime(Seconds time) = 0;
     virtual Seconds getTime() const = 0;
 
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
+    virtual void serialize(Serializer& s) const override { s.serialize("selected", isSelected_); };
+    virtual void deserialize(Deserializer& d) override { d.deserialize("selected", isSelected_); };
+
+    bool isSelected() const { return isSelected_; }
+    void setSelected(bool selected = true) { 
+        if (selected != isSelected_) {
+            isSelected_ = selected;
+            notifyKeyframeSelectionChanged(this);
+        }
+    }
+
 
     virtual std::string getClassIdentifier() const = 0;
+
+private:
+    bool isSelected_{false};
 };
 
 IVW_MODULE_ANIMATION_API bool operator<(const Keyframe& a, const Keyframe& b);
@@ -94,7 +106,7 @@ public:
         if (time != time_) {
             auto oldTime = time_;
             time_ = time;
-            notifKeyframeTimeChanged(this, oldTime);
+            notifyKeyframeTimeChanged(this, oldTime);
         }
     }
     virtual Seconds getTime() const override { return time_; }
@@ -136,6 +148,7 @@ bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
 
 template <typename T>
 void ValueKeyframe<T>::serialize(Serializer& s) const {
+    Keyframe::serialize(s);
     // s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("time", time_.count());
     s.serialize("value", value_);
@@ -143,6 +156,7 @@ void ValueKeyframe<T>::serialize(Serializer& s) const {
 
 template <typename T>
 void ValueKeyframe<T>::deserialize(Deserializer& d) {
+    Keyframe::deserialize(d);
     /* std::string className;
      d.deserialize("type", className, SerializationTarget::Attribute);
      if (className != getClassIdentifier()) {

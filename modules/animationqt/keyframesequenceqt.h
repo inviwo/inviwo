@@ -45,6 +45,7 @@ namespace animation {
 
 class KeyframeSequence;
 class KeyframeQt;
+class TrackQt;
 
 /**
 * \class KeyframeSequenceQt
@@ -53,7 +54,7 @@ class KeyframeQt;
 class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceQt : public QGraphicsItem,
                                                       public KeyframeSequenceObserver {
 public:
-    KeyframeSequenceQt(KeyframeSequence& keyframeSequence, QGraphicsItem* parent);
+    KeyframeSequenceQt(KeyframeSequence& keyframeSequence, TrackQt* parent);
     virtual ~KeyframeSequenceQt();
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
@@ -79,6 +80,7 @@ protected:
     // Move all keyframes, restrict vertical movement and snap to grid
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     KeyframeSequence& keyframeSequence_;
+    TrackQt& trackQt_;
     QRectF rect_;
     std::vector<std::unique_ptr<KeyframeQt>> keyframes_;
 };

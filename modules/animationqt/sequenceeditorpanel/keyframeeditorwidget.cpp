@@ -27,62 +27,56 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SEQUENCEEDITORPANEL_H
-#define IVW_SEQUENCEEDITORPANEL_H
+#include <modules/animationqt/sequenceeditorpanel/keyframeeditorwidget.h>
+#include <modules/animationqt/sequenceeditorpanel/sequenceeditorwidget.h>
+#include <modules/animation/datastructures/propertytrack.h>
 
-#include <modules/animationqt/animationqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
 
-#include <modules/animation/animationcontroller.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animation/datastructures/animationobserver.h>
-#include <modules/animation/datastructures/trackobserver.h>
-
-#include <modules/qtwidgets/inviwodockwidget.h>
+#include <inviwo/core/properties/property.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QWidget>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QDoubleSpinBox>
 #include <warn/pop>
-
-class QVBoxLayout;
 
 namespace inviwo {
 
 namespace animation {
-class SequenceEditorWidget;
+KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
+    : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-/**
- * \class SequenceEditorPanel
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QWidget,
-                                                       public AnimationControllerObserver,
-                                                       public AnimationObserver,
-                                                       public TrackObserver {
-public:
-    SequenceEditorPanel(AnimationController& controller, QWidget* parent = nullptr);
-    virtual ~SequenceEditorPanel() = default;
+    auto layout = new QVBoxLayout();
+    layout->addWidget(new QLabel("Keyframe"));
 
-    virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,
-                                    Animation* newAnim) override;
+    auto layout2 = new QHBoxLayout();
+    layout->addLayout(layout2);
 
-    virtual void onTrackAdded(Track* track) override;
-    virtual void onTrackRemoved(Track* track) override;
+    auto timeSpinner = new QDoubleSpinBox();
+    timeSpinner->setValue(keyframe.getTime().count());
+    timeSpinner->setSuffix("s");
+    timeSpinner->setSingleStep(0.1);
+    timeSpinner->setDecimals(5);
+    layout2->addWidget(timeSpinner);
 
-    virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) override;
-    virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) override;
+    if (auto track = dynamic_cast<BasePropertyTrack *>(&parent->getTrack())) {
+        property_.reset(track->getProperty()->clone());
+        auto propWidget =
+            util::getInviwoApplication()->getPropertyWidgetFactory()->create(property_.get());
+        auto propWidgetQt = static_cast<PropertyWidgetQt *>(propWidget.release());
 
-private:
-    AnimationController& controller_;
+        if (auto label = propWidgetQt->findChild<EditableLabelQt *>()) {
+            label->setVisible(false);
+        }
 
-    QVBoxLayout* layout_;
+        layout2->addWidget(propWidgetQt);
+    }
 
-    std::unordered_map<KeyframeSequence*, SequenceEditorWidget*> widgets_;
-};
+    setLayout(layout);
+}
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_SEQUENCEEDITORPANEL_H

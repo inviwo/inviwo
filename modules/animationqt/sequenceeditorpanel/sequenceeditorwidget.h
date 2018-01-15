@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,56 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/keyframeobserver.h>
+#ifndef IVW_SEQUENCEEDITORWIDGET_H
+#define IVW_SEQUENCEEDITORWIDGET_H
+
+#include <modules/animationqt/animationqtmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWidget>
+#include <warn/pop>
+
+class QVBoxLayout;
 
 namespace inviwo {
 
 namespace animation {
+class SequenceEditorPanel;
+/**
+ * \class SequenceEditorWidget
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_ANIMATIONQT_API SequenceEditorWidget : public QWidget,
+                                                        public KeyframeSequenceObserver {
+public:
+    SequenceEditorWidget(KeyframeSequence& sequence, Track& track,
+                         SequenceEditorPanel* panel = nullptr);
+    virtual ~SequenceEditorWidget() = default;
 
-    void KeyframeObservable::notifyKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
-        forEachObserver([&](KeyframeObserver* o) { o->onKeyframeTimeChanged(key, oldTime); });
-    }
+    void updateVisibility();
 
-    void KeyframeObservable::notifyKeyframeSelectionChanged(Keyframe* key) {
-        forEachObserver([&](KeyframeObserver* o) { o->onKeyframeSelectionChanged(key); });
-    }
+    virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence* seq) override;
 
-} // namespace
+    virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) override;
 
-} // namespace
+    virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) override;
+
+    Track& getTrack() {return track_;}
+
+private:
+    KeyframeSequence& sequence_;
+    Track& track_;
+
+    QVBoxLayout* keyframesLayout_;
+};
+
+}  // namespace animation
+}  // namespace inviwo
+#endif  // IVW_SEQUENCEEDITORWIDGET_H
