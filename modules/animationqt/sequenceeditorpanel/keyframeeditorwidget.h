@@ -32,6 +32,8 @@
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/properties/property.h>
 #include <modules/animation/datastructures/keyframe.h>
 
 #include <warn/push>
@@ -42,8 +44,8 @@
 class QHBoxLayout;
 
 namespace inviwo {
-    class Property;
-    class PropertyWidgetQt;
+class Property;
+class PropertyWidgetQt;
 namespace animation {
 class SequenceEditorWidget;
 
@@ -61,9 +63,9 @@ private:
     Keyframe &keyframe_;
     SequenceEditorWidget *sequenceEditorWidget_{nullptr};
 
-    std::unique_ptr<Property> property_ {nullptr};
-    PropertyWidgetQt* propertyWidget_ {nullptr};
-    QHBoxLayout* layout {nullptr};
+    std::unique_ptr<Property> property_{nullptr};
+    PropertyWidgetQt *propertyWidget_{nullptr};
+    QHBoxLayout *layout{nullptr};
 };
 
 }  // namespace animation
