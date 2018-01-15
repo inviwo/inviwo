@@ -13,6 +13,7 @@ Note:
 - Disabled all subdirectories except libtiff
 - Added alias inviwo::tiff in libtiff/CmakeLists.txt
 - Suppress build warnings for MSVC builds (`_CRT_SECURE_NO_WARNINGS` and C4996)
+- Temporarily disabled installing binary and header files:  `install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib...` in `CMakeLists.txt` and `install(FILES ${tiff_HEADERS} ...` in `libtiff/CMakeLists.txt`
 
 Examples of changes:
 

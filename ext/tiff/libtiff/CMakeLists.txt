@@ -135,8 +135,9 @@ endif()
 #        LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
 #        ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
-install(FILES ${tiff_HEADERS} ${nodist_tiff_HEADERS}
-        DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+## Temporarily disabled installing header files
+##install(FILES ${tiff_HEADERS} ${nodist_tiff_HEADERS}
+##        DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 
 if(cxx)
   add_library(tiffxx ${tiffxx_SOURCES} ${tiffxx_HEADERS})

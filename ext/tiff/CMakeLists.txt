@@ -727,8 +727,9 @@ set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
 set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libtiff-4.pc.in
                ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc
-        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+## Temporarily disabled installing header files
+##install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc
+##        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
 
 # Includes used by libtiff (and tests)
 if(ZLIB_INCLUDE_DIRS)
