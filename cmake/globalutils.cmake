@@ -75,13 +75,15 @@ endfunction(ivw_prepend)
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
 # result in output.
-# Linebreaks ('\n') and semicolon (';') are replaced for better handling 
+# Linebreaks ('\n'), semicolon (';'), and quotes ('"') are replaced for better handling 
 # within CMAKE with __LINEBREAK__ and __SEMICOLON__, respectively.
 function(encodeLineBreaks output)
     # replace linebreaks
     string(REPLACE "\n" "__LINEBREAK__" _tmp_str "${ARGN}")
     # replace semicolon, as it is interpreted as a list separator by CMAKE
     string(REPLACE ";" "__SEMICOLON__" _tmp_str "${_tmp_str}")
+    # replace quotes as well
+    string(REPLACE "\"" "__QUOTE__" _tmp_str "${_tmp_str}")
     set(${output} "${_tmp_str}" PARENT_SCOPE)
 endfunction()
 
@@ -94,6 +96,8 @@ function(decodeLineBreaks output)
     string(REPLACE "__LINEBREAK__" "\n" _tmp_str "${ARGN}")
     # revert semicolon
     string(REPLACE "__SEMICOLON__" ";" _tmp_str "${_tmp_str}")
+    # revert quotes
+    string(REPLACE "__QUOTE__" "\"" _tmp_str "${_tmp_str}")
     set(${output} "${_tmp_str}" PARENT_SCOPE)
 endfunction()
 

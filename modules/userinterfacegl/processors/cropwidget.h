@@ -131,8 +131,8 @@ private:
     FloatProperty offset_;
     FloatProperty scale_;
     std::array<CropAxis, 3> cropAxes_;
-    CompositeProperty outputProps_;
     BoolProperty relativeRangeAdjustment_;
+    CompositeProperty outputProps_;
 
     CameraProperty camera_;
 

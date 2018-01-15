@@ -48,9 +48,27 @@ class Texture2D;
 
 namespace glui {
 
+enum class UIOrientation { Vertical, Horizontal };
+
 /**
  * \class glui::Element
  * \brief graphical UI element for use in combination with glui::Layout
+ *
+ * Layout of a UI element:
+ *                                                         extent
+ *   +----------------------------------------------------+
+ *   |                                                    |
+ *   |                 widgetExtent                       |
+ *   |     +----------+                      labelExtent  |
+ *   |     | rendered |        +-----------------+        |
+ *   |     | textures |        |  label          |        |
+ *   |     |    +     |        +-----------------+        |
+ *   |     | picking  |    labelPos                       |
+ *   |     +----------+                                   |
+ *   |  widgetPos                                         |
+ *   |                                                    |
+ *   +----------------------------------------------------+
+ * (0,0)
  *
  * \see glui::Layout, glui::Renderer
  */
@@ -58,20 +76,58 @@ class IVW_MODULE_USERINTERFACEGL_API Element {
 public:
     enum class UIState { Normal, Pressed, Checked };
 
-    Element(const std::string &label, Processor &processor, Renderer &uiRenderer);
+    Element(const std::string &label, Processor &processor, Renderer &uiRenderer,
+            UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~Element();
-
-    void setLabel(const std::string &str);
-    const std::string &getLabel() const;
-
-    void setLabelBold(bool bold);
-    bool isLabelBold() const;
-
-    bool isDirty() const;
 
     void setVisible(bool visible = true);
     bool isVisible() const;
 
+    void setEnabled(bool enable = true);
+    bool isEnabled() const;
+
+    void setLabel(const std::string &str);
+    const std::string &getLabel() const;
+
+    void setFontSize(int size);
+    int getFontSize() const;
+
+    void setLabelBold(bool bold);
+    bool isLabelBold() const;
+
+    void setLabelVisible(bool visible = true);
+    bool isLabelVisible() const;
+
+    void setScalingFactor(double factor);
+    double getScalingFactor() const;
+
+    void setOrientation(UIOrientation orientation);
+    UIOrientation getOrientation() const;
+
+    bool isDirty() const;
+
+    /**
+     * \brief sets the extent of the widget
+     * @param extent   new extent of the widget
+     */
+    void setWidgetExtent(const ivec2 &extent);
+    const ivec2 &getWidgetExtent() const;
+
+    /**
+     * \brief sets the extent of the widget
+     * @param extent   new extent of the widget (including scaling)
+     */
+    void setWidgetExtentScaled(const ivec2 &extent);
+    /**
+     * \brief returns the true widget extent including scaling
+     * @return widget extent
+     */
+    ivec2 getWidgetExtentScaled() const;
+    /**
+     * \brief return extent of the element, including both widget and label, and considering scaling
+     *
+     * @return total element extent
+     */
     const ivec2 &getExtent();
 
     /**
@@ -80,13 +136,16 @@ public:
      * @param origin         defines the lower left corner where the widget is positioned
      * @param canvasDim      dimensions of the output canvas
      */
-    void render(const ivec2 &origin, const ivec2 &canvasDim);
+    void render(const ivec2 &origin, const size2_t &canvasDim);
 
     void setHoverState(bool enable);
     bool isHovered() const { return hovered_; }
 
     void setPushedState(bool pushed);
     bool isPushed() const;
+
+    void setChecked(bool checked);
+    bool isChecked() const;
 
     /**
      * \brief sets the callback action when the user releases the mouse button
@@ -138,48 +197,49 @@ protected:
      */
     virtual void pushStateChanged(){};
 
-    virtual void renderWidget(const ivec2 &origin) = 0;
+    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) = 0;
 
     void renderLabel(const ivec2 &origin, const size2_t &canvasDim);
 
     void handlePickingEvent(PickingEvent *e);
+
+    // reduce saturation and darken color
+    static vec4 adjustColor(const vec4 &color);
+
+    /**
+     * \brief set up text renderer for rendering the label using current settings,
+     * i.e. font size, widget scaling, and whether it should be rendered bold
+     *
+     * @return reference to the set-up text renderer
+     */
+    TextRenderer &getCurrentTextRenderer() const;
 
     std::function<void()>
         action_;  //<! is called by triggerAction() after the internal state has been updated
     std::function<bool(const dvec2 &)> moveAction_;  //!< is called by mouseMoved()
 
     // UI interaction states
-    bool hovered_;  // true as long as the element is under the mouse
+    bool hovered_;  // true as long as the element is under the mouse and element is enabled
     bool pushed_;  // true as long as the mouse button is not released, mouse might not be on top of
                    // UI element any more
     bool checked_;
 
     bool visible_;
+    bool enabled_;  // UI elements will respond to mouse interactions only if enabled
 
     bool boldLabel_;
+    bool labelVisible_;
+    int labelFontSize_;
 
-    // Layout of a UI element:
-    //                                                         extent
-    //   +----------------------------------------------------+
-    //   |                                                    |
-    //   |                 widgetExtent                       |
-    //   |     +----------+                      labelExtent  |
-    //   |     | rendered |        +-----------------+        |
-    //   |     | textures |        |  label          |        |
-    //   |     |    +     |        +-----------------+        |
-    //   |     | picking  |    labelPos                       |
-    //   |     +----------+                                   |
-    //   |  widgetPos                                         |
-    //   |                                                    |
-    //   +----------------------------------------------------+
-    // (0,0)
-    //
+    UIOrientation orientation_;
 
     ivec2 extent_;
     ivec2 widgetPos_;
     ivec2 widgetExtent_;
     ivec2 labelPos_;
     ivec2 labelExtent_;
+
+    double scalingFactor_;
 
     std::string labelStr_;
     bool labelDirty_;
@@ -190,6 +250,7 @@ protected:
     Renderer *uiRenderer_;
 
     PickingMapper pickingMapper_;
+    size_t currentPickingID_;
 };
 
 }  // namespace glui

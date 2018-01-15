@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/widgets/button.h>
+#include <modules/userinterfacegl/glui/widgets/toolbutton.h>
 
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/propertywidget.h>
@@ -41,11 +42,13 @@
 
 namespace inviwo {
 
+class Texture2D;
+
 namespace glui {
 
 /**
- * \class GLUIButtonProperty
- * \brief GLUI property widget for a button property using GLUIButton
+ * \class ButtonProperty
+ * \brief GLUI property widget for a button property using a glui Button
  */
 class IVW_MODULE_USERINTERFACEGL_API ButtonPropertyWidget : public Button,
                                                             public PropertyWidget,
@@ -58,8 +61,36 @@ public:
     virtual void updateFromProperty() override;
 
     // PropertyObservable overrides
-    virtual void onSetVisible(Property* property, bool visible) override;
-    virtual void onSetDisplayName(Property* property, const std::string &displayName) override;
+    virtual void onSetVisible(Property *property, bool visible) override;
+    virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
+
+private:
+    ButtonProperty *property_;
+};
+
+/**
+ * \class ToolButtonProperty
+ * \brief GLUI property widget for a button property using a glui ToolButton
+ */
+class IVW_MODULE_USERINTERFACEGL_API ToolButtonPropertyWidget : public ToolButton,
+                                                                public PropertyWidget,
+                                                                public PropertyObserver {
+public:
+    ToolButtonPropertyWidget(const std::string &imageFileName, ButtonProperty &property,
+                             Processor &processor, Renderer &uiRenderer,
+                             const ivec2 &extent = ivec2(24, 24));
+    ToolButtonPropertyWidget(ButtonProperty &property, std::shared_ptr<Texture2D> image,
+                             Processor &processor, Renderer &uiRenderer,
+                             const ivec2 &extent = ivec2(24, 24));
+    virtual ~ToolButtonPropertyWidget() = default;
+
+    virtual void updateFromProperty() override;
+
+    // PropertyObservable overrides
+    virtual void onSetVisible(Property *property, bool visible) override;
+    virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
 
 private:
     ButtonProperty *property_;

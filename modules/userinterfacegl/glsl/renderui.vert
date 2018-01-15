@@ -36,12 +36,18 @@ uniform vec2 extent = vec2(32.0, 32.0); // width and height in screen coords (pi
 
 uniform vec2 marginScale = vec2(1.0);
 
+uniform mat3 uiTextureMatrix = mat3(1);
+
 out vec4 color;
 out vec3 texCoord;
 
 void main() {
     color = in_Color;
-    texCoord = vec3(in_TexCoord.x, 1.0 - in_TexCoord.y, 0.0);
+
+    // transform texture coordinates to account for UI widget orientation
+    // invert y coord to flip input images
+    vec3 t = uiTextureMatrix * vec3(in_TexCoord.x, 1.0 - in_TexCoord.y, 1.0);
+    texCoord = vec3(t.xy, 0.0);
 
     vec2 vertexPos = in_Vertex.xy;
 

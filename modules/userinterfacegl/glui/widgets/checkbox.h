@@ -57,13 +57,14 @@ public:
     bool getValue() const;
 
 private:
-    virtual void renderWidget(const ivec2 &origin) override;
+    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
 
     virtual ivec2 computeLabelPos(int descent) const override;
     virtual UIState uiState() const override;
     virtual void updateState() override;
 
     Texture2DArray *uiTextures_;
+    std::array<int, 9> uiTextureMap_;
 };
 
 }  // namespace glui
