@@ -54,12 +54,14 @@ Slider::Slider(const std::string &label, int value, int minValue, int maxValue,
     widgetExtent_ = extent;
     moveAction_ = [this](const dvec2 &delta) {
         if (!enabled_) {
-            return false; 
+            return false;
         }
         // delta in pixel (screen coords),
         // need to scale from graphical representation to slider
-        const int newVal = glm::clamp(static_cast<int>(
-            round(prevValue_ + convertDeltaToSlider(delta) * static_cast<double>(max_ - min_))), min_, max_);
+        const int newVal =
+            glm::clamp(static_cast<int>(round(prevValue_ + convertDeltaToSlider(delta) *
+                                                               static_cast<double>(max_ - min_))),
+                       min_, max_);
         bool triggerUpdate = (value_ != newVal);
         value_ = newVal;
         return triggerUpdate;
@@ -115,7 +117,8 @@ void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
 
         uiShader.setUniform("pickingColor", vec3(0.0f));
         uiShader.setUniform("uiState", ivec2(0, (hovered_ ? 1 : 0)));
-        uiShader.setUniform("marginScale", vec2(grooveTextures_->getDimensions()) / vec2(widgetExtent_));
+        uiShader.setUniform("marginScale",
+                            vec2(grooveTextures_->getDimensions()) / vec2(widgetExtent_));
 
         uiRenderer_->getMeshDrawer()->draw();
     }
@@ -124,13 +127,13 @@ void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
     {
         uiTextures_->bind();
 
-        const int sliderPos = getSliderPos();
+        const auto sliderPos = getSliderPos();
         if (orientation_ == UIOrientation::Horizontal) {
-            uiShader.setUniform("origin", vec2(origin + widgetPos_ + ivec2(sliderPos, 0)));
+            uiShader.setUniform("origin", vec2(origin + widgetPos_) + vec2(sliderPos, 0));
             uiShader.setUniform("extent", vec2(extent.y));
             uiShader.setUniform("marginScale", vec2(marginScale().y));
         } else {
-            uiShader.setUniform("origin", vec2(origin + widgetPos_ + ivec2(0, sliderPos)));
+            uiShader.setUniform("origin", vec2(origin + widgetPos_) + vec2(0, sliderPos));
             uiShader.setUniform("extent", vec2(extent.x));
             uiShader.setUniform("marginScale", vec2(marginScale().x));
         }
@@ -174,15 +177,23 @@ vec2 Slider::marginScale() const {
 
 void Slider::pushStateChanged() { prevValue_ = value_; }
 
-int Slider::getSliderPos() const {
-    const ivec2 ext(getWidgetExtentScaled());
+double Slider::getHandleWidth() const {
+    const dvec2 ext(getWidgetExtentScaled());
+    // need to consider potentially different texture size
+    const double ratio = static_cast<double>(uiTextures_->getDimensions().x) /
+                         static_cast<double>(uiTextures_->getDimensions().y);
+    return ratio * (orientation_ == UIOrientation::Horizontal ? ext.y : ext.x);
+}
+
+double Slider::getSliderPos() const {
+    const dvec2 ext(getWidgetExtentScaled());
     // account for the width of the handle
-    const double handleWidth = uiTextures_->getDimensions().x * scalingFactor_;
+    const double handleWidth = getHandleWidth();
     const double sliderLength =
         (orientation_ == UIOrientation::Vertical ? ext.y - handleWidth : ext.x - handleWidth);
 
-    return static_cast<int>((glm::clamp(value_, min_, max_) - min_) /
-                            static_cast<double>(max_ - min_) * sliderLength);
+    return (glm::clamp(value_, min_, max_) - min_) / static_cast<double>(max_ - min_) *
+           sliderLength;
 }
 
 double Slider::convertDeltaToSlider(const dvec2 &delta) const {
@@ -195,7 +206,6 @@ double Slider::convertDeltaToSlider(const dvec2 &delta) const {
         return delta.x / static_cast<double>(ext.x - handleWidth);
     }
 }
-
 
 }  // namespace glui
 

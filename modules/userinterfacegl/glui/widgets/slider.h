@@ -82,7 +82,8 @@ private:
     virtual vec2 marginScale() const override;
     virtual void pushStateChanged() override;
 
-    int getSliderPos() const;
+    double getHandleWidth() const;
+    double getSliderPos() const;
 
     Texture2DArray *uiTextures_;
     Texture2DArray *grooveTextures_;

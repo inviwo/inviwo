@@ -90,7 +90,8 @@ private:
     virtual vec2 marginScale() const override;
     virtual void pushStateChanged() override;
 
-    ivec2 getSliderPos() const;
+    double getHandleWidth() const;
+    vec2 getSliderPos() const;
 
     Texture2DArray *uiTextures_;
     Texture2DArray *centerTextures_;

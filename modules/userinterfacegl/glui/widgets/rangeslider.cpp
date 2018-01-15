@@ -204,22 +204,22 @@ void RangeSlider::renderWidget(const ivec2 &origin, const size2_t &) {
 
         vec2 centerPos;
         vec2 centerExtent;
-        vec2 margin(marginScale());
-        const double handleWidth = uiTextures_->getDimensions().x * scalingFactor_;
+        vec2 margin(1.0f);
+        const double handleWidth = getHandleWidth();
         if (orientation_ == UIOrientation::Horizontal) {
             // offset left position of center piece by half the size of a handle
-            centerPos = vec2(sliderPos.x + handleWidth / 2, 0);
+            centerPos = vec2(sliderPos.x + handleWidth / 2.0, 0);
             // extent of center piece corresponds to difference between the two handles
             centerExtent = vec2(sliderPos.y - sliderPos.x, extent.y);
-            margin.y =
-                centerTextures_->getDimensions().y / static_cast<float>(widgetExtent_.y);
+            margin.x = uiTextures_->getDimensions().x / static_cast<float>(widgetExtent_.x);
+            margin.y = centerTextures_->getDimensions().y / static_cast<float>(widgetExtent_.y);
         } else {
             // offset left position of center piece by half the size of a handle
-            centerPos = vec2(0, sliderPos.x + handleWidth / 2);
+            centerPos = vec2(0, sliderPos.x + handleWidth / 2.0);
             // extent of center piece corresponds to difference between the two handles
             centerExtent = vec2(extent.x, sliderPos.y - sliderPos.x);
-            margin.x =
-                centerTextures_->getDimensions().y / static_cast<float>(widgetExtent_.x);
+            margin.x = centerTextures_->getDimensions().y / static_cast<float>(widgetExtent_.x);
+            margin.y = uiTextures_->getDimensions().x / static_cast<float>(widgetExtent_.y);
         }
         uiShader.setUniform("marginScale", margin);
         uiShader.setUniform("origin", vec2(origin + widgetPos_) + centerPos);
@@ -234,19 +234,21 @@ void RangeSlider::renderWidget(const ivec2 &origin, const size2_t &) {
 
         vec2 dims(uiTextures_->getDimensions());
         const float aspectRatio = dims.x / dims.y;
+        const float roundness = 0.8f;  // make them appear slightly square
 
-        ivec2 positionMask;
+        vec2 positionMask;
         if (orientation_ == UIOrientation::Horizontal) {
-            positionMask = ivec2(1, 0);
+            positionMask = vec2(1, 0);
             uiShader.setUniform("extent", vec2(extent.y * aspectRatio, extent.y));
+            uiShader.setUniform("marginScale", vec2(roundness));
         } else {
-            positionMask = ivec2(0, 1);
+            positionMask = vec2(0, 1);
             uiShader.setUniform("extent", vec2(extent.x, extent.x * aspectRatio));
+            uiShader.setUniform("marginScale", vec2(roundness));
         }
-        uiShader.setUniform("marginScale", vec2(1.0f, aspectRatio));
 
-        auto drawHandle = [&uiShader, origin, positionMask, this](int pos, size_t id) {
-            uiShader.setUniform("origin", vec2(origin + widgetPos_ + ivec2(pos) * positionMask));
+        auto drawHandle = [&uiShader, origin, positionMask, this](float pos, size_t id) {
+            uiShader.setUniform("origin", vec2(origin + widgetPos_) + vec2(pos) * positionMask);
             // set up picking color
             uiShader.setUniform("pickingColor", pickingMapper_.getColor(id));
             uiShader.setUniform("uiState", ivec2((pushed_ && (currentPickingID_ == id) ? 1 : 0),
@@ -294,19 +296,27 @@ vec2 RangeSlider::marginScale() const {
 
 void RangeSlider::pushStateChanged() { prevValue_ = value_; }
 
-ivec2 RangeSlider::getSliderPos() const {
-    const ivec2 ext(getWidgetExtentScaled());
+double RangeSlider::getHandleWidth() const {
+    const dvec2 ext(getWidgetExtentScaled());
+    // need to consider potentially different texture size
+    const double ratio = static_cast<double>(uiTextures_->getDimensions().x) /
+                         static_cast<double>(uiTextures_->getDimensions().y);
+    return ratio * (orientation_ == UIOrientation::Horizontal ? ext.y : ext.x);
+}
+
+vec2 RangeSlider::getSliderPos() const {
+    const dvec2 ext(getWidgetExtentScaled());
     // account for the width of the handle
-    const double handleWidth = uiTextures_->getDimensions().x * scalingFactor_;
+    const double handleWidth = getHandleWidth();
     const double sliderLength =
         (orientation_ == UIOrientation::Vertical ? ext.y - handleWidth : ext.x - handleWidth);
 
     auto calcPos = [this, sliderLength](int pos) {
-        return static_cast<int>((glm::clamp(pos, min_, max_) - min_) /
-                                static_cast<double>(max_ - min_) * sliderLength);
+        return (glm::clamp(pos, min_, max_) - min_) / static_cast<double>(max_ - min_) *
+               sliderLength;
     };
 
-    return ivec2(calcPos(value_.x), calcPos(value_.y));
+    return vec2(calcPos(value_.x), calcPos(value_.y));
 }
 
 double RangeSlider::convertDeltaToSlider(const dvec2 &delta) const {
