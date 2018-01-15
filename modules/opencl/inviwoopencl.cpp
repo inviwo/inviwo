@@ -147,7 +147,7 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
                     devices.emplace_back(d);
                 } catch (cl::Error &e) {
                     // Error getting device info, continue with other devices
-                    LogWarn("Failed to get device info, skipping this device: (" << err.what()
+                    LogWarnCustom("InviwoOpenCL","Failed to get device info, skipping this device: (" << e.what()
                                                                                  << ")");
                 }
             }
