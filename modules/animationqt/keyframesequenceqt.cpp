@@ -140,7 +140,6 @@ QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVarian
         return QPointF(static_cast<float>(xV), y());
     }
     else if(change == ItemSelectedChange){
-        LogInfo(value.toBool());
         keyframeSequence_.setSelected(value.toBool());
     }
     
