@@ -39,65 +39,187 @@ namespace inviwo {
 
 namespace animation {
 
+namespace easing {
+enum class EasingType {
+    None,
+    Linear,
+
+    // Polynomial Types
+    InQuadratic,
+    InCubic,
+    InQuartic,
+    InQuintic,
+    OutQuadratic,
+    OutCubic,
+    OutQuartic,
+    OutQuintic,
+    InOutQuadratic,
+    InOutCubic,
+    InOutQuartic,
+    InOutQuintic,
+
+    // Trigonometric Types
+    InSine,
+    OutSine,
+    InOutSine,
+
+    // Exponential Types
+    InExp,
+    OutExp,
+    InOutExp,
+
+    // Circular Types
+    InCircular,
+    OutCircular,
+    InOutCircular,
+
+    // Overshooting Back Types
+    InBack,
+    OutBack,
+    InOutBack,
+
+    // Overshooting Elastic Types
+    InElastic,
+    OutElastic,
+    InOutElastic,
+
+    // Bounce Types
+    InBounce,
+    OutBounce,
+    InOutBounce
+};
+const EasingType FirstEasingType = EasingType::None;
+const EasingType LastEasingType = EasingType::InOutBounce;
+
+IVW_MODULE_ANIMATION_API EasingType& operator++( EasingType &e );
+
+IVW_MODULE_ANIMATION_API EasingType operator++( EasingType &e , int);
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+    EasingType type) {
+    switch (type)
+    {
+    case inviwo::animation::easing::EasingType::None:
+        os << "None";
+        break;
+    case inviwo::animation::easing::EasingType::Linear:
+        os << "Linear";
+        break;
+    case inviwo::animation::easing::EasingType::InQuadratic:
+        os << "InQuadratic";
+        break;
+    case inviwo::animation::easing::EasingType::InCubic:
+        os << "InCubic";
+        break;
+    case inviwo::animation::easing::EasingType::InQuartic:
+        os << "InQuartic";
+        break;
+    case inviwo::animation::easing::EasingType::InQuintic:
+        os << "InQuintic";
+        break;
+    case inviwo::animation::easing::EasingType::OutQuadratic:
+        os << "OutQuadratic";
+        break;
+    case inviwo::animation::easing::EasingType::OutCubic:
+        os << "OutCubic";
+        break;
+    case inviwo::animation::easing::EasingType::OutQuartic:
+        os << "OutQuartic";
+        break;
+    case inviwo::animation::easing::EasingType::OutQuintic:
+        os << "OutQuintic";
+        break;
+    case inviwo::animation::easing::EasingType::InOutQuadratic:
+        os << "InOutQuadratic";
+        break;
+    case inviwo::animation::easing::EasingType::InOutCubic:
+        os << "InOutCubic";
+        break;
+    case inviwo::animation::easing::EasingType::InOutQuartic:
+        os << "InOutQuartic";
+        break;
+    case inviwo::animation::easing::EasingType::InOutQuintic:
+        os << "InOutQuintic";
+        break;
+    case inviwo::animation::easing::EasingType::InSine:
+        os << "InSine";
+        break;
+    case inviwo::animation::easing::EasingType::OutSine:
+        os << "OutSine";
+        break;
+    case inviwo::animation::easing::EasingType::InOutSine:
+        os << "InOutSine";
+        break;
+    case inviwo::animation::easing::EasingType::InExp:
+        os << "InExp";
+        break;
+    case inviwo::animation::easing::EasingType::OutExp:
+        os << "OutExp";
+        break;
+    case inviwo::animation::easing::EasingType::InOutExp:
+        os << "InOutExp";
+        break;
+    case inviwo::animation::easing::EasingType::InCircular:
+        os << "InCircular";
+        break;
+    case inviwo::animation::easing::EasingType::OutCircular:
+        os << "OutCircular";
+        break;
+    case inviwo::animation::easing::EasingType::InOutCircular:
+        os << "InOutCircular";
+        break;
+    case inviwo::animation::easing::EasingType::InBack:
+        os << "InBack";
+        break;
+    case inviwo::animation::easing::EasingType::OutBack:
+        os << "OutBack";
+        break;
+    case inviwo::animation::easing::EasingType::InOutBack:
+        os << "InOutBack";
+        break;
+    case inviwo::animation::easing::EasingType::InElastic:
+        os << "InElastic";
+        break;
+    case inviwo::animation::easing::EasingType::OutElastic:
+        os << "OutElastic";
+        break;
+    case inviwo::animation::easing::EasingType::InOutElastic:
+        os << "InOutElastic";
+        break;
+    case inviwo::animation::easing::EasingType::InBounce:
+        os << "InBounce";
+        break;
+    case inviwo::animation::easing::EasingType::OutBounce:
+        os << "OutBounce";
+        break;
+    case inviwo::animation::easing::EasingType::InOutBounce:
+        os << "InOutBounce";
+        break;
+    default:
+        throw inviwo::Exception("Unknown Easing type" , IvwContextCustom("Easing::operator<<"));
+        break;
+    }
+
+
+    return os;
+
+}
+
+
+}  // namespace easing
+
 /** \class Easing
     \brief Provides easing functions.
     
+
     This class provides a function to ease animation between two keys.
     Different approaches are supported, including overshooting animations.
  */
 class IVW_MODULE_ANIMATION_API Easing {
 public:
-    enum class EEasingType {
-        None,
-        Linear,
-
-        // Polynomial Types
-        InQuadratic,
-        InCubic,
-        InQuartic,
-        InQuintic,
-        OutQuadratic,
-        OutCubic,
-        OutQuartic,
-        OutQuintic,
-        InOutQuadratic,
-        InOutCubic,
-        InOutQuartic,
-        InOutQuintic,
-
-        // Trigonometric Types
-        InSine,
-        OutSine,
-        InOutSine,
-
-        // Exponential Types
-        InExp,
-        OutExp,
-        InOutExp,
-
-        // Circular Types
-        InCircular,
-        OutCircular,
-        InOutCircular,
-
-        // Overshooting Back Types
-        InBack,
-        OutBack,
-        InOutBack,
-
-        // Overshooting Elastic Types
-        InElastic,
-        OutElastic,
-        InOutElastic,
-
-        // Bounce Types
-        InBounce,
-        OutBounce,
-        InOutBounce
-    };
-
 public:
-    Easing(){}
+    Easing() {}
     virtual ~Easing() = default;
 
 private:
@@ -287,91 +409,90 @@ public:
     /// Most easing functions return a value in [0,1] as well.
     /// Some functions overshoot, which means you get also values outside of [0,1].
     /// Most interpolations should be fine with that. Linear Interpolation is fine with that.
-    static double Ease(const double t, EEasingType HowToEase) {
+    static double Ease(const double t, easing::EasingType HowToEase) {
         ivwAssert(t >= 0 && t <= 1, "Normalized time required as easing input.");
 
         switch (HowToEase) {
             default:
-            case EEasingType::None:
-            case EEasingType::Linear: {
+            case easing::EasingType::None:
+            case easing::EasingType::Linear: {
                 return t;
             }
 
-            case EEasingType::InQuadratic:
+            case easing::EasingType::InQuadratic:
                 return InPolynomial(t, 2);
-            case EEasingType::InCubic:
+            case easing::EasingType::InCubic:
                 return InPolynomial(t, 3);
-            case EEasingType::InQuartic:
+            case easing::EasingType::InQuartic:
                 return InPolynomial(t, 4);
-            case EEasingType::InQuintic:
+            case easing::EasingType::InQuintic:
                 return InPolynomial(t, 5);
 
-            case EEasingType::OutQuadratic:
+            case easing::EasingType::OutQuadratic:
                 return OutPolynomial(t, 2);
-            case EEasingType::OutCubic:
+            case easing::EasingType::OutCubic:
                 return OutPolynomial(t, 3);
-            case EEasingType::OutQuartic:
+            case easing::EasingType::OutQuartic:
                 return OutPolynomial(t, 4);
-            case EEasingType::OutQuintic:
+            case easing::EasingType::OutQuintic:
                 return OutPolynomial(t, 5);
 
-            case EEasingType::InOutQuadratic:
+            case easing::EasingType::InOutQuadratic:
                 return InOutPolynomial(t, 2);
-            case EEasingType::InOutCubic:
+            case easing::EasingType::InOutCubic:
                 return InOutPolynomial(t, 3);
-            case EEasingType::InOutQuartic:
+            case easing::EasingType::InOutQuartic:
                 return InOutPolynomial(t, 4);
-            case EEasingType::InOutQuintic:
+            case easing::EasingType::InOutQuintic:
                 return InOutPolynomial(t, 5);
 
-            case EEasingType::InSine:
+            case easing::EasingType::InSine:
                 return InSine(t);
-            case EEasingType::OutSine:
+            case easing::EasingType::OutSine:
                 return OutSine(t);
-            case EEasingType::InOutSine:
+            case easing::EasingType::InOutSine:
                 return InOutSine(t);
 
-            case EEasingType::InExp:
+            case easing::EasingType::InExp:
                 return InExp(t);
-            case EEasingType::OutExp:
+            case easing::EasingType::OutExp:
                 return OutExp(t);
-            case EEasingType::InOutExp:
+            case easing::EasingType::InOutExp:
                 return InOutExp(t);
 
-            case EEasingType::InCircular:
+            case easing::EasingType::InCircular:
                 return InCircular(t);
-            case EEasingType::OutCircular:
+            case easing::EasingType::OutCircular:
                 return OutCircular(t);
-            case EEasingType::InOutCircular:
+            case easing::EasingType::InOutCircular:
                 return InOutCircular(t);
 
-            case EEasingType::InBack:
+            case easing::EasingType::InBack:
                 return InBack(t);
-            case EEasingType::OutBack:
+            case easing::EasingType::OutBack:
                 return OutBack(t);
-            case EEasingType::InOutBack:
+            case easing::EasingType::InOutBack:
                 return InOutBack(t);
 
-            case EEasingType::InElastic:
+            case easing::EasingType::InElastic:
                 return InElastic(t);
-            case EEasingType::OutElastic:
+            case easing::EasingType::OutElastic:
                 return OutElastic(t);
-            case EEasingType::InOutElastic:
+            case easing::EasingType::InOutElastic:
                 return InOutElastic(t);
 
-            case EEasingType::InBounce:
+            case easing::EasingType::InBounce:
                 return InBounce(t);
-            case EEasingType::OutBounce:
+            case easing::EasingType::OutBounce:
                 return OutBounce(t);
-            case EEasingType::InOutBounce:
+            case easing::EasingType::InOutBounce:
                 return InOutBounce(t);
         }
     }
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAME_EASING_H
-
+#endif  // IVW_KEYFRAME_EASING_H
