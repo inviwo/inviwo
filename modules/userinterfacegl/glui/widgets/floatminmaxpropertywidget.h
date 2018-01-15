@@ -52,7 +52,8 @@ class IVW_MODULE_USERINTERFACEGL_API FloatMinMaxPropertyWidget : public RangeSli
                                                                  public PropertyObserver {
 public:
     FloatMinMaxPropertyWidget(FloatMinMaxProperty &property, Processor &processor,
-                              Renderer &uiRenderer, const ivec2 &extent = ivec2(24, 24));
+                              Renderer &uiRenderer, const ivec2 &extent = ivec2(24, 24),
+                              UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~FloatMinMaxPropertyWidget() = default;
 
     virtual void updateFromProperty() override;

@@ -34,8 +34,9 @@ namespace inviwo {
 namespace glui {
 
 FloatPropertyWidget::FloatPropertyWidget(FloatProperty &property, Processor &processor,
-                                         Renderer &uiRenderer, const ivec2 &extent)
-    : Slider(property.getDisplayName(), 0, 0, 100, processor, uiRenderer, extent)
+                                         Renderer &uiRenderer, const ivec2 &extent,
+                                         UIOrientation orientation)
+    : Slider(property.getDisplayName(), 0, 0, 100, processor, uiRenderer, extent, orientation)
     , PropertyWidget(&property)
     , sliderMax_(10000)
     , property_(&property) {

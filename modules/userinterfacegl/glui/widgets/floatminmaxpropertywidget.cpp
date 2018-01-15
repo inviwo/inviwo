@@ -35,8 +35,9 @@ namespace glui {
 
 FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty &property,
                                                      Processor &processor, Renderer &uiRenderer,
-                                                     const ivec2 &extent)
-    : RangeSlider(property.getDisplayName(), ivec2(0), 0, 100, 0, processor, uiRenderer, extent)
+                                                     const ivec2 &extent, UIOrientation orientation)
+    : RangeSlider(property.getDisplayName(), ivec2(0), 0, 100, 0, processor, uiRenderer, extent,
+                  orientation)
     , PropertyWidget(&property)
     , sliderMax_(10000)
     , property_(&property) {

@@ -34,10 +34,11 @@ namespace inviwo {
 namespace glui {
 
 IntMinMaxPropertyWidget::IntMinMaxPropertyWidget(IntMinMaxProperty &property, Processor &processor,
-                                                 Renderer &uiRenderer, const ivec2 &extent)
+                                                 Renderer &uiRenderer, const ivec2 &extent,
+                                                 UIOrientation orientation)
     : RangeSlider(property.getDisplayName(), property.get(), property.getRangeMin(),
                   property.getRangeMax(), property.getMinSeparation(), processor, uiRenderer,
-                  extent)
+                  extent, orientation)
     , PropertyWidget(&property)
     , property_(&property) {
     property_->addObserver(this);

@@ -52,7 +52,8 @@ class IVW_MODULE_USERINTERFACEGL_API IntMinMaxPropertyWidget : public RangeSlide
                                                                public PropertyObserver {
 public:
     IntMinMaxPropertyWidget(IntMinMaxProperty &property, Processor &processor, Renderer &uiRenderer,
-                            const ivec2 &extent = ivec2(24, 24));
+                            const ivec2 &extent = ivec2(24, 24),
+                            UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~IntMinMaxPropertyWidget() = default;
 
     virtual void updateFromProperty() override;

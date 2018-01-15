@@ -34,9 +34,10 @@ namespace inviwo {
 namespace glui {
 
 IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor,
-                                     Renderer &uiRenderer, const ivec2 &extent)
+                                     Renderer &uiRenderer, const ivec2 &extent,
+                                     UIOrientation orientation)
     : Slider(property.getDisplayName(), property.get(), property.getMinValue(),
-             property.getMaxValue(), processor, uiRenderer, extent)
+             property.getMaxValue(), processor, uiRenderer, extent, orientation)
     , PropertyWidget(&property)
     , property_(&property) {
     property_->addObserver(this);
