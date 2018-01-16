@@ -74,7 +74,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
     if (auto track = dynamic_cast<BasePropertyTrack *>(&parent->getTrack())) {
         auto baseProperty = track->getProperty();
         property_.reset(baseProperty->clone());
-        track->rickardsLittleHelper(property_.get(),&keyframe);
+        track->setOtherProperty(property_.get(),&keyframe);
         property_->onChange([b = baseProperty, p = property_.get()]() { b->set(p); });
         property_->setOwner(nullptr);
         
