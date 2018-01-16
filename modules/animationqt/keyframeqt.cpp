@@ -85,8 +85,11 @@ bool KeyframeQt::islocked() const { return isEditing_; }
 void KeyframeQt::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
     if (!isEditing_) {
         KeyframeQtLock lock(this);
-        auto newPos = mapFromScene(
-            QPointF(key->getTime().count() * static_cast<double>(WidthPerSecond), y()));
+        QPointF newPos(this->parentItem()
+                           ->mapFromScene(QPointF(keyframe_.getTime().count() * WidthPerSecond, 0))
+                           .x(),
+                       0);
+
         if (newPos != pos()) {
             setPos(newPos);
         }
@@ -113,8 +116,7 @@ QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value
             KeyframeQtLock lock(this);
             keyframe_.setTime(Seconds(value.toPointF().x() / static_cast<double>(WidthPerSecond)));
         }
-    }
-    else if(change == ItemSelectedChange){
+    } else if (change == ItemSelectedChange) {
         keyframe_.setSelected(value.toBool());
     }
 
@@ -129,6 +131,6 @@ KeyframeQtLock::~KeyframeQtLock() {
     if (keyframe_) keyframe_->unlock();
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo
