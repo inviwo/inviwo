@@ -109,7 +109,7 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
                 controller_.play();
                 break;
             case AnimationState::Playing:
-                controller_.stop();
+                controller_.pause();
                 break;
         } 
     }
