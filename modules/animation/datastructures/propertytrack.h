@@ -34,11 +34,14 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/linearinterpolation.h>
+
 
 namespace inviwo {
 
