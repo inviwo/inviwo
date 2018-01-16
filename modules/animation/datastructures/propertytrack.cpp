@@ -30,6 +30,8 @@
 #include <modules/animation/datastructures/propertytrack.h>
 
 namespace inviwo {
+namespace animation {
 
-} // namespace
 
+}  // namespace animation
+}  // namespace inviwo

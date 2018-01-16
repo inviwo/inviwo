@@ -35,6 +35,7 @@
 
 #include <inviwo/core/properties/property.h>
 #include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,6 +43,7 @@
 #include <warn/pop>
 
 class QHBoxLayout;
+class QDoubleSpinBox;
 
 namespace inviwo {
 class Property;
@@ -54,10 +56,18 @@ class SequenceEditorWidget;
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget {
+class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget , public KeyframeObserver {
 public:
     KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
     virtual ~KeyframeEditorWidget();
+
+
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
+
+    Keyframe &getKeyframe() {return keyframe_;}
+
+
+    virtual void onKeyframeSelectionChanged(Keyframe* seq) override;
 
 private:
     Keyframe &keyframe_;
@@ -66,6 +76,7 @@ private:
     std::unique_ptr<Property> property_{nullptr};
     PropertyWidgetQt *propertyWidget_{nullptr};
     QHBoxLayout *layout{nullptr};
+    QDoubleSpinBox *timeSpinner_{nullptr};
 };
 
 }  // namespace animation

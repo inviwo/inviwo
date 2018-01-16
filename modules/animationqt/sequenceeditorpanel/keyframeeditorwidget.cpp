@@ -51,17 +51,31 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
     : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
     setObjectName("KeyframeEditorWidget");
+
+    keyframe.addObserver(this);
+
     layout = new QHBoxLayout();
     
-    auto timeSpinner = new QDoubleSpinBox();
-    timeSpinner->setValue(keyframe.getTime().count());
-    timeSpinner->setSuffix("s");
-    timeSpinner->setSingleStep(0.1);
-    timeSpinner->setDecimals(5);
-    layout->addWidget(timeSpinner);
+
+    timeSpinner_ = new QDoubleSpinBox();
+    timeSpinner_->setValue(keyframe.getTime().count());
+    timeSpinner_->setSuffix("s");
+    timeSpinner_->setSingleStep(0.1);
+    timeSpinner_->setDecimals(5);
+    
+
+    void (QDoubleSpinBox::*signal)(double) = &QDoubleSpinBox::valueChanged;
+    connect(timeSpinner_,signal,[this](double t){
+        keyframe_.setTime(Seconds(t));
+    });
+
+    layout->addWidget(timeSpinner_);
 
     if (auto track = dynamic_cast<BasePropertyTrack *>(&parent->getTrack())) {
-        property_.reset(track->getProperty()->clone());
+        auto baseProperty = track->getProperty();
+        property_.reset(baseProperty->clone());
+        track->rickardsLittleHelper(property_.get(),&keyframe);
+        property_->onChange([b = baseProperty, p = property_.get()]() { b->set(p); });
         property_->setOwner(nullptr);
         
         auto propWidget =
@@ -82,6 +96,15 @@ KeyframeEditorWidget::~KeyframeEditorWidget()
 {
     layout->removeWidget(propertyWidget_);
     delete propertyWidget_;
+}
+
+void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
+    timeSpinner_->setValue(key->getTime().count());
+    sequenceEditorWidget_->setReorderNeeded();
+}
+
+void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe* seq) {
+    sequenceEditorWidget_->updateVisibility();
 }
 
 }  // namespace animation
