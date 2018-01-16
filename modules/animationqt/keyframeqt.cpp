@@ -53,6 +53,7 @@ KeyframeQt::KeyframeQt(Keyframe& keyframe, QGraphicsItem* parent)
     keyframe_.addObserver(this);
 
     setPos(mapFromScene(QPointF(keyframe_.getTime().count() * WidthPerSecond, 0)).x(), 0);
+    setSelected(keyframe_.isSelected());
 }
 
 void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
