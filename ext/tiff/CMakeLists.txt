@@ -489,14 +489,6 @@ if (UNIX OR MINGW)
   set(FILE_OFFSET_BITS 64)
 endif()
 
-if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-  ## suppress "deprecated" warnings
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-  ## suppress POSIX deprecation warnings
-  ## e.g. The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _close. 
-  add_definitions(/wd4996)
-endif()
-
 # Documentation install directory (default to cmake project docdir)
 set(LIBTIFF_DOCDIR "${CMAKE_INSTALL_FULL_DOCDIR}")
 
@@ -727,9 +719,10 @@ set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
 set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libtiff-4.pc.in
                ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc)
-## Temporarily disabled installing header files
-##install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc
-##        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+## Inviwo: Temporarily disabled installing header files
+#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc
+#        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+##-------------------
 
 # Includes used by libtiff (and tests)
 if(ZLIB_INCLUDE_DIRS)
