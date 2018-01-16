@@ -19,6 +19,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/surfaceextraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegeneration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramdistancetransform.h
@@ -114,6 +115,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegeneration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramdistancetransform.cpp
