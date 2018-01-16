@@ -43,11 +43,13 @@
 #include <warn/pop>
 
 class QVBoxLayout;
+class QPaintEvent;
 
 namespace inviwo {
 
 namespace animation {
 class SequenceEditorPanel;
+class KeyframeEditorWidget;
 /**
  * \class SequenceEditorWidget
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
@@ -63,18 +65,26 @@ public:
     void updateVisibility();
 
     virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence* seq) override;
-
     virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) override;
-
     virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) override;
 
-    Track& getTrack() {return track_;}
+    Track& getTrack() { return track_; }
+
+    void setReorderNeeded();
+
+protected:
+    void reorderKeyframes();
+    virtual void paintEvent(QPaintEvent* event) override;
 
 private:
     KeyframeSequence& sequence_;
     Track& track_;
 
+    std::unordered_map<Keyframe*, KeyframeEditorWidget*> keyframeEditorWidgets_;
+
     QVBoxLayout* keyframesLayout_;
+
+    bool reorderNeeded_{true};
 };
 
 }  // namespace animation

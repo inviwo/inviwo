@@ -44,6 +44,27 @@ namespace inviwo {
 
 namespace animation {
 
+namespace detail {
+
+    template <typename Prop, typename Key>
+    void setOtherPropertyHelper(Property* property, Keyframe* keyframe){
+        LogWarnCustom("","DOINT NOTING");
+    }
+
+    template<typename T>
+    void setOtherPropertyHelper(TemplateProperty<T>* property, ValueKeyframe<T>* keyframe){
+        property->set(keyframe->getValue());
+    }
+
+
+    template<typename T>
+    void setOtherPropertyHelper(TemplateOptionProperty<T>* property, ValueKeyframe<T>* keyframe){
+        LogWarnCustom("", "NOT YET SETTING OPTION PROPERTIES");
+    }
+
+
+}  // namespace detail
+
 /** \class BasePropertyTrack
  * Interface for tracks based on a Property.
  * Exposes functions for adding a KeyFrame and KeyFrameSequence
@@ -100,6 +121,8 @@ public:
      */
     virtual void addSequenceUsingPropertyValue(Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
     virtual Track* toTrack() = 0;
+
+    virtual void setOtherProperty(Property*  , Keyframe *){ LogInfo("DEFAULT");}
 };
 
 /** \class PropertyTrack
@@ -178,6 +201,14 @@ public:
     virtual void addSequenceUsingPropertyValue(Seconds time, std::unique_ptr<Interpolation> interpolation) override;
 
     virtual Track* toTrack() override;
+
+
+    void setOtherProperty(Property* property, Keyframe* keyframe) override {
+        ivwAssert(property->getClassIdentifier() == Prop::CLASS_IDENTIFIER , "Incorrect Property type");
+        ivwAssert(keyframe->getClassIdentifier() == Key::classIdentifier() , "Incorrect Keyframe type");
+        detail::setOtherPropertyHelper(static_cast<Prop*>(property) , static_cast<Key*>(keyframe));
+    }
+
 
 private:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
@@ -516,6 +547,23 @@ void PropertyTrack<Prop, Key>::serialize(Serializer& s) const {
     s.serialize("sequences", sequences_, "sequence");
 }
 
+//
+//template <typename Prop, typename Key>
+//void PropertyTrack<Prop, Key>::rickardsLittleHelper(Property* property, Keyframe* keyframe) {
+//    detail::rickardsLittleHelperOrdinalProperty(property,keyframe);
+//    return;
+//    // if(auto typedProperty = dynamic_cast<Prop*>(property)){
+//    //    if(auto typedKeyframe = dynamic_cast<ValueKeyframe<Key>*>(keyframe)){
+//    //        typedProperty->set( typedKeyframe->getValue());
+//    //    }else{
+//    //        throw Exception("Incorrect keyframe type" , IvwContext);
+//    //    }
+//
+//    //}else{
+//    //    throw Exception("Incorrect property type" , IvwContext);
+//    //}
+//}
+
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::deserialize(Deserializer& d) {
     std::string className;
@@ -559,9 +607,9 @@ void PropertyTrack<Prop, Key>::deserialize(Deserializer& d) {
     d.deserializeAs<Property>("property", property_);
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
 #endif // IVW_PROPERTYTRACK_H
 

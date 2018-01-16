@@ -39,16 +39,16 @@
 #include <QComboBox>
 #include <warn/pop>
 
-/** 
-* TODO: 
-* * Listen to updates to easing from outside
-*/
+/**
+ * TODO:
+ * * Listen to updates to easing from outside
+ */
 
 namespace inviwo {
 
 namespace animation {
-SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence &sequence, Track &track,
-                                           SequenceEditorPanel *panel)
+SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& track,
+                                           SequenceEditorPanel* panel)
     : QWidget(panel), sequence_(sequence), track_(track) {
     setObjectName("SequenceEditorWidget");
     sequence_.addObserver(this);
@@ -63,7 +63,6 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence &sequence, Track &tr
     label->setFont(font);
     layout->addWidget(label);
 
-
     keyframesLayout_ = new QVBoxLayout();
     layout->addLayout(keyframesLayout_);
 
@@ -76,42 +75,84 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence &sequence, Track &tr
 
     auto currentEasing = sequence_.getEasingType();
 
-    for(auto e = easing::FirstEasingType ; e<=easing::LastEasingType;++e){
+    for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
         std::ostringstream oss;
         oss << e;
-        easing->addItem( oss.str().c_str() , QVariant((int)e) );
-        if(currentEasing==e){
-            easing->setCurrentIndex(easing->count()-1);
+        easing->addItem(oss.str().c_str(), QVariant((int)e));
+        if (currentEasing == e) {
+            easing->setCurrentIndex(easing->count() - 1);
         }
     }
 
-    void (QComboBox::*funcPtr)(int) = &QComboBox::currentIndexChanged;
-    connect(easing, funcPtr , [this](int index){
-        sequence_.setEasingType( static_cast<easing::EasingType>(index) );
-    });
+    void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
+    connect(easing, signal,
+            [this](int index) { sequence_.setEasingType(static_cast<easing::EasingType>(index)); });
 
-    for(size_t i = 0;i<sequence_.size();i++){
-        onKeyframeAdded(&sequence_[i],&sequence_);
+    for (size_t i = 0; i < sequence_.size(); i++) {
+        onKeyframeAdded(&sequence_[i], &sequence_);
     }
-    
+
     updateVisibility();
 }
 
 void SequenceEditorWidget::updateVisibility() {
-    setVisible(sequence_.isSelected() /*|| sequence_.isAnyKeyframeSelected()*/);
+    setVisible(sequence_.isSelected() || sequence_.isAnyKeyframeSelected());
 }
 
-void SequenceEditorWidget::onKeyframeSequenceSelectionChanged(KeyframeSequence *seq) {
+void SequenceEditorWidget::onKeyframeSequenceSelectionChanged(KeyframeSequence* seq) {
     updateVisibility();
 }
 
 void SequenceEditorWidget::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
-    keyframesLayout_->addWidget(new KeyframeEditorWidget(*key,this) );
+    auto w = new KeyframeEditorWidget(*key, this);
+    keyframesLayout_->addWidget(w);
+    keyframeEditorWidgets_[key] = w;
+    setReorderNeeded();
 }
 
-void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq)
-{
-    LogWarn("Should do something here");
+void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
+    auto widget = keyframeEditorWidgets_[key];
+    keyframeEditorWidgets_.erase(key);
+    keyframesLayout_->removeWidget(widget);
+    setReorderNeeded();
+}
+
+void SequenceEditorWidget::setReorderNeeded() { reorderNeeded_ = true; }
+
+void SequenceEditorWidget::reorderKeyframes() {
+
+    std::vector<KeyframeEditorWidget*> widgets(keyframeEditorWidgets_.size());
+    std::transform(keyframeEditorWidgets_.begin(), keyframeEditorWidgets_.end(), widgets.begin(),
+                   [](auto pair) { return pair.second; });
+
+    std::stable_sort(widgets.begin(), widgets.end(), [](auto a, auto b) {
+        return a->getKeyframe().getTime().count() < b->getKeyframe().getTime().count();
+    });
+
+    bool orderChanged = false;
+    size_t i = 0;
+    for (auto w : widgets) {
+        orderChanged |= keyframesLayout_->indexOf(w) != i++;
+    }
+
+    if (orderChanged) {
+        for (auto w : widgets) {
+            keyframesLayout_->removeWidget(w);
+        }
+
+        for (auto w : widgets) {
+            keyframesLayout_->addWidget(w);
+        }
+    };
+}
+
+void SequenceEditorWidget::paintEvent(QPaintEvent* event) {
+    if (reorderNeeded_) {
+        reorderKeyframes();
+        reorderNeeded_ = false;
+    }
+
+    QWidget::paintEvent(event);
 }
 
 }  // namespace animation
