@@ -233,7 +233,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         });
     }
 
-    addObservation(&controller_);
+    controller_.AnimationControllerObservable::addObserver(this);
 }
 
 AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;

@@ -42,7 +42,40 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     , currentTime_(0)
     , deltaTime_(Seconds(1.0 / 60.0))
     , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_),
-             [this] { if (state_ == AnimationState::Rendering) tickRender(); else tick(); }} {}
+             [this] { if (state_ == AnimationState::Rendering) tickRender(); else tick(); }}
+    , propRenderSizeOptions("RenderSizeOptions", "Size")
+    , propRenderSize("RenderSize", "Pixels")
+    , propRenderNumFrames("RenderNumFrames", "# Frames", 100, 2)
+    , propRenderLocationDir("RenderLocationDir", "Directory")
+    , propRenderLocationBaseName("RenderLocationBaseName", "BaseName")
+    , propRenderAction("RenderAction", "Render") {
+
+    propRenderSizeOptions.addOption("CurrentCanvasSize", "Use current size of canvases", 0);
+    propRenderSizeOptions.addOption("SaveImageSize", "Use SaveImg size of canvases", 1);
+    propRenderSizeOptions.addOption("720p", "720p for all canvases", 2);
+    propRenderSizeOptions.addOption("1080p", "1080p for all canvases", 3);
+    propRenderSizeOptions.addOption("CustomSize", "User-defined resolution for all canvases", 4);
+    propRenderSizeOptions.onChange([&](){
+        propRenderSize.setVisible(propRenderSizeOptions.get() == 4);
+    });
+    propRenderSizeOptions.setCurrentStateAsDefault();
+    addProperty(propRenderSizeOptions);
+
+    propRenderSize.setSemantics(PropertySemantics::Text);
+    propRenderSize.setVisible(propRenderSizeOptions.get() == 4);
+    addProperty(propRenderSize);
+
+    propRenderNumFrames.setSemantics(PropertySemantics::Text);
+    addProperty(propRenderNumFrames);
+
+    addProperty(propRenderLocationDir);
+    addProperty(propRenderLocationBaseName);
+
+    propRenderAction.onChange([&](){
+        render();
+    });
+    addProperty(propRenderAction);
+}
 
 AnimationController::~AnimationController() = default;
 
