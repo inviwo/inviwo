@@ -40,6 +40,13 @@
 #include <modules/animation/datastructures/animationstate.h>
 #include <modules/animation/animationcontrollerobserver.h>
 
+#include <inviwo/core/properties/buttonproperty.h>
+//#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+
 namespace inviwo {
 
 namespace animation {
@@ -51,7 +58,8 @@ namespace animation {
 
     Furthermore, it allows to render the animation into an image sequence.
  */
-class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable {
+class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable,
+                                                     public PropertyOwner {
 public:
     AnimationController(Animation* animation, InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~AnimationController();
@@ -98,6 +106,14 @@ public:
     Seconds getCurrentTime() const;
     
     InviwoApplication* getInviwoApplication() { return app_; }
+
+public:
+    OptionPropertyInt propRenderSizeOptions;
+    IntVec2Property propRenderSize;
+    DirectoryProperty propRenderLocationDir;
+    StringProperty propRenderLocationBaseName;
+    IntProperty propRenderNumFrames;
+    ButtonProperty propRenderAction;
 
 protected:
     ///Low-level setting of @currentTime_. Use @eval() to set time in the public interface.

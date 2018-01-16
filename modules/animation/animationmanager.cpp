@@ -74,6 +74,12 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
         [&](Serializer& s) { s.serialize("Animation", animation_); });
     animationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
         [&](Deserializer& d) { d.deserialize("Animation", animation_); });
+
+    animationControllerClearHandle_ = app_->getWorkspaceManager()->onClear([&]() { controller_.resetAllPoperties(); });
+    animationControllerSerializationHandle_ = app_->getWorkspaceManager()->onSave(
+        [&](Serializer& s) { s.serialize("AnimationController", controller_); });
+    animationControllerDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
+        [&](Deserializer& d) { d.deserialize("AnimationController", controller_); });
 }
 
 TrackFactory& AnimationManager::getTrackFactory() { return trackFactory_; }

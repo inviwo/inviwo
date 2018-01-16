@@ -57,10 +57,10 @@ class BasePropertyTrack;
 /**
  * The AnimationManager is responsible for managing the factories related to animations as well as
  * owning the currently used Animation and AnimationController. It is also responsible for 
- * clearing, saving, and loading the animation when ever the workspace is cleared, saved, or loaded.
+ * clearing, saving, and loading the animation and its controller when the workspace is cleared, saved, or loaded.
  * The AnimationManager also manages the ModuleCallback actions that are used to facilitate
  * the creation of property track from the context menu of properties. 
- * To be able to do this is has a map of track class identifiers to map to property class 
+ * To be able to do this it has a map of track class identifiers to map to property class 
  * identifiers.
  * 
  * The modules that wish to extend the Animation with a new functionality ( Track or Interpolation )
@@ -157,6 +157,10 @@ private:
     WorkspaceManager::ClearHandle animationClearHandle_;
     WorkspaceManager::SerializationHandle animationSerializationHandle_;
     WorkspaceManager::DeserializationHandle animationDeserializationHandle_;
+
+    WorkspaceManager::ClearHandle animationControllerClearHandle_;
+    WorkspaceManager::SerializationHandle animationControllerSerializationHandle_;
+    WorkspaceManager::DeserializationHandle animationControllerDeserializationHandle_;
 };
 
 } // namespace animation
