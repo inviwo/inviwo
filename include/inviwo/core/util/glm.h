@@ -348,7 +348,7 @@ struct same_extent<G<T,P>, U> { typedef G<U,P> type; };
 template <typename To = double, typename From,
           typename std::enable_if<util::rank<From>::value == 0 && util::rank<To>::value == 0,
                                   int>::type = 0>
-To glm_convert(From x) {
+inline To glm_convert(From x) {
     return static_cast<To>(x);
 }
 
@@ -356,7 +356,7 @@ To glm_convert(From x) {
 template <class To, typename From,
           typename std::enable_if<util::rank<From>::value == 0 && util::rank<To>::value == 1,
                                   int>::type = 0>
-To glm_convert(From x) {
+inline To glm_convert(From x) {
     To res(0);
     res[0] = static_cast<typename To::value_type>(x);
     return res;
@@ -366,7 +366,7 @@ To glm_convert(From x) {
 template <typename To = double, class From,
           typename std::enable_if<util::rank<From>::value == 1 && util::rank<To>::value == 0,
                                   int>::type = 0>
-To glm_convert(From x) {
+inline To glm_convert(From x) {
     return static_cast<To>(x[0]);
 }
 
@@ -374,7 +374,7 @@ To glm_convert(From x) {
 template <class To, class From,
           typename std::enable_if<util::rank<From>::value == 1 && util::rank<To>::value == 1,
                                   int>::type = 0>
-To glm_convert(From x) {
+inline To glm_convert(From x) {
     To res(static_cast<typename To::value_type>(0));
     size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
     for (size_t i = 0; i < max; ++i) res[i] = static_cast<typename To::value_type>(x[i]);
