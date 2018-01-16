@@ -54,7 +54,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
 
     keyframe.addObserver(this);
 
-    layout = new QHBoxLayout();
+    layout_ = new QHBoxLayout();
     
 
     timeSpinner_ = new QDoubleSpinBox();
@@ -69,7 +69,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         keyframe_.setTime(Seconds(t));
     });
 
-    layout->addWidget(timeSpinner_);
+    layout_->addWidget(timeSpinner_);
 
     if (auto track = dynamic_cast<BasePropertyTrack *>(&parent->getTrack())) {
         auto baseProperty = track->getProperty();
@@ -89,15 +89,16 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
             label->setVisible(false);
         }
 
-        layout->addWidget(propertyWidget_);
+        layout_->addWidget(propertyWidget_);
     }
 
-    setLayout(layout);
+    
+
+    setLayout(layout_);
 }
 
-KeyframeEditorWidget::~KeyframeEditorWidget()
-{
-    layout->removeWidget(propertyWidget_);
+KeyframeEditorWidget::~KeyframeEditorWidget() {
+    layout_->removeWidget(propertyWidget_);
     delete propertyWidget_;
 }
 
@@ -106,7 +107,7 @@ void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime)
     sequenceEditorWidget_->setReorderNeeded();
 }
 
-void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe* seq) {
+void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe *key) {
     sequenceEditorWidget_->updateVisibility();
 }
 

@@ -75,7 +75,7 @@ private:
 
     std::unique_ptr<Property> property_{nullptr};
     PropertyWidgetQt *propertyWidget_{nullptr};
-    QHBoxLayout *layout{nullptr};
+    QHBoxLayout *layout_{nullptr};
     QDoubleSpinBox *timeSpinner_{nullptr};
 };
 
