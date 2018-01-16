@@ -75,7 +75,10 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         auto baseProperty = track->getProperty();
         property_.reset(baseProperty->clone());
         track->setOtherProperty(property_.get(),&keyframe);
-        property_->onChange([b = baseProperty, p = property_.get()]() { b->set(p); });
+        property_->onChange([b = baseProperty, p = property_.get(),t=track,k=&keyframe_]() { 
+            b->set(p); 
+            t->updateKeyframeFromProperty(p,k);
+        });
         property_->setOwner(nullptr);
         
         auto propWidget =

@@ -46,20 +46,25 @@ namespace animation {
 
 namespace detail {
 
-    template <typename Prop, typename Key>
-    void setOtherPropertyHelper(Property* property, Keyframe* keyframe){
-        LogWarnCustom("","DOINT NOTING");
-    }
-
     template<typename T>
     void setOtherPropertyHelper(TemplateProperty<T>* property, ValueKeyframe<T>* keyframe){
         property->set(keyframe->getValue());
     }
 
-
     template<typename T>
     void setOtherPropertyHelper(TemplateOptionProperty<T>* property, ValueKeyframe<T>* keyframe){
-        LogWarnCustom("", "NOT YET SETTING OPTION PROPERTIES");
+        property->setSelectedValue(keyframe->getValue());
+    }
+
+    template<typename T>
+    void updateKeyframeFromPropertyHelper(TemplateProperty<T>* property, ValueKeyframe<T>* keyframe){
+        keyframe->setValue(property->get());
+    }
+
+
+    template<typename T>
+    void updateKeyframeFromPropertyHelper(TemplateOptionProperty<T>* property, ValueKeyframe<T>* keyframe){
+        keyframe->setValue(property->getSelectedValue());
     }
 
 
@@ -122,7 +127,8 @@ public:
     virtual void addSequenceUsingPropertyValue(Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
     virtual Track* toTrack() = 0;
 
-    virtual void setOtherProperty(Property*  , Keyframe *){ LogInfo("DEFAULT");}
+    virtual void setOtherProperty(Property*  , Keyframe *){}; //Should this be pure virtual
+    virtual void updateKeyframeFromProperty(Property*  , Keyframe *){}; //Should this be pure virtual
 };
 
 /** \class PropertyTrack
@@ -207,6 +213,13 @@ public:
         ivwAssert(property->getClassIdentifier() == Prop::CLASS_IDENTIFIER , "Incorrect Property type");
         ivwAssert(keyframe->getClassIdentifier() == Key::classIdentifier() , "Incorrect Keyframe type");
         detail::setOtherPropertyHelper(static_cast<Prop*>(property) , static_cast<Key*>(keyframe));
+    }
+
+
+    void updateKeyframeFromProperty(Property* property, Keyframe* keyframe) override {
+        ivwAssert(property->getClassIdentifier() == Prop::CLASS_IDENTIFIER , "Incorrect Property type");
+        ivwAssert(keyframe->getClassIdentifier() == Key::classIdentifier() , "Incorrect Keyframe type");
+        detail::updateKeyframeFromPropertyHelper(static_cast<Prop*>(property) , static_cast<Key*>(keyframe));
     }
 
 
