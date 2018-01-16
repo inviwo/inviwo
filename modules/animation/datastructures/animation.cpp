@@ -140,7 +140,10 @@ Seconds Animation::lastTime() const {
     }
 }
 
-void Animation::serialize(Serializer& s) const { s.serialize("tracks", tracks_, "track"); }
+void Animation::serialize(Serializer& s) const {
+	s.serialize("tracks", tracks_, "track");
+	s.serialize("control-track", controlTrack_);
+}
 
 void Animation::deserialize(Deserializer& d) {
     util::IdentifiedDeserializer<std::string, std::unique_ptr<Track>>("tracks", "track")
@@ -148,6 +151,7 @@ void Animation::deserialize(Deserializer& d) {
         .setMakeNew([]() { return std::unique_ptr<Track>(); })
         .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
         .onRemove([&](const std::string& id) { removeTrack(id); })(d, tracks_);
+	d.deserialize("control-track", controlTrack_);
 }
 
 void Animation::onPriorityChanged(Track* t) { doPrioritySort(); }

@@ -75,6 +75,16 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     animation.addObserver(this);
     model_ = new AnimationLabelModelQt(this);
 
+	// Add Control Track
+	{
+		QList<QStandardItem*> row;
+		auto item = new QStandardItem(QString::fromStdString(animation.getControlTrack().getName()));
+		item->setData(QVariant::fromValue(static_cast<void*>(&animation.getControlTrack())), Qt::UserRole + 1);
+		row.append(item);
+		model_->appendRow(row);
+	}
+
+	// Add Other Tracks
     for (size_t i = 0; i < animation.size(); ++i) {
         auto& track = animation[i];
         QList<QStandardItem*> row;
