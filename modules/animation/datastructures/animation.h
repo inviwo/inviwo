@@ -36,6 +36,7 @@
 
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/animationobserver.h>
 #include <modules/animation/datastructures/animationstate.h>
@@ -62,6 +63,9 @@ public:
     size_t size() const;
     Track& operator[](size_t i);
     const Track& operator[](size_t i) const;
+
+	ControlTrack& getControlTrack() { return controlTrack_; }
+	const ControlTrack& getControlTrack() const { return controlTrack_; }
 
     void add(std::unique_ptr<Track> track);
     /**
@@ -114,6 +118,7 @@ private:
     virtual void onFirstMoved(Track* t) override;
     virtual void onLastMoved(Track* t) override;
 
+	ControlTrack controlTrack_;
     std::vector<std::unique_ptr<Track>> tracks_;
     std::vector<Track*> priorityTracks_;
 };

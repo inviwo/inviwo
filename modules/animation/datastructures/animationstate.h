@@ -30,6 +30,8 @@
 #ifndef IVW_ANIMATIONSTATE_H
 #define IVW_ANIMATIONSTATE_H
 
+#include <modules/animation/datastructures/animationtime.h>
+
 namespace inviwo {
 
 namespace animation {
