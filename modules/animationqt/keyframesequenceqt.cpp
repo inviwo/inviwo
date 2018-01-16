@@ -46,7 +46,7 @@ namespace animation {
 KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, TrackQt* parent)
     : QGraphicsItem(parent), keyframeSequence_(keyframeSequence) , trackQt_(*parent) {
     //setFlags(ItemIsMovable | ItemSendsGeometryChanges);
-    setFlags(ItemIgnoresTransformations | ItemIsMovable | ItemIsSelectable |
+    setFlags( ItemIsMovable | ItemIsSelectable |
         ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
 
     keyframeSequence.addObserver(this);
