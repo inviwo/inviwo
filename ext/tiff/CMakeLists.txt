@@ -775,6 +775,15 @@ add_subdirectory(libtiff)
 #add_subdirectory(man)
 #add_subdirectory(html)
 
+## Inviwo: suppress build warnings
+if (TARGET tiff)
+  ivw_suppress_compiler_warnings(tiff)
+endif()
+if (TARGET tiffxx)
+  ivw_suppress_compiler_warnings(tiffxx)
+endif()
+##-------------------
+
 #message(STATUS "EXTRA_DIST: ${EXTRA_DIST}")
 #[[ Inviwo: Disable messages 
 message(STATUS "")

@@ -140,9 +140,6 @@ endif()
 ## Inviwo: Temporarily disabled installing header files
 #install(FILES ${tiff_HEADERS} ${nodist_tiff_HEADERS}
 #        DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
-
-## Inviwo: suppress build warnings
-ivw_suppress_compiler_warnings(tiff)
 ##-------------------
 
 if(cxx)
@@ -170,10 +167,6 @@ if(cxx)
   ## Inviwo: Temporarily disabled installing header files
   # install(FILES ${tiffxx_HEADERS}
   #         DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
-
-  ## Inviwo: suppress build warnings
-  ivw_suppress_compiler_warnings(tiffxx)
-##-------------------
 endif()
 
 #--------------------------------------------------------------------
