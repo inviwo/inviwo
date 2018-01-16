@@ -37,6 +37,7 @@
 #include <modules/qtwidgets/inviwodockwidget.h>
 
 class QToolButton;
+class QMainWindow;
 
 namespace inviwo {
 
@@ -58,20 +59,15 @@ protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
 
-    virtual void onPlaybackSettingsChanged(AnimationController* controller, AnimationPlaySettings prevSettings,
-                                           AnimationPlaySettings newSettings) override;
-
     AnimationController& controller_;
 
     // GUI-stuff
     QAction* btnPlayPause_;
-    QAction* btnStop_;
-    QAction* loop_;
     std::unique_ptr<AnimationEditorQt> animationEditor_;
     AnimationViewQt* animationView_;
     AnimationLabelViewQt* animationLabelView_;
     SequenceEditorPanel* sequenceEditorView_;
-
+    QMainWindow* leftPanel_;
 };
 
 } // namespace

@@ -43,12 +43,50 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     , deltaTime_(Seconds(1.0 / 60.0))
     , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_),
              [this] { if (state_ == AnimationState::Rendering) tickRender(); else tick(); }}
+    , propPlayOptions("PlayOptions", "Play Settings")
+    , propPlayFirstLastTimeOption("PlayFirstLastTimeOption", "")
+    , propPlayFirstLastTime("PlayFirstLastTime", "Time Window", 0, 10, 0, 1e5, 1)
+    , propPlayFramesPerSecond("PlayFramesPerSecond", "Frames per Second")
+    , propPlayMode("PlayMode", "Mode")
+    , propRenderOptions("RenderOptions", "Render Animation")
     , propRenderSizeOptions("RenderSizeOptions", "Size")
     , propRenderSize("RenderSize", "Pixels")
     , propRenderNumFrames("RenderNumFrames", "# Frames", 100, 2)
     , propRenderLocationDir("RenderLocationDir", "Directory")
     , propRenderLocationBaseName("RenderLocationBaseName", "BaseName")
     , propRenderAction("RenderAction", "Render") {
+
+    ///////////////////////////
+    // Play Settings
+
+    propPlayFirstLastTimeOption.addOption("FullTimeWindow", "Play full animation", 0);
+    propPlayFirstLastTimeOption.addOption("UserTimeWindow", "Selected time window", 1);
+    propPlayFirstLastTimeOption.onChange([&](){
+        propPlayFirstLastTime.setVisible(propPlayFirstLastTimeOption.get() == 1);
+    });
+    propPlayFirstLastTimeOption.setCurrentStateAsDefault();
+
+    propPlayFirstLastTime.setSemantics(PropertySemantics::Text);
+    propPlayFirstLastTime.setVisible(propPlayFirstLastTimeOption.get() == 1);
+
+    propPlayFramesPerSecond.setSemantics(PropertySemantics::Text);
+
+    propPlayMode.addOption("Once", "Play once", (int)PlaybackMode::Once);
+    propPlayMode.addOption("Loop", "Loop animation", (int)PlaybackMode::Loop);
+    propPlayMode.addOption("Swing", "Swing animation", (int)PlaybackMode::Swing);
+    //propPlayMode.onChange([&](){
+    //});
+    propPlayMode.setCurrentStateAsDefault();
+
+    propPlayOptions.addProperty(propPlayFirstLastTimeOption);
+    propPlayOptions.addProperty(propPlayFirstLastTime);
+    propPlayOptions.addProperty(propPlayFramesPerSecond);
+    propPlayOptions.addProperty(propPlayMode);
+    addProperty(propPlayOptions);
+
+
+    ///////////////////////////
+    // Rendering Settings
 
     propRenderSizeOptions.addOption("CurrentCanvasSize", "Use current size of canvases", 0);
     propRenderSizeOptions.addOption("SaveImageSize", "Use SaveImg size of canvases", 1);
@@ -59,22 +97,23 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
         propRenderSize.setVisible(propRenderSizeOptions.get() == 4);
     });
     propRenderSizeOptions.setCurrentStateAsDefault();
-    addProperty(propRenderSizeOptions);
 
     propRenderSize.setSemantics(PropertySemantics::Text);
     propRenderSize.setVisible(propRenderSizeOptions.get() == 4);
-    addProperty(propRenderSize);
 
     propRenderNumFrames.setSemantics(PropertySemantics::Text);
-    addProperty(propRenderNumFrames);
-
-    addProperty(propRenderLocationDir);
-    addProperty(propRenderLocationBaseName);
 
     propRenderAction.onChange([&](){
         render();
     });
-    addProperty(propRenderAction);
+
+    propRenderOptions.addProperty(propRenderSizeOptions);
+    propRenderOptions.addProperty(propRenderSize);
+    propRenderOptions.addProperty(propRenderNumFrames);
+    propRenderOptions.addProperty(propRenderLocationDir);
+    propRenderOptions.addProperty(propRenderLocationBaseName);
+    propRenderOptions.addProperty(propRenderAction);
+    addProperty(propRenderOptions);
 }
 
 AnimationController::~AnimationController() = default;
@@ -109,7 +148,6 @@ void AnimationController::setPlaybackSettings(const AnimationPlaySettings& newSe
     }
 }
 
-
 void AnimationController::setTime(Seconds time) {
     // No upper boundary check since you might want to set the time after the last keyframe of
     // animation when creating new ones
@@ -121,29 +159,11 @@ void AnimationController::setTime(Seconds time) {
 }
 
 void AnimationController::play() {
-    //For now, use the animation's firstTime and lastTime.
-    //It can be a feature later, to allow the user sub-windows.
-    settingsPlay_.setFirstTime(animation_->firstTime());
-    settingsPlay_.setLastTime(animation_->lastTime());
-
-    //Fixed FPS for now
-    settingsPlay_.setFramesPerSecond(25);
-
+    deltaTime_ = Seconds(fabs(deltaTime_.count())); //Make sure we play forward.
     setState(AnimationState::Playing);
 }
 
 void AnimationController::render() {
-    //For now, use the animation's firstTime and lastTime.
-    //It can be a feature later, to allow the user sub-windows.
-    settingsRendering_.setFirstTime(animation_->firstTime());
-    settingsRendering_.setLastTime(animation_->lastTime());
-
-    //Fixed number of frames for now
-    settingsRendering_.setNumFrames(100);
-
-    //Force Once-Mode
-    settingsRendering_.mode = PlaybackMode::Once;
-
     setState(AnimationState::Rendering);
 }
 
@@ -168,21 +188,31 @@ void AnimationController::tick() {
     // muster.
     auto newTime = currentTime_ + deltaTime_;
 
+    //Get active time window for playing
+    // - init with sub-window, overwrite with full window if necessary
+    Seconds firstTime = Seconds(propPlayFirstLastTime.get()[0]);
+    Seconds lastTime = Seconds(propPlayFirstLastTime.get()[1]);
+    if (propPlayFirstLastTimeOption.get() == 0) {
+        //Full animation window
+        firstTime = animation_->firstTime();
+        lastTime = animation_->lastTime();
+    }
+
     //Ping at the end of time
-    if (newTime > settingsPlay_.getLastTime()) {
-        switch (settingsPlay_.mode) {
+    if (newTime > lastTime) {
+        switch (propPlayMode.get()) {
             case PlaybackMode::Once: {
-                newTime = settingsPlay_.getLastTime();
+                newTime = lastTime;
                 setState(AnimationState::Paused);
                 break;
             }
             case PlaybackMode::Loop: {
-                newTime = settingsPlay_.getFirstTime();
+                newTime = firstTime;
                 break;
             }
             case PlaybackMode::Swing: {
                 deltaTime_ = -deltaTime_;
-                newTime = settingsPlay_.getLastTime() + deltaTime_;
+                newTime = lastTime + deltaTime_;
                 break;
             }
             default:
@@ -191,20 +221,20 @@ void AnimationController::tick() {
     }
 
     //Pong at the beginning of time
-    if (newTime < settingsPlay_.getFirstTime()) {
-        switch (settingsPlay_.mode) {
+    if (newTime < firstTime) {
+        switch (propPlayMode.get()) {
             case PlaybackMode::Once: {
-                newTime = settingsPlay_.getFirstTime();
+                newTime = firstTime;
                 setState(AnimationState::Paused);
                 break;
             }
             case PlaybackMode::Loop: {
-                newTime = settingsPlay_.getLastTime();
+                newTime = lastTime;
                 break;
             }
             case PlaybackMode::Swing: {
                 deltaTime_ = -deltaTime_;
-                newTime = settingsPlay_.getFirstTime() + deltaTime_;
+                newTime = firstTime + deltaTime_;
                 break;
             }
             default:

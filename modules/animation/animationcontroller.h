@@ -41,11 +41,12 @@
 #include <modules/animation/animationcontrollerobserver.h>
 
 #include <inviwo/core/properties/buttonproperty.h>
-//#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 
 namespace inviwo {
 
@@ -108,6 +109,13 @@ public:
     InviwoApplication* getInviwoApplication() { return app_; }
 
 public:
+    CompositeProperty propPlayOptions;
+    OptionPropertyInt propPlayFirstLastTimeOption;
+    DoubleMinMaxProperty propPlayFirstLastTime;
+    DoubleProperty propPlayFramesPerSecond;
+    OptionPropertyInt propPlayMode;
+
+    CompositeProperty propRenderOptions;
     OptionPropertyInt propRenderSizeOptions;
     IntVec2Property propRenderSize;
     DirectoryProperty propRenderLocationDir;
