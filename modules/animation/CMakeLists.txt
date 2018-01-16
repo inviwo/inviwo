@@ -16,6 +16,9 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationstate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationtime.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/constantinterpolation.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controlkeyframe.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controlkeyframesequence.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controltrack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/easing.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/linearinterpolation.h
@@ -46,6 +49,9 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/animationtime.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/easing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controlkeyframe.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controlkeyframesequence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controltrack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.cpp
