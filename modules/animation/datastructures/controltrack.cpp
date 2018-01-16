@@ -160,6 +160,20 @@ Seconds ControlTrack::firstTime() const {
     }
 }
 
+
+std::vector<Seconds> ControlTrack::getAllTimes() const
+{
+	std::vector<Seconds> result;
+	for (const auto& seq : sequences_) {
+		for (size_t i = 0; i < seq->size(); i++) {
+			result.push_back((*seq)[i].getTime());
+		}
+	}
+	std::sort(result.begin(), result.end());
+	return result;
+}
+
+
 void ControlTrack::onKeyframeSequenceMoved(KeyframeSequence* key) {
     std::stable_sort(sequences_.begin(), sequences_.end(), [](const auto& a, const auto& b) {
         return a->getFirst().getTime() < b->getFirst().getTime();

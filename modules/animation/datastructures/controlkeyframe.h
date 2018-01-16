@@ -69,7 +69,7 @@ public:
         if (time != time_) {
             auto oldTime = time_;
             time_ = time;
-            notifKeyframeTimeChanged(this, oldTime);
+            notifyKeyframeTimeChanged(this, oldTime);
         }
     }
     virtual Seconds getTime() const override { return time_; }
@@ -106,4 +106,4 @@ IVW_MODULE_ANIMATION_API bool operator!=(const ControlKeyframe& a, const Control
 
 }  // namespace inviwo
 
-#endif  // IVW_KEYFRAME_H
+#endif  // IVW_CONTROLKEYFRAME_H

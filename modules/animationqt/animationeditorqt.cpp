@@ -56,9 +56,18 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
     auto& animation = *controller_.getAnimation();
     animation.addObserver(this);
 
+	// Add Control track
+	{
+		auto trackQt = std::make_unique<TrackQt>(animation.getControlTrack());
+		trackQt->setPos(0, TimelineHeight);
+		this->addItem(trackQt.get());
+		tracks_.push_back(std::move(trackQt));
+	}
+
+	// Add Property tracks
     for (size_t i = 0; i < animation.size(); ++i) {
         auto trackQt = std::make_unique<TrackQt>(animation[i]);
-        trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
+        trackQt->setPos(0, TimelineHeight + TrackHeight * (i + 1) + TrackHeight * 0.5);
         this->addItem(trackQt.get());
         tracks_.push_back(std::move(trackQt));
     }

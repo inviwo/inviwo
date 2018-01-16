@@ -80,6 +80,8 @@ public:
 
     virtual Seconds lastTime() const override;
 
+	virtual std::vector<Seconds> getAllTimes() const override;
+
     virtual AnimationTimeState operator()(Seconds from, Seconds to,
                                           AnimationState state) const override;
 
