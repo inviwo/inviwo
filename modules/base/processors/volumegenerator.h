@@ -65,6 +65,7 @@ public:
 private:
     VolumeOutport outport_;
     TemplateOptionProperty<Type> type_;
+    TemplateOptionProperty<DataFormatId> format_;
     IntSize3Property size_;
     IntProperty index_;
 

@@ -37,6 +37,9 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/indexmapper.h>
+#include <modules/base/algorithm/dataminmax.h>
+
+#include <bitset>
 
 namespace inviwo {
 
@@ -59,24 +62,63 @@ std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat3& ba
 
     forEachVoxelParallel(*ram, [&](const size3_t& ind) { data[im(ind)] = function(ind); });
 
-    auto minmax = std::minmax_element(data, data + glm::compMul(dimensions));
+    auto minmax = util::dataMinMax(data, glm::compMul(dimensions), IgnoreSpecialValues::Yes);
 
     auto volume = std::make_unique<Volume>(ram);
     volume->setBasis(basis);
     volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
-    volume->dataMap_.dataRange.x = util::glm_convert<double>(*minmax.first);
-    volume->dataMap_.dataRange.y = util::glm_convert<double>(*minmax.second);
+    volume->dataMap_.dataRange.x = glm::compMin(minmax.first);
+    volume->dataMap_.dataRange.y = glm::compMax(minmax.second);
     volume->dataMap_.valueRange = volume->dataMap_.dataRange;
     return volume;
 }
 
-IVW_MODULE_BASE_API std::unique_ptr<Volume> makeSingleVoxelVolume(const size3_t& size);
+template <typename T = float>
+std::unique_ptr<Volume> makeSingleVoxelVolume(const size3_t& size) {
+    const size3_t mid{(size - size3_t{1u}) / size_t{2}};
+    return generateVolume(size, mat3(1.0), [&](const size3_t& ind) {
+        if (ind == mid)
+            return glm_convert_normalized<T>(1.0);
+        else
+            return glm_convert_normalized<T>(0.0);
+    });
+}
 
-IVW_MODULE_BASE_API std::unique_ptr<Volume> makeSphericalVolume(const size3_t& size);
+template <typename T = float>
+std::unique_ptr<Volume> makeSphericalVolume(const size3_t& size) {
+    const dvec3 rsize{size};
+    const dvec3 center = (rsize / 2.0);
+    const auto r0 = glm::length(rsize);
+    return generateVolume(size, mat3(1.0), [&](const size3_t& ind) {
+        const auto pos = dvec3(ind) + dvec3{0.5};
+        return glm_convert_normalized<T>(r0 / (r0 + glm::length2(center - pos)));
+    });
+}
 
-IVW_MODULE_BASE_API std::unique_ptr<Volume> makeRippleVolume(const size3_t& size);
+template <typename T = float>
+std::unique_ptr<Volume> makeRippleVolume(const size3_t& size) {
+    const dvec3 rsize{size};
+    const dvec3 center = (rsize / 2.0);
+    const double r0 = glm::length(rsize);
+    return generateVolume(size, mat3(1.0), [&](const size3_t& ind) {
+        const auto pos = dvec3(ind) + dvec3{0.5};
+        const auto r = glm::length2(center - pos);
+        return glm_convert_normalized<T>(
+            0.5 + 0.5 * std::sin(rsize.x * 0.5 * glm::pi<double>() * r / r0));
+    });
+}
 
-IVW_MODULE_BASE_API std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index);
+template <typename T = float>
+std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
+    std::bitset<8> corners(index);
+    const std::array<size3_t, 8> vertices = {
+        {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
+    std::unordered_map<size3_t, T> map;
+    for (int i = 0; i < 8; ++i) {
+        map[vertices[i]] = glm_convert_normalized<T>(corners[i] ? 1.0 : 0.0);
+    }
+    return generateVolume({2, 2, 2}, mat3(1.0), [&](const size3_t& ind) { return map[ind]; });
+}
 
 }  // namespace util
 

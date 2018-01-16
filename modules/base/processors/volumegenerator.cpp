@@ -29,8 +29,39 @@
 
 #include <modules/base/processors/volumegenerator.h>
 #include <modules/base/algorithm/volume/volumegeneration.h>
+#include <inviwo/core/util/formatdispatching.h>
 
 namespace inviwo {
+
+namespace {
+struct Helper {
+    template <typename Format>
+    void operator()(std::vector<OptionPropertyOption<DataFormatId>>& formats) {
+        formats.emplace_back(Format::str(), Format::str(), Format::id());
+    }
+};
+
+struct Creator {
+    template <typename Result, typename Format>
+    Result operator()(VolumeGenerator::Type type, size3_t size, size_t index) {
+        switch (type) {
+            case VolumeGenerator::Type::SingleVoxel:
+                return std::shared_ptr<Volume>(
+                    util::makeSingleVoxelVolume<typename Format::type>(size));
+            case VolumeGenerator::Type::Sphere:
+                return std::shared_ptr<Volume>(
+                    util::makeSphericalVolume<typename Format::type>(size));
+            case VolumeGenerator::Type::Ripple:
+                return std::shared_ptr<Volume>(util::makeRippleVolume<typename Format::type>(size));
+            case VolumeGenerator::Type::MarchingCube:
+                return std::shared_ptr<Volume>(
+                    util::makeMarchingCubeVolume<typename Format::type>(index));
+            default:
+                return std::shared_ptr<Volume>{};
+        }
+    }
+};
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeGenerator::processorInfo_{
@@ -51,31 +82,26 @@ VolumeGenerator::VolumeGenerator()
              {"sphere", "Sphere", Type::Sphere},
              {"ripple", "Ripple", Type::Ripple},
              {"marchingCube", "Marching Cube", Type::MarchingCube}}}
+    , format_{"format", "Format",
+              [&]() {
+                  std::vector<OptionPropertyOption<DataFormatId>> formats;
+                  util::for_each_type<DefaultDataFormats>{}(Helper{}, formats);
+                  return formats;
+              }(),
+              1}
     , size_("size", "Size", size3_t(10), size3_t(0), size3_t(500))
     , index_("index", "Index", 5, 0, 255) {
 
     addPort(outport_);
     addProperty(type_);
+    addProperty(format_);
     addProperty(size_);
     addProperty(index_);
 }
 
 void VolumeGenerator::process() {
-    std::shared_ptr<Volume> volume;
-    switch (type_) {
-        case Type::SingleVoxel:
-            volume = std::shared_ptr<Volume>(util::makeSingleVoxelVolume(size_));
-            break;
-        case Type::Sphere:
-            volume = std::shared_ptr<Volume>(util::makeSphericalVolume(size_));
-            break;
-        case Type::Ripple:
-            volume = std::shared_ptr<Volume>(util::makeRippleVolume(size_));
-            break;
-        case Type::MarchingCube:
-            volume = std::shared_ptr<Volume>(util::makeMarchingCubeVolume(index_));
-            break;
-    }
+    auto volume = dispatching::dispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
+        format_.get(), Creator{}, type_.get(), size_.get(), index_.get());
     outport_.setData(volume);
 }
 
