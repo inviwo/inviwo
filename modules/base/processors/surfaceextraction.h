@@ -64,6 +64,7 @@ class IVW_MODULE_BASE_API SurfaceExtraction : public Processor, public ProgressB
 public:
     enum class Method{
         MarchingCubes,
+        MarchingCubes2,
         MarchingTetrahedron,
     };
 

@@ -32,6 +32,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <modules/base/algorithm/volume/marchingtetrahedron.h>
 #include <modules/base/algorithm/volume/marchingcubes.h>
+#include <modules/base/algorithm/volume/marchingcubes2.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <numeric>
@@ -58,7 +59,8 @@ SurfaceExtraction::SurfaceExtraction()
     , outport_("mesh")
     , method_("method", "Method",
               {{"marchingtetrahedron", "MarchingTetrahedron", Method::MarchingTetrahedron},
-               {"marchingcubes", "MarchingCubes", Method::MarchingCubes}})
+               {"marchingcubes", "MarchingCubes", Method::MarchingCubes},
+    {"marchingcubes2", "MarchingCubes2", Method::MarchingCubes2}})
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
     , invertIso_("invert", "Invert ISO", false)
     , encloseSurface_("enclose", "Enclose Surface", true)
@@ -133,6 +135,10 @@ void SurfaceExtraction::process() {
                                switch (method) {
                                    case Method::MarchingCubes:
                                        m = util::marchingcubes(vol, iso, color, invert, enclose,
+                                                                progressCallBack);
+                                       break;
+                                   case Method::MarchingCubes2:
+                                       m = util::marchingcubes2(vol, iso, color, invert, enclose,
                                                                 progressCallBack);
                                        break;
                                    case Method::MarchingTetrahedron:

@@ -61,7 +61,7 @@ namespace util {
  * (return true to include current cell)
  */
 
-std::shared_ptr<Mesh> marchingcubes(
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingcubes(
     std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert, bool enclose,
     std::function<void(float)> progressCallback = std::function<void(float)>(),
     std::function<bool(const size3_t &)> maskingCallback = [](const size3_t &) { return true; });
