@@ -46,7 +46,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
         return calcTriangles(~corners, true);
     }
     std::unordered_map<NodeId, std::vector<NodeId>> edgeMap;
-    DisjointSets groups(8);
+    DisjointSets<int> groups(8);
 
     // Check which edges that are involved add group neighboring nodes
     for (NodeId i = 0; i < 8; ++i) {
@@ -114,83 +114,177 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
             } else {
                 triangles.push_back({e2, e1, e0});
             }
+
+            // 0 2, 3 1, 4 5, 7 6, 8 10, 11 9
         }
     }
 
     return triangles;
 }
 
-namespace {
+std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8> corners,
+                                                                  bool flip) {
+    if (corners.count() > 4) {
+        return calcEdges(~corners, true);
+    }
+    std::vector<EdgeId> res;
 
-class Cache {
-public:
-    Cache(const size2_t &dim) : cIm{dim} {}
-
-    inline std::pair<size_t, bool> find(const size3_t &ind, int edge, const size_t &val) {
-
-        const auto get = [](auto &map, const size_t &key,
-                            const size_t &val) -> std::pair<size_t, bool> {
-            auto res = map.insert({key, val});
-            return {res.first->second, res.second};
-        };
-
-        switch (edge) {
-            case 0:
-                return get(xCacheCurr, cIm(ind.x, ind.y), val);
-            case 1:
-                return get(yCacheCurr, cIm(ind.x + 1, ind.y), val);
-            case 2:
-                return get(xCacheCurr, cIm(ind.x, ind.y + 1), val);
-            case 3:
-                return get(yCacheCurr, cIm(ind.x, ind.y), val);
-            case 4:
-                return get(zCacheCurr, ind.x, val);
-            case 5:
-                return get(zCacheCurr, ind.x + 1, val);
-            case 6:
-                return get(zCacheNext, ind.x + 1, val);
-            case 7:
-                return get(zCacheNext, ind.x, val);
-            case 8:
-                return get(xCacheNext, cIm(ind.x, ind.y), val);
-            case 9:
-                return get(yCacheNext, cIm(ind.x + 1, ind.y), val);
-            case 10:
-                return get(xCacheNext, cIm(ind.x, ind.y + 1), val);
-            case 11:
-                return get(yCacheNext, cIm(ind.x, ind.y), val);
-            default:
-                throw Exception("Invalid edge");
+    // Check which edges that are involved add group neighboring nodes
+    const std::array<int, 12> edgeToCache = {{0, 2, 0, 2, 4, 4, 5, 5, 1, 3, 1, 3}};
+    for (NodeId i = 0; i < 8; ++i) {
+        if (corners[i]) {
+            for (NodeId j : nodeNeighbours[i]) {
+                if (!corners[j]) {
+                    auto edge = nodeIdsToEdgeId[i][j];
+                    res.push_back(edge);
+                }
+            }
         }
     }
+    return res;
+}
 
-    void incZ() {
-        xCacheCurr.clear();
-        std::swap(xCacheCurr, xCacheNext);
-        yCacheCurr.clear();
-        std::swap(yCacheCurr, yCacheNext);
-        zCacheNext.clear();
+std::array<size_t, 8> marching::Config::calcIncrenents(std::bitset<8> corners, bool flip) {
+    if (corners.count() > 4) {
+        return calcIncrenents(~corners, true);
+    }
+    std::array<size_t, 8> res;
+    std::fill(res.begin(), res.end(), 0);
+
+    // Check which edges that are involved add group neighboring nodes
+    const std::array<int, 12> edgeToCache = {{0, 4, 1, 4, 6, 6, 7, 7, 2, 5, 3, 5}};
+    for (NodeId i = 0; i < 8; ++i) {
+        if (corners[i]) {
+            for (NodeId j : nodeNeighbours[i]) {
+                if (!corners[j]) {
+                    auto edge = nodeIdsToEdgeId[i][j];
+                    res[edgeToCache[edge]] = 1;
+                }
+            }
+        }
+    }
+    return res;
+}
+
+namespace {
+
+class VCache {
+public:
+    enum CacheName { xCacheCurr, xCacheNext, yCacheCurr, yCacheNext, zCacheCurr, zCacheNext };
+    enum CachePosName { xCurr0, xCurr1, xNext0, xNext1, yCurr, yNext, zCurr, zNext };
+    VCache(const size2_t &dim) : cIm{dim} {
+        cache[xCacheCurr].resize(dim.x * dim.y);
+        cache[xCacheNext].resize(dim.x * dim.y);
+        cache[yCacheCurr].resize(dim.x * dim.y);
+        cache[yCacheNext].resize(dim.x * dim.y);
+        cache[zCacheCurr].resize(dim.x);
+        cache[zCacheNext].resize(dim.x);
+    }
+
+    std::pair<size_t, bool> find(const size3_t &ind, int edge, const size_t &val) {
+        switch (edge) {
+            case 0:
+                if (ind.z == 0 && ind.y == 0) {
+                    cache[xCacheCurr][cIm(pos[xCurr0], ind.y)] = val;
+                    return {val, true};
+                } else {
+                    return {cache[xCacheCurr][cIm(pos[xCurr0], ind.y)], false};
+                }
+            case 1:
+                if (ind.z == 0) {
+                    cache[yCacheCurr][cIm(pos[yCurr] + 1, ind.y)] = val;
+                    return {val, true};
+                } else {
+                    return {cache[yCacheCurr][cIm(pos[yCurr] + 1, ind.y)], false};
+                }
+            case 2:
+                if (ind.z == 0) {
+                    cache[xCacheCurr][cIm(pos[xCurr1], ind.y + 1)] = val;
+                    return {val, true};
+                } else {
+                    return {cache[xCacheCurr][cIm(pos[xCurr1], ind.y + 1)], false};
+                }
+            case 3:
+                if (ind.z == 0 && ind.x == 0) {
+                    cache[yCacheCurr][cIm(pos[yCurr], ind.y)] = val;
+                    return {val, true};
+                } else {
+                    return {cache[yCacheCurr][cIm(pos[yCurr], ind.y)], false};
+                }
+
+            case 4:
+                if (ind.x == 0 && ind.y == 0) {
+                    cache[zCacheCurr][pos[zCurr]] = val;
+                    return {val, true};
+                } else {
+                    return {cache[zCacheCurr][pos[zCurr]], false};
+                }
+            case 5:
+                if (ind.y == 0) {
+                    cache[zCacheCurr][pos[zCurr] + 1] = val;
+                    return {val, true};
+                } else {
+                    return {cache[zCacheCurr][pos[zCurr] + 1], false};
+                }
+            case 6:  // add
+                cache[zCacheNext][pos[zNext] + 1] = val;
+                return {val, true};
+            case 7:
+                if (ind.x == 0) {
+                    cache[zCacheNext][pos[zNext]] = val;
+                    return {val, true};
+                } else {
+                    return {cache[zCacheNext][pos[zNext]], false};
+                }
+
+            case 8:
+                if (ind.y == 0) {
+                    cache[xCacheNext][cIm(pos[xNext0], ind.y)] = val;
+                    return {val, true};
+                } else {
+                    return {cache[xCacheNext][cIm(pos[xNext0], ind.y)], false};
+                }
+            case 9:  // add
+                cache[yCacheNext][cIm(pos[yNext] + 1, ind.y)] = val;
+                return {val, true};
+            case 10:  // add
+                cache[xCacheNext][cIm(pos[xNext1], ind.y + 1)] = val;
+                return {val, true};
+            case 11:
+                if (ind.x == 0) {
+                    cache[yCacheNext][cIm(pos[yNext], ind.y)] = val;
+                    return {val, true};
+                } else {
+                    return {cache[yCacheNext][cIm(pos[yNext], ind.y)], false};
+                }
+        }
+        return {0, false};
+    }
+    void incX(const std::array<size_t, 8> &increments) {
+        for (int i = 0; i < 8; ++i) {
+            pos[i] += increments[i];
+        }
     }
     void incY() {
-        zCacheCurr.clear();
-        std::swap(zCacheCurr, zCacheNext);
+        std::swap(cache[zCacheCurr], cache[zCacheNext]);
+        pos[xCurr0] = 0;
+        pos[xNext0] = 0;
+        pos[xCurr1] = 0;
+        pos[xNext1] = 0;
+        pos[yCurr] = 0;
+        pos[yNext] = 0;
+        pos[zCurr] = 0;
+        pos[zNext] = 0;
+    }
+    void incZ() {
+        std::swap(cache[xCacheCurr], cache[xCacheNext]);
+        std::swap(cache[yCacheCurr], cache[yCacheNext]);
     }
 
 private:
-    struct CheapHash {
-        std::size_t operator()(size_t const &s) const noexcept { return s; }
-    };
-
     util::IndexMapper2D cIm;
-
-    using Map = std::unordered_map<size_t, size_t, CheapHash>;
-
-    Map xCacheCurr;
-    Map xCacheNext;
-    Map yCacheCurr;
-    Map yCacheNext;
-    Map zCacheCurr;
-    Map zCacheNext;
+    std::array<std::vector<size_t>, 6> cache;
+    std::array<size_t, 8> pos;
 };
 
 struct OffsetIndexMasks {
@@ -280,6 +374,7 @@ std::shared_ptr<Mesh> marchingcubes2(std::shared_ptr<const Volume> volume, doubl
     auto normalBuffer = std::make_shared<Buffer<vec3>>();
 
     auto indexRAM = indexBuffer->getEditableRAMRepresentation();
+    auto &indices = indexRAM->getDataContainer();
     auto &positions = vertexBuffer->getEditableRAMRepresentation()->getDataContainer();
     auto &textures = textureBuffer->getEditableRAMRepresentation()->getDataContainer();
     auto &colors = colorBuffer->getEditableRAMRepresentation()->getDataContainer();
@@ -304,14 +399,15 @@ std::shared_ptr<Mesh> marchingcubes2(std::shared_ptr<const Volume> volume, doubl
             return tmp;
         }();
 
-        const auto interpolate = [src, im, &mapValue, &doffs](const size3_t &ind, const dvec3 &pos,
-                                                              marching::Config::EdgeId e) {
+        const auto interpolate = [src, im, &mapValue, &doffs, tiso = util::glm_convert<T>(iso)](
+                                     const size3_t &ind, const dvec3 &pos,
+                                     marching::Config::EdgeId e) {
             const auto a = cube.edges[e][0];
             const auto b = cube.edges[e][1];
-            auto v0 = util::glm_convert<double>(src[im(ind + cube.vertices[a])]);
-            v0 = mapValue(v0);
-            auto v1 = util::glm_convert<double>(src[im(ind + cube.vertices[b])]);
-            v1 = mapValue(v1);
+            const auto tv0 = src[im(ind + cube.vertices[a])];
+            const auto v0 = util::glm_convert<double>(mapValue(tv0, tiso));
+            const auto tv1 = src[im(ind + cube.vertices[b])];
+            const auto v1 = util::glm_convert<double>(mapValue(tv1, tiso));
 
             const auto t = v0 / (v0 - v1);
             const auto r0 = pos + doffs[a];
@@ -319,46 +415,49 @@ std::shared_ptr<Mesh> marchingcubes2(std::shared_ptr<const Volume> volume, doubl
             return r0 + t * (r1 - r0);
         };
 
-        Cache cache(size2_t{dim.x, dim.y});
+        VCache vcache(size2_t{dim.x, dim.y});
         Index<T, decltype(isoTest)> index(src, im, util::glm_convert<T>(iso), isoTest);
         size3_t ind;
         dvec3 pos;
-        std::array<dvec3, 3> verts;
+
+        const float err = 4.0f * glm::epsilon<float>() * glm::epsilon<float>() * dr.x * dr.y;
+
         for (ind.z = 0, pos.z = 0.0; ind.z < dim1.z; ++ind.z, pos.z += dr.z) {
-            cache.incZ();
+            vcache.incZ();
             for (ind.y = 0, pos.y = 0.0; ind.y < dim1.y; ++ind.y, pos.y += dr.y) {
                 ind.x = 0;
                 const auto cInd = im(ind);
-                cache.incY();
+                vcache.incY();
                 index.init(cInd);
                 for (pos.x = 0.0; ind.x < dim1.x; ++ind.x, pos.x += dr.x) {
                     index.update(cInd + ind.x);
-
+                    if (index == 0 || index == 255) continue;
                     if (maskingCallback && !maskingCallback(ind)) continue;
 
-                    for (const auto &tri : cube.cases[index]) {
-                        std::transform(tri.begin(), tri.end(), verts.begin(),
-                                     [&](auto e) { return interpolate(ind, pos, e); });
-
-                        auto n = glm::cross(verts[1] - verts[0], verts[2] - verts[0]);
-                        if (glm::length2(n) < glm::epsilon<double>()) {
-                            // triangle is so small area is 0.
-                            continue;
-                        }
-                        n = glm::normalize(n);
-
-                        for (int v = 0; v < 3; ++v) {
-                            auto c = cache.find(ind, t[v], positions.size());
-                            if (c.second) {
-                                positions.emplace_back(verts[v]);
-                                normals.emplace_back(0.0f, 0.0f, 0.0f);
-                            }
-                            const auto i = c.first;
-
-                            indexRAM->add(static_cast<uint32_t>(i));
-                            normals[i] += n;
+                    std::array<size_t, 12> inds;
+                    for (const auto edge : cube.caseEdges[index]) {
+                        const auto c = vcache.find(ind, edge, positions.size());
+                        inds[edge] = c.first;
+                        if (c.second) {
+                            const auto vertex = interpolate(ind, pos, edge);
+                            positions.emplace_back(vertex);
+                            normals.emplace_back(0.0f, 0.0f, 0.0f);
                         }
                     }
+                    for (const auto &tri : cube.caseTriangles[index]) {
+                        const auto side0 = positions[inds[tri[1]]] - positions[inds[tri[0]]];
+                        const auto side1 = positions[inds[tri[2]]] - positions[inds[tri[0]]];
+                        auto n = glm::cross(side0, side1);
+                        if (glm::length2(n) < err) {
+                            continue;  // triangle is so small area is 0.
+                        }
+                        n = glm::normalize(n);
+                        for (int v = 0; v < 3; ++v) {
+                            indices.push_back(static_cast<uint32_t>(inds[tri[v]]));
+                            normals[inds[tri[v]]] += n;
+                        }
+                    }
+                    vcache.incX(cube.caseIncrements[index]);
                 }
             }
             if (progressCallback) {
@@ -368,20 +467,20 @@ std::shared_ptr<Mesh> marchingcubes2(std::shared_ptr<const Volume> volume, doubl
 
         if (enclose) {
             marching::encloseSurfce(src, dim, indexRAM, positions, normals, iso, invert, dr.x, dr.y,
-                                    dr.z);
+                                   dr.z);
         }
     };
     if (invert) {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
                 mc(ram, [](auto &&val, auto &&iso) { return val > iso; },
-                   [iso](const double &val) { return val - iso; });
+                   [](auto &&val, auto &&iso) { return val - iso; });
             });
     } else {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
                 mc(ram, [](auto &&val, auto &&iso) { return val < iso; },
-                   [iso](const double &val) { return -(val - iso); });
+                   [](auto &&val, auto &&iso) { return -(val - iso); });
             });
     }
 

@@ -68,50 +68,67 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingcubes2(
 }  // namespace util
 
 namespace marching {
-
-// Cube definitions
-//
-//                         ●────────── e10  ─────────●
-//                    v7 (0,1,1)                v6 (1,1,1)
-//                       ╱ │                       ╱ │
-//                      ╱  │                      ╱  │
-//                         │                         │
-//                   e11   │                    e9   │
-//
-//                  ╱      e7                 ╱      e6
-//                 ●──────────  e8  ─────────●
-//            v4 (0,0,1)   │            v5 (1,0,1)   │
-//                 │       │                 │       │
-//                 │       │                 │       │
-//                 │       │                 │       │
-//                 │       ●─────────  e2  ──┼───────●
-//                    v3 (0,1,0)                v2 (1,1,0)
-//                e4     ╱                  e5     ╱
-//
-//                 │   e3                    │   e1
-//    ▲            │                         │
-//    │     ▲      │ ╱                       │ ╱
-//  Z │  Y ╱       │╱                        │╱
-//    │   ╱        ●──────────  e0  ─────────●
-//    │  ╱    v0 (0,0,0)                v1 (1,0,0)
-//    │ ╱
-//    │╱
-//    ●──────────▶
-//            X
-//
-// Triangulations
-//                                                                      3
-//                                                                      ●
-//        2        3         2             3         2                 ╱ ╲
-//        ●         ●───────●               ●───────●                 ╱   ╲
-//       ╱ ╲         ╲     ╱ ╲             ╱ ╲     ╱ ╲               ╱     ╲
-//      ╱   ╲         ╲   ╱   ╲           ╱   ╲   ╱   ╲           4 ●───────● 2
-//     ╱     ╲         ╲ ╱     ╲         ╱     ╲ ╱     ╲           ╱ ╲     ╱ ╲
-//    ●───────●         ●───────●       ●───────●───────●         ╱   ╲   ╱   ╲
-//   0         1       0         1     4        0        1       ╱     ╲ ╱     ╲
-//                                                              ●───────●───────●
-//                                                             5        0        1
-//
+/**
+ * Cube definitions
+ *
+ *                         ●────────── e10  ─────────●
+ *                    v7 (0,1,1)                v6 (1,1,1)
+ *                       ╱ │                       ╱ │
+ *                      ╱  │                      ╱  │
+ *                         │                         │
+ *                   e11   │                    e9   │
+ *
+ *                  ╱      e7                 ╱      e6
+ *                 ●──────────  e8  ─────────●
+ *            v4 (0,0,1)   │            v5 (1,0,1)   │
+ *                 │       │                 │       │
+ *                 │       │                 │       │
+ *                 │       │                 │       │
+ *                 │       ●─────────  e2  ──┼───────●
+ *                    v3 (0,1,0)                v2 (1,1,0)
+ *                e4     ╱                  e5     ╱
+ *
+ *                 │   e3                    │   e1
+ *    ▲            │                         │
+ *    │     ▲      │ ╱                       │ ╱
+ *  Z │  Y ╱       │╱                        │╱
+ *    │   ╱        ●──────────  e0  ─────────●
+ *    │  ╱    v0 (0,0,0)                v1 (1,0,0)
+ *    │ ╱
+ *    │╱
+ *    ●──────────▶
+ *            X
+ *
+ * Caching
+ * Edge 
+ *   0: xCacheCurr0 get 0 ind.x, ind.y
+ *   1: yCacheCurr  get 4 ind.x + 1, ind.y
+ *   2: xCacheCurr1 get 1 ind.x, ind.y + 1
+ *   3: yCacheCurr  get 4 ind.x, ind.y
+ *   4: zCacheCurr  get 6 ind.x
+ *   5: zCacheCurr  get 6 ind.x + 1
+ *   6: zCacheNext  add 7 ind.x + 1
+ *   7: zCacheNext  get 7 ind.x
+ *   8: xCacheNext0 get 2 ind.x, ind.y
+ *   9: yCacheNext  add 5 ind.x + 1, ind.y
+ *  10: xCacheNext1 add 3 ind.x, ind.y + 1
+ *  11: yCacheNext  get 5 ind.x, ind.y
+ *
+ * {xCacheCurr0, xCacheCurr1, xCacheNext0, xCacheNext1, yCacheCurr, yCacheNext, zCacheCurr, zCacheNext}
+ * 0, 4, 1, 4, 6, 6, 7, 7, 2, 5, 3, 5
+ * Triangulations
+ *                                                                      3
+ *                                                                      ●
+ *        2        3         2             3         2                 ╱ ╲
+ *        ●         ●───────●               ●───────●                 ╱   ╲
+ *       ╱ ╲         ╲     ╱ ╲             ╱ ╲     ╱ ╲               ╱     ╲
+ *      ╱   ╲         ╲   ╱   ╲           ╱   ╲   ╱   ╲           4 ●───────● 2
+ *     ╱     ╲         ╲ ╱     ╲         ╱     ╲ ╱     ╲           ╱ ╲     ╱ ╲
+ *    ●───────●         ●───────●       ●───────●───────●         ╱   ╲   ╱   ╲
+ *   0         1       0         1     4        0        1       ╱     ╲ ╱     ╲
+ *                                                              ●───────●───────●
+ *                                                             5        0        1
+ */
 struct IVW_MODULE_BASE_API Config {
     using NodeId = int;
     using EdgeId = int;
@@ -149,6 +166,7 @@ struct IVW_MODULE_BASE_API Config {
         return tmp;
     }();
 
+
     // Derived properties;
     const std::array<std::array<EdgeId, 8>, 8> nodeIdsToEdgeId =
         util::make_array<8, NodeId>([&](NodeId i) -> std::array<EdgeId, 8> {
@@ -178,9 +196,9 @@ struct IVW_MODULE_BASE_API Config {
             auto distance2 = [](const size3_t &a, const size3_t &b) {
                 return glm::compAdd((a - b) * (a - b));
             };
-            std::array<int, 3> nn{};
+            std::array<NodeId, 3> nn{};
             int count = 0;
-            for (int j = 0; j < 8; ++j) {
+            for (NodeId j = 0; j < 8; ++j) {
                 if (distance2(vertices[i], vertices[j]) == 1) {
                     nn[count] = j;
                     ++count;
@@ -191,8 +209,18 @@ struct IVW_MODULE_BASE_API Config {
 
     std::vector<Triangle> calcTriangles(std::bitset<8> corners, bool flip = false);
 
-    const std::array<std::vector<Triangle>, 256> cases =
+    std::vector<EdgeId> calcEdges(std::bitset<8> corners, bool flip = false);
+
+    std::array<size_t, 8> calcIncrenents(std::bitset<8> corners, bool flip = false);
+
+    const std::array<std::vector<Triangle>, 256> caseTriangles =
         util::make_array<256>([&](size_t i) { return calcTriangles(i); });
+
+    const std::array<std::vector<EdgeId>, 256> caseEdges =
+        util::make_array<256>([&](size_t i) { return calcEdges(i); });
+
+    const std::array<std::array<size_t, 8>, 256> caseIncrements =
+        util::make_array<256>([&](size_t i) { return calcIncrenents(i); });
 };
 
 }  // namespace marching
