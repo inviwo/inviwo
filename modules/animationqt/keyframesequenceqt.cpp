@@ -55,7 +55,10 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, Track
     for (size_t i = 0; i < keyframeSequence_.size(); ++i) {
         keyframes_.push_back(std::make_unique<KeyframeQt>(keyframeSequence_[i], this));
     }
+
     prepareGeometryChange();
+    setSelected(keyframeSequence_.isSelected());
+
 }
 
 KeyframeSequenceQt::~KeyframeSequenceQt() = default;
