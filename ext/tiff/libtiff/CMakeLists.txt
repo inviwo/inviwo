@@ -130,13 +130,17 @@ if(HAVE_LD_VERSION_SCRIPT)
                         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiff.map")
 endif()
 
+
+## Inviwo: disabled installing binary files
 #install(TARGETS tiff
 #        RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
 #        LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
 #        ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
-install(FILES ${tiff_HEADERS} ${nodist_tiff_HEADERS}
-        DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+## Inviwo: Temporarily disabled installing header files
+#install(FILES ${tiff_HEADERS} ${nodist_tiff_HEADERS}
+#        DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+##-------------------
 
 if(cxx)
   add_library(tiffxx ${tiffxx_SOURCES} ${tiffxx_HEADERS})
@@ -154,14 +158,15 @@ if(cxx)
                           "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiffxx.map")
   endif()
 
-  install(TARGETS tiffxx
-          RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
-          LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
-          ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
+  ## Inviwo: disabled installing binary files
+  # install(TARGETS tiffxx
+  #         RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+  #         LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
+  #         ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
-  install(FILES ${tiffxx_HEADERS}
-          DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
-
+  ## Inviwo: Temporarily disabled installing header files
+  # install(FILES ${tiffxx_HEADERS}
+  #         DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 endif()
 
 #--------------------------------------------------------------------

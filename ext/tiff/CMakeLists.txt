@@ -719,8 +719,10 @@ set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
 set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libtiff-4.pc.in
                ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc
-        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+## Inviwo: Temporarily disabled installing header files
+#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtiff-4.pc
+#        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+##-------------------
 
 # Includes used by libtiff (and tests)
 if(ZLIB_INCLUDE_DIRS)
@@ -772,6 +774,15 @@ add_subdirectory(libtiff)
 #add_subdirectory(build)
 #add_subdirectory(man)
 #add_subdirectory(html)
+
+## Inviwo: suppress build warnings
+if (TARGET tiff)
+  ivw_suppress_compiler_warnings(tiff)
+endif()
+if (TARGET tiffxx)
+  ivw_suppress_compiler_warnings(tiffxx)
+endif()
+##-------------------
 
 #message(STATUS "EXTRA_DIST: ${EXTRA_DIST}")
 #[[ Inviwo: Disable messages 
