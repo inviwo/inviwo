@@ -44,8 +44,7 @@ namespace animation {
 
 /** \class ControlTrack
  * A special track for manipulating the playback.
- * Exposes functions for adding a KeyFrame and KeyFrameSequence
- * using the current values of the Property.
+ * Exposes functions for adding a ControlKeyFrame and ControlKeyFrameSequence
  * @see Track
  */
 class ControlTrack : public Track {

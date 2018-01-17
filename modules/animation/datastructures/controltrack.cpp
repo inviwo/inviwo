@@ -94,12 +94,14 @@ AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationS
 	if (state == AnimationState::Playing) {
 		auto t_beg = std::min(from.count(), to.count());
 		auto t_end = std::max(from.count(), to.count());
+		// center and radius
 		auto t_c = (t_beg + t_end) * 0.5f;
 		auto t_r = t_end - t_c;
 
 		for (auto& seq : sequences_) {
 			auto s_beg = seq->getFirst().getTime().count();
 			auto s_end = seq->getLast().getTime().count();
+			// center and radius
 			auto s_c = (s_beg + s_end) * 0.5f;
 			auto s_r = s_end - s_c;
 

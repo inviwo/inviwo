@@ -41,7 +41,7 @@ namespace animation {
 
 enum class ControlAction { Pause, JumpTo, Script };
 
-// TODO: Perhaps replace with variant in future
+// TODO: Perhaps replace with variant in future (Cannot be union due to std::string)
 struct ControlPayload {
     Seconds jumpToTime;
     std::string script;
