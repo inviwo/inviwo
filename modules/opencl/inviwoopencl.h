@@ -209,10 +209,16 @@ public:
     bool isOpenGLSharingEnabled() const;
 
     /**
-     *  Get the device that has most compute units.
-     *  @param bestDevice Set to found device, if found.
-     *  @param onPlatform Set to platform that device exist on, if found.
-     *  @return True if any device found, false otherwise.
+     * /brief Get the device that has most compute units.
+     * Search priority:
+     *  1. CL Devices from same vendor as GL 
+     *  2. GPU devices rather than CPU devices
+     *  3. Number of max compute units 
+     * (Some Intel CPU reports larger number of max compute units than some NVidia graphics cards) 
+     * 
+     * @param bestDevice Set to found device, if found.
+     * @param onPlatform Set to platform that device exist on, if found.
+     * @return True if any device found, false otherwise.
      */
     static bool getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPlatform);
 private:
