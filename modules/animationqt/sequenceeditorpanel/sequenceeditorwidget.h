@@ -44,6 +44,7 @@
 
 class QVBoxLayout;
 class QPaintEvent;
+class QComboBox;
 
 namespace inviwo {
 
@@ -72,6 +73,8 @@ public:
 
     void setReorderNeeded();
 
+    virtual void onKeyframeSequenceEasingChanged(KeyframeSequence* seq) override;
+
 protected:
     void reorderKeyframes();
     virtual void paintEvent(QPaintEvent* event) override;
@@ -83,6 +86,7 @@ private:
     std::unordered_map<Keyframe*, KeyframeEditorWidget*> keyframeEditorWidgets_;
 
     QVBoxLayout* keyframesLayout_;
+    QComboBox* easingComboBox_;
 
     bool reorderNeeded_{true};
 };

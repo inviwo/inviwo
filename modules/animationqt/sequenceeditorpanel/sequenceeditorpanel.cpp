@@ -47,10 +47,10 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
     : QScrollArea(parent), controller_(controller) {
     setObjectName("SequenceEditorPanel");
 
-    //auto scrollArea = new QScrollArea(this);
+    // auto scrollArea = new QScrollArea(this);
     auto scrollArea = this;
     scrollArea->setWidgetResizable(true);
-    //scrollArea->setMinimumWidth(320);
+    // scrollArea->setMinimumWidth(320);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 #ifdef __APPLE__
     // Scrollbars are overlayed in different way on mac...
@@ -61,10 +61,9 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setContentsMargins(0, 7, 0, /*PropertyWidgetQt::spacing*/ 7);
 
+    auto* widget = new QWidget();
 
-    auto * widget = new QWidget();
-
-    auto layout = new QVBoxLayout();  
+    auto layout = new QVBoxLayout();
     widget->setLayout(layout);
     layout->setAlignment(Qt::AlignTop);
 
@@ -92,32 +91,28 @@ void SequenceEditorPanel::onAnimationChanged(AnimationController* controller, An
     newAnim->addObserver(this);
 }
 
-void SequenceEditorPanel::onTrackAdded(Track* track)
-{
+void SequenceEditorPanel::onTrackAdded(Track* track) {
     for (size_t i = 0; i < track->size(); i++) {
-        onKeyframeSequenceAdded(track, &(*track)[i]  );
+        onKeyframeSequenceAdded(track, &(*track)[i]);
     }
     track->addObserver(this);
 }
 
-void SequenceEditorPanel::onTrackRemoved(Track* track)
-{
-    track->removeObserver(this);
+void SequenceEditorPanel::onTrackRemoved(Track* track) { track->removeObserver(this); }
 
-    LogWarn("Should probably do something here");
-}
-
-
-void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s)
-{
-    auto widget = new SequenceEditorWidget(*s,*t,this);
+void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
+    auto widget = new SequenceEditorWidget(*s, *t, this);
     widgets_[s] = widget;
     sequenceEditors_->addWidget(widget);
 }
 
-void SequenceEditorPanel::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s)
-{
-    LogWarn("Should probably do something here");
+void SequenceEditorPanel::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) {
+    auto it = widgets_.find(s);
+    if (it != widgets_.end()) {
+        sequenceEditors_->removeWidget(it->second);
+        delete it->second;
+        widgets_.erase(it);
+    }
 }
 
 }  // namespace animation

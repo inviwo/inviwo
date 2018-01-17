@@ -47,8 +47,10 @@ class QComboBox;
 class QDoubleSpinBox;
 
 namespace inviwo {
+
 class Property;
 class PropertyWidgetQt;
+
 namespace animation {
 class SequenceEditorWidget;
 
@@ -57,18 +59,16 @@ class SequenceEditorWidget;
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget , public KeyframeObserver {
+class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget, public KeyframeObserver {
 public:
     KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
     virtual ~KeyframeEditorWidget();
 
+    virtual void onKeyframeTimeChanged(Keyframe *key, Seconds oldTime) override;
 
-    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
+    Keyframe &getKeyframe() { return keyframe_; }
 
-    Keyframe &getKeyframe() {return keyframe_;}
-
-
-    virtual void onKeyframeSelectionChanged(Keyframe* seq) override;
+    virtual void onKeyframeSelectionChanged(Keyframe *seq) override;
 
 private:
     Keyframe &keyframe_;
