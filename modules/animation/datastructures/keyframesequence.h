@@ -84,40 +84,16 @@ public:
 
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) = 0;
 
-    virtual void serialize(Serializer& s) const override { 
-        s.serialize("selected", isSelected_); 
-        s.serialize("easing", easing_); 
-    };
-    virtual void deserialize(Deserializer& d) override { 
-        d.deserialize("selected", isSelected_); 
-        d.deserialize("easing", easing_); 
-    };
+    virtual void serialize(Serializer& s) const override;;
+    virtual void deserialize(Deserializer& d) override;;
 
-    bool isSelected() const { return isSelected_; }
-    void setSelected(bool selected = true) {
-        if (selected != isSelected_) {
-            isSelected_ = selected;
-            notifyKeyframeSequenceSelectionChanged(this);
-        }
-    }
+    bool isSelected() const;
+    void setSelected(bool selected = true);
 
-    bool isAnyKeyframeSelected() const {
-        for (size_t i = 0; i < size(); i++) {
-            if (operator[](i).isSelected()) return true;
-        }
-        return false;
-    }
+    bool isAnyKeyframeSelected() const;
 
-
-
-
-    virtual easing::EasingType getEasingType() const { return easing_; }
-    virtual void setEasingType(easing::EasingType easing) { 
-        if(easing_ != easing){
-            easing_ = easing; 
-            notifyKeyframeSequenceEasingChanged(this);
-        }
-    }
+    virtual easing::EasingType getEasingType() const;
+    virtual void setEasingType(easing::EasingType easing);
 
 protected:
     bool isSelected_{false};

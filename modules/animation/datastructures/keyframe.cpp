@@ -31,7 +31,6 @@
 
 namespace inviwo {
 
-
 bool animation::operator<(const Keyframe& a, const Keyframe& b) {
     return a.getTime() < b.getTime();
 }
@@ -48,5 +47,18 @@ bool animation::operator<=(const Keyframe& a, const Keyframe& b) {
     return a.getTime() <= b.getTime();
 }
 
-} // namespace
+void animation::Keyframe::serialize(Serializer& s) const { s.serialize("selected", isSelected_); }
 
+void animation::Keyframe::deserialize(Deserializer& d) { d.deserialize("selected", isSelected_); }
+
+bool animation::Keyframe::isSelected() const { return isSelected_; }
+
+void animation::Keyframe::setSelected(bool selected /*= true*/) {
+
+    if (selected != isSelected_) {
+        isSelected_ = selected;
+        notifyKeyframeSelectionChanged(this);
+    }
+}
+
+}  // namespace inviwo

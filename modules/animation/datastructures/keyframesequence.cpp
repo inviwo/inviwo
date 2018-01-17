@@ -31,5 +31,44 @@
 
 namespace inviwo {
 
-} // namespace
+void animation::KeyframeSequence::serialize(Serializer& s) const {
 
+    s.serialize("selected", isSelected_);
+    s.serialize("easing", easing_);
+}
+
+void animation::KeyframeSequence::deserialize(Deserializer& d) {
+
+    d.deserialize("selected", isSelected_);
+    d.deserialize("easing", easing_);
+}
+
+bool animation::KeyframeSequence::isSelected() const { return isSelected_; }
+
+void animation::KeyframeSequence::setSelected(bool selected /*= true*/) {
+    if (selected != isSelected_) {
+        isSelected_ = selected;
+        notifyKeyframeSequenceSelectionChanged(this);
+    }
+}
+
+bool animation::KeyframeSequence::isAnyKeyframeSelected() const {
+    for (size_t i = 0; i < size(); i++) {
+        if (operator[](i).isSelected()) return true;
+    }
+    return false;
+}
+
+inviwo::animation::easing::EasingType animation::KeyframeSequence::getEasingType() const {
+    return easing_;
+}
+
+void animation::KeyframeSequence::setEasingType(easing::EasingType easing) {
+
+    if (easing_ != easing) {
+        easing_ = easing;
+        notifyKeyframeSequenceEasingChanged(this);
+    }
+}
+
+}  // namespace inviwo

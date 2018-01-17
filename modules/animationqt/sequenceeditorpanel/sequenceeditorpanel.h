@@ -78,7 +78,7 @@ public:
 private:
     AnimationController& controller_;
 
-    QVBoxLayout* sequenceEditors_;
+    QVBoxLayout* sequenceEditors_{nullptr};
 
     std::unordered_map<KeyframeSequence*, SequenceEditorWidget*> widgets_;
 };
