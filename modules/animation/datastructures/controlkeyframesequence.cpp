@@ -104,7 +104,7 @@ AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
 	if (state == AnimationState::Playing) {
 		for (const auto& key : keyframes_) {
 			auto t = key->getTime();
-			if (from < t && t < to) {
+			if (from < t && t < to || to < t && t < from) {
 				timeState = (*key)(from, to, state);
 			}
 		}

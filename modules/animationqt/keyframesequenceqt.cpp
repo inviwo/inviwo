@@ -56,7 +56,7 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, Track
         keyframes_.push_back(std::make_unique<KeyframeQt>(keyframeSequence_[i], this));
     }
 
-    prepareGeometryChange();
+	prepareGeometryChange();
     setSelected(keyframeSequence_.isSelected());
 
 }
@@ -92,20 +92,20 @@ const KeyframeSequence& KeyframeSequenceQt::getKeyframeSequence() const {
 }
 
 void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
+	prepareGeometryChange();
     keyframes_.push_back(std::make_unique<KeyframeQt>(*key, this));
-    prepareGeometryChange();
 }
 
 void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
     if (util::erase_remove_if(keyframes_, [&](auto& keyframeqt) {
             if (&(keyframeqt->getKeyframe()) == key) {
+				prepareGeometryChange();
                 this->scene()->removeItem(keyframeqt.get());
                 return true;
             } else {
                 return false;
             }
         }) > 0) {
-        prepareGeometryChange();
     }
 }
 

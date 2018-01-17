@@ -33,7 +33,9 @@ namespace inviwo {
 
 namespace animation {
 
-Animation::Animation() = default;
+Animation::Animation() {
+	priorityTracks_.push_back(&controlTrack_);
+};
 
 AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
     AnimationTimeState ts{to, state};
@@ -43,9 +45,7 @@ AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationStat
     return ts;
 }
 
-bool Animation::empty() const {
-    return tracks_.empty();
-}
+bool Animation::empty() const { return tracks_.empty(); }
 
 size_t Animation::size() const { return tracks_.size(); }
 
@@ -77,6 +77,23 @@ void Animation::removeTrack(const std::string& id) {
 }
 
 void Animation::removeKeyframe(Keyframe* key) {
+	// Check control track
+	for (size_t s = 0; s < controlTrack_.size(); s++) {
+		auto& seq = controlTrack_[s];
+		for (size_t k = 0; k < seq.size(); ++k) {
+			if (&seq[k] == key) {
+				if (seq.size() == 1) {
+					controlTrack_.remove(s);
+				}
+				else {
+					seq.remove(k);
+				}
+				return;
+			}
+		}
+	}
+
+	// Check other tracks
     for (size_t t = 0; t < tracks_.size(); ++t) {
         auto& track = *tracks_[t];
         for (size_t s = 0; s < track.size(); ++s) {
@@ -95,6 +112,27 @@ void Animation::removeKeyframe(Keyframe* key) {
     }
 }
 
+void Animation::removeKeyframeSequence(KeyframeSequence* seq) {
+	// Check control track
+	for (size_t s = 0; s < controlTrack_.size(); s++) {
+		if (&controlTrack_[s] == seq) {
+			controlTrack_.remove(s);
+			return;
+		}
+	}
+
+	// Check other tracks
+	for (size_t t = 0; t < tracks_.size(); ++t) {
+		auto& track = *tracks_[t];
+		for (size_t s = 0; s < track.size(); ++s) {
+			if (&track[s] == seq) {
+				track.remove(s);
+				return;
+			}
+		}
+	}
+}
+
 void Animation::clear() {
     while (!empty()) {
         removeTrack(tracks_.size() - 1);
@@ -102,7 +140,7 @@ void Animation::clear() {
 }
 
 std::vector<Seconds> Animation::getAllTimes() const {
-    
+
     std::vector<Seconds> result;
 
     for (size_t t = 0; t < tracks_.size(); ++t) {
@@ -119,30 +157,30 @@ std::vector<Seconds> Animation::getAllTimes() const {
 }
 
 Seconds Animation::firstTime() const {
+	Seconds time = controlTrack_.firstTime();
     auto it = std::min_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
         return a->firstTime() < b->firstTime();
     });
     if (it != tracks_.end()) {
-        return (*it)->firstTime();
-    } else {
-        return Seconds{0.0};
+        time = std::min(time, (*it)->firstTime());
     }
+	return time;
 }
 
 Seconds Animation::lastTime() const {
+	Seconds time = controlTrack_.lastTime();
     auto it = std::max_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
         return a->lastTime() < b->lastTime();
     });
     if (it != tracks_.end()) {
-        return (*it)->lastTime();
-    } else {
-        return Seconds{0.0};
+		time = std::max(time, (*it)->lastTime());
     }
+	return time;
 }
 
 void Animation::serialize(Serializer& s) const {
-	s.serialize("tracks", tracks_, "track");
-	s.serialize("control-track", controlTrack_);
+    s.serialize("tracks", tracks_, "track");
+    s.serialize("control-track", controlTrack_);
 }
 
 void Animation::deserialize(Deserializer& d) {
@@ -151,7 +189,7 @@ void Animation::deserialize(Deserializer& d) {
         .setMakeNew([]() { return std::unique_ptr<Track>(); })
         .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
         .onRemove([&](const std::string& id) { removeTrack(id); })(d, tracks_);
-	d.deserialize("control-track", controlTrack_);
+    d.deserialize("control-track", controlTrack_);
 }
 
 void Animation::onPriorityChanged(Track* t) { doPrioritySort(); }
@@ -166,7 +204,6 @@ void Animation::onFirstMoved(Track* t) { notifyFirstMoved(); }
 
 void Animation::onLastMoved(Track* t) { notifyLastMoved(); }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
-
+}  // namespace inviwo
