@@ -6,8 +6,8 @@ ivw_module(ABufferGL)
 # Add header files
 set(HEADER_FILES   
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/abuffergeometryglprocessor.h    
-	#ABUFFER STUFFS
-	${CMAKE_CURRENT_SOURCE_DIR}/abufferglhelpers/abuffergl.h
+    #ABUFFER STUFFS
+    ${CMAKE_CURRENT_SOURCE_DIR}/abufferglhelpers/abuffergl.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -15,8 +15,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES    
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/abuffergeometryglprocessor.cpp
-	#ABUFFER STUFFS
-	${CMAKE_CURRENT_SOURCE_DIR}/abufferglhelpers/abuffergl.cpp
+    #ABUFFER STUFFS
+    ${CMAKE_CURRENT_SOURCE_DIR}/abufferglhelpers/abuffergl.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -28,8 +28,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferlinkedlist.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abuffersort.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abuffer.glsl
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferresolve.glsl
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferreset.glsl	
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferresolve.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferreset.glsl  
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
