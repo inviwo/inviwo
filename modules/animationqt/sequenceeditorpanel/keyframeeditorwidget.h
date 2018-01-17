@@ -43,6 +43,7 @@
 #include <warn/pop>
 
 class QHBoxLayout;
+class QComboBox;
 class QDoubleSpinBox;
 
 namespace inviwo {
@@ -75,6 +76,8 @@ private:
 
     std::unique_ptr<Property> property_{nullptr};
     PropertyWidgetQt *propertyWidget_{nullptr};
+	QComboBox *actionWidget_{ nullptr };
+	QDoubleSpinBox *jumpToWidget_{ nullptr };
     QHBoxLayout *layout_{nullptr};
     QDoubleSpinBox *timeSpinner_{nullptr};
 };

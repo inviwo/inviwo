@@ -74,6 +74,7 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
     scrollArea->setWidget(widget);
 
     if (auto ani = controller.getAnimation()) {
+		onTrackAdded(&ani->getControlTrack());
         for (size_t i = 0; i < ani->size(); i++) {
             onTrackAdded(&(*ani)[i]);
         }

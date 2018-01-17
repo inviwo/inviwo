@@ -66,27 +66,29 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
     keyframesLayout_ = new QVBoxLayout();
     layout->addLayout(keyframesLayout_);
 
-    auto easingLayout = new QHBoxLayout();
-    layout->addLayout(easingLayout);
+	if (dynamic_cast<ControlTrack*>(&track) == nullptr) {
+		auto easingLayout = new QHBoxLayout();
+		layout->addLayout(easingLayout);
 
-    auto easing = new QComboBox();
-    easingLayout->addWidget(new QLabel("Easing: "));
-    easingLayout->addWidget(easing);
+		auto easing = new QComboBox();
+		easingLayout->addWidget(new QLabel("Easing: "));
+		easingLayout->addWidget(easing);
 
-    auto currentEasing = sequence_.getEasingType();
+		auto currentEasing = sequence_.getEasingType();
 
-    for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
-        std::ostringstream oss;
-        oss << e;
-        easing->addItem(oss.str().c_str(), QVariant((int)e));
-        if (currentEasing == e) {
-            easing->setCurrentIndex(easing->count() - 1);
-        }
-    }
+		for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
+			std::ostringstream oss;
+			oss << e;
+			easing->addItem(oss.str().c_str(), QVariant((int)e));
+			if (currentEasing == e) {
+				easing->setCurrentIndex(easing->count() - 1);
+			}
+		}
 
-    void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
-    connect(easing, signal,
-            [this](int index) { sequence_.setEasingType(static_cast<easing::EasingType>(index)); });
+		void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
+		connect(easing, signal,
+			[this](int index) { sequence_.setEasingType(static_cast<easing::EasingType>(index)); });
+	}
 
     for (size_t i = 0; i < sequence_.size(); i++) {
         onKeyframeAdded(&sequence_[i], &sequence_);
