@@ -86,12 +86,7 @@ ControlKeyframeSequence& ControlTrack::operator[](size_t i) {
 
 size_t ControlTrack::size() const { return sequences_.size(); }
 
-/**
-* Track of sequences
-* ----------X======X====X-----------X=========X-------X=====X--------
-* |- case 1-|-case 2----------------|-case 2----------|-case 2------|
-*           |-case 2a---|-case 2b---|
-*/
+
 AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!enabled_ || sequences_.empty()) return {to, state};
 
@@ -103,11 +98,8 @@ AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationS
 			[](const auto& time, const auto& seq) { return time < seq->getFirst().getTime(); });
 
 		if (it != sequences_.begin()) {
-			auto& seq1 = *std::prev(it);
-
-			if (to < seq1->getLast().getTime()) {  // case 2a
-				return (*seq1)(from, to, state);
-			}
+			auto& seq = *std::prev(it);
+			return (*seq)(from, to, state);
 		}
 	}
 

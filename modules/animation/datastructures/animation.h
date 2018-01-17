@@ -91,6 +91,16 @@ public:
      * @note Keyframe will be deleted if removed so do not use pointer after calling this function.
      */
     void removeKeyframe(Keyframe* key);
+
+	/**
+	* Remove KeyframeSequence if matching any of the Sequences in the tracks.
+	* Calls KeyFrameSequenceObserver::notifyKeyframeSequenceRemoved for the sequence removed
+	* and TrackObserver::notifyKeyframeRemoved for every removed keyframe.
+	* Does nothing if no match was found.
+	* @note KeyframeSequences and its Keyframes will be deleted if removed so
+	* do not use pointer after calling this function.
+	*/
+	void removeKeyframeSequence(KeyframeSequence* seq);
     /**
      * Remove all tracks. Calls TrackObserver::notifyTrackRemoved for each removed track.
      */

@@ -30,6 +30,7 @@
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animationqt/trackqt.h>
 #include <modules/animationqt/keyframeqt.h>
+#include <modules/animationqt/keyframesequenceqt.h>
 #include <modules/animation/animationmodule.h>
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/animationcontroller.h>
@@ -59,7 +60,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
 	// Add Control track
 	{
 		auto trackQt = std::make_unique<TrackQt>(animation.getControlTrack());
-		trackQt->setPos(0, TimelineHeight);
+		trackQt->setPos(0, TimelineHeight + TrackHeight * 0.5);
 		this->addItem(trackQt.get());
 		tracks_.push_back(std::move(trackQt));
 	}
@@ -107,10 +108,14 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
     if (k == Qt::Key_Delete) {  // Delete selected
         QList<QGraphicsItem*> itemList = selectedItems();
         for (auto& elem : itemList) {
-            if (auto key = qgraphicsitem_cast<KeyframeQt*>(elem)) {
+            if (auto keyqt = qgraphicsitem_cast<KeyframeQt*>(elem)) {
                 auto& animation = *controller_.getAnimation();
-                animation.removeKeyframe(&(key->getKeyframe()));
+                animation.removeKeyframe(&(keyqt->getKeyframe()));
             }
+			else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceQt*>(elem)) {
+				auto& animation = *controller_.getAnimation();
+				animation.removeKeyframeSequence(&(seqqt->getKeyframeSequence()));
+			}
         }
     } else if (k == Qt::Key_Space) {
         switch(controller_.getState()) {

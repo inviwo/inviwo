@@ -30,6 +30,8 @@
 #ifndef IVW_CONTROLKEYFRAME_H
 #define IVW_CONTROLKEYFRAME_H
 
+#include <modules/animation/animationmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/animationstate.h>
 
@@ -49,12 +51,12 @@ struct ControlPayload {
  * Base class for Keyframes that performs some type of control action.
  * @see Keyframe
  */
-IVW_MODULE_ANIMATION_API class ControlKeyframe : public Keyframe {
+class IVW_MODULE_ANIMATION_API ControlKeyframe : public Keyframe {
 public:
     using value_type = void;
     ControlKeyframe() = default;
 
-    ControlKeyframe(Seconds time) : time_(time) {}
+	ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause, ControlPayload payload = {}) : time_(time), action_(action), payload_(payload) {}
     virtual ~ControlKeyframe() = default;
 
     ControlKeyframe(const ControlKeyframe& rhs) = default;

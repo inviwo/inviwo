@@ -30,6 +30,8 @@
 #ifndef IVW_CONTROLKEYFRAMESEQUENCE_H
 #define IVW_CONTROLKEYFRAMESEQUENCE_H
 
+#include <modules/animation/animationmoduledefine.h>
+
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/controlkeyframe.h>
 
@@ -41,7 +43,7 @@ namespace animation {
 * KeyframeSequence for Control Keyframes.
 * @see KeyframeSequence
 */
-class ControlKeyframeSequence : public KeyframeSequence {
+class IVW_MODULE_ANIMATION_API ControlKeyframeSequence : public KeyframeSequence {
 public:
 	ControlKeyframeSequence();
 

@@ -37,6 +37,8 @@
 #include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
 
 #include <modules/animation/animationcontroller.h>
+#include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <modules/animation/datastructures/controlkeyframe.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
@@ -219,16 +221,29 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     }
 
     {
-        auto end = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
-        end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        end->setToolTip("To End");
-        leftPanel_->addAction(end);
-        connect(end, &QAction::triggered, [&]() {
-            auto endTime = controller_.getAnimation()->lastTime();
-            controller_.eval(controller_.getCurrentTime(), endTime);
+        auto pause_frame = toolBar->addAction("Create Pause Frame");
+		pause_frame->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+		pause_frame->setToolTip("Create Pause Frame");
+		leftPanel_->addAction(pause_frame);
+        connect(pause_frame, &QAction::triggered, [&]() {
+			auto time = controller_.getCurrentTime();
+			ControlKeyframeSequence seq;
+			seq.add(ControlKeyframe(time, ControlAction::Pause));
+			controller_.getAnimation()->getControlTrack().addTyped(seq);
         });
     }
+
+	{
+		auto end = toolBar->addAction(
+			QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
+		end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+		end->setToolTip("To End");
+		leftPanel_->addAction(end);
+		connect(end, &QAction::triggered, [&]() {
+			auto endTime = controller_.getAnimation()->lastTime();
+			controller_.eval(controller_.getCurrentTime(), endTime);
+		});
+	}
 
     toolBar->addSeparator();
     controller_.AnimationControllerObservable::addObserver(this);
