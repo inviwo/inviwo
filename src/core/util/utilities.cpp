@@ -52,10 +52,24 @@ void saveNetwork(ProcessorNetwork* network, std::string filename) {
     }
 }
 
-void saveAllCanvases(ProcessorNetwork* network, std::string dir, std::string name,
-                     std::string ext) {
+void saveAllCanvases(ProcessorNetwork* network, const std::string& dir, const std::string& name,
+                     const std::string& ext, const bool bOnlyActiveCanvases) {
+
+    //Get all canvases, possibly only the active ones. We need their count below.
+    std::vector<CanvasProcessor*> allCanvases = network->getProcessorsByType<inviwo::CanvasProcessor>();
+    std::vector<CanvasProcessor*> allConsideredCanvases;
+    if (bOnlyActiveCanvases) {
+        allConsideredCanvases.reserve(allCanvases.size());
+        for (auto cp : allCanvases) {
+            if (cp->isSink()) allConsideredCanvases.push_back(cp);
+        }
+    } else {
+        allConsideredCanvases = allCanvases;
+    }
+
+    //Save them
     int i = 0;
-    for (auto cp : network->getProcessorsByType<inviwo::CanvasProcessor>()) {
+    for (auto cp : allConsideredCanvases) {
         std::stringstream ss;
         ss << dir << "/";
 
@@ -66,9 +80,9 @@ void saveAllCanvases(ProcessorNetwork* network, std::string dir, std::string nam
             replaceInString(tmp, "UPN", cp->getIdentifier());
             ss << tmp;
         } else {
-            ss << name << i + 1;
+            ss << name << ((allConsideredCanvases.size() > 1) ? std::to_string(i + 1) : "");
         }
-        ss << ext;
+        ss << ((ext.size() && ext[0]!='.') ? "." : "") << ext;
 
         LogInfoCustom("Inviwo", "Saving canvas to: " + ss.str());
         cp->saveImageLayer(ss.str());

@@ -116,12 +116,17 @@ public:
     OptionPropertyInt propPlayMode;
 
     CompositeProperty propRenderOptions;
+    OptionPropertyInt propRenderFirstLastTimeOption;
+    DoubleMinMaxProperty propRenderFirstLastTime;
     OptionPropertyInt propRenderSizeOptions;
     IntVec2Property propRenderSize;
+    OptionPropertyInt propRenderSizeAspectRatio;
     DirectoryProperty propRenderLocationDir;
     StringProperty propRenderLocationBaseName;
+    OptionPropertyString propRenderImageExtension;
     IntProperty propRenderNumFrames;
     ButtonProperty propRenderAction;
+    ButtonProperty propRenderActionStop;
 
 	CompositeProperty propControlOptions;
 	ButtonProperty propControlInsertPauseFrame;
@@ -130,6 +135,9 @@ public:
 protected:
     ///Low-level setting of @currentTime_. Use @eval() to set time in the public interface.
     void setTime(Seconds time);
+
+    ///Called to cleanup after rendering
+    void afterRender();
 
     ///The animation to control, non-owning reference.
     Animation* animation_;
@@ -154,6 +162,29 @@ protected:
 
     ///Timer for calling the @tick function is regular intervals.
     Timer timer_;
+
+    struct TRenderCanvasSize {
+        TRenderCanvasSize() {}
+        std::string canvasIdentifier;
+        bool enableCustomInputDimensions_;
+        ivec2 customInputDimensions_;
+        bool keepAspectRatio_;
+    };
+
+    ///Simple data structure for the state needed during rendering
+    struct TRenderState {
+        Seconds firstTime;
+        Seconds lastTime;
+        int numFrames;
+        int currentFrame;
+        int digits;
+        std::string baseFileName;
+        std::vector<TRenderCanvasSize> origCanvasSettings;
+        std::string canvasIndicator;
+    };
+
+    ///State needed during rendering
+    TRenderState renderState_;
 };
 
 } // namespace
