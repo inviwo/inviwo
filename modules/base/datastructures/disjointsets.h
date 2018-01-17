@@ -50,22 +50,22 @@ public:
 
     /**
      * Join the sets of element r and s.
-     * Requires r and s positive and less then size.
-     * Return true it the sets were joined or false if r and s
+     * Requires r and s to be positive and less than size.
+     * Returns true if the sets were joined, or false if r and s
      * already were in the same set.
      */
     bool join(T r, T s);
 
     /**
-     * Returns name of the set for element x
+     * Returns name of the set for element x,
      * i.e. return root of tree for element x
-     * Requires x positive and less then size.
+     * Requires x to be positive and less than size.
      */
     T find(T x);
 
     /**
-     * Returns cardinality of the set for element x
-     * Requires x positive and less then size.
+     * Returns cardinality of the set for element x.
+     * Requires x to be positive and less than size.
      */
     T cardinality(T x);
 
@@ -86,11 +86,11 @@ inline DisjointSets<T>::DisjointSets(T size) : array_(size, T{-1}) {
 
 template <typename T>
 inline bool DisjointSets<T>::join(T r, T s) {
-    IVW_ASSERT(r >= 0, "r should be greater then or equal to 0");
-    IVW_ASSERT(s = > 0, "s should be greater then or equal to 0");
+    IVW_ASSERT(r >= 0, "r should be greater than or equal to 0");
+    IVW_ASSERT(s = > 0, "s should be greater than or equal to 0");
 
-    IVW_ASSERT(r < array_.size(), "r should be less then size");
-    IVW_ASSERT(s < array_.size(), "s should be less then size");
+    IVW_ASSERT(r < array_.size(), "r should be less than size");
+    IVW_ASSERT(s < array_.size(), "s should be less than size");
 
     r = find(r);
     s = find(s);
@@ -108,8 +108,8 @@ inline bool DisjointSets<T>::join(T r, T s) {
 
 template <typename T>
 inline T DisjointSets<T>::find(T x) {
-    IVW_ASSERT(x = > 0, "x should be greater then or equal to 0");
-    IVW_ASSERT(x < array_.size(), "x should be less then size");
+    IVW_ASSERT(x = > 0, "x should be greater than or equal to 0");
+    IVW_ASSERT(x < array_.size(), "x should be less than size");
 
     // find with path compression
     if (array_[x] < 0) {
@@ -121,8 +121,8 @@ inline T DisjointSets<T>::find(T x) {
 
 template <typename T>
 inline T DisjointSets<T>::cardinality(T x) {
-    IVW_ASSERT(x = > 0, "x should be greater then or equal to 0");
-    IVW_ASSERT(x < array_.size(), "x should be less then size");
+    IVW_ASSERT(x = > 0, "x should be greater than or equal to 0");
+    IVW_ASSERT(x < array_.size(), "x should be less than size");
 
     auto r = find(x);
     return -array_[r];
