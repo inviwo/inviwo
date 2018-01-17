@@ -31,6 +31,8 @@
 #include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
 #include <modules/animationqt/sequenceeditorpanel/keyframeeditorwidget.h>
 
+#include <modules/animation/datastructures/propertytrack.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QVBoxLayout>
@@ -56,7 +58,6 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
     auto layout = new QVBoxLayout();
     setLayout(layout);
 
-    // Sequence (track) Name
     auto label = new QLabel(track_.getName().c_str());
     auto font = label->font();
     font.setBold(true);
@@ -66,29 +67,29 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
     keyframesLayout_ = new QVBoxLayout();
     layout->addLayout(keyframesLayout_);
 
-	if (dynamic_cast<ControlTrack*>(&track) == nullptr) {
-		auto easingLayout = new QHBoxLayout();
-		layout->addLayout(easingLayout);
+	if (dynamic_cast<BasePropertyTrack*>(&track)) {
+        auto easingLayout = new QHBoxLayout();
+        layout->addLayout(easingLayout);
 
-		auto easing = new QComboBox();
-		easingLayout->addWidget(new QLabel("Easing: "));
-		easingLayout->addWidget(easing);
+        easingComboBox_ = new QComboBox();
+        easingLayout->addWidget(new QLabel("Easing: "));
+        easingLayout->addWidget(easingComboBox_);
 
-		auto currentEasing = sequence_.getEasingType();
+        auto currentEasing = sequence_.getEasingType();
 
-		for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
-			std::ostringstream oss;
-			oss << e;
-			easing->addItem(oss.str().c_str(), QVariant((int)e));
-			if (currentEasing == e) {
-				easing->setCurrentIndex(easing->count() - 1);
-			}
-		}
+        for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
+            std::ostringstream oss;
+            oss << e;
+            easingComboBox_->addItem(oss.str().c_str(), QVariant((int)e));
+            if (currentEasing == e) {
+                easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
+            }
+        }
 
-		void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
-		connect(easing, signal,
-			[this](int index) { sequence_.setEasingType(static_cast<easing::EasingType>(index)); });
-	}
+        void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
+        connect(easingComboBox_, signal,
+                [this](int index) { sequence_.setEasingType(static_cast<easing::EasingType>(index)); });
+    }
 
     for (size_t i = 0; i < sequence_.size(); i++) {
         onKeyframeAdded(&sequence_[i], &sequence_);
@@ -120,6 +121,13 @@ void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence* se
 }
 
 void SequenceEditorWidget::setReorderNeeded() { reorderNeeded_ = true; }
+
+void SequenceEditorWidget::onKeyframeSequenceEasingChanged(KeyframeSequence* seq) {
+    easingComboBox_->blockSignals(true);
+    auto index = easingComboBox_->findData(QVariant((int)seq->getEasingType()));
+    easingComboBox_->setCurrentIndex(index);
+    easingComboBox_->blockSignals(false);
+}
 
 void SequenceEditorWidget::reorderKeyframes() {
 
