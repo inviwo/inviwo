@@ -32,6 +32,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/qtwidgets/qtwidgetssettings.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -215,13 +216,15 @@ static const char* glsl_builtins_func[] = {"\\bsin\\b",
                                            "\\bshadow2DProjLod\\b",
                                            "\\bnoise[1-4]\\b",
                                            nullptr};
-static const char* constants[] = {
-    "\\b0\\b",  "\\b1\\b",  "\\b2\\b",  "\\b3\\b",  "\\b4\\b",  "\\b5\\b",  "\\b6\\b",
-    "\\b7\\b",  "\\b8\\b",  "\\b9\\b",  "\\b0.\\b", "\\b1.\\b", "\\b2.\\b", "\\b3.\\b",
-    "\\b4.\\b", "\\b5.\\b", "\\b6.\\b", "\\b7.\\b", "\\b8.\\b", "\\b9.\\b", nullptr};
 static const char* voidmain[] = {"\\bmain\\b", nullptr};
-// static const char* glsl_preprocessor[] =
-// {"#","#define","#include","#if","#ifdef","#ifdef","#else","#elif","#endif","#error","#pragma","#line","__LINE__","__FILE__","__VERSION__",0};
+static const char* glsl_preprocessor[] = {
+    "\\bdefine\\b", "\\binclude\\b", "\\bif\\b",    "\\bifdef\\b",  "\\bifndef\\b", "\\belse\\b",
+    "\\belif\\b",   "\\bendif\\b",   "\\berror\\b", "\\bpragma\\b", "\\bline\\b",   "\\bversion\\b",
+};
+static const char* glsl_operators[] = {"\\+", "-", "\\*", "\\/", "<",   ">",
+                                       "=", "!", "&", "\\|", "\\^", "%", "\\?", ":"};
+static const char* glsl_preprocessorAdditional[] = {"\\b__LINE__\\b", "\\b__FILE__\\b",
+                                                    "\\b__VERSION__\\b", nullptr};
 
 namespace inviwo {
 
@@ -229,7 +232,7 @@ class GLSLCommentFormater : public SyntaxFormater {
 public:
     GLSLCommentFormater(const QTextCharFormat& format)
         : format_(format)
-        , oneLineComment_("^[\\s\\t]*\\/\\/")
+        , oneLineComment_("\\/\\/")
         , blockStart_(QRegExp::escape("/*"))
         , blockEnd_(QRegExp::escape("*/")) {}
 
@@ -237,9 +240,10 @@ public:
         Result res;
         res.format = &format_;
 
-        if (oneLineComment_.indexIn(text) != -1) {
-            res.start.push_back(0);
-            res.length.push_back(text.size());
+        int commentBegin = oneLineComment_.indexIn(text);
+        if (commentBegin != -1) {
+            res.start.push_back(commentBegin);
+            res.length.push_back(text.size() - commentBegin);
             return res;
         }
 
@@ -287,22 +291,61 @@ private:
 
 class GLSLPreProcessorFormater : public SyntaxFormater {
 public:
-    GLSLPreProcessorFormater(const QTextCharFormat& format) : format_(format) {}
-
     virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
-        Result res;
-        res.format = &format_;
+        Result result;
+        result.format = &format_;
+        std::vector<QRegExp>::iterator reg;
 
-        if (text.size() && text.at(0) == '#') {
-            res.start.push_back(0);
-            res.length.push_back(text.size());
+        for (reg = regexps_.begin(); reg != regexps_.end(); ++reg) {
+            int pos = 0;
+
+            while ((pos = reg->indexIn(text, pos)) != -1) {
+                result.start.push_back(pos);
+                pos += reg->matchedLength();
+                result.length.push_back(reg->matchedLength());
+            }
         }
 
-        return res;
+        return result;
+    }
+
+    GLSLPreProcessorFormater(const QTextCharFormat& format, const char** keywords)
+        : format_(format) {
+        int i = -1;
+        while (keywords[++i]) {
+            // interpret anything matching a '#' at the beginning, followed by space/tab and keyword
+            regexps_.push_back(QRegExp(QString("#[ \t]*%1").arg(keywords[i])));
+        }
     }
 
 private:
     QTextCharFormat format_;
+    std::vector<QRegExp> regexps_;
+};
+
+class GLSLNumberFormater : public SyntaxFormater {
+public:
+    virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
+        Result result;
+        result.format = &format_;
+
+        int pos = 0;
+
+        while ((pos = regexp_.indexIn(text, pos)) != -1) {
+            result.start.push_back(pos);
+            pos += regexp_.matchedLength();
+            result.length.push_back(regexp_.matchedLength());
+        }
+
+        return result;
+    }
+
+    GLSLNumberFormater(const QTextCharFormat& format)
+        : format_(format), regexp_("\\b([0-9]+\\.)?[0-9]+([eE][+-]?[0-9]+)?") {}
+
+private:
+    QTextCharFormat format_;
+    QRegExp regexp_;
 };
 
 class GLSLKeywordFormater : public SyntaxFormater {
@@ -336,36 +379,34 @@ private:
     std::vector<QRegExp> regexps_;
 };
 
-static inline QColor ivec4toQtColor(const ivec4& i) { return QColor(i.r, i.g, i.b, i.a); }
-
 template <>
 void SyntaxHighligther::loadConfig<GLSL>() {
     auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
 
-    QColor textColor = ivec4toQtColor(sysSettings->glslTextColor_.get());
-    QColor bgColor = ivec4toQtColor(sysSettings->glslBackgroundColor_.get());
+    QColor textColor = utilqt::toQColor(sysSettings->glslTextColor_.get());
+    backgroundColor_ = utilqt::toQColor(sysSettings->glslBackgroundColor_.get());
 
-    defaultFormat_.setBackground(bgColor);
+    defaultFormat_.setBackground(backgroundColor_);
     defaultFormat_.setForeground(textColor);
     QTextCharFormat typeformat, qualifiersformat, builtins_varformat, glsl_builtins_funcformat,
         commentformat, preprocessorformat, constantsformat, mainformat;
-    typeformat.setBackground(bgColor);
-    typeformat.setForeground(ivec4toQtColor(sysSettings->glslTypeColor_.get()));
-    qualifiersformat.setBackground(bgColor);
-    qualifiersformat.setForeground(ivec4toQtColor(sysSettings->glslQualifierColor_.get()));
-    builtins_varformat.setBackground(bgColor);
-    builtins_varformat.setForeground(ivec4toQtColor(sysSettings->glslBuiltinsColor_.get()));
-    glsl_builtins_funcformat.setBackground(bgColor);
+    typeformat.setBackground(backgroundColor_);
+    typeformat.setForeground(utilqt::toQColor(sysSettings->glslTypeColor_.get()));
+    qualifiersformat.setBackground(backgroundColor_);
+    qualifiersformat.setForeground(utilqt::toQColor(sysSettings->glslQualifierColor_.get()));
+    builtins_varformat.setBackground(backgroundColor_);
+    builtins_varformat.setForeground(utilqt::toQColor(sysSettings->glslBuiltinsColor_.get()));
+    glsl_builtins_funcformat.setBackground(backgroundColor_);
     glsl_builtins_funcformat.setForeground(
-        ivec4toQtColor(sysSettings->glslGlslBuiltinsColor_.get()));
-    commentformat.setBackground(bgColor);
-    commentformat.setForeground(ivec4toQtColor(sysSettings->glslCommentColor_.get()));
-    preprocessorformat.setBackground(bgColor);
-    preprocessorformat.setForeground(ivec4toQtColor(sysSettings->glslPreProcessorColor_.get()));
-    constantsformat.setBackground(bgColor);
-    constantsformat.setForeground(ivec4toQtColor(sysSettings->glslConstantsColor_.get()));
-    mainformat.setBackground(bgColor);
-    mainformat.setForeground(ivec4toQtColor(sysSettings->glslVoidMainColor_.get()));
+        utilqt::toQColor(sysSettings->glslGlslBuiltinsColor_.get()));
+    commentformat.setBackground(backgroundColor_);
+    commentformat.setForeground(utilqt::toQColor(sysSettings->glslCommentColor_.get()));
+    preprocessorformat.setBackground(backgroundColor_);
+    preprocessorformat.setForeground(utilqt::toQColor(sysSettings->glslPreProcessorColor_.get()));
+    constantsformat.setBackground(backgroundColor_);
+    constantsformat.setForeground(utilqt::toQColor(sysSettings->glslConstantsColor_.get()));
+    mainformat.setBackground(backgroundColor_);
+    mainformat.setForeground(utilqt::toQColor(sysSettings->glslVoidMainColor_.get()));
 
     if (formaters_.empty()) {
         sysSettings->glslSyntax_.onChange(this, &SyntaxHighligther::loadConfig<GLSL>);
@@ -380,9 +421,11 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     formaters_.push_back(new GLSLKeywordFormater(qualifiersformat, glsl_qualifiers));
     formaters_.push_back(new GLSLKeywordFormater(builtins_varformat, glsl_builtins_var));
     formaters_.push_back(new GLSLKeywordFormater(glsl_builtins_funcformat, glsl_builtins_func));
-    formaters_.push_back(new GLSLKeywordFormater(constantsformat, constants));
+    formaters_.push_back(new GLSLKeywordFormater(preprocessorformat, glsl_operators));
+    formaters_.push_back(new GLSLNumberFormater(constantsformat));
     formaters_.push_back(new GLSLKeywordFormater(mainformat, voidmain));
-    formaters_.push_back(new GLSLPreProcessorFormater(preprocessorformat));
+    formaters_.push_back(new GLSLPreProcessorFormater(preprocessorformat, glsl_preprocessor));
+    formaters_.push_back(new GLSLKeywordFormater(preprocessorformat, glsl_preprocessorAdditional));
     formaters_.push_back(new GLSLCommentFormater(commentformat));
 }
 
