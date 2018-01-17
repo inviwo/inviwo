@@ -30,6 +30,9 @@
 #include <modules/animationqt/animationlabelviewqt.h>
 #include <modules/animation/datastructures/animation.h>
 
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networkutils.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWheelEvent>
