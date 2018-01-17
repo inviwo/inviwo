@@ -114,10 +114,13 @@ void SequenceEditorWidget::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq)
 }
 
 void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
-    auto widget = keyframeEditorWidgets_[key];
-    keyframeEditorWidgets_.erase(key);
-    keyframesLayout_->removeWidget(widget);
-    setReorderNeeded();
+    auto it = keyframeEditorWidgets_.find(key);
+    if (it != keyframeEditorWidgets_.end()) {
+        keyframesLayout_->removeWidget(it->second);
+        delete it->second;
+        keyframeEditorWidgets_.erase(it);
+        setReorderNeeded();
+    }
 }
 
 void SequenceEditorWidget::setReorderNeeded() { reorderNeeded_ = true; }
