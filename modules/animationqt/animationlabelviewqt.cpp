@@ -36,6 +36,8 @@
 #include <QPainter>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QStyledItemDelegate>
+#include <QPushButton>
 #include <warn/pop>
 #include "animation/datastructures/propertytrack.h"
 
@@ -98,7 +100,26 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
 }
 
 void AnimationLabelViewQt::mousePressEvent(QMouseEvent* e) {
+    // Process the Event first, so the correct index is selected
     QListView::mousePressEvent(e);
+    // Deselect all processors first
+    util::setSelected(
+        util::getInviwoApplication()->getProcessorNetwork()->getProcessors(), false);
+    for (auto index: selectedIndexes())
+    {
+        auto item = model_->itemFromIndex(index)->data().value<void*>();
+        Track* track = reinterpret_cast<Track*>(item);
+        BasePropertyTrack* propertytrack = dynamic_cast<BasePropertyTrack*>(track);
+        // Might not have been a BasePropertyTrack
+        if (propertytrack)
+        {
+            auto property = propertytrack->getProperty();
+            // Select the processor the selected property belongs to
+            Processor* processor = property->getOwner()->getProcessor();
+            util::setSelected({ processor }, true);
+        }
+
+    }
 }
 
 void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) {
