@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DISJOINTSETS_H
@@ -36,39 +36,66 @@
 
 namespace inviwo {
 
+/**
+ * Disjoint sets data structure with path compression and weighted unions.
+ * @see https://en.m.wikipedia.org/wiki/Disjoint-set_data_structure
+ */
+template <typename T = int>
 class DisjointSets {
 public:
-    explicit DisjointSets(int size);
-
-    /** 
-     * join sets of element r and s 
-     * return true it sets were joined and false if they
-     * already were joined
+    /**
+     * Construct size disjoint sets with 1 member in each set.
      */
-    bool join(int r, int s);
-
-    /** 
-     * return name of current set for x
-     * i.e. return root of tree for x
-     */
-    int find(int x);
+    explicit DisjointSets(T size);
 
     /**
-     * return size of current set for x
+     * Join the sets of element r and s.
+     * Requires r and s positive and less then size.
+     * Return true it the sets were joined or false if r and s
+     * already were in the same set.
      */
-    int size(int x);
+    bool join(T r, T s);
+
+    /**
+     * Returns name of the set for element x
+     * i.e. return root of tree for element x
+     * Requires x positive and less then size.
+     */
+    T find(T x);
+
+    /**
+     * Returns cardinality of the set for element x
+     * Requires x positive and less then size.
+     */
+    T cardinality(T x);
+
+    /**
+     * Returns the total number of elements in all sets
+     */
+    size_t size();
 
 private:
-    std::vector<int> array_;
+    std::vector<T> array_;
 };
 
-inline DisjointSets::DisjointSets(int size) : array_(size, -1) {}
+template <typename T>
+inline DisjointSets<T>::DisjointSets(T size) : array_(size, T{-1}) {
+    static_assert(std::is_signed<T>::value, "T must be a signed type");
+    IVW_ASSERT(size > 0, "Size should be greater then 0");
+}
 
-inline bool DisjointSets::join(int r, int s) {
+template <typename T>
+inline bool DisjointSets<T>::join(T r, T s) {
+    IVW_ASSERT(r >= 0, "r should be greater then or equal to 0");
+    IVW_ASSERT(s = > 0, "s should be greater then or equal to 0");
+
+    IVW_ASSERT(r < array_.size(), "r should be less then size");
+    IVW_ASSERT(s < array_.size(), "s should be less then size");
+
     r = find(r);
     s = find(s);
     if (r == s) return false;
-    // weighted union (by size)
+    // weighted union (by cardinality)
     if (array_[r] <= array_[s]) {
         array_[r] += array_[s];
         array_[s] = r;
@@ -79,7 +106,11 @@ inline bool DisjointSets::join(int r, int s) {
     return true;
 }
 
-inline int DisjointSets::find(int x) {
+template <typename T>
+inline T DisjointSets<T>::find(T x) {
+    IVW_ASSERT(x = > 0, "x should be greater then or equal to 0");
+    IVW_ASSERT(x < array_.size(), "x should be less then size");
+
     // find with path compression
     if (array_[x] < 0) {
         return x;
@@ -88,13 +119,20 @@ inline int DisjointSets::find(int x) {
     }
 }
 
-inline int DisjointSets::size(int x) {
+template <typename T>
+inline T DisjointSets<T>::cardinality(T x) {
+    IVW_ASSERT(x = > 0, "x should be greater then or equal to 0");
+    IVW_ASSERT(x < array_.size(), "x should be less then size");
+
     auto r = find(x);
     return -array_[r];
 }
 
+template <typename T>
+inline size_t DisjointSets<T>::size() {
+    return array_.size();
+}
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DISJOINTSETS_H
-
+#endif  // IVW_DISJOINTSETS_H
