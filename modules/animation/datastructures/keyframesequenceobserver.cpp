@@ -46,13 +46,14 @@ void KeyframeSequenceObserverble::notifyKeyframeSequenceMoved(KeyframeSequence* 
 }
 
 void KeyframeSequenceObserverble::notifyKeyframeSequenceSelectionChanged(KeyframeSequence* seq) {
-    forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeSequenceSelectionChanged(seq); });
+    forEachObserver(
+        [&](KeyframeSequenceObserver* o) { o->onKeyframeSequenceSelectionChanged(seq); });
 }
 
 void KeyframeSequenceObserverble::notifyKeyframeSequenceEasingChanged(KeyframeSequence* seq) {
     forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeSequenceEasingChanged(seq); });
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

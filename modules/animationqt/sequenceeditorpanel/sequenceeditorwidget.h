@@ -85,8 +85,8 @@ private:
 
     std::unordered_map<Keyframe*, KeyframeEditorWidget*> keyframeEditorWidgets_;
 
-    QVBoxLayout* keyframesLayout_;
-    QComboBox* easingComboBox_;
+    QVBoxLayout* keyframesLayout_{nullptr};
+    QComboBox* easingComboBox_{nullptr};
 
     bool reorderNeeded_{true};
 };

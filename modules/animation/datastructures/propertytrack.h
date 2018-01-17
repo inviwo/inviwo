@@ -245,9 +245,9 @@ public:
      * @param keyframe The keyframe to set from
      */
     void setOtherProperty(Property* dstProperty, Keyframe* keyframe) {
-        ivwAssert(dstProperty->getClassIdentifier() == Prop::CLASS_IDENTIFIER,
+        IVW_ASSERT(dstProperty->getClassIdentifier() == Prop::CLASS_IDENTIFIER,
                   "Incorrect Property type");
-        ivwAssert(keyframe->getClassIdentifier() == Key::classIdentifier(),
+        IVW_ASSERT(keyframe->getClassIdentifier() == Key::classIdentifier(),
                   "Incorrect Keyframe type");
         detail::setOtherPropertyHelper(static_cast<Prop*>(dstProperty),
                                        static_cast<Key*>(keyframe));

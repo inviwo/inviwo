@@ -60,9 +60,8 @@ protected:
     void notifyKeyframeSequenceEasingChanged(KeyframeSequence* seq);
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAMESEQUENCEOBSERVER_H
-
+#endif  // IVW_KEYFRAMESEQUENCEOBSERVER_H

@@ -98,7 +98,9 @@ void SequenceEditorPanel::onTrackAdded(Track* track) {
     track->addObserver(this);
 }
 
-void SequenceEditorPanel::onTrackRemoved(Track* track) { track->removeObserver(this); }
+void SequenceEditorPanel::onTrackRemoved(Track* track) { 
+    track->removeObserver(this); 
+}
 
 void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
     auto widget = new SequenceEditorWidget(*s, *t, this);

@@ -56,17 +56,11 @@ public:
     virtual void setTime(Seconds time) = 0;
     virtual Seconds getTime() const = 0;
 
-    virtual void serialize(Serializer& s) const override { s.serialize("selected", isSelected_); };
-    virtual void deserialize(Deserializer& d) override { d.deserialize("selected", isSelected_); };
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
-    bool isSelected() const { return isSelected_; }
-    void setSelected(bool selected = true) { 
-        if (selected != isSelected_) {
-            isSelected_ = selected;
-            notifyKeyframeSelectionChanged(this);
-        }
-    }
-
+    bool isSelected() const;
+    void setSelected(bool selected = true);
 
     virtual std::string getClassIdentifier() const = 0;
 
@@ -171,8 +165,8 @@ void ValueKeyframe<T>::deserialize(Deserializer& d) {
     d.deserialize("value", value_);
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_KEYFRAME_H
