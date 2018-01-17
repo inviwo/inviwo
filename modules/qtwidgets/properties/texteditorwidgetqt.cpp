@@ -56,6 +56,7 @@
 #include <QDesktopServices>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QFont>
 #include <warn/pop>
 
 namespace inviwo {
@@ -75,16 +76,27 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
 
     editor_ = new QTextEdit(nullptr);
     editor_->setReadOnly(false);
-    editor_->setStyleSheet("font: 10pt \"Courier\";");
     editor_->setWordWrapMode(QTextOption::NoWrap);
     editor_->createStandardContextMenu();
     mainWindow->setCentralWidget(editor_);
 
+    QFont fixedFont("Monospace");
+    fixedFont.setPointSize(10);
+    fixedFont.setStyleHint(QFont::TypeWriter);
+    editor_->setFont(fixedFont);
+
+    QString bgString;
     if (property->getSemantics() == PropertySemantics::ShaderEditor) {
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<GLSL>(editor_->document());
     } else {
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<None>(editor_->document());
     }
+
+    // set background of Text editor matching syntax highlighting
+    QColor bgColor = syntaxHighligther_->getBackgroundColor();
+    QString styleSheet(QString("QTextEdit { font-family: 'monospace'; background-color: %1; }")
+                           .arg(bgColor.name()));
+    editor_->setStyleSheet(styleSheet);
 
     {
         auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save"));
