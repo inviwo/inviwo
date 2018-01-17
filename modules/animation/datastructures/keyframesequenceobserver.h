@@ -47,6 +47,7 @@ public:
     virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq){};
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq){};
     virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence* seq){};
+    virtual void onKeyframeSequenceEasingChanged(KeyframeSequence* seq){};
 };
 
 class IVW_MODULE_ANIMATION_API KeyframeSequenceObserverble
@@ -56,6 +57,7 @@ protected:
     void notifyKeyframeRemoved(Keyframe* key, KeyframeSequence* seq);
     void notifyKeyframeSequenceMoved(KeyframeSequence* seq);
     void notifyKeyframeSequenceSelectionChanged(KeyframeSequence* seq);
+    void notifyKeyframeSequenceEasingChanged(KeyframeSequence* seq);
 };
 
 } // namespace

@@ -112,7 +112,12 @@ public:
 
 
     virtual easing::EasingType getEasingType() const { return easing_; }
-    virtual void setEasingType(easing::EasingType easing) { easing_ = easing; }
+    virtual void setEasingType(easing::EasingType easing) { 
+        if(easing_ != easing){
+            easing_ = easing; 
+            notifyKeyframeSequenceEasingChanged(this);
+        }
+    }
 
 protected:
     bool isSelected_{false};
