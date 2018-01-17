@@ -113,7 +113,7 @@ public:
     OptionPropertyInt propPlayFirstLastTimeOption;
     DoubleMinMaxProperty propPlayFirstLastTime;
     DoubleProperty propPlayFramesPerSecond;
-    OptionPropertyInt propPlayMode;
+    TemplateOptionProperty<PlaybackMode> propPlayMode;
 
     CompositeProperty propRenderOptions;
     OptionPropertyInt propRenderFirstLastTimeOption;

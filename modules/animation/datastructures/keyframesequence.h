@@ -84,8 +84,8 @@ public:
 
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) = 0;
 
-    virtual void serialize(Serializer& s) const override;;
-    virtual void deserialize(Deserializer& d) override;;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     bool isSelected() const;
     void setSelected(bool selected = true);

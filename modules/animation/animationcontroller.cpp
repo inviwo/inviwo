@@ -29,7 +29,10 @@
 
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/animationcontrollerobserver.h>
+#include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
 
@@ -78,9 +81,9 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
 
     propPlayFramesPerSecond.setSemantics(PropertySemantics::Text);
 
-    propPlayMode.addOption("Once", "Play once", (int)PlaybackMode::Once);
-    propPlayMode.addOption("Loop", "Loop animation", (int)PlaybackMode::Loop);
-    propPlayMode.addOption("Swing", "Swing animation", (int)PlaybackMode::Swing);
+    propPlayMode.addOption("Once", "Play once", PlaybackMode::Once);
+    propPlayMode.addOption("Loop", "Loop animation", PlaybackMode::Loop);
+    propPlayMode.addOption("Swing", "Swing animation", PlaybackMode::Swing);
     //propPlayMode.onChange([&](){
     //});
     propPlayMode.setCurrentStateAsDefault();
