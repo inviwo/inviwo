@@ -53,8 +53,8 @@ FilePatternProperty::FilePatternProperty(std::string identifier, std::string dis
     , sort_("sorting", "Sort File Names", true)
     , matchShorterNumbers_("matchShorterNumbers", "Match Numbers with less Digits", true)
     , rangeSelection_("rangeSelection", "Range Selection", false)
-    , minIndex_("minIndex", "Minimum Index", 0, -1)
-    , maxIndex_("maxIndex", "Maximum Index", 100, -1)
+    , minIndex_("minIndex", "Minimum Index", 0, -1, std::numeric_limits<int>::max())
+    , maxIndex_("maxIndex", "Maximum Index", 100, -1, std::numeric_limits<int>::max())
     , outOfRangeMatches_(false)
 {
     helpText_.setReadOnly(true);
