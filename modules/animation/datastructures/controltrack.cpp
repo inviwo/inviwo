@@ -92,14 +92,21 @@ AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationS
 
 	// We only consider keyframes if they are passed over whilst playing.
 	if (state == AnimationState::Playing) {
-		// 'it' will be the first seq. with a first time larger then 'to'.
-		auto it = std::upper_bound(
-			sequences_.begin(), sequences_.end(), to,
-			[](const auto& time, const auto& seq) { return time < seq->getFirst().getTime(); });
+		auto t_beg = std::min(from.count(), to.count());
+		auto t_end = std::max(from.count(), to.count());
+		auto t_c = (t_beg + t_end) * 0.5f;
+		auto t_r = t_end - t_c;
 
-		if (it != sequences_.begin()) {
-			auto& seq = *std::prev(it);
-			return (*seq)(from, to, state);
+		for (auto& seq : sequences_) {
+			auto s_beg = seq->getFirst().getTime().count();
+			auto s_end = seq->getLast().getTime().count();
+			auto s_c = (s_beg + s_end) * 0.5f;
+			auto s_r = s_end - s_c;
+
+			// Check if ranges are overlapping
+			if (std::abs(t_c - s_c) < (t_r + s_r)) {
+				return (*seq)(from, to, state);
+			}
 		}
 	}
 

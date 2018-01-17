@@ -54,7 +54,7 @@ AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to, Animati
 			// We passed over this keyframe
 			switch (getAction()) {
 			case ControlAction::Pause:
-				return { to, AnimationState::Paused };
+				return { time_, AnimationState::Paused };
 			case ControlAction::JumpTo:
 				return { getPayload().jumpToTime, state };
 			case ControlAction::Script:
