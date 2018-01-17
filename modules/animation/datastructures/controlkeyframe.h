@@ -79,6 +79,14 @@ public:
     const void getValue() const {}
     void getValue() {}
 
+	void setAction(ControlAction action) {
+		action_ = action;
+	}
+
+	void setPayload(ControlPayload payload) {
+		payload_ = payload;
+	}
+
     ControlAction getAction() const { return action_; }
     ControlPayload getPayload() const { return payload_; }
 
