@@ -220,19 +220,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         });
     }
 
-    {
-        auto pause_frame = toolBar->addAction("Create Pause Frame");
-		pause_frame->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-		pause_frame->setToolTip("Create Pause Frame");
-		leftPanel_->addAction(pause_frame);
-        connect(pause_frame, &QAction::triggered, [&]() {
-			auto time = controller_.getCurrentTime();
-			ControlKeyframeSequence seq;
-			seq.add(ControlKeyframe(time, ControlAction::Pause));
-			controller_.getAnimation()->getControlTrack().addTyped(seq);
-        });
-    }
-
 	{
 		auto end = toolBar->addAction(
 			QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
