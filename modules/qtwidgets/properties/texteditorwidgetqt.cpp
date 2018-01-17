@@ -117,22 +117,6 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto undo = toolBar->addAction(QIcon(":/icons/undo.png"), tr("Undo"));
-        undo->setShortcut(QKeySequence::Undo);
-        undo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        mainWindow->addAction(undo);
-        connect(undo, &QAction::triggered, editor_, &QTextEdit::undo);
-    }
-
-    {
-        auto redo = toolBar->addAction(QIcon(":/icons/redo.png"), tr("Redo"));
-        redo->setShortcut(QKeySequence::Redo);
-        redo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        mainWindow->addAction(redo);
-        connect(redo, &QAction::triggered, editor_, &QTextEdit::redo);
-    }
-
-    {
         auto reload = toolBar->addAction(QIcon(":/icons/button_cancel-bw.png"), tr("Reload"));
         reload->setToolTip("Discard changes");
         reload->setShortcutContext(Qt::WidgetWithChildrenShortcut);
