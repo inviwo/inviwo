@@ -88,8 +88,8 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     imageInport_.setOptional(true);
 
     tf_.get().clearPoints();
-    tf_.get().addPoint(vec2(0.0f, 1.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    tf_.get().addPoint(vec2(1.0f, 1.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    tf_.get().addPoint(0.0f, vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    tf_.get().addPoint(1.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
     tf_.setCurrentStateAsDefault();
 
