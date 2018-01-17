@@ -36,8 +36,8 @@
 //#extension GL_NV_shader_buffer_store : enable
 
 // ABuffer includes
-#include "abuffer/abuffersort.hglsl"
-#include "abuffer/abufferlinkedlist.hglsl"
+#include "abuffer/abuffersort.glsl"
+#include "abuffer/abufferlinkedlist.glsl"
 
 void sync(ivec2 coords) {
     int ii = 0;

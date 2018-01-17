@@ -31,7 +31,7 @@
  *********************************************************************************/
 
 //ABuffer
-#include "abuffer.hglsl"
+#include "abuffer.glsl"
 
 void main() {
 	#if USE_ABUFFER==1

@@ -31,7 +31,7 @@
  *********************************************************************************/
 
 //ABuffer
-#include "abuffer.hglsl"
+#include "abuffer.glsl"
 #include "utils/sampler2d.glsl"
 
 uniform bool isInputImageGiven;

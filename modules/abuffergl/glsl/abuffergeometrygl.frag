@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "abuffer.hglsl"
+#include "abuffer.glsl"
 
 #include "utils/shading.glsl"
 

@@ -25,11 +25,11 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(SHADER_FILES    
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffergeometrygl.frag
     #ABUFFER
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferlinkedlist.hglsl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abuffersort.hglsl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abuffer.hglsl
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferresolve.hglsl
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferreset.hglsl	
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferlinkedlist.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abuffersort.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abuffer.glsl
+	${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferresolve.glsl
+	${CMAKE_CURRENT_SOURCE_DIR}/glsl/abuffer/abufferreset.glsl	
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
