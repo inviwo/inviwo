@@ -54,7 +54,9 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     , propRenderNumFrames("RenderNumFrames", "# Frames", 100, 2)
     , propRenderLocationDir("RenderLocationDir", "Directory")
     , propRenderLocationBaseName("RenderLocationBaseName", "BaseName")
-    , propRenderAction("RenderAction", "Render") {
+    , propRenderAction("RenderAction", "Render")
+	, propControlOptions("ControlOptions", "Control Track")
+	, propControlInsertPauseFrame("ControlInsertPauseFrame", "Insert Pause-Frame") {
 
     ///////////////////////////
     // Play Settings
@@ -114,6 +116,19 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     propRenderOptions.addProperty(propRenderLocationBaseName);
     propRenderOptions.addProperty(propRenderAction);
     addProperty(propRenderOptions);
+
+	///////////////////////////
+	// Control Track
+
+	propControlInsertPauseFrame.onChange([&]() {
+		auto time = getCurrentTime();
+		ControlKeyframeSequence seq;
+		seq.add(ControlKeyframe(time, ControlAction::Pause));
+		getAnimation()->getControlTrack().addTyped(seq);
+	});
+
+	propControlOptions.addProperty(propControlInsertPauseFrame);
+	addProperty(propControlOptions);
 }
 
 AnimationController::~AnimationController() = default;

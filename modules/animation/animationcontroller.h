@@ -123,6 +123,10 @@ public:
     IntProperty propRenderNumFrames;
     ButtonProperty propRenderAction;
 
+	CompositeProperty propControlOptions;
+	ButtonProperty propControlInsertPauseFrame;
+
+
 protected:
     ///Low-level setting of @currentTime_. Use @eval() to set time in the public interface.
     void setTime(Seconds time);
