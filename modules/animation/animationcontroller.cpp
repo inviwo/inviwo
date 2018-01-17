@@ -234,7 +234,6 @@ void AnimationController::setTime(Seconds time) {
 }
 
 void AnimationController::play() {
-    deltaTime_ = Seconds(fabs(deltaTime_.count())); //Make sure we play forward.
     setState(AnimationState::Playing);
 }
 
@@ -356,6 +355,7 @@ void AnimationController::pause() {
 
 void AnimationController::stop() {
     setState(AnimationState::Paused);
+	deltaTime_ = Seconds(fabs(deltaTime_.count())); //Make sure we play forward.
     eval(currentTime_, Seconds(0));
 }
 
