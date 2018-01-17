@@ -65,16 +65,19 @@ ControlKeyframeSequence& ControlKeyframeSequence::operator=(const ControlKeyfram
     if (this != &that) {
         KeyframeSequence::operator=(that);
 
-        while (keyframes_.size() > 0) {
-            auto key = std::move(keyframes_.back());
-            keyframes_.pop_back();
-            notifyKeyframeRemoved(key.get(), this);
-        }
-
-        for (const auto& key : that.keyframes_) {
-            keyframes_.push_back(std::make_unique<ControlKeyframe>(*key));
-            notifyKeyframeAdded(keyframes_.back().get(), this);
-        }
+		for (size_t i = 0; i < std::min(keyframes_.size(), that.keyframes_.size()); i++) {
+			*keyframes_[i] = *that.keyframes_[i];
+		}
+		for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
+			i < that.keyframes_.size(); i++) {
+			keyframes_.push_back(std::make_unique<ControlKeyframe>(*that.keyframes_[i]));
+			notifyKeyframeAdded(keyframes_.back().get(), this);
+		}
+		while (keyframes_.size() > that.keyframes_.size()) {
+			auto key = std::move(keyframes_.back());
+			keyframes_.pop_back();
+			notifyKeyframeRemoved(key.get(), this);
+		}
     }
     return *this;
 }
@@ -158,16 +161,13 @@ void ControlKeyframeSequence::serialize(Serializer& s) const {
 }
 
 void ControlKeyframeSequence::deserialize(Deserializer& d) {
-    //static_assert(false);
-    /*
-using Elem = std::unique_ptr<Key>;
+using Elem = std::unique_ptr<ControlKeyframe>;
 util::IndexedDeserializer<Elem>("keyframes", "keyframe")
     .onNew([&](Elem& key) {
         notifyKeyframeAdded(key.get(), this);
         key->addObserver(this);
     })
     .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get(), this); })(d, keyframes_);
-            */
 }
 
 }  // namespace animation

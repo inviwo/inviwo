@@ -67,7 +67,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
     
 
     void (QDoubleSpinBox::*signal)(double) = &QDoubleSpinBox::valueChanged;
-    connect(timeSpinner_,signal,[this](double t){
+    connect(timeSpinner_, signal, this, [this](double t){
         keyframe_.setTime(Seconds(t));
     });
 
@@ -115,7 +115,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
 		});
 
 		connect(timeSpinner_, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-			[this, &ctrlKey](double t) {
+			this, [this, &ctrlKey](double t) {
 			ControlPayload payload;
 			payload.jumpToTime = Seconds{ t };
 			ctrlKey.setPayload(payload);
@@ -128,30 +128,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
     setLayout(layout_);
 }
 
-KeyframeEditorWidget::~KeyframeEditorWidget() {
-	const std::array<QWidget*, 3> widgets = { propertyWidget_, actionWidget_, jumpToWidget_ };
-	for (auto w : widgets) {
-		if (w) {
-			layout_->removeWidget(w);
-			delete w;
-		}
-	}
-
-	/*
-	if (propertyWidget_) {
-		layout_->removeWidget(propertyWidget_);
-		delete propertyWidget_;
-	}
-	if (actionWidget_) {
-		layout_->removeWidget(actionWidget_);
-		delete actionWidget_;
-	}
-	if (jumpToWidget_) {
-		layout_->removeWidget(actionWidget_);
-		delete actionWidget_;
-	}
-	*/
-}
+KeyframeEditorWidget::~KeyframeEditorWidget() = default;
 
 void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
     timeSpinner_->setValue(key->getTime().count());

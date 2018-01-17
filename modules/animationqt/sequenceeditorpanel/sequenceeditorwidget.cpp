@@ -41,11 +41,6 @@
 #include <QComboBox>
 #include <warn/pop>
 
-/**
- * TODO:
- * * Listen to updates to easing from outside
- */
-
 namespace inviwo {
 
 namespace animation {
@@ -80,7 +75,7 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
         for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
             std::ostringstream oss;
             oss << e;
-            easingComboBox_->addItem(oss.str().c_str(), QVariant((int)e));
+            easingComboBox_->addItem(oss.str().c_str(), QVariant(static_cast<int>(e)));
             if (currentEasing == e) {
                 easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
             }
@@ -127,7 +122,7 @@ void SequenceEditorWidget::setReorderNeeded() { reorderNeeded_ = true; }
 
 void SequenceEditorWidget::onKeyframeSequenceEasingChanged(KeyframeSequence* seq) {
     easingComboBox_->blockSignals(true);
-    auto index = easingComboBox_->findData(QVariant((int)seq->getEasingType()));
+    auto index = easingComboBox_->findData(QVariant(static_cast<int>(seq->getEasingType())));
     easingComboBox_->setCurrentIndex(index);
     easingComboBox_->blockSignals(false);
 }
