@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,22 +31,22 @@
 
 namespace inviwo {
 
-<name>Module::<name>Module(InviwoApplication* app) : InviwoModule(app, "<name>") {   
+<name>Module::<name>Module(InviwoApplication* app) : InviwoModule(app, "<name>") {
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
-    
+
     // Processors
     // registerProcessor<<name>Processor>();
-    
+
     // Properties
     // registerProperty<<name>Property>();
-    
+
     // Readers and writes
     // registerDataReader(util::make_unique<<name>Reader>());
     // registerDataWriter(util::make_unique<<name>Writer>());
-    
+
     // Data converters
     // registerRepresentationConverter(util::make_unique<<name>Disk2RAMConverter>());
 
@@ -56,17 +56,17 @@ namespace inviwo {
 
     // PropertyWidgets
     // registerPropertyWidget<<name>PropertyWidget, <name>Property>("Default");
-    
+
     // Dialogs
     // registerDialog<<name>Dialog>(<name>Outport);
-    
-    // Other varius things
+
+    // Other things
     // registerCapabilities(util::make_unique<<name>Capabilities>());
     // registerSettings(util::make_unique<<name>Settings>());
-    // registerMetaData(util::make_unique<<name>MetaData>());   
+    // registerMetaData(util::make_unique<<name>MetaData>());
     // registerPortInspector("<name>Outport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<<name>Drawer>());  
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
+    // registerDrawer(util::make_unique_ptr<<name>Drawer>());
 }
 
-} // namespace
+}  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,13 +40,12 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class <api> <name> { 
+class <api> <name> {
 public:
     <name>();
     virtual ~<name>() = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_<uname>_H
-
+#endif  // IVW_<uname>_H
