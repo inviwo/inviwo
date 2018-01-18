@@ -121,28 +121,31 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
+        auto revert = toolBar->addAction(QIcon(":/icons/revert.png"), tr("Revert"));
+        revert->setToolTip("Revert changes");
+        revert->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(revert);
+        connect(revert, &QAction::triggered, [this]() { updateFromProperty(); });
+    }
+
+    {
         auto undo = toolBar->addAction(QIcon(":/icons/undo.png"), tr("Undo"));
         undo->setShortcut(QKeySequence::Undo);
         undo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        undo->setEnabled(false);
         mainWindow->addAction(undo);
         connect(undo, &QAction::triggered, editor_, &QTextEdit::undo);
+        connect(editor_, &QTextEdit::undoAvailable, undo, &QAction::setEnabled);
     }
 
     {
         auto redo = toolBar->addAction(QIcon(":/icons/redo.png"), tr("Redo"));
         redo->setShortcut(QKeySequence::Redo);
         redo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        redo->setEnabled(false);
         mainWindow->addAction(redo);
         connect(redo, &QAction::triggered, editor_, &QTextEdit::redo);
-    }
-
-    {
-
-        auto reload = toolBar->addAction(QIcon(":/icons/button_cancel-bw.png"), tr("Revert"));
-        reload->setToolTip("Revert changes");
-        reload->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        mainWindow->addAction(reload);
-        connect(reload, &QAction::triggered, [this]() { updateFromProperty(); });
+        connect(editor_, &QTextEdit::redoAvailable, redo, &QAction::setEnabled);
     }
 
     resize(QSize(500, 500));  // default size
