@@ -55,7 +55,7 @@ namespace utilqt {
 std::locale getCurrentStdLocale() {
     std::locale loc;
     try {
-// use the system locale provided by Qt
+        // use the system locale provided by Qt
 
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
@@ -99,6 +99,14 @@ ivec2 toGLM(QSize v) { return ivec2(v.width(), v.height()); }
 QSizeF toQSize(dvec2 v) { return QSizeF(v.x, v.y); }
 
 QSize toQSize(ivec2 v) { return QSize(v.x, v.y); }
+
+vec4 tovec4(const QColor& c) { return vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
+
+ivec4 toivec4(const QColor& c) { return vec4(c.red(), c.green(), c.blue(), c.alpha()); }
+
+QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
+
+QColor toQColor(const ivec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 
 QMainWindow* getApplicationMainWindow() {
     auto widgets = QApplication::allWidgets();
@@ -162,7 +170,7 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
     if (!withinAnyDesktop) {
         // If the widget is outside visible screen
         auto mainWindow = getApplicationMainWindow();
-        QPoint appPos(0,0);
+        QPoint appPos(0, 0);
         if (mainWindow) {
             appPos = mainWindow->pos();
         }
@@ -193,7 +201,6 @@ QPoint offsetWidget() {
     return QPoint(pos.x, pos.y);
 }
 
-
 QMenu* addMenu(std::string menuName, std::string before) {
     return addMenu(menuName, getMenu(before));
 }
@@ -217,7 +224,6 @@ QMenu* addMenu(std::string menuName, QMenu* before) {
     throw Exception("No Qt main window found");
 }
 
-
 QMenu* getMenu(std::string menuName, bool createIfNotFound) {
     if (auto mainwin = utilqt::getApplicationMainWindow()) {
         auto menuBar = mainwin->menuBar();
@@ -240,9 +246,9 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
     throw Exception("No Qt main window found");
 }
 
-QImage layerToQImage(const Layer &layer){
-    auto data = layer.getAsCodedBuffer("png"); 
-    return QImage::fromData(data->data(), static_cast<int>(data->size()),"png");
+QImage layerToQImage(const Layer& layer) {
+    auto data = layer.getAsCodedBuffer("png");
+    return QImage::fromData(data->data(), static_cast<int>(data->size()), "png");
 }
 
 void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, size_t visibleIndex) {
@@ -258,21 +264,20 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
         });
 
         auto saveAction = save->addAction(oss.str().c_str());
-        saveAction->connect(saveAction, &QAction::triggered, [layer]() {
-             util::saveLayer(*layer);
-        });
+        saveAction->connect(saveAction, &QAction::triggered,
+                            [layer]() { util::saveLayer(*layer); });
     };
 
     const auto nLayers = image.getNumberOfColorLayers();
     for (size_t i = 0; i < nLayers; i++) {
         addAction("Color Layer " + (nLayers > 1 ? toString(i) : ""), image.getColorLayer(i),
-                      visibleLayer == LayerType::Color && visibleIndex == i);
+                  visibleLayer == LayerType::Color && visibleIndex == i);
     }
 
     addAction("Picking Layer", image.getPickingLayer(), visibleLayer == LayerType::Picking);
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
 }
 
-} // namespace utilqt
+}  // namespace utilqt
 
-}  // namespace
+}  // namespace inviwo

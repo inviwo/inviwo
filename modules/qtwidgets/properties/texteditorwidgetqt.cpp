@@ -56,6 +56,7 @@
 #include <QDesktopServices>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QFont>
 #include <warn/pop>
 
 namespace inviwo {
@@ -74,17 +75,32 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     setWidget(mainWindow);
 
     editor_ = new QTextEdit(nullptr);
+    editor_->setObjectName("SourceCodeEditor");
     editor_->setReadOnly(false);
-    editor_->setStyleSheet("font: 10pt \"Courier\";");
     editor_->setWordWrapMode(QTextOption::NoWrap);
     editor_->createStandardContextMenu();
     mainWindow->setCentralWidget(editor_);
 
+    // setting a monospace font explicitely is necessary despite providing a font-family in css
+    // Otherwise, the editor will not feature a fixed-width font face.
+    QFont fixedFont("Monospace");
+    fixedFont.setPointSize(10);
+    fixedFont.setStyleHint(QFont::TypeWriter);
+    editor_->setFont(fixedFont);
+
+    QString bgString;
     if (property->getSemantics() == PropertySemantics::ShaderEditor) {
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<GLSL>(editor_->document());
     } else {
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<None>(editor_->document());
     }
+
+    // set background of text editor matching syntax highlighting
+    const QColor bgColor = syntaxHighligther_->getBackgroundColor();
+    QString styleSheet(QString("QTextEdit#%1 { background-color: %2; }")
+                           .arg(editor_->objectName())
+                           .arg(bgColor.name()));
+    editor_->setStyleSheet(styleSheet);
 
     {
         auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save"));
@@ -121,8 +137,9 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto reload = toolBar->addAction(QIcon(":/icons/button_cancel-bw.png"), tr("Reload"));
-        reload->setToolTip("Discard changes");
+
+        auto reload = toolBar->addAction(QIcon(":/icons/button_cancel-bw.png"), tr("Revert"));
+        reload->setToolTip("Revert changes");
         reload->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         mainWindow->addAction(reload);
         connect(reload, &QAction::triggered, [this]() { updateFromProperty(); });

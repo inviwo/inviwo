@@ -421,9 +421,10 @@ void CropWidget::updateAxisRanges() {
         cropDims[i] = cropAxes_[i].range.getRangeMax() + 1;
     }
 
-    {
+    if (dims != cropDims) {
         NetworkLock lock(this);
 
+        // crop range should be [0, dims - 1]
         for (int i = 0; i < 3; ++i) {
             if (relativeRangeAdjustment_.get()) {
                 cropAxes_[i].range.setRangeNormalized(ivec2(0, dims[i] - 1));

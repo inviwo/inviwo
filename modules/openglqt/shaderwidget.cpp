@@ -27,7 +27,8 @@
  *
  *********************************************************************************/
 
-#include "shaderwidget.h"
+#include <modules/openglqt/shaderwidget.h>
+
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadermanager.h>
@@ -46,6 +47,7 @@
 #include <QCheckBox>
 #include <QHBoxLayout>
 #include <QCloseEvent>
+#include <QFont>
 #include <warn/pop>
 
 namespace inviwo {
@@ -71,9 +73,23 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     shadercode->setObjectName("shaderwidgetcode");
     shadercode->setReadOnly(false);
     shadercode->setText(utilqt::toQString(obj->print(false, false)));
-    shadercode->setStyleSheet("font: 10pt \"Courier\";");
     shadercode->setWordWrapMode(QTextOption::NoWrap);
-    SyntaxHighligther::createSyntaxHighligther<GLSL>(shadercode->document());
+    auto syntaxHighlighter =
+        SyntaxHighligther::createSyntaxHighligther<GLSL>(shadercode->document());
+
+    // setting a monospace font explicitely is necessary despite providing a font-family in css
+    // Otherwise, the editor will not feature a fixed-width font face.
+    QFont fixedFont("Monospace");
+    fixedFont.setPointSize(10);
+    fixedFont.setStyleHint(QFont::TypeWriter);
+    shadercode->setFont(fixedFont);
+
+    // set background color matching syntax highlighting
+    const QColor bgColor = syntaxHighlighter->getBackgroundColor();
+    QString styleSheet(QString("QTextEdit#%1 { background-color: %2; }")
+                           .arg(shadercode->objectName())
+                           .arg(bgColor.name()));
+    shadercode->setStyleSheet(styleSheet);
 
     auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save shader"));
     save->setShortcut(QKeySequence::Save);

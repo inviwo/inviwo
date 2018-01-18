@@ -123,6 +123,10 @@ QWidget#CompositeContents > QWidget {
     /*background: #2b2b2d;*/
 }
 
+QTextEdit#SourceCodeEditor, QTextEdit#shaderwidgetcode {
+    font-family: monospace;
+}
+
 
 /* Common defines for flat property editors, both active and disabled */
 QLineEdit, QAbstractSpinBox, QComboBox {
