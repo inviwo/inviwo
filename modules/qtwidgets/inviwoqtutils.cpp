@@ -100,9 +100,9 @@ QSizeF toQSize(dvec2 v) { return QSizeF(v.x, v.y); }
 
 QSize toQSize(ivec2 v) { return QSize(v.x, v.y); }
 
-vec4 toGLM(const QColor& c) { return vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
+vec4 tovec4(const QColor& c) { return vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
 
-ivec4 toGLMi(const QColor& c) { return vec4(c.red(), c.green(), c.blue(), c.alpha()); }
+ivec4 toivec4(const QColor& c) { return vec4(c.red(), c.green(), c.blue(), c.alpha()); }
 
 QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
 
