@@ -482,9 +482,11 @@ void InviwoMainWindow::addActions() {
         auto findAction =
             editMenu_->addAction(QIcon(":/icons/findprocessor.png"), tr("&Find Processor"));
         findAction->setShortcut(QKeySequence::Find);
-        connect(findAction, &QAction::triggered, this,
-                [this]() { processorTreeWidget_->focusSearch(); });
-        
+        connect(findAction, &QAction::triggered, this, [this]() {
+            processorTreeWidget_->show();
+            processorTreeWidget_->focusSearch();
+        });
+
         auto addProcessorAction =
             editMenu_->addAction(QIcon(":/icons/processor-add.png"), tr("&Add Processor"));
         addProcessorAction->setShortcut(Qt::ControlModifier + Qt::Key_D);
