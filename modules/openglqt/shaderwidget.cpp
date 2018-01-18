@@ -77,15 +77,17 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     auto syntaxHighlighter =
         SyntaxHighligther::createSyntaxHighligther<GLSL>(shadercode->document());
 
+    // setting a monospace font explicitely is necessary despite providing a font-family in css
+    // Otherwise, the editor will not feature a fixed-width font face.
     QFont fixedFont("Monospace");
     fixedFont.setPointSize(10);
     fixedFont.setStyleHint(QFont::TypeWriter);
     shadercode->setFont(fixedFont);
 
-    QColor bgColor = syntaxHighlighter->getBackgroundColor();
-
-    // select monospace font family and set background color matching syntax highlighting
-    QString styleSheet(QString("QTextEdit { font-family: 'monospace'; background-color: %1; }")
+    // set background color matching syntax highlighting
+    const QColor bgColor = syntaxHighlighter->getBackgroundColor();
+    QString styleSheet(QString("QTextEdit#%1 { background-color: %2; }")
+                           .arg(shadercode->objectName())
                            .arg(bgColor.name()));
     shadercode->setStyleSheet(styleSheet);
 

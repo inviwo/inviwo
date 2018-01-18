@@ -75,11 +75,14 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     setWidget(mainWindow);
 
     editor_ = new QTextEdit(nullptr);
+    editor_->setObjectName("SourceCodeEditor");
     editor_->setReadOnly(false);
     editor_->setWordWrapMode(QTextOption::NoWrap);
     editor_->createStandardContextMenu();
     mainWindow->setCentralWidget(editor_);
 
+    // setting a monospace font explicitely is necessary despite providing a font-family in css
+    // Otherwise, the editor will not feature a fixed-width font face.
     QFont fixedFont("Monospace");
     fixedFont.setPointSize(10);
     fixedFont.setStyleHint(QFont::TypeWriter);
@@ -92,9 +95,10 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<None>(editor_->document());
     }
 
-    // set background of Text editor matching syntax highlighting
-    QColor bgColor = syntaxHighligther_->getBackgroundColor();
-    QString styleSheet(QString("QTextEdit { font-family: 'monospace'; background-color: %1; }")
+    // set background of text editor matching syntax highlighting
+    const QColor bgColor = syntaxHighligther_->getBackgroundColor();
+    QString styleSheet(QString("QTextEdit#%1 { background-color: %2; }")
+                           .arg(editor_->objectName())
                            .arg(bgColor.name()));
     editor_->setStyleSheet(styleSheet);
 
@@ -117,8 +121,25 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto reload = toolBar->addAction(QIcon(":/icons/button_cancel-bw.png"), tr("Reload"));
-        reload->setToolTip("Discard changes");
+        auto undo = toolBar->addAction(QIcon(":/icons/undo.png"), tr("Undo"));
+        undo->setShortcut(QKeySequence::Undo);
+        undo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(undo);
+        connect(undo, &QAction::triggered, editor_, &QTextEdit::undo);
+    }
+
+    {
+        auto redo = toolBar->addAction(QIcon(":/icons/redo.png"), tr("Redo"));
+        redo->setShortcut(QKeySequence::Redo);
+        redo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(redo);
+        connect(redo, &QAction::triggered, editor_, &QTextEdit::redo);
+    }
+
+    {
+
+        auto reload = toolBar->addAction(QIcon(":/icons/button_cancel-bw.png"), tr("Revert"));
+        reload->setToolTip("Revert changes");
         reload->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         mainWindow->addAction(reload);
         connect(reload, &QAction::triggered, [this]() { updateFromProperty(); });
