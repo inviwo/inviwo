@@ -246,6 +246,8 @@ void InviwoMainWindow::addActions() {
 
     auto workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
+    auto editToolBar = addToolBar("Edit");
+    editToolBar->setObjectName("fileToolBar");
     auto viewModeToolBar = addToolBar("View");
     viewModeToolBar->setObjectName("viewModeToolBar");
     auto networkToolBar = addToolBar("Network");
@@ -469,19 +471,22 @@ void InviwoMainWindow::addActions() {
         // here will the cut/copy/paste/del/select already in the menu be.
 
         editMenu_->addSeparator();
-        auto findAction = editMenu_->addAction(tr("&Find Processor"));
-        findAction->setShortcut(QKeySequence::Find);
-        connect(findAction, &QAction::triggered, this,
-                [this]() { processorTreeWidget_->focusSearch(); });
-
-        auto searchNetwork = editMenu_->addAction(tr("&Search Network"));
+        auto searchNetwork =
+            editMenu_->addAction(QIcon(":/icons/searchnetwork.png"), tr("&Search Network"));
         searchNetwork->setShortcut(Qt::ShiftModifier + Qt::ControlModifier + Qt::Key_F);
         connect(searchNetwork, &QAction::triggered, [this]() {
             networkSearch_->setVisible(true);
             networkSearch_->setFocus();
         });
 
-        auto addProcessorAction = editMenu_->addAction(tr("&Add Processor"));
+        auto findAction =
+            editMenu_->addAction(QIcon(":/icons/findprocessor.png"), tr("&Find Processor"));
+        findAction->setShortcut(QKeySequence::Find);
+        connect(findAction, &QAction::triggered, this,
+                [this]() { processorTreeWidget_->focusSearch(); });
+        
+        auto addProcessorAction =
+            editMenu_->addAction(QIcon(":/icons/processor-add.png"), tr("&Add Processor"));
         addProcessorAction->setShortcut(Qt::ControlModifier + Qt::Key_D);
         connect(addProcessorAction, &QAction::triggered, this,
                 [this]() { processorTreeWidget_->addSelectedProcessor(); });
@@ -489,6 +494,14 @@ void InviwoMainWindow::addActions() {
         editMenu_->addSeparator();
 
         editMenu_->addAction(consoleWidget_->getClearAction());
+
+        // add actions to tool bar
+        editToolBar->addAction(undoManager_.getUndoAction());
+        editToolBar->addAction(undoManager_.getRedoAction());
+        editToolBar->addSeparator();
+        editToolBar->addAction(searchNetwork);
+        editToolBar->addAction(findAction);
+        editToolBar->addAction(addProcessorAction);
     }
 
     // View

@@ -21,6 +21,7 @@
         <file>icons/filewarning.png</file>
         <file>icons/filter-bw.png</file>
         <file>icons/filter.png</file>
+        <file>icons/findprocessor.png</file>
         <file>icons/html.png</file>
         <file>icons/info-bw.png</file>
         <file>icons/info.png</file>
@@ -40,6 +41,7 @@
         <file>icons/open.png</file>
         <file>icons/player_record.png</file>
         <file>icons/player_stop.png</file>
+        <file>icons/processor-add.png</file>
         <file>icons/processor_broken.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
@@ -53,6 +55,7 @@
         <file>icons/save.png</file>
         <file>icons/saveas.png</file>
         <file>icons/savecopy.png</file>
+        <file>icons/searchnetwork.png</file>
         <file>icons/text_block.png</file>
         <file>icons/timer.png</file>
         <file>icons/undo.png</file>
