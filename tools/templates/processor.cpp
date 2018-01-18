@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,22 +39,19 @@ const ProcessorInfo <name>::processorInfo_{
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };
-const ProcessorInfo <name>::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo <name>::getProcessorInfo() const { return processorInfo_; }
 
 <name>::<name>()
     : Processor()
     , outport_("outport")
     , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
-    
+
     addPort(outport_);
     addProperty(position_);
 }
-    
-void <name>::process() {
-    //outport_.setData(myImage);
+
+void<name>::process() {
+    // outport_.setData(myImage);
 }
 
-} // namespace
-
+}  // namespace inviwo
