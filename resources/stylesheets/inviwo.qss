@@ -186,25 +186,29 @@ QToolBar {
     spacing: 3px;
     padding: 1px;
     border: 1px solid black;
-    background-color: #3a3a3e;
+    border: none;
+    padding-right: 8px;
+    background-color: #323235;
 }
 QToolBar::handle {
     background-image: url(:/stylesheets/images/dense6pattern.png);
     background-repeat: repeat-xy;
-    background-color: #4a4a4f;
+    background-color: #404042;
     border: 1px solid #333;
-    width: 5px;
+    width: 3px;
     margin:1px;
-    margin-right: 3px;
+    margin-right: 1px;
     padding:1px;
-   border-radius: 2px;
+    border-radius: 2px;
 }
 
 /* QToolButton */
 
 QToolBar > QToolButton {
-    background-color: #3a3a3e;
+    background-color: transparent;
     padding:2px;
+    width: 16px;
+    height: 16px;
 }
 QToolButton {
     border: 1px solid transparent;

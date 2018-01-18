@@ -253,7 +253,7 @@ void InviwoMainWindow::addActions() {
 
     // file menu entries
     {
-        auto newAction = new QAction(QIcon(":/icons/new.png"), tr("&New Workspace"), this);
+        auto newAction = new QAction(QIcon(":/icons/newfile.png"), tr("&New Workspace"), this);
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(newAction);
@@ -297,7 +297,7 @@ void InviwoMainWindow::addActions() {
 
     {
         auto workspaceActionSaveAsCopy =
-            new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As Copy"), this);
+            new QAction(QIcon(":/icons/savecopy.png"), tr("&Save Workspace As Copy"), this);
         connect(workspaceActionSaveAsCopy, &QAction::triggered, this,
                 &InviwoMainWindow::saveWorkspaceAsCopy);
         fileMenuItem->addAction(workspaceActionSaveAsCopy);
@@ -453,7 +453,7 @@ void InviwoMainWindow::addActions() {
 
     {
         fileMenuItem->addSeparator();
-        auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
+        auto exitAction = new QAction(QIcon(":/icons/exit.png"), tr("&Exit"), this);
         exitAction->setShortcut(QKeySequence::Close);
         connect(exitAction, &QAction::triggered, this, &InviwoMainWindow::close);
         fileMenuItem->addAction(exitAction);
@@ -508,20 +508,23 @@ void InviwoMainWindow::addActions() {
     {
         // application/developer mode menu entries
         QIcon visibilityModeIcon;
-        visibilityModeIcon.addFile(":/icons/view-developer.png", QSize(), QIcon::Normal,
-                                   QIcon::Off);
-        visibilityModeIcon.addFile(":/icons/view-application.png", QSize(), QIcon::Normal,
-                                   QIcon::On);
+        visibilityModeIcon.addFile(":/icons/usermode.png", QSize(), QIcon::Normal, QIcon::Off);
+        visibilityModeIcon.addFile(":/icons/developermode.png", QSize(), QIcon::Normal, QIcon::On);
         visibilityModeAction_ = new QAction(visibilityModeIcon, tr("&Application Mode"), this);
+        visibilityModeAction_->setToolTip("Switch to Application Mode");
         visibilityModeAction_->setCheckable(true);
         visibilityModeAction_->setChecked(false);
         viewMenuItem->addAction(visibilityModeAction_);
         viewModeToolBar->addAction(visibilityModeAction_);
-        connect(visibilityModeAction_, &QAction::triggered, [&](bool appView) {
+        connect(visibilityModeAction_, &QAction::triggered, [this](bool appView) {
             if (appView) {
                 app_->setApplicationUsageMode(UsageMode::Application);
+                visibilityModeAction_->setToolTip("Switch to Developer Mode");
+                visibilityModeAction_->setText("&Developer Mode");
             } else {
                 app_->setApplicationUsageMode(UsageMode::Development);
+                visibilityModeAction_->setToolTip("Switch to Application Mode");
+                visibilityModeAction_->setText("&Application Mode");
             }
         });
 
@@ -533,44 +536,54 @@ void InviwoMainWindow::addActions() {
     // Network
     {
         QIcon enableDisableIcon;
-        enableDisableIcon.addFile(":/icons/button_ok.png", QSize(), QIcon::Active, QIcon::Off);
-        enableDisableIcon.addFile(":/icons/button_cancel.png", QSize(), QIcon::Active, QIcon::On);
-        auto lockNetworkAction = new QAction(enableDisableIcon, tr("&Lock Network"), this);
-        lockNetworkAction->setCheckable(true);
-        lockNetworkAction->setChecked(false);
-        lockNetworkAction->setToolTip("Enable/Disable Network Evaluation");
+        enableDisableIcon.addFile(":/icons/unlocked.png", QSize(), QIcon::Active, QIcon::Off);
+        enableDisableIcon.addFile(":/icons/locked.png", QSize(), QIcon::Active, QIcon::On);
+        auto disableEvalAction =
+            new QAction(enableDisableIcon, tr("Disable &Network Evaluation"), this);
+        disableEvalAction->setCheckable(true);
+        disableEvalAction->setChecked(false);
 
-        lockNetworkAction->setShortcut(Qt::ControlModifier + Qt::Key_L);
-        networkMenuItem->addAction(lockNetworkAction);
-        networkToolBar->addAction(lockNetworkAction);
-        connect(lockNetworkAction, &QAction::triggered, this, [lockNetworkAction, this]() {
-            if (lockNetworkAction->isChecked()) {
+        disableEvalAction->setShortcut(Qt::ControlModifier + Qt::Key_L);
+        networkMenuItem->addAction(disableEvalAction);
+        networkToolBar->addAction(disableEvalAction);
+        connect(disableEvalAction, &QAction::triggered, this, [disableEvalAction, this]() {
+            if (disableEvalAction->isChecked()) {
                 app_->getProcessorNetwork()->lock();
+                disableEvalAction->setToolTip("Enable Network Evaluation");
+                disableEvalAction->setText("Enable &Network Evaluation");
             } else {
                 app_->getProcessorNetwork()->unlock();
+                disableEvalAction->setToolTip("Disable Network Evaluation");
+                disableEvalAction->setText("Disable &Network Evaluation");
             }
         });
 
-        auto compAction = networkMenuItem->addAction(tr("&Create Composite"));
+        auto compAction = networkMenuItem->addAction(QIcon(":/icons/createcomposite.png"),
+                                                     tr("&Create Composite"));
+        compAction->setEnabled(false);
+        networkToolBar->addAction(compAction);
         compAction->setShortcut(Qt::ControlModifier + Qt::Key_G);
         connect(compAction, &QAction::triggered, this, [this]() {
             util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
         });
 
-        auto expandAction = networkMenuItem->addAction(tr("&Expand Composite"));
+        auto expandAction = networkMenuItem->addAction(QIcon(":/icons/expandcomposite.png"),
+                                                       tr("&Expand Composite"));
+        networkToolBar->addAction(expandAction);
         expandAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_G);
+        expandAction->setEnabled(false);
         connect(expandAction, &QAction::triggered, this, [this]() {
             std::unordered_set<CompositeProcessor*> selectedComposites;
             for (auto item : networkEditor_->selectedItems()) {
                 if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
                     if (auto comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
-                         util::expandCompositeProcessorIntoNetwork(*comp);
+                        util::expandCompositeProcessorIntoNetwork(*comp);
                     }
                 }
             }
         });
 
-        connect(networkMenuItem, &QMenu::aboutToShow, this, [this, expandAction, compAction] {
+        auto updateButtonState = [this, expandAction, compAction] {
             std::unordered_set<CompositeProcessor*> selectedComposites;
             std::unordered_set<Processor*> selectedProcessors;
             for (auto item : networkEditor_->selectedItems()) {
@@ -583,13 +596,15 @@ void InviwoMainWindow::addActions() {
             }
             expandAction->setDisabled(selectedComposites.empty());
             compAction->setDisabled(selectedProcessors.empty());
-        });
+        };
+        connect(networkEditor_.get(), &QGraphicsScene::selectionChanged, this, updateButtonState);
+        connect(networkMenuItem, &QMenu::aboutToShow, this, updateButtonState);
     }
 
 #if IVW_PROFILING
     {
         auto resetTimeMeasurementsAction =
-            new QAction(QIcon(":/icons/stopwatch.png"), tr("Reset All Time Measurements"), this);
+            new QAction(QIcon(":/icons/timer.png"), tr("Reset All Time Measurements"), this);
         resetTimeMeasurementsAction->setCheckable(false);
 
         connect(resetTimeMeasurementsAction, &QAction::triggered,
@@ -679,7 +694,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
     std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
     workspaceFileName = utilqt::toQString(fileName);
-    
+
     if (!filesystem::fileExists(fileName)) {
         LogError("Could not find workspace file: " << fileName);
         return;
@@ -824,7 +839,7 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
 
 void InviwoMainWindow::showAboutBox() {
-    if(!inviwoAboutWindow_) {
+    if (!inviwoAboutWindow_) {
         inviwoAboutWindow_ = new InviwoAboutWindow(this);
         inviwoAboutWindow_->setVisible(false);
         inviwoAboutWindow_->loadState();
