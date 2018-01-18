@@ -19,6 +19,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/surfaceextraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegeneration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramdistancetransform.h
@@ -80,6 +81,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.h
@@ -115,6 +117,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegeneration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramdistancetransform.cpp
@@ -171,6 +174,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.cpp
