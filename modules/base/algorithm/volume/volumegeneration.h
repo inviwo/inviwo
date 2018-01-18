@@ -48,7 +48,7 @@ namespace util {
 /**
  * Convenience function for generating volumes
  * @param dimensions Volume grid dimensions
- * @param basis Volume basis, offset set to center volume automatically
+ * @param basis Volume basis, offset automatically set to center the volume around origo
  * @param function Functor called for each volume voxel. T(const size3_t& ind).
  */
 template <typename Functor>
