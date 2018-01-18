@@ -48,7 +48,7 @@ namespace util {
 /**
  * Convenience function for generating volumes
  * @param dimensions Volume grid dimensions
- * @param basisAndOffset Volume basis and offset matrix
+ * @param basis Volume basis, offset set to center volume automatically
  * @param function Functor called for each volume voxel. T(const size3_t& ind).
  */
 template <typename Functor>
@@ -73,6 +73,9 @@ std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat3& ba
     return volume;
 }
 
+/**
+ * Center voxel equal to 1 all other 0
+ */
 template <typename T = float>
 std::unique_ptr<Volume> makeSingleVoxelVolume(const size3_t& size) {
     const size3_t mid{(size - size3_t{1u}) / size_t{2}};
@@ -84,6 +87,10 @@ std::unique_ptr<Volume> makeSingleVoxelVolume(const size3_t& size) {
     });
 }
 
+/**
+ * Spherically symmetric density centered in the volume decaying radially with the distance from the
+ * center
+ */
 template <typename T = float>
 std::unique_ptr<Volume> makeSphericalVolume(const size3_t& size) {
     const dvec3 rsize{size};
@@ -95,6 +102,9 @@ std::unique_ptr<Volume> makeSphericalVolume(const size3_t& size) {
     });
 }
 
+/**
+ * A quickly oscillating density between 0 and 1
+ */
 template <typename T = float>
 std::unique_ptr<Volume> makeRippleVolume(const size3_t& size) {
     const dvec3 rsize{size};
@@ -108,6 +118,9 @@ std::unique_ptr<Volume> makeRippleVolume(const size3_t& size) {
     });
 }
 
+/**
+ * A 2x2x2 volume corresponding to a marching cube case
+ */
 template <typename T = float>
 std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
     std::bitset<8> corners(index);

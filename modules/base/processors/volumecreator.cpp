@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumegenerator.h>
+#include <modules/base/processors/volumecreator.h>
 #include <modules/base/algorithm/volume/volumegeneration.h>
 #include <inviwo/core/util/formatdispatching.h>
 
@@ -43,17 +43,17 @@ struct Helper {
 
 struct Creator {
     template <typename Result, typename Format>
-    Result operator()(VolumeGenerator::Type type, size3_t size, size_t index) {
+    Result operator()(VolumeCreator::Type type, size3_t size, size_t index) {
         switch (type) {
-            case VolumeGenerator::Type::SingleVoxel:
+            case VolumeCreator::Type::SingleVoxel:
                 return std::shared_ptr<Volume>(
                     util::makeSingleVoxelVolume<typename Format::type>(size));
-            case VolumeGenerator::Type::Sphere:
+            case VolumeCreator::Type::Sphere:
                 return std::shared_ptr<Volume>(
                     util::makeSphericalVolume<typename Format::type>(size));
-            case VolumeGenerator::Type::Ripple:
+            case VolumeCreator::Type::Ripple:
                 return std::shared_ptr<Volume>(util::makeRippleVolume<typename Format::type>(size));
-            case VolumeGenerator::Type::MarchingCube:
+            case VolumeCreator::Type::MarchingCube:
                 return std::shared_ptr<Volume>(
                     util::makeMarchingCubeVolume<typename Format::type>(index));
             default:
@@ -64,16 +64,16 @@ struct Creator {
 }  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VolumeGenerator::processorInfo_{
-    "org.inviwo.VolumeGenerator",  // Class identifier
-    "Volume Generator",            // Display name
-    "Data Creation",               // Category
-    CodeState::Experimental,       // Code state
-    Tags::None,                    // Tags
+const ProcessorInfo VolumeCreator::processorInfo_{
+    "org.inviwo.VolumeCreator",  // Class identifier
+    "Volume Creator",            // Display name
+    "Data Creation",             // Category
+    CodeState::Stable,           // Code state
+    Tags::CPU,                   // Tags
 };
-const ProcessorInfo VolumeGenerator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VolumeCreator::getProcessorInfo() const { return processorInfo_; }
 
-VolumeGenerator::VolumeGenerator()
+VolumeCreator::VolumeCreator()
     : Processor()
     , outport_("volume")
     , type_{"type",
@@ -89,19 +89,19 @@ VolumeGenerator::VolumeGenerator()
                   return formats;
               }(),
               1}
-    , size_("size", "Size", size3_t(10), size3_t(0), size3_t(500))
+    , dimensions_("dimensions", "Dimensions", size3_t(10), size3_t(0), size3_t(512))
     , index_("index", "Index", 5, 0, 255) {
 
     addPort(outport_);
     addProperty(type_);
     addProperty(format_);
-    addProperty(size_);
+    addProperty(dimensions_);
     addProperty(index_);
 }
 
-void VolumeGenerator::process() {
+void VolumeCreator::process() {
     auto volume = dispatching::dispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
-        format_.get(), Creator{}, type_.get(), size_.get(), index_.get());
+        format_.get(), Creator{}, type_.get(), dimensions_.get(), index_.get());
     outport_.setData(volume);
 }
 

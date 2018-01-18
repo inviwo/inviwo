@@ -64,6 +64,7 @@
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/surfaceextraction.h>
+#include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeexport.h>
@@ -99,7 +100,6 @@
 #include <modules/base/io/ivfsequencevolumereader.h>
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
-#include <modules/base/processors/volumegenerator.h>
 
 
 namespace inviwo {
@@ -167,7 +167,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<BufferToMeshProcessor>();
     registerProcessor<CameraFrustum>();
     registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
-    registerProcessor<VolumeGenerator>();
+    registerProcessor<VolumeCreator>();
 
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();

@@ -24,11 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEGENERATOR_H
-#define IVW_VOLUMEGENERATOR_H
+#ifndef IVW_VOLUMECREATOR_H
+#define IVW_VOLUMECREATOR_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,39 +39,45 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeGenerator, Volume Generator}
- * ![](org.inviwo.VolumeGenerator.png?classIdentifier=org.inviwo.VolumeGenerator)
- * Generate simple volume data.
+/** \docpage{org.inviwo.VolumeCreator, Volume Creator}
+ * ![](org.inviwo.VolumeCreator.png?classIdentifier=org.inviwo.VolumeCreator)
+ * Procedurally generate volume data on the CPU.
  *
  * ### Outports
  *   * __volume__ The generated volume.
- * 
+ *
  * ### Properties
- *   * __size__ Volume Dimensions
- *   * __<Prop2>__ <description>
+ *   * __Type__ Type of volume to generate:
+ *       * __Single Voxel__ Center voxel equal to 1 all other 0
+ *       * __Sphere__ Spherically symmetric density centered in the volume decaying radially with
+ *         the distance from the center
+ *       * __Ripple__ A quickly oscillating density between 0 and 1
+ *       * __Marching Cube__ A 2x2x2 volume corresponding to a marching cube case
+ *   * __Dimensions__ Volume Dimensions
+ *   * __Format__ Volume data format
+ *   * __Index__ Marching cube case index
  */
 
-class IVW_MODULE_BASE_API VolumeGenerator : public Processor { 
+class IVW_MODULE_BASE_API VolumeCreator : public Processor {
 public:
-    VolumeGenerator();
-    virtual ~VolumeGenerator() = default;
-     
-    enum class Type {SingleVoxel, Sphere, Ripple, MarchingCube};
+    VolumeCreator();
+    virtual ~VolumeCreator() = default;
+
+    enum class Type { SingleVoxel, Sphere, Ripple, MarchingCube };
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     VolumeOutport outport_;
     TemplateOptionProperty<Type> type_;
     TemplateOptionProperty<DataFormatId> format_;
-    IntSize3Property size_;
+    IntSize3Property dimensions_;
     IntProperty index_;
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEGENERATOR_H
-
+#endif  // IVW_VOLUMECREATOR_H
