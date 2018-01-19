@@ -697,7 +697,7 @@ void InviwoMainWindow::newWorkspace() {
 
     app_->getWorkspaceManager()->clear();
 
-    setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+    setCurrentWorkspace("untitled");
     getNetworkEditor()->setModified(false);
 }
 
@@ -731,7 +731,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
             });
 
             if (exampleWorkspace) {
-                setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+                setCurrentWorkspace("untitled");
             } else {
                 setCurrentWorkspace(workspaceFileName);
                 addToRecentWorkspaces(workspaceFileName);
@@ -741,7 +741,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
                       "Unable to load network " + fileName + " due to " + e.getMessage(),
                       LogLevel::Error);
             app_->getWorkspaceManager()->clear();
-            setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+            setCurrentWorkspace("untitled");
         }
         app_->processEvents();  // make sure the gui is ready before we unlock.
     }
@@ -800,7 +800,7 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
 }
 
 void InviwoMainWindow::saveWorkspace() {
-    if (currentWorkspaceFileName_.contains("untitled.inv"))
+    if (currentWorkspaceFileName_.contains("untitled"))
         saveWorkspaceAs();
     else {
         saveWorkspace(currentWorkspaceFileName_);
@@ -935,7 +935,7 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
 
     QSettings settings;
     settings.beginGroup(objectName());
-    if (!currentWorkspaceFileName_.contains("untitled.inv")) {
+    if (!currentWorkspaceFileName_.contains("untitled")) {
         settings.setValue("workspaceOnLastSuccessfulExit", currentWorkspaceFileName_);
     } else {
         settings.setValue("workspaceOnLastSuccessfulExit", "");
