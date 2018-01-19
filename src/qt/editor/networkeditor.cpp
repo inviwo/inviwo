@@ -761,7 +761,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedPosition_ = {false, ivec2{0, 0}};
 }
 
-void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
+void NetworkEditor::showProcessorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
     auto help = mainwindow_->getHelpWidget();
     help->showDocForClassName(classIdentifier);
     if (raise) {

@@ -99,7 +99,7 @@ public:
     void addPropertyWidgets(Processor* processor);
     void removeAndDeletePropertyWidgets(Processor* processor);
     void removePropertyWidgets(Processor* processor);
-    void showProecssorHelp(const std::string& classIdentifier, bool raise = false);
+    void showProcessorHelp(const std::string& classIdentifier, bool raise = false);
 
     bool isModified() const;
     void setModified(const bool modified = true);
