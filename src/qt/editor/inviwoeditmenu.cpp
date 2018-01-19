@@ -80,26 +80,6 @@ InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) 
             }
         });
     }
-
-    // enable the actions currently supported by the item in focus
-    connect(this, &QMenu::aboutToShow, this, [this]() {
-        if (auto item = getFocusItem()) {
-            for (auto& action : actions_) {
-                action.second->setEnabled(item->enabled(action.first));
-            }
-        } else {
-            for (auto& action : actions_) {
-                action.second->setEnabled(false);
-            }
-        }
-    });
-
-    // need to enable all for potential shortcut use to function
-    connect(this, &QMenu::aboutToHide, this, [this]() {
-        for (auto& action : actions_) {
-            action.second->setEnabled(true);
-        }
-    });
 }
 
 std::shared_ptr<MenuItem> InviwoEditMenu::getFocusItem() {
@@ -133,6 +113,19 @@ std::shared_ptr<MenuItem> InviwoEditMenu::registerItem(std::shared_ptr<MenuItem>
         }      
     }
     return item;
+}
+
+void InviwoEditMenu::updateMenuState() {
+    // enable the actions currently supported by the item in focus
+    if (auto item = getFocusItem()) {
+        for (auto& action : actions_) {
+            action.second->setEnabled(item->enabled(action.first));
+        }
+    } else {
+        for (auto& action : actions_) {
+            action.second->setEnabled(false);
+        }
+    }
 }
 
 MenuItem::MenuItem(QObject* owner_, std::function<bool(MenuItemType)> enabled_,

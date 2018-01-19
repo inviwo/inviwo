@@ -77,6 +77,8 @@ public:
     
     std::shared_ptr<MenuItem> registerItem(std::shared_ptr<MenuItem> item);
     
+    void updateMenuState();
+
 private:
     std::shared_ptr<MenuItem> getFocusItem();
 
