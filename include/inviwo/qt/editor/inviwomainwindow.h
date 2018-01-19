@@ -164,6 +164,7 @@ private:
     bool maximized_;
 
     // paths
+    const QString untitledWorkspaceName_;
     QString rootDir_;
     QString workspaceFileDir_;
     QString currentWorkspaceFileName_;

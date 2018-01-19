@@ -92,6 +92,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
     , networkEditor_(nullptr)
+    , maximized_(false)
+    , untitledWorkspaceName_("untitled")
     , snapshotArg_("s", "snapshot",
                    "Specify base name of each snapshot, or \"UPN\" string for processor name.",
                    false, "", "file name")
@@ -701,7 +703,7 @@ void InviwoMainWindow::newWorkspace() {
 
     app_->getWorkspaceManager()->clear();
 
-    setCurrentWorkspace("untitled");
+    setCurrentWorkspace(untitledWorkspaceName_);
     getNetworkEditor()->setModified(false);
 }
 
@@ -735,7 +737,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
             });
 
             if (exampleWorkspace) {
-                setCurrentWorkspace("untitled");
+                setCurrentWorkspace(untitledWorkspaceName_);
             } else {
                 setCurrentWorkspace(workspaceFileName);
                 addToRecentWorkspaces(workspaceFileName);
@@ -745,7 +747,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
                       "Unable to load network " + fileName + " due to " + e.getMessage(),
                       LogLevel::Error);
             app_->getWorkspaceManager()->clear();
-            setCurrentWorkspace("untitled");
+            setCurrentWorkspace(untitledWorkspaceName_);
         }
         app_->processEvents();  // make sure the gui is ready before we unlock.
     }
@@ -804,7 +806,7 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
 }
 
 void InviwoMainWindow::saveWorkspace() {
-    if (currentWorkspaceFileName_.contains("untitled"))
+    if (currentWorkspaceFileName_ == untitledWorkspaceName_)
         saveWorkspaceAs();
     else {
         saveWorkspace(currentWorkspaceFileName_);
@@ -939,10 +941,10 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
 
     QSettings settings;
     settings.beginGroup(objectName());
-    if (!currentWorkspaceFileName_.contains("untitled")) {
-        settings.setValue("workspaceOnLastSuccessfulExit", currentWorkspaceFileName_);
-    } else {
+    if (currentWorkspaceFileName_ == untitledWorkspaceName_) {
         settings.setValue("workspaceOnLastSuccessfulExit", "");
+    } else {
+        settings.setValue("workspaceOnLastSuccessfulExit", currentWorkspaceFileName_);
     }
     settings.endGroup();
 
