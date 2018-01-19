@@ -406,7 +406,11 @@ void InviwoMainWindow::addActions() {
                 auto action = menu->addAction(QString::fromStdString(item));
                 auto path = QString::fromStdString(moduleWorkspacePath + "/" + item);
                 connect(action, &QAction::triggered, this, [this, path]() {
-                    if (askToSaveWorkspaceChanges()) openWorkspace(path, true);
+                    if (askToSaveWorkspaceChanges()) {
+                        bool controlPressed = (app_->keyboardModifiers() == Qt::ControlModifier);
+                        // open as regular workspace with proper filename if control is pressed
+                        openWorkspace(path, !controlPressed);
+                    }
                 });
             }
             if (!menu->isEmpty()) exampleMenu_->addMenu(menu.release());
