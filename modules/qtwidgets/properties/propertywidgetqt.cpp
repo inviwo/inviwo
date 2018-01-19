@@ -133,7 +133,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
         menu->addSeparator();
 
         {
-            auto copyAction = menu->addAction("&Copy");
+            auto copyAction = menu->addAction(QIcon(":/icons/edit-copy.png"), "&Copy");
             connect(copyAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
 
@@ -158,7 +158,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                 QApplication::clipboard()->setMimeData(mimedata.release());
             });
 
-            auto pasteAction = menu->addAction("&Paste");
+            auto pasteAction = menu->addAction(QIcon(":/icons/edit-paste.png"), "&Paste");
             if (property_->getReadOnly()) pasteAction->setEnabled(false);
             connect(pasteAction, &QAction::triggered, this, [this, app]() {
                 if (!property_) return;

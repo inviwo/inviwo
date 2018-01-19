@@ -90,7 +90,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     hWidgetLayout->addWidget(lineEdit_);
 
     auto revealButton = new QToolButton(this);
-    revealButton->setIcon(QIcon(":/icons/reveal.png"));
+    revealButton->setIcon(QIcon(":/icons/about.png"));
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, [&]() {
         auto fileName = (!property_->get().empty() ? property_->get().front() : "");

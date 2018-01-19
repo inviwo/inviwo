@@ -88,7 +88,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
 
     {
         auto revealButton = new QToolButton(this);
-        revealButton->setIcon(QIcon(":/icons/reveal.png"));
+        revealButton->setIcon(QIcon(":/icons/about.png"));
         hWidgetLayout->addWidget(revealButton);
         connect(revealButton, &QToolButton::pressed, [&]() {
             auto dir = filesystem::directoryExists(property_->get())
