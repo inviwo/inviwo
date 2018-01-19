@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/volume/marchingcubes2.h>
+#include <modules/base/algorithm/volume/marchingcubesopt.h>
 #include <modules/base/algorithm/volume/surfaceextraction.h>
 #include <inviwo/core/util/indexmapper.h>
 
@@ -362,7 +362,7 @@ const std::array<OffsetIndexMasks, 4> Index<T, IsoTest>::oim_ = {
 }  // namespace
 
 namespace util {
-std::shared_ptr<Mesh> marchingcubes2(std::shared_ptr<const Volume> volume, double iso,
+std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, double iso,
                                      const vec4 &color, bool invert, bool enclose,
                                      std::function<void(float)> progressCallback,
                                      std::function<bool(const size3_t &)> maskingCallback) {

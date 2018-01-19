@@ -35,7 +35,7 @@
 #include <modules/base/algorithm/volume/volumegeneration.h>
 
 #include <modules/base/algorithm/volume/marchingcubes.h>
-#include <modules/base/algorithm/volume/marchingcubes2.h>
+#include <modules/base/algorithm/volume/marchingcubesopt.h>
 
 #include <benchmark/benchmark.h>
 
@@ -61,7 +61,7 @@ static void SphereNew(benchmark::State& state) {
         util::makeSphericalVolume(size3_t{static_cast<size_t>(state.range(0))}));
 
     for (auto _ : state) {
-        auto mesh = util::marchingcubes2(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
         state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
         state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
         benchmark::ClobberMemory();
@@ -87,7 +87,7 @@ static void RippleNew(benchmark::State& state) {
         util::makeRippleVolume(size3_t{static_cast<size_t>(state.range(0))}));
 
     for (auto _ : state) {
-        auto mesh = util::marchingcubes2(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
         state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
         state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
         benchmark::ClobberMemory();
@@ -113,7 +113,7 @@ static void MiniNew(benchmark::State& state) {
         util::makeSingleVoxelVolume(size3_t{static_cast<size_t>(state.range(0))}));
 
     for (auto _ : state) {
-        auto mesh = util::marchingcubes2(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
         state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
         state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
         benchmark::ClobberMemory();

@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MARCHINGCUBES2_H
-#define IVW_MARCHINGCUBES2_H
+#ifndef IVW_MARCHINGCUBESOPT_H
+#define IVW_MARCHINGCUBESOPT_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -61,7 +61,7 @@ namespace util {
  * (return true to include current cell)
  */
 
-IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingcubes2(
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingCubesOpt(
     std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert, bool enclose,
     std::function<void(float)> progressCallback = nullptr,
     std::function<bool(const size3_t &)> maskingCallback = nullptr);
@@ -227,4 +227,4 @@ struct IVW_MODULE_BASE_API Config {
 
 }  // namespace inviwo
 
-#endif  // IVW_MARCHINGCUBES2_H
+#endif  // IVW_MARCHINGCUBESOPT_H
