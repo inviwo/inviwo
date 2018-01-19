@@ -342,11 +342,10 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
                                        switch (t) {
                                            case MenuItemType::copy:
                                                return tableView_->selectionModel()->hasSelection();
-                                           case MenuItemType::select:
-                                               return true;
                                            case MenuItemType::cut:
                                            case MenuItemType::paste:
                                            case MenuItemType::del:
+                                           case MenuItemType::select:
                                            default:
                                                return false;
                                        }
@@ -360,21 +359,15 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
                                                }
                                                break;
                                            }
-                                           case MenuItemType::select: {
-                                               tableView_->selectAll();
-                                               break;
-                                           }
                                            case MenuItemType::cut:
                                            case MenuItemType::paste:
                                            case MenuItemType::del:
+                                           case MenuItemType::select:
                                            default:
                                                break;
                                        }
 
                                    }));
-
-    connect(tableView_->selectionModel(), &QItemSelectionModel::selectionChanged, editmenu,
-            &InviwoEditMenu::updateMenuState);
 }
 
 ConsoleWidget::~ConsoleWidget() = default;

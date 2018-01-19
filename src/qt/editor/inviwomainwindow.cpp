@@ -112,14 +112,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
     editMenu_ = new InviwoEditMenu(this);
-
-    // ensure that edit menu and context menu are always up to date
-    connect(app_, &QApplication::focusChanged, editMenu_, &InviwoEditMenu::updateMenuState);
-
     networkEditor_ = util::make_unique<NetworkEditor>(this);
-    connect(networkEditor_.get(), &QGraphicsScene::selectionChanged, editMenu_,
-            &InviwoEditMenu::updateMenuState);
-
     // initialize console widget first to receive log messages
     consoleWidget_ = std::make_shared<ConsoleWidget>(this);
     LogCentral::getPtr()->registerLogger(consoleWidget_);
@@ -500,13 +493,17 @@ void InviwoMainWindow::addActions() {
         connect(addProcessorAction, &QAction::triggered, this,
                 [this]() { processorTreeWidget_->addSelectedProcessor(); });
 
-        // add all actions to tool bar except for clear action of console widget
-        for (auto action : editMenu_->actions()) {
-            editToolBar->addAction(action);
-        }
-
         editMenu_->addSeparator();
+
         editMenu_->addAction(consoleWidget_->getClearAction());
+
+        // add actions to tool bar
+        editToolBar->addAction(undoManager_.getUndoAction());
+        editToolBar->addAction(undoManager_.getRedoAction());
+        editToolBar->addSeparator();
+        editToolBar->addAction(searchNetwork);
+        editToolBar->addAction(findAction);
+        editToolBar->addAction(addProcessorAction);
     }
 
     // View
