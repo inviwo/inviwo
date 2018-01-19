@@ -92,6 +92,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
     , networkEditor_(nullptr)
+    , maximized_(false)
+    , untitledWorkspaceName_("untitled")
     , snapshotArg_("s", "snapshot",
                    "Specify base name of each snapshot, or \"UPN\" string for processor name.",
                    false, "", "file name")
@@ -406,7 +408,11 @@ void InviwoMainWindow::addActions() {
                 auto action = menu->addAction(QString::fromStdString(item));
                 auto path = QString::fromStdString(moduleWorkspacePath + "/" + item);
                 connect(action, &QAction::triggered, this, [this, path]() {
-                    if (askToSaveWorkspaceChanges()) openWorkspace(path, true);
+                    if (askToSaveWorkspaceChanges()) {
+                        bool controlPressed = (app_->keyboardModifiers() == Qt::ControlModifier);
+                        // open as regular workspace with proper filename if control is pressed
+                        openWorkspace(path, !controlPressed);
+                    }
                 });
             }
             if (!menu->isEmpty()) exampleMenu_->addMenu(menu.release());
@@ -697,7 +703,7 @@ void InviwoMainWindow::newWorkspace() {
 
     app_->getWorkspaceManager()->clear();
 
-    setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+    setCurrentWorkspace(untitledWorkspaceName_);
     getNetworkEditor()->setModified(false);
 }
 
@@ -731,7 +737,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
             });
 
             if (exampleWorkspace) {
-                setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+                setCurrentWorkspace(untitledWorkspaceName_);
             } else {
                 setCurrentWorkspace(workspaceFileName);
                 addToRecentWorkspaces(workspaceFileName);
@@ -741,7 +747,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
                       "Unable to load network " + fileName + " due to " + e.getMessage(),
                       LogLevel::Error);
             app_->getWorkspaceManager()->clear();
-            setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
+            setCurrentWorkspace(untitledWorkspaceName_);
         }
         app_->processEvents();  // make sure the gui is ready before we unlock.
     }
@@ -800,7 +806,7 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
 }
 
 void InviwoMainWindow::saveWorkspace() {
-    if (currentWorkspaceFileName_.contains("untitled.inv"))
+    if (currentWorkspaceFileName_ == untitledWorkspaceName_)
         saveWorkspaceAs();
     else {
         saveWorkspace(currentWorkspaceFileName_);
@@ -935,10 +941,10 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
 
     QSettings settings;
     settings.beginGroup(objectName());
-    if (!currentWorkspaceFileName_.contains("untitled.inv")) {
-        settings.setValue("workspaceOnLastSuccessfulExit", currentWorkspaceFileName_);
-    } else {
+    if (currentWorkspaceFileName_ == untitledWorkspaceName_) {
         settings.setValue("workspaceOnLastSuccessfulExit", "");
+    } else {
+        settings.setValue("workspaceOnLastSuccessfulExit", currentWorkspaceFileName_);
     }
     settings.endGroup();
 
