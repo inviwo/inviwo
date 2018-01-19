@@ -15,3 +15,6 @@
 [submodule "ext/utf/utfcpp"]
     path = ext/utf/utfcpp
     url = https://github.com/nemtrif/utfcpp
+[submodule "ext/benchmark/benchmark"]
+	path = ext/benchmark/benchmark
+	url = https://github.com/petersteneteg/benchmark
