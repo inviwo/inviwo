@@ -606,9 +606,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             });
             menu.addSeparator();
 
-            QAction* helpAction = menu.addAction(tr("Show &Help"));
+            QAction* helpAction = menu.addAction(QIcon(":/icons/help.png"), tr("Show &Help"));
             connect(helpAction, &QAction::triggered, [this, processor]() {
-                showProecssorHelp(processor->getProcessor()->getClassIdentifier(), true);
+                showProcessorHelp(processor->getProcessor()->getClassIdentifier(), true);
             });
 
             break;
@@ -660,12 +660,12 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
     {
         menu.addSeparator();
-        auto compAction = menu.addAction(tr("&Create Composite"));
+        auto compAction = menu.addAction(QIcon(":/icons/composite-create.png"), tr("&Create Composite"));
         connect(compAction, &QAction::triggered, this,
                 [this]() { util::replaceSelectionWithCompositeProcessor(*network_); });
         compAction->setEnabled(selectedProcessors.size() > 1);
 
-        auto expandAction = menu.addAction(tr("&Expand Composite"));
+        auto expandAction = menu.addAction(QIcon(":/icons/composite-expand.png"), tr("&Expand Composite"));
         std::unordered_set<CompositeProcessor*> selectedComposites;
         for (auto& p : selectedProcessors) {
             if (auto comp = dynamic_cast<CompositeProcessor*>(p.first)) {
@@ -708,7 +708,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         saveCompAction->setDisabled(selectedComposites.empty());
 
         menu.addSeparator();
-        auto cutAction = menu.addAction(tr("Cu&t"));
+        auto cutAction = menu.addAction(QIcon(":/icons/edit-cut.png"), tr("Cu&t"));
         cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(cutAction, &QAction::triggered, this, [this]() {
             auto data = cut();
@@ -718,7 +718,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QApplication::clipboard()->setMimeData(mimedata.release());
         });
 
-        auto copyAction = menu.addAction(tr("&Copy"));
+        auto copyAction = menu.addAction(QIcon(":/icons/edit-copy.png"), tr("&Copy"));
         copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(copyAction, &QAction::triggered, this, [this]() {
             auto data = copy();
@@ -728,7 +728,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QApplication::clipboard()->setMimeData(mimedata.release());
         });
 
-        auto pasteAction = menu.addAction(tr("&Paste"));
+        auto pasteAction = menu.addAction(QIcon(":/icons/edit-paste.png"), tr("&Paste"));
         auto clipboard = QApplication::clipboard();
         auto mimeData = clipboard->mimeData();
         if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
@@ -750,7 +750,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         menu.addSeparator();
 
-        auto deleteAction = menu.addAction(tr("&Delete"));
+        auto deleteAction = menu.addAction(QIcon(":/icons/edit-delete.png"), tr("&Delete"));
         deleteAction->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
         connect(deleteAction, &QAction::triggered, this, [this]() { deleteSelection(); });
     }

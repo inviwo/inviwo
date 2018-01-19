@@ -117,7 +117,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->setCornerButtonEnabled(false);
 
     tableView_->setContextMenuPolicy(Qt::ActionsContextMenu);
-    clearAction_ = new QAction(QIcon(":/icons/clear-consolelog.png"), tr("&Clear Log"), this);
+    clearAction_ = new QAction(QIcon(":/icons/console-clear.png"), tr("&Clear Log"), this);
     clearAction_->setShortcut(Qt::ControlModifier + Qt::Key_E);
     connect(clearAction_, &QAction::triggered, [&]() { clear(); });
 
@@ -172,10 +172,9 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         auto icon = QIcon();
         if (checkable) {
             icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::On);
-            icon.addPixmap(QPixmap(":/icons/" + file + "-bw.png"), QIcon::Normal, QIcon::Off);
+            icon.addPixmap(QPixmap(":/icons/" + file + "-grey.png"), QIcon::Normal, QIcon::Off);
         } else {
-            icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::Off);
-            icon.addPixmap(QPixmap(":/icons/" + file + "-bw.png"), QIcon::Disabled, QIcon::Off);
+            icon.addPixmap(QPixmap(":/icons/" + file + ".png"));
         }
         return icon;
     };
@@ -246,7 +245,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     statusBar->addWidget(filterPattern_, 1);
     statusBar->addSpacing(5);
 
-    auto clearFilter = new QAction(makeIcon("clear-filter"), "C&lear Filter", this);
+    auto clearFilter = new QAction(makeIcon("find-clear16"), "C&lear Filter", this);
     clearFilter->setEnabled(false);
 
     connect(filterPattern_, &QLineEdit::textChanged,
@@ -258,7 +257,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     connect(clearFilter, &QAction::triggered, [this]() { filterPattern_->setText(""); });
 
-    auto filterAction = new QAction(makeIcon("filter"), "&Filter", this);
+    auto filterAction = new QAction(makeIcon("find16"), "&Filter", this);
     filterAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
     connect(filterAction, &QAction::triggered, [this]() {
         raise();
@@ -273,7 +272,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return separator;
     };
 
-    auto copyAction = new QAction(tr("&Copy"), this);
+    auto copyAction = new QAction(QIcon(":/icons/edit-copy.png"), tr("&Copy"), this);
     copyAction->setEnabled(true);
     connect(copyAction, &QAction::triggered, this, &ConsoleWidget::copy);
 

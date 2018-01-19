@@ -1,33 +1,33 @@
 <RCC>
     <qresource prefix="/">
         <file>icons/about.png</file>
-        <file>icons/arrow_bidirectional.png</file>
-        <file>icons/arrow_left.png</file>
-        <file>icons/arrow_right.png</file>
-        <file>icons/button_cancel-bw.png</file>
-        <file>icons/button_cancel.png</file>
-        <file>icons/button_ok.png</file>
-        <file>icons/clear-consolelog.png</file>
-        <file>icons/clear-filter-bw.png</file>
-        <file>icons/clear-filter.png</file>
-        <file>icons/createcomposite.png</file>
+        <file>icons/composite-create.png</file>
+        <file>icons/composite-expand.png</file>
+        <file>icons/console-clear.png</file>
+        <file>icons/console-clear16.png</file>
         <file>icons/developermode.png</file>
-        <file>icons/edit-undo-icon.png</file>
         <file>icons/edit.png</file>
-        <file>icons/error-bw.png</file>
+        <file>icons/edit-copy.png</file>
+        <file>icons/edit-cut.png</file>
+        <file>icons/edit-delete.png</file>
+        <file>icons/edit-paste.png</file>
+        <file>icons/edit-selectall.png</file>
         <file>icons/error.png</file>
+        <file>icons/error-grey.png</file>
         <file>icons/exit.png</file>
-        <file>icons/expandcomposite.png</file>
         <file>icons/filewarning.png</file>
-        <file>icons/filter-bw.png</file>
-        <file>icons/filter.png</file>
+        <file>icons/find.png</file>
+        <file>icons/find16.png</file>
+        <file>icons/find-clear.png</file>
+        <file>icons/find-clear16.png</file>
         <file>icons/findprocessor.png</file>
-        <file>icons/html.png</file>
-        <file>icons/info-bw.png</file>
+        <file>icons/help.png</file>
         <file>icons/info.png</file>
+        <file>icons/info-grey.png</file>
+        <file>icons/inviwo_dark.ico</file>
         <file>icons/inviwo_dark.png</file>
+        <file>icons/inviwo_light.ico</file>
         <file>icons/inviwo_light.png</file>
-        <file>icons/inviwo_tmp.png</file>
         <file>icons/linkarrow_bidirectional.png</file>
         <file>icons/linkarrow_left.png</file>
         <file>icons/linkarrow_right.png</file>
@@ -35,37 +35,28 @@
         <file>icons/log-append.png</file>
         <file>icons/log-clear.png</file>
         <file>icons/log-clearonrun.png</file>
-        <file>icons/network.png</file>
         <file>icons/newfile.png</file>
-        <file>icons/ok.png</file>
         <file>icons/open.png</file>
-        <file>icons/player_record.png</file>
-        <file>icons/player_stop.png</file>
-        <file>icons/processor-add.png</file>
         <file>icons/processor_broken.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
-        <file>icons/python-run.png</file>
+        <file>icons/processor-add.png</file>
         <file>icons/python.png</file>
+        <file>icons/python-run.png</file>
         <file>icons/redo.png</file>
-        <file>icons/reset-dark.png</file>
         <file>icons/reset.png</file>
-        <file>icons/reveal.png</file>
+        <file>icons/reset-dark.png</file>
         <file>icons/revert.png</file>
         <file>icons/save.png</file>
         <file>icons/saveas.png</file>
         <file>icons/savecopy.png</file>
         <file>icons/searchnetwork.png</file>
-        <file>icons/text_block.png</file>
         <file>icons/timer.png</file>
         <file>icons/undo.png</file>
         <file>icons/unlocked.png</file>
         <file>icons/usermode.png</file>
-        <file>icons/view_choose.png</file>
-        <file>icons/view_statistics.png</file>
-        <file>icons/wallet_open.png</file>
-        <file>icons/warning-bw.png</file>
         <file>icons/warning.png</file>
+        <file>icons/warning-grey.png</file>
         <file>images/splashscreen.png</file>
         <file>stylesheets/images/arrow_darker_down.png</file>
         <file>stylesheets/images/arrow_darker_right.png</file>
@@ -74,10 +65,6 @@
         <file>stylesheets/images/arrow_lighter_right.png</file>
         <file>stylesheets/images/arrow_lighter_up.png</file>
         <file>stylesheets/images/arrow_up.png</file>
-        <file>stylesheets/images/circle.png</file>
-        <file>stylesheets/images/circle_disabled.png</file>
-        <file>stylesheets/images/circle_gray.png</file>
-        <file>stylesheets/images/circle_gray_disabled.png</file>
         <file>stylesheets/images/close.png</file>
         <file>stylesheets/images/dense6pattern.png</file>
         <file>stylesheets/images/dock-docked.png</file>

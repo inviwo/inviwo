@@ -573,7 +573,7 @@ void InviwoMainWindow::addActions() {
             }
         });
 
-        auto compAction = networkMenuItem->addAction(QIcon(":/icons/createcomposite.png"),
+        auto compAction = networkMenuItem->addAction(QIcon(":/icons/composite-create.png"),
                                                      tr("&Create Composite"));
         compAction->setEnabled(false);
         networkToolBar->addAction(compAction);
@@ -582,7 +582,7 @@ void InviwoMainWindow::addActions() {
             util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
         });
 
-        auto expandAction = networkMenuItem->addAction(QIcon(":/icons/expandcomposite.png"),
+        auto expandAction = networkMenuItem->addAction(QIcon(":/icons/composite-expand.png"),
                                                        tr("&Expand Composite"));
         networkToolBar->addAction(expandAction);
         expandAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_G);

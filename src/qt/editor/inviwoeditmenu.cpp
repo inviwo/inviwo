@@ -45,28 +45,28 @@ namespace inviwo {
 
 InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) {
     {
-        auto cutAction = addAction(tr("Cu&t"));
+        auto cutAction = addAction(QIcon(":/icons/edit-cut.png"), tr("Cu&t"));
         actions_[MenuItemType::cut] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
     }
     {
-        auto copyAction = addAction(tr("&Copy"));
+        auto copyAction = addAction(QIcon(":/icons/edit-copy.png"), tr("&Copy"));
         actions_[MenuItemType::copy] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
     }
     {
-        auto pasteAction = addAction(tr("&Paste"));
+        auto pasteAction = addAction(QIcon(":/icons/edit-paste.png"), tr("&Paste"));
         actions_[MenuItemType::paste] = pasteAction;
         pasteAction->setShortcut(QKeySequence::Paste);
     }
     {
-        auto deleteAction = addAction(tr("&Delete"));
+        auto deleteAction = addAction(QIcon(":/icons/edit-delete.png"), tr("&Delete"));
         actions_[MenuItemType::del] = deleteAction;
         deleteAction->setShortcuts(QList<QKeySequence>(
             {QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace)}));
     }
     {
-        auto selectAllAction = addAction(tr("&Select All"));
+        auto selectAllAction = addAction(QIcon(":/icons/edit-selectall.png"), tr("&Select All"));
         actions_[MenuItemType::select] = selectAllAction;
         selectAllAction->setShortcut(QKeySequence::SelectAll);
     }
