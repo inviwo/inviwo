@@ -41,6 +41,7 @@
 #include <warn/ignore/all>
 #include <QPainter>
 #include <QGraphicsItem>
+#include <QGraphicsView>
 #include <QKeyEvent>
 #include <QGraphicsSceneDragDropEvent>
 #include <QMimeData>
@@ -72,6 +73,15 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
         this->addItem(trackQt.get());
         tracks_.push_back(std::move(trackQt));
     }
+
+    // Add drag&drop indicator
+    QPen timePen;
+    timePen.setColor(QColor(255, 128, 0));
+    timePen.setWidthF(1.0);
+    timePen.setCosmetic(true);
+    timePen.setStyle(Qt::DashLine);
+    pDropIndicatorLine = addLine(10, 0, 10, 1000, timePen);
+    if (pDropIndicatorLine) pDropIndicatorLine->setVisible(false);
 
     updateSceneRect();
 }
@@ -134,22 +144,46 @@ void AnimationEditorQt::dragEnterEvent(QGraphicsSceneDragDropEvent *event) {
     auto source = dynamic_cast<PropertyWidget*>(event->source());
     event->setAccepted(source != nullptr && source->getProperty() != nullptr);
 }
-    
+
+void AnimationEditorQt::dragLeaveEvent(QGraphicsSceneDragDropEvent * event) {
+    if (pDropIndicatorLine) pDropIndicatorLine->setVisible(false);
+}
+
 void AnimationEditorQt::dragMoveEvent(QGraphicsSceneDragDropEvent *event) {
     // Must override for drop events to occur. Do not call QGraphicsScene::dragMoveEvent
+
+    //Indicate position
+    if (pDropIndicatorLine) {
+        QGraphicsView* pView = views().empty() ? nullptr : views().first();
+        const qreal snapX = getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
+        pDropIndicatorLine->setLine(snapX, 0, snapX, pView ? pView->height() : height());
+        pDropIndicatorLine->setVisible(true);
+    }
+
     event->accept();
 }
     
 void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent *event) {
 
+    //Switch off drag&drop indicator
+    if (pDropIndicatorLine) pDropIndicatorLine->setVisible(false);
+
+    //Drop it into the scene
     auto source = dynamic_cast<PropertyWidget*>(event->source());
     if (source) {
         auto property = source->getProperty();
         auto app = controller_.getInviwoApplication();
+
+        //Get time
+        QGraphicsView* pView = views().empty() ? nullptr : views().first();
+        const qreal snapX = getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
+        const qreal time = snapX / static_cast<double>(WidthPerSecond);
+
         // Need AnimationManager for adding key frame.
         auto& am = app->template getModuleByType<AnimationModule>()->getAnimationManager();
-        auto time = event->scenePos().x() / static_cast<double>(WidthPerSecond);
         am.addKeyframeCallback(property, Seconds(time));
+
+        //Thanks
         event->acceptProposedAction();
     }
 }

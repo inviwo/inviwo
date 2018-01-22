@@ -81,6 +81,7 @@ public:
 
     virtual void keyPressEvent(QKeyEvent *event) override;
     void dragEnterEvent(QGraphicsSceneDragDropEvent *event) override;
+    void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) override;
     void dragMoveEvent(QGraphicsSceneDragDropEvent *event) override;
     void dropEvent(QGraphicsSceneDragDropEvent *event) override;
 
@@ -93,6 +94,11 @@ protected:
 
     AnimationController& controller_;
     std::vector<std::unique_ptr<TrackQt>> tracks_;
+
+    ///Indicator line for the drag&drop of properties.
+    /// Shows a timeline indicating where the item will be dropped.
+    /// Manipulated in the drag* and drop* functions.
+    QGraphicsLineItem* pDropIndicatorLine;
 };
 
 }  // namespace
