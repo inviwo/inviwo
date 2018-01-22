@@ -36,7 +36,9 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+//#include <QGraphicsDropShadowEffect>
 #include <QPainter>
+#include <QLinearGradient>
 #include <warn/pop>
 
 namespace inviwo {
@@ -59,6 +61,10 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, Track
 	prepareGeometryChange();
     setSelected(keyframeSequence_.isSelected());
 
+    //QGraphicsDropShadowEffect* pDropShadow = new QGraphicsDropShadowEffect();
+    //pDropShadow->setOffset(5);
+    //pDropShadow->setBlurRadius(8);
+    //setGraphicsEffect(pDropShadow);
 }
 
 KeyframeSequenceQt::~KeyframeSequenceQt() = default;
@@ -74,14 +80,17 @@ void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem
     pen.setCosmetic(true);
     pen.setCapStyle(Qt::RoundCap);
     pen.setStyle(Qt::SolidLine);
-    isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
-    QBrush brush = QBrush(QColor::fromRgb(128, 128, 128));
+    isSelected() ? pen.setColor(QColor(66, 66, 132)) : pen.setColor(QColor(66, 66, 66));
+    QLinearGradient Gradient(0, -TrackHeight / 2 + TrackHeightNudge, 0, TrackHeight / 2 - TrackHeightNudge);
+    Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(192, 192, 192) );
+    Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132)  : QColor(66, 66, 66)    );
+    QBrush brush = QBrush(Gradient);
     painter->setPen(pen);
     painter->setBrush(brush);
     auto rect = boundingRect();
     auto penWidth = pen.widthF();
-    rect.adjust(0.5 * (KeyframeWidth + penWidth) , 0.5 * penWidth,
-                -0.5 * (KeyframeWidth - penWidth), -0.5 * penWidth);
+    rect.adjust(0.5 * (KeyframeWidth + penWidth) , 0.5 * penWidth + TrackHeightNudge,
+                -0.5 * (KeyframeWidth - penWidth), -0.5 * penWidth - TrackHeightNudge);
     painter->drawRect(rect);
 }
 

@@ -39,6 +39,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPainter>
+#include <QRadialGradient>
 #include <warn/pop>
 
 namespace inviwo {
@@ -66,13 +67,16 @@ void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
     pen.setCosmetic(true);
     pen.setCapStyle(Qt::RoundCap);
     pen.setStyle(Qt::SolidLine);
-    isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
-    QBrush brush = QBrush(QColor::fromRgb(128, 128, 128));
+    isSelected() ? pen.setColor(QColor(66, 66, 132)) : pen.setColor(QColor(66, 66, 66));
+    QRadialGradient Gradient(QPointF(0, 0), TrackHeight / 2 - TrackHeightNudge, QPointF(0, -TrackHeight / 4));
+    Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(220, 220, 220) );
+    Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132)  : QColor(128, 128, 128) );
+    QBrush brush = QBrush(Gradient);
     painter->setPen(pen);
     painter->setBrush(brush);
     auto penWidth = pen.widthF();
     int hs = static_cast<int>((KeyframeWidth - penWidth) / 2.0f);
-    QPoint p[4] = {{-hs, 0}, {0, -hs}, {hs, 0}, {0, hs}};
+    QPoint p[4] = {{-hs, 0}, {0, -TrackHeight/2 + TrackHeightNudge}, {hs, 0}, {0, TrackHeight/2 - TrackHeightNudge}};
     painter->drawPolygon(p, 4);
 }
 
