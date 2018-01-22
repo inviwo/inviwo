@@ -125,22 +125,20 @@ KeyframeQt* KeyframeSequenceQt::getKeyframeQt(const Keyframe* keyframe) const {
 }
 
 QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVariant& value) {
-    // Only restrict movement on user interaction
-    if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
-        // Snap to frame per second
-        double xV = round(value.toPointF().x() / WidthPerFrame) * WidthPerFrame;
-        auto dt = Seconds((xV - x()) / static_cast<double>(WidthPerSecond));
-        
-        // No need to update time within keyframes in here,
-        // since the position changed event will be propagated to keyframes.
-        if (dt < Seconds(0.0)) {
-            // Do not allow it to move before t=0
-            auto maxMove = -keyframeSequence_.getFirst().getTime().count();
-            dt = Seconds(std::max(dt.count(), maxMove));
-            xV = x() + dt.count() * static_cast<double>(WidthPerSecond);
-        } 
-        // Restrict vertical movement
-        return QPointF(static_cast<float>(xV), y());
+    if (change == ItemPositionChange) {
+        //Dragging the keyframesequence to a new time is like snapping its left-most keyframe
+        // - parent coordinates (== scene coordinates in our case)
+        qreal xResult = value.toPointF().x();
+
+        if (scene() && scene()->views().first() && QApplication::mouseButtons() == Qt::LeftButton) {
+            const qreal xFirstChild = childItems().empty() ? 0 : childItems().first()->x();
+            const qreal xLeftBorderOfSequence = xResult + xFirstChild;
+            const qreal xSnappedInScene = getSnapTime(xLeftBorderOfSequence, scene()->views().first()->transform().m11());
+            xResult = std::max(xSnappedInScene, 0.0) - xFirstChild;
+        }
+
+        // Restrict vertical movement: y does not change
+        return QPointF(xResult, y());
     }
     else if(change == ItemSelectedChange){
         keyframeSequence_.setSelected(value.toBool());
