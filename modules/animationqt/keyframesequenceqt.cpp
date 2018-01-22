@@ -130,7 +130,7 @@ QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVarian
         // - parent coordinates (== scene coordinates in our case)
         qreal xResult = value.toPointF().x();
 
-        if (scene() && scene()->views().first() && QApplication::mouseButtons() == Qt::LeftButton) {
+        if (scene() && !scene()->views().empty() && QApplication::mouseButtons() == Qt::LeftButton) {
             const qreal xFirstChild = childItems().empty() ? 0 : childItems().first()->x();
             const qreal xLeftBorderOfSequence = xResult + xFirstChild;
             const qreal xSnappedInScene = getSnapTime(xLeftBorderOfSequence, scene()->views().first()->transform().m11());
