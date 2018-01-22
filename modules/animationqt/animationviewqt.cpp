@@ -49,7 +49,7 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller)
     : QGraphicsView(), controller_(controller) {
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
-    setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
     controller_.AnimationControllerObservable::addObserver(this);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
