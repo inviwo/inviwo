@@ -101,16 +101,20 @@ QRectF KeyframeQt::boundingRect() const {
 }
 
 QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value) {
-    // Only restrict movement on user interaction
-    if (change == ItemPositionChange && scene() && QApplication::mouseButtons() == Qt::LeftButton) {
-        // Snap to frame per second
-        // auto snapToGrid = WidthPerSecond / 24.0;
-        // qreal xV = round(value.toPointF().x() / snapToGrid) * snapToGrid;
-        qreal xV = value.toPointF().x();
-        // Do not allow it to move before t=0
-        xV = mapFromScene(std::max(mapToScene(xV, 0).x(), 0.0), 0).x();
-        // Restrict vertical movement
-        return QPointF(xV, y());
+    if (change == ItemPositionChange) {
+        //Dragging a keyframe to a new time
+        qreal xResult = value.toPointF().x();
+        if (scene() && scene()->views().first() && QApplication::mouseButtons() == Qt::LeftButton) {
+            //Snap to a grid depending on the current scale
+            // - We get parent coordinates here, and need scene coordinates to snap to something globally
+            const qreal xInScene = mapToScene(mapFromParent(xResult, 0.0)).x();
+            const qreal xSnappedInScene = getSnapTime(xInScene, scene()->views().first()->transform().m11());
+            xResult = mapToParent(mapFromScene(std::max(xSnappedInScene, 0.0), 0.0)).x();
+        }
+
+        // Restrict vertical movement: y does not change
+        return QPointF(xResult, y());
+
     } else if (change == ItemScenePositionHasChanged) {
         if (!isEditing_) {
             KeyframeQtLock lock(this);

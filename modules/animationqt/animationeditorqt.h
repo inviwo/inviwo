@@ -37,6 +37,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsScene>
+#include <QApplication>
 #include <warn/pop>
 
 class QKeyEvent;
@@ -50,7 +51,21 @@ constexpr int TimelineHeight = 25;
 constexpr int KeyframeWidth = 15;
 constexpr int KeyframeHeight = TrackHeight;
 constexpr int WidthPerSecond = 96;
-constexpr int WidthPerFrame = WidthPerSecond / 24;
+
+///We snap to certain times depending on the scale (zoom) level and keyboard modifiers.
+/// It is important to supply scene coordinates to this function!
+static qreal getSnapTime(const qreal& actualTime, const qreal& scale) {
+    if (QApplication::keyboardModifiers() == Qt::AltModifier) {
+        return actualTime;
+    }
+    qreal snapScale = (scale >= 1) ? round(scale) + 1 : 3-round(1/scale);
+    snapScale = std::max(snapScale, 0.0); //not over 1 second
+    snapScale = std::min(snapScale, 5.0); //not under 1/32 second
+    const qreal snapToGridResolution = WidthPerSecond / pow(2, snapScale);
+    const qreal snapTime = round(actualTime / snapToGridResolution) * snapToGridResolution;
+
+    return snapTime;
+}
 
 class AnimationController;
 class TrackQt;
