@@ -56,7 +56,7 @@ constexpr int WidthPerSecond = 96;
 ///We snap to certain times depending on the scale (zoom) level and keyboard modifiers.
 /// It is important to supply scene coordinates to this function!
 static qreal getSnapTime(const qreal& actualTime, const qreal& scale) {
-    if (QApplication::keyboardModifiers() == Qt::AltModifier) {
+    if (QApplication::keyboardModifiers() & Qt::AltModifier) {
         return actualTime;
     }
     qreal snapScale = (scale >= 1) ? round(scale) + 1 : 3-round(1/scale);
@@ -100,6 +100,9 @@ protected:
     /// Shows a timeline indicating where the item will be dropped.
     /// Manipulated in the drag* and drop* functions.
     QGraphicsLineItem* pDropIndicatorLine;
+    
+    ///Shows a text describing what will be added on drop.
+    QGraphicsSimpleTextItem* pDropIndicatorText;
 };
 
 }  // namespace

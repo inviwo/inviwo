@@ -81,7 +81,7 @@ void AnimationViewQt::wheelEvent(QWheelEvent* e) {
     QPointF numPixels = e->pixelDelta() / 5.0;
     QPointF numDegrees = e->angleDelta() / 8.0 / 15;
 
-    if (e->modifiers() == Qt::ControlModifier) {
+    if (e->modifiers() & Qt::ControlModifier) {
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
         if (!numPixels.isNull()) {
             zoom(qPow(1.05, numPixels.y()));

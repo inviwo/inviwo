@@ -117,10 +117,16 @@ public:
      */
     void addKeyframeCallback(Property* property, Seconds time);
     /**
-     * Callback for the module action callbacks.
+     * Add sequence at current time given by AnimationController.
+     * @see addSequenceCallback(Property* property, Seconds time)
      */
     void addSequenceCallback(Property* property);
-                                                      
+    /**
+     * Add sequence at specified time.
+     * Creates a new track if no track with the supplied property exists.
+     */
+    void addSequenceCallback(Property * property, Seconds time);
+
     /**
      * Lookup the default interpolation to use for a property.
      * @throw Exception if none is found.

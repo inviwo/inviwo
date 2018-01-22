@@ -81,7 +81,18 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
     timePen.setCosmetic(true);
     timePen.setStyle(Qt::DashLine);
     pDropIndicatorLine = addLine(10, 0, 10, 1000, timePen);
-    if (pDropIndicatorLine) pDropIndicatorLine->setVisible(false);
+    if (pDropIndicatorLine) {
+        pDropIndicatorLine->setZValue(1);
+        pDropIndicatorLine->setVisible(false);
+    }
+
+    //Add drag&drop hint - this one still has a number of issue. It should probably not be in the scene, not be affected by zoom.
+    pDropIndicatorText = new QGraphicsSimpleTextItem(pDropIndicatorLine);
+    if (pDropIndicatorText) {
+        pDropIndicatorText->setPos(0, TimelineHeight);
+        pDropIndicatorText->setZValue(1);
+        pDropIndicatorText->setVisible(false);
+    }
 
     updateSceneRect();
 }
@@ -160,6 +171,17 @@ void AnimationEditorQt::dragMoveEvent(QGraphicsSceneDragDropEvent *event) {
         pDropIndicatorLine->setVisible(true);
     }
 
+    //Indicate insertion mode: keyframe or keyframe sequence.
+    if (pDropIndicatorText) {
+        QString Text = (event->modifiers() & Qt::ControlModifier)
+                        ? "Insert new keyframe sequence (Alt for non-snapping time)"
+                        : "Insert new keyframe (Ctrl for sequence, Alt for non-snapping time)";
+
+        pDropIndicatorText->setText(Text);
+        pDropIndicatorText->setVisible(true);
+    }
+
+
     event->accept();
 }
     
@@ -179,9 +201,13 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent *event) {
         const qreal snapX = getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
         const qreal time = snapX / static_cast<double>(WidthPerSecond);
 
-        // Need AnimationManager for adding key frame.
+        // Use AnimationManager for adding keyframe or keyframe sequence.
         auto& am = app->template getModuleByType<AnimationModule>()->getAnimationManager();
-        am.addKeyframeCallback(property, Seconds(time));
+        if (event->modifiers() & Qt::ControlModifier) {
+            am.addSequenceCallback(property, Seconds(time));
+        } else {
+            am.addKeyframeCallback(property, Seconds(time));
+        }
 
         //Thanks
         event->acceptProposedAction();
