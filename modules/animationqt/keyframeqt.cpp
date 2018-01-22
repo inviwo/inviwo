@@ -104,7 +104,7 @@ QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value
     if (change == ItemPositionChange) {
         //Dragging a keyframe to a new time
         qreal xResult = value.toPointF().x();
-        if (scene() && scene()->views().first() && QApplication::mouseButtons() == Qt::LeftButton) {
+        if (scene() && !scene()->views().empty() && QApplication::mouseButtons() == Qt::LeftButton) {
             //Snap to a grid depending on the current scale
             // - We get parent coordinates here, and need scene coordinates to snap to something globally
             const qreal xInScene = mapToScene(mapFromParent(xResult, 0.0)).x();
