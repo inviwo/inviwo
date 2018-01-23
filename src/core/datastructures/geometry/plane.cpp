@@ -53,7 +53,7 @@ vec3 Plane::projectPoint(const vec3& p) const {
 }
 
 bool Plane::isInside(const vec3& p) const {
-    return (distance(p) > 0.f) ? true : false;
+    return (distance(p) >= 0.f) ? true : false;
 }
 
 bool Plane::perpendicularToPlane(const vec3& p) const {
