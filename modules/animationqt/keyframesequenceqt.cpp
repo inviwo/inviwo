@@ -46,10 +46,10 @@ namespace inviwo {
 namespace animation {
 
 KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, TrackQt* parent)
-    : QGraphicsItem(parent), keyframeSequence_(keyframeSequence) , trackQt_(*parent) {
-    //setFlags(ItemIsMovable | ItemSendsGeometryChanges);
-    setFlags( ItemIsMovable | ItemIsSelectable |
-        ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
+    : QGraphicsItem(parent), keyframeSequence_(keyframeSequence), trackQt_(*parent) {
+    // setFlags(ItemIsMovable | ItemSendsGeometryChanges);
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges |
+             ItemSendsScenePositionChanges);
 
     keyframeSequence.addObserver(this);
     auto firstKeyframePos = keyframeSequence_.getFirst().getTime().count() * WidthPerSecond;
@@ -58,13 +58,13 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, Track
         keyframes_.push_back(std::make_unique<KeyframeQt>(keyframeSequence_[i], this));
     }
 
-	prepareGeometryChange();
+    QGraphicsTextItem::prepareGeometryChange();
     setSelected(keyframeSequence_.isSelected());
 
-    //QGraphicsDropShadowEffect* pDropShadow = new QGraphicsDropShadowEffect();
-    //pDropShadow->setOffset(5);
-    //pDropShadow->setBlurRadius(8);
-    //setGraphicsEffect(pDropShadow);
+    // QGraphicsDropShadowEffect* pDropShadow = new QGraphicsDropShadowEffect();
+    // pDropShadow->setOffset(5);
+    // pDropShadow->setBlurRadius(8);
+    // setGraphicsEffect(pDropShadow);
 }
 
 KeyframeSequenceQt::~KeyframeSequenceQt() = default;
@@ -81,15 +81,16 @@ void KeyframeSequenceQt::paint(QPainter* painter, const QStyleOptionGraphicsItem
     pen.setCapStyle(Qt::RoundCap);
     pen.setStyle(Qt::SolidLine);
     isSelected() ? pen.setColor(QColor(66, 66, 132)) : pen.setColor(QColor(66, 66, 66));
-    QLinearGradient Gradient(0, -TrackHeight / 2 + TrackHeightNudge, 0, TrackHeight / 2 - TrackHeightNudge);
-    Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(192, 192, 192) );
-    Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132)  : QColor(66, 66, 66)    );
+    QLinearGradient Gradient(0, -TrackHeight / 2 + TrackHeightNudge, 0,
+                             TrackHeight / 2 - TrackHeightNudge);
+    Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(192, 192, 192));
+    Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132) : QColor(66, 66, 66));
     QBrush brush = QBrush(Gradient);
     painter->setPen(pen);
     painter->setBrush(brush);
     auto rect = boundingRect();
     auto penWidth = pen.widthF();
-    rect.adjust(0.5 * (KeyframeWidth + penWidth) , 0.5 * penWidth + TrackHeightNudge,
+    rect.adjust(0.5 * (KeyframeWidth + penWidth), 0.5 * penWidth + TrackHeightNudge,
                 -0.5 * (KeyframeWidth - penWidth), -0.5 * penWidth - TrackHeightNudge);
     painter->drawRect(rect);
 }
@@ -101,14 +102,14 @@ const KeyframeSequence& KeyframeSequenceQt::getKeyframeSequence() const {
 }
 
 void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
-	prepareGeometryChange();
+    QGraphicsTextItem::prepareGeometryChange();
     keyframes_.push_back(std::make_unique<KeyframeQt>(*key, this));
 }
 
 void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
     if (util::erase_remove_if(keyframes_, [&](auto& keyframeqt) {
             if (&(keyframeqt->getKeyframe()) == key) {
-				prepareGeometryChange();
+                QGraphicsTextItem::prepareGeometryChange();
                 this->scene()->removeItem(keyframeqt.get());
                 return true;
             } else {
@@ -118,7 +119,9 @@ void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq)
     }
 }
 
-void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) { prepareGeometryChange(); }
+void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) {
+    QGraphicsTextItem::prepareGeometryChange();
+}
 
 QRectF KeyframeSequenceQt::boundingRect() const { return childrenBoundingRect(); }
 
@@ -135,28 +138,28 @@ KeyframeQt* KeyframeSequenceQt::getKeyframeQt(const Keyframe* keyframe) const {
 
 QVariant KeyframeSequenceQt::itemChange(GraphicsItemChange change, const QVariant& value) {
     if (change == ItemPositionChange) {
-        //Dragging the keyframesequence to a new time is like snapping its left-most keyframe
+        // Dragging the keyframesequence to a new time is like snapping its left-most keyframe
         // - parent coordinates (== scene coordinates in our case)
         qreal xResult = value.toPointF().x();
 
-        if (scene() && !scene()->views().empty() && QApplication::mouseButtons() == Qt::LeftButton) {
+        if (scene() && !scene()->views().empty() &&
+            QApplication::mouseButtons() == Qt::LeftButton) {
             const qreal xFirstChild = childItems().empty() ? 0 : childItems().first()->x();
             const qreal xLeftBorderOfSequence = xResult + xFirstChild;
-            const qreal xSnappedInScene = getSnapTime(xLeftBorderOfSequence, scene()->views().first()->transform().m11());
+            const qreal xSnappedInScene =
+                getSnapTime(xLeftBorderOfSequence, scene()->views().first()->transform().m11());
             xResult = std::max(xSnappedInScene, 0.0) - xFirstChild;
         }
 
         // Restrict vertical movement: y does not change
         return QPointF(xResult, y());
-    }
-    else if(change == ItemSelectedChange){
+    } else if (change == ItemSelectedChange) {
         keyframeSequence_.setSelected(value.toBool());
     }
-    
+
     return QGraphicsItem::itemChange(change, value);
 }
 
+}  // namespace animation
 
-}  // namespace
-
-}  // namespace
+}  // namespace inviwo
