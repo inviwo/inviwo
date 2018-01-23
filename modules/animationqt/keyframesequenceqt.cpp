@@ -58,7 +58,7 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, Track
         keyframes_.push_back(std::make_unique<KeyframeQt>(keyframeSequence_[i], this));
     }
 
-    QGraphicsTextItem::prepareGeometryChange();
+    QGraphicsItem::prepareGeometryChange();
     setSelected(keyframeSequence_.isSelected());
 
     // QGraphicsDropShadowEffect* pDropShadow = new QGraphicsDropShadowEffect();
@@ -102,14 +102,14 @@ const KeyframeSequence& KeyframeSequenceQt::getKeyframeSequence() const {
 }
 
 void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
-    QGraphicsTextItem::prepareGeometryChange();
+    QGraphicsItem::prepareGeometryChange();
     keyframes_.push_back(std::make_unique<KeyframeQt>(*key, this));
 }
 
 void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
     if (util::erase_remove_if(keyframes_, [&](auto& keyframeqt) {
             if (&(keyframeqt->getKeyframe()) == key) {
-                QGraphicsTextItem::prepareGeometryChange();
+                QGraphicsItem::prepareGeometryChange();
                 this->scene()->removeItem(keyframeqt.get());
                 return true;
             } else {
@@ -120,7 +120,7 @@ void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq)
 }
 
 void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) {
-    QGraphicsTextItem::prepareGeometryChange();
+    QGraphicsItem::prepareGeometryChange();
 }
 
 QRectF KeyframeSequenceQt::boundingRect() const { return childrenBoundingRect(); }
