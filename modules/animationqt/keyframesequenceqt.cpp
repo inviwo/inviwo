@@ -109,7 +109,7 @@ void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
 void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
     if (util::erase_remove_if(keyframes_, [&](auto& keyframeqt) {
             if (&(keyframeqt->getKeyframe()) == key) {
-                QGraphicsItem::prepareGeometryChange();
+                this->prepareGeometryChange();
                 this->scene()->removeItem(keyframeqt.get());
                 return true;
             } else {
