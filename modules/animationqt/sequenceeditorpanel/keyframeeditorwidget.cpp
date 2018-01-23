@@ -128,7 +128,12 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
     setLayout(layout_);
 }
 
-KeyframeEditorWidget::~KeyframeEditorWidget() = default;
+KeyframeEditorWidget::~KeyframeEditorWidget() {
+    if(propertyWidget_){
+        layout_->removeWidget(propertyWidget_);
+        delete propertyWidget_;
+    }
+}
 
 void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
     timeSpinner_->setValue(key->getTime().count());
