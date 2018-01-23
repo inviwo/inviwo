@@ -58,7 +58,7 @@ MeshClipping::MeshClipping()
                             InvalidationLevel::Valid)
     , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true,
                              InvalidationLevel::Valid)
-    , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, -2.f, 2.f, 0.01f)
+    , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, 0.f, 2.f, 0.01f)
     , planePoint_("planePoint", "Plane Point", vec3(0.0f), vec3(-10000.0f), vec3(10000.0f),
                   vec3(0.1f))
     , planeNormal_("planeNormal", "Plane Normal", vec3(0.0f, 0.0f, -1.0f), vec3(-1.0f), vec3(1.0f),
@@ -175,17 +175,18 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
     if (ram && ram->getDataFormat()->getComponents() == 3) {
         ram->dispatch<void, dispatching::filter::Float3s>([&](auto pb) -> void {
             const auto& vertexList = pb->getDataContainer();
+            // Get closest and furthest vertex with respect to the camera near plane
+            auto minMaxVertices =
+                std::minmax_element(std::begin(vertexList), std::end(vertexList),
+                                    [&nearPlane](const auto& a, const auto& b) {
+                                        // Use max(0, dist) to make sure we do not consider vertices
+                                        // behind plane
+                                        return std::max(0.f, nearPlane.distance(a)) <
+                                               std::max(0.f, nearPlane.distance(b));
+                                    });
+            auto minDist = nearPlane.distance(*minMaxVertices.first);
+            auto maxDist = nearPlane.distance(*minMaxVertices.second);
 
-            auto minDist = nearPlane.distance(vertexList[0]);
-            auto maxDist = minDist;
-            for (const auto& vertex : vertexList) {
-                // Calculate distance to camera
-                auto dist = nearPlane.distance(vertex);
-                // Make sure we do not consider vertices behind plane
-                dist = std::max(0.f, dist);
-                minDist = std::min(minDist, dist);
-                maxDist = std::max(maxDist, dist);
-            }
             auto closestVertex = minDist * nearPlane.getNormal() + nearPlane.getPoint();
             auto farVertex = maxDist * nearPlane.getNormal() + nearPlane.getPoint();
             auto closestWorldSpacePos = vec3(
