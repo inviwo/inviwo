@@ -14,8 +14,9 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubesopt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/surfaceextraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
@@ -112,8 +113,9 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubesopt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
@@ -199,9 +201,13 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/base-unittest-main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/kdtree-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/convexhull-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/marchingcubes-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+if(IVW_BENCHMARKS)
+    add_subdirectory(tests/benchmarks)
+endif()

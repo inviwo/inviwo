@@ -32,6 +32,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <modules/base/algorithm/volume/marchingtetrahedron.h>
 #include <modules/base/algorithm/volume/marchingcubes.h>
+#include <modules/base/algorithm/volume/marchingcubesopt.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <numeric>
@@ -57,8 +58,9 @@ SurfaceExtraction::SurfaceExtraction()
     , volume_("volume")
     , outport_("mesh")
     , method_("method", "Method",
-              {{"marchingtetrahedron", "MarchingTetrahedron", Method::MarchingTetrahedron},
-               {"marchingcubes", "MarchingCubes", Method::MarchingCubes}})
+              {{"marchingtetrahedron", "Marching Tetrahedron", Method::MarchingTetrahedron},
+               {"marchingcubes", "Marching Cubes", Method::MarchingCubes},
+               {"marchingCubesOpt", "Marching Cubes Optimized", Method::MarchingCubesOpt}}, 2)
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
     , invertIso_("invert", "Invert ISO", false)
     , encloseSurface_("enclose", "Enclose Surface", true)
@@ -107,12 +109,12 @@ void SurfaceExtraction::process() {
         vec4 color = static_cast<FloatVec4Property*>(colors_[i])->get();
         bool invert = invertIso_.get();
         bool enclose = encloseSurface_.get();
-        if (!result_[i].result.valid() && (util::contains(changed, data[i].first) ||
-                                           !result_[i].isSame(method, iso, color, invert, enclose))) {
+        if (!result_[i].result.valid() &&
+            (util::contains(changed, data[i].first) ||
+             !result_[i].isSame(method, iso, color, invert, enclose))) {
             result_[i].set(method, iso, color, invert, enclose, 0.0f,
                            dispatchPool([this, vol, method, iso, color, invert, enclose,
                                          i]() -> std::shared_ptr<Mesh> {
-
                                auto progressCallBack = [this, i](float s) {
                                    this->result_[i].status = s;
                                    float status = 0;
@@ -133,12 +135,16 @@ void SurfaceExtraction::process() {
                                switch (method) {
                                    case Method::MarchingCubes:
                                        m = util::marchingcubes(vol, iso, color, invert, enclose,
-                                                                progressCallBack);
+                                                               progressCallBack);
+                                       break;
+                                   case Method::MarchingCubesOpt:
+                                       m = util::marchingCubesOpt(vol, iso, color, invert, enclose,
+                                                                  progressCallBack);
                                        break;
                                    case Method::MarchingTetrahedron:
                                    default:
-                                       m = util::marchingtetrahedron(vol, iso, color, invert, enclose,
-                                           progressCallBack);
+                                       m = util::marchingtetrahedron(vol, iso, color, invert,
+                                                                     enclose, progressCallBack);
                                        break;
                                }
 
