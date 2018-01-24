@@ -31,14 +31,130 @@
 #include <modules/demo/democontrollerobserver.h>
 #include <inviwo/core/network/networklock.h>
 
+
 namespace inviwo {
 
 namespace demo {
 
 DemoController::DemoController(InviwoApplication* app)
-    : app_(app) {}
+    : app_(app)
+    , demoFolder_("demoFolder", "Folder", "")
+    , demoFile_("demoFile", "File") {
+
+    demoFolder_.setFileMode(FileMode::DirectoryOnly);
+    addProperty(demoFolder_);
+    addProperty(demoFile_);
+    demoFolder_.onChange([this]() {
+        setFileOptions(); });
+
+
+    demoFile_.onChange([this]() {
+        if (updateWorkspace_)
+            onChangeSelection(Offset::Reload); });
+}
 
 DemoController::~DemoController() = default;
+
+void loadWorkspaceApp(const std::string& path);
+
+void DemoController::setFileOptions() {
+
+    std::string selectedPath = filesystem::cleanupPath(demoFolder_.get());
+
+    updateWorkspace_ = false;
+    // Get all files and gather interesting ones.
+    demoFile_.clearOptions();
+    std::vector<std::string> elements = filesystem::getDirectoryContents(selectedPath, filesystem::ListMode::Files);
+
+    int invNum = 0;
+    for (int elIdx = 0; elIdx < elements.size(); ++elIdx) {
+        std::string& elem = elements[elIdx];
+        std::string ext = filesystem::getFileExtension(elem);
+        std::transform(ext.begin(), ext.end(), ext.begin(), std::tolower);
+        if (ext.compare("inv") == 0) { // Found a workspace
+            auto cleanName = filesystem::getFileNameWithoutExtension(elem);
+            auto cleanNameExt = filesystem::cleanupPath(elem);
+            demoFile_.addOption(cleanNameExt, cleanName, invNum++);
+        }
+    }
+
+    updateWorkspace_ = true;
+
+    // Select first element, call file callback.
+    if (demoFile_.getValues().size() > 0)
+    {
+        demoFile_.set(0);
+        onChangeSelection(Offset::Reload);
+    }
+}
+
+void DemoController::onChangeSelection(Offset offset) {
+
+    if (offset == Offset::None)
+        return;
+
+    int numFiles = demoFile_.getValues().size();
+    int nextFileIndex = demoFile_.get();
+    
+    switch (offset) {
+    case Offset::First:
+        nextFileIndex = 0;
+        break;
+    case Offset::Previous:
+        nextFileIndex--;
+        break;
+    case Offset::Next:
+        nextFileIndex++;
+        break;
+    case Offset::Last:
+        nextFileIndex = numFiles - 1;
+    }
+
+    // No need to load anything
+    if (nextFileIndex < 0
+        || nextFileIndex >= numFiles
+        || (offset != Offset::Reload && nextFileIndex == demoFile_.get()))
+        return;
+
+    updateWorkspace_ = false;
+    demoFile_.set(nextFileIndex);
+    loadWorkspaceApp(demoFolder_.get() + "/" + demoFile_.getIdentifiers()[demoFile_.get()]);
+
+    updateWorkspace_ = true;
+}
+
+void DemoController::setFolder(const std::string& path) {
+
+    demoFolder_.set(path);
+}
+
+// Copied from InviwoMainWindow::openWorkspace
+void loadWorkspaceApp(const std::string& fileName) {
+
+    InviwoApplication* app = InviwoApplication::getPtr();
+
+    NetworkLock lock(app->getProcessorNetwork());
+    app->getWorkspaceManager()->clear();
+    try {
+        app->getWorkspaceManager()->load(fileName, [&](ExceptionContext ec) {
+            try {
+                throw;
+            }
+            catch (const IgnoreException& e) {
+                util::log(
+                    e.getContext(),
+                    "Incomplete network loading " + fileName + " due to " + e.getMessage(),
+                    LogLevel::Error);
+            }
+        });
+    }
+    catch (const Exception& e) {
+        util::log(e.getContext(),
+            "Unable to load network " + fileName + " due to " + e.getMessage(),
+            LogLevel::Error);
+        app->getWorkspaceManager()->clear();
+    }
+}
 
 } // namespace demo
 

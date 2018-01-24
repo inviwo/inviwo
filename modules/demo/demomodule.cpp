@@ -41,10 +41,10 @@ namespace inviwo {
 
 DemoModule::DemoModule(InviwoApplication* app)
     : InviwoModule(app, "Demo")
-    , demoManager_(app, this) {}
+    , demoController_(app) {}
 
-demo::DemoManager& DemoModule::getDemoManager() { return demoManager_; }
+demo::DemoController& DemoModule::getDemoController() { return demoController_; }
 
-const demo::DemoManager& DemoModule::getDemoManager() const { return demoManager_; }
+const demo::DemoController& DemoModule::getDemoController() const { return demoController_; }
 
 } // namespace

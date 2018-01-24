@@ -32,7 +32,7 @@
 
 #include <modules/demo/demomoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <modules/demo/demomanager.h>
+#include <modules/demo/democontroller.h>
 
 namespace inviwo {
 
@@ -41,11 +41,11 @@ namespace inviwo {
         DemoModule(InviwoApplication* app);
         virtual ~DemoModule() {}
 
-        demo::DemoManager& getDemoManager();
-        const demo::DemoManager& getDemoManager() const;
+        demo::DemoController& getDemoController();
+        const demo::DemoController& getDemoController() const;
 
     private:
-        demo::DemoManager demoManager_;
+        demo::DemoController demoController_;
     };
 
 } // namespace

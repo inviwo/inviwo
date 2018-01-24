@@ -35,6 +35,7 @@
 #include <modules/demo/democontroller.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 class QToolButton;
 
@@ -43,14 +44,14 @@ namespace inviwo {
 namespace demo {
 
 class IVW_MODULE_DEMOQT_API DemoNavigatorDockWidgetQt : public InviwoDockWidget,
-                                                        public DemoControllerObserver {
+                                                        public DemoControllerObserver,
+                                                        public PropertyOwner {
 public:
     DemoNavigatorDockWidgetQt(DemoController& controller, const std::string& widgetName,
-                                QWidget* parent);
+                              QWidget* parent);
     virtual ~DemoNavigatorDockWidgetQt();
 
 protected:
-    virtual void onStateChanged(DemoController* controller) override;
 
     DemoController& controller_;
 
@@ -58,6 +59,7 @@ protected:
     QAction* btnLast_;
     QAction* btnNext_;
     QAction* btnBegin_;
+    QAction* btnEnd_;
 };
 
 } // namespace demo
