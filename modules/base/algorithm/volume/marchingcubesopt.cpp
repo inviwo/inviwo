@@ -40,6 +40,80 @@
 
 namespace inviwo {
 
+marching::Config::Config()
+    : vertices{{{0, 0, 0},
+                {1, 0, 0},
+                {1, 1, 0},
+                {0, 1, 0},
+                {0, 0, 1},
+                {1, 0, 1},
+                {1, 1, 1},
+                {0, 1, 1}}}
+    , edges{{{0, 1},
+             {1, 2},
+             {2, 3},
+             {3, 0},
+             {0, 4},
+             {1, 5},
+             {2, 6},
+             {3, 7},
+             {4, 5},
+             {5, 6},
+             {6, 7},
+             {7, 4}}}
+    , faces{{{0, 1, 2, 3},
+             {0, 5, 8, 4},
+             {1, 6, 9, 5},
+             {2, 7, 10, 6},
+             {3, 4, 11, 7},
+             {8, 9, 10, 11}}}
+    , triangulations{[]() {
+        std::unordered_map<size_t, std::vector<Triangle>> tmp;
+        tmp[3] = {{{0, 1, 2}}};
+        tmp[4] = {{{0, 1, 2}, {0, 2, 3}}};
+        tmp[5] = {{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}}};
+        tmp[6] = {{{0, 1, 2}, {2, 3, 4}, {0, 4, 5}, {0, 2, 4}}};
+        return tmp;
+    }()}
+    , nodeIdsToEdgeId{util::make_array<8, NodeId>([&](NodeId i) -> std::array<EdgeId, 8> {
+        return util::make_array<8, NodeId>([&](NodeId j) -> EdgeId {
+            auto it = std::find_if(edges.begin(), edges.end(), [&](auto e) {
+                return (e[0] == i && e[1] == j) || (e[0] == j && e[1] == i);
+            });
+            if (it != edges.end()) {
+                return static_cast<EdgeId>(std::distance(edges.begin(), it));
+            }
+            return -1;
+        });
+    })}
+    , edgeIdToFaceIds{util::make_array<12, EdgeId>([&](EdgeId edge) -> std::array<FaceId, 2> {
+        auto it1 = std::find_if(faces.begin(), faces.end(),
+                                [&](auto &face) { return util::contains(face, edge); });
+        auto it2 = std::find_if(it1 + 1, faces.end(),
+                                [&](auto &face) { return util::contains(face, edge); });
+        return {static_cast<FaceId>(std::distance(faces.begin(), it1)),
+                static_cast<FaceId>(std::distance(faces.begin(), it2))};
+    })}
+    , nodeNeighbours{util::make_array<8>([&](size_t i) -> std::array<NodeId, 3> {
+        auto distance2 = [](const size3_t &a, const size3_t &b) {
+            return glm::compAdd((a - b) * (a - b));
+        };
+        std::array<NodeId, 3> nn{};
+        int count = 0;
+        for (NodeId j = 0; j < 8; ++j) {
+            if (distance2(vertices[i], vertices[j]) == 1) {
+                nn[count] = j;
+                ++count;
+            }
+        }
+        return nn;
+    })}
+    , caseTriangles{util::make_array<256>([&](size_t i) { return calcTriangles(i); })}
+
+    , caseEdges{util::make_array<256>([&](size_t i) { return calcEdges(i); })}
+
+    , caseIncrements{util::make_array<256>([&](size_t i) { return calcIncrenents(i); })} {}
+
 std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bitset<8> corners,
                                                                         bool flip) {
     if (corners.count() > 4) {
@@ -363,9 +437,9 @@ const std::array<OffsetIndexMasks, 4> Index<T, IsoTest>::oim_ = {
 
 namespace util {
 std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, double iso,
-                                     const vec4 &color, bool invert, bool enclose,
-                                     std::function<void(float)> progressCallback,
-                                     std::function<bool(const size3_t &)> maskingCallback) {
+                                       const vec4 &color, bool invert, bool enclose,
+                                       std::function<void(float)> progressCallback,
+                                       std::function<bool(const size3_t &)> maskingCallback) {
 
     auto indexBuffer = std::make_shared<IndexBuffer>();
     auto vertexBuffer = std::make_shared<Buffer<vec3>>();
@@ -467,7 +541,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
 
         if (enclose) {
             marching::encloseSurfce(src, dim, indexRAM, positions, normals, iso, invert, dr.x, dr.y,
-                                   dr.z);
+                                    dr.z);
         }
     };
     if (invert) {

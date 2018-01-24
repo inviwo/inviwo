@@ -137,90 +137,26 @@ struct IVW_MODULE_BASE_API Config {
     using Face = std::array<EdgeId, 4>;
     using Triangle = std::array<EdgeId, 3>;
 
+    Config();
+
     // Cube definitions
-    const std::array<size3_t, 8> vertices = {
-        {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
-
-    const std::array<Edge, 12> edges = {{{0, 1},
-                                         {1, 2},
-                                         {2, 3},
-                                         {3, 0},
-                                         {0, 4},
-                                         {1, 5},
-                                         {2, 6},
-                                         {3, 7},
-                                         {4, 5},
-                                         {5, 6},
-                                         {6, 7},
-                                         {7, 4}}};
-
-    const std::array<Face, 6> faces = {
-        {{0, 1, 2, 3}, {0, 5, 8, 4}, {1, 6, 9, 5}, {2, 7, 10, 6}, {3, 4, 11, 7}, {8, 9, 10, 11}}};
-
-    const std::unordered_map<size_t, std::vector<Triangle>> triangulations = []() {
-        std::unordered_map<size_t, std::vector<Triangle>> tmp;
-        tmp[3] = {{{0, 1, 2}}};
-        tmp[4] = {{{0, 1, 2}, {0, 2, 3}}};
-        tmp[5] = {{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}}};
-        tmp[6] = {{{0, 1, 2}, {2, 3, 4}, {0, 4, 5}, {0, 2, 4}}};
-        return tmp;
-    }();
-
+    const std::array<size3_t, 8> vertices;
+    const std::array<Edge, 12> edges;
+    const std::array<Face, 6> faces;
+    const std::unordered_map<size_t, std::vector<Triangle>> triangulations;
 
     // Derived properties;
-    const std::array<std::array<EdgeId, 8>, 8> nodeIdsToEdgeId =
-        util::make_array<8, NodeId>([&](NodeId i) -> std::array<EdgeId, 8> {
-            return util::make_array<8, NodeId>([&](NodeId j) -> EdgeId {
-                auto it = std::find_if(edges.begin(), edges.end(), [&](auto e) {
-                    return (e[0] == i && e[1] == j) || (e[0] == j && e[1] == i);
-                });
-                if (it != edges.end()) {
-                    return static_cast<EdgeId>(std::distance(edges.begin(), it));
-                }
-                return -1;
-            });
-        });
-
-    const std::array<std::array<FaceId, 2>, 12> edgeIdToFaceIds =
-        util::make_array<12, EdgeId>([&](EdgeId edge) -> std::array<FaceId, 2> {
-            auto it1 = std::find_if(faces.begin(), faces.end(),
-                                    [&](auto &face) { return util::contains(face, edge); });
-            auto it2 = std::find_if(it1 + 1, faces.end(),
-                                    [&](auto &face) { return util::contains(face, edge); });
-            return {static_cast<FaceId>(std::distance(faces.begin(), it1)),
-                    static_cast<FaceId>(std::distance(faces.begin(), it2))};
-        });
-
-    const std::array<std::array<NodeId, 3>, 8> nodeNeighbours =
-        util::make_array<8>([&](size_t i) -> std::array<NodeId, 3> {
-            auto distance2 = [](const size3_t &a, const size3_t &b) {
-                return glm::compAdd((a - b) * (a - b));
-            };
-            std::array<NodeId, 3> nn{};
-            int count = 0;
-            for (NodeId j = 0; j < 8; ++j) {
-                if (distance2(vertices[i], vertices[j]) == 1) {
-                    nn[count] = j;
-                    ++count;
-                }
-            }
-            return nn;
-        });
+    const std::array<std::array<EdgeId, 8>, 8> nodeIdsToEdgeId;
+    const std::array<std::array<FaceId, 2>, 12> edgeIdToFaceIds;
+    const std::array<std::array<NodeId, 3>, 8> nodeNeighbours;
 
     std::vector<Triangle> calcTriangles(std::bitset<8> corners, bool flip = false);
-
     std::vector<EdgeId> calcEdges(std::bitset<8> corners, bool flip = false);
-
     std::array<size_t, 8> calcIncrenents(std::bitset<8> corners, bool flip = false);
 
-    const std::array<std::vector<Triangle>, 256> caseTriangles =
-        util::make_array<256>([&](size_t i) { return calcTriangles(i); });
-
-    const std::array<std::vector<EdgeId>, 256> caseEdges =
-        util::make_array<256>([&](size_t i) { return calcEdges(i); });
-
-    const std::array<std::array<size_t, 8>, 256> caseIncrements =
-        util::make_array<256>([&](size_t i) { return calcIncrenents(i); });
+    const std::array<std::vector<Triangle>, 256> caseTriangles;
+    const std::array<std::vector<EdgeId>, 256> caseEdges;
+    const std::array<std::array<size_t, 8>, 256> caseIncrements;
 };
 
 }  // namespace marching
