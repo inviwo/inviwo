@@ -58,9 +58,9 @@ SurfaceExtraction::SurfaceExtraction()
     , volume_("volume")
     , outport_("mesh")
     , method_("method", "Method",
-              {{"marchingtetrahedron", "MarchingTetrahedron", Method::MarchingTetrahedron},
-               {"marchingcubes", "MarchingCubes", Method::MarchingCubes},
-               {"marchingCubesOpt", "MarchingCubesOpt", Method::MarchingCubesOpt}})
+              {{"marchingtetrahedron", "Marching Tetrahedron", Method::MarchingTetrahedron},
+               {"marchingcubes", "Marching Cubes", Method::MarchingCubes},
+               {"marchingCubesOpt", "Marching Cubes Optimized", Method::MarchingCubesOpt}}, 2)
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
     , invertIso_("invert", "Invert ISO", false)
     , encloseSurface_("enclose", "Enclose Surface", true)
