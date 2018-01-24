@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 #include <modules/demo/democontrollerobserver.h>
 
@@ -45,14 +46,35 @@ namespace demo {
  * The AnimationController is responsible for evaluating the demo and keeping track of the
  * demo time and state.
  */
-class IVW_MODULE_DEMO_API DemoController : public DemoControllerObservable {
+class IVW_MODULE_DEMO_API DemoController : public DemoControllerObservable
+                                         , public PropertyOwner {
 public:
     DemoController(InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~DemoController();
+    
+    enum Offset {
+        None,
+        First,
+        Previous,
+        Next,
+        Last,
+        Reload
+    };
+
+    void onChangeSelection(Offset offset);
+    void setFileOptions();
+
+    void setFolder(const std::string& path);
+
+
 
 protected:
 
+    FileProperty demoFolder_;
+    OptionPropertyInt demoFile_;
     InviwoApplication* app_;
+
+    bool updateWorkspace_ = true;
 };
 
 } // namespace demo

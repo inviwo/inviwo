@@ -10,7 +10,6 @@ find_package(Qt5Widgets QUIET REQUIRED)
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/demonavigatordockwidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/demonavigatorqt.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -18,7 +17,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/demonavigatordockwidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/demonavigatorqt.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

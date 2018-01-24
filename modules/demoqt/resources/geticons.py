@@ -32,7 +32,7 @@ for ind, name in icons:
 
 with open("demo.qrc", 'w') as f:
 	f.write("<RCC>\n")
-	f.write("	<qresource prefix=\"/animation/\">\n")
+	f.write("	<qresource prefix=\"/demo/\">\n")
 	for ind, name in icons:
 		for imgtype, size in types:
 			f.write("		<file>icons/" + name + "_" + size + "." + imgtype + "</file>\n")

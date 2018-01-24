@@ -72,7 +72,7 @@ DemoQtModule::DemoQtModule(InviwoApplication* app) : InviwoModule(app, "DemoQt")
                              [&](QObject* obj) { menu_.release(); });
         }
         auto& controller =
-            app->getModuleByType<DemoModule>()->getDemoManager().getDemoController();
+            app->getModuleByType<DemoModule>()->getDemoController();
         navigator_ = std::make_unique<demo::DemoNavigatorDockWidgetQt>(controller,
                                                                     "Demo Navigator", win);
         menu->addAction(navigator_->toggleViewAction());
