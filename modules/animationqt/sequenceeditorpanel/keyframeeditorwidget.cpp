@@ -57,32 +57,29 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
     keyframe.addObserver(this);
 
     layout_ = new QHBoxLayout();
-    
 
     timeSpinner_ = new QDoubleSpinBox();
     timeSpinner_->setValue(keyframe.getTime().count());
     timeSpinner_->setSuffix("s");
     timeSpinner_->setSingleStep(0.1);
     timeSpinner_->setDecimals(5);
-    
 
     void (QDoubleSpinBox::*signal)(double) = &QDoubleSpinBox::valueChanged;
-    connect(timeSpinner_, signal, this, [this](double t){
-        keyframe_.setTime(Seconds(t));
-    });
+    connect(timeSpinner_, signal, this, [this](double t) { keyframe_.setTime(Seconds(t)); });
 
     layout_->addWidget(timeSpinner_);
 
     if (auto propTrack = dynamic_cast<BasePropertyTrack *>(&parent->getTrack())) {
         auto baseProperty = propTrack->getProperty();
         property_.reset(baseProperty->clone());
-		propTrack->setOtherProperty(property_.get(),&keyframe);
-        property_->onChange([b = baseProperty, p = property_.get(),t= propTrack,k=&keyframe_]() {
-            b->set(p); 
-            t->updateKeyframeFromProperty(p,k);
-        });
+        propTrack->setOtherProperty(property_.get(), &keyframe);
+        property_->onChange(
+            [ b = baseProperty, p = property_.get(), t = propTrack, k = &keyframe_ ]() {
+                b->set(p);
+                t->updateKeyframeFromProperty(p, k);
+            });
         property_->setOwner(nullptr);
-        
+
         auto propWidget =
             util::getInviwoApplication()->getPropertyWidgetFactory()->create(property_.get());
         propertyWidget_ = static_cast<PropertyWidgetQt *>(propWidget.release());
@@ -92,50 +89,54 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         }
 
         layout_->addWidget(propertyWidget_);
-	}
-	else if (auto ctrlTrack = dynamic_cast<ControlTrack*>(&parent->getTrack())) {
-		// Assume that we only have ControlKeyframes within ControlTracks
-		auto& ctrlKey = *static_cast<ControlKeyframe*>(&keyframe);
+    } else if (auto ctrlTrack = dynamic_cast<ControlTrack *>(&parent->getTrack())) {
+        // Assume that we only have ControlKeyframes within ControlTracks
+        auto &ctrlKey = *static_cast<ControlKeyframe *>(&keyframe);
 
-		actionWidget_ = new QComboBox();
-		actionWidget_->addItems({ "Pause", "Jump To", "Script" });
-		actionWidget_->setCurrentIndex(static_cast<int>(ctrlKey.getAction()));
+        actionWidget_ = new QComboBox();
+        actionWidget_->addItems({"Pause", "Jump To", "Script"});
+        actionWidget_->setCurrentIndex(static_cast<int>(ctrlKey.getAction()));
 
-		jumpToWidget_ = new QDoubleSpinBox();
-		jumpToWidget_->setValue(ctrlKey.getPayload().jumpToTime.count());
-		jumpToWidget_->setSuffix("s");
-		jumpToWidget_->setSingleStep(0.1);
-		jumpToWidget_->setDecimals(5);
-		jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::JumpTo);
+        jumpToWidget_ = new QDoubleSpinBox();
+        jumpToWidget_->setValue(ctrlKey.getPayload().jumpToTime.count());
+        jumpToWidget_->setSuffix("s");
+        jumpToWidget_->setSingleStep(0.1);
+        jumpToWidget_->setDecimals(5);
+        jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::JumpTo);
 
-		connect(actionWidget_, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated),
-			[this, &ctrlKey](int idx) {
-			ctrlKey.setAction(static_cast<ControlAction>(idx));
-			jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::JumpTo);
-		});
+        connect(actionWidget_, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
+                [this, &ctrlKey](int idx) {
+                    ctrlKey.setAction(static_cast<ControlAction>(idx));
+                    jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::JumpTo);
+                });
 
-		connect(timeSpinner_, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-			this, [this, &ctrlKey](double t) {
-			ControlPayload payload;
-			payload.jumpToTime = Seconds{ t };
-			ctrlKey.setPayload(payload);
-		});
+        connect(timeSpinner_,
+                static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
+                [this, &ctrlKey](double t) {
+                    ControlPayload payload;
+                    payload.jumpToTime = Seconds{t};
+                    ctrlKey.setPayload(payload);
+                });
 
-		layout_->addWidget(actionWidget_);
-		layout_->addWidget(jumpToWidget_);
-	}
+        layout_->addWidget(actionWidget_);
+        layout_->addWidget(jumpToWidget_);
+    }
 
     setLayout(layout_);
 }
 
 KeyframeEditorWidget::~KeyframeEditorWidget() {
-    if(propertyWidget_){
+    if (propertyWidget_) {
+        // We need to manually remove and delete the propertyWidget_ since the destructor of
+        // propertyWidget_ tries to use the property. If we do not remove it it will be destroyed in
+        // QWidgets destructor which is called after this destructor, hence, the property has been
+        // destroyed.
         layout_->removeWidget(propertyWidget_);
         delete propertyWidget_;
     }
 }
 
-void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
+void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe *key, Seconds oldTime) {
     timeSpinner_->setValue(key->getTime().count());
     sequenceEditorWidget_->setReorderNeeded();
 }
