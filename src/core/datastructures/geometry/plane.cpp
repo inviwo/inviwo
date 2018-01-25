@@ -44,56 +44,47 @@ vec3 Plane::getPoint() const { return point_; }
 
 vec3 Plane::getNormal() const { return normal_; }
 
-vec3 Plane::getIntersection(const vec3& p1, const vec3& p2) const {
-    ivwAssert(!(glm::abs(glm::dot(p2 - p1, normal_)) < 0.0001f), "Line parallel with clip plane.");
-    vec3 l = p2 - p1;
-    float nom = glm::dot(point_ - p1, normal_);
-    float denom = glm::dot(l, normal_);
-    float dist = nom / denom;
-    float roundDist =
-        static_cast<float>(static_cast<int>(dist * 1000000 + (dist < 0.f ? -0.5f : 0.5f))) /
-        1000000.f;
-    vec3 res = vec3(roundDist * l + p1);
-    return res;
+float Plane::distance(const vec3& p) const {
+    return glm::dot(p - point_, normal_);
 }
 
-vec3 Plane::projectPoint(const vec3& p1) const {
-    float dist = glm::dot(p1 - point_, normal_);
-    return p1 - dist * normal_;
+vec3 Plane::projectPoint(const vec3& p) const {
+    return p - distance(p) * normal_;
 }
 
 bool Plane::isInside(const vec3& p) const {
-    return (glm::dot(normal_, p - point_) > 0.f) ? true : false;
+    return (distance(p) >= 0.f) ? true : false;
 }
 
 bool Plane::perpendicularToPlane(const vec3& p) const {
-    return (glm::abs(glm::dot(normal_, p)) < 0.0001f);
+    return (glm::abs(glm::dot(normal_, p)) < glm::epsilon<float>());
 }
 
 void Plane::setPoint(const vec3 p) { this->point_ = p; }
 
 void Plane::setNormal(const vec3& n) { this->normal_ = n; }
 
-IntersectionResult Plane::getSegmentIntersection(const vec3& start, const vec3& stop) const {
-    float numerator = glm::dot(point_ - start, normal_);
+IntersectionResult Plane::getIntersection(const vec3& start, const vec3& stop) const {
+    // Distance from point to plane 
+    float d = glm::dot(point_ - start, normal_);
 
-    // If line is in plane return start point.
-    if (glm::abs(numerator) < 1e-6) {
+    if (glm::abs(d) < glm::epsilon<float>()) {
+        // segment is in plane, return start point.
         return IntersectionResult(true, start);
     }
 
-    // Line not in plane
-    vec3 d = stop - start;
-    float denom = glm::dot(normal_, d);
-    if (std::abs(denom) > 1e-6) {
-        float tHit = numerator / denom;
+    vec3 segment = stop - start;
+     // Distance of segment projected onto plane normal
+    float denom = glm::dot(normal_, segment); // if zero, segment is parallel to plane
+    if (std::abs(denom) > glm::epsilon<float>()) {
+        float tHit = d / denom;
 
         if (tHit >= 0.0f && tHit <= 1.0f) {
-            return IntersectionResult(true, start + tHit * d);
+            return IntersectionResult(true, start + tHit * segment);
         }
     }
 
-    // no intersection
+    // No intersection
     return IntersectionResult(false);
 }
 

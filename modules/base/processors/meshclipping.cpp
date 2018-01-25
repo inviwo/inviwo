@@ -58,7 +58,7 @@ MeshClipping::MeshClipping()
                             InvalidationLevel::Valid)
     , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true,
                              InvalidationLevel::Valid)
-    , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, -2.f, 2.f, 0.01f)
+    , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, 0.f, 2.f, 0.01f)
     , planePoint_("planePoint", "Plane Point", vec3(0.0f), vec3(-10000.0f), vec3(10000.0f),
                   vec3(0.1f))
     , planeNormal_("planeNormal", "Plane Normal", vec3(0.0f, 0.0f, -1.0f), vec3(-1.0f), vec3(1.0f),
@@ -115,18 +115,14 @@ void MeshClipping::process() {
             if (moveCameraAlongNormal_.get()) {
 
                 float planeMoveDiff = pointPlaneMove_.get() - previousPointPlaneMove_;
-                vec3 lookOffset = plane->getNormal() * planeMoveDiff;
+                // Move camera half of the plane movement distance.
+                // Ensures that lookAt position is centered in the mesh,
+                // assuming that initial lookAt position is in the center of the mesh.
+                vec3 lookOffset = plane->getNormal() * planeMoveDiff * 0.5f;
                 camera_.setLook(camera_.getLookFrom() + lookOffset,
                                 camera_.getLookTo() + lookOffset, camera_.getLookUp());
             }
             previousPointPlaneMove_ = pointPlaneMove_.get();
-
-            // If pointPlaneMove_ zero i.e. no clipping, so output same mesh
-            if (pointPlaneMove_ <= 0.f + EPSILON) {
-                clippingPlane_.setData(plane);
-                outport_.setData(inport_.getData());
-                return;
-            }
         }
         if (auto clippedPlaneGeom = clipGeometryAgainstPlane(inport_.getData().get(), *plane)) {
             clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
@@ -162,29 +158,37 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
         return;
     }
 
-    const auto ram = it->second->getRepresentation<BufferRAM>();
+    auto& camera = camera_.get();
+    auto direction = glm::normalize(camera.getDirection());
+    auto nearPos = camera.getLookFrom() + camera.getNearPlaneDist() * direction;
+    // Transform coordinates to data space
+    auto worldToData = geom->getCoordinateTransformer().getWorldToDataMatrix();
+    auto worldToDataNormal = glm::transpose(glm::inverse(worldToData));
+    auto dataSpacePos = vec3(worldToData * vec4(nearPos, 1.0));
+    auto dataSpaceNormal = glm::normalize(vec3(worldToDataNormal * vec4(direction, 0.0)));
+    // Plane start/end position based on distance to camera near plane
+    Plane nearPlane(dataSpacePos, dataSpaceNormal);
 
+    // Align clipping plane to camera and make sure it starts and ends on the mesh boundaries.
+    // Start point will be on the camera near plane if it is inside the mesh.
+    const auto ram = it->second->getRepresentation<BufferRAM>();
     if (ram && ram->getDataFormat()->getComponents() == 3) {
         ram->dispatch<void, dispatching::filter::Float3s>([&](auto pb) -> void {
             const auto& vertexList = pb->getDataContainer();
+            // Get closest and furthest vertex with respect to the camera near plane
+            auto minMaxVertices =
+                std::minmax_element(std::begin(vertexList), std::end(vertexList),
+                                    [&nearPlane](const auto& a, const auto& b) {
+                                        // Use max(0, dist) to make sure we do not consider vertices
+                                        // behind plane
+                                        return std::max(0.f, nearPlane.distance(a)) <
+                                               std::max(0.f, nearPlane.distance(b));
+                                    });
+            auto minDist = nearPlane.distance(*minMaxVertices.first);
+            auto maxDist = nearPlane.distance(*minMaxVertices.second);
 
-            auto closestVertex = vertexList[0];
-            auto farVertex = vertexList[0];
-            decltype(closestVertex) lookFrom{camera_.getLookFrom()};
-            auto minDist = glm::distance(lookFrom, closestVertex);
-            auto maxDist = minDist;
-            for (const auto& vertex : vertexList) {
-                // Calculate distance to camera
-                auto dist = glm::distance(lookFrom, vertex);
-                if (dist < minDist) {
-                    minDist = dist;
-                    closestVertex = vertex;
-                }
-                if (dist > maxDist) {
-                    maxDist = dist;
-                    farVertex = vertex;
-                }
-            }
+            auto closestVertex = minDist * nearPlane.getNormal() + nearPlane.getPoint();
+            auto farVertex = maxDist * nearPlane.getNormal() + nearPlane.getPoint();
             auto closestWorldSpacePos = vec3(
                 geom->getCoordinateTransformer().getDataToWorldMatrix() * vec4(closestVertex, 1.f));
             auto farWorldSpacePos = vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
@@ -193,7 +197,7 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
             auto minVal = glm::min(closestWorldSpacePos, farWorldSpacePos);
             auto maxVal = glm::max(closestWorldSpacePos, farWorldSpacePos);
             planePoint_.set(closestWorldSpacePos, minVal, maxVal, range * 0.1f);
-            pointPlaneMove_.setMaxValue(glm::compMax(range));
+            pointPlaneMove_.setMaxValue(glm::distance(farWorldSpacePos, closestWorldSpacePos));
         });
 
     } else {
@@ -362,7 +366,7 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                         } else {  // Case 2
                             // Add Intersection
                             vec3 intersection = plane.getIntersection(vertexList->at(idx[i]),
-                                                                      vertexList->at(idx[j]));
+                                                                      vertexList->at(idx[j])).intersection_;
                             newVertices.push_back(intersection);
                             vec3 interBC =
                                 barycentricTriangle(intersection, vertexList->at(idx[0]),
@@ -390,7 +394,7 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                         if (plane.isInside(vertexList->at(idx[j]))) {  // Case 3
                             // Add Intersection
                             vec3 intersection = plane.getIntersection(vertexList->at(idx[i]),
-                                                                      vertexList->at(idx[j]));
+                                                                      vertexList->at(idx[j])).intersection_;
                             newVertices.push_back(intersection);
                             vec3 interBC =
                                 barycentricTriangle(intersection, vertexList->at(idx[0]),

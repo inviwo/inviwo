@@ -47,18 +47,52 @@ public:
     vec3 getNormal() const;
 
     /**
-     * \brief Get intersection point with plane between p1 and p2
+     * \brief Get intersection point with plane and line segment.
+     * Intersects if plane is in between start and stop.
+     * Segement start point will be returned if segment lies in the plane. 
      *
-     * @param p1 Start point
-     * @param p2 End point
-     * @return Intersected point
+     * Returned intersection point is invalid if no intersection exist.
+     * @param start Start point of segment
+     * @param stop End point of segment
+     * @return Intersected point and true if intersecting. 
      */
-    vec3 getIntersection(const vec3& p1, const vec3& p2) const;
+    IntersectionResult getIntersection(const vec3& start, const vec3& stop) const;
 
-    IntersectionResult getSegmentIntersection(const vec3& start, const vec3& stop) const;
+    /**
+     * Return signed distance from plane to point, i.e. dot(x - p, normal).
+     * 
+     *      Plane
+     *        |
+     *        p-> normal
+     * x <----|----> x (point)
+     *    -d     d   
+     * @return Negative distance if behind plane, positive otherwise.
+     */
+    float distance(const vec3& x) const;
 
-    vec3 projectPoint(const vec3&) const;
+    /**
+     * Project point onto plane.
+     *          Plane
+     *            |
+     *            |-> normal
+     * projection |<---- x (point)
+     *
+     * @param x Point to project
+     * @return point on the plane
+     */
+    vec3 projectPoint(const vec3& x) const;
 
+    /**
+     * Check if point is on positive side of plane. 
+     *         Plane
+     *           |
+     *           |-> normal
+     * (outside) |  (inside)
+     *
+     * @see Plane::distance
+     * @param Point to check
+     * @return True if on positive side of normal or on the plane, otherwise false
+     */
     bool isInside(const vec3&) const;
 
     bool perpendicularToPlane(const vec3&) const;
