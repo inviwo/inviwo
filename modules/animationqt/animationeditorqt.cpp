@@ -154,7 +154,7 @@ void AnimationEditorQt::dragEnterEvent(QGraphicsSceneDragDropEvent *event) {
     // Only accept PropertyWidgets from a processor
     auto source = dynamic_cast<PropertyWidget*>(event->source());
     event->setAccepted(source != nullptr && source->getProperty() != nullptr
-                       && dynamic_cast<Processor*>(source->getProperty()->getOwner()) != nullptr);
+                       && source->getProperty()->getOwner()->getProcessor() != nullptr);
 }
 
 void AnimationEditorQt::dragLeaveEvent(QGraphicsSceneDragDropEvent * event) {
