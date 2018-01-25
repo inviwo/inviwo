@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
@@ -39,36 +40,27 @@
 
 namespace inviwo {
 
-PropertyPresetManager::PropertyPresetManager() { loadApplicationPresets(); }
+PropertyPresetManager::PropertyPresetManager(InviwoApplication* app) : app_{app} {
+    loadApplicationPresets();
+}
 
 bool PropertyPresetManager::loadPreset(const std::string& name, Property* property,
                                        PropertyPresetType type) const {
-    auto apply = [](Property* p, const std::string& data) {
+    auto apply = [this](Property* p, const std::string& data) {
         NetworkLock lock(p);
         std::stringstream ss;
         ss << data;
-        Deserializer deserializer(ss, "");
-        auto app = InviwoApplication::getPtr();
-        deserializer.registerFactory(app->getPropertyFactory());
-        deserializer.registerFactory(app->getMetaDataFactory());
-        // save current status, except property value, as the preset might overwrite it
-        const auto identifier = p->getIdentifier();
-        const auto displayName = p->getDisplayName();
-        const auto semantics = p->getSemantics();
-        const auto readOnly = p->getReadOnly();
-        const auto usage = p->getUsageMode();
-        p->deserialize(deserializer);
-        // restore property state
-        p->setIdentifier(identifier);
-        p->setDisplayName(displayName);
-        p->setSemantics(semantics);
-        p->setReadOnly(readOnly);
-        p->setUsageMode(usage);
+        auto d = app_->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
+
+        // We deserialize into a clone here and link it to the original to only set value not
+        // identifiers and such.
+        auto temp = std::unique_ptr<Property>(p->clone());
+        temp->deserialize(d);
+        p->set(temp.get());
     };
 
     switch (type) {
-        case PropertyPresetType::Property: 
-        {
+        case PropertyPresetType::Property: {
             auto pmap = getPropertyPresets(property);
             auto it = std::find_if(pmap.begin(), pmap.end(),
                                    [&](const auto& pair) { return pair.first == name; });
@@ -78,8 +70,7 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
             }
             break;
         }
-        case PropertyPresetType::Workspace:
-        {
+        case PropertyPresetType::Workspace: {
             auto it = std::find_if(workspacePresets_.begin(), workspacePresets_.end(),
                                    [&](const auto& item) { return item.name == name; });
             if (it != workspacePresets_.end() &&
@@ -89,8 +80,7 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
             }
             break;
         }
-        case PropertyPresetType::Application:
-        {
+        case PropertyPresetType::Application: {
             auto it = std::find_if(appPresets_.begin(), appPresets_.end(),
                                    [&](const auto& item) { return item.name == name; });
             if (it != appPresets_.end() && it->classIdentifier == property->getClassIdentifier()) {
@@ -110,7 +100,10 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
     if (!property) return;
 
     Serializer serializer("");
-    property->serialize(serializer);
+    {
+        auto reset = scopedSerializationModeAll(property);
+        property->serialize(serializer);
+    }
     std::stringstream ss;
     serializer.writeFile(ss);
 
@@ -171,6 +164,35 @@ bool PropertyPresetManager::removePreset(const std::string& name, PropertyPreset
     }
 }
 
+void PropertyPresetManager::appendPropertyPresets(Property* target, Property* source) {
+    auto& pmap = getPropertyPresets(target);
+    for (auto item : getPropertyPresets(source)) {
+        pmap[item.first] = item.second;
+    }
+}
+
+inviwo::util::OnScopeExit PropertyPresetManager::scopedSerializationModeAll(
+    Property* property) {
+    std::vector<std::pair<Property*, PropertySerializationMode>> toReset;
+    std::function<void(Property*)> setPSM = [&](Property* p) {
+        if (p->getSerializationMode() != PropertySerializationMode::All) {
+            toReset.emplace_back(p, p->getSerializationMode());
+            p->setSerializationMode(PropertySerializationMode::All);
+        }
+        if (auto comp = dynamic_cast<CompositeProperty*>(p)) {
+            for (auto child : comp->getProperties()) {
+                setPSM(child);
+            }
+        }
+    };
+    setPSM(property);
+    return util::OnScopeExit{[toReset]() {
+        for (auto item : toReset) {
+            item.first->setSerializationMode(item.second);
+        }
+    }};
+}
+
 std::vector<std::string> PropertyPresetManager::getAvailablePresets(
     Property* property, PropertyPresetTypes types) const {
     std::vector<std::string> result;
@@ -224,7 +246,7 @@ void PropertyPresetManager::saveApplicationPresets() {
     }
 }
 
-void PropertyPresetManager::clearPropertyPresets(Property *property) {
+void PropertyPresetManager::clearPropertyPresets(Property* property) {
     if (!property) return;
     auto& pmap = getPropertyPresets(property);
     pmap.clear();
@@ -265,4 +287,4 @@ std::map<std::string, std::string>& PropertyPresetManager::getPropertyPresets(Pr
     return property->createMetaData<MT>("SavedState")->getMap();
 }
 
-}  // namespace
+}  // namespace inviwo

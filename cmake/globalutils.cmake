@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2017 Inviwo Foundation
+# Copyright (c) 2013-2018 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -75,13 +75,15 @@ endfunction(ivw_prepend)
 # encodeLineBreaks(output strings)
 # encodes the contents of the string given as last argument and saves the 
 # result in output.
-# Linebreaks ('\n') and semicolon (';') are replaced for better handling 
+# Linebreaks ('\n'), semicolon (';'), and quotes ('"') are replaced for better handling 
 # within CMAKE with __LINEBREAK__ and __SEMICOLON__, respectively.
 function(encodeLineBreaks output)
     # replace linebreaks
     string(REPLACE "\n" "__LINEBREAK__" _tmp_str "${ARGN}")
     # replace semicolon, as it is interpreted as a list separator by CMAKE
     string(REPLACE ";" "__SEMICOLON__" _tmp_str "${_tmp_str}")
+    # replace quotes as well
+    string(REPLACE "\"" "__QUOTE__" _tmp_str "${_tmp_str}")
     set(${output} "${_tmp_str}" PARENT_SCOPE)
 endfunction()
 
@@ -94,6 +96,8 @@ function(decodeLineBreaks output)
     string(REPLACE "__LINEBREAK__" "\n" _tmp_str "${ARGN}")
     # revert semicolon
     string(REPLACE "__SEMICOLON__" ";" _tmp_str "${_tmp_str}")
+    # revert quotes
+    string(REPLACE "__QUOTE__" "\"" _tmp_str "${_tmp_str}")
     set(${output} "${_tmp_str}" PARENT_SCOPE)
 endfunction()
 
@@ -357,19 +361,14 @@ function(ivw_mod_name_to_class retval)
 endfunction()
 
 #--------------------------------------------------------------------
-# ivw_mod_name_to_class(retval item1 item2 ...)
-# Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
+# ivw_mod_name_to_alias(retval item1 item2 ...)
+# Convert module name to alias name, i.e. InviwoOpenGLModule -> inviwo::module::alias
+# using module data
 function(ivw_mod_name_to_alias retval)
     set(the_list "")
     foreach(item ${ARGN})
-        string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
-        if(found_item)
-            string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
-            string(TOLOWER ${new_item} l_new_item)
-            list(APPEND the_list inviwo::module::${l_new_item})
-        else()
-            message(FATAL_ERROR "Error argument format error: ${item}, should be in the form Inviwo<Name>Module")
-        endif()
+        ivw_mod_name_to_mod_dep(mod ${item})
+        list(APPEND the_list ${${mod}_alias})
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()

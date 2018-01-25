@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,9 +68,11 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
         case 14:
             usedIdentifier_.clear();
             traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiersStriped);
-            return true; // Changes has been made.
+        case 15:
+            traverseNodes(root, &ProcessorNetworkConverter::updatePropertyEditorMetadata);
+            return true;  // Changes has been made.
         default:
-            return false; // No changes
+            return false;  // No changes
     }
 }
 
@@ -108,23 +110,63 @@ void ProcessorNetworkConverter::updateMetaDataTree(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updatePropertType(TxElement* node) {
-    std::string renamed[] = {
-        "undefined", "BoolProperty", "AdvancedMaterialProperty", "BaseOptionProperty",
-        "OptionPropertyFloat", "OptionPropertyDouble", "OptionPropertyInt", "OptionPropertyInt64",
-        "OptionPropertyString", "OptionPropertyFloatVec2", "OptionPropertyFloatVec3",
-        "OptionPropertyFloatVec4", "OptionPropertyDoubleVec2", "OptionPropertyDoubleVec3",
-        "OptionPropertyDoubleVec4", "OptionPropertyIntVec2", "OptionPropertyIntVec3",
-        "OptionPropertyIntVec4", "OptionPropertyFloatMat2", "OptionPropertyFloatMat3",
-        "OptionPropertyFloatMat4", "OptionPropertyDoubleMat2", "OptionPropertyDoubleMat3",
-        "OptionPropertyDoubleMat4", "ButtonProperty", "CameraProperty", "CompositeProperty",
-        "DirectoryProperty", "EventProperty", "FileProperty", "ImageEditorProperty",
-        "FloatMinMaxProperty", "DoubleMinMaxProperty", "IntMinMaxProperty", "FloatProperty",
-        "DoubleProperty", "IntProperty", "Int64Property", "FloatVec2Property", "FloatVec3Property",
-        "FloatVec4Property", "DoubleVec2Property", "DoubleVec3Property", "DoubleVec4Property",
-        "IntVec2Property", "IntVec3Property", "IntVec4Property", "FloatMat2Property",
-        "FloatMat3Property", "FloatMat4Property", "DoubleMat2Property", "DoubleMat3Property",
-        "DoubleMat4Property", "SimpleLightingProperty", "SimpleRaycastingProperty",
-        "StringProperty", "TransferFunctionProperty"};
+    std::string renamed[] = {"undefined",
+                             "BoolProperty",
+                             "AdvancedMaterialProperty",
+                             "BaseOptionProperty",
+                             "OptionPropertyFloat",
+                             "OptionPropertyDouble",
+                             "OptionPropertyInt",
+                             "OptionPropertyInt64",
+                             "OptionPropertyString",
+                             "OptionPropertyFloatVec2",
+                             "OptionPropertyFloatVec3",
+                             "OptionPropertyFloatVec4",
+                             "OptionPropertyDoubleVec2",
+                             "OptionPropertyDoubleVec3",
+                             "OptionPropertyDoubleVec4",
+                             "OptionPropertyIntVec2",
+                             "OptionPropertyIntVec3",
+                             "OptionPropertyIntVec4",
+                             "OptionPropertyFloatMat2",
+                             "OptionPropertyFloatMat3",
+                             "OptionPropertyFloatMat4",
+                             "OptionPropertyDoubleMat2",
+                             "OptionPropertyDoubleMat3",
+                             "OptionPropertyDoubleMat4",
+                             "ButtonProperty",
+                             "CameraProperty",
+                             "CompositeProperty",
+                             "DirectoryProperty",
+                             "EventProperty",
+                             "FileProperty",
+                             "ImageEditorProperty",
+                             "FloatMinMaxProperty",
+                             "DoubleMinMaxProperty",
+                             "IntMinMaxProperty",
+                             "FloatProperty",
+                             "DoubleProperty",
+                             "IntProperty",
+                             "Int64Property",
+                             "FloatVec2Property",
+                             "FloatVec3Property",
+                             "FloatVec4Property",
+                             "DoubleVec2Property",
+                             "DoubleVec3Property",
+                             "DoubleVec4Property",
+                             "IntVec2Property",
+                             "IntVec3Property",
+                             "IntVec4Property",
+                             "FloatMat2Property",
+                             "FloatMat3Property",
+                             "FloatMat4Property",
+                             "DoubleMat2Property",
+                             "DoubleMat3Property",
+                             "DoubleMat4Property",
+                             "SimpleLightingProperty",
+                             "SimpleRaycastingProperty",
+                             "StringProperty",
+                             "TransferFunctionProperty"};
 
     std::string key;
     node->GetValue(&key);
@@ -139,18 +181,45 @@ void ProcessorNetworkConverter::updatePropertType(TxElement* node) {
 }
 
 void ProcessorNetworkConverter::updateMetaDataType(TxElement* node) {
-    std::string renamed[] = {
-        "BoolMetaData", "IntMetaData", "FloatMetaData", "DoubleMetaData", "StringMetaData",
-        "FloatVec2MetaData", "FloatVec3MetaData", "FloatVec4MetaData", "DoubleVec2MetaData",
-        "DoubleVec3MetaData", "DoubleVec4MetaData", "IntVec2MetaData", "IntVec3MetaData",
-        "IntVec4MetaData", "UIntVec2MetaData", "UIntVec3MetaData", "UIntVec4MetaData",
-        "FloatMat2MetaData", "FloatMat3MetaData", "FloatMat4MetaData", "DoubleMat2MetaData",
-        "DoubleMat4MetaData", "DoubleMat3MetaData", "VectorMetaData<2, Float>",
-        "VectorMetaData<3, Float>", "VectorMetaData<4, Float>", "VectorMetaData<2, Int>",
-        "VectorMetaData<3, Int>", "VectorMetaData<4, Int>", "VectorMetaData<2, Uint",
-        "VectorMetaData<3, UInt>", "VectorMetaData<4, UInt>", "MatrixMetaData<2, Float>",
-        "MatrixMetaData<3, Float>", "MatrixMetaData<4, Float>", "PositionMetaData",
-        "ProcessorMetaData", "ProcessorWidgetMetaData", "PropertyEditorWidgetMetaData"
+    std::string renamed[] = {"BoolMetaData",
+                             "IntMetaData",
+                             "FloatMetaData",
+                             "DoubleMetaData",
+                             "StringMetaData",
+                             "FloatVec2MetaData",
+                             "FloatVec3MetaData",
+                             "FloatVec4MetaData",
+                             "DoubleVec2MetaData",
+                             "DoubleVec3MetaData",
+                             "DoubleVec4MetaData",
+                             "IntVec2MetaData",
+                             "IntVec3MetaData",
+                             "IntVec4MetaData",
+                             "UIntVec2MetaData",
+                             "UIntVec3MetaData",
+                             "UIntVec4MetaData",
+                             "FloatMat2MetaData",
+                             "FloatMat3MetaData",
+                             "FloatMat4MetaData",
+                             "DoubleMat2MetaData",
+                             "DoubleMat4MetaData",
+                             "DoubleMat3MetaData",
+                             "VectorMetaData<2, Float>",
+                             "VectorMetaData<3, Float>",
+                             "VectorMetaData<4, Float>",
+                             "VectorMetaData<2, Int>",
+                             "VectorMetaData<3, Int>",
+                             "VectorMetaData<4, Int>",
+                             "VectorMetaData<2, Uint",
+                             "VectorMetaData<3, UInt>",
+                             "VectorMetaData<4, UInt>",
+                             "MatrixMetaData<2, Float>",
+                             "MatrixMetaData<3, Float>",
+                             "MatrixMetaData<4, Float>",
+                             "PositionMetaData",
+                             "ProcessorMetaData",
+                             "ProcessorWidgetMetaData",
+                             "PropertyEditorWidgetMetaData"
 
     };
     std::string key;
@@ -377,18 +446,31 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
 }
 
 void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElement* node) {
-    std::string renamed[] = {
-        "org.inviwo.Diffuse light source", "org.inviwo.Directional light source",
-        "org.inviwo.Ordinal Property Animator", "org.inviwo.Point light source",
-        "org.inviwo.Spot light source", "org.inviwo.3D Model Reader", "org.inviwo.Cones Test",
-        "org.inviwo.Edge Processor", "org.inviwo.Final Composition", "org.inviwo.Bader Info",
-        "Cone Liver test", "El. vis. Raycaster", "org.inviwo.Point Cloud Generator",
-        "org.inviwo.Surface Extraction", "org.inviwo.GromacsDynamicTrajectoryData source",
-        "org.inviwo.Gromacs source", "org.inviwo.Gromacs to geometry",
-        "org.inviwo.Gromacs to stream line geometry", "org.inviwo.Occlusion Density Volume",
-        "org.inviwo.Point Cloud Mesh Extraction", "org.inviwo.Point Cloud Mesh Extraction2",
-        "org.inviwo.Camera Test", "org.inviwo.Composite Property Test",
-        "org.inviwo.Volume Laplacian", "org.inviwo.Bader Partition"};
+    std::string renamed[] = {"org.inviwo.Diffuse light source",
+                             "org.inviwo.Directional light source",
+                             "org.inviwo.Ordinal Property Animator",
+                             "org.inviwo.Point light source",
+                             "org.inviwo.Spot light source",
+                             "org.inviwo.3D Model Reader",
+                             "org.inviwo.Cones Test",
+                             "org.inviwo.Edge Processor",
+                             "org.inviwo.Final Composition",
+                             "org.inviwo.Bader Info",
+                             "Cone Liver test",
+                             "El. vis. Raycaster",
+                             "org.inviwo.Point Cloud Generator",
+                             "org.inviwo.Surface Extraction",
+                             "org.inviwo.GromacsDynamicTrajectoryData source",
+                             "org.inviwo.Gromacs source",
+                             "org.inviwo.Gromacs to geometry",
+                             "org.inviwo.Gromacs to stream line geometry",
+                             "org.inviwo.Occlusion Density Volume",
+                             "org.inviwo.Point Cloud Mesh Extraction",
+                             "org.inviwo.Point Cloud Mesh Extraction2",
+                             "org.inviwo.Camera Test",
+                             "org.inviwo.Composite Property Test",
+                             "org.inviwo.Volume Laplacian",
+                             "org.inviwo.Bader Partition"};
 
     std::string key;
     node->GetValue(&key);
@@ -470,7 +552,7 @@ void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* nod
     if (key == "Processor") {
         std::string identifier = node->GetAttributeOrDefault("identifier", "");
         if (identifier != "") {
-            
+
             std::string baseIdentifier = identifier;
             std::string newIdentifier = identifier;
             int i = 2;
@@ -496,5 +578,79 @@ void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* nod
         }
     }
 }
+// Transform
+//<MetaDataMap>
+//    <MetaDataItem type="org.inviwo.PropertyEditorWidgetMetaData"
+//    key="org.inviwo.PropertyEditorWidgetMetaData">
+//        <position x="1407" y="1205" />
+//        <dimensions x="935" y="409" />
+//        <visibility content="0" />
+//        <dockstatus content="Floating" />
+//        <stickyflag content="0" />
+//    </MetaDataItem>
+//</MetaDataMap>
+// to
+//<MetaDataMap>
+//    <MetaDataItem type="org.inviwo.IntMetaData" key="PropertyEditorWidgetDockStatus">
+//        <MetaData content="2" />
+//    </MetaDataItem>
+//    <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetFloating">
+//        <MetaData content="1" />
+//    </MetaDataItem>
+//    <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
+//        <MetaData x="510" y="209" />
+//    </MetaDataItem>
+//    <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
+//        <MetaData x="500" y="324" />
+//    </MetaDataItem>
+//    <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
+//        <MetaData content="0" />
+//    </MetaDataItem>
+//    <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetVisible">
+//        <MetaData content="1" />
+//    </MetaDataItem>
+//</MetaDataMap>
+void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) {
+    using R = std::tuple<std::string, std::string, std::string>;
+    const std::vector<R> replacements = {
+        R{"position", "org.inviwo.IntVec2MetaData", "PropertyEditorWidgetPosition"},
+        R{"dimensions", "org.inviwo.IntVec2MetaData", "PropertyEditorWidgetSize"},
+        R{"visibility", "org.inviwo.BoolMetaData", "PropertyEditorWidgetVisible"},
+        R{"stickyflag", "org.inviwo.BoolMetaData", "PropertyEditorWidgetSticky"}};
 
-}  // namespace
+    std::string key;
+    parent->GetValue(&key);
+
+    if (key == "MetaDataMap") {
+        std::vector<TxElement*> toRemove;
+        ticpp::Iterator<TxElement> child;
+        for (child = child.begin(parent); child != child.end(); child++) {
+            std::string childKey;
+            TxElement* node = child.Get();
+            node->GetValue(&childKey);
+            if (childKey == "MetaDataItem") {
+                std::string nodeKey = node->GetAttributeOrDefault("key", "");
+                if (nodeKey == "org.inviwo.PropertyEditorWidgetMetaData") {
+                    for (const auto& item : replacements) {
+                        if (auto n = node->FirstChild(std::get<0>(item), false)) {
+                            TxElement newNode;
+                            newNode.SetValue("MetaDataItem");
+                            newNode.SetAttribute("type", std::get<1>(item));
+                            newNode.SetAttribute("key", std::get<2>(item));
+                            auto data = n->Clone();
+                            data->SetValue("MetaData");
+                            newNode.InsertEndChild(*data);
+                            parent->InsertEndChild(newNode);
+                        }
+                    }
+                    toRemove.push_back(node);
+                }
+            }
+        }
+        for (auto item : toRemove) {
+            parent->RemoveChild(item);
+        }
+    }
+}
+
+}  // namespace inviwo

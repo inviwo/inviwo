@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::s
  * Example for a processor identifier:
  *     auto uniqueIdentifier = util::findUniqueIdentifier(
  *         startIdentifier,
- *         [&](const std::string& id) { 
+ *         [&](const std::string& id) {
  *             return processorNetwork->getProcessorByIdentifier(id) == nullptr; },
  *         ""
  *     );

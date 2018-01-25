@@ -2,7 +2,7 @@
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2012-2017 Inviwo Foundation
+ # Copyright (c) 2012-2018 Inviwo Foundation
  # All rights reserved.
  # 
  # Redistribution and use in source and binary forms, with or without
@@ -132,13 +132,14 @@ endif()
 # It also ensures that we are in control of the used version 
 # and is built using the same, Inviwo, settings.
 add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
-add_subdirectory(ext/libpng) # Defines target inviwo::libpng and libpng
+add_subdirectory(ext/libpng)  # Defines target inviwo::libpng and libpng
 add_subdirectory(ext/libjpeg) # Defines target inviwo::libjpeg and libjpeg
-add_subdirectory(ext/openexr)
+add_subdirectory(ext/tiff)    # Defines target inviwo::tiff and tiff
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
 add_subdirectory(ext/gtest)
+add_subdirectory(ext/benchmark)
 add_subdirectory(ext/warn)
 add_subdirectory(ext/tclap)
 add_subdirectory(ext/tinydir)
@@ -155,10 +156,6 @@ endif()
 if(WIN32)
     add_subdirectory(ext/stackwalker)
 endif()
-
-#--------------------------------------------------------------------
-# Add Core
-add_subdirectory(src/core)
 
 #--------------------------------------------------------------------
 # Add default modules

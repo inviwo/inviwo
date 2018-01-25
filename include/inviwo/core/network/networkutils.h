@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,8 +100,7 @@ private:
     std::vector<Processor*> addedProcessors_;
 };
 
-}  // namespace
-
+}  // namespace detail
 
 IVW_CORE_API std::unordered_set<Processor*> getDirectPredecessors(Processor* processor);
 IVW_CORE_API std::unordered_set<Processor*> getDirectSuccessors(Processor* processor);
@@ -109,8 +108,8 @@ IVW_CORE_API std::unordered_set<Processor*> getDirectSuccessors(Processor* proce
 IVW_CORE_API std::unordered_set<Processor*> getPredecessors(Processor* processor);
 IVW_CORE_API std::unordered_set<Processor*> getSuccessors(Processor* processor);
 
-enum class TraversalDirection {Up, Down};
-enum class VisitPattern {Pre, Post};
+enum class TraversalDirection { Up, Down };
+enum class VisitPattern { Pre, Post };
 
 #include <warn/push>
 #include <warn/ignore/constant-conditional>
@@ -161,7 +160,29 @@ private:
     std::map<const Property*, vec2> cache_;
 };
 
+/**
+ * Retrieve the mean position of the processors in the list.
+ */
+IVW_CORE_API ivec2 getCenterPosition(const std::vector<Processor*>& processors);
+
+/**
+ * Retrieve bounding box of the processors in the list.
+ * The return value is pair of the min x,y and the max x,y
+ */
+IVW_CORE_API std::pair<ivec2, ivec2> getBoundingBox(const std::vector<Processor*>& processors);
+
+/**
+ * Offset all the positions of the processors in the list by offset
+ */
+IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, const ivec2& offset);
+
+/**
+ * Set the listed processors as selected or unSelected.
+ */
+IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
+
 IVW_CORE_API void autoLinkProcessor(ProcessorNetwork* network, Processor* processor);
+
 
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::string& refPath);
@@ -171,8 +192,8 @@ IVW_CORE_API std::vector<Processor*> appendDeserialized(ProcessorNetwork* networ
                                                         const std::string& refPath,
                                                         InviwoApplication* app);
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NETWORKUTILS_H

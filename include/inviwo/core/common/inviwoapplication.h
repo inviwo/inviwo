@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -292,11 +292,11 @@ protected:
     };
 
     std::string displayName_;
+    CommandLineParser commandLineParser_;
     std::shared_ptr<FileLogger> filelogger_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::function<void(std::string)> progressCallback_;
 
-    CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
 
@@ -320,8 +320,8 @@ protected:
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::unique_ptr<SystemSettings> systemSettings_;
     std::unique_ptr<SystemCapabilities> systemCapabilities_;
+    std::vector<std::unique_ptr<ModuleCallbackAction>> moduleCallbackActions_;
     ModuleManager moduleManager_;
-    std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
     std::unique_ptr<WorkspaceManager> workspaceManager_;

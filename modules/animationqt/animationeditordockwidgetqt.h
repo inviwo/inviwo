@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,8 +56,6 @@ public:
 protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
-
-    virtual void closeEvent(QCloseEvent *event) override;
 
     virtual void onPlaybackModeChanged(AnimationController* controller, PlaybackMode prevMode,
                                        PlaybackMode newMode) override;

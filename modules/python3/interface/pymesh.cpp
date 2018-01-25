@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,11 +91,13 @@ void exposeMesh(py::module &m) {
                              std::shared_ptr<BufferBase> att) { m->addBuffer(info, att); })
         .def("addBuffer", [](Mesh *m, BufferType type,
                              std::shared_ptr<BufferBase> att) { m->addBuffer(type, att); })
+        .def("removeBuffer", [](Mesh *m, size_t idx) { m->removeBuffer(idx); })
 
-        .def("setBuffer", [](Mesh *m, size_t idx, Mesh::BufferInfo info,
-                             std::shared_ptr<BufferBase> att) { m->setBuffer(idx, info, att); })
+        .def("replaceBuffer", [](Mesh *m, size_t idx, Mesh::BufferInfo info,
+                             std::shared_ptr<BufferBase> att) { m->replaceBuffer(idx, info, att); })
         .def("addIndicies", [](Mesh *m, Mesh::MeshInfo info,
                                std::shared_ptr<IndexBuffer> ind) { m->addIndicies(info, ind); })
+        .def("removeIndexBuffer", [](Mesh *m, size_t idx) { m->removeIndexBuffer(idx); })
 
         .def("reserveSizeInVertexBuffer", &Mesh::reserveSizeInVertexBuffer)
         .def("reserveIndexBuffers", &Mesh::reserveIndexBuffers)

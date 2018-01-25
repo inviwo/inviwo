@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,10 +74,13 @@ private:
     void zoom(double dz);
     void fitNetwork();
 
+    virtual void onSceneSizeChanged() override;
+
     InviwoMainWindow* mainwindow_;
     NetworkEditor* networkEditor_;
     ivec2 scrollPos_;
     WorkspaceManager::DeserializationHandle loadHandle_;
+    WorkspaceManager::ClearHandle clearHandle_;
     std::shared_ptr<MenuItem> editActionsHandle_;
 };
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,7 @@ public:
     // PropertyObservable overrides
     virtual void onSetVisible(Property* property, bool visible) override;
     virtual void onSetDisplayName(Property* property, const std::string &displayName) override;
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
 
 private:
     BoolProperty *property_;

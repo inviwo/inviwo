@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/propertyeditorwidget.h>
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -69,15 +70,12 @@ void exposeProperties(py::module &m) {
                                py::return_value_policy::reference);
 
     py::class_<PropertyEditorWidget>(m, "PropertyEditorWidget")
-        .def_property("visibility", &PropertyEditorWidget::isVisible,
-                      &PropertyEditorWidget::setVisibility)
+        .def_property("visible", &PropertyEditorWidget::isVisible,
+                      &PropertyEditorWidget::setVisible)
         .def_property("dimensions", &PropertyEditorWidget::getDimensions,
                       &PropertyEditorWidget::setDimensions)
         .def_property("position", &PropertyEditorWidget::getPosition,
-                      &PropertyEditorWidget::setPosition)
-        //.def_property("dockStatus", &PropertyEditorWidget::getDockStatus,
-        //&PropertyEditorWidget::setDockStatus) //TODO expose dock status
-        .def_property("sticky", &PropertyEditorWidget::isSticky, &PropertyEditorWidget::setSticky);
+                      &PropertyEditorWidget::setPosition);
 
     py::class_<Property, PropertyPtr<Property>>(m, "Property")
         .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
@@ -173,7 +171,10 @@ void exposeProperties(py::module &m) {
              [](TransferFunctionProperty *tf, std::string filename) { tf->get().load(filename); })
         .def("clear", [](TransferFunctionProperty &tp) { tp.get().clearPoints(); })
         .def("addPoint", [](TransferFunctionProperty &tp, vec2 pos, vec3 color) {
-            tp.get().addPoint(pos, vec4(color, pos.y));
+            tp.get().addPoint(pos.x, vec4(color, pos.y));
+        })
+        .def("addPoint", [](TransferFunctionProperty &tp, float pos, vec4 color) {
+            tp.get().addPoint(pos, color);
         });
 
     py::class_<StringProperty, Property, PropertyPtr<StringProperty>> strProperty(m, "StringProperty");

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -99,7 +99,7 @@ public:
     void addPropertyWidgets(Processor* processor);
     void removeAndDeletePropertyWidgets(Processor* processor);
     void removePropertyWidgets(Processor* processor);
-    void showProecssorHelp(const std::string& classIdentifier, bool raise = false);
+    void showProcessorHelp(const std::string& classIdentifier, bool raise = false);
 
     bool isModified() const;
     void setModified(const bool modified = true);
@@ -117,8 +117,6 @@ public:
     bool addPortInspector(Outport* port, QPointF pos);
     void removePortInspector(Outport* port);
     std::shared_ptr<const Image> renderPortInspectorImage(Outport* port);
-
-    void updateLeds();
     
     ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
     ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
@@ -128,6 +126,9 @@ public:
 
     void setBackgroundVisible(bool visible);
     bool isBackgroundVisible() const;
+
+    void updateSceneSize();
+    QRectF getProcessorsBoundingRect() const;
 
     static std::string getMimeTag();
 public slots:
@@ -219,9 +220,10 @@ private:
 
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};
-    mutable int pasteCount_ = 0;
+    mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0,0}};
 
     // Connection and link state
+    ProcessorGraphicsItem* processorItem_;
     ConnectionDragGraphicsItem* connectionCurve_;
     LinkConnectionDragGraphicsItem* linkCurve_;
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,7 @@
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/meshexport.h>
+#include <modules/base/processors/meshmapping.h>
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/meshsource.h>
 #include <modules/base/processors/noiseprocessor.h>
@@ -63,6 +64,7 @@
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/surfaceextraction.h>
+#include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeexport.h>
@@ -79,6 +81,9 @@
 #include <modules/base/processors/volumelaplacianprocessor.h>
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
 #include <modules/base/processors/worldtransform.h>
+#include <modules/base/processors/camerafrustum.h>
+#include <modules/base/processors/imagetospatialsampler.h>
+#include <modules/base/processors/volumesequencesingletimestepsampler.h>
 
 // Properties
 #include <modules/base/properties/basisproperty.h>
@@ -92,9 +97,10 @@
 #include <modules/base/io/datvolumewriter.h>
 #include <modules/base/io/ivfvolumereader.h>
 #include <modules/base/io/ivfvolumewriter.h>
+#include <modules/base/io/ivfsequencevolumereader.h>
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
-#include <modules/base/processors/camerafrustum.h>
+
 
 namespace inviwo {
 
@@ -120,6 +126,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshCreator>();
+    registerProcessor<MeshMapping>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
     registerProcessor<PointLightSourceProcessor>();
@@ -159,6 +166,9 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<NoiseVolumeProcessor>();
     registerProcessor<BufferToMeshProcessor>();
     registerProcessor<CameraFrustum>();
+    registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
+    registerProcessor<VolumeCreator>();
+
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
     registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
@@ -174,6 +184,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     // Register Data readers
     registerDataReader(util::make_unique<DatVolumeSequenceReader>());
     registerDataReader(util::make_unique<IvfVolumeReader>());
+    registerDataReader(util::make_unique<IvfSequenceVolumeReader>());
     // Register Data writers
     registerDataWriter(util::make_unique<DatVolumeWriter>());
     registerDataWriter(util::make_unique<IvfVolumeWriter>());

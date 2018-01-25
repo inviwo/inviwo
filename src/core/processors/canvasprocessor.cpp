@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,6 +73,8 @@ CanvasProcessor::CanvasProcessor()
     , toggleFullscreen_("toggleFullscreen", "Toggle Full Screen")
     , fullscreen_("fullscreen", "FullScreen", [this](Event*) { setFullScreen(!isFullScreen()); },
                   IvwKey::F, KeyState::Press, KeyModifier::Shift)
+    , saveLayerEvent_("saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
+        IvwKey::Unknown, KeyState::Press)
     , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
@@ -157,6 +159,7 @@ CanvasProcessor::CanvasProcessor()
 
     addProperty(toggleFullscreen_);
     addProperty(fullscreen_);
+    addProperty(saveLayerEvent_);
     addProperty(allowContextMenu_);
 
     inport_.onChange([&]() {
@@ -183,6 +186,7 @@ void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> proces
     }
     Processor::setProcessorWidget(std::move(processorWidget));
     isSink_.update();
+    isReady_.update();
 }
 
 void CanvasProcessor::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
@@ -201,6 +205,7 @@ void CanvasProcessor::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*)
 
 void CanvasProcessor::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
     isSink_.update();
+    isReady_.update();
     invalidate(InvalidationLevel::InvalidOutput);
 }
 

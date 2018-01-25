@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,8 @@ private:
     TCLAP::ValueArg<std::string> pythonScriptArg_;
     PythonLogger pythonLogger_;
 
+    // Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
     std::shared_ptr<pybind11::module> inviwopyPyModule_;
 
     void setInviwopyModule(std::shared_ptr<pybind11::module> m);

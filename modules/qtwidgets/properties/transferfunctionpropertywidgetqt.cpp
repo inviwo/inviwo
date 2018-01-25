@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
@@ -53,8 +53,13 @@ TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
     hLayout->addWidget(label_);
 
     connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
-        auto tfwidget = getEditorWidget();
-        tfwidget->setVisibility(!tfwidget->isVisible());
+        if (!transferFunctionDialog_) {
+            transferFunctionDialog_ = util::make_unique<TransferFunctionPropertyDialog>(
+                static_cast<TransferFunctionProperty*>(property_));
+            transferFunctionDialog_->setVisible(true);
+        } else {
+            transferFunctionDialog_->setVisible(!transferFunctionDialog_->isVisible());
+        }
     });
 
     {
@@ -83,32 +88,20 @@ TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
     if (transferFunctionDialog_) transferFunctionDialog_->hide();
 }
 
-void TransferFunctionPropertyWidgetQt::updateFromProperty() {
-    btnOpenTF_->updateFromProperty();
-}
+void TransferFunctionPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
 TransferFunctionPropertyDialog* TransferFunctionPropertyWidgetQt::getEditorWidget() const {
-    if (!transferFunctionDialog_) {
-        auto mainWindow = utilqt::getApplicationMainWindow();
-        transferFunctionDialog_ = util::make_unique<TransferFunctionPropertyDialog>(
-            static_cast<TransferFunctionProperty*>(property_), mainWindow);
-    }
-    transferFunctionDialog_->setReadOnly(property_->getReadOnly());
     return transferFunctionDialog_.get();
 }
 
 bool TransferFunctionPropertyWidgetQt::hasEditorWidget() const {
-    return true;
+    return transferFunctionDialog_ != nullptr;
 }
 
-void TransferFunctionPropertyWidgetQt::setReadOnly(bool readonly) {
-    if (transferFunctionDialog_) transferFunctionDialog_->setReadOnly(readonly);
-    label_->setDisabled(readonly);
-}
+void TransferFunctionPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
-    : IvwPushButton(parent)
-    , tfProperty_(property) {}
+    : IvwPushButton(parent), tfProperty_(property) {}
 
 void TFPushButton::updateFromProperty() {
     QSize gradientSize = this->size() - QSize(2, 2);
@@ -123,15 +116,13 @@ void TFPushButton::updateFromProperty() {
         float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
         curColor.a = 1.0f - factor * factor;
 
-        gradientStops.append(
-            QGradientStop(curPoint->getPos(),
-                          QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
+        gradientStops.append(QGradientStop(
+            curPoint->getPos(), QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
     }
 
     QLinearGradient gradient;
     gradient.setStops(gradientStops);
     gradient.setFinalStop(gradientSize.width(), 0);
-
 
     QPixmap tfPixmap(gradientSize);
     QPainter tfPainter(&tfPixmap);
@@ -144,15 +135,15 @@ void TFPushButton::updateFromProperty() {
     checkerBoardPainter.end();
     tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), QBrush(checkerBoard));
     tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), gradient);
-    
+
     // draw masking indicators
     if (tfProperty_->getMask().x > 0.0f) {
         tfPainter.fillRect(0, 0, static_cast<int>(tfProperty_->getMask().x * gradientSize.width()),
-            this->height(), QColor(25, 25, 25, 100));
+                           this->height(), QColor(25, 25, 25, 100));
 
         tfPainter.drawLine(static_cast<int>(tfProperty_->getMask().x * gradientSize.width()), 0,
-            static_cast<int>(tfProperty_->getMask().x * gradientSize.width()),
-            this->height());
+                           static_cast<int>(tfProperty_->getMask().x * gradientSize.width()),
+                           this->height());
     }
 
     if (tfProperty_->getMask().y < 1.0f) {
@@ -162,8 +153,8 @@ void TFPushButton::updateFromProperty() {
             this->height(), QColor(25, 25, 25, 150));
 
         tfPainter.drawLine(static_cast<int>(tfProperty_->getMask().y * gradientSize.width()), 0,
-            static_cast<int>(tfProperty_->getMask().y * gradientSize.width()),
-            this->height());
+                           static_cast<int>(tfProperty_->getMask().y * gradientSize.width()),
+                           this->height());
     }
 
     this->setIcon(tfPixmap);
@@ -175,5 +166,4 @@ void TFPushButton::resizeEvent(QResizeEvent* event) {
     IvwPushButton::resizeEvent(event);
 }
 
-
-}//namespace
+}  // namespace inviwo

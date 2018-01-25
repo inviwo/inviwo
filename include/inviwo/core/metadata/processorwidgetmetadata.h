@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,8 +53,8 @@ class IVW_CORE_API ProcessorWidgetMetaData : public MetaData,
                                              public Observable<ProcessorWidgetMetaDataObserver> {
 public:
     ProcessorWidgetMetaData();
-    ProcessorWidgetMetaData(const ProcessorWidgetMetaData& rhs);
-    ProcessorWidgetMetaData& operator=(const ProcessorWidgetMetaData& that);
+    ProcessorWidgetMetaData(const ProcessorWidgetMetaData& rhs) = default;
+    ProcessorWidgetMetaData& operator=(const ProcessorWidgetMetaData& that) = default;
     virtual ~ProcessorWidgetMetaData() = default;
 
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }

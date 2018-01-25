@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -122,8 +122,6 @@ protected:
 
     using FileExtMap = std::unordered_map<std::string, FileExtension>;
     FileExtMap extmap_;
-
-    static QSettings globalSettings_;
 };
 }  // namespace
 

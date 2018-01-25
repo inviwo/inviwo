@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,14 +88,31 @@ void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> att) {
     buffers_.emplace_back(BufferInfo(type), att);
 }
 
-void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att) {
+void Mesh::removeBuffer(size_t idx) {
+    if (idx < buffers_.size()) {
+        buffers_.erase(buffers_.begin() + idx);
+    }
+}
+
+void Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att) {
     if (idx < buffers_.size()) {
         buffers_[idx] = std::make_pair(info, att);
     }
 }
 
+void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att) {
+    LogWarn("Deprecated: Mesh::setBuffer() has been renamed to Mesh::replaceBuffer()");
+    replaceBuffer(idx, info, att);
+}
+
 void Mesh::addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
     indices_.push_back(std::make_pair(info, ind));
+}
+
+void Mesh::removeIndexBuffer(size_t idx) {
+    if (idx < indices_.size()) {
+        indices_.erase(indices_.begin() + idx);
+    }
 }
 
 void Mesh::reserveSizeInVertexBuffer(size_t size) {
@@ -106,17 +123,49 @@ void Mesh::reserveSizeInVertexBuffer(size_t size) {
 
 void Mesh::reserveIndexBuffers(size_t size) { indices_.reserve(size); }
 
-const BufferBase* Mesh::getBuffer(size_t idx) const { return buffers_[idx].second.get(); }
+const BufferBase* Mesh::getBuffer(size_t idx) const {
+    if (idx >= buffers_.size()) {
+        throw RangeException("Index out of range", IvwContext);
+    }
+    return buffers_[idx].second.get();
+}
 
-const IndexBuffer* Mesh::getIndices(size_t idx) const { return indices_[idx].second.get(); }
+Mesh::BufferInfo Mesh::getBufferInfo(size_t idx) const {
+    if (idx >= buffers_.size()) {
+        throw RangeException("Index out of range", IvwContext);
+    }
+    return buffers_[idx].first;
+}
 
-BufferBase* Mesh::getBuffer(size_t idx) { return buffers_[idx].second.get(); }
+const IndexBuffer* Mesh::getIndices(size_t idx) const {
+    if (idx >= indices_.size()) {
+        throw RangeException("Index out of range", IvwContext);
+    }
+    return indices_[idx].second.get();
+}
 
-IndexBuffer* Mesh::getIndices(size_t idx) { return indices_[idx].second.get(); }
+BufferBase* Mesh::getBuffer(size_t idx) {
+    if (idx >= buffers_.size()) {
+        throw RangeException("Index out of range", IvwContext);
+    }
+    return buffers_[idx].second.get();
+}
+
+IndexBuffer* Mesh::getIndices(size_t idx) {
+    if (idx >= indices_.size()) {
+        throw RangeException("Index out of range", IvwContext);
+    }
+    return indices_[idx].second.get();
+}
 
 Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return meshInfo_; }
 
-Mesh::MeshInfo Mesh::getIndexMeshInfo(size_t idx) const { return indices_[idx].first; }
+Mesh::MeshInfo Mesh::getIndexMeshInfo(size_t idx) const {
+    if (idx >= indices_.size()) {
+        throw RangeException("Index out of range", IvwContext);
+    }
+    return indices_[idx].first;
+}
 
 size_t Mesh::getNumberOfBuffers() const { return buffers_.size(); }
 
@@ -165,14 +214,14 @@ Document Mesh::getInfo() const {
     doc.append("b", "Mesh", {{"style", "color:white;"}});
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
-    
+
     tb(H(std::string("Buffers (") + std::to_string(buffers_.size()) + ")"));
-    
+
     // show all the buffers
     for (const auto& elem : buffers_) {
         std::stringstream ss1;
         ss1 << elem.first << ", " << elem.second->getBufferUsage();
-        std::stringstream ss2; 
+        std::stringstream ss2;
         ss2 << " (" << elem.second->getSize() << ")";
         tb(ss1.str(), ss2.str());
     }
@@ -233,4 +282,4 @@ bool hasRadiiBuffer(const Mesh* mesh) {
 
 }  // namespace meshutil
 
-}  // namespace
+}  // namespace inviwo

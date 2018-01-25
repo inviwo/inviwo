@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,8 +78,8 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     minRadius_.setVisible(false);
 
     tf_.get().clearPoints();
-    tf_.get().addPoint(vec2(0, 1), vec4(1));
-    tf_.get().addPoint(vec2(1, 1), vec4(1));
+    tf_.get().addPoint(0.0f, vec4(1));
+    tf_.get().addPoint(1.0f, vec4(1));
     tf_.setCurrentStateAsDefault();
 }
 

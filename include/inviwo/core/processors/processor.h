@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -188,7 +188,7 @@ public:
      * Sets the identifier of the Processor. Processor identifiers should only contain alpha numeric
      * characters, "-", "_" and " ". If there already exist a processor with that identifier or if
      * the identifier is invalid an Exception will be thrown. By default initialized to the
-     * ProcessorInfo displayName. 
+     * ProcessorInfo displayName.
      * When adding the processor to a network the network will use util::findUniqueIdentifier
      * to modify the identifier if it is already used in the network.
      * @see ProcessorNetwork
@@ -225,13 +225,21 @@ public:
 
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
-
+    /**
+     * Concept for event propagation. Currently only used for
+     * ResizeEvents, which only propagate from outports to inports in the same port group
+     */
     const std::string& getPortGroup(Port* port) const;
     std::vector<std::string> getPortGroups() const;
     const std::vector<Port*>& getPortsInGroup(const std::string& portGroup) const;
     const std::vector<Port*>& getPortsInSameGroup(Port* port) const;
 
     bool allInportsConnected() const;
+
+    /**
+     * The default function for checking whether all inports are ready. Will return true if all non
+     * optional inports are ready.
+     */
     bool allInportsAreReady() const;
 
     /**
@@ -246,27 +254,34 @@ public:
      * Returns whether the processor is a sink. I.e. whether it pulls data from the network.
      * By default a processor is a sink if it has no outports. This behavior can be customized by
      * setting the isSink_ update functor. For a processor to be evaluated there have to be a sink
-     * among its decendants.
+     * among its descendants.
      * @see StateCoordinator
      */
     bool isSink() const;
 
     /**
-     * Returns whether the processor is ready to be processed. By default this will depend on
-     * whether all inports are ready. This behavior can be customized by setting the isReady_
-     * update functor.
+     * Returns whether the processor is ready to be processed. By default this will call
+     * allInportsAreReady. This behavior can be customized by setting the isReady_ update functor.
      * @see StateCoordinator
+     * @see allInportsAreReady
      */
     bool isReady() const;
 
     /**
-     * Called when the network is evaluated and the processor is ready and not valid.
-     * The work of the processor should be done here.
+     * Deriving classes should override this function to do the main work of the processor.
+     * This function is called by the ProcessorNetworkEvaluator when the network is evaluated and
+     * the processor is invalid, i.e. some of its inports or properties has been modified, and is
+     * ready i.e. all non optional inports have valid data.
+     * @see ProcessorNetworkEvaluator
+     * @see Inport
+     * @see Property
      */
     virtual void process() {}
 
     /**
-     * Called when the network is evaluated and the processor is neither ready or valid.
+     * This function is called by the ProcessorNetworkEvaluator when the network is evaluated and
+     * the processor is neither ready or valid.
+     * @see ProcessorNetworkEvaluator
      */
     virtual void doIfNotReady() {}
 
@@ -322,7 +337,21 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    /**
+     * Add inport to processor.
+     * @note Port group is a concept for event propagation. Currently only used for
+     * ResizeEvents, which only propagate from outports to inports in the same port group
+     * @param port to add
+     * @param portGroup name of group to propagate events through (defaults to "default")
+     */
     void addPort(Inport& port, const std::string& portGroup = "default");
+    /**
+    * Add outport to processor.
+    * @note Port group is a concept for event propagation. Currently only used for
+    * ResizeEvents, which only propagate from outports to inports in the same port group
+    * @param port to add
+    * @param portGroup name of group to propagate events through (defaults to "default")
+    */
     void addPort(Outport& port, const std::string& portGroup = "default");
 
     // Assume ownership of port, needed for dynamic ports
@@ -338,12 +367,21 @@ protected:
     StateCoordinator<bool> isReady_;
     StateCoordinator<bool> isSink_;
     StateCoordinator<bool> isSource_;
+    /**
+     * Overwrites current port group, if any. 
+     * @note Port group will be overwritten by addPort. 
+     * @see addPort
+     */
+    void addPortToGroup(Port* port, const std::string& portGroup);
+    /**
+     * Removes port from its group, even if it is the default one.
+     * @see addPort
+     */
+    void removePortFromGroups(Port* port);
 
 private:
     void addPort(Inport* port, const std::string& portGroup);
     void addPort(Outport* port, const std::string& portGroup);
-    void addPortToGroup(Port* port, const std::string& portGroup);
-    void removePortFromGroups(Port* port);
 
     std::string identifier_;
     std::string displayName_;

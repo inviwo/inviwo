@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include <inviwo/core/util/volumeutils.h>
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/opengl/geometry/meshgl.h>
@@ -129,7 +130,8 @@ CropWidget::CropWidget()
             const auto rangeExtrema = elem.range.getRange();
             if (elem.enabled.get()) {
                 // sync the cropped range
-                elem.outputRange.set(ivec2(elem.range.getStart(), elem.range.getEnd()), rangeExtrema, 1, 1);
+                elem.outputRange.set(ivec2(elem.range.getStart(), elem.range.getEnd()),
+                                     rangeExtrema, 1, 1);
             } else {
                 // don't sync the crop range, use the full range instead
                 elem.outputRange.set(rangeExtrema, rangeExtrema, 1, 1);
@@ -193,7 +195,7 @@ CropWidget::CropWidget()
 
     std::array<InteractionElement, 3> elem = {
         InteractionElement::LowerBound, InteractionElement::UpperBound, InteractionElement::Middle};
-    for (int i = 0; i < pickingIDs_.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(pickingIDs_.size()); ++i) {
         pickingIDs_[i] = {picking_.getPickingId(i), elem[i % numInteractionWidgets]};
     }
 }
@@ -336,8 +338,7 @@ void CropWidget::renderAxis(const CropAxis &axis) {
             drawObject.draw();
         };
 
-        const auto globalPickID =
-            static_cast<unsigned int>(picking_.getPickingId(axisIDOffset));
+        const auto globalPickID = static_cast<unsigned int>(picking_.getPickingId(axisIDOffset));
 
         {
             // lower bound
@@ -354,7 +355,8 @@ void CropWidget::renderAxis(const CropAxis &axis) {
                 (property.get().y < property.getRangeMax())) {
                 auto drawObject = MeshDrawerGL::getDrawObject(interactionHandleMesh_[1].get());
                 if (std::fabs(upperBound - lowerBound) > minSeparationPercentage) {
-                    draw(drawObject, globalPickID + 2, (upperBound + lowerBound) * 0.5f, axis.info.rotMatrix);
+                    draw(drawObject, globalPickID + 2, (upperBound + lowerBound) * 0.5f,
+                         axis.info.rotMatrix);
                 }
             }
         }
@@ -419,9 +421,10 @@ void CropWidget::updateAxisRanges() {
         cropDims[i] = cropAxes_[i].range.getRangeMax() + 1;
     }
 
-    {
+    if (dims != cropDims) {
         NetworkLock lock(this);
 
+        // crop range should be [0, dims - 1]
         for (int i = 0; i < 3; ++i) {
             if (relativeRangeAdjustment_.get()) {
                 cropAxes_[i].range.setRangeNormalized(ivec2(0, dims[i] - 1));
@@ -446,27 +449,48 @@ void CropWidget::updateBoundingCube() {
 }
 
 void CropWidget::objectPicked(PickingEvent *p) {
-    if (auto me = p->getEventAs<MouseEvent>()) {
+    const auto axisID = p->getPickedId() / static_cast<size_t>(numInteractionWidgets);
+    if (axisID >= cropAxes_.size()) {
+        LogWarn("invalid picking ID");
+        return;
+    }
+
+    if (p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = p->getEventAs<MouseEvent>();
         if (me->buttonState() & MouseButton::Left) {
-            const int axisID = static_cast<int>(p->getPickedId()) / numInteractionWidgets;
+            if (me->state() == MouseState::Press) {
+                isMouseBeingPressedAndHold_ = true;
+                lastState_ = cropAxes_[axisID].range.get();
+            } else if (me->state() == MouseState::Release) {
+                isMouseBeingPressedAndHold_ = false;
+                lastState_ = ivec2(-1);
+            } else if (me->state() == MouseState::Move) {
 
-            if (axisID >= cropAxes_.size()) {
-                LogWarn("invalid picking ID");
-            } else {
-                if (me->state() == MouseState::Press) {
-                    isMouseBeingPressedAndHold_ = true;
-                    lastState_ = cropAxes_[axisID].range.get();
-                } else if (me->state() == MouseState::Release) {
-                    isMouseBeingPressedAndHold_ = false;
-                    lastState_ = ivec2(-1);
-                } else if (me->state() == MouseState::Move) {
-
-                    InteractionElement element =
-                        static_cast<InteractionElement>(p->getPickedId() % numInteractionWidgets);
-                    rangePositionHandlePicked(cropAxes_[axisID], p, element);
-                }
+                InteractionElement element =
+                    static_cast<InteractionElement>(p->getPickedId() % numInteractionWidgets);
+                rangePositionHandlePicked(cropAxes_[axisID], p, element);
             }
             me->markAsUsed();
+        }
+    } else if (p->getEvent()->hash() == TouchEvent::chash()) {
+        auto touchEvent = p->getEventAs<TouchEvent>();
+
+        if (touchEvent->touchPoints().size() == 1) {
+            // allow interaction only for a single touch point
+            const auto &touchPoint = touchEvent->touchPoints().front();
+
+            if (touchPoint.state() == TouchState::Started) {
+                lastState_ = cropAxes_[axisID].range.get();
+            } else if (touchPoint.state() == TouchState::Finished) {
+                lastState_ = ivec2(-1);
+            } else if (touchPoint.state() == TouchState::Updated) {
+                const auto delta = touchPoint.pos() - touchPoint.pressedPos();
+
+                InteractionElement element =
+                    static_cast<InteractionElement>(p->getPickedId() % numInteractionWidgets);
+                rangePositionHandlePicked(cropAxes_[axisID], p, element);
+            }
+            p->markAsUsed();
         }
     }
 }
@@ -622,12 +646,7 @@ void CropWidget::rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p,
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
 
-    auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-    auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
-
     vec3 axis(volumeBasis_[static_cast<int>(cropAxis.axis)]);
-
-    auto viewprojMatrix = camera_.get().getProjectionMatrix() * camera_.get().getViewMatrix();
 
     // project mouse delta onto axis
     vec2 delta(currNDC - prevNDC);

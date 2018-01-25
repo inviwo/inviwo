@@ -26,6 +26,7 @@ target_include_directories(utf INTERFACE
 
 #  HACK: have the files showing in the IDE, under the name 'utfcpp'
 add_custom_target(utfcpp SOURCES ${HEADER_FILES} ${DOC_FILES})
+set_target_properties(utfcpp PROPERTIES VERSION 2.3.5 SOVERSION 2.3)
 
 # Creates VS folder structure
 ivw_folder(utfcpp ext)

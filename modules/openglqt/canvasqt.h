@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CANVASQT_H
@@ -73,7 +73,7 @@ class CanvasQtBase : public T {
 public:
     using QtBase = typename T::QtBase;
 
-    explicit CanvasQtBase(size2_t dim = size2_t(256,256), const std::string& name = "Canvas");
+    explicit CanvasQtBase(size2_t dim = size2_t(256, 256), const std::string& name = "Canvas");
     virtual ~CanvasQtBase();
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
@@ -89,7 +89,7 @@ public:
     virtual void setFullScreen(bool fullscreen) override;
 
 protected:
-    virtual bool event(QEvent *e) override;
+    virtual bool event(QEvent* e) override;
 
 private:
     void doContextMenu(QMouseEvent* event);
@@ -104,11 +104,13 @@ private:
     bool mapKeyReleaseEvent(QKeyEvent* keyEvent);
     bool mapTouchEvent(QTouchEvent* e);
     bool mapGestureEvent(QGestureEvent*);
-    bool mapPanTriggered(QPanGesture* );
+    bool mapPanTriggered(QPanGesture*);
     bool mapPinchTriggered(QPinchGesture* e);
-    
-    std::map<QTouchDevice*, TouchDevice> touchDevices_; ///< Links QTouchDevice to inviwo::TouchDevice
-    std::vector<TouchPoint> prevTouchPoints_; ///< Compare with next touch event to prevent duplicates
+
+    std::map<QTouchDevice*, TouchDevice>
+        touchDevices_;  ///< Links QTouchDevice to inviwo::TouchDevice
+    std::vector<TouchPoint>
+        prevTouchPoints_;  ///< Compare with next touch event to prevent duplicates
     Qt::GestureType lastType_;
     int lastNumFingers_;
     vec2 screenPositionNormalized_;
@@ -116,8 +118,8 @@ private:
 };
 
 using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
-//using CanvasQt = CanvasQtBase<CanvasQWindow>;
-//using CanvasQt = CanvasQtBase<CanvasQOpenGLWidget>;
+// using CanvasQt = CanvasQtBase<CanvasQWindow>;
+// using CanvasQt = CanvasQtBase<CanvasQOpenGLWidget>;
 
 template <typename T>
 CanvasQtBase<T>::CanvasQtBase(size2_t dim, const std::string& name)
@@ -138,7 +140,7 @@ std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
     auto thread = QThread::currentThread();
     // The context has to be created on the main thread.
     auto res = dispatchFront([&thread]() {
-        auto canvas = util::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>();       
+        auto canvas = util::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>();
         canvas->doneCurrent();
         canvas->context()->moveToThread(thread);
         return canvas;
@@ -183,9 +185,8 @@ void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
             canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
                 ->setSelected(true);
         });
-        this->connect(menu.addAction("Hide Widget"), &QAction::triggered, this, [&]() {
-            this->ownerWidget_->setVisible(false);
-        });
+        this->connect(menu.addAction("Hide Widget"), &QAction::triggered, this,
+                      [&]() { this->ownerWidget_->setVisible(false); });
 
         if (this->image_) {
             menu.addSeparator();
@@ -203,9 +204,9 @@ void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
 template <typename T>
 bool CanvasQtBase<T>::event(QEvent* e) {
     switch (e->type()) {
-        case QEvent::KeyPress: 
+        case QEvent::KeyPress:
             return mapKeyPressEvent(static_cast<QKeyEvent*>(e));
-        case QEvent::KeyRelease: 
+        case QEvent::KeyRelease:
             return mapKeyReleaseEvent(static_cast<QKeyEvent*>(e));
         case QEvent::MouseButtonPress:
             return mapMousePressEvent(static_cast<QMouseEvent*>(e));
@@ -221,7 +222,7 @@ bool CanvasQtBase<T>::event(QEvent* e) {
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::TouchEnd:
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
-        case QEvent::TouchUpdate: 
+        case QEvent::TouchUpdate:
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::Gesture:
             return mapGestureEvent(static_cast<QGestureEvent*>(e));
@@ -233,7 +234,7 @@ bool CanvasQtBase<T>::event(QEvent* e) {
 template <typename T>
 dvec2 inviwo::CanvasQtBase<T>::normalPos(dvec2 pos) const {
     return util::invertY(pos, this->getCanvasDimensions()) /
-        dvec2(this->getCanvasDimensions() - size2_t(1));
+           dvec2(this->getCanvasDimensions() - size2_t(1));
 }
 
 template <typename T>
@@ -243,17 +244,16 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Press,
-                          utilqt::getMouseButtons(e), utilqt::getModifiers(e),
-                          pos, this->getImageDimensions(),
-                          this->getDepthValueAtNormalizedCoord(pos));
+                          utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
+                          this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
-    
+
     if (e->button() == Qt::RightButton && mouseEvent.hasBeenUsed()) {
         blockContextMenu_ = true;
     }
-    
+
     return true;
 }
 
@@ -263,9 +263,8 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::DoubleClick,
-                          utilqt::getMouseButtons(e), utilqt::getModifiers(e),
-                          pos, this->getImageDimensions(),
-                          this->getDepthValueAtNormalizedCoord(pos));
+                          utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
+                          this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
 
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
@@ -282,18 +281,17 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Release,
-                          utilqt::getMouseButtons(e), utilqt::getModifiers(e),
-                          pos, this->getImageDimensions(),
-                          this->getDepthValueAtNormalizedCoord(pos));
+                          utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
+                          this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&mouseEvent);
-    
+
     // Only show context menu when we have not used the event and the mouse have not been dragged.
     if (e->button() == Qt::RightButton && !mouseEvent.hasBeenUsed() && !blockContextMenu_) {
         doContextMenu(e);
     }
     blockContextMenu_ = false;
-    
+
     return true;
 }
 
@@ -328,9 +326,8 @@ bool CanvasQtBase<T>::mapWheelEvent(QWheelEvent* e) {
 
     const auto pos{normalPos(utilqt::toGLM(QPointF(e->pos())))};
 
-    WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps,
-                          pos, this->getImageDimensions(),
-                          this->getDepthValueAtNormalizedCoord(pos));
+    WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps, pos,
+                          this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     Canvas::propagateEvent(&wheelEvent);
     return true;
@@ -381,7 +378,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
     touchPoints.reserve(touch->touchPoints().size());
-    uvec2 screenSize(this->getCanvasDimensions());
+    const uvec2 imageSize(this->getImageDimensions());
 
     for (const auto& touchPoint : touch->touchPoints()) {
         const auto pos = normalPos(utilqt::toGLM(touchPoint.pos()));
@@ -406,7 +403,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
             default:
                 touchState = TouchState::None;
         }
-        touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos, pressedPos, screenSize,
+        touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos, pressedPos, imageSize,
                                  pressure, this->getDepthValueAtNormalizedCoord(pos));
     }
     // Ensure that the order to the touch points are the same as last touch event.
@@ -414,18 +411,19 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     // they are given can vary.
     std::sort(touchPoints.begin(), touchPoints.end(),
               [](const auto& a, const auto& b) { return a.id() < b.id(); });
-    
+
     // Touchpad on Mac sends one event per touch point. Prevent duplicate events from being sent.
-    // We consider an event to be a duplicate if all points in the event are the same as the last event.
-    if (std::equal(touchPoints.begin(), touchPoints.end(),
-                   prevTouchPoints_.begin(), prevTouchPoints_.end())) {
+    // We consider an event to be a duplicate if all points in the event are the same as the last
+    // event.
+    if (std::equal(touchPoints.begin(), touchPoints.end(), prevTouchPoints_.begin(),
+                   prevTouchPoints_.end())) {
         prevTouchPoints_ = touchPoints;
         touch->accept();
         return true;
     }
     // Store previous touch points
     prevTouchPoints_ = touchPoints;
-    
+
     // Get the device generating the event (touch screen or touch pad)
     auto deviceIt = touchDevices_.find(touch->device());
     TouchDevice* device = nullptr;
@@ -444,7 +442,8 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
             default:
                 deviceType = TouchDevice::DeviceType::TouchScreen;
         }
-        device = &(touchDevices_[touch->device()] = TouchDevice(deviceType, (touch->device()->name().toStdString())));
+        device = &(touchDevices_[touch->device()] =
+                       TouchDevice(deviceType, (touch->device()->name().toStdString())));
     }
     TouchEvent touchEvent(touchPoints, device);
     touch->accept();
@@ -491,15 +490,16 @@ bool CanvasQtBase<T>::mapGestureEvent(QGestureEvent* ge) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
-    auto deltaPos =
-        dvec2((gesture->lastOffset().x() - gesture->offset().x()) / this->getCanvasDimensions().x,
-             (gesture->offset().y() - gesture->lastOffset().y()) /  this->getCanvasDimensions().y);
+    // determine delta position, use canvas dimensions here for normalization
+    auto deltaPos = dvec2(
+        (gesture->lastOffset().x() - gesture->offset().x()) / (this->getCanvasDimensions().x - 1),
+        (gesture->offset().y() - gesture->lastOffset().y()) / (this->getCanvasDimensions().y - 1));
 
     if (deltaPos == dvec2(0.f)) return true;
 
     auto depth = this->getDepthValueAtNormalizedCoord(screenPositionNormalized_);
     GestureEvent ge(deltaPos, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
-                    lastNumFingers_, screenPositionNormalized_,  this->getCanvasDimensions(), depth);
+                    lastNumFingers_, screenPositionNormalized_, this->getImageDimensions(), depth);
 
     Canvas::propagateEvent(&ge);
     return true;
@@ -510,8 +510,8 @@ bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
     auto depth = this->getDepthValueAtNormalizedCoord(screenPositionNormalized_);
     GestureEvent ge(dvec2(gesture->centerPoint().x(), gesture->centerPoint().y()),
                     static_cast<double>(gesture->scaleFactor()) - 1.0, GestureType::Pinch,
-                    utilqt::getGestureState(gesture), lastNumFingers_,
-                    screenPositionNormalized_, this->getCanvasDimensions(), depth);
+                    utilqt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_,
+                    this->getImageDimensions(), depth);
 
     Canvas::propagateEvent(&ge);
     return true;
@@ -519,6 +519,6 @@ bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
 
 #include <warn/pop>
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CANVASQT_H
+#endif  // IVW_CANVASQT_H

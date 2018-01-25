@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTION_H
@@ -34,7 +34,6 @@
 #include <inviwo/core/datastructures/transferfunctiondatapoint.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/fileextension.h>
-
 
 namespace inviwo {
 
@@ -56,10 +55,10 @@ protected:
     void notifyControlPointChanged(const TransferFunctionDataPoint* p);
 };
 
-/** 
- * \ingroup datastructures 
- * \brief for holding transfer function data.
- *  This class holds transfer function data, currently one parameter in the variable data_.
+/**
+ * \ingroup datastructures
+ * \brief for holding 1D transfer function data.
+ *  This class holds 1D transfer function data, currently one parameter in the variable data_.
  */
 class IVW_CORE_API TransferFunction : public Serializable,
                                       public TransferFunctionObservable,
@@ -74,7 +73,7 @@ public:
     TransferFunction& operator=(const TransferFunction& rhs);
 
     virtual ~TransferFunction();
-    
+
     const Layer* getData() const;
     size_t getNumPoints() const;
     size_t getTextureSize();
@@ -84,27 +83,40 @@ public:
 
     /**
      * Add a transfer function point at pos with value color
+     *
+     * @param pos     position of TF point in range [0,1]
+     * @param color   color and opacity, i.e. rgba, of the TF point
+     * @throws RangeException if pos is outside [0,1]
      */
     void addPoint(const float& pos, const vec4& color);
 
     /**
      * Add a transfer function point
+     *
+     * @param point   TF point to be added
+     * @throws RangeException if position of point is outside [0,1]
      */
     void addPoint(const Point& point);
 
     /**
-     * Add a transfer function point at pos.x() with alpha from pos.y and color interpolated from
-     * neighbors
+     * Add a transfer function point at pos.x() where pos.y is used as alpha and the color is
+     * interpolated from existing TF points before and after the given position
+     *
+     * @param pos     pos.x refers to the position of TF point in range [0,1], pos.y will be mapped
+     *                to alpha
+     * @throws RangeException if pos.x is outside [0,1]
      */
     void addPoint(const vec2& pos);
 
     /**
      * Add a transfer function points
+     *
+     * @throws RangeException if any of the given points is outside [0,1]
      */
     void addPoints(const std::vector<Point>& points);
 
     /**
-     * Depricated. Add a transfer function point at pos.x() with value color, pos.y is not used.
+     * Deprecated. Add a transfer function point at pos.x() with value color, pos.y is not used.
      */
     void addPoint(const vec2& pos, const vec4& color);
 
@@ -127,7 +139,21 @@ public:
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
+    /**
+     * Sample the transfer function at position v and return the respective color and
+     * opacity (rgba). The range of the transfer function is [0,1].
+     *
+     * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
+     * @return color and opacity at position v
+     */
     vec4 sample(double v) const;
+    /**
+     * Sample the transfer function at position v and return the respective color and
+     * opacity (rgba). The range of the transfer function is [0,1].
+     *
+     * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
+     * @return color and opacity at position v
+     */
     vec4 sample(float v) const;
 
     friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
@@ -155,5 +181,5 @@ private:
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
 
-} // namespace
-#endif // IVW_TRANSFERFUNCTION_H
+}  // namespace inviwo
+#endif  // IVW_TRANSFERFUNCTION_H

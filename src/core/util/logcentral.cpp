@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,9 @@ void Logger::logNetwork(LogLevel level, LogAudience audience, std::string msg, c
     log("ProcessorNetwork", level, audience, file, function, line, msg);
 }
 
+void Logger::logAssertion(const char* file, const char* function, int line, std::string msg) {
+    log("Assertion failed", LogLevel::Error, LogAudience::Developer, file, function, line, msg);
+}
 
 LogCentral::LogCentral() : logLevel_(LogLevel::Info), logStacktrace_(false) {}
 
@@ -111,6 +114,17 @@ void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string ms
     }
 }
 
+void LogCentral::logAssertion(const char* file, const char* function, int line, std::string msg) {
+    util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+        if (auto l = logger.lock()) {
+            l->logAssertion(file, function, line, msg);
+            return false;
+        } else {
+            return true;
+        }
+    });
+}
+
 void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = logStacktrace; }
 
 bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
@@ -121,4 +135,4 @@ void util::log(ExceptionContext context, std::string message, LogLevel level,
                               context.getFunction().c_str(), context.getLine(), message);
 }
 
-}  // namespace
+}  // namespace inviwo

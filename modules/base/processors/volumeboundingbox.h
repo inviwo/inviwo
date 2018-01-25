@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEBOUNDINGBOX_H
@@ -42,41 +42,37 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeBoundingBox, Volume Bounding Box}
  * ![](org.inviwo.VolumeBoundingBox.png?classIdentifier=org.inviwo.VolumeBoundingBox)
- * Explanation of how to use the processor.
+ *
+ * Creates a mesh containing the bounding box of the volumes (Lines with Adjacency Information).
+ *
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __volume__ The volume.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
- * 
+ *   * __mesh__ The bounding mesh.
+ *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Color__ The color of the lines in the mesh.
+ *
  */
-class IVW_MODULE_BASE_API VolumeBoundingBox : public Processor { 
+
+class IVW_MODULE_BASE_API VolumeBoundingBox : public Processor {
 public:
     VolumeBoundingBox();
     virtual ~VolumeBoundingBox() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     VolumeInport volume_;
     MeshOutport mesh_;
     FloatVec4Property color_;
-
-    BoolProperty showFrontFace_;
-    BoolProperty showBackFace_;
-    BoolProperty showRightFace_;
-    BoolProperty showLeftFace_;
-    BoolProperty showTopFace_;
-    BoolProperty showBottomFace_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEBOUNDINGBOX_H
-
+#endif  // IVW_VOLUMEBOUNDINGBOX_H

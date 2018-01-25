@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -90,8 +90,39 @@ void dataFormatDummyInitialization() {
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
-    , progressCallback_()
     , commandLineParser_(argc, argv)
+    , consoleLogger_{[&]() {
+        if (commandLineParser_.getLogToConsole()) {
+            auto clog = std::make_shared<ConsoleLogger>();
+            LogCentral::getPtr()->registerLogger(clog);
+            return clog;
+        } else {
+            return std::shared_ptr<ConsoleLogger>{};
+        }
+    }()}
+    , filelogger_{[&]() {
+        if (commandLineParser_.getLogToFile()) {
+            auto filename = commandLineParser_.getLogToFileFileName();
+            if (!filesystem::isAbsolutePath(filename)) {
+                auto outputDir = commandLineParser_.getOutputPath();
+                if (!outputDir.empty()) {
+                    filename = outputDir + "/" + filename;
+                } else {
+                    filename = filesystem::getWorkingDirectory() + "/" + filename;
+                }
+            }
+            auto dir = filesystem::getFileDirectory(filename);
+            if (!filesystem::directoryExists(dir)) {
+                filesystem::createDirectoryRecursively(dir);
+            }
+            auto flog = std::make_shared<FileLogger>(filename);
+            LogCentral::getPtr()->registerLogger(flog);
+            return flog;
+        } else {
+            return std::shared_ptr<FileLogger>{};
+        }
+    }()}
+    , progressCallback_()
     , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
     , queue_()
     , clearAllSingeltons_{[]() {
@@ -116,33 +147,16 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , systemCapabilities_{std::make_unique<SystemCapabilities>()}
     , moduleManager_{this}
-    , moudleCallbackActions_()
+    , moduleCallbackActions_()
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{util::make_unique<ProcessorNetworkEvaluator>(
           processorNetwork_.get())}
     , workspaceManager_{util::make_unique<WorkspaceManager>(this)}
-    , propertyPresetManager_{util::make_unique<PropertyPresetManager>()}
+    , propertyPresetManager_{util::make_unique<PropertyPresetManager>(this)}
     , portInspectorManager_{util::make_unique<PortInspectorManager>(this)} {
 
-    if (commandLineParser_.getLogToConsole()) {
-        consoleLogger_ = std::make_shared<ConsoleLogger>();
-        LogCentral::getPtr()->registerLogger(consoleLogger_);
-    }
-
-    if (commandLineParser_.getLogToFile()) {
-        auto filename = commandLineParser_.getLogToFileFileName();
-        auto dir = filesystem::getFileDirectory(filename);
-        if (dir.empty() || !filesystem::directoryExists(dir)) {
-            if (!commandLineParser_.getOutputPath().empty()) {
-                filename = commandLineParser_.getOutputPath() + "/" + filename;
-            }
-        }
-        filelogger_ = std::make_shared<FileLogger>(filename);
-        LogCentral::getPtr()->registerLogger(filelogger_);
-    }
-
-    // Keep the pool at size 0 if are quiting directly to make sure that we don't have unfinished
-    // results in the worker threads
+    // Keep the pool at size 0 if are quiting directly to make sure that we don't have
+    // unfinished results in the worker threads
     if (!commandLineParser_.getQuitApplicationAfterStartup()) {
         resizePool(systemSettings_->poolSize_);
         systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
@@ -281,11 +295,11 @@ void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
 const std::string& InviwoApplication::getDisplayName() const { return displayName_; }
 
 void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
-    moudleCallbackActions_.emplace_back(callbackAction);
+    moduleCallbackActions_.emplace_back(callbackAction);
 }
 
 std::vector<std::unique_ptr<ModuleCallbackAction>>& InviwoApplication::getCallbackActions() {
-    return moudleCallbackActions_;
+    return moduleCallbackActions_;
 }
 
 std::vector<Settings*> InviwoApplication::getModuleSettings() {

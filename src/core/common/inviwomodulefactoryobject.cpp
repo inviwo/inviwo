@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_, V
                                                      std::vector<std::string> dependencies_,
                                                      std::vector<Version> dependenciesVersion_,
                                                      std::vector<std::string> aliases_,
+                                                     std::vector<LicenseInfo> licenses_,
                                                      ProtectedModule protectedModule_)
     : name(name_)
     , version(version_)
@@ -54,6 +55,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name_, V
         return deps;
     }())
     , aliases(aliases_)
+    , licenses(licenses_)
     , protectedModule(protectedModule_) {}
 
 /**

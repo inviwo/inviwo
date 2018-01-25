@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,6 +52,7 @@
 #include <QScrollBar>
 #include <QResizeEvent>
 #include <QWheelEvent>
+#include <QMessageBox>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
@@ -89,7 +90,7 @@ void TextSelectionDelegate::setModelData(QWidget* editor, QAbstractItemModel* mo
 }
 
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
-    : InviwoDockWidget(tr("Console"), parent)
+    : InviwoDockWidget(tr("Console"), parent, "ConsoleWidget")
     , tableView_(new QTableView(this))
     , model_()
     , filter_(new QSortFilterProxyModel(this))
@@ -98,8 +99,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , filterPattern_(new QLineEdit(this))
     , mainwindow_(parent) {
 
-    setObjectName("ConsoleWidget");
     setAllowedAreas(Qt::BottomDockWidgetArea);
+    resize(QSize(500, 300));  // default size
 
     qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
 
@@ -116,7 +117,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->setCornerButtonEnabled(false);
 
     tableView_->setContextMenuPolicy(Qt::ActionsContextMenu);
-    clearAction_ = new QAction(QIcon(":/icons/clear-consolelog.png"), tr("&Clear Log"), this);
+    clearAction_ = new QAction(QIcon(":/icons/console-clear.png"), tr("&Clear Log"), this);
     clearAction_->setShortcut(Qt::ControlModifier + Qt::Key_E);
     connect(clearAction_, &QAction::triggered, [&]() { clear(); });
 
@@ -171,10 +172,9 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         auto icon = QIcon();
         if (checkable) {
             icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::On);
-            icon.addPixmap(QPixmap(":/icons/" + file + "-bw.png"), QIcon::Normal, QIcon::Off);
+            icon.addPixmap(QPixmap(":/icons/" + file + "-grey.png"), QIcon::Normal, QIcon::Off);
         } else {
-            icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::Off);
-            icon.addPixmap(QPixmap(":/icons/" + file + "-bw.png"), QIcon::Disabled, QIcon::Off);
+            icon.addPixmap(QPixmap(":/icons/" + file + ".png"));
         }
         return icon;
     };
@@ -245,7 +245,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     statusBar->addWidget(filterPattern_, 1);
     statusBar->addSpacing(5);
 
-    auto clearFilter = new QAction(makeIcon("clear-filter"), "C&lear Filter", this);
+    auto clearFilter = new QAction(makeIcon("find-clear16"), "C&lear Filter", this);
     clearFilter->setEnabled(false);
 
     connect(filterPattern_, &QLineEdit::textChanged,
@@ -257,7 +257,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     connect(clearFilter, &QAction::triggered, [this]() { filterPattern_->setText(""); });
 
-    auto filterAction = new QAction(makeIcon("filter"), "&Filter", this);
+    auto filterAction = new QAction(makeIcon("find16"), "&Filter", this);
     filterAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
     connect(filterAction, &QAction::triggered, [this]() {
         raise();
@@ -272,7 +272,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return separator;
     };
 
-    auto copyAction = new QAction(tr("&Copy"), this);
+    auto copyAction = new QAction(QIcon(":/icons/edit-copy.png"), tr("&Copy"), this);
     copyAction->setEnabled(true);
     connect(copyAction, &QAction::triggered, this, &ConsoleWidget::copy);
 
@@ -304,8 +304,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     connect(this, &ConsoleWidget::clearSignal, this, &ConsoleWidget::clear);
 
     // Restore State
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("console");
+    QSettings settings;
+    settings.beginGroup(objectName());
 
     {
         auto columnsActive = settings.value("columnsActive", QVariant(QList<QVariant>()));
@@ -429,6 +429,26 @@ void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string
     logEntry(std::move(e));
 }
 
+void ConsoleWidget::logAssertion(const char* file, const char* function, int line,
+                                 std::string msg) {
+    LogTableModelEntry e = {std::chrono::system_clock::now(),
+                            "Assertion",
+                            LogLevel::Error,
+                            LogAudience::Developer,
+                            file ? file : "",
+                            line,
+                            function ? function : "",
+                            msg};
+    logEntry(std::move(e));
+
+    auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
+                     .arg(file)
+                     .arg(line)
+                     .arg(function)
+                     .arg(utilqt::toQString(msg));
+    QMessageBox::critical(nullptr, "Assertion Failed", error);
+}
+
 void ConsoleWidget::logEntry(LogTableModelEntry e) {
     if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
         emit logSignal(e);
@@ -499,9 +519,8 @@ void ConsoleWidget::copy() {
 }
 
 void ConsoleWidget::closeEvent(QCloseEvent* event) {
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("console");
-    settings.setValue("geometry", saveGeometry());
+    QSettings settings;
+    settings.beginGroup(objectName());
 
     const auto cols = tableView_->horizontalHeader()->count();
     QList<QVariant> columnsActive;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,6 +72,8 @@ public:
     static SyntaxHighligther* createSyntaxHighligther(QTextDocument* parent);
     virtual ~SyntaxHighligther();
 
+    const QColor& getBackgroundColor() const;
+
 protected:
     void clearFormaters();
     SyntaxHighligther(QTextDocument* parent);
@@ -82,6 +84,8 @@ private:
     void loadConfig();
     QTextCharFormat defaultFormat_;
     std::vector<SyntaxFormater*> formaters_;
+
+    QColor backgroundColor_;
 };
 
 template <SyntaxType T>
@@ -104,6 +108,6 @@ IVW_MODULE_QTWIDGETS_API void SyntaxHighligther::loadConfig<GLSL>();
 template <>
 IVW_MODULE_QTWIDGETS_API void SyntaxHighligther::loadConfig<Python>();
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SYNTAXHIGHLIGTHER_H

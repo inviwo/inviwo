@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,7 @@ public:
     Tags getTags() const { return info_.tags; }
     std::string getCategory() const { return info_.category; }
     CodeState getCodeState() const { return info_.codeState; }
+    bool isVisible() { return info_.visible; }
 
 private:
     const ProcessorInfo info_;

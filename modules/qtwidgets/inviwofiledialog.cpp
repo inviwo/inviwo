@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ InviwoFileDialog::InviwoFileDialog(QWidget *parent, const std::string &title,
     : QFileDialog(parent, utilqt::toQString(title))
     , pathType_(utilqt::toQString(pathType))
     , currentPath_() {
+    setObjectName("InviwoFileDialog");
     setCurrentFile(path);
     sidebarURLs_ << QUrl::fromLocalFile(
         QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
@@ -276,10 +277,9 @@ void InviwoFileDialog::addSidebarPath(const QString &path) {
     sidebarURLs_ << QUrl::fromLocalFile(QDir(path).absolutePath());
 }
 
-QSettings InviwoFileDialog::globalSettings_("Inviwo", "Inviwo");
-
 QString InviwoFileDialog::getPreviousPath(const QString &pathType) {
-    globalSettings_.beginGroup("InviwoFileDialog");
+    QSettings settings;
+    settings.beginGroup("InviwoFileDialog");
 
     QString defaultPath;
     if (pathType != "default") {
@@ -288,19 +288,21 @@ QString InviwoFileDialog::getPreviousPath(const QString &pathType) {
         defaultPath = utilqt::toQString(InviwoApplication::getPtr()->getBasePath());
     }
 
-    const QVariant &variant = globalSettings_.value(pathType, defaultPath);
-    globalSettings_.endGroup();
+    const QVariant &variant = settings.value(pathType, defaultPath);
+    settings.endGroup();
     return variant.toString();
 }
 
 void InviwoFileDialog::setPreviousPath(const QString &pathType, const QString &path) {
-    globalSettings_.beginGroup("InviwoFileDialog");
-    globalSettings_.setValue(pathType, path);
-    globalSettings_.endGroup();
+    QSettings settings;
+    settings.beginGroup("InviwoFileDialog");
+    settings.setValue(pathType, path);
+    settings.endGroup();
 }
 
 QString InviwoFileDialog::getPreviousExtension(const QString &pathType) {
-    globalSettings_.beginGroup("InviwoFileDialog");
+    QSettings settings;
+    settings.beginGroup("InviwoFileDialog");
     QString setting = pathType + "_extension";
 
     QString defaultExt;
@@ -310,16 +312,17 @@ QString InviwoFileDialog::getPreviousExtension(const QString &pathType) {
         defaultExt = "";
     }
 
-    const QVariant &variant = globalSettings_.value(setting, defaultExt);
-    globalSettings_.endGroup();
+    const QVariant &variant = settings.value(setting, defaultExt);
+    settings.endGroup();
     return variant.toString();
 }
 
 void InviwoFileDialog::setPreviousExtension(const QString &pathType, const QString &path) {
-    globalSettings_.beginGroup("InviwoFileDialog");
+    QSettings settings;
+    settings.beginGroup("InviwoFileDialog");
     QString setting = pathType + "_extension";
-    globalSettings_.setValue(setting, path);
-    globalSettings_.endGroup();
+    settings.setValue(setting, path);
+    settings.endGroup();
 }
 
 }  // namespace inviwo

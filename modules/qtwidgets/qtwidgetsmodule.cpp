@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -96,6 +96,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>("Default");
     registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
+    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::TextEditor);
+    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
     registerPropertyWidget<FontSizePropertyWidgetQt, IntProperty>("Fontsize");
     registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
 
@@ -164,12 +166,11 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyString>("Default");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Default");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Password");
+    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::TextEditor);
+    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
     registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
-    registerPropertyWidget<TextEditorWidgetQt, FileProperty>("TextEditor");
-    registerPropertyWidget<TextEditorWidgetQt, FileProperty>("ShaderEditor");
-    registerPropertyWidget<TextEditorWidgetQt, StringProperty>("TextEditor");
-    registerPropertyWidget<TextEditorWidgetQt, StringProperty>("ShaderEditor");
     registerPropertyWidget<TransferFunctionPropertyWidgetQt, TransferFunctionProperty>("Default");
+
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
     registerDialog<InviwoFileDialog>("FileDialog");
 }

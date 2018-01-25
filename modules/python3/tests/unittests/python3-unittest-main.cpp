@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
-#include <inviwo/core/common/inviwocore.h>
+#include <inviwo/core/common/coremodulesharedlibrary.h>
+#include <modules/python3/python3modulesharedlibrary.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,7 +44,6 @@
 #include <warn/pop>
 
 
-#include <modules/python3/python3module.h>
 
 using namespace inviwo;
 
@@ -54,9 +54,13 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->setLogLevel(LogLevel::Error);
     LogCentral::getPtr()->registerLogger(logger);
     InviwoApplication app(argc, argv, "inviwo");
-    app.getModuleManager().registerModule(std::make_unique<InviwoCore>(&app));
-    app.getModuleManager().registerModule(std::make_unique<Python3Module>(&app));
 
+    {
+        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+        modules.emplace_back(createCoreModule());
+        modules.emplace_back(createPython3Module());
+        app.registerModules(std::move(modules));
+    }
 
     app.processFront();
 

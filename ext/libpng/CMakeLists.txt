@@ -14,6 +14,7 @@ ivw_group("Source Files" ${SOURCE_FILES} )
 # Create library
 add_library(libpng ${SOURCE_FILES} ${HEADER_FILES})
 add_library(inviwo::libpng ALIAS libpng)
+set_target_properties(libpng PROPERTIES VERSION 1.5.13 SOVERSION 1.5)
 
 #--------------------------------------------------------------------
 # Define definitions for build on windows
@@ -28,7 +29,6 @@ target_include_directories(libpng INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:include/ext/libpng>
 )
-
 
 #--------------------------------------------------------------------
 # libpng depends on zlib

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,8 @@ public:
 
     using ElemVec = std::vector<std::unique_ptr<Element>>;
 
+    enum class ElementType { Node, Text };
+
     class IVW_CORE_API Element {
     public:
         friend Document;
@@ -66,22 +68,32 @@ public:
         Element(Element&&) = default;
         Element& operator=(Element&&) = default;
 
-        Element(const std::string& name, const std::string content = "",
+        Element(ElementType type, const std::string& content);
+        Element(const std::string& name, const std::string& content = "",
                 const std::unordered_map<std::string, std::string>& attributes = {});
 
         const std::string& name() const;
         const std::unordered_map<std::string, std::string>& attributes() const;
         const std::string& content() const;
 
+        ElementType type() const;
+        bool isText() const;
+        bool isNode() const;
+
         std::string& name();
         std::unordered_map<std::string, std::string>& attributes();
         std::string& content();
 
+        bool emptyTag() const;
+        bool noIndent() const;
+
     private:
+        const ElementType type_;
         std::vector<std::unique_ptr<Element>> children_;
-        std::string name_;
+        std::string data_;
         std::unordered_map<std::string, std::string> attributes_;
-        std::string content_;
+        static const std::vector<std::string> emptyTags_;
+        static const std::vector<std::string> noIndentTags_;
     };
 
     class IVW_CORE_API PathComponent {
@@ -130,14 +142,14 @@ public:
                               const std::string content = "",
                               const std::unordered_map<std::string, std::string>& attributes = {});
 
-        DocumentHandle append(const std::string& name,
-                              const std::string content = "",
+        DocumentHandle append(const std::string& name, const std::string content = "",
                               const std::unordered_map<std::string, std::string>& attributes = {});
 
-        const Element* element() const;
-        Element* element();
+        const Element& element() const;
+        Element& element();
 
         operator bool() const;
+        DocumentHandle& operator+=(const std::string& content);
 
     private:
         DocumentHandle(const Document* doc, Element* elem);
@@ -159,22 +171,21 @@ public:
                           const std::string content = "",
                           const std::unordered_map<std::string, std::string>& attributes = {});
 
-    DocumentHandle append(const std::string& name,
-                          const std::string content = "",
+    DocumentHandle append(const std::string& name, const std::string content = "",
                           const std::unordered_map<std::string, std::string>& attributes = {});
 
     template <typename BeforVisitor, typename AfterVisitor>
     void visit(BeforVisitor before, AfterVisitor after) const {
-        const std::function<void(Element*, std::vector<Element*>&)> traverser = [&](
-            Element* elem, std::vector<Element*>& stack) {
-            before(elem, stack);
-            stack.push_back(elem);
+        const std::function<void(Element*, std::vector<Element*>&)> traverser =
+            [&](Element* elem, std::vector<Element*>& stack) {
+                before(elem, stack);
+                stack.push_back(elem);
 
-            for (const auto& e : elem->children_) traverser(e.get(), stack);
+                for (const auto& e : elem->children_) traverser(e.get(), stack);
 
-            stack.pop_back();
-            after(elem, stack);
-        };
+                stack.pop_back();
+                after(elem, stack);
+            };
         std::vector<Element*> stack;
         for (const auto& e : root_->children_) traverser(e.get(), stack);
     }
@@ -184,16 +195,23 @@ public:
                                                         const Document& doc) {
         doc.visit(
             [&](Element* elem, std::vector<Element*>& stack) {
-                ss << std::string(stack.size() * 4, ' ') << "<" << elem->name();
-                for (const auto& item : elem->attributes()) {
-                    ss << " " << item.first << "='" << item.second << "'";
+                if (elem->isNode()) {
+                    ss << std::string(stack.size() * 4, ' ') << "<" << elem->name();
+                    for (const auto& item : elem->attributes()) {
+                        ss << " " << item.first << "='" << item.second << "'";
+                    }
+                    ss << ">\n";
+                } else if (elem->isText() && !elem->content().empty()) {
+                    if (!stack.empty() && !stack.back()->noIndent()) {
+                        ss << std::string((stack.size()) * 4, ' ');
+                    }
+                    ss << elem->content() << "\n";
                 }
-                ss << ">\n";
-                if (!elem->content().empty())
-                    ss << std::string((1 + stack.size()) * 4, ' ') << elem->content() << "\n";
             },
             [&](Element* elem, std::vector<Element*>& stack) {
-                ss << std::string(stack.size() * 4, ' ') << "</" << elem->name() << ">\n";
+                if (elem->isNode() && !elem->emptyTag()) {
+                    ss << std::string(stack.size() * 4, ' ') << "</" << elem->name() << ">\n";
+                }
             });
 
         return ss;
@@ -208,7 +226,6 @@ public:
 private:
     std::unique_ptr<Element> root_;
 };
-
 
 namespace utildoc {
 
@@ -226,7 +243,7 @@ template <typename T,
 std::string convert(T&& /*val*/) {
     return "???";
 }
-}
+}  // namespace detail
 
 class IVW_CORE_API TableBuilder {
 public:
@@ -235,8 +252,7 @@ public:
 
     protected:
         template <typename T>
-        Wrapper(T&& data)
-            : data_(detail::convert(std::forward<T>(data))) {}
+        Wrapper(T&& data) : data_(detail::convert(std::forward<T>(data))) {}
         Wrapper(const std::string& data);
         Wrapper(const char* const data);
     };
@@ -250,11 +266,10 @@ public:
     };
     struct IVW_CORE_API Header : Wrapper {
         template <typename T>
-        Header(T&& data)
-            : Wrapper(std::forward<T>(data)) {}
+        Header(T&& data) : Wrapper(std::forward<T>(data)) {}
     };
 
-    struct Span_t {};  
+    struct Span_t {};
 
     TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                  const std::unordered_map<std::string, std::string>& attributes = {});
@@ -288,9 +303,8 @@ private:
     void tabledata(Document::DocumentHandle& row, const std::string& val);
     void tabledata(Document::DocumentHandle& row, const char* const val);
 
-    template <typename T,
-              typename std::enable_if<
-                  !std::is_base_of<Wrapper, std::decay_t<T>>::value, int>::type = 0>
+    template <typename T, typename std::enable_if<!std::is_base_of<Wrapper, std::decay_t<T>>::value,
+                                                  int>::type = 0>
     void tabledata(Document::DocumentHandle& row, T&& val) {
         row.insert(Document::PathComponent::end(), "td", detail::convert(val));
     }
@@ -302,8 +316,8 @@ private:
     Document::DocumentHandle table_;
 };
 
-}  // namespace
+}  // namespace utildoc
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DOCUMENT_H

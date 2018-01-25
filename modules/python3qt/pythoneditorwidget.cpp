@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,8 +67,7 @@ const static std::string defaultSource =
 "#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = app.network\n";
 
 PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
-    : InviwoDockWidget(tr("Python Editor"), parent)
-    , settings_("Inviwo", "Inviwo")
+    : InviwoDockWidget(tr("Python Editor"), parent, "PythonEditorWidget")
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
     , runAction_(nullptr)
@@ -77,7 +76,6 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     , app_(app)
     , appendLog_(nullptr)
 {
-    setObjectName("PythonEditor");
     setWindowIcon(QIcon(":/icons/python.png"));
 
     QMainWindow* mainWindow = new QMainWindow();
@@ -192,34 +190,20 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
             this, &PythonEditorWidget::updateStyle);
     }
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    resize(QSize(500, 700)); // default size
 
     {
         // Restore state
-        settings_.beginGroup("PythonEditor");
-        QString lastFile = settings_.value("lastScript", "").toString();
+        QSettings settings;
+        settings.beginGroup(objectName());
+        QString lastFile = settings.value("lastScript", "").toString();
         if (!lastFile.isEmpty()) loadFile(lastFile.toLocal8Bit().constData(), false);
         
-        auto append = settings_.value("appendLog", appendLog_->isCheckable()).toBool();
+        auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
         appendLog_->setChecked(append);
-        
-        setVisible(settings_.value("visible", false).toBool());
-        setFloating(settings_.value("floating", true).toBool());
-        resize(settings_.value("size", QSize(500, 700)).toSize());
-        restoreGeometry(settings_.value("geometry", saveGeometry()).toByteArray());
-        setSticky(settings_.value("isSticky", InviwoDockWidget::isSticky()).toBool());
-        settings_.endGroup();
+        settings.endGroup();
     }
 
-    auto newPos =
-        utilqt::movePointOntoDesktop(InviwoDockWidget::pos(), InviwoDockWidget::size(), false);
-    if (!(newPos.x() == 0 && newPos.y() == 0)) {
-        InviwoDockWidget::move(newPos);
-    } else if (auto ivwMW = utilqt::getApplicationMainWindow()) {
-        // We assume that this is a new widget and give it a new position
-        newPos = ivwMW->pos();
-        newPos += utilqt::offsetWidget();
-        InviwoDockWidget::move(newPos);
-    }
     unsavedChanges_ = false;
 }
 
@@ -237,17 +221,11 @@ void PythonEditorWidget::closeEvent(QCloseEvent* event) {
                                      "Save", "Discard");
         if (ret == 0) save();
     }
-
-    settings_.beginGroup("PythonEditor");
-    settings_.setValue("appendLog", appendLog_->isChecked());
-    settings_.setValue("lastScript", scriptFileName_.c_str());
-    settings_.setValue("visible", isVisible());
-    settings_.setValue("floating", isFloating());
-    settings_.setValue("geometry", saveGeometry());
-    settings_.setValue("isSticky", isSticky());
-    settings_.setValue("size", size());
-    settings_.endGroup();
-
+    QSettings settings;
+    settings.beginGroup(objectName());
+    settings.setValue("appendLog", appendLog_->isChecked());
+    settings.setValue("lastScript", scriptFileName_.c_str());
+    settings.endGroup();
 
     InviwoDockWidget::closeEvent(event);
 }

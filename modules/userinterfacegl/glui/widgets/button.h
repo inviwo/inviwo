@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,11 +33,12 @@
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/userinterfacegl/glui/element.h>
+#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
 
 namespace inviwo {
 
 class Texture2DArray;
+class Texture2D;
 
 namespace glui {
 
@@ -45,22 +46,16 @@ class Renderer;
 
 /**
  * \class Button
- * \brief glui::element representing a button with the label centered within
+ * \brief glui::Element representing a button with the label centered within
  */
-class IVW_MODULE_USERINTERFACEGL_API Button : public Element {
+class IVW_MODULE_USERINTERFACEGL_API Button : public AbstractButton {
 public:
     Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
            const ivec2 &extent = ivec2(100, 24));
     virtual ~Button() = default;
 
-private:
-    virtual void renderWidget(const ivec2 &origin) override;
-
-    virtual ivec2 computeLabelPos(int descent) const override;
-    virtual UIState uiState() const override;
-    virtual vec2 marginScale() const override;
-
-    Texture2DArray *uiTextures_;
+protected:
+    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
 };
 
 }  // namespace glui

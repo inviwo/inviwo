@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -90,7 +90,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     hWidgetLayout->addWidget(lineEdit_);
 
     auto revealButton = new QToolButton(this);
-    revealButton->setIcon(QIcon(":/icons/reveal.png"));
+    revealButton->setIcon(QIcon(":/icons/about.png"));
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, [&]() {
         auto fileName = (!property_->get().empty() ? property_->get().front() : "");

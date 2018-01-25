@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/logcentral.h>
 
 #ifndef WIN32
 #include <signal.h>
@@ -35,20 +36,25 @@
 
 namespace inviwo {
 
-#if defined(IVW_DEBUG)
+#if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
 
-void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
+void assertion(const char* fileName, const char* functionName, long lineNumber,
                   std::string message) {
-    std::cout << "Assertion in (" << fileName << ", " << functionName << ", Ln " << lineNumber
+    std::cout << "Assertion failed in (" << fileName << ":" << lineNumber << ", " << functionName 
               << "): ";
     std::cout << message << std::endl;
+
+    if (LogCentral::isInitialized()) {
+        LogCentral::getPtr()->logAssertion(fileName, functionName, lineNumber, message);
+    }
 
     util::debugBreak();
     exit(-1);
 }
 
 #else
-void ivwAssertion(const char*, const char*, long, std::string) {}
+
+void assertion(const char*, const char*, long, std::string) {}
 
 #endif  // _DEBUG
 

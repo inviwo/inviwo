@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2017 Inviwo Foundation
+# Copyright (c) 2013-2018 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -99,6 +99,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 
 #--------------------------------------------------------------------
 # Add parameter for paths to external modules

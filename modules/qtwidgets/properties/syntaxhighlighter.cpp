@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,17 +43,19 @@ namespace inviwo {
 
 SyntaxHighligther::SyntaxHighligther(QTextDocument* parent) : QSyntaxHighlighter(parent) {}
 
-SyntaxHighligther::~SyntaxHighligther() { 
-    clearFormaters(); 
+SyntaxHighligther::~SyntaxHighligther() {
+    clearFormaters();
     // Remove observer created in loadConfig
-    // Why remove from python and glsl? 
-    // A workaround since we do not know which loadConfig template 
-    // that was used after creation... 
+    // Why remove from python and glsl?
+    // A workaround since we do not know which loadConfig template
+    // that was used after creation...
     // Preferably, the loadConfig should return an object that can be destroyed.
     auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
     settings->pythonSyntax_.removeOnChange(this);
     settings->glslSyntax_.removeOnChange(this);
 }
+
+const QColor& SyntaxHighligther::getBackgroundColor() const { return backgroundColor_; }
 
 void SyntaxHighligther::clearFormaters() {
     while (!formaters_.empty()) {
@@ -81,9 +83,9 @@ void SyntaxHighligther::loadConfig<None>() {
     auto ivec4toQtColor = [](const ivec4& i) { return QColor(i.r, i.g, i.b, i.a); };
     auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
     QColor textColor = ivec4toQtColor(settings->glslTextColor_.get());
-    QColor bgColor = ivec4toQtColor(settings->glslBackgroundColor_.get());
-    defaultFormat_.setBackground(bgColor);
+    backgroundColor_ = ivec4toQtColor(settings->glslBackgroundColor_.get());
+    defaultFormat_.setBackground(backgroundColor_);
     defaultFormat_.setForeground(textColor);
 }
 
-}  // namespace
+}  // namespace inviwo

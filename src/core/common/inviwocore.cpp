@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@
 #include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
-#include <inviwo/core/metadata/propertyeditorwidgetmetadata.h>
 
 // Utilizes
 #include <inviwo/core/util/settings/linksettings.h>
@@ -90,6 +89,11 @@
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyconverter.h>
 
+// Processors
+#include <inviwo/core/processors/compositeprocessor.h>
+#include <inviwo/core/processors/compositesink.h>
+#include <inviwo/core/processors/compositesource.h>
+
 #include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
@@ -112,7 +116,7 @@ struct ConverterRegFunctor {
 struct ScalarStringConverterRegFunctor {
     template <typename T>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-            reg(util::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
+        reg(util::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
     }
 };
 struct VectorStringConverterRegFunctor {
@@ -124,7 +128,14 @@ struct VectorStringConverterRegFunctor {
 
 }  // namespace
 
-InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
+InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
+    : FileObserver(app), core_(core) {}
+void InviwoCore::Observer::fileChanged(const std::string& dir) {
+    core_.scanDirForComposites(dir);
+}
+
+InviwoCore::InviwoCore(InviwoApplication* app)
+    : InviwoModule(app, "Core"), compositeDirObserver_{*this, app} {
     // Register Converter Factories
     registerRepresentationConverterFactory(
         util::make_unique<RepresentationConverterFactory<VolumeRepresentation>>());
@@ -184,7 +195,6 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerMetaData(util::make_unique<PositionMetaData>());
     registerMetaData(util::make_unique<ProcessorMetaData>());
     registerMetaData(util::make_unique<ProcessorWidgetMetaData>());
-    registerMetaData(util::make_unique<PropertyEditorWidgetMetaData>());
     registerMetaData(util::make_unique<StdUnorderedMapMetaData<std::string, std::string>>());
     registerMetaData(util::make_unique<StdVectorMetaData<std::string>>());
 
@@ -201,30 +211,33 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerPort<ImageInport>();
     registerPort<ImageMultiInport>();
     registerPort<ImageOutport>();
-    registerStandardPortsForObject<Mesh>();
-    registerStandardPortsForObject<Volume>();
-    registerStandardPortsForObject<BufferBase>();
-    registerStandardPortsForObject<LightSource>();
+    registerProcessor<CompositeSource<ImageInport, ImageOutport>>();
+    registerProcessor<CompositeSink<ImageInport, ImageOutport>>();
 
-    registerStandardPortsForObject<vec2>();
-    registerStandardPortsForObject<dvec2>();
-    registerStandardPortsForObject<ivec2>();
-    registerStandardPortsForObject<vec3>();
-    registerStandardPortsForObject<dvec3>();
-    registerStandardPortsForObject<ivec3>();
-    registerStandardPortsForObject<vec4>();
-    registerStandardPortsForObject<dvec4>();
-    registerStandardPortsForObject<ivec4>();
+    registerDefaultsForDataType<Mesh>();
+    registerDefaultsForDataType<Volume>();
+    registerDefaultsForDataType<BufferBase>();
+    registerDefaultsForDataType<LightSource>();
 
-    registerStandardPortsForObject<std::vector<vec2>>();
-    registerStandardPortsForObject<std::vector<dvec2>>();
-    registerStandardPortsForObject<std::vector<ivec2>>();
-    registerStandardPortsForObject<std::vector<vec3>>();
-    registerStandardPortsForObject<std::vector<dvec3>>();
-    registerStandardPortsForObject<std::vector<ivec3>>();
-    registerStandardPortsForObject<std::vector<vec4>>();
-    registerStandardPortsForObject<std::vector<dvec4>>();
-    registerStandardPortsForObject<std::vector<ivec4>>();
+    registerDefaultsForDataType<vec2>();
+    registerDefaultsForDataType<dvec2>();
+    registerDefaultsForDataType<ivec2>();
+    registerDefaultsForDataType<vec3>();
+    registerDefaultsForDataType<dvec3>();
+    registerDefaultsForDataType<ivec3>();
+    registerDefaultsForDataType<vec4>();
+    registerDefaultsForDataType<dvec4>();
+    registerDefaultsForDataType<ivec4>();
+
+    registerDefaultsForDataType<std::vector<vec2>>();
+    registerDefaultsForDataType<std::vector<dvec2>>();
+    registerDefaultsForDataType<std::vector<ivec2>>();
+    registerDefaultsForDataType<std::vector<vec3>>();
+    registerDefaultsForDataType<std::vector<dvec3>>();
+    registerDefaultsForDataType<std::vector<ivec3>>();
+    registerDefaultsForDataType<std::vector<vec4>>();
+    registerDefaultsForDataType<std::vector<dvec4>>();
+    registerDefaultsForDataType<std::vector<ivec4>>();
 
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),
@@ -309,11 +322,32 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     util::for_each_type<Vec3s>{}(VectorStringConverterRegFunctor{}, registerPC);
     util::for_each_type<Vec4s>{}(VectorStringConverterRegFunctor{}, registerPC);
 
+    // Register Processors
+    auto userCompositeDir = app_->getPath(PathType::Settings, "/composites");
+    scanDirForComposites(userCompositeDir);
+    compositeDirObserver_.startFileObservation(userCompositeDir);
+
+    auto coreCompositeDir = app_->getPath(PathType::Workspaces, "/composites");
+    scanDirForComposites(coreCompositeDir);
+    compositeDirObserver_.startFileObservation(coreCompositeDir);
+
     // Register Settings
     // Do this after the property registration since the settings use properties.
     registerSettings(util::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
 }
 
 std::string InviwoCore::getPath() const { return filesystem::findBasePath(); }
+
+void InviwoCore::scanDirForComposites(const std::string& dir) {
+    for (auto&& file : filesystem::getDirectoryContentsRecursively(
+        dir, filesystem::ListMode::Files)) {
+        if (filesystem::getFileExtension(file) == "inv") {
+            if (addedCompositeFiles_.count(file) == 0) {
+                registerCompositeProcessor(file);
+                addedCompositeFiles_.insert(file);
+            }
+        }
+    }
+}
 
 }  // namespace inviwo

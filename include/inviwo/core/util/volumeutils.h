@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,14 @@ std::pair<vec3, vec3> IVW_CORE_API getVolumeMargins(const std::shared_ptr<const 
 * @return true volume dimensions
 */
 size3_t IVW_CORE_API getVolumeDimensions(const std::shared_ptr<const Volume> &volume);
+
+/**
+* \brief calculates the volume of a single voxel, taking the basis and the dimensions into account
+* The units of the result is in the unit as the basis vectors ^3 
+*
+* @return volume of one voxel 
+*/
+double IVW_CORE_API voxelVolume(const Volume &volume);
 
 } // namespace util
 

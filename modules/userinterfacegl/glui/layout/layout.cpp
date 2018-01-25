@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,10 +39,8 @@ void Layout::setMargins(int top, int left, int bottom, int right) {
     margins_ = ivec4(top, left, bottom, right);
 }
 
-const ivec4 & Layout::getMargins() const {
-    return margins_;
-}
+const ivec4& Layout::getMargins() const { return margins_; }
 
-} // namespace glui
+}  // namespace glui
 
 }  // namespace inviwo

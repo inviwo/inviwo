@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/opengl/geometry/meshgl.h>
@@ -70,11 +71,14 @@ CameraWidget::CameraWidget()
 
     , settings_("settings", "Settings")
     , enabled_("enabled", "Enabled", true)
-    , invertDirections_("invertDirections", "Invert Directions", false)
+    , invertDirections_("invertDirections", "Invert Directions", false, InvalidationLevel::Valid)
     , useObjectRotAxis_("useObjectRotationAxis", "Use Vertical Object Axis for Rotation", false)
     , showRollWidget_("showRollWidget", "Show Widget for Camera Roll", true)
-    , speed_("speed", "Speed (deg per pixel)", 0.25f, 0.01f, 5.0f, 0.05f)
-    , angleIncrement_("angleIncrement", "Angle (deg) per Click", 15.0f, 0.05f, 90.0f, 0.5f)
+    , speed_("speed", "Speed (deg per pixel)", 0.25f, 0.01f, 5.0f, 0.05f, InvalidationLevel::Valid)
+    , angleIncrement_("angleIncrement", "Angle (deg) per Click", 15.0f, 0.05f, 90.0f, 0.5f,
+                      InvalidationLevel::Valid)
+    , minTouchMovement_("minTouchMovement", "Min Touch Movement (pixel)", 5, 0, 25, 1,
+                        InvalidationLevel::Valid)
 
     , appearance_("appearance", "Appearance")
     , scaling_("scaling", "Scaling", 1.0f, 0.01f, 5.0f, 0.01f)
@@ -126,6 +130,7 @@ CameraWidget::CameraWidget()
     settings_.addProperty(showRollWidget_);
     settings_.addProperty(speed_);
     settings_.addProperty(angleIncrement_);
+    settings_.addProperty(minTouchMovement_);
 
     // widget appearance
     customColorComposite_.addProperty(axisColoring_);
@@ -228,10 +233,8 @@ void CameraWidget::initializeResources() {
 
     // set up default colors for the mesh (horizontal: red, vertical: green, center: light gray,
     // roll: light blue, zoom: light gray)
-    std::array<vec4, 5> color = {vec4(0.8f, 0.5f, 0.5f, 1.0f), 
-                                 vec4(0.5f, 0.8f, 0.5f, 1.0f),
-                                 vec4(vec3(0.5f), 1.0f), 
-                                 vec4(0.4f, 0.5f, 0.8f, 1.0f),
+    std::array<vec4, 5> color = {vec4(0.8f, 0.5f, 0.5f, 1.0f), vec4(0.5f, 0.8f, 0.5f, 1.0f),
+                                 vec4(vec3(0.5f), 1.0f), vec4(0.4f, 0.5f, 0.8f, 1.0f),
                                  vec4(vec3(0.5f), 1.0f)};
     shader_.setUniform("meshColors_", color);
 
@@ -262,7 +265,7 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
     // draw zoom buttons
     utilgl::setShaderUniforms(shader_, *meshDrawers_[2]->getMesh(), "geometry");
     meshDrawers_[2]->draw();
-    
+
     if (showCube_.get()) {
         // draw cube behind the widget using the view matrix of the output camera
         cubeShader_.activate();
@@ -320,7 +323,16 @@ void CameraWidget::drawWidgetTexture() {
 }
 
 void CameraWidget::objectPicked(PickingEvent *p) {
-    if (auto me = p->getEventAs<MouseEvent>()) {
+    const auto pickedID = static_cast<int>(p->getPickedId());
+    if (pickedID >= static_cast<int>(pickingIDs_.size())) {
+        return;
+    }
+
+    bool triggerMoveEvent = false;
+    bool triggerSingleEvent = false;
+
+    if (p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = p->getEventAs<MouseEvent>();
         if (!(me->buttonState() & MouseButton::Left) && (me->state() != MouseState::Release)) {
             return;
         }
@@ -329,50 +341,27 @@ void CameraWidget::objectPicked(PickingEvent *p) {
         const bool mousePress{me->state() == MouseState::Press};
         const bool mouseRelease{me->state() == MouseState::Release};
 
-        dvec2 mousePos = me->pos();
-
         bool interactionBegin = false;
         if (!isMouseBeingPressedAndHold_ && mousePress && leftMouseBtn) {
             isMouseBeingPressedAndHold_ = true;
             mouseWasMoved_ = false;
             interactionBegin = true;
-            initialState_.mousePos = mousePos;
-            prevMousePos_ = mousePos;
-
-            // save current camera vectors (direction, up, and right) to be able to do absolute
-            // rotations
-            auto &cam = camera_.get();
-            vec3 camDir(glm::normalize(cam.getDirection()));
-            vec3 camUp(glm::normalize(cam.getLookUp()));
-            vec3 camRight(glm::cross(camDir, camUp));
-            // make sure, up is orthogonal to both, dir and right
-            camUp = glm::cross(camRight, camDir);
-            // update camera
-            camera_.setLookUp(camUp);
-
-            initialState_.camDir = camDir;
-            initialState_.camUp = camUp;
-            initialState_.camRight = camRight;
-            try {
-                auto &perspCam = dynamic_cast<PerspectiveCamera &>(cam);
-                double fovy = perspCam.getFovy();
-                initialState_.zoom_ = 1.0 / std::tan(fovy * glm::pi<double>() / 360.0);
-            } catch (std::bad_cast &) {
-                // camera is not a PerspectiveCamera
-                initialState_.zoom_ = 1.0;
-            }
+            activeWidgetID_ = pickedID;
+            saveInitialCameraState();
         } else if (isMouseBeingPressedAndHold_ && (me->state() == MouseState::Move)) {
             // check whether mouse has been moved for more than 1 pixel
             if (!mouseWasMoved_) {
-                dvec2 delta(me->pos() - initialState_.mousePos);
-                double squaredDist = delta.x * delta.x + delta.y * delta.y;
+                const dvec2 delta(p->getDeltaPressedPosition() * dvec2(p->getCanvasSize()));
+                const double squaredDist = delta.x * delta.x + delta.y * delta.y;
                 mouseWasMoved_ = (squaredDist > 1.0);
             }
         }
 
-        // trigger event on release of left mouse button, and only _if_ the mouse was not moved
-        bool triggerEvent = (leftMouseBtn && isMouseBeingPressedAndHold_ && mouseRelease &&
-                             (activeWidgetID_ >= 0) && !mouseWasMoved_);
+        triggerMoveEvent = (isMouseBeingPressedAndHold_ && !mouseRelease && !interactionBegin);
+        // trigger single event on release of left mouse button, and only _if_ the mouse was not
+        // moved
+        triggerSingleEvent = (leftMouseBtn && isMouseBeingPressedAndHold_ && mouseRelease &&
+                              (activeWidgetID_ >= 0) && !mouseWasMoved_);
 
         if (mouseRelease) {
             isMouseBeingPressedAndHold_ = false;
@@ -381,23 +370,72 @@ void CameraWidget::objectPicked(PickingEvent *p) {
                 invalidate(InvalidationLevel::InvalidOutput);
             }
         }
+        p->markAsUsed();
+    } else if (p->getEvent()->hash() == TouchEvent::chash()) {
+        auto touchEvent = p->getEventAs<TouchEvent>();
 
-        auto pickedID = static_cast<int>(p->getPickedId());
-        if (pickedID < pickingIDs_.size()) {
-            if (interactionBegin) {
+        if (touchEvent->touchPoints().size() == 1) {
+            // allow interaction only for a single touch point
+            const auto &touchPoint = touchEvent->touchPoints().front();
+
+            if (!isMouseBeingPressedAndHold_ && (touchPoint.state() == TouchState::Started)) {
+                isMouseBeingPressedAndHold_ = true;
+                mouseWasMoved_ = false;
                 activeWidgetID_ = pickedID;
+                saveInitialCameraState();
+            } else if (touchPoint.state() == TouchState::Finished) {
+                isMouseBeingPressedAndHold_ = false;
+                triggerSingleEvent = ((activeWidgetID_ >= 0) && !mouseWasMoved_);
+                if (activeWidgetID_ >= 0) {
+                    activeWidgetID_ = -1;
+                    invalidate(InvalidationLevel::InvalidOutput);
+                }
+            } else if (touchPoint.state() == TouchState::Updated) {
+                // check whether touch point has been moved for more than 3 pixels
+                // to accept touch "clicks" with a certain movement
+                if (!mouseWasMoved_) {
+                    const auto delta = touchPoint.pos() - touchPoint.pressedPos();
+                    const double squaredDist = delta.x * delta.x + delta.y * delta.y;
+                    mouseWasMoved_ =
+                        (squaredDist > minTouchMovement_.get() * minTouchMovement_.get());
+                }
+                triggerMoveEvent = true;
             }
-
-            if (isMouseBeingPressedAndHold_ && !mouseRelease && !interactionBegin) {
-                interaction(pickingIDs_[activeWidgetID_].dir, mousePos - prevMousePos_);
-
-            } else if (triggerEvent && (pickedID >= -1)) {
-                singleStepInteraction(pickingIDs_[pickedID].dir, pickingIDs_[pickedID].clockwise);
-            }
-            prevMousePos_ = mousePos;
+            p->markAsUsed();
         }
-        // LogInfo("picked object: " << pressedElemID_);
-        me->markAsUsed();
+    }
+
+    if (triggerMoveEvent) {
+        interaction(pickingIDs_[activeWidgetID_].dir,
+                    p->getDeltaPosition() * dvec2(p->getCanvasSize()));
+
+    } else if (triggerSingleEvent) {
+        singleStepInteraction(pickingIDs_[pickedID].dir, pickingIDs_[pickedID].clockwise);
+    }
+}
+
+void CameraWidget::saveInitialCameraState() {
+    // save current camera vectors (direction, up, and right) to be able to do absolute
+    // rotations
+    auto &cam = camera_.get();
+    vec3 camDir(glm::normalize(cam.getDirection()));
+    vec3 camUp(glm::normalize(cam.getLookUp()));
+    vec3 camRight(glm::cross(camDir, camUp));
+    // make sure, up is orthogonal to both, dir and right
+    camUp = glm::cross(camRight, camDir);
+    // update camera
+    camera_.setLookUp(camUp);
+
+    initialState_.camDir = camDir;
+    initialState_.camUp = camUp;
+    initialState_.camRight = camRight;
+    try {
+        auto &perspCam = dynamic_cast<PerspectiveCamera &>(cam);
+        double fovy = perspCam.getFovy();
+        initialState_.zoom_ = 1.0 / std::tan(fovy * glm::pi<double>() / 360.0);
+    } catch (std::bad_cast &) {
+        // camera is not a PerspectiveCamera
+        initialState_.zoom_ = 1.0;
     }
 }
 

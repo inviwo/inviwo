@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,13 +47,18 @@ BoolPropertyWidget::BoolPropertyWidget(BoolProperty &property, Processor &proces
     updateFromProperty();
 }
 
-void BoolPropertyWidget::updateFromProperty() { setValue(property_->get()); }
+void BoolPropertyWidget::updateFromProperty() {
+    setValue(property_->get());
+    setEnabled(!property_->getReadOnly());
+}
 
 void BoolPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
 
 void BoolPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
     setLabel(displayName);
 }
+
+void BoolPropertyWidget::onSetReadOnly(Property *property, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

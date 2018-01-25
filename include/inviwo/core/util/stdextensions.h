@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,6 +86,21 @@ std::unique_ptr<Derived> dynamic_unique_ptr_cast(
         return std::unique_ptr<Derived>(result);
     }
     return std::unique_ptr<Derived>(nullptr);
+}
+
+namespace detail {
+
+template <typename Index, typename Functor, Index... Is>
+auto make_array(Functor&& func, std::integer_sequence<Index, Is...>)
+    -> std::array<decltype(func(std::declval<Index>())), sizeof...(Is)> {
+    return {{func(Is)...}};
+}
+}  // namespace detail
+
+template <std::size_t N, typename Index = size_t, typename Functor>
+auto make_array(Functor&& func) -> std::array<decltype(func(std::declval<Index>())), N> {
+    return detail::make_array<Index>(std::forward<Functor>(func),
+                                     std::make_integer_sequence<Index, N>());
 }
 
 // Default construct if possible otherwise return nullptr;
@@ -615,6 +630,38 @@ struct is_constructible {
 public:
     static const bool value = decltype(check<Type>(0))::value;
 };
+
+namespace detail {
+
+// https://stackoverflow.com/a/22882504/600633
+struct is_callable_test {
+    template <typename F, typename... A>
+    static decltype(std::declval<F>()(std::declval<A>()...), std::true_type()) f(int);
+
+    template <typename F, typename... A>
+    static std::false_type f(...);
+};
+
+template <typename F, typename... A>
+struct is_callable : decltype(is_callable_test::f<F, A...>(0)) {};
+
+template <typename F, typename... A>
+struct is_callable<F(A...)> : is_callable<F, A...> {};
+
+}  // namespace detail
+
+/**
+ * A type trait to determine if type "callback" cann be called with certain arguments.
+ * Example:
+ *     util::is_callable_with<float>(callback)
+ *     where
+ *        callback = [](float){}  -> true
+ *        callback = [](std::string){}  -> false
+ */
+template <typename... A, typename F>
+constexpr detail::is_callable<F, A...> is_callable_with(F&&) {
+    return detail::is_callable<F(A...)>{};
+}
 
 /**
  *    Function to combine several hash values

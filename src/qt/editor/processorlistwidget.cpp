@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,12 +89,13 @@ ProcessorTree::ProcessorTree(ProcessorTreeWidget* parent)
     : QTreeWidget(parent), processorTreeWidget_{parent} {}
 
 ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget)
-    : InviwoDockWidget(tr("Processors"), parent)
+    : InviwoDockWidget(tr("Processors"), parent, "ProcessorTreeWidget")
     , app_{parent->getInviwoApplication()}
     , helpWidget_{helpWidget} {
 
-    setObjectName("ProcessorTreeWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    resize(QSize(400, 700)); // default size
+
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
     vLayout->setSpacing(7);
@@ -153,8 +154,8 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
             app_->getProcessorFactory()->removeObserver(this);
         });
 
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("processorlist");
+    QSettings settings;
+    settings.beginGroup(objectName());
     lineEdit_->setText(settings.value("filterText", "").toString());
     listView_->setCurrentIndex(settings.value("currentView", 1).toInt());
 
@@ -215,14 +216,8 @@ void ProcessorTreeWidget::addProcessor(std::string className) {
         if (auto p = app_->getProcessorFactory()->create(className)) {
             auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 
-            auto pos = util::transform(network->getProcessors(), [](Processor* elem) {
-                return elem->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                    ->getPosition();
-            });
-            pos.push_back(ivec2(0, 0));
-            auto min = std::min_element(pos.begin(), pos.end(),
-                                        [](const ivec2& a, const ivec2& b) { return a.y > b.y; });
-            meta->setPosition(*min + ivec2(0, 75));
+            auto bb = util::getBoundingBox(network->getProcessors());
+            meta->setPosition(ivec2{bb.first.x, bb.second.y} + ivec2(0, 75));
 
             network->addProcessor(p.get());
             util::autoLinkProcessor(network, p.get());
@@ -279,8 +274,8 @@ void ProcessorTreeWidget::onRegister(ProcessorFactoryObject* item) { addProcesso
 void ProcessorTreeWidget::onUnRegister(ProcessorFactoryObject*) { addProcessorsToTree(); }
 
 void ProcessorTreeWidget::closeEvent(QCloseEvent* event) {
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("processorlist");
+    QSettings settings;
+    settings.beginGroup(objectName());
     settings.setValue("filterText", QVariant(lineEdit_->text()));
     settings.setValue("currentView", QVariant(listView_->currentIndex()));
 
@@ -320,7 +315,8 @@ void ProcessorTreeWidget::addProcessorsToTree(ProcessorFactoryObject* item) {
 
     for (auto& elem : app_->getModules()) {
         for (auto& processor : elem->getProcessors()) {
-            if (lineEdit_->text().isEmpty() || processorFits(processor, lineEdit_->text())) {
+            if (processor->isVisible() &&
+                (lineEdit_->text().isEmpty() || processorFits(processor, lineEdit_->text()))) {
                 extractInfoAndAddProcessor(processor, elem.get());
             }
         }
@@ -392,7 +388,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
         case 5: {  // Most Used
             auto it = useCounts_.find(processor->getClassIdentifier());
             if (it != useCounts_.end()) {
-                sortVal.prepend(QVariant::fromValue<qint64>(-it->second));
+                sortVal.prepend(QVariant::fromValue<qint64>(-static_cast<qint64>(it->second)));
             } else {
                 sortVal.prepend(0);
             }

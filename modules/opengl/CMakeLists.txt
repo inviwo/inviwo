@@ -149,4 +149,8 @@ target_include_directories(inviwo-module-opengl INTERFACE ${OPENGL_INCLUDE_DIR})
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 
+ivw_register_license_file(ID glew NAME "GLEW" TARGET inviwo::GLEW MODULE OpenGL
+    URL http://glew.sourceforge.net
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/license.txt
+)
 ivw_make_package(InviwoOpenGLModule inviwo-module-opengl)

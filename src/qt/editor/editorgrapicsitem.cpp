@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,6 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
     using P = Document::PathComponent;
-    using H = utildoc::TableBuilder::Header;
 
     auto doc = port->getInfo();
     auto t = doc.get({P("html"), P("body"), P("table")});

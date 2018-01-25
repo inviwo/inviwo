@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,11 +53,11 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
     mainWindow_->getInviwoApplicationQt()->setUndoTrigger([this](){pushStateIfDirty();});
     mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);
 
-    undoAction_ = new QAction(QAction::tr("&Undo"), mainWindow_);
+    undoAction_ = new QAction(QIcon(":/icons/undo.png"), QAction::tr("&Undo"), mainWindow_);
     undoAction_->setShortcut(QKeySequence::Undo);
     undoAction_->connect(undoAction_, &QAction::triggered, this, [&]() { undoState(); });
 
-    redoAction_ = new QAction(QAction::tr("&Redo"), mainWindow_);
+    redoAction_ = new QAction(QIcon(":/icons/redo.png"), QAction::tr("&Redo"), mainWindow_);
     redoAction_->setShortcut(QKeySequence::Redo);
     redoAction_->connect(redoAction_, &QAction::triggered, this, [&]() { redoState(); });
 

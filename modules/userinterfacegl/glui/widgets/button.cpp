@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,18 +45,9 @@ namespace glui {
 
 Button::Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
                const ivec2 &extent)
-    : Element(label, processor, uiRenderer) {
-    widgetExtent_ = extent;
-    setLabelBold(true);
+    : AbstractButton(label, processor, uiRenderer, extent) {}
 
-    std::vector<std::string> btnFiles = {"button-normal.png",  "button-pressed.png",
-                                         "button-checked.png", "button-halo.png",
-                                         "button-halo.png",    "button-halo.png"};
-    uiTextures_ = uiRenderer_->createUITextures(
-        "button", btnFiles, module::getModulePath("UserInterfaceGL", ModulePath::Images));
-}
-
-void Button::renderWidget(const ivec2 &origin) {
+void Button::renderWidget(const ivec2 &origin, const size2_t &) {
     TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();
@@ -64,9 +55,10 @@ void Button::renderWidget(const ivec2 &origin) {
     // bind textures
     auto &uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
+    uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
-    uiShader.setUniform("extent", vec2(widgetExtent_));
+    uiShader.setUniform("extent", vec2(getWidgetExtentScaled()));
 
     // set up picking color
     uiShader.setUniform("pickingColor", pickingMapper_.getColor(0));
@@ -75,31 +67,6 @@ void Button::renderWidget(const ivec2 &origin) {
 
     // render quad
     uiRenderer_->getMeshDrawer()->draw();
-}
-
-ivec2 Button::computeLabelPos(int descent) const {
-    // align label to be vertically and horizontally centered within the button
-    if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
-        vec2 labelSize(labelExtent_);
-        labelSize.y -= descent;
-        ivec2 labelOrigin(ivec2(glm::floor(vec2(widgetExtent_) * 0.5f + 0.5f)));
-        // compute offset for vertical alignment in the center
-        vec2 labelOffset(-labelSize.x * 0.5f, -labelSize.y * 0.5f);
-
-        return ivec2(labelOrigin + ivec2(labelOffset + 0.5f));
-    }
-    return ivec2(0);
-}
-
-Element::UIState Button::uiState() const {
-    return (checked_ ? UIState::Checked : pushed_ ? UIState::Pressed : UIState::Normal);
-}
-
-vec2 Button::marginScale() const {
-    if (uiTextures_) {
-        return (vec2(uiTextures_->getDimensions()) / vec2(widgetExtent_));
-    }
-    return vec2(1.0f);
 }
 
 }  // namespace glui

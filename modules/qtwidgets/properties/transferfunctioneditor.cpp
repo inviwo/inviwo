@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -260,9 +260,9 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void TransferFunctionEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
+    mouseDoubleClick_ = true;
     if (selectedItems().size() > 0) {
         colorDialog_->show();
-        mouseDoubleClick_ = true;
         e->accept();
     } else {
         QGraphicsScene::mouseDoubleClickEvent(e);
@@ -478,13 +478,8 @@ void TransferFunctionEditor::addControlPoint(QPointF pos, vec4 color) {
     } else if (pos.x() > width()) {
         pos.setX(width());
     }
-    if (pos.y() < 0.0) {
-        pos.setY(0.0);
-    } else if (pos.y() > height()) {
-        pos.setY(height());
-    }
     NetworkLock lock;
-    transferFunction_->addPoint(vec2(pos.x() / width(), pos.y() / height()), color);
+    transferFunction_->addPoint(static_cast<float>(pos.x() / width()), color);
 }
 
 void TransferFunctionEditor::removeControlPoint(TransferFunctionEditorControlPoint* controlPoint) {
@@ -508,12 +503,10 @@ TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraph
 }
 
 void TransferFunctionEditor::onControlPointAdded(TransferFunctionDataPoint* p) {
-    auto newpoint = new TransferFunctionEditorControlPoint(p, dataMap_, controlPointSize_);
-    auto it = std::lower_bound(points_.begin(), points_.end(), newpoint, comparePtr{});
+    auto newpoint = new TransferFunctionEditorControlPoint(p, this, dataMap_, controlPointSize_);
+    auto it = std::upper_bound(points_.begin(), points_.end(), newpoint, comparePtr{});
     it = points_.insert(it, newpoint);
-
     updateConnections();
-    addItem(newpoint);
 }
 
 void TransferFunctionEditor::onControlPointRemoved(TransferFunctionDataPoint* p) {

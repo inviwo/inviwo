@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -111,7 +111,7 @@ Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
     const Vector<SpatialDims, double> &pos) const {
     if (space_ != Space::Data) {
         const auto p = transform_ * Vector<SpatialDims + 1, double>(pos, 1.0);
-        return sampleDataSpace(dvec3(p) / p.w);
+        return sampleDataSpace(Vector<SpatialDims, double>(p) / p[SpatialDims]);
     } else {
         return sampleDataSpace(pos);
     }
@@ -127,9 +127,9 @@ template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
     const Vector<SpatialDims, double> &pos, Space space) const {
     if (space != Space::Data) {
-        const dmat4 m{spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data)};
+        const Matrix<SpatialDims+1,double> m{spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data)};
         const auto p = m * Vector<SpatialDims + 1, double>(pos, 1.0);
-        return sampleDataSpace(dvec3(p) / p.w);
+        return sampleDataSpace(Vector<SpatialDims, double>(p) / p[SpatialDims]);
     } else {
         return sampleDataSpace(pos);
     }
@@ -145,7 +145,7 @@ bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(
     const Vector<SpatialDims, double> &pos) const {
     if (space_ != Space::Data) {
         const auto p = transform_ * Vector<SpatialDims + 1, double>(pos, 1.0);
-        return withinBoundsDataSpace(dvec3(p) / p.w);
+        return withinBoundsDataSpace(Vector<SpatialDims, double>(p) / p[SpatialDims]);
     } else {
         return withinBoundsDataSpace(pos);
     }
@@ -161,9 +161,9 @@ template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(const Vector<SpatialDims, double> &pos,
                                                             Space space) const {
     if (space != Space::Data) {
-        const dmat4 m{spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data)};
+        const Matrix<SpatialDims+1,double> m{ spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data) };
         const auto p = m * Vector<SpatialDims + 1, double>(pos, 1.0);
-        return withinBoundsDataSpace(dvec3(p) / p.w);
+        return withinBoundsDataSpace(Vector<SpatialDims, double>(p) / p[SpatialDims]);
     } else {
         return withinBoundsDataSpace(pos);
     }

@@ -83,6 +83,7 @@ target_include_directories(gtest INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include/ext/gtest>
 )
+set_target_properties(gtest PROPERTIES VERSION 1.7.0 SOVERSION 1.7)
 
 target_compile_definitions(gtest INTERFACE -DGTEST_HAS_TR1_TUPLE=0)
 if(BUILD_SHARED_LIBS)

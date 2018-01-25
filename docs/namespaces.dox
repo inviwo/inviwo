@@ -1,0 +1,72 @@
+// This file makes namespaces, and functions in them, appear in doxygen.
+// (namespaces must be documented for functions to appear) 
+// We collect them in this file since the namespaces appear in many places.
+// http://doxygen.10944.n7.nabble.com/C-functions-missing-in-documentation-td3393.html
+
+/**
+ * \namespace inviwo inviwo  
+ */
+
+/**
+ * \namespace inviwo::util util
+ */
+
+/**
+ * \namespace inviwo::utilqt utilqt
+ */
+
+/**
+ * \namespace inviwo::utilcl utilcl
+ */
+
+/**
+ * \namespace inviwo::utilgl utilgl
+ */
+
+/**
+ * \namespace inviwo::utildoc utildoc
+ */
+
+/**
+ * \namespace inviwo::cimgutil cimgutil
+ */
+
+/**
+ * \namespace inviwo::colorbrewer colorbrewer
+ */
+
+/**
+ * \namespace inviwo::eigenutil eigenutil
+ */
+
+/**
+ * \namespace inviwo::meshutil meshutil
+ */
+
+/**
+ * \namespace inviwo::plot plot
+ */
+
+/**
+ * \namespace inviwo::pyutil pyutil
+ */
+
+/**
+ * \namespace inviwo::inviwopy inviwopy
+ */
+
+/**
+ * \namespace inviwo::statsutil statsutil 
+ */
+
+/**
+ * \namespace inviwo::swizzlemasks swizzlemasks 
+ */
+
+/**
+ * \namespace inviwo::color color
+ */
+
+/**
+ * \namespace inviwo::filesystem filesystem
+ */

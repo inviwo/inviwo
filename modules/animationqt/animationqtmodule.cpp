@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
             menu = menu_.get();
             // Release pointer if destroyed by Qt before module is destroyed
             QObject::connect(menu_.get(), &QObject::destroyed,
-                             [&](QObject *obj) { menu_.release(); });
+                             [&](QObject* obj) { menu_.release(); });
         }
         auto& controller =
             app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
@@ -79,12 +79,13 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
                                                                            "Animation Editor", win);
         menu->addAction(editor_->toggleViewAction());
         editor_->hide();
+        editor_->loadState();
         // Release pointer if destroyed by Qt before module is destroyed
-        QObject::connect(editor_.get(), &QObject::destroyed, [&](QObject *obj) { editor_.release(); });
-
+        QObject::connect(editor_.get(), &QObject::destroyed,
+                         [this](QObject* obj) { editor_.release(); });
     }
 }
 
 AnimationQtModule::~AnimationQtModule() = default;
 
-} // namespace inviwo
+}  // namespace inviwo

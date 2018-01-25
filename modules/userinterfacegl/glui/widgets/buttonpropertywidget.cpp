@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,13 +48,69 @@ ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty &property, Processor &
     updateFromProperty();
 }
 
-void ButtonPropertyWidget::updateFromProperty() { setLabel(property_->getDisplayName()); }
+void ButtonPropertyWidget::updateFromProperty() {
+    setLabel(property_->getDisplayName());
+    setEnabled(!property_->getReadOnly());
+}
 
-void ButtonPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
+void ButtonPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
 
-void ButtonPropertyWidget::onSetDisplayName(Property*, const std::string &displayName) {
+void ButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
+}
+
+void ButtonPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+    setEnabled(!readonly);
+}
+
+ToolButtonPropertyWidget::ToolButtonPropertyWidget(const std::string &imageFileName,
+                                                   ButtonProperty &property, Processor &processor,
+                                                   Renderer &uiRenderer, const ivec2 &extent)
+    : ToolButton(imageFileName, processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
+    property_->addObserver(this);
+    property_->registerWidget(this);
+    action_ = [&]() {
+        if (!property_->getReadOnly()) {
+            property_->pressButton();
+        }
+    };
+    updateFromProperty();
+}
+
+ToolButtonPropertyWidget::ToolButtonPropertyWidget(ButtonProperty &property,
+                                                   std::shared_ptr<Texture2D> image,
+                                                   Processor &processor, Renderer &uiRenderer,
+                                                   const ivec2 &extent)
+    : ToolButton(image, processor, uiRenderer, extent)
+    , PropertyWidget(&property)
+    , property_(&property) {
+    property_->addObserver(this);
+    property_->registerWidget(this);
+    action_ = [&]() {
+        if (!property_->getReadOnly()) {
+            property_->pressButton();
+        }
+    };
+    updateFromProperty();
+}
+
+void ToolButtonPropertyWidget::updateFromProperty() {
+    setLabel(property_->getDisplayName());
+    setEnabled(!property_->getReadOnly());
+}
+
+void ToolButtonPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+
+void ToolButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+    setLabel(displayName);
+    property_->propertyModified();
+}
+
+void ToolButtonPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+    setEnabled(!readonly);
 }
 
 }  // namespace glui

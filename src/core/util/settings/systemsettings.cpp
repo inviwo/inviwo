@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                              {"developerMode", "Developer Mode", UsageMode::Development}},
                             1)
     , poolSize_("poolSize", "Pool Size", defaultPoolSize(), 0, 32)
-    , txtEditor_("txtEditor", "Use system text editor", true)
     , enablePortInspectors_("enablePortInspectors", "Enable port inspectors", true)
     , portInspectorSize_("portInspectorSize", "Port inspector size", 128, 1, 1024)
 #if __APPLE__
@@ -56,7 +55,6 @@ SystemSettings::SystemSettings(InviwoApplication* app)
 
     addProperty(applicationUsageMode_);
     addProperty(poolSize_);
-    addProperty(txtEditor_);
     addProperty(enablePortInspectors_);
     addProperty(portInspectorSize_);
     addProperty(enableTouchProperty_);

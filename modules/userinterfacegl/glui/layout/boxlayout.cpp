@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,13 @@ void BoxLayout::setSpacing(int spacing) { spacing_ = spacing; }
 
 int BoxLayout::getSpacing() const { return spacing_; }
 
-void BoxLayout::render(const ivec2 &topLeft, const ivec2 &canvasDim) {
+void BoxLayout::setScalingFactor(double factor) {
+    for (Element &elem : uiElements_) {
+        elem.setScalingFactor(factor);
+    }
+}
+
+void BoxLayout::render(const ivec2 &topLeft, const size2_t &canvasDim) {
     ivec2 pos(topLeft + ivec2(margins_.y, -margins_.x));
 
     if (direction_ == LayoutDirection::Vertical) {
@@ -115,7 +121,7 @@ void BoxLayout::render(const ivec2 &topLeft, const ivec2 &canvasDim) {
 void BoxLayout::addElement(Element &element) { uiElements_.push_back(std::ref(element)); }
 
 void BoxLayout::insertElement(int index, Element &element) {
-    if ((index < 0) || (index >= uiElements_.size())) {
+    if ((index < 0) || (index >= static_cast<int>(uiElements_.size()))) {
         addElement(element);
     } else {
         uiElements_.insert(uiElements_.begin() + index, std::ref(element));

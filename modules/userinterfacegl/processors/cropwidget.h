@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -131,8 +131,8 @@ private:
     FloatProperty offset_;
     FloatProperty scale_;
     std::array<CropAxis, 3> cropAxes_;
-    CompositeProperty outputProps_;
     BoolProperty relativeRangeAdjustment_;
+    CompositeProperty outputProps_;
 
     CameraProperty camera_;
 

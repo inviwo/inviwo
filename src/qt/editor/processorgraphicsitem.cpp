@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -116,7 +116,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         LabelGraphicsItemObserver::addObservation(identifierLabel_);
     }
     {
-        tagLabel_ = new LabelGraphicsItem(this, width/2, Qt::AlignTop);
+        tagLabel_ = new LabelGraphicsItem(this, width / 2, Qt::AlignTop);
         tagLabel_->setDefaultTextColor(Qt::lightGray);
         QFont classFont("Segoe", labelHeight, QFont::Bold, false);
         classFont.setPixelSize(pointSizeToPixelSize(labelHeight));
@@ -321,16 +321,31 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (change) {
-        case QGraphicsItem::ItemPositionHasChanged:
-            if (processorMeta_) processorMeta_->setPosition(ivec2(x(), y()));
-            break;
+        case QGraphicsItem::ItemPositionHasChanged: {
+            QPointF newPos = value.toPointF();
+            newPos.setX(round(newPos.x()));
+            newPos.setY(round(newPos.y()));
+            if (processorMeta_) {
+                processorMeta_->setPosition(ivec2(newPos.x(), newPos.y()));
+            }
+            if (auto editor = qobject_cast<NetworkEditor*>(scene())) {
+                editor->updateSceneSize();
+            }
+            return newPos;
+        }
         case QGraphicsItem::ItemSelectedHasChanged:
             updateWidgets();
             if (!highlight_ && processorMeta_) processorMeta_->setSelected(isSelected());
             break;
-        case QGraphicsItem::ItemVisibleHasChanged:
-            if (processorMeta_) processorMeta_->setVisible(isVisible());
+        case QGraphicsItem::ItemVisibleHasChanged: {
+            if (processorMeta_) {
+                processorMeta_->setVisible(isVisible());
+            }
+            if (auto editor = qobject_cast<NetworkEditor*>(scene())) {
+                editor->updateSceneSize();
+            }
             break;
+        }
         case QGraphicsItem::ItemSceneHasChanged:
             updateWidgets();
             break;
@@ -347,7 +362,7 @@ void ProcessorGraphicsItem::updateWidgets() {
         if (!highlight_) {
             if (auto editor = getNetworkEditor()) {
                 editor->addPropertyWidgets(processor_);
-                editor->showProecssorHelp(processor_->getClassIdentifier());
+                editor->showProcessorHelp(processor_->getClassIdentifier());
             }
         }
     } else {
@@ -460,6 +475,8 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Code"), processor_->getCodeState());
     tb(H("Tags"), processor_->getTags().getString());
     tb(H("Ready"), processor_->isReady() ? "Yes" : "No");
+    tb(H("Source"), processor_->isSource() ? "Yes" : "No");
+    tb(H("Sink"), processor_->isSink() ? "Yes" : "No");
 
 #if IVW_PROFILING
     tb(H("Eval Count"), processCount_);

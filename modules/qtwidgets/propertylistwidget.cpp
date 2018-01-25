@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,9 +76,10 @@ void PropertyListFrame::paintEvent(QPaintEvent*) {
 }
 
 PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
-    : InviwoDockWidget(tr("Properties"), parent), app_{app} {
-    setObjectName("ProcessorListWidget");
+    : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget"), app_{app} {
+
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    resize(QSize(400, 700)); // default size
 
     QSizePolicy sp(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     sp.setVerticalStretch(1);
@@ -113,6 +114,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
 
     scrollArea_->setWidget(listWidget_);
     setWidget(scrollArea_);
+
 }
 
 PropertyListWidget::~PropertyListWidget() = default;

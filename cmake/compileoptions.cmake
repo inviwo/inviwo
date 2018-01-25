@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2017 Inviwo Foundation
+# Copyright (c) 2013-2018 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 # ivw_define_standard_properties(target1 [target2 ...])
 
 option(IVW_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
+option(IVW_FORCE_ASSERTIONS "Force use of assertions when not in debug mode" OFF)
 
 function(ivw_define_standard_properties)
     foreach(target ${ARGN})
@@ -94,6 +95,10 @@ macro(ivw_define_standard_definitions project_name target)
         target_compile_definitions(${target} PRIVATE IVW_PROFILING)
     endif()
 
+    if(IVW_FORCE_ASSERTIONS)
+        target_compile_definitions(${target} PRIVATE IVW_FORCE_ASSERTIONS)
+    endif()
+    
     if(BUILD_SHARED_LIBS)
         target_compile_definitions(${target} PRIVATE INVIWO_ALL_DYN_LINK)
     endif()

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,14 +28,46 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/version.h>
+#include <cstdio>
 
 namespace inviwo {
 
 Version::Version(std::string versionString) {
-    sscanf(versionString.c_str(), "%u.%u.%u.%u", &major, &minor, &patch, &build);
+    std::sscanf(versionString.c_str(), "%u.%u.%u.%u", &major, &minor, &patch, &build);
 }
 
 Version::Version(const char* versionString) : Version(std::string(versionString)) {}
 
-} // namespace
+Version::Version(unsigned int major_, unsigned int minor_, unsigned int patch_, unsigned int build_)
+    : major{major_}, minor{minor_}, patch{patch_}, build{build_} {}
 
+bool Version::semanticVersionEqual(const Version& other) const {
+    if (major < 1 || other.major < 1) {
+        // Each version increment is a breaking change
+        // when major version is 0
+        return std::tie(major, minor, patch) == std::tie(other.major, other.minor, other.patch);
+    } else {
+        return std::tie(major, minor) == std::tie(other.major, other.minor);
+    }
+}
+
+bool operator<(const Version& lhs, const Version& rhs) {
+    // Keep ordering using lexicographical comparison provided by std::tie:
+    return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build) <
+           std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
+}
+bool operator==(const Version& lhs, const Version& rhs) {
+    // Keep ordering using lexicographical comparison provided by std::tie:
+    return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build) ==
+           std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
+}
+
+bool operator!=(const Version& lhs, const Version& rhs) { return !(lhs == rhs); }
+
+bool operator>(const Version& lhs, const Version& rhs) { return !(lhs <= rhs); }
+
+bool operator>=(const Version& lhs, const Version& rhs) { return !(lhs < rhs); }
+
+bool operator<=(const Version& lhs, const Version& rhs) { return (lhs < rhs) || (lhs == rhs); }
+
+}  // namespace inviwo

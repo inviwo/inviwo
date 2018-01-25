@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -114,47 +114,69 @@ bool OpenCL::isOpenGLSharingEnabled() const {
                          })) != contextProperties.end();
 }
 
-/*! \brief Get the device that has most compute units.
-    *
-    *  @param bestDevice Set to found device, if found.
-    *  @param onPlatform Set to platform that device exist on, if found.
-    *  \return True if any device found, false otherwise.
-    */
 bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPlatform) {
-    bool foundDevice = false;
     std::vector<cl::Platform> platforms;
     cl::Platform::get(&platforms);
-    cl_uint maxComputeUnits = 0;
-    cl_device_type deviceType = CL_DEVICE_TYPE_DEFAULT;
-    // Search for best device
-    for (::size_t i = 0; i < platforms.size(); ++i) {
-        std::vector<cl::Device> devices;
+    auto glVendor = std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
 
+    // Store found devices in a local struct to only have to query device info once
+    struct Device {
+        Device(cl::Device device) : device(device) {
+            cl_int err;
+            vendor = device.getInfo<CL_DEVICE_VENDOR>(&err);
+            if (err != CL_SUCCESS) throw cl::Error(err, "Failed to get the device vendor");
+            device_type = device.getInfo<CL_DEVICE_TYPE>(&err);
+            if (err != CL_SUCCESS) throw cl::Error(err, "Failed to get the device type");
+            max_compute_units = device.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>(&err);
+            if (err != CL_SUCCESS)
+                throw cl::Error(err, "Failed to get the device max number of compute units ");
+        }
+        cl::Device device;
+        std::string vendor;
+        cl_device_type device_type;
+        cl_uint max_compute_units;
+    };
+
+    std::vector<Device> devices;
+    for (auto& platform : platforms) {
         try {
-            platforms[i].getDevices(CL_DEVICE_TYPE_ALL, &devices);
-
-            // platforms[i].getDevices(CL_DEVICE_TYPE_CPU, &devices);
-            for (::size_t j = 0; j < devices.size(); ++j) {
-                cl_uint tmpMaxComputeUnits;
-                devices[j].getInfo(CL_DEVICE_MAX_COMPUTE_UNITS, &tmpMaxComputeUnits);
-                cl_device_type otherDeviceType = devices[j].getInfo<CL_DEVICE_TYPE>();
-                // Select if the current device is not a GPU device
-                // or if the new one has more compute units than the previous GPU device
-                if (deviceType != CL_DEVICE_TYPE_GPU || (otherDeviceType == CL_DEVICE_TYPE_GPU &&
-                                                         maxComputeUnits < tmpMaxComputeUnits)) {
-                    bestDevice = devices[j];
-                    onPlatform = platforms[i];
-                    maxComputeUnits = tmpMaxComputeUnits;
-                    deviceType = otherDeviceType;
-                    foundDevice = true;
+            std::vector<cl::Device> devicesTmp;
+            platform.getDevices(CL_DEVICE_TYPE_ALL, &devicesTmp);
+            for (auto& d : devicesTmp) {
+                try {
+                    devices.emplace_back(d);
+                } catch (cl::Error &e) {
+                    // Error getting device info, continue with other devices
+                    LogWarnCustom("InviwoOpenCL","Failed to get device info, skipping this device: (" << e.what()
+                                                                                 << ")");
                 }
             }
+
         } catch (cl::Error&) {
-            // Error getting device, continue with others
+            // Error getting devices, continue with next platform
         }
     }
 
-    return foundDevice;
+    if (devices.empty()) return false;
+    std::sort(devices.begin(), devices.end(), [&](Device& a, Device& b) {
+
+        if (a.vendor == glVendor && b.vendor != glVendor) return true;
+        if (a.vendor != glVendor && b.vendor == glVendor) return false;
+
+        if (a.device_type != b.device_type) {
+            if (a.device_type == CL_DEVICE_TYPE_GPU)
+                return true;
+            else if (b.device_type == CL_DEVICE_TYPE_GPU)
+                return false;
+        }
+
+        return a.max_compute_units > b.max_compute_units;
+
+    });
+
+    bestDevice = devices.front().device;
+    onPlatform = bestDevice.getInfo<CL_DEVICE_PLATFORM>();
+    return true;
 }
 
 void OpenCL::printBuildError(const std::vector<cl::Device>& devices, const cl::Program& program,

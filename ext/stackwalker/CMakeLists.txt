@@ -21,6 +21,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Create library
 add_library(stackwalker ${SOURCE_FILES} ${HEADER_FILES})
 add_library(inviwo::stackwalker ALIAS stackwalker)
+set_target_properties(stackwalker PROPERTIES VERSION 14.0.0 SOVERSION 14.0)
+
 #--------------------------------------------------------------------
 # Define defintions
 ivw_define_standard_definitions(stackwalker stackwalker)

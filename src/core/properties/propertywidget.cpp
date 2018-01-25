@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
 
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/property.h>
-#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
@@ -48,70 +47,5 @@ Property* PropertyWidget::getProperty() { return property_; }
 PropertyEditorWidget* PropertyWidget::getEditorWidget() const { return nullptr; }
 
 bool PropertyWidget::hasEditorWidget() const { return false; }
-
-//////////////////////////////////////////////////////////////////////////
-
-// Additional widgets owned by property
-
-PropertyEditorWidget::PropertyEditorWidget(Property* property) : property_(property), metaData_(nullptr) {
-    ivwAssert(property != nullptr, "property must not be null");
-    metaData_ = property->createMetaData<PropertyEditorWidgetMetaData>(
-        PropertyEditorWidgetMetaData::CLASS_IDENTIFIER);
-}
-
-PropertyEditorWidget::~PropertyEditorWidget() = default;
-
-void PropertyEditorWidget::setVisibility(bool visible) { updateVisibility(visible); }
-
-
-void PropertyEditorWidget::setDimensions(const ivec2& dimensions) {
-    updateDimensions(dimensions);
-}
-
-void PropertyEditorWidget::setPosition(const ivec2& pos) { updatePosition(pos); }
-
-void PropertyEditorWidget::setDockStatus(PropertyEditorWidgetDockStatus dockStatus) {
-    updateDockStatus(dockStatus);
-}
-
-void PropertyEditorWidget::setSticky(bool sticky) {
-    updateSticky(sticky);
-}
-
-bool PropertyEditorWidget::isVisible() const { return metaData_->isVisible(); }
-
-ivec2 PropertyEditorWidget::getPosition() const {
-    return metaData_->getWidgetPosition();
-}
-
-ivec2 PropertyEditorWidget::getDimensions() const {
-    return metaData_->getDimensions();
-}
-
-PropertyEditorWidgetDockStatus PropertyEditorWidget::getDockStatus() const {
-    return metaData_->getDockStatus();
-}
-
-bool PropertyEditorWidget::isSticky() const {
-    return metaData_->isSticky();
-}
-
-void PropertyEditorWidget::updateVisibility(bool visible) { metaData_->setVisible(visible); }
-
-
-void PropertyEditorWidget::updateDimensions(const ivec2& dimensions) {
-    metaData_->setDimensions(dimensions);
-}
-
-void PropertyEditorWidget::updatePosition(const ivec2& pos) { metaData_->setWidgetPosition(pos); }
-
-void PropertyEditorWidget::updateDockStatus(PropertyEditorWidgetDockStatus dockStatus) {
-    metaData_->setDockStatus(dockStatus);
-}
-
-void PropertyEditorWidget::updateSticky(bool sticky) {
-    metaData_->setSticky(sticky);
-}
-
 
 }  // namespace

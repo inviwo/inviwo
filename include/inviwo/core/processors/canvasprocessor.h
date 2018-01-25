@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -109,6 +109,7 @@ protected:
     CompositeProperty inputSize_;
     ButtonProperty toggleFullscreen_;
     EventProperty fullscreen_;
+    EventProperty saveLayerEvent_;
 
     BoolProperty allowContextMenu_;
 

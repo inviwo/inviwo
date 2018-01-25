@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ public:
     virtual Canvas* getCanvas() const override;
 
     // Override ProcessorObserver
-    virtual void onProcessorIdentifierChanged(Processor*, const std::string&) override;
+    virtual void onProcessorDisplayNameChanged(Processor*, const std::string&) override;
 
 protected:
     virtual void updateVisible(bool visible) override;

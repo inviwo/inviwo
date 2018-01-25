@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,6 +82,8 @@ public:
     TextRenderer& getTextRenderer(bool bold = false);
     const TextRenderer& getTextRenderer(bool bold = false) const;
 
+    int getDefaultFontSize() const;
+
     TextureQuadRenderer& getTextureQuadRenderer();
     const TextureQuadRenderer& getTextureQuadRenderer() const;
 
@@ -89,27 +91,31 @@ public:
 
     Texture2DArray* getUITextures(const std::string& name) const;
 
-    void setTextColor(const vec4& color) {
-        if (glm::any(glm::notEqual(color, colorText_))) {
-            colorText_ = color;
-            auto& shader = quadRenderer_.getShader();
-            shader.activate();
-            shader.setUniform("uiColor", color);
-        }
-    }
+    void setTextColor(const vec4& color);
     const vec4& getTextColor() const;
 
-    void setUIColor(const vec4& color) { colorUI_ = color; }
+    void setUIColor(const vec4& color);
     const vec4& getUIColor() const;
 
-    void setHoverColor(const vec4& color) { colorHover_ = color; }
+    void setSecondaryUIColor(const vec4& color);
+    const vec4& getSecondaryUIColor() const;
+
+    void setBorderColor(const vec4& color);
+    const vec4& getBorderColor() const;
+
+    void setHoverColor(const vec4& color);
     const vec4& getHoverColor() const;
+
+    void setDisabledColor(const vec4& color);
+    const vec4& getDisabledColor() const;
 
 protected:
     void setupRectangleMesh();
 
     std::shared_ptr<Texture2DArray> createUITextureObject(
         const std::vector<std::string>& textureFiles, const std::string& sourcePath) const;
+
+    const int defaultFontSize_ = 13;
 
     Shader uiShader_;
     TextRenderer textRenderer_;
@@ -122,8 +128,13 @@ protected:
     std::map<std::string, std::shared_ptr<Texture2DArray>> uiTextureMap_;
 
     vec4 colorUI_;
+    vec4 colorSecondaryUI_;
+    vec4 colorBorder_;
     vec4 colorText_;
     vec4 colorHover_;
+    vec4 colorDisabled_;
+
+    double scaling_;
 };
 
 }  // namespace glui

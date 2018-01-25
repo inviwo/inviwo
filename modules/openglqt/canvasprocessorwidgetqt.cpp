@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,9 +52,9 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     ivec2 dim = CanvasProcessorWidget::getDimensions();
     ivec2 pos = CanvasProcessorWidget::getPosition();
 
-    setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
+    setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
 
-    canvas_ = canvas_ptr(new CanvasQt(uvec2(dim.x, dim.y), processor_->getIdentifier()),
+    canvas_ = canvas_ptr(new CanvasQt(uvec2(dim.x, dim.y), processor_->getDisplayName()),
                          [&](CanvasQt* c) {
                              c->activate();
                              layout()->removeWidget(c);
@@ -192,9 +192,9 @@ void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
     QWidget::moveEvent(event);
 }
 
-void CanvasProcessorWidgetQt::onProcessorIdentifierChanged(Processor*, const std::string&) {
-    setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
-    RenderContext::getPtr()->setContextName(canvas_->contextId(), processor_->getIdentifier());
+void CanvasProcessorWidgetQt::onProcessorDisplayNameChanged(Processor*, const std::string&) {
+    setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
+    RenderContext::getPtr()->setContextName(canvas_->contextId(), processor_->getDisplayName());
 }
 
 void CanvasProcessorWidgetQt::updateVisible(bool visible) {

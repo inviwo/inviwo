@@ -27,6 +27,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Create library
 add_library(ticpp ${SOURCE_FILES} ${HEADER_FILES})
+set_target_properties(ticpp PROPERTIES VERSION 0.4 SOVERSION 0.4)
 
 #--------------------------------------------------------------------
 # Define defintions

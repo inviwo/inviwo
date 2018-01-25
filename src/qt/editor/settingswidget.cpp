@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,9 +48,10 @@
 namespace inviwo {
 
 SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindow)
-    : InviwoDockWidget(title, mainwindow), mainwindow_(mainwindow) {
-    setObjectName("SettingsWidget");
+    : InviwoDockWidget(title, mainwindow, "SettingsWidget"), mainwindow_(mainwindow) {
+
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    resize(QSize(500, 500)); // default size
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -525,7 +525,7 @@ std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {
                        {V(m, vec3(0, 1, 0)), N(m, vec3(0, 0, -1)), vec3(0, 1, 0), color}});
 
     std::uint32_t o = 0;
-    indices->add({0 + o, 2 + o, 1 + o, 0 + o, 3 + o, 2 + o});
+    indices->add({0 + o, 1 + o, 2 + o, 0 + o, 2 + o, 3 + o});
 
     mesh->addVertices({{V(m, vec3(0, 0, 1)), N(m, vec3(0, 0, 1)), vec3(0, 0, 1), color},
                        {V(m, vec3(1, 0, 1)), N(m, vec3(0, 0, 1)), vec3(1, 0, 1), color},
@@ -541,7 +541,7 @@ std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {
                        {V(m, vec3(0, 1, 1)), N(m, vec3(-1, 0, 0)), vec3(0, 1, 1), color},
                        {V(m, vec3(0, 0, 1)), N(m, vec3(-1, 0, 0)), vec3(0, 0, 1), color}});
     o += 4;
-    indices->add({0 + o, 2 + o, 1 + o, 0 + o, 3 + o, 2 + o});
+    indices->add({0 + o, 1 + o, 2 + o, 0 + o, 2 + o, 3 + o});
 
     mesh->addVertices({{V(m, vec3(1, 0, 0)), N(m, vec3(1, 0, 0)), vec3(1, 0, 0), color},
                        {V(m, vec3(1, 1, 0)), N(m, vec3(1, 0, 0)), vec3(1, 1, 0), color},
@@ -556,7 +556,7 @@ std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {
                        {V(m, vec3(1, 1, 1)), N(m, vec3(0, 1, 0)), vec3(1, 1, 1), color},
                        {V(m, vec3(0, 1, 1)), N(m, vec3(0, 1, 0)), vec3(0, 1, 1), color}});
     o += 4;
-    indices->add({0 + o, 2 + o, 1 + o, 0 + o, 3 + o, 2 + o});
+    indices->add({0 + o, 1 + o, 2 + o, 0 + o, 2 + o, 3 + o});
 
     mesh->addVertices({{V(m, vec3(0, 0, 0)), N(m, vec3(0, -1, 0)), vec3(0, -1, 0), color},
                        {V(m, vec3(1, 0, 0)), N(m, vec3(0, -1, 0)), vec3(1, -1, 0), color},

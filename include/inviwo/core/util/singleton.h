@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,11 +53,6 @@ public:
     Singleton<T>(Singleton<T> const&) = delete;
     void operator=(Singleton<T> const&) = delete;
 
-    /**
-     * For Singletons in the inviwo::core init should be called in
-     * void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc).
-     *
-     */
     static void init() {
         if (instance_ != nullptr) {
             throw SingletonException("Singleton already initialized", IvwContextCustom("Singleton"));
@@ -93,11 +88,14 @@ public:
         instance_ = nullptr;
     };
 
+    static bool isInitialized() {
+        return instance_ != nullptr;
+    }
+
     virtual ~Singleton() { Singleton<T>::resetInstance(); };
 
 private:
     static void resetInstance() { instance_ = nullptr; };
-
     static T* instance_;
 };
 

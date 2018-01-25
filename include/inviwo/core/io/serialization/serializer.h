@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@
 
 #include <type_traits>
 #include <list>
+#include <bitset>
 
 namespace inviwo {
 
@@ -126,6 +127,10 @@ public:
     // glm matrix types
     template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type = 0>
     void serialize(const std::string& key, const Mat& data);
+
+    // bitsets
+    template<unsigned N>
+    void serialize(const std::string& key, const std::bitset<N>& bits);
 
     // serializable classes
     void serialize(const std::string& key, const Serializable& sObj);
@@ -283,6 +288,11 @@ void Serializer::serialize(const std::string& key, const Mat& data) {
     for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
         serialize("col" + toString(i), data[i]);
     }
+}
+
+template <unsigned N>
+void Serializer::serialize(const std::string& key, const std::bitset<N>& bits) {
+    serialize(key, bits.to_string());
 }
 
 }  // namespace

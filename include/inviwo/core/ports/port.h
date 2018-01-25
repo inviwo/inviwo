@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,7 @@ class IVW_CORE_API Port : public Serializable {
 public:
     virtual ~Port() = default;
     std::string getIdentifier() const;
+    void setIdentifier(const std::string& name);
     Processor* getProcessor() const;
 
     virtual std::string getClassIdentifier() const = 0;
@@ -81,7 +82,6 @@ protected:
      */
     Port(std::string identifier = "");
 
-    void setIdentifier(const std::string& name);
     void setProcessor(Processor* processor);
 
     std::string identifier_;

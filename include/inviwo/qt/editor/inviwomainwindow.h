@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,7 @@ class HelpWidget;
 class InviwoApplicationQt;
 class NetworkSearch;
 class InviwoEditMenu;
+class InviwoAboutWindow;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -149,6 +150,7 @@ private:
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     HelpWidget* helpWidget_;
     NetworkSearch* networkSearch_;
+    InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
     
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
@@ -162,6 +164,7 @@ private:
     bool maximized_;
 
     // paths
+    const QString untitledWorkspaceName_;
     QString rootDir_;
     QString workspaceFileDir_;
     QString currentWorkspaceFileName_;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@
 #include <QPoint>
 #include <QSizeF>
 #include <QSize>
+#include <QColor>
 #include <QMainWindow>
 #include <QImage>
 #include <warn/pop>
@@ -105,6 +106,12 @@ IVW_MODULE_QTWIDGETS_API ivec2 toGLM(QSize);
 
 IVW_MODULE_QTWIDGETS_API QSizeF toQSize(dvec2);
 IVW_MODULE_QTWIDGETS_API QSize toQSize(ivec2);
+
+IVW_MODULE_QTWIDGETS_API vec4 tovec4(const QColor&);
+IVW_MODULE_QTWIDGETS_API ivec4 toivec4(const QColor&);
+
+IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec4&);
+IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec4&);
 
 /**
  * \brief Retrieve the QMainWindow named "InviwoMainWindow" from QApplication.

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ASSERTION_H
@@ -36,30 +36,35 @@
 
 namespace inviwo {
 
-IVW_CORE_API void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
-                               std::string message);
+IVW_CORE_API void assertion(const char* fileName, const char* functionName, long lineNumber,
+                            std::string message);
 
 namespace util {
 
 IVW_CORE_API void debugBreak();
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
-#if defined(IVW_DEBUG)
-#define ivwAssert(condition, message)                                                  \
-    {                                                                                  \
-                                                                                       \
-        if (!(bool(condition))){                                                       \
-            std::ostringstream stream__;                                               \
-            stream__ << message;                                                       \
-            inviwo::ivwAssertion(__FILE__, __FUNCTION__, __LINE__, (stream__.str()));  \
-        }                                                                              \
+#if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
+#define IVW_ASSERT(condition, message)                                               \
+    {                                                                                \
+        if (!(bool(condition))) {                                                    \
+            std::ostringstream stream__;                                             \
+            stream__ << message;                                                     \
+            ::inviwo::assertion(__FILE__, __FUNCTION__, __LINE__, (stream__.str())); \
+        }                                                                            \
     }
+
+// Deprecated
+#define ivwAssert(condition, message) IVW_ASSERT(condition, message)
+
 #else
+
+#define IVW_ASSERT(condition, message)
 #define ivwAssert(condition, message)
+
 #endif
 
-#endif // IVW_ASSERTION_H
-
+#endif  // IVW_ASSERTION_H

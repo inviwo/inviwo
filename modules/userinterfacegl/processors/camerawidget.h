@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CAMERAINTERACTIONWIDGET_H
@@ -51,7 +51,7 @@ namespace inviwo {
 class MouseEvent;
 class Mesh;
 class MeshDrawerGL;
-class PickingObject; 
+class PickingObject;
 class Image;
 class ImageGL;
 
@@ -65,36 +65,39 @@ class ImageGL;
  *
  * ### Outports
  *   * __ImageOutport__ Output image
- * 
+ *
  * ### Properties
  *   * __Enabled (settings)__ Enables interactions with the widget
  *   * __Invert Directions (settings)__ Inverts the rotation directions
  *   * __Show Rotation Widget (settings)__ Shows an additional widget for rolling the camera
  *   * __Speed Scaling (settings)__ Scaling factor (sensitivity) for rotation with a mouse drag
- *   * __Angle per click (settings)__  Rotation angle in degrees when a rotation is triggered by a mouse click
- *   * __Scaling (appearance)__ Scales the size of the widget (a factor of 1 corresponds to 300 pixel)
+ *   * __Angle per click (settings)__  Rotation angle in degrees when a rotation is triggered by a
+ * mouse click
+ *   * __Scaling (appearance)__ Scales the size of the widget (a factor of 1 corresponds to 300
+ * pixel)
  *   * __Position (appearance)__  Positioning of the interaction widget within the input image
  *   * __Anchor (appearance)__ Anchor position of the widget
- *   * __Show Cube (appearance)__ Toggles a cube behind the widget for showing the camera orientation
+ *   * __Show Cube (appearance)__ Toggles a cube behind the widget for showing the camera
+ * orientation
  *   * __Cube Color (appearance)__ Custom color for the cube
- *   * __RGB Axis Coloring (appearance)__ Map red, green, and blue to the respective orientation arrows of the widget
+ *   * __RGB Axis Coloring (appearance)__ Map red, green, and blue to the respective orientation
+ * arrows of the widget
  *   * __User Color (appearance)__ Apply a custom color onto the entire widget
  *   * __Camera (output)__  Camera affected by the widget interaction
  *   * __Rotation Matrix (output)__  Matrix representing the camera orientation
  */
 
-
 /**
  * \class CameraWidget
  * \brief provides a mesh-based interaction widget for the camera rotation
  */
-class IVW_MODULE_USERINTERFACEGL_API CameraWidget : public Processor { 
+class IVW_MODULE_USERINTERFACEGL_API CameraWidget : public Processor {
 public:
     enum class Interaction { HorizontalRotation, VerticalRotation, FreeRotation, Roll, Zoom, None };
 
     CameraWidget();
     virtual ~CameraWidget();
-     
+
     virtual void process() override;
 
     virtual void initializeResources() override;
@@ -104,10 +107,10 @@ public:
 
 private:
     void updateWidgetTexture(const ivec2 &widgetSize);
-    void drawOutlines();
     void drawWidgetTexture();
 
     void objectPicked(PickingEvent *p);
+    void saveInitialCameraState();
     void loadMesh();
 
     void interaction(Interaction dir, dvec2 mouseDelta);
@@ -134,6 +137,7 @@ private:
     BoolProperty showRollWidget_;
     FloatProperty speed_;
     FloatProperty angleIncrement_;
+    IntProperty minTouchMovement_;
 
     CompositeProperty appearance_;
     FloatProperty scaling_;
@@ -160,9 +164,11 @@ private:
 
     // number of available interaction elements. Each interaction widget has two trigger areas to
     // distinguish the direction of rotation when clicked
-    static const int numInteractionWidgets = 10; //!< horizontal (left, right), vertical (up, down), center (2), roll (left, right), zoom (out, in)
+    static const int numInteractionWidgets = 10;  //!< horizontal (left, right), vertical (up,
+                                                  //!< down), center (2), roll (left, right), zoom
+                                                  //!< (out, in)
 
-    // meshes of the interaction widgets. 
+    // meshes of the interaction widgets.
     // 1) camera widget
     // 2) camera widget including widget for "camera roll"
     // 3) camera zoom buttons
@@ -184,18 +190,17 @@ private:
 
     // initial state of camera when an interaction is triggered to keep the rotation axis consistent
     struct InitialState {
-        dvec2 mousePos;
         vec3 camDir;
         vec3 camUp;
         vec3 camRight;
         double zoom_;
     } initialState_;
-    dvec2 prevMousePos_;
 
-    std::shared_ptr<Image> widgetImage_; //!< the widget is rendered into this image, which is then drawn on top of the input image
-    ImageGL *widgetImageGL_; //!< keep an ImageGL representation around to avoid overhead
+    std::shared_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
+                                          //!< drawn on top of the input image
+    ImageGL *widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_CAMERAINTERACTIONWIDGET_H
+#endif  // IVW_CAMERAINTERACTIONWIDGET_H

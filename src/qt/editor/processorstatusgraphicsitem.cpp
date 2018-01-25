@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
     , processor_(processor)
     , size_(10.0f)
     , lineWidth_(1.0f)
-    , state_(State::Invalid)
-    , current_(State::Invalid) {
+    , state_(processor_->isReady() ? State::Ready : State::Invalid)
+    , current_(processor_->isReady() ? State::Ready : State::Invalid) {
     setRect(-0.5f * size_ - lineWidth_, -0.5f * size_ - lineWidth_, size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
 }
@@ -91,9 +91,7 @@ void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
     p->restore();
 }
 
-void ProcessorStatusGraphicsItem::activityIndicatorChanged(bool active) {
-    setRunning(active);
-}
+void ProcessorStatusGraphicsItem::activityIndicatorChanged(bool active) { setRunning(active); }
 
 void ProcessorStatusGraphicsItem::update(const QRectF& rect) {
     if (state_ != State::Running) {
@@ -106,4 +104,4 @@ void ProcessorStatusGraphicsItem::update(const QRectF& rect) {
     if (current_ != state_) EditorGraphicsItem::update(rect);
 }
 
-}  // namespace
+}  // namespace inviwo

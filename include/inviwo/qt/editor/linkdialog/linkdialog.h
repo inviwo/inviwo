@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,17 +54,11 @@ class LinkDialogGraphicsView;
 class LinkDialogGraphicsScene;
 
 class IVW_QTEDITOR_API CheckableQComboBox : public QComboBox {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     CheckableQComboBox(QWidget* parent, std::string widgetName, std::vector<std::string> options);
     virtual ~CheckableQComboBox();
     bool isItemChecked(int i);
     std::vector<std::string> getCheckedItems();
-public slots:
-    void onSmartLinkOptionChecked(const QModelIndex&, const QModelIndex&);
 
 private:
     std::unique_ptr<QStandardItemModel> stdandardModel_;
@@ -73,10 +67,6 @@ private:
 };
 
 class IVW_QTEDITOR_API LinkDialog : public InviwoDockWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     LinkDialog(Processor* src, Processor* dest, QWidget* parent);
     virtual ~LinkDialog() = default;
@@ -85,13 +75,11 @@ public:
     int exec();
     virtual QSize sizeHint() const;
 
-private slots:
     void closeLinkDialog();
+private:
     void clickedSmartLinkPushButton();
     void clickedDeleteAllLinksPushButton();
-    void expandCompositeProperties();
 
-private:
     LinkDialogGraphicsView* linkDialogView_;
     LinkDialogGraphicsScene* linkDialogScene_;
     QPushButton* smartLinkPushButton_;
@@ -104,6 +92,6 @@ private:
     QEventLoop eventLoop_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LINKDIALOG_H

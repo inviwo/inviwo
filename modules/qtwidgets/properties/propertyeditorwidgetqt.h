@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,10 @@
 #define IVW_PROPERTYEDITORWIDGETQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/propertywidget.h>
-
+#include <inviwo/core/properties/propertyeditorwidget.h>
+#include <inviwo/core/properties/propertyobserver.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
 class QResizeEvent;
 class QShowEvent;
@@ -44,30 +43,54 @@ class QMoveEvent;
 
 namespace inviwo {
 
+class Property;
+
 // PropertyEditorWidget owned by PropertyWidget
 class IVW_MODULE_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
-                                                        public PropertyEditorWidget {
+                                                        public PropertyEditorWidget,
+                                                        public PropertyObserver {
 public:
-    PropertyEditorWidgetQt(Property *property, std::string widgetName, QWidget *parent);
+    PropertyEditorWidgetQt(Property* property, const std::string& widgetName);
+    PropertyEditorWidgetQt(Property* property, const std::string& widgetName,
+                           const std::string& objName);
     virtual ~PropertyEditorWidgetQt();
+
+    // PropertyEditorWidget overrides
+    virtual Property* getProperty() const override;
+    virtual bool isVisible() const override;
+    virtual void setVisible(bool visible) override;
+
+    virtual ivec2 getPosition() const override;
+    virtual void setPosition(const ivec2& pos) override;
+
+    virtual ivec2 getDimensions() const override;
+    virtual void setDimensions(const ivec2& dimensions) override;
+
+    virtual void saveState() override;
+    virtual void loadState() override;
+
+protected:
+    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void showEvent(QShowEvent*) override;
+    virtual void closeEvent(QCloseEvent*) override;
+    virtual void moveEvent(QMoveEvent* event) override;
+
+    // PropertyObserver overrides
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
 
     virtual void setReadOnly(bool readonly);
 
-    virtual void setVisibility(bool visible) override;
-    virtual void setDimensions(const ivec2& dimensions) override;
-    virtual void setPosition(const ivec2& pos) override;
-    virtual void setDockStatus(PropertyEditorWidgetDockStatus dockStatus) override;
-    virtual void setSticky(bool sticky) override;
 
-    virtual bool isVisible() const override;
+    static const std::string visibleKey;
+    static const std::string floatingKey;
+    static const std::string stickyKey;
+    static const std::string sizeKey;
+    static const std::string positionKey;
+    static const std::string dockareaKey;
 
-protected:
-    virtual void resizeEvent(QResizeEvent *event) override;
-    virtual void showEvent(QShowEvent *) override;
-    virtual void closeEvent(QCloseEvent *) override;
-    virtual void moveEvent(QMoveEvent *event) override;
+    Property* property_;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_PROPERTYEDITORWIDGETQT_H
+#endif  // IVW_PROPERTYEDITORWIDGETQT_H

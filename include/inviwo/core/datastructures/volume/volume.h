@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -137,6 +137,8 @@ const typename representation_traits<Volume, Kind>::type *Volume::getRep() const
         "No representation of specified kind found");
     return getRepresentation<typename representation_traits<Volume, Kind>::type>();
 }
+
+using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
 
 }  // namespace
 

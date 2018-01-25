@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,6 @@ uniform float threshold;
 uniform float smoothWidth = 0.01;
 
 in vec2 texCoord;
-layout(location = 0, index = 0) out vec4 outColor;
 
 //-------------------------------------------------------------------------
 
@@ -51,5 +50,5 @@ void main() {
     vec3 luma = vec3(0.299, 0.587, 0.114);
     float v = dot(texel.xyz, luma);
     float alpha = smoothstep(threshold, threshold + smoothWidth, v);
-    outColor = mix(vec4(0), texel, alpha);
+    FragData0 = mix(vec4(0), texel, alpha);
 }

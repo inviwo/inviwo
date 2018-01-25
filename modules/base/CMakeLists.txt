@@ -14,15 +14,20 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubesopt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/surfaceextraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegeneration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramdistancetransform.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/disjointsets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/imagereusecache.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/kdtree.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.h
@@ -30,6 +35,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumewriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumereader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumewriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.h
@@ -53,6 +60,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshmapping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.h
@@ -74,9 +82,11 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesingletimestepsampler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.h
@@ -103,21 +113,28 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubesopt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumecurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumedivergence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegeneration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumegradient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumelaplacian.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramdistancetransform.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumesignificantvoxels.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/disjointsets.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/imagereusecache.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumesequencereader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumewriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumereader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumewriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.cpp
@@ -139,6 +156,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshmapping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.cpp
@@ -158,9 +176,11 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesingletimestepsampler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.cpp
@@ -181,9 +201,13 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/base-unittest-main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/kdtree-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/convexhull-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/marchingcubes-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+if(IVW_BENCHMARKS)
+    add_subdirectory(tests/benchmarks)
+endif()

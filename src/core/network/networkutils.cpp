@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,6 +93,47 @@ std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
     return sorted;
 }
 
+ivec2 util::getCenterPosition(const std::vector<Processor*>& processors) {
+    ivec2 center{0};
+    if (processors.empty()) return center;
+
+    for (auto p : processors) {
+        if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+            center += meta->getPosition();
+        }
+    }
+    return center / static_cast<int>(processors.size());
+}
+
+std::pair<ivec2, ivec2> util::getBoundingBox(const std::vector<Processor*>& processors) {
+    if (processors.empty()) return {ivec2{0}, ivec2{0}};
+    ivec2 minPos{std::numeric_limits<int>::max()};
+    ivec2 maxPos{std::numeric_limits<int>::lowest()};
+
+    for (auto p : processors) {
+        if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+            minPos = glm::min(minPos, meta->getPosition());
+            maxPos = glm::max(maxPos, meta->getPosition());
+        }
+    }
+    return {minPos, maxPos};
+}
+
+void util::offsetPosition(const std::vector<Processor*>& processors, const ivec2& offset) {
+    for (auto p : processors) {
+        if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+            meta->setPosition(meta->getPosition() + offset);
+        }
+    }
+}
+
+ void util::setSelected(const std::vector<Processor*>& processors, bool selected) {
+     for (auto p : processors) {
+         if (auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+             meta->setSelected(selected);
+         }
+     }
+}
 
 util::PropertyDistanceSorter::PropertyDistanceSorter() {}
 void util::PropertyDistanceSorter::setTarget(const Property* target) { pos_ = getPosition(target); }
@@ -116,6 +157,8 @@ vec2 util::PropertyDistanceSorter::getPosition(const Processor* processor) {
     }
     return vec2(0, 0);
 }
+
+
 
 void util::autoLinkProcessor(ProcessorNetwork* network, Processor* processor) {
     auto app = network->getApplication();

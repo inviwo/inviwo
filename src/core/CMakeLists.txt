@@ -134,7 +134,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/positionmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processormetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processorwidgetmetadata.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/metadata/propertyeditorwidgetmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/evaluationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networklock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkutils.h
@@ -167,6 +166,11 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/activityindicator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessorwidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessor.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesink.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactoryobject.h
@@ -204,6 +208,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/property.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconvertermanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyeditorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyobserver.h
@@ -226,6 +231,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawerfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/assertion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/bufferutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/buildinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/canvas.h
@@ -251,6 +257,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filelogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/foreach.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatdispatching.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
@@ -265,6 +272,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
@@ -398,7 +406,6 @@ set(SOURCE_FILES
     metadata/positionmetadata.cpp
     metadata/processormetadata.cpp
     metadata/processorwidgetmetadata.cpp
-    metadata/propertyeditorwidgetmetadata.cpp
     network/evaluationerrorhandler.cpp
     network/networklock.cpp
     network/networkutils.cpp
@@ -423,6 +430,11 @@ set(SOURCE_FILES
     ports/porttraits.cpp
     processors/activityindicator.cpp
     processors/canvasprocessor.cpp
+    processors/compositeprocessor.cpp
+    processors/compositeprocessorfactoryobject.cpp
+    processors/compositeprocessorutils.cpp
+    processors/compositesink.cpp
+    processors/compositesource.cpp
     processors/processor.cpp
     processors/processorfactory.cpp
     processors/processorinfo.cpp
@@ -452,6 +464,7 @@ set(SOURCE_FILES
     properties/property.cpp
     properties/propertyconverter.cpp
     properties/propertyconvertermanager.cpp
+    properties/propertyeditorwidget.cpp
     properties/propertyfactory.cpp
     properties/propertyfactoryobject.cpp
     properties/propertyobserver.cpp
@@ -470,6 +483,7 @@ set(SOURCE_FILES
     properties/volumeindicatorproperty.cpp
     rendering/meshdrawerfactory.cpp
     util/assertion.cpp
+    util/bufferutils.cpp
     util/canvas.cpp
     util/capabilities.cpp
     util/clock.cpp
@@ -494,6 +508,7 @@ set(SOURCE_FILES
     util/imageramutils.cpp
     util/imagesampler.cpp
     util/inviwosetupinfo.cpp
+    util/licenseinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
     util/memoryfilehandle.cpp
@@ -551,6 +566,12 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
+set(GEN_FILES
+    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.h
+    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.cpp
+)
+source_group("Source Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.cpp)
+source_group("Header Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.h)
 
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
@@ -562,7 +583,7 @@ add_definitions(-DCMAKE_GENERATOR="${CMAKE_GENERATOR}")
 
 #--------------------------------------------------------------------
 # Create library
-add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES})
+add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES})
 add_library(inviwo::core ALIAS inviwo-core)
 
 #--------------------------------------------------------------------
@@ -629,8 +650,99 @@ if(IVW_UNITTESTS)
     ivw_make_unittest_target(core inviwo-core)
 endif()
 
-
 #--------------------------------------------------------------------
+# register license files
+ivw_register_license_file(NAME "Inviwo" MODULE Core
+    URL http://www.inviwo.org
+    TYPE "The MIT License"
+    FILES ${IVW_ROOT_DIR}/LICENSE
+)
+
+ivw_register_license_file(NAME "Flags" MODULE Core
+    URL "http://grisumbras.github.io/enum-flags/"
+    TYPE "The MIT License"
+    FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
+)
+
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm MODULE Core
+    URL "https://glm.g-truc.net"
+    TYPE "The MIT License"
+    FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
+)
+
+ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
+    URL "http://code.google.com/p/googletest/"
+    TYPE "BSD 3-clause"
+    FILES ${IVW_EXTENSIONS_DIR}/gtest/LICENSE
+)
+
+ivw_register_license_file(NAME "half" TARGET half MODULE Core
+    URL "http://half.sourceforge.net"
+    TYPE "The MIT License"
+    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
+)
+
+if(TARGET inviwo::sigar)
+    ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core
+        URL "http://sigar.hyperic.com"
+        TYPE "Apache License"
+        FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
+    )
+endif()
+
+if (TARGET inviwo::stackwalker)
+    ivw_register_license_file(NAME "stackwalker" TARGET inviwo::stackwalker MODULE Core
+        URL http://stackwalker.codeplex.com/
+        TYPE "BSD-License"
+        FILES ${IVW_EXTENSIONS_DIR}/stackwalker/LICENSE.txt
+    )
+endif()
+
+ivw_register_license_file(NAME "tclap" TARGET tclap MODULE Core
+    URL http://tclap.sourceforge.net/
+    TYPE "The MIT License"
+    FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
+)
+
+ivw_register_license_file(NAME "TiCPP" TARGET ticpp MODULE Core
+    URL https://github.com/wxFormBuilder/ticpp
+    TYPE "The MIT License"
+    FILES ${IVW_EXTENSIONS_DIR}/ticpp/LICENSE
+)
+
+ivw_register_license_file(NAME "TinyDir" MODULE Core
+    URL https://github.com/cxong/tinydir
+    TYPE "Simplified BSD"
+    FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
+)
+
+ivw_register_license_file(NAME "UTF8-CPP" TARGET utfcpp MODULE Core
+    URL "https://github.com/nemtrif/utfcpp"
+    TYPE "Boost Software License"
+    FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
+)
+
+if (TARGET vld-interface)
+    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" TARGET vld-interface MODULE Core
+        URL "https://kinddragon.github.io/vld/"
+        TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
+        FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
+    )
+endif()
+
+ivw_register_license_file(NAME "warn" MODULE Core
+    URL "https://github.com/petersteneteg/warn"
+    TYPE "BSD 2-clause"
+    FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
+)
+
+ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
+    URL "http://zlib.net/"
+    TYPE "The zlib/libpng License"
+    FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
+)
+
+#----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation
 
 # make a clean help script

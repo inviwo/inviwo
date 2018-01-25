@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -112,8 +112,8 @@ std::string ABufferGLCompositeProperty::getClassIdentifierForWidget() const {
 
 Inviwo_ABufferGL4::Inviwo_ABufferGL4(ivec2 dim)
     : settings_("abuffer-settings-property", "ABuffer Settings")
-    , resolveABufferShader_("abufferresolve.hglsl")
-    , resetABufferShader_("abufferreset.hglsl")
+    , resolveABufferShader_("abufferresolve.glsl")
+    , resetABufferShader_("abufferreset.glsl")
     , abuffInteractionHandler_(this)
     , shared_RGBA_DataListBuffID_(0)
     , shared_Ext_DataListBuffID_(0)

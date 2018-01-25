@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/introspection.h>
+#include <inviwo/core/util/assertion.h>
 #include <type_traits>
 #include <iterator>
 
@@ -351,21 +352,33 @@ size_t TemplateOptionProperty<T>::getSelectedIndex() const {
 
 template <typename T>
 const std::string& TemplateOptionProperty<T>::getSelectedIdentifier() const {
+    ivwAssert(selectedIndex_ < options_.size(),
+              "Index out of range (number of options: " << options_.size()
+                                                        << ", index: " << selectedIndex_ << ")");
     return options_[selectedIndex_].id_;
 }
 
 template <typename T>
 const std::string& TemplateOptionProperty<T>::getSelectedDisplayName() const {
+    ivwAssert(selectedIndex_ < options_.size(),
+              "Index out of range (number of options: " << options_.size()
+                                                        << ", index: " << selectedIndex_ << ")");
     return options_[selectedIndex_].name_;
 }
 
 template <typename T>
 const T& TemplateOptionProperty<T>::getSelectedValue() const {
+    ivwAssert(selectedIndex_ < options_.size(),
+              "Index out of range (number of options: " << options_.size()
+                                                        << ", index: " << selectedIndex_ << ")");
     return options_[selectedIndex_].value_;
 }
 
 template <typename T>
 TemplateOptionProperty<T>::operator const T&() const {
+    ivwAssert(selectedIndex_ < options_.size(),
+              "Index out of range (number of options: " << options_.size()
+                                                        << ", index: " << selectedIndex_ << ")");
     return options_[selectedIndex_].value_;
 }
 
@@ -605,6 +618,7 @@ Document TemplateOptionProperty<T>::getDescription() const {
     if (options_.size() > 0) {
         auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
         utildoc::TableBuilder tb(table);
+        tb(H("Number of Options"), options_.size());
         tb(H("Selected Index"), selectedIndex_);
         tb(H("Selected Name"), options_[selectedIndex_].name_);
         tb(H("Selected Value"), options_[selectedIndex_].value_);

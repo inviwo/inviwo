@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ uniform vec2 direction;
 uniform sampler2D texSource;
 
 in vec2 texCoord;
-layout(location = 0, index = 0) out vec4 outColor;
 
 //-------------------------------------------------------------------------
 
@@ -58,5 +57,5 @@ void main() {
         weightSum += 2.0 * w;
     }
 
-    outColor = diffuseSum / weightSum;
+    FragData0 = diffuseSum / weightSum;
 }

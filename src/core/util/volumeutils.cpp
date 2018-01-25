@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,20 +55,20 @@ std::pair<vec3, vec3> getVolumeMargins(const std::shared_ptr<const Volume> &volu
             volume->getMetaData<FloatVec3MetaData>("marginsBottomLeft", vec3(0.0f));
         auto marginsTopRight =
             volume->getMetaData<FloatVec3MetaData>("marginsTopRight", vec3(0.0f));
-        return{ marginsBottomLeft, marginsTopRight };
+        return {marginsBottomLeft, marginsTopRight};
     }
-    return{ vec3(0.0f), vec3(0.0f) };
+    return {vec3(0.0f), vec3(0.0f)};
 }
 
 size3_t getVolumeDimensions(const std::shared_ptr<const Volume> &volume) {
     if (!volume) {
-        return{};
+        return {};
     }
     auto dims = volume->getDimensions();
     // adjust dimensions for bricked volumes
     if (isBricked(volume)) {
         // volume dimensions refer only to the size of the index volume,
-        // multiply it by brick dimension        
+        // multiply it by brick dimension
         dims *= getBrickDimensions(volume);
     }
     // re-adjust volume dimensions by considering margins
@@ -80,11 +80,24 @@ size3_t getVolumeDimensions(const std::shared_ptr<const Volume> &volume) {
         vec3 marginsTopRight;
         std::tie(marginsBottomLeft, marginsTopRight) = getVolumeMargins(volume);
 
-        dims = size3_t(vec3(dims) * (vec3(1.0f) - (marginsBottomLeft + marginsTopRight)));
+        if (glm::any(greaterThan(marginsBottomLeft, vec3(0.0f))) ||
+            glm::any(greaterThan(marginsTopRight, vec3(0.0f)))) {
+            // adjust margins only if they are set
+            dims = size3_t(vec3(dims) * (vec3(1.0f) - (marginsBottomLeft + marginsTopRight)));
+        }
     }
     return dims;
 }
 
-} // namespace util
+double voxelVolume(const Volume &volume) {
+    auto basis = volume.getBasis();
+    auto dims = volume.getDimensions();
+    auto a = basis[0] / static_cast<float>(dims.x);
+    auto b = basis[1] / static_cast<float>(dims.y);
+    auto c = basis[2] / static_cast<float>(dims.z);
+    return glm::dot(glm::cross(a, b), c);
+}
+
+}  // namespace util
 
 }  // namespace inviwo

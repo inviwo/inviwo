@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,29 +75,29 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-#define LogInfo(message)                                                                          \
-    {                                                                                             \
-        std::ostringstream stream__;                                                              \
-        stream__ << message;                                                                      \
-        inviwo::LogCentral::getPtr()->log(inviwo::parseTypeIdName(std::string(typeid(this).name())), \
-                                          inviwo::LogLevel::Info, inviwo::LogAudience::Developer, \
-                                          __FILE__, __FUNCTION__, __LINE__, stream__.str());      \
+#define LogInfo(message)                                                                       \
+    {                                                                                          \
+        std::ostringstream stream__;                                                           \
+        stream__ << message;                                                                   \
+        inviwo::LogCentral::getPtr()->log(                                                     \
+            inviwo::parseTypeIdName(std::string(typeid(this).name())), inviwo::LogLevel::Info, \
+            inviwo::LogAudience::Developer, __FILE__, __FUNCTION__, __LINE__, stream__.str()); \
     }
-#define LogWarn(message)                                                                          \
-    {                                                                                             \
-        std::ostringstream stream__;                                                              \
-        stream__ << message;                                                                      \
-        inviwo::LogCentral::getPtr()->log(inviwo::parseTypeIdName(std::string(typeid(this).name())), \
-                                          inviwo::LogLevel::Warn, inviwo::LogAudience::Developer, \
-                                          __FILE__, __FUNCTION__, __LINE__, stream__.str());      \
+#define LogWarn(message)                                                                       \
+    {                                                                                          \
+        std::ostringstream stream__;                                                           \
+        stream__ << message;                                                                   \
+        inviwo::LogCentral::getPtr()->log(                                                     \
+            inviwo::parseTypeIdName(std::string(typeid(this).name())), inviwo::LogLevel::Warn, \
+            inviwo::LogAudience::Developer, __FILE__, __FUNCTION__, __LINE__, stream__.str()); \
     }
-#define LogError(message)                                                                          \
-    {                                                                                              \
-        std::ostringstream stream__;                                                               \
-        stream__ << message;                                                                       \
-        inviwo::LogCentral::getPtr()->log(inviwo::parseTypeIdName(std::string(typeid(this).name())), \
-                                          inviwo::LogLevel::Error, inviwo::LogAudience::Developer, \
-                                          __FILE__, __FUNCTION__, __LINE__, stream__.str());       \
+#define LogError(message)                                                                       \
+    {                                                                                           \
+        std::ostringstream stream__;                                                            \
+        stream__ << message;                                                                    \
+        inviwo::LogCentral::getPtr()->log(                                                      \
+            inviwo::parseTypeIdName(std::string(typeid(this).name())), inviwo::LogLevel::Error, \
+            inviwo::LogAudience::Developer, __FILE__, __FUNCTION__, __LINE__, stream__.str());  \
     }
 
 #define LogInfoCustom(source, message)                                                            \
@@ -185,14 +185,15 @@ public:
     virtual ~Logger() = default;
 
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg) = 0;
+                     const char* file, const char* function, int line, std::string msg) = 0;
 
     virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                               std::string msg, const char* file, const char* function, int line);
 
     virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                             const char* function, int line);
+
+    virtual void logAssertion(const char* file, const char* function, int line, std::string msg);
 };
 
 class IVW_CORE_API LogCentral : public Singleton<LogCentral> {
@@ -213,22 +214,23 @@ public:
     void log(std::string source, LogLevel level, LogAudience audience, const char* file,
              const char* function, int line, std::string msg);
 
-    void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                      std::string msg, const char* file = "", const char* function = "",
-                      int line = 0);
+    void logProcessor(Processor* processor, LogLevel level, LogAudience audience, std::string msg,
+                      const char* file = "", const char* function = "", int line = 0);
 
     void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file = "",
                     const char* function = "", int line = 0);
+
+    void logAssertion(const char* file, const char* function, int line, std::string msg);
 
     void setLogStacktrace(const bool& logStacktrace = true);
     bool getLogStacktrace() const;
 
 private:
     LogLevel logLevel_;
-    #include <warn/push>
-    #include <warn/ignore/dll-interface>
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     std::vector<std::weak_ptr<Logger>> loggers_;
-    #include <warn/pop>
+#include <warn/pop>
     bool logStacktrace_;
 };
 
@@ -238,8 +240,8 @@ IVW_CORE_API void log(ExceptionContext context, std::string message,
                       LogLevel level = LogLevel::Info,
                       LogAudience audience = LogAudience::Developer);
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LOGGER_H

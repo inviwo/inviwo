@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,8 +57,6 @@
 
 namespace inviwo {
 
-
-
 class HelpBrowser : public QTextBrowser {
 public:
     HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine);
@@ -75,7 +73,7 @@ class QCHFileObserver : public FileObserver {
 public:
     QCHFileObserver(QHelpEngineCore* engine) : engine_(engine) {}
     virtual ~QCHFileObserver() = default;
-    
+
     void addFile(const std::string& fileName) {
         reload(fileName);
         if (!isObserved(fileName)) {
@@ -98,7 +96,7 @@ private:
 
         if (!engine_->registerDocumentation(file)) {
             LogWarn("Problem loading help file : " << fileName << " "
-                    << engine_->error().toStdString());
+                                                   << engine_->error().toStdString());
         }
     }
     QHelpEngineCore* engine_;
@@ -122,12 +120,13 @@ private:
  */
 
 HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
-    : InviwoDockWidget(tr("Help"), mainwindow)
+    : InviwoDockWidget(tr("Help"), mainwindow, "HelpWidget")
     , mainwindow_(mainwindow)
-    , helpEngine_(nullptr) 
+    , helpEngine_(nullptr)
     , helpBrowser_(nullptr) {
-    setObjectName("HelpWidget");
+
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    resize(QSize(500, 500)); // default size
 
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
@@ -137,9 +136,9 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     auto app = mainwindow->getInviwoApplication();
 
     // The help engine needs a file backed db "inviwo.qhc", this file is created on demand in the
-    // settings folder, we will create the folder if it does not exists 
+    // settings folder, we will create the folder if it does not exists
     const std::string helpfile = app->getPath(PathType::Settings, "/inviwo.qhc", true);
-    
+
     helpEngine_ = new QHelpEngineCore(QString::fromStdString(helpfile), this);
     // Any old data will be left in the since last time, we want to clear that so we can load the
     // new qch files.
@@ -169,13 +168,11 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     }
 
     fileObserver_ = util::make_unique<QCHFileObserver>(helpEngine_);
-    
-    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([this]() {
-        registerQCHFiles();
-    });
-    onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([this]() {
-        fileObserver_->removeAll();
-    });
+
+    onModulesDidRegister_ =
+        app->getModuleManager().onModulesDidRegister([this]() { registerQCHFiles(); });
+    onModulesWillUnregister_ =
+        app->getModuleManager().onModulesWillUnregister([this]() { fileObserver_->removeAll(); });
 }
 
 HelpWidget::~HelpWidget() = default;
@@ -193,15 +190,15 @@ void HelpWidget::registerQCHFiles() {
 
 void HelpWidget::showDocForClassName(std::string classIdentifier) {
     if (!helpEngine_) return;
-    
+
     current_ = classIdentifier;
-    
+
     const QString path("qthelp:///doc/docpage-%1.html");
     QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
     if (foundUrl.isValid()) {
         helpBrowser_->setSource(foundUrl);
         return;
-    } 
+    }
 
     replaceInString(classIdentifier, ".", "_8");
     foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
@@ -210,11 +207,10 @@ void HelpWidget::showDocForClassName(std::string classIdentifier) {
         return;
     }
 
-    helpBrowser_->setText(
-        QString::fromStdString("No documentation available for: " + current_));
+    helpBrowser_->setText(QString::fromStdString("No documentation available for: " + current_));
 }
 
-void HelpWidget::resizeEvent(QResizeEvent * event) {
+void HelpWidget::resizeEvent(QResizeEvent* event) {
     helpBrowser_->reload();
     InviwoDockWidget::resizeEvent(event);
 }
@@ -266,4 +262,4 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& name) {
     return QTextBrowser::loadResource(type, url);
 }
 
-}  // namespace
+}  // namespace inviwo

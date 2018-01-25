@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,14 +29,17 @@
 
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QKeyEvent>
+#include <QSettings>
 #include <warn/pop>
 
 namespace inviwo {
 
 InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget(title, parent) {
+
     setObjectName(title);
 #ifdef __APPLE__
     setStyleSheet("QDockWidget::title {padding-left: 45px; }");
@@ -54,6 +57,11 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget
                      &InviwoDockWidget::stickyFlagChanged);
     QObject::connect(this, &QDockWidget::allowedAreasChanged, dockWidgetTitleBar_,
                      &InviwoDockWidgetTitleBar::allowedAreasChanged);
+}
+
+InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent, QString objName)
+    : InviwoDockWidget(title, parent) {
+    setObjectName(objName);
 }
 
 InviwoDockWidget::~InviwoDockWidget() = default;
@@ -96,6 +104,83 @@ void InviwoDockWidget::setContents(QLayout *layout) {
     QWidget *centralWidget = new QWidget();
     centralWidget->setLayout(layout);
     this->setWidget(centralWidget);
+}
+
+void InviwoDockWidget::saveState() {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    settings.setValue("sticky", isSticky());
+    settings.setValue("floating", isFloating());
+    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+        settings.setValue("dockarea", static_cast<int>(mainWindow->dockWidgetArea(this)));
+    }
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.setValue("visible", isVisible());
+    settings.endGroup();
+}
+
+void InviwoDockWidget::loadState() {
+    QSettings settings;
+    settings.beginGroup(objectName());
+
+    if (settings.contains("sticky")) {
+        setSticky(settings.value("sticky").toBool());
+    }
+
+    if (settings.contains("floating")) {
+        setFloating(settings.value("floating").toBool());
+    }
+
+    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+        if (settings.contains("dockarea")) {
+            auto dockarea = static_cast<Qt::DockWidgetArea>(settings.value("dockarea").toInt());
+            if (dockarea == Qt::NoDockWidgetArea) {
+                // take care of special case where dock area is not set due to floating status
+                if (allowedAreas() & Qt::RightDockWidgetArea) {
+                    dockarea = Qt::RightDockWidgetArea;
+                } else if (allowedAreas() & Qt::LeftDockWidgetArea) {
+                    dockarea = Qt::LeftDockWidgetArea;
+                } else if (allowedAreas() & Qt::BottomDockWidgetArea) {
+                    dockarea = Qt::BottomDockWidgetArea;
+                } else if (allowedAreas() & Qt::TopDockWidgetArea) {
+                    dockarea = Qt::TopDockWidgetArea;
+                } else {
+                    // fall-back: dock to right
+                    dockarea = Qt::RightDockWidgetArea;
+                }
+                mainWindow->addDockWidget(dockarea, this);
+                setFloating(true);
+            } else {
+                mainWindow->addDockWidget(dockarea, this);
+            }
+        }
+    }
+
+    if (settings.contains("size")) {
+        resize(settings.value("size").toSize());
+    }
+
+    if (settings.contains("pos")) {
+        auto pos = settings.value("pos").toPoint();
+        auto newPos = utilqt::movePointOntoDesktop(pos, InviwoDockWidget::size(), false);
+        move(newPos);
+    } else if (auto ivwMW = utilqt::getApplicationMainWindow()) {
+        // We assume that this is a new widget and give it a new position
+        auto newPos = ivwMW->pos();
+        newPos += utilqt::offsetWidget();
+        move(newPos);
+    }
+
+    if (settings.contains("visible")) {
+        setVisible(settings.value("visible").toBool());
+    }
+    settings.endGroup();
+}
+
+void InviwoDockWidget::closeEvent(QCloseEvent *event) {
+    saveState();
+    QDockWidget::closeEvent(event);
 }
 
 }  // namespace inviwo

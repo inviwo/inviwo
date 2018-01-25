@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/version.h>
+#include <inviwo/core/util/licenseinfo.h>
 #include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
@@ -49,7 +50,8 @@ public:
                               const std::string& description, Version inviwoCoreVersion,
                               std::vector<std::string> dependencies,
                               std::vector<Version> dependenciesVersion,
-                              std::vector<std::string> aliases, ProtectedModule protectedModule);
+                              std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,
+                              ProtectedModule protectedModule);
     virtual ~InviwoModuleFactoryObject() = default;
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
@@ -63,6 +65,8 @@ public:
     // A module can have one or more aliases. Several modules can have the same alias. Useful when
     // several modules implement the same functionality
     const std::vector<std::string> aliases;
+    // License information related to the module
+    const std::vector<LicenseInfo> licenses;
     // A protected module does not participate in runtime reloading
     const ProtectedModule protectedModule;
 };
@@ -75,6 +79,7 @@ public:
                                       std::vector<std::string> dependencies,
                                       std::vector<Version> dependenciesVersion,
                                       std::vector<std::string> aliases,
+                                      std::vector<LicenseInfo> licenses,
                                       ProtectedModule protectedModule);
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) override {
@@ -97,9 +102,9 @@ InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
     const std::string& name, Version version, const std::string& description,
     Version inviwoCoreVersion, std::vector<std::string> dependencies,
     std::vector<Version> dependenciesVersion, std::vector<std::string> aliases,
-    ProtectedModule protectedModule)
+    std::vector<LicenseInfo> licenses, ProtectedModule protectedModule)
     : InviwoModuleFactoryObject(name, version, description, inviwoCoreVersion, dependencies,
-                                dependenciesVersion, aliases, protectedModule) {}
+                                dependenciesVersion, aliases, licenses, protectedModule) {}
 
 /**
  * \brief Topological sort to make sure that we load modules in correct order

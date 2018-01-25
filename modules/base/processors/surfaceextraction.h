@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2017 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,12 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API SurfaceExtraction : public Processor, public ProgressBarOwner {
 public:
+    enum class Method{
+        MarchingCubes,
+        MarchingCubesOpt,
+        MarchingTetrahedron,
+    };
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -87,14 +93,15 @@ protected:
         task& operator=(task&&);
 
         std::future<std::shared_ptr<Mesh>> result;
+        Method method;
         float iso = 0.0f;
         vec4 color = vec4(0);
         bool invert = false;
         bool enclose = true;
         float status = 0.0f;
 
-        bool isSame(float iso, vec4 color, bool invert, bool enclose) const;
-        void set(float iso, vec4 color, bool invert, bool enclose, float status,
+        bool isSame(Method m, float iso, vec4 color, bool invert, bool enclose) const;
+        void set(Method m, float iso, vec4 color, bool invert, bool enclose, float status,
                  std::future<std::shared_ptr<Mesh>>&& result);
     };
 
@@ -102,6 +109,7 @@ protected:
     DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
     std::shared_ptr<std::vector<std::shared_ptr<Mesh>>> meshes_;
 
+    TemplateOptionProperty<Method> method_;
     FloatProperty isoValue_;
     BoolProperty invertIso_;
     BoolProperty encloseSurface_;

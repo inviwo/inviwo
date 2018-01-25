@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,11 +48,11 @@
 #include <warn/pop>
 
 int main(int argc, char** argv) {
-    inviwo::LogCentral::init();
-    inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
+    inviwo::LogCentral logger;
+    inviwo::LogCentral::init(&logger);
     auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
-    inviwo::LogCentral::getPtr()->registerLogger(logCounter);
-    inviwo::InviwoApplicationQt inviwoApp("Inviwo v" + IVW_VERSION, argc, argv);
+    logger.registerLogger(logCounter);
+    inviwo::InviwoApplicationQt inviwoApp("Inviwo", argc, argv);
     inviwoApp.setWindowIcon(QIcon(":/icons/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
     QFile styleSheetFile(":/stylesheets/inviwo.qss");

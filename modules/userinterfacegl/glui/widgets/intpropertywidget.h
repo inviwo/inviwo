@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,22 +44,24 @@ namespace inviwo {
 namespace glui {
 
 /**
- * \class BoolPropertyWidget
- * \brief glui property widget for a bool property using glui::Slider
+ * \class IntPropertyWidget
+ * \brief glui property widget for an int property using glui::Slider
  */
 class IVW_MODULE_USERINTERFACEGL_API IntPropertyWidget : public Slider,
                                                          public PropertyWidget,
                                                          public PropertyObserver {
 public:
     IntPropertyWidget(IntProperty &property, Processor &processor, Renderer &uiRenderer,
-                      const ivec2 &extent = ivec2(24, 24));
+                      const ivec2 &extent = ivec2(24, 24),
+                      UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~IntPropertyWidget() = default;
 
     virtual void updateFromProperty() override;
 
     // PropertyObservable overrides
-    virtual void onSetVisible(Property* property, bool visible) override;
-    virtual void onSetDisplayName(Property* property, const std::string &displayName) override;
+    virtual void onSetVisible(Property *property, bool visible) override;
+    virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
+    virtual void onSetReadOnly(Property *property, bool readonly) override;
 
 private:
     IntProperty *property_;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,8 @@
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
+#include <inviwo/core/processors/compositesink.h>
+#include <inviwo/core/processors/compositesource.h>
 
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
@@ -183,6 +185,12 @@ protected:
     template <typename T>
     void registerProcessor();
 
+    /**
+     * Register a workspace file as a CompositeProcessor.
+     * The CompositeProcessor will load the file as its sub network on construction.
+     */
+    void registerCompositeProcessor(const std::string& file);
+
     template <typename T, typename P>
     void registerProcessorWidget();
 
@@ -191,23 +199,32 @@ protected:
     /**
      * Register port type T, PortTraits<T>::classIdentifier has to be defined and return a non
      * empty and unique string. We use reverse DNS for class identifiers, i.e. org.inviwo.classname
+     * Prefer using registerDefaultsForDataType to registerPort since it adds support for
+     * CompositeProcessor
      * @see PortTraits
+     * @see registerDefaultsForDataType
      */
     template <typename T>
     void registerPort();
 
     /**
-     * Utility for register a standard set of ports for a data type T
+     * Utility for register a standard set of ports and processors for a data type T
      * Will register the following ports:
      *     DataInport<T>           Inport
      *     DataInport<T, 0>        Multi Inport (accepts multiple input connections)
-     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with vector<T>)
+     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with vector<shared_ptr<T>>)
      *     DataOutport<T>          Outport
+     * and Sink and Source Processors:
+     *     CompositeSink<DataInport<T>, DataOutport<T>>
+     *     CompositeSource<DataInport<T>, DataOutport<T>>
+     *
      * @see DataInport
      * @see DataOutport
+     * @see CompositeSource
+     * @see CompositeSink
      */
     template <typename T>
-    void registerStandardPortsForObject();
+    void registerDefaultsForDataType();
 
     template <typename T>
     void registerProperty();
@@ -325,11 +342,14 @@ void InviwoModule::registerPort() {
 }
 
 template <typename T>
-void InviwoModule::registerStandardPortsForObject() {
+void InviwoModule::registerDefaultsForDataType() {
     registerPort<DataInport<T>>();
     registerPort<DataInport<T, 0>>();
     registerPort<DataInport<T, 0, true>>();
     registerPort<DataOutport<T>>();
+    
+    registerProcessor<CompositeSink<DataInport<T>, DataOutport<T>>>();
+    registerProcessor<CompositeSource<DataInport<T>, DataOutport<T>>>();
 }
 
 template <typename T>

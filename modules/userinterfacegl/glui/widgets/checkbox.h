@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,13 +57,14 @@ public:
     bool getValue() const;
 
 private:
-    virtual void renderWidget(const ivec2 &origin) override;
+    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
 
     virtual ivec2 computeLabelPos(int descent) const override;
     virtual UIState uiState() const override;
     virtual void updateState() override;
 
     Texture2DArray *uiTextures_;
+    std::array<int, 9> uiTextureMap_;
 };
 
 }  // namespace glui

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2017 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
 #include <QPainterPath>
 #include <warn/pop>
 
+class QGraphicsScene;
 class QGraphicsSceneHoverEvent;
 class QPainter;
 
@@ -58,7 +59,7 @@ public:
         Number_of_InviwoWidgetGraphicsItemTypes
     };
 
-    TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint,
+    TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint, QGraphicsScene* scene,
                                        const DataMapper& dataMap, float size = 14.0f);
     ~TransferFunctionEditorControlPoint() = default;
 

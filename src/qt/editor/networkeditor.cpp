@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/compositeprocessorutils.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/inport.h>
@@ -45,6 +46,7 @@
 #include <inviwo/core/ports/portinspectormanager.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -84,6 +86,7 @@
 #include <QPainter>
 #include <QMimeData>
 #include <QMargins>
+#include <QGraphicsView>
 #include <warn/pop>
 
 namespace inviwo {
@@ -95,6 +98,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , oldConnectionTarget_(nullptr)
     , oldProcessorTarget_(nullptr)
     , validConnectionTarget_(false)
+    , processorItem_(nullptr)
     , connectionCurve_(nullptr)
     , linkCurve_(nullptr)
     , mainwindow_(mainwindow)
@@ -107,6 +111,21 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
 
     // The default BSP tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
+    setSceneRect(QRectF());
+
+    // If selection contains processors don't select any other items
+    connect(this, &QGraphicsScene::selectionChanged, this, [this]() {
+        auto selection = selectedItems();
+        if (util::contains_if(selection, [](auto i) {
+                return qgraphicsitem_cast<ProcessorGraphicsItem*>(i) != nullptr;
+            })) {
+            for (auto i : selection) {
+                if (qgraphicsitem_cast<ProcessorGraphicsItem*>(i) == nullptr) {
+                    i->setSelected(false);
+                }
+            }
+        }
+    });
 }
 
 ////////////////////////////////////////////////////////
@@ -143,6 +162,10 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
     auto processorGraphicsItem = new ProcessorGraphicsItem(processor);
     processorGraphicsItems_[processor] = processorGraphicsItem;
     addItem(processorGraphicsItem);
+    updateSceneSize();
+    for (auto v : views()) {
+        v->ensureVisible(processorGraphicsItem);
+    }
     return processorGraphicsItem;
 }
 
@@ -156,6 +179,8 @@ void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
     processorGraphicsItems_.erase(processor);
     // delete processor graphics item
     delete processorGraphicsItem;
+
+    updateSceneSize();
 }
 
 void NetworkEditor::addPropertyWidgets(Processor* processor) {
@@ -310,6 +335,23 @@ void NetworkEditor::setBackgroundVisible(bool visible) {
 
 bool NetworkEditor::isBackgroundVisible() const { return backgroundVisible_; }
 
+void NetworkEditor::updateSceneSize() {
+    if (!processorItem_) {
+        setSceneRect(getProcessorsBoundingRect());
+        forEachObserver([&](auto o) { o->onSceneSizeChanged(); });
+    }
+}
+
+QRectF NetworkEditor::getProcessorsBoundingRect() const {
+    QRectF rect;
+    for (const auto& item : processorGraphicsItems_) {
+        if (item.second->isVisible()) {
+            rect = rect.united(item.second->sceneBoundingRect());
+        }
+    }
+    return rect;
+}
+
 std::string NetworkEditor::getMimeTag() { return "application/x.vnd.inviwo.network+xml"; }
 
 ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItemAt(const QPointF pos) const {
@@ -330,6 +372,9 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItemAt(const QPointF p
 //   EVENT HANDLING METHODS   //
 ////////////////////////////////
 void NetworkEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
+    if (auto p = getProcessorGraphicsItemAt(e->scenePos())) {
+        processorItem_ = p;
+    }
     QGraphicsScene::mousePressEvent(e);
 }
 
@@ -391,6 +436,9 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
             }
         }
         e->accept();
+    } else if (processorItem_) {
+        processorItem_ = nullptr;
+        updateSceneSize();
     }
 
     QGraphicsScene::mouseReleaseEvent(e);
@@ -486,7 +534,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 processor->editDisplayName();
             });
 
-
             auto editIdentifier = menu.addAction(tr("Edit Identifier"));
             connect(editIdentifier, &QAction::triggered, [this, processor]() {
                 clearSelection();
@@ -559,9 +606,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             });
             menu.addSeparator();
 
-            QAction* helpAction = menu.addAction(tr("Show &Help"));
+            QAction* helpAction = menu.addAction(QIcon(":/icons/help.png"), tr("Show &Help"));
             connect(helpAction, &QAction::triggered, [this, processor]() {
-                showProecssorHelp(processor->getProcessor()->getClassIdentifier(), true);
+                showProcessorHelp(processor->getProcessor()->getClassIdentifier(), true);
             });
 
             break;
@@ -613,7 +660,55 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
     {
         menu.addSeparator();
-        auto cutAction = menu.addAction(tr("Cu&t"));
+        auto compAction = menu.addAction(QIcon(":/icons/composite-create.png"), tr("&Create Composite"));
+        connect(compAction, &QAction::triggered, this,
+                [this]() { util::replaceSelectionWithCompositeProcessor(*network_); });
+        compAction->setEnabled(selectedProcessors.size() > 1);
+
+        auto expandAction = menu.addAction(QIcon(":/icons/composite-expand.png"), tr("&Expand Composite"));
+        std::unordered_set<CompositeProcessor*> selectedComposites;
+        for (auto& p : selectedProcessors) {
+            if (auto comp = dynamic_cast<CompositeProcessor*>(p.first)) {
+                selectedComposites.insert(comp);
+            }
+        }
+        for (auto item : clickedOnItems_) {
+            if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                if (auto comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
+                    selectedComposites.insert(comp);
+                }
+            }
+        }
+        connect(expandAction, &QAction::triggered, this, [selectedComposites]() {
+            for (auto& p : selectedComposites) {
+                util::expandCompositeProcessorIntoNetwork(*p);
+            }
+        });
+        expandAction->setDisabled(selectedComposites.empty());
+
+        auto saveCompAction = menu.addAction(tr("&Save Composite"));
+        connect(saveCompAction, &QAction::triggered, this, [this, selectedComposites]() {
+            for (auto& p : selectedComposites) {
+                const auto compDir = mainwindow_->getInviwoApplication()->getPath(
+                    PathType::Settings, "/composites", true);
+                const auto filename = util::findUniqueIdentifier(
+                    util::stripIdentifier(p->getDisplayName()),
+                    [&](const std::string& name) {
+                        return !filesystem::fileExists(compDir + "/" + name + ".inv");
+                    },
+                    "");
+                filesystem::createDirectoryRecursively(compDir);
+                const auto path = compDir + "/" + filename + ".inv";
+                p->saveSubNetwork(path);
+                LogInfo("Saved Composite to \"" << path
+                                                << "\". \nComposite is now available in the "
+                                                   "Processor list (restart may be required).");
+            }
+        });
+        saveCompAction->setDisabled(selectedComposites.empty());
+
+        menu.addSeparator();
+        auto cutAction = menu.addAction(QIcon(":/icons/edit-cut.png"), tr("Cu&t"));
         cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(cutAction, &QAction::triggered, this, [this]() {
             auto data = cut();
@@ -623,7 +718,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QApplication::clipboard()->setMimeData(mimedata.release());
         });
 
-        auto copyAction = menu.addAction(tr("&Copy"));
+        auto copyAction = menu.addAction(QIcon(":/icons/edit-copy.png"), tr("&Copy"));
         copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(copyAction, &QAction::triggered, this, [this]() {
             auto data = copy();
@@ -633,7 +728,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QApplication::clipboard()->setMimeData(mimedata.release());
         });
 
-        auto pasteAction = menu.addAction(tr("&Paste"));
+        auto pasteAction = menu.addAction(QIcon(":/icons/edit-paste.png"), tr("&Paste"));
         auto clipboard = QApplication::clipboard();
         auto mimeData = clipboard->mimeData();
         if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
@@ -655,7 +750,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         menu.addSeparator();
 
-        auto deleteAction = menu.addAction(tr("&Delete"));
+        auto deleteAction = menu.addAction(QIcon(":/icons/edit-delete.png"), tr("&Delete"));
         deleteAction->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
         connect(deleteAction, &QAction::triggered, this, [this]() { deleteSelection(); });
     }
@@ -666,7 +761,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedPosition_ = {false, ivec2{0, 0}};
 }
 
-void NetworkEditor::showProecssorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
+void NetworkEditor::showProcessorHelp(const std::string& classIdentifier, bool raise /*= false*/) {
     auto help = mainwindow_->getHelpWidget();
     help->showDocForClassName(classIdentifier);
     if (raise) {
@@ -733,7 +828,7 @@ void NetworkEditor::dragEnterEvent(QGraphicsSceneDragDropEvent* e) { dragMoveEve
 
 void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
     if (ProcessorDragObject::canDecode(e->mimeData())) {
-        //e->setAccepted(true);
+        // e->setAccepted(true);
         e->acceptProposedAction();
 
         auto connectionItem = getConnectionGraphicsItemAt(e->scenePos());
@@ -807,7 +902,7 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
 
                 clearSelection();
 
-                ProcessorMetaData* meta =
+                auto meta =
                     processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 
                 if (oldProcessorTarget_) {
@@ -968,7 +1063,7 @@ QByteArray NetworkEditor::copy() const {
 
     for (auto& item : items) item->setSelected(false);
 
-    pasteCount_ = 0;
+    pastePos_.first = false;
 
     return byteArray;
 }
@@ -981,6 +1076,8 @@ QByteArray NetworkEditor::cut() {
 
 void NetworkEditor::paste(QByteArray mimeData) {
     try {
+        auto orgBounds = util::getBoundingBox(network_->getProcessors());
+
         std::stringstream ss;
         for (auto d : mimeData) ss << d;
         // Activate the default context, might be needed in processor constructors.
@@ -988,22 +1085,40 @@ void NetworkEditor::paste(QByteArray mimeData) {
         auto added =
             util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
 
-        ivec2 top{std::numeric_limits<int>::max()};
+        auto center = util::getCenterPosition(added);
+        auto bounds = util::getBoundingBox(added);
 
-        for (auto p : added) {
-            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            top = glm::min(top, m->getPosition());
+        if (clickedPosition_.first) {  // center on clicked pos
+            util::offsetPosition(added, clickedPosition_.second - center);
+        } else if (pastePos_.first) {
+            pastePos_.second.x += (bounds.second.x - bounds.first.x) +
+                                  ProcessorGraphicsItem::size_.width() + gridSpacing_;
+            util::offsetPosition(added, pastePos_.second - center);
+        } else {  // add to bottom left
+            pastePos_.first = true;
+            pastePos_.second = ivec2{orgBounds.first.x, orgBounds.second.y} +
+                               ivec2{(bounds.second.x - bounds.first.x) / 2,
+                                     (bounds.second.y - bounds.first.y) / 2} +
+                               ivec2{0, gridSpacing_} +
+                               ivec2{0, ProcessorGraphicsItem::size_.height()};
+            util::offsetPosition(added, pastePos_.second - center);
         }
 
-        ivec2 pos = clickedPosition_.first
-                        ? clickedPosition_.second - top
-                        : ivec2(++pasteCount_) *
-                              ivec2{ProcessorGraphicsItem::size_.width() + gridSpacing_, 0};
-
-        for (auto p : added) {
-            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            m->setPosition(m->getPosition() + pos);
+        // Make sure the pasted processors are in the view
+        auto selection = selectedItems();
+        util::erase_remove_if(selection, [](auto i) {
+            return qgraphicsitem_cast<ProcessorGraphicsItem*>(i) == nullptr;
+        });
+        if (!selection.empty()) {
+            QRectF rect;
+            for (auto item : selection) {
+                rect = rect.united(item->sceneBoundingRect());
+            }
+            for (auto v : views()) {
+                v->ensureVisible(rect);
+            }
         }
+
     } catch (const Exception&) {
         LogWarn("Paste operation failed");
     }
@@ -1092,13 +1207,6 @@ void NetworkEditor::initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos) {
     linkCurve_->show();
 }
 
-void NetworkEditor::updateLeds() {
-    // Update the status items
-    for (auto& elem : processorGraphicsItems_) {
-        elem.second->getStatusItem()->update();
-    }
-}
-
 void NetworkEditor::resetAllTimeMeasurements() {
 #if IVW_PROFILING
     // Update the status items
@@ -1176,12 +1284,10 @@ void NetworkEditor::onProcessorNetworkWillRemoveProcessor(Processor* processor) 
 
 void NetworkEditor::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
     addConnectionGraphicsItem(connection);
-    updateLeds();
     setModified(true);
 }
 void NetworkEditor::onProcessorNetworkWillRemoveConnection(const PortConnection& connection) {
     removeConnectionGraphicsItem(connection);
-    updateLeds();
     setModified(true);
 }
 

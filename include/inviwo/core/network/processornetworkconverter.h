@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,8 +63,8 @@ class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
         void updateDisplayName(TxElement* node);
         void updateProcessorIdentifiers(TxElement* node);
         void updateTransferfunctions(TxElement* node);
-
         void updateProcessorIdentifiersStriped(TxElement *node);
+        void updatePropertyEditorMetadata(TxElement *node);
 
         void traverseNodes(TxElement* node, updateType update);
 

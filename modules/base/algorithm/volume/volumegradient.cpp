@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
         data[index(pos)] = g;
     };
 
-    util::forEachVoxel(*volume->getRepresentation<VolumeRAM>(), func);
+    util::forEachVoxelParallel(*volume->getRepresentation<VolumeRAM>(), func);
 
     return newVolume;
 }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,22 +34,24 @@ namespace inviwo {
 namespace glui {
 
 IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor,
-                                     Renderer &uiRenderer, const ivec2 &extent)
+                                     Renderer &uiRenderer, const ivec2 &extent,
+                                     UIOrientation orientation)
     : Slider(property.getDisplayName(), property.get(), property.getMinValue(),
-             property.getMaxValue(), processor, uiRenderer, extent)
+             property.getMaxValue(), processor, uiRenderer, extent, orientation)
     , PropertyWidget(&property)
     , property_(&property) {
     property_->addObserver(this);
 
-    moveAction_ = [&](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2 &delta) {
         bool triggerUpdate = false;
         if (!property_->getReadOnly()) {
             // delta in pixel (screen coords),
             // need to scale from graphical representation to slider
-            int newVal = static_cast<int>(
-                round(getPreviousValue() +
-                      delta.x / static_cast<double>(widgetExtent_.x - widgetExtent_.y) *
-                          static_cast<double>(getMaxValue() - getMinValue())));
+            const int newVal = glm::clamp(
+                static_cast<int>(round(getPreviousValue() +
+                                       convertDeltaToSlider(delta) *
+                                           static_cast<double>(getMaxValue() - getMinValue()))),
+                getMinValue(), getMaxValue());
             if (newVal != property_->get()) {
                 property_->set(newVal);
                 triggerUpdate = true;
@@ -62,14 +64,17 @@ IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor
 
 void IntPropertyWidget::updateFromProperty() {
     set(property_->get(), property_->getMinValue(), property_->getMaxValue());
+    setEnabled(!property_->getReadOnly());
 }
 
-void IntPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
+void IntPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
 
-void IntPropertyWidget::onSetDisplayName(Property*, const std::string &displayName) {
+void IntPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
+
+void IntPropertyWidget::onSetReadOnly(Property *property, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

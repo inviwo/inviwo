@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2017 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,13 @@
 namespace inviwo {
 
 ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
-                             std::string aCategory, CodeState aCodeState, Tags someTags)
+                             std::string aCategory, CodeState aCodeState, Tags someTags,
+                             bool isVisible)
     : classIdentifier(aClassIdentifier)
     , displayName(aDisplayName)
     , category(aCategory)
     , codeState(aCodeState)
-    , tags(someTags) {}
+    , tags(someTags)
+    , visible(isVisible) {}
 
-}  // namespace
+}  // namespace inviwo

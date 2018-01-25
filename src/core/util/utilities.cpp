@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -123,22 +123,28 @@ std::string cleanIdentifier(const std::string& identifier, const std::string& ex
 std::string stripModuleFileNameDecoration(std::string filePath) {
     auto fileNameWithoutExtension = filesystem::getFileNameWithoutExtension(filePath);
 #if defined(WIN32)
-    auto decoration = std::string("inviwo-module-");
+    auto decoration1 = std::string("inviwo-module-");
+    auto decoration2 = std::string("inviwo-");
 #else
-    auto decoration = std::string("libinviwo-module-");
+    auto decoration1 = std::string("libinviwo-module-");
+    auto decoration2 = std::string("libinviwo-");
 #endif
-    auto inviwoModulePos = fileNameWithoutExtension.find(decoration);
+    auto inviwoModulePos = fileNameWithoutExtension.find(decoration1);
     if (inviwoModulePos == std::string::npos) {
-        inviwoModulePos = 0;
-    }
-    else {
-        inviwoModulePos = decoration.size();
+        inviwoModulePos = fileNameWithoutExtension.find(decoration2);
+        if (inviwoModulePos == std::string::npos) {
+            inviwoModulePos = 0;
+        } else {
+            inviwoModulePos = decoration2.size();
+        }
+    } else {
+        inviwoModulePos = decoration1.size();
     }
     auto len = fileNameWithoutExtension.size() - inviwoModulePos;
 #ifdef DEBUG
     // Remove debug ending "d" at end of file name
     len -= 1;
-#endif 
+#endif
     auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
     return moduleName;
 }
@@ -151,7 +157,9 @@ std::string stripIdentifier(std::string identifier) {
 
     while (identifier.size() > 0) {
         const auto& c = identifier[0];
-        if (!testFirst(c)) { break; }
+        if (!testFirst(c)) {
+            break;
+        }
         if (std::isdigit(c)) {  // prepend an underscore if first char is a digit
             identifier = "_" + identifier;
             break;
@@ -165,11 +173,11 @@ std::string stripIdentifier(std::string identifier) {
 
 namespace detail {
 
-void Shower::operator()(Property& p) {p.setVisible(true);}
-void Hideer::operator()(Property& p) {p.setVisible(false);}
+void Shower::operator()(Property& p) { p.setVisible(true); }
+void Hideer::operator()(Property& p) { p.setVisible(false); }
 
-void Shower::operator()(ProcessorWidget& p) {p.setVisible(true);}
-void Hideer::operator()(ProcessorWidget& p) {p.setVisible(false);}
+void Shower::operator()(ProcessorWidget& p) { p.setVisible(true); }
+void Hideer::operator()(ProcessorWidget& p) { p.setVisible(false); }
 
 }  // namespace detail
 

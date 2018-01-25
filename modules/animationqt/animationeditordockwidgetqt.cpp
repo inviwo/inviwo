@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,11 +56,13 @@ namespace animation {
 AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& controller,
                                                          const std::string& widgetName,
                                                          QWidget* parent)
-    : InviwoDockWidget(QString(widgetName.c_str()), parent), controller_(controller) {
+    : InviwoDockWidget(QString(widgetName.c_str()), parent, "AnimationEditorWidget")
+    , controller_(controller) {
 
-    setObjectName("AnimationEditor");
     setFloating(true);
     setSticky(false);
+    resize(QSize(700, 400)); // default size
+    setAllowedAreas(Qt::BottomDockWidgetArea);
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 
@@ -111,9 +113,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         begin->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         begin->setToolTip("To Beginning");
         leftWidget->addAction(begin);
-        connect(begin, &QAction::triggered, [&]() {
-            controller_.eval(controller_.getCurrentTime(), Seconds(0.0));
-        });
+        connect(begin, &QAction::triggered,
+                [&]() { controller_.eval(controller_.getCurrentTime(), Seconds(0.0)); });
     }
 
     {
@@ -127,7 +128,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
             auto it = std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
             if (it != times.begin()) {
                 controller_.eval(controller_.getCurrentTime(), *std::prev(it));
-            }       
+            }
         });
     }
 
@@ -161,14 +162,13 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         btnStop_->setToolTip("Stop");
         leftWidget->addAction(btnStop_);
 
-        connect(btnStop_, &QAction::triggered, [&]() { 
-            controller_.stop(); 
-        });
+        connect(btnStop_, &QAction::triggered, [&]() { controller_.stop(); });
     }
 
     {
         auto next = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_arrows_direction_next_previous_icon_32.png"), "Next Key");
+            QIcon(":/animation/icons/arrow_arrows_direction_next_previous_icon_32.png"),
+            "Next Key");
         next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         next->setToolTip("Next Key");
         leftWidget->addAction(next);
@@ -176,8 +176,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
             auto times = controller_.getAnimation()->getAllTimes();
             auto it = std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
             if (it != times.end()) {
-                 controller_.eval(controller_.getCurrentTime(), *it);
-            }           
+                controller_.eval(controller_.getCurrentTime(), *it);
+            }
         });
     }
 
@@ -197,13 +197,12 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
 
     {
         QIcon icon;
-        icon.addFile(":/animation/icons/arrows_media_player_repeat_song_sound_video_icon_32.png", QSize(),
-                     QIcon::Normal, QIcon::On);
+        icon.addFile(":/animation/icons/arrows_media_player_repeat_song_sound_video_icon_32.png",
+                     QSize(), QIcon::Normal, QIcon::On);
         icon.addFile(":/animation/icons/arrow_direction_next_previous_right_icon_32.png", QSize(),
                      QIcon::Normal, QIcon::Off);
-     
-        loop_ = toolBar->addAction(
-            icon, "Loop");
+
+        loop_ = toolBar->addAction(icon, "Loop");
         loop_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         loop_->setCheckable(true);
         loop_->setChecked(controller_.getPlaybackMode() == PlaybackMode::Loop);
@@ -218,17 +217,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         });
     }
 
-
     addObservation(&controller_);
-
-    {
-        // Restore State
-        QSettings settings("Inviwo", "Inviwo");
-        settings.beginGroup("AnimationEditor");
-        restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
-        setSticky(settings.value("isSticky", InviwoDockWidget::isSticky()).toBool());
-        settings.endGroup();
-    }
 }
 
 AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;
@@ -252,16 +241,6 @@ void AnimationEditorDockWidgetQt::onPlaybackModeChanged(AnimationController* con
     loop_->setChecked(newMode == PlaybackMode::Loop);
 }
 
-void AnimationEditorDockWidgetQt::closeEvent(QCloseEvent* event) {
-    QSettings settings("Inviwo", "Inviwo");
-    settings.beginGroup("AnimationEditor");
-    settings.setValue("geometry", saveGeometry());
-    settings.setValue("isSticky", isSticky());
-    settings.endGroup();
+}  // namespace animation
 
-    InviwoDockWidget::closeEvent(event);
-}
-
-}  // namespace
-
-}  // namespace
+}  // namespace inviwo

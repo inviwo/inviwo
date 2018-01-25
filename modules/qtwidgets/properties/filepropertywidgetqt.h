@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2017 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,12 +37,11 @@
 class QDropEvent;
 class QDragEnterEvent;
 class QDragMoveEvent;
-class QToolButton;
 
 namespace inviwo {
 
-class EditableLabelQt;
 class FilePathLineEditQt;
+class TextEditorDockWidget;
 
 class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt,
     public FileRequestable {
@@ -52,6 +51,9 @@ public:
 
     virtual void updateFromProperty() override;
     virtual bool requestFile() override;
+
+    virtual PropertyEditorWidget* getEditorWidget() const override;
+    virtual bool hasEditorWidget() const override;
 
 protected:
     virtual void dropEvent(QDropEvent*) override;
@@ -63,8 +65,7 @@ private:
 
     FileProperty* property_;
     FilePathLineEditQt* lineEdit_;
-    QToolButton* openButton_;
-    EditableLabelQt* label_;
+    std::unique_ptr<TextEditorDockWidget> editor_;
 };
 
 } // namespace

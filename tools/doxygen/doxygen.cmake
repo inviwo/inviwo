@@ -2,7 +2,7 @@
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2014-2017 Inviwo Foundation
+ # Copyright (c) 2014-2018 Inviwo Foundation
  # All rights reserved.
  # 
  # Redistribution and use in source and binary forms, with or without
@@ -130,6 +130,7 @@ FILE_PATTERNS          = *.c \\
                          *.frag \\
                          *.vert \\
                          *.geom \\
+                         *.dox \\
                          *.glsl
 
 RECURSIVE              = YES
@@ -222,7 +223,7 @@ ${additional_flags}
     file(WRITE ${ARG_OUTPUT_DIR}/${name_lower}.doxy ${doxyfile})
 endfunction()
 
- # Help, used for the help inside invowo
+ # Help, used for the help inside inviwo
 function(ivw_private_make_help)
     set(options "")
     set(oneValueArgs 
