@@ -7,7 +7,6 @@ ivw_module(Demo)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/democontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/democontrollerobserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/demomanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -16,7 +15,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/democontroller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/democontrollerobserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/demomanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
