@@ -18,6 +18,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/keyframeeditorwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorpanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorwidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/trackcontrolswidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/trackqt.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -34,6 +35,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/keyframeeditorwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorpanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/trackcontrolswidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/trackqt.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
@@ -50,3 +52,4 @@ target_link_libraries(inviwo-module-animationqt PRIVATE Qt5::Core Qt5::Gui Qt5::
 ivw_compile_optimize_on_target(inviwo-module-animationqt)
 
 ivw_make_package(InviwoAnimationQtModule inviwo-module-animationqt)
+

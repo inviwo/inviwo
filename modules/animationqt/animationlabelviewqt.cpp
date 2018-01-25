@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationlabelviewqt.h>
+#include <modules/animationqt/trackcontrolswidgetqt.h>
 #include <modules/animation/datastructures/animation.h>
 
 #include <inviwo/core/network/processornetwork.h>
@@ -43,6 +44,7 @@
 #include <QPushButton>
 #include <warn/pop>
 #include "animation/datastructures/propertytrack.h"
+#include <QGridLayout>
 
 namespace inviwo {
 
@@ -59,7 +61,7 @@ public:
     }
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
         if (role == Qt::SizeHintRole) {
-            return QSize(200, 25);
+            return QSize(200, 31);
         }
         return QStandardItemModel::data(index, role);
     }
@@ -85,8 +87,11 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
 		QList<QStandardItem*> row;
 		auto item = new QStandardItem(QString::fromStdString(animation.getControlTrack().getName()));
 		item->setData(QVariant::fromValue(static_cast<void*>(&animation.getControlTrack())), Qt::UserRole + 1);
-		row.append(item);
-		model_->appendRow(row);
+                row.append(item);
+                QWidget* widget = new TrackControlsWidgetQt(item, controller_);
+                model_->appendRow(row);
+                auto index = model_->indexFromItem(item);
+                setIndexWidget(index, widget);
 	}
 
 	// Add Other Tracks
@@ -96,7 +101,10 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
         auto item = new QStandardItem(QString::fromStdString(track.getName()));
         item->setData(QVariant::fromValue(static_cast<void*>(&track)), Qt::UserRole + 1);
         row.append(item);
+        QWidget* widget = new TrackControlsWidgetQt(item, controller_);
         model_->appendRow(row);
+        auto index = model_->indexFromItem(item);
+        setIndexWidget(index, widget);
     }
 
     setModel(model_);
@@ -138,7 +146,10 @@ void AnimationLabelViewQt::onTrackAdded(Track* track) {
     auto item = new QStandardItem(QString::fromStdString(track->getName()));
     item->setData(QVariant::fromValue(static_cast<void*>(track)), Qt::UserRole + 1);
     row.append(item);
+    QWidget* widget = new TrackControlsWidgetQt(item, controller_);
     model_->appendRow(row);
+    auto index = model_->indexFromItem(item);
+    setIndexWidget(index, widget);
 }
 
 void AnimationLabelViewQt::onTrackRemoved(Track* track) {
