@@ -52,6 +52,7 @@
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
+#include <inviwo/core/resourcemanager/resourcemanager.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/fileobserver.h>
@@ -129,6 +130,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         PickingManager::deleteInstance();
         RenderContext::deleteInstance();
     }}
+    , resourceManager_{util::make_unique<ResourceManager>()}
     , cameraFactory_{util::make_unique<CameraFactory>()}
     , dataReaderFactory_{util::make_unique<DataReaderFactory>()}
     , dataWriterFactory_{util::make_unique<DataWriterFactory>()}

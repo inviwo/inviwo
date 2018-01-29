@@ -50,6 +50,7 @@
 #include <inviwo/qt/editor/networksearch.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
+#include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
@@ -191,6 +192,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());
     consoleWidget_->setVisible(true);
     consoleWidget_->loadState();
+
+    resourceManagerDockWidget_ = new ResourceManagerDockWidget(this, *app->getResourceManager());
+    addDockWidget(Qt::LeftDockWidgetArea, resourceManagerDockWidget_);
+    resourceManagerDockWidget_->setVisible(false);
+    resourceManagerDockWidget_->loadState();
 
     // load settings and restore window state
     loadWindowState();
@@ -520,6 +526,8 @@ void InviwoMainWindow::addActions() {
         viewMenuItem->addAction(processorTreeWidget_->toggleViewAction());
         propertyListWidget_->toggleViewAction()->setText(tr("&Property List"));
         viewMenuItem->addAction(propertyListWidget_->toggleViewAction());
+        resourceManagerDockWidget_->toggleViewAction()->setText(tr("&Resource Manager"));
+        viewMenuItem->addAction(resourceManagerDockWidget_->toggleViewAction());
         consoleWidget_->toggleViewAction()->setText(tr("&Output Console"));
         viewMenuItem->addAction(consoleWidget_->toggleViewAction());
         helpWidget_->toggleViewAction()->setText(tr("&Help"));

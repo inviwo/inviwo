@@ -64,6 +64,7 @@ namespace inviwo {
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
 
+class ResourceManager;
 class CameraFactory;
 class DataReaderFactory;
 class DataWriterFactory;
@@ -235,6 +236,8 @@ public:
     void setPostEnqueueFront(std::function<void()> func);
     void setProgressCallback(std::function<void(std::string)> progressCallback);
 
+    ResourceManager* getResourceManager();
+
     // Factory getters
     CameraFactory* getCameraFactory() const;
     DataReaderFactory* getDataReaderFactory() const;
@@ -301,6 +304,8 @@ protected:
     Queue queue_;  // "Interaction/GUI" queue
 
     util::OnScopeExit clearAllSingeltons_;
+
+    std::unique_ptr<ResourceManager> resourceManager_;
 
     // Factories
     std::unique_ptr<CameraFactory> cameraFactory_;
@@ -413,6 +418,8 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     if (queue_.postEnqueue) queue_.postEnqueue();
     return res;
 }
+
+inline ResourceManager* InviwoApplication::getResourceManager() {return resourceManager_.get(); }
 
 inline CameraFactory* InviwoApplication::getCameraFactory() const { return cameraFactory_.get(); }
 
