@@ -29,6 +29,7 @@
 
 #include <modules/postprocessing/postprocessingmodule.h>
 #include <modules/postprocessing/processors/ssao.h>
+#include <modules/postprocessing/processors/fog.h>
 #include <modules/postprocessing/processors/fxaa.h>
 #include <modules/postprocessing/processors/tonemapping.h>
 #include <modules/postprocessing/processors/hdrbloom.h>
@@ -53,6 +54,7 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     // Processors
     registerProcessor<SSAO>();
     registerProcessor<FXAA>();
+	registerProcessor<Fog>();
     registerProcessor<Tonemapping>();
     registerProcessor<HdrBloom>();
     registerProcessor<ImageBrightnessContrast>();
