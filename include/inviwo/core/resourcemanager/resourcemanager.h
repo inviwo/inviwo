@@ -39,6 +39,8 @@
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
+#include <typeindex>
+
 namespace inviwo {
 
 /**

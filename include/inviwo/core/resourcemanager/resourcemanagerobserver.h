@@ -35,6 +35,9 @@
 
 #include <inviwo/core/util/observer.h>
 
+
+#include <typeindex>
+
 namespace inviwo {
 
 class Resource;
