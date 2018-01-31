@@ -31,13 +31,15 @@
 
 namespace inviwo {
 
-void ResourceManagerObservable::notifyResourceAdded(const std::string& key, const std::type_index& type,
+void ResourceManagerObservable::notifyResourceAdded(const std::string& key,
+                                                    const std::type_index& type,
                                                     Resource* resource) {
     forEachObserver([&](ResourceManagerObserver* o) { o->onResourceAdded(key, type, resource); });
 }
 
 void ResourceManagerObservable::notifyResourceRemoved(const std::string& key,
-                                                      const std::type_index& type, Resource* resource) {
+                                                      const std::type_index& type,
+                                                      Resource* resource) {
     forEachObserver([&](ResourceManagerObserver* o) { o->onResourceRemoved(key, type, resource); });
 }
 

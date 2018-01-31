@@ -41,16 +41,18 @@ class Resource;
 
 class IVW_CORE_API ResourceManagerObserver : public Observer {
 public:
-    virtual void onResourceAdded(const std::string& key, const std::type_index &type,
+    virtual void onResourceAdded(const std::string& key, const std::type_index& type,
                                  Resource* resource){};
-    virtual void onResourceRemoved(const std::string& key, const std::type_index &type,
+    virtual void onResourceRemoved(const std::string& key, const std::type_index& type,
                                    Resource* resource){};
 };
 
 class IVW_CORE_API ResourceManagerObservable : public Observable<ResourceManagerObserver> {
 protected:
-    void notifyResourceAdded(const std::string& key, const std::type_index &type, Resource* resource);
-    void notifyResourceRemoved(const std::string& key, const std::type_index &type, Resource* resource);
+    void notifyResourceAdded(const std::string& key, const std::type_index& type,
+                             Resource* resource);
+    void notifyResourceRemoved(const std::string& key, const std::type_index& type,
+                               Resource* resource);
 };
 
 }  // namespace inviwo

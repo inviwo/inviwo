@@ -45,9 +45,9 @@ namespace inviwo {
  * \class ResourceManager
  * \brief A resource manager to store data to avoid creating/loading the same dataset twice.
  *
- * To avoid loading the same data twice, resources are stored in a unordered\_map are hashed by type
- * and key. Key should uniquely describe the dataset, for example, when loading a file from disk the
- * filename could be used.
+ * To avoid loading the same data twice, resources are stored in a std::unordered_map are hashed by
+ * type and key. Key should uniquely describe the dataset, for example, when loading a file from
+ * disk the filename could be used.
  *
  * Example Usage:
  * \code{.cpp}
@@ -74,7 +74,7 @@ public:
      *
      * @param key key of the resource to find
      * @return the found resource
-     * @throw inviwo::Exception if resource with key and type T could not be found
+     * @throw inviwo::ResourceException if resource with key and type T could not be found
      */
     template <typename T>
     std::shared_ptr<T> getResource(const std::string &key);
@@ -85,7 +85,8 @@ public:
      * @param key key of the resource to add
      * @param resource a shared_ptr to the data to store
      * @param overwrite a flag to indicate if overwriting existing resources is allowed.
-     * @throw inviwo::Exception if resource with key and type T exists and overwrite is set to false
+     * @throw inviwo::ResourceException if resource with key and type T exists and overwrite is set
+     * to false
      */
     template <typename T>
     void addResource(const std::string &key, std::shared_ptr<T> resource, bool overwrite = false);
@@ -130,18 +131,12 @@ public:
 
 private:
     /**
-     * \brief Convenience function to create a std::pair of strings for a key and a type T.
-     *
-     * TODO: UPDATE THIS
-     *
-     * Used for look up into the resources map.
-     * @see typeToString
+     * \brief Convenience function to create a std::pair for uses in resources_ map.
      *
      * @param key the key to be used in the pair
      */
     template <typename T>
     static std::pair<std::string, std::type_index> keyTypePair(const std::string &key);
-
 
     std::unordered_map<std::pair<std::string, std::type_index>, std::shared_ptr<Resource>>
         resources_;

@@ -54,7 +54,6 @@ public:
 
     virtual std::string typeDisplayName() = 0;
     virtual Document info() = 0;
-    //virtual std::type_index type_index() = 0;
 };
 
 /**
@@ -68,12 +67,10 @@ public:
     TypedResource(std::shared_ptr<T> resource) : resource_(resource) {}
     virtual ~TypedResource() = default;
 
-    //operator std::shared_ptr<T>() const { return resource_; }
     std::shared_ptr<T> getData() { return resource_; }
 
     virtual std::string typeDisplayName() override { return DataTraits<T>::dataName(); }
     virtual Document info() override { return DataTraits<T>::info(*resource_); }
-//    virtual std::type_index type_index() override { return typeid(T); };
 
 private:
     std::shared_ptr<T> resource_;

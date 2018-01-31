@@ -62,9 +62,9 @@ public:
         return Qt::ItemIsEnabled;
     }
 
-    Resource* getResource(int row) const {
+    Resource *getResource(int row) const {
         auto qvar = data(this->index(row, 0), ResourceRole);
-        return static_cast<Resource*>(qvar.value<void *>());
+        return static_cast<Resource *>(qvar.value<void *>());
     }
 
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
@@ -128,11 +128,8 @@ void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const st
     replaceInString(keyC, "\\", "/");
     auto keySplit = splitString(keyC, '/').back();
 
-    auto item = new QStandardItem(utilqt::toQString(keySplit));
-    auto item2 = new QStandardItem(utilqt::toQString(resource->typeDisplayName()));
-
-    row.append(item);
-    row.append(item2);
+    row.append(new QStandardItem(utilqt::toQString(keySplit)));
+    row.append(new QStandardItem(utilqt::toQString(resource->typeDisplayName())));
     auto rowID = model_->rowCount();
     model_->appendRow(row);
     auto btn = new QToolButton();
@@ -143,15 +140,13 @@ void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const st
     model_->setData(model_->index(rowID, 0), QVariant::fromValue((void *)resource), ResourceRole);
 
     connect(btn, &QPushButton::pressed,
-            [ key, t = type, r = resource, rowID, m = this->model_, rm = &this->manager_ ]() {
-                rm->removeResource(key, t);
-            });
+            [ key, t = type, rm = &this->manager_ ]() { rm->removeResource(key, t); });
 }
 
-void ResourceManagerDockWidget::onResourceRemoved(const std::string &key,
-                                                  const std::type_index &type, Resource *resource) {
+void ResourceManagerDockWidget::onResourceRemoved(const std::string &, const std::type_index &,
+                                                  Resource *resource) {
     for (int i = 0; i < model_->rowCount(); i++) {
-        if(model_->getResource(i) == resource) {
+        if (model_->getResource(i) == resource) {
             model_->removeRow(i);
             break;
         }
