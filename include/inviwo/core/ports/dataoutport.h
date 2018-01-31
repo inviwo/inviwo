@@ -36,6 +36,7 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/porttraits.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -129,7 +130,7 @@ Document DataOutport<T>::getInfo() const {
     using H = utildoc::TableBuilder::Header;
     auto t = doc.append("html").append("body").append("table");
     auto pi = t.append("tr").append("td");
-    pi.append("b", DataTraits<T>::dataName() + " Outport", {{"style", "color:white;"}});
+    pi.append("b", htmlEncode(DataTraits<T>::dataName()) + " Outport", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(pi, P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());

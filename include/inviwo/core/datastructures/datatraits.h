@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/introspection.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <type_traits>
 
@@ -205,7 +206,7 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
     }
     static Document info(const std::vector<std::shared_ptr<T>, A>& data) {
         Document doc;
-        doc.append("p", dataName());
+        doc.append("p", htmlEncode(dataName()));
         doc.append("p", toString(data.size()));
         if (!data.empty()) {
             doc.append("p", DataTraits<T>::info(*data.front()));
