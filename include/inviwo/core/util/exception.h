@@ -113,6 +113,13 @@ public:
     virtual ~FileException() throw() {}
 };
 
+
+class IVW_CORE_API ResourceException : public Exception {
+public:
+    ResourceException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    virtual ~ResourceException() throw() {}
+};
+
 class IVW_CORE_API ModuleInitException : public Exception {
 public:
     ModuleInitException(const std::string& message = "",
