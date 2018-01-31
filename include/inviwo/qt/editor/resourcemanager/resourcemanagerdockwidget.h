@@ -42,6 +42,9 @@ class QTableView;
 namespace inviwo {
 class Resource;
 class ResourceManager;
+
+class ResourceManagerItemModel;
+
 /**
  * \class ResourceManagerDockWidget
  * \brief Widget class for the Resource Manager
@@ -52,15 +55,15 @@ public:
     ResourceManagerDockWidget(QWidget* parent, ResourceManager& manager);
     virtual ~ResourceManagerDockWidget();
 
-    virtual void onResourceAdded(const std::string& key, const std::string& type,
+    virtual void onResourceAdded(const std::string& key, const std::type_index& type,
                                  Resource* resource) override;
-    virtual void onResourceRemoved(const std::string& key, const std::string& type,
+    virtual void onResourceRemoved(const std::string& key, const std::type_index& type,
                                    Resource* resource) override;
 
 private:
     ResourceManager& manager_;
 
-    QStandardItemModel* model_;
+    ResourceManagerItemModel* model_;
     QTableView* tableView_;
 };
 

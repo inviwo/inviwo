@@ -31,11 +31,8 @@
 
 namespace inviwo {
 
-ResourceManager::ResourceManager() {}
-
-void ResourceManager::removeResource(const std::string &key, const std::string &type) {
+void ResourceManager::removeResource(const std::string &key, const std::type_index &type) {
     IVW_ASSERT(!key.empty(), "Key should not be empty string");
-    IVW_ASSERT(!type.empty(), "Type should not be empty string");
     auto it = resources_.find(std::make_pair(key, type));
     if (it != resources_.end()) {
         notifyResourceRemoved(key, type, it->second.get());
@@ -45,7 +42,7 @@ void ResourceManager::removeResource(const std::string &key, const std::string &
 
 void ResourceManager::clear() {
     while (!resources_.empty()) {
-        auto p = resources_.begin()->first;
+        auto &p = resources_.begin()->first;
         removeResource(p.first, p.second);
     }
 }

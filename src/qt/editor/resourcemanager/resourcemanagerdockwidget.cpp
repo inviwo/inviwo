@@ -52,23 +52,31 @@
 
 namespace inviwo {
 
-namespace detail {
-class ItemModel : public QStandardItemModel {
+int ResourceRole = Qt::UserRole + 1;
+
+class ResourceManagerItemModel : public QStandardItemModel {
 public:
-    ItemModel(QObject *parent) : QStandardItemModel(parent) { setColumnCount(3); }
+    ResourceManagerItemModel(QObject *parent) : QStandardItemModel(parent) { setColumnCount(3); }
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const override {
         return Qt::ItemIsEnabled;
     }
 
+    Resource* getResource(int row) const {
+        auto qvar = data(this->index(row, 0), ResourceRole);
+        return static_cast<Resource*>(qvar.value<void *>());
+    }
+
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
-        /*if (role == Qt::SizeHintRole) {
-            return QSize(200, 25);
-        }*/
+
+        if (role == Qt::ToolTipRole) {
+            auto resource = getResource(index.row());
+            auto toolTip = resource->info();
+            return QString(utilqt::toQString(toolTip));
+        }
         return QStandardItemModel::data(index, role);
     }
 };
-}  // namespace detail
 
 ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceManager &manager)
     : InviwoDockWidget("Resource Manager", parent, "ResourceManager"), manager_(manager) {
@@ -84,7 +92,7 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceMa
     tableView_->setSortingEnabled(true);
     tableView_->verticalHeader()->hide();
 
-    model_ = new detail::ItemModel(this);
+    model_ = new ResourceManagerItemModel(this);
 
     model_->setHorizontalHeaderLabels({"Name", "Type", ""});
 
@@ -100,7 +108,6 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceMa
     tableView_->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
     tableView_->setColumnWidth(2, 32);
 
-
     auto buttomRowLayout = new QHBoxLayout();
     layout->addLayout(buttomRowLayout);
     buttomRowLayout->addStretch();
@@ -108,16 +115,12 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceMa
     auto clearAllButton = new QPushButton("Clear all");
     buttomRowLayout->addWidget(clearAllButton);
 
-    connect(clearAllButton,&QPushButton::pressed,[rm=&this->manager_](){
-        rm->clear();
-    });
-
-
+    connect(clearAllButton, &QPushButton::pressed, [rm = &this->manager_]() { rm->clear(); });
 }
 
 ResourceManagerDockWidget::~ResourceManagerDockWidget() { manager_.removeObserver(this); }
 
-void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const std::string &type,
+void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const std::type_index &type,
                                                 Resource *resource) {
     QList<QStandardItem *> row;
 
@@ -126,8 +129,8 @@ void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const st
     auto keySplit = splitString(keyC, '/').back();
 
     auto item = new QStandardItem(utilqt::toQString(keySplit));
-    item->setToolTip(utilqt::toQString(keyC));
-    auto item2 = new QStandardItem(utilqt::toQString(type));
+    auto item2 = new QStandardItem(utilqt::toQString(resource->typeDisplayName()));
+
     row.append(item);
     row.append(item2);
     auto rowID = model_->rowCount();
@@ -136,22 +139,19 @@ void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const st
     btn->setIcon(QIcon(":/icons/edit-delete.png"));
     btn->setToolTip("Remove resource");
     tableView_->setIndexWidget(model_->index(rowID, 2), btn);
+
+    model_->setData(model_->index(rowID, 0), QVariant::fromValue((void *)resource), ResourceRole);
+
     connect(btn, &QPushButton::pressed,
-            [ key, type, rowID, m = this->model_, rm = &this->manager_ ]() {
-                rm->removeResource(key, type);
+            [ key, t = type, r = resource, rowID, m = this->model_, rm = &this->manager_ ]() {
+                rm->removeResource(key, t);
             });
 }
 
-void ResourceManagerDockWidget::onResourceRemoved(const std::string &key, const std::string &type,
-                                                  Resource *resource) {
-    auto keyC = key;
-    replaceInString(keyC, "\\", "/");
-    auto keySplit = splitString(keyC, '/').back();
+void ResourceManagerDockWidget::onResourceRemoved(const std::string &key,
+                                                  const std::type_index &type, Resource *resource) {
     for (int i = 0; i < model_->rowCount(); i++) {
-
-        //TODO should check for full key, not keySplit
-        if (utilqt::fromQString(model_->item(i, 0)->text()) == keySplit &&
-            utilqt::fromQString(model_->item(i, 1)->text()) == type) {
+        if(model_->getResource(i) == resource) {
             model_->removeRow(i);
             break;
         }

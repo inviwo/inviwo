@@ -37,27 +37,30 @@ namespace inviwo {
 
 /**
  * \class Resource
- * \brief Base class for resources. 
- * @see TypedResource<T> 
+ * \brief Base class for resources.
+ * @see TypedResource<T>
  * @see ResourceManager
  */
 class IVW_CORE_API Resource {
 public:
     Resource();
     virtual ~Resource() = default;
-    
+
     Resource(const Resource &r) = delete;
     Resource(Resource &&r) = delete;
 
     Resource &operator=(const Resource &r) = delete;
     Resource &operator=(const Resource &&r) = delete;
 
+    virtual std::string typeDisplayName() = 0;
+    virtual Document info() = 0;
+    //virtual std::type_index type_index() = 0;
 };
 
 /**
  * \class TypedResource
  * \brief Class used by ResourceManager to wrap a shared_ptr in a resource
- * @see ResourceManager
+ * \see ResourceManager
  */
 template <typename T>
 class TypedResource : public Resource {
@@ -65,8 +68,12 @@ public:
     TypedResource(std::shared_ptr<T> resource) : resource_(resource) {}
     virtual ~TypedResource() = default;
 
-    operator std::shared_ptr<T>() const { return resource_; }
+    //operator std::shared_ptr<T>() const { return resource_; }
     std::shared_ptr<T> getData() { return resource_; }
+
+    virtual std::string typeDisplayName() override { return DataTraits<T>::dataName(); }
+    virtual Document info() override { return DataTraits<T>::info(*resource_); }
+//    virtual std::type_index type_index() override { return typeid(T); };
 
 private:
     std::shared_ptr<T> resource_;

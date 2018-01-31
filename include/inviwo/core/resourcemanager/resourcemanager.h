@@ -66,7 +66,7 @@ namespace inviwo {
  */
 class IVW_CORE_API ResourceManager : public ResourceManagerObservable {
 public:
-    ResourceManager();
+    ResourceManager() = default;
     virtual ~ResourceManager() = default;
 
     /**
@@ -77,7 +77,7 @@ public:
      * @throw inviwo::Exception if resource with key and type T could not be found
      */
     template <typename T>
-    TypedResource<T> &getResource(const std::string &key);
+    std::shared_ptr<T> getResource(const std::string &key);
 
     /**
      * \brief Adds a resource to the manager
@@ -119,7 +119,7 @@ public:
      * @param key the key of the resource to remove
      * @param type the type as a string of the resource to remove
      */
-    void removeResource(const std::string &key, const std::string &type);
+    void removeResource(const std::string &key, const std::type_index &type);
 
     /**
      * \brief Clears the resource manager.
@@ -130,40 +130,31 @@ public:
 
 private:
     /**
-    * \brief Convenience function to converts a type T to string.
-    *
-    * Uses DataTraits::dataName() 
-    */
+     * \brief Convenience function to create a std::pair of strings for a key and a type T.
+     *
+     * TODO: UPDATE THIS
+     *
+     * Used for look up into the resources map.
+     * @see typeToString
+     *
+     * @param key the key to be used in the pair
+     */
     template <typename T>
-    static std::string typeToString();
+    static std::pair<std::string, std::type_index> keyTypePair(const std::string &key);
 
 
-    /**
-    * \brief Convenience function to create a std::pair of strings for a key and a type T.
-    *
-    * Used for look up into the resources map. 
-    * @see typeToString
-    *
-    * @param key the key to be used in the pair
-    */
-    template <typename T>
-    static std::pair<std::string, std::string> keyTypePair(const std::string &key);
-
-    std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<Resource>> resources_;
+    std::unordered_map<std::pair<std::string, std::type_index>, std::shared_ptr<Resource>>
+        resources_;
 };
 
 template <typename T>
-TypedResource<T> &ResourceManager::getResource(const std::string &key) {
+std::shared_ptr<T> ResourceManager::getResource(const std::string &key) {
     IVW_ASSERT(!key.empty(), "Key should not be empty string");
     auto it = resources_.find(keyTypePair<T>(key));
     if (it == resources_.end()) {
-        throw inviwo::Exception("No resource with " + key + " registered", IvwContext);
+        throw inviwo::ResourceException("No resource with " + key + " registered", IvwContext);
     }
-    auto resourceTyped = dynamic_cast<TypedResource<T> *>(it->second.get());
-    if (!resourceTyped) {
-        throw inviwo::Exception("Wrong type given for resource " + key, IvwContext);
-    }
-    return *resourceTyped;
+    return static_cast<TypedResource<T> *>(it->second.get())->getData();
 }
 
 template <typename T>
@@ -175,7 +166,8 @@ void ResourceManager::addResource(const std::string &key, std::shared_ptr<T> res
         if (overwrite) {
             removeResource<T>(key);
         } else {
-            throw inviwo::Exception("Resource with " + key + " already registered", IvwContext);
+            throw inviwo::ResourceException("Resource with " + key + " already registered",
+                                            IvwContext);
         }
     }
     auto typedResource = std::make_shared<TypedResource<T>>(resource);
@@ -188,29 +180,17 @@ bool ResourceManager::hasResource(const std::string &key) const {
     IVW_ASSERT(!key.empty(), "Key should not be empty string");
     auto tk = keyTypePair<T>(key);
     auto it = resources_.find(tk);
-    if (it == resources_.end()) {
-        return false;
-    }
-    auto resourceTyped = dynamic_cast<TypedResource<T> *>(it->second.get());
-    if (!resourceTyped) {
-        throw inviwo::Exception("Wrong type given for resource " + key, IvwContext);
-    }
-    return true;
+    return it != resources_.end();
 }
 
 template <typename T>
 void ResourceManager::removeResource(const std::string &key) {
-    removeResource(key, typeToString<T>());
+    removeResource(key, typeid(T));
 }
 
 template <typename T>
-std::string ResourceManager::typeToString() {
-    return DataTraits<T>::dataName();
-}
-
-template <typename T>
-std::pair<std::string, std::string> ResourceManager::keyTypePair(const std::string &key) {
-    return {key, typeToString<T>()};
+std::pair<std::string, std::type_index> ResourceManager::keyTypePair(const std::string &key) {
+    return {key, typeid(T)};
 }
 
 }  // namespace inviwo
