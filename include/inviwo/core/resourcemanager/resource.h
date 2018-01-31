@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
