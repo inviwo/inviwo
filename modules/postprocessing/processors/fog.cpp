@@ -37,53 +37,56 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo Fog::processorInfo_{
-    "org.inviwo.Fog",  // Class identifier
-    "Fog",            // Display name
-    "Image Operation",          // Category
-    CodeState::Experimental,    // Code state
-    Tags::None,                 // Tags
+    "org.inviwo.Fog",         // Class identifier
+    "Fog",                    // Display name
+    "Image Operation",        // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
 };
 const ProcessorInfo Fog::getProcessorInfo() const { return processorInfo_; }
 
 Fog::Fog()
     : input_("inport")
-	, output_("output")
-	, camera_("camera", "Camera")
-    , color_("color", "Color", vec3(1,1,1))
-	, shader_("fullscreenquad.vert", "fog.frag") {
-	addPort(input_);
-	addPort(output_);
-	addProperty(camera_);
+    , output_("output")
+    , color_("color", "Color", vec3(1, 1, 1))
+    , density_("density", "Density", 1.f, 0.0f, 10.f)
+    , camera_("camera", "Camera")
+    , shader_("fullscreenquad.vert", "fog.frag") {
+    addPort(input_);
+    addPort(output_);
     addProperty(color_);
+    addProperty(density_);
+    addProperty(camera_);
+
+    color_.setSemantics(PropertySemantics::Color);
 }
 
 void Fog::process() {
-	auto n = camera_.getNearPlaneDist();
-	auto f = camera_.getFarPlaneDist();
-	vec4 clipInfo(n * f, n - f, f, 1.0f);
+    utilgl::activateTargetAndCopySource(output_, input_, ImageType::ColorOnly);
 
-	utilgl::activateTargetAndCopySource(output_, input_, ImageType::ColorOnly);
+    shader_.activate();
+    shader_.setUniform("fogColor", color_);
+    shader_.setUniform("fogDensity", density_);
+    shader_.setUniform("depthTexture", 0);
+    shader_.setUniform("colorTexture", 1);
+    utilgl::setUniforms(shader_, camera_);
 
-	shader_.activate();
-	shader_.setUniform("fogColor", color_);
-	shader_.setUniform("clipInfo", clipInfo);
-	shader_.setUniform("depthTexture", 0);
-	shader_.setUniform("colorTexture", 1);
+    auto imageGL = input_.getData()->getRepresentation<ImageGL>();
+    auto depthTex = imageGL->getDepthLayerGL()->getTexture()->getID();
+    auto colorTex = imageGL->getColorLayerGL()->getTexture()->getID();
 
-	auto imageGL = input_.getData()->getRepresentation<ImageGL>();
-	auto depthTex = imageGL->getDepthLayerGL()->getTexture()->getID();
-	auto colorTex = imageGL->getColorLayerGL()->getTexture()->getID();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, depthTex);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, depthTex);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, colorTex);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, colorTex);
+    utilgl::singleDrawImagePlaneRect();
 
-	auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-	utilgl::Enable<MeshGL> enable(rect);
-
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    shader_.deactivate();
+    utilgl::deactivateCurrentTarget();
 }
 
 }  // namespace inviwo

@@ -33,12 +33,34 @@
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <modules/opengl/shader/shader.h>
-
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.Fog, Fog}
+ * ![](org.inviwo.Fog.png?classIdentifier=org.inviwo.Fog)
+ * Use any image with a proper depth channel as input. It will apply a colored fog to the
+ * color-layer based on the normalized and linearized depth. The fog is computed from an exponential
+ * function and the shape/curve of this exponential function is controlled by the FogExponent.
+ *
+ * ### Inports
+ *   * __ImageInport__ Input Image.
+ *
+ * ### Outports
+ *   * __ImageOutport__ Output Image.
+ *
+ * ### Properties
+ *   * __Color__ The color of the fog
+ *   * __Density__ The density of the fog
+ */
+
+/**
+ * \class Fog
+ * \brief Fog post process. (Computed using depth-layer and applied to color-layer)
+ */
 class IVW_MODULE_POSTPROCESSING_API Fog : public Processor {
 public:
     Fog();
@@ -46,14 +68,17 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 protected:
-	virtual void process() override;
+    virtual void process() override;
+
 private:
-	ImageInport input_;
-	ImageOutport output_;
-	CameraProperty camera_;
+    ImageInport input_;
+    ImageOutport output_;
     FloatVec3Property color_;
-	Shader shader_;
+    FloatProperty density_;
+    CameraProperty camera_;
+    Shader shader_;
 };
 
 }  // namespace inviwo

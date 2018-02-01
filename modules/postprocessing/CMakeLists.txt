@@ -51,6 +51,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthlinearize.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/displaytex.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/edgedarken.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fog.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fog.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fullscreenquad.vert

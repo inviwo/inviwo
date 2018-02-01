@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,26 @@
  *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
-#include "utils/depth.glsl"
-#include "fog.glsl"
+// Inspired by Inigo Quilez
+// http://www.iquilezles.org/www/articles/fog/fog.htm
 
-uniform vec3 fogColor;
-uniform float fogDensity = 2.0;
-uniform CameraParameters camera;
-uniform sampler2D depthTexture;
-uniform sampler2D colorTexture;
+#ifndef IVW_FOG_GLSL
+#define IVW_FOG_GLSL
 
-void main() {
-    float depth = texelFetch(depthTexture, ivec2(gl_FragCoord.xy), 0).r;
-    vec4 color = texelFetch(colorTexture, ivec2(gl_FragCoord.xy), 0).rgba;
-
-    float linDepth = calculateTValueFromDepthValue(camera, depth, 0, 1);
-    vec3 rgb = computeFog(color.rgb, linDepth, fogColor, fogDensity);
-
-    FragData0 = vec4(rgb, color.a);
+vec3 computeFog(in vec3 pixelColor, in float distance, in vec3 fogColor, in float density) {
+    float amount = 1.0 - exp( -distance*density);
+    return mix(pixelColor, fogColor, amount);
 }
+
+vec3 computeFogScatter(in vec3 pixelColor, in float distance, in vec3 fogColor, in float scatter) {
+    return pixelColor * (1.0 - exp(-distance*scatter)) + fogColor * exp(-distance*scatter);
+}
+
+vec3 computeFogInOutScatter(in vec3 pixelColor, in float distance, in vec3 fogColor, in vec3 extinction, in vec3 scatter) {
+    vec3 extColor = vec3( exp(-distance*extinction.x), exp(-distance*extinction.y), exp(-distance*extinction.z) );
+    vec3 insColor = vec3( exp(-distance*scatter.x), exp(-distance*scatter.y), exp(-distance*scatter.z) );
+    return  pixelColor*(1.0-extColor) + fogColor*insColor;
+}
+
+
+#endif
