@@ -1,0 +1,7 @@
+{
+	"image_test" :  {
+		"differenceTolerance" : {
+			 "fog.png"   : 0.001
+		}
+	}
+}
