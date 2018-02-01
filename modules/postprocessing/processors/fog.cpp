@@ -41,7 +41,7 @@ const ProcessorInfo Fog::processorInfo_{
     "Fog",                    // Display name
     "Image Operation",        // Category
     CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    Tags::GL,                 // Tags
 };
 const ProcessorInfo Fog::getProcessorInfo() const { return processorInfo_; }
 
