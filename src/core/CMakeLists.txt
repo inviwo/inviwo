@@ -670,12 +670,6 @@ ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm MODULE Core
     FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
 )
 
-ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
-    URL "http://code.google.com/p/googletest/"
-    TYPE "BSD 3-clause"
-    FILES ${IVW_EXTENSIONS_DIR}/gtest/LICENSE
-)
-
 ivw_register_license_file(NAME "half" TARGET half MODULE Core
     URL "http://half.sourceforge.net"
     TYPE "The MIT License"

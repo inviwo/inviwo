@@ -84,6 +84,8 @@ find_package(PythonLibsNew 3)
 
 include(cmake/globalconfig.cmake)
 
+option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
+
 #--------------------------------------------------------------------
 # Applications/Qt
 option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
@@ -188,7 +190,6 @@ if(OPENCL_FOUND)
     list(APPEND ivw_default_modules "OpenCL" "BaseCL")
 endif()
 
-option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
 ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
 ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
 
