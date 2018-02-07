@@ -20,7 +20,7 @@ excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking
 					"*/genetree/*", "*.DS_Store", "*DS_mapp",
 					"*.jpg", "*.JPG", "*.jpeg", "*.lib", "*.dll",
 					"*.png", "*.ttf", "*.tif", "*.pyc", "*.raw", "*.bmp", "*.wav", "*.ico", "*.icns",
-					"*.qch", "*.qhc", "*.exr", "*.pwm", "*.pvm", "*.pdf", "*.otf", "*.exe"]
+					"*.qch", "*.qhc", "*.exr", "*.pwm", "*.pvm", "*.pdf", "*.otf", "*.exe", "*.fbx"]
 
 files = refactoring.find_files(paths, ['*'], excludes=excludespatterns)
 
