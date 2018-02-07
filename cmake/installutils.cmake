@@ -119,7 +119,7 @@ macro(ivw_qt_add_to_install ivw_comp)
                     install(FILES ${QTARGET_DIR}/${qtarget}.dll 
                             DESTINATION bin 
                             COMPONENT ${ivw_comp} 
-                            CONFIGURATIONS Release)
+                            CONFIGURATIONS Release RelWithDebInfo)
                     foreach(plugin ${${qtarget}_PLUGINS})
                         get_target_property(_loc ${plugin} LOCATION)
                         get_filename_component(_path ${_loc} PATH)
