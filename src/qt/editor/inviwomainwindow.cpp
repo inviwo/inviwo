@@ -408,9 +408,9 @@ void InviwoMainWindow::addActions() {
                 auto action = menu->addAction(QString::fromStdString(item));
                 auto path = QString::fromStdString(moduleWorkspacePath + "/" + item);
                 connect(action, &QAction::triggered, this, [this, path]() {
+                    // open as regular workspace with proper filename if control is pressed
+                    bool controlPressed = (app_->keyboardModifiers() == Qt::ControlModifier);
                     if (askToSaveWorkspaceChanges()) {
-                        bool controlPressed = (app_->keyboardModifiers() == Qt::ControlModifier);
-                        // open as regular workspace with proper filename if control is pressed
                         openWorkspace(path, !controlPressed);
                     }
                 });
