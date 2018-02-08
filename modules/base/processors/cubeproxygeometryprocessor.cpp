@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "cubeproxygeometryprocessor.h"
@@ -38,13 +38,11 @@ namespace inviwo {
 const ProcessorInfo CubeProxyGeometry::processorInfo_{
     "org.inviwo.CubeProxyGeometry",  // Class identifier
     "Cube Proxy Geometry",           // Display name
-    "Mesh Creation",             // Category
+    "Mesh Creation",                 // Category
     CodeState::Stable,               // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo CubeProxyGeometry::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo CubeProxyGeometry::getProcessorInfo() const { return processorInfo_; }
 
 CubeProxyGeometry::CubeProxyGeometry()
     : Processor()
@@ -61,7 +59,6 @@ CubeProxyGeometry::CubeProxyGeometry()
     addProperty(clipX_);
     addProperty(clipY_);
     addProperty(clipZ_);
-    
 
     // Since the clips depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
@@ -80,8 +77,7 @@ void CubeProxyGeometry::process() {
         const size3_t clipMin(clipX_.get().x, clipY_.get().x, clipZ_.get().x);
         const size3_t clipMax(clipX_.get().y, clipY_.get().y, clipZ_.get().y);
         mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipMax);
-    }
-    else {
+    } else {
         mesh = algorithm::createCubeProxyGeometry(inport_.getData());
     }
     outport_.setData(mesh);
@@ -92,12 +88,13 @@ void CubeProxyGeometry::onVolumeChange() {
     // Update to the new dimensions.
     auto dims = util::getVolumeDimensions(volume);
 
-    if (dims != size3_t(clipX_.getRangeMax()-1, clipY_.getRangeMax()-1, clipZ_.getRangeMax()-1)) {
+    if (dims !=
+        size3_t(clipX_.getRangeMax() - 1, clipY_.getRangeMax() - 1, clipZ_.getRangeMax() - 1)) {
         NetworkLock lock(this);
 
-        clipX_.setRangeNormalized(ivec2(0, dims.x-1));
-        clipY_.setRangeNormalized(ivec2(0, dims.y-1));
-        clipZ_.setRangeNormalized(ivec2(0, dims.z-1));
+        clipX_.setRangeNormalized(ivec2(0, dims.x - 1));
+        clipY_.setRangeNormalized(ivec2(0, dims.y - 1));
+        clipZ_.setRangeNormalized(ivec2(0, dims.z - 1));
 
         // set the new dimensions to default if we were to press reset
         clipX_.setCurrentStateAsDefault();
@@ -106,4 +103,4 @@ void CubeProxyGeometry::onVolumeChange() {
     }
 }
 
-} // namespace
+}  // namespace inviwo
