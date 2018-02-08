@@ -35,7 +35,6 @@
 
 #include <inviwo/core/util/observer.h>
 
-
 #include <typeindex>
 
 namespace inviwo {
@@ -48,6 +47,7 @@ public:
                                  Resource* resource){};
     virtual void onResourceRemoved(const std::string& key, const std::type_index& type,
                                    Resource* resource){};
+    virtual void onEnableChanged(){};
 };
 
 class IVW_CORE_API ResourceManagerObservable : public Observable<ResourceManagerObserver> {
@@ -56,6 +56,7 @@ protected:
                              Resource* resource);
     void notifyResourceRemoved(const std::string& key, const std::type_index& type,
                                Resource* resource);
+    void notifyEnableChanged();
 };
 
 }  // namespace inviwo

@@ -131,6 +131,19 @@ public:
      */
     void clear();
 
+    /**
+     * \brief Returns true if the resource manager is enabled
+     */
+    bool isEnabled() const;
+
+    /**
+     * \brief enable or disable the resource manager
+     * Notifys observers by calling ResourceManagerObservable::notifyEnableChanged
+     * \note Does not clear the resource manager, calls to getResource and hasResource will continue
+     * to work resources that already has been added
+     */
+    void setEnabled(bool enable = true);
+
 private:
     /**
      * \brief Convenience function to create a std::pair for uses in resources_ map.
@@ -142,6 +155,8 @@ private:
 
     std::unordered_map<std::pair<std::string, std::type_index>, std::shared_ptr<Resource>>
         resources_;
+
+    bool enabled_{true};
 };
 
 template <typename T>
@@ -157,6 +172,9 @@ std::shared_ptr<T> ResourceManager::getResource(const std::string &key) {
 template <typename T>
 void ResourceManager::addResource(const std::string &key, std::shared_ptr<T> resource,
                                   bool overwrite) {
+    if (!enabled_) {
+        return;
+    }
     IVW_ASSERT(!key.empty(), "Key should not be empty string");
     auto tk = keyTypePair<T>(key);
     if (hasResource<T>(key)) {

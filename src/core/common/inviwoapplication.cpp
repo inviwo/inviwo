@@ -164,6 +164,11 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
     }
 
+    if (commandLineParser_.getDisableResourceManager()) {
+        resourceManager_->setEnabled(false);
+    }
+    resourceManager_->addObserver(this);
+
     // initialize singletons
     init(this);
     RenderContext::init();
@@ -344,6 +349,10 @@ UsageMode InviwoApplication::getApplicationUsageMode() const {
 
 void InviwoApplication::setApplicationUsageMode(UsageMode mode) {
     systemSettings_->applicationUsageMode_.set(mode);
+}
+
+void InviwoApplication::onEnableChanged() {
+    getSystemSettings().enableResourceManager_.set(resourceManager_->isEnabled());
 }
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }

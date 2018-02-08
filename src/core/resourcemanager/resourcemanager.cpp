@@ -47,4 +47,13 @@ void ResourceManager::clear() {
     }
 }
 
+bool ResourceManager::isEnabled() const { return enabled_; }
+
+void ResourceManager::setEnabled(bool enable) {
+    if (enable != enabled_) {
+        enabled_ = enable;
+        notifyEnableChanged();
+    }
+}
+
 }  // namespace inviwo

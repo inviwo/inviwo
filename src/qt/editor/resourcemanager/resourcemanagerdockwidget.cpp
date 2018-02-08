@@ -48,6 +48,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QIcon>
+#include <QCheckBox>
 #include <warn/pop>
 
 namespace inviwo {
@@ -110,12 +111,23 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceMa
 
     auto buttomRowLayout = new QHBoxLayout();
     layout->addLayout(buttomRowLayout);
+
+    disabledCheckBox_ = new QCheckBox("Disable");
+    disabledCheckBox_->setChecked(!manager_.isEnabled());
+    buttomRowLayout->addWidget(disabledCheckBox_);
+
     buttomRowLayout->addStretch();
 
     auto clearAllButton = new QPushButton("Clear all");
     buttomRowLayout->addWidget(clearAllButton);
 
     connect(clearAllButton, &QPushButton::pressed, [rm = &this->manager_]() { rm->clear(); });
+
+    connect(disabledCheckBox_, &QCheckBox::stateChanged, [this](int state) {
+        disabledCheckBox_->blockSignals(true);
+        manager_.setEnabled(state == Qt::Unchecked);
+        disabledCheckBox_->blockSignals(false);
+    });
 }
 
 ResourceManagerDockWidget::~ResourceManagerDockWidget() { manager_.removeObserver(this); }
@@ -151,6 +163,12 @@ void ResourceManagerDockWidget::onResourceRemoved(const std::string &, const std
             break;
         }
     }
+}
+
+void ResourceManagerDockWidget::onEnableChanged() {
+    disabledCheckBox_->blockSignals(true);
+    disabledCheckBox_->setChecked(!manager_.isEnabled());
+    disabledCheckBox_->blockSignals(false);
 }
 
 }  // namespace inviwo

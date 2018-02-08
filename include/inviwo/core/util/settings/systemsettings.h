@@ -56,6 +56,7 @@ public:
     BoolProperty logStackTraceProperty_;
     BoolProperty followObjectDuringRotation_;
     BoolProperty runtimeModuleReloading_;
+    BoolProperty enableResourceManager_;
 
     static size_t defaultPoolSize();
 };

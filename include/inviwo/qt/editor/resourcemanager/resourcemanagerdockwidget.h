@@ -36,8 +36,8 @@
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 
-class QStandardItemModel;
 class QTableView;
+class QCheckBox;
 
 namespace inviwo {
 class Resource;
@@ -60,11 +60,14 @@ public:
     virtual void onResourceRemoved(const std::string& key, const std::type_index& type,
                                    Resource* resource) override;
 
+    virtual void onEnableChanged() override;
+
 private:
     ResourceManager& manager_;
 
     ResourceManagerItemModel* model_;
     QTableView* tableView_;
+    QCheckBox* disabledCheckBox_;
 };
 
 }  // namespace inviwo

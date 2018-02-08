@@ -101,6 +101,7 @@ public:
     bool getShowSplashScreen() const;
     bool getLogToFile() const;
     bool getLogToConsole() const;
+    bool getDisableResourceManager() const;
 
     int getARGC()const;
     char** getARGV()const;
@@ -123,6 +124,7 @@ private:
     WildCardArg wildcard_;
     TCLAP::SwitchArg helpQuiet_;
     TCLAP::SwitchArg versionQuiet_;
+    TCLAP::SwitchArg disableResourceManager_;
 
     std::vector<std::tuple<int, TCLAP::Arg*, std::function<void()>>> callbacks_; 
 };
