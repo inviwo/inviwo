@@ -92,7 +92,7 @@ void CubeProxyGeometry::onVolumeChange() {
     // Update to the new dimensions.
     auto dims = util::getVolumeDimensions(volume);
 
-    if (dims != size3_t(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax())) {
+    if (dims != size3_t(clipX_.getRangeMax()-1, clipY_.getRangeMax()-1, clipZ_.getRangeMax()-1)) {
         NetworkLock lock(this);
 
         clipX_.setRangeNormalized(ivec2(0, dims.x-1));
