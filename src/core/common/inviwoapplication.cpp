@@ -164,6 +164,10 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
     }
 
+    resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get());
+    systemSettings_->enableResourceManager_.onChange([this](){
+        resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get());
+    });
     if (commandLineParser_.getDisableResourceManager()) {
         resourceManager_->setEnabled(false);
     }

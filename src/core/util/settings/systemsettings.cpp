@@ -52,7 +52,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , followObjectDuringRotation_("followObjectDuringRotation",
                                   "Follow Object During Camera Rotation", false)
     , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
-    , enableResourceManager_("enableResourceManager", "Enable Resource Manager", true) {
+    , enableResourceManager_("enableResourceManager", "Enable Resource Manager", false) {
 
     addProperty(applicationUsageMode_);
     addProperty(poolSize_);
@@ -72,10 +72,6 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     runtimeModuleReloading_.onChange([this]() {
         if (isDeserializing_) return;
         LogInfo("Inviwo needs to be restarted for Runtime Module Reloading change to take effect");
-    });
-
-    enableResourceManager_.onChange([ app, e = &enableResourceManager_ ]() {
-        app->getResourceManager()->setEnabled(e->get());
     });
 
     load();
