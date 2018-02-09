@@ -351,7 +351,7 @@ void InviwoApplication::setApplicationUsageMode(UsageMode mode) {
     systemSettings_->applicationUsageMode_.set(mode);
 }
 
-void InviwoApplication::onEnableChanged() {
+void InviwoApplication::onResourceManagerEnableStateChanged() {
     getSystemSettings().enableResourceManager_.set(resourceManager_->isEnabled());
 }
 

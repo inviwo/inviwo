@@ -165,7 +165,7 @@ void ResourceManagerDockWidget::onResourceRemoved(const std::string &, const std
     }
 }
 
-void ResourceManagerDockWidget::onEnableChanged() {
+void ResourceManagerDockWidget::onResourceManagerEnableStateChanged() {
     disabledCheckBox_->blockSignals(true);
     disabledCheckBox_->setChecked(!manager_.isEnabled());
     disabledCheckBox_->blockSignals(false);

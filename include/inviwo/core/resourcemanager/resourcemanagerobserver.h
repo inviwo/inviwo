@@ -47,7 +47,7 @@ public:
                                  Resource* resource){};
     virtual void onResourceRemoved(const std::string& key, const std::type_index& type,
                                    Resource* resource){};
-    virtual void onEnableChanged(){};
+    virtual void onResourceManagerEnableStateChanged(){};
 };
 
 class IVW_CORE_API ResourceManagerObservable : public Observable<ResourceManagerObserver> {

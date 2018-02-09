@@ -137,7 +137,7 @@ public:
     bool isEnabled() const;
 
     /**
-     * \brief enable or disable the resource manager
+     * \brief Enable or disable the resource manager
      * Notifys observers by calling ResourceManagerObservable::notifyEnableChanged
      * \note Does not clear the resource manager, calls to getResource and hasResource will continue
      * to work resources that already has been added

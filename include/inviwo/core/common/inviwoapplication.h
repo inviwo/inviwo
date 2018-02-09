@@ -286,7 +286,7 @@ public:
     void setApplicationUsageMode(UsageMode mode);
 
 
-    virtual void onEnableChanged() override;
+    virtual void onResourceManagerEnableStateChanged() override;
 
 protected:
     struct Queue {

@@ -60,7 +60,7 @@ public:
     virtual void onResourceRemoved(const std::string& key, const std::type_index& type,
                                    Resource* resource) override;
 
-    virtual void onEnableChanged() override;
+    virtual void onResourceManagerEnableStateChanged() override;
 
 private:
     ResourceManager& manager_;

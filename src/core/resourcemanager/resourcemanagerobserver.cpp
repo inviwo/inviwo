@@ -44,7 +44,7 @@ void ResourceManagerObservable::notifyResourceRemoved(const std::string& key,
 }
 
 void ResourceManagerObservable::notifyEnableChanged() {
-    forEachObserver([&](ResourceManagerObserver* o) { o->onEnableChanged(); });
+    forEachObserver([&](ResourceManagerObserver* o) { o->onResourceManagerEnableStateChanged(); });
 }
 
 }  // namespace inviwo
