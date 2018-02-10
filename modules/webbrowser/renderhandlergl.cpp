@@ -49,7 +49,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
                             const RectList& dirtyRects, const void* buffer, int width, int height) {
 
     auto dims = texture2D_.getDimensions();
-    if (dims.x == width && dims.y == height) {
+    if (dims.x == static_cast<size_t>(width) && dims.y == static_cast<size_t>(height)) {
         // CPU implementation using LayerRAM
 
         // Flipping image and swizzling using CPU code was too slow.

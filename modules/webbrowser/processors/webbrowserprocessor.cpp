@@ -32,7 +32,10 @@
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <include/cef_app.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -71,7 +74,6 @@ WebBrowserProcessor::WebBrowserProcessor()
 
         // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause
         // some render errors, in context-menu and plugins.
-        std::size_t windowHandle = 0;
         window_info.SetAsWindowless(
             nullptr);  // nullptr means no transparency (site background colour)
 

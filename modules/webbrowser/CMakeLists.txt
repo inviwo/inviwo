@@ -42,6 +42,10 @@ set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 # Group in folder 
 ivw_folder(libcef_dll_wrapper ext/CEF)
+# Inviwo: Remove warnings (-w), and build error due to 'OSAtomicCompareAndSwap32' is deprecated
+if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    target_compile_options(libcef_dll_wrapper PRIVATE -Wno-deprecated-declarations -w)
+endif()
 # Logical target used to link the libcef library.
 ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 

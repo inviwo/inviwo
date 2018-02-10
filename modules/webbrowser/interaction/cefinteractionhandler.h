@@ -31,9 +31,14 @@
 #define IVW_CEFINTERACTIONHANDLER_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <include/cef_browser.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -48,9 +53,9 @@ public:
     CEFInteractionHandler(CefRefPtr<CefBrowserHost> host);
     virtual ~CEFInteractionHandler() = default;
 
-    virtual std::string getClassIdentifier() const { return "org.inviwo.cefinteractionhandler"; }
+    virtual std::string getClassIdentifier() const override { return "org.inviwo.cefinteractionhandler"; }
 
-    void invokeEvent(Event* event) override;
+    virtual void invokeEvent(Event* event) override;
 
 private:
     CefKeyEvent mapKeyEvent(KeyboardEvent* e);

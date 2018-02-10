@@ -32,6 +32,7 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/timer.h>
 
 namespace inviwo {
 

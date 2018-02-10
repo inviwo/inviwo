@@ -35,11 +35,14 @@
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 #include <modules/opengl/shader/shader.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <include/cef_base.h>
-
+#include <warn/pop>
 
 namespace inviwo {
 class WebBrowser;

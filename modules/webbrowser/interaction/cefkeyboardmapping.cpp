@@ -28,7 +28,11 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/interaction/cefkeyboardmapping.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include "include/cef_base.h"
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -135,6 +139,8 @@ unsigned int keyModifiers(KeyModifiers modifiers, IvwKey key) {
         case IvwKey::LeftMeta:
         case IvwKey::RightMeta:
             cefModifiers |= EVENTFLAG_IS_KEY_PAD;
+            break;
+        default:
             break;
     }
     return cefModifiers;

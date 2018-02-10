@@ -33,7 +33,10 @@
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/renderhandlergl.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <include/cef_client.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -44,12 +47,12 @@ class WebBrowserClient : public CefClient {
 public:
     WebBrowserClient(RenderHandlerGL *renderHandler);
 
-    virtual CefRefPtr<CefRenderHandler> GetRenderHandler() { return m_renderHandler; }
+    virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return m_renderHandler; }
 protected:
     CefRefPtr<CefRenderHandler> m_renderHandler;
 
 public:
-    IMPLEMENT_REFCOUNTING(WebBrowserClient);
+    IMPLEMENT_REFCOUNTING(WebBrowserClient)
 };
 
 }  // namespace inviwo

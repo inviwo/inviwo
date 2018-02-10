@@ -32,8 +32,11 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <include/cef_app.h>
 #include <include/wrapper/cef_helpers.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -45,11 +48,11 @@ class WebBrowserApp : public CefApp, public CefRenderProcessHandler {
 public:
     WebBrowserApp();
 
-    CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler();
+    CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
     //void OnContextCreated(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>, CefRefPtr<CefV8Context>);
 
 private:
-    IMPLEMENT_REFCOUNTING(WebBrowserApp);
+    IMPLEMENT_REFCOUNTING(WebBrowserApp)
 };
 
 };      // namespace inviwo

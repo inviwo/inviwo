@@ -29,6 +29,8 @@
 
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
 #include <modules/webbrowser/interaction/cefkeyboardmapping.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 
 namespace inviwo {
 

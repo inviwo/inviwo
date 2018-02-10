@@ -33,7 +33,10 @@
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/opengl/texture/texture2d.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <include/cef_render_handler.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -67,7 +70,7 @@ private:
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
 
 public:
-    IMPLEMENT_REFCOUNTING(RenderHandlerGL);
+    IMPLEMENT_REFCOUNTING(RenderHandlerGL)
 };
 
 };  // namespace inviwo
