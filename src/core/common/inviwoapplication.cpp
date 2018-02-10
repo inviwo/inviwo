@@ -165,13 +165,19 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     }
 
     resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get());
-    systemSettings_->enableResourceManager_.onChange([this](){
-        resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get());
-    });
+    systemSettings_->enableResourceManager_.onChange(
+        [this]() { resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get()); });
     if (commandLineParser_.getDisableResourceManager()) {
         resourceManager_->setEnabled(false);
     }
     resourceManager_->addObserver(this);
+    moduleManager_.onModulesDidRegister([this]() {
+        if (resourceManager_->isEnabled() && resourceManager_->numberOfResources() > 0) {
+            LogWarn(
+                "Resource manager was not empty when reloading modules. The beaviour of resources "
+                "of data structures that has changed is undefined and may effect stability");
+        }
+    });
 
     // initialize singletons
     init(this);

@@ -56,4 +56,6 @@ void ResourceManager::setEnabled(bool enable) {
     }
 }
 
+size_t ResourceManager::numberOfResources() const { return resources_.size(); }
+
 }  // namespace inviwo

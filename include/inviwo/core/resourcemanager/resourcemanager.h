@@ -144,6 +144,11 @@ public:
      */
     void setEnabled(bool enable = true);
 
+    /**
+     * Returns the number of added resources
+     */
+    size_t numberOfResources() const;
+
 private:
     /**
      * \brief Convenience function to create a std::pair for uses in resources_ map.
@@ -185,7 +190,7 @@ void ResourceManager::addResource(const std::string &key, std::shared_ptr<T> res
                                             IvwContext);
         }
     }
-    auto typedResource = std::make_shared<TypedResource<T>>(resource,key);
+    auto typedResource = std::make_shared<TypedResource<T>>(resource, key);
     resources_[tk] = typedResource;
     notifyResourceAdded(key, tk.second, typedResource.get());
 }

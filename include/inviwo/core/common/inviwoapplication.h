@@ -238,6 +238,11 @@ public:
     void setPostEnqueueFront(std::function<void()> func);
     void setProgressCallback(std::function<void(std::string)> progressCallback);
 
+    /** 
+     * Returns the ResourceManager owned the InviwoApplication
+     * 
+     * @see inviwo::ResourceManager
+     */ 
     ResourceManager* getResourceManager();
 
     // Factory getters
