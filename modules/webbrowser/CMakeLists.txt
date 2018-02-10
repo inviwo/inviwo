@@ -66,11 +66,11 @@ ivw_module(WebBrowser)
 # Add header files
 set(HEADER_FILES
     interaction/cefinteractionhandler.h
-	interaction/cefkeyboardmapping.h
+    interaction/cefkeyboardmapping.h
     processors/webbrowserprocessor.h
-	renderhandlergl.h
-	webbrowserapp.h
-	webbrowserclient.h
+    renderhandlergl.h
+    webbrowserapp.h
+    webbrowserclient.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -78,11 +78,11 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     interaction/cefinteractionhandler.cpp
-	interaction/cefkeyboardmapping.cpp
+    interaction/cefkeyboardmapping.cpp
     processors/webbrowserprocessor.cpp
-	renderhandlergl.cpp
-	webbrowserapp.cpp
-	webbrowserclient.cpp
+    renderhandlergl.cpp
+    webbrowserapp.cpp
+    webbrowserclient.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -96,7 +96,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/webbrowser-test.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/webbrowser-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
@@ -116,7 +116,7 @@ set(CEF_BINARY_DIR "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo>:Release>$<$<CONFIG:M
 
 ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSION} MODULE WebBrowser
     URL "https://bitbucket.org/chromiumembedded/cef"
-	TYPE "BSD-license"
+    TYPE "BSD-license"
     FILES ${CEF_ROOT}/LICENSE.txt
 )
 
@@ -126,12 +126,12 @@ ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSI
 
 # Process running CEF browser
 set(WEBBROWSER_HELPER_SOURCES
-	# Should include webbrowserapp .h/.cpp but get precompiled header errors
-	# Tried to ignore cotire in all sorts of ways but did not work. 
-	# Hack: webbrowserapp-cotire-fix is a copy of webbrowserapp, resolves cotire issue.
-	webbrowserapp-cotire-fix.h
+    # Should include webbrowserapp .h/.cpp but get precompiled header errors
+    # Tried to ignore cotire in all sorts of ways but did not work. 
+    # Hack: webbrowserapp-cotire-fix is a copy of webbrowserapp, resolves cotire issue.
+    webbrowserapp-cotire-fix.h
     webbrowserapp-cotire-fix.cpp
-	cefprocesshelper.cpp
+    cefprocesshelper.cpp
 )
 # place helper in separate executable
 set(CEF_HELPER_TARGET "inviwo_web_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
@@ -139,13 +139,15 @@ set(CEF_HELPER_TARGET "inviwo_web_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
 add_executable(${CEF_HELPER_TARGET} ${WEBBROWSER_HELPER_SOURCES})
 add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
 target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+# Add IVW_ROOT_DIR to include file in "modules/webbrowser/...h"
 target_include_directories(${CEF_HELPER_TARGET} PRIVATE "${IVW_ROOT_DIR}")
 target_include_directories(${CEF_HELPER_TARGET} PRIVATE "${CEF_INCLUDE_PATH}")
 # Use inviwo preprocessor definitions  
-ivw_define_standard_definitions(webbrowser ${CEF_HELPER_TARGET})
+ivw_define_standard_definitions(WebBrowser ${CEF_HELPER_TARGET})
 ivw_define_standard_properties(${CEF_HELPER_TARGET})
 ivw_suppress_compiler_warnings(${CEF_HELPER_TARGET})
 # Tried to ignore cotire to resolve webbrowserapp issue but it does not work
+# This function is not for turning off cotire... It is for setting the cotire ignore include paths.
 #ivw_cotire_ignore_on_target(inviwo-module-webbrowser)
 
 # Inviwo: Needed? (Windows only) Add the custom manifest files to the executable.
