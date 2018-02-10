@@ -54,7 +54,7 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     // Processors
     registerProcessor<SSAO>();
     registerProcessor<FXAA>();
-	registerProcessor<Fog>();
+    registerProcessor<Fog>();
     registerProcessor<Tonemapping>();
     registerProcessor<HdrBloom>();
     registerProcessor<ImageBrightnessContrast>();
@@ -94,4 +94,4 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     // registerDrawer(util::make_unique_ptr<PostProcessingDrawer>());
 }
 
-}  // namespace
+}  // namespace inviwo

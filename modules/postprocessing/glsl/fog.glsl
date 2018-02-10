@@ -34,19 +34,19 @@
 #define IVW_FOG_GLSL
 
 vec3 computeFog(in vec3 pixelColor, in float distance, in vec3 fogColor, in float density) {
-    float amount = 1.0 - exp( -distance*density);
+    float amount = 1.0 - exp(-distance * density);
     return mix(pixelColor, fogColor, amount);
 }
 
 vec3 computeFogScatter(in vec3 pixelColor, in float distance, in vec3 fogColor, in float scatter) {
-    return pixelColor * (1.0 - exp(-distance*scatter)) + fogColor * exp(-distance*scatter);
+    return pixelColor * (1.0 - exp(-distance * scatter)) + fogColor * exp(-distance * scatter);
 }
 
-vec3 computeFogInOutScatter(in vec3 pixelColor, in float distance, in vec3 fogColor, in vec3 extinction, in vec3 scatter) {
-    vec3 extColor = vec3( exp(-distance*extinction.x), exp(-distance*extinction.y), exp(-distance*extinction.z) );
-    vec3 insColor = vec3( exp(-distance*scatter.x), exp(-distance*scatter.y), exp(-distance*scatter.z) );
-    return  pixelColor*(1.0-extColor) + fogColor*insColor;
+vec3 computeFogInOutScatter(in vec3 pixelColor, in float distance, in vec3 fogColor,
+                            in vec3 extinction, in vec3 scatter) {
+    vec3 extColor = exp(-distance * extinction);
+    vec3 insColor = exp(-distance * scatter);
+    return pixelColor * (1.0 - extColor) + fogColor * insColor;
 }
-
 
 #endif

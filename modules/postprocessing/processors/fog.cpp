@@ -48,8 +48,8 @@ const ProcessorInfo Fog::getProcessorInfo() const { return processorInfo_; }
 Fog::Fog()
     : input_("inport")
     , output_("output")
-    , color_("color", "Color", vec3(1, 1, 1))
-    , density_("density", "Density", 1.f, 0.0f, 10.f)
+    , color_("color", "Color", vec3(1.f))
+    , density_("density", "Density", 1.f, 0.f, 10.f)
     , camera_("camera", "Camera")
     , shader_("fullscreenquad.vert", "fog.frag") {
     addPort(input_);
