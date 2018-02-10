@@ -54,6 +54,7 @@ set(CEF_TARGET_OUT_DIR $<TARGET_FILE_DIR:inviwo-module-webbrowser>)
 
 # Inviwo: Hide option, currently no support for sandbox and then set default value
 unset(USE_SANDBOX CACHE)
+set(USE_SANDBOX FALSE)
 
 # Display configuration settings.
 #PRINT_CEF_CONFIG()
