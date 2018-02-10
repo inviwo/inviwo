@@ -5,7 +5,7 @@
 # Determine the platform used by CEF.
 function(determineCEFPlatform CEF_PLATFORM)
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
-  set(platform "macosx64"  PARENT_SCOPE)
+  set(CEF_PLATFORM "macosx64"  PARENT_SCOPE)
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   if(CMAKE_SIZEOF_VOID_P MATCHES 8)
     set(CEF_PLATFORM "linux64" PARENT_SCOPE)

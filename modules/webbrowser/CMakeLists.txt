@@ -15,7 +15,7 @@ determineCEFPlatform(CEF_PLATFORM)
 
 # Download and extract the CEF binary distribution (executes cmake/DownloadCEF.cmake).
 include("cmake/DownloadCEF.cmake")
-DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${CMAKE_CURRENT_SOURCE_DIR}/ext/cef")
+DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${PROJECT_BINARY_DIR}/ext/cef")
 
 # Add the CEF binary distribution's cmake/ directory to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
