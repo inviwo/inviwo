@@ -185,7 +185,7 @@ void ResourceManager::addResource(const std::string &key, std::shared_ptr<T> res
                                             IvwContext);
         }
     }
-    auto typedResource = std::make_shared<TypedResource<T>>(resource);
+    auto typedResource = std::make_shared<TypedResource<T>>(resource,key);
     resources_[tk] = typedResource;
     notifyResourceAdded(key, tk.second, typedResource.get());
 }

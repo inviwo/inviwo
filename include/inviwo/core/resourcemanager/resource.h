@@ -46,7 +46,7 @@ namespace inviwo {
  */
 class IVW_CORE_API Resource {
 public:
-    Resource();
+    Resource(const std::string &key);
     virtual ~Resource() = default;
 
     Resource(const Resource &r) = delete;
@@ -57,6 +57,11 @@ public:
 
     virtual std::string typeDisplayName() = 0;
     virtual Document info() = 0;
+
+    std::string key() const { return key_; }
+
+private:
+    std::string key_;
 };
 
 /**
@@ -67,13 +72,33 @@ public:
 template <typename T>
 class TypedResource : public Resource {
 public:
-    TypedResource(std::shared_ptr<T> resource) : resource_(resource) {}
+    TypedResource(std::shared_ptr<T> resource, const std::string &key)
+        : Resource(key), resource_(resource) {}
     virtual ~TypedResource() = default;
 
     std::shared_ptr<T> getData() { return resource_; }
 
     virtual std::string typeDisplayName() override { return DataTraits<T>::dataName(); }
-    virtual Document info() override { return DataTraits<T>::info(*resource_); }
+
+    virtual Document info() override {
+        using P = Document::PathComponent;
+        using H = utildoc::TableBuilder::Header;
+        Document doc;
+        utildoc::TableBuilder tb(doc.handle(), P::end());
+        tb(H("Key"), htmlEncode(key()));
+        auto typeName = typeDisplayName();
+        if (typeName != "") {
+            tb(H("Type"), htmlEncode(typeName));
+        }
+        std::string dataInfo = DataTraits<T>::info(*resource_);
+        if (dataInfo != "") {
+            doc.append("", "<hr />");
+            doc.append("b", "Data Info");
+            doc.append("p", dataInfo);
+        }
+
+        return doc;
+    }
 
 private:
     std::shared_ptr<T> resource_;
