@@ -62,6 +62,7 @@ class InviwoApplicationQt;
 class NetworkSearch;
 class InviwoEditMenu;
 class InviwoAboutWindow;
+class ResourceManagerDockWidget;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -146,6 +147,7 @@ private:
     // dock widgets
     SettingsWidget* settingsWidget_;
     ProcessorTreeWidget* processorTreeWidget_;
+    ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     HelpWidget* helpWidget_;

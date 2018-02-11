@@ -57,6 +57,9 @@ AbortException::AbortException(const std::string& message, ExceptionContext cont
 FileException::FileException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}
 
+ResourceException::ResourceException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
+
 ModuleInitException::ModuleInitException(const std::string& message, ExceptionContext context,
                                          std::vector<std::string> modulesToDeregister)
     : Exception(message, context), modulesToDeregister_(std::move(modulesToDeregister)) {}
@@ -89,4 +92,4 @@ const std::string& ExceptionContext::getFunction() { return function_; }
 
 const int& ExceptionContext::getLine() { return line_; }
 
-}  // namespace
+}  // namespace inviwo

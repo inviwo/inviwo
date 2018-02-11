@@ -51,7 +51,8 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
     , followObjectDuringRotation_("followObjectDuringRotation",
                                   "Follow Object During Camera Rotation", false)
-    , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false) {
+    , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
+    , enableResourceManager_("enableResourceManager", "Enable Resource Manager", false) {
 
     addProperty(applicationUsageMode_);
     addProperty(poolSize_);
@@ -63,6 +64,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     addProperty(logStackTraceProperty_);
     addProperty(followObjectDuringRotation_);
     addProperty(runtimeModuleReloading_);
+    addProperty(enableResourceManager_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
@@ -75,8 +77,6 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     load();
 }
 
-size_t SystemSettings::defaultPoolSize() {
-    return std::thread::hardware_concurrency() / 2;
-}
+size_t SystemSettings::defaultPoolSize() { return std::thread::hardware_concurrency() / 2; }
 
 }  // namespace inviwo

@@ -52,6 +52,7 @@
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
+#include <inviwo/core/resourcemanager/resourcemanager.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/fileobserver.h>
@@ -129,6 +130,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         PickingManager::deleteInstance();
         RenderContext::deleteInstance();
     }}
+    , resourceManager_{util::make_unique<ResourceManager>()}
     , cameraFactory_{util::make_unique<CameraFactory>()}
     , dataReaderFactory_{util::make_unique<DataReaderFactory>()}
     , dataWriterFactory_{util::make_unique<DataWriterFactory>()}
@@ -161,6 +163,21 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         resizePool(systemSettings_->poolSize_);
         systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
     }
+
+    resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get());
+    systemSettings_->enableResourceManager_.onChange(
+        [this]() { resourceManager_->setEnabled(systemSettings_->enableResourceManager_.get()); });
+    if (commandLineParser_.getDisableResourceManager()) {
+        resourceManager_->setEnabled(false);
+    }
+    resourceManager_->addObserver(this);
+    moduleManager_.onModulesDidRegister([this]() {
+        if (resourceManager_->isEnabled() && resourceManager_->numberOfResources() > 0) {
+            LogWarn(
+                "Resource manager was not empty when reloading modules. The beaviour of resources "
+                "of data structures that has changed is undefined and may effect stability");
+        }
+    });
 
     // initialize singletons
     init(this);
@@ -342,6 +359,10 @@ UsageMode InviwoApplication::getApplicationUsageMode() const {
 
 void InviwoApplication::setApplicationUsageMode(UsageMode mode) {
     systemSettings_->applicationUsageMode_.set(mode);
+}
+
+void InviwoApplication::onResourceManagerEnableStateChanged() {
+    getSystemSettings().enableResourceManager_.set(resourceManager_->isEnabled());
 }
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }

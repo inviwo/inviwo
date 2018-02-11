@@ -34,6 +34,8 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/rawvolumereader.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/resourcemanager/resource.h>
+#include <inviwo/core/resourcemanager/resourcemanager.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datareaderexception.h>
@@ -49,9 +51,7 @@ const ProcessorInfo VolumeSource::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::CPU,                  // Tags
 };
-const ProcessorInfo VolumeSource::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeSource::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSource::VolumeSource()
     : Processor()
@@ -61,7 +61,7 @@ VolumeSource::VolumeSource()
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
     , volumeSequence_("Sequence", "Sequence") {
-    
+
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
 
@@ -84,23 +84,34 @@ VolumeSource::VolumeSource()
 void VolumeSource::load(bool deserialize) {
     if (file_.get().empty()) return;
 
-    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
+    auto app = InviwoApplication::getPtr();
+    auto rf = app->getDataReaderFactory();
+    auto rm = app->getResourceManager();
     std::string ext = filesystem::getFileExtension(file_.get());
 
-    try {
-        if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
-            auto volumes = volVecReader->readData(file_.get());
-            std::swap(volumes, volumes_);
-        } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
-            auto volume = volreader->readData(file_.get());
-            auto volumes = std::make_shared<VolumeSequence>();
-            volumes->push_back(volume);
-            std::swap(volumes, volumes_);
-        } else {
-            LogProcessorError("Could not find a data reader for file: " << file_.get());
+    // use resource unless the "Reload data"-button (reload_) was pressed,
+    // Note: reload_ will be marked as modified when deserializing.
+    bool checkResource = deserialized_ || !reload_.isModified();
+    if (checkResource && rm->hasResource<VolumeSequence>(file_.get())) {
+        volumes_ = rm->getResource<VolumeSequence>(file_.get());
+    } else {
+        try {
+            if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
+                auto volumes = volVecReader->readData(file_.get());
+                std::swap(volumes, volumes_);
+                rm->addResource(file_.get(), volumes_, reload_.isModified());
+            } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+                auto volume = volreader->readData(file_.get());
+                auto volumes = std::make_shared<VolumeSequence>();
+                volumes->push_back(volume);
+                std::swap(volumes, volumes_);
+                rm->addResource(file_.get(), volumes_, reload_.isModified());
+            } else {
+                LogProcessorError("Could not find a data reader for file: " << file_.get());
+            }
+        } catch (DataReaderException const& e) {
+            LogProcessorError(e.getMessage());
         }
-    } catch (DataReaderException const& e) {
-        LogProcessorError(e.getMessage());
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
@@ -114,7 +125,7 @@ void VolumeSource::load(bool deserialize) {
 
 void VolumeSource::addFileNameFilters() {
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
-    
+
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
     file_.addNameFilters(rf->getExtensionsForType<Volume>());
@@ -145,5 +156,4 @@ void VolumeSource::deserialize(Deserializer& d) {
     deserialized_ = true;
 }
 
-}  // namespace
-
+}  // namespace inviwo

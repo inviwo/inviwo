@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,49 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SYSTEMSETTINGS_H
-#define IVW_SYSTEMSETTINGS_H
+#ifndef IVW_RESOURCEMANAGERDOCKWIDGET_H
+#define IVW_RESOURCEMANAGERDOCKWIDGET_H
 
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
+
+class QTableView;
+class QCheckBox;
 
 namespace inviwo {
+class Resource;
+class ResourceManager;
 
-class InviwoApplication;
+class ResourceManagerItemModel;
 
 /**
- * System settings, owned by the application, loaded before all the factories so we can't use any
- * dynamic properties here
+ * \class ResourceManagerDockWidget
+ * \brief Widget class for the Resource Manager
  */
-class IVW_CORE_API SystemSettings : public Settings {
+class IVW_QTEDITOR_API ResourceManagerDockWidget : public InviwoDockWidget,
+                                                   public ResourceManagerObserver {
 public:
-    SystemSettings(InviwoApplication* app);
-    TemplateOptionProperty<UsageMode> applicationUsageMode_;
-    IntSizeTProperty poolSize_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    BoolProperty logStackTraceProperty_;
-    BoolProperty followObjectDuringRotation_;
-    BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
+    ResourceManagerDockWidget(QWidget* parent, ResourceManager& manager);
+    virtual ~ResourceManagerDockWidget();
 
-    static size_t defaultPoolSize();
+    virtual void onResourceAdded(const std::string& key, const std::type_index& type,
+                                 Resource* resource) override;
+    virtual void onResourceRemoved(const std::string& key, const std::type_index& type,
+                                   Resource* resource) override;
+
+    virtual void onResourceManagerEnableStateChanged() override;
+
+private:
+    ResourceManager& manager_;
+
+    ResourceManagerItemModel* model_;
+    QTableView* tableView_;
+    QCheckBox* disabledCheckBox_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_SYSTEMSETTINGS_H
+#endif  // IVW_RESOURCEMANAGERDOCKWIDGET_H

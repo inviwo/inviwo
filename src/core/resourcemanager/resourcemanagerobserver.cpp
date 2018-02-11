@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,24 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SYSTEMSETTINGS_H
-#define IVW_SYSTEMSETTINGS_H
-
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 
 namespace inviwo {
 
-class InviwoApplication;
+void ResourceManagerObservable::notifyResourceAdded(const std::string& key,
+                                                    const std::type_index& type,
+                                                    Resource* resource) {
+    forEachObserver([&](ResourceManagerObserver* o) { o->onResourceAdded(key, type, resource); });
+}
 
-/**
- * System settings, owned by the application, loaded before all the factories so we can't use any
- * dynamic properties here
- */
-class IVW_CORE_API SystemSettings : public Settings {
-public:
-    SystemSettings(InviwoApplication* app);
-    TemplateOptionProperty<UsageMode> applicationUsageMode_;
-    IntSizeTProperty poolSize_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    BoolProperty logStackTraceProperty_;
-    BoolProperty followObjectDuringRotation_;
-    BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
+void ResourceManagerObservable::notifyResourceRemoved(const std::string& key,
+                                                      const std::type_index& type,
+                                                      Resource* resource) {
+    forEachObserver([&](ResourceManagerObserver* o) { o->onResourceRemoved(key, type, resource); });
+}
 
-    static size_t defaultPoolSize();
-};
+void ResourceManagerObservable::notifyEnableChanged() {
+    forEachObserver([&](ResourceManagerObserver* o) { o->onResourceManagerEnableStateChanged(); });
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_SYSTEMSETTINGS_H

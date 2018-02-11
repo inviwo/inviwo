@@ -35,6 +35,7 @@
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
 #include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/threadpool.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -64,6 +65,7 @@ namespace inviwo {
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
 
+class ResourceManager;
 class CameraFactory;
 class DataReaderFactory;
 class DataWriterFactory;
@@ -88,7 +90,7 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
-class Property; 
+class Property;
 class PropertyOwner;
 class PropertyPresetManager;
 
@@ -107,7 +109,8 @@ class TimerThread;
  * All modules should be owned and accessed trough this singleton, as well as the processor network
  *and the evaluator.
  */
-class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
+class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication>,
+                                       public ResourceManagerObserver {
 public:
     InviwoApplication();
     InviwoApplication(std::string displayName);
@@ -182,7 +185,7 @@ public:
 
     /**
      * \brief Get list of ModuleCallbackAction shown in for example property widget context menu.
-     * Do not keep references to elements in the list around since you cannot be notified when 
+     * Do not keep references to elements in the list around since you cannot be notified when
      * they will be removed.
      * @see addCallbackAction
      */
@@ -235,6 +238,13 @@ public:
     void setPostEnqueueFront(std::function<void()> func);
     void setProgressCallback(std::function<void(std::string)> progressCallback);
 
+    /** 
+     * Returns the ResourceManager owned the InviwoApplication
+     * 
+     * @see inviwo::ResourceManager
+     */ 
+    ResourceManager* getResourceManager();
+
     // Factory getters
     CameraFactory* getCameraFactory() const;
     DataReaderFactory* getDataReaderFactory() const;
@@ -280,6 +290,9 @@ public:
      */
     void setApplicationUsageMode(UsageMode mode);
 
+
+    virtual void onResourceManagerEnableStateChanged() override;
+
 protected:
     struct Queue {
         // Task queue
@@ -301,6 +314,8 @@ protected:
     Queue queue_;  // "Interaction/GUI" queue
 
     util::OnScopeExit clearAllSingeltons_;
+
+    std::unique_ptr<ResourceManager> resourceManager_;
 
     // Factories
     std::unique_ptr<CameraFactory> cameraFactory_;
@@ -340,7 +355,7 @@ protected:
 
 template <class F, class... Args>
 auto dispatchFront(F&& f, Args&&... args)
--> std::future<typename std::result_of<F(Args...)>::type> {
+    -> std::future<typename std::result_of<F(Args...)>::type> {
     return InviwoApplication::getPtr()->dispatchFront(std::forward<F>(f),
                                                       std::forward<Args>(args)...);
 }
@@ -387,7 +402,7 @@ T* InviwoApplication::getModuleByType() const {
 
 template <class T>
 T* InviwoApplication::getCapabilitiesByType() {
-     return getTypeFromVector<T>(getModuleCapabilities());
+    return getTypeFromVector<T>(getModuleCapabilities());
 }
 
 template <class F, class... Args>
@@ -413,6 +428,8 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     if (queue_.postEnqueue) queue_.postEnqueue();
     return res;
 }
+
+inline ResourceManager* InviwoApplication::getResourceManager() { return resourceManager_.get(); }
 
 inline CameraFactory* InviwoApplication::getCameraFactory() const { return cameraFactory_.get(); }
 
