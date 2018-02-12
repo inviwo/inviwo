@@ -358,7 +358,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     // Register Settings
     // Do this after the property registration since the settings use properties.
-     registerSettings(util::make_unique<SystemSettings>());
     registerSettings(util::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
 }
 
