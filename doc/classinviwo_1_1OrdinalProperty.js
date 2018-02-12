@@ -1,0 +1,25 @@
+var classinviwo_1_1OrdinalProperty =
+[
+    [ "OrdinalProperty", "classinviwo_1_1OrdinalProperty.html#ad5bc9547c55835f97babd2cfc0dd6fc0", null ],
+    [ "OrdinalProperty", "classinviwo_1_1OrdinalProperty.html#adf404d0fae3acb31e8376edd021a6ce7", null ],
+    [ "~OrdinalProperty", "classinviwo_1_1OrdinalProperty.html#a5cf4f6691c48f844126dc55f204699e8", null ],
+    [ "clone", "classinviwo_1_1OrdinalProperty.html#abe2097329033f1289f2f3293cb25ef0c", null ],
+    [ "deserialize", "classinviwo_1_1OrdinalProperty.html#ae2719740047cabc2fe51af22a881e5af", null ],
+    [ "getDescription", "classinviwo_1_1OrdinalProperty.html#a51041d4776b60abe577bb0975db51cfc", null ],
+    [ "getIncrement", "classinviwo_1_1OrdinalProperty.html#a3aa9b51f2813c8dc9d71b50233def326", null ],
+    [ "getMaxValue", "classinviwo_1_1OrdinalProperty.html#ab5b5eddb63a2d6c530e5075cd0b354d2", null ],
+    [ "getMinValue", "classinviwo_1_1OrdinalProperty.html#afcfbb2368916ffed5ca3b7694edf864d", null ],
+    [ "InviwoPropertyInfo", "classinviwo_1_1OrdinalProperty.html#a24b8540900868e09d67b1ee32e28d6ba", null ],
+    [ "operator=", "classinviwo_1_1OrdinalProperty.html#ace38abdee039f8515e9f124447b0d274", null ],
+    [ "operator=", "classinviwo_1_1OrdinalProperty.html#a69baec5c66b580b2c1e3cb070863e0f2", null ],
+    [ "resetToDefaultState", "classinviwo_1_1OrdinalProperty.html#acd5bcdbdf9601ed091f712ce5b4b1dd4", null ],
+    [ "serialize", "classinviwo_1_1OrdinalProperty.html#a473d304d944c2f2d7eca68c202e1abc6", null ],
+    [ "set", "classinviwo_1_1OrdinalProperty.html#aadd8c8fe62f39df0af943fcd92283dba", null ],
+    [ "set", "classinviwo_1_1OrdinalProperty.html#afac040e9cd842f323281480536295ed2", null ],
+    [ "set", "classinviwo_1_1OrdinalProperty.html#a197d2df94777e52ff9340558df1cf6dc", null ],
+    [ "setCurrentStateAsDefault", "classinviwo_1_1OrdinalProperty.html#af4fbd0908b054a41666dc8e8843325e7", null ],
+    [ "setIncrement", "classinviwo_1_1OrdinalProperty.html#a9982d6241752072c524d489fc07fe8bb", null ],
+    [ "setMaxValue", "classinviwo_1_1OrdinalProperty.html#a227b64e2e53c5a46ba50d301c4baab1a", null ],
+    [ "setMinValue", "classinviwo_1_1OrdinalProperty.html#ac94583ad792594c8ca438127e2114e76", null ],
+    [ "validateValues", "classinviwo_1_1OrdinalProperty.html#ad5818703383be5fa9af3c366906df8c7", null ]
+];
