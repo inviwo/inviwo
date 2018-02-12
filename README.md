@@ -1,6 +1,6 @@
 ## Inviwo - Interactive Visualization Workshop
 
-[![Build Status](http://130.236.145.152:8080/buildStatus/icon?job=Public/Inviwo-public)](http://130.236.145.152:8080/job/Public/job/Inviwo-public/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
+[![Build Status](http://130.236.145.152:8080/buildStatus/icon?job=inviwo-pub/master)](http://130.236.145.152:8080/job/inviwo-pub/job/master/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
 [![Release version](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=86400)](https://github.com/inviwo/inviwo/releases/latest)
 <!-- We need to create a regression badge before showing it
 Regression [![Build Status](http://130.236.145.152:8080/buildStatus/icon?job=Regression)](http://130.236.145.152:8080/job/Regression/) -->
