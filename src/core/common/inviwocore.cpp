@@ -349,5 +349,6 @@ void InviwoCore::scanDirForComposites(const std::string& dir) {
             }
         }
     }
+}
 
 }  // namespace inviwo
