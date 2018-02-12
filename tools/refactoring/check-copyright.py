@@ -2,8 +2,6 @@ import sys
 import os
 import re
 import codecs
-import colorama
-colorama.init()
 
 import refactoring # Note: refactoring.py need to be in the current working directory
 

@@ -138,7 +138,7 @@ node {
             dir('inviwo') {
             nicelog {
                 sh '''
-                python tools/refactoring/check-copyright.py .
+                python3 tools/refactoring/check-copyright.py .
                 '''
             }
 
