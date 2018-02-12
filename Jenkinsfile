@@ -134,6 +134,17 @@ node {
             }
         }
 
+        stage('Copyright check') {
+            dir('inviwo') {
+            nicelog {
+                sh '''
+                python tools/refactoring/check-copyright.py .
+                '''
+            }
+
+            }
+
+        }
         
         stage('Doxygen') {
             dir('build') {
