@@ -1,0 +1,7 @@
+<map id="inviwo::ProcessorGraphicsItem" name="inviwo::ProcessorGraphicsItem">
+<area shape="rect" id="node2" href="$classinviwo_1_1EditorGraphicsItem.html" title="inviwo::EditorGraphicsItem" alt="" coords="191,5,366,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ProcessorObserver.html" title="inviwo::ProcessorObserver" alt="" coords="191,56,366,83"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="16,115,131,141"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1LabelGraphicsItemObserver.html" title="inviwo::LabelGraphicsItem\lObserver" alt="" coords="193,107,365,149"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ProcessorMetaDataObserver.html" title="inviwo::ProcessorMetaData\lObserver" alt="" coords="189,173,368,214"/>
+</map>

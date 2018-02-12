@@ -1,0 +1,6 @@
+<map id="inviwo::TransferFunctionObservable" name="inviwo::TransferFunctionObservable">
+<area shape="rect" id="node5" href="$classinviwo_1_1TransferFunction.html" title="for holding transfer function data. This class holds transfer function data, currently one parameter ..." alt="" coords="22,352,182,379"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; TransferFunctionObserver \&gt;" alt="" coords="5,171,199,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="29,5,207,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="119,81,277,108"/>
+</map>

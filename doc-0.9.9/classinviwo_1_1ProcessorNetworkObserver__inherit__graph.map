@@ -1,0 +1,9 @@
+<map id="inviwo::ProcessorNetworkObserver" name="inviwo::ProcessorNetworkObserver">
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1AnimationManager.html" title="inviwo::animation::\lAnimationManager" alt="" coords="417,5,547,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1LinkDialogGraphicsScene.html" title="inviwo::LinkDialogGraphics\lScene" alt="" coords="394,71,570,112"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1NetworkEditor.html" title="inviwo::NetworkEditor" alt="" coords="409,137,555,163"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1PortInspectorManager.html" title="Keep track of which port has port inspectors on them. " alt="" coords="387,187,577,214"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ProcessorNetworkEvaluator.html" title="inviwo::ProcessorNetwork\lEvaluator" alt="" coords="397,239,567,280"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1UndoManager.html" title="inviwo::UndoManager" alt="" coords="410,305,554,331"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="5,162,120,189"/>
+</map>

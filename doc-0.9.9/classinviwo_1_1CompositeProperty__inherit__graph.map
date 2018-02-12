@@ -1,0 +1,51 @@
+<map id="inviwo::CompositeProperty" name="inviwo::CompositeProperty">
+<area shape="rect" id="node15" href="$classinviwo_1_1GaussianProperty.html" title="inviwo::GaussianProperty\l\&lt; double \&gt;" alt="" coords="2081,12,2249,54"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1GaussianProperty.html" title="inviwo::GaussianProperty\l\&lt; dvec2 \&gt;" alt="" coords="2081,94,2249,135"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1ABufferGLCompositeProperty.html" title="inviwo::ABufferGLComposite\lProperty" alt="" coords="1759,170,1944,211"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1AdvancedMaterialProperty.html" title="inviwo::AdvancedMaterial\lProperty" alt="" coords="1768,235,1935,276"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1BaseOrdinalAnimationProperty.html" title="inviwo::BaseOrdinalAnimation\lProperty" alt="" coords="1755,300,1948,342"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1BasisProperty.html" title="inviwo::BasisProperty" alt="" coords="1778,366,1925,393"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1BoolCompositeProperty.html" title="A CompositeProperty with an additional check box. " alt="" coords="1751,417,1952,444"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1CameraProperty.html" title="inviwo::CameraProperty" alt="" coords="1772,468,1931,494"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1FilePatternProperty.html" title="inviwo::FilePatternProperty" alt="" coords="1763,518,1939,545"/>
+<area shape="rect" id="node31" href="$classinviwo_1_1FontProperty.html" title="inviwo::FontProperty" alt="" coords="1782,569,1921,596"/>
+<area shape="rect" id="node32" href="$classinviwo_1_1GaussianProperty.html" title="inviwo::GaussianProperty\&lt; T \&gt;" alt="" coords="1752,68,1951,94"/>
+<area shape="rect" id="node33" href="$classinviwo_1_1IntegralLineProperties.html" title="VERY_BRIEFLY_DESCRIBE_THE_CLASS DESCRIBE_THE_CLASS. " alt="" coords="1757,620,1946,646"/>
+<area shape="rect" id="node36" href="$classinviwo_1_1OverlayProperty.html" title="CompositeProperty for overlay images. An overlay is defined by a position, a anchor position..." alt="" coords="1773,670,1929,697"/>
+<area shape="rect" id="node37" href="$classinviwo_1_1PlaneProperty.html" title="A Property that represents a plane. " alt="" coords="1778,721,1925,748"/>
+<area shape="rect" id="node38" href="$classinviwo_1_1plot_1_1AxisProperty.html" title="inviwo::plot::AxisProperty" alt="" coords="1767,772,1935,798"/>
+<area shape="rect" id="node39" href="$classinviwo_1_1plot_1_1MajorTickProperty.html" title="inviwo::plot::MajorTickProperty" alt="" coords="1752,822,1951,849"/>
+<area shape="rect" id="node40" href="$classinviwo_1_1plot_1_1MarginProperty.html" title="Property for keeping track of margins. " alt="" coords="1761,873,1942,900"/>
+<area shape="rect" id="node41" href="$classinviwo_1_1plot_1_1MinorTickProperty.html" title="inviwo::plot::MinorTickProperty" alt="" coords="1752,924,1951,950"/>
+<area shape="rect" id="node42" href="$classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html" title="inviwo::plot::ScatterPlot\lGL::Properties" alt="" coords="1772,975,1931,1016"/>
+<area shape="rect" id="node43" href="$classinviwo_1_1plot_1_1TickProperty.html" title="inviwo::plot::TickProperty" alt="" coords="1768,1041,1935,1068"/>
+<area shape="rect" id="node44" href="$classinviwo_1_1PositionProperty.html" title="Enables Edit a position in world or view space. " alt="" coords="1771,1092,1931,1118"/>
+<area shape="rect" id="node45" href="$classinviwo_1_1SequenceTimerProperty.html" title="inviwo::SequenceTimerProperty" alt="" coords="1750,1142,1953,1169"/>
+<area shape="rect" id="node46" href="$classinviwo_1_1SimpleLightingProperty.html" title="inviwo::SimpleLightingProperty" alt="" coords="1752,1193,1951,1220"/>
+<area shape="rect" id="node47" href="$classinviwo_1_1SimpleRaycastingProperty.html" title="inviwo::SimpleRaycasting\lProperty" alt="" coords="1767,1244,1936,1286"/>
+<area shape="rect" id="node48" href="$classinviwo_1_1StipplingProperty.html" title="inviwo::StipplingProperty" alt="" coords="1770,1310,1933,1337"/>
+<area shape="rect" id="node49" href="$classinviwo_1_1Trackball.html" title="inviwo::Trackball" alt="" coords="1793,1361,1909,1388"/>
+<area shape="rect" id="node52" href="$classinviwo_1_1VolumeIndicatorProperty.html" title="A property for highlighting a plane, line of point in 3D. " alt="" coords="1748,1412,1955,1438"/>
+<area shape="rect" id="node53" href="$classinviwo_1_1VolumeInformationProperty.html" title="inviwo::VolumeInformation\lProperty" alt="" coords="1766,1463,1937,1504"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Property.html" title="A Property represents a parameter to a processor. " alt="" coords="1343,664,1456,690"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1PropertyObservable.html" title="inviwo::PropertyObservable" alt="" coords="905,645,1083,672"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; PropertyObserver \&gt;" alt="" coords="660,638,807,679"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,784,183,810"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,738,391,765"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; PropertyOwnerObserver \&gt;" alt="" coords="642,783,825,824"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; CompositePropertyObserver \&gt;" alt="" coords="629,848,837,890"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="929,696,1059,722"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1PropertyOwner.html" title="inviwo::PropertyOwner" alt="" coords="1324,746,1475,773"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get. " alt="" coords="915,594,1073,621"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1PropertyOwnerObservable.html" title="inviwo::PropertyOwnerObservable" alt="" coords="887,797,1101,824"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1EventListener.html" title="inviwo::EventListener" alt="" coords="923,746,1065,773"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1CompositePropertyObservable.html" title="inviwo::CompositeProperty\lObservable" alt="" coords="1125,831,1300,872"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1Gaussian1DProperty.html" title="inviwo::Gaussian1DProperty" alt="" coords="2309,20,2493,46"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1Gaussian2DProperty.html" title="inviwo::Gaussian2DProperty" alt="" coords="2309,101,2493,128"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1OrdinalAnimationProperty.html" title="inviwo::OrdinalAnimation\lProperty\&lt; T \&gt;" alt="" coords="2083,279,2246,320"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1plot_1_1PlotTextProperty.html" title="inviwo::plot::PlotTextProperty" alt="" coords="2069,541,2260,568"/>
+<area shape="rect" id="node34" href="$classinviwo_1_1PathLineProperties.html" title="VERY_BRIEFLY_DESCRIBE_THE_CLASS DESCRIBE_THE_CLASS. " alt="" coords="2077,656,2252,682"/>
+<area shape="rect" id="node35" href="$classinviwo_1_1StreamLineProperties.html" title="VERY_BRIEFLY_DESCRIBE_THE_CLASS DESCRIBE_THE_CLASS. " alt="" coords="2070,605,2259,632"/>
+<area shape="rect" id="node50" href="$classinviwo_1_1CameraTrackball.html" title="inviwo::CameraTrackball" alt="" coords="2084,1386,2245,1413"/>
+<area shape="rect" id="node51" href="$classinviwo_1_1PointLightTrackball.html" title="inviwo::PointLightTrackball" alt="" coords="2077,1336,2252,1362"/>
+</map>

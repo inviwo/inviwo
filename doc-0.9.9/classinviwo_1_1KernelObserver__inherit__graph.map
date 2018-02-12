@@ -1,0 +1,5 @@
+<map id="inviwo::KernelObserver" name="inviwo::KernelObserver">
+<area shape="rect" id="node3" href="$classinviwo_1_1EntryExitPointsCLProcessor.html" title="Computes the entry and exit points of a triangle mesh from the camera position in texture space..." alt="" coords="5,155,236,181"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1VolumeRaycasterCLProcessor.html" title="Perform volume rendering on the input volume. " alt="" coords="261,155,503,181"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="194,5,309,32"/>
+</map>

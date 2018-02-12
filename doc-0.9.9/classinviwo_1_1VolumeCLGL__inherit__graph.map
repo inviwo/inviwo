@@ -1,0 +1,8 @@
+<map id="inviwo::VolumeCLGL" name="inviwo::VolumeCLGL">
+<area shape="rect" id="node2" href="$classinviwo_1_1VolumeCLBase.html" title="inviwo::VolumeCLBase" alt="" coords="5,200,160,227"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1VolumeRepresentation.html" title="inviwo::VolumeRepresentation" alt="" coords="184,200,379,227"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataRepresentation.html" title="inviwo::DataRepresentation\l\&lt; Volume \&gt;" alt="" coords="192,109,371,151"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations. " alt="" coords="192,5,371,47"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1TextureObserver.html" title="inviwo::TextureObserver" alt="" coords="403,200,562,227"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="425,117,540,143"/>
+</map>

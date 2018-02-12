@@ -1,0 +1,5 @@
+<map id="inviwo::VersionConverter" name="inviwo::VersionConverter">
+<area shape="rect" id="node2" href="$classinviwo_1_1NodeVersionConverter.html" title="inviwo::NodeVersionConverter" alt="" coords="216,5,408,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ProcessorNetworkConverter.html" title="A utility to handle conversion of ProcessorNetwork versions. " alt="" coords="227,57,397,98"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1TraversingVersionConverter.html" title="inviwo::TraversingVersion\lConverter" alt="" coords="229,122,395,163"/>
+</map>

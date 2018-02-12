@@ -1,0 +1,4 @@
+<map id="inviwo::AnimationModule" name="inviwo::AnimationModule">
+<area shape="rect" id="node2" href="$classinviwo_1_1InviwoModule.html" title="A module class contains registrations of functionality, such as processors, ports, properties etc. " alt="" coords="5,13,145,39"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1AnimationSupplier.html" title="inviwo::animation::\lAnimationSupplier" alt="" coords="170,5,298,47"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="inviwo::GrayscaleCLProcessor" name="inviwo::GrayscaleCLProcessor">
+<area shape="rect" id="node2" href="$classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result. " alt="" coords="1531,107,1653,133"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1PropertyOwner.html" title="inviwo::PropertyOwner" alt="" coords="1289,157,1440,184"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyOwnerObservable.html" title="inviwo::PropertyOwnerObservable" alt="" coords="836,208,1051,235"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; PropertyOwnerObserver \&gt;" alt="" coords="604,198,787,239"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,197,183,224"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,152,391,179"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ProcessorObserver \&gt;" alt="" coords="617,49,773,90"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; KernelObserver \&gt;" alt="" coords="628,263,763,305"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="878,107,1009,133"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1EventListener.html" title="inviwo::EventListener" alt="" coords="872,157,1015,184"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get. " alt="" coords="1286,5,1443,32"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1ProcessorObservable.html" title="inviwo::ProcessorObservable" alt="" coords="1075,56,1261,83"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1EventPropagator.html" title="Abstract base class for a event propagator. " alt="" coords="1285,107,1444,133"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1ProcessorKernelOwner.html" title="inviwo::ProcessorKernelOwner" alt="" coords="1493,188,1691,215"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1KernelOwner.html" title="inviwo::KernelOwner" alt="" coords="1295,237,1434,264"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1KernelObservable.html" title="inviwo::KernelObservable" alt="" coords="861,265,1026,292"/>
+</map>

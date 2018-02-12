@@ -1,0 +1,46 @@
+<map id="inviwo::Factory&lt; T, K, Args &gt;" name="inviwo::Factory&lt; T, K, Args &gt;">
+<area shape="rect" id="node3" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; MetaData,\l const std::string &amp; \&gt;" alt="" coords="788,58,968,99"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Processor,\l const std::string &amp;, Args... \&gt;" alt="" coords="782,187,974,229"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Processor\lWidget, const std::string\l &amp;, Processor * \&gt;" alt="" coords="566,833,745,889"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; DataWriter,\l const FileExtension &amp; \&gt;" alt="" coords="562,914,749,955"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; T,\l K, Args... \&gt;" alt="" coords="590,534,721,575"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; DataReader,\l const FileExtension &amp; \&gt;" alt="" coords="559,979,751,1021"/>
+<area shape="rect" id="node31" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; MeshDrawer,\l const Mesh * \&gt;" alt="" coords="557,1045,753,1086"/>
+<area shape="rect" id="node33" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; T, K \&gt;" alt="" coords="577,131,733,157"/>
+<area shape="rect" id="node35" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Inport,\l const std::string &amp;,\l Args... \&gt;" alt="" coords="800,733,956,789"/>
+<area shape="rect" id="node36" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Outport,\l const std::string &amp;, Args... \&gt;" alt="" coords="782,619,974,661"/>
+<area shape="rect" id="node37" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Track,\l const std::string &amp;,\l Args... \&gt;" alt="" coords="800,808,956,864"/>
+<area shape="rect" id="node38" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Interpolation,\l const std::string &amp;, Args... \&gt;" alt="" coords="781,247,975,289"/>
+<area shape="rect" id="node39" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Dialog,\l const std::string &amp;,\l Args... \&gt;" alt="" coords="798,323,958,379"/>
+<area shape="rect" id="node40" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Property\lWidget, Property * \&gt;" alt="" coords="571,1110,740,1151"/>
+<area shape="rect" id="node42" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Camera,\l const std::string &amp;,\l Args... \&gt;" alt="" coords="793,455,963,511"/>
+<area shape="rect" id="node43" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; Property \&gt;" alt="" coords="565,1176,746,1203"/>
+<area shape="rect" id="node45" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; PortInspector,\l const std::string &amp;, Args... \&gt;" alt="" coords="777,673,979,714"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1FactoryBase.html" title="inviwo::FactoryBase" alt="" coords="5,663,144,689"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1CloningFactory.html" title="inviwo::CloningFactory\l\&lt; MetaData \&gt;" alt="" coords="1506,99,1657,141"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1MetaDataFactory.html" title="inviwo::MetaDataFactory" alt="" coords="1755,107,1919,133"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; Processor, ProcessorFactory\lObject \&gt;" alt="" coords="1479,175,1683,231"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1ProcessorFactory.html" title="inviwo::ProcessorFactory" alt="" coords="1753,189,1920,216"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1ProcessorWidgetFactory.html" title="inviwo::ProcessorWidgetFactory" alt="" coords="1003,885,1211,912"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1DataWriterFactory.html" title="inviwo::DataWriterFactory" alt="" coords="1021,936,1192,963"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; T, M, K, Args \&gt;" alt="" coords="1027,533,1187,574"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; Interpolation, Interpolation\lFactoryObject \&gt;" alt="" coords="1490,273,1673,329"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; Outport, OutportFactoryObject \&gt;" alt="" coords="1470,535,1693,577"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; Track, TrackFactoryObject \&gt;" alt="" coords="1481,789,1681,830"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; Inport, InportFactoryObject \&gt;" alt="" coords="1481,682,1681,723"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; Camera, CameraFactoryObject \&gt;" alt="" coords="1468,470,1695,511"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; Dialog, DialogFactoryObject \&gt;" alt="" coords="1477,390,1685,431"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; PortInspector, PortInspector\lFactoryObject \&gt;" alt="" coords="1483,601,1679,657"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1animation_1_1InterpolationFactory.html" title="inviwo::animation::\lInterpolationFactory" alt="" coords="1769,281,1905,322"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1OutportFactory.html" title="inviwo::OutportFactory" alt="" coords="1761,543,1912,569"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1animation_1_1TrackFactory.html" title="inviwo::animation::\lTrackFactory" alt="" coords="1773,789,1901,830"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1InportFactory.html" title="inviwo::InportFactory" alt="" coords="1767,689,1907,716"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1CameraFactory.html" title="inviwo::CameraFactory" alt="" coords="1760,477,1913,504"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1DialogFactory.html" title="inviwo::DialogFactory" alt="" coords="1765,397,1909,424"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1PortInspectorFactory.html" title="inviwo::PortInspectorFactory" alt="" coords="1744,616,1929,643"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1DataReaderFactory.html" title="inviwo::DataReaderFactory" alt="" coords="1019,987,1195,1013"/>
+<area shape="rect" id="node32" href="$classinviwo_1_1MeshDrawerFactory.html" title="inviwo::MeshDrawerFactory" alt="" coords="1017,1052,1197,1079"/>
+<area shape="rect" id="node34" href="$classinviwo_1_1CloningFactory.html" title="inviwo::CloningFactory\l\&lt; T, K \&gt;" alt="" coords="1031,114,1182,155"/>
+<area shape="rect" id="node41" href="$classinviwo_1_1PropertyWidgetFactory.html" title="inviwo::PropertyWidgetFactory" alt="" coords="1007,1117,1206,1144"/>
+<area shape="rect" id="node44" href="$classinviwo_1_1PropertyFactory.html" title="inviwo::PropertyFactory" alt="" coords="1028,1176,1185,1203"/>
+</map>

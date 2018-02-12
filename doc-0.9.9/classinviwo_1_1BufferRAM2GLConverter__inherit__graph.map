@@ -1,0 +1,7 @@
+<map id="inviwo::BufferRAM2GLConverter" name="inviwo::BufferRAM2GLConverter">
+<area shape="rect" id="node2" href="$classinviwo_1_1RepresentationConverterType.html" title="inviwo::RepresentationConverter\lType\&lt; BufferRepresentation,\l BufferRAM, BufferGL \&gt;" alt="" coords="1033,31,1239,87"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1RepresentationConverter.html" title="inviwo::RepresentationConverter\l\&lt; BufferRepresentation \&gt;" alt="" coords="639,5,844,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1BaseRepresentationConverter.html" title="inviwo::BaseRepresentation\lConverter" alt="" coords="5,15,187,56"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1RepresentationConverter.html" title="inviwo::RepresentationConverter\l\&lt; BaseRepr \&gt;" alt="" coords="236,51,441,92"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1RepresentationConverterType.html" title="inviwo::RepresentationConverter\lType\&lt; BaseRepr, From, To \&gt;" alt="" coords="639,71,844,112"/>
+</map>

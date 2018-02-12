@@ -1,0 +1,9 @@
+<map id="inviwo::TransferFunction" name="inviwo::TransferFunction">
+<area shape="rect" id="node2" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="872,5,1003,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1TransferFunctionObservable.html" title="inviwo::TransferFunction\lObservable" alt="" coords="857,57,1017,98"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; TransferFunctionObserver \&gt;" alt="" coords="615,57,808,98"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,68,183,95"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,97,391,124"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1TransferFunctionPointObserver.html" title="inviwo::TransferFunction\lPointObserver" alt="" coords="857,122,1017,163"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="654,129,769,156"/>
+</map>

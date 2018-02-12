@@ -1,0 +1,5 @@
+<map id="inviwo::TransferFunctionPointObserver" name="inviwo::TransferFunctionPointObserver">
+<area shape="rect" id="node3" href="$classinviwo_1_1TransferFunction.html" title="for holding transfer function data. This class holds transfer function data, currently one parameter ..." alt="" coords="5,177,165,203"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1TransferFunctionEditorControlPoint.html" title="inviwo::TransferFunction\lEditorControlPoint" alt="" coords="189,169,349,211"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="120,5,235,32"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="inviwo::Camera" name="inviwo::Camera">
+<area shape="rect" id="node3" href="$classinviwo_1_1OrthographicCamera.html" title="Camera with no perspective projection. Objects far away will appear as large as objects close..." alt="" coords="341,5,524,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PerspectiveCamera.html" title="inviwo::PerspectiveCamera" alt="" coords="345,56,521,83"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1SkewedPerspectiveCamera.html" title="Camera with off axis perspective projection. " alt="" coords="344,107,521,149"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="5,56,136,83"/>
+</map>

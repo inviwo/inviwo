@@ -1,0 +1,8 @@
+<map id="inviwo::LightSource" name="inviwo::LightSource">
+<area shape="rect" id="node4" href="$classinviwo_1_1DiffuseLight.html" title="inviwo::DiffuseLight" alt="" coords="5,247,136,273"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1DirectionalLight.html" title="inviwo::DirectionalLight" alt="" coords="161,247,314,273"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1PointLight.html" title="inviwo::PointLight" alt="" coords="339,247,461,273"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1SpotLight.html" title="inviwo::SpotLight" alt="" coords="486,247,605,273"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1SpatialEntity.html" title="inviwo::SpatialEntity\&lt; 3 \&gt;" alt="" coords="234,95,403,121"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1SpatialEntity.html" title="A convenience class to generate transformation matrices between the different coordinate systems in u..." alt="" coords="233,5,404,32"/>
+</map>

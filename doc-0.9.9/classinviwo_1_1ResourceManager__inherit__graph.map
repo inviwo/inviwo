@@ -1,0 +1,8 @@
+<map id="inviwo::ResourceManager" name="inviwo::ResourceManager">
+<area shape="rect" id="node2" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l ResourceManager \&gt;" alt="" coords="9,275,151,316"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt; T \&gt;" alt="" coords="5,178,155,205"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ResourceManagerObservable.html" title="inviwo::ResourceManagerObservable" alt="" coords="175,282,409,309"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ResourceManagerObserver \&gt;" alt="" coords="191,171,393,212"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="182,5,359,32"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="271,81,430,108"/>
+</map>

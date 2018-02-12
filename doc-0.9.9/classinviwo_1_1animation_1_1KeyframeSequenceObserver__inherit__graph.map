@@ -1,0 +1,7 @@
+<map id="inviwo::animation::KeyframeSequenceObserver" name="inviwo::animation::KeyframeSequenceObserver">
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1KeyframeSequenceQt.html" title="Owns a sorted list of keyframes. " alt="" coords="5,169,155,211"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1animation_1_1Track.html" title="inviwo::animation::\lTrack" alt="" coords="179,169,307,211"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="104,5,219,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1animation_1_1TrackTyped.html" title="inviwo::animation::\lTrackTyped\&lt; Key \&gt;" alt="" coords="175,259,311,300"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1animation_1_1PropertyTrack.html" title="inviwo::animation::\lPropertyTrack\&lt; Key \&gt;" alt="" coords="167,348,318,389"/>
+</map>

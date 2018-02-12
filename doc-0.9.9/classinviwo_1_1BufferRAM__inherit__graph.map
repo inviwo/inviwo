@@ -1,0 +1,6 @@
+<map id="inviwo::BufferRAM" name="inviwo::BufferRAM">
+<area shape="rect" id="node5" href="$classinviwo_1_1BufferRAMPrecision.html" title="inviwo::BufferRAMPrecision\l\&lt; T, Target \&gt;" alt="" coords="7,352,187,393"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1BufferRepresentation.html" title="inviwo::BufferRepresentation" alt="" coords="5,200,189,227"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataRepresentation.html" title="inviwo::DataRepresentation\l\&lt; BufferBase \&gt;" alt="" coords="8,109,187,151"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations. " alt="" coords="8,5,187,47"/>
+</map>

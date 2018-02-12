@@ -1,0 +1,7 @@
+<map id="inviwo::VolumeRaycasterCL" name="inviwo::VolumeRaycasterCL">
+<area shape="rect" id="node2" href="$classinviwo_1_1KernelOwner.html" title="inviwo::KernelOwner" alt="" coords="27,337,166,364"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1KernelObservable.html" title="inviwo::KernelObservable" alt="" coords="14,261,179,288"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; KernelObserver \&gt;" alt="" coords="29,171,164,212"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="24,5,201,32"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="113,81,272,108"/>
+</map>

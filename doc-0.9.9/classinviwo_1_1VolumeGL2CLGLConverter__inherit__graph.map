@@ -1,0 +1,7 @@
+<map id="inviwo::VolumeGL2CLGLConverter" name="inviwo::VolumeGL2CLGLConverter">
+<area shape="rect" id="node2" href="$classinviwo_1_1RepresentationConverterType.html" title="inviwo::RepresentationConverter\lType\&lt; VolumeRepresentation,\l VolumeGL, VolumeCLGL \&gt;" alt="" coords="1065,31,1271,87"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1RepresentationConverter.html" title="inviwo::RepresentationConverter\l\&lt; VolumeRepresentation \&gt;" alt="" coords="649,5,855,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1BaseRepresentationConverter.html" title="inviwo::BaseRepresentation\lConverter" alt="" coords="5,15,187,56"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1RepresentationConverter.html" title="inviwo::RepresentationConverter\l\&lt; BaseRepr \&gt;" alt="" coords="236,51,441,92"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1RepresentationConverterType.html" title="inviwo::RepresentationConverter\lType\&lt; BaseRepr, From, To \&gt;" alt="" coords="649,71,855,112"/>
+</map>

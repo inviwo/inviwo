@@ -1,0 +1,102 @@
+<map id="inviwo::Observer" name="inviwo::Observer">
+<area shape="rect" id="node2" href="$classinviwo_1_1FactoryObserver.html" title="inviwo::FactoryObserver\l\&lt; PropertyFactoryObject \&gt;" alt="" coords="630,37,807,79"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ActivityIndicatorObserver.html" title="inviwo::ActivityIndicator\lObserver" alt="" coords="202,215,357,256"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1animation_1_1AnimationControllerObserver.html" title="inviwo::animation::\lAnimationControllerObserver" alt="" coords="186,332,373,373"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1animation_1_1AnimationObserver.html" title="inviwo::animation::\lAnimationObserver" alt="" coords="214,471,345,512"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1animation_1_1KeyframeObserver.html" title="inviwo::animation::\lKeyframeObserver" alt="" coords="215,1520,343,1561"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1animation_1_1KeyframeSequenceObserver.html" title="inviwo::animation::\lKeyframeSequenceObserver" alt="" coords="186,1647,373,1688"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1animation_1_1TrackObserver.html" title="inviwo::animation::\lTrackObserver" alt="" coords="215,1777,343,1819"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1BufferObjectObserver.html" title="inviwo::BufferObjectObserver" alt="" coords="186,1875,373,1902"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1CompositePropertyObserver.html" title="inviwo::CompositeProperty\lObserver" alt="" coords="906,852,1081,893"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1FactoryObserver.html" title="inviwo::FactoryObserver\&lt; T \&gt;" alt="" coords="184,95,375,122"/>
+<area shape="rect" id="node31" href="$classinviwo_1_1KernelObserver.html" title="inviwo::KernelObserver" alt="" coords="203,1959,355,1986"/>
+<area shape="rect" id="node34" href="$classinviwo_1_1LabelGraphicsItemObserver.html" title="inviwo::LabelGraphicsItem\lObserver" alt="" coords="193,1389,365,1431"/>
+<area shape="rect" id="node36" href="$classinviwo_1_1NetworkEditorObserver.html" title="inviwo::NetworkEditorObserver" alt="" coords="181,2061,377,2087"/>
+<area shape="rect" id="node39" href="$classinviwo_1_1ProcessorMetaDataObserver.html" title="inviwo::ProcessorMetaData\lObserver" alt="" coords="190,1324,369,1365"/>
+<area shape="rect" id="node40" href="$classinviwo_1_1ProcessorNetworkEvaluationObserver.html" title="inviwo::ProcessorNetwork\lEvaluationObserver" alt="" coords="194,148,365,189"/>
+<area shape="rect" id="node43" href="$classinviwo_1_1ProcessorNetworkObserver.html" title="inviwo::ProcessorNetwork\lObserver" alt="" coords="194,701,365,743"/>
+<area shape="rect" id="node49" href="$classinviwo_1_1ProcessorObserver.html" title="inviwo::ProcessorObserver" alt="" coords="192,1097,367,1123"/>
+<area shape="rect" id="node54" href="$classinviwo_1_1ProcessorWidgetMetaDataObserver.html" title="inviwo::ProcessorWidgetMeta\lDataObserver" alt="" coords="183,1455,376,1496"/>
+<area shape="rect" id="node61" href="$classinviwo_1_1ProcessorWidgetObserver.html" title="inviwo::ProcessorWidgetObserver" alt="" coords="172,281,387,307"/>
+<area shape="rect" id="node62" href="$classinviwo_1_1ProgressBarObserver.html" title="inviwo::ProgressBarObserver" alt="" coords="186,2141,373,2167"/>
+<area shape="rect" id="node64" href="$classinviwo_1_1PropertyObserver.html" title="inviwo::PropertyObserver" alt="" coords="197,1267,361,1294"/>
+<area shape="rect" id="node85" href="$classinviwo_1_1PropertyOwnerObserver.html" title="inviwo::PropertyOwnerObserver" alt="" coords="179,937,380,963"/>
+<area shape="rect" id="node86" href="$classinviwo_1_1PythonExecutionOutputObeserver.html" title="inviwo::PythonExecutionOutput\lObeserver" alt="" coords="178,2221,381,2263"/>
+<area shape="rect" id="node89" href="$classinviwo_1_1ResourceManagerObserver.html" title="inviwo::ResourceManagerObserver" alt="" coords="169,2309,389,2335"/>
+<area shape="rect" id="node91" href="$classinviwo_1_1TextureObserver.html" title="inviwo::TextureObserver" alt="" coords="200,2381,359,2407"/>
+<area shape="rect" id="node94" href="$classinviwo_1_1TransferFunctionObserver.html" title="inviwo::TransferFunction\lObserver" alt="" coords="199,2483,359,2524"/>
+<area shape="rect" id="node97" href="$classinviwo_1_1TransferFunctionPointObserver.html" title="inviwo::TransferFunction\lPointObserver" alt="" coords="199,2607,359,2648"/>
+<area shape="rect" id="node100" href="$classinviwo_1_1TransferFunctionPropertyObserver.html" title="inviwo::TransferFunction\lPropertyObserver" alt="" coords="199,2701,359,2743"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1LinkSettings.html" title="inviwo::LinkSettings" alt="" coords="925,45,1061,71"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ProcessorStatusGraphicsItem.html" title="inviwo::ProcessorStatusGraphicsItem" alt="" coords="599,206,838,233"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1animation_1_1AnimationEditorDockWidgetQt.html" title="inviwo::animation::\lAnimationEditorDockWidgetQt" alt="" coords="619,257,818,299"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1animation_1_1AnimationViewQt.html" title="VERY_BRIEFLY_DESCRIBE_THE_CLASS DESCRIBE_THE_CLASS. " alt="" coords="655,323,783,364"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1animation_1_1AnimationEditorQt.html" title="inviwo::animation::\lAnimationEditorQt" alt="" coords="655,388,783,429"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1animation_1_1AnimationLabelViewQt.html" title="inviwo::animation::\lAnimationLabelViewQt" alt="" coords="642,453,795,495"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1animation_1_1AnimationManager.html" title="inviwo::animation::\lAnimationManager" alt="" coords="653,636,784,677"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1animation_1_1KeyframeQt.html" title="Graphical representation of a keyframe. " alt="" coords="655,1516,783,1557"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1animation_1_1KeyframeSequence.html" title="inviwo::animation::\lKeyframeSequence" alt="" coords="651,1581,786,1623"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1animation_1_1KeyframeSequenceTyped.html" title="inviwo::animation::\lKeyframeSequenceTyped\l\&lt; Key \&gt;" alt="" coords="908,2221,1079,2277"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1animation_1_1KeyframeSequenceQt.html" title="Owns a sorted list of keyframes. " alt="" coords="644,1647,793,1688"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1animation_1_1Track.html" title="inviwo::animation::\lTrack" alt="" coords="655,1712,783,1753"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1animation_1_1TrackTyped.html" title="inviwo::animation::\lTrackTyped\&lt; Key \&gt;" alt="" coords="925,2301,1061,2343"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1animation_1_1PropertyTrack.html" title="inviwo::animation::\lPropertyTrack\&lt; Key \&gt;" alt="" coords="1193,2301,1344,2343"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1animation_1_1Animation.html" title="inviwo::animation::\lAnimation" alt="" coords="655,1777,783,1819"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1animation_1_1TrackQt.html" title="inviwo::animation::\lTrackQt" alt="" coords="655,1843,783,1884"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1BufferCLGL.html" title="inviwo::BufferCLGL" alt="" coords="653,1909,784,1935"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1BoolCompositePropertyWidgetQt.html" title="inviwo::BoolCompositeProperty\lWidgetQt" alt="" coords="1168,845,1369,887"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1CompositePropertyWidgetQt.html" title="inviwo::CompositeProperty\lWidgetQt" alt="" coords="1181,921,1356,963"/>
+<area shape="rect" id="node32" href="$classinviwo_1_1EntryExitPointsCLProcessor.html" title="Computes the entry and exit points of a triangle mesh from the camera position in texture space..." alt="" coords="603,1959,834,1986"/>
+<area shape="rect" id="node33" href="$classinviwo_1_1VolumeRaycasterCLProcessor.html" title="Perform volume rendering on the input volume. " alt="" coords="597,2010,840,2037"/>
+<area shape="rect" id="node35" href="$classinviwo_1_1ProcessorGraphicsItem.html" title="inviwo::ProcessorGraphicsItem" alt="" coords="619,1363,819,1390"/>
+<area shape="rect" id="node37" href="$classinviwo_1_1InviwoMainWindow.html" title="inviwo::InviwoMainWindow" alt="" coords="633,2061,805,2087"/>
+<area shape="rect" id="node38" href="$classinviwo_1_1NetworkEditorView.html" title="inviwo::NetworkEditorView" alt="" coords="632,2111,805,2138"/>
+<area shape="rect" id="node41" href="$classinviwo_1_1GLFWModule.html" title="inviwo::GLFWModule" alt="" coords="647,155,791,182"/>
+<area shape="rect" id="node42" href="$classinviwo_1_1OpenGLQtModule.html" title="inviwo::OpenGLQtModule" alt="" coords="635,105,803,131"/>
+<area shape="rect" id="node44" href="$classinviwo_1_1LinkDialogGraphicsScene.html" title="inviwo::LinkDialogGraphics\lScene" alt="" coords="631,701,807,743"/>
+<area shape="rect" id="node45" href="$classinviwo_1_1NetworkEditor.html" title="inviwo::NetworkEditor" alt="" coords="646,767,791,794"/>
+<area shape="rect" id="node46" href="$classinviwo_1_1PortInspectorManager.html" title="Keep track of which port has port inspectors on them. " alt="" coords="623,818,814,845"/>
+<area shape="rect" id="node47" href="$classinviwo_1_1ProcessorNetworkEvaluator.html" title="inviwo::ProcessorNetwork\lEvaluator" alt="" coords="633,519,804,560"/>
+<area shape="rect" id="node48" href="$classinviwo_1_1UndoManager.html" title="inviwo::UndoManager" alt="" coords="647,585,791,611"/>
+<area shape="rect" id="node50" href="$classinviwo_1_1CanvasProcessorWidgetQt.html" title="inviwo::CanvasProcessorWidgetQt" alt="" coords="1159,993,1379,1019"/>
+<area shape="rect" id="node51" href="$classinviwo_1_1CollapsibleGroupBoxWidgetQt.html" title="inviwo::CollapsibleGroup\lBoxWidgetQt" alt="" coords="912,917,1075,959"/>
+<area shape="rect" id="node52" href="$classinviwo_1_1ProcessorDockWidgetQt.html" title="Base class for Qt processor widget using InviwoDockWidget. " alt="" coords="889,1683,1097,1710"/>
+<area shape="rect" id="node53" href="$classinviwo_1_1ProcessorNetwork.html" title="inviwo::ProcessorNetwork" alt="" coords="633,970,804,997"/>
+<area shape="rect" id="node55" href="$classinviwo_1_1CanvasProcessor.html" title="inviwo::CanvasProcessor" alt="" coords="636,1414,801,1441"/>
+<area shape="rect" id="node57" href="$classinviwo_1_1ProcessorWidget.html" title="inviwo::ProcessorWidget" alt="" coords="637,1465,801,1491"/>
+<area shape="rect" id="node56" href="$classinviwo_1_1CanvasProcessorGL.html" title="Takes an Image Inport and renders it into a OpenGL window i.e. a canvas. " alt="" coords="902,2069,1085,2095"/>
+<area shape="rect" id="node58" href="$classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge..." alt="" coords="890,2170,1097,2197"/>
+<area shape="rect" id="node60" href="$classinviwo_1_1ProcessorWidgetQt.html" title="inviwo::ProcessorWidgetQt" alt="" coords="904,2119,1083,2146"/>
+<area shape="rect" id="node59" href="$classinviwo_1_1CanvasProcessorWidgetGLFW.html" title="inviwo::CanvasProcessorWidgetGLFW" alt="" coords="1147,2170,1391,2197"/>
+<area shape="rect" id="node63" href="$classinviwo_1_1ProcessorProgressGraphicsItem.html" title="inviwo::ProcessorProgress\lGraphicsItem" alt="" coords="631,2163,806,2204"/>
+<area shape="rect" id="node65" href="$classinviwo_1_1EditableLabelQt.html" title="inviwo::EditableLabelQt" alt="" coords="641,1262,797,1289"/>
+<area shape="rect" id="node66" href="$classinviwo_1_1ModifiedWidget.html" title="inviwo::ModifiedWidget" alt="" coords="642,1211,795,1238"/>
+<area shape="rect" id="node67" href="$classinviwo_1_1PropertyWidgetQt.html" title="inviwo::PropertyWidgetQt" alt="" coords="635,1313,803,1339"/>
+<area shape="rect" id="node68" href="$classinviwo_1_1AnglePropertyWidgetQt.html" title="inviwo::AnglePropertyWidget\lQt\&lt; T \&gt;" alt="" coords="900,1901,1087,1943"/>
+<area shape="rect" id="node69" href="$classinviwo_1_1BoolPropertyWidgetQt.html" title="inviwo::BoolPropertyWidgetQt" alt="" coords="896,1967,1091,1994"/>
+<area shape="rect" id="node70" href="$classinviwo_1_1ButtonPropertyWidgetQt.html" title="inviwo::ButtonPropertyWidgetQt" alt="" coords="890,2018,1097,2045"/>
+<area shape="rect" id="node71" href="$classinviwo_1_1ColorPropertyWidgetQt.html" title="inviwo::ColorPropertyWidget\lQt\&lt; T \&gt;" alt="" coords="901,1035,1085,1076"/>
+<area shape="rect" id="node72" href="$classinviwo_1_1EventPropertyWidgetQt.html" title="inviwo::EventPropertyWidgetQt" alt="" coords="893,1101,1093,1127"/>
+<area shape="rect" id="node73" href="$classinviwo_1_1FilePropertyWidgetQt.html" title="inviwo::FilePropertyWidgetQt" alt="" coords="899,1151,1088,1178"/>
+<area shape="rect" id="node74" href="$classinviwo_1_1ImageEditorWidgetQt.html" title="inviwo::ImageEditorWidgetQt" alt="" coords="899,1202,1087,1229"/>
+<area shape="rect" id="node75" href="$classinviwo_1_1LightPropertyWidgetQt.html" title="inviwo::LightPropertyWidgetQt" alt="" coords="895,1253,1091,1279"/>
+<area shape="rect" id="node76" href="$classinviwo_1_1MultiFilePropertyWidgetQt.html" title="Property widget for MultiFileProperty showing only the first file name. " alt="" coords="912,1304,1075,1345"/>
+<area shape="rect" id="node77" href="$classinviwo_1_1OptionPropertyWidgetQt.html" title="inviwo::OptionPropertyWidgetQt" alt="" coords="890,1370,1097,1397"/>
+<area shape="rect" id="node78" href="$classinviwo_1_1OrdinalMinMaxPropertyWidgetQt.html" title="inviwo::OrdinalMinMaxProperty\lWidgetQt\&lt; T \&gt;" alt="" coords="893,1421,1093,1463"/>
+<area shape="rect" id="node79" href="$classinviwo_1_1OrdinalMinMaxTextPropertyWidgetQt.html" title="inviwo::OrdinalMinMaxText\lPropertyWidgetQt\&lt; BT, T \&gt;" alt="" coords="903,1487,1084,1528"/>
+<area shape="rect" id="node80" href="$classinviwo_1_1OrdinalPropertyWidgetQt.html" title="inviwo::OrdinalPropertyWidget\lQt\&lt; T \&gt;" alt="" coords="896,1552,1091,1593"/>
+<area shape="rect" id="node81" href="$classinviwo_1_1StringMultilinePropertyWidgetQt.html" title="Property widget for string properties which shows the contents spread over multiple lines..." alt="" coords="896,1617,1091,1659"/>
+<area shape="rect" id="node82" href="$classinviwo_1_1StringPropertyWidgetQt.html" title="inviwo::StringPropertyWidgetQt" alt="" coords="892,1734,1095,1761"/>
+<area shape="rect" id="node83" href="$classinviwo_1_1TextEditorWidgetQt.html" title="inviwo::TextEditorWidgetQt" alt="" coords="904,1785,1083,1811"/>
+<area shape="rect" id="node84" href="$classinviwo_1_1TransferFunctionPropertyWidgetQt.html" title="inviwo::TransferFunction\lPropertyWidgetQt" alt="" coords="913,1836,1073,1877"/>
+<area shape="rect" id="node87" href="$classinviwo_1_1PythonEditorWidget.html" title="inviwo::PythonEditorWidget" alt="" coords="629,2229,809,2255"/>
+<area shape="rect" id="node88" href="$classinviwo_1_1PythonLogger.html" title="inviwo::PythonLogger" alt="" coords="647,2279,791,2306"/>
+<area shape="rect" id="node90" href="$classinviwo_1_1ResourceManagerWidget.html" title="inviwo::ResourceManagerWidget" alt="" coords="613,2330,824,2357"/>
+<area shape="rect" id="node92" href="$classinviwo_1_1LayerCLGL.html" title="inviwo::LayerCLGL" alt="" coords="654,2381,783,2407"/>
+<area shape="rect" id="node93" href="$classinviwo_1_1VolumeCLGL.html" title="inviwo::VolumeCLGL" alt="" coords="648,2431,789,2458"/>
+<area shape="rect" id="node95" href="$classinviwo_1_1TransferFunctionProperty.html" title="inviwo::TransferFunction\lProperty" alt="" coords="639,2483,799,2524"/>
+<area shape="rect" id="node96" href="$classinviwo_1_1TransferFunctionPropertyDialog.html" title="inviwo::TransferFunction\lPropertyDialog" alt="" coords="639,2548,799,2589"/>
+<area shape="rect" id="node98" href="$classinviwo_1_1TransferFunction.html" title="for holding transfer function data. This class holds transfer function data, currently one parameter ..." alt="" coords="639,2614,799,2641"/>
+<area shape="rect" id="node99" href="$classinviwo_1_1TransferFunctionEditorControlPoint.html" title="inviwo::TransferFunction\lEditorControlPoint" alt="" coords="639,2665,799,2707"/>
+<area shape="rect" id="node101" href="$classinviwo_1_1TransferFunctionEditorView.html" title="inviwo::TransferFunction\lEditorView" alt="" coords="639,2731,799,2772"/>
+</map>

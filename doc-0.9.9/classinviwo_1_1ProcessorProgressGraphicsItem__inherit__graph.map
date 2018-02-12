@@ -1,0 +1,5 @@
+<map id="inviwo::ProcessorProgressGraphicsItem" name="inviwo::ProcessorProgressGraphicsItem">
+<area shape="rect" id="node2" href="$classinviwo_1_1EditorGraphicsItem.html" title="inviwo::EditorGraphicsItem" alt="" coords="5,80,180,107"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ProgressBarObserver.html" title="inviwo::ProgressBarObserver" alt="" coords="205,80,391,107"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="241,5,355,32"/>
+</map>

@@ -1,0 +1,34 @@
+<map id="inviwo::DataInport&lt; T, N, Flat &gt;" name="inviwo::DataInport&lt; T, N, Flat &gt;">
+<area shape="rect" id="node6" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; Eigen::MatrixXf \&gt;" alt="" coords="917,19,1050,61"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; std::vector\&lt; vec4 \&gt; \&gt;" alt="" coords="905,85,1061,126"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; SeedPointVector, 0 \&gt;" alt="" coords="904,150,1063,191"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; Volume \&gt;" alt="" coords="922,215,1045,257"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; inviwo::LightSource \&gt;" alt="" coords="905,281,1062,322"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; std::vector\&lt; std::\lshared_ptr\&lt; Image \&gt; \&gt; \&gt;" alt="" coords="900,347,1067,403"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; std::vector\&lt; std::\lshared_ptr\&lt; inviwo::Volume \&gt; \&gt; \&gt;" alt="" coords="875,427,1092,483"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; std::vector\&lt; std::\lshared_ptr\&lt; T \&gt; \&gt; \&gt;" alt="" coords="914,507,1053,563"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; IntegralLineSet \&gt;" alt="" coords="917,587,1049,629"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\&lt; T \&gt;" alt="" coords="906,653,1061,680"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; Handle \&gt;" alt="" coords="922,705,1045,746"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; inviwo::Spatial4DSampler\l\&lt; 3, double \&gt; \&gt;" alt="" coords="893,771,1073,827"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; Image, N \&gt;" alt="" coords="922,851,1045,893"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; inviwo::SpatialSampler\l\&lt; 3, 3, double \&gt; \&gt;" alt="" coords="901,917,1065,973"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; SeedPoint3DVector, 0 \&gt;" alt="" coords="896,998,1071,1039"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; Mesh, 0, true \&gt;" alt="" coords="922,1063,1045,1105"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; BrushingAndLinkingManager \&gt;" alt="" coords="878,1129,1089,1170"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; std::vector\&lt; std::\lshared_ptr\&lt; Mesh \&gt; \&gt; \&gt;" alt="" coords="902,1195,1065,1251"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; VolumeSequence \&gt;" alt="" coords="909,1275,1057,1317"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; inviwo::plot::DataFrame \&gt;" alt="" coords="893,1341,1074,1382"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; Mesh \&gt;" alt="" coords="922,1406,1045,1447"/>
+<area shape="rect" id="node31" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; std::vector\&lt; std::\lshared_ptr\&lt; Volume \&gt; \&gt; \&gt;" alt="" coords="896,1472,1071,1528"/>
+<area shape="rect" id="node32" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; DataFrame \&gt;" alt="" coords="922,1553,1045,1594"/>
+<area shape="rect" id="node33" href="$classinviwo_1_1DataInport.html" title="inviwo::DataInport\l\&lt; inviwo::Volume, 0 \&gt;" alt="" coords="910,1618,1057,1659"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Inport.html" title="Abstract base class for all inports An Inport can be connected to an Outport. The approved connection..." alt="" coords="344,773,440,800"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Port.html" title="A abstract base class for all ports. " alt="" coords="185,773,273,800"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="5,773,136,800"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1InportIterable.html" title="inviwo::InportIterable\l\&lt; T, Flat \&gt;" alt="" coords="323,825,461,866"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1BaseImageInport.html" title="inviwo::BaseImageInport\&lt; 0 \&gt;" alt="" coords="1420,820,1612,847"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1BaseImageInport.html" title="inviwo::BaseImageInport\&lt; 1 \&gt;" alt="" coords="1420,889,1612,916"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1BaseImageInport.html" title="inviwo::BaseImageInport\&lt; N \&gt;" alt="" coords="1141,859,1336,885"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1BrushingAndLinkingInport.html" title="inviwo::BrushingAndLinking\lInport" alt="" coords="1149,1129,1328,1170"/>
+</map>

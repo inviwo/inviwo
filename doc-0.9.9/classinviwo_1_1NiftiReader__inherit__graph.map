@@ -1,0 +1,5 @@
+<map id="inviwo::NiftiReader" name="inviwo::NiftiReader">
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderType.html" title="inviwo::DataReaderType\l\&lt; std::vector\&lt; std::shared\l_ptr\&lt; Volume \&gt; \&gt; \&gt;" alt="" coords="5,185,176,241"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataReader.html" title="A abstract base class for all file readers. " alt="" coords="45,5,177,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataReaderType.html" title="Template base class for file readers designating what type of data object the reader returns..." alt="" coords="107,81,298,108"/>
+</map>

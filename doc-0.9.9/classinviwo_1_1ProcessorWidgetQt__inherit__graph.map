@@ -1,0 +1,9 @@
+<map id="inviwo::ProcessorWidgetQt" name="inviwo::ProcessorWidgetQt">
+<area shape="rect" id="node3" href="$classinviwo_1_1ProcessorWidget.html" title="inviwo::ProcessorWidget" alt="" coords="180,352,344,379"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ProcessorWidgetObservable.html" title="inviwo::ProcessorWidgetObservable" alt="" coords="5,269,233,295"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ProcessorWidgetObserver \&gt;" alt="" coords="21,171,218,212"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="47,5,224,32"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="136,81,295,108"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1ProcessorWidgetMetaDataObserver.html" title="inviwo::ProcessorWidgetMeta\lDataObserver" alt="" coords="257,261,451,303"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="297,178,411,205"/>
+</map>

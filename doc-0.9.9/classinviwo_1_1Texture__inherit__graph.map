@@ -1,0 +1,8 @@
+<map id="inviwo::Texture" name="inviwo::Texture">
+<area shape="rect" id="node5" href="$classinviwo_1_1Texture2D.html" title="inviwo::Texture2D" alt="" coords="5,337,128,364"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Texture2DArray.html" title="inviwo::Texture2DArray" alt="" coords="152,337,307,364"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Texture3D.html" title="inviwo::Texture3D" alt="" coords="331,337,453,364"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; TextureObserver \&gt;" alt="" coords="159,171,299,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="157,5,334,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="246,81,405,108"/>
+</map>

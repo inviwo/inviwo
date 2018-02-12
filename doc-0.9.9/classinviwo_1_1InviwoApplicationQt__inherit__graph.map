@@ -1,0 +1,5 @@
+<map id="inviwo::InviwoApplicationQt" name="inviwo::InviwoApplicationQt">
+<area shape="rect" id="node3" href="$classinviwo_1_1InviwoApplication.html" title="The main application which holds the instances of all modules. " alt="" coords="125,185,288,212"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l InviwoApplication \&gt;" alt="" coords="139,95,275,136"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt; T \&gt;" alt="" coords="132,5,281,32"/>
+</map>

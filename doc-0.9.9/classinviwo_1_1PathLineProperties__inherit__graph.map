@@ -1,0 +1,17 @@
+<map id="inviwo::PathLineProperties" name="inviwo::PathLineProperties">
+<area shape="rect" id="node2" href="$classinviwo_1_1IntegralLineProperties.html" title="VERY_BRIEFLY_DESCRIBE_THE_CLASS DESCRIBE_THE_CLASS. " alt="" coords="1748,157,1937,184"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1CompositeProperty.html" title="inviwo::CompositeProperty" alt="" coords="1524,157,1699,184"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Property.html" title="A Property represents a parameter to a processor. " alt="" coords="1343,75,1456,101"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PropertyObservable.html" title="inviwo::PropertyObservable" alt="" coords="905,56,1083,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; PropertyObserver \&gt;" alt="" coords="660,49,807,90"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,195,183,221"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,149,391,176"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; PropertyOwnerObserver \&gt;" alt="" coords="642,194,825,235"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; CompositePropertyObserver \&gt;" alt="" coords="629,259,837,301"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="929,107,1059,133"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1PropertyOwner.html" title="inviwo::PropertyOwner" alt="" coords="1324,157,1475,184"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get. " alt="" coords="915,5,1073,32"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1PropertyOwnerObservable.html" title="inviwo::PropertyOwnerObservable" alt="" coords="887,208,1101,235"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1EventListener.html" title="inviwo::EventListener" alt="" coords="923,157,1065,184"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1CompositePropertyObservable.html" title="inviwo::CompositeProperty\lObservable" alt="" coords="1125,242,1300,283"/>
+</map>

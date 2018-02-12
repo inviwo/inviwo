@@ -1,0 +1,5 @@
+<map id="inviwo::DataReaderFactory" name="inviwo::DataReaderFactory">
+<area shape="rect" id="node2" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; DataReader,\l const FileExtension &amp; \&gt;" alt="" coords="5,200,197,241"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1FactoryBase.html" title="inviwo::FactoryBase" alt="" coords="44,5,183,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; T,\l K, Args \&gt;" alt="" coords="117,81,248,123"/>
+</map>

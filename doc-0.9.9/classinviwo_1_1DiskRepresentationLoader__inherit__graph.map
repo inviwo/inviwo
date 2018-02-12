@@ -1,0 +1,8 @@
+<map id="inviwo::DiskRepresentationLoader&lt; Repr &gt;" name="inviwo::DiskRepresentationLoader&lt; Repr &gt;">
+<area shape="rect" id="node2" href="$classinviwo_1_1DiskRepresentationLoader.html" title="inviwo::DiskRepresentation\lLoader\&lt; LayerRepresentation \&gt;" alt="" coords="397,7,601,49"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DiskRepresentationLoader.html" title="inviwo::DiskRepresentation\lLoader\&lt; VolumeRepresentation \&gt;" alt="" coords="391,90,607,131"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1CImgLayerRAMLoader.html" title="inviwo::CImgLayerRAMLoader" alt="" coords="662,5,857,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1CImgVolumeRAMLoader.html" title="inviwo::CImgVolumeRAMLoader" alt="" coords="656,56,863,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1NiftiVolumeRAMLoader.html" title="A loader of Nifti files. Used to create VolumeRAM representations. This class us used by the NiftiRea..." alt="" coords="660,107,859,133"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1RawVolumeRAMLoader.html" title="A loader of raw files. Used to create VolumeRAM representations. This class us used by the DatVolumeR..." alt="" coords="659,157,860,184"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="inviwo::animation::TrackObservable" name="inviwo::animation::TrackObservable">
+<area shape="rect" id="node5" href="$classinviwo_1_1animation_1_1Track.html" title="inviwo::animation::\lTrack" alt="" coords="17,352,145,393"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; TrackObserver \&gt;" alt="" coords="16,171,145,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="8,5,185,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="97,81,256,108"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1animation_1_1TrackTyped.html" title="inviwo::animation::\lTrackTyped\&lt; Key \&gt;" alt="" coords="13,443,149,484"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1animation_1_1PropertyTrack.html" title="inviwo::animation::\lPropertyTrack\&lt; Key \&gt;" alt="" coords="5,533,156,575"/>
+</map>

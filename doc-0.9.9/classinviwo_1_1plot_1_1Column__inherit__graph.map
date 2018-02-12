@@ -1,0 +1,5 @@
+<map id="inviwo::plot::Column" name="inviwo::plot::Column">
+<area shape="rect" id="node2" href="$classinviwo_1_1plot_1_1TemplateColumn.html" title="Data column used for plotting which represents a named buffer of type T. The name is used as column h..." alt="" coords="5,81,227,108"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1plot_1_1TemplateColumn.html" title="inviwo::plot::TemplateColumn\l\&lt; std::uint32_t \&gt;" alt="" coords="101,171,291,212"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1plot_1_1CategoricalColumn.html" title="Specialized data column representing categorical values, i.e. strings. Categorical values are interna..." alt="" coords="117,261,275,303"/>
+</map>

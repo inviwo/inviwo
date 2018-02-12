@@ -1,0 +1,6 @@
+<map id="inviwo::ProgressBarObservable" name="inviwo::ProgressBarObservable">
+<area shape="rect" id="node5" href="$classinviwo_1_1ProgressBar.html" title="inviwo::ProgressBar" alt="" coords="37,337,173,364"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ProgressBarObserver \&gt;" alt="" coords="21,171,190,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="33,5,210,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="122,81,281,108"/>
+</map>

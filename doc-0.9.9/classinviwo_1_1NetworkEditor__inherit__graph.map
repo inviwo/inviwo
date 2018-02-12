@@ -1,0 +1,7 @@
+<map id="inviwo::NetworkEditor" name="inviwo::NetworkEditor">
+<area shape="rect" id="node3" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; NetworkEditorObserver \&gt;" alt="" coords="600,57,779,98"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,43,183,69"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,72,391,99"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1ProcessorNetworkObserver.html" title="inviwo::ProcessorNetwork\lObserver" alt="" coords="604,122,775,163"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="254,129,369,156"/>
+</map>

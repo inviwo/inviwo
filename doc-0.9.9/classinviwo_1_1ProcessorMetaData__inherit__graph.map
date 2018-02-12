@@ -1,0 +1,7 @@
+<map id="inviwo::ProcessorMetaData" name="inviwo::ProcessorMetaData">
+<area shape="rect" id="node2" href="$classinviwo_1_1MetaData.html" title="inviwo::MetaData" alt="" coords="11,178,131,205"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="5,81,136,108"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ProcessorMetaDataObserver \&gt;" alt="" coords="155,171,367,212"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="151,5,329,32"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="241,81,399,108"/>
+</map>

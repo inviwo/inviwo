@@ -1,0 +1,8 @@
+<map id="inviwo::MetaDataFactory" name="inviwo::MetaDataFactory">
+<area shape="rect" id="node2" href="$classinviwo_1_1CloningFactory.html" title="inviwo::CloningFactory\l\&lt; MetaData \&gt;" alt="" coords="100,395,251,436"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; MetaData,\l const std::string &amp; \&gt;" alt="" coords="5,200,185,241"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1FactoryBase.html" title="inviwo::FactoryBase" alt="" coords="137,5,275,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; T,\l K, Args \&gt;" alt="" coords="141,81,271,123"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; T, K \&gt;" alt="" coords="209,207,365,234"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1CloningFactory.html" title="inviwo::CloningFactory\l\&lt; T, K \&gt;" alt="" coords="181,291,332,332"/>
+</map>

@@ -1,0 +1,21 @@
+<map id="inviwo::Singleton&lt; T &gt;" name="inviwo::Singleton&lt; T &gt;">
+<area shape="rect" id="node2" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l KernelManager \&gt;" alt="" coords="414,5,541,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l PickingManager \&gt;" alt="" coords="412,71,543,112"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l InviwoApplication \&gt;" alt="" coords="409,136,545,177"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l LogCentral \&gt;" alt="" coords="414,201,541,243"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l OpenCL \&gt;" alt="" coords="414,267,541,308"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l ResourceManager \&gt;" alt="" coords="406,332,549,373"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l RenderContext \&gt;" alt="" coords="414,397,541,439"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l SharedOpenGLResources \&gt;" alt="" coords="383,463,572,504"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1Singleton.html" title="inviwo::Singleton\&lt;\l ShaderManager \&gt;" alt="" coords="413,528,542,569"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1KernelManager.html" title="inviwo::KernelManager" alt="" coords="653,13,804,39"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PickingManager.html" title="inviwo::PickingManager" alt="" coords="650,78,807,105"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1InviwoApplication.html" title="The main application which holds the instances of all modules. " alt="" coords="647,143,810,170"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1InviwoApplicationQt.html" title="inviwo::InviwoApplicationQt" alt="" coords="885,143,1061,170"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1LogCentral.html" title="inviwo::LogCentral" alt="" coords="665,209,792,235"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1OpenCL.html" title="inviwo::OpenCL" alt="" coords="673,274,784,301"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1ResourceManager.html" title="inviwo::ResourceManager" alt="" coords="644,339,813,366"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1RenderContext.html" title="Keeper of the default render context. " alt="" coords="653,405,804,431"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1SharedOpenGLResources.html" title="inviwo::SharedOpenGLResources" alt="" coords="621,470,836,497"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1ShaderManager.html" title="inviwo::ShaderManager" alt="" coords="651,535,806,562"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="inviwo::LabelGraphicsItem" name="inviwo::LabelGraphicsItem">
+<area shape="rect" id="node3" href="$classinviwo_1_1LabelGraphicsItemObservable.html" title="inviwo::LabelGraphicsItem\lObservable" alt="" coords="164,261,336,303"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; LabelGraphicsItemObserver \&gt;" alt="" coords="147,171,353,212"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="177,5,355,32"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="267,81,425,108"/>
+</map>

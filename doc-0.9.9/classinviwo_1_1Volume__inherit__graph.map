@@ -1,0 +1,8 @@
+<map id="inviwo::Volume" name="inviwo::Volume">
+<area shape="rect" id="node2" href="$classinviwo_1_1Data.html" title="inviwo::Data\&lt; Volume,\l VolumeRepresentation \&gt;" alt="" coords="722,5,891,47"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Data.html" title="The base class for all data objects. " alt="" coords="268,5,397,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1StructuredGridEntity.html" title="inviwo::StructuredGridEntity\&lt; 3 \&gt;" alt="" coords="700,71,913,98"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1SpatialEntity.html" title="A convenience class to generate transformation matrices between the different coordinate systems in u..." alt="" coords="5,93,176,119"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1StructuredGridEntity.html" title="inviwo::StructuredGridEntity\&lt; N \&gt;" alt="" coords="225,122,440,149"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get. " alt="" coords="728,122,885,149"/>
+</map>

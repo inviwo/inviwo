@@ -1,0 +1,8 @@
+<map id="inviwo::BasicMesh" name="inviwo::BasicMesh">
+<area shape="rect" id="node2" href="$classinviwo_1_1Mesh.html" title="inviwo::Mesh" alt="" coords="659,71,755,98"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataGroup.html" title="inviwo::DataGroup\&lt;\l Mesh, MeshRepresentation \&gt;" alt="" coords="412,5,609,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataGroup.html" title="The base class for all DataGroup objects. " alt="" coords="23,5,158,47"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1SpatialEntity.html" title="inviwo::SpatialEntity\&lt; 3 \&gt;" alt="" coords="426,71,595,98"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1SpatialEntity.html" title="A convenience class to generate transformation matrices between the different coordinate systems in u..." alt="" coords="5,71,176,98"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get. " alt="" coords="432,122,589,149"/>
+</map>

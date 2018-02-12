@@ -1,0 +1,6 @@
+<map id="inviwo::InteractionHandler" name="inviwo::InteractionHandler">
+<area shape="rect" id="node4" href="$classinviwo_1_1Inviwo__ABufferGL4_1_1ABufferGLInteractionHandler.html" title="inviwo::Inviwo_ABufferGL4\l::ABufferGLInteractionHandler" alt="" coords="412,5,605,47"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PointLightInteractionHandler.html" title="inviwo::PointLightInteraction\lHandler" alt="" coords="417,71,600,112"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1EventListener.html" title="inviwo::EventListener" alt="" coords="5,21,148,47"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="11,71,142,98"/>
+</map>

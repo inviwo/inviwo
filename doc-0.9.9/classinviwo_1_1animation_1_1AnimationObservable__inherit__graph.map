@@ -1,0 +1,6 @@
+<map id="inviwo::animation::AnimationObservable" name="inviwo::animation::AnimationObservable">
+<area shape="rect" id="node5" href="$classinviwo_1_1animation_1_1Animation.html" title="inviwo::animation::\lAnimation" alt="" coords="19,352,147,393"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; AnimationObserver \&gt;" alt="" coords="5,171,160,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="10,5,187,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="99,81,258,108"/>
+</map>

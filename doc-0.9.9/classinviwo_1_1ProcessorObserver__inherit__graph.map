@@ -1,0 +1,10 @@
+<map id="inviwo::ProcessorObserver" name="inviwo::ProcessorObserver">
+<area shape="rect" id="node3" href="$classinviwo_1_1CanvasProcessorWidgetQt.html" title="inviwo::CanvasProcessorWidgetQt" alt="" coords="391,5,611,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1CollapsibleGroupBoxWidgetQt.html" title="inviwo::CollapsibleGroup\lBoxWidgetQt" alt="" coords="419,57,582,98"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ProcessorDockWidgetQt.html" title="Base class for Qt processor widget using InviwoDockWidget. " alt="" coords="397,123,605,149"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1ProcessorGraphicsItem.html" title="inviwo::ProcessorGraphicsItem" alt="" coords="401,173,601,200"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1ProcessorNetwork.html" title="inviwo::ProcessorNetwork" alt="" coords="415,224,586,251"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="5,123,120,149"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1BoolCompositePropertyWidgetQt.html" title="inviwo::BoolCompositeProperty\lWidgetQt" alt="" coords="659,23,860,65"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1CompositePropertyWidgetQt.html" title="inviwo::CompositeProperty\lWidgetQt" alt="" coords="672,89,847,130"/>
+</map>

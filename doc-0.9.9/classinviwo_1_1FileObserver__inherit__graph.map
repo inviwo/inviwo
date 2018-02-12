@@ -1,0 +1,7 @@
+<map id="inviwo::FileObserver" name="inviwo::FileObserver">
+<area shape="rect" id="node2" href="$classinviwo_1_1FileShaderResource.html" title="inviwo::FileShaderResource" alt="" coords="189,5,371,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1KernelManager.html" title="inviwo::KernelManager" alt="" coords="205,56,355,83"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PythonEditorWidget.html" title="inviwo::PythonEditorWidget" alt="" coords="190,107,370,133"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1SingleFileObserver.html" title="SingleFileObserver observes a single file for changes on disk. SingleFileObserver observes a single f..." alt="" coords="194,208,366,235"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1PythonScriptDisk.html" title="inviwo::PythonScriptDisk" alt="" coords="419,208,584,235"/>
+</map>

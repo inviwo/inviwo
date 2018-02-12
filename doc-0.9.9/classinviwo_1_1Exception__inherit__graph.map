@@ -1,0 +1,28 @@
+<map id="inviwo::Exception" name="inviwo::Exception">
+<area shape="rect" id="node3" href="$classinviwo_1_1AbortException.html" title="inviwo::AbortException" alt="" coords="357,5,510,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1colorbrewer_1_1ColorBrewerException.html" title="inviwo::colorbrewer\l::ColorBrewerException" alt="" coords="354,57,513,98"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ConverterException.html" title="inviwo::ConverterException" alt="" coords="345,123,521,149"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1DataFormatException.html" title="inviwo::DataFormatException" alt="" coords="338,173,529,200"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1DataReaderException.html" title="inviwo::DataReaderException" alt="" coords="338,224,529,251"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1DataWriterException.html" title="inviwo::DataWriterException" alt="" coords="341,275,525,301"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1dispatching_1_1DispatchException.html" title="inviwo::dispatching\l::DispatchException" alt="" coords="364,326,503,367"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1FileException.html" title="inviwo::FileException" alt="" coords="362,392,505,419"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1GLFWException.html" title="inviwo::GLFWException" alt="" coords="353,443,513,469"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1hdf5_1_1Exception.html" title="inviwo::hdf5::Exception" alt="" coords="356,493,511,520"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1IgnoreException.html" title="inviwo::IgnoreException" alt="" coords="355,544,512,571"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1InvalidConversion.html" title="inviwo::InvalidConversion" alt="" coords="352,595,515,621"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1ModuleInitException.html" title="inviwo::ModuleInitException" alt="" coords="343,645,524,672"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1NullPointerException.html" title="inviwo::NullPointerException" alt="" coords="341,696,526,723"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1OpenCLException.html" title="inviwo::OpenCLException" alt="" coords="349,747,518,773"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1OpenCLFormatException.html" title="Exception thrown when a data format is not supported by OpenCL. " alt="" coords="328,797,539,824"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1OpenGLException.html" title="inviwo::OpenGLException" alt="" coords="348,848,519,875"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1plot_1_1DataTypeMismatch.html" title="inviwo::plot::DataTypeMismatch" alt="" coords="331,899,536,925"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1plot_1_1InvalidColCount.html" title="inviwo::plot::InvalidCol\lCount" alt="" coords="360,950,507,991"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1plot_1_1NoColumns.html" title="inviwo::plot::NoColumns" alt="" coords="353,1016,513,1043"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1RangeException.html" title="inviwo::RangeException" alt="" coords="354,1067,513,1093"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1SerializationException.html" title="inviwo::SerializationException" alt="" coords="337,1117,530,1144"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1SingletonException.html" title="inviwo::SingletonException" alt="" coords="345,1168,521,1195"/>
+<area shape="rect" id="node2" title="STL class. " alt="" coords="5,595,109,621"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1GLFWInitException.html" title="inviwo::GLFWInitException" alt="" coords="591,620,769,647"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1OpenGLInitException.html" title="inviwo::OpenGLInitException" alt="" coords="587,671,773,697"/>
+</map>

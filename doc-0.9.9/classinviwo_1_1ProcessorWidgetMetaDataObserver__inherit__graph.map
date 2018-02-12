@@ -1,0 +1,11 @@
+<map id="inviwo::ProcessorWidgetMetaDataObserver" name="inviwo::ProcessorWidgetMetaDataObserver">
+<area shape="rect" id="node3" href="$classinviwo_1_1CanvasProcessor.html" title="inviwo::CanvasProcessor" alt="" coords="409,19,575,45"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ProcessorWidget.html" title="inviwo::ProcessorWidget" alt="" coords="410,95,574,121"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="5,69,120,96"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1CanvasProcessorGL.html" title="Takes an Image Inport and renders it into a OpenGL window i.e. a canvas. " alt="" coords="635,5,818,32"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge..." alt="" coords="623,56,830,83"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1ProcessorDockWidgetQt.html" title="Base class for Qt processor widget using InviwoDockWidget. " alt="" coords="623,107,831,133"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1ProcessorWidgetQt.html" title="inviwo::ProcessorWidgetQt" alt="" coords="637,157,816,184"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1CanvasProcessorWidgetGLFW.html" title="inviwo::CanvasProcessorWidgetGLFW" alt="" coords="879,31,1123,57"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1CanvasProcessorWidgetQt.html" title="inviwo::CanvasProcessorWidgetQt" alt="" coords="891,81,1111,108"/>
+</map>

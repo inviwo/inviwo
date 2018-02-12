@@ -1,0 +1,5 @@
+<map id="inviwo::PythonScriptDisk" name="inviwo::PythonScriptDisk">
+<area shape="rect" id="node2" href="$classinviwo_1_1PythonScript.html" title="inviwo::PythonScript" alt="" coords="5,80,144,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1SingleFileObserver.html" title="SingleFileObserver observes a single file for changes on disk. SingleFileObserver observes a single f..." alt="" coords="169,80,341,107"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1FileObserver.html" title="inviwo::FileObserver" alt="" coords="187,5,323,32"/>
+</map>

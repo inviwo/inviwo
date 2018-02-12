@@ -1,0 +1,10 @@
+<map id="inviwo::ProcessorKernelOwner" name="inviwo::ProcessorKernelOwner">
+<area shape="rect" id="node7" href="$classinviwo_1_1GrayscaleCLProcessor.html" title="Turns an image into grayscale. " alt="" coords="1403,5,1601,32"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1VolumeFirstHitCLProcessor.html" title="Computes the first point with non&#45;zero opacity within a volume given entry and exit points in texture..." alt="" coords="1389,56,1615,83"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1VolumeMaxCLProcessor.html" title="Computes the maximum data value for each sub&#45;region of the input volume. " alt="" coords="1398,107,1606,133"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1KernelOwner.html" title="inviwo::KernelOwner" alt="" coords="955,56,1093,83"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1KernelObservable.html" title="inviwo::KernelObservable" alt="" coords="740,56,905,83"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; KernelObserver \&gt;" alt="" coords="556,49,691,90"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,56,183,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,85,391,112"/>
+</map>

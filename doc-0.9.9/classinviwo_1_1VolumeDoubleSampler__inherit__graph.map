@@ -1,0 +1,5 @@
+<map id="inviwo::VolumeDoubleSampler&lt; DataDims &gt;" name="inviwo::VolumeDoubleSampler&lt; DataDims &gt;">
+<area shape="rect" id="node4" href="$classinviwo_1_1VolumeDoubleSampler.html" title="inviwo::VolumeDoubleSampler\&lt; 4 \&gt;" alt="" coords="5,304,232,331"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1SpatialSampler.html" title="inviwo::SpatialSampler\l\&lt; 3, DataDims, double \&gt;" alt="" coords="37,109,201,151"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1SpatialSampler.html" title="inviwo::SpatialSampler\l\&lt; SpatialDims, DataDims, T \&gt;" alt="" coords="21,5,217,47"/>
+</map>

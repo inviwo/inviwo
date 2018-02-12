@@ -1,0 +1,6 @@
+<map id="inviwo::ProcessorNetworkEvaluationObserver" name="inviwo::ProcessorNetworkEvaluationObserver">
+<area shape="rect" id="node3" href="$classinviwo_1_1GLFWModule.html" title="inviwo::GLFWModule" alt="" coords="5,169,149,196"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1OpenGLQtModule.html" title="inviwo::OpenGLQtModule" alt="" coords="173,169,341,196"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ProcessorStatusGraphicsItem.html" title="inviwo::ProcessorStatusGraphicsItem" alt="" coords="366,169,605,196"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="200,5,315,32"/>
+</map>

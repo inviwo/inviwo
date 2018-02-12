@@ -1,0 +1,5 @@
+<map id="inviwo::SpotLight" name="inviwo::SpotLight">
+<area shape="rect" id="node2" href="$classinviwo_1_1LightSource.html" title="inviwo::LightSource" alt="" coords="24,171,157,197"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1SpatialEntity.html" title="inviwo::SpatialEntity\&lt; 3 \&gt;" alt="" coords="6,95,175,121"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1SpatialEntity.html" title="A convenience class to generate transformation matrices between the different coordinate systems in u..." alt="" coords="5,5,176,32"/>
+</map>

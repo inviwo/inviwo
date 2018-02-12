@@ -1,0 +1,15 @@
+<map id="inviwo::VolumeDiff" name="inviwo::VolumeDiff">
+<area shape="rect" id="node2" href="$classinviwo_1_1VolumeGLProcessor.html" title="Base class for volume processing on the GPU using OpenGL. " alt="" coords="1665,134,1849,161"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result. " alt="" coords="1493,134,1616,161"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyOwner.html" title="inviwo::PropertyOwner" alt="" coords="1289,105,1440,131"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PropertyOwnerObservable.html" title="inviwo::PropertyOwnerObservable" alt="" coords="836,73,1051,99"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; PropertyOwnerObserver \&gt;" alt="" coords="604,71,787,112"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,50,183,77"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,50,391,77"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ProcessorObserver \&gt;" alt="" coords="617,5,773,47"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="878,174,1009,201"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1EventListener.html" title="inviwo::EventListener" alt="" coords="872,123,1015,150"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get. " alt="" coords="1286,155,1443,182"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1ProcessorObservable.html" title="inviwo::ProcessorObservable" alt="" coords="1075,37,1261,63"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1EventPropagator.html" title="Abstract base class for a event propagator. " alt="" coords="1285,206,1444,233"/>
+</map>

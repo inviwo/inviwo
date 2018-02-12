@@ -1,0 +1,11 @@
+<map id="inviwo::ProcessorDockWidgetQt" name="inviwo::ProcessorDockWidgetQt">
+<area shape="rect" id="node2" href="$classinviwo_1_1InviwoDockWidget.html" title="inviwo::InviwoDockWidget" alt="" coords="1316,15,1485,41"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ProcessorWidget.html" title="inviwo::ProcessorWidget" alt="" coords="1319,91,1483,117"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ProcessorWidgetObservable.html" title="inviwo::ProcessorWidgetObservable" alt="" coords="865,56,1093,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ProcessorWidgetObserver \&gt;" alt="" coords="619,49,816,90"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,60,183,87"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,89,391,116"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1ProcessorWidgetMetaDataObserver.html" title="inviwo::ProcessorWidgetMeta\lDataObserver" alt="" coords="883,107,1076,149"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="660,144,775,171"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1ProcessorObserver.html" title="inviwo::ProcessorObserver" alt="" coords="1117,160,1292,187"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="inviwo::Dialog" name="inviwo::Dialog">
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderDialog.html" title="inviwo::DataReaderDialog" alt="" coords="34,80,202,107"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1FileDialog.html" title="inviwo::FileDialog" alt="" coords="244,80,365,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1RawDataReaderDialogQt.html" title="inviwo::RawDataReaderDialogQt" alt="" coords="5,155,212,181"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1InviwoFileDialog.html" title="inviwo::InviwoFileDialog" alt="" coords="237,155,391,181"/>
+</map>

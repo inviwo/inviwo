@@ -1,0 +1,12 @@
+<map id="inviwo::animation::PropertyTrack&lt; Prop, Key &gt;" name="inviwo::animation::PropertyTrack&lt; Prop, Key &gt;">
+<area shape="rect" id="node2" href="$classinviwo_1_1animation_1_1TrackTyped.html" title="inviwo::animation::\lTrackTyped\&lt; Key \&gt;" alt="" coords="1143,57,1279,98"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1Track.html" title="inviwo::animation::\lTrack" alt="" coords="965,57,1093,98"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="757,5,888,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1animation_1_1TrackObservable.html" title="inviwo::animation::\lTrackObservable" alt="" coords="759,57,887,98"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; TrackObserver \&gt;" alt="" coords="551,57,680,98"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,68,183,95"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,97,391,124"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1animation_1_1KeyframeSequenceObserver.html" title="inviwo::animation::\lKeyframeSequenceObserver" alt="" coords="729,122,916,163"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="558,129,673,156"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1animation_1_1BasePropertyTrack.html" title="inviwo::animation::\lBasePropertyTrack" alt="" coords="1144,122,1277,163"/>
+</map>

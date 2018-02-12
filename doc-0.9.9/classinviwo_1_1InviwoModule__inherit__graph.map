@@ -1,0 +1,31 @@
+<map id="inviwo::InviwoModule" name="inviwo::InviwoModule">
+<area shape="rect" id="node2" href="$classinviwo_1_1ABufferGLModule.html" title="inviwo::ABufferGLModule" alt="" coords="213,5,378,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1AnimationModule.html" title="inviwo::AnimationModule" alt="" coords="213,56,377,83"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1AnimationQtModule.html" title="inviwo::AnimationQtModule" alt="" coords="206,107,385,133"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1AssimpModule.html" title="inviwo::AssimpModule" alt="" coords="220,157,371,184"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1BaseCLModule.html" title="inviwo::BaseCLModule" alt="" coords="219,208,371,235"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1BaseGLModule.html" title="inviwo::BaseGLModule" alt="" coords="219,259,372,285"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1BaseModule.html" title="inviwo::BaseModule" alt="" coords="227,309,363,336"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1BrushingAndLinkingModule.html" title="inviwo::BrushingAndLinking\lModule" alt="" coords="206,361,385,402"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1CImgModule.html" title="inviwo::CImgModule" alt="" coords="227,427,363,453"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1EigenUtilsModule.html" title="inviwo::EigenUtilsModule" alt="" coords="213,477,378,504"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1ExampleModule.html" title="inviwo::ExampleModule" alt="" coords="217,528,374,555"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1FontRenderingModule.html" title="inviwo::FontRenderingModule" alt="" coords="200,579,391,605"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1GLFWModule.html" title="inviwo::GLFWModule" alt="" coords="223,629,367,656"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1HDF5Module.html" title="inviwo::HDF5Module" alt="" coords="226,680,365,707"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1InviwoCore.html" title="Module which registers all module related functionality available in the core. " alt="" coords="233,731,358,757"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1NiftiModule.html" title="inviwo::NiftiModule" alt="" coords="231,781,359,808"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1OpenCLModule.html" title="inviwo::OpenCLModule" alt="" coords="219,832,372,859"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1OpenGLModule.html" title="inviwo::OpenGLModule" alt="" coords="218,883,373,909"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1OpenGLQtModule.html" title="inviwo::OpenGLQtModule" alt="" coords="211,933,379,960"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1PlottingGLModule.html" title="inviwo::PlottingGLModule" alt="" coords="212,984,379,1011"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1PlottingModule.html" title="inviwo::PlottingModule" alt="" coords="220,1035,371,1061"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1PostProcessingModule.html" title="inviwo::PostProcessingModule" alt="" coords="196,1085,395,1112"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1PVMModule.html" title="inviwo::PVMModule" alt="" coords="228,1136,363,1163"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1Python3Module.html" title="inviwo::Python3Module" alt="" coords="218,1187,373,1213"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1Python3QtModule.html" title="inviwo::Python3QtModule" alt="" coords="211,1237,379,1264"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1QtWidgetsModule.html" title="inviwo::QtWidgetsModule" alt="" coords="211,1288,379,1315"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1UserInterfaceGLModule.html" title="inviwo::UserInterfaceGLModule" alt="" coords="196,1339,395,1365"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1VectorFieldVisualizationGLModule.html" title="inviwo::VectorFieldVisualization\lGLModule" alt="" coords="193,1390,397,1431"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1VectorFieldVisualizationModule.html" title="inviwo::VectorFieldVisualization\lModule" alt="" coords="193,1455,397,1497"/>
+</map>

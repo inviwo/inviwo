@@ -1,0 +1,10 @@
+<map id="inviwo::OpenCLSettings" name="inviwo::OpenCLSettings">
+<area shape="rect" id="node2" href="$classinviwo_1_1Settings.html" title="inviwo::Settings" alt="" coords="254,413,366,440"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1PropertyOwner.html" title="inviwo::PropertyOwner" alt="" coords="235,337,385,364"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyOwnerObservable.html" title="inviwo::PropertyOwnerObservable" alt="" coords="5,261,220,288"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; PropertyOwnerObserver \&gt;" alt="" coords="21,171,204,212"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="40,5,217,32"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="129,81,288,108"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="245,261,375,288"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1EventListener.html" title="inviwo::EventListener" alt="" coords="400,261,543,288"/>
+</map>

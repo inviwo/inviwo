@@ -1,0 +1,8 @@
+<map id="inviwo::Dispatcher&lt; C &gt;" name="inviwo::Dispatcher&lt; C &gt;">
+<area shape="rect" id="node2" href="$classinviwo_1_1Dispatcher.html" title="inviwo::Dispatcher\l\&lt; void(GLuint)\&gt;" alt="" coords="437,5,564,47"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Dispatcher.html" title="inviwo::Dispatcher\l\&lt; void(inviwo::ShaderObject *)\&gt;" alt="" coords="399,71,602,112"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Dispatcher.html" title="inviwo::Dispatcher\l\&lt; void(Serializer &amp;,\l const ExceptionHandler &amp;)\&gt;" alt="" coords="406,137,595,193"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Dispatcher.html" title="inviwo::Dispatcher\l\&lt; void()\&gt;" alt="" coords="437,217,564,259"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Dispatcher.html" title="inviwo::Dispatcher\l\&lt; void(const inviwo\l::ShaderResource *)\&gt;" alt="" coords="427,283,574,339"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Dispatcher.html" title="inviwo::Dispatcher\l\&lt; void(Deserializer\l &amp;, const ExceptionHandler &amp;)\&gt;" alt="" coords="397,363,604,419"/>
+</map>

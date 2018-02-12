@@ -1,0 +1,6 @@
+<map id="inviwo::animation::AnimationManager" name="inviwo::animation::AnimationManager">
+<area shape="rect" id="node2" href="$classinviwo_1_1animation_1_1AnimationObserver.html" title="inviwo::animation::\lAnimationObserver" alt="" coords="203,5,334,47"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="5,71,120,98"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyOwnerObserver.html" title="inviwo::PropertyOwnerObserver" alt="" coords="168,71,369,98"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ProcessorNetworkObserver.html" title="inviwo::ProcessorNetwork\lObserver" alt="" coords="183,123,354,164"/>
+</map>

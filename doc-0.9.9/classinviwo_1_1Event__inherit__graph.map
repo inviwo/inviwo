@@ -1,0 +1,14 @@
+<map id="inviwo::Event" name="inviwo::Event">
+<area shape="rect" id="node2" href="$classinviwo_1_1BrushingAndLinkingEvent.html" title="inviwo::BrushingAndLinking\lEvent" alt="" coords="149,49,328,90"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1InteractionEvent.html" title="inviwo::InteractionEvent" alt="" coords="161,157,317,184"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1PickingEvent.html" title="inviwo::PickingEvent" alt="" coords="169,208,308,235"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1ResizeEvent.html" title="inviwo::ResizeEvent" alt="" coords="171,259,307,285"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1FilteringEvent.html" title="VERY_BRIEFLY_DESCRIBE_THE_CLASS DESCRIBE_THE_CLASS. " alt="" coords="386,5,529,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1SelectionEvent.html" title="VERY_BRIEFLY_DESCRIBE_THE_CLASS DESCRIBE_THE_CLASS. " alt="" coords="382,56,533,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1GestureEvent.html" title="inviwo::GestureEvent" alt="" coords="386,107,529,133"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1KeyboardEvent.html" title="inviwo::KeyboardEvent" alt="" coords="382,157,533,184"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1MouseInteractionEvent.html" title="inviwo::MouseInteraction\lEvent" alt="" coords="376,209,539,250"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1TouchEvent.html" title="inviwo::TouchEvent" alt="" coords="392,275,523,301"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1MouseEvent.html" title="inviwo::MouseEvent" alt="" coords="587,191,721,217"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1WheelEvent.html" title="inviwo::WheelEvent" alt="" coords="587,241,721,268"/>
+</map>

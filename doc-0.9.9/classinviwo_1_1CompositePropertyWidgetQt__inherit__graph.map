@@ -1,0 +1,10 @@
+<map id="inviwo::CompositePropertyWidgetQt" name="inviwo::CompositePropertyWidgetQt">
+<area shape="rect" id="node2" href="$classinviwo_1_1CollapsibleGroupBoxWidgetQt.html" title="inviwo::CollapsibleGroup\lBoxWidgetQt" alt="" coords="635,159,798,201"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1PropertyWidgetQt.html" title="inviwo::PropertyWidgetQt" alt="" coords="397,81,565,108"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PropertyWidget.html" title="inviwo::PropertyWidget" alt="" coords="173,56,327,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1PropertyObserver.html" title="inviwo::PropertyObserver" alt="" coords="168,107,332,133"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="5,183,120,209"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1PropertyOwnerObserver.html" title="inviwo::PropertyOwnerObserver" alt="" coords="380,157,581,184"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1ProcessorObserver.html" title="inviwo::ProcessorObserver" alt="" coords="393,208,568,235"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1CompositePropertyObserver.html" title="inviwo::CompositeProperty\lObserver" alt="" coords="629,242,804,283"/>
+</map>

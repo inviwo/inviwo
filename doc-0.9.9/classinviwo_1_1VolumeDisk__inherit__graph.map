@@ -1,0 +1,7 @@
+<map id="inviwo::VolumeDisk" name="inviwo::VolumeDisk">
+<area shape="rect" id="node2" href="$classinviwo_1_1VolumeRepresentation.html" title="inviwo::VolumeRepresentation" alt="" coords="5,221,200,247"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataRepresentation.html" title="inviwo::DataRepresentation\l\&lt; Volume \&gt;" alt="" coords="13,109,192,151"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations. " alt="" coords="13,5,192,47"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1DiskRepresentation.html" title="inviwo::DiskRepresentation\l\&lt; VolumeRepresentation \&gt;" alt="" coords="225,213,402,255"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1DiskRepresentation.html" title="inviwo::DiskRepresentation\l\&lt; Repr \&gt;" alt="" coords="225,109,402,151"/>
+</map>

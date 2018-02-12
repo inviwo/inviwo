@@ -1,0 +1,8 @@
+<map id="inviwo::animation::Keyframe" name="inviwo::animation::Keyframe">
+<area shape="rect" id="node7" href="$classinviwo_1_1animation_1_1ValueKeyframe.html" title="inviwo::animation::\lValueKeyframe\&lt; T \&gt;" alt="" coords="48,443,189,484"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="5,269,136,295"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1KeyframeObservable.html" title="inviwo::animation::\lKeyframeObservable" alt="" coords="160,261,301,303"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; KeyframeObserver \&gt;" alt="" coords="155,171,307,212"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="158,5,335,32"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="247,81,406,108"/>
+</map>

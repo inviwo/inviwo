@@ -1,0 +1,7 @@
+<map id="inviwo::PropertyConverter" name="inviwo::PropertyConverter">
+<area shape="rect" id="node2" href="$classinviwo_1_1TemplatePropertyConverter.html" title="inviwo::TemplateProperty\lConverter\&lt; srcProperty,\l dstProperty \&gt;" alt="" coords="221,11,388,67"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1TemplatePropertyConverter.html" title="inviwo::TemplateProperty\lConverter\&lt; srcProperty,\l StringProperty \&gt;" alt="" coords="643,74,810,130"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1OrdinalPropertyConverter.html" title="inviwo::OrdinalPropertyConverter\l\&lt; srcProperty, dstProperty \&gt;" alt="" coords="623,5,831,47"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ScalarToStringConverter.html" title="inviwo::ScalarToStringConverter\l\&lt; srcProperty \&gt;" alt="" coords="881,48,1083,89"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1VectorToStringConverter.html" title="inviwo::VectorToStringConverter\l\&lt; srcProperty \&gt;" alt="" coords="880,113,1084,155"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="inviwo::Canvas" name="inviwo::Canvas">
+<area shape="rect" id="node2" href="$classinviwo_1_1CanvasGL.html" title="inviwo::CanvasGL" alt="" coords="160,81,283,108"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1CanvasGLFW.html" title="inviwo::CanvasGLFW" alt="" coords="361,5,505,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1CanvasQGLWidget.html" title="inviwo::CanvasQGLWidget" alt="" coords="346,56,521,83"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1CanvasQOpenGLWidget.html" title="inviwo::CanvasQOpenGLWidget" alt="" coords="331,107,536,133"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1CanvasQWindow.html" title="inviwo::CanvasQWindow" alt="" coords="352,157,515,184"/>
+</map>

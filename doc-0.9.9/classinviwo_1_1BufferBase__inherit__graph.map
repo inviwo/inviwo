@@ -1,0 +1,6 @@
+<map id="inviwo::BufferBase" name="inviwo::BufferBase">
+<area shape="rect" id="node5" href="$classinviwo_1_1Buffer.html" title="inviwo::Buffer\&lt; unsigned\l char \&gt;" alt="" coords="1076,83,1237,124"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Buffer.html" title="inviwo::Buffer\&lt; T,\l Target \&gt;" alt="" coords="799,49,919,91"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Data.html" title="inviwo::Data\&lt; BufferBase,\l BufferRepresentation \&gt;" alt="" coords="403,49,573,91"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Data.html" title="The base class for all data objects. " alt="" coords="5,49,135,91"/>
+</map>

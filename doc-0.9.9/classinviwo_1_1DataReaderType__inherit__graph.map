@@ -1,0 +1,18 @@
+<map id="inviwo::DataReaderType&lt; T &gt;" name="inviwo::DataReaderType&lt; T &gt;">
+<area shape="rect" id="node3" href="$classinviwo_1_1DataReaderType.html" title="inviwo::DataReaderType\l\&lt; Volume \&gt;" alt="" coords="592,125,752,166"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1DataReaderType.html" title="inviwo::DataReaderType\l\&lt; plot::DataFrame \&gt;" alt="" coords="592,245,752,286"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1DataReaderType.html" title="inviwo::DataReaderType\l\&lt; Layer \&gt;" alt="" coords="592,310,752,351"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1DataReaderType.html" title="inviwo::DataReaderType\l\&lt; std::vector\&lt; std::shared\l_ptr\&lt; Volume \&gt; \&gt; \&gt;" alt="" coords="587,376,757,432"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1DataReaderType.html" title="inviwo::DataReaderType\l\&lt; Mesh \&gt;" alt="" coords="592,459,752,501"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReader.html" title="A abstract base class for all file readers. " alt="" coords="5,317,137,344"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1CImgVolumeReader.html" title="inviwo::CImgVolumeReader" alt="" coords="812,5,991,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1IvfVolumeReader.html" title="inviwo::IvfVolumeReader" alt="" coords="821,56,981,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1MPVMVolumeReader.html" title="Reader for *.mpvm files. " alt="" coords="807,107,996,133"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1PVMVolumeReader.html" title="Reader for *.pvm files. " alt="" coords="812,157,991,184"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1RawVolumeReader.html" title="inviwo::RawVolumeReader" alt="" coords="814,208,989,235"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1CSVReader.html" title="A reader for comma separated value (CSV) files with customizable delimiters. " alt="" coords="835,259,967,285"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1CImgLayerReader.html" title="Reader for Images files. " alt="" coords="818,316,985,343"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1DatVolumeReader.html" title="Reader for *.dat files. " alt="" coords="817,367,986,393"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1NiftiReader.html" title="Volume data reader for Nifti&#45;1 files. " alt="" coords="838,417,965,444"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1AssimpReader.html" title="Inviwo Module Assimp. " alt="" coords="827,468,976,495"/>
+</map>

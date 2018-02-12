@@ -1,0 +1,8 @@
+<map id="inviwo::ProcessorNetworkEvaluator" name="inviwo::ProcessorNetworkEvaluator">
+<area shape="rect" id="node2" href="$classinviwo_1_1ProcessorNetworkObserver.html" title="inviwo::ProcessorNetwork\lObserver" alt="" coords="5,291,176,332"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="33,200,148,227"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ProcessorNetworkEvaluationObservable.html" title="inviwo::ProcessorNetwork\lEvaluationObservable" alt="" coords="200,291,371,332"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ProcessorNetworkEvaluation\lObserver \&gt;" alt="" coords="186,185,385,241"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="175,5,353,32"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="265,81,423,108"/>
+</map>

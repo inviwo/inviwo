@@ -1,0 +1,10 @@
+<map id="inviwo::VolumeRepresentation" name="inviwo::VolumeRepresentation">
+<area shape="rect" id="node4" href="$classinviwo_1_1VolumeCL.html" title="inviwo::VolumeCL" alt="" coords="786,5,910,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1VolumeCLGL.html" title="inviwo::VolumeCLGL" alt="" coords="777,56,919,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1VolumeDisk.html" title="inviwo::VolumeDisk" alt="" coords="781,107,915,133"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1VolumeGL.html" title="inviwo::VolumeGL" alt="" coords="785,157,911,184"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1VolumeRAM.html" title="inviwo::VolumeRAM" alt="" coords="779,208,917,235"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataRepresentation.html" title="inviwo::DataRepresentation\l\&lt; Volume \&gt;" alt="" coords="305,99,484,141"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations. " alt="" coords="5,99,184,141"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1VolumeRAMPrecision.html" title="inviwo::VolumeRAMPrecision\&lt; T \&gt;" alt="" coords="968,208,1191,235"/>
+</map>

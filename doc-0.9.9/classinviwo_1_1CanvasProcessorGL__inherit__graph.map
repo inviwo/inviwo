@@ -1,0 +1,17 @@
+<map id="inviwo::CanvasProcessorGL" name="inviwo::CanvasProcessorGL">
+<area shape="rect" id="node2" href="$classinviwo_1_1CanvasProcessor.html" title="inviwo::CanvasProcessor" alt="" coords="1736,141,1901,168"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result. " alt="" coords="1529,107,1651,133"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyOwner.html" title="inviwo::PropertyOwner" alt="" coords="1289,107,1440,133"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PropertyOwnerObservable.html" title="inviwo::PropertyOwnerObservable" alt="" coords="836,75,1051,101"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; PropertyOwnerObserver \&gt;" alt="" coords="604,73,787,114"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ObservableInterface.html" title="inviwo::ObservableInterface" alt="" coords="5,52,183,79"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\&lt; T \&gt;" alt="" coords="232,52,391,79"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1Observable.html" title="inviwo::Observable\l\&lt; ProcessorObserver \&gt;" alt="" coords="617,7,773,49"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="878,176,1009,203"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1EventListener.html" title="inviwo::EventListener" alt="" coords="872,125,1015,152"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get. " alt="" coords="1286,157,1443,184"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1ProcessorObservable.html" title="inviwo::ProcessorObservable" alt="" coords="1075,37,1261,64"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1EventPropagator.html" title="Abstract base class for a event propagator. " alt="" coords="1285,5,1444,32"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1ProcessorWidgetMetaDataObserver.html" title="inviwo::ProcessorWidgetMeta\lDataObserver" alt="" coords="1493,179,1687,221"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="1307,208,1422,235"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="inviwo::Logger" name="inviwo::Logger">
+<area shape="rect" id="node2" href="$classinviwo_1_1ConsoleLogger.html" title="A Logger class that log to the console using cout. " alt="" coords="160,5,311,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ConsoleWidget.html" title="inviwo::ConsoleWidget" alt="" coords="159,56,311,83"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1FileLogger.html" title="A logger class that logs to a file in html format. " alt="" coords="173,107,297,133"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1LogErrorCounter.html" title="inviwo::LogErrorCounter" alt="" coords="156,157,315,184"/>
+</map>

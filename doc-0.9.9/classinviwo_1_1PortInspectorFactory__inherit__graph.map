@@ -1,0 +1,8 @@
+<map id="inviwo::PortInspectorFactory" name="inviwo::PortInspectorFactory">
+<area shape="rect" id="node2" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; PortInspector, PortInspector\lFactoryObject \&gt;" alt="" coords="1144,34,1340,90"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; PortInspector,\l const std::string &amp;, Args... \&gt;" alt="" coords="507,12,708,53"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1FactoryBase.html" title="inviwo::FactoryBase" alt="" coords="5,49,144,75"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; T,\l K, Args \&gt;" alt="" coords="193,41,324,83"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; T,\l K, Args... \&gt;" alt="" coords="542,77,673,119"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1StandardFactory.html" title="inviwo::StandardFactory\l\&lt; T, M, K, Args \&gt;" alt="" coords="757,73,917,115"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="inviwo::PerspectiveCamera" name="inviwo::PerspectiveCamera">
+<area shape="rect" id="node2" href="$classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix. " alt="" coords="39,80,148,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Serializable.html" title="inviwo::Serializable" alt="" coords="28,5,159,32"/>
+</map>

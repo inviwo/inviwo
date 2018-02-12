@@ -1,0 +1,8 @@
+<map id="inviwo::BufferCLGL" name="inviwo::BufferCLGL">
+<area shape="rect" id="node2" href="$classinviwo_1_1BufferCLBase.html" title="inviwo::BufferCLBase" alt="" coords="5,200,148,227"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1BufferRepresentation.html" title="inviwo::BufferRepresentation" alt="" coords="173,200,357,227"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataRepresentation.html" title="inviwo::DataRepresentation\l\&lt; BufferBase \&gt;" alt="" coords="175,109,354,151"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations. " alt="" coords="175,5,354,47"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1BufferObjectObserver.html" title="inviwo::BufferObjectObserver" alt="" coords="381,200,567,227"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observer.html" title="inviwo::Observer" alt="" coords="417,117,531,143"/>
+</map>

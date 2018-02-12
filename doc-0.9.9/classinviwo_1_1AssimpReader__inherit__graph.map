@@ -1,0 +1,5 @@
+<map id="inviwo::AssimpReader" name="inviwo::AssimpReader">
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderType.html" title="inviwo::DataReaderType\l\&lt; Mesh \&gt;" alt="" coords="5,171,165,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataReader.html" title="A abstract base class for all file readers. " alt="" coords="39,5,171,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataReaderType.html" title="Template base class for file readers designating what type of data object the reader returns..." alt="" coords="102,81,293,108"/>
+</map>
