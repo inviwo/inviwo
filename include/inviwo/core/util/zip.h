@@ -447,7 +447,7 @@ struct sequence {
 
         value_type operator[](difference_type rhs) const { return val_ + rhs * inc_; }
 
-        reference operator*() { return val_; }
+        reference operator*() const { return val_; }
 
         pointer operator->() { return &val_; }
 
