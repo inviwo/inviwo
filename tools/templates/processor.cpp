@@ -50,7 +50,7 @@ const ProcessorInfo <name>::getProcessorInfo() const { return processorInfo_; }
     addProperty(position_);
 }
 
-void<name>::process() {
+void <name>::process() {
     // outport_.setData(myImage);
 }
 
