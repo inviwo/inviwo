@@ -48,14 +48,18 @@ namespace inviwo {
 class IVW_MODULE_WEBBROWSER_API CEFInteractionHandler : public InteractionHandler {
 public:
     /*
+     * host must be provided before invokeEvent is called.
      * @param host The browser to inject events into.
      */
-    CEFInteractionHandler(CefRefPtr<CefBrowserHost> host);
+    CEFInteractionHandler(CefRefPtr<CefBrowserHost> host = nullptr);
     virtual ~CEFInteractionHandler() = default;
 
     virtual std::string getClassIdentifier() const override { return "org.inviwo.cefinteractionhandler"; }
 
     virtual void invokeEvent(Event* event) override;
+    
+    void setHost(CefRefPtr<CefBrowserHost> host) { host_ = host; }
+    CefRefPtr<CefBrowserHost> getHost() const { return host_; }
 
 private:
     CefKeyEvent mapKeyEvent(KeyboardEvent* e);

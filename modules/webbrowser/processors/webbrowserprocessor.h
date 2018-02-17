@@ -32,6 +32,7 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/webbrowserclient.h>
+#include <modules/webbrowser/interaction/cefinteractionhandler.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
@@ -87,6 +88,7 @@ private:
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
 
+    CEFInteractionHandler cefInteractionHandler_;
 };
 
 }  // namespace inviwo

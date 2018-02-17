@@ -76,21 +76,26 @@ WebBrowserProcessor::WebBrowserProcessor()
         // some render errors, in context-menu and plugins.
         window_info.SetAsWindowless(
             nullptr);  // nullptr means no transparency (site background colour)
-
+        
+        // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in destructor
         browser_ = CefBrowserHost::CreateBrowserSync(
-            window_info, browserClient_.get(), "http://www.google.com", browserSettings, nullptr);
+            window_info, browserClient_, "http://www.google.com", browserSettings, nullptr);
+        
     }
 
     addProperty(url_);
     url_.onChange([&]() { browser_->GetMainFrame()->LoadURL(url_.get()); });
 
     // Inject events into CEF browser_
-    addInteractionHandler(new CEFInteractionHandler(browser_->GetHost()));
+    cefInteractionHandler_.setHost(browser_->GetHost());
+    addInteractionHandler(&cefInteractionHandler_);
 }
 
 WebBrowserProcessor::~WebBrowserProcessor() {
     // Force close browser
     browser_->GetHost()->CloseBrowser(true);
+    // Remove render handler since browserClient_ might not be destroyed until CefShutdown() is called
+    browserClient_->SetRenderHandler(NULL);
 }
 
 void WebBrowserProcessor::process() {
@@ -114,7 +119,9 @@ void WebBrowserProcessor::invokeEvent(Event* event) {
     Processor::invokeEvent(event);
     switch (event->hash()) {
         case ResizeEvent::chash():
+            
             renderHandler_->updateCanvasSize(outport_.getData()->getDimensions());
+            browser_->GetHost()->WasResized();
             break;
     }
 }

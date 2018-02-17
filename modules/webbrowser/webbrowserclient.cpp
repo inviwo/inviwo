@@ -31,6 +31,6 @@
 
 namespace inviwo {
 
-WebBrowserClient::WebBrowserClient(RenderHandlerGL *renderHandler) : m_renderHandler(renderHandler) { ; }
-
+WebBrowserClient::WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler) : renderHandler_(renderHandler) { ; }
+    
 }  // namespace inviwo

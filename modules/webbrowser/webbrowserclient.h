@@ -41,18 +41,21 @@
 namespace inviwo {
 
 /* \class WebBrowserClient
- * CefClient with manual render handler
+ * CefClient with custom render handler
  */
 class WebBrowserClient : public CefClient {
 public:
-    WebBrowserClient(RenderHandlerGL *renderHandler);
+    WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler);
+    
+    virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
+    void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler) { renderHandler_ = renderHandler; }
 
-    virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return m_renderHandler; }
 protected:
-    CefRefPtr<CefRenderHandler> m_renderHandler;
+    CefRefPtr<CefRenderHandler> renderHandler_;
 
-public:
+private:
     IMPLEMENT_REFCOUNTING(WebBrowserClient)
+    DISALLOW_COPY_AND_ASSIGN(WebBrowserClient);
 };
 
 }  // namespace inviwo

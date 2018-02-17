@@ -138,14 +138,27 @@ set(WEBBROWSER_HELPER_SOURCES
     webbrowserapp-cotire-fix.cpp
     cefprocesshelper.cpp
 )
+set(WEBBROWSER_RESOURCES_MAC_SOURCES_MACOSX
+    mac/helper-Info.plist
+)
+APPEND_PLATFORM_SOURCES(WEBBROWSER_RESOURCES_MAC_SOURCES)
+source_group(WebBrowser\\\\mac FILES ${WEBBROWSER_RESOURCES_MAC_SOURCES})
+
+set(WEBBROWSER_RESOURCES_SRCS
+    ${WEBBROWSER_RESOURCES_MAC_SOURCES}
+)
 # place helper in separate executable
 set(CEF_HELPER_TARGET "inviwo_web_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
 
-add_executable(${CEF_HELPER_TARGET} ${WEBBROWSER_HELPER_SOURCES})
+add_executable(${CEF_HELPER_TARGET} MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
 add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
+# Build helper before module so that we can copy it
+add_dependencies(inviwo-module-webbrowser ${CEF_HELPER_TARGET})
 target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
 # Add IVW_ROOT_DIR to include file in "modules/webbrowser/...h"
 target_include_directories(${CEF_HELPER_TARGET} PRIVATE "${IVW_ROOT_DIR}")
+# IVW_EXTENSIONS_DIR is necessary to be able to include warn
+target_include_directories(${CEF_HELPER_TARGET} PRIVATE "${IVW_EXTENSIONS_DIR}")
 target_include_directories(${CEF_HELPER_TARGET} PRIVATE "${CEF_INCLUDE_PATH}")
 # Use inviwo preprocessor definitions  
 ivw_define_standard_definitions(WebBrowser ${CEF_HELPER_TARGET})
@@ -160,9 +173,42 @@ ivw_suppress_compiler_warnings(${CEF_HELPER_TARGET})
 # Put in ext folder in developer IDE
 ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
 
-# Copy CEF binary and resource files to the target output directory.
-COPY_FILES("inviwo-module-webbrowser" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
-COPY_FILES("inviwo-module-webbrowser" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+if (OS_MACOSX)
+    # Output paths for the app bundles.
+    # Inviwo: We would like to get all bundle executables but they have not been created yet.  
+    # Note: Your custom app will need to add these commands using:
+    # set(CEF_APP "CEF_APP = $<TARGET_BUNDLE_DIR:your_target_app_name>")
+    set(CEF_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>/../inviwo.app")
+    set(CEF_HELPER_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>") # full/path/to/helper.app
+
+    # Copy files into the main app bundle.
+    add_custom_command(
+        TARGET inviwo-module-webbrowser
+        POST_BUILD
+        # Copy the helper app bundle into the Frameworks directory.
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CEF_HELPER_APP}"
+        "${CEF_APP}/Contents/Frameworks/${CEF_HELPER_TARGET}.app"
+        # Copy the CEF framework into the Frameworks directory.
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
+        "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
+        VERBATIM
+    )
+
+    # Fix the framework rpath in the main executable.
+    FIX_MACOSX_MAIN_FRAMEWORK_RPATH(inviwo-module-webbrowser)
+    # Fix the framework rpath in the helper executable.
+    FIX_MACOSX_HELPER_FRAMEWORK_RPATH(${CEF_HELPER_TARGET})
+
+    set_target_properties(${CEF_HELPER_TARGET} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/helper-Info.plist
+    )
+else()
+    # Copy CEF binary and resource files to the target output directory.
+    COPY_FILES("inviwo-module-webbrowser" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
+    COPY_FILES("inviwo-module-webbrowser" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+endif()
 
 
 
