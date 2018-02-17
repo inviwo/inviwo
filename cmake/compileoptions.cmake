@@ -64,8 +64,7 @@ function(ivw_define_standard_properties)
             if(MSVC_VERSION GREATER_EQUAL 1910)
                 list(APPEND comp_opts "/w35038") # class member reorder
                 if(NOT OpenMP_ON)
-                    #list(APPEND comp_opts "/permissive-")
-                    #list(APPEND comp_opts "/Zc:twoPhase-") # disable two phase lookup for now https://developercommunity.visualstudio.com/content/problem/185399/error-c2760-in-combaseapih-with-windows-sdk-81-and.html
+                    list(APPEND comp_opts "/permissive-")
                 endif()
                 list(APPEND comp_opts "/std:c++latest")
                 #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
