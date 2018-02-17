@@ -584,8 +584,8 @@ function(ivw_create_module)
     ivw_mod_name_to_alias(ivw_dep_targets ${${mod}_dependencies})
     target_link_libraries(${${mod}_target} PUBLIC ${ivw_dep_targets})
 
-    # Optimize compilation with pre-compilied headers based on inviwo-core
-    ivw_compile_optimize_inviwo_core_on_target(${${mod}_target})
+    # Optimize compilation with pre-compilied headers
+    ivw_compile_optimize_on_target(${${mod}_target})
 
     # Add stuff to the installer
     ivw_default_install_targets(${${mod}_target})
@@ -610,35 +610,80 @@ endfunction()
 #                        Precompile headers                         #
 #-------------------------------------------------------------------#
 # Set header ignore paths for cotire
-function(ivw_cotire_ignore_on_target target)
-    get_target_property(COTIRE_PREFIX_HEADER_IGNORE_PATH ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
-    if(NOT COTIRE_PREFIX_HEADER_IGNORE_PATH)
-        set(COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+
+function(ivw_get_header_path header retval)
+    file(WRITE "${IVW_BINARY_DIR}/cmake/findheader.cpp" "#include <${header}>")
+    string(TOLOWER "${header}" lheader)
+
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+    set(CMAKE_TRY_COMPILE_CONFIGURATION RELEASE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /showIncludes")
+    try_compile(res ${CMAKE_BINARY_DIR}
+        SOURCES "${IVW_BINARY_DIR}/cmake/findheader.cpp"
+        OUTPUT_VARIABLE output
+    )
+    if(NOT ${res})
+        message(FATAL_ERROR "Header path not found")
     endif()
-
-    list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH "${IVW_EXTENSIONS_DIR}/warn")
-    list(REMOVE_DUPLICATES COTIRE_PREFIX_HEADER_IGNORE_PATH)
-
-    set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}")  
+    string (REPLACE "\\" "/" output "${output}")
+    string (REPLACE "//" "/" output "${output}")
+    string (REPLACE ";" "\\;" output "${output}")
+    string (REGEX REPLACE "\n" ";" output "${output}")
+    string (REGEX REPLACE "\r" "" output "${output}")
+    foreach(line ${output})
+        if (line MATCHES ":( +)([^:]+:[^:]+)$")
+            string (LENGTH "${CMAKE_MATCH_1}" depth)
+            get_filename_component(file "${CMAKE_MATCH_2}" ABSOLUTE)
+            get_filename_component(name "${file}" NAME)
+            string(TOLOWER "${name}" lname)
+            if(${lname} STREQUAL ${lheader})
+                get_filename_component(path ${file} DIRECTORY)
+                set(${retval} ${path} PARENT_SCOPE)
+                return()
+            endif()
+        endif()
+    endforeach()
+    message(FATAL_ERROR "Header path not found")
 endfunction()
+
+function(ivw_get_drive file retval)
+    set(tmp1 ${file})
+    set(tmp2 "")
+    while(NOT "${tmp1}" STREQUAL "${tmp2}")
+        set(tmp2 ${tmp1})
+        get_filename_component(tmp1 ${tmp1} DIRECTORY)
+    endwhile()
+    set(${retval} ${tmp1} PARENT_SCOPE)
+endfunction()
+
+if(WIN32 AND MSVC)
+    ivw_get_header_path("windows.h" ivw_private_windows_path)
+endif()
 
 # Optimize compilation with pre-compilied headers from inviwo core
 function(ivw_compile_optimize_inviwo_core_on_target target)
-    if(PRECOMPILED_HEADERS)
-        ivw_cotire_ignore_on_target(${target})
-        set_target_properties(${target} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
-        get_target_property(_prefixHeader inviwo-core COTIRE_CXX_PREFIX_HEADER)
-        set_target_properties(${target} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
-        cotire(${target})
-    endif()
+    message(DEPRECATION "Use ivw_compile_optimize_on_target")
+    ivw_compile_optimize_on_target(${target})
 endfunction()
 
 # Optimize compilation with pre-compilied headers
 function(ivw_compile_optimize_on_target target)
     if(PRECOMPILED_HEADERS)
-        ivw_cotire_ignore_on_target(${target})
+        get_target_property(ignorePaths ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
+        if(NOT ignorePaths)
+            set(ignorePaths "${CMAKE_CURRENT_SOURCE_DIR}")
+        endif()
+
+        list(APPEND ignorePaths "${IVW_EXTENSIONS_DIR}/warn")
+        if(WIN32 AND MSVC)
+            ivw_get_drive(${ivw_private_windows_path} windrive)
+            list(APPEND ignorePaths ${windrive})
+        endif()
+        list(REMOVE_DUPLICATES ignorePaths)
+        set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${ignorePaths}")
         set_target_properties(${target} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
-        set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${IVW_EXTENSIONS_DIR}")
+        set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${IVW_ROOT_DIR}")
+
         cotire(${target})
     endif()
 endfunction()

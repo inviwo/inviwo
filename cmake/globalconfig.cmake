@@ -74,7 +74,7 @@ if(IVW_CMAKE_DEBUG)
         endif()
     endfunction()
 
-    #variable_watch(PYTHON_EXECUTABLE)
+    #variable_watch(OpenMP_ON)
     #variable_watch(_projectName log_proj)
 endif()
 
@@ -276,13 +276,15 @@ option(IVW_RUNTIME_MODULE_LOADING
 
 #--------------------------------------------------------------------
 # Check if OpenMP is available and set it to use, and include the dll in packs
+option(OpenMP_ON "Use OpenMP" OFF)
 find_package(OpenMP QUIET)
-if(OPENMP_FOUND)
-    option(OPENMP_ON "Use OpenMP" ON)
-    if(OPENMP_ON)
+if(OpenMP_ON)
+    if(OPENMP_FOUND)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+    else()
+        message(FATAL_ERROR "OpenMP not available")
     endif()
 endif()
 

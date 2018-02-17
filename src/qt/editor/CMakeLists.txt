@@ -104,8 +104,8 @@ ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)
 ivw_define_standard_properties(inviwo-qteditor)
 
 #--------------------------------------------------------------------
-# Optimize compilation with pre-compilied headers based on inviwo-core
-ivw_compile_optimize_inviwo_core_on_target(inviwo-qteditor)
+# Optimize compilation with pre-compilied headers
+ivw_compile_optimize_on_target(inviwo-qteditor)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

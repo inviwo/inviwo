@@ -228,3 +228,6 @@ include(cmake/packaging.cmake)
 # Generate Doxygen setup. 
 include(tools/doxygen/doxygen.cmake)
 make_doxygen_target(all_modules)
+
+string(TIMESTAMP time "%Y-%m-%d %H:%M:%S")
+message(STATUS "Configure ended at ${time}")
