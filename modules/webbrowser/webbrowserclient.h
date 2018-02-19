@@ -46,9 +46,9 @@ namespace inviwo {
 class WebBrowserClient : public CefClient {
 public:
     WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler);
-    
+
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
-    void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler) { renderHandler_ = renderHandler; }
+    void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
 
 protected:
     CefRefPtr<CefRenderHandler> renderHandler_;

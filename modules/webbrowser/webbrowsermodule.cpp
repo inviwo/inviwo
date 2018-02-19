@@ -52,7 +52,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
 
     // CEF initialization
-    
+
     CefMainArgs args;
     CefSettings settings;
 #ifdef WIN32
@@ -72,35 +72,39 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     auto exeExtension = filesystem::getFileExtension(filesystem::getExecutablePath());
     // Assume that inviwo_web_helper is next to the main executable
     auto exeDirectory = filesystem::getFileDirectory(filesystem::getExecutablePath());
-    auto subProcessExecutable =  exeDirectory + "/inviwo_web_helper" + exeExtension;
-#ifdef DARWIN // Mac specific
-        // Crashes if not set and non-default locale is used
-        CefString(&settings.locales_dir_path).FromASCII(
-                (exeDirectory + std::string("/../Frameworks/Chromium Embedded Framework.framework/Resources")).c_str());
-        
-        //Locale returns "en_US.UFT8" but "en.UTF8" is needed by CEF
-        auto startErasePos = locale.find('_');
-        locale.erase(startErasePos, locale.find('.') - startErasePos);
-        
-        // Web helper executable should be located in Frameworks dir of bundle, see OS_MACOSX part in CMakeLists.txt
-        if (!filesystem::fileExists(subProcessExecutable)) {
-            subProcessExecutable = exeDirectory + std::string("/../Frameworks/inviwo_web_helper.app/Contents/MacOS/inviwo_web_helper");
-        }
+    auto subProcessExecutable = exeDirectory + "/inviwo_web_helper." + exeExtension;
+#ifdef DARWIN  // Mac specific
+    // Crashes if not set and non-default locale is used
+    CefString(&settings.locales_dir_path)
+        .FromASCII((exeDirectory +
+                    std::string("/../Frameworks/Chromium Embedded Framework.framework/Resources"))
+                       .c_str());
+
+    // Locale returns "en_US.UFT8" but "en.UTF8" is needed by CEF
+    auto startErasePos = locale.find('_');
+    locale.erase(startErasePos, locale.find('.') - startErasePos);
+
+    // Web helper executable should be located in Frameworks dir of bundle, see OS_MACOSX part in
+    // CMakeLists.txt
+    if (!filesystem::fileExists(subProcessExecutable)) {
+        subProcessExecutable =
+            exeDirectory +
+            std::string("/../Frameworks/inviwo_web_helper.app/Contents/MacOS/inviwo_web_helper");
+    }
 #endif
-        
+
     CefString(&settings.locale).FromASCII(locale.c_str());
-    
+
     if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
     CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
 
-
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);
 
     bool result = CefInitialize(args, settings, browserApp, nullptr);
-    
+
     if (!result) {
         throw ModuleInitException("Failed to initialize Chromium Embedded Framework");
     }
@@ -122,6 +126,5 @@ WebBrowserModule::~WebBrowserModule() {
     doChromiumWork_.stop();
     app_->waitForPool();
     CefShutdown();
-    
 }
 }  // namespace inviwo

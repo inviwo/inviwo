@@ -35,7 +35,7 @@ WebBrowserApp::WebBrowserApp() = default;
 
 CefRefPtr<CefRenderProcessHandler> WebBrowserApp::GetRenderProcessHandler() { return this; }
 
-//void WebBrowserApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+// void WebBrowserApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
 //                                     CefRefPtr<CefV8Context> context) {
 //    //CEF_REQUIRE_UI_THREAD();
 //    //CefRefPtr<CefV8Value> val = CefV8Value::CreateBool(true);

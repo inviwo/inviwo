@@ -59,7 +59,7 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
                     type = MBT_LEFT;
                 } else if (mouseEvent->button() & MouseButton::Middle) {
                     type = MBT_MIDDLE;
-                } else { // if (mouseEvent->button() & MouseButton::Right) {
+                } else {  // if (mouseEvent->button() & MouseButton::Right) {
                     type = MBT_RIGHT;
                 }
                 bool mouseUp = MouseState::Release & mouseEvent->state() ? true : false;
@@ -93,12 +93,12 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(KeyboardEvent* e) {
 
     // TODO: Fix key code translation to match the ones used in CEF
     cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_RAWKEYDOWN : KEYEVENT_CHAR;
-    //cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_KEYDOWN : KEYEVENT_KEYUP;
+    // cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_KEYDOWN : KEYEVENT_KEYUP;
 
     cefEvent.windows_key_code = cef::mapKey(e->key());
 
-    //cefEvent.native_key_code = e->nativeVirtualKey_;
-    //cefEvent.native_key_code = static_cast<int>(e->key());
+    // cefEvent.native_key_code = e->nativeVirtualKey_;
+    // cefEvent.native_key_code = static_cast<int>(e->key());
 #ifdef _WINDOWS
     // F10 or ALT
     // https://msdn.microsoft.com/en-us/library/ms646286(VS.85).aspx
@@ -109,8 +109,7 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(KeyboardEvent* e) {
 #endif
     if (e->state() & KeyState::Press) {
         modifiers_ |= cef::keyModifiers(e->modifiers(), e->key());
-    }
-    else {
+    } else {
         modifiers_ &= ~cef::keyModifiers(e->modifiers(), e->key());
     }
     cefEvent.modifiers = modifiers_;

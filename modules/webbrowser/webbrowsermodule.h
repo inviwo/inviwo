@@ -37,16 +37,17 @@
 namespace inviwo {
 
 /*
- * Enable suppport for showing web pages using CEF 
+ * Enable suppport for showing web pages using CEF
  */
 class IVW_MODULE_WEBBROWSER_API WebBrowserModule : public InviwoModule {
 public:
     WebBrowserModule(InviwoApplication* app);
     virtual ~WebBrowserModule();
+
 protected:
-    Timer doChromiumWork_; /// Calls CefDoMessageLoopWork()
+    Timer doChromiumWork_;  /// Calls CefDoMessageLoopWork()
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_WEBBROWSERMODULE_H
+#endif  // IVW_WEBBROWSERMODULE_H

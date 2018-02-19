@@ -29,7 +29,6 @@
 
 #include <modules/webbrowser/renderhandlergl.h>
 
-
 namespace inviwo {
 
 RenderHandlerGL::RenderHandlerGL(std::function<void()> onWebPageCopiedCallback)
@@ -46,7 +45,8 @@ bool RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) 
 }
 
 void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
-                            const RectList& dirtyRects, const void* buffer, int width, int height) {
+                              const RectList& dirtyRects, const void* buffer, int width,
+                              int height) {
 
     auto dims = texture2D_.getDimensions();
     if (dims.x == static_cast<size_t>(width) && dims.y == static_cast<size_t>(height)) {
