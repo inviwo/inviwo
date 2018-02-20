@@ -426,7 +426,6 @@ function(make_doxygen_target modules_var)
 
     ivw_group("Documentation Files" ${DOCS_FILES}) 
 
-
     add_custom_target("DOXY-Inviwo"
         COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen Inviwo"
         COMMAND ${CMAKE_COMMAND} -E remove_directory "${output_dir}/inviwo"
