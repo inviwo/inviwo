@@ -36,7 +36,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -49,10 +50,10 @@ namespace plot {
 
 /** \docpage{org.inviwo.VolumeToDataFrame, Volume To DataFrame}
  * ![](org.inviwo.VolumeToDataFrame.png?classIdentifier=org.inviwo.VolumeToDataFrame)
- * This processor converts an image into a DataFrame.
+ * This processor converts a volume into a DataFrame.
  *
  * ### Inports
- *   * __image__  source volume
+ *   * __volume__  source volume
  *
  * ### Outports
  *   * __outport__  generated DataFrame
