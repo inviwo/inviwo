@@ -176,7 +176,7 @@ node {
             // Mark as unstable, if we mark as failed, the report will not be published.
             currentBuild.result = 'UNSTABLE'
         }
-        stage('Publish') {
+        stage('Publish Regression Report') {
             publishHTML([
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
@@ -185,6 +185,9 @@ node {
                 reportFiles: 'report.html',
                 reportName: 'Regression Report'
             ])
+        }
+        
+        stage('Publish Doxygen Documentation') {
             publishHTML([
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
@@ -194,6 +197,37 @@ node {
                 reportName: 'Doxygen Documentation'
             ])
         }
+        
+        if ( "${env.BRANCH_NAME}" == "test/jenkins-gh-pages") {
+            stage('Push doc to gh-pages') {
+                dir('gh-pages') {                    
+                    git branch: 'gh-pages', 
+                        changelog: false, 
+                        credentialsId: 'bc26c365-0b51-47cf-8af0-4043bd3e054c', 
+                        poll: false, url: 'https://github.com/inviwo/inviwo.git'
+                    nicelog {
+                        sh """
+                            git config user.email "jenkins@scivis.itn.liu.se"
+                            git config user.name "Jenkins"
+                        
+                            if [ -d "./doc-master" ]; then
+                                git rm -r --ignore-unmatch doc-master 
+                            fi
+                            
+                            cp -R ../build/doc/inviwo doc-master
+                            git add . 
+                            git commit -m "Doxygen update from jenkins"                           
+                        """
+                    }
+                    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'bc26c365-0b51-47cf-8af0-4043bd3e054c', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD']]) {
+                        sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/inviwo/inviwo.git gh-pages')
+                    }
+                    
+                }
+            }
+        }
+        
+        
         currentBuild.result = 'SUCCESS'
     } catch (e) {
         currentBuild.result = 'FAILURE'
