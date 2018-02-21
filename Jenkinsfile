@@ -198,8 +198,8 @@ node {
             ])
         }
         
-        if ( "${env.BRANCH_NAME}" == "test/jenkins-gh-pages") {
-            stage('Push doc to gh-pages') {
+        if ( "${env.BRANCH_NAME}" == "feature/push-docs-to-gh-pages") {
+            stage('Push generated Doxygen HTML to gh-pages') {
                 dir('gh-pages') {                    
                     git branch: 'gh-pages', 
                         changelog: false, 
