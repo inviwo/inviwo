@@ -214,7 +214,7 @@ node {
                                 git rm -r --ignore-unmatch doc-master 
                             fi
                             
-                            cp -R ../build/doc/inviwo doc-master
+                            cp -R ../build/doc/inviwo/html doc-master
                             git add . 
                             git commit -m "Doxygen update from jenkins"                           
                         """
