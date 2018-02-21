@@ -1,0 +1,27 @@
+var classinviwo_1_1InviwoMainWindow =
+[
+    [ "InviwoMainWindow", "classinviwo_1_1InviwoMainWindow.html#a07dd183390002c4f7986a8cbb669e29e", null ],
+    [ "~InviwoMainWindow", "classinviwo_1_1InviwoMainWindow.html#a07ba26adbb41ec2d57f78b92c084156a", null ],
+    [ "dragEnterEvent", "classinviwo_1_1InviwoMainWindow.html#a464953c3f133bae4f715787565886358", null ],
+    [ "dropEvent", "classinviwo_1_1InviwoMainWindow.html#af47755dc4533f5b02367a6dad8ea515c", null ],
+    [ "exitInviwo", "classinviwo_1_1InviwoMainWindow.html#ab89f6d0da15a57c6e43bf532a9b9bc74", null ],
+    [ "getConsoleWidget", "classinviwo_1_1InviwoMainWindow.html#a074275e2e2930b26dcb65525adcc1672", null ],
+    [ "getCurrentWorkspace", "classinviwo_1_1InviwoMainWindow.html#a00e8639c4ad3c12688230ec867fbbba1", null ],
+    [ "getHelpWidget", "classinviwo_1_1InviwoMainWindow.html#ab099e2d2cbdb2d4b63a1e628be28ce45", null ],
+    [ "getInviwoApplication", "classinviwo_1_1InviwoMainWindow.html#af68a8d860c2961eec679c2c41415ce28", null ],
+    [ "getInviwoApplicationQt", "classinviwo_1_1InviwoMainWindow.html#a2198e2574ff16611507d81cc2e39703d", null ],
+    [ "getInviwoEditMenu", "classinviwo_1_1InviwoMainWindow.html#ad9a07abaecfbdc227c3d4ced739faeba", null ],
+    [ "getNetworkEditor", "classinviwo_1_1InviwoMainWindow.html#a0c7e42bfca5e857ec1b218c1d2341e9b", null ],
+    [ "getProcessorTreeWidget", "classinviwo_1_1InviwoMainWindow.html#ad61a46e5923b1a16f36cbf4f48e18d32", null ],
+    [ "getPropertyListWidget", "classinviwo_1_1InviwoMainWindow.html#a37316b56a7c04571bad0f4896ce69e9d", null ],
+    [ "getSettingsWidget", "classinviwo_1_1InviwoMainWindow.html#aec1b2f5b1b21485d760fefaf67a70987", null ],
+    [ "newWorkspace", "classinviwo_1_1InviwoMainWindow.html#a92bcf4e40653444e5bc08d1137e7a9c2", null ],
+    [ "openLastWorkspace", "classinviwo_1_1InviwoMainWindow.html#abcf3ed52e220748a59e5930c7881a238", null ],
+    [ "openWorkspace", "classinviwo_1_1InviwoMainWindow.html#a4afe227b105dfea024699ba4ef31c36c", null ],
+    [ "openWorkspace", "classinviwo_1_1InviwoMainWindow.html#a7b0b2624fdd6b8fe52505d8e2705d52a", null ],
+    [ "saveWorkspace", "classinviwo_1_1InviwoMainWindow.html#ad552604844510a485fcc1181929d0fc9", null ],
+    [ "saveWorkspaceAs", "classinviwo_1_1InviwoMainWindow.html#a61bb43b1fc3f2a1c91188650345d6e55", null ],
+    [ "saveWorkspaceAsCopy", "classinviwo_1_1InviwoMainWindow.html#a6752d5703e3065e426ad7e4dbac2c2dd", null ],
+    [ "showAboutBox", "classinviwo_1_1InviwoMainWindow.html#a56c2e57e8f3c556ccc4fa0b37747ca8d", null ],
+    [ "showWindow", "classinviwo_1_1InviwoMainWindow.html#aa08ef1499597f1dff4cb0b270e02a91d", null ]
+];

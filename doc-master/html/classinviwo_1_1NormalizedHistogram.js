@@ -1,0 +1,27 @@
+var classinviwo_1_1NormalizedHistogram =
+[
+    [ "Stats", "structinviwo_1_1NormalizedHistogram_1_1Stats.html", "structinviwo_1_1NormalizedHistogram_1_1Stats" ],
+    [ "NormalizedHistogram", "classinviwo_1_1NormalizedHistogram.html#aea6156739716d6518ade147a6df097f0", null ],
+    [ "NormalizedHistogram", "classinviwo_1_1NormalizedHistogram.html#a9e0deec48488b0ebacaed52c2032363b", null ],
+    [ "~NormalizedHistogram", "classinviwo_1_1NormalizedHistogram.html#add9c54741de1fdba080f56b81648f15e", null ],
+    [ "calculateHistStats", "classinviwo_1_1NormalizedHistogram.html#a5ae405fdfd76ae6494a1611d98bf8af2", null ],
+    [ "calculatePercentiles", "classinviwo_1_1NormalizedHistogram.html#a0b814283fb716a83219f1b16fb4e0a29", null ],
+    [ "clone", "classinviwo_1_1NormalizedHistogram.html#a0213cc268c17226f6e074ac15bbf62ac", null ],
+    [ "exists", "classinviwo_1_1NormalizedHistogram.html#acaca6c7b2d3cc7147f6a81b7349405f5", null ],
+    [ "getData", "classinviwo_1_1NormalizedHistogram.html#adbdbe0f560065bf616a17278ded2aa6b", null ],
+    [ "getData", "classinviwo_1_1NormalizedHistogram.html#a8d9aa1f3dc4bcb094a7411282090cfde", null ],
+    [ "getMaximumBinValue", "classinviwo_1_1NormalizedHistogram.html#a27e1738ad02c96558f2c2bb9e8bab2da", null ],
+    [ "isValid", "classinviwo_1_1NormalizedHistogram.html#a01f6c6487a02558c72724be559702313", null ],
+    [ "operator=", "classinviwo_1_1NormalizedHistogram.html#acdcbd4da70d52fd21d728546d7c4345c", null ],
+    [ "operator[]", "classinviwo_1_1NormalizedHistogram.html#a56f3b10a28ba2e557e05077ebf211bb7", null ],
+    [ "operator[]", "classinviwo_1_1NormalizedHistogram.html#adebf0f376e2d4dabd110d586180ab66e", null ],
+    [ "performNormalization", "classinviwo_1_1NormalizedHistogram.html#a63bb4f11a203ce08e05cf34c5785a242", null ],
+    [ "resize", "classinviwo_1_1NormalizedHistogram.html#a84e0c30a570c49f60b1388d7e413b66f", null ],
+    [ "setValid", "classinviwo_1_1NormalizedHistogram.html#aa67bd857c3d2df88674ff6f446a4dffc", null ],
+    [ "data_", "classinviwo_1_1NormalizedHistogram.html#a8a87ad8eab6831bc0b4b2a622b7cd631", null ],
+    [ "dataRange_", "classinviwo_1_1NormalizedHistogram.html#a5a1426e6242579d679def5cf7e2433df", null ],
+    [ "histStats_", "classinviwo_1_1NormalizedHistogram.html#a552e2c0d15a696dbcb02e6fa61aa5d86", null ],
+    [ "maximumBinCount_", "classinviwo_1_1NormalizedHistogram.html#ac8ab1bcd4782147bb8a581fd08f5a662", null ],
+    [ "stats_", "classinviwo_1_1NormalizedHistogram.html#a99647b0fa7fb4a5556554bde446578f3", null ],
+    [ "valid_", "classinviwo_1_1NormalizedHistogram.html#a3afee1a1d8e6f73bdd52a5362f462298", null ]
+];
