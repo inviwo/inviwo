@@ -41,11 +41,11 @@ namespace plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameExporter::processorInfo_{
-    "org.inviwo.DataFrameExporter",  // Class identifier
-    "DataFrame Exporter",            // Display name
-    "Data Output",                   // Category
-    CodeState::Experimental,         // Code state
-    "CPU, DataFrame, Export, CSV",   // Tags
+    "org.inviwo.DataFrameExporter",      // Class identifier
+    "DataFrame Exporter",                // Display name
+    "Data Output",                       // Category
+    CodeState::Experimental,             // Code state
+    "CPU, DataFrame, Export, CSV, XML",  // Tags
 };
 
 const ProcessorInfo DataFrameExporter::getProcessorInfo() const { return processorInfo_; }

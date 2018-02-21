@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
-#include <modules/dataplotting/datastructures/dataframeutil.h>
+#include <modules/plotting/datastructures/dataframeutil.h>
 
 namespace inviwo {
 

@@ -34,8 +34,8 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <modules/plotting/datastructures/dataframe.h>
-#include "inviwo/core/io/serialization/serializable.h"
 
 namespace inviwo {
 
@@ -186,9 +186,6 @@ void IVW_MODULE_PLOTTING_API copyBufferRange(std::shared_ptr<const BufferBase> s
 std::shared_ptr<plot::DataFrame> IVW_MODULE_PLOTTING_API
 combineDataFrames(std::vector<std::shared_ptr<plot::DataFrame>> histogrameTimeDataFrame,
                   bool skipIndexColumn = false, std::string skipcol = "index");
-
-std::shared_ptr<plot::DataFrame> IVW_MODULE_PLOTTING_API
-transposeDataFrames(std::shared_ptr<plot::DataFrame> frame, std::string columnToken = "Values");
 
 }  // namespace dataframeutil
 
