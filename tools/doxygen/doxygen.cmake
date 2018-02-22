@@ -422,9 +422,18 @@ function(make_doxygen_target modules_var)
 
 
     if(${IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD})
+        if(WIN32)
+            set(OPEN_COMMAND "start")
+        elseif(APPLE)
+            set(OPEN_COMMAND "open")
+        else()
+            set(OPEN_COMMAND "xdg-open")
+        endif()
+
         add_custom_command(TARGET DOXY-Inviwo 
             POST_BUILD
-            COMMAND "${output_dir}/inviwo/html/index.html"
+            COMMAND ${OPEN_COMMAND} 
+            ARGS "${output_dir}/inviwo/html/index.html"
         )
     endif()
 
