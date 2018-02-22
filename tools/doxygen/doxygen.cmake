@@ -44,6 +44,9 @@ else()
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" ${DOXYGEN_FOUND})
 endif()
 
+option(IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD "Open the generated doxygen HTML when build is done" OFF)
+
+
 function(ivw_private_format_doxy_arg retval )
     string(REGEX REPLACE ";" " \\\\\n                         " result "${ARGN}")
     set(${retval} ${result} PARENT_SCOPE)
@@ -416,6 +419,25 @@ function(make_doxygen_target modules_var)
         COMMENT "Generating Inviwo API documentation with Doxygen"
         VERBATIM
     )
+
+
+    if(${IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD})
+        if(WIN32)
+            set(OPEN_COMMAND "start")
+        elseif(APPLE)
+            set(OPEN_COMMAND "open")
+        else()
+            set(OPEN_COMMAND "xdg-open")
+        endif()
+
+        add_custom_command(TARGET DOXY-Inviwo 
+            POST_BUILD
+            COMMAND ${OPEN_COMMAND} 
+            ARGS "${output_dir}/inviwo/html/index.html"
+        )
+    endif()
+
+
     set_target_properties("DOXY-Inviwo" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
     add_dependencies("DOXY-ALL" "DOXY-Inviwo")
 
