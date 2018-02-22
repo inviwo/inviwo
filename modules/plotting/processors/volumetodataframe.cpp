@@ -115,10 +115,6 @@ void VolumeToDataFrame::recomputeReduceBuffer() {
             if (vol->getDataFormat()->getNumericType() != NumericType::Float) continue;
             if (vol->getDataFormat()->getComponents() != 1)
                 LogWarn("This volume is omitted because it has more than one channel.");
-            /*
-            It's deadline time so I will just assume that the volume has only one channel because
-            for the data I am using now that is true
-            */
             volumeData.push_back(
                 static_cast<const glm::f32 *>(vol->getRepresentation<VolumeRAM>()->getData()));
         }
@@ -169,7 +165,7 @@ void VolumeToDataFrame::recomputeReduceBuffer() {
             }
         }
     }
-}  // namespace inviwo
+}
 
 void VolumeToDataFrame::initializeResources() { recomputeReduceBuffer(); }
 
