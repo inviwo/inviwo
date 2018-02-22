@@ -423,7 +423,7 @@ function(make_doxygen_target modules_var)
     add_custom_target("DOXY-generate-processor-previews"
         COMMAND inviwo --save-previews "${output_dir}/inviwo/html" --quit
         WORKING_DIRECTORY ${output_dir}
-        COMMENT "Generating Inviwo API documentation with Doxygen"
+        COMMENT "Generate preview images of processors to be used in Inviwo Doxygen API documentation"
         VERBATIM
     )
     set_target_properties("DOXY-generate-processor-previews" 
