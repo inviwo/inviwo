@@ -91,6 +91,8 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     QString bgString;
     if (property->getSemantics() == PropertySemantics::ShaderEditor) {
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<GLSL>(editor_->document());
+    } else if (property->getSemantics() == PropertySemantics::PythonEditor) {
+        syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<Python>(editor_->document());
     } else {
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<None>(editor_->document());
     }
