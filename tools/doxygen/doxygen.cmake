@@ -156,7 +156,7 @@ EXCLUDE_SYMBOLS        = cl::* \\
 FILTER_PATTERNS        = ${filter_patterns}
 
 USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/README.md
-USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/docs/main.md
+# USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/docs/main.md
 
 HTML_EXTRA_FILES       = ${ivw_doxy_dir}/style/img_downArrow.png
 
