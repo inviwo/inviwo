@@ -7,10 +7,14 @@ ivw_module(Plotting)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/column.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframe.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframeutil.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/datapoint.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/csvsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframecolumntocolorvector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframeexporter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagetodataframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/syntheticdataframe.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetodataframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/axisproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/dataframeproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/marginproperty.h
@@ -27,9 +31,13 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/column.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframe.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframeutil.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/csvsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframecolumntocolorvector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframeexporter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagetodataframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/syntheticdataframe.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetodataframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/axisproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/dataframeproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/marginproperty.cpp

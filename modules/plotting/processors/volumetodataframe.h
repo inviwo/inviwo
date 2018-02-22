@@ -27,37 +27,65 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/plottingmodule.h>
-#include <modules/plotting/processors/csvsource.h>
-#include <modules/plotting/processors/dataframecolumntocolorvector.h>
-#include <modules/plotting/processors/dataframeexporter.h>
-#include <modules/plotting/processors/imagetodataframe.h>
-#include <modules/plotting/processors/syntheticdataframe.h>
-#include <modules/plotting/processors/volumetodataframe.h>
-#include <modules/plotting/properties/axisproperty.h>
-#include <modules/plotting/properties/dataframeproperty.h>
-#include <modules/plotting/properties/marginproperty.h>
-#include <modules/plotting/properties/plottextproperty.h>
-#include <modules/plotting/properties/tickproperty.h>
+#ifndef IVW_VOLUMETODATAFRAME_H
+#define IVW_VOLUMETODATAFRAME_H
+
+#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/dataframe.h>
+
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
+#include <set>
 
 namespace inviwo {
 
-PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plotting") {
+namespace plot {
 
-    registerProcessor<plot::CSVSource>();
-    registerProcessor<plot::DataFrameColumnToColorVector>();
-    registerProcessor<plot::DataFrameExporter>();
-    registerProcessor<plot::ImageToDataFrame>();
-    registerProcessor<plot::SyntheticDataFrame>();
-    registerProcessor<plot::VolumeToDataFrame>();
+/** \docpage{org.inviwo.VolumeToDataFrame, Volume To DataFrame}
+ * ![](org.inviwo.VolumeToDataFrame.png?classIdentifier=org.inviwo.VolumeToDataFrame)
+ * This processor converts a volume into a DataFrame.
+ *
+ * ### Inports
+ *   * __volume__  source volume
+ *
+ * ### Outports
+ *   * __outport__  generated DataFrame
+ */
 
-    registerProperty<plot::AxisProperty>();
-    registerProperty<plot::DataFrameColumnProperty>();
-    registerProperty<plot::MajorTickProperty>();
-    registerProperty<plot::MarginProperty>();
-    registerProperty<plot::MinorTickProperty>();
-    registerProperty<plot::PlotTextProperty>();
-    registerProperty<plot::TickProperty>();
-}
+class IVW_MODULE_PLOTTING_API VolumeToDataFrame : public Processor {
+public:
+    VolumeToDataFrame();
+    virtual ~VolumeToDataFrame() = default;
+
+    virtual void initializeResources() override;
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    DataInport<Volume, 0, true> volume_;
+    DataOutport<DataFrame> dataframe_;
+
+    std::set<size_t> filteredIDs_;
+    BoolProperty reduce_;
+    FloatProperty probability_;
+
+    BoolProperty omitOutliers_;
+    FloatProperty threshold_;
+
+    void recomputeReduceBuffer();
+};
+
+}  // namespace plot
 
 }  // namespace inviwo
+
+#endif  // IVW_VOLUMETODATAFRAME_H
