@@ -30,7 +30,7 @@
 set(IVW_MAJOR_VERSION 0)
 set(IVW_MINOR_VERSION 9)
 set(IVW_PATCH_VERSION 9)
-set(IVW_BUILD_VERSION 0) # set to zero when doing a release, bump to 1 directly after the release. 
+set(IVW_BUILD_VERSION 1) # set to zero when doing a release, bump to 1 directly after the release. 
 
 if(${IVW_BUILD_VERSION})
     set(IVW_VERSION ${IVW_MAJOR_VERSION}.${IVW_MINOR_VERSION}.${IVW_PATCH_VERSION}.${IVW_BUILD_VERSION})
