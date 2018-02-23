@@ -62,6 +62,7 @@ const PropertySemantics PropertySemantics::Color("Color");
 const PropertySemantics PropertySemantics::LightPosition("LightPosition");
 const PropertySemantics PropertySemantics::Multiline("Multiline");
 const PropertySemantics PropertySemantics::TextEditor("TextEditor");
+const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
 const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
 const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
 

@@ -98,6 +98,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::TextEditor);
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
+    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::PythonEditor);
     registerPropertyWidget<FontSizePropertyWidgetQt, IntProperty>("Fontsize");
     registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
 
@@ -168,6 +169,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Password");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::TextEditor);
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
+    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::PythonEditor);
     registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
     registerPropertyWidget<TransferFunctionPropertyWidgetQt, TransferFunctionProperty>("Default");
 
