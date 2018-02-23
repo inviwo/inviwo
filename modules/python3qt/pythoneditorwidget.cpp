@@ -198,9 +198,16 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         settings.beginGroup(objectName());
         QString lastFile = settings.value("lastScript", "").toString();
         if (!lastFile.isEmpty()) loadFile(lastFile.toLocal8Bit().constData(), false);
-        
+        else {
+            QString src = settings.value("source", "").toString();
+            if(src.length()!=0){
+                pythonCode_->setPlainText(src);
+                script_.setSource(utilqt::fromQString(src)); // or use localQString? 
+            }
+        }
         auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
         appendLog_->setChecked(append);
+
         settings.endGroup();
     }
 
@@ -225,6 +232,7 @@ void PythonEditorWidget::closeEvent(QCloseEvent* event) {
     settings.beginGroup(objectName());
     settings.setValue("appendLog", appendLog_->isChecked());
     settings.setValue("lastScript", scriptFileName_.c_str());
+    settings.setValue("source", pythonCode_->toPlainText());
     settings.endGroup();
 
     InviwoDockWidget::closeEvent(event);
