@@ -46,7 +46,7 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeToDataFrame::processorInfo_{
     "org.inviwo.VolumeToDataFrame",  // Class identifier
-    "Volume To DataFrame",           // Display name
+    "Volume To Data Frame",          // Display name
     "Data Creation",                 // Category
     CodeState::Experimental,         // Code state
     "CPU, DataFrame, Volume",        // Tags

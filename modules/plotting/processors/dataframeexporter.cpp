@@ -53,8 +53,7 @@ const ProcessorInfo DataFrameExporter::getProcessorInfo() const { return process
 DataFrameExporter::DataFrameExporter()
     : Processor()
     , dataFrame_("dataFrame")
-    , exportFile_("exportFile", "Export file name", "",
-                  "dataframeCSV")  //, filesystem::getPath(PathType::Data, "/mesh"),
+    , exportFile_("exportFile", "Export file name", "", "dataframe")
     , exportButton_("snapshot", "Export DataFrame")
     , overwrite_("overwrite", "Overwrite", false)
     , forceDoublePrecision_("forceDoublePrecision", "Force Double Precision", true)
@@ -166,6 +165,7 @@ void DataFrameExporter::exportAsXML(bool forceDoublePrecision /*= true*/) {
     }
 
     serializer.writeFile(file);
+    LogInfo("XML file exported to " << exportFile_);
 }
 
 }  // namespace plot

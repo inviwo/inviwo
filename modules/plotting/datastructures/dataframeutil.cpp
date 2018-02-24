@@ -41,7 +41,6 @@ std::shared_ptr<BufferBase> cloneBufferRange(std::shared_ptr<const BufferBase> b
     }
 
     return buffer->getRepresentation<BufferRAM>()->dispatch<std::shared_ptr<BufferBase>>(
-
         [&](auto typed) {
             using ValueType = util::PrecsionValueType<decltype(typed)>;
             auto newBuffer = std::make_shared<Buffer<ValueType>>();
@@ -50,9 +49,7 @@ std::shared_ptr<BufferBase> cloneBufferRange(std::shared_ptr<const BufferBase> b
 
             vecOut.insert(vecOut.begin(), vecIn.begin() + range.x, vecIn.begin() + range.y + 1);
             return newBuffer;
-        }
-
-    );
+        });
 }
 
 void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<BufferBase> dst,
@@ -71,13 +68,19 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
             vecOut.insert(vecOut.begin() + dstStart, vecIn.begin() + range.x,
                           vecIn.begin() + range.y + 1);
         });
+    } else {
+        throw inviwo::Exception("Data Formats needs to be of same type",
+                                IvwContextCustom("dataframeutil::copyBufferRange"));
     }
 }
 
 std::shared_ptr<plot::DataFrame> combineDataFrames(
     std::vector<std::shared_ptr<plot::DataFrame>> dataFrames, bool skipIndexColumn,
     std::string skipcol) {
-    if (dataFrames.size() == 0) return nullptr;
+    if (dataFrames.empty()) {
+        throw inviwo::Exception("data frames vector is empty",
+                                IvwContextCustom("dataframeutil::combineDataFrames"));
+    }
     if (dataFrames.size() == 1) {  // just one df, clone it;
         return std::make_shared<plot::DataFrame>(*dataFrames.front().get());
     }
@@ -87,7 +90,10 @@ std::shared_ptr<plot::DataFrame> combineDataFrames(
         newSize += hf->getNumberOfRows();
     }
 
-    if (newSize == 0) return nullptr;
+    if (newSize == 0) {
+        throw inviwo::Exception("All Input data frames are empty",
+                                IvwContextCustom("dataframeutil::combineDataFrames"));
+    }
 
     auto first = *dataFrames.front();
     {
@@ -103,21 +109,22 @@ std::shared_ptr<plot::DataFrame> combineDataFrames(
                 if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
                 auto it = columnType.find(col->getHeader());
                 if (it == columnType.end()) {
-                    LogErrorCustom("combineDataFrames", "Column " << col->getHeader()
-                                                                  << " did not exist in first "
-                                                                     "dataframe but in at least "
-                                                                     "one of the other dataframes");
-                    return nullptr;
+                    std::ostringstream oss;
+                    oss << "Column " << col->getHeader()
+                        << " did not exist in first data frame but in at least one of the other "
+                           "data frames";
+                    throw inviwo::Exception(oss.str(),
+                                            IvwContextCustom("dataframeutil::combineDataFrames"));
                 }
                 if (it->second != col->getBuffer()->getDataFormat()) {
                     if (it == columnType.end()) {
-                        LogErrorCustom("combineDataFrames",
-                                       "Column "
-                                           << col->getHeader()
-                                           << " as different format in differetn data frames ("
-                                           << it->second->getString() << " and "
-                                           << col->getBuffer()->getDataFormat()->getSize());
-                        return nullptr;
+                        std::ostringstream oss;
+                        oss << "Column " << col->getHeader()
+                            << " has different format in different data frames ("
+                            << it->second->getString() << " and "
+                            << col->getBuffer()->getDataFormat()->getSize() << ")";
+                        throw inviwo::Exception(
+                            oss.str(), IvwContextCustom("dataframeutil::combineDataFrames"));
                     }
                 }
             }

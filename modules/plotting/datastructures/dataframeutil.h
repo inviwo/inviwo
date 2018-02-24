@@ -64,8 +64,9 @@ struct IVW_MODULE_PLOTTING_API BufferCopyDispatcher {
                               toVec.begin() + dstStart);
                 return to;
             } else {
-                std::cout << "Data range not copied to index buffer" << std::endl;
-                return nullptr;
+                throw inviwo::Exception(
+                    "Data range not copied to index buffer",
+                    IvwContextCustom("dataframeutil::BufferCopyDispatcher::dispatch"));
             }
 
         } else if (target == BufferTarget::Data) {
@@ -82,8 +83,9 @@ struct IVW_MODULE_PLOTTING_API BufferCopyDispatcher {
                               toVec.begin() + dstStart);
                 return to;
             } else {
-                std::cout << "Data range not copied to data buffer" << std::endl;
-                return nullptr;
+                throw inviwo::Exception(
+                    "Data range not copied to data buffer",
+                    IvwContextCustom("dataframeutil::BufferCopyDispatcher::dispatch"));
             }
         }
 
@@ -92,12 +94,10 @@ struct IVW_MODULE_PLOTTING_API BufferCopyDispatcher {
 };
 
 struct IVW_MODULE_PLOTTING_API BufferToStringDispatcher {
-    using type = std::shared_ptr<BufferBase>;
+    using type = void;
     template <class T>
-    std::shared_ptr<BufferBase> dispatch(std::shared_ptr<const BufferBase> from,
-                                         std::vector<std::string>& strBuffer,
-                                         std::vector<std::string>& strDBuffer,
-                                         std::string delimiter) {
+    void dispatch(std::shared_ptr<const BufferBase> from, std::vector<std::string>& strBuffer,
+                  std::vector<std::string>& strDBuffer, std::string delimiter) {
         typedef typename T::type F;
 
         BufferTarget target = from->getBufferTarget();
@@ -143,19 +143,19 @@ struct IVW_MODULE_PLOTTING_API BufferToStringDispatcher {
                     strBuffer.push_back(s);
                 }
             } else {
-                std::cout << "IO failed for index buffer" << std::endl;
+                throw inviwo::Exception(
+                    "IO failed for index buffer",
+                    IvwContextCustom("dataframeutil::BufferCopyDispatcher::dispatch"));
             }
         }
-        return nullptr;
     }
 };
 
 struct IVW_MODULE_PLOTTING_API BufferSerializerDispatcher {
-    using type = std::shared_ptr<BufferBase>;
+    using type = void;
     template <class T>
-    std::shared_ptr<BufferBase> dispatch(std::shared_ptr<const BufferBase> from,
-                                         Serializer& serializer, std::string key,
-                                         std::string itemKey) {
+    void dispatch(std::shared_ptr<const BufferBase> from, Serializer& serializer, std::string key,
+                  std::string itemKey) {
         typedef typename T::type F;
 
         BufferTarget target = from->getBufferTarget();
@@ -169,10 +169,11 @@ struct IVW_MODULE_PLOTTING_API BufferSerializerDispatcher {
                 auto& fromVec = (frampI) ? frampI->getDataContainer() : frampD->getDataContainer();
                 serializer.serialize(key, fromVec, itemKey);
             } else {
-                std::cout << "IO failed for index buffer" << std::endl;
+                throw inviwo::Exception(
+                    "IO failed for index buffer",
+                    IvwContextCustom("dataframeutil::BufferCopyDispatcher::dispatch"));
             }
         }
-        return nullptr;
     }
 };
 
@@ -180,8 +181,8 @@ std::shared_ptr<BufferBase> IVW_MODULE_PLOTTING_API
 cloneBufferRange(std::shared_ptr<const BufferBase> buffer, ivec2 range);
 
 void IVW_MODULE_PLOTTING_API copyBufferRange(std::shared_ptr<const BufferBase> src,
-                                                 std::shared_ptr<BufferBase> dst, ivec2 range,
-                                                 size_t dstStart = 0);
+                                             std::shared_ptr<BufferBase> dst, ivec2 range,
+                                             size_t dstStart = 0);
 
 std::shared_ptr<plot::DataFrame> IVW_MODULE_PLOTTING_API
 combineDataFrames(std::vector<std::shared_ptr<plot::DataFrame>> histogrameTimeDataFrame,

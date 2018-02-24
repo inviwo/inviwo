@@ -43,7 +43,7 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageToDataFrame::processorInfo_{
     "org.inviwo.ImageToDataFrame",  // Class identifier
-    "Image To DataFrame",           // Display name
+    "Image To Data Frame",          // Display name
     "Data Creation",                // Category
     CodeState::Experimental,        // Code state
     "CPU, DataFrame, Image",        // Tags
@@ -57,7 +57,6 @@ ImageToDataFrame::ImageToDataFrame() : Processor(), image_("image"), dataframe_(
 
 void ImageToDataFrame::process() {
     auto volume = image_.getData()->getColorLayer()->getRepresentation<LayerRAM>();
-    // auto volume = volume_.getData()->getRepresentation<VolumeRAM>();
     auto dims = volume->getDimensions();
     auto size = dims.x * dims.y;
 
@@ -98,7 +97,7 @@ void ImageToDataFrame::process() {
                                           ->getEditableRAMRepresentation()
                                           ->getDataContainer();
 
-    // Calues copied from imagegrayscale.cpp
+    // Values copied from imagegrayscale.cpp
     static const dvec3 perceivedLum(0.299, 0.587f, 0.114f);
     static const dvec3 relativeLum(0.2126, 0.7152, 0.0722);
     static const dvec3 avgLum(1.0 / 3.0);
@@ -113,13 +112,13 @@ void ImageToDataFrame::process() {
             m += v[c] * v[c];
             sum += v[c];
         }
-        if (greycalePerceived != nullptr) {
+        if (greycalePerceived) {
             greycalePerceived->at(idx) = glm::dot(perceivedLum, dvec3(v));
         }
-        if (greycaleRelative != nullptr) {
+        if (greycaleRelative) {
             greycaleRelative->at(idx) = glm::dot(relativeLum, dvec3(v));
         }
-        if (averageRGB != nullptr) {
+        if (averageRGB) {
             averageRGB->at(idx) = glm::dot(avgLum, dvec3(v));
         }
 
