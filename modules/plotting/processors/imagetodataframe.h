@@ -27,54 +27,51 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/processors/csvsource.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#ifndef IVW_IMAGETODATAFRAME_H
+#define IVW_IMAGETODATAFRAME_H
 
-#include <modules/plotting/utils/csvreader.h>
+#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/dataframe.h>
+
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
 namespace plot {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo CSVSource::processorInfo_{
-    "org.inviwo.CSVSource",                   // Class identifier
-    "CSVSource",                              // Display name
-    "Data Input",                             // Category
-    CodeState::Stable,                        // Code state
-    "CPU, Plotting, Source, CSV, DataFrame",  // Tags
+/** \docpage{org.inviwo.ImageToDataFrame, Image To DataFrame}
+ * ![](org.inviwo.ImageToDataFrame.png?classIdentifier=org.inviwo.ImageToDataFrame)
+ * This processor converts an image into a DataFrame.
+ *
+ * ### Inports
+ *   * __image__  source image
+ *
+ * ### Outports
+ *   * __outport__  generated DataFrame
+ *
+ */
+
+class IVW_MODULE_PLOTTING_API ImageToDataFrame : public Processor {
+public:
+    ImageToDataFrame();
+    virtual ~ImageToDataFrame() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageInport image_;
+    DataOutport<DataFrame> dataframe_;
 };
-const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
-
-CSVSource::CSVSource()
-    : Processor()
-    , data_("data")
-    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
-    , inputFile_("inputFile_", "CSV File", "", "dataframe")
-    , delimiters_("delimiters", "Delimiters", ",")
-    , reloadData_("reloadData", "Reload Data") {
-
-    addPort(data_);
-
-    addProperty(inputFile_);
-    addProperty(firstRowIsHeaders_);
-    addProperty(delimiters_);
-    addProperty(reloadData_);
-
-    reloadData_.onChange([&] {});
-}
-
-void CSVSource::process() {
-    CSVReader reader;
-
-    reader.setDelimiters(delimiters_.get());
-    reader.setFirstRowHeader(firstRowIsHeaders_.get());
-
-    data_.setData(reader.readData(inputFile_.get()));
-}
 
 }  // namespace plot
 
 }  // namespace inviwo
+
+#endif  // IVW_IMAGETODATAFRAME_H
