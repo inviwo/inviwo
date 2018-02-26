@@ -138,14 +138,18 @@ set(WEBBROWSER_HELPER_SOURCES
     webbrowserapp-cotire-fix.cpp
     cefprocesshelper.cpp
 )
-set(WEBBROWSER_RESOURCES_MAC_SOURCES_MACOSX
+set(WEBBROWSER_RESOURCES_WINDOWS
+  inviwo_web_helper.exe.manifest # Resolves "Check failed: fallback_available" in debug mode
+)
+set(WEBBROWSER_RESOURCES_MACOSX
     mac/helper-Info.plist
 )
-APPEND_PLATFORM_SOURCES(WEBBROWSER_RESOURCES_MAC_SOURCES)
-source_group(WebBrowser\\\\mac FILES ${WEBBROWSER_RESOURCES_MAC_SOURCES})
+APPEND_PLATFORM_SOURCES(WEBBROWSER_RESOURCES)
+source_group(WebBrowser\\\\resources FILES ${WEBBROWSER_RESOURCES})
 
-set(WEBBROWSER_RESOURCES_SRCS
-    ${WEBBROWSER_RESOURCES_MAC_SOURCES}
+set(WEBBROWSER_HELPER_SOURCES
+    ${WEBBROWSER_HELPER_SOURCES}
+    ${WEBBROWSER_RESOURCES}
 )
 # place helper in separate executable
 set(CEF_HELPER_TARGET "inviwo_web_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
