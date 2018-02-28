@@ -122,9 +122,9 @@ ENABLE_PREPROCESSING   = YES
 SEARCH_INCLUDES        = NO
 
 IMAGE_PATH             = ${image_paths} \\
-                         ${IVW_ROOT_DIR}/docs/images
-                         ${IVW_ROOT_DIR}/docs/manual/images
-
+                         ${IVW_ROOT_DIR}/docs/images \
+                         ${IVW_ROOT_DIR}/docs/manual/images \ 
+                        
 EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++
 
 FILE_PATTERNS          = *.c \\
@@ -156,7 +156,6 @@ EXCLUDE_SYMBOLS        = cl::* \\
 FILTER_PATTERNS        = ${filter_patterns}
 
 USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/README.md
-# USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/docs/main.md
 
 HTML_EXTRA_FILES       = ${ivw_doxy_dir}/style/img_downArrow.png
 
@@ -221,7 +220,11 @@ DOT_CLEANUP            = YES
 PREDEFINED             = DOXYGEN_SHOULD_SKIP_THIS
 SHOW_INCLUDE_FILES     = YES
 ALPHABETICAL_INDEX     = YES
-LAYOUT_FILE            = ${ivw_doxy_dir}/DoxygenLayout.xml
+GENERATE_DEPRECATEDLIST= YES
+
+TOC_EXPAND             = YES
+
+
 
 ${additional_flags}
 ")
@@ -400,10 +403,18 @@ function(make_doxygen_target modules_var)
         endif()
     endforeach()
 
+    set(additional_flags_list 
+        "LAYOUT_FILE            = ${ivw_doxy_dir}/style/layout.xml"
+        "HTML_STYLESHEET        = ${ivw_doxy_dir}/style/inviwodoxy.css"
+        "HTML_HEADER            = ${ivw_doxy_dir}/style/header.html"
+        "HTML_FOOTER            = ${ivw_doxy_dir}/style/footer.html"
+        "HTML_TIMESTAMP         = YES"
+        )          
+
     # Inviwo
     ivw_private_make_doxyfile(
         NAME "Inviwo"
-        BRIEF "Inviwo documentation"
+        BRIEF ""
         OUTPUT_DIR "${output_dir}"
         WARNING_FORMAT ${warn_format}
         INPUTS ${all_input}
@@ -411,6 +422,7 @@ function(make_doxygen_target modules_var)
         ALIASES ${aliases_list}
         TAG_FILE ${output_dir}/inviwo/inviwo.tag
         FILTER_PATTERNS ${filer_patterns_list}
+        ADDITIONAL_FLAGS ${additional_flags_list}
         GENERATE_IMG
     )
     
@@ -420,11 +432,17 @@ function(make_doxygen_target modules_var)
         ${IVW_ROOT_DIR}/docs/changelog.md
         ${IVW_ROOT_DIR}/docs/namespaces.dox
         ${IVW_ROOT_DIR}/docs/manual/manual.md
+    )
+    ivw_group("Documentation Files" ${DOCS_FILES}) 
 
-        ${ivw_doxy_dir}/DoxygenLayout.xml
+    set(STYLE_FILES
+        ${ivw_doxy_dir}/style/layout.xml
+        ${ivw_doxy_dir}/style/inviwodoxy.css
+        ${ivw_doxy_dir}/style/header.html
+        ${ivw_doxy_dir}/style/footer.html
     )
 
-    ivw_group("Documentation Files" ${DOCS_FILES}) 
+    ivw_group("Style Files" ${STYLE_FILES}) 
 
     add_custom_target("DOXY-Inviwo"
         COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen Inviwo"
@@ -434,7 +452,7 @@ function(make_doxygen_target modules_var)
         WORKING_DIRECTORY ${output_dir}
         COMMENT "Generating Inviwo API documentation with Doxygen"
         VERBATIM
-        SOURCES ${DOCS_FILES}
+        SOURCES ${DOCS_FILES} ${STYLE_FILES}
     )
 
 
