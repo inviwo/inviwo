@@ -30,13 +30,15 @@
 #include <modules/plotting/plottingmodule.h>
 #include <modules/plotting/processors/csvsource.h>
 #include <modules/plotting/processors/dataframecolumntocolorvector.h>
+#include <modules/plotting/processors/dataframeexporter.h>
+#include <modules/plotting/processors/imagetodataframe.h>
 #include <modules/plotting/processors/syntheticdataframe.h>
+#include <modules/plotting/processors/volumetodataframe.h>
+#include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
-
-#include <modules/plotting/properties/tickproperty.h>
-#include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
+#include <modules/plotting/properties/tickproperty.h>
 
 namespace inviwo {
 
@@ -44,7 +46,10 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
 
     registerProcessor<plot::CSVSource>();
     registerProcessor<plot::DataFrameColumnToColorVector>();
+    registerProcessor<plot::DataFrameExporter>();
+    registerProcessor<plot::ImageToDataFrame>();
     registerProcessor<plot::SyntheticDataFrame>();
+    registerProcessor<plot::VolumeToDataFrame>();
 
     registerProperty<plot::AxisProperty>();
     registerProperty<plot::DataFrameColumnProperty>();

@@ -27,54 +27,65 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/processors/csvsource.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#ifndef IVW_VOLUMETODATAFRAME_H
+#define IVW_VOLUMETODATAFRAME_H
 
-#include <modules/plotting/utils/csvreader.h>
+#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/dataframe.h>
+
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
+#include <set>
 
 namespace inviwo {
 
 namespace plot {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo CSVSource::processorInfo_{
-    "org.inviwo.CSVSource",                   // Class identifier
-    "CSVSource",                              // Display name
-    "Data Input",                             // Category
-    CodeState::Stable,                        // Code state
-    "CPU, Plotting, Source, CSV, DataFrame",  // Tags
+/** \docpage{org.inviwo.VolumeToDataFrame, Volume To DataFrame}
+ * ![](org.inviwo.VolumeToDataFrame.png?classIdentifier=org.inviwo.VolumeToDataFrame)
+ * This processor converts a volume into a DataFrame.
+ *
+ * ### Inports
+ *   * __volume__  source volume
+ *
+ * ### Outports
+ *   * __outport__  generated DataFrame
+ */
+
+class IVW_MODULE_PLOTTING_API VolumeToDataFrame : public Processor {
+public:
+    VolumeToDataFrame();
+    virtual ~VolumeToDataFrame() = default;
+
+    virtual void initializeResources() override;
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    DataInport<Volume, 0, true> volume_;
+    DataOutport<DataFrame> dataframe_;
+
+    std::set<size_t> filteredIDs_;
+    BoolProperty reduce_;
+    FloatProperty probability_;
+
+    BoolProperty omitOutliers_;
+    FloatProperty threshold_;
+
+    void recomputeReduceBuffer();
 };
-const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
-
-CSVSource::CSVSource()
-    : Processor()
-    , data_("data")
-    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
-    , inputFile_("inputFile_", "CSV File", "", "dataframe")
-    , delimiters_("delimiters", "Delimiters", ",")
-    , reloadData_("reloadData", "Reload Data") {
-
-    addPort(data_);
-
-    addProperty(inputFile_);
-    addProperty(firstRowIsHeaders_);
-    addProperty(delimiters_);
-    addProperty(reloadData_);
-
-    reloadData_.onChange([&] {});
-}
-
-void CSVSource::process() {
-    CSVReader reader;
-
-    reader.setDelimiters(delimiters_.get());
-    reader.setFirstRowHeader(firstRowIsHeaders_.get());
-
-    data_.setData(reader.readData(inputFile_.get()));
-}
 
 }  // namespace plot
 
 }  // namespace inviwo
+
+#endif  // IVW_VOLUMETODATAFRAME_H

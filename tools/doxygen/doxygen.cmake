@@ -44,6 +44,9 @@ else()
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" ${DOXYGEN_FOUND})
 endif()
 
+option(IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD "Open the generated doxygen HTML when build is done" OFF)
+
+
 function(ivw_private_format_doxy_arg retval )
     string(REGEX REPLACE ";" " \\\\\n                         " result "${ARGN}")
     set(${retval} ${result} PARENT_SCOPE)
@@ -406,20 +409,51 @@ function(make_doxygen_target modules_var)
         GENERATE_IMG
     )
 
+
     add_custom_target("DOXY-Inviwo"
         COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen Inviwo"
         COMMAND ${CMAKE_COMMAND} -E remove_directory "${output_dir}/inviwo"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${output_dir}/inviwo/html"
-        COMMAND inviwo --save-previews "${output_dir}/inviwo/html" --quit
         COMMAND ${DOXYGEN_EXECUTABLE} "${output_dir}/inviwo.doxy"
         WORKING_DIRECTORY ${output_dir}
         COMMENT "Generating Inviwo API documentation with Doxygen"
         VERBATIM
     )
+
+
+    if(${IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD})
+        if(WIN32)
+            set(OPEN_COMMAND "start")
+        elseif(APPLE)
+            set(OPEN_COMMAND "open")
+        else()
+            set(OPEN_COMMAND "xdg-open")
+        endif()
+
+        add_custom_command(TARGET DOXY-Inviwo 
+            POST_BUILD
+            COMMAND ${OPEN_COMMAND} 
+            ARGS "${output_dir}/inviwo/html/index.html"
+        )
+    endif()
+
+
     set_target_properties("DOXY-Inviwo" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
     add_dependencies("DOXY-ALL" "DOXY-Inviwo")
 
-    # Help, used for the help inside invowo
+
+    add_custom_target("DOXY-generate-processor-previews"
+        COMMAND inviwo --save-previews "${output_dir}/inviwo/html" --quit
+        WORKING_DIRECTORY ${output_dir}
+        COMMENT "Generate preview images of processors to be used in Inviwo Doxygen API documentation"
+        VERBATIM
+    )
+    set_target_properties("DOXY-generate-processor-previews" 
+                            PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
+    add_dependencies("DOXY-ALL" "DOXY-generate-processor-previews")
+    add_dependencies("DOXY-generate-processor-previews" "DOXY-Inviwo")
+
+    # Help, used for the help inside inviwo
     set(module_bases "")
     foreach(mod ${${modules_var}})
         if(${${mod}_opt}) # Only include enabled modules

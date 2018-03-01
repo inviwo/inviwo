@@ -27,54 +27,66 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/processors/csvsource.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#ifndef IVW_DATAFRAMETOCSVEXPORTER_H
+#define IVW_DATAFRAMETOCSVEXPORTER_H
 
-#include <modules/plotting/utils/csvreader.h>
+#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/dataframe.h>
+
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/datainport.h>
 
 namespace inviwo {
 
 namespace plot {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo CSVSource::processorInfo_{
-    "org.inviwo.CSVSource",                   // Class identifier
-    "CSVSource",                              // Display name
-    "Data Input",                             // Category
-    CodeState::Stable,                        // Code state
-    "CPU, Plotting, Source, CSV, DataFrame",  // Tags
+/** \docpage{org.inviwo.DataFrameExporter, DataFrame Exporter}
+ * ![](org.inviwo.DataFrameExporter.png?classIdentifier=org.inviwo.DataFrameExporter)
+ * This processor exports a DataFrame into a CSV or XML file.
+ *
+ * ### Inports
+ *   * __<Inport>__ source DataFrame which is saved as CSV or XML file
+ *
+ */
+
+class IVW_MODULE_PLOTTING_API DataFrameExporter : public Processor {
+public:
+    DataFrameExporter();
+    virtual ~DataFrameExporter() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+protected:
+    void exportNow();
+
+private:
+    void exportAsCSV(bool forceDoublePrecision = true);
+    void exportAsXML(bool forceDoublePrecision = true);
+
+    DataInport<DataFrame> dataFrame_;
+
+    FileProperty exportFile_;
+    ButtonProperty exportButton_;
+    BoolProperty overwrite_;
+    BoolProperty forceDoublePrecision_;
+
+    bool export_;
 };
-const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
-
-CSVSource::CSVSource()
-    : Processor()
-    , data_("data")
-    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
-    , inputFile_("inputFile_", "CSV File", "", "dataframe")
-    , delimiters_("delimiters", "Delimiters", ",")
-    , reloadData_("reloadData", "Reload Data") {
-
-    addPort(data_);
-
-    addProperty(inputFile_);
-    addProperty(firstRowIsHeaders_);
-    addProperty(delimiters_);
-    addProperty(reloadData_);
-
-    reloadData_.onChange([&] {});
-}
-
-void CSVSource::process() {
-    CSVReader reader;
-
-    reader.setDelimiters(delimiters_.get());
-    reader.setFirstRowHeader(firstRowIsHeaders_.get());
-
-    data_.setData(reader.readData(inputFile_.get()));
-}
 
 }  // namespace plot
 
 }  // namespace inviwo
+
+#endif  // IVW_DATAFRAMETOCSVEXPORTER_H
