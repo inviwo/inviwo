@@ -49,6 +49,12 @@ struct BufferTrait {
     static constexpr inviwo::BufferType bufType = static_cast<inviwo::BufferType>(pos);
     static constexpr int bufLog = location;
     static inviwo::Mesh::BufferInfo bi() { return {bufType, location}; }
+
+#if _MSC_VER <= 1900
+    BufferTrait(type t) : t(t) {}
+    type t;
+    operator type() const { return t; }
+#endif
 };
 
 // Default buffer traits
@@ -67,10 +73,13 @@ using RadiiBufferTrait =
 template <typename... BuffersTraits>
 class DecoratedMesh : public Mesh {
 public:
+#if _MSC_VER <= 1900
+    using Vertex = std::tuple<BuffersTraits...>;
+#else
     template <typename T>
     using TypeAlias = typename T::type;
     using Vertex = std::tuple<TypeAlias<BuffersTraits>...>;
-
+#endif
     using Slef = typename DecoratedMesh<BuffersTraits...>;
 
     DecoratedMesh() { addBuffersImpl<0, BuffersTraits...>(); }
@@ -90,8 +99,11 @@ public:
     void addVertices(const std::vector<Vertex> &vertices) {
         addVerticesImpl<0, BuffersTraits...>(vertices);
     }
-
+#if _MSC_VER <= 1900
+    void addVertex(BuffersTraits... args) { addVertexImpl<0>(args...); }
+#else
     void addVertex(TypeAlias<BuffersTraits>... args) { addVertexImpl<0>(args...); }
+#endif
 
     IndexBufferRAM *addIndexBuffer(DrawType dt, ConnectivityType ct) {
         auto indicesRam = std::make_shared<IndexBufferRAM>();
