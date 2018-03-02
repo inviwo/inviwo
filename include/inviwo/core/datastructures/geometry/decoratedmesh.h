@@ -83,9 +83,9 @@ public:
     }
 
     // For some reason does not work with glm types.
-    /*virtual DecoratedMesh *clone() const override {
+    virtual DecoratedMesh *clone() const override {
         return new DecoratedMesh(*this);
-    }*/
+    }
 
     virtual ~DecoratedMesh() {}
 
