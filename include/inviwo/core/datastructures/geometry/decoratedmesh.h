@@ -41,28 +41,25 @@
 
 namespace inviwo {
 
-namespace detail {
+namespace detail {}  // namespace detail
 
-template <typename T>
-struct BufferHolder {
-    using BUF = inviwo::Buffer<typename T::type>;
-    std::shared_ptr<BUF> buffer_{std::make_shared<BUF>()};
-};
-
-template <typename T>
-using Type = typename T::type;
-template <typename T>
-using BufferPtr = std::shared_ptr<typename inviwo::Buffer<typename Type<T>>>;
-
-}  // namespace detail
-
-template <typename T, int pos, int location = static_cast<int>(pos)>
+template <typename T, unsigned DIM, int pos, int location = static_cast<int>(pos)>
 struct BufferTrait {
-    using type = T;
+    using type = Vector<DIM, T>;
     static constexpr inviwo::BufferType bufType = static_cast<inviwo::BufferType>(pos);
     static constexpr int bufLog = location;
     static inviwo::Mesh::BufferInfo bi() { return {bufType, location}; }
 };
+
+// Default buffer traits
+using PositionsBufferTrait = BufferTrait<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
+using NormalBufferTrait = BufferTrait<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
+using ColorsBufferTrait = BufferTrait<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
+using TexcoordBufferTrait = BufferTrait<float, 3, static_cast<int>(BufferType::TexcoordAttrib)>;
+using CurvatureBufferTrait = BufferTrait<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
+using IndexBufferTrait = BufferTrait<uint32_t, 1, static_cast<int>(BufferType::IndexAttrib)>;
+using RadiiBufferTrait =
+    BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes), 5>;
 
 /**
  * \ingroup datastructures
@@ -70,7 +67,11 @@ struct BufferTrait {
 template <typename... BuffersTraits>
 class DecoratedMesh : public Mesh {
 public:
-    using Vertex = std::tuple<detail::Type<BuffersTraits>...>;
+    template <typename T>
+    using TypeAlias = typename T::type;
+    using Vertex = std::tuple<TypeAlias<BuffersTraits>...>;
+
+    using Slef = typename DecoratedMesh<BuffersTraits...>;
 
     DecoratedMesh() { addBuffersImpl<0, BuffersTraits...>(); }
     DecoratedMesh(const DecoratedMesh &rhs) : Mesh(rhs) { copyConstrHelper<0, BuffersTraits...>(); }
@@ -82,10 +83,7 @@ public:
         return *this;
     }
 
-    // For some reason does not work with glm types.
-    virtual DecoratedMesh *clone() const override {
-        return new DecoratedMesh(*this);
-    }
+    virtual Slef *clone() const override { return new Slef(*this); }
 
     virtual ~DecoratedMesh() {}
 
@@ -93,7 +91,7 @@ public:
         addVerticesImpl<0, BuffersTraits...>(vertices);
     }
 
-    void addVertex(detail::Type<BuffersTraits>... args) { addVertexImpl<0>(args...); }
+    void addVertex(TypeAlias<BuffersTraits>... args) { addVertexImpl<0>(args...); }
 
     IndexBufferRAM *addIndexBuffer(DrawType dt, ConnectivityType ct) {
         auto indicesRam = std::make_shared<IndexBufferRAM>();
@@ -183,17 +181,15 @@ private:
     }
 
 private:
-    using BufferTuple = std::tuple<detail::BufferHolder<BuffersTraits>...>;
+    template <typename T>
+    struct BufferHolder {
+        using BUF = inviwo::Buffer<typename T::type>;
+        std::shared_ptr<BUF> buffer_{std::make_shared<BUF>()};
+    };
+
+    using BufferTuple = std::tuple<BufferHolder<BuffersTraits>...>;
     BufferTuple buffers_;
 };
-
-using PositionsBufferTrait = BufferTrait<vec3, (int)inviwo::BufferType::PositionAttrib>;
-using NormalBufferTrait = BufferTrait<vec3, (int)inviwo::BufferType::NormalAttrib>;
-using ColorsBufferTrait = BufferTrait<vec4, (int)inviwo::BufferType::ColorAttrib>;
-using TexcoordBufferTrait = BufferTrait<vec3, (int)inviwo::BufferType::TexcoordAttrib>;
-using CurvatureBufferTrait = BufferTrait<float, (int)inviwo::BufferType::CurvatureAttrib>;
-using IndexBufferTrait = BufferTrait<uint32_t, (int)inviwo::BufferType::IndexAttrib>;
-using RadiiBufferTrait = BufferTrait<float, (int)inviwo::BufferType::NumberOfBufferTypes, 5>;
 
 using MeshInterfaceSphere =
     DecoratedMesh<PositionsBufferTrait, RadiiBufferTrait, ColorsBufferTrait>;
