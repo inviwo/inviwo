@@ -58,8 +58,7 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     // registerRepresentationConverter(util::make_unique<EigenUtilsDisk2RAMConverter>());
 
     // Ports
-    registerPort<EigenMatrixInport>();
-    registerPort<EigenMatrixOutport>();
+    registerDefaultsForDataType<Eigen::MatrixXf>();
 
     registerPortInspector("EigenMatrixXfOutport",
                           this->getPath(ModulePath::PortInspectors) + "/eigenmatrix.inv");
