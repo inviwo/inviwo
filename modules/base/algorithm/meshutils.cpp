@@ -730,25 +730,26 @@ std::shared_ptr<BasicMesh> square(const vec3& center, const vec3& normal, const 
     return mesh;
 }
 
-std::shared_ptr<Mesh> cameraFrustum(const Camera& camera, vec4 color, std::shared_ptr<Mesh> mesh) {
+std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
+                                           std::shared_ptr<ColoredMesh> mesh) {
     const static std::vector<vec3> vertices{vec3(-1, -1, -1), vec3(-1, 1, -1), vec3(1, -1, -1),
                                             vec3(1, 1, -1),   vec3(-1, -1, 1), vec3(-1, 1, 1),
                                             vec3(1, -1, 1),   vec3(1, 1, 1)};
 
-    auto verticesBuffer = std::make_shared<Buffer<vec3>>();
-    auto colorsBuffer = std::make_shared<Buffer<vec4>>();
-    mesh->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-    mesh->addBuffer(BufferType::ColorAttrib, colorsBuffer);
+    auto& vertVector = mesh->getTypedDataContainer<0>();
+    auto& colorVector = mesh->getTypedDataContainer<1>();
 
-    verticesBuffer->getEditableRAMRepresentation()->getDataContainer() = vertices;
-    colorsBuffer->getEditableRAMRepresentation()->getDataContainer() = std::vector<vec4>(8, color);
+    auto off = static_cast<unsigned int>(vertVector.size());
+    vertVector.insert(vertVector.end(), vertices.begin(), vertices.end());
+    colorVector.insert(colorVector.end(), 8, color);
+
     mesh->setModelMatrix(glm::inverse(camera.getProjectionMatrix() * camera.getViewMatrix()));
 
     auto ib = std::make_shared<IndexBufferRAM>();
     auto indices = std::make_shared<IndexBuffer>(ib);
-    ib->add({0, 1, 1, 3, 3, 2, 2, 0});  // front
-    ib->add({4, 5, 5, 7, 7, 6, 6, 4});  // back
-    ib->add({0, 4, 1, 5, 2, 6, 3, 7});  // sides
+    ib->add({off + 0, off + 1, off + 1, off + 3, off + 3, off + 2, off + 2, off + 0});  // front
+    ib->add({off + 4, off + 5, off + 5, off + 7, off + 7, off + 6, off + 6, off + 4});  // back
+    ib->add({off + 0, off + 4, off + 1, off + 5, off + 2, off + 6, off + 3, off + 7});  // sides
 
     mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indices);
 
