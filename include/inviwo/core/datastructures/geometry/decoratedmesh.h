@@ -268,7 +268,7 @@ public:
     }
 
     template<typename BT>
-    auto getTypedDataContainer() {
+    auto &getTypedDataContainer() {
         return getTypedDataContainer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
     }
 
@@ -282,7 +282,7 @@ public:
 
 
     template<typename BT>
-    auto getTypedDataContainer() const {
+    auto &getTypedDataContainer() const {
         return getTypedDataContainer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
     }
 
