@@ -335,7 +335,7 @@ private:
     template <unsigned I, typename T, typename... ARGS>
     void copyConstrHelper() {
         std::get<I>(buffers_).buffer_ =
-            std::static_pointer_cast<Buffer<T::type>>(Mesh::buffers_[I].second);
+            std::static_pointer_cast<Buffer<typename T::type>>(Mesh::buffers_[I].second);
         copyConstrHelper<I + 1, ARGS...>();
     }
 

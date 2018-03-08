@@ -739,6 +739,7 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
     auto& vertVector = mesh->getTypedDataContainer<buffertraits::PositionsBuffer>();
     auto& colorVector = mesh->getTypedDataContainer<buffertraits::ColorsBuffer>();
 
+
     auto off = static_cast<unsigned int>(vertVector.size());
     vertVector.insert(vertVector.end(), vertices.begin(), vertices.end());
     colorVector.insert(colorVector.end(), 8, color);
