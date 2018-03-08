@@ -56,6 +56,28 @@ namespace inviwo {
  */
 namespace buffertraits {
 
+    namespace detail{
+        template <typename T, typename... Ts> struct get_index;
+
+        template <typename T, typename... Ts>
+        struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
+
+        template <typename T, typename Tail, typename... Ts>
+        struct get_index<T, Tail, Ts...> :
+            std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {};
+
+#if 1 // explicit error case, but you already have error without that. 
+        template <typename T>
+        struct get_index<T>
+        {
+            // condition is always false, but should be dependant of T
+            static_assert(sizeof(T) == 0, "element not found");
+        };
+#endif
+    
+    
+    }
+
 template <typename T, unsigned DIM, int pos, int location = static_cast<int>(pos)>
 struct BufferTrait {
     using type = Vector<DIM, T>;
@@ -185,30 +207,87 @@ public:
         return std::get<I>(buffers_).buffer_;
     }
 
+    template<typename BT>
+    auto getTypedBuffer() {
+        return getTypedBuffer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+    }
+    
+
+
+
+
     template <unsigned I>
     auto getTypedBuffer() const {
         return std::get<I>(buffers_).buffer_;
     }
+
+    template<typename BT>
+    auto getTypedBuffer() const {
+        return getTypedBuffer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+    }
+
+
+
+
 
     template <unsigned I>
     auto getTypedEditableRAMRepresentation() {
         return getTypedBuffer<I>()->getEditableRAMRepresentation();
     }
 
+
+    template<typename BT>
+    auto getEditableRAMRepresentation() {
+        return getEditableRAMRepresentation<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+    }
+
+
+
+
+
+
     template <unsigned I>
     auto getTypedRAMRepresentation() const {
         return getTypedBuffer<I>()->getRAMRepresentation();
     }
+
+
+    template<typename BT>
+    auto getTypedRAMRepresentation() {
+        return getTypedRAMRepresentation<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+    }
+
+
+
+
+
 
     template <unsigned I>
     auto &getTypedDataContainer() {
         return getTypedEditableRAMRepresentation<I>()->getDataContainer();
     }
 
+    template<typename BT>
+    auto &getTypedDataContainer() {
+        return getTypedDataContainer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+    }
+
+
+
+
     template <unsigned I>
     auto &getTypedDataContainer() const {
         return getTypedRAMRepresentation<I>()->getDataContainer();
     }
+
+
+    template<typename BT>
+    auto &getTypedDataContainer() const {
+        return getTypedDataContainer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+    }
+
+
+
 
 private:
     template <unsigned I>
@@ -256,7 +335,7 @@ private:
     template <unsigned I, typename T, typename... ARGS>
     void copyConstrHelper() {
         std::get<I>(buffers_).buffer_ =
-            std::static_pointer_cast<Buffer<T::type>>(Mesh::buffers_[I].second);
+            std::static_pointer_cast<Buffer<typename T::type>>(Mesh::buffers_[I].second);
         copyConstrHelper<I + 1, ARGS...>();
     }
 
