@@ -37,7 +37,6 @@
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
-
 #include <inviwo/core/util/indexmapper.h>
 
 namespace inviwo {
@@ -49,9 +48,7 @@ const ProcessorInfo VolumeSlice::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
 };
-const ProcessorInfo VolumeSlice::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeSlice::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSlice::VolumeSlice()
     : Processor()
@@ -116,7 +113,7 @@ void VolumeSlice::process() {
     auto vol = inport_.getData();
 
     const auto dims(vol->getDimensions());
-    double pos {sliceNumber_.get() / static_cast<double>(sliceNumber_.getMaxValue())};
+    double pos{sliceNumber_.get() / static_cast<double>(sliceNumber_.getMaxValue())};
     switch (sliceAlongAxis_.get()) {
         case CartesianCoordinateAxis::X:
             if (dims.x != sliceNumber_.getMaxValue()) {
@@ -167,16 +164,22 @@ void VolumeSlice::process() {
                 auto layerrep = res.second;
                 auto layerdata = layerrep->getDataTyped();
 
+                auto asfd = util::extent<T, 0>::value;
+
                 switch (util::extent<T, 0>::value) {
+                    case 0:  // util::extent<T, 0>::value returns zero for non-glm types
                     case 1:
-                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Zero,
-                                                   ImageChannel::Zero, ImageChannel::One}});
+                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Red,
+                                                   ImageChannel::Red, ImageChannel::One}});
+                        break;
                     case 2:
                         layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
                                                    ImageChannel::Zero, ImageChannel::One}});
+                        break;
                     case 3:
                         layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
                                                    ImageChannel::Blue, ImageChannel::One}});
+                        break;
                     default:
                     case 4:
                         layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
@@ -246,5 +249,4 @@ void VolumeSlice::eventGestureShiftSlice(Event* event) {
         shiftSlice(-1);
 }
 
-}  // inviwo namespace
-
+}  // namespace inviwo
