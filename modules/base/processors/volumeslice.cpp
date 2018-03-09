@@ -164,8 +164,6 @@ void VolumeSlice::process() {
                 auto layerrep = res.second;
                 auto layerdata = layerrep->getDataTyped();
 
-                auto asfd = util::extent<T, 0>::value;
-
                 switch (util::extent<T, 0>::value) {
                     case 0:  // util::extent<T, 0>::value returns zero for non-glm types
                     case 1:
