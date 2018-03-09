@@ -42,48 +42,45 @@
 namespace inviwo {
 
 /**
- * \defgroup datastructures Datastructures
- */
-
-/**
- * \defgroup DecoratedMesh DecoratedMesh
+ * \defgroup decoratedmesh DecoratedMesh
  * \ingroup datastructures
  */
 
 /**
  * Namespace for buffer traits
- * \ingroup DecoratedMesh
+ * \ingroup decoratedmesh
  */
 namespace buffertraits {
 
-    namespace detail{
-        template <typename T, typename... Ts> struct get_index;
+namespace detail {
+template <typename T, typename... Ts>
+struct get_index;
 
-        template <typename T, typename... Ts>
-        struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
+template <typename T, typename... Ts>
+struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
 
-        template <typename T, typename Tail, typename... Ts>
-        struct get_index<T, Tail, Ts...> :
-            std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {};
+template <typename T, typename Tail, typename... Ts>
+struct get_index<T, Tail, Ts...>
+    : std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {};
 
-#if 1 // explicit error case, but you already have error without that. 
-        template <typename T>
-        struct get_index<T>
-        {
-            // condition is always false, but should be dependant of T
-            static_assert(sizeof(T) == 0, "element not found");
-        };
-#endif
-    
-    
-    }
+}  // namespace detail
 
-template <typename T, unsigned DIM, int pos, int location = static_cast<int>(pos)>
+/**
+ * \ingroup decoratedmesh
+ * Struct used to tell DecoratedMesh what buffers to create.
+ * The first two template parameters, ´typename T, unsigned DIM´ is used rather than Vector<DIM,T>
+ * or glm::TvecX due to compiler issues related to the clone function. Similarly, The template
+ * parameter ´int attrib´ needs can't be a strongly typed enum (inviwo::BufferType) and hence it is
+ * an int.
+ *
+ * /see DecoratedMesh
+ */
+template <typename T, unsigned DIM, int attrib, int location = attrib>
 struct BufferTrait {
     using type = Vector<DIM, T>;
-    static constexpr inviwo::BufferType bufType = static_cast<inviwo::BufferType>(pos);
-    static constexpr int bufLog = location;
-    static inviwo::Mesh::BufferInfo bi() { return {bufType, location}; }
+    static inviwo::Mesh::BufferInfo bi() {
+        return {static_cast<inviwo::BufferType>(attrib), location};
+    }
 
 #if _MSC_VER <= 1900
     BufferTrait(type t) : t(t) {}
@@ -98,7 +95,7 @@ using PositionsBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::Posit
 using NormalBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
 //! BufferTrait for Colors Buffers
 using ColorsBuffer = BufferTrait<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
-//! BufferTrait for Texcoord Buffers
+//! BufferTrait for Texture coords Buffers
 using TexcoordBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::TexcoordAttrib)>;
 //! BufferTrait for Curvature Buffers
 using CurvatureBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
@@ -107,60 +104,61 @@ using IndexBuffer = BufferTrait<uint32_t, 1, static_cast<int>(BufferType::IndexA
 //! BufferTrait for Radii Buffer
 using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes), 5>;
 }  // namespace buffertraits
-   /**
-    * \ingroup datastructures
-    * \ingroup DecoratedMesh
-    *
-    * DecoratedMesh is a templated data structure for creating meshes with a custom amount of vertex
-    * buffers. It uses a variadic set of BufferTraits to define its interface. For example, a Mesh with
-    * a position and color per vertex would be defined as
-    * `DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>`. Depending on the Traits specified in the
-    * declaration the interface towards the class is updated: for example, a mesh with a position and
-    * a color could be used as:
-    *
-    * \code{.cpp}
-    * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
-    * MyMesh mesh;
-    * mesh.addVertex(vec3(0.0f), vec4(1,0,0,1) );
-    * mesh.addVertex(vec3(1.0f), vec4(0,1,0,1) );
-    * \endcode
-    *
-    * If texture coordinates is also needed for each vertex in the mesh then one could instead use:
-    *
-    * \code{.cpp}
-    * using MyMesh = DecoratedMesh<PositionsBufferTrait, TexcoordBufferTrait, ColorsBufferTrait>;
-    * MyMesh mesh;
-    * mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
-    * mesh.addVertex(vec3(1.0f), vec3(1.0f), vec4(0,1,0,1) );
-    * \endcode
-    *
-    * For meshes when more than a few vertices is added is more efficient to add all vertices to the
-    * mesh at the same time. This can be done by using a std::vector containing
-    * DecoratedMesh::Vertex instead, as described by the following example:
-    *
-    * \code{.cpp}
-    * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
-    * std::vector<MyMesh::Vertex> vertices;
-    * vertices.emplace_back(vec3(0.0f), vec4(1,0,0,1));
-    * vertices.emplace_back(vec3(1.0f), vec4(0,1,0,1));
-    * MyMesh mesh;
-    * mesh.addVertices(vertices);
-    * \endcode
-    *
-    * When creating meshes it is very common to also have Index buffers, in addition to the vertex
-    * buffers. To add a index buffer to the mesh you can use the function addIndexBuffer as demonstrate
-    * by the following example.
-    *
-    * \code{.cpp}
-    * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
-    * MyMesh mesh;
-    * // Add vertices as above
-    * auto ib = mesh.addIndexBuffer(DrawType::Lines, ConnectivityType::None);
-    * ib->add({0,1}); // Create a line between vertex 0 and 1
-    * ib->add({1,2}); // Create another line between vertex 1 and 2
-    * \endcode
-    *
-    */
+
+/**
+ * \ingroup datastructures
+ * \ingroup decoratedmesh
+ *
+ * DecoratedMesh is a templated data structure for creating meshes with a custom amount of vertex
+ * buffers. It uses a variadic set of BufferTraits to define its interface. For example, a Mesh with
+ * a position and color per vertex would be defined as
+ * `DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>`. Depending on the Traits specified in the
+ * declaration the interface towards the class is updated: for example, a mesh with a position and
+ * a color could be used as:
+ *
+ * \code{.cpp}
+ * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
+ * MyMesh mesh;
+ * mesh.addVertex(vec3(0.0f), vec4(1,0,0,1) );
+ * mesh.addVertex(vec3(1.0f), vec4(0,1,0,1) );
+ * \endcode
+ *
+ * If texture coordinates is also needed for each vertex in the mesh then one could instead use:
+ *
+ * \code{.cpp}
+ * using MyMesh = DecoratedMesh<PositionsBufferTrait, TexcoordBufferTrait, ColorsBufferTrait>;
+ * MyMesh mesh;
+ * mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
+ * mesh.addVertex(vec3(1.0f), vec3(1.0f), vec4(0,1,0,1) );
+ * \endcode
+ *
+ * For meshes when more than a few vertices is added is more efficient to add all vertices to the
+ * mesh at the same time. This can be done by using a std::vector containing
+ * DecoratedMesh::Vertex instead, as described by the following example:
+ *
+ * \code{.cpp}
+ * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
+ * std::vector<MyMesh::Vertex> vertices;
+ * vertices.emplace_back(vec3(0.0f), vec4(1,0,0,1));
+ * vertices.emplace_back(vec3(1.0f), vec4(0,1,0,1));
+ * MyMesh mesh;
+ * mesh.addVertices(vertices);
+ * \endcode
+ *
+ * When creating meshes it is very common to also have Index buffers, in addition to the vertex
+ * buffers. To add a index buffer to the mesh you can use the function addIndexBuffer as demonstrate
+ * by the following example.
+ *
+ * \code{.cpp}
+ * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
+ * MyMesh mesh;
+ * // Add vertices as above
+ * auto ib = mesh.addIndexBuffer(DrawType::Lines, ConnectivityType::None);
+ * ib->add({0,1}); // Create a line between vertex 0 and 1
+ * ib->add({1,2}); // Create another line between vertex 1 and 2
+ * \endcode
+ *
+ */
 template <typename... BufferTraits>
 class DecoratedMesh : public Mesh {
 public:
@@ -189,11 +187,22 @@ public:
     void addVertices(const std::vector<Vertex> &vertices) {
         addVerticesImpl<0, BufferTraits...>(vertices);
     }
+
 #if _MSC_VER <= 1900
     void addVertex(BufferTraits... args) { addVertexImpl<0>(args...); }
+    void setVertex(size_t index, BufferTraits... args) { setVertiesImpl<0>(index, args...); }
 #else
     void addVertex(TypeAlias<BufferTraits>... args) { addVertexImpl<0>(args...); }
+
+    void setVertex(size_t index, TypeAlias<BufferTraits>... args) {
+        setVertiesImpl<0, BufferTraits...>(index, args...);
+    }
 #endif
+
+    template <typename BT>
+    void setVertex(size_t index, const typename BT::type &v) {
+        getTypedDataContainer<BT>().at(index) = v;
+    }
 
     IndexBufferRAM *addIndexBuffer(DrawType dt, ConnectivityType ct) {
         auto indicesRam = std::make_shared<IndexBufferRAM>();
@@ -207,87 +216,62 @@ public:
         return std::get<I>(buffers_).buffer_;
     }
 
-    template<typename BT>
+    template <typename BT>
     auto getTypedBuffer() {
-        return getTypedBuffer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedBuffer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-    
-
-
-
 
     template <unsigned I>
     auto getTypedBuffer() const {
         return std::get<I>(buffers_).buffer_;
     }
 
-    template<typename BT>
+    template <typename BT>
     auto getTypedBuffer() const {
-        return getTypedBuffer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedBuffer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
-
 
     template <unsigned I>
     auto getTypedEditableRAMRepresentation() {
         return getTypedBuffer<I>()->getEditableRAMRepresentation();
     }
 
-
-    template<typename BT>
+    template <typename BT>
     auto getEditableRAMRepresentation() {
-        return getEditableRAMRepresentation<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getEditableRAMRepresentation<
+            buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
-
-
 
     template <unsigned I>
     auto getTypedRAMRepresentation() const {
         return getTypedBuffer<I>()->getRAMRepresentation();
     }
 
-
-    template<typename BT>
+    template <typename BT>
     auto getTypedRAMRepresentation() {
-        return getTypedRAMRepresentation<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedRAMRepresentation<
+            buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
-
-
 
     template <unsigned I>
     auto &getTypedDataContainer() {
         return getTypedEditableRAMRepresentation<I>()->getDataContainer();
     }
 
-    template<typename BT>
+    template <typename BT>
     auto &getTypedDataContainer() {
-        return getTypedDataContainer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedDataContainer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
 
     template <unsigned I>
     auto &getTypedDataContainer() const {
         return getTypedRAMRepresentation<I>()->getDataContainer();
     }
 
-
-    template<typename BT>
+    template <typename BT>
     auto &getTypedDataContainer() const {
-        return getTypedDataContainer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedDataContainer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
 
 private:
     template <unsigned I>
@@ -308,6 +292,17 @@ private:
     void addVertexImpl(T &t, ARGS... args) {
         std::get<I>(buffers_).buffer_->getEditableRAMRepresentation()->add(t);
         addVertexImpl<I + 1>(args...);
+    }
+
+    template <unsigned I, typename T>
+    void setVertiesImpl(size_t index, T &t) {
+        getTypedDataContainer<I>()->at(index) = t;
+    }
+
+    template <unsigned I, typename T, typename... ARGS>
+    void setVertiesImpl(size_t index, T &t, ARGS... args) {
+        getTypedDataContainer<I>()->at(index) = t;
+        addVertexImpl<I + 1>(index, args...);
     }
 
     template <unsigned I>
@@ -341,6 +336,7 @@ private:
 
 private:
     template <typename T>
+    //! Convenience struct creating the default buffers.
     struct BufferHolder {
         using BUF = inviwo::Buffer<typename T::type>;
         std::shared_ptr<BUF> buffer_{std::make_shared<BUF>()};
@@ -350,9 +346,14 @@ private:
     BufferTuple buffers_;
 };
 
+/** Type definition of a Mesh useful for Spheres, consists of a vec3-buffer for position, a
+ * float-buffer for radii and vec4 for colors.
+ */
 using SphereMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::RadiiBuffer,
                                  buffertraits::ColorsBuffer>;
 
+/** Type definition of a Mesh having only positions(vec3) and colors(vec4).
+ */
 using ColoredMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 
 }  // namespace inviwo
