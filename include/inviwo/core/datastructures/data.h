@@ -37,6 +37,9 @@
 #include <typeindex>
 
 namespace inviwo {
+/**
+ * \defgroup datastructures Datastructures
+ */
 
 /**
  * \ingroup datastructures
@@ -52,7 +55,7 @@ namespace inviwo {
  * representation is valid the handle can just return the that representation. If not, it will have
  * to find a valid representation and try to either create the representation we wanted from the
  * valid representation, if there was no representation of the kind we asked for around. Or if there
- * is a invalid representation around, update that representation with the valid representation. 
+ * is a invalid representation around, update that representation with the valid representation.
  *
  * Call getRepresentation to retrieve the data:
  * \code{.cpp}
@@ -108,13 +111,13 @@ public:
     T* getEditableRepresentation();
 
     /**
-    * Check if a specific representation type exists.
-    * Example:
-    * \code{.cpp}
-    *     hasRepresentation<BufferRAM>();
-    * \endcode
-    * @return true if existing, false otherwise.
-    */
+     * Check if a specific representation type exists.
+     * Example:
+     * \code{.cpp}
+     *     hasRepresentation<BufferRAM>();
+     * \endcode
+     * @return true if existing, false otherwise.
+     */
     template <typename T>
     bool hasRepresentation() const;
 
@@ -125,11 +128,11 @@ public:
     bool hasRepresentations() const;
 
     /**
-    * Add the representation and set it as last valid.
-    * The owner of the representation will be set to this object.
-    * @note A representation can only be added to one Data object.
-    * @param representation The representation to add
-    */
+     * Add the representation and set it as last valid.
+     * The owner of the representation will be set to this object.
+     * @note A representation can only be added to one Data object.
+     * @param representation The representation to add
+     */
     void addRepresentation(std::shared_ptr<Repr> representation);
 
     /**
@@ -159,10 +162,10 @@ public:
     void invalidateAllOther(const Repr* repr);
 
     /**
-    * Set the format of the data.
-    * @see DataFormatBase
-    * @param format The format of the data.
-    */
+     * Set the format of the data.
+     * @see DataFormatBase
+     * @param format The format of the data.
+     */
     void setDataFormat(const DataFormatBase* format);
     const DataFormatBase* getDataFormat() const;
 
@@ -300,7 +303,8 @@ void Data<Self, Repr>::copyRepresentationsTo(Data<Self, Repr>* targetData) const
 }
 
 template <typename Self, typename Repr>
-std::shared_ptr<Repr> Data<Self, Repr>::addRepresentationInternal(std::shared_ptr<Repr> repr) const {
+std::shared_ptr<Repr> Data<Self, Repr>::addRepresentationInternal(
+    std::shared_ptr<Repr> repr) const {
     repr->setValid(true);
     repr->setOwner(static_cast<Self*>(const_cast<Data<Self, Repr>*>(this)));
     representations_[repr->getTypeIndex()] = repr;
@@ -372,6 +376,6 @@ const DataFormatBase* Data<Self, Repr>::getDataFormat() const {
     return dataFormatBase_;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATA_H
