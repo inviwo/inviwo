@@ -42,41 +42,29 @@
 namespace inviwo {
 
 /**
- * \defgroup datastructures Datastructures
- */
-
-/**
- * \defgroup DecoratedMesh DecoratedMesh
+ * \defgroup decoratedmesh DecoratedMesh
  * \ingroup datastructures
  */
 
 /**
  * Namespace for buffer traits
- * \ingroup DecoratedMesh
+ * \ingroup decoratedmesh
  */
 namespace buffertraits {
 
-    namespace detail{
-        template <typename T, typename... Ts> struct get_index;
+namespace detail {
+template <typename T, typename... Ts>
+struct get_index;
 
-        template <typename T, typename... Ts>
-        struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
+template <typename T, typename... Ts>
+struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
 
-        template <typename T, typename Tail, typename... Ts>
-        struct get_index<T, Tail, Ts...> :
-            std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {};
+template <typename T, typename Tail, typename... Ts>
+struct get_index<T, Tail, Ts...>
+    : std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {};
 
-#if 1 // explicit error case, but you already have error without that. 
-        template <typename T>
-        struct get_index<T>
-        {
-            // condition is always false, but should be dependant of T
-            static_assert(sizeof(T) == 0, "element not found");
-        };
-#endif
-    
-    
-    }
+
+}  // namespace detail
 
 template <typename T, unsigned DIM, int pos, int location = static_cast<int>(pos)>
 struct BufferTrait {
@@ -109,7 +97,7 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
 }  // namespace buffertraits
    /**
     * \ingroup datastructures
-    * \ingroup DecoratedMesh
+    * \ingroup decoratedmesh
     *
     * DecoratedMesh is a templated data structure for creating meshes with a custom amount of vertex
     * buffers. It uses a variadic set of BufferTraits to define its interface. For example, a Mesh with
@@ -189,11 +177,22 @@ public:
     void addVertices(const std::vector<Vertex> &vertices) {
         addVerticesImpl<0, BufferTraits...>(vertices);
     }
+
 #if _MSC_VER <= 1900
     void addVertex(BufferTraits... args) { addVertexImpl<0>(args...); }
+    void setVertex(size_t index, BufferTraits... args) { setVertiesImpl<0>(index, args...); }
 #else
     void addVertex(TypeAlias<BufferTraits>... args) { addVertexImpl<0>(args...); }
+
+    void setVertex(size_t index, TypeAlias<BufferTraits>... args) {
+        setVertiesImpl<0, BufferTraits...>(index, args...);
+    }
 #endif
+
+    template<typename BT>
+    void setVertex(size_t index, const typename BT::type &v){
+        getTypedDataContainer<BT>().at(index) = v;
+    }
 
     IndexBufferRAM *addIndexBuffer(DrawType dt, ConnectivityType ct) {
         auto indicesRam = std::make_shared<IndexBufferRAM>();
@@ -207,87 +206,62 @@ public:
         return std::get<I>(buffers_).buffer_;
     }
 
-    template<typename BT>
+    template <typename BT>
     auto getTypedBuffer() {
-        return getTypedBuffer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedBuffer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-    
-
-
-
 
     template <unsigned I>
     auto getTypedBuffer() const {
         return std::get<I>(buffers_).buffer_;
     }
 
-    template<typename BT>
+    template <typename BT>
     auto getTypedBuffer() const {
-        return getTypedBuffer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedBuffer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
-
 
     template <unsigned I>
     auto getTypedEditableRAMRepresentation() {
         return getTypedBuffer<I>()->getEditableRAMRepresentation();
     }
 
-
-    template<typename BT>
+    template <typename BT>
     auto getEditableRAMRepresentation() {
-        return getEditableRAMRepresentation<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getEditableRAMRepresentation<
+            buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
-
-
 
     template <unsigned I>
     auto getTypedRAMRepresentation() const {
         return getTypedBuffer<I>()->getRAMRepresentation();
     }
 
-
-    template<typename BT>
+    template <typename BT>
     auto getTypedRAMRepresentation() {
-        return getTypedRAMRepresentation<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedRAMRepresentation<
+            buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
-
-
 
     template <unsigned I>
     auto &getTypedDataContainer() {
         return getTypedEditableRAMRepresentation<I>()->getDataContainer();
     }
 
-    template<typename BT>
+    template <typename BT>
     auto &getTypedDataContainer() {
-        return getTypedDataContainer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedDataContainer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
 
     template <unsigned I>
     auto &getTypedDataContainer() const {
         return getTypedRAMRepresentation<I>()->getDataContainer();
     }
 
-
-    template<typename BT>
+    template <typename BT>
     auto &getTypedDataContainer() const {
-        return getTypedDataContainer<buffertraits::detail::get_index<BT,BufferTraits...>::value>();
+        return getTypedDataContainer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
     }
-
-
-
 
 private:
     template <unsigned I>
@@ -308,6 +282,17 @@ private:
     void addVertexImpl(T &t, ARGS... args) {
         std::get<I>(buffers_).buffer_->getEditableRAMRepresentation()->add(t);
         addVertexImpl<I + 1>(args...);
+    }
+
+    template <unsigned I, typename T>
+    void setVertiesImpl(size_t index, T &t) {
+        getTypedDataContainer<I>()->at(index) = t;
+    }
+
+    template <unsigned I, typename T, typename... ARGS>
+    void setVertiesImpl(size_t index, T &t, ARGS... args) {
+        getTypedDataContainer<I>()->at(index) = t;
+        addVertexImpl<I + 1>(index, args...);
     }
 
     template <unsigned I>
