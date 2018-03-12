@@ -614,18 +614,19 @@ std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& c
     return mesh;
 }
 
-std::shared_ptr<BasicMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color) {
-    auto mesh = std::make_shared<BasicMesh>();
+//! [Using Simple Mesh 2]
+std::shared_ptr<SimpleMesh2> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color) {
+    auto mesh = std::make_shared<SimpleMesh2>();
     mesh->setModelMatrix(basisandoffset);
 
-    mesh->addVertices({{vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.0, 0.0), color},
-                       {vec3(1.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 0.0, 0.0), color},
-                       {vec3(1.0, 1.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 0.0), color},
-                       {vec3(0.0, 1.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0), color},
-                       {vec3(0.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.0, 1.0), color},
-                       {vec3(1.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 0.0, 1.0), color},
-                       {vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), color},
-                       {vec3(0.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 1.0, 1.0), color}});
+    mesh->addVertices({{vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), color},
+                       {vec3(1.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), color},
+                       {vec3(1.0, 1.0, 0.0), vec3(1.0, 1.0, 0.0), color},
+                       {vec3(0.0, 1.0, 0.0), vec3(0.0, 1.0, 0.0), color},
+                       {vec3(0.0, 0.0, 1.0), vec3(0.0, 0.0, 1.0), color},
+                       {vec3(1.0, 0.0, 1.0), vec3(1.0, 0.0, 1.0), color},
+                       {vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), color},
+                       {vec3(0.0, 1.0, 1.0), vec3(0.0, 1.0, 1.0), color}});
 
     auto inds1 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
     inds1->add({3, 0, 1, 2, 3, 0, 1});
@@ -641,6 +642,7 @@ std::shared_ptr<BasicMesh> boundingBoxAdjacency(const mat4& basisandoffset, cons
 
     return mesh;
 }
+//! [Using Simple Mesh 2]
 
 std::shared_ptr<BasicMesh> torus(const vec3& center, const vec3& up_, float r1, float r2,
                                  const ivec2& subdivisions, vec4 color) {
@@ -730,6 +732,7 @@ std::shared_ptr<BasicMesh> square(const vec3& center, const vec3& normal, const 
     return mesh;
 }
 
+//! [Using Colored Mesh]
 std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
                                            std::shared_ptr<ColoredMesh> mesh) {
     const static std::vector<vec3> vertices{vec3(-1, -1, -1), vec3(-1, 1, -1), vec3(1, -1, -1),
@@ -743,6 +746,8 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
     vertVector.insert(vertVector.end(), vertices.begin(), vertices.end());
     colorVector.insert(colorVector.end(), 8, color);
 
+    mesh->setVertex<buffertraits::ColorsBuffer>(3,vec4(1,0,0,0));
+
     mesh->setModelMatrix(glm::inverse(camera.getProjectionMatrix() * camera.getViewMatrix()));
 
     auto ib = std::make_shared<IndexBufferRAM>();
@@ -755,6 +760,7 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
 
     return mesh;
 }
+//! [Using Colored Mesh]
 
 }  // namespace meshutil
 
