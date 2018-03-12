@@ -44,6 +44,10 @@ namespace inviwo {
 /**
  * \defgroup decoratedmesh DecoratedMesh
  * \ingroup datastructures
+ *
+ * \copydetails DecoratedMesh
+ *
+ *
  */
 
 /**
@@ -68,12 +72,13 @@ struct get_index<T, Tail, Ts...>
 /**
  * \ingroup decoratedmesh
  * Struct used to tell DecoratedMesh what buffers to create.
- * The first two template parameters, ´typename T, unsigned DIM´ is used rather than Vector<DIM,T>
- * or glm::TvecX due to compiler issues related to the clone function. Similarly, The template
- * parameter ´int attrib´ needs can't be a strongly typed enum (inviwo::BufferType) and hence it is
- * an int.
+ * The first two template parameters, 'typename T, unsigned DIM' is used rather than
+ * ´´´Vector<DIM,T>´´´ or glm::TvecX due to compiler issues related to the clone function.
+ * Similarly, The template parameter ´´´int attrib´´´ needs can't be a strongly typed enum
+ * (inviwo::BufferType) and hence it is an int.
  *
- * /see DecoratedMesh
+ * \see DecoratedMesh
+ * \see decoratedmesh
  */
 template <typename T, unsigned DIM, int attrib, int location = attrib>
 struct BufferTrait {
@@ -89,35 +94,65 @@ struct BufferTrait {
 #endif
 };
 
-//! BufferTrait for Positions Buffers
+/**
+ * \ingroup decoratedmesh
+ * BufferTrait for Position buffers (glm::vec3)
+ */
 using PositionsBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
-//! BufferTrait for Normal Buffers
+
+/**
+ * \ingroup decoratedmesh
+ * BufferTrait for Normal buffers (glm::vec3)
+ */
 using NormalBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
-//! BufferTrait for Colors Buffers
+
+/**
+ * \ingroup decoratedmesh
+ * BufferTrait for Colors buffers (glm::vec4)
+ */
 using ColorsBuffer = BufferTrait<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
-//! BufferTrait for Texture coords Buffers
+
+/**
+ * \ingroup decoratedmesh
+ * BufferTrait for Texture Coordinate buffers (glm::vec3)
+ */
 using TexcoordBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::TexcoordAttrib)>;
-//! BufferTrait for Curvature Buffers
+
+/**
+ * \ingroup decoratedmesh
+ * BufferTrait for Curvature buffers (float)
+ */
 using CurvatureBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
-//! BufferTrait for Index Buffers
+/**
+ * \ingroup decoratedmesh
+ * BufferTrait for Uint32 buffers
+ */
 using IndexBuffer = BufferTrait<uint32_t, 1, static_cast<int>(BufferType::IndexAttrib)>;
-//! BufferTrait for Radii Buffer
+
+/**
+ * \ingroup decoratedmesh
+ * BufferTrait for radii buffers (float)
+ * \see SphereMesh
+ */
 using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes), 5>;
 }  // namespace buffertraits
 
 /**
+ * \class DecoratedMesh
  * \ingroup datastructures
  * \ingroup decoratedmesh
  *
- * DecoratedMesh is a templated data structure for creating meshes with a custom amount of vertex
+ *
+ *  DecoratedMesh is a templated data structure for creating meshes with a custom amount of vertex
  * buffers. It uses a variadic set of BufferTraits to define its interface. For example, a Mesh with
  * a position and color per vertex would be defined as
  * `DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>`. Depending on the Traits specified in the
- * declaration the interface towards the class is updated: for example, a mesh with a position and
- * a color could be used as:
+ * declaration the interface towards the class is updated.
+ *
+ * # Simple Usage
  *
  * \code{.cpp}
- * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
+ * using MyMesh = DecoratedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * mesh.addVertex(vec3(0.0f), vec4(1,0,0,1) );
  * mesh.addVertex(vec3(1.0f), vec4(0,1,0,1) );
@@ -126,7 +161,7 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * If texture coordinates is also needed for each vertex in the mesh then one could instead use:
  *
  * \code{.cpp}
- * using MyMesh = DecoratedMesh<PositionsBufferTrait, TexcoordBufferTrait, ColorsBufferTrait>;
+ * using MyMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
  * mesh.addVertex(vec3(1.0f), vec3(1.0f), vec4(0,1,0,1) );
@@ -150,13 +185,27 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * by the following example.
  *
  * \code{.cpp}
- * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
+ * using MyMesh = DecoratedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * // Add vertices as above
  * auto ib = mesh.addIndexBuffer(DrawType::Lines, ConnectivityType::None);
  * ib->add({0,1}); // Create a line between vertex 0 and 1
  * ib->add({1,2}); // Create another line between vertex 1 and 2
  * \endcode
+ *
+ * # Examples
+ * ## Creating a bounding box with Adjacency information
+ * The following code snippet uses a SimpleMesh2 to create bounding box for a given basisandoffset
+ * matrix. It is the code used in meshutil::boundingBoxAdjacency
+ *
+ * \snippet modules/base/algorithm/meshutils.cpp Using Simple Mesh 2
+ *
+ *
+ * ## Creating camera frustum
+ * The following code snippet is another example where we create a camera frustum mesh for a given
+ * camera. It is the code used in meshutil::cameraFrustum
+ *
+ * \snippet modules/base/algorithm/meshutils.cpp Using Colored Mesh
  *
  */
 template <typename... BufferTraits>
@@ -346,15 +395,37 @@ private:
     BufferTuple buffers_;
 };
 
-/** Type definition of a Mesh useful for Spheres, consists of a vec3-buffer for position, a
+/**
+ * \ingroup decoratedmesh
+ * Type definition of a DecoratedMesh useful for Spheres, consists of a vec3-buffer for position, a
  * float-buffer for radii and vec4 for colors.
  */
 using SphereMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::RadiiBuffer,
                                  buffertraits::ColorsBuffer>;
 
-/** Type definition of a Mesh having only positions(vec3) and colors(vec4).
+/**
+ * \ingroup decoratedmesh
+ * Type definition of a DecoratedMesh having only positions(vec3) and colors(vec4).
+ * Example usage:
+ * \snippet modules/base/algorithm/meshutils.cpp Using Colored Mesh
  */
 using ColoredMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
+
+/**
+ * \ingroup decoratedmesh
+ * Type definition of a DecoratedMesh having positions(vec3), texture coordinates(vec3) and
+ * colors(vec4). Example usage: \snippet modules/base/algorithm/meshutils.cpp Using Simple Mesh 2
+ */
+using SimpleMesh2 = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer,
+                                  buffertraits::ColorsBuffer>;
+
+/**
+ * \ingroup decoratedmesh
+ * Type definition of a DecoratedMesh having positions(vec3), normals(vec3), texture
+ * coordinates(vec3) and colors(vec4). Example usage:
+ */
+using BasicMesh2 = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
+                                 buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer>;
 
 }  // namespace inviwo
 
