@@ -149,7 +149,7 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * `DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>`. Depending on the Traits specified in the
  * declaration the interface towards the class is updated.
  *
- * # Usage 
+ * # Simple Usage 
  *
  * \code{.cpp}
  * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
@@ -193,15 +193,15 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * ib->add({1,2}); // Create another line between vertex 1 and 2
  * \endcode
  *
- *
- * # Creating a bounding box with Adjacency information
+ * # Examples
+ * ## Creating a bounding box with Adjacency information
  * The following code snippet uses a SimpleMesh2 to createa bounding box for a given basisandoffset
  * matrix. It is the code used in meshutil::boundingBoxAdjacency
  *
  * \snippet modules/base/algorithm/meshutils.cpp Using Simple Mesh 2
  *
  *
- * # Creating camera frustum
+ * ## Creating camera frustum
  * The following code snippet is another example where we create a camera frustum mesh for a given
  * camera. It is the code used in meshutil::cameraFrustum
  *
