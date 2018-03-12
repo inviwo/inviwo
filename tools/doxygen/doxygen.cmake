@@ -311,7 +311,7 @@ function(ivw_private_make_help)
         COMMENT "Building Qt QCH files for ${HARG_NAME}"
         VERBATIM
     )
-    set_target_properties("DOXY-HELP-${HARG_NAME}" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
+    set_target_properties("DOXY-HELP-${HARG_NAME}" PROPERTIES FOLDER "doc/qch" EXCLUDE_FROM_ALL TRUE)
 endfunction()
 
 function(make_doxygen_target modules_var)
