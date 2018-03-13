@@ -46,8 +46,6 @@ namespace inviwo {
  * \ingroup datastructures
  *
  * \copydetails DecoratedMesh
- *
- *
  */
 
 /**
@@ -81,7 +79,8 @@ struct get_index<T, Tail, Ts...>
  * \see decoratedmesh
  */
 template <typename T, unsigned DIM, int attrib, int location = attrib>
-struct BufferTrait {
+class BufferTrait {
+public:
     using type = Vector<DIM, T>;
     static inviwo::Mesh::BufferInfo bi() {
         return {static_cast<inviwo::BufferType>(attrib), location};
@@ -92,37 +91,91 @@ struct BufferTrait {
     type t;
     operator type() const { return t; }
 #endif
+
+    BufferTrait() {}
+    virtual ~BufferTrait() = default;
+
+    BufferTrait(Mesh &mesh) {
+        mesh.addBuffer(bi(), buffer_);
+    }
+
+    // Convenience functions
+    auto getTypedRAMRepresentation() const { return buffer_->getRAMRepresentation(); }
+    auto getTypedEditableRAMRepresentation() { return buffer_->getEditableRAMRepresentation(); }
+    auto &getTypedDataContainer() const { return getTypedRAMRepresentation()->getDataContainer(); }
+    auto &getTypedDataContainer() {
+        return getTypedEditableRAMRepresentation()->getDataContainer();
+    }
+
+    std::shared_ptr<Buffer<type>> buffer_{std::make_shared<Buffer<type>>()};
 };
 
 /**
  * \ingroup decoratedmesh
  * BufferTrait for Position buffers (glm::vec3)
  */
-using PositionsBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
+class PositionsBuffer : public BufferTrait<float, 3, static_cast<int>(BufferType::PositionAttrib)> {
+public:
+    using Base = BufferTrait<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
+    using Base::Base;
+
+    const std::shared_ptr<Buffer<type>> getVertices() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<type>> getEditableVertices() { return Base::buffer_; }
+};
 
 /**
  * \ingroup decoratedmesh
  * BufferTrait for Normal buffers (glm::vec3)
  */
-using NormalBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
+class NormalBuffer : public BufferTrait<float, 3, static_cast<int>(BufferType::NormalAttrib)> {
+public:
+    using Base = BufferTrait<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
+    using Base::Base;
+
+    const std::shared_ptr<Buffer<type>> getNormals() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<type>> getEditableNormals() { return Base::buffer_; }
+};
 
 /**
  * \ingroup decoratedmesh
  * BufferTrait for Colors buffers (glm::vec4)
  */
-using ColorsBuffer = BufferTrait<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
+class ColorsBuffer : public BufferTrait<float, 4, static_cast<int>(BufferType::ColorAttrib)> {
+public:
+    using Base = BufferTrait<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
+    using Base::Base;
+
+    const std::shared_ptr<Buffer<type>> getColors() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<type>> getEditableColors() { return Base::buffer_; }
+};
 
 /**
  * \ingroup decoratedmesh
  * BufferTrait for Texture Coordinate buffers (glm::vec3)
  */
-using TexcoordBuffer = BufferTrait<float, 3, static_cast<int>(BufferType::TexcoordAttrib)>;
+class TexcoordBuffer : public BufferTrait<float, 3, static_cast<int>(BufferType::TexcoordAttrib)> {
+public:
+    using Base = BufferTrait<float, 3, static_cast<int>(BufferType::TexcoordAttrib)>;
+    using Base::Base;
+
+    const std::shared_ptr<Buffer<type>> getTexCoords() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<type>> getEditableTexCoords() { return Base::buffer_; }
+};
 
 /**
  * \ingroup decoratedmesh
  * BufferTrait for Curvature buffers (float)
  */
-using CurvatureBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
+class CurvatureBuffer
+    : public BufferTrait<float, 1, static_cast<int>(BufferType::CurvatureAttrib)> {
+public:
+    using Base = BufferTrait<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
+    using Base::Base;
+
+    const std::shared_ptr<Buffer<type>> getCurvatures() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<type>> getEditableCurvatures() { return Base::buffer_; }
+};
+
 /**
  * \ingroup decoratedmesh
  * BufferTrait for Uint32 buffers
@@ -134,7 +187,15 @@ using IndexBuffer = BufferTrait<uint32_t, 1, static_cast<int>(BufferType::IndexA
  * BufferTrait for radii buffers (float)
  * \see SphereMesh
  */
-using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes), 5>;
+class RadiiBuffer
+    : public BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)> {
+public:
+    using Base = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)>;
+    using Base::Base;
+
+    const std::shared_ptr<Buffer<type>> getRadii() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<type>> getEditableRadii() { return Base::buffer_; }
+};
 }  // namespace buffertraits
 
 /**
@@ -161,9 +222,8 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * If texture coordinates is also needed for each vertex in the mesh then one could instead use:
  *
  * \code{.cpp}
- * using MyMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer>;
- * MyMesh mesh;
- * mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
+ * using MyMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer,
+ * buffertraits::ColorsBuffer>; MyMesh mesh; mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
  * mesh.addVertex(vec3(1.0f), vec3(1.0f), vec4(0,1,0,1) );
  * \endcode
  *
@@ -208,18 +268,42 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * \snippet modules/base/algorithm/meshutils.cpp Using Colored Mesh
  *
  */
+
+// DecoratedMesh<buffertraits::IndexBuffer,buffertraits::PositionBuffer> test;
+
 template <typename... BufferTraits>
-class DecoratedMesh : public Mesh {
+class DecoratedMesh : public Mesh, public BufferTraits... {
 public:
-#if _MSC_VER <= 1900
+#if defined(_MSC_VER) && _MSC_VER <= 1900
     using Vertex = std::tuple<BufferTraits...>;
 #else
     template <typename T>
     using TypeAlias = typename T::type;
-    using Vertex = std::tuple<TypeAlias<BufferTraits>...>;
+    
+    class Vertex {
+        
+        template<unsigned I,typename T2, typename... ARGS> void set(T2 &t , ARGS... args){
+            std::get<I>(values) = t;
+            set<I+1>(args...);
+        }
+
+        template<unsigned I,typename T2> void set(T2 &t){
+            std::get<I>(values) = t;
+        }
+
+    public:
+        Vertex(TypeAlias<BufferTraits>... vals) {
+            set<0>(vals...);
+        }
+        using VertexTuple = std::tuple<TypeAlias<BufferTraits>...>;
+        VertexTuple values;
+    };
+
+    //using Vertex = std::tuple<TypeAlias<BufferTraits>...>;
 #endif
 
-    DecoratedMesh() { addBuffersImpl<0, BufferTraits...>(); }
+    DecoratedMesh() : Mesh(), BufferTraits(*static_cast<Mesh*>(this))... {}
+
     DecoratedMesh(const DecoratedMesh &rhs) : Mesh(rhs) { copyConstrHelper<0, BufferTraits...>(); }
     DecoratedMesh &operator=(const DecoratedMesh &that) {
         if (this != &that) {
@@ -237,14 +321,14 @@ public:
         addVerticesImpl<0, BufferTraits...>(vertices);
     }
 
-#if _MSC_VER <= 1900
+#if defined(_MSC_VER) && _MSC_VER <= 1900
     void addVertex(BufferTraits... args) { addVertexImpl<0>(args...); }
     void setVertex(size_t index, BufferTraits... args) { setVertiesImpl<0>(index, args...); }
 #else
     void addVertex(TypeAlias<BufferTraits>... args) { addVertexImpl<0>(args...); }
 
     void setVertex(size_t index, TypeAlias<BufferTraits>... args) {
-        setVertiesImpl<0, BufferTraits...>(index, args...);
+        setVertiesImpl<0>(index, args...);
     }
 #endif
 
@@ -260,98 +344,61 @@ public:
         return indicesRam.get();
     }
 
-    template <unsigned I>
-    auto getTypedBuffer() {
-        return std::get<I>(buffers_).buffer_;
-    }
-
     template <typename BT>
     auto getTypedBuffer() {
-        return getTypedBuffer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
-    }
-
-    template <unsigned I>
-    auto getTypedBuffer() const {
-        return std::get<I>(buffers_).buffer_;
+        return BT::buffer_;
     }
 
     template <typename BT>
     auto getTypedBuffer() const {
-        return getTypedBuffer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
-    }
-
-    template <unsigned I>
-    auto getTypedEditableRAMRepresentation() {
-        return getTypedBuffer<I>()->getEditableRAMRepresentation();
+        return BT::buffer_;
     }
 
     template <typename BT>
-    auto getEditableRAMRepresentation() {
-        return getEditableRAMRepresentation<
-            buffertraits::detail::get_index<BT, BufferTraits...>::value>();
-    }
-
-    template <unsigned I>
     auto getTypedRAMRepresentation() const {
-        return getTypedBuffer<I>()->getRAMRepresentation();
+        return BT::getTypedRAMRepresentation();
     }
 
     template <typename BT>
-    auto getTypedRAMRepresentation() {
-        return getTypedRAMRepresentation<
-            buffertraits::detail::get_index<BT, BufferTraits...>::value>();
-    }
-
-    template <unsigned I>
-    auto &getTypedDataContainer() {
-        return getTypedEditableRAMRepresentation<I>()->getDataContainer();
-    }
-
-    template <typename BT>
-    auto &getTypedDataContainer() {
-        return getTypedDataContainer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
-    }
-
-    template <unsigned I>
-    auto &getTypedDataContainer() const {
-        return getTypedRAMRepresentation<I>()->getDataContainer();
+    auto getTypedEditableRAMRepresentation() {
+        return BT::getTypedEditableRAMRepresentation();
     }
 
     template <typename BT>
     auto &getTypedDataContainer() const {
-        return getTypedDataContainer<buffertraits::detail::get_index<BT, BufferTraits...>::value>();
+        return BT::getTypedDataContainer();
+    }
+
+    template <typename BT>
+    auto &getTypedDataContainer() {
+        return BT::getTypedDataContainer();
     }
 
 private:
-    template <unsigned I>
-    void addBuffersImpl() {}  // sink
-
-    template <unsigned I, typename T, typename... ARGS>
-    void addBuffersImpl() {
-        addBuffer(T::bi(), std::get<I>(buffers_).buffer_);
-        addBuffersImpl<I + 1, ARGS...>();
-    }
-
     template <unsigned I, typename T>
     void addVertexImpl(T &t) {
-        std::get<I>(buffers_).buffer_->getEditableRAMRepresentation()->add(t);
+        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
+        BT::getTypedEditableRAMRepresentation()->add(t);
     }
 
     template <unsigned I, typename T, typename... ARGS>
     void addVertexImpl(T &t, ARGS... args) {
-        std::get<I>(buffers_).buffer_->getEditableRAMRepresentation()->add(t);
+        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
+        BT::getTypedEditableRAMRepresentation()->add(t);
         addVertexImpl<I + 1>(args...);
     }
 
     template <unsigned I, typename T>
     void setVertiesImpl(size_t index, T &t) {
-        getTypedDataContainer<I>()->at(index) = t;
+        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
+        BT::getTypedDataContainer().at(index) = t;
     }
 
     template <unsigned I, typename T, typename... ARGS>
     void setVertiesImpl(size_t index, T &t, ARGS... args) {
-        getTypedDataContainer<I>()->at(index) = t;
-        addVertexImpl<I + 1>(index, args...);
+        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
+        BT::getTypedDataContainer().at(index) = t;
+        setVertiesImpl<I + 1>(index, args...);
     }
 
     template <unsigned I>
@@ -360,14 +407,14 @@ private:
     template <unsigned I, typename T, typename... ARGS>
     void addVerticesImpl(const std::vector<Vertex> &vertices) {
 
-        auto &vec = getTypedDataContainer<I>();
+        auto &vec = getTypedDataContainer<T>();
 
         auto neededSize = vertices.size() + vec.size();
         if (vec.capacity() < neededSize) {
             vec.reserve(neededSize);
         }
         for (auto &v : vertices) {
-            vec.push_back(std::get<I>(v));
+            vec.push_back(std::get<I>(v.values));
         }
 
         addVerticesImpl<I + 1, ARGS...>(vertices);
@@ -378,21 +425,9 @@ private:
 
     template <unsigned I, typename T, typename... ARGS>
     void copyConstrHelper() {
-        std::get<I>(buffers_).buffer_ =
-            std::static_pointer_cast<Buffer<typename T::type>>(Mesh::buffers_[I].second);
+        T::buffer_ = std::static_pointer_cast<Buffer<typename T::type>>(Mesh::buffers_[I].second);
         copyConstrHelper<I + 1, ARGS...>();
     }
-
-private:
-    template <typename T>
-    //! Convenience struct creating the default buffers.
-    struct BufferHolder {
-        using BUF = inviwo::Buffer<typename T::type>;
-        std::shared_ptr<BUF> buffer_{std::make_shared<BUF>()};
-    };
-
-    using BufferTuple = std::tuple<BufferHolder<BufferTraits>...>;
-    BufferTuple buffers_;
 };
 
 /**
@@ -416,16 +451,21 @@ using ColoredMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::C
  * Type definition of a DecoratedMesh having positions(vec3), texture coordinates(vec3) and
  * colors(vec4). Example usage: \snippet modules/base/algorithm/meshutils.cpp Using Simple Mesh 2
  */
-using SimpleMesh2 = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer,
-                                  buffertraits::ColorsBuffer>;
+class SimpleMesh2 : public DecoratedMesh<buffertraits::PositionsBuffer,
+                                         buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer> {
+};
 
 /**
  * \ingroup decoratedmesh
  * Type definition of a DecoratedMesh having positions(vec3), normals(vec3), texture
  * coordinates(vec3) and colors(vec4). Example usage:
  */
-using BasicMesh2 = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
-                                 buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer>;
+// using BasicMesh2 = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
+//                                 buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer>;
+
+class BasicMesh2 : public DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
+                                        buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer> {
+};
 
 }  // namespace inviwo
 
