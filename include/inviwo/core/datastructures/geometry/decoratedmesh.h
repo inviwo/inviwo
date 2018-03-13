@@ -275,7 +275,7 @@ public:
 template <typename... BufferTraits>
 class DecoratedMesh : public Mesh, public BufferTraits... {
 public:
-#if _MSC_VER <= 1900
+#if defined(_MSC_VER) && _MSC_VER <= 1900
     using Vertex = std::tuple<BufferTraits...>;
 #else
     template <typename T>
@@ -302,7 +302,7 @@ public:
         addVerticesImpl<0, BufferTraits...>(vertices);
     }
 
-#if _MSC_VER <= 1900
+#if defined(_MSC_VER) && _MSC_VER <= 1900
     void addVertex(BufferTraits... args) { addVertexImpl<0>(args...); }
     void setVertex(size_t index, BufferTraits... args) { setVertiesImpl<0>(index, args...); }
 #else
