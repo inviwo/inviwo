@@ -95,7 +95,6 @@ public:
     BufferTrait() {}
     virtual ~BufferTrait() = default;
 
-    template <typename Mesh>
     BufferTrait(Mesh &mesh) {
         mesh.addBuffer(bi(), buffer_);
     }
@@ -283,7 +282,7 @@ public:
     using Vertex = std::tuple<TypeAlias<BufferTraits>...>;
 #endif
 
-    DecoratedMesh() : Mesh(), BufferTraits(*this)... {}
+    DecoratedMesh() : Mesh(), BufferTraits(*static_cast<Mesh*>(this))... {}
 
     DecoratedMesh(const DecoratedMesh &rhs) : Mesh(rhs) { copyConstrHelper<0, BufferTraits...>(); }
     DecoratedMesh &operator=(const DecoratedMesh &that) {
