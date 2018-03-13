@@ -149,10 +149,10 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * `DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>`. Depending on the Traits specified in the
  * declaration the interface towards the class is updated.
  *
- * # Simple Usage 
+ * # Simple Usage
  *
  * \code{.cpp}
- * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
+ * using MyMesh = DecoratedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * mesh.addVertex(vec3(0.0f), vec4(1,0,0,1) );
  * mesh.addVertex(vec3(1.0f), vec4(0,1,0,1) );
@@ -161,7 +161,7 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * If texture coordinates is also needed for each vertex in the mesh then one could instead use:
  *
  * \code{.cpp}
- * using MyMesh = DecoratedMesh<PositionsBufferTrait, TexcoordBufferTrait, ColorsBufferTrait>;
+ * using MyMesh = DecoratedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
  * mesh.addVertex(vec3(1.0f), vec3(1.0f), vec4(0,1,0,1) );
@@ -185,7 +185,7 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  * by the following example.
  *
  * \code{.cpp}
- * using MyMesh = DecoratedMesh<PositionsBufferTrait,ColorsBufferTrait>;
+ * using MyMesh = DecoratedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * // Add vertices as above
  * auto ib = mesh.addIndexBuffer(DrawType::Lines, ConnectivityType::None);
@@ -195,7 +195,7 @@ using RadiiBuffer = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfB
  *
  * # Examples
  * ## Creating a bounding box with Adjacency information
- * The following code snippet uses a SimpleMesh2 to createa bounding box for a given basisandoffset
+ * The following code snippet uses a SimpleMesh2 to create bounding box for a given basisandoffset
  * matrix. It is the code used in meshutil::boundingBoxAdjacency
  *
  * \snippet modules/base/algorithm/meshutils.cpp Using Simple Mesh 2
