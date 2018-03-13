@@ -746,8 +746,6 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
     vertVector.insert(vertVector.end(), vertices.begin(), vertices.end());
     colorVector.insert(colorVector.end(), 8, color);
 
-    mesh->setVertex<buffertraits::ColorsBuffer>(3,vec4(1,0,0,0));
-
     mesh->setModelMatrix(glm::inverse(camera.getProjectionMatrix() * camera.getViewMatrix()));
 
     auto ib = std::make_shared<IndexBufferRAM>();
