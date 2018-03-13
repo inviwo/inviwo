@@ -279,7 +279,27 @@ public:
 #else
     template <typename T>
     using TypeAlias = typename T::type;
-    using Vertex = std::tuple<TypeAlias<BufferTraits>...>;
+    
+    class Vertex {
+        
+        template<unsigned I,typename T2, typename... ARGS> void set(T2 &t , ARGS... args){
+            std::get<I>(values) = t;
+            set<I+1>(args...);
+        }
+
+        template<unsigned I,typename T2> void set(T2 &t){
+            std::get<I>(values) = t;
+        }
+
+    public:
+        Vertex(TypeAlias<BufferTraits>... vals) {
+            set<0>(vals...);
+        }
+        using VertexTuple = std::tuple<TypeAlias<BufferTraits>...>;
+        VertexTuple values;
+    };
+
+    //using Vertex = std::tuple<TypeAlias<BufferTraits>...>;
 #endif
 
     DecoratedMesh() : Mesh(), BufferTraits(*static_cast<Mesh*>(this))... {}
@@ -394,7 +414,7 @@ private:
             vec.reserve(neededSize);
         }
         for (auto &v : vertices) {
-            vec.push_back(std::get<I>(v));
+            vec.push_back(std::get<I>(v.values));
         }
 
         addVerticesImpl<I + 1, ARGS...>(vertices);
