@@ -307,6 +307,7 @@ public:
     using VertexTuple = std::tuple<TypeAlias<BufferTraits>...>;
     class Vertex : public VertexTuple {
     public:
+        using VertexTuple::VertexTuple;
         Vertex(TypeAlias<BufferTraits>... vals) : VertexTuple(std::forward_as_tuple(vals...)) { }
     };
 
