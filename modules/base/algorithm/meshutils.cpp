@@ -29,6 +29,8 @@
 
 #include <modules/base/algorithm/meshutils.h>
 
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 
 #ifdef WIN32
@@ -95,7 +97,7 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
         float k;
         vec3 o;
         auto tube = util::make_unique<BasicMesh>();
-        IndexBufferRAM* inds = tube->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+        auto inds = tube->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
         for (std::uint32_t j = 0; j < segments; ++j) {
             k = static_cast<float>(j);
             o = glm::rotate(odir, static_cast<float>(j * angle), dir);
@@ -120,7 +122,7 @@ std::shared_ptr<BasicMesh> disk(const vec3& center, const vec3& normal, const ve
                                 const float& radius, const size_t& segments) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    IndexBufferRAM* inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     vec3 orth = detail::orthvec(normal);
 
     mesh->addVertex(center, normal, vec3(0.5f, 0.5f, 0.0f), color);
@@ -614,9 +616,9 @@ std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& c
     return mesh;
 }
 
-//! [Using Simple Mesh 2]
-std::shared_ptr<SimpleMesh2> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color) {
-    auto mesh = std::make_shared<SimpleMesh2>();
+//! [Using Simple Mesh]
+std::shared_ptr<NewSimpleMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color) {
+    auto mesh = std::make_shared<NewSimpleMesh>();
     mesh->setModelMatrix(basisandoffset);
 
     mesh->addVertices({{vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), color},
@@ -755,6 +757,12 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
     ib->add({off + 0, off + 4, off + 1, off + 5, off + 2, off + 6, off + 3, off + 7});  // sides
 
     mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indices);
+
+
+    using Foo = std::tuple<int,float>;
+    std::vector<Foo> foos = {{1 , 3.14f},{2 , 6.28f}};
+    Foo foo = {1 , 3.14f };
+
 
     return mesh;
 }

@@ -120,13 +120,14 @@ void exposeMesh(py::module &m) {
         .def("addVertex", &BasicMesh::addVertex)
         .def("addVertices", &BasicMesh::addVertices)
 
-        .def("setVertex", &BasicMesh::setVertex)
+        .def("setVertex", [](BasicMesh &self , size_t i , vec3 pos, vec3 norm, vec3 texCoord, vec4 color){
+        self.setVertex(i,pos,norm,texCoord,color);
+    })
         .def("setVertexPosition", &BasicMesh::setVertexPosition)
         .def("setVertexNormal", &BasicMesh::setVertexNormal)
         .def("setVertexTexCoord", &BasicMesh::setVertexTexCoord)
         .def("setVertexColor", &BasicMesh::setVertexColor)
 
-        //.def("addIndexBuffer", &BasicMesh::addIndexBuffer2, py::return_value_policy::reference)
         .def("addIndexBuffer",
              [](BasicMesh *mesh, DrawType dt, ConnectivityType ct) {
                  mesh->addIndexBuffer(dt, ct);
@@ -137,7 +138,9 @@ void exposeMesh(py::module &m) {
         .def("getVertices", &BasicMesh::getEditableVertices, py::return_value_policy::reference)
         .def("getTexCoords", &BasicMesh::getEditableTexCoords, py::return_value_policy::reference)
         .def("getColors", &BasicMesh::getEditableColors, py::return_value_policy::reference)
-        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference);
+        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference)
+    
+    ;
 
     exposeOutport<MeshOutport>(m, "Mesh");
 }
