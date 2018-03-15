@@ -758,12 +758,6 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
 
     mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indices);
 
-
-    using Foo = std::tuple<int,float>;
-    std::vector<Foo> foos = {{1 , 3.14f},{2 , 6.28f}};
-    Foo foo = {1 , 3.14f };
-
-
     return mesh;
 }
 //! [Using Colored Mesh]
