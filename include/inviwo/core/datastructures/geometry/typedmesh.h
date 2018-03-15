@@ -302,31 +302,12 @@ public:
     template <typename T>
     using TypeAlias = typename T::type;
 
-    class Vertex {
-
-        template <unsigned I, typename T2, typename... ARGS>
-        void set(T2 &t, ARGS... args) {
-            std::get<I>(values) = t;
-            set<I + 1>(args...);
-        }
-
-        template <unsigned I, typename T2>
-        void set(T2 &t) {
-            std::get<I>(values) = t;
-        }
-
+    using VertexTuple = std::tuple<TypeAlias<BufferTraits>...>;
+    class Vertex : public VertexTuple {
     public:
-        Vertex() = default;
-        Vertex(const Vertex &) = default;
-        Vertex &operator=(const Vertex &) = default;
-        ~Vertex() = default;
-
-        Vertex(TypeAlias<BufferTraits>... vals) { set<0>(vals...); }
-        using VertexTuple = std::tuple<TypeAlias<BufferTraits>...>;
-        VertexTuple values;
+        Vertex(TypeAlias<BufferTraits>... vals) : VertexTuple(std::forward_as_tuple(vals...)) { }
     };
 
-    // using Vertex = std::tuple<TypeAlias<BufferTraits>...>;
 #endif
 
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
@@ -455,7 +436,7 @@ private:
             vec.reserve(neededSize);
         }
         for (auto &v : vertices) {
-            vec.push_back(std::get<I>(v.values));
+            vec.push_back(std::get<I>(v));
         }
 
         addVerticesImpl<I + 1, ARGS...>(vertices);
