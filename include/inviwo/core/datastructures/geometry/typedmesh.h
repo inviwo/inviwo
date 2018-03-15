@@ -39,6 +39,8 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
+#include <tuple>
+
 namespace inviwo {
 
 /**
