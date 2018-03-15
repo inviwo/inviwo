@@ -308,7 +308,7 @@ public:
     class Vertex : public VertexTuple {
     public:
         Vertex() = default;
-        Vertex(TypeAlias<BufferTraits>... vals) : VertexTuple({vals...}) { }
+        Vertex(TypeAlias<BufferTraits>... vals) : VertexTuple(vals...) { }
     };
 #endif
 
