@@ -71,7 +71,7 @@ pybind11::dtype toNumPyFormat(const DataFormatBase *df) {
     return pybind11::dtype(format);
 }
 
-const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr) {
+const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr) {
     auto k = arr.dtype().kind();
     auto numType = [&]() {
         if (k == 'f')
@@ -126,7 +126,7 @@ struct VolumeFromArrayDistpatcher {
 std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
-    auto df = pyutil::getDataFomrat(ndim == 1 ? 1 : arr.shape(1), arr);
+    auto df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
     BufferFromArrayDistpatcher bufferFromArrayDistpatcher;
     return df->dispatch(bufferFromArrayDistpatcher, arr);
 }
@@ -134,7 +134,7 @@ std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr) {
 std::shared_ptr<Layer> createLayer(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 2 || ndim == 3, "Ndims must be either 2 or 3");
-    auto df = pyutil::getDataFomrat(ndim == 2 ? 1 : arr.shape(2), arr);
+    auto df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
     LayerFromArrayDistpatcher bufferFromArrayDistpatcher;
     return df->dispatch(bufferFromArrayDistpatcher, arr);
 }
@@ -142,7 +142,7 @@ std::shared_ptr<Layer> createLayer(pybind11::array &arr) {
 std::shared_ptr<Volume> createVolume(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 3 || ndim == 4, "Ndims must be either 3 or 4");
-    auto df = pyutil::getDataFomrat(ndim == 3 ? 1 : arr.shape(3), arr);
+    auto df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);
     VolumeFromArrayDistpatcher bufferFromArrayDistpatcher;
     return df->dispatch(bufferFromArrayDistpatcher, arr);
 }
