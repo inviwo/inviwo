@@ -92,6 +92,8 @@ if __name__ == '__main__':
                 names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
                 
         families += "\tNumberOfColormapFamilies,\n\tUndefined" + "\n};"
+        families_os += "\tcase Family::NumberOfColormapFamilies: os << \"NumberOfColormapFamilies\"; break;\n"
+        families_os += "\tcase Family::Undefined: os << \"Undefined\"; break;\n"
         catset = set(cat);
         catlist = list(catset);
 
@@ -111,6 +113,9 @@ if __name__ == '__main__':
                 getFamiliesForCategoryImpl += "\t\t\tv.emplace_back(Family::" + f + ");\n";
             getFamiliesForCategoryImpl += "\t\t\tbreak;\n";
         getFamiliesForCategoryImpl += "\t\tdefault:\n\t\t\tbreak;";
+
+        categories_os += "\t\tcase Category::NumberOfColormapCategories: os << \"NumberOfColormapCategories\"; break;\n";
+        categories_os += "\t\tcase Category::Undefined: os << \"Undefined\"; break;\n";
 
         r = 0;
         for a in maxElementsForFamily:
@@ -154,8 +159,8 @@ if __name__ == '__main__':
     header = header.replace("\t","    ");
 
     with open(ivwpath + '/include/inviwo/core/util/colorbrewer.h','w') as header_file:
-        print(header,file=header_file);
+        print(header,file=header_file)
         header_file.close();
     with open(ivwpath + '/src/core/util/colorbrewer.cpp','w') as source_file:
-        print(src,file=source_file);
+        print(src,file=source_file)
         source_file.close();
