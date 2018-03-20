@@ -427,6 +427,8 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
         case Category::Diverging: os << "Diverging"; break;
         case Category::Qualitative: os << "Qualitative"; break;
         case Category::Sequential: os << "Sequential"; break;
+        case Category::NumberOfColormapCategories: os << "NumberOfColormapCategories"; break;
+        case Category::Undefined: os << "Undefined"; break;
 
     }
 
@@ -472,6 +474,8 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     case Family::YlGnBu: os << "YlGnBu"; break;
     case Family::YlOrBr: os << "YlOrBr"; break;
     case Family::YlOrRd: os << "YlOrRd"; break;
+    case Family::NumberOfColormapFamilies: os << "NumberOfColormapFamilies"; break;
+    case Family::Undefined: os << "Undefined"; break;
 
     }
 
