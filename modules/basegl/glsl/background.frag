@@ -74,6 +74,12 @@ vec4 linearGradientVertical(vec2 texCoord) {
     return mix(bgColor2, bgColor1, texCoord.y);
 }
 
+vec4 linearGradientSpherical(vec2 texCoord) {
+	// bgColor1: inner color in circle
+	// bgColor2: outer color
+    return mix(bgColor1, bgColor2, distance(vec2(0.5), texCoord));
+}
+
 
 vec4 blendBackToFront(vec4 srcColor, vec4 dstColor) {
     return srcColor + dstColor * (1.0 - srcColor.a);
