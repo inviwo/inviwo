@@ -50,7 +50,7 @@ class Volume;
 namespace pyutil {
 
 IVW_MODULE_PYTHON3_API pybind11::dtype toNumPyFormat(const DataFormatBase *df);
-IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr);
+IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr);
 IVW_MODULE_PYTHON3_API std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr);
 IVW_MODULE_PYTHON3_API std::shared_ptr<Layer> createLayer(pybind11::array &arr);
 IVW_MODULE_PYTHON3_API std::shared_ptr<Volume> createVolume(pybind11::array &arr);
@@ -89,7 +89,7 @@ pybind11::array toNpArray(const std::vector<T> &v){
         return pybind11::array(pyutil::toNumPyFormat(df), shape, strides, v.data());
     }
     else {
-        return pybind11::array(/*pyutil::toNumPyFormat(df)*/ pybind11::dtype::of<DataFormat<T>::primitive>(), shape, strides, v.data(), pybind11::cast<>(1));
+        return pybind11::array(/*pyutil::toNumPyFormat(df)*/ pybind11::dtype::of<typename DataFormat<T>::primitive>(), shape, strides, v.data(), pybind11::cast<>(1));
     }
 }
 
