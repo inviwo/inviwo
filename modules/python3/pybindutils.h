@@ -89,7 +89,7 @@ pybind11::array toNpArray(const std::vector<T> &v){
         return pybind11::array(pyutil::toNumPyFormat(df), shape, strides, v.data());
     }
     else {
-        return pybind11::array(/*pyutil::toNumPyFormat(df)*/ pybind11::dtype::of<DataFormat<T>::primitive>(), shape, strides, v.data(), pybind11::cast<>(1));
+        return pybind11::array(/*pyutil::toNumPyFormat(df)*/ pybind11::dtype::of<typename DataFormat<T>::primitive>(), shape, strides, v.data(), pybind11::cast<>(1));
     }
 }
 
