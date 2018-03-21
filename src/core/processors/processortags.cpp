@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-Tag::Tag(const std::string& tag) : tag_(tag) {}
+Tag::Tag(std::string tag) : tag_(std::move(tag)) {}
 
 Tag& Tag::operator=(const std::string& that) {
     tag_ = that;
@@ -54,13 +54,7 @@ Tags::Tags(const std::string& tags) {
     }
 }
 
-Tags::Tags(const char* chartags) {
-    const std::string tags(chartags);
-    std::vector<std::string> strings = splitString(tags, ',');
-    for (auto& strings_it : strings) {
-        addTag(Tag(trim(strings_it)));
-    }
-}
+Tags::Tags(const char* tags) : Tags{std::string{tags}} {}
 
 Tags& Tags::operator=(const std::string& that) {
     tags_.clear();
