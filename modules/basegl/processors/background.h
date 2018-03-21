@@ -89,6 +89,7 @@ private:
     enum class BackgroundStyle {
         LinearHorizontal,
         LinearVertical,
+        LinearSpherical,
         Uniform,
         CheckerBoard,
     };
