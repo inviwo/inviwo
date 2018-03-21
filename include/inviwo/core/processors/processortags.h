@@ -98,6 +98,8 @@ public:
     static const Tags GL;
     static const Tags CL;
     static const Tags CPU;
+	static const Tags NanoVG;
+	static const Tags Python;
 };
 
 inline bool operator==(const Tags& lhs, const Tags& rhs) {

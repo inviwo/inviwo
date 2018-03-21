@@ -147,7 +147,8 @@ const Tags Tags::None("");
 const Tags Tags::GL("GL");
 const Tags Tags::CL("CL");
 const Tags Tags::CPU("CPU");
-
+const Tags Tags::NanoVG("NanoVG");
+const Tags Tags::Python("Python");
 
 namespace util {
 
