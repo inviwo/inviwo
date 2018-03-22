@@ -113,6 +113,8 @@ QtWidgetsSettings::QtWidgetsSettings()
     pythonSyntax_.addProperty(pyTextColor_);
     pythonSyntax_.addProperty(pyCommentsColor_);
     pythonSyntax_.addProperty(pyTypeColor_);
+    
+    load();
 }
 
 }  // namespace inviwo
