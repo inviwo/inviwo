@@ -28,9 +28,9 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/cuberenderer.h>
+#include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -57,6 +57,11 @@ CubeRenderer::CubeRenderer()
                          InvalidationLevel::InvalidResources)
     , customColor_("customColor", "Custom Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
                    vec4(1.0f))
+    , culling_("culling", "Culling",
+               {{"none", "None", 0},
+                {"front", "Front", GL_FRONT},
+                {"back", "Back", GL_BACK},
+                {"frontAndBack", "Front and Back", GL_FRONT_AND_BACK}})
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting", &camera_)
     , trackball_(&camera_)
@@ -75,7 +80,7 @@ CubeRenderer::CubeRenderer()
     cubeProperties_.addProperty(customSize_);
     cubeProperties_.addProperty(overrideCubeColor_);
     cubeProperties_.addProperty(customColor_);
-
+	cubeProperties_.addProperty(culling_);
     addProperty(cubeProperties_);
 
     addProperty(camera_);
@@ -96,11 +101,26 @@ void CubeRenderer::process() {
     shader_.activate();
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	const auto cullingWasEnabled = glIsEnabled(GL_CULL_FACE);
+	GLint state{ 0 };
+	glGetIntegerv(GL_CULL_FACE_MODE, &state);
+
+	if (culling_.get()) {
+		glEnable(GL_CULL_FACE);
+		glCullFace(culling_.get());
+	}
+	else {
+		glDisable(GL_CULL_FACE);
+	}
+
     utilgl::setUniforms(shader_, camera_, lighting_, customColor_, customSize_);
 
     shader_.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
                                         2.0f / outport_.getDimensions().y));
     drawMeshes();
+
+	cullingWasEnabled ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
+	glCullFace(state);
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
@@ -125,16 +145,14 @@ void CubeRenderer::initializeResources() {
 }
 
 void CubeRenderer::drawMeshes() {
-    
-            for (const auto& elem : inport_) {
-                MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
-                                                elem->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader_, *elem, "geometry");
-                shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
-                drawer.draw(MeshDrawerGL::DrawMode::Points);
-            }
-    
-    
+
+    for (const auto& elem : inport_) {
+        MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
+                                        elem->getDefaultMeshInfo());
+        utilgl::setShaderUniforms(shader_, *elem, "geometry");
+        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
+        drawer.draw(MeshDrawerGL::DrawMode::Points);
+    }
 }
 
 }  // namespace inviwo
