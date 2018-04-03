@@ -41,6 +41,7 @@
 #include <modules/python3/interface/pyglmtypes.h>
 #include <modules/python3/interface/pyproperties.h>
 #include <modules/python3/interface/pyvolume.h>
+#include <modules/python3/interface/pydatamapper.h>
 #include <modules/python3/interface/pybuffer.h>
 #include <modules/python3/interface/pymesh.h>
 
@@ -165,6 +166,7 @@ PYBIND11_PLUGIN(inviwopy) {
     exposeProperties(propertiesModule);
     exposeImage(dataModule);
     exposeVolume(dataModule);
+    exposeDataMapper(dataModule);
     exposeBuffer(dataModule);
     exposeMesh(dataModule);
 
