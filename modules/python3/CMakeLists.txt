@@ -17,6 +17,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonscriptsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.h
@@ -31,6 +32,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonscriptsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.cpp
