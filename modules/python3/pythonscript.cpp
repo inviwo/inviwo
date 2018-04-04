@@ -27,19 +27,18 @@
  *
  *********************************************************************************/
 
-#include "pythonscript.h"
+#include <modules/python3/pythonscript.h>
+
+#include <modules/python3/python3module.h>
+#include <modules/python3/pythonexecutionoutputobservable.h>
+#include <modules/python3/pythoninterpreter.h>
+#include <modules/python3/pybindutils.h>
+
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
-
-#include <modules/python3/pythonexecutionoutputobservable.h>
-#include <modules/python3/pythoninterpreter.h>
-
-#include <modules/python3/pybindutils.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <modules/python3/python3module.h>
 
-#include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 
 #include <traceback.h>

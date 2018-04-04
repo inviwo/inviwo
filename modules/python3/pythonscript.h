@@ -32,11 +32,12 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <pybind11/pybind11.h>
 #include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/callback.h>
 
-#include <unordered_map>
 #include <pybind11/pybind11.h>
+#include <unordered_map>
+#include <string>
 
 namespace inviwo {
 
@@ -92,7 +93,7 @@ public:
     bool run(std::function<void(pybind11::dict)> callback) { return run({}, callback); }
 
     virtual void setFilename(const std::string& filename);
-    const std::string& PythonScript::getFilename() const;
+    const std::string& getFilename() const;
 
 private:
     bool checkCompileError();

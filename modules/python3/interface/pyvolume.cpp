@@ -76,21 +76,14 @@ void exposeVolume(py::module &m) {
                     strides.push_back(df->getSize() / df->getComponents());
                 }
 
-                auto data = volume->getRepresentation<VolumeRAM>()->getData();
-
-                bool readOnly = false;
-                if (readOnly) {
-                    return py::array(pyutil::toNumPyFormat(df), shape, strides, data);
-                } else {
-                    return py::array(pyutil::toNumPyFormat(df), shape, strides, data,
-                                     py::cast<>(1));
-                }
-
+                auto data = volume->getEditableRepresentation<VolumeRAM>()->getData();
+                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
             })
-        .def("setData", [](Volume *volume, py::array arr) {
-                auto volData = volume->getEditableRepresentation<VolumeRAM>()->getData();
-                memcpy(volData, arr.data(0), arr.nbytes());
-            })
+        .def("setData",
+             [](Volume *volume, py::array arr) {
+                 auto volData = volume->getEditableRepresentation<VolumeRAM>()->getData();
+                 memcpy(volData, arr.data(0), arr.nbytes());
+             })
         .def("__repr__", [](const Volume &volume) {
             std::ostringstream oss;
             oss << "<Volume:\n  dimensions = " << volume.getDimensions()
