@@ -74,7 +74,7 @@ CanvasProcessor::CanvasProcessor()
     , fullscreen_("fullscreen", "FullScreen", [this](Event*) { setFullScreen(!isFullScreen()); },
                   IvwKey::F, KeyState::Press, KeyModifier::Shift)
     , saveLayerEvent_("saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
-        IvwKey::Unknown, KeyState::Press)
+        IvwKey::Undefined, KeyState::Press)
     , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
