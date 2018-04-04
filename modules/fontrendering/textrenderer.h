@@ -176,6 +176,8 @@ public:
      * height of the bounding box will be equal to (ascend + descend) + (number of lines - 1) times
      * line height.
      *
+     * Note: currently, overhang to the left, e.g. caused by italic glyphs, is not considered.
+     *
      * @param str  input string
      * @return size of the bounding box enclosing the input string in pixel
      */

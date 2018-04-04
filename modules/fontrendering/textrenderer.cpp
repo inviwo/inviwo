@@ -121,7 +121,6 @@ void TextRenderer::render(const std::string &str, const vec2 &posf, const vec2 &
         if (!p.first) {
             // glyph not found, skip it
             glyphPos += p.second.advance;
-
             continue;
         }
 
@@ -178,6 +177,8 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const siz
     // disable depth test and writing depth
     utilgl::DepthMaskState depthMask(GL_FALSE);
     utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
+
+    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     fbo_.activate();
     if (prevTexture_ != texture) {
@@ -237,8 +238,7 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
 }
 
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
-                                   const std::vector<TexAtlasEntry> &entries,
-                                   bool clearTexture) {
+                                   const std::vector<TexAtlasEntry> &entries, bool clearTexture) {
     // disable depth test and writing depth
     utilgl::DepthMaskState depthMask(GL_FALSE);
     utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
@@ -272,49 +272,69 @@ vec2 TextRenderer::computeTextSize(const std::string &str, const vec2 &scale) {
 }
 
 vec2 TextRenderer::computeTextSize(const std::string &str) {
-    float x = 0.0f;
+    const char lf = '\n';   // Line Feed Ascii for std::endl, \n
+    const char tab = '\t';  // Tab Ascii
+
+    auto &fc = getFontCache();
+
+    ivec2 glyphPos;
+    int verticalOffset = 0;
+
     // calculate height of first line
     // for most fonts descend is negative (see FreeType documentation for details)
-    float y = static_cast<float>(getFontAscent() + std::max(-getFontDescent(), 0.0));
+    vec2 bboxExtent(0.0f, static_cast<float>(getFontAscent() + std::max(-getFontDescent(), 0.0)));
+    vec2 bboxOrigin(0.0f);
 
-    float maxx = 0.0f;
-    float maxy = 0.0f;
-
-    const char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
-    const char tab = (char)0x9;  // Tab Ascii
-
-    for (auto p : str) {
-        if (FT_Load_Char(fontface_, p, FT_LOAD_RENDER)) {
-            LogWarn("FreeType: could not render char: '" << p << "' (0x" << std::hex
-                                                         << static_cast<int>(p) << ")");
-            continue;
-        }
-
-        float w = static_cast<float>(fontface_->glyph->bitmap.width);
-
-        if (p == lf) {
-            y += getLineHeight();
-            y += (fontface_->glyph->advance.y >> 6);
-            x = 0.0f;
-            continue;
-        } else if (p == tab) {
-            x += (fontface_->glyph->advance.x >> 6);
-            y += (fontface_->glyph->advance.y >> 6);
-            x += (4 * w);  // 4 times glyph character width
-            maxx = std::max(maxx, x);
-            continue;
-        }
-        x += (fontface_->glyph->advance.x >> 6);
-        maxx = std::max(maxx, x);
-
-        y += (fontface_->glyph->advance.y >> 6);
-        maxy = std::max(maxy, y);
+    // check input string for invalid utf8 encoding
+    auto endIt = utf8::find_invalid(str.begin(), str.end());
+    if (endIt != str.end()) {
+        LogWarn("Invalid UTF-8 encoding detected. This part is fine: " << std::string(str.begin(),
+                                                                                      endIt));
     }
+
+    auto it = str.begin();
+    while (it < endIt) {
+        // convert input string to Unicode
+        const uint32_t charCode = utf8::next(it, endIt);
+
+        auto p = requestGlyph(fc, charCode);
+        if (!p.first) {
+            // glyph not found, skip it
+            glyphPos += p.second.advance;
+            continue;
+        }
+
+        GlyphEntry &glyph = p.second;
+
+        if (charCode == lf) {
+            verticalOffset += getLineHeight();
+            glyphPos.x = 0;
+            glyphPos.y += glyph.advance.y;
+            continue;
+        } else if (charCode == tab) {
+            glyphPos += glyph.advance;
+            glyphPos.x += (4 * glyph.bitmapSize.x);  // 4 times glyph character width
+
+            bboxExtent.x = std::max<float>(bboxExtent.x, glyphPos.x);
+            continue;
+        }
+
+        // compute floating point position
+        vec2 pos(glyphPos.x + glyph.bitmapPos.x, verticalOffset + glyphPos.y + glyph.bitmapPos.y);
+
+        bboxExtent = glm::max(bboxExtent, pos + vec2(glyph.bitmapSize));
+        bboxOrigin = glm::min(bboxOrigin, pos);
+
+        glyphPos += glyph.advance;
+    }
+
+    // TODO: bboxOrigin needs to be taken into consideration as well as it might be negative
+    //       due to glyphs overhanging to the left, e.g. in italic font.
 
     // add 2 pixel in vertical direction to prevent cut-off. This is caused by the fact
     // that the font ascend and descend are not necessarily correct
     // (see FreeType documentation for details)
-    return vec2(maxx, maxy + 2);
+    return vec2(bboxExtent.x, bboxExtent.y + 2.0f);
 }
 
 void TextRenderer::setFontSize(int val) {
