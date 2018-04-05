@@ -35,14 +35,14 @@ if(POLICY CMP0042)
 endif()
 
 if(POLICY CMP0043)
-    # The OLD behavior for this policy is to consume the content of the 
-    # suffixed COMPILE_DEFINITIONS_<CONFIG> target property when generating
-    # the compilation command.
-    cmake_policy(SET CMP0043 OLD)
+    # The New bahaviour is to ignore COMPILE_DEFINITIONS_<CONFIG>
+    # and used COMPILE_DEFINITIONS with generator expressions"
+    cmake_policy(SET CMP0043 NEW)
 endif()
 
 if(POLICY CMP0046)
-    cmake_policy(SET CMP0046 OLD) # Missing dependencies policy.
+     # Warn when adding a missing dependency using add_dependencies()
+    cmake_policy(SET CMP0046 NEW)
 endif()
 
 if(POLICY CMP0051)
@@ -53,6 +53,11 @@ endif()
 if(POLICY CMP0054)
     # only interpret if() arguments as variables or keywords when unquoted
     cmake_policy(SET CMP0054 NEW)
+endif()
+
+if(POLICY CMP0057)
+    # CMake 3.3 adds support for the new IN_LIST operator.
+    cmake_policy(SET CMP0057 NEW)
 endif()
 
 # option for setting the project/solution name of the Inviwo project
