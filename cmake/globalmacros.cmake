@@ -55,7 +55,7 @@ function(ivw_configure_application_module_dependencies target)
         # Dependencies to build before this project when they are changed.
         # Needed if modules are loaded at runtime since they should be built
         # when this project is set as startup project
-        ivw_mod_name_to_target_name(dep_targets ${ARGN})
+        ivw_mod_name_to_alias(dep_targets ${ARGN})
         add_dependencies(${target} ${dep_targets})
     else()
         ivw_mod_name_to_reg(reg_targets ${ARGN})

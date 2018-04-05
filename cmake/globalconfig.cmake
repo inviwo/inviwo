@@ -261,7 +261,11 @@ if(WIN32 AND MSVC)
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
             SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
         endif()
-    endif()  
+    endif()
+
+    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.6")
+        set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo)
+    endif()
 endif()
 
 if(UNIX AND NOT APPLE)

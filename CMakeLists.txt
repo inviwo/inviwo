@@ -209,11 +209,6 @@ add_subdirectory(src/qt)
 #--------------------------------------------------------------------
 # Add applications
 add_subdirectory(apps)
-if(WIN32)
-    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.6")
-        set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo-cli)
-    endif()
-endif()
 
 #--------------------------------------------------------------------
 # Add external projects
