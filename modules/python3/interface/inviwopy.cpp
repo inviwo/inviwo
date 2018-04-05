@@ -64,20 +64,21 @@ struct DataFormatHelper {
                      py::return_value_policy::reference);
     }
 };
-}
+
+} //  namespace inviwo
 
 PYBIND11_MAKE_OPAQUE(std::vector<int>);
 PYBIND11_MAKE_OPAQUE(std::vector<float>);
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
-PYBIND11_PLUGIN(inviwopy) {
+PYBIND11_MODULE(inviwopy, m) {
 
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDDisable();
 #endif
 
     using namespace inviwo;
-    py::module m("inviwopy", "Python interface for Inviwo");
+    m.doc() = "Python interface for Inviwo";
 
     exposeGLMTypes(m);
 

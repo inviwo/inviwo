@@ -113,7 +113,7 @@ if(NOT MSVC)
     # We have some problem with -fvisibility=hidden...
     add_library(restore_default_visibility INTERFACE)
     target_compile_options(restore_default_visibility INTERFACE -fvisibility=default)
-    target_link_libraries(inviwo-module-python3 PRIVATE restore_default_visibility)
+    target_link_libraries(inviwo-module-python3 PUBLIC restore_default_visibility)
 endif()
 
 target_include_directories(inviwo-module-python3 PUBLIC
@@ -147,7 +147,7 @@ if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
         endif()
        
         file(MAKE_DIRECTORY "${py_dir}/python")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file} 
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file}
                         WORKING_DIRECTORY "${py_dir}/python")
         install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT python)
     endif()
