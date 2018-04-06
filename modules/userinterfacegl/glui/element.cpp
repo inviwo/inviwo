@@ -302,7 +302,7 @@ void Element::updateLabelPos() {
     if (!labelStr_.empty()) {
         // compute label position
         // keep track of the font descent to account for proper centering
-        int fontDescent = getCurrentTextRenderer().getBaseLineDescent();
+        int fontDescent = getCurrentTextRenderer().getBaseLineDescender();
         labelPos_ = computeLabelPos(fontDescent);
     } else {
         labelPos_ = ivec2(0, 0);

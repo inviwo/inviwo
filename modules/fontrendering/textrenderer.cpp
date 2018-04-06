@@ -133,23 +133,23 @@ void TextRenderer::render(const std::string &str, const vec2 &posf, const vec2 &
             continue;
         } else if (charCode == tab) {
             glyphPos += glyph.advance;
-            glyphPos.x += (4 * glyph.bitmapSize.x);  // 4 times glyph character width
+            glyphPos.x += (4 * glyph.size.x);  // 4 times glyph character width
             continue;
         }
 
         // compute floating point position
         vec3 pos(posf, 0.f);
-        pos.x += (glyphPos.x + glyph.bitmapPos.x) * scaling.x;
-        pos.y -= (verticalOffset - glyphPos.y - glyph.bitmapPos.y) * scaling.y;
+        pos.x += (glyphPos.x + glyph.bearing.x) * scaling.x;
+        pos.y -= (verticalOffset - glyphPos.y - glyph.bearing.y) * scaling.y;
 
         // Translate quad to correct position and render
         mat4 dataToWorld(
-            glm::scale(vec3(glyph.bitmapSize.x * scaling.x, -glyph.bitmapSize.y * scaling.y, 1.f)));
+            glm::scale(vec3(glyph.size.x * scaling.x, -glyph.size.y * scaling.y, 1.f)));
         dataToWorld[3] = vec4(pos, 1.0f);
 
         {
-            mat4 texTransform(glm::scale(vec3(vec2(glyph.bitmapSize) / texDims, 1.0f)));
-            texTransform[3] = vec4(vec2(glyph.texPos) / texDims, 0.0f, 1.0f);
+            mat4 texTransform(glm::scale(vec3(vec2(glyph.size) / texDims, 1.0f)));
+            texTransform[3] = vec4(vec2(glyph.texAtlasPos) / texDims, 0.0f, 1.0f);
 
             shader_.setUniform("geometry_.dataToWorld", dataToWorld);
             shader_.setUniform("texCoordTransform", texTransform);
@@ -171,7 +171,19 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const std
     renderToTexture(texture, size2_t(0u), texture->getDimensions(), str, color, clearTexture);
 }
 
+void TextRenderer::renderToTexture(const TextTextureObject &texObject, const std::string &str,
+                                   const vec4 &color, bool clearTexture) {
+    renderToTexture(texObject, size2_t(0u), texObject.texture->getDimensions(), str, color,
+                    clearTexture);
+}
+
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t &origin,
+                                   const size2_t &size, const std::string &str, const vec4 &color,
+                                   bool clearTexture) {
+    renderToTexture({texture, computeBoundingBox(str)}, origin, size, str, color, clearTexture);
+}
+
+void TextRenderer::renderToTexture(const TextTextureObject &texObject, const size2_t &origin,
                                    const size2_t &size, const std::string &str, const vec4 &color,
                                    bool clearTexture) {
     // disable depth test and writing depth
@@ -181,11 +193,11 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const siz
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     fbo_.activate();
-    if (prevTexture_ != texture) {
+    if (prevTexture_ != texObject.texture) {
         // detach previous texture and attach new texture as a render target, no depth texture
         fbo_.detachTexture(GL_COLOR_ATTACHMENT0);
-        fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
-        prevTexture_ = texture;
+        fbo_.attachTexture(texObject.texture.get(), GL_COLOR_ATTACHMENT0);
+        prevTexture_ = texObject.texture;
     }
     if (clearTexture) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -196,9 +208,12 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const siz
     ivec2 dim(size);
     utilgl::ViewportState viewport(pos.x, pos.y, dim.x, dim.y);
 
+    // adjust text position, i.e. the pen position, to match the first baseline
+    vec2 textPos(texObject.bbox.glyphPenOffset);
+
     // render text into texture
     vec2 scale(2.f / vec2(dim));
-    render(str, -1.0f, 1.0f - getBaseLineOffset() * scale.y, scale, color);
+    render(str, vec2(-1.0f, 1.0f) - textPos * scale, scale, color);
 
     fbo_.deactivate();
 }
@@ -231,7 +246,9 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
 
         // render text into texture
         vec2 scale(2.f / vec2(dim));
-        render(get<2>(elem), -1.0f, 1.0f - getBaseLineOffset() * scale.y, scale, color);
+        // adjust text position, i.e. the pen position, to match the first baseline
+        vec2 textPos(computeBoundingBox(get<2>(elem)).glyphPenOffset);
+        render(get<2>(elem), vec2(-1.0f, 1.0f) - textPos * scale, scale, color);
     }
 
     fbo_.deactivate();
@@ -261,80 +278,109 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
 
         // render text into texture
         vec2 scale(2.f / vec2(elem.texExtent));
-        render(elem.value, -1.0f, 1.0f - getBaseLineOffset() * scale.y, scale, elem.color);
+        // adjust text position, i.e. the pen position, to match the first baseline
+        vec2 textPos(computeBoundingBox(elem.value).glyphPenOffset);
+        render(elem.value, vec2(-1.0f, 1.0f) - textPos * scale, scale, elem.color);
     }
 
     fbo_.deactivate();
 }
 
 vec2 TextRenderer::computeTextSize(const std::string &str, const vec2 &scale) {
-    return computeTextSize(str) * scale;
+    return vec2(computeTextSize(str)) * scale;
 }
 
-vec2 TextRenderer::computeTextSize(const std::string &str) {
+size2_t TextRenderer::computeTextSize(const std::string &str) {
+    return computeBoundingBox(str).glyphsExtent;
+}
+
+TextBoundingBox TextRenderer::computeBoundingBox(const std::string &str) {
     const char lf = '\n';   // Line Feed Ascii for std::endl, \n
     const char tab = '\t';  // Tab Ascii
 
-    auto &fc = getFontCache();
-
-    ivec2 glyphPos;
-    int verticalOffset = 0;
-
-    // calculate height of first line
-    // for most fonts descend is negative (see FreeType documentation for details)
-    vec2 bboxExtent(0.0f, static_cast<float>(getFontAscent() + std::max(-getFontDescent(), 0.0)));
-    vec2 bboxOrigin(0.0f);
-
-    // check input string for invalid utf8 encoding
-    auto endIt = utf8::find_invalid(str.begin(), str.end());
-    if (endIt != str.end()) {
-        LogWarn("Invalid UTF-8 encoding detected. This part is fine: " << std::string(str.begin(),
-                                                                                      endIt));
+    if (str.empty()) {
+        // empty string, return empty bounding box
+        return {};
     }
 
-    auto it = str.begin();
-    while (it < endIt) {
-        // convert input string to Unicode
-        const uint32_t charCode = utf8::next(it, endIt);
+    // the pen position defines where the current glyph is positioned
+    ivec2 penPos(0, getBaseLineOffset());
 
+    // textual bounding box contains at least one line, calculate height of first line
+    //
+    // For most fonts descender is negative (see FreeType documentation for details)
+    ivec2 textBoxExtent(0, getBaseLineOffset() + std::max(-getBaseLineDescender(), 0));
+
+    // glyph bounding box enclosing all individual glyph bounding boxes
+    // start glyph bounding box at baseline
+    ivec2 glyphsTopLeft(std::numeric_limits<int>::max(), getBaseLineOffset());
+    ivec2 glyphsBottomRight(std::numeric_limits<int>::min());
+
+    auto &fc = getFontCache();
+    
+    // the vertical offset is increased for each additional line
+    int verticalOffset = 0;
+
+    // check input string for invalid utf8 encoding, process only valid part
+    auto strEndIt = utf8::find_invalid(str.begin(), str.end());
+    if (strEndIt != str.end()) {
+        LogWarn("Invalid UTF-8 encoding detected. This part is fine: " << std::string(str.begin(),
+                                                                                      strEndIt));
+    }
+    auto it = str.begin();
+    while (it < strEndIt) {
+        // convert input string to Unicode
+        const uint32_t charCode = utf8::next(it, strEndIt);
+
+        // query font cache for glyph matching the character code
         auto p = requestGlyph(fc, charCode);
         if (!p.first) {
             // glyph not found, skip it
-            glyphPos += p.second.advance;
+            penPos += p.second.advance;
             continue;
         }
 
         GlyphEntry &glyph = p.second;
 
         if (charCode == lf) {
+            // line break
             verticalOffset += getLineHeight();
-            glyphPos.x = 0;
-            glyphPos.y += glyph.advance.y;
+            // reset pen position to begin of the next line
+            penPos.x = 0;
+            penPos.y += glyph.advance.y;
             continue;
         } else if (charCode == tab) {
-            glyphPos += glyph.advance;
-            glyphPos.x += (4 * glyph.bitmapSize.x);  // 4 times glyph character width
+            // tab character
+            penPos += glyph.advance;
+            penPos.x += (4 * glyph.size.x);  // 4 times glyph character width
 
-            bboxExtent.x = std::max<float>(bboxExtent.x, glyphPos.x);
+            glyphsBottomRight.x = std::max(glyphsBottomRight.x, penPos.x);
+            textBoxExtent.x = std::max(textBoxExtent.x, penPos.x);
             continue;
         }
 
-        // compute floating point position
-        vec2 pos(glyphPos.x + glyph.bitmapPos.x, verticalOffset + glyphPos.y + glyph.bitmapPos.y);
+        // compute top-left position of glyph based on current pen position
+        ivec2 pos(penPos.x + glyph.bearing.x, verticalOffset + penPos.y - glyph.bearing.y);
 
-        bboxExtent = glm::max(bboxExtent, pos + vec2(glyph.bitmapSize));
-        bboxOrigin = glm::min(bboxOrigin, pos);
+        // update global glyphs bounding box
+        glyphsTopLeft = glm::min(glyphsTopLeft, pos);
+        glyphsBottomRight = glm::max(glyphsBottomRight, pos + glyph.size);
 
-        glyphPos += glyph.advance;
+        // advance pen to next glyph
+        penPos += glyph.advance;
+
+        // textual bounding box only considers maximum pen position
+        textBoxExtent.x = std::max(textBoxExtent.x, penPos.x);
     }
 
-    // TODO: bboxOrigin needs to be taken into consideration as well as it might be negative
-    //       due to glyphs overhanging to the left, e.g. in italic font.
+    // update vertical extent of textual bounding box
+    textBoxExtent.y += verticalOffset;
 
-    // add 2 pixel in vertical direction to prevent cut-off. This is caused by the fact
-    // that the font ascend and descend are not necessarily correct
-    // (see FreeType documentation for details)
-    return vec2(bboxExtent.x, bboxExtent.y + 2.0f);
+    // determine glyphs bounding box relative to bottom left corner of text box
+    ivec2 glyphsBottomLeft(glyphsTopLeft.x, textBoxExtent.y - glyphsBottomRight.y);
+    ivec2 glyphsExtent(glyphsBottomRight - glyphsTopLeft);
+
+    return {textBoxExtent, glyphsBottomLeft, glyphsExtent, getBaseLineOffset()};
 }
 
 void TextRenderer::setFontSize(int val) {
@@ -356,15 +402,17 @@ int TextRenderer::getLineHeight() const {
     return static_cast<int>(fontSize_ * (1.0 + lineSpacing_));
 }
 
-int TextRenderer::getBaseLineOffset() const { return static_cast<int>(getFontAscent()); }
+int TextRenderer::getBaseLineOffset() const { return static_cast<int>(getFontAscender() + 0.5); }
 
-int TextRenderer::getBaseLineDescent() const { return static_cast<int>(getFontDescent()); }
+int TextRenderer::getBaseLineDescender() const {
+    return static_cast<int>(getFontDescender() + 0.5);
+}
 
-double TextRenderer::getFontAscent() const {
+double TextRenderer::getFontAscender() const {
     return (fontface_->ascender * fontSize_ / static_cast<double>(fontface_->units_per_EM));
 }
 
-double TextRenderer::getFontDescent() const {
+double TextRenderer::getFontDescender() const {
     return (fontface_->descender * fontSize_ / static_cast<double>(fontface_->units_per_EM));
 }
 
@@ -388,13 +436,19 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache &fc,
         return std::make_pair(false, GlyphEntry());
     }
 
+    // create glyph entry with glyph specific params like advance, bearing (bitmap_left and
+    // bitmap_top), and size (bitmap.width, bitmap.height)
+    //
+    // \see
+    // https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_GlyphSlotRec
+    //
     const ivec2 advance(fontface_->glyph->advance.x >> 6, fontface_->glyph->advance.y >> 6);
     const ivec2 bitmapSize(fontface_->glyph->bitmap.width, fontface_->glyph->bitmap.rows);
     const ivec2 bitmapPos(fontface_->glyph->bitmap_left, fontface_->glyph->bitmap_top);
 
     GlyphEntry glyphEntry = {advance, bitmapSize, bitmapPos, ivec2(-1)};
 
-    const ivec2 glyphExtent(glyphEntry.bitmapSize + 2 * glyphMargin_);
+    const ivec2 glyphExtent(glyphEntry.size + 2 * glyphMargin_);
     const ivec2 texDims(fc.glyphTex->getDimensions());
 
     size_t line = 0;
@@ -402,7 +456,7 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache &fc,
         if ((fc.lineLengths[line] + glyphExtent.x < texDims.x) &&
             (fc.lineHeights[line + 1] - fc.lineHeights[line] >= glyphExtent.y)) {
             // found some space in the current line, store the glyph here
-            glyphEntry.texPos = ivec2(fc.lineLengths[line], fc.lineHeights[line]);
+            glyphEntry.texAtlasPos = ivec2(fc.lineLengths[line], fc.lineHeights[line]);
 
             fc.lineLengths[line] += glyphExtent.x;
             break;
@@ -417,7 +471,7 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache &fc,
             return std::make_pair(false, glyphEntry);
         }
         // create a new, empty line in the texture and store the glyph there
-        glyphEntry.texPos = ivec2(0, fc.lineHeights.back());
+        glyphEntry.texAtlasPos = ivec2(0, fc.lineHeights.back());
 
         fc.lineLengths.push_back(glyphExtent.x);
         fc.lineHeights.push_back(glyphExtent.y + fc.lineHeights.back());
@@ -441,8 +495,8 @@ void TextRenderer::uploadGlyph(FontCache &fc, unsigned int glyph) {
     if (FT_Load_Char(fontface_, glyph, FT_LOAD_RENDER)) return;
 
     const auto &elem = it->second;
-    glTexSubImage2D(GL_TEXTURE_2D, 0, elem.texPos.x, elem.texPos.y, elem.bitmapSize.x,
-                    elem.bitmapSize.y, GL_RED, GL_UNSIGNED_BYTE, fontface_->glyph->bitmap.buffer);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, elem.texAtlasPos.x, elem.texAtlasPos.y, elem.size.x,
+                    elem.size.y, GL_RED, GL_UNSIGNED_BYTE, fontface_->glyph->bitmap.buffer);
 }
 
 TextRenderer::FontCache &TextRenderer::getFontCache() {
@@ -499,9 +553,8 @@ void TextRenderer::createDefaultGlyphAtlas() {
             continue;
         }
         const auto &elem = it->second;
-        glTexSubImage2D(GL_TEXTURE_2D, 0, elem.texPos.x, elem.texPos.y, elem.bitmapSize.x,
-                        elem.bitmapSize.y, GL_RED, GL_UNSIGNED_BYTE,
-                        fontface_->glyph->bitmap.buffer);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, elem.texAtlasPos.x, elem.texAtlasPos.y, elem.size.x,
+                        elem.size.y, GL_RED, GL_UNSIGNED_BYTE, fontface_->glyph->bitmap.buffer);
     }
 
     // insert font cache into global map
@@ -514,8 +567,8 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache &fc) {
 
     // sort labels according to width then height
     std::sort(indices.begin(), indices.end(), [&](auto a, auto b) {
-        const auto &extA(fc.glyphMap[a].bitmapSize);
-        const auto &extB(fc.glyphMap[b].bitmapSize);
+        const auto &extA(fc.glyphMap[a].size);
+        const auto &extB(fc.glyphMap[b].size);
 
         return ((extA.x > extB.x) || ((extA.x == extA.x) && (extA.y > extA.y)));
     });
@@ -530,13 +583,13 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache &fc) {
         // Fill each line by putting each element after the previous one.
         // If an element does not fit, start new line.
         for (auto i : indices) {
-            const auto &extent = fc.glyphMap[i].bitmapSize + 2 * margin;
+            const auto &extent = fc.glyphMap[i].size + 2 * margin;
             size_t line = 0;
             while (line < lineLengths.size()) {
                 if (lineLengths[line] + extent.x < width) {
                     // found a position with enough space, for now we only know the x coord,
                     // use y component to store current line
-                    fc.glyphMap[i].texPos = ivec2(lineLengths[line] + margin, line);
+                    fc.glyphMap[i].texAtlasPos = ivec2(lineLengths[line] + margin, line);
                     lineLengths[line] += extent.x;
                     lineHeights[line] = std::max(extent.y, lineHeights[line]);
                     break;
@@ -545,7 +598,7 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache &fc) {
             }
             if (line == lineLengths.size()) {
                 // no space found, create new line
-                fc.glyphMap[i].texPos = ivec2(margin, line);
+                fc.glyphMap[i].texAtlasPos = ivec2(margin, line);
                 lineLengths.push_back(extent.x);
                 lineHeights.push_back(extent.y);
             }
@@ -554,7 +607,7 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache &fc) {
         std::partial_sum(lineHeights.begin(), lineHeights.end(), lineHeights.begin());
         lineHeights.insert(lineHeights.begin(), 0);
         for (auto &elem : fc.glyphMap) {
-            elem.second.texPos.y = lineHeights[elem.second.texPos.y] + margin;
+            elem.second.texAtlasPos.y = lineHeights[elem.second.texAtlasPos.y] + margin;
         }
 
         fc.lineLengths = std::move(lineLengths);
@@ -599,20 +652,52 @@ TextRenderer::FontFamilyStyle TextRenderer::getFontTuple() const {
 }
 
 namespace util {
-std::shared_ptr<Texture2D> createTextTexture(TextRenderer &textRenderer_, std::string text,
+
+TextTextureObject createTextTextureObject(TextRenderer &textRenderer, std::string text,
+                                          int fontSize, vec4 fontColor,
+                                          std::shared_ptr<Texture2D> tex) {
+    textRenderer.setFontSize(fontSize);
+
+    auto bbox = textRenderer.computeBoundingBox(text);
+
+    if (!tex || tex->getDimensions() != bbox.glyphsExtent) {
+        tex = std::make_shared<Texture2D>(bbox.glyphsExtent, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
+                                          GL_LINEAR);
+        tex->initialize(nullptr);
+    }
+    textRenderer.renderToTexture(tex, text, fontColor);
+    return {tex, bbox};
+}
+
+std::shared_ptr<Texture2D> createTextTexture(TextRenderer &textRenderer, std::string text,
                                              int fontSize, vec4 fontColor,
                                              std::shared_ptr<Texture2D> tex) {
-    textRenderer_.setFontSize(fontSize);
-    size2_t labelSize(textRenderer_.computeTextSize(text));
+    textRenderer.setFontSize(fontSize);
+
+    size2_t labelSize(textRenderer.computeBoundingBox(text).glyphsExtent);
 
     if (!tex || tex->getDimensions() != labelSize) {
         tex = std::make_shared<Texture2D>(labelSize, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR);
         tex->initialize(nullptr);
     }
-    textRenderer_.renderToTexture(tex, text, fontColor);
+    textRenderer.renderToTexture(tex, text, fontColor);
     return tex;
 }
 
 }  // namespace util
+
+TextBoundingBox::TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin,
+                                 const size2_t &glyphsExt, int baselineOffset)
+    : textExtent(textExt), glyphsOrigin(glyphsOrigin), glyphsExtent(glyphsExt) {
+    updateGlyphPenOffset(baselineOffset);
+}
+
+void TextBoundingBox::updateGlyphPenOffset(int baselineOffset) {
+    // determine vertical offset from top between text bounding box and glyph bounding box
+    int vertOffset =
+        static_cast<int>(textExtent.y) - glyphsOrigin.y - static_cast<int>(glyphsExtent.y);
+    // pen offset is determined by left-most and top-most glyphs
+    glyphPenOffset = ivec2(glyphsOrigin.x, baselineOffset - vertOffset);
+}
 
 }  // namespace inviwo

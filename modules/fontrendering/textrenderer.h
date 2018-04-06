@@ -54,11 +54,46 @@ namespace inviwo {
 class Texture2D;
 
 /**
+ * \struct TextBoundingBox
+ *
+ * \brief struct for holding bounding box information for a specific text
+ *
+ * The textual bounding box for a string has its origin (0,0) at the bottom-left corner and is
+ * given by its extent. The bounding box enclosing all glyphs has its own origin relative to (0,0).
+ * The first line starts at (0,0) + textExtent.y - ascender (i.e. getBaseLineOffset()).
+ *
+ * The glyph bounding box might be larger than the textual bounding box. It is guaranteed to
+ * enclose all glyphs including overhang, e.g. caused by italic glyphs or glyphs exceeding
+ * ascend and descend.
+ */
+struct TextBoundingBox {
+
+    TextBoundingBox() = default;
+
+    TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin, const size2_t &glyphsExt,
+                    int baselineOffset);
+
+    size2_t textExtent;  //<! extent of textual bounding box
+
+    ivec2 glyphsOrigin;    //!< relative origin of bottom-left most glyph
+    size2_t glyphsExtent;  //!< extent of bbox containing all glyphs extending to top right corner
+
+    ivec2 glyphPenOffset;  //!< pen offset to align first glyph perfectly on first baseline
+
+    void updateGlyphPenOffset(int baselineOffset);
+};
+
+struct TextTextureObject {
+    std::shared_ptr<Texture2D> texture;
+    TextBoundingBox bbox;
+};
+
+/**
  * \class TextRenderer
  *
  * \brief Render text using the FreeType font library
  *
- * The origin is at the top-left corner. The first line starts at origin - ascent
+ * The origin is at the top-left corner. The first line starts at origin - ascender
  * (getBaseLineOffset()). The distance between two lines is governed by either setting the line
  * height or the line spacing. The line height defines the distance between two consecutive
  * baselines. In contrast, the line spacing (or line gap) is given by line height minus ascend minus
@@ -75,7 +110,7 @@ class Texture2D;
  *        ggggggggg   ggggg  f:::::f       ffffff   │          │
  *       g:::::::::ggg::::g  f:::::f                │          │
  *      g:::::::::::::::::g f:::::::ffffff          │          │
- *     g::::::ggggg::::::gg f::::::::::::f          │        Ascent
+ *     g::::::ggggg::::::gg f::::::::::::f          │        Ascender
  *     g:::::g     g:::::g  f::::::::::::f          │          │
  *     g:::::g     g:::::g  f:::::::ffffff          │          │
  *     g:::::g     g:::::g   f:::::f                │          │
@@ -86,7 +121,7 @@ class Texture2D;
  * ────────gggggggg::::::g──fffffffff───────────────│────────────── Base line
  *                 g:::::g                          │          ▲
  *     gggggg      g:::::g                          │          │
- *     g:::::gg   gg:::::g                          │       Descent
+ *     g:::::gg   gg:::::g                          │       Descender
  *      g::::::ggg:::::::g                          │          │
  *       gg:::::::::::::g                           │          │
  *         ggg::::::ggg                             │          ▼
@@ -138,6 +173,9 @@ public:
      */
     void renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str,
                          const vec4 &color, bool clearTexture = true);
+
+    void renderToTexture(const TextTextureObject &texObject, const std::string &str,
+                         const vec4 &color, bool clearTexture = true);
     /**
      * \brief renders the given string with the specified color into a subregion of the texture.
      *
@@ -148,6 +186,9 @@ public:
      * @param color  color of rendered text
      * @param clearTexture   if true, the texture is cleared before rendering the text
      */
+    void renderToTexture(const TextTextureObject &texObject, const size2_t &origin,
+                         const size2_t &size, const std::string &str, const vec4 &color,
+                         bool clearTexture = true);
     void renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t &origin,
                          const size2_t &size, const std::string &str, const vec4 &color,
                          bool clearTexture = true);
@@ -160,28 +201,45 @@ public:
                          const std::vector<TexAtlasEntry> &entries, bool clearTexture = true);
 
     /**
-     * \brief computes the bounding box of a given string in normalized device coordinates using the
-     * scaling factor. The vertical height of the bounding box will be equal to (ascend + descend) +
-     * (number of lines - 1) times line height.
+     * \brief computes the glyph bounding box of a given string in normalized device coordinates
+     * using the scaling factor. The vertical height of the bounding box will be about (ascend +
+     * descend) + (number of lines - 1) times line height.
      *
      * @param str    input string
      * @param scale  scaling factor from screen space (pixel) to normalized device coordinates
      * ([-1,1])
-     * @return size of the bounding box enclosing the input string in normalized device coordinates
+     * @return size of the bounding box enclosing all glyphs of the input string in normalized
+     * device coordinates
+     *
+     * \see computeBoundingBox
      */
     vec2 computeTextSize(const std::string &str, const vec2 &scale);
 
     /**
-     * \brief computes the bounding box of a given string in pixels (screen space). The vertical
-     * height of the bounding box will be equal to (ascend + descend) + (number of lines - 1) times
-     * line height.
-     *
-     * Note: currently, overhang to the left, e.g. caused by italic glyphs, is not considered.
+     * \brief computes the glyph bounding box of a given string in pixels (screen space). The
+     * vertical height of the bounding box will be about (ascend + descend) + (number of lines - 1)
+     * times line height.
      *
      * @param str  input string
-     * @return size of the bounding box enclosing the input string in pixel
+     * @return size of the bounding box enclosing all glyphs of the input string in pixel
+     *
+     * \see computeBoundingBox
      */
-    vec2 computeTextSize(const std::string &str);
+    size2_t computeTextSize(const std::string &str);
+
+    /**
+     * \brief computes the bounding boxes of both text and all glyphs for a given string in pixels
+     * (screen space).
+     *
+     * The vertical height of the textual bounding box is equal to
+     * (ascend + descend) + (number of lines - 1) times line height. The width corresponds to the
+     * maximum sum of all glyph advances per row, which are given by the respective font.
+     * Note: glyphs might extend beyond the text bounding box.
+     *
+     * @param str  input string
+     * @return bounding box of the given string
+     */
+    TextBoundingBox computeBoundingBox(const std::string &str);
 
     void setFontSize(int val);
     int getFontSize() const { return fontSize_; }
@@ -209,16 +267,22 @@ public:
      *
      * @return baseline offset
      */
-    int getBaseLineDescent() const;
+    int getBaseLineDescender() const;
 
 protected:
     struct GlyphEntry {
+
+        /**
+         * glyph specific metrics. The bearing defines the offset from the origin to
+         * the top-left corner of the glyph.
+         *
+         * \see https://www.freetype.org/freetype2/docs/tutorial/step2.html
+         */
         ivec2 advance;
+        ivec2 size;     // corresponds to ivec2(bitmap.width, bitmap.rows)
+        ivec2 bearing;  // corresponds to ivec2(bitmap_left, bitmap_top)
 
-        ivec2 bitmapSize;  // bitmap.width, bitmap.rows
-        ivec2 bitmapPos;   // bitmap_left, bitmap_top
-
-        ivec2 texPos;
+        ivec2 texAtlasPos;  //!< position in texture atlas
     };
 
     using FontFamilyStyle =
@@ -234,8 +298,8 @@ protected:
         std::vector<int> lineHeights;
     };
 
-    double getFontAscent() const;
-    double getFontDescent() const;
+    double getFontAscender() const;
+    double getFontDescender() const;
 
     /**
      * \brief request glyph information from the texture atlas. The glyph will be added
@@ -278,25 +342,57 @@ protected:
 namespace util {
 
 /**
- * \brief Creates a texture with a text string
+ * \brief Creates a texture with rendered text for a given string including its bounding box
+ *
+ * Creates a texture with rendered text for a string using the specified renderer, fontSize and
+ * color. May take an additional variable tex of an existing texture that can be reused to reduce
+ * the number of times we need to allocating new textures. The resulting texture is returned along
+ * with the respective bounding box.
+ *
+ * The size of the texture will be the smallest possible for the given text. All pixels
+ * containing no text will have zero alpha.
+ *
+ * For correct alignment of the baseline, the position of where this texture will be rendered
+ * must be adjusted by pos + TextTextureObject.glyphsOrigin.
+ * See also TextOverlayGL::process() as an example.
+ *
+ * @param textRenderer The renderer that will be used to render the text
+ * @param text         string to be rendered
+ * @param fontSize     size of the text in pt
+ * @param fontColor    the final color of the text
+ * @param tex          optional cache texture which will be reused if possible
+ *                    (same texture will be returned)
+ * @return text texture object referring to both texture and corresponding bounding box
+ */
+IVW_MODULE_FONTRENDERING_API TextTextureObject
+createTextTextureObject(TextRenderer &textRenderer, std::string text, int fontSize, vec4 fontColor,
+                        std::shared_ptr<Texture2D> tex = nullptr);
+
+/**
+ * \brief Creates a texture with rendered text for a given string
  *
  * Creates a texture with a text string using the specified renderer, fontSize and color. May
  * take an additional variable tex of an existing texture that can be reused to reduce the number of
  * times we need to allocating new textures.
  *
  * The size of the texture will be the smallest possible for the given text and the pixels
- * containing no text will have zero alpha
+ * containing no text will have zero alpha.
+ * 
+ * For correct alignment of the baseline, the position of where this texture will be rendered
+ * must be adjusted by pos + computeBoundingBox(text).glyphsOrigin.
+ * See also TextOverlayGL::process() as an example.
  *
- * @param textRenderer_ The renderer that will be used to render the text
+ * @param textRenderer The renderer that will be used to render the text
  * @param text text to be rendered
  * @param fontSize size of the text in pt
  * @param fontColor the final color of the text
  * @param tex optional cache texture which will be reused if possible
- * @return std::shared_ptr<Texture2D> The texture containing the text.
+ * @return texture containing the text
  */
 IVW_MODULE_FONTRENDERING_API std::shared_ptr<Texture2D> createTextTexture(
-    TextRenderer &textRenderer_, std::string text, int fontSize, vec4 fontColor,
+    TextRenderer &textRenderer, std::string text, int fontSize, vec4 fontColor,
     std::shared_ptr<Texture2D> tex = nullptr);
+
 }  // namespace util
 
 }  // namespace inviwo
