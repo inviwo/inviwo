@@ -222,8 +222,6 @@ PYBIND11_MODULE(inviwopy, m) {
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDEnable();
 #endif
-
-    return m.ptr();
 }
 
 namespace inviwo {

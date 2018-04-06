@@ -11,6 +11,8 @@ function(echo_target_property tgt prop)
 endfunction()
 
 function(echo_target tgt)
+    # Property list from:
+    # https://cmake.org/cmake/help/latest/manual/cmake-properties.7.html#properties-on-targets
     set(props
     ALIASED_TARGET
     ANDROID_ANT_ADDITIONAL_OPTIONS
@@ -349,6 +351,7 @@ function(echo_target tgt)
         return()
     endif()
 
+
     set(interface_whitlist 
         COMPATIBLE_INTERFACE_BOOL
         COMPATIBLE_INTERFACE_NUMBER_MAX
@@ -366,6 +369,8 @@ function(echo_target tgt)
     get_property(target_type TARGET ${tgt} PROPERTY TYPE)
     foreach(p ${props})
         if(${target_type} STREQUAL  "INTERFACE_LIBRARY")
+            # Whitelist rules from:
+            # https://gitlab.kitware.com/cmake/cmake/blob/master/Source/cmTargetPropertyComputer.cxx
             if(${p} MATCHES "^INTERFACE_")
             elseif(${p} MATCHES "^_")
             elseif(${p} MATCHES "^[a-z]")
