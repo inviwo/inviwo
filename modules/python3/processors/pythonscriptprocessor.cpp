@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/processors/pythonscriptsource.h>
+#include <modules/python3/processors/pythonscriptprocessor.h>
 #include <modules/python3/python3module.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
@@ -36,16 +36,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo PythonScriptSource::processorInfo_{
-    "org.inviwo.PythonScriptSource",  // Class identifier
-    "Python Script Source",           // Display name
-    "Python",                         // Category
-    CodeState::Experimental,          // Code state
-    "Python, CPU",                    // Tags
+const ProcessorInfo PythonScriptProcessor::processorInfo_{
+    "org.inviwo.PythonScriptProcessor",  // Class identifier
+    "Python Script Processor",           // Display name
+    "Python",                            // Category
+    CodeState::Experimental,             // Code state
+    "Python, CPU",                       // Tags
 };
-const ProcessorInfo PythonScriptSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo PythonScriptProcessor::getProcessorInfo() const { return processorInfo_; }
 
-PythonScriptSource::PythonScriptSource()
+PythonScriptProcessor::PythonScriptProcessor()
     : Processor()
     , script_("")
     , scriptFileName_("scriptFileName", "File Name", "")
@@ -61,7 +61,7 @@ PythonScriptSource::PythonScriptSource()
     script_.onChange([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
-void PythonScriptSource::process() {
+void PythonScriptProcessor::process() {
     if (script_.getSource().empty()) {
         mesh_.setData(std::make_shared<Mesh>());
         return;

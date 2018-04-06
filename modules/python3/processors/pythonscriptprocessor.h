@@ -40,8 +40,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.PythonScriptSource, Python Mesh Script Source}
- * ![](org.inviwo.PythonScriptSource.png?classIdentifier=org.inviwo.PythonScriptSource)
+/** \docpage{org.inviwo.PythonScriptProcessor, Python Mesh Script Source}
+ * ![](org.inviwo.PythonScriptProcessor.png?classIdentifier=org.inviwo.PythonScriptProcessor)
  * Source processor for loading mesh and volume data using a python script.
  *
  * ### Outports
@@ -53,14 +53,14 @@ namespace inviwo {
  */
 
 /**
- * \class PythonScriptSource
+ * \class PythonScriptProcessor
  * \brief Loads a mesh and volume via a python script. The processor is invalidated
  * as soon as the script changes on disk.
  */
-class IVW_MODULE_PYTHON3_API PythonScriptSource : public Processor {
+class IVW_MODULE_PYTHON3_API PythonScriptProcessor : public Processor {
 public:
-    PythonScriptSource();
-    virtual ~PythonScriptSource() = default;
+    PythonScriptProcessor();
+    virtual ~PythonScriptProcessor() = default;
 
     virtual void process() override;
 
