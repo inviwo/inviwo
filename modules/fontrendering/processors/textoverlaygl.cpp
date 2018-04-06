@@ -49,7 +49,7 @@ const ProcessorInfo TextOverlayGL::processorInfo_{
     "Text Overlay",              // Display name
     "Drawing",                   // Category
     CodeState::Stable,           // Code state
-    Tags::GL,                    // Tags
+    "GL, Font, Text",            // Tags
 };
 const ProcessorInfo TextOverlayGL::getProcessorInfo() const { return processorInfo_; }
 
@@ -64,6 +64,7 @@ TextOverlayGL::TextOverlayGL()
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , font_("font", "Font Settings")
     , position_("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
+    , offset_("offset", "Offset (Pixel)", ivec2(0), ivec2(-100), ivec2(100))
     , addArgButton_("addArgBtn", "Add String Argument")
     , numArgs_(0u) {
     inport_.setOptional(true);
@@ -75,6 +76,7 @@ TextOverlayGL::TextOverlayGL()
     addProperty(color_);
     addProperty(font_);
     addProperty(position_);
+    addProperty(offset_);
     addProperty(addArgButton_);
 
     addArgButton_.onChange([this]() {
@@ -127,7 +129,8 @@ void TextOverlayGL::process() {
     vec2 shift = 0.5f * size * (font_.anchorPos_.get() + vec2(1.0f, 1.0f));
 
     ivec2 pos(position_.get() * vec2(outport_.getDimensions()));
-    pos -= ivec2(shift);
+    pos += offset_.get() - ivec2(shift);
+
     // render texture containing the text onto the current canvas
     textureRenderer_.render(cacheTexture_, pos, outport_.getDimensions());
 
@@ -190,6 +193,7 @@ std::string TextOverlayGL::getString() const {
 
 void TextOverlayGL::updateCache() {
     textRenderer_.setFontSize(font_.fontSize_.get());
+    textRenderer_.setLineSpacing(font_.lineSpacing_.get());
     std::string str(getString());
     cacheTexture_ = util::createTextTexture(textRenderer_, str, font_.fontSize_.get(), color_.get(),
                                             cacheTexture_);
