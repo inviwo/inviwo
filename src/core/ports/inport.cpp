@@ -41,8 +41,8 @@ Inport::Inport(std::string identifier)
                    return (isConnected() && util::all_of(connectedOutports_,
                                                          [](Outport* p) { return p->isReady(); }));
                }}
-    , changed_(false)
     , isOptional_(false, [this](const bool& isOptional) {}, []() { return false; })
+    , changed_(false)
     , lastInvalidationLevel_(InvalidationLevel::Valid) {}
 
 Inport::~Inport() = default;

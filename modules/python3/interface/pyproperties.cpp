@@ -47,20 +47,12 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-struct propertyDelete {
-    void operator()(Property *p) {
-        if (p && p->getOwner() == nullptr) delete p;
-    }
-};
-
 void exposeProperties(py::module &m) {
-
     py::class_<PropertyFactory>(m, "PropertyFactory")
         .def("hasKey", [](PropertyFactory *pf, std::string key) { return pf->hasKey(key); })
         .def_property_readonly("keys", [](PropertyFactory *pf) { return pf->getKeys(); })
         .def("create", [](PropertyFactory *pf, std::string key) {
             return propertyToPyObject(pf->create(key).release());
-
         });
 
     py::class_<PropertyWidget>(m, "PropertyWidget")
@@ -96,7 +88,8 @@ void exposeProperties(py::module &m) {
         .def("__getattr__", &getPropertyById<CompositeProperty>,
              py::return_value_policy::reference);
 
-    py::class_<BaseOptionProperty, Property, PropertyPtr<BaseOptionProperty>>(m, "BaseOptionProperty")
+    py::class_<BaseOptionProperty, Property, PropertyPtr<BaseOptionProperty>>(m,
+                                                                              "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
         .def_property_readonly("size", &BaseOptionProperty::size)
 
@@ -112,9 +105,8 @@ void exposeProperties(py::module &m) {
         .def("isSelectedDisplayName", &BaseOptionProperty::isSelectedDisplayName)
 
         .def_property_readonly("identifiers", &BaseOptionProperty::getIdentifiers)
-        .def_property_readonly("displayName", &BaseOptionProperty::getDisplayNames)
+        .def_property_readonly("displayName", &BaseOptionProperty::getDisplayNames);
 
-        ;
     using OptionPropetyTypes = std::tuple<double, float, int, std::string>;
     using MinMaxPropertyTypes = std::tuple<float, double, size_t, glm::i64, int>;
     using OrdinalPropetyTypes = std::tuple<float, int, size_t, glm::i64, double, vec2, vec3, vec4,
@@ -129,9 +121,12 @@ void exposeProperties(py::module &m) {
         .def("press", &ButtonProperty::pressButton);
 
     py::class_<CameraProperty, CompositeProperty, PropertyPtr<CameraProperty>>(m, "CameraProperty")
-        .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom , py::return_value_policy::copy)
-        .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo , py::return_value_policy::copy)
-        .def_property("lookUp", &CameraProperty::getLookUp, &CameraProperty::setLookUp , py::return_value_policy::copy)
+        .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom,
+                      py::return_value_policy::copy)
+        .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo,
+                      py::return_value_policy::copy)
+        .def_property("lookUp", &CameraProperty::getLookUp, &CameraProperty::setLookUp,
+                      py::return_value_policy::copy)
         .def_property_readonly("lookRight", &CameraProperty::getLookRight)
         .def_property("aspectRatio", &CameraProperty::getAspectRatio,
                       &CameraProperty::setAspectRatio)
@@ -170,14 +165,14 @@ void exposeProperties(py::module &m) {
         .def("load",
              [](TransferFunctionProperty *tf, std::string filename) { tf->get().load(filename); })
         .def("clear", [](TransferFunctionProperty &tp) { tp.get().clearPoints(); })
-        .def("addPoint", [](TransferFunctionProperty &tp, vec2 pos, vec3 color) {
-            tp.get().addPoint(pos.x, vec4(color, pos.y));
-        })
+        .def("addPoint", [](TransferFunctionProperty &tp, vec2 pos,
+                            vec3 color) { tp.get().addPoint(pos.x, vec4(color, pos.y)); })
         .def("addPoint", [](TransferFunctionProperty &tp, float pos, vec4 color) {
             tp.get().addPoint(pos, color);
         });
 
-    py::class_<StringProperty, Property, PropertyPtr<StringProperty>> strProperty(m, "StringProperty");
+    py::class_<StringProperty, Property, PropertyPtr<StringProperty>> strProperty(m,
+                                                                                  "StringProperty");
     pyTemplateProperty<std::string, StringProperty>(strProperty);
 
     py::class_<FileProperty, Property, PropertyPtr<FileProperty>> fileProperty(m, "FileProperty");
@@ -190,4 +185,4 @@ void exposeProperties(py::module &m) {
     py::class_<BoolProperty, Property, PropertyPtr<BoolProperty>> boolProperty(m, "BoolProperty");
     pyTemplateProperty<bool, BoolProperty>(boolProperty);
 }
-}  // namespace
+}  // namespace inviwo
