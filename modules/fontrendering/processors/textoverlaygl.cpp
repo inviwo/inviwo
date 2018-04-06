@@ -109,8 +109,8 @@ void TextOverlayGL::process() {
     }
 
     // check whether a property was modified
-    if (!cacheTexture_ ||
-        util::any_of(getProperties(), [](const auto& p) { return p->isModified(); })) {
+    if (!textObject_.texture || text_.isModified() || color_.isModified() || font_.isModified()) {
+        // util::any_of(font_.getProperties(), [](const auto& p) { return p->isModified(); })) {
         updateCache();
     }
 
@@ -125,14 +125,15 @@ void TextOverlayGL::process() {
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     // use integer position for best results
-    vec2 size(cacheTexture_->getDimensions());
+    vec2 size(textObject_.bbox.textExtent);
     vec2 shift = 0.5f * size * (font_.anchorPos_.get() + vec2(1.0f, 1.0f));
 
     ivec2 pos(position_.get() * vec2(outport_.getDimensions()));
     pos += offset_.get() - ivec2(shift);
 
     // render texture containing the text onto the current canvas
-    textureRenderer_.render(cacheTexture_, pos, outport_.getDimensions());
+    textureRenderer_.render(textObject_.texture, pos + textObject_.bbox.glyphsOrigin,
+                            outport_.getDimensions());
 
     utilgl::deactivateCurrentTarget();
 }
@@ -195,8 +196,8 @@ void TextOverlayGL::updateCache() {
     textRenderer_.setFontSize(font_.fontSize_.get());
     textRenderer_.setLineSpacing(font_.lineSpacing_.get());
     std::string str(getString());
-    cacheTexture_ = util::createTextTexture(textRenderer_, str, font_.fontSize_.get(), color_.get(),
-                                            cacheTexture_);
+    textObject_ = util::createTextTextureObject(textRenderer_, str, font_.fontSize_.get(),
+                                                color_.get(), textObject_.texture);
 }
 
 }  // namespace inviwo

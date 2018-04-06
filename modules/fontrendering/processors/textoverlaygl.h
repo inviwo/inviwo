@@ -117,7 +117,7 @@ private:
 
     const std::size_t maxNumArgs_ = 99;
 
-    std::shared_ptr<Texture2D> cacheTexture_; //!< cache rendered text
+    TextTextureObject textObject_;
 
     TextureQuadRenderer textureRenderer_;
 };
