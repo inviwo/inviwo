@@ -267,7 +267,8 @@ IvwKey mapKeyFromQt(const QKeyEvent *keyevent) {
         /* Function Keys */
     case Qt::Key_Escape:
         return IvwKey::Escape;
-    case Qt::Key_Enter:
+    case Qt::Key_Enter:  // from Qt docs: Typically located on the keypad.
+    case Qt::Key_Return: // maps to the actual Enter key on Windows
         return IvwKey::Enter;
     case Qt::Key_Tab:
         return IvwKey::Tab;
