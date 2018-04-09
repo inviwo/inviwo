@@ -36,6 +36,8 @@
 
 namespace inviwo {
 
+KernelManager* KernelManager::instance_ = nullptr;
+
 KernelManager::KernelManager() {
 }
 

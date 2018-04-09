@@ -81,6 +81,9 @@ private:
     std::thread::id mainThread_;
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;
+
+    friend Singleton<RenderContext>;
+    static RenderContext* instance_;
 };
 
 template <typename C>

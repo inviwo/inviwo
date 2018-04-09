@@ -79,6 +79,9 @@ private:
 
     bool enabled_ = false;
     const BaseCallBack* enableCallback_ = nullptr;
+
+    friend Singleton<PickingManager>;
+    static PickingManager* instance_;
 };
 
 template <typename T>

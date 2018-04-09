@@ -32,6 +32,8 @@
 
 namespace inviwo {
 
+RenderContext* RenderContext::instance_ = nullptr;
+
 void RenderContext::setDefaultRenderContext(Canvas* canvas) {
     defaultContext_ = canvas;
     mainThread_ = std::this_thread::get_id();

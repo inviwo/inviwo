@@ -226,6 +226,9 @@ public:
     bool getLogStacktrace() const;
 
 private:
+    friend Singleton<LogCentral>;
+    static LogCentral* instance_;
+
     LogLevel logLevel_;
 #include <warn/push>
 #include <warn/ignore/dll-interface>
