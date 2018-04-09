@@ -55,7 +55,7 @@ std::wstring toWstring(const std::string& str) {
     MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), &result[0], size_needed);
     return result;
 }
-#else 
+#else
 std::wstring toWstring(const std::string& str) {
     auto state = std::mbstate_t();
     const char* s = str.c_str();
@@ -66,7 +66,7 @@ std::wstring toWstring(const std::string& str) {
 }
 #endif
 
-} // namespace util
+}  // namespace util
 
 std::vector<std::string> splitString(const std::string& str, char delimeter) {
     std::vector<std::string> strings;
@@ -206,8 +206,7 @@ std::string randomString(size_t length) {
 
 // trim from start
 std::string ltrim(std::string s) {
-    s.erase(s.begin(),
-            std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) { return !std::isspace(c); }));
     return s;
 }
 
@@ -252,9 +251,8 @@ bool iCaseLess(const std::string& l, const std::string& r) {
 
 // trim from end
 std::string rtrim(std::string s) {
-    s.erase(
-        std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(),
-        s.end());
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](auto c) { return !std::isspace(c); }).base(),
+            s.end());
     return s;
 }
 

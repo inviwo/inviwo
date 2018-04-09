@@ -109,10 +109,20 @@ set(INTERFACE_SRC_FILES
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 target_link_libraries(inviwo-module-python3 PUBLIC pybind11::module $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>)
 
+if(NOT MSVC)
+    # We have some problem with -fvisibility=hidden...
+    add_library(restore_default_visibility INTERFACE)
+    target_compile_options(restore_default_visibility INTERFACE -fvisibility=default)
+    target_link_libraries(inviwo-module-python3 PUBLIC restore_default_visibility)
+endif()
+
 target_include_directories(inviwo-module-python3 PUBLIC
     ${PYTHON_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/ext/pybind11/include
 )
+
+#include(../../cmake/taget_info.cmake)
+#echo_targets(pybind11::module pybind11::embed inviwo-module-python3)
 
 ivw_add_py_wrapper(inviwopy ${INTERFACE_SRC_FILES} ${INTERFACE_HEADER_FILES})
 
@@ -137,7 +147,7 @@ if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
         endif()
        
         file(MAKE_DIRECTORY "${py_dir}/python")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file} 
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file}
                         WORKING_DIRECTORY "${py_dir}/python")
         install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT python)
     endif()
@@ -153,7 +163,7 @@ ivw_make_package(InviwoPython3Module inviwo-module-python3)
 # register license files
 
 # Cannot get pybind11::module version property since it is an INTERFACE target
-ivw_register_license_file(NAME "PyBind11" VERSION 2.1.1 MODULE Python3
+ivw_register_license_file(NAME "PyBind11" VERSION 2.2.2 MODULE Python3
     URL "https://github.com/pybind/pybind11"
     TYPE "BSD-style"
     FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE

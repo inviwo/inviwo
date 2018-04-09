@@ -124,68 +124,61 @@ void addOrdinalPropertyIterator(M &m, PC &pc) {
 }
 
 struct OrdinalPropertyHelper {
-
     template <typename T>
     auto operator()(pybind11::module &m) {
+        namespace py = pybind11;
         using P = OrdinalProperty<T>;
 
         auto classname = Defaultvalues<T>::getName() + "Property";
 
-        pybind11::class_<P, Property, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOrdinal(
-            m, classname.c_str());
-        pyOrdinal
-            .def("__init__",
-                 [](P &instance, const std::string &identifier, const std::string &displayName,
-                    const T &value = Defaultvalues<T>::getVal(),
-                    const T &minValue = Defaultvalues<T>::getMin(),
-                    const T &maxValue = Defaultvalues<T>::getMax(),
-                    const T &increment = Defaultvalues<T>::getInc()) {
-                     new (&instance)
-                         P(identifier, displayName, value, minValue, maxValue, increment);
-                 })
-
+        py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
+        prop.def(py::init([](const std::string &identifier, const std::string &name,
+                             const T &value = Defaultvalues<T>::getVal(),
+                             const T &min = Defaultvalues<T>::getMin(),
+                             const T &max = Defaultvalues<T>::getMax(),
+                             const T &increment = Defaultvalues<T>::getInc()) {
+                return new P(identifier, name, value, min, max, increment);
+            }))
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement);
-        pyTemplateProperty<T, P>(pyOrdinal);
 
-        addOrdinalPropertyIterator<T, P>(m, pyOrdinal);
+        pyTemplateProperty<T, P>(prop);
+        addOrdinalPropertyIterator<T, P>(m, prop);
 
-        return pyOrdinal;
+        return prop;
     }
 };
 
 struct MinMaxHelper {
-
     template <typename T>
     auto operator()(pybind11::module &m) {
+        namespace py = pybind11;
         using P = MinMaxProperty<T>;
         using range_type = glm::tvec2<T, glm::defaultp>;
 
         auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
 
-        pybind11::class_<P, Property, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOrdinal(
-            m, classname.c_str());
-        pyOrdinal
-            .def("__init__",
-                 [](P &instance, const std::string &identifier, const std::string &displayName,
-                    const T &valueMin = Defaultvalues<T>::getMin(),
-                    const T &valueMax = Defaultvalues<T>::getMax(),
-                    const T &rangeMin = Defaultvalues<T>::getMin(),
-                    const T &rangeMax = Defaultvalues<T>::getMax(),
-                    const T &increment = Defaultvalues<T>::getInc(), const T &minSeperation = 0) {
-                     new (&instance) P(identifier, displayName, valueMin, valueMax, rangeMin,
-                                       rangeMax, increment, minSeperation);
-                 })
+        py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
+        prop.def(py::init([](const std::string &identifier, const std::string &name,
+                             const T &valueMin = Defaultvalues<T>::getMin(),
+                             const T &valueMax = Defaultvalues<T>::getMax(),
+                             const T &rangeMin = Defaultvalues<T>::getMin(),
+                             const T &rangeMax = Defaultvalues<T>::getMax(),
+                             const T &increment = Defaultvalues<T>::getInc(),
+                             const T &minSeperation = 0) {
+                return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax, increment,
+                             minSeperation);
+            }))
             .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
             .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def_property("minSeparation", &P::getMinSeparation, &P::setMinSeparation)
             .def_property("range", &P::getRange, &P::setRange);
 
-        pyTemplateProperty<range_type, P>(pyOrdinal);
+        pyTemplateProperty<range_type, P>(prop);
 
-        return pyOrdinal;
+        return prop;
     }
 };
 
@@ -193,29 +186,28 @@ struct OptionPropertyHelper {
 
     template <typename T>
     auto operator()(pybind11::module &m) {
-        using namespace inviwo;
+        namespace py = pybind11;
         using P = TemplateOptionProperty<T>;
         using O = OptionPropertyOption<T>;
 
         auto classname = "OptionProperty" + Defaultvalues<T>::getName();
         auto optionclassname = Defaultvalues<T>::getName() + "Option";
 
-        pybind11::class_<O>(m, optionclassname.c_str())
-            .def(pybind11::init<>())
-            .def(pybind11::init<const std::string &, const std::string &, const T &>())
+        py::class_<O>(m, optionclassname.c_str())
+            .def(py::init<>())
+            .def(py::init<const std::string &, const std::string &, const T &>())
             .def_readwrite("id", &O::id_)
             .def_readwrite("name", &O::name_)
             .def_readwrite("value", &O::value_);
 
-        pybind11::class_<P, BaseOptionProperty, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOption(
-            m, classname.c_str());
-        pyOption.def(pybind11::init<const std::string &, const std::string &>())
+        py::class_<P, BaseOptionProperty, PropertyPtr<P>> prop(m, classname.c_str());
+        prop.def(py::init<const std::string &, const std::string &>())
             .def("addOption", [](P *p, const std::string &id, const std::string &displayName,
                                  const T &t) { p->addOption(id, displayName, t); })
 
             .def_property_readonly("values", &P::getValues)
-            .def("removeOption", static_cast<void(P::*)(size_t)>(&P::removeOption))
-            .def("removeOption", static_cast<void(P::*)(const std::string&)>(&P::removeOption))
+            .def("removeOption", py::overload_cast<size_t>(&P::removeOption))
+            .def("removeOption", py::overload_cast<const std::string &>(&P::removeOption))
 
             .def_property("value", [](P *p) { return p->get(); }, [](P *p, T &t) { p->set(t); })
             .def_property("selectedValue", &P::getSelectedValue, &P::setSelectedValue)
@@ -225,14 +217,11 @@ struct OptionPropertyHelper {
                     const std::vector<std::string> &displayNames,
                     const std::vector<T> &values) { p->replaceOptions(ids, displayNames, values); })
 
-            .def("replaceOptions",
-                 [](P *p, std::vector<OptionPropertyOption<T>> options) {
-                     p->replaceOptions(options);
-                 })
+            .def("replaceOptions", [](P *p, std::vector<OptionPropertyOption<T>> options) {
+                p->replaceOptions(options);
+            });
 
-            ;
-
-        return pyOption;
+        return prop;
     }
 };
 

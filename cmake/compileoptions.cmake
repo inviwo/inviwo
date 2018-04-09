@@ -61,6 +61,14 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
             list(APPEND comp_opts "/wd4996") # ignore deprication    https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx
+            if(MSVC_VERSION GREATER_EQUAL 1910)
+                list(APPEND comp_opts "/w35038") # class member reorder
+                if(NOT OpenMP_ON)
+                    list(APPEND comp_opts "/permissive-")
+                endif()
+                list(APPEND comp_opts "/std:c++latest")
+                #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
+            endif()
         endif()
         list(REMOVE_DUPLICATES comp_opts)
         set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
@@ -113,6 +121,7 @@ macro(ivw_define_standard_definitions project_name target)
                                                      NOMINMAX
                                                      WIN32_LEAN_AND_MEAN
                                                      UNICODE
+                                                     _UNICODE
         )
     else()
         target_compile_definitions(${target} PRIVATE HAVE_CONFIG_H)

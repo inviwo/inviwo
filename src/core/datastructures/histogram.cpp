@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogram.h>
@@ -43,7 +43,7 @@ NormalizedHistogram::NormalizedHistogram(const NormalizedHistogram& rhs)
     , maximumBinCount_(rhs.maximumBinCount_)
     , valid_(rhs.valid_) {}
 
-NormalizedHistogram& NormalizedHistogram::operator=(const NormalizedHistogram &that) {
+NormalizedHistogram& NormalizedHistogram::operator=(const NormalizedHistogram& that) {
     if (this != &that) {
         stats_ = that.stats_;
         data_.resize(that.data_.size());
@@ -54,39 +54,23 @@ NormalizedHistogram& NormalizedHistogram::operator=(const NormalizedHistogram &t
     return *this;
 }
 
-NormalizedHistogram* NormalizedHistogram::clone() const {
-    return new NormalizedHistogram(*this);
-}
+NormalizedHistogram* NormalizedHistogram::clone() const { return new NormalizedHistogram(*this); }
 
 NormalizedHistogram::~NormalizedHistogram() {}
 
-std::vector<double>* NormalizedHistogram::getData() {
-    return &data_;
-}
+std::vector<double>* NormalizedHistogram::getData() { return &data_; }
 
-const std::vector<double>* NormalizedHistogram::getData() const {
-    return &data_;
-}
+const std::vector<double>* NormalizedHistogram::getData() const { return &data_; }
 
-double& NormalizedHistogram::operator[](size_t i) {
-    return data_[i];
-}
+double& NormalizedHistogram::operator[](size_t i) { return data_[i]; }
 
-const double& NormalizedHistogram::operator[](size_t i) const {
-    return data_[i];
-}
+const double& NormalizedHistogram::operator[](size_t i) const { return data_[i]; }
 
-bool NormalizedHistogram::exists() const {
-    return data_.empty();
-}
+bool NormalizedHistogram::exists() const { return data_.empty(); }
 
-void NormalizedHistogram::setValid(bool valid) {
-    valid_ = valid;
-}
+void NormalizedHistogram::setValid(bool valid) { valid_ = valid; }
 
-bool NormalizedHistogram::isValid() const {
-    return valid_;
-}
+bool NormalizedHistogram::isValid() const { return valid_; }
 
 void NormalizedHistogram::resize(size_t numberOfBins) {
     if (numberOfBins != data_.size()) {
@@ -101,23 +85,22 @@ void NormalizedHistogram::performNormalization() {
 
     // Normalize all bins with the largest count
     std::transform(data_.begin(), data_.end(), data_.begin(),
-                   std::bind2nd(std::multiplies<double>(), 1.0 / maximumBinCount_));
+                   [factor = 1.0 / maximumBinCount_](auto val) { return val * factor; });
 }
 
-double NormalizedHistogram::getMaximumBinValue() const {
-    return maximumBinCount_;
-}
+double NormalizedHistogram::getMaximumBinValue() const { return maximumBinCount_; }
 
 void NormalizedHistogram::calculatePercentiles() {
     double sum = std::accumulate(data_.begin(), data_.end(), 0.0);
     stats_.percentiles.resize(101);
     double accumulation = 0;
     size_t i = 0;
-    for (size_t j = 0; j < data_.size(); ++j){
+    for (size_t j = 0; j < data_.size(); ++j) {
         accumulation += data_[j];
         while (accumulation / sum >= static_cast<double>(i) / 100.0) {
-            stats_.percentiles[i] = static_cast<double>(j) / static_cast<double>(data_.size() - 1)
-                    * (dataRange_.y - dataRange_.x) + dataRange_.x;
+            stats_.percentiles[i] = static_cast<double>(j) / static_cast<double>(data_.size() - 1) *
+                                        (dataRange_.y - dataRange_.x) +
+                                    dataRange_.x;
             i++;
         }
     }
@@ -128,8 +111,8 @@ void NormalizedHistogram::calculateHistStats() {
     std::copy(data_.begin(), data_.end(), temp.begin());
     std::sort(temp.begin(), temp.end());
     double sum = std::accumulate(data_.begin(), data_.end(), 0.0);
-    double sum2 = std::accumulate(data_.begin(), data_.end(), 0.0, 
-        [](double a, double b) { return a + b*b; });
+    double sum2 = std::accumulate(data_.begin(), data_.end(), 0.0,
+                                  [](double a, double b) { return a + b * b; });
 
     histStats_.min = *temp.begin();
     histStats_.max = *(temp.end() - 1);
@@ -139,17 +122,18 @@ void NormalizedHistogram::calculateHistStats() {
 
     histStats_.percentiles.resize(101, 0.0);
     for (size_t i = 1; i < histStats_.percentiles.size(); ++i) {
-        histStats_.percentiles[i] = temp.at(static_cast<size_t>(
-            std::ceil(static_cast<double>(i) / static_cast<double>(histStats_.percentiles.size()-1) *
-            static_cast<double>(data_.size()))) - 1);
+        histStats_.percentiles[i] = temp.at(
+            static_cast<size_t>(std::ceil(static_cast<double>(i) /
+                                          static_cast<double>(histStats_.percentiles.size() - 1) *
+                                          static_cast<double>(data_.size()))) -
+            1);
     }
 }
 
 HistogramContainer::HistogramContainer() {}
 
 HistogramContainer::HistogramContainer(const HistogramContainer& rhs) {
-    for (auto h : rhs.histograms_)
-        histograms_.push_back(h->clone());
+    for (auto h : rhs.histograms_) histograms_.push_back(h->clone());
 }
 
 HistogramContainer::HistogramContainer(HistogramContainer&& rhs) : histograms_(rhs.histograms_) {
@@ -164,34 +148,21 @@ HistogramContainer& HistogramContainer::operator=(HistogramContainer&& that) {
     return *this;
 }
 
-NormalizedHistogram& HistogramContainer::operator[](size_t i) const {
-    return *histograms_[i];
-}
+NormalizedHistogram& HistogramContainer::operator[](size_t i) const { return *histograms_[i]; }
 
-HistogramContainer* HistogramContainer::clone() const {
-    return new HistogramContainer(*this);
-}
+HistogramContainer* HistogramContainer::clone() const { return new HistogramContainer(*this); }
 
 HistogramContainer::~HistogramContainer() {
-    for (auto h : histograms_)
-        delete h;
+    for (auto h : histograms_) delete h;
 }
 
-size_t HistogramContainer::size() const {
-    return histograms_.size();
-}
+size_t HistogramContainer::size() const { return histograms_.size(); }
 
-bool HistogramContainer::empty() const {
-    return histograms_.empty();
-}
+bool HistogramContainer::empty() const { return histograms_.empty(); }
 
-NormalizedHistogram* HistogramContainer::get(size_t i) const {
-    return histograms_[i];
-}
+NormalizedHistogram* HistogramContainer::get(size_t i) const { return histograms_[i]; }
 
-void HistogramContainer::add(NormalizedHistogram* hist) {
-    histograms_.push_back(hist);
-}
+void HistogramContainer::add(NormalizedHistogram* hist) { histograms_.push_back(hist); }
 
 void HistogramContainer::setValid(bool valid) {
     for (auto h : histograms_) h->setValid(valid);
@@ -199,7 +170,7 @@ void HistogramContainer::setValid(bool valid) {
 
 bool HistogramContainer::isValid() const {
     for (auto h : histograms_)
-        if(!h->isValid()) return false;
+        if (!h->isValid()) return false;
 
     return true;
 }
@@ -214,5 +185,4 @@ HistogramContainer& HistogramContainer::operator=(const HistogramContainer& that
     return *this;
 }
 
-} // namespace
-
+}  // namespace inviwo

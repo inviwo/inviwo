@@ -80,7 +80,7 @@ if(IVW_CMAKE_DEBUG)
         endif()
     endfunction()
 
-    #variable_watch(PYTHON_EXECUTABLE)
+    #variable_watch(OpenMP_ON)
     #variable_watch(_projectName log_proj)
 endif()
 
@@ -267,7 +267,11 @@ if(WIN32 AND MSVC)
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
             SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
         endif()
-    endif()  
+    endif()
+
+    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.6")
+        set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo)
+    endif()
 endif()
 
 if(UNIX AND NOT APPLE)
@@ -283,14 +287,15 @@ option(IVW_RUNTIME_MODULE_LOADING
 #--------------------------------------------------------------------
 # Check if OpenMP is available and set it to use, and include the dll in packs
 find_package(OpenMP QUIET)
-if(OPENMP_FOUND)
-    option(OPENMP_ON "Use OpenMP" ON)
-    if(OPENMP_ON)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-    endif()
+option(OpenMP_ON "Use OpenMP" ${OPENMP_FOUND})
+if(OpenMP_ON AND OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+elseif(OpenMP_ON)
+    message(FATAL_ERROR "OpenMP not available")
 endif()
+
 
 #--------------------------------------------------------------------
 # Set preprocessor definition to indicate whether 

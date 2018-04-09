@@ -36,4 +36,4 @@ ivw_define_standard_properties(inviwo-integrationtests)
 ivw_memleak_setup(inviwo-integrationtests)
 
 # Optimize compilation with pre-compilied headers based on inviwo-core
-ivw_compile_optimize_inviwo_core_on_target(inviwo-integrationtests)
+ivw_compile_optimize_on_target(inviwo-integrationtests)
