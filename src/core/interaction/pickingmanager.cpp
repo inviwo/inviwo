@@ -36,6 +36,8 @@
 
 namespace inviwo {
 
+PickingManager* PickingManager::instance_ = nullptr;
+
 PickingManager::PickingManager() = default;
 
 PickingManager::~PickingManager() = default;

@@ -129,6 +129,8 @@ void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = 
 
 bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
 
+LogCentral* LogCentral::instance_ = nullptr;
+
 void util::log(ExceptionContext context, std::string message, LogLevel level,
                LogAudience audience) {
     LogCentral::getPtr()->log(context.getCaller(), level, audience, context.getFile().c_str(),

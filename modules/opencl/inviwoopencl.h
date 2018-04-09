@@ -243,6 +243,8 @@ private:
     // Include directories define
     std::vector<std::string> includeDirectories_;
 
+    friend Singleton<OpenCL>;
+    static OpenCL* instance_;
 };
 
 /**

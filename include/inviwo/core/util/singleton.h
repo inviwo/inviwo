@@ -46,6 +46,10 @@ public:
         : Exception(message, context) {}
 };
 
+
+/*
+ * T must have a static T* instance_ member variable.
+ */
 template <class T>
 class Singleton {
 public:
@@ -54,53 +58,47 @@ public:
     void operator=(Singleton<T> const&) = delete;
 
     static void init() {
-        if (instance_ != nullptr) {
+        if (T::instance_) {
             throw SingletonException("Singleton already initialized", IvwContextCustom("Singleton"));
         }
-        instance_ = util::defaultConstructType<T>();
-        if (instance_ == nullptr) {
+        T::instance_ = util::defaultConstructType<T>();
+        if (!T::instance_) {
             throw SingletonException("Was not able to initialize singleton", IvwContextCustom("Singleton"));
         }
     };
 
     static void init(T* instance) {
-        if (instance_ != nullptr) {
+        if (T::instance_) {
             throw SingletonException("Singleton already initialized", IvwContextCustom("Singleton"));
         }
-        if (instance == nullptr) {
+        if (!instance) {
             throw SingletonException("Null pointer passed", IvwContextCustom("Singleton"));
         }
-        instance_ = instance;
+        T::instance_ = instance;
     };
 
     static T* getPtr() {
-        if (instance_ == 0) {
+        if (!T::instance_) {
             throw SingletonException(
                 "Singleton not initialized. Ensure that init() is called in a thread-safe "
                 "environment. ",
                 IvwContextCustom("Singleton"));
         }
-        return instance_;
+        return T::instance_;
     };
 
     static void deleteInstance() {
-        delete instance_;
-        instance_ = nullptr;
+        delete T::instance_;
+        T::instance_ = nullptr;
     };
 
     static bool isInitialized() {
-        return instance_ != nullptr;
+        return T::instance_ != nullptr;
     }
 
-    virtual ~Singleton() { Singleton<T>::resetInstance(); };
-
-private:
-    static void resetInstance() { instance_ = nullptr; };
-    static T* instance_;
+    virtual ~Singleton() { T::instance_ = nullptr; };
 };
 
-template <class T>
-T* Singleton<T>::instance_ = nullptr;
 
 }  // end of namespace
 
