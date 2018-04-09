@@ -54,6 +54,10 @@ public:
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
+	
+	void setFlag(const std::string& flag);
+	void resetFlag(const std::string& flag);
+	bool isFlagSet(const std::string& flag) const;
 
     const std::unordered_set<size_t> &getSelectedIndices()const;
     const std::unordered_set<size_t> &getFilteredIndices()const;
@@ -61,7 +65,10 @@ public:
     virtual std::string getClassIdentifier() const override;
 
     std::unordered_set<size_t> filterCache_;
-    std::unordered_set<size_t> selctionCache_;
+    std::unordered_set<size_t> selectionCache_;
+
+private:
+	std::vector<std::string> flags_;
 };
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport

@@ -29,7 +29,7 @@
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-namespace inviwo{
+namespace inviwo {
 
 BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     : DataInport<BrushingAndLinkingManager>(identifier) {
@@ -37,19 +37,19 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
 
     onConnect([&]() {
         sendFilterEvent(filterCache_);
-        sendSelectionEvent(selctionCache_);
+        sendSelectionEvent(selectionCache_);
     });
 }
 
 void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> &indices) {
-    filterCache_ = indices;
-    FilteringEvent event(this, filterCache_);
+	filterCache_ = indices; 
+	FilteringEvent event(this, filterCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
-    selctionCache_ = indices;
-    SelectionEvent event(this, selctionCache_);
+	selectionCache_ = indices; 
+	SelectionEvent event(this, selectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
@@ -65,25 +65,32 @@ bool BrushingAndLinkingInport::isSelected(size_t idx) const {
     if (isConnected()) {
         return getData()->isSelected(idx);
     } else {
-        return selctionCache_.find(idx) != selctionCache_.end();
+        return selectionCache_.find(idx) != selectionCache_.end();
     }
+}
+
+void BrushingAndLinkingInport::setFlag(const std::string &flag) { flags_.push_back(flag); }
+
+void BrushingAndLinkingInport::resetFlag(const std::string &flag) {
+    flags_.erase(std::remove(flags_.begin(), flags_.end(), flag), flags_.end());
+}
+
+bool BrushingAndLinkingInport::isFlagSet(const std::string &flag) const {
+    return std::find(flags_.begin(), flags_.end(), flag) != flags_.end();
 }
 
 const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices() const {
     if (isConnected()) {
         return getData()->getSelectedIndices();
-    }
-    else {
-        return selctionCache_;
+    } else {
+        return selectionCache_;
     }
 }
-
 
 const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices() const {
     if (isConnected()) {
         return getData()->getFilteredIndices();
-    }
-    else {
+    } else {
         return filterCache_;
     }
 }
@@ -99,4 +106,4 @@ std::string BrushingAndLinkingOutport::getClassIdentifier() const {
     return PortTraits<BrushingAndLinkingOutport>::classIdentifier();
 }
 
-}  // namespace
+}  // namespace inviwo
