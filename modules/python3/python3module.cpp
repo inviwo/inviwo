@@ -42,6 +42,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythonlogger.h>
+#include <modules/python3/processors/pythonscriptprocessor.h>
 
 namespace inviwo {
 
@@ -55,6 +56,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();
     registerProcessor<NumPyMeshCreateTest>();
+    registerProcessor<PythonScriptProcessor>();
 
     pythonInterpreter_->addObserver(&pythonLogger_);
     app->getCommandLineParser().add(

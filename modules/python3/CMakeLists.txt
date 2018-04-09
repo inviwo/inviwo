@@ -14,9 +14,10 @@ execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonscriptprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.h
@@ -28,12 +29,13 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymandelbrot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpymeshcreatetest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/numpyvolume.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pythonscriptprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonexecutionoutputobservable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythoninterpreter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pybindutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonlogger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonscript.cpp
 )
@@ -54,6 +56,7 @@ set(SCRIPT_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/mandelbrot.py
     ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/numpymeshcreatetest.py
     ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/numpyvolumeprocessor.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/scripts/scriptprocessorexample.py
 )
 ivw_group("Script Files" ${SCRIPT_FILES})
 
@@ -82,6 +85,7 @@ set(INTERFACE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/inviwopy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyvolume.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pydatamapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pybuffer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pymesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyimage.h
@@ -96,6 +100,7 @@ set(INTERFACE_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyglmtypes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyimage.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyvolume.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pydatamapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pybuffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pymesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pynetwork.cpp

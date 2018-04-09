@@ -95,7 +95,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         connect(runAction_, &QAction::triggered, [this]() {run(); });
     }
     {
-        auto action = toolBar->addAction(QIcon(":/icons/new.png"), tr("&New Script"));
+        auto action = toolBar->addAction(QIcon(":/icons/newfile.png"), tr("&New Script"));
         action->setShortcut(QKeySequence::New);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("New Script");
