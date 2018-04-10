@@ -143,13 +143,13 @@ public:
      * Register a widget for the property. Registered widgets will receive updateFromProperty calls
      * when the value state of the property changes. One Property can have multiple widgets.
      * The property does not take ownership of the widget.
-     * @see deregisterProperty 
+     * @see deregisterProperty
      * @see PropertyWidget
      */
     void registerWidget(PropertyWidget* propertyWidget);
 
     /**
-     * Deregister a widget, the widget will no longer receive updateFromProperty calls. 
+     * Deregister a widget, the widget will no longer receive updateFromProperty calls.
      * @see registerProperty
      * @see PropertyWidget
      */
@@ -211,8 +211,10 @@ public:
     const BaseCallBack* onChange(std::function<void()> callback);
     void removeOnChange(const BaseCallBack* callback);
     template <typename T>
+    [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
     const BaseCallBack* onChange(T* object, void (T::*method)());
     template <typename T>
+    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
     void removeOnChange(T* object);
 
     virtual void setUsageMode(UsageMode usageMode);
@@ -277,7 +279,7 @@ private:
 };
 
 template <typename T>
-void inviwo::Property::removeOnChange(T* o) {
+void Property::removeOnChange(T* o) {
     onChangeCallback_.removeMemberFunction(o);
 }
 

@@ -59,6 +59,7 @@ public:
     }
 
     template <typename T>
+    [[deprecated("was declared deprecated. Use `addLambdaCallback(std::function<void()>)` instead")]]
     const BaseCallBack* addMemberFunction(T* o, void (T::*m)()) {
         auto cb = dispatcher_.add([o, m](){if (m) (*o.*m)();});
         callBackList_.push_back(cb);
@@ -94,6 +95,7 @@ public:
      * \brief Remove all callbacks associated with the object.
      */
     template <typename T>
+    [[deprecated("was declared deprecated. Use `remove(const BaseCallBack* callback)` instead")]]
     void removeMemberFunction(T* o) {
         auto it = objMap_.find(static_cast<void*>(o));
         if(it != objMap_.end()) {
