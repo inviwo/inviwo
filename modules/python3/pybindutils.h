@@ -33,8 +33,10 @@
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <warn/push>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
