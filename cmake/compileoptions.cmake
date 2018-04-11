@@ -61,7 +61,6 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4201") # nameless struct/union https://msdn.microsoft.com/en-us/library/c89bw853.aspx
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
-            list(APPEND comp_opts "/wd4996") # ignore deprication    https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx
             if(MSVC_VERSION GREATER_EQUAL 1910)
                 list(APPEND comp_opts "/w35038") # class member reorder
                 if(NOT OpenMP_ON)

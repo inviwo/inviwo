@@ -34,7 +34,13 @@
 #define NOMINMAX // tinydir.h includes windows.h... 
 #define WIN32_LEAN_AND_MEAN
 #endif
+
+// push/pop warning state to prevent disabling of some warnings by tinydir header
+
+#include <warn/push>
 #include <tinydir.h>
+#include <warn/pop>
+
 #include <algorithm>
 #include <cerrno>
 
