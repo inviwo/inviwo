@@ -59,12 +59,12 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     addPort(inport_);
     addPort(pixelValues_);
 
-    inport_.onChange(this, &PixelToBufferProcessor::inportChanged);
+    inport_.onChange([this]() {inportChanged(); });
 
     addProperty(fromPixel_);
     addProperty(channel_);
     addProperty(clearValues_);
-    clearValues_.onChange(this, &PixelToBufferProcessor::clearOutput);
+    clearValues_.onChange([this]() { clearOutput(); });
     addProperty(handleInteractionEvents_);
     pixelValues_.setData(values_);
 }

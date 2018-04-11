@@ -409,7 +409,7 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     mainformat.setForeground(utilqt::toQColor(sysSettings->glslVoidMainColor_.get()));
 
     if (formaters_.empty()) {
-        sysSettings->glslSyntax_.onChange(this, &SyntaxHighligther::loadConfig<GLSL>);
+        sysSettings->glslSyntax_.onChange([this]() { loadConfig<GLSL>(); });
     } else {
         while (!formaters_.empty()) {
             delete formaters_.back();

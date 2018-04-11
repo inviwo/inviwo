@@ -70,7 +70,7 @@ QPoint EditorGraphicsItem::mapPosToSceen(QPointF inPos) const {
     }
 }
 
-void EditorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {}
+void EditorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent*) {}
 
 void EditorGraphicsItem::showToolTipHelper(QGraphicsSceneHelpEvent* e, QString string) const {
     QGraphicsView* v = scene()->views().first();

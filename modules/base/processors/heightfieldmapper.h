@@ -99,9 +99,6 @@ protected:
     virtual void process() override;
 
 private:
-    // adjust property visibility with respect to selected scaling mode
-    void scalingModeChanged();
-
     ImageInport inport_;   //!< inport for the 2D heightfield texture
     ImageOutport outport_; //!< outport for the scaled heightfield
         

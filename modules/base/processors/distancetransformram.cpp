@@ -41,9 +41,7 @@ const ProcessorInfo DistanceTransformRAM::processorInfo_{
     CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
 };
-const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
 
 DistanceTransformRAM::DistanceTransformRAM()
     : Processor()
@@ -56,9 +54,11 @@ DistanceTransformRAM::DistanceTransformRAM()
     , resultSquaredDist_("distSquared", "Squared Distance", false)
     , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
     , upsampleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
-    , upsampleFactorVec3_("upsampleFactorVec3", "Sampling Factor", size3_t(1), size3_t(1), size3_t(10))
-    , dataRangeOutput_("dataRange", "Output Range", 0.0, 1.0, 0.0, std::numeric_limits<double>::max(), 0.01,
-                 0.0, InvalidationLevel::Valid, PropertySemantics::Text)
+    , upsampleFactorVec3_("upsampleFactorVec3", "Sampling Factor", size3_t(1), size3_t(1),
+                          size3_t(10))
+    , dataRangeOutput_("dataRange", "Output Range", 0.0, 1.0, 0.0,
+                       std::numeric_limits<double>::max(), 0.01, 0.0, InvalidationLevel::Valid,
+                       PropertySemantics::Text)
     , dataRangeMode_("dataRangeMode", "Data Range",
                      {DataRangeMode::Diagonal, DataRangeMode::MinMax, DataRangeMode::Custom}, 0)
     , customDataRange_("customDataRange", "Custom Data Range", 0.0, 1.0, 0.0,
@@ -96,13 +96,13 @@ DistanceTransformRAM::DistanceTransformRAM()
 
     addProperty(dataRangeOutput_);
 
-    dataRangeMode_.onChange([&](){
+    dataRangeMode_.onChange([&]() {
         customDataRange_.setReadOnly(dataRangeMode_.getSelectedValue() != DataRangeMode::Custom);
     });
 
     addProperty(btnForceUpdate_);
-    
-    btnForceUpdate_.onChange(this, &DistanceTransformRAM::paramChanged);
+
+    btnForceUpdate_.onChange([this]() { distTransformDirty_ = true; });
 
     progressBar_.hide();
 }
@@ -127,7 +127,8 @@ void DistanceTransformRAM::process() {
             hasNewData_ = false;
             btnForceUpdate_.setDisplayName("Update Distance Map");
         } catch (Exception&) {
-            // Need to reset the future, VS bug: http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
+            // Need to reset the future, VS bug:
+            // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
             newVolume_ = {};
             outport_.setData(nullptr);
             hasNewData_ = false;
@@ -143,20 +144,21 @@ void DistanceTransformRAM::process() {
 
 void DistanceTransformRAM::updateOutport() {
     auto done = [this]() {
-        dispatchFront([this]() { 
+        dispatchFront([this]() {
             distTransformDirty_ = false;
             hasNewData_ = true;
-            invalidate(InvalidationLevel::InvalidOutput); 
+            invalidate(InvalidationLevel::InvalidOutput);
         });
     };
 
     auto calc =
         [
-          pb = &progressBar_,
-          upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get()) : upsampleFactorVec3_.get(),
-          threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
-          square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
-          dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(), done
+            pb = &progressBar_,
+            upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+                                                : upsampleFactorVec3_.get(),
+            threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
+            square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
+            dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(), done
         ](std::shared_ptr<const Volume> volume)
             ->std::shared_ptr<const Volume> {
 
@@ -181,7 +183,7 @@ void DistanceTransformRAM::updateOutport() {
         switch (dataRangeMode) {
             case DistanceTransformRAM::DataRangeMode::Diagonal: {
                 const auto basis = volume->getBasis();
-                const auto diagonal = basis[0]+basis[1]+basis[2];
+                const auto diagonal = basis[0] + basis[1] + basis[2];
                 const auto maxDist = square ? glm::length2(diagonal) : glm::length(diagonal);
                 dstVol->dataMap_.dataRange = dvec2(0.0, maxDist);
                 dstVol->dataMap_.valueRange = dvec2(0.0, maxDist);
@@ -211,7 +213,4 @@ void DistanceTransformRAM::updateOutport() {
     newVolume_ = dispatchPool(calc, volumePort_.getData());
 }
 
-void DistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }
-
-}  // namespace
-
+}  // namespace inviwo

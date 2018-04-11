@@ -54,9 +54,11 @@ PositionProperty::PositionProperty(std::string identifier, std::string displayNa
     addProperty(referenceFrame_);
     addProperty(position_);
 
-    referenceFrame_.onChange(this, &PositionProperty::referenceFrameChanged);
-    position_.onChange(this, &PositionProperty::positionChanged);
-    if (camera_) camera_->onChange(this, &PositionProperty::cameraChanged);
+    referenceFrame_.onChange([this]() { referenceFrameChanged(); });
+    position_.onChange([this]() { positionChanged(); });
+    if (camera_) {
+        camera_->onChange([this]() { cameraChanged(); });
+    }
 }
 
 PositionProperty::PositionProperty(const PositionProperty& rhs)
@@ -69,9 +71,11 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     addProperty(referenceFrame_);
     addProperty(position_);
 
-    referenceFrame_.onChange(this, &PositionProperty::referenceFrameChanged);
-    position_.onChange(this, &PositionProperty::positionChanged);
-    if (camera_) camera_->onChange(this, &PositionProperty::cameraChanged);
+    referenceFrame_.onChange([this]() { referenceFrameChanged(); });
+    position_.onChange([this]() { positionChanged(); });
+    if (camera_) {
+        camera_->onChange([this]() { cameraChanged(); });
+    }
 }
 
 PositionProperty& PositionProperty::operator=(const PositionProperty& that) {

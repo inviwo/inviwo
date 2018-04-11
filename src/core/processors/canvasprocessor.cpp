@@ -91,18 +91,18 @@ CanvasProcessor::CanvasProcessor()
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
     inputSize_.addProperty(dimensions_);
 
-    enableCustomInputDimensions_.onChange(this, &CanvasProcessor::sizeChanged);
+    enableCustomInputDimensions_.onChange([this]() { sizeChanged(); });
     inputSize_.addProperty(enableCustomInputDimensions_);
 
-    customInputDimensions_.onChange(this, &CanvasProcessor::sizeChanged);
+    customInputDimensions_.onChange([this]() { sizeChanged(); });
     customInputDimensions_.setVisible(false);
     inputSize_.addProperty(customInputDimensions_);
 
-    keepAspectRatio_.onChange(this, &CanvasProcessor::sizeChanged);
+    keepAspectRatio_.onChange([this]() { sizeChanged(); });
     keepAspectRatio_.setVisible(false);
     inputSize_.addProperty(keepAspectRatio_);
 
-    aspectRatioScaling_.onChange(this, &CanvasProcessor::sizeChanged);
+    aspectRatioScaling_.onChange([this]() { sizeChanged(); });
     aspectRatioScaling_.setVisible(false);
     inputSize_.addProperty(aspectRatioScaling_);
 

@@ -191,7 +191,7 @@ void PropertyEditorWidgetQt::loadState() {
     setReadOnly(property_->getReadOnly());
 }
 
-void PropertyEditorWidgetQt::onSetReadOnly(Property* property, bool readonly) {
+void PropertyEditorWidgetQt::onSetReadOnly(Property*, bool readonly) {
     setReadOnly(readonly);
 }
 

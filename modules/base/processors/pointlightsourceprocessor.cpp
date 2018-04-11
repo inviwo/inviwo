@@ -97,7 +97,14 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     interactionEvents_.setCurrentStateAsDefault();
     addProperty(interactionEvents_);
 
-    interactionEvents_.onChange(this, &PointLightSourceProcessor::handleInteractionEventsChanged);
+    interactionEvents_.onChange([this]() {
+        if (interactionEvents_.get() > 0) {
+            addInteractionHandler(&lightInteractionHandler_);
+        } else {
+            removeInteractionHandler(&lightInteractionHandler_);
+        }
+        lightInteractionHandler_.setHandleEventsOptions(interactionEvents_.get());
+    });
 }
 
 PointLightSourceProcessor::~PointLightSourceProcessor() {
@@ -128,15 +135,6 @@ void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) 
     lightSource->setSize(vec2(lightSize_.get()));
     lightSource->setIntensity(lightPowerProp_.get() * lightDiffuse_.get());
     lightSource->setEnabled(lightEnabled_.get());
-}
-
-void PointLightSourceProcessor::handleInteractionEventsChanged() {
-    if (interactionEvents_.get() > 0) {
-        addInteractionHandler(&lightInteractionHandler_);
-    } else {
-        removeInteractionHandler(&lightInteractionHandler_);
-    }
-    lightInteractionHandler_.setHandleEventsOptions(interactionEvents_.get());
 }
 
 PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,

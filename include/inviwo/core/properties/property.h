@@ -285,7 +285,7 @@ void Property::removeOnChange(T* o) {
 
 template <typename T>
 const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
-    return onChangeCallback_.addMemberFunction(o, m);
+    return onChangeCallback_.addLambdaCallback([o, m]() {if (m) (*o.*m)(); });
 }
 
 template <typename T, typename U>

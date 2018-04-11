@@ -79,7 +79,6 @@ public:
 
 protected:
     virtual void process() override;
-    void setMinMax();
     void updateColors();
 
     virtual void invalidate(InvalidationLevel invalidationLevel,
