@@ -118,6 +118,7 @@ macro(ivw_define_standard_definitions project_name target)
         endif()
         target_compile_definitions(${target} PRIVATE _CRT_SECURE_NO_WARNINGS 
                                                      _CRT_SECURE_NO_DEPRECATE
+                                                     _SCL_SECURE_NO_WARNINGS
                                                      NOMINMAX
                                                      WIN32_LEAN_AND_MEAN
                                                      UNICODE

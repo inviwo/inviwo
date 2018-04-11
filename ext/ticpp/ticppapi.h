@@ -41,11 +41,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     #endif
     
     // Disable dll-interface warning
-    #ifdef TICPP_API
-        #pragma warning( push )
-        #pragma warning( disable : 4251 ) // X needs to have dll-interface to be used by clients of class Y
-        #pragma warning( disable : 4275 ) // X is derived from class Y but only X is exported
-    #endif
+    // Inviwo: 
+    //         commented out since the warning(push) is not matched thus messing up
+    //         warnings in other files
+    // #ifdef TICPP_API
+    //     #pragma warning( push )
+    //     #pragma warning( disable : 4251 ) // X needs to have dll-interface to be used by clients of class Y
+    //     #pragma warning( disable : 4275 ) // X is derived from class Y but only X is exported
+    // #endif
     
 #endif
 
