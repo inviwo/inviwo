@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERPROCESSOR_H
-#define IVW_WEBBROWSERPROCESSOR_H
+#ifndef IVW_PROPERTYSYNCEXAMPLEPROCESSOR_H
+#define IVW_PROPERTYSYNCEXAMPLEPROCESSOR_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/webbrowserclient.h>
@@ -48,47 +48,55 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.WebBrowser, Chromium Processor}
- * ![](org.inviwo.WebBrowser.png?classIdentifier=org.inviwo.WebBrowser)
- * Renders webpage, including transparency, into output image color layer. 
- * Forwards events to webpage but does not consume them.
+/** \docpage{org.inviwo.PropertySyncExampleProcessor, Property Sync Example Processor}
+ * ![](org.inviwo.PropertySyncExampleProcessor.png?classIdentifier=org.inviwo.PropertySyncExampleProcessor)
+ * Demonstrates synchronization of properties between browser and Inviwo.
  *
  * ### Outports
- *   * __webpage__ Rendered web page.
+ *   * __webpage__ GUI elements rendered by web browser.
  *
- * ### Properties
- *   * __URL__ Link to webpage, online or file path.
  */
+
 /**
- * \class WebBrowser
- * \brief Render webpage into the color layer (OpenGL).
+ * \class PropertySyncExampleProcessor
+ * \brief Demonstrates synchronization of properties between browser and Inviwo.
+ * Synchronization requires two things:
+ * 1. Properties must be added to PropertyCefSynchronizer in WebBrowserClient
+ * 2. Javascript functions must be added to the html page, see /data/workspaces/web_property_sync.html
  */
-class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor {
+class IVW_MODULE_WEBBROWSER_API PropertySyncExampleProcessor : public Processor {
 public:
-    WebBrowserProcessor();
-    virtual ~WebBrowserProcessor();
+    PropertySyncExampleProcessor();
+    virtual ~PropertySyncExampleProcessor();
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
+    
 private:
+    // Returns "file:/path/modules/webbrowser/data/workspaces/web_property_sync.html"
+    std::string getTestWebpageUrl();
     ImageOutport outport_;
-
+    
     StringProperty url_; ///< Web page to show
     ButtonProperty reload_; ///< Force reload url
-
+    
+    FloatProperty ordinalProp_;
+    BoolProperty boolProp_;
+    ButtonProperty buttonProp_;
+    StringProperty stringProp_;
+    
     CefImageConverter cefToInviwoImageConverter_;
-
+    
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
-
+    
     CEFInteractionHandler cefInteractionHandler_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_WEBBROWSERPROCESSOR_H
+#endif  // IVW_PROPERTYSYNCEXAMPLEPROCESSOR_H

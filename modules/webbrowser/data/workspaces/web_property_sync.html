@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>Inviwo property syncing example</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script language="JavaScript">
+
+function checkboxInput(val) {
+     
+	window.cefQuery({
+		request: '<Properties><Property type="org.inviwo.BoolProperty" identifier="PropertySyncExample.boolProperty"><value content="' + (+val) + '" /></Properties>',
+		onSuccess: function(response) {
+			$("#boolProperty").fadeOut("fast");  
+			$("#boolProperty").fadeIn("fast");
+		},
+		onFailure: function(error_code, error_message) {}
+		
+	});
+}
+
+function buttonClicked(val) { 
+	// Indicate that button was clicked using JQuery animation
+	$("#buttonProperty").fadeOut("fast");  
+	$("#buttonProperty").fadeIn("fast");
+	window.cefQuery({
+		request: '<Properties><Property type="org.inviwo.buttonProperty" identifier="PropertySyncExample.buttonProperty"></Properties>',
+		onSuccess: function(response) {},
+		onFailure: function(error_code, error_message) {}
+		
+	});
+}
+function textInput(val) {  
+	window.cefQuery({
+		request: '<Properties><Property type="org.inviwo.stringProperty" identifier="PropertySyncExample.stringProperty"><value content="' + val + '" </Property></Properties>',
+		onSuccess: function(response) {
+			document.getElementById("stringProperty").focus();
+		},
+		onFailure: function(error_code, error_message) {}
+		
+	});
+}
+</script>
+
+</head>
+<body>
+
+<div class="slidecontainer">
+  <p>Range<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
+  <span id="demo"></span></p>
+</div>
+  <p><input type="button" value="Button" id="buttonProperty" onclick="buttonClicked(this.value)"></p>
+  <p>Checkbox <input type="checkbox" value="Checkbox" id="boolProperty" onchange="checkboxInput(this.checked)"></p>
+  <p>Text <input type="text" id="stringProperty" value="not changed" oninput="textInput(this.value)"></p>
+<script>
+var slider = document.getElementById("ordinalProperty");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+
+slider.oninput = function() {
+  	  
+      window.cefQuery({
+		request: '<Properties><Property type="org.inviwo.FloatProperty" identifier="PropertySyncExample.ordinalProperty"><value content="' + document.getElementById("ordinalProperty").value + '" /></Properties>',
+		onSuccess: function(response) {
+		  
+		},
+		onFailure: function(error_code, error_message) {}
+		
+	});
+    output.innerHTML = document.getElementById("ordinalProperty").value;
+}
+
+</script>
+</body>
+</html>

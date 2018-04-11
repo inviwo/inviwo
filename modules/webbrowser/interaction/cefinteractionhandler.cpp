@@ -29,6 +29,7 @@
 
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
 #include <modules/webbrowser/interaction/cefkeyboardmapping.h>
+#include <modules/webbrowser/renderhandlergl.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
 
@@ -38,9 +39,12 @@ CEFInteractionHandler::CEFInteractionHandler(CefRefPtr<CefBrowserHost> host) : h
 
 void CEFInteractionHandler::invokeEvent(Event* event) {
     switch (event->hash()) {
-        case ResizeEvent::chash():
+        case ResizeEvent::chash(): {
+            auto resizeEvent = static_cast<ResizeEvent*>(event);
+            renderHandler_->updateCanvasSize(resizeEvent->size());
             host_->WasResized();
             break;
+        }
         case KeyboardEvent::chash(): {
             host_->SendKeyEvent(mapKeyEvent(static_cast<KeyboardEvent*>(event)));
             event->markAsUsed();

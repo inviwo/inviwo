@@ -36,6 +36,7 @@
 #include <warn/ignore/all>
 #include <include/cef_app.h>
 #include <include/wrapper/cef_helpers.h>
+#include "include/wrapper/cef_message_router.h"
 #include <warn/pop>
 
 namespace inviwo {
@@ -50,8 +51,37 @@ public:
 
     CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
     // void OnContextCreated(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>, CefRefPtr<CefV8Context>);
-
+    // CefRenderProcessHandler methods:
+    void OnWebKitInitialized() OVERRIDE {
+        // Create the renderer-side router for query handling.
+        CefMessageRouterConfig config;
+        message_router_ = CefMessageRouterRendererSide::Create(config);
+    }
+    
+    void OnContextCreated(CefRefPtr<CefBrowser> browser,
+                          CefRefPtr<CefFrame> frame,
+                          CefRefPtr<CefV8Context> context) OVERRIDE {
+        // Register the JavaScripts functions with the new context.
+        message_router_->OnContextCreated(browser, frame, context);
+    }
+    
+    void OnContextReleased(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefFrame> frame,
+                           CefRefPtr<CefV8Context> context) OVERRIDE {
+        
+        message_router_->OnContextReleased(browser, frame, context);
+    }
+    
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                  CefProcessId source_process,
+                                  CefRefPtr<CefProcessMessage> message) OVERRIDE {
+        return message_router_->OnProcessMessageReceived(browser, source_process,
+                                                         message);
+    }
 private:
+    // Handles the renderer side of query routing.
+    // Adds JavaScript function "cefQuery" to the 'window' object for sending a query.
+    CefRefPtr<CefMessageRouterRendererSide> message_router_;
     IMPLEMENT_REFCOUNTING(WebBrowserApp)
 };
 

@@ -27,68 +27,46 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERPROCESSOR_H
-#define IVW_WEBBROWSERPROCESSOR_H
+#ifndef IVW_STRINGPROPERTYWIDGETCEF_H
+#define IVW_STRINGPROPERTYWIDGETCEF_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/webbrowserclient.h>
-#include <modules/webbrowser/interaction/cefinteractionhandler.h>
-#include <modules/webbrowser/cefimageconverter.h>
+#include <modules/webbrowser/properties/propertywidgetcef.h>
 
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
-
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <include/cef_base.h>
-#include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.WebBrowser, Chromium Processor}
- * ![](org.inviwo.WebBrowser.png?classIdentifier=org.inviwo.WebBrowser)
- * Renders webpage, including transparency, into output image color layer. 
- * Forwards events to webpage but does not consume them.
- *
- * ### Outports
- *   * __webpage__ Rendered web page.
- *
- * ### Properties
- *   * __URL__ Link to webpage, online or file path.
- */
 /**
- * \class WebBrowser
- * \brief Render webpage into the color layer (OpenGL).
+ * \class StringPropertyWidgetCEF
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor {
+class IVW_MODULE_WEBBROWSER_API StringPropertyWidgetCEF : public PropertyWidgetCEF {
 public:
-    WebBrowserProcessor();
-    virtual ~WebBrowserProcessor();
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    ImageOutport outport_;
-
-    StringProperty url_; ///< Web page to show
-    ButtonProperty reload_; ///< Force reload url
-
-    CefImageConverter cefToInviwoImageConverter_;
-
-    // create browser-window
-    CefRefPtr<RenderHandlerGL> renderHandler_;
-    CefRefPtr<WebBrowserClient> browserClient_;
-    CefRefPtr<CefBrowser> browser_;
-
-    CEFInteractionHandler cefInteractionHandler_;
+    StringPropertyWidgetCEF(StringProperty* property, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
+    virtual ~StringPropertyWidgetCEF() = default;
+    /**
+     * Update HTML widget using calls javascript oninput() function on element.
+     * Assumes that widget is HTML input attribute.
+     */
+    virtual void updateFromProperty() {
+        auto property = static_cast<StringProperty*>(property_);
+        
+        std::stringstream script;
+        script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+        script << "property.value='" << property->get() << "';";
+        // Send oninput event to update element
+        script << "property.oninput();";
+        // Need to figure out how to make sure the frame is drawn after changing values.
+        //script << "window.focus();";
+        // Block OnQuery, called due to property.oninput()
+        onQueryBlocker_++;
+        frame_->ExecuteJavaScript(script.str(),
+                                  frame_->GetURL(), 0);
+    };
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_WEBBROWSERPROCESSOR_H
+#endif  // IVW_STRINGPROPERTYWIDGETCEF_H

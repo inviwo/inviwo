@@ -54,7 +54,7 @@ WebBrowserProcessor::WebBrowserProcessor()
     // Output from CEF is 8-bits per channel
     , outport_("webpage", DataVec4UInt8::get())
     , url_("URL", "URL", "http://www.google.com")
-    , shader_{"img_convert_cef.frag", true}
+    , reload_("reload", "Reload")
     , renderHandler_(new RenderHandlerGL([&]() {
         // Called as soon as new content is available
         // Queue an invalidation
@@ -70,7 +70,7 @@ WebBrowserProcessor::WebBrowserProcessor()
 
         CefBrowserSettings browserSettings;
 
-        browserSettings.windowless_frame_rate = 30;  // 30 is default
+        browserSettings.windowless_frame_rate = 60;  // 30 is default
 
         // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause
         // some render errors, in context-menu and plugins.
@@ -80,14 +80,14 @@ WebBrowserProcessor::WebBrowserProcessor()
         // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in
         // destructor
         browser_ = CefBrowserHost::CreateBrowserSync(
-            window_info, browserClient_, "http://www.google.com", browserSettings, nullptr);
+            window_info, browserClient_, url_.get(), browserSettings, nullptr);
     }
 
     addProperty(url_);
-    url_.onChange([&]() { browser_->GetMainFrame()->LoadURL(url_.get()); });
-
+    addProperty(reload_);
     // Inject events into CEF browser_
     cefInteractionHandler_.setHost(browser_->GetHost());
+    cefInteractionHandler_.setRenderHandler(renderHandler_);
     addInteractionHandler(&cefInteractionHandler_);
 }
 
@@ -100,31 +100,12 @@ WebBrowserProcessor::~WebBrowserProcessor() {
 }
 
 void WebBrowserProcessor::process() {
-    // Vertical flip of CEF output image
-    utilgl::activateTarget(outport_, ImageType::ColorOnly);
-    shader_.activate();
-
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-
-    // bind input image
-    TextureUnit texUnit;
-    utilgl::bindTexture(renderHandler_->getTexture2D(), texUnit);
-    shader_.setUniform("inport_", texUnit);
-
-    utilgl::singleDrawImagePlaneRect();
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
-}
-
-void WebBrowserProcessor::invokeEvent(Event* event) {
-    Processor::invokeEvent(event);
-    switch (event->hash()) {
-        case ResizeEvent::chash():
-
-            renderHandler_->updateCanvasSize(outport_.getData()->getDimensions());
-            browser_->GetHost()->WasResized();
-            break;
+    if (url_.isModified() || reload_.isModified()) {
+        browser_->GetMainFrame()->LoadURL(url_.get());
     }
+    //LogInfo("Process")
+    // Vertical flip of CEF output image
+    cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_);
 }
 
 }  // namespace inviwo

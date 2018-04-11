@@ -43,13 +43,14 @@
 #include "include/cef_app.h"
 #include "include/cef_command_line.h"
 #include <warn/pop>
+#include <modules/webbrowser/processors/propertysyncexampleprocessor.h>
 
 namespace inviwo {
 
 WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     : InviwoModule(app, "WebBrowser")
     // Call 60 times per second
-    , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
+    , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork();}) {
 
     // CEF initialization
 
@@ -117,6 +118,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     // Processors
     registerProcessor<WebBrowserProcessor>();
+    registerProcessor<PropertySyncExampleProcessor>();
 
     doChromiumWork_.start();
 }

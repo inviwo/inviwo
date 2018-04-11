@@ -41,7 +41,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-
+class RenderHandlerGL;
 /*\class CEFInteractionHandler
  * Translates Inviwo events to CEF events and injects them into provided CefBrowserHost.
  */
@@ -60,6 +60,12 @@ public:
     
     void setHost(CefRefPtr<CefBrowserHost> host) { host_ = host; }
     CefRefPtr<CefBrowserHost> getHost() const { return host_; }
+    /*
+     * Render hander to forward resize events to.
+     * Will do nothing if null and does not take ownership
+     */
+    void setRenderHandler(RenderHandlerGL* renderHandler) { renderHandler_ = renderHandler; }
+    RenderHandlerGL* getRenderHandler() const { return renderHandler_; }
 
 private:
     CefKeyEvent mapKeyEvent(KeyboardEvent* e);
@@ -68,6 +74,7 @@ private:
     void updateMouseStates(MouseEvent* e);
     uint32 modifiers_ = 0;
     CefRefPtr<CefBrowserHost> host_;
+    RenderHandlerGL* renderHandler_ = nullptr; ///< Forward resize event if set
 };
 
 };  // namespace inviwo
