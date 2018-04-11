@@ -94,18 +94,8 @@ function(ivw_debug_message)
 endfunction()
 
 #--------------------------------------------------------------------
-# Add own cmake modules
+# Add our cmake modules to search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/modules")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/cmake/")
-
-#--------------------------------------------------------------------
-# Add globalmacros
-include(${CMAKE_CURRENT_LIST_DIR}/globalutils.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 
 #--------------------------------------------------------------------
 # Add parameter for paths to external modules
@@ -121,16 +111,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
 # Output paths for the executables, runtimes, archives and libraries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH
    "Single Directory for all Executables.")
-
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
    "Single Directory for all Libraries")
-
-mark_as_advanced(
-    CMAKE_RUNTIME_OUTPUT_DIRECTORY
-    CMAKE_BUNDLE_OUTPUT_DIRECTORY 
-    CMAKE_ARCHIVE_OUTPUT_DIRECTORY
-    CMAKE_LIBRARY_OUTPUT_DIRECTORY
-)
 
 #--------------------------------------------------------------------
 # Path for this solution
@@ -138,13 +120,10 @@ if(NOT EXECUTABLE_OUTPUT_PATH)
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH 
         "Single output directory for building all executables.")
 endif()
-
 if(NOT LIBRARY_OUTPUT_PATH)
     set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE PATH
         "Single output directory for building all libraries.")
 endif()
-
-mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 
 # Set Common Variables
 get_filename_component(IVW_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} PATH)
@@ -164,6 +143,15 @@ set(IVW_EXECUTABLE_DIR          ${EXECUTABLE_OUTPUT_PATH})
 set(IVW_CMAKE_SOURCE_MODULE_DIR ${CMAKE_CURRENT_LIST_DIR}/modules)
 set(IVW_CMAKE_BINARY_MODULE_DIR ${CMAKE_BINARY_DIR}/cmake)
 set(IVW_CMAKE_TEMPLATES         ${IVW_ROOT_DIR}/cmake/templates)
+
+#--------------------------------------------------------------------
+# Add globalmacros
+include(${CMAKE_CURRENT_LIST_DIR}/globalutils.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 
 #Generate headers
 ivw_generate_module_paths_header()
@@ -341,13 +329,3 @@ include(${CMAKE_CURRENT_LIST_DIR}/utilities/clean_library_list.cmake)
 if(PRECOMPILED_HEADERS)
     include(${CMAKE_CURRENT_LIST_DIR}/cotire.cmake)
 endif()
-
-mark_as_advanced(
-    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_EXTENSIONS 
-    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_PATH 
-    COTIRE_DEBUG 
-    COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES 
-    COTIRE_MINIMUM_NUMBER_OF_TARGET_SOURCES
-    COTIRE_UNITY_SOURCE_EXCLUDE_EXTENSIONS
-    COTIRE_VERBOSE
-)
