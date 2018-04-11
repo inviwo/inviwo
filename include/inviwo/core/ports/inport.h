@@ -185,19 +185,16 @@ const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) {
 
 template <typename T>
 const BaseCallBack* Inport::onInvalid(T* o, void (T::*m)()) {
-    ivwDeprecatedMethod("const BaseCallBack* onInvalid(std::function<void()> lambda)");
     return onInvalidCallback_.addMemberFunction(o, m);
 }
 
 template <typename T>
 void Inport::removeOnChange(T* o) {
-    ivwDeprecatedMethod("void removeOnChange(const BaseCallBack* callback)");
     onChangeCallback_.removeMemberFunction(o);
 }
 
 template <typename T>
 void Inport::removeOnInvalid(T* o) {
-    ivwDeprecatedMethod("void removeOnInvalid(const BaseCallBack* callback)");
     onInvalidCallback_.removeMemberFunction(o);
 }
 
