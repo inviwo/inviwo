@@ -94,9 +94,6 @@ public:
     virtual void process() override; 
 
 protected:
-    void centerViewOnGeometry();
-    std::pair<vec3, vec3> calcWorldBoundingBox() const;
-
     void setNearFarPlane();
     void updateDrawers();
 

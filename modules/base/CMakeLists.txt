@@ -12,6 +12,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
+	${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.h
+	${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/centerviewonmeshes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.h
@@ -112,6 +114,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/centerviewonmeshes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubesopt.cpp

@@ -90,7 +90,10 @@ public:
 
     void setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
-
+    /**
+     * Locks processor network and sets given camera properties.
+     * @note Parameters will be capped by their min/max.
+     */
     virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
 
     virtual float getNearPlaneDist() const override;
@@ -142,6 +145,17 @@ public:
      */
     void resetAdjustCameraToData();
     void inportChanged();
+
+    // These properties enable linking of individual
+    // camera properties but requires them to be synced
+    // with the camera. 
+    // Use NetworkLock if editing multiple properties at the same time
+    FloatVec3Property lookFrom_;
+    FloatVec3Property lookTo_;
+    FloatVec3Property lookUp_;
+    FloatProperty aspectRatio_;
+    FloatProperty nearPlane_;
+    FloatProperty farPlane_;
     
 private:
     void changeCamera(std::unique_ptr<Camera> newCamera);
@@ -149,15 +163,7 @@ private:
 
     OptionPropertyString cameraType_;
 
-    // These properties enable linking of individual
-    // camera properties but requires them to be synced
-    // with the camera
-    FloatVec3Property lookFrom_;
-    FloatVec3Property lookTo_;
-    FloatVec3Property lookUp_;
-    FloatProperty aspectRatio_;
-    FloatProperty nearPlane_;
-    FloatProperty farPlane_;
+
 
     BoolProperty adjustCameraOnDataChange_;
 

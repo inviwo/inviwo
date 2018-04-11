@@ -33,6 +33,8 @@
 #include <inviwo/core/interaction/trackball.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
+#include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
+#include <modules/base/algorithm/mesh/centerviewonmeshes.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/shader/shader.h>
@@ -97,7 +99,10 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     imageInport_.setOptional(true);
 
     addProperty(camera_);
-    centerViewOnGeometry_.onChange(this, &MeshRenderProcessorGL::centerViewOnGeometry);
+    centerViewOnGeometry_.onChange([&]() {
+        if (!inport_.hasData()) return;
+        meshutil::centerViewOnMeshes(inport_.getVectorData(), camera_);
+    });
     addProperty(centerViewOnGeometry_);
     setNearFarPlane_.onChange(this, &MeshRenderProcessorGL::setNearFarPlane);
     addProperty(setNearFarPlane_);
@@ -210,34 +215,6 @@ void MeshRenderProcessorGL::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-}
-
-std::pair<vec3, vec3> MeshRenderProcessorGL::calcWorldBoundingBox() const {
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
-    for (const auto& mesh : inport_) {
-        const auto& buffers = mesh->getBuffers();
-        auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
-            return buff.first.type == BufferType::PositionAttrib;
-        });
-        if (it != buffers.end()) {
-            auto minmax = util::bufferMinMax(it->second.get());
-
-            mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
-            worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
-            worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
-        }
-    }
-    return{ worldMin, worldMax };
-}
-
-
-void MeshRenderProcessorGL::centerViewOnGeometry() {
-    if (!inport_.hasData()) return;
-
-    auto minmax = calcWorldBoundingBox();
-    camera_.setLook(camera_.getLookFrom(), 0.5f * (minmax.first + minmax.second),
-                    camera_.getLookUp());
 }
 
 void MeshRenderProcessorGL::setNearFarPlane() {
