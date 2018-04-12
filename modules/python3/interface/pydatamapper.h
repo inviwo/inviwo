@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHAREDOPENGLRESOURCES_H
-#define IVW_SHAREDOPENGLRESOURCES_H
+#ifndef IVW_PYDATAMAPPER_H
+#define IVW_PYDATAMAPPER_H
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <pybind11/pybind11.h>
 
 namespace inviwo {
 
-class Mesh;
-class MeshGL;
-class Shader;
+void exposeDataMapper(pybind11::module &m);
 
-/**
- * \class SharedOpenGLResources
- */
-class IVW_MODULE_OPENGL_API SharedOpenGLResources : public Singleton<SharedOpenGLResources> {
-public:
-    SharedOpenGLResources() = default;
-    virtual ~SharedOpenGLResources() = default;
-    
-    const MeshGL* imagePlaneRect();
+}  // namespace inviwo
 
-    Shader* getTextureShader();
-    Shader* getNoiseShader(); 
-    Shader* getImageCopyShader(size_t colorLayers);
-
-    void reset();
-    
-private:
-    std::unique_ptr<Mesh> planeRectMesh_;
-    const MeshGL* planeRectMeshGl_ = nullptr;
-
-    std::unique_ptr<Shader> textureShader_;
-    std::unique_ptr<Shader> noiseShader_;
-    std::unordered_map<std::size_t, std::unique_ptr<Shader>> imgCopyShaders_;
-
-    friend Singleton<SharedOpenGLResources>;
-    static SharedOpenGLResources* instance_;
-};
-
-} // namespace
-
-#endif // IVW_SHAREDOPENGLRESOURCES_H
-
+#endif  // IVW_PYDATAMAPPER_H

@@ -55,6 +55,8 @@ namespace cl {
 
 namespace inviwo {
 
+OpenCL* OpenCL::instance_ = nullptr;
+
 OpenCL::OpenCL() { initialize(true); }
 
 void OpenCL::initialize(bool glSharing) {

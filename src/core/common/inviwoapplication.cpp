@@ -89,6 +89,8 @@ void dataFormatDummyInitialization() {
 
 }  // namespace util
 
+InviwoApplication* InviwoApplication::instance_ = nullptr;
+
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
     , commandLineParser_(argc, argv)

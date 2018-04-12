@@ -47,6 +47,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "-Wall")
             list(APPEND comp_opts "-Wextra")
             list(APPEND comp_opts "-pedantic")
+            list(APPEND comp_opts "-Wno-mismatched-tags") # gives lots of warnings about redefinitions of structs as class.
             list(APPEND comp_opts "-Wno-unused-parameter") # not sure we want to remove them.
             list(APPEND comp_opts "-Wno-missing-braces")   # http://stackoverflow.com/questions/13905200/is-it-wise-to-ignore-gcc-clangs-wmissing-braces-warning
         elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
@@ -60,7 +61,6 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4201") # nameless struct/union https://msdn.microsoft.com/en-us/library/c89bw853.aspx
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
-            list(APPEND comp_opts "/wd4996") # ignore deprication    https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx
             if(MSVC_VERSION GREATER_EQUAL 1910)
                 list(APPEND comp_opts "/w35038") # class member reorder
                 if(NOT OpenMP_ON)

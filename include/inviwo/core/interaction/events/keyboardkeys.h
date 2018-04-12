@@ -114,6 +114,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 
 enum class IvwKey {
+    Undefined        = -2,
     // key codes based on glfw
     Unknown          = -1,
     
@@ -270,6 +271,9 @@ enum class IvwKey {
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, IvwKey k) {
     switch (k) {
+        case IvwKey::Undefined:
+            ss << "Undefined";
+            break;
         case IvwKey::Unknown:
             ss << "Unknown";
             break;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,54 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHAREDOPENGLRESOURCES_H
-#define IVW_SHAREDOPENGLRESOURCES_H
+#ifndef IVW_PYTHONMESHSCRIPTSOURCE_H
+#define IVW_PYTHONMESHSCRIPTSOURCE_H
 
-#include <modules/opengl/openglmoduledefine.h>
+#include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <modules/python3/pythonscript.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-class Mesh;
-class MeshGL;
-class Shader;
+/** \docpage{org.inviwo.PythonScriptProcessor, Python Mesh Script Source}
+ * ![](org.inviwo.PythonScriptProcessor.png?classIdentifier=org.inviwo.PythonScriptProcessor)
+ * Source processor for loading mesh and volume data using a python script.
+ *
+ * ### Outports
+ *   * __mesh__    mesh data
+ *   * __volume__  volume data
+ *
+ * ### Properties
+ *   * __File Name__  file name of the python script
+ */
 
 /**
- * \class SharedOpenGLResources
+ * \class PythonScriptProcessor
+ * \brief Loads a mesh and volume via a python script. The processor is invalidated
+ * as soon as the script changes on disk.
  */
-class IVW_MODULE_OPENGL_API SharedOpenGLResources : public Singleton<SharedOpenGLResources> {
+class IVW_MODULE_PYTHON3_API PythonScriptProcessor : public Processor {
 public:
-    SharedOpenGLResources() = default;
-    virtual ~SharedOpenGLResources() = default;
-    
-    const MeshGL* imagePlaneRect();
+    PythonScriptProcessor();
+    virtual ~PythonScriptProcessor() = default;
 
-    Shader* getTextureShader();
-    Shader* getNoiseShader(); 
-    Shader* getImageCopyShader(size_t colorLayers);
+    virtual void process() override;
 
-    void reset();
-    
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
 private:
-    std::unique_ptr<Mesh> planeRectMesh_;
-    const MeshGL* planeRectMeshGl_ = nullptr;
+    PythonScriptDisk script_;
+    FileProperty scriptFileName_;
 
-    std::unique_ptr<Shader> textureShader_;
-    std::unique_ptr<Shader> noiseShader_;
-    std::unordered_map<std::size_t, std::unique_ptr<Shader>> imgCopyShaders_;
-
-    friend Singleton<SharedOpenGLResources>;
-    static SharedOpenGLResources* instance_;
+    MeshOutport mesh_;
+    VolumeOutport volume_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SHAREDOPENGLRESOURCES_H
-
+#endif  // IVW_PYTHONMESHSCRIPTSOURCE_H

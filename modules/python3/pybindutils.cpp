@@ -85,7 +85,7 @@ const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr) {
     return DataFormatBase::get(numType, components, arr.itemsize() * 8);
 }
 
-struct BufferFromArrayDistpatcher {
+struct BufferFromArrayDispatcher {
     using type = std::shared_ptr<BufferBase>;
 
     template <typename T>
@@ -97,7 +97,7 @@ struct BufferFromArrayDistpatcher {
     }
 };
 
-struct LayerFromArrayDistpatcher {
+struct LayerFromArrayDispatcher {
     using type = std::shared_ptr<Layer>;
 
     template <typename T>
@@ -110,7 +110,7 @@ struct LayerFromArrayDistpatcher {
     }
 };
 
-struct VolumeFromArrayDistpatcher {
+struct VolumeFromArrayDispatcher {
     using type = std::shared_ptr<Volume>;
 
     template <typename T>
@@ -127,7 +127,7 @@ std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
     auto df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
-    BufferFromArrayDistpatcher bufferFromArrayDistpatcher;
+    BufferFromArrayDispatcher bufferFromArrayDistpatcher;
     return df->dispatch(bufferFromArrayDistpatcher, arr);
 }
 
@@ -135,7 +135,7 @@ std::shared_ptr<Layer> createLayer(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 2 || ndim == 3, "Ndims must be either 2 or 3");
     auto df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
-    LayerFromArrayDistpatcher bufferFromArrayDistpatcher;
+    LayerFromArrayDispatcher bufferFromArrayDistpatcher;
     return df->dispatch(bufferFromArrayDistpatcher, arr);
 }
 
@@ -143,7 +143,7 @@ std::shared_ptr<Volume> createVolume(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 3 || ndim == 4, "Ndims must be either 3 or 4");
     auto df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);
-    VolumeFromArrayDistpatcher bufferFromArrayDistpatcher;
+    VolumeFromArrayDispatcher bufferFromArrayDistpatcher;
     return df->dispatch(bufferFromArrayDistpatcher, arr);
 }
 

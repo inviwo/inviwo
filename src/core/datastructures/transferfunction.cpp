@@ -110,9 +110,6 @@ void TransferFunction::addPoint(const vec2& pos) {
 }
 
 void TransferFunction::addPoint(const vec2& pos, const vec4& color) {
-    LogWarn(
-        "TransferFunction::addPoint(const vec2& pos, const vec4& color) is deprecated. Use "
-        "addPoint(const float& pos, const vec4& color) instead");
     addPoint(util::make_unique<TransferFunctionDataPoint>(pos.x, color));
 }
 
