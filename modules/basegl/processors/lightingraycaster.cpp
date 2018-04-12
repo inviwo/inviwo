@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "lightingraycaster.h"
@@ -48,9 +48,7 @@ const ProcessorInfo LightingRaycaster::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::GL,                        // Tags
 };
-const ProcessorInfo LightingRaycaster::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo LightingRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 LightingRaycaster::LightingRaycaster()
     : Processor()
@@ -83,7 +81,21 @@ LightingRaycaster::LightingRaycaster()
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();
 
-    volumePort_.onChange(this, &LightingRaycaster::onVolumeChange);
+    volumePort_.onChange([this]() {
+        if (volumePort_.hasData()) {
+            std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+
+            if (channels == channel_.size()) return;
+
+            channel_.clearOptions();
+            for (int i = 0; i < static_cast<int>(channels); i++) {
+                std::stringstream ss;
+                ss << "Channel " << i;
+                channel_.addOption(ss.str(), ss.str(), i);
+            }
+            channel_.setCurrentStateAsDefault();
+        }
+    });
 
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
@@ -110,24 +122,6 @@ void LightingRaycaster::initializeResources() {
     shader_.build();
 }
 
-void LightingRaycaster::onVolumeChange() {
-    if (volumePort_.hasData()) {
-        std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-
-        if (channels == channel_.size())
-            return;
-
-        channel_.clearOptions();
-        for (int i = 0; i < static_cast<int>(channels); i++) {
-            std::stringstream ss;
-            ss << "Channel " << i;
-            channel_.addOption(ss.str(), ss.str(), i);
-        }
-        channel_.setCurrentStateAsDefault();
-    }
-}
-
-
 void LightingRaycaster::process() {
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
@@ -136,7 +130,8 @@ void LightingRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, volumePort_);
     utilgl::bindAndSetUniforms(shader_, units, lightVolumePort_);
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
-    utilgl::bindAndSetUniforms(shader_, units, *entryPort_.getData(), "entry", ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader_, units, *entryPort_.getData(), "entry",
+                               ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, *exitPort_.getData(), "exit", ImageType::ColorDepth);
     if (backgroundPort_.isConnected()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
@@ -160,5 +155,4 @@ void LightingRaycaster::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-} // namespace
-
+}  // namespace inviwo

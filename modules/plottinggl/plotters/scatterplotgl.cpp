@@ -300,8 +300,8 @@ void ScatterPlotGL::setXAxisData(std::shared_ptr<const BufferBase> buffer) {
     xAxis_ = buffer;
     if (buffer) {
         auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        minmaxX_.x = minmax.first.x;
-        minmaxX_.y = minmax.second.x;
+        minmaxX_.x = static_cast<float>(minmax.first.x);
+        minmaxX_.y = static_cast<float>(minmax.second.x);
 
         properties_.xAxis_.setRange(minmaxX_);
     }
@@ -311,8 +311,8 @@ void ScatterPlotGL::setYAxisData(std::shared_ptr<const BufferBase> buffer) {
     yAxis_ = buffer;
     if (buffer) {
         auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        minmaxY_.x = minmax.first.x;
-        minmaxY_.y = minmax.second.x;
+        minmaxY_.x = static_cast<float>(minmax.first.x);
+        minmaxY_.y = static_cast<float>(minmax.second.x);
 
         properties_.yAxis_.setRange(minmaxY_);
     }
@@ -322,8 +322,8 @@ void ScatterPlotGL::setColorData(std::shared_ptr<const BufferBase> buffer) {
     color_ = buffer;
     if (buffer) {
         auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        minmaxC_.x = minmax.first.x;
-        minmaxC_.y = minmax.second.x;
+        minmaxC_.x = static_cast<float>(minmax.first.x);
+        minmaxC_.y = static_cast<float>(minmax.second.x);
     }
     properties_.tf_.setVisible(buffer != nullptr);
     properties_.color_.setVisible(buffer == nullptr);
@@ -333,8 +333,8 @@ void ScatterPlotGL::setRadiusData(std::shared_ptr<const BufferBase> buffer) {
     radius_ = buffer;
     if (buffer) {
         auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        minmaxR_.x = minmax.first.x;
-        minmaxR_.y = minmax.second.x;
+        minmaxR_.x = static_cast<float>(minmax.first.x);
+        minmaxR_.y = static_cast<float>(minmax.second.x);
     }
     properties_.minRadius_.setVisible(buffer != nullptr);
 }

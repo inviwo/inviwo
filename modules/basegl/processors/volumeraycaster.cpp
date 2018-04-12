@@ -67,14 +67,14 @@ VolumeRaycaster::VolumeRaycaster()
     , positionIndicator_("positionindicator", "Position Indicator")
     , toggleShading_("toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); },
                      IvwKey::L) {
-                     
+
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
-    addPort(backgroundPort_ ,"ImagePortGroup1");
+    addPort(backgroundPort_, "ImagePortGroup1");
 
     backgroundPort_.setOptional(true);
 
@@ -82,7 +82,21 @@ VolumeRaycaster::VolumeRaycaster()
     channel_.setSerializationMode(PropertySerializationMode::All);
     channel_.setCurrentStateAsDefault();
 
-    volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);
+    volumePort_.onChange([this]() {
+        if (volumePort_.hasData()) {
+            size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+
+            if (channels == channel_.size()) return;
+
+            std::vector<OptionPropertyIntOption> channelOptions;
+            for (size_t i = 0; i < channels; i++) {
+                channelOptions.emplace_back("Channel " + toString(i + 1),
+                                            "Channel " + toString(i + 1), static_cast<int>(i));
+            }
+            channel_.replaceOptions(channelOptions);
+            channel_.setCurrentStateAsDefault();
+        }
+    });
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
@@ -107,9 +121,7 @@ VolumeRaycaster::VolumeRaycaster()
     addProperty(toggleShading_);
 }
 
-const ProcessorInfo VolumeRaycaster::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 void VolumeRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, raycasting_);
@@ -118,22 +130,6 @@ void VolumeRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, positionIndicator_);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
-}
-
-void VolumeRaycaster::onVolumeChange() {
-    if (volumePort_.hasData()) {
-        size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-
-        if (channels == channel_.size()) return;
-
-        std::vector<OptionPropertyIntOption> channelOptions;
-        for (size_t i = 0; i < channels; i++) {
-            channelOptions.emplace_back("Channel " + toString(i+1), "Channel " + toString(i+1),
-                                        static_cast<int>(i));
-        }
-        channel_.replaceOptions(channelOptions);
-        channel_.setCurrentStateAsDefault();
-    }
 }
 
 void VolumeRaycaster::process() {
@@ -169,7 +165,7 @@ void VolumeRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-    if(backgroundPort_.isConnected()){
+    if (backgroundPort_.isConnected()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
@@ -195,4 +191,4 @@ void VolumeRaycaster::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-}  // namespace
+}  // namespace inviwo

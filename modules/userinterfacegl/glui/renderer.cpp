@@ -235,7 +235,6 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
         }
     } else {
         throw Exception("Could not find a data reader for texture data (png).", IvwContext);
-        return nullptr;
     }
 
     // find common texture size, use tex format of first available resource

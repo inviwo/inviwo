@@ -150,7 +150,7 @@ void DataFrameExporter::exportAsCSV(bool forceDoublePrecision) {
     LogInfo("CSV file exported to " << exportFile_);
 }
 
-void DataFrameExporter::exportAsXML(bool forceDoublePrecision /*= true*/) {
+void DataFrameExporter::exportAsXML(bool) {
     auto dataFrame = dataFrame_.getData();
 
     std::ofstream file(exportFile_);

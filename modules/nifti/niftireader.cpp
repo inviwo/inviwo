@@ -230,7 +230,6 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     NiftiVolumeRAMLoader loader(niftiImage, start_index, region_size, flipAxis);
     // Load in data to determine data/value ranges if necessary
     auto volRAM = std::static_pointer_cast<VolumeRAM>(loader.createRepresentation());
-    auto data = volRAM->getData();
     /*
     The cal_min and cal_max fields (if nonzero) are used for mapping (possibly
     scaled) dataset values to display colors:

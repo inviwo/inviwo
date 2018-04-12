@@ -96,7 +96,7 @@ void FloatMinMaxPropertyWidget::onSetDisplayName(Property *, const std::string &
     property_->propertyModified();
 }
 
-void FloatMinMaxPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+void FloatMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) {
     setEnabled(!readonly);
 }
 

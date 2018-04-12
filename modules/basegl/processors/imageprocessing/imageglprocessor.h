@@ -104,10 +104,6 @@ protected:
     std::string fragmentShader_;
 
     Shader shader_;
-
-    /*! \brief call-back function for onChange events of the inport
-     */
-    void inportChanged();
 };
 
 } // namespace
