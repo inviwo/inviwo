@@ -96,11 +96,7 @@ unsigned int keyModifiers(KeyModifiers modifiers, IvwKey key) {
         case IvwKey::PageDown:
         case IvwKey::Home:
         case IvwKey::End:
-        case IvwKey::CapsLock:
-        case IvwKey::ScrollLock:
         case IvwKey::NumLock:
-        case IvwKey::PrintScreen:
-        case IvwKey::Pause:
             cefModifiers |= EVENTFLAG_IS_KEY_PAD;
             break;
         case IvwKey::KP0:

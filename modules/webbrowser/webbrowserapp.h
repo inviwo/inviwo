@@ -50,7 +50,7 @@ public:
     WebBrowserApp();
 
     CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
-    // void OnContextCreated(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>, CefRefPtr<CefV8Context>);
+    
     // CefRenderProcessHandler methods:
     void OnWebKitInitialized() OVERRIDE {
         // Create the renderer-side router for query handling.

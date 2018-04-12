@@ -108,7 +108,7 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(KeyboardEvent* e) {
     // https://msdn.microsoft.com/en-us/library/ms646286(VS.85).aspx
     cefEvent.is_system_key = (e->key() == IvwKey::F10) || (e->modifiers() & KeyModifier::Alt);
 #else
-    // Always forle on non-windows platforms
+    // Always false on non-windows platforms
     cefEvent.is_system_key = false;
 #endif
     if (e->state() & KeyState::Press) {

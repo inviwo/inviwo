@@ -27,20 +27,12 @@
  *
  *********************************************************************************/
 
-#include "modules/webbrowser/webbrowserapp.h"
+#include <modules/webbrowser/webbrowserapp.h>
 
 namespace inviwo {
 
 WebBrowserApp::WebBrowserApp() = default;
 
 CefRefPtr<CefRenderProcessHandler> WebBrowserApp::GetRenderProcessHandler() { return this; }
-
-// void WebBrowserApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-//                                     CefRefPtr<CefV8Context> context) {
-//    //CEF_REQUIRE_UI_THREAD();
-//    //CefRefPtr<CefV8Value> val = CefV8Value::CreateBool(true);
-//    //CefRefPtr<CefV8Value> global = context->GetGlobal();
-//    //global->SetValue("ExampleValue", val, V8_PROPERTY_ATTRIBUTE_NONE);
-//}
 
 }  // namespace inviwo

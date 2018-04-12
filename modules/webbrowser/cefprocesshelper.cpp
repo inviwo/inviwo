@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include "modules/webbrowser/webbrowserapp.h"
+#include <modules/webbrowser/webbrowserapp.h>
 
-#include "include/cef_app.h"
+#include <include/cef_app.h>
 
 // This process will run the CEF web browser. Used as a sub-process by WebBrowserModule 
 // See WebBrowserModule::WebBrowserModule

@@ -31,7 +31,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "include/wrapper/cef_helpers.h"
+#include <include/wrapper/cef_helpers.h>
 #include <warn/pop>
 
 namespace inviwo {
