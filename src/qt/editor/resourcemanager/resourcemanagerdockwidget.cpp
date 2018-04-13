@@ -59,7 +59,7 @@ class ResourceManagerItemModel : public QStandardItemModel {
 public:
     ResourceManagerItemModel(QObject *parent) : QStandardItemModel(parent) { setColumnCount(3); }
 
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const override {
+    virtual Qt::ItemFlags flags(const QModelIndex &/*index*/) const override {
         return Qt::ItemIsEnabled;
     }
 

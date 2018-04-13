@@ -660,12 +660,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
     {
         menu.addSeparator();
-        auto compAction = menu.addAction(QIcon(":/icons/composite-create.png"), tr("&Create Composite"));
+        auto compAction =
+            menu.addAction(QIcon(":/icons/composite-create.png"), tr("&Create Composite"));
         connect(compAction, &QAction::triggered, this,
                 [this]() { util::replaceSelectionWithCompositeProcessor(*network_); });
         compAction->setEnabled(selectedProcessors.size() > 1);
 
-        auto expandAction = menu.addAction(QIcon(":/icons/composite-expand.png"), tr("&Expand Composite"));
+        auto expandAction =
+            menu.addAction(QIcon(":/icons/composite-expand.png"), tr("&Expand Composite"));
         std::unordered_set<CompositeProcessor*> selectedComposites;
         for (auto& p : selectedProcessors) {
             if (auto comp = dynamic_cast<CompositeProcessor*>(p.first)) {
@@ -1092,7 +1094,8 @@ void NetworkEditor::paste(QByteArray mimeData) {
             util::offsetPosition(added, clickedPosition_.second - center);
         } else if (pastePos_.first) {
             pastePos_.second.x += (bounds.second.x - bounds.first.x) +
-                                  ProcessorGraphicsItem::size_.width() + gridSpacing_;
+                                  static_cast<int>(ProcessorGraphicsItem::size_.width()) +
+                                  gridSpacing_;
             util::offsetPosition(added, pastePos_.second - center);
         } else {  // add to bottom left
             pastePos_.first = true;

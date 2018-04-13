@@ -132,7 +132,7 @@ VolumeSliceGL::VolumeSliceGL()
     addPort(inport_);
     addPort(outport_);
 
-    inport_.onChange(this, &VolumeSliceGL::updateMaxSliceNumber);
+    inport_.onChange([this]() { updateMaxSliceNumber(); });
     sliceAlongAxis_.addOption("x", "y-z plane (X axis)",
                               static_cast<int>(CartesianCoordinateAxis::X));
     sliceAlongAxis_.addOption("y", "z-x plane (Y axis)",
@@ -142,22 +142,22 @@ VolumeSliceGL::VolumeSliceGL()
     sliceAlongAxis_.addOption("p", "Plane Equation", 3);
     sliceAlongAxis_.set(static_cast<int>(CartesianCoordinateAxis::X));
     sliceAlongAxis_.setCurrentStateAsDefault();
-    sliceAlongAxis_.onChange(this, &VolumeSliceGL::modeChange);
+    sliceAlongAxis_.onChange([this]() { modeChange(); });
     addProperty(sliceAlongAxis_);
 
     addProperty(sliceX_);
     addProperty(sliceY_);
     addProperty(sliceZ_);
     // Invalidate selected voxel cursor when current slice changes
-    sliceX_.onChange(this, &VolumeSliceGL::sliceChange);
-    sliceY_.onChange(this, &VolumeSliceGL::sliceChange);
-    sliceZ_.onChange(this, &VolumeSliceGL::sliceChange);
+    sliceX_.onChange([this]() { sliceChange(); });
+    sliceY_.onChange([this]() { sliceChange(); });
+    sliceZ_.onChange([this]() { sliceChange(); });
 
     addProperty(planeNormal_);
     addProperty(planePosition_);
 
-    planePosition_.onChange(this, &VolumeSliceGL::positionChange);
-    planeNormal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
+    planePosition_.onChange([this]() { positionChange(); });
+    planeNormal_.onChange([this]() { planeSettingsChanged(); });
 
     // Transformations
     rotationAroundAxis_.addOption("0", "0 deg", 0);
@@ -199,11 +199,11 @@ VolumeSliceGL::VolumeSliceGL()
     trafoGroup_.addProperty(volumeWrapping_);
     trafoGroup_.addProperty(fillColor_);
 
-    rotationAroundAxis_.onChange(this, &VolumeSliceGL::rotationModeChange);
-    imageRotation_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
-    imageScale_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
-    flipHorizontal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
-    flipVertical_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
+    rotationAroundAxis_.onChange([this]() { rotationModeChange(); });
+    imageRotation_.onChange([this]() { planeSettingsChanged(); });
+    imageScale_.onChange([this]() { planeSettingsChanged(); });
+    flipHorizontal_.onChange([this]() { planeSettingsChanged(); });
+    flipVertical_.onChange([this]() { planeSettingsChanged(); });
 
     addProperty(trafoGroup_);
 
@@ -212,8 +212,8 @@ VolumeSliceGL::VolumeSliceGL()
     pickGroup_.addProperty(showIndicator_);
     pickGroup_.addProperty(indicatorColor_);
 
-    posPicking_.onChange(this, &VolumeSliceGL::modeChange);
-    indicatorColor_.onChange(this, &VolumeSliceGL::invalidateMesh);
+    posPicking_.onChange([this]() { modeChange(); });
+    indicatorColor_.onChange([this]() { invalidateMesh(); });
     showIndicator_.setReadOnly(posPicking_.get());
     indicatorColor_.setSemantics(PropertySemantics::Color);
 

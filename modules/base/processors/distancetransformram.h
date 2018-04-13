@@ -100,7 +100,6 @@ protected:
 
 private:
     void updateOutport();
-    void paramChanged();
 
     VolumeInport volumePort_;
     VolumeOutport outport_;

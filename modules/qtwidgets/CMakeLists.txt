@@ -23,11 +23,8 @@ set(MOC_FILES
     ordinaleditorwidget.h
     processors/processordockwidgetqt.h
     processors/processorwidgetqt.h
-    properties/propertywidgetqt.h
     properties/stringmultilinepropertywidgetqt.h
-    properties/texteditorwidgetqt.h
     properties/transferfunctioneditor.h
-    properties/transferfunctionpropertydialog.h
     propertylistwidget.h
     rangesliderqt.h
     sliderwidgetqt.h
@@ -53,6 +50,7 @@ set(HEADER_FILES
     properties/fontsizepropertywidgetqt.h
     properties/lightpropertywidgetqt.h
     properties/multifilepropertywidgetqt.h
+    properties/propertywidgetqt.h
     properties/optionpropertywidgetqt.h
     properties/ordinalminmaxpropertywidgetqt.h
     properties/ordinalminmaxtextpropertywidgetqt.h
@@ -61,9 +59,11 @@ set(HEADER_FILES
     properties/propertysettingswidgetqt.h
     properties/stringpropertywidgetqt.h
     properties/syntaxhighlighter.h
+    properties/texteditorwidgetqt.h
     properties/transferfunctioncontrolpointconnection.h
     properties/transferfunctioneditorcontrolpoint.h
     properties/transferfunctioneditorview.h
+    properties/transferfunctionpropertydialog.h
     properties/transferfunctionpropertywidgetqt.h
     qstringhelper.h
     qtwidgetsmodule.h

@@ -74,7 +74,7 @@ void IntPropertyWidget::onSetDisplayName(Property *, const std::string &displayN
     property_->propertyModified();
 }
 
-void IntPropertyWidget::onSetReadOnly(Property *property, bool readonly) { setEnabled(!readonly); }
+void IntPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

@@ -32,7 +32,6 @@
 #include <inviwo/core/datastructures/datamapper.h>
 
 #include <pybind11/pybind11.h>
-#include <pybind11/common.h>
 #include <pybind11/numpy.h>
 
 #include <sstream>

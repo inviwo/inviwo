@@ -78,8 +78,22 @@ SurfaceExtraction::SurfaceExtraction()
 
     getProgressBar().hide();
 
-    volume_.onChange(this, &SurfaceExtraction::updateColors);
-    volume_.onChange(this, &SurfaceExtraction::setMinMax);
+    volume_.onChange([this]() {
+        updateColors();
+        if (volume_.hasData()) {
+            auto minmax = std::make_pair(std::numeric_limits<double>::max(),
+                                         std::numeric_limits<double>::lowest());
+            minmax =
+                std::accumulate(volume_.begin(), volume_.end(), minmax,
+                                [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
+                return std::make_pair(std::min(mm.first, v->dataMap_.dataRange.x),
+                                      std::max(mm.second, v->dataMap_.dataRange.y));
+            });
+
+            isoValue_.setMinValue(static_cast<const float>(minmax.first));
+            isoValue_.setMaxValue(static_cast<const float>(minmax.second));
+        }
+    });
 }
 
 SurfaceExtraction::~SurfaceExtraction() {}
@@ -156,22 +170,6 @@ void SurfaceExtraction::process() {
                                return m;
                            }));
         }
-    }
-}
-
-void SurfaceExtraction::setMinMax() {
-    if (volume_.hasData()) {
-        auto minmax = std::make_pair(std::numeric_limits<double>::max(),
-                                     std::numeric_limits<double>::lowest());
-        minmax =
-            std::accumulate(volume_.begin(), volume_.end(), minmax,
-                            [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
-                                return std::make_pair(std::min(mm.first, v->dataMap_.dataRange.x),
-                                                      std::max(mm.second, v->dataMap_.dataRange.y));
-                            });
-
-        isoValue_.setMinValue(static_cast<const float>(minmax.first));
-        isoValue_.setMaxValue(static_cast<const float>(minmax.second));
     }
 }
 

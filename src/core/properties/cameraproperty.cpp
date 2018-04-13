@@ -98,7 +98,9 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
 
     changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
 
-    if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
+    if (inport_) {
+        callbackInportOnChange_ = inport_->onChange([this]() { inportChanged(); });
+    }
 }
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
@@ -140,9 +142,17 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
 
     changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
 
-    if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
+    if (inport_) {
+        callbackInportOnChange_ = inport_->onChange([this]() { inportChanged(); });
+    }
 
     inportChanged();
+}
+
+CameraProperty::~CameraProperty() {
+    if (inport_ && callbackInportOnChange_) {
+        inport_->removeOnChange(callbackInportOnChange_);
+    }
 }
 
 void CameraProperty::changeCamera(std::unique_ptr<Camera> newCamera) {
@@ -162,9 +172,14 @@ CameraProperty& CameraProperty::operator=(const CameraProperty& that) {
         CompositeProperty::operator=(that);
         changeCamera(std::unique_ptr<Camera>(that.camera_->clone()));
 
-        if (inport_) inport_->removeOnChange(this);
+        if (inport_) {
+            inport_->removeOnChange(callbackInportOnChange_);
+            callbackInportOnChange_ = nullptr;
+        }
         inport_ = that.inport_;
-        if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
+        if (inport_) {
+            callbackInportOnChange_ = inport_->onChange([this]() { inportChanged(); });
+        }
         data_ = nullptr;
         prevDataToWorldMatrix_ = mat4(0);
         updatePropertyFromValue();
@@ -297,9 +312,17 @@ void CameraProperty::invokeEvent(Event* event) {
 }
 
 void CameraProperty::setInport(Inport* inport) {
-    if (inport_ != inport) inport->onChange(this, &CameraProperty::inportChanged);
+    if (inport_ != inport) {
+        if (inport_) {
+            inport_->removeOnChange(callbackInportOnChange_);
+            callbackInportOnChange_ = nullptr;
+        }
+    }
 
     inport_ = inport;
+    if (inport_) {
+        callbackInportOnChange_ = inport_->onChange([this]() { inportChanged(); });
+    }
 }
 
 void CameraProperty::adjustCameraToData(const mat4& newDataToWorldMatrix) {
@@ -360,11 +383,9 @@ void CameraProperty::inportChanged() {
         data = volumeInport->getData().get();
     } else if (meshInport) {
         data = meshInport->getData().get();
-    }
-    else if (meshMultiInport) {
+    } else if (meshMultiInport) {
         data = meshMultiInport->getData().get();
-    }
-    else if (meshFlatMultiInport) {
+    } else if (meshFlatMultiInport) {
         data = meshFlatMultiInport->getData().get();
     }
 
@@ -399,4 +420,4 @@ const mat4& CameraProperty::inverseProjectionMatrix() const {
     return camera_->getInverseProjectionMatrix();
 }
 
-}  // namespace
+}  // namespace inviwo

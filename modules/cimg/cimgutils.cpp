@@ -167,7 +167,7 @@ struct CImgToVoidConvert {
 template <typename T>
 struct LayerToCImg {
     static std::unique_ptr<cimg_library::CImg<T>> convert(const LayerRAM* inputLayerRAM,
-                                                          bool permute = true) {
+                                                          bool /*permute*/ = true) {
         // Single channel means we can do xyzc, as no permutation is needed
         auto img = util::make_unique<cimg_library::CImg<T>>(
             static_cast<const T*>(inputLayerRAM->getData()),

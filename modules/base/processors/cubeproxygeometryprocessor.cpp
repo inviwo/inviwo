@@ -66,7 +66,25 @@ CubeProxyGeometry::CubeProxyGeometry()
     clipY_.setSerializationMode(PropertySerializationMode::All);
     clipZ_.setSerializationMode(PropertySerializationMode::All);
 
-    inport_.onChange(this, &CubeProxyGeometry::onVolumeChange);
+    inport_.onChange([this]() {
+        auto volume = inport_.getData();
+        // Update to the new dimensions.
+        auto dims = util::getVolumeDimensions(volume);
+
+        if (dims !=
+            size3_t(clipX_.getRangeMax() - 1, clipY_.getRangeMax() - 1, clipZ_.getRangeMax() - 1)) {
+            NetworkLock lock(this);
+
+            clipX_.setRangeNormalized(ivec2(0, dims.x - 1));
+            clipY_.setRangeNormalized(ivec2(0, dims.y - 1));
+            clipZ_.setRangeNormalized(ivec2(0, dims.z - 1));
+
+            // set the new dimensions to default if we were to press reset
+            clipX_.setCurrentStateAsDefault();
+            clipY_.setCurrentStateAsDefault();
+            clipZ_.setCurrentStateAsDefault();
+        }
+    });
 }
 
 CubeProxyGeometry::~CubeProxyGeometry() {}
@@ -81,26 +99,6 @@ void CubeProxyGeometry::process() {
         mesh = algorithm::createCubeProxyGeometry(inport_.getData());
     }
     outport_.setData(mesh);
-}
-
-void CubeProxyGeometry::onVolumeChange() {
-    auto volume = inport_.getData();
-    // Update to the new dimensions.
-    auto dims = util::getVolumeDimensions(volume);
-
-    if (dims !=
-        size3_t(clipX_.getRangeMax() - 1, clipY_.getRangeMax() - 1, clipZ_.getRangeMax() - 1)) {
-        NetworkLock lock(this);
-
-        clipX_.setRangeNormalized(ivec2(0, dims.x - 1));
-        clipY_.setRangeNormalized(ivec2(0, dims.y - 1));
-        clipZ_.setRangeNormalized(ivec2(0, dims.z - 1));
-
-        // set the new dimensions to default if we were to press reset
-        clipX_.setCurrentStateAsDefault();
-        clipY_.setCurrentStateAsDefault();
-        clipZ_.setCurrentStateAsDefault();
-    }
 }
 
 }  // namespace inviwo

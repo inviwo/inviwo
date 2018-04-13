@@ -99,7 +99,7 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
 template <typename ValueType,
           typename std::enable_if<!util::is_floating_point<ValueType>::value, int>::type = 0>
 std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
-                                   IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
+                                   IgnoreSpecialValues = IgnoreSpecialValues::No) {
     using Res = std::pair<ValueType, ValueType>;
     Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
     minmax =
@@ -118,7 +118,7 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
  * @param data pointer to values
  * @param size of data 
  * @param ignore infinite and NaN
- * @return mininum and maximum values of each component and zero for non-existing components
+ * @return minimum and maximum values of each component and zero for non-existing components
  */
 template <typename ValueType>
 std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,

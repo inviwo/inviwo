@@ -56,7 +56,7 @@ AdvancedMaterialProperty::AdvancedMaterialProperty(
     phaseFunctionProp.addOption("mix", "Mix");
     phaseFunctionProp.addOption("none", "None");
     phaseFunctionProp.setCurrentStateAsDefault();
-    phaseFunctionProp.onChange(this, &AdvancedMaterialProperty::phaseFunctionChanged);
+    phaseFunctionProp.onChange([this]() { phaseFunctionChanged(); });
 
     specularColorProp.setSemantics(PropertySemantics::Color);
 

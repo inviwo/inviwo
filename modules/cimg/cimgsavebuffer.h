@@ -144,8 +144,6 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
         return img.save_raw(handle);
     else
         throw cimg_library::CImgIOException("unsupported format");
-
-    return img;
 }
 
 }  // namespace cimgutil

@@ -42,7 +42,6 @@
 
 #include <modules/base/algorithm/dataminmax.h>
 
-
 #include <limits>
 
 namespace inviwo {
@@ -50,7 +49,7 @@ namespace inviwo {
 const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
     "org.inviwo.GeometryRenderGL",  // Class identifier
     "Mesh Renderer",                // Display name
-    "Mesh Rendering",           // Category
+    "Mesh Rendering",               // Category
     CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
 };
@@ -97,14 +96,14 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     imageInport_.setOptional(true);
 
     addProperty(camera_);
-    centerViewOnGeometry_.onChange(this, &MeshRenderProcessorGL::centerViewOnGeometry);
+    centerViewOnGeometry_.onChange([this]() { centerViewOnGeometry(); });
     addProperty(centerViewOnGeometry_);
-    setNearFarPlane_.onChange(this, &MeshRenderProcessorGL::setNearFarPlane);
+    setNearFarPlane_.onChange([this]() { setNearFarPlane(); });
     addProperty(setNearFarPlane_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
-    inport_.onChange(this, &MeshRenderProcessorGL::updateDrawers);
+    inport_.onChange([this]() { updateDrawers(); });
 
     geomProperties_.addProperty(cullFace_);
     geomProperties_.addProperty(enableDepthTest_);
@@ -173,7 +172,7 @@ void MeshRenderProcessorGL::initializeResources() {
 
     // get a hold of the current output data
     auto prevData = outport_.getData();
-    auto numLayers = static_cast<std::size_t>(layerID-1); // Don't count picking
+    auto numLayers = static_cast<std::size_t>(layerID - 1);  // Don't count picking
     if (prevData->getNumberOfColorLayers() != numLayers) {
         // create new image with matching number of layers
         auto image = std::make_shared<Image>(prevData->getDimensions(), prevData->getDataFormat());
@@ -228,9 +227,8 @@ std::pair<vec3, vec3> MeshRenderProcessorGL::calcWorldBoundingBox() const {
             worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
         }
     }
-    return{ worldMin, worldMax };
+    return {worldMin, worldMax};
 }
-
 
 void MeshRenderProcessorGL::centerViewOnGeometry() {
     if (!inport_.hasData()) return;
@@ -258,8 +256,8 @@ void MeshRenderProcessorGL::setNearFarPlane() {
     float farDist = 0;
     vec3 nearPos;
     vec3 farPos;
-    const vec3 camPos{ geom->getCoordinateTransformer().getWorldToModelMatrix() *
-                      vec4(camera_.getLookFrom(), 1.0) };
+    const vec3 camPos{geom->getCoordinateTransformer().getWorldToModelMatrix() *
+                      vec4(camera_.getLookFrom(), 1.0)};
     for (auto& po : pos) {
         auto d = glm::distance2(po, camPos);
         if (d < nearDist) {
@@ -308,4 +306,4 @@ void MeshRenderProcessorGL::updateDrawers() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

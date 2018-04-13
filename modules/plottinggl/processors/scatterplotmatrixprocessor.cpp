@@ -69,20 +69,21 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , textRenderer_()
     , textureQuadRenderer_()
 
-    , mouseEvent_("mouseEvent", "Mouse Event",
-                  [&](Event *e) {
-                      if (auto me = dynamic_cast<MouseEvent *>(e)) {
-                          auto p = ivec2(me->posNormalized() * dvec2(numParams_)) + 1;
-                          if (p.x == p.y) {
-                              color_.setSelectedValue(p.x);
-                          } else {
-                              selectedX_.setSelectedValue(p.x);
-                              selectedY_.setSelectedValue(p.y);
-                          }
-                      }
+    , mouseEvent_(
+          "mouseEvent", "Mouse Event",
+          [&](Event *e) {
+              if (auto me = dynamic_cast<MouseEvent *>(e)) {
+                  auto p = ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_))) + 1;
+                  if (p.x == p.y) {
+                      color_.setSelectedValue(p.x);
+                  } else {
+                      selectedX_.setSelectedValue(p.x);
+                      selectedY_.setSelectedValue(p.y);
+                  }
+              }
 
-                  },
-                  MouseButton::Left, MouseState::Press)
+          },
+          MouseButton::Left, MouseState::Press)
 
 {
     addPort(dataFrame_);
@@ -114,9 +115,9 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     });
 
     correlectionTF_.get().clearPoints();
-    correlectionTF_.get().addPoint(vec2(0, 1), vec4(1, 0, 0, 1));
-    correlectionTF_.get().addPoint(vec2(0.5, 1), vec4(1, 1, 1, 1));
-    correlectionTF_.get().addPoint(vec2(1, 1), vec4(0, 0, 1, 1));
+    correlectionTF_.get().addPoint(0.0f, vec4(1, 0, 0, 1));
+    correlectionTF_.get().addPoint(0.5f, vec4(1, 1, 1, 1));
+    correlectionTF_.get().addPoint(1.0f, vec4(0, 0, 1, 1));
     correlectionTF_.setCurrentStateAsDefault();
 
     labels_.addProperty(fontSize_);

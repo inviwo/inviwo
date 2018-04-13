@@ -42,9 +42,7 @@ const ProcessorInfo LayerDistanceTransformRAM::processorInfo_{
     CodeState::Stable,                       // Code state
     Tags::CPU,                               // Tags
 };
-const ProcessorInfo LayerDistanceTransformRAM::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo LayerDistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
 
 LayerDistanceTransformRAM::LayerDistanceTransformRAM()
     : Processor()
@@ -85,7 +83,7 @@ LayerDistanceTransformRAM::LayerDistanceTransformRAM()
 
     addProperty(btnForceUpdate_);
 
-    btnForceUpdate_.onChange(this, &LayerDistanceTransformRAM::paramChanged);
+    btnForceUpdate_.onChange([this]() { distTransformDirty_ = true; });
 
     progressBar_.hide();
 }
@@ -135,12 +133,12 @@ void LayerDistanceTransformRAM::updateOutport() {
 
     auto calc =
         [
-          pb = &progressBar_,
-          upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
-                                              : upsampleFactorVec2_.get(),
-          threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
-          square = resultSquaredDist_.get(), scale = resultDistScale_.get(), done,
-          &cache = imageCache_
+            pb = &progressBar_,
+            upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+                                                : upsampleFactorVec2_.get(),
+            threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
+            square = resultSquaredDist_.get(), scale = resultDistScale_.get(), done,
+            &cache = imageCache_
         ](std::shared_ptr<const Image> image)
             ->std::shared_ptr<Image> {
 
@@ -172,7 +170,4 @@ void LayerDistanceTransformRAM::updateOutport() {
     newImage_ = dispatchPool(calc, imagePort_.getData());
 }
 
-void LayerDistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }
-
-} // namespace
-
+}  // namespace inviwo

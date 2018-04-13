@@ -76,7 +76,7 @@ void FloatPropertyWidget::onSetDisplayName(Property *, const std::string &displa
     property_->propertyModified();
 }
 
-void FloatPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+void FloatPropertyWidget::onSetReadOnly(Property *, bool readonly) {
     setEnabled(!readonly);
 }
 

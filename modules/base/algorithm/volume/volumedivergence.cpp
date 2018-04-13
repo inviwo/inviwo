@@ -61,6 +61,7 @@ std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
 
     volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>(
         [&](auto vol) {
+            IVW_UNUSED_PARAM(vol);
             using ValueType = util::PrecsionValueType<decltype(vol)>;
             using ComponentType = typename ValueType::value_type;
 

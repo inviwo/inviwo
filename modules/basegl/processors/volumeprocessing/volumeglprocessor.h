@@ -88,10 +88,6 @@ protected:
     std::string fragmentShader_;
     Shader shader_;
     FrameBufferObject fbo_;
-
-private:
-    // \brief call-back function for onChange events of the inport
-    void inportChanged();
 };
 
 }  // namespace

@@ -87,7 +87,7 @@ void LayerGL::unbindTexture() const {
     glActiveTexture(GL_TEXTURE0);
 }
 
-bool LayerGL::copyRepresentationsTo(LayerRepresentation* targetLayerGL) const {
+bool LayerGL::copyRepresentationsTo(LayerRepresentation* /*targetLayerGL*/) const {
     /*const LayerGL* source = this;
     LayerGL* target = dynamic_cast<LayerGL*>(targetLayerGL);
     if(!target){

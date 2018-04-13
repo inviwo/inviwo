@@ -57,7 +57,6 @@ public:
 protected:
     const HistogramContainer* getNormalizedHistograms();
 
-    void onVolumeInportInvalid();
     virtual void resizeEvent(QResizeEvent* event) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
@@ -81,6 +80,11 @@ private:
     std::future<void> histCalculation_;
 
     vec2 maskHorizontal_;
+
+    const BaseCallBack *callbackOnInvalid = nullptr;
+    const BaseCallBack *callbackOnChange = nullptr;
+    const BaseCallBack *callbackOnConnect = nullptr;
+    const BaseCallBack *callbackOnDisconnect = nullptr;
 };
 
 }  // namespace
