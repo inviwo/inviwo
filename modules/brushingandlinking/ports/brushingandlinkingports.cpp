@@ -29,7 +29,7 @@
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-namespace inviwo{
+namespace inviwo {
 
 BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     : DataInport<BrushingAndLinkingManager>(identifier) {
@@ -41,15 +41,29 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     });
 }
 
-void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> &indices) {
+void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t>& indices) {
     filterCache_ = indices;
     FilteringEvent event(this, filterCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
+void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t>& indices) {
     selctionCache_ = indices;
     SelectionEvent event(this, selctionCache_);
+    getProcessor()->propagateEvent(&event, nullptr);
+}
+
+void BrushingAndLinkingInport::sendClusterSelectionEvent(
+    const std::unordered_set<size_t>& indices) {
+    clusterSelectionCache_ = indices;
+    ClusterSelectionEvent event(this, clusterSelectionCache_);
+    getProcessor()->propagateEvent(&event, nullptr);
+}
+
+void BrushingAndLinkingInport::sendSomeOtherSelectionEvent(
+    const std::unordered_set<size_t>& indices) {
+    someOtherSelectionCache_ = indices;
+    SomeOtherSelectionEvent event(this, someOtherSelectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
@@ -69,22 +83,51 @@ bool BrushingAndLinkingInport::isSelected(size_t idx) const {
     }
 }
 
-const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices() const {
+bool BrushingAndLinkingInport::isClusterSelected(size_t idx) const {
+    if (isConnected()) {
+        return getData()->isClusterSelected(idx);
+    } else {
+        return clusterSelectionCache_.find(idx) != clusterSelectionCache_.end();
+    }
+}
+
+bool BrushingAndLinkingInport::isSomeOtherSelected(size_t idx) const {
+    if (isConnected()) {
+        return getData()->isSomeOtherSelected(idx);
+    } else {
+        return someOtherSelectionCache_.find(idx) != someOtherSelectionCache_.end();
+    }
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedIndices() const {
     if (isConnected()) {
         return getData()->getSelectedIndices();
-    }
-    else {
+    } else {
         return selctionCache_;
     }
 }
 
-
-const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices() const {
+const std::unordered_set<size_t>& BrushingAndLinkingInport::getFilteredIndices() const {
     if (isConnected()) {
         return getData()->getFilteredIndices();
-    }
-    else {
+    } else {
         return filterCache_;
+    }
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingInport::getClusterSelectedIndices() const {
+    if (isConnected()) {
+        return getData()->getClusterSelectedIndices();
+    } else {
+        return clusterSelectionCache_;
+    }
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingInport::getSomeOtherSelectedIndices() const {
+    if (isConnected()) {
+        return getData()->getSomeOtherSelectedIndices();
+    } else {
+        return someOtherSelectionCache_;
     }
 }
 
@@ -99,4 +142,4 @@ std::string BrushingAndLinkingOutport::getClassIdentifier() const {
     return PortTraits<BrushingAndLinkingOutport>::classIdentifier();
 }
 
-}  // namespace
+}  // namespace inviwo

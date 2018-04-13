@@ -31,21 +31,27 @@
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-
 namespace inviwo {
 
-BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p, InvalidationLevel validationLevel) {
+BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
+                                                     InvalidationLevel validationLevel) {
     auto outPorts = p->getOutports();
     for (auto& op : outPorts) {
         if (dynamic_cast<BrushingAndLinkingOutport*>(op)) {
             op->onDisconnect([=]() {
                 selected_.update();
                 filtered_.update();
+                clusterSelected_.update();
+                someOtherSelected_.update();
             });
         }
     }
     callback1_ = selected_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
     callback2_ = filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
+    callback3_ =
+        clusterSelected_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
+    callback4_ =
+        someOtherSelected_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
 }
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
@@ -54,14 +60,32 @@ size_t BrushingAndLinkingManager::getNumberOfSelected() const { return selected_
 
 size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_.getSize(); }
 
+size_t BrushingAndLinkingManager::getNumberOfClusterSelected() const {
+    return clusterSelected_.getSize();
+}
+
+size_t BrushingAndLinkingManager::getNumberOfSomeOtherSelected() const {
+    return someOtherSelected_.getSize();
+}
+
 void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
     selected_.remove(src);
     filtered_.remove(src);
+    clusterSelected_.remove(src);
+    someOtherSelected_.remove(src);
 }
 
 bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
 
 bool BrushingAndLinkingManager::isSelected(size_t idx) const { return selected_.has(idx); }
+
+bool BrushingAndLinkingManager::isClusterSelected(size_t idx) const {
+    return clusterSelected_.has(idx);
+}
+
+bool BrushingAndLinkingManager::isSomeOtherSelected(size_t idx) const {
+    return someOtherSelected_.has(idx);
+}
 
 void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport* src,
                                             const std::unordered_set<size_t>& indices) {
@@ -73,6 +97,16 @@ void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
     filtered_.set(src, indices);
 }
 
+void BrushingAndLinkingManager::setClusterSelected(const BrushingAndLinkingInport* src,
+                                                   const std::unordered_set<size_t>& indices) {
+    clusterSelected_.set(src, indices);
+}
+
+void BrushingAndLinkingManager::setSomeOtherSelected(const BrushingAndLinkingInport* src,
+                                                     const std::unordered_set<size_t>& indices) {
+    someOtherSelected_.set(src, indices);
+}
+
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices() const {
     return selected_.getIndices();
 }
@@ -81,4 +115,12 @@ const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices(
     return filtered_.getIndices();
 }
 
-}  // namespace
+const std::unordered_set<size_t>& BrushingAndLinkingManager::getClusterSelectedIndices() const {
+    return clusterSelected_.getIndices();
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingManager::getSomeOtherSelectedIndices() const {
+    return someOtherSelected_.getIndices();
+}
+
+}  // namespace inviwo
