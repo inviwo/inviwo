@@ -63,20 +63,6 @@ function (ivw_add_py_wrapper target)
 
         set(_allPyBindWrappers "${_allPyBindWrappers};${target}" CACHE INTERNAL  "_allPyBindWrappers")
 
-        ## disable some warnings for MSVC builds
-        get_property(comp_opts TARGET ${target} PROPERTY COMPILE_OPTIONS)
-        # Specify warnings
-        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-            list(APPEND comp_opts "/wd4005") # macro redefinition    https://msdn.microsoft.com/en-us/library/8d10sc3w.aspx
-            list(APPEND comp_opts "/wd4201") # nameless struct/union https://msdn.microsoft.com/en-us/library/c89bw853.aspx
-            list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
-            list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
-            if(MSVC_VERSION GREATER_EQUAL 1910)
-                list(APPEND comp_opts "/std:c++latest")
-                #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
-            endif()
-        endif()
-        list(REMOVE_DUPLICATES comp_opts)
-        set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
+        ivw_define_standard_properties(${target})
     endif()
 endfunction()
