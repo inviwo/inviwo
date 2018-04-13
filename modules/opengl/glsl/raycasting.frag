@@ -66,7 +66,13 @@ uniform RaycastingParameters raycaster;
 
 uniform int channel;
 
+uniform int isoValueCount = 0;
+uniform float isoValues[10];
+uniform vec4 isoValueColors[10];
+
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
+
+
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth) {
     vec4 result = vec4(0.0);
@@ -99,14 +105,77 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     }
 #endif
 
+    // used for isosurface computation
+    float prevSample = getNormalizedVoxel(volume, volumeParameters, entryPoint + t * rayDirection)[channel];
+
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
-        color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
+
+        // check for isosurfaces
+        float currentSample = voxel[channel];
+        float sampleDelta = (currentSample - prevSample);
+        if (sampleDelta > 0) {
+            for (int i = 0; i < isoValueCount; ++i) {
+                // found isosurface if differences between current/prev sample and isovalue have different signs
+                if ((isoValues[i] - currentSample) * (isoValues[i] - prevSample) < 0) {
+                    // apply linear interpolation
+                    float a = (currentSample - isoValues[i]) / sampleDelta;
+                    vec3 isopos = samplePos - tIncr * a * rayDirection;
+                    vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, isopos, channel);
+                    gradient = normalize(gradient);
+
+
+                    // two-sided
+                    if (dot(gradient, rayDirection) < 0) {
+                        gradient = -gradient;
+                    }
+
+                    vec4 surfaceColor = isoValueColors[i];
+                    vec3 isoposWorld = (volumeParameters.textureToWorld * vec4(isopos, 1.0)).xyz;
+                    surfaceColor.rgb = APPLY_LIGHTING(lighting, surfaceColor.rgb, surfaceColor.rgb, vec3(1.0),
+                                       isoposWorld, -gradient, toCameraDir);
+
+                    //surfaceColor.rgb = vec3(dot(gradient, normalize(lighting.position - isoposWorld)));
+
+                    result = APPLY_COMPOSITING(result, surfaceColor, isopos, voxel, gradient, camera,
+                                       raycaster.isoValue, t - tIncr * a, tDepth, tIncr);                    
+                }
+            }
+        } else {
+            // previous sample is larger, iterate in reverse over isovalues
+            for (int i = isoValueCount - 1; i >= 0; --i) {
+                // found isosurface if differences between current/prev sample and isovalue have different signs
+                if ((isoValues[i] - currentSample) * (isoValues[i] - prevSample) < 0) {
+                    // apply linear interpolation
+                    float a = (currentSample - isoValues[i]) / sampleDelta;
+                    vec3 isopos = samplePos - tIncr * a * rayDirection;
+                    vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, isopos, channel);
+                    gradient = normalize(gradient);
+
+
+                    // two-sided
+                    if (dot(gradient, rayDirection) < 0) {
+                        gradient = -gradient;
+                    }
+
+                    vec4 surfaceColor = isoValueColors[i];
+                    vec3 isoposWorld = (volumeParameters.textureToWorld * vec4(isopos, 1.0)).xyz;
+                    surfaceColor.rgb = APPLY_LIGHTING(lighting, surfaceColor.rgb, surfaceColor.rgb, vec3(1.0),
+                                       isoposWorld, -gradient, toCameraDir);
+
+                    //surfaceColor.rgb = vec3(dot(gradient, normalize(lighting.position - isoposWorld)));
+
+                    result = APPLY_COMPOSITING(result, surfaceColor, isopos, voxel, gradient, camera,
+                                       raycaster.isoValue, t - tIncr * a, tDepth, tIncr);                    
+                }
+            }
+        }
 
         result = DRAW_BACKGROUND(result, t, tIncr, backgroundColor, bgTDepth, tDepth);
         result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator, t, tDepth);
 
+        color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
         if (color.a > 0) {
             vec3 gradient =
                 COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
