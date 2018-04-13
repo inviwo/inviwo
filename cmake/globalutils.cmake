@@ -810,7 +810,7 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Get target properties recursively by following all INTERFACE_LINK_LIBRARIES
-function(ivw_get_target_property_recursive relval target property)
+function(ivw_get_target_property_recursive retval target property)
     set(res "")
     get_target_property(target_type ${target} TYPE)
     if(NOT ${target_type} STREQUAL "INTERFACE_LIBRARY")
@@ -828,5 +828,5 @@ function(ivw_get_target_property_recursive relval target property)
         endforeach(t)
     endif()
     list(REMOVE_DUPLICATES res)
-    set(${relval} ${res} PARENT_SCOPE)
+    set(${retval} ${res} PARENT_SCOPE)
 endfunction()
