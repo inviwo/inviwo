@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
-#include <modules/base/algorithm/mesh/centerviewonmeshes.h>
+#include <modules/base/algorithm/mesh/meshcameraalgorithms.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/shader/shader.h>
@@ -219,40 +219,9 @@ void MeshRenderProcessorGL::process() {
 
 void MeshRenderProcessorGL::setNearFarPlane() {
     if (!inport_.hasData()) return;
-
-    auto geom = inport_.getData();
-
-    auto posBuffer =
-        dynamic_cast<const Vec3BufferRAM*>(geom->getBuffer(0)->getRepresentation<BufferRAM>());
-
-    if (posBuffer == nullptr) return;
-
-    auto pos = posBuffer->getDataContainer();
-
-    if (pos.empty()) return;
-
-    float nearDist = std::numeric_limits<float>::infinity();
-    float farDist = 0;
-    vec3 nearPos;
-    vec3 farPos;
-    const vec3 camPos{ geom->getCoordinateTransformer().getWorldToModelMatrix() *
-                      vec4(camera_.getLookFrom(), 1.0) };
-    for (auto& po : pos) {
-        auto d = glm::distance2(po, camPos);
-        if (d < nearDist) {
-            nearDist = d;
-            nearPos = po;
-        }
-        if (d > farDist) {
-            farDist = d;
-            farPos = po;
-        }
-    }
-
-    mat4 m = camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
-
-    camera_.setNearPlaneDist(std::max(0.0f, 0.5f * std::abs((m * vec4(nearPos, 1.0f)).z)));
-    camera_.setFarPlaneDist(std::max(0.0f, 2.0f * std::abs((m * vec4(farPos, 1.0f)).z)));
+    // Adjust near/far planes if necessary
+    auto nearFar = meshutil::computeNearFarPlanes(meshutil::axisAlignedBoundingBox(inport_.getVectorData()), camera_);
+    camera_.setNearFarPlaneDist(nearFar.first, nearFar.second);
 }
 
 void MeshRenderProcessorGL::updateDrawers() {

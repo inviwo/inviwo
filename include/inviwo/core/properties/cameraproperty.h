@@ -101,6 +101,11 @@ public:
 
     void setNearPlaneDist(float v);
     void setFarPlaneDist(float v);
+    /**
+     * Set near and far plane distance values and adjust their min/max ranges.
+     * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value
+     */
+    void setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist, float minMaxRatio = 10.f);
 
     virtual vec3 getLookFromMinValue() const override;
     virtual vec3 getLookFromMaxValue() const override;

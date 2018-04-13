@@ -27,23 +27,39 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/mesh/centerviewonmeshes.h>
-#include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
+#ifndef IVW_MESHCAMERAALGORITHMS_H
+#define IVW_MESHCAMERAALGORITHMS_H
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/properties/cameraproperty.h>
 
 namespace inviwo {
 
 namespace meshutil {
+/**
+ * \brief Set lookAt position of camera on the center point of the meshes.
+ * Adjusts min/max parameters of camera property.
+ * @param meshes Meshes to consider
+ * @param camera Camera to adjust
+ */
+IVW_MODULE_BASE_API void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
+                                            CameraProperty& camera);
+/**
+ * \brief Compute near and far plane parameters covering the bounding box when maximally zoomed out.
+ * Projects the bounding box onto the view direction and selects the distance furthest away as far plane.
+ * The view directions considered are lookFrom min/max -> lookTo.
+ * Near plane is computed as max(1e^-6, farPlaneDistance * farNearRatio)
+ *
+ * @param meshes worldSpaceBoundingBox Min and max points of geometry 
+ * @param camera Camera used as basis for computation
+ * @return Near and far plane distances. 
+ */
+IVW_MODULE_BASE_API std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBoundingBox, const CameraProperty& camera, float farNearRatio = 1.f / 10000.f);
 
-void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
-                        CameraProperty& camera) {
-    auto minmax = meshutil::axisAlignedBoundingBox(meshes);
-    auto newLookTo = 0.5f * (minmax.first + minmax.second);
-    // Make sure the new value is not clamped
-    auto& lookTo = camera.lookTo_;
-    lookTo.set(newLookTo, glm::min(lookTo.getMinValue(), newLookTo),
-               glm::max(lookTo.getMaxValue(), newLookTo), lookTo.getIncrement());
-}
 
 }  // namespace meshutil
 
 }  // namespace inviwo
+
+#endif  // IVW_MESHCAMERAALGORITHMS_H
