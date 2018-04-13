@@ -34,7 +34,8 @@ namespace inviwo {
 
 namespace meshutil {
 
-std::pair<vec3, vec3> axisAlignedBoundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes) {
+std::pair<vec3, vec3> axisAlignedBoundingBox(
+    const std::vector<std::shared_ptr<const Mesh>>& meshes) {
     vec3 worldMin(std::numeric_limits<float>::max());
     vec3 worldMax(std::numeric_limits<float>::lowest());
     for (const auto& mesh : meshes) {
@@ -42,7 +43,7 @@ std::pair<vec3, vec3> axisAlignedBoundingBox(const std::vector<std::shared_ptr<c
         worldMin = glm::min(worldMin, minmax.first);
         worldMax = glm::max(worldMax, minmax.second);
     }
-    return{ worldMin, worldMax };
+    return {worldMin, worldMax};
 }
 
 std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh) {
@@ -60,9 +61,9 @@ std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh) {
         worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
         worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
     }
-    return{ worldMin, worldMax };
+    return {worldMin, worldMax};
 }
 
-}  // namespace util
+}  // namespace meshutil
 
 }  // namespace inviwo

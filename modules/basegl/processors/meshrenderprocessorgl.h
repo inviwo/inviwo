@@ -94,7 +94,6 @@ public:
     virtual void process() override; 
 
 protected:
-    void setNearFarPlane();
     void updateDrawers();
 
     MeshFlatMultiInport inport_;

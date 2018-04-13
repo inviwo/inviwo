@@ -33,9 +33,7 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
-
 namespace inviwo {
-
 
 namespace meshutil {
 /**
@@ -43,7 +41,8 @@ namespace meshutil {
  * @param meshes Meshes to consider
  * @return Minimum and maximum vertex points of meshes in (x,y,z)
  */
-IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes);
+IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(
+    const std::vector<std::shared_ptr<const Mesh>>& meshes);
 
 /**
  * \brief Compute bounding box of mesh in world space.
@@ -52,7 +51,7 @@ IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(const std::vect
  */
 IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh);
 
-}  // namespace util
+}  // namespace meshutil
 
 }  // namespace inviwo
 

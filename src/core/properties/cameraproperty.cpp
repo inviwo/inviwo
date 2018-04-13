@@ -258,7 +258,8 @@ void CameraProperty::setNearPlaneDist(float v) {
 void CameraProperty::setFarPlaneDist(float v) {
     farPlane_.set(glm::clamp(v, farPlane_.getMinValue(), farPlane_.getMaxValue()));
 }
-void CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist, float minMaxRatio) {
+void CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
+                                         float minMaxRatio) {
     NetworkLock lock(this);
 
     // TODO: Change when issue #41 has been fixed
@@ -267,7 +268,7 @@ void CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist
     //    std::max(nearPlane_.getMaxValue(), nearPlaneDist * 100.f),
     //    nearPlane_.getIncrement());
 
-    // farPlane_.set(farPlaneDist, 
+    // farPlane_.set(farPlaneDist,
     //    std::min(farPlane_.getMinValue(), farPlaneDist * 0.1f),
     //    std::max(farPlane_.getMaxValue(), farPlaneDist * 100.f),
     //    farPlane_.getIncrement());
@@ -279,7 +280,6 @@ void CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist
     farPlane_.setMaxValue(std::max(farPlane_.getMaxValue(), farPlaneDist * minMaxRatio));
     farPlane_.set(farPlaneDist);
 }
-
 
 inviwo::vec3 CameraProperty::getLookFromMinValue() const { return lookFrom_.getMinValue(); }
 
@@ -382,11 +382,9 @@ void CameraProperty::inportChanged() {
         data = volumeInport->getData().get();
     } else if (meshInport) {
         data = meshInport->getData().get();
-    }
-    else if (meshMultiInport) {
+    } else if (meshMultiInport) {
         data = meshMultiInport->getData().get();
-    }
-    else if (meshFlatMultiInport) {
+    } else if (meshFlatMultiInport) {
         data = meshFlatMultiInport->getData().get();
     }
 
@@ -421,4 +419,4 @@ const mat4& CameraProperty::inverseProjectionMatrix() const {
     return camera_->getInverseProjectionMatrix();
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -44,7 +44,6 @@
 
 #include <modules/base/algorithm/dataminmax.h>
 
-
 #include <limits>
 
 namespace inviwo {
@@ -52,7 +51,7 @@ namespace inviwo {
 const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
     "org.inviwo.GeometryRenderGL",  // Class identifier
     "Mesh Renderer",                // Display name
-    "Mesh Rendering",           // Category
+    "Mesh Rendering",               // Category
     CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
 };
@@ -104,7 +103,12 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
         meshutil::centerViewOnMeshes(inport_.getVectorData(), camera_);
     });
     addProperty(centerViewOnGeometry_);
-    setNearFarPlane_.onChange(this, &MeshRenderProcessorGL::setNearFarPlane);
+    setNearFarPlane_.onChange([&]() {
+        if (!inport_.hasData()) return;
+        auto nearFar = meshutil::computeNearFarPlanes(
+            meshutil::axisAlignedBoundingBox(inport_.getVectorData()), camera_);
+        camera_.setNearFarPlaneDist(nearFar.first, nearFar.second);
+    });
     addProperty(setNearFarPlane_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     addProperty(resetViewParams_);
@@ -178,7 +182,7 @@ void MeshRenderProcessorGL::initializeResources() {
 
     // get a hold of the current output data
     auto prevData = outport_.getData();
-    auto numLayers = static_cast<std::size_t>(layerID-1); // Don't count picking
+    auto numLayers = static_cast<std::size_t>(layerID - 1);  // Don't count picking
     if (prevData->getNumberOfColorLayers() != numLayers) {
         // create new image with matching number of layers
         auto image = std::make_shared<Image>(prevData->getDimensions(), prevData->getDataFormat());
@@ -217,13 +221,6 @@ void MeshRenderProcessorGL::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void MeshRenderProcessorGL::setNearFarPlane() {
-    if (!inport_.hasData()) return;
-    // Adjust near/far planes if necessary
-    auto nearFar = meshutil::computeNearFarPlanes(meshutil::axisAlignedBoundingBox(inport_.getVectorData()), camera_);
-    camera_.setNearFarPlaneDist(nearFar.first, nearFar.second);
-}
-
 void MeshRenderProcessorGL::updateDrawers() {
     auto changed = inport_.getChangedOutports();
     DrawerMap temp;
@@ -254,4 +251,4 @@ void MeshRenderProcessorGL::updateDrawers() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

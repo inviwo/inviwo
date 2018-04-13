@@ -38,25 +38,28 @@ namespace inviwo {
 
 namespace meshutil {
 /**
- * \brief Set lookAt position of camera on the center point of the meshes.
- * Adjusts min/max parameters of camera property.
+ * \brief Set lookAt position of camera to the center point of the meshes and adjust near/far plane
+ * distances. Adjusts min/max parameters of lookTo and near/far plane according to the supplied minMaxRatio.
+ *
  * @param meshes Meshes to consider
  * @param camera Camera to adjust
+ * @param minMaxRatio Adjust min/max values to (value / minMaxRatio, value * minMaxRatio)
  */
 IVW_MODULE_BASE_API void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
-                                            CameraProperty& camera);
+                                            CameraProperty& camera, float minMaxRatio = 10.f);
 /**
  * \brief Compute near and far plane parameters covering the bounding box when maximally zoomed out.
- * Projects the bounding box onto the view direction and selects the distance furthest away as far plane.
- * The view directions considered are lookFrom min/max -> lookTo.
- * Near plane is computed as max(1e^-6, farPlaneDistance * farNearRatio)
+ * Projects the bounding box onto the view direction and selects the distance furthest away as far
+ * plane. The view directions considered are lookFrom min/max -> lookTo. Near plane is computed as
+ * max(1e^-6, farPlaneDistance * farNearRatio)
  *
- * @param meshes worldSpaceBoundingBox Min and max points of geometry 
+ * @param meshes worldSpaceBoundingBox Min and max points of geometry
  * @param camera Camera used as basis for computation
- * @return Near and far plane distances. 
+ * @return Near and far plane distances.
  */
-IVW_MODULE_BASE_API std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBoundingBox, const CameraProperty& camera, float farNearRatio = 1.f / 10000.f);
-
+IVW_MODULE_BASE_API std::pair<float, float> computeNearFarPlanes(
+    std::pair<vec3, vec3> worldSpaceBoundingBox, const CameraProperty& camera,
+    float farNearRatio = 1.f / 10000.f);
 
 }  // namespace meshutil
 

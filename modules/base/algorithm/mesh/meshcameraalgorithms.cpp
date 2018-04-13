@@ -37,22 +37,22 @@ namespace inviwo {
 namespace meshutil {
 
 void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
-                        CameraProperty& camera) {
+                        CameraProperty& camera, float minMaxRatio) {
     auto minmax = meshutil::axisAlignedBoundingBox(meshes);
     auto newLookTo = 0.5f * (minmax.first + minmax.second);
     // Locking to avoid multiple evaluations when changing properties
     NetworkLock lock(&camera);
     // Make sure the new value is not clamped
     auto& lookTo = camera.lookTo_;
-    lookTo.set(newLookTo, glm::min(lookTo.getMinValue(), newLookTo),
-               glm::max(lookTo.getMaxValue(), newLookTo), lookTo.getIncrement());
+    lookTo.set(newLookTo, glm::min(lookTo.getMinValue(), newLookTo / minMaxRatio),
+               glm::max(lookTo.getMaxValue(), minMaxRatio * newLookTo), lookTo.getIncrement());
     // Adjust near/far planes if necessary
     auto nearFar = computeNearFarPlanes(minmax, camera);
-    camera.setNearFarPlaneDist(nearFar.first, nearFar.second);
+    camera.setNearFarPlaneDist(nearFar.first, nearFar.second, minMaxRatio);
 }
 
 std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBoundingBox,
-                                      const CameraProperty& camera, float farNearRatio) {
+                                             const CameraProperty& camera, float farNearRatio) {
     auto nearPlaneDist = std::numeric_limits<float>::max();
 
     auto farPlaneDist = 0.f;
@@ -64,13 +64,14 @@ std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBou
                  glm::distance(camera.lookFrom_.getMinValue(), camera.lookTo_.get()));
     auto furthestViewPoint = camera.getLookFrom() - cameraDir * maxViewLength;
     // Project min/max points onto view ray and compute distances to the most zoomed out view point
-    farPlaneDist = std::max(glm::distance(furthestViewPoint,
-                                 cameraDir * glm::dot(worldSpaceBoundingBox.first, cameraDir)),
-                            glm::distance(furthestViewPoint,
-                                             cameraDir * glm::dot(worldSpaceBoundingBox.second, cameraDir)));
+    farPlaneDist =
+        std::max(glm::distance(furthestViewPoint,
+                               cameraDir * glm::dot(worldSpaceBoundingBox.first, cameraDir)),
+                 glm::distance(furthestViewPoint,
+                               cameraDir * glm::dot(worldSpaceBoundingBox.second, cameraDir)));
     // Try to have a reasonable precision in the depth buffer
-    nearPlaneDist = std::max(glm::epsilon<float>(), farNearRatio*farPlaneDist);
- 
+    nearPlaneDist = std::max(glm::epsilon<float>(), farNearRatio * farPlaneDist);
+
     return {nearPlaneDist, farPlaneDist};
 }
 
