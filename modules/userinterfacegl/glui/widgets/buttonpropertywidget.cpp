@@ -60,7 +60,7 @@ void ButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displ
     property_->propertyModified();
 }
 
-void ButtonPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+void ButtonPropertyWidget::onSetReadOnly(Property *, bool readonly) {
     setEnabled(!readonly);
 }
 
@@ -109,7 +109,7 @@ void ToolButtonPropertyWidget::onSetDisplayName(Property *, const std::string &d
     property_->propertyModified();
 }
 
-void ToolButtonPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+void ToolButtonPropertyWidget::onSetReadOnly(Property *, bool readonly) {
     setEnabled(!readonly);
 }
 

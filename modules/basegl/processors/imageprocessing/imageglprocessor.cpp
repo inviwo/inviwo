@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "imageglprocessor.h"
@@ -36,34 +36,36 @@
 
 namespace inviwo {
 
-    ImageGLProcessor::ImageGLProcessor(const std::string& fragmentShader, bool buildShader)
-        : ImageGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
+ImageGLProcessor::ImageGLProcessor(const std::string &fragmentShader, bool buildShader)
+    : ImageGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
 
-    ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
-        bool buildShader)
-        : Processor()
-        , inport_("inputImage")
-        , outport_("outputImage")
-        , dataFormat_(nullptr)
-        , swizzleMask_(swizzlemasks::rgba)
-        , internalInvalid_(false)
-        , shader_({ {ShaderType::Fragment, fragmentShader} },
-            buildShader ? Shader::Build::Yes : Shader::Build::No)
-    {
-        addPort(inport_);
-        addPort(outport_);
+ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
+                                   bool buildShader)
+    : Processor()
+    , inport_("inputImage")
+    , outport_("outputImage")
+    , dataFormat_(nullptr)
+    , swizzleMask_(swizzlemasks::rgba)
+    , internalInvalid_(false)
+    , shader_({{ShaderType::Fragment, fragmentShader}},
+              buildShader ? Shader::Build::Yes : Shader::Build::No) {
+    addPort(inport_);
+    addPort(outport_);
 
-        inport_.onChange(this, &ImageGLProcessor::inportChanged);
-        inport_.setOutportDeterminesSize(true);
-        outport_.setHandleResizeEvents(false);
-        shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    }
+    inport_.onChange([this]() {
+        markInvalid();
+        afterInportChanged();
+    });
+    inport_.setOutportDeterminesSize(true);
+    outport_.setHandleResizeEvents(false);
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+}
 
-    ImageGLProcessor::~ImageGLProcessor() {}
+ImageGLProcessor::~ImageGLProcessor() {}
 
-    void ImageGLProcessor::initializeResources() {
-        shader_.build();
-        internalInvalid_ = true;
+void ImageGLProcessor::initializeResources() {
+    shader_.build();
+    internalInvalid_ = true;
 }
 
 void ImageGLProcessor::process() {
@@ -89,7 +91,7 @@ void ImageGLProcessor::process() {
     utilgl::bindColorTexture(inport_, imgUnit);
     shader_.setUniform("inport_", imgUnit);
     cont.push_back(std::move(imgUnit));
-    
+
     // trigger preprocessing
     preProcess(cont);
 
@@ -102,28 +104,31 @@ void ImageGLProcessor::process() {
 
 void ImageGLProcessor::markInvalid() { internalInvalid_ = true; }
 
-void ImageGLProcessor::preProcess(TextureUnitContainer&) {}
+void ImageGLProcessor::preProcess(TextureUnitContainer &) {}
 
 void ImageGLProcessor::postProcess() {}
 
 void ImageGLProcessor::afterInportChanged() {}
 
 void ImageGLProcessor::createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
-                                         const SwizzleMask &swizzleMask, ImageInport &inport, ImageOutport &outport) {
+                                         const SwizzleMask &swizzleMask, ImageInport &inport,
+                                         ImageOutport &outport) {
 
-    if (!outport.hasEditableData() || dataFormat != outport.getData()->getDataFormat()
-        || dim != outport.getData()->getDimensions()) {
+    if (!outport.hasEditableData() || dataFormat != outport.getData()->getDataFormat() ||
+        dim != outport.getData()->getDimensions()) {
         Image *img = new Image(dim, dataFormat);
         img->copyMetaDataFrom(*inport.getData());
         img->getColorLayer()->setSwizzleMask(swizzleMask);
         outport.setData(img);
-    } else if (outport.hasEditableData() && outport.getData()->getColorLayer()->getSwizzleMask() != swizzleMask) {
+    } else if (outport.hasEditableData() &&
+               outport.getData()->getColorLayer()->getSwizzleMask() != swizzleMask) {
         outport.getEditableData()->getColorLayer()->setSwizzleMask(swizzleMask);
     }
 }
 
-void ImageGLProcessor::createDefaultImage(const size2_t &dim, ImageInport &inport, ImageOutport &outport) {
-    const DataFormatBase* format = inport.getData()->getDataFormat();
+void ImageGLProcessor::createDefaultImage(const size2_t &dim, ImageInport &inport,
+                                          ImageOutport &outport) {
+    const DataFormatBase *format = inport.getData()->getDataFormat();
 
     const auto swizzleMask = inport.getData()->getColorLayer()->getSwizzleMask();
 
@@ -149,9 +154,4 @@ size2_t ImageGLProcessor::calcOutputDimensions() const {
     return dimensions;
 }
 
-void ImageGLProcessor::inportChanged() {
-    markInvalid();
-    afterInportChanged();
-}
-
-}  // namespace
+}  // namespace inviwo

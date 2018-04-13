@@ -97,7 +97,7 @@ ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
 
-    inport_.onChange(this, &ABufferGeometryGLProcessor::updateDrawers);
+    inport_.onChange([this]() { updateDrawers(); });
 
     geomProperties_.addProperty(cullFace_);
     geomProperties_.addProperty(enableDepthTest_);
@@ -105,7 +105,7 @@ ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     geomProperties_.addProperty(overrideColor_);
     overrideColor_.setSemantics(PropertySemantics::Color);
     overrideColor_.setVisible(false);
-    overrideColorBuffer_.onChange([&]() { overrideColor_.setVisible(overrideColorBuffer_.get()); });
+    overrideColorBuffer_.onChange([this]() { overrideColor_.setVisible(overrideColorBuffer_.get()); });
 
     addProperty(geomProperties_);
     addProperty(lightingProperty_);
@@ -115,8 +115,8 @@ ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     addProperty(transparency_);
     addProperty(verboseLogging_);
 
-    abuffer_.settings_.onChange(this, &ABufferGeometryGLProcessor::onAbufferSettingChanged);
-    transparency_.onChange(this, &ABufferGeometryGLProcessor::onAbufferTransparencyChanged);
+    abuffer_.settings_.onChange([this]() { onAbufferSettingChanged(); });
+    transparency_.onChange([this]() { onAbufferTransparencyChanged(); });
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }

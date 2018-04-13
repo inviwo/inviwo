@@ -59,7 +59,15 @@ HeightFieldMapper::HeightFieldMapper()
     scalingModeProp_.addOption("scaleRange", "Data Range", HeightFieldScaling::DataRange);
     scalingModeProp_.addOption("scaleSeaLevel", "Sea Level", HeightFieldScaling::SeaLevel);
     scalingModeProp_.set(HeightFieldScaling::FixedRange);
-    scalingModeProp_.onChange(this, &HeightFieldMapper::scalingModeChanged);
+
+    auto scalingModeChanged = [this]() {
+        int mode = scalingModeProp_.get();
+        heightRange_.setVisible(mode == HeightFieldScaling::DataRange);
+        maxHeight_.setVisible(mode == HeightFieldScaling::SeaLevel);
+        seaLevel_.setVisible(mode == HeightFieldScaling::SeaLevel);
+    };
+
+    scalingModeProp_.onChange(scalingModeChanged);
 
     addProperty(scalingModeProp_);
     addProperty(heightRange_);
@@ -185,13 +193,6 @@ void HeightFieldMapper::process() {
             }
         } break;
     }
-}
-
-void HeightFieldMapper::scalingModeChanged() {
-    int mode = scalingModeProp_.get();
-    heightRange_.setVisible(mode == HeightFieldScaling::DataRange);
-    maxHeight_.setVisible(mode == HeightFieldScaling::SeaLevel);
-    seaLevel_.setVisible(mode == HeightFieldScaling::SeaLevel);
 }
 
 }  // namespace

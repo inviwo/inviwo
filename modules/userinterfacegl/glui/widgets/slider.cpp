@@ -107,7 +107,7 @@ void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
-    const ivec2 extent(getWidgetExtentScaled());
+    const vec2 extent(getWidgetExtentScaled());
 
     // render groove first
     {

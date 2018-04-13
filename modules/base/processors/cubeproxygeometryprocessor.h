@@ -70,8 +70,6 @@ public:
 protected:
     virtual void process() override;
 
-    void onVolumeChange();
-
 private:
     VolumeInport inport_;
     MeshOutport outport_;

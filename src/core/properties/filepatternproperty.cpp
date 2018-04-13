@@ -94,8 +94,8 @@ FilePatternProperty::FilePatternProperty(std::string identifier, std::string dis
     pattern_.onChange(update);
     rangeSelection_.onChange(update);
 
-    sort_.onChange(this, &FilePatternProperty::sort);
-    matchShorterNumbers_.onChange(this, &FilePatternProperty::updateFileList);
+    sort_.onChange([this]() { sort(); });
+    matchShorterNumbers_.onChange([this]() { updateFileList(); });
     if (!pattern.empty()) {
         updateFileList();
     }

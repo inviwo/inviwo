@@ -196,8 +196,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
     return triangles;
 }
 
-std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8> corners,
-                                                                  bool flip) {
+std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8> corners, bool) {
     if (corners.count() > 4) {
         return calcEdges(~corners, true);
     }
@@ -218,7 +217,7 @@ std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8>
     return res;
 }
 
-std::array<size_t, 8> marching::Config::calcIncrenents(std::bitset<8> corners, bool flip) {
+std::array<size_t, 8> marching::Config::calcIncrenents(std::bitset<8> corners, bool) {
     if (corners.count() > 4) {
         return calcIncrenents(~corners, true);
     }
@@ -491,7 +490,8 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
         size3_t ind;
         dvec3 pos;
 
-        const float err = 4.0f * glm::epsilon<float>() * glm::epsilon<float>() * dr.x * dr.y;
+        const float err =
+            static_cast<float>(4.0 * glm::epsilon<double>() * glm::epsilon<double>() * dr.x * dr.y);
 
         for (ind.z = 0, pos.z = 0.0; ind.z < dim1.z; ++ind.z, pos.z += dr.z) {
             vcache.incZ();

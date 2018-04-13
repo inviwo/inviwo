@@ -2872,7 +2872,7 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
     return v;
 }
 
-glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { return 3; }
+glm::uint8 getMinNumberOfColorsForFamily(const Family &) { return 3; }
 
 glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
     if (family == Family::Accent || family == Family::Dark2 || 

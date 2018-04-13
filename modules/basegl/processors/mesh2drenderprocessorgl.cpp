@@ -84,7 +84,7 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     addProperty(bottom_);
     addProperty(top_);
 
-    inport_.onChange(this, &Mesh2DRenderProcessorGL::updateDrawers);
+    inport_.onChange([this]() { updateDrawers(); });
 }
 
 Mesh2DRenderProcessorGL::~Mesh2DRenderProcessorGL() {}

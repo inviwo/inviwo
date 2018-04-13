@@ -287,7 +287,7 @@ void add(Buffer<T> *buffer, const std::string &value) {
 template <typename T
     ,typename std::enable_if<!std::is_integral<T>::value &&
     !std::is_floating_point<T>::value, int>::type = 0>
-void add(Buffer<T> *buffer, const std::string &value) {
+void add(Buffer<T>* /*buffer*/, const std::string &value) {
     throw InvalidConversion("conversion to target type not implemented (\"" + value + "\")");
 }
 

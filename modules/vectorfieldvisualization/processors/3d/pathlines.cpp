@@ -153,10 +153,10 @@ void PathLines::process() {
         [&]() -> std::function<vec4(float, float, size_t)> {
         switch (coloringMethod_.get()) {
             case ColoringMethod::Timestamp:
-                return [&](float t, float d, size_t lineId) { return tf_.get().sample(t); };
+                return [&](float t, float /*d*/, size_t /*lineId*/) { return tf_.get().sample(t); };
             case ColoringMethod::ColorPort:
                 if (colors_.hasData()) {
-                    return [&](float t, float d, size_t lineId) {
+                    return [&](float /*t*/, float /*d*/, size_t lineId) {
                         if (lineId < colors_.getData()->size()) {
                             return (*colors_.getData())[lineId];
                         } else if (lineId == colors_.getData()->size()) {
@@ -174,7 +174,7 @@ void PathLines::process() {
                 }
             default:
             case ColoringMethod::Velocity:
-                return [&](float t, float d, size_t lineId) { return tf_.get().sample(d); };
+                return [&](float /*t*/, float d, size_t /*lineId*/) { return tf_.get().sample(d); };
         }
     }();
 

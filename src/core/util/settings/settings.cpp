@@ -45,7 +45,7 @@ Settings::~Settings() = default;
 
 void Settings::addProperty(Property* property, bool owner) {
     PropertyOwner::addProperty(property, owner);
-    property->onChange(this, &Settings::save);
+    property->onChange([this]() { save(); });
 }
 
 void Settings::addProperty(Property& property) { addProperty(&property, false); }

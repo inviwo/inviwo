@@ -88,7 +88,7 @@ MultichannelRaycaster::MultichannelRaycaster()
     addProperty(positionIndicator_);
     addProperty(transferFunctions_);
     
-    volumePort_.onChange(this, &MultichannelRaycaster::initializeResources);
+    volumePort_.onChange([this]() { initializeResources(); });
 
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });

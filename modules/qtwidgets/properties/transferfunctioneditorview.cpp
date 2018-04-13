@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogram.h>
@@ -71,10 +71,15 @@ TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty*
             }
         };
 
-        volumeInport_->onInvalid(this, &TransferFunctionEditorView::onVolumeInportInvalid);
-        volumeInport_->onChange(portChange);
-        volumeInport_->onConnect(portChange);
-        volumeInport_->onDisconnect([this](){
+        callbackOnInvalid = volumeInport_->onInvalid([this]() {
+            stopHistCalculation_ = true;
+            resetCachedContent();
+            update();
+        });
+        callbackOnChange = volumeInport_->onChange(portChange);
+        callbackOnConnect = volumeInport_->onConnect(portChange);
+        callbackOnDisconnect = volumeInport_->onDisconnect([this]() {
+            stopHistCalculation_ = true;
             histograms_.clear();
             resetCachedContent();
             update();
@@ -85,7 +90,12 @@ TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty*
 
 TransferFunctionEditorView::~TransferFunctionEditorView() {
     stopHistCalculation_ = true;
-    if (volumeInport_) volumeInport_->removeOnInvalid(this);
+    if (volumeInport_) {
+        volumeInport_->removeOnInvalid(callbackOnInvalid);
+        volumeInport_->removeOnChange(callbackOnChange);
+        volumeInport_->removeOnConnect(callbackOnConnect);
+        volumeInport_->removeOnDisconnect(callbackOnDisconnect);
+    }
 }
 
 void TransferFunctionEditorView::onMaskChange(const vec2& mask) {
@@ -140,12 +150,6 @@ void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF&
     }
 
     QGraphicsView::drawForeground(painter, rect);
-}
-
-void TransferFunctionEditorView::onVolumeInportInvalid() {
-    stopHistCalculation_ = true;
-    resetCachedContent();
-    update();
 }
 
 void TransferFunctionEditorView::updateHistogram() {

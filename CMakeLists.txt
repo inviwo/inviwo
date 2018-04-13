@@ -60,6 +60,8 @@ if(POLICY CMP0057)
     cmake_policy(SET CMP0057 NEW)
 endif()
 
+string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
+
 # option for setting the project/solution name of the Inviwo project
 set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
 
@@ -230,4 +232,4 @@ include(tools/doxygen/doxygen.cmake)
 make_doxygen_target(all_modules)
 
 string(TIMESTAMP time "%Y-%m-%d %H:%M:%S")
-message(STATUS "Configure ended at ${time}")
+message(STATUS "Configure started at ${timeStart} and ended at ${time}")
