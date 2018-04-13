@@ -548,6 +548,11 @@ endfunction()
 # This it called from the inviwo module CMakeLists.txt 
 # that is included from ivw_register_modules. 
 function(ivw_create_module)
+    set(options "NO_PCH")
+    set(oneValueArgs "")
+    set(multiValueArgs "")
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
     string(TOLOWER ${PROJECT_NAME} l_project_name)
     ivw_debug_message(STATUS "create module: ${PROJECT_NAME}")
     ivw_dir_to_mod_dep(mod ${l_project_name})  # opengl -> INVIWOOPENGLMODULE
@@ -570,7 +575,7 @@ function(ivw_create_module)
         ${CMAKE_BINARY_DIR}/modules/_generated/modules/${l_project_name}/${l_project_name}modulesharedlibrary.cpp
         ${CMAKE_BINARY_DIR}/modules/_generated/modules/${l_project_name}/${l_project_name}modulesharedlibrary.h
     )
-    remove_duplicates(ivw_unique_mod_files ${ARGN} ${mod_class_files} ${cmake_files})
+    remove_duplicates(ivw_unique_mod_files ${ARG_UNPARSED_ARGUMENTS} ${mod_class_files} ${cmake_files})
 
     # Create library
     add_library(${${mod}_target} ${ivw_unique_mod_files})
@@ -585,7 +590,9 @@ function(ivw_create_module)
     target_link_libraries(${${mod}_target} PUBLIC ${ivw_dep_targets})
 
     # Optimize compilation with pre-compilied headers
-    ivw_compile_optimize_on_target(${${mod}_target})
+    if(NOT ARG_NO_PCH)
+        ivw_compile_optimize_on_target(${${mod}_target})
+    endif()
 
     # Add stuff to the installer
     ivw_default_install_targets(${${mod}_target})
@@ -667,22 +674,44 @@ function(ivw_compile_optimize_inviwo_core_on_target target)
 endfunction()
 
 # Optimize compilation with pre-compilied headers
+# Custom target properties:
+#  * COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH  
+#  * COTIRE_PREFIX_HEADER_PUBLIC_INCLUDE_PATH 
+# We make sure that these properties are propagated to the 
+# depending targets.
 function(ivw_compile_optimize_on_target target)
     if(PRECOMPILED_HEADERS)
+        ivw_get_target_property_recursive(publicIgnorePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH)
         get_target_property(ignorePaths ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
         if(NOT ignorePaths)
-            set(ignorePaths "${CMAKE_CURRENT_SOURCE_DIR}")
+            set(ignorePaths "")
         endif()
-
-        list(APPEND ignorePaths "${IVW_EXTENSIONS_DIR}/warn")
+        list(APPEND ignorePaths
+            ${publicIgnorePaths}
+            "${CMAKE_CURRENT_SOURCE_DIR}"
+            "${CMAKE_CURRENT_BINARY_DIR}"
+            "${IVW_EXTENSIONS_DIR}/warn"
+        )
         if(WIN32 AND MSVC)
             ivw_get_drive(${ivw_private_windows_path} windrive)
             list(APPEND ignorePaths ${windrive})
         endif()
         list(REMOVE_DUPLICATES ignorePaths)
+
+        ivw_get_target_property_recursive(publicIncludePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_INCLUDE_PATH)
+        get_target_property(includePaths ${target} COTIRE_PREFIX_HEADER_INCLUDE_PATH)
+        if(NOT includePaths)
+            set(includePaths "")
+        endif()
+        list(APPEND includePaths
+            "${IVW_ROOT_DIR}"
+            ${publicIncludePaths}
+        )
+        list(REMOVE_DUPLICATES includePaths)
+
         set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${ignorePaths}")
+        set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${includePaths}")
         set_target_properties(${target} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
-        set_target_properties(${target} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${IVW_ROOT_DIR}")
 
         cotire(${target})
     endif()
