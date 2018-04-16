@@ -28,12 +28,10 @@
  *********************************************************************************/
 
 #include "volumeraycaster.h"
-#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -49,7 +47,7 @@ const ProcessorInfo VolumeRaycaster::processorInfo_{
     "Volume Raycaster",            // Display name
     "Volume Rendering",            // Category
     CodeState::Stable,             // Code state
-    Tags::GL                       // Tags
+    "GL, DVR, Raycasting"          // Tags
 };
 
 VolumeRaycaster::VolumeRaycaster()
@@ -114,15 +112,14 @@ VolumeRaycaster::VolumeRaycaster()
         }
     });
 
-    isoValues_.onChange([this]() { 
+    isoValues_.onChange([this]() {
         std::ostringstream os;
         for (size_t i = 0; i < isoValues_.get().getNumIsoValues(); ++i) {
             auto isoValue = isoValues_.get().getIsoValue(i);
             // write color as HTML color code
-            os << isoValue->getIsoValue() << " " << color::rgba2html(isoValue->getColor())
-                << "\n";
+            os << isoValue->getIsoValue() << " " << color::rgba2html(isoValue->getColor()) << "\n";
         }
-        LogWarn("Isovalues changed:\n" << os.str()); 
+        LogWarn("Isovalues changed:\n" << os.str());
     });
 
     addProperty(channel_);
