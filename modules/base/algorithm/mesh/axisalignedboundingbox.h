@@ -37,17 +37,20 @@ namespace inviwo {
 
 namespace meshutil {
 /**
- * \brief Compute bounding box of meshes in world space.
+ * \brief Compute bounding box of meshes aligned to principal axes of world space.
+ * 
  * @param meshes Meshes to consider
- * @return Minimum and maximum vertex points of meshes in (x,y,z)
+ * @return Minimum and maximum vertex points of meshes in (x,y,z) world space, or zero if vector is empty.
  */
 IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(
     const std::vector<std::shared_ptr<const Mesh>>& meshes);
 
 /**
- * \brief Compute bounding box of mesh in world space.
+ * \brief Compute bounding box of mesh aligned to principal axes of world space.
+ * Returns mesh offset in both min/max if the mesh does not have any vertices.
  * @param mesh Mesh to consider
- * @return Minimum and maximum vertex points of mesh in (x,y,z)
+ * @return Minimum and maximum vertex points of mesh in (x,y,z), or mesh offset if no vertices
+ * exist.
  */
 IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh);
 

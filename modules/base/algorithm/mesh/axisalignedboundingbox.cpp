@@ -36,6 +36,10 @@ namespace meshutil {
 
 std::pair<vec3, vec3> axisAlignedBoundingBox(
     const std::vector<std::shared_ptr<const Mesh>>& meshes) {
+    if (meshes.empty()) {
+        return { vec3(0.f), vec3(0.f) };
+    }
+
     vec3 worldMin(std::numeric_limits<float>::max());
     vec3 worldMax(std::numeric_limits<float>::lowest());
     for (const auto& mesh : meshes) {
@@ -54,12 +58,16 @@ std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh) {
     auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
         return buff.first.type == BufferType::PositionAttrib;
     });
-    if (it != buffers.end()) {
+    if (it != buffers.end() && it->second->getSize() > 0) {
         auto minmax = util::bufferMinMax(it->second.get());
 
         mat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
         worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
         worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
+    }
+    else {
+        // No vertices, use same values for min/max
+        worldMin = worldMax = mesh.getOffset();
     }
     return {worldMin, worldMax};
 }

@@ -91,7 +91,8 @@ public:
     void setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
     /**
-     * Locks processor network and sets given camera properties.
+     * Sets given camera properties while respecting their min/max ranges. 
+     * Locks and unlocks processor network before and after changing property values.
      * @note Parameters will be capped by their min/max.
      */
     virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
@@ -103,7 +104,8 @@ public:
     void setFarPlaneDist(float v);
     /**
      * Set near and far plane distance values and adjust their min/max ranges.
-     * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value
+     * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value.
+     * Locks and unlocks processor network before and after changing property values.
      */
     void setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist, float minMaxRatio = 10.f);
 
@@ -142,6 +144,7 @@ public:
 
     /**
      * \brief Translates and scales camera to match new data and fit new object into view.
+     * Locks and unlocks processor network before and after changing property values.
      * @param newDataToWorldMatrix Matrix of new object
      */
     void adjustCameraToData(const mat4& newDataToWorldMatrix);
@@ -149,6 +152,9 @@ public:
      * \brief Reset the camera adjustment matrix to currently set inport data.
      */
     void resetAdjustCameraToData();
+    /**
+     * \brief Calls adjustCameraToData if "Adjust camera on data change" is set to true.
+     */
     void inportChanged();
 
     // These properties enable linking of individual

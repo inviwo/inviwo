@@ -44,8 +44,8 @@ void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
     NetworkLock lock(&camera);
     // Make sure the new value is not clamped
     auto& lookTo = camera.lookTo_;
-    lookTo.set(newLookTo, glm::min(lookTo.getMinValue(), newLookTo / minMaxRatio),
-               glm::max(lookTo.getMaxValue(), minMaxRatio * newLookTo), lookTo.getIncrement());
+    lookTo.set(newLookTo, glm::min(lookTo.getMinValue(), newLookTo - minMaxRatio * glm::abs(newLookTo)),
+               glm::max(lookTo.getMaxValue(), newLookTo + minMaxRatio * glm::abs(newLookTo)), lookTo.getIncrement());
     // Adjust near/far planes if necessary
     auto nearFar = computeNearFarPlanes(minmax, camera);
     camera.setNearFarPlaneDist(nearFar.first, nearFar.second, minMaxRatio);
@@ -69,8 +69,11 @@ std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBou
                                cameraDir * glm::dot(worldSpaceBoundingBox.first, cameraDir)),
                  glm::distance(furthestViewPoint,
                                cameraDir * glm::dot(worldSpaceBoundingBox.second, cameraDir)));
+    // Increase farPlaneDist by 1% to make sure that we do not clip the last vertex
+    farPlaneDist *= 1.01f;
+
     // Try to have a reasonable precision in the depth buffer
-    nearPlaneDist = std::max(glm::epsilon<float>(), farNearRatio * farPlaneDist);
+    nearPlaneDist = std::max(1e-6f, farNearRatio * farPlaneDist);
 
     return {nearPlaneDist, farPlaneDist};
 }
