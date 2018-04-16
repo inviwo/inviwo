@@ -48,14 +48,26 @@
 #include <warn/pop>
 
 class QPlainTextEdit;
+class QFocusEvent;
 
 namespace inviwo {
 
 class IVW_MODULE_PYTHON3QT_API PythonTextEditor : public QPlainTextEdit {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+
 public:
     PythonTextEditor(QWidget* parent) : QPlainTextEdit(parent) {}
     virtual ~PythonTextEditor() {}
     virtual void keyPressEvent(QKeyEvent* keyEvent);
+
+signals:
+    void focusChanged();
+
+protected:
+    virtual void focusInEvent(QFocusEvent *event) override;
 };
 
 class InviwoApplication;
@@ -96,10 +108,12 @@ public slots:
 
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
+    virtual void focusInEvent(QFocusEvent *event) override;
 
 private:
     void setFileName(const std::string filename);
     void updateTitleBar();
+    void queryReloadFile();
 
     PythonTextEditor* pythonCode_;
     QTextEdit* pythonOutput_;
@@ -113,6 +127,8 @@ private:
     std::string scriptFileName_;
 
     bool unsavedChanges_;
+    bool fileChangedInBackground_ = false;
+    bool reloadQueryInProgress_ = false;
     void readFile();
 
     SyntaxHighligther* syntaxHighligther_;
