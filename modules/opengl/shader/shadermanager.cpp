@@ -47,6 +47,8 @@
 
 namespace inviwo {
 
+ShaderManager* ShaderManager::instance_ = nullptr;
+
 ShaderManager::ShaderManager() : uniformWarnings_(nullptr) {
     openGLInfoRef_ = nullptr;
 }

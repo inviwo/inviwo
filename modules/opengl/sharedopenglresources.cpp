@@ -36,6 +36,8 @@
 
 namespace inviwo {
 
+SharedOpenGLResources* SharedOpenGLResources::instance_ = nullptr;
+
 const MeshGL* SharedOpenGLResources::imagePlaneRect() {
     if (!planeRectMesh_) {
         planeRectMesh_ = utilgl::planeRect();

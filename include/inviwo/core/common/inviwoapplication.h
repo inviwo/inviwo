@@ -306,8 +306,8 @@ protected:
 
     std::string displayName_;
     CommandLineParser commandLineParser_;
-    std::shared_ptr<FileLogger> filelogger_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
+    std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
 
     ThreadPool pool_;
@@ -351,6 +351,9 @@ protected:
     WorkspaceManager::SerializationHandle presetsSerializationHandle_;
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
     std::unique_ptr<TimerThread> timerThread_;
+private:
+    friend Singleton<InviwoApplication>;
+    static InviwoApplication* instance_;
 };
 
 template <class F, class... Args>

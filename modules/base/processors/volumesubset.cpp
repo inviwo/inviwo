@@ -69,7 +69,21 @@ VolumeSubset::VolumeSubset() : Processor()
     rangeY_.setSerializationMode(PropertySerializationMode::All);
     rangeZ_.setSerializationMode(PropertySerializationMode::All);
 
-    inport_.onChange(this, &VolumeSubset::onVolumeChange);
+    inport_.onChange([this]() {
+        NetworkLock lock(this);
+
+        // Update to the new dimensions.
+        dims_ = inport_.getData()->getDimensions();
+
+        rangeX_.setRangeNormalized(ivec2(0, dims_.x));
+        rangeY_.setRangeNormalized(ivec2(0, dims_.y));
+        rangeZ_.setRangeNormalized(ivec2(0, dims_.z));
+
+        // set the new dimensions to default if we were to press reset
+        rangeX_.setCurrentStateAsDefault();
+        rangeY_.setCurrentStateAsDefault();
+        rangeZ_.setCurrentStateAsDefault();
+    });
 }
 
 VolumeSubset::~VolumeSubset() {}
@@ -118,22 +132,6 @@ void VolumeSubset::process() {
     } else {
         outport_.setData(inport_.getData());
     }
-}
-
-void VolumeSubset::onVolumeChange() {
-    NetworkLock lock(this);
-    
-    // Update to the new dimensions.
-    dims_ = inport_.getData()->getDimensions();
-
-    rangeX_.setRangeNormalized(ivec2(0, dims_.x));
-    rangeY_.setRangeNormalized(ivec2(0, dims_.y));
-    rangeZ_.setRangeNormalized(ivec2(0, dims_.z));
-
-    // set the new dimensions to default if we were to press reset
-    rangeX_.setCurrentStateAsDefault();
-    rangeY_.setCurrentStateAsDefault();
-    rangeZ_.setCurrentStateAsDefault();
 }
 
 } // inviwo namespace

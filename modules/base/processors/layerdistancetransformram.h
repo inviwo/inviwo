@@ -101,7 +101,6 @@ protected:
 
 private:
     void updateOutport();
-    void paramChanged();
 
     ImageInport imagePort_;
     ImageOutport outport_;

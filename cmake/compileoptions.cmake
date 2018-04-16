@@ -47,6 +47,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "-Wall")
             list(APPEND comp_opts "-Wextra")
             list(APPEND comp_opts "-pedantic")
+            list(APPEND comp_opts "-Wno-mismatched-tags") # gives lots of warnings about redefinitions of structs as class.
             list(APPEND comp_opts "-Wno-unused-parameter") # not sure we want to remove them.
             list(APPEND comp_opts "-Wno-missing-braces")   # http://stackoverflow.com/questions/13905200/is-it-wise-to-ignore-gcc-clangs-wmissing-braces-warning
         elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
@@ -57,10 +58,18 @@ function(ivw_define_standard_properties)
             endif()
             list(APPEND comp_opts "/W4")     # Set default warning level to 4
             list(APPEND comp_opts "/wd4005") # macro redefinition    https://msdn.microsoft.com/en-us/library/8d10sc3w.aspx
+            list(APPEND comp_opts "/wd4127") # cond expr is const    https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-4-c4127
             list(APPEND comp_opts "/wd4201") # nameless struct/union https://msdn.microsoft.com/en-us/library/c89bw853.aspx
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
-            list(APPEND comp_opts "/wd4996") # ignore deprication    https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx
+            if(MSVC_VERSION GREATER_EQUAL 1910)
+                list(APPEND comp_opts "/w35038") # class member reorder
+                if(NOT OpenMP_ON)
+                    list(APPEND comp_opts "/permissive-")
+                endif()
+                list(APPEND comp_opts "/std:c++latest")
+                #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
+            endif()
         endif()
         list(REMOVE_DUPLICATES comp_opts)
         set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
@@ -110,9 +119,11 @@ macro(ivw_define_standard_definitions project_name target)
         endif()
         target_compile_definitions(${target} PRIVATE _CRT_SECURE_NO_WARNINGS 
                                                      _CRT_SECURE_NO_DEPRECATE
+                                                     _SCL_SECURE_NO_WARNINGS
                                                      NOMINMAX
                                                      WIN32_LEAN_AND_MEAN
                                                      UNICODE
+                                                     _UNICODE
         )
     else()
         target_compile_definitions(${target} PRIVATE HAVE_CONFIG_H)

@@ -38,9 +38,7 @@ const ProcessorInfo VolumeGradientProcessor::processorInfo_{
     CodeState::Stable,            // Code state
     Tags::GL,                     // Tags
 };
-const ProcessorInfo VolumeGradientProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeGradientProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientProcessor::VolumeGradientProcessor()
     : VolumeGLProcessor("volume_gradient.frag")
@@ -52,7 +50,21 @@ VolumeGradientProcessor::VolumeGradientProcessor()
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();
 
-    inport_.onChange(this, &VolumeGradientProcessor::onVolumeChange);
+    inport_.onChange([this]() {
+        if (inport_.hasData()) {
+            int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
+
+            if (channels == static_cast<int>(channel_.size())) return;
+
+            channel_.clearOptions();
+            for (int i = 0; i < channels; i++) {
+                std::stringstream ss;
+                ss << "Channel " << i;
+                channel_.addOption(ss.str(), ss.str(), i);
+            }
+            channel_.setCurrentStateAsDefault();
+        }
+    });
 
     addProperty(channel_);
     addProperty(dataInChannel4_);
@@ -64,9 +76,7 @@ void VolumeGradientProcessor::preProcess(TextureUnitContainer &) {
     shader_.setUniform("channel", channel_.getSelectedValue());
 }
 
-void VolumeGradientProcessor::postProcess() {
-    volume_->dataMap_.dataRange = dvec2(-1.0, 1.0);
-}
+void VolumeGradientProcessor::postProcess() { volume_->dataMap_.dataRange = dvec2(-1.0, 1.0); }
 
 void VolumeGradientProcessor::initializeResources() {
     if (dataInChannel4_.get()) {
@@ -80,21 +90,4 @@ void VolumeGradientProcessor::initializeResources() {
     internalInvalid_ = true;
 }
 
-void VolumeGradientProcessor::onVolumeChange() {
-    if (inport_.hasData()) {
-        int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
-
-        if (channels == static_cast<int>(channel_.size())) return;
-
-        channel_.clearOptions();
-        for (int i = 0; i < channels; i++) {
-            std::stringstream ss;
-            ss << "Channel " << i;
-            channel_.addOption(ss.str(), ss.str(), i);
-        }
-        channel_.setCurrentStateAsDefault();
-    }
-}
-
-}  // namespace
-
+}  // namespace inviwo

@@ -118,6 +118,7 @@ public:
     /**
      * Deprecated. Add a transfer function point at pos.x() with value color, pos.y is not used.
      */
+    [[deprecated("was declared deprecated. Use `addPoint(const float& pos, const vec4& color)` instead")]]
     void addPoint(const vec2& pos, const vec4& color);
 
     void removePoint(TransferFunctionDataPoint* dataPoint);

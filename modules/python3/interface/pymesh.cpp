@@ -40,7 +40,6 @@
 #include <inviwo/core/ports/meshport.h>
 
 #include <pybind11/pybind11.h>
-#include <pybind11/common.h>
 #include <pybind11/numpy.h>
 
 namespace py = pybind11;
@@ -93,8 +92,10 @@ void exposeMesh(py::module &m) {
                              std::shared_ptr<BufferBase> att) { m->addBuffer(type, att); })
         .def("removeBuffer", [](Mesh *m, size_t idx) { m->removeBuffer(idx); })
 
-        .def("replaceBuffer", [](Mesh *m, size_t idx, Mesh::BufferInfo info,
-                             std::shared_ptr<BufferBase> att) { m->replaceBuffer(idx, info, att); })
+        .def("replaceBuffer",
+             [](Mesh *m, size_t idx, Mesh::BufferInfo info, std::shared_ptr<BufferBase> att) {
+                 m->replaceBuffer(idx, info, att);
+             })
         .def("addIndicies", [](Mesh *m, Mesh::MeshInfo info,
                                std::shared_ptr<IndexBuffer> ind) { m->addIndicies(info, ind); })
         .def("removeIndexBuffer", [](Mesh *m, size_t idx) { m->removeIndexBuffer(idx); })
@@ -102,20 +103,17 @@ void exposeMesh(py::module &m) {
         .def("reserveSizeInVertexBuffer", &Mesh::reserveSizeInVertexBuffer)
         .def("reserveIndexBuffers", &Mesh::reserveIndexBuffers)
 
-        .def_property_readonly("buffers", [&](Mesh *m) { return getBuffers(m->getBuffers());})
-        .def_property_readonly("indexBuffers", [&](Mesh *m) { return getBuffers(m->getIndexBuffers());})
-            
-        ;
+        .def_property_readonly("buffers", [&](Mesh *m) { return getBuffers(m->getBuffers()); })
+        .def_property_readonly("indexBuffers",
+                               [&](Mesh *m) { return getBuffers(m->getIndexBuffers()); });
 
     py::class_<BasicMesh::Vertex>(m, "BasicMeshVertex")
         .def(py::init<>())
-        .def("__init__",
-             [](BasicMesh::Vertex &instance, vec3 pos, vec3 normal, vec3 tex, vec4 color) {
-                 new (&instance) BasicMesh::Vertex{pos, normal, tex, color};
-             });
+        .def(py::init([](vec3 pos, vec3 normal, vec3 tex, vec4 color) {
+            return BasicMesh::Vertex{pos, normal, tex, color};
+        }));
 
     py::class_<BasicMesh, Mesh>(m, "BasicMesh")
-        .def(pybind11::init<>())
         .def(py::init<>())
         .def("addVertex", &BasicMesh::addVertex)
         .def("addVertices", &BasicMesh::addVertices)
@@ -141,4 +139,4 @@ void exposeMesh(py::module &m) {
 
     exposeOutport<MeshOutport>(m, "Mesh");
 }
-}  // namespace
+}  // namespace inviwo

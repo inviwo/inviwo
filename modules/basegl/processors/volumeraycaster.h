@@ -88,7 +88,6 @@ public:
 protected:
     virtual void process() override;
 
-    void onVolumeChange();
     void toggleShading(Event*);
     
     Shader shader_;

@@ -50,7 +50,7 @@ VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::st
 
     mode_.addOption("plane", "Plane", 0);
     mode_.addOption("cross", "Cross", 1);
-    mode_.onChange(this, &VolumeIndicatorProperty::onModeChange);
+    mode_.onChange([this]() { onModeChange(); });
     
     setCollapsed(true);
     setAllPropertiesCurrentStateAsDefault();
@@ -63,7 +63,7 @@ VolumeIndicatorProperty::VolumeIndicatorProperty(const VolumeIndicatorProperty& 
     , plane1_(rhs.plane1_)
     , plane2_(rhs.plane2_)
     , plane3_(rhs.plane3_) {
-    mode_.onChange(this, &VolumeIndicatorProperty::onModeChange);
+    mode_.onChange([this]() { onModeChange(); });
     setAllPropertiesCurrentStateAsDefault();
 }
 

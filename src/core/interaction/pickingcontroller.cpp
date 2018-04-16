@@ -165,7 +165,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     if (touchPoints.empty()) e->markAsUsed();
 }
 
-void PickingController::propagateEvent(GestureEvent* event, EventPropagator* propagator) {
+void PickingController::propagateEvent(GestureEvent* /*event*/, EventPropagator* /*propagator*/) {
     // TODO...
 }
 

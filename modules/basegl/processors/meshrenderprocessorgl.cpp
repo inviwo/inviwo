@@ -98,6 +98,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     imageInport_.setOptional(true);
 
     addProperty(camera_);
+
     centerViewOnGeometry_.onChange([&]() {
         if (!inport_.hasData()) return;
         meshutil::centerViewOnMeshes(inport_.getVectorData(), camera_);
@@ -109,11 +110,12 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
             meshutil::axisAlignedBoundingBox(inport_.getVectorData()), camera_);
         camera_.setNearFarPlaneDist(nearFar.first, nearFar.second);
     });
+
     addProperty(setNearFarPlane_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
-    inport_.onChange(this, &MeshRenderProcessorGL::updateDrawers);
+    inport_.onChange([this]() { updateDrawers(); });
 
     geomProperties_.addProperty(cullFace_);
     geomProperties_.addProperty(enableDepthTest_);

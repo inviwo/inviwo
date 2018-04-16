@@ -41,6 +41,7 @@
 #include <modules/python3/interface/pyglmtypes.h>
 #include <modules/python3/interface/pyproperties.h>
 #include <modules/python3/interface/pyvolume.h>
+#include <modules/python3/interface/pydatamapper.h>
 #include <modules/python3/interface/pybuffer.h>
 #include <modules/python3/interface/pymesh.h>
 
@@ -64,20 +65,21 @@ struct DataFormatHelper {
                      py::return_value_policy::reference);
     }
 };
-}
+
+} //  namespace inviwo
 
 PYBIND11_MAKE_OPAQUE(std::vector<int>);
 PYBIND11_MAKE_OPAQUE(std::vector<float>);
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
-PYBIND11_PLUGIN(inviwopy) {
+PYBIND11_MODULE(inviwopy, m) {
 
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDDisable();
 #endif
 
     using namespace inviwo;
-    py::module m("inviwopy", "Python interface for Inviwo");
+    m.doc() = "Python interface for Inviwo";
 
     exposeGLMTypes(m);
 
@@ -165,6 +167,7 @@ PYBIND11_PLUGIN(inviwopy) {
     exposeProperties(propertiesModule);
     exposeImage(dataModule);
     exposeVolume(dataModule);
+    exposeDataMapper(dataModule);
     exposeBuffer(dataModule);
     exposeMesh(dataModule);
 
@@ -221,8 +224,6 @@ PYBIND11_PLUGIN(inviwopy) {
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDEnable();
 #endif
-
-    return m.ptr();
 }
 
 namespace inviwo {

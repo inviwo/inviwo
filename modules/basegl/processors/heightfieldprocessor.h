@@ -99,7 +99,6 @@ protected:
     virtual void process() override;
 
 private:
-    void heightfieldChanged();
     void updateDrawers();
 
     MeshFlatMultiInport inport_;

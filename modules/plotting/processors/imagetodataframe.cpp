@@ -98,13 +98,13 @@ void ImageToDataFrame::process() {
                                           ->getDataContainer();
 
     // Values copied from imagegrayscale.cpp
-    static const dvec3 perceivedLum(0.299, 0.587f, 0.114f);
-    static const dvec3 relativeLum(0.2126, 0.7152, 0.0722);
-    static const dvec3 avgLum(1.0 / 3.0);
+    static const vec3 perceivedLum(0.299f, 0.587f, 0.114f);
+    static const vec3 relativeLum(0.2126f, 0.7152f, 0.0722f);
+    static const vec3 avgLum(1.0f / 3.0f);
 
     util::forEachPixel(*volume, [&](const size2_t& pos) {
         auto idx = index(pos);
-        auto v = volume->getAsDVec4(pos);
+        auto v = vec4(volume->getAsDVec4(pos));
         float m = 0;
         float sum = 0;
         for (size_t c = 0; c < numCh; c++) {
@@ -113,13 +113,13 @@ void ImageToDataFrame::process() {
             sum += v[c];
         }
         if (greycalePerceived) {
-            greycalePerceived->at(idx) = glm::dot(perceivedLum, dvec3(v));
+            greycalePerceived->at(idx) = glm::dot(perceivedLum, vec3(v));
         }
         if (greycaleRelative) {
-            greycaleRelative->at(idx) = glm::dot(relativeLum, dvec3(v));
+            greycaleRelative->at(idx) = glm::dot(relativeLum, vec3(v));
         }
         if (averageRGB) {
-            averageRGB->at(idx) = glm::dot(avgLum, dvec3(v));
+            averageRGB->at(idx) = glm::dot(avgLum, vec3(v));
         }
 
         magnitudes->at(idx) = std::sqrt(m);

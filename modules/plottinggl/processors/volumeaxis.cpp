@@ -137,9 +137,9 @@ VolumeAxis::VolumeAxis()
     rangeZaxis_.onChange(linkAxisRanges(rangeZaxis_, zAxis_.range_));
 
     // adjust axis ranges when input volume, i.e. its basis, changes
-    inport_.onChange(this, &VolumeAxis::adjustRanges);
+    inport_.onChange([this]() { adjustRanges(); });
     // sync ranges when custom range is enabled or disabled
-    rangeMode_.onChange(this, &VolumeAxis::adjustRanges);
+    rangeMode_.onChange([this]() { adjustRanges(); });
 
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }

@@ -209,12 +209,12 @@ void NetworkSearch::updateSearch(const QString &str) {
     });
 }
 
-void NetworkSearch::focusInEvent(QFocusEvent *event) {
+void NetworkSearch::focusInEvent(QFocusEvent *) {
     edit_->setFocus();
     updateSearch(edit_->text());
 }
 
-void NetworkSearch::focusOutEvent(QFocusEvent *event) {}
+void NetworkSearch::focusOutEvent(QFocusEvent *) {}
 
 bool NetworkSearch::eventFilter(QObject *watched, QEvent *event) {
     if (watched == edit_) {

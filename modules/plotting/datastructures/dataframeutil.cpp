@@ -138,6 +138,7 @@ std::shared_ptr<plot::DataFrame> combineDataFrames(
         col->getBuffer()
             ->getRepresentation<BufferRAM>()
             ->dispatch<void, dispatching::filter::Scalars>([&](auto typedBuf) {
+                IVW_UNUSED_PARAM(typedBuf);
                 using ValueType = util::PrecsionValueType<decltype(typedBuf)>;
                 columns[col->getHeader()] = newDataFrame->addColumn<ValueType>(col->getHeader());
             });

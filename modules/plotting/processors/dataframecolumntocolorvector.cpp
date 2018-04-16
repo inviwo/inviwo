@@ -71,8 +71,8 @@ void DataFrameColumnToColorVector::process() {
                     auto colors = std::make_shared<std::vector<vec4>>();
                     auto &vec = buf->getDataContainer();
                     auto minMax = std::minmax_element(vec.begin(), vec.end());
-                    double minV = *minMax.first;
-                    double maxV = *minMax.second;
+                    double minV = static_cast<double>(*minMax.first);
+                    double maxV = static_cast<double>(*minMax.second);
                     const double range = (maxV - minV);
 
                     for (const auto &v : vec) {

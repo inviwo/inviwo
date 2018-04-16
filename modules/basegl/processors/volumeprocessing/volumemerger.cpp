@@ -34,54 +34,45 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeMerger::processorInfo_{
-    "org.inviwo.VolumeMerger",      // Class identifier
-    "Volume Merger",                // Display name
-    "Volume Operation",              // Category
-    CodeState::Stable,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.VolumeMerger",  // Class identifier
+    "Volume Merger",            // Display name
+    "Volume Operation",         // Category
+    CodeState::Stable,          // Code state
+    "GL",                       // Tags
 };
-const ProcessorInfo VolumeMerger::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeMerger::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMerger::VolumeMerger()
     : VolumeGLProcessor("volumemerger.frag"), vol2_("volume2"), vol3_("volume3"), vol4_("volume4") {
-    
+
     addPort(vol2_);
     addPort(vol3_);
     addPort(vol4_);
-    
+
     vol2_.setOptional(true);
     vol3_.setOptional(true);
     vol4_.setOptional(true);
 
     auto changeFormat = [this]() {
-        bool a = vol2_.isConnected();
-        bool b = vol3_.isConnected();
-        bool c = vol4_.isConnected();
-
         int numVolumes = 1;
-        if (a ) {
+        if (vol2_.isReady()) {
             numVolumes++;
             shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL2");
-        }
-        else {
+        } else {
             shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL2");
         }
 
-        if (b) {
+        if (vol3_.isReady()) {
             numVolumes++;
             shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL3");
-        }
-        else {
+        } else {
             shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL3");
-        }        
-        
-        if (c) {
+        }
+
+        if (vol4_.isReady()) {
             numVolumes++;
             shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL4");
-        }
-        else {
+        } else {
             shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL4");
         }
 
@@ -98,22 +89,17 @@ VolumeMerger::VolumeMerger()
     vol3_.onChange(changeFormat);
     vol4_.onChange(changeFormat);
 }
-    
-void VolumeMerger::preProcess(TextureUnitContainer &cont)
-{
-    bool a = vol2_.isConnected();
-    bool b = vol3_.isConnected();
-    bool c = vol4_.isConnected();
 
-    if (a) {
+void VolumeMerger::preProcess(TextureUnitContainer &cont) {
+    if (vol2_.isReady()) {
         utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "vol2");
     }
-    if (b) {
+    if (vol3_.isReady()) {
         utilgl::bindAndSetUniforms(shader_, cont, *vol3_.getData(), "vol3");
     }
-    if (c) {
+    if (vol4_.isReady()) {
         utilgl::bindAndSetUniforms(shader_, cont, *vol4_.getData(), "vol4");
     }
 }
 
-} // namespace
+}  // namespace inviwo

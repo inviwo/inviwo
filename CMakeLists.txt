@@ -35,14 +35,14 @@ if(POLICY CMP0042)
 endif()
 
 if(POLICY CMP0043)
-    # The OLD behavior for this policy is to consume the content of the 
-    # suffixed COMPILE_DEFINITIONS_<CONFIG> target property when generating
-    # the compilation command.
-    cmake_policy(SET CMP0043 OLD)
+    # The New bahaviour is to ignore COMPILE_DEFINITIONS_<CONFIG>
+    # and used COMPILE_DEFINITIONS with generator expressions"
+    cmake_policy(SET CMP0043 NEW)
 endif()
 
 if(POLICY CMP0046)
-    cmake_policy(SET CMP0046 OLD) # Missing dependencies policy.
+     # Warn when adding a missing dependency using add_dependencies()
+    cmake_policy(SET CMP0046 NEW)
 endif()
 
 if(POLICY CMP0051)
@@ -54,6 +54,13 @@ if(POLICY CMP0054)
     # only interpret if() arguments as variables or keywords when unquoted
     cmake_policy(SET CMP0054 NEW)
 endif()
+
+if(POLICY CMP0057)
+    # CMake 3.3 adds support for the new IN_LIST operator.
+    cmake_policy(SET CMP0057 NEW)
+endif()
+
+string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 # option for setting the project/solution name of the Inviwo project
 set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
@@ -204,11 +211,6 @@ add_subdirectory(src/qt)
 #--------------------------------------------------------------------
 # Add applications
 add_subdirectory(apps)
-if(WIN32)
-    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.6")
-        set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo-cli)
-    endif()
-endif()
 
 #--------------------------------------------------------------------
 # Add external projects
@@ -228,3 +230,6 @@ include(cmake/packaging.cmake)
 # Generate Doxygen setup. 
 include(tools/doxygen/doxygen.cmake)
 make_doxygen_target(all_modules)
+
+string(TIMESTAMP time "%Y-%m-%d %H:%M:%S")
+message(STATUS "Configure started at ${timeStart} and ended at ${time}")

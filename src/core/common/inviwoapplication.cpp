@@ -89,6 +89,8 @@ void dataFormatDummyInitialization() {
 
 }  // namespace util
 
+InviwoApplication* InviwoApplication::instance_ = nullptr;
+
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
     , commandLineParser_(argc, argv)
@@ -148,8 +150,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , representationConverterMetaFactory_{util::make_unique<RepresentationConverterMetaFactory>()}
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , systemCapabilities_{std::make_unique<SystemCapabilities>()}
+    , moduleCallbackActions_{}
     , moduleManager_{this}
-    , moduleCallbackActions_()
     , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{util::make_unique<ProcessorNetworkEvaluator>(
           processorNetwork_.get())}

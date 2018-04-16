@@ -47,9 +47,11 @@
 #pragma warning(disable : 4456)
 #pragma warning(disable : 4458)
 #pragma warning(disable : 4611)
+#pragma warning(disable : 5040)
 #endif
 #define cimg_verbosity 0  // Disable all cimg output
 #define cimg_display 0    // Do not use any gui stuff
+struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-
 #include <modules/cimg/ext/cimg/CImg.h>
 #include <warn/pop>
 
@@ -142,8 +144,6 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
         return img.save_raw(handle);
     else
         throw cimg_library::CImgIOException("unsupported format");
-
-    return img;
 }
 
 }  // namespace cimgutil

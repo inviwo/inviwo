@@ -249,9 +249,9 @@ void CompositeProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
     }
 }
 
-void CompositeProcessor::onDidAddProperty(Property* prop, size_t index) { registerProperty(prop); }
+void CompositeProcessor::onDidAddProperty(Property* prop, size_t) { registerProperty(prop); }
 
-void CompositeProcessor::onWillRemoveProperty(Property* prop, size_t index) {
+void CompositeProcessor::onWillRemoveProperty(Property* prop, size_t) {
     unregisterProperty(prop);
 }
 
@@ -283,7 +283,7 @@ CompositeProcessor::PropertyHandler::~PropertyHandler() {
     delete comp.removeProperty(superProperty);
 }
 
-void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string& identifier) {
+void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
     if (auto superProperty = getSuperProperty(orgProp)) {
         superProperty->setIdentifier(joinString(orgProp->getPath(), "-"));
     }
@@ -313,7 +313,7 @@ void CompositeProcessor::onSetVisible(Property* orgProp, bool visible) {
     }
 }
 
-void CompositeProcessor::onSetUsageMode(Property* orgProp, UsageMode usageMode) {
+void CompositeProcessor::onSetUsageMode(Property* orgProp, UsageMode) {
     if (orgProp->getUsageMode() == UsageMode::Application) {
         addSuperProperty(orgProp);
     } else {

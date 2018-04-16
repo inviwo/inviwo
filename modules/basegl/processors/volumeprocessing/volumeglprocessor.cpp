@@ -52,13 +52,16 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
     addPort(inport_);
     addPort(outport_);
 
-    inport_.onChange(this, &VolumeGLProcessor::inportChanged);
+    inport_.onChange([this]() {
+        markInvalid();
+        afterInportChanged();
+    });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 VolumeGLProcessor::VolumeGLProcessor(const std::string& fragmentShader, bool buildShader)
-    : VolumeGLProcessor( utilgl::findShaderResource(fragmentShader) ,buildShader){}
-  
+    : VolumeGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
+
 VolumeGLProcessor::~VolumeGLProcessor() {}
 
 void VolumeGLProcessor::process() {
@@ -67,7 +70,8 @@ void VolumeGLProcessor::process() {
     if (internalInvalid_) {
         reattach = true;
         internalInvalid_ = false;
-        const DataFormatBase* format = dataFormat_?dataFormat_:inport_.getData()->getDataFormat();
+        const DataFormatBase* format =
+            dataFormat_ ? dataFormat_ : inport_.getData()->getDataFormat();
         volume_ = std::make_shared<Volume>(inport_.getData()->getDimensions(), format);
         volume_->setModelMatrix(inport_.getData()->getModelMatrix());
         volume_->setWorldMatrix(inport_.getData()->getWorldMatrix());
@@ -90,7 +94,7 @@ void VolumeGLProcessor::process() {
 
     // We always need to ask for a editable representation
     // this will invalidate any other representations
-    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>(); 
+    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
     if (reattach) {
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
@@ -111,9 +115,4 @@ void VolumeGLProcessor::postProcess() {}
 
 void VolumeGLProcessor::afterInportChanged() {}
 
-void VolumeGLProcessor::inportChanged() {
-    markInvalid();
-    afterInportChanged();
-}
-
-}  // namespace
+}  // namespace inviwo

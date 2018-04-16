@@ -102,10 +102,11 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                     }
                     metasouce->getSuperInport().setOptional(optional);
                     auto portIdentifier = c.second.front()->getIdentifier();
-                    // Make first letter uppercase for reability when combined with processor
+                    // Make first letter uppercase for readability when combined with processor
                     // display name
                     if (!portIdentifier.empty()) {
-                        portIdentifier.front() = ::toupper(portIdentifier.front());
+                        portIdentifier.front() =
+                            static_cast<char>(std::toupper(portIdentifier.front()));
                     }
 
                     auto id = util::stripIdentifier(
@@ -118,7 +119,8 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                         "Unable to find a Composite Source Processor for outport: \""
                             << portId
                             << "\"\n"
-                               "Probably need to register a Composite Source Processor for the port:\n"
+                               "Probably need to register a Composite Source Processor for the "
+                               "port:\n"
                                "registerProcessor<CompositeSource<InportType, OutportType>>();\n"
                                "or use the convenience function:\n"
                                "registerDefaultsForDataType<DataType>();");
@@ -147,10 +149,11 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                         network.addConnection(&metasink->getSuperOutport(), inport);
                     }
                     auto portIdentifier = c.first->getIdentifier();
-                    // Make first letter uppercase for reability when combined with processor
+                    // Make first letter uppercase for readability when combined with processor
                     // display name
                     if (!portIdentifier.empty()) {
-                        portIdentifier.front() = ::toupper(portIdentifier.front());
+                        portIdentifier.front() =
+                            static_cast<char>(std::toupper(portIdentifier.front()));
                     }
                     auto id = util::stripIdentifier(c.first->getProcessor()->getDisplayName() +
                                                     portIdentifier);
@@ -161,7 +164,8 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                         "Unable to find a Composite Sink Processor for outport: \""
                             << portId
                             << "\"\n"
-                               "Probably need to register a Composite Sink Processor for the port:\n"
+                               "Probably need to register a Composite Sink Processor for the "
+                               "port:\n"
                                "registerProcessor<CompositeSink<InportType, OutportType>>();\n"
                                "or use the convenience function:\n"
                                "registerDefaultsForDataType<DataType>();");

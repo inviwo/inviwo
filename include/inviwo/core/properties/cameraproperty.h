@@ -68,7 +68,7 @@ public:
     operator const Camera&() const;
 
     virtual CameraProperty* clone() const override;
-    virtual ~CameraProperty() = default;
+    virtual ~CameraProperty();
 
     virtual Camera& get();
     virtual const Camera& get() const;
@@ -181,7 +181,10 @@ private:
     Inport* inport_;  ///< Allows the camera to be positioned relative to new data (VolumeInport,
                       /// MeshInport)
     const SpatialEntity<3>* data_;  //< non-owning reference;
-    mat4 prevDataToWorldMatrix_;    //< Data-to-world matrix of object currently being viewed
+
+    mat4 prevDataToWorldMatrix_; //< Data-to-world matrix of object currently being viewed
+
+    const BaseCallBack* callbackInportOnChange_ = nullptr;
 };
 
 }  // namespace inviwo

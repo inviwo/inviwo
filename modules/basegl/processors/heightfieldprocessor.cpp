@@ -77,8 +77,6 @@ HeightFieldProcessor::HeightFieldProcessor()
     , lightingProperty_("lighting", "Lighting", &camera_)
     , shader_("heightfield.vert", "heightfield.frag", false) {
 
-    inportHeightfield_.onChange(this, &HeightFieldProcessor::heightfieldChanged);
-
     addPort(inport_);
     addPort(inportHeightfield_);
     addPort(inportTexture_);
@@ -98,7 +96,7 @@ HeightFieldProcessor::HeightFieldProcessor()
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
-    inport_.onChange(this, &HeightFieldProcessor::updateDrawers);
+    inport_.onChange([this]() { updateDrawers(); });
 
     addProperty(lightingProperty_);
     addProperty(trackball_);
@@ -161,11 +159,6 @@ void HeightFieldProcessor::process() {
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
     TextureUnit::setZeroUnit();
-}
-
-void HeightFieldProcessor::heightfieldChanged() {
-    if (!inportHeightfield_.isConnected()) return;
-
 }
 
 void HeightFieldProcessor::updateDrawers() {

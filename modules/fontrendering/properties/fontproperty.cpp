@@ -41,6 +41,7 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , fontFace_("fontFace", "Font Face")
     , fontSize_("fontSize", "Font size", 14, 0, 144, 1)
+    , lineSpacing_("lineSpacing", "Line Spacing", 0.0f, -1.0f, 2.0f)
     , anchorPos_("anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f)) {
     auto fonts = util::getAvailableFonts();
 
@@ -53,9 +54,10 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
     fontFace_.setCurrentStateAsDefault();
 
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
-
+    
     addProperty(fontFace_);
     addProperty(fontSize_);
+    addProperty(lineSpacing_);
     addProperty(anchorPos_);
 }
 
@@ -63,9 +65,11 @@ FontProperty::FontProperty(const FontProperty& rhs)
     : CompositeProperty(rhs)
     , fontFace_(rhs.fontFace_)
     , fontSize_(rhs.fontSize_)
+    , lineSpacing_(rhs.lineSpacing_)
     , anchorPos_(rhs.anchorPos_) {
     addProperty(fontFace_);
     addProperty(fontSize_);
+    addProperty(lineSpacing_);
     addProperty(anchorPos_);
 }
 

@@ -92,7 +92,6 @@ protected:
     std::shared_ptr<Mesh> clipGeometryAgainstPlane(const Mesh*, const Plane&);
 
 private:
-    void onMovePointAlongNormalToggled();
     void onAlignPlaneNormalToCameraNormalPressed();
 
     MeshInport inport_;
