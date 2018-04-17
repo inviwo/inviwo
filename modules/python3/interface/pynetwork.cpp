@@ -38,14 +38,9 @@
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 
-
-
 namespace py = pybind11;
 
 namespace inviwo {
-
-
-
 
 void exposeNetwork(py::module &m) {
     py::class_<PortConnection>(m, "PortConnection")
@@ -74,7 +69,6 @@ void exposeNetwork(py::module &m) {
                      return py::cast(cp);
                  }
                  return py::cast(p);
-
              },
              py::return_value_policy::reference)
         .def("addProcessor",
@@ -84,8 +78,10 @@ void exposeNetwork(py::module &m) {
 
         .def_property_readonly("connections", &ProcessorNetwork::getConnections,
                                py::return_value_policy::reference)
-        .def("addConnection", [&](ProcessorNetwork *on, Outport *sourcePort,
-                                  Inport *destPort) { on->addConnection(sourcePort, destPort); },
+        .def("addConnection",
+             [&](ProcessorNetwork *on, Outport *sourcePort, Inport *destPort) {
+                 on->addConnection(sourcePort, destPort);
+             },
              py::arg("sourcePort"), py::arg("destPort"))
         .def("addConnection", [&](ProcessorNetwork *on,
                                   PortConnection &connection) { on->addConnection(connection); })
@@ -99,8 +95,10 @@ void exposeNetwork(py::module &m) {
                  on->removeConnection(connection);
              })
 
-        .def("isConnected", [&](ProcessorNetwork *on, Outport *sourcePort,
-                                Inport *destPort) { on->isConnected(sourcePort, destPort); },
+        .def("isConnected",
+             [&](ProcessorNetwork *on, Outport *sourcePort, Inport *destPort) {
+                 on->isConnected(sourcePort, destPort);
+             },
              py::arg("sourcePort"), py::arg("destPort"))
         .def("isPortInNetwork", &ProcessorNetwork::isPortInNetwork)
         .def_property_readonly("links", &ProcessorNetwork::getLinks,
@@ -149,50 +147,5 @@ void exposeNetwork(py::module &m) {
                                                                  // throwing (we just want to pass
                                                                  // the exception on to python)
         });
-
-    py::class_<Port>(m, "Port")
-        .def_property_readonly("identifier", &Port::getIdentifier)
-        .def_property_readonly("processor", &Port::getProcessor, py::return_value_policy::reference)
-        .def_property_readonly("classIdentifier", &Port::getClassIdentifier)
-        .def_property_readonly("contentInfo", &Port::getInfo)
-        .def("isConnected", &Port::isConnected)
-        .def("isReady", &Port::isReady);
-
-    py::class_<Inport, Port>(m, "Inport")
-        .def_property("optional", &Inport::isOptional, &Inport::setOptional)
-        .def("canConnectTo", &Inport::canConnectTo)
-        .def("connectTo", &Inport::connectTo)
-        .def("disconnectFrom", &Inport::disconnectFrom)
-        .def("isConnectedTo", &Inport::isConnectedTo)
-        .def("getConnectedOutport", &Inport::getConnectedOutport,
-             py::return_value_policy::reference)
-        .def("getConnectedOutports", &Inport::getConnectedOutports,
-             py::return_value_policy::reference)
-        .def("getMaxNumberOfConnections", &Inport::getMaxNumberOfConnections)
-        .def("getNumberOfConnections", &Inport::getNumberOfConnections)
-        .def("getChangedOutports", &Inport::getChangedOutports, py::return_value_policy::reference);
-
-    py::class_<Outport, Port> pyOutport(m, "Outport");
-    pyOutport.def("isConnectedTo", &Outport::isConnectedTo);
-    pyOutport.def("getConnectedInports", &Outport::getConnectedInports, py::return_value_policy::reference);
-
-
-    exposeOutport<DataOutport<std::vector<vec2>>>(m, "Vec2");
-    exposeOutport<DataOutport<std::vector<vec3>>>(m, "Vec3");
-    exposeOutport<DataOutport<std::vector<vec4>>>(m, "Vec4");
-    exposeOutport<DataOutport<std::vector<dvec2>>>(m, "dVec2");
-    exposeOutport<DataOutport<std::vector<dvec3>>>(m, "dVec3");
-    exposeOutport<DataOutport<std::vector<dvec4>>>(m, "dVec4");
-    exposeOutport<DataOutport<std::vector<ivec2>>>(m, "iVec2");
-    exposeOutport<DataOutport<std::vector<ivec3>>>(m, "iVec3");
-    exposeOutport<DataOutport<std::vector<ivec4>>>(m, "iVec4");
-    exposeOutport<DataOutport<std::vector<size2_t>>>(m, "Size2t");
-    exposeOutport<DataOutport<std::vector<size3_t>>>(m, "Size3t");
-    exposeOutport<DataOutport<std::vector<size4_t>>>(m, "Size4t");
-
-   
-
-
-
 }
-}  // namespace
+}  // namespace inviwo

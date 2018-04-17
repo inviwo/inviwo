@@ -45,7 +45,7 @@ public:
     virtual ~PythonLogger() = default;
 
     virtual void onPyhonExecutionOutput(const std::string &msg,
-                                        const PythonExecutionOutputStream &outputType) override;
+                                        PythonOutputType outputType) override;
 };
 
 }  // namespace

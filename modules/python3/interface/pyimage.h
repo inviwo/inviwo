@@ -32,10 +32,10 @@
 
 #include <pybind11/pybind11.h>
 
-
 namespace inviwo {
 
 void exposeImage(pybind11::module &m);
-}
+
+}  // namespace inviwo
 
 #endif  // IVW_PYIMAGE_H

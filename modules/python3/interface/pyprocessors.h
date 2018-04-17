@@ -44,6 +44,7 @@ template <typename P>
 using ProcessorPtr = std::unique_ptr<P, processorDelete<P>>;
 
 void exposeProcessors(pybind11::module &m);
-}
+
+}  // namespace inviwo
 
 #endif  // IVW_PYPROPERTIES_H

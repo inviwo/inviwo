@@ -27,50 +27,67 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONMESHSCRIPTSOURCE_H
-#define IVW_PYTHONMESHSCRIPTSOURCE_H
+#ifndef IVW_VECTORIDENTIFIERWRAPPER_H
+#define IVW_VECTORIDENTIFIERWRAPPER_H
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/python3/pythonscript.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/volumeport.h>
+
 #include <pybind11/pybind11.h>
+#include <memory>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.PythonScriptProcessor, Python Mesh Script Source}
- * ![](org.inviwo.PythonScriptProcessor.png?classIdentifier=org.inviwo.PythonScriptProcessor)
- * Processor defined by a python script.
- *
- *
- * ### Properties
- *   * __File Name__  file name of the python script
- */
-
-/**
- * \class PythonScriptProcessor
- * \brief Loads a mesh and volume via a python script. The processor is invalidated
- * as soon as the script changes on disk.
- */
-class IVW_MODULE_PYTHON3_API PythonScriptProcessor : public Processor {
+template <typename V>
+class VectorIdentifierWrapper {
 public:
-    PythonScriptProcessor();
-    virtual ~PythonScriptProcessor() = default;
+    VectorIdentifierWrapper(const V& vector) : vector_{vector} {}
 
-    virtual void process() override;
+    auto& getFromIdentifier(const std::string& identifier) const {
+        using std::begin;
+        using std::end;
+        auto it = std::find_if(begin(vector_), end(vector_), [&](const auto& elem) {
+            return elem->getIdentifier() == identifier;
+        });
+        if (it != end(vector_)) {
+            return *(*it);
+        } else {
+            throw pybind11::key_error();
+        }
+    }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    auto& getFromIndex(size_t ind) const {
+        if (ind < vector_.size()) {
+            return *vector_[ind];
+        } else {
+            throw pybind11::index_error();
+        }
+    }
+
+    size_t size() { return vector_.size(); }
+
+    bool contains(const std::string& identifier) {
+        return std::find_if(begin(vector_), end(vector_), [&](const auto& elem) {
+                   return elem->getIdentifier() == identifier;
+               }) != end(vector_);
+    }
 
 private:
-    pybind11::dict locals_;
-    PythonScriptDisk script_;
-    FileProperty scriptFileName_;
+    const V& vector_;
 };
+
+template <typename V>
+void exposeVectorIdentifierWrapper(pybind11::module& m, const std::string& name) {
+    namespace py = pybind11;
+    using VecWrapper = typename VectorIdentifierWrapper<V>;
+
+    py::class_<VecWrapper>(m, name.c_str())
+        .def("__getattr__", &VecWrapper::getFromIdentifier, py::return_value_policy::reference)
+        .def("__getitem__", &VecWrapper::getFromIndex, py::return_value_policy::reference)
+        .def("__len__", &VecWrapper::size)
+        .def("__contains__", &VecWrapper::contains);
+}
 
 }  // namespace inviwo
 
-#endif  // IVW_PYTHONMESHSCRIPTSOURCE_H
+#endif  // IVW_VECTORIDENTIFIERWRAPPER_H

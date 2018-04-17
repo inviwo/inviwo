@@ -276,8 +276,8 @@ void PythonEditorWidget::loadFile(std::string fileName, bool askForSave) {
 }
 
 void PythonEditorWidget::onPyhonExecutionOutput(const std::string& msg,
-                                                const PythonExecutionOutputStream& outputType) {
-    appendToOutput(msg, outputType != sysstdout);
+                                                PythonOutputType outputType) {
+    appendToOutput(msg, outputType != PythonOutputType::sysstdout);
 }
 
 void PythonEditorWidget::save() {

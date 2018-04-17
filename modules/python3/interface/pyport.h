@@ -1,9 +1,8 @@
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,45 +27,48 @@
  *
  *********************************************************************************/
 
-#include <pybind11/pybind11.h>
-#include <modules/python3qt/python3qtmodule.h>
-#include <modules/python3qt/pythoneditorwidget.h>
-#include <modules/python3qt/pythonmenu.h>
+#ifndef IVW_PYPORT_H
+#define IVW_PYPORT_H
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QInputDialog>
-#include <QCoreApplication>
-#include <warn/pop>
+#include <inviwo/core/ports/outport.h>
+
+#include <pybind11/pybind11.h>
 
 namespace inviwo {
 
-namespace {
-pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
-
-    bool ok;
-    QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
-                                         defaultResponse.c_str(), &ok);
-    if (ok && !text.isEmpty()) {
-        return pybind11::str(text.toLocal8Bit().constData());
-    } else if (ok) {
-        return pybind11::str("");
-    }
-    return pybind11::none();
-}
-}  // namespace
-
-Python3QtModule::Python3QtModule(InviwoApplication* app)
-    : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
-
-    auto inviwopy = pybind11::module::import("inviwopy");
-    auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
-
-    m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
-          pybind11::arg("defaultResponse") = "");
-    m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+template <typename T>
+void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
+    exposeOutport<DataOutport<T>>(m, name);
+    exposeInport<DataInport<T>>(m, name);
+    exposeInport<DataInport<T, 0>>(m, name + "Multi");
+    exposeInport<DataInport<T, 0, true>>(m, name + "FlatMulti");
 }
 
-Python3QtModule::~Python3QtModule() = default;
+template <typename Port>
+pybind11::class_<Port, Outport> exposeOutport(pybind11::module& m, const std::string& name) {
+    namespace py = pybind11;
+    using T = typename Port::type;
+    return pybind11::class_<Port, Outport>(m, (name + "Outport").c_str())
+        .def(py::init<std::string>())
+        .def("getData", &Port::getData)
+        .def("detatchData", &Port::detachData)
+        .def("setData", [](Port* port, std::shared_ptr<T> data) { port->setData(data); })
+        .def("hasData", &Port::hasData);
+}
+
+template <typename Port>
+pybind11::class_<Port, Inport> exposeInport(pybind11::module& m, const std::string& name) {
+    namespace py = pybind11;
+    return pybind11::class_<Port, Inport>(m, (name + "Inport").c_str())
+        .def(py::init<std::string>())
+        .def("getData", &Port::getData)
+        .def("getVectorData", &Port::getVectorData)
+        .def("getSourceVectorData", &Port::getSourceVectorData)
+        .def("hasData", &Port::hasData);
+}
+
+void exposePort(pybind11::module& m);
 
 }  // namespace inviwo
+
+#endif  // IVW_PYPORT_H

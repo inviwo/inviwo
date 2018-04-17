@@ -59,7 +59,7 @@ function (ivw_add_py_wrapper target)
         set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
         ivw_define_standard_definitions(${target} ${target})
         target_link_libraries(${target} PUBLIC inviwo::module::python3)
-        ivw_folder(${target} pybind11modules)
+        ivw_folder(${target} pymodules)
 
         set(_allPyBindWrappers "${_allPyBindWrappers};${target}" CACHE INTERNAL  "_allPyBindWrappers")
 

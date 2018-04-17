@@ -39,6 +39,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 
 #include <traceback.h>
@@ -65,8 +66,25 @@ bool PythonScript::compile() {
     return !isCompileNeeded_;
 }
 
-bool PythonScript::run(const VariableMap& extraLocalVariables,
+bool PythonScript::run(const std::unordered_map<std::string, pybind11::object>& locals,
                        std::function<void(pybind11::dict)> callback) {
+    namespace py = pybind11;
+    py::dict pylocals;
+
+    for (auto& item : locals) {
+        pylocals[py::str(item.first)] = item.second;
+    }
+
+    return run(pylocals, callback);
+}
+
+bool PythonScript::run(std::function<void(pybind11::dict)> callback) {
+    namespace py = pybind11;
+    return run(py::dict{}, callback);
+}
+
+bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)> callback) {
+    namespace py = pybind11;
 
     if (isCompileNeeded_ && !compile()) {
         LogError("Failed to run script, script could not be compiled");
@@ -75,23 +93,13 @@ bool PythonScript::run(const VariableMap& extraLocalVariables,
 
     ivwAssert(byteCode_ != nullptr, "No byte code");
 
-    auto m = PyImport_AddModule("__main__");
-    if (m == NULL) return false;
-
-    PyObject* copy = PyDict_Copy(PyModule_GetDict(m));
-    for (auto ea : extraLocalVariables) {
-        PyDict_SetItemString(copy, ea.first.c_str(), ea.second.ptr());
-    }
-
-    PyObject* ret = PyEval_EvalCode(BYTE_CODE, copy, copy);
+    PyObject* ret = PyEval_EvalCode(BYTE_CODE, py::globals().ptr(), locals.ptr());
 
     bool success = checkRuntimeError();
-    if (success) {
-        callback(pyutil::toPyBindObjectBorrow<pybind11::dict>(copy));
+    if (success && callback) {
+        callback(locals);
     }
 
-    Py_XDECREF(ret);
-    Py_XDECREF(copy);
     return success;
 }
 
@@ -109,118 +117,92 @@ void PythonScript::setSource(const std::string& source) {
 }
 
 bool PythonScript::checkCompileError() {
+    namespace py = pybind11;
     if (!PyErr_Occurred()) return true;
 
-    LogError("Compile Error occured when compiling script " << filename_ << ", see below for info");
+    LogError("Compile Error occurred when compiling script " << filename_
+                                                             << ", see below for info");
+    py::object type;
+    py::object value;
+    py::object traceback;
+    PyErr_Fetch(&type.ptr(), &value.ptr(), &traceback.ptr());
 
-    PyObject *errtype, *errvalue, *traceback;
-    PyErr_Fetch(&errtype, &errvalue, &traceback);
-    std::string log = "";
+    std::stringstream log;
     char* msg = nullptr;
     PyObject* obj = nullptr;
 
-    if (PyArg_ParseTuple(errvalue, "sO", &msg, &obj)) {
+    if (PyArg_ParseTuple(value.ptr(), "sO", &msg, &obj)) {
         int line, col;
         char* code = nullptr;
         char* mod = nullptr;
 
         if (PyArg_ParseTuple(obj, "siis", &mod, &line, &col, &code)) {
-            log = "[" + toString(line) + ":" + toString(col) + "] " + toString(msg) + ": " +
-                  toString(code);
+            log << "[" << line << ":" << col << "] " << msg << ": " << code;
         }
     }
 
     // convert error to string, if it could not be parsed
-    if (log.empty()) {
-        LogWarn("Failed to parse exception, printing as string:");
-        auto s = pyutil::toPyBindObjectSteal<pybind11::str>(PyObject_Str(errvalue));
-        if (pybind11::isinstance<pybind11::str>(s)) {
-            log = s;
-        }
+    if (log.str().empty()) {
+        log << std::string(py::str(value));
     }
 
-    Py_XDECREF(errtype);
-    Py_XDECREF(errvalue);
-    Py_XDECREF(traceback);
-    LogError(log);
+    LogError(log.str());
     return false;
 }
 
 bool PythonScript::checkRuntimeError() {
+    namespace py = pybind11;
     if (!PyErr_Occurred()) return true;
 
-    LogError("Runtime Error occured when runing script " << filename_ << ", see below for info");
+    py::object type;
+    py::object value;
+    py::object traceback;
+    PyErr_Fetch(&type.ptr(), &value.ptr(), &traceback.ptr());
 
-    std::string pyException = "";
-    PyObject* pyError_type = nullptr;
-    PyObject* pyError_value = nullptr;
-    PyObject* pyError_traceback = nullptr;
-    PyErr_Fetch(&pyError_type, &pyError_value, &pyError_traceback);
+    PyErr_NormalizeException(&type.ptr(), &value.ptr(), &traceback.ptr());
+    PyException_SetTraceback(value.ptr(), traceback.ptr());
+
     int errorLine = -1;
-    std::string stacktraceStr;
 
-    if (pyError_traceback) {
-        PyTracebackObject* traceback = (PyTracebackObject*)pyError_traceback;
+    std::stringstream errstr;
 
-        while (traceback) {
-            PyFrameObject* frame = traceback->tb_frame;
-            std::string stacktraceLine;
+    if (type) {
+        errstr << type.attr("__name__").cast<std::string>() << ": ";
+    }
+    if (value) {
+        errstr << std::string(py::str(value));
+    } else {
+        errstr << "<No data available>";
+    }
+    errstr << "\n";
+    if (traceback) {
+        errstr << "Stacktrace (most recent call first):\n";
+        PyTracebackObject* tb = (PyTracebackObject*)traceback.ptr();
 
-            if (frame && frame->f_code) {
-                PyCodeObject* codeObject = frame->f_code;
+        /* Get the deepest trace possible */
+        while (tb->tb_next) tb = tb->tb_next;
 
-                auto co_filename =
-                    pyutil::toPyBindObjectBorrow<pybind11::str>(codeObject->co_filename);
-                if (co_filename)
-                    stacktraceLine.append(std::string("  File \"") + std::string(co_filename) +
-                                          std::string("\", "));
+        PyFrameObject* frame = tb->tb_frame;
+        while (frame) {
+            int line = PyFrame_GetLineNumber(frame);
+            auto file = py::handle(frame->f_code->co_filename).cast<std::string>();
+            auto name = py::handle(frame->f_code->co_name).cast<std::string>();
 
-                errorLine = PyCode_Addr2Line(codeObject, frame->f_lasti);
-                stacktraceLine.append(std::string("line ") + toString(errorLine));
-
-                auto co_name = pyutil::toPyBindObjectBorrow<pybind11::str>(codeObject->co_name);
-                if (co_name) stacktraceLine.append(std::string(", in ") + std::string(co_name));
+            if (file.empty()) {
+                file = "<script>";
             }
 
-            stacktraceLine.append("\n");
-            stacktraceStr = stacktraceLine + stacktraceStr;
-            traceback = traceback->tb_next;
-        }
-    }
-
-    std::stringstream s;
-    s << errorLine;
-    pyException.append(std::string("[") + s.str() + std::string("] "));
-
-    if (pyError_value) {
-        auto pyError_string =
-            pyutil::toPyBindObjectSteal<pybind11::str>(PyObject_Str(pyError_value));
-        if (pyError_string) {
-            pyException.append(pyError_string);
+            errstr << file << ":" << line << " in " << name << "\n";
+            frame = frame->f_back;
         }
     } else {
-        pyException.append("<No data available>");
+        errstr << "No stacktrace available";
     }
 
-    pyException.append("\n");
-
-    // finally append stacktrace string
-    if (!stacktraceStr.empty()) {
-        pyException.append("Stacktrace (most recent call first):\n");
-        pyException.append(stacktraceStr);
-    } else {
-        pyException.append("<No stacktrace available>");
-        LogWarn("Failed to parse traceback");
-    }
-
-    Py_XDECREF(pyError_type);
-    Py_XDECREF(pyError_value);
-    Py_XDECREF(pyError_traceback);
-    LogError(pyException);
     InviwoApplication::getPtr()
         ->getModuleByType<Python3Module>()
         ->getPythonInterpreter()
-        ->pythonExecutionOutputEvent(pyException, sysstderr);
+        ->pythonExecutionOutputEvent(errstr.str(), PythonOutputType::sysstderr);
     return false;
 }
 

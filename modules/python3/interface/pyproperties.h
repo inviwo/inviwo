@@ -57,13 +57,6 @@ void pyTemplateProperty(C &prop) {
 
 template <typename PropertyType, typename T>
 struct OrdinalPropertyIterator {
-    PropertyType *property_;
-    T cur;
-    T inc;
-
-    T begin;
-    T end;
-
     OrdinalPropertyIterator(PropertyType *prop)
         : property_(prop)
         , cur(prop->getMinValue())
@@ -94,6 +87,12 @@ struct OrdinalPropertyIterator {
             return cur - inc;
         }
     }
+
+    PropertyType *property_;
+    T cur;
+    T inc;
+    T begin;
+    T end;
 };
 
 template <typename T, typename P, typename M, typename PC>
@@ -132,13 +131,15 @@ struct OrdinalPropertyHelper {
         auto classname = Defaultvalues<T>::getName() + "Property";
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string &identifier, const std::string &name,
-                             const T &value = Defaultvalues<T>::getVal(),
-                             const T &min = Defaultvalues<T>::getMin(),
-                             const T &max = Defaultvalues<T>::getMax(),
-                             const T &increment = Defaultvalues<T>::getInc()) {
-                return new P(identifier, name, value, min, max, increment);
-            }))
+        prop.def(py::init([](const std::string &identifier, const std::string &name, const T &value,
+                             const T &min, const T &max, const T &increment) {
+                     return new P(identifier, name, value, min, max, increment);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("value") = Defaultvalues<T>::getVal(),
+                 py::arg("min") = Defaultvalues<T>::getMin(),
+                 py::arg("max") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc())
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement);
@@ -161,15 +162,17 @@ struct MinMaxHelper {
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
         prop.def(py::init([](const std::string &identifier, const std::string &name,
-                             const T &valueMin = Defaultvalues<T>::getMin(),
-                             const T &valueMax = Defaultvalues<T>::getMax(),
-                             const T &rangeMin = Defaultvalues<T>::getMin(),
-                             const T &rangeMax = Defaultvalues<T>::getMax(),
-                             const T &increment = Defaultvalues<T>::getInc(),
-                             const T &minSeperation = 0) {
-                return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax, increment,
-                             minSeperation);
-            }))
+                             const T &valueMin, const T &valueMax, const T &rangeMin,
+                             const T &rangeMax, const T &increment, const T &minSeperation = 0) {
+                     return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
+                                  increment, minSeperation);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("valueMin") = Defaultvalues<T>::getMin(),
+                 py::arg("valueMax") = Defaultvalues<T>::getMax(),
+                 py::arg("rangeMin") = Defaultvalues<T>::getMin(),
+                 py::arg("rangeMax") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0)
             .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
             .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
@@ -226,6 +229,7 @@ struct OptionPropertyHelper {
 };
 
 void exposeProperties(pybind11::module &m);
+
 }  // namespace inviwo
 
 #endif  // IVW_PYPROPERTIES_H

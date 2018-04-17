@@ -54,10 +54,10 @@ namespace pyutil {
 
 IVW_MODULE_PYTHON3_API pybind11::dtype toNumPyFormat(const DataFormatBase *df);
 IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Layer> createLayer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Volume> createVolume(pybind11::array &arr);
 
+IVW_MODULE_PYTHON3_API std::unique_ptr<BufferBase> createBuffer(pybind11::array &arr);
+IVW_MODULE_PYTHON3_API std::unique_ptr<Layer> createLayer(pybind11::array &arr);
+IVW_MODULE_PYTHON3_API std::unique_ptr<Volume> createVolume(pybind11::array &arr);
 
 template <typename T>
 pybind11::dtype toNumPyFormat() {
@@ -73,16 +73,15 @@ T toPyBindObjectSteal(PyObject *obj) {
     return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
 }
 
-
-template<typename T> 
-pybind11::array toNpArray(const std::vector<T> &v){
+template <typename T>
+pybind11::array toNpArray(const std::vector<T> &v) {
     auto df = DataFormat<T>::get();
     auto componentSize = df->getSize();
 
-    std::vector<size_t> shape = { v.size(), df->getComponents() };
-    std::vector<size_t> strides = { componentSize * df->getComponents(), componentSize };
+    std::vector<size_t> shape = {v.size(), df->getComponents()};
+    std::vector<size_t> strides = {componentSize * df->getComponents(), componentSize};
 
-    if(shape.back()==1){
+    if (shape.back() == 1) {
         shape.pop_back();
         strides.pop_back();
     }
@@ -90,9 +89,10 @@ pybind11::array toNpArray(const std::vector<T> &v){
     bool readOnly = false;
     if (readOnly) {
         return pybind11::array(pyutil::toNumPyFormat(df), shape, strides, v.data());
-    }
-    else {
-        return pybind11::array(/*pyutil::toNumPyFormat(df)*/ pybind11::dtype::of<typename DataFormat<T>::primitive>(), shape, strides, v.data(), pybind11::cast<>(1));
+    } else {
+        return pybind11::array(
+            /*pyutil::toNumPyFormat(df)*/ pybind11::dtype::of<typename DataFormat<T>::primitive>(),
+            shape, strides, v.data(), pybind11::cast<>(1));
     }
 }
 

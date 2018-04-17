@@ -35,9 +35,6 @@
 #include <modules/python3/pythonlogger.h>
 #include <string>
 
-namespace pybind11 {
-class module;
-}
 
 namespace inviwo {
 
@@ -49,11 +46,7 @@ public:
     Python3Module(InviwoApplication* app);
     virtual ~Python3Module();
 
-    using PythonInitCallback = std::function<void(pybind11::module* module)>;
-
     PythonInterpreter* getPythonInterpreter();
-
-    std::shared_ptr<pybind11::module> getInviwopyModule();
 
 private:
     std::unique_ptr<PythonInterpreter> pythonInterpreter_;
@@ -62,10 +55,6 @@ private:
 
     // Called after modules have been registered
     std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    std::shared_ptr<pybind11::module> inviwopyPyModule_;
-
-    void setInviwopyModule(std::shared_ptr<pybind11::module> m);
-    friend void setInviwopyModule(Python3Module* ivwmodule, pybind11::module pymodule);
 };
 
 }  // namespace

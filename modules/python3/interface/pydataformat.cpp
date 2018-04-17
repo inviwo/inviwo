@@ -1,9 +1,8 @@
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,45 +27,38 @@
  *
  *********************************************************************************/
 
-#include <pybind11/pybind11.h>
-#include <modules/python3qt/python3qtmodule.h>
-#include <modules/python3qt/pythoneditorwidget.h>
-#include <modules/python3qt/pythonmenu.h>
+#include <modules/python3/interface/pydataformat.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QInputDialog>
-#include <QCoreApplication>
-#include <warn/pop>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
-namespace {
-pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
-
-    bool ok;
-    QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
-                                         defaultResponse.c_str(), &ok);
-    if (ok && !text.isEmpty()) {
-        return pybind11::str(text.toLocal8Bit().constData());
-    } else if (ok) {
-        return pybind11::str("");
+struct DataFormatHelper {
+    template <typename DataFormat>
+    auto operator()(pybind11::module &m) {
+        namespace py = pybind11;
+        m.attr(("Data" + DataFormat::str()).c_str()) =
+            py::cast(static_cast<const DataFormatBase *>(DataFormat::get()),
+                     py::return_value_policy::reference);
     }
-    return pybind11::none();
+};
+
+void exposeDataFormat(pybind11::module &m) {
+    namespace py = pybind11;
+
+    py::class_<DataFormatBase>(m, "DataFormat")
+        .def_property_readonly("size", &DataFormatBase::getSize)
+        .def_property_readonly("components", &DataFormatBase::getComponents)
+        .def_property_readonly("precision", &DataFormatBase::getPrecision)
+        //.def_property_readonly("numericType", &DataFormatBase::getNumericTypve)
+        //.def_property_readonly("id", &DataFormatBase::getId)
+        .def_property_readonly("max", &DataFormatBase::getMax)
+        .def_property_readonly("min", &DataFormatBase::getMin)
+        .def_property_readonly("lowest", &DataFormatBase::getLowest)
+        .def_property_readonly("__str__", &DataFormatBase::getString);
+
+    util::for_each_type<DefaultDataFormats>{}(DataFormatHelper{}, m);
 }
-}  // namespace
-
-Python3QtModule::Python3QtModule(InviwoApplication* app)
-    : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
-
-    auto inviwopy = pybind11::module::import("inviwopy");
-    auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
-
-    m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
-          pybind11::arg("defaultResponse") = "");
-    m.def("update", []() { QCoreApplication::instance()->processEvents(); });
-}
-
-Python3QtModule::~Python3QtModule() = default;
 
 }  // namespace inviwo

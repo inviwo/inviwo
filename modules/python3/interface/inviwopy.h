@@ -77,31 +77,8 @@ struct type_caster<std::vector<Layer *>> : ListCasterBase<Layer> {
         return cast(*src, pol, parent);
     }
 };
-}
-}
+}  // namespace detail
+}  // namespace pybind11
 
-namespace inviwo {
-    class Python3Module;
-
-    void setInviwopyModule(Python3Module *ivwmodule , pybind11::module pymodule);
-
-
-template <typename T>
-pybind11::object propertyToPyObject(T *prop) {
-    if (auto cp = dynamic_cast<inviwo::CompositeProperty *>(prop)) {
-        return pybind11::cast(cp);
-    } else if (auto op = dynamic_cast<inviwo::BaseOptionProperty *>(prop)) {
-        return pybind11::cast(op);
-    } else {
-        return pybind11::cast(prop);
-    }
-}
-
-template <typename T>
-pybind11::object getPropertyById(T &po, std::string key) {
-    auto prop = po.getPropertyByIdentifier(key);
-    return propertyToPyObject(prop);
-}
-}
 
 #endif  // IVW_PYPROPERTIES_H

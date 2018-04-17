@@ -48,12 +48,21 @@ namespace py = pybind11;
 namespace inviwo {
 
 void exposeProperties(py::module &m) {
+
+    py::enum_<InvalidationLevel>(m, "InvalidationLevel")
+        .value("Valid", InvalidationLevel::Valid)
+        .value("InvalidOutput", InvalidationLevel::InvalidOutput)
+        .value("InvalidResources", InvalidationLevel::InvalidResources);
+
+    py::class_<PropertySemantics>(m, "PropertySemantics")
+        .def(py::init())
+        .def(py::init<std::string>())
+        .def("getString", &PropertySemantics::getString);
+
     py::class_<PropertyFactory>(m, "PropertyFactory")
         .def("hasKey", [](PropertyFactory *pf, std::string key) { return pf->hasKey(key); })
         .def_property_readonly("keys", [](PropertyFactory *pf) { return pf->getKeys(); })
-        .def("create", [](PropertyFactory *pf, std::string key) {
-            return propertyToPyObject(pf->create(key).release());
-        });
+        .def("create", [](PropertyFactory *pf, std::string key) { return pf->create(key); });
 
     py::class_<PropertyWidget>(m, "PropertyWidget")
         .def_property_readonly("editorWidget", &PropertyWidget::getEditorWidget,
@@ -73,8 +82,7 @@ void exposeProperties(py::module &m) {
         .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
         .def_property("displayName", &Property::getDisplayName, &Property::setDisplayName)
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
-        .def_property("semantics", &Property::getSemantics,
-                      &Property::setSemantics)  // TODO expose semantics
+        .def_property("semantics", &Property::getSemantics, &Property::setSemantics)
         .def_property_readonly("classIdentifierForWidget", &Property::getClassIdentifierForWidget)
         .def_property_readonly("path", &Property::getPath)
         .def_property_readonly("invalidationLevel", &Property::getInvalidationLevel)
@@ -84,9 +92,7 @@ void exposeProperties(py::module &m) {
         .def("resetToDefaultState", &Property::resetToDefaultState);
 
     py::class_<CompositeProperty, Property, PropertyOwner, PropertyPtr<CompositeProperty>>(
-        m, "CompositeProperty")
-        .def("__getattr__", &getPropertyById<CompositeProperty>,
-             py::return_value_policy::reference);
+        m, "CompositeProperty");
 
     py::class_<BaseOptionProperty, Property, PropertyPtr<BaseOptionProperty>>(m,
                                                                               "BaseOptionProperty")
@@ -121,6 +127,17 @@ void exposeProperties(py::module &m) {
         .def("press", &ButtonProperty::pressButton);
 
     py::class_<CameraProperty, CompositeProperty, PropertyPtr<CameraProperty>>(m, "CameraProperty")
+        .def(py::init([](const std::string &identifier, const std::string &displayName, vec3 eye,
+                         vec3 center, vec3 lookUp, Inport *inport,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new CameraProperty(identifier, displayName, eye, center, lookUp, inport,
+                                           invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("eye") = vec3(0.0f, 0.0f, 2.0f),
+             py::arg("center") = vec3(0.0f), py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f),
+             py::arg("inport") = nullptr,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
         .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom,
                       py::return_value_policy::copy)
         .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo,
@@ -154,6 +171,12 @@ void exposeProperties(py::module &m) {
 
     py::class_<TransferFunctionProperty, Property, PropertyPtr<TransferFunctionProperty>>(
         m, "TransferFunctionProperty")
+        .def(py::init(
+            [](const std::string &identifier, const std::string &displayName,
+               const TransferFunction &value = TransferFunction(
+                   {{0.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f)}})) {
+                return new TransferFunctionProperty(identifier, displayName, value);
+            }))
         .def_property("mask", &TransferFunctionProperty::getMask,
                       &TransferFunctionProperty::setMask)
         .def_property("zoomH", &TransferFunctionProperty::getZoomH,

@@ -37,17 +37,12 @@ namespace inviwo {
 
 class IVW_CORE_API Tag {
 public:
-    Tag();
-    Tag(std::string tag);
-    Tag(const Tag& rhs);
-    Tag& operator=(const Tag& that);
+    Tag() = default;
+    Tag(const std::string& tag);
     Tag& operator=(const std::string& that);
-
-    virtual ~Tag() = default;
-
     const std::string& getString() const;
 
-    friend std::ostream& operator << (std::ostream& os, const inviwo::Tag& obj);
+    friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
 
 private:
     std::string tag_;
@@ -56,26 +51,18 @@ private:
 inline bool operator==(const Tag& lhs, const Tag& rhs) {
     return lhs.getString() == rhs.getString();
 }
-inline bool operator< (const Tag& lhs, const Tag& rhs) {
-    return lhs.getString() < rhs.getString();
-}
+inline bool operator<(const Tag& lhs, const Tag& rhs) { return lhs.getString() < rhs.getString(); }
 inline bool operator!=(const Tag& lhs, const Tag& rhs) { return !operator==(lhs, rhs); }
-inline bool operator> (const Tag& lhs, const Tag& rhs) { return  operator< (rhs, lhs); }
-inline bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator> (lhs, rhs); }
-inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator< (lhs, rhs); }
-
-
+inline bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
+inline bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator>(lhs, rhs); }
+inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator<(lhs, rhs); }
 
 class IVW_CORE_API Tags { 
 public:
-    Tags();
-    Tags(const std::string tags);
+    Tags() = default;
+    Tags(const std::string& tags);
     Tags(const char* tags);
-    Tags(const Tags& rhs);
-    Tags& operator=(const Tags& that);
     Tags& operator=(const std::string& that);
-
-    virtual ~Tags() = default;
 
     void addTag(Tag);
     void addTags(const Tags &t);

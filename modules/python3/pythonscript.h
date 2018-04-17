@@ -49,8 +49,6 @@ namespace inviwo {
 class IVW_MODULE_PYTHON3_API PythonScript {
 
 public:
-    using VariableMap = std::unordered_map<std::string, pybind11::object>;
-
     PythonScript();
 
     /**
@@ -79,7 +77,7 @@ public:
     *
     * @param extraLocalVariables a map of  keys and PyOjbects that will available as local
     variables in the python scripts, eg {"number" , PyValueParser::toPyObject<int>(123) } will
-    be avaible as the local variable 'number' in the script
+    be available as the local variable 'number' in the script
     * @param callback a callback that will be called once the script has finished executing. The
     callback takes a PyObject representing the python dict of local variables from the script.
     Can be used to parse results from the script. This callback will only be called of the
@@ -87,10 +85,13 @@ public:
     *
     * @return true, if script execution has been successful
     */
-    bool run(const VariableMap& extraLocalVariables = VariableMap(),
-             std::function<void(pybind11::dict)> callback = [](pybind11::dict dict) {});
+    bool run(const std::unordered_map<std::string, pybind11::object>& locals,
+             std::function<void(pybind11::dict)> callback = nullptr);
 
-    bool run(std::function<void(pybind11::dict)> callback) { return run({}, callback); }
+    bool run(pybind11::dict locals = pybind11::dict(),
+             std::function<void(pybind11::dict)> callback = nullptr);
+
+    bool run(std::function<void(pybind11::dict)> callback);
 
     virtual void setFilename(const std::string& filename);
     const std::string& getFilename() const;
