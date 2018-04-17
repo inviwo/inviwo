@@ -77,9 +77,7 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
 IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
                                    VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                                    PropertySemantics semantics)
-    : IsoValueProperty(identifier, displayName,
-                       IsoValueCollection({{0.5f, vec4(1.0f, 1.0f, 1.0f, 0.5f)}}), volumeInport,
-                       invalidationLevel, semantics) {}
+    : IsoValueProperty(identifier, displayName, {}, volumeInport, invalidationLevel, semantics) {}
 
 IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     : TemplateProperty<IsoValueCollection>(rhs)
@@ -115,9 +113,7 @@ void IsoValueProperty::setEnabled(bool enable) {
     }
 }
 
-bool IsoValueProperty::getEnabled() const {
-    return enabled_;
-}
+bool IsoValueProperty::getEnabled() const { return enabled_; }
 
 void IsoValueProperty::setZoomH(float zoomHMin, float zoomHMax) {
     if (zoomHMax < zoomHMin) {
