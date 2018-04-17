@@ -58,7 +58,7 @@ VolumeRaycaster::VolumeRaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
-    , isoValues_("isoValues", "Isovalues", &volumePort_)
+    , isoValues_("isovalues", "Isovalues", &volumePort_)
     , transferFunction_("transferFunction", "Transfer function", &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
@@ -136,6 +136,7 @@ const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processor
 
 void VolumeRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, raycasting_);
+    utilgl::addShaderDefines(shader_, isoValues_);
     utilgl::addShaderDefines(shader_, camera_);
     utilgl::addShaderDefines(shader_, lighting_);
     utilgl::addShaderDefines(shader_, positionIndicator_);
@@ -180,27 +181,7 @@ void VolumeRaycaster::process() {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
-                        channel_);
-
-    {
-        // iso surface stuff
-        auto data = isoValues_.get().getSortedIsoValues();
-        // transform to struct of values
-        std::array<float, 10> values;
-        std::array<vec4, 10> colors;
-
-        // use only up to 10 for now
-        size_t numIsoValues = std::min<size_t>(10, data.size());
-        for (size_t i = 0; i < numIsoValues; ++i) {
-            values[i] = data[i].isovalue;
-            colors[i] = data[i].color;
-        }
-
-        shader_.setUniform("isoValues", numIsoValues, values.data());
-        shader_.setUniform("isoValueColors", numIsoValues, colors.data());
-        shader_.setUniform("isoValueCount", static_cast<int>(numIsoValues));
-        // ------
-    }
+                        channel_, isoValues_);
 
     utilgl::singleDrawImagePlaneRect();
 
