@@ -209,13 +209,16 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     resize(QSize(500, 700));  // default size
 
     {
-        // Restore state
+        // restore state
         QSettings settings;
         settings.beginGroup(objectName());
         QString lastFile = settings.value("lastScript", "").toString();
+        // If the script was saved to disk, the load it, else we use the script that was in the editor
+        // at last script execution or when inviwo closed (CloseEvent)
         if (!lastFile.isEmpty()) {
             loadFile(utilqt::fromQString(lastFile), false);
-        } else {
+        }
+        else {
             QString src = settings.value("source", "").toString();
             if (src.length() != 0) {
                 pythonCode_->setPlainText(src);
@@ -245,12 +248,7 @@ void PythonEditorWidget::closeEvent(QCloseEvent* event) {
                                         "Do you want to save unsaved changes?", "Save", "Discard");
         if (ret == 0) save();
     }
-    QSettings settings;
-    settings.beginGroup(objectName());
-    settings.setValue("appendLog", appendLog_->isChecked());
-    settings.setValue("lastScript", utilqt::toQString(scriptFileName_));
-    settings.setValue("source", pythonCode_->toPlainText());
-    settings.endGroup();
+    saveState();
 
     InviwoDockWidget::closeEvent(event);
 }
@@ -429,6 +427,10 @@ void PythonEditorWidget::run() {
         clearOutput();
     }
 
+    // save the current code to QSettings such that it can be recovered in case of a crash or if the
+    // user forgets to save it as a file.
+    saveState();
+
     Clock c;
     c.start();
     bool ok = script_.run();
@@ -497,5 +499,15 @@ void PythonEditorWidget::updateTitleBar() {
 
     setWindowTitle(QString("Python Editor - %1%2").arg(str).arg(unsavedChanges_ ? "*" : ""));
 }
+
+void PythonEditorWidget::saveState() {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    settings.setValue("appendLog", appendLog_->isChecked());
+    settings.setValue("lastScript", utilqt::toQString(scriptFileName_));
+    settings.setValue("source", pythonCode_->toPlainText());
+    settings.endGroup();
+}
+
 
 }  // namespace inviwo

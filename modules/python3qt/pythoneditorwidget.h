@@ -115,6 +115,9 @@ private:
     void updateTitleBar();
     void queryReloadFile();
 
+
+    void saveState();
+
     PythonTextEditor* pythonCode_;
     QTextEdit* pythonOutput_;
 
