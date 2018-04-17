@@ -209,16 +209,15 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     resize(QSize(500, 700));  // default size
 
     {
-        // restore state
+        // Restore state
         QSettings settings;
         settings.beginGroup(objectName());
         QString lastFile = settings.value("lastScript", "").toString();
-        // If the script was saved to disk, the load it, else we use the script that was in the editor
-        // at last script execution or when inviwo closed (CloseEvent)
+        // If the script was saved to disk, the load it, else we use the script that was in the
+        // editor at last script execution or when inviwo closed (CloseEvent)
         if (!lastFile.isEmpty()) {
             loadFile(utilqt::fromQString(lastFile), false);
-        }
-        else {
+        } else {
             QString src = settings.value("source", "").toString();
             if (src.length() != 0) {
                 pythonCode_->setPlainText(src);
@@ -508,6 +507,5 @@ void PythonEditorWidget::saveState() {
     settings.setValue("source", pythonCode_->toPlainText());
     settings.endGroup();
 }
-
 
 }  // namespace inviwo
