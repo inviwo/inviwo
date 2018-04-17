@@ -54,7 +54,7 @@ void IsoValueCollectionObservable::notifyIsoValueChanged(const IsoValue* v) {
     forEachObserver([&](IsoValueCollectionObserver* o) { o->onIsoValueChanged(v); });
 }
 
-IsoValueCollection::IsoValueCollection(const std::vector<IsoValue>& values) {
+IsoValueCollection::IsoValueCollection(const std::vector<IsoValueData>& values) {
     addIsoValues(values);
 }
 
@@ -97,6 +97,18 @@ std::vector<IsoValueData> IsoValueCollection::getSortedIsoValues() const {
     return values;
 }
 
+std::pair<std::vector<float>, std::vector<vec4>> IsoValueCollection::getShaderUniformData() const {
+    std::pair<std::vector<float>, std::vector<vec4>> result;
+    result.first.reserve(sorted_.size());
+    result.second.reserve(sorted_.size());
+    for (auto &v : sorted_) {
+        result.first.push_back(v->getIsoValue());
+        result.second.push_back(v->getColor());
+    }
+
+    return result;
+}
+
 void IsoValueCollection::addIsoValue(const float value, const vec4& color) {
     addIsoValue(util::make_unique<IsoValue>(value, color));
 }
@@ -110,7 +122,11 @@ void IsoValueCollection::addIsoValue(const vec2& pos) {
     addIsoValue(util::make_unique<IsoValue>(pos.x, color));
 }
 
-void IsoValueCollection::addIsoValues(const std::vector<IsoValue>& values) {
+void IsoValueCollection::addIsoValue(const IsoValueData& value) {
+    addIsoValue(value.isovalue, value.color);
+}
+
+void IsoValueCollection::addIsoValues(const std::vector<IsoValueData>& values) {
     for (auto& v : values) {
         addIsoValue(v);
     }

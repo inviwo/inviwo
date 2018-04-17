@@ -73,7 +73,7 @@ void IsoValuePropertyWidgetQt::setPropertyValue() {
     property_->setInitiatingWidget(this);
 
     // convert string back to isovalue/color values
-    std::vector<IsoValue> isovalues;
+    std::vector<IsoValueData> isovalues;
 
     std::istringstream ss(valueStr);
     std::string str;

@@ -65,7 +65,7 @@ class IVW_CORE_API IsoValueCollection : public Serializable,
                                         public IsoValueCollectionObservable,
                                         public IsoValueObserver {
 public:
-    IsoValueCollection(const std::vector<IsoValue>& values = {});
+    IsoValueCollection(const std::vector<IsoValueData>& values = {});
     IsoValueCollection(const IsoValueCollection& rhs);
     virtual ~IsoValueCollection() = default;
 
@@ -78,6 +78,13 @@ public:
 
     std::vector<IsoValueData> getIsoValues() const;
     std::vector<IsoValueData> getSortedIsoValues() const;
+
+    /**
+     * Access isovalues as pair of vectors which can be used for setting uniforms of a shader.
+     *
+     * @return vectors of isovalues and colors sorted increasingly regarding isovalue
+     */
+    std::pair<std::vector<float>, std::vector<vec4>> getShaderUniformData() const;
 
     /**
      * Add an isovalue at pos with value color
@@ -107,13 +114,20 @@ public:
     void addIsoValue(const vec2& pos);
 
     /**
+     * Add an isovalue
+     *
+     * @param value   isovalue to be added
+     * @throws RangeException if position of point is outside [0,1]
+     */
+    void addIsoValue(const IsoValueData& value);
+
+    /**
      * Add multiple isovalues
      *
      * @param values  isovalues to be added
-     *
      * @throws RangeException if any of the given points is outside [0,1]
      */
-    void addIsoValues(const std::vector<IsoValue>& values);
+    void addIsoValues(const std::vector<IsoValueData>& values);
 
     void removeIsoValue(IsoValue* value);
 

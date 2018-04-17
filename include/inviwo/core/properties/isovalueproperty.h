@@ -43,6 +43,7 @@ namespace inviwo {
 
 class IVW_CORE_API IsoValuePropertyObserver : public Observer {
 public:
+    virtual void onEnabledChange(bool enabled);
     virtual void onZoomHChange(const vec2& zoomH);
     virtual void onZoomVChange(const vec2& zoomV);
     virtual void onHistogramModeChange(HistogramMode mode);
@@ -50,6 +51,7 @@ public:
 
 class IVW_CORE_API IsoValuePropertyObservable : public Observable<IsoValuePropertyObserver> {
 protected:
+    virtual void notifyEnabledChange(bool enabled);
     virtual void notifyZoomHChange(const vec2& zoomH);
     virtual void notifyZoomVChange(const vec2& zoomV);
     virtual void notifyHistogramModeChange(HistogramMode mode);
@@ -70,12 +72,12 @@ public:
                      const IsoValueCollection& value =
                          IsoValueCollection({{0.5f, vec4(1.0f, 1.0f, 1.0f, 0.5f)}}),
                      VolumeInport* volumeInport = nullptr,
-                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(const std::string& identifier, const std::string& displayName,
                      VolumeInport* volumeInport,
-                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(const IsoValueProperty& rhs);
@@ -83,6 +85,9 @@ public:
 
     IsoValueProperty& operator=(const IsoValueProperty& rhs);
     virtual IsoValueProperty* clone() const override;
+
+    bool getEnabled() const;
+    void setEnabled(bool enable);
 
     const vec2& getZoomH() const;
     void setZoomH(float zoomHMin, float zoomHMax);
@@ -109,6 +114,7 @@ public:
     virtual void onIsoValueChanged(const IsoValue* v) override;
 
 private:
+    ValueWrapper<bool> enabled_;
     ValueWrapper<vec2> zoomH_;
     ValueWrapper<vec2> zoomV_;
     ValueWrapper<HistogramMode> histogramMode_;

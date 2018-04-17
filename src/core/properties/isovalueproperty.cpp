@@ -33,11 +33,17 @@ namespace inviwo {
 
 PropertyClassIdentifier(IsoValueProperty, "org.inviwo.IsoValueProperty");
 
+void IsoValuePropertyObserver::onEnabledChange(bool) {}
+
 void IsoValuePropertyObserver::onZoomHChange(const vec2&) {}
 
 void IsoValuePropertyObserver::onZoomVChange(const vec2&) {}
 
 void IsoValuePropertyObserver::onHistogramModeChange(HistogramMode) {}
+
+void IsoValuePropertyObservable::notifyEnabledChange(bool enabled) {
+    forEachObserver([&](IsoValuePropertyObserver* o) { o->onEnabledChange(enabled); });
+}
 
 void IsoValuePropertyObservable::notifyZoomHChange(const vec2& zoomH) {
     forEachObserver([&](IsoValuePropertyObserver* o) { o->onZoomHChange(zoomH); });
@@ -56,6 +62,7 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : TemplateProperty<IsoValueCollection>(identifier, displayName, value, invalidationLevel,
                                            semantics)
+    , enabled_("enabled", true)
     , zoomH_("zoomH_", vec2(0.0f, 1.0f))
     , zoomV_("zoomV_", vec2(0.0f, 1.0f))
     , histogramMode_("showHistogram_", HistogramMode::All)
@@ -75,6 +82,7 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
 
 IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     : TemplateProperty<IsoValueCollection>(rhs)
+    , enabled_(rhs.enabled_)
     , zoomH_(rhs.zoomH_)
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
@@ -89,6 +97,7 @@ IsoValueProperty& IsoValueProperty::operator=(const IsoValueProperty& rhs) {
         value_.value.removeObserver(this);
         TemplateProperty<IsoValueCollection>::operator=(rhs);
         value_.value.addObserver(this);
+        enabled_ = rhs.enabled_;
         zoomH_ = rhs.zoomH_;
         zoomV_ = rhs.zoomV_;
         histogramMode_ = rhs.histogramMode_;
@@ -97,6 +106,17 @@ IsoValueProperty& IsoValueProperty::operator=(const IsoValueProperty& rhs) {
     return *this;
 }
 IsoValueProperty* IsoValueProperty::clone() const { return new IsoValueProperty(*this); }
+
+void IsoValueProperty::setEnabled(bool enable) {
+    if (enabled_ != enable) {
+        enabled_ = enable;
+        notifyEnabledChange(enabled_);
+    }
+}
+
+bool IsoValueProperty::getEnabled() const {
+    return enabled_;
+}
 
 void IsoValueProperty::setZoomH(float zoomHMin, float zoomHMax) {
     if (zoomHMax < zoomHMin) {
@@ -139,6 +159,7 @@ VolumeInport* IsoValueProperty::getVolumeInport() { return volumeInport_; }
 
 void IsoValueProperty::setCurrentStateAsDefault() {
     TemplateProperty<IsoValueCollection>::setCurrentStateAsDefault();
+    enabled_.setAsDefault();
     zoomH_.setAsDefault();
     zoomV_.setAsDefault();
     histogramMode_.setAsDefault();
@@ -146,6 +167,7 @@ void IsoValueProperty::setCurrentStateAsDefault() {
 
 void IsoValueProperty::resetToDefaultState() {
     NetworkLock lock(this);
+    enabled_.reset();
     zoomH_.reset();
     zoomV_.reset();
     histogramMode_.reset();
@@ -155,6 +177,7 @@ void IsoValueProperty::resetToDefaultState() {
 void IsoValueProperty::serialize(Serializer& s) const {
     Property::serialize(s);
 
+    enabled_.serialize(s, this->serializationMode_);
     zoomH_.serialize(s, this->serializationMode_);
     zoomV_.serialize(s, this->serializationMode_);
     histogramMode_.serialize(s, this->serializationMode_);
@@ -165,6 +188,7 @@ void IsoValueProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
+    modified |= enabled_.deserialize(d, this->serializationMode_);
     modified |= zoomH_.deserialize(d, this->serializationMode_);
     modified |= zoomV_.deserialize(d, this->serializationMode_);
     modified |= histogramMode_.deserialize(d, this->serializationMode_);
