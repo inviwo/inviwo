@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -119,7 +120,20 @@ bool AssimpReader::getFixInvalidDataFlag() const {
     return fixInvalidData_;
 }
 
-std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
+std::shared_ptr<Mesh> AssimpReader::readData(const std::string& fileName) {
+    // Search both given file path and relative to application
+    auto filePath = fileName;
+    if (!filesystem::fileExists(filePath)) {
+        std::string newPath = filesystem::addBasePath(filePath);
+
+        if (filesystem::fileExists(newPath)) {
+            filePath = newPath;
+        }
+        else {
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        }
+    }
+
     Assimp::Importer importer;
 
     std::clock_t start_readmetadata = std::clock();
