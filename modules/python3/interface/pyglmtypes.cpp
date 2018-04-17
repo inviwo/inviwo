@@ -104,40 +104,33 @@ void floatOnlyVecs(py::module &m) {
     floatOnlyVecs<T, V>(m, std::is_floating_point<T>());
 }
 
-template <typename T, unsigned A>
+template <typename T, int Dim>
 void vecx(py::module &m, std::string prefix, std::string name = "vec", std::string postfix = "") {
-    using V = Vector<A, T>;
+    
     std::stringstream classname;
-    classname << prefix << name << A << postfix;
-    py::class_<V> pyv(m, classname.str().c_str());
+    classname << prefix << name << Dim << postfix;
+    py::class_<Vector<Dim, T>> pyv(m, classname.str().c_str());
     common<T>(m, pyv, classname.str());
-    addInit<T, V, A>(pyv);
+    addInit<T, Vector<Dim, T>, Dim>(pyv);
     pyv.def(py::self * py::self)
         .def(py::self / py::self)
         .def(py::self *= py::self)
         .def(py::self /= py::self)
-
-        .def_property_readonly("nparray",
-                               [](V &self) { return py::array_t<T>(A, glm::value_ptr(self)); })
-
+        .def_property_readonly(
+            "array",
+            [](Vector<Dim, T> &self) { return py::array_t<T>(Dim, glm::value_ptr(self)); })
         .def("__repr__",
-             [](V &v) {
+             [](Vector<Dim, T> &v) {
                  std::ostringstream oss;
-                 oss << "[";
-                 for (int i = 0; i < A; i++) {
-                     if (i != 0) {
-                         oss << " ";
-                     }
-                     oss << v[i];
-                 }
-                 oss << "]";
+                 oss << v;
                  return oss.str();
              })
+        .def("__setitem__", [](Vector<Dim, T> &v, int idx, T &t) { return v[idx] = t; });
 
-        .def("__setitem__", [](V &v, int idx, T &t) { return v[idx] = t; });
-    floatOnlyVecs<T, V>(m);
+    floatOnlyVecs<T, Vector<Dim, T>>(m);
 
-    switch (A) {
+    using V = Vector<Dim, T>;
+    switch (Dim) {
         case 4:
             pyv.def_property("w", [](V &b) { return b[3]; }, [](V &b, T t) { b[3] = t; });
             pyv.def_property("a", [](V &b) { return b[3]; }, [](V &b, T t) { b[3] = t; });
@@ -165,7 +158,7 @@ void vec(py::module &m, std::string prefix, std::string name = "vec", std::strin
     vecx<T, 4>(m, prefix, name, postfix);
 }
 
-template <typename T, unsigned COLS, unsigned ROWS>
+template <typename T, int COLS, int ROWS>
 void matxx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
 
     using M = typename util::glmtype<T, COLS, ROWS>::type;
@@ -194,39 +187,22 @@ void matxx(py::module &m, std::string prefix, std::string name = "mat", std::str
         .def(py::self * Ma2())
         .def(py::self * Ma3())
         .def(py::self * Ma4())
-
         .def_property_readonly(
-            "nparray",
+            "array",
             [](M &self) {
                 return py::array_t<T>(std::vector<size_t>{ROWS, COLS}, glm::value_ptr(self));
             })
-
         .def("__getitem__", [](M &m, int idx, int idy) { return m[idx][idy]; })
         .def("__setitem__", [](M &m, int idx, ColumnVector &t) { return m[idx] = t; })
         .def("__setitem__", [](M &m, int idx, int idy, T &t) { return m[idx][idy] = t; })
-
         .def("__repr__", [](M &m) {
             std::ostringstream oss;
-            oss << "[";
-            for (int col = 0; col < COLS; col++) {
-                if (col != 0) {
-                    oss << ",";
-                }
-                oss << "[";
-                for (int row = 0; row < ROWS; row++) {
-                    if (row != 0) {
-                        oss << " ";
-                    }
-                    oss << m[col][row];
-                }
-                oss << "]";
-            }
-            oss << "]";
+            oss << m;
             return oss.str();
         });
 }
 
-template <typename T, unsigned COLS>
+template <typename T, int COLS>
 void matx(py::module &m, std::string prefix, std::string name = "mat", std::string postfix = "") {
     matxx<T, COLS, 2>(m, prefix, name, postfix);
     matxx<T, COLS, 3>(m, prefix, name, postfix);

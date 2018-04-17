@@ -36,14 +36,6 @@
 
 namespace inviwo {
 
-template <typename T>
-void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
-    exposeOutport<DataOutport<T>>(m, name);
-    exposeInport<DataInport<T>>(m, name);
-    exposeInport<DataInport<T, 0>>(m, name + "Multi");
-    exposeInport<DataInport<T, 0, true>>(m, name + "FlatMulti");
-}
-
 template <typename Port>
 pybind11::class_<Port, Outport> exposeOutport(pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
@@ -65,6 +57,14 @@ pybind11::class_<Port, Inport> exposeInport(pybind11::module& m, const std::stri
         .def("getVectorData", &Port::getVectorData)
         .def("getSourceVectorData", &Port::getSourceVectorData)
         .def("hasData", &Port::hasData);
+}
+
+template <typename T>
+void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
+    exposeOutport<DataOutport<T>>(m, name);
+    exposeInport<DataInport<T>>(m, name);
+    exposeInport<DataInport<T, 0>>(m, name + "Multi");
+    exposeInport<DataInport<T, 0, true>>(m, name + "FlatMulti");
 }
 
 void exposePort(pybind11::module& m);

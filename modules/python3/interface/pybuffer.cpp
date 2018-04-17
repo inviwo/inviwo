@@ -124,7 +124,7 @@ void exposeBuffer(pybind11::module &m) {
             [](BufferBase *buffer, py::array data) {
                 auto rep = buffer->getEditableRepresentation<BufferRAM>();
 
-                if (data.dtype() != pyutil::toNumPyFormat(rep->getDataFormat())) {
+                if (!data.dtype().is(pyutil::toNumPyFormat(rep->getDataFormat()))) {
                     throw Exception("Invalid data format", IvwContextCustom("Python"));
                 }
                 if (data.ndim() == 1) {

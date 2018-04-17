@@ -94,13 +94,13 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
     ivwAssert(byteCode_ != nullptr, "No byte code");
 
     PyObject* ret = PyEval_EvalCode(BYTE_CODE, py::globals().ptr(), locals.ptr());
-
-    bool success = checkRuntimeError();
-    if (success && callback) {
+    if (ret){
         callback(locals);
+        return true;
+    } else {
+        checkRuntimeError();
+        return false;
     }
-
-    return success;
 }
 
 void PythonScript::setFilename(const std::string& filename) { filename_ = filename; }
@@ -161,8 +161,6 @@ bool PythonScript::checkRuntimeError() {
 
     PyErr_NormalizeException(&type.ptr(), &value.ptr(), &traceback.ptr());
     PyException_SetTraceback(value.ptr(), traceback.ptr());
-
-    int errorLine = -1;
 
     std::stringstream errstr;
 

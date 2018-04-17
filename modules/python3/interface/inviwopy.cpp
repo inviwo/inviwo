@@ -58,11 +58,9 @@
 
 namespace py = pybind11;
 
-namespace inviwo {}  //  namespace inviwo
-
-PYBIND11_MAKE_OPAQUE(std::vector<int>);
-PYBIND11_MAKE_OPAQUE(std::vector<float>);
-PYBIND11_MAKE_OPAQUE(std::vector<double>);
+PYBIND11_MAKE_OPAQUE(std::vector<int>)
+PYBIND11_MAKE_OPAQUE(std::vector<float>)
+PYBIND11_MAKE_OPAQUE(std::vector<double>)
 
 PYBIND11_MODULE(inviwopy, m) {
 
