@@ -419,9 +419,6 @@ void PythonEditorWidget::open() {
 }
 
 void PythonEditorWidget::run() {
-    if (unsavedChanges_ && scriptFileName_.size() != 0)  // save if needed
-        save();
-
     runAction_->setDisabled(true);
     util::OnScopeExit reenable([&]() { runAction_->setEnabled(true); });
     InviwoApplication::getPtr()
