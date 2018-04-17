@@ -77,7 +77,6 @@ public:
     }
 };
 
-
 AssimpReader::AssimpReader()
     : DataReaderType<Mesh>()
     , logLevel_(AssimpLogLevel::Warn)
@@ -106,33 +105,13 @@ void AssimpReader::setLogLevel(AssimpLogLevel level, bool verbose) {
     verboseLog_ = verbose;
 }
 
-AssimpLogLevel AssimpReader::getLogLevel() const {
-    return logLevel_;
-}
+AssimpLogLevel AssimpReader::getLogLevel() const { return logLevel_; }
 
+void AssimpReader::setFixInvalidDataFlag(bool enable) { fixInvalidData_ = enable; }
 
-void AssimpReader::setFixInvalidDataFlag(bool enable) {
-    fixInvalidData_ = enable;
-}
+bool AssimpReader::getFixInvalidDataFlag() const { return fixInvalidData_; }
 
-bool AssimpReader::getFixInvalidDataFlag() const {
-    return fixInvalidData_;
-}
-
-std::shared_ptr<Mesh> AssimpReader::readData(const std::string& fileName) {
-    // Search both given file path and relative to application
-    auto filePath = fileName;
-    if (!filesystem::fileExists(filePath)) {
-        std::string newPath = filesystem::addBasePath(filePath);
-
-        if (filesystem::fileExists(newPath)) {
-            filePath = newPath;
-        }
-        else {
-            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
-        }
-    }
-
+std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
     Assimp::Importer importer;
 
     std::clock_t start_readmetadata = std::clock();
@@ -159,7 +138,6 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& fileName) {
                                                        Assimp::Logger::ErrorSeverity::Debugging);
         }
     }
-
 
     //#define AI_CONFIG_PP_SBP_REMOVE "aiPrimitiveType_POINTS | aiPrimitiveType_LINES"
     //#define AI_CONFIG_PP_FD_REMOVE 1
@@ -409,4 +387,4 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& fileName) {
     return mesh;
 }
 
-}  // namespace
+}  // namespace inviwo

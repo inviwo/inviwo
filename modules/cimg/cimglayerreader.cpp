@@ -58,18 +58,11 @@ CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
 CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*this); }
 
 std::shared_ptr<Layer> CImgLayerReader::readData(const std::string& filePath) {
-    std::string fileName = filePath; 
-    if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
-
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
-        }
+    if (!filesystem::fileExists(filePath)) {
+        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
     }
 
-    auto layerDisk = std::make_shared<LayerDisk>(fileName);
+    auto layerDisk = std::make_shared<LayerDisk>(filePath);
     layerDisk->setLoader(new CImgLayerRAMLoader(layerDisk.get()));
     auto layer = std::make_shared<Layer>(layerDisk);
     return layer;
@@ -77,9 +70,7 @@ std::shared_ptr<Layer> CImgLayerReader::readData(const std::string& filePath) {
 
 CImgLayerRAMLoader::CImgLayerRAMLoader(LayerDisk* layerDisk) : layerDisk_(layerDisk) {}
 
-CImgLayerRAMLoader* CImgLayerRAMLoader::clone() const {
-    return new CImgLayerRAMLoader(*this);
-}
+CImgLayerRAMLoader* CImgLayerRAMLoader::clone() const { return new CImgLayerRAMLoader(*this); }
 
 std::shared_ptr<LayerRepresentation> CImgLayerRAMLoader::createRepresentation() const {
     void* data = nullptr;
@@ -162,10 +153,9 @@ void CImgLayerRAMLoader::updateSwizzleMask(LayerDisk* layerDisk) {
             default:
                 return swizzlemasks::rgba;
         }
-
     };
 
     layerDisk->setSwizzleMask(swizzleMask(layerDisk->getDataFormat()->getComponents()));
 }
 
-}  // namespace
+}  // namespace inviwo
