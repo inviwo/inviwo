@@ -170,15 +170,13 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
             "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
             "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
-        allChannelsGradientValue =
-            "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos)";
+        allChannelsGradientValue = "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("central")) {
         gradientValue =
             "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
             "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
-        allChannelsGradientValue =
-            "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos)";
+        allChannelsGradientValue = "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("central-higher")) {
         gradientValue =
             "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
@@ -262,6 +260,7 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
 
     shader.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
 }
+
 void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property) {
     shader.setUniform("samplingRate_", property.samplingRate_.get());
     shader.setUniform("isoValue_", property.isoValue_.get());
@@ -275,11 +274,11 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
 void addShaderDefinesBGPort(Shader& shader, ImageInport port) {
     std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {
-        shader.getFragmentShaderObject()->addShaderDefine("HAS_BACKGROUND");
+        shader.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
         shader.getFragmentShaderObject()->addShaderDefine(
             bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth)");
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("HAS_BACKGROUND");
+        shader.getFragmentShaderObject()->removeShaderDefine("BACKGROUND_AVAILABLE");
         shader.getFragmentShaderObject()->addShaderDefine(bgKey, "result");
     }
 }

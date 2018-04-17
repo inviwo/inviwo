@@ -94,7 +94,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 
     vec4 backgroundColor = vec4(0);
     float bgTDepth = -1;
-#ifdef HAS_BACKGROUND
+#ifdef BACKGROUND_AVAILABLE
     backgroundColor = texture(bgColor, texCoords);
     // convert to raycasting depth
     bgTDepth = tEnd * calculateTValueFromDepthValue(
@@ -103,7 +103,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     if (bgTDepth < 0) {
         result = backgroundColor;
     }
-#endif
+#endif // BACKGROUND_AVAILABLE
 
     // used for isosurface computation
     float prevSample = getNormalizedVoxel(volume, volumeParameters, entryPoint + t * rayDirection)[channel];
@@ -226,16 +226,16 @@ void main() {
     vec4 color = vec4(0);
 
     float backgroundDepth = 1;
-#ifdef HAS_BACKGROUND
+#ifdef BACKGROUND_AVAILABLE
     color = texture(bgColor, texCoords);
     gl_FragDepth = backgroundDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
-#else
+#else // BACKGROUND_AVAILABLE
     PickingData = vec4(0);
     if (entryPoint == exitPoint) {
         discard;
     }
-#endif
+#endif // BACKGROUND_AVAILABLE
     if (entryPoint != exitPoint) {
         color = rayTraversal(entryPoint, exitPoint, texCoords, backgroundDepth);
     }
