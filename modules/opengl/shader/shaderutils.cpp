@@ -48,32 +48,38 @@ void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
 
     switch (mode) {
         case ShadingMode::Ambient:
-            shadingValue = "shadeAmbient(lighting, materialAmbientColor);";
+            shadingValue = "shadeAmbient(lighting, materialAmbientColor)";
             break;
         case ShadingMode::Diffuse:
-            shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal);";
+            shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal)";
             break;
         case ShadingMode::Specular:
             shadingValue =
-                "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir);";
+                "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir)";
             break;
         case ShadingMode::BlinnPhong:
             shadingValue =
                 "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir);";
+                "materialSpecularColor, position, normal, toCameraDir)";
             break;
         case ShadingMode::Phong:
             shadingValue =
                 "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir);";
+                "materialSpecularColor, position, normal, toCameraDir)";
             break;
         case ShadingMode::None:
         default:
-            shadingValue = "materialAmbientColor;";
+            shadingValue = "materialAmbientColor";
             break;
     }
 
     shader.getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
+
+    if (mode == ShadingMode::None) {
+        shader.getFragmentShaderObject()->removeShaderDefine("SHADING_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->addShaderDefine("SHADING_ENABLED");
+    }
 }
 
 void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, std::string name) {
@@ -161,40 +167,40 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         allChannelsGradientValue = "mat4x3(0)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("forward")) {
         gradientValue =
-            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
+            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
-            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
+            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
         allChannelsGradientValue =
-            "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos);";
+            "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("central")) {
         gradientValue =
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
         allChannelsGradientValue =
-            "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos);";
+            "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("central-higher")) {
         gradientValue =
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ");";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ")";
         allChannelsGradientValue =
-            "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos);";
+            "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("backward")) {
         gradientValue =
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
         allChannelsGradientValue =
-            "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos);";
+            "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("precomputedXYZ")) {
-        gradientValue = "gradientPrecomputedXYZ(voxel, volumeParams);";
-        singleChannelGradientValue = "gradientPrecomputedXYZ(voxel, volumeParams);";
-        allChannelsGradientValue = "gradientPrecomputedXYZ(voxel, volumeParams);";
+        gradientValue = "gradientPrecomputedXYZ(voxel, volumeParams)";
+        singleChannelGradientValue = "gradientPrecomputedXYZ(voxel, volumeParams)";
+        allChannelsGradientValue = "gradientPrecomputedXYZ(voxel, volumeParams)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("precomputedYZW")) {
-        gradientValue = "gradientPrecomputedYZW(voxel, volumeParams);";
-        singleChannelGradientValue = "gradientPrecomputedYZW(voxel, volumeParams);";
-        allChannelsGradientValue = "gradientPrecomputedYZW(voxel, volumeParams);";
+        gradientValue = "gradientPrecomputedYZW(voxel, volumeParams)";
+        singleChannelGradientValue = "gradientPrecomputedYZW(voxel, volumeParams)";
+        allChannelsGradientValue = "gradientPrecomputedYZW(voxel, volumeParams)";
     }
 
     shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey, gradientValue);
@@ -203,50 +209,56 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     shader.getFragmentShaderObject()->addShaderDefine(allChannelsGradientKey,
                                                       allChannelsGradientValue);
 
+    if (property.gradientComputationMode_.isSelectedIdentifier("none")) {
+        shader.getFragmentShaderObject()->removeShaderDefine("GRADIENTS_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->addShaderDefine("GRADIENTS_ENABLED");
+    }
+
     // classification defines, red channel is used
     std::string classificationKey = "APPLY_CLASSIFICATION(transferFunc, voxel)";
     std::string classificationValue = "";
     if (property.classificationMode_.isSelectedIdentifier("none"))
-        classificationValue = "vec4(voxel.r);";
+        classificationValue = "vec4(voxel.r)";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
-        classificationValue = "applyTF(transferFunc, voxel.r);";
+        classificationValue = "applyTF(transferFunc, voxel.r)";
     else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
-        classificationValue = "voxel;";
+        classificationValue = "voxel";
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // classification of specific channel
     classificationKey = "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
     classificationValue = "";
     if (property.classificationMode_.isSelectedIdentifier("none"))
-        classificationValue = "vec4(voxel[channel]);";
+        classificationValue = "vec4(voxel[channel])";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
-        classificationValue = "applyTF(transferFunc, voxel, channel);";
+        classificationValue = "applyTF(transferFunc, voxel, channel)";
     else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
-        classificationValue = "voxel;";
+        classificationValue = "voxel";
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // compositing defines
     std::string compositingKey =
         "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, tDepth, "
         "tIncr)";
-    std::string compositingValue;
+    std::string compositingValue = "result";
 
     if (property.compositingMode_.isSelectedIdentifier("dvr"))
-        compositingValue = "compositeDVR(result, color, t, tDepth, tIncr);";
+        compositingValue = "compositeDVR(result, color, t, tDepth, tIncr)";
     else if (property.compositingMode_.isSelectedIdentifier("mip"))
-        compositingValue = "compositeMIP(result, color, t, tDepth);";
+        compositingValue = "compositeMIP(result, color, t, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("fhp"))
-        compositingValue = "compositeFHP(result, color, samplePos, t, tDepth);";
+        compositingValue = "compositeFHP(result, color, samplePos, t, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("fhn"))
-        compositingValue = "compositeFHN(result, color, gradient, t, tDepth);";
+        compositingValue = "compositeFHN(result, color, gradient, t, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("fhnvs"))
-        compositingValue = "compositeFHN_VS(result, color, gradient, t, camera, tDepth);";
+        compositingValue = "compositeFHN_VS(result, color, gradient, t, camera, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("fhd"))
-        compositingValue = "compositeFHD(result, color, t, tDepth);";
+        compositingValue = "compositeFHD(result, color, t, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("iso"))
-        compositingValue = "compositeISO(result, color, voxel.r, t, tDepth, tIncr, isoValue);";
+        compositingValue = "compositeISO(result, color, voxel.r, t, tDepth, tIncr, isoValue)";
     else if (property.compositingMode_.isSelectedIdentifier("ison"))
-        compositingValue = "compositeISON(result, color, voxel.r, gradient, t, tDepth, isoValue);";
+        compositingValue = "compositeISON(result, color, voxel.r, gradient, t, tDepth, isoValue)";
 
     shader.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
 }
@@ -265,7 +277,7 @@ void addShaderDefinesBGPort(Shader& shader, ImageInport port) {
     if (port.isConnected()) {
         shader.getFragmentShaderObject()->addShaderDefine("HAS_BACKGROUND");
         shader.getFragmentShaderObject()->addShaderDefine(
-            bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);");
+            bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth)");
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("HAS_BACKGROUND");
         shader.getFragmentShaderObject()->addShaderDefine(bgKey, "result");
@@ -286,6 +298,10 @@ void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& property) {
         planes += property.plane3_.enable_ ? ", params.plane3" : "";
         value =
             "drawPlanes(result, samplePosition, rayDirection, increment " + planes + ",t,tDepth)";
+
+        shader.getFragmentShaderObject()->addShaderDefine("PLANES_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->removeShaderDefine("PLANES_ENABLED");
     }
     shader.getFragmentShaderObject()->addShaderDefine(key, value);
 }
