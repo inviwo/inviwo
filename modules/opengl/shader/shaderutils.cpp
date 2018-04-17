@@ -271,6 +271,31 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
     shader.setUniform(name + ".isoValue", property.isoValue_.get());
 }
 
+void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
+    shader.getFragmentShaderObject()->addShaderDefine("MAX_ISOVALUE_COUNT",
+                                                      toString(property.get().getNumIsoValues()));
+
+    if (property.getEnabled()) {
+        shader.getFragmentShaderObject()->addShaderDefine("ISOSURFACE_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->removeShaderDefine("ISOSURFACE_ENABLED");
+    }
+}
+
+void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
+    auto data = property.get().getShaderUniformData();
+
+    shader.setUniform("isovalues", data.first.size(), data.first.data());
+    shader.setUniform("isosurfaceColors", data.second.size(), data.second.data());
+}
+
+void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::string name) {
+    auto data = property.get().getShaderUniformData();
+
+    shader.setUniform(name + ".values", data.first.size(), data.first.data());
+    shader.setUniform(name + ".colors", data.second.size(), data.second.data());
+}
+
 void addShaderDefinesBGPort(Shader& shader, ImageInport port) {
     std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {
