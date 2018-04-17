@@ -33,6 +33,9 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/util/interpolation.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 namespace inviwo {
 

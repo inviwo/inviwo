@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
