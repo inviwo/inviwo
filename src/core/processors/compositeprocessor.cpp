@@ -50,6 +50,7 @@ const ProcessorInfo CompositeProcessor::processorInfo_{
     "Meta",                           // Category
     CodeState::Stable,                // Code state
     "Composites",                     // Tags
+    false
 };
 const ProcessorInfo CompositeProcessor::getProcessorInfo() const { return processorInfo_; }
 

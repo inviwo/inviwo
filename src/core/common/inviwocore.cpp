@@ -213,6 +213,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerPort<ImageOutport>();
     registerProcessor<CompositeSource<ImageInport, ImageOutport>>();
     registerProcessor<CompositeSink<ImageInport, ImageOutport>>();
+    registerProcessor<CompositeProcessor>();
 
     registerDefaultsForDataType<Mesh>();
     registerDefaultsForDataType<Volume>();
