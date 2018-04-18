@@ -29,6 +29,7 @@
 
 #include <modules/pvm/pvmvolumereader.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -44,6 +45,9 @@ PVMVolumeReader::PVMVolumeReader() : DataReaderType<Volume>() {
 PVMVolumeReader* PVMVolumeReader::clone() const { return new PVMVolumeReader(*this); }
 
 std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string& filePath) {
+    if (!filesystem::fileExists(filePath)) {
+        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+    }
     auto volume = readPVMData(filePath);
 
     if (!volume) return std::shared_ptr<Volume>();
@@ -62,16 +66,6 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string& filePath) {
 }
 
 std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        std::string newPath = filesystem::addBasePath(filePath);
-
-        if (filesystem::fileExists(newPath)) {
-            filePath = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + filePath,
-                                      IvwContextCustom("PVMVolumeReader"));
-        }
-    }
 
     size3_t dim(0);
     glm::mat3 basis(2.0f);
@@ -87,8 +81,9 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
 
     try {
         uvec3 udim{0};
-        data = readPVMvolume(filePath.c_str(), &udim.x, &udim.y, &udim.z, &bytesPerVoxel, &spacing.x,
-                             &spacing.y, &spacing.z, &description, &courtesy, &parameter, &comment);
+        data =
+            readPVMvolume(filePath.c_str(), &udim.x, &udim.y, &udim.z, &bytesPerVoxel, &spacing.x,
+                          &spacing.y, &spacing.z, &description, &courtesy, &parameter, &comment);
         dim = udim;
 
     } catch (Exception& e) {
@@ -195,4 +190,4 @@ void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::str
     }
 }
 
-}  // namespace
+}  // namespace inviwo

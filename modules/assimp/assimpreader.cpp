@@ -77,7 +77,6 @@ public:
     }
 };
 
-
 AssimpReader::AssimpReader()
     : DataReaderType<Mesh>()
     , logLevel_(AssimpLogLevel::Warn)
@@ -106,18 +105,11 @@ void AssimpReader::setLogLevel(AssimpLogLevel level, bool verbose) {
     verboseLog_ = verbose;
 }
 
-AssimpLogLevel AssimpReader::getLogLevel() const {
-    return logLevel_;
-}
+AssimpLogLevel AssimpReader::getLogLevel() const { return logLevel_; }
 
+void AssimpReader::setFixInvalidDataFlag(bool enable) { fixInvalidData_ = enable; }
 
-void AssimpReader::setFixInvalidDataFlag(bool enable) {
-    fixInvalidData_ = enable;
-}
-
-bool AssimpReader::getFixInvalidDataFlag() const {
-    return fixInvalidData_;
-}
+bool AssimpReader::getFixInvalidDataFlag() const { return fixInvalidData_; }
 
 std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
     Assimp::Importer importer;
@@ -146,7 +138,6 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
                                                        Assimp::Logger::ErrorSeverity::Debugging);
         }
     }
-
 
     //#define AI_CONFIG_PP_SBP_REMOVE "aiPrimitiveType_POINTS | aiPrimitiveType_LINES"
     //#define AI_CONFIG_PP_FD_REMOVE 1
@@ -396,4 +387,4 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
     return mesh;
 }
 
-}  // namespace
+}  // namespace inviwo
