@@ -73,9 +73,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     rayDirection = rayDirection / tEnd;
     float tDepth = -1.0;
     
-        vec3 toCameraDir = normalize((volumeParameters.textureToWorld * vec4(entryPoint, 1.0) -
-                                  volumeParameters.textureToWorld * vec4(exitPoint, 1.0))
-                                     .xyz);
+    vec3 toCameraDir = normalize((volumeParameters.textureToWorld * vec4(entryPoint, 1.0) -
+                                  volumeParameters.textureToWorld * vec4(exitPoint, 1.0)).xyz);
 
     while (t < tEnd) {
         vec3 samplePos = entryPoint + t * rayDirection;

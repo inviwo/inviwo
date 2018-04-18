@@ -55,7 +55,6 @@ SimpleRaycaster::SimpleRaycaster()
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
-    , backgroundPort_("bg")
     , outport_("outport")
     , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
     , channel_("channel", "Render Channel", {{"channel1", "Channel 1", 0}})
@@ -63,14 +62,11 @@ SimpleRaycaster::SimpleRaycaster()
     , camera_("camera", "Camera") {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
-    backgroundPort_.setOptional(true);
-
+    
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
-    addPort(backgroundPort_, "ImagePortGroup1");
 
     channel_.setSerializationMode(PropertySerializationMode::All);
 
@@ -90,18 +86,10 @@ SimpleRaycaster::SimpleRaycaster()
             channel_.setCurrentStateAsDefault();
         }
     });
-    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
-    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
-
     addProperty(channel_);
     addProperty(transferFunction_);
     addProperty(samplingRate_);
     addProperty(camera_);
-}
-
-void SimpleRaycaster::initializeResources() {
-    utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
-    shader_.build();
 }
 
 void SimpleRaycaster::process() {
@@ -138,11 +126,6 @@ void SimpleRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-
-    if (backgroundPort_.hasData()) {
-        utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
-    } else {
-    }
 
     utilgl::setUniforms(shader_, outport_, camera_, channel_, samplingRate_);
 
