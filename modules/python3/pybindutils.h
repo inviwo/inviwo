@@ -66,8 +66,8 @@ void checkDataFormat(const DataFormatBase *format, const Vector<Dim, size_t> &di
     const auto expectedType = pyutil::toNumPyFormat(format);
     if (!data.dtype().is(expectedType)) {
         throw py::value_error("Invalid data format, got: '" +
-                              std::string(py::str(data.dtype())) + "' expected: '" +
-                              std::string(py::str(expectedType)) + "'");
+                              data.dtype().cast<std::string>() + "' expected: '" +
+                              expectedType.cast<std::string>() + "'");
     }
 
     const auto expectedComponents = format->getComponents();

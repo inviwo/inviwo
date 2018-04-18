@@ -46,11 +46,13 @@ const ProcessorInfo PythonScriptProcessor::getProcessorInfo() const { return pro
 
 PythonScriptProcessor::PythonScriptProcessor()
     : Processor(), script_(""), scriptFileName_("scriptFileName", "File Name", "") {
-
+    namespace py = pybind11;
     isSink_.setUpdate([]() { return true; });
 
     auto runscript = [this]() {
-        locals_["self"] = pybind11::cast(static_cast<Processor*>(this));
+        locals_ = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));   
+
+        locals_["processor"] = pybind11::cast(static_cast<Processor*>(this));
         script_.run(locals_);
 
         if (locals_.contains("init")) {
@@ -78,7 +80,7 @@ PythonScriptProcessor::PythonScriptProcessor()
 }
 
 void PythonScriptProcessor::process() {
-    if (locals_.contains("process")) {
+    if (locals_.contains("process") != 0) {
         try {
             locals_["process"](pybind11::cast(static_cast<Processor*>(this)));
         } catch (std::exception& e) {

@@ -68,11 +68,25 @@ bool PythonScript::compile() {
 
 bool PythonScript::run(std::function<void(pybind11::dict)> callback) {
     namespace py = pybind11;
-    return run({}, callback);
+    
+    // Copy the dict to get a clean slate every time we run the script
+    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr())); 
+    return run(global, callback);
 }
 
-bool PythonScript::run(const std::unordered_map<std::string, pybind11::object>& locals,
+bool PythonScript::run(std::unordered_map<std::string, pybind11::object> locals,
                        std::function<void(pybind11::dict)> callback) {
+    namespace py = pybind11;
+    
+    // Copy the dict to get a clean slate every time we run the script
+    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));   
+    for (auto& item : locals) {
+        global[py::str(item.first)] = item.second;
+    }
+    return run(global, callback);
+}
+
+bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)> callback) {
     namespace py = pybind11;
 
     if (isCompileNeeded_ && !compile()) {
@@ -82,21 +96,18 @@ bool PythonScript::run(const std::unordered_map<std::string, pybind11::object>& 
 
     ivwAssert(byteCode_ != nullptr, "No byte code");
 
-    // Copy the dict to get a clean slate every time we run the script
-    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));   
-    for (auto& item : locals) {
-        global[py::str(item.first)] = item.second;
-    }
-
-    auto ret = PyEval_EvalCode(BYTE_CODE, global.ptr(), global.ptr());
+    auto ret = PyEval_EvalCode(BYTE_CODE, locals.ptr(), locals.ptr());
     if (ret) {
-        if (callback) callback(global);
+        if (callback) {
+            callback(locals);
+        }
         return true;
     } else {
         checkRuntimeError();
         return false;
     }
 }
+
 
 void PythonScript::setFilename(const std::string& filename) { filename_ = filename; }
 

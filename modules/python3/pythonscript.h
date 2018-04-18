@@ -85,11 +85,12 @@ public:
     *
     * @return true, if script execution has been successful
     */
-    bool run(const std::unordered_map<std::string, pybind11::object>& locals =
+    bool run(std::unordered_map<std::string, pybind11::object> locals =
                  std::unordered_map<std::string, pybind11::object>{},
              std::function<void(pybind11::dict)> callback = nullptr);
 
     bool run(std::function<void(pybind11::dict)> callback);
+    bool run(pybind11::dict locals, std::function<void(pybind11::dict)> callback = nullptr);
 
     virtual void setFilename(const std::string& filename);
     const std::string& getFilename() const;
