@@ -30,9 +30,13 @@
 #ifndef IVW_PYPORT_H
 #define IVW_PYPORT_H
 
-#include <inviwo/core/ports/outport.h>
-
 #include <pybind11/pybind11.h>
+
+#include <inviwo/core/ports/port.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 

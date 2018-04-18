@@ -31,12 +31,6 @@
 
 #include <modules/python3/interface/pyglmtypes.h>
 
-#include <inviwo/core/ports/port.h>
-#include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-
 #include <vector>
 
 namespace inviwo {

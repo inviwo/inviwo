@@ -82,13 +82,14 @@ bool PythonScript::run(const std::unordered_map<std::string, pybind11::object>& 
 
     ivwAssert(byteCode_ != nullptr, "No byte code");
 
-    // Copy the dict to get a clean state every time we run the script
+    // Copy the dict to get a clean slate every time we run the script
     py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));   
     for (auto& item : locals) {
         global[py::str(item.first)] = item.second;
     }
 
-    if (auto ret = PyEval_EvalCode(BYTE_CODE, global.ptr(), global.ptr())) {
+    auto ret = PyEval_EvalCode(BYTE_CODE, global.ptr(), global.ptr());
+    if (ret) {
         if (callback) callback(global);
         return true;
     } else {

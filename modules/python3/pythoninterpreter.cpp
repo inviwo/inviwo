@@ -70,14 +70,12 @@ void PythonInterpreter::init(Python3Module* module) {
     static wchar_t programName[] = L"PyInviwo";
     Py_SetProgramName(programName);
 
-    py::initialize_interpreter();
+    py::initialize_interpreter(false);
     isInit_ = true;
 
     if (!Py_IsInitialized()) {
         throw ModuleInitException("Python is not Initialized", IvwContext);
     }
-
-    PyEval_InitThreads();
 
     auto dict = py::globals();
     dict["inviwo_internal"] = py::module::import("inviwo_internal");

@@ -64,10 +64,10 @@ void checkDataFormat(const DataFormatBase *format, const Vector<Dim, size_t> &di
                      const pybind11::array &data) {
     namespace py = pybind11;
     const auto expectedType = pyutil::toNumPyFormat(format);
-    if (data.dtype() != expectedType) {
+    if (!data.dtype().is(expectedType)) {
         throw py::value_error("Invalid data format, got: '" +
-                              py::str(data.dtype()).cast<std::string>() + "' expected: '" +
-                              py::str(expectedType).cast<std::string>() + "'");
+                              std::string(py::str(data.dtype())) + "' expected: '" +
+                              std::string(py::str(expectedType)) + "'");
     }
 
     const auto expectedComponents = format->getComponents();
@@ -85,7 +85,7 @@ void checkDataFormat(const DataFormatBase *format, const Vector<Dim, size_t> &di
                               "' expected: '" + toString(expectedDimensions.size()) + "'");
     }
 
-    for (int i = 0; i < expectedDimensions.size(); i++) {
+    for (size_t i = 0; i < expectedDimensions.size(); i++) {
         if (static_cast<size_t>(data.shape(i)) != expectedDimensions[i]) {
             throw py::value_error("Invalid data dimensions, got '" + toString(data.shape(i)) +
                                   "' expected: '" + toString(expectedDimensions[i]) + "'");
