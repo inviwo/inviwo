@@ -38,7 +38,6 @@
 #include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/util/colorconversion.h>
 
 namespace inviwo {
 
@@ -112,16 +111,6 @@ VolumeRaycaster::VolumeRaycaster()
         }
     });
 
-    isoValues_.onChange([this]() {
-        std::ostringstream os;
-        for (size_t i = 0; i < isoValues_.get().getNumIsoValues(); ++i) {
-            auto isoValue = isoValues_.get().getIsoValue(i);
-            // write color as HTML color code
-            os << isoValue->getIsoValue() << " " << color::rgba2html(isoValue->getColor()) << "\n";
-        }
-        LogWarn("Isovalues changed:\n" << os.str());
-    });
-
     addProperty(channel_);
     addProperty(isoValues_);
     addProperty(transferFunction_);
@@ -135,11 +124,7 @@ VolumeRaycaster::VolumeRaycaster()
 const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 void VolumeRaycaster::initializeResources() {
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, isoValues_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
-    utilgl::addShaderDefines(shader_, positionIndicator_);
+    utilgl::addDefines(shader_, raycasting_, isoValues_, camera_, lighting_, positionIndicator_);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
 }

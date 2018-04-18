@@ -114,8 +114,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 
         // check for isosurfaces
 #if defined(ISOSURFACE_ENABLED)
+        // make sure that tIncr has the correct length since drawIsoSurface will modify it
+        tIncr = tEnd / samples;
         result = drawIsosurfaces(result, isovalues, voxel, previousVoxel, 
-                                 volume, volumeParameters, channel, camera, lighting, 
+                                 volume, volumeParameters, channel, transferFunction, camera, lighting, 
                                  samplePos, rayDirection, toCameraDir, t, tIncr, tDepth);
 #endif // ISOSURFACE_ENABLED
 
@@ -148,6 +150,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         if (result.a > ERT_THRESHOLD) {
             t = tEnd;
         } else {
+#if defined(ISOSURFACE_ENABLED)
+            // make sure that tIncr has the correct length since drawIsoSurface will modify it
+            tIncr = tEnd / samples;
+#endif // ISOSURFACE_ENABLED
             t += tIncr;
         }
     }

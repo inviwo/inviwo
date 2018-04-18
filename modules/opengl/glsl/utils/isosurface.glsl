@@ -48,7 +48,9 @@ struct IsovalueParameters {
 
 /**
  * Draws an isosurface if the given isovalue is found along the ray in between the 
- * current and the previous volume sample.
+ * current and the previous volume sample. On return, tIncr refers to the distance
+ * between the last valid isosurface and the current sampling position. That is
+ * if no isosurface was found, tIncr is not modified.
  *
  * @param curResult        color accumulated so far during raycasting
  * @param isovalue         isovalue of isosurface to be drawn
@@ -61,9 +63,10 @@ struct IsovalueParameters {
 vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColor, 
                     in vec4 voxel, in vec4 previousVoxel,
                     in sampler3D volume, in VolumeParameters volumeParameters, in int channel, 
+                    in sampler2D transferFunction,
                     in CameraParameters camera, in LightParameters lighting,
                     in vec3 rayPosition, in vec3 rayDirection, in vec3 toCameraDir,
-                    in float t, in float tIncr, inout float tDepth) {
+                    in float t, in float raySegmentLen, inout float tIncr, inout float tDepth) {
     vec4 result = curResult;
 
     float currentSample = voxel[channel];
@@ -78,9 +81,12 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
         // if a == 1, isosurface was already computed for previous sampling position
         if (a >= 1.0) return result;
         
-        vec3 isopos = rayPosition - tIncr * a * rayDirection;
+        // adjust length of remaining ray segment
+        tIncr -= (1.0 - a) * raySegmentLen;
 
-        vec4 color = isosurfaceColor;
+        vec3 isopos = rayPosition - raySegmentLen * a * rayDirection;
+
+        vec4 isocolor = isosurfaceColor;
 #if defined(SHADING_ENABLED)
         vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, isopos, channel);
         gradient = normalize(gradient);
@@ -91,18 +97,31 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
         }
 
         vec3 isoposWorld = (volumeParameters.textureToWorld * vec4(isopos, 1.0)).xyz;
-        color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0),
+        isocolor.rgb = APPLY_LIGHTING(lighting, isocolor.rgb, isocolor.rgb, vec3(1.0),
                            isoposWorld, -gradient, toCameraDir);
 #endif // SHADING_ENABLED
 
-        // blend surface color and adjust first-hit depth if necessary
+        // apply compositing of volumetric media from last sampling position up till isosurface
+        vec4 isoSample = mix(voxel, previousVoxel, a);
+        vec4 voxelColor = APPLY_CHANNEL_CLASSIFICATION(transferFunction, isoSample, channel);
+        if (voxelColor.a > 0) {
+#if defined(SHADING_ENABLED)
+            voxelColor.rgb = APPLY_LIGHTING(lighting, voxelColor.rgb, voxelColor.rgb, vec3(1.0),
+                                       isoposWorld, -gradient, toCameraDir);
+#endif // SHADING_ENABLED
+
+            result = APPLY_COMPOSITING(result, voxelColor, isopos, isoSample, gradient, camera,
+                                       isovalue, t - tIncr, tDepth, raySegmentLen - tIncr);
+        }
+
+        // blend isosurface color and adjust first-hit depth if necessary
         if (tDepth < 0.0) {
             // store depth of first hit, i.e. voxel with non-zero alpha
-             tDepth = t;   
+             tDepth = t - tIncr;   
         }
-        color.rgb *= color.a; // use pre-multiplied alpha
-        // blend color with result accumulated so far
-        result += (1.0 - result.a) * color;
+        isocolor.rgb *= isocolor.a; // use pre-multiplied alpha
+        // blend isosurface color with result accumulated so far
+        result += (1.0 - result.a) * isocolor;
     }
 
     return result;
@@ -112,32 +131,34 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
 vec4 drawIsosurfaces(in vec4 curResult, in IsovalueParameters isoparams, 
                      in vec4 voxel, in vec4 previousVoxel,
                      in sampler3D volume, in VolumeParameters volumeParameters, in int channel, 
+                     in sampler2D transferFunction,
                      in CameraParameters camera, in LightParameters lighting,
                      in vec3 rayPosition, in vec3 rayDirection, in vec3 toCameraDir,
-                     in float t, in float tIncr, inout float tDepth) {
+                     in float t, inout float tIncr, inout float tDepth) {
 
     // in case of zero no isovalues return current color
     vec4 result = curResult;
+    float raySegmentLen = tIncr;
 
 #if defined(ISOSURFACE_ENABLED)
 
 #if MAX_ISOVALUE_COUNT == 1
     result = drawIsosurface(result, isoparams.values[0], isoparams.colors[0],
-                            voxel, previousVoxel, volume, volumeParameters, channel,
-                            camera, lighting, rayPosition, rayDirection, toCameraDir, t, tIncr, tDepth);
+                            voxel, previousVoxel, volume, volumeParameters, channel, transferFunction,
+                            camera, lighting, rayPosition, rayDirection, toCameraDir, t, raySegmentLen, tIncr, tDepth);
 #else // MAX_ISOVALUE_COUNT
     // multiple isosurfaces, need to determine order of traversal
     if (voxel[channel] - previousVoxel[channel] > 0) {
         for (int i = 0; i < MAX_ISOVALUE_COUNT; ++i) {
             result = drawIsosurface(result, isoparams.values[i], isoparams.colors[i],
-                voxel, previousVoxel, volume, volumeParameters, channel,
-                camera, lighting, rayPosition, rayDirection, toCameraDir, t, tIncr, tDepth);
+                voxel, previousVoxel, volume, volumeParameters, channel, transferFunction,
+                camera, lighting, rayPosition, rayDirection, toCameraDir, t, raySegmentLen, tIncr, tDepth);
         }
     } else {
         for (int i = MAX_ISOVALUE_COUNT; i > 0; --i) {
             result = drawIsosurface(result, isoparams.values[i - 1], isoparams.colors[i - 1],
-                voxel, previousVoxel, volume, volumeParameters, channel,
-                camera, lighting, rayPosition, rayDirection, toCameraDir, t, tIncr, tDepth);
+                voxel, previousVoxel, volume, volumeParameters, channel, transferFunction,
+                camera, lighting, rayPosition, rayDirection, toCameraDir, t, raySegmentLen, tIncr, tDepth);
         }
     }
 #endif // MAX_ISOVALUE_COUNT
