@@ -67,6 +67,9 @@ IsoValueCollection::IsoValueCollection(const IsoValueCollection& rhs) {
     }
 }
 
+IsoValueCollection::IsoValueCollection(IsoValueCollection&& rhs)
+    : values_(std::move(rhs.values_)), sorted_(std::move(rhs.sorted_)) {}
+
 IsoValueCollection& IsoValueCollection::operator=(const IsoValueCollection& rhs) {
     if (this != &rhs) {
         for (size_t i = 0; i < std::min(values_.size(), rhs.values_.size()); i++) {
@@ -84,19 +87,21 @@ IsoValueCollection& IsoValueCollection::operator=(const IsoValueCollection& rhs)
 
 size_t IsoValueCollection::getNumIsoValues() const { return values_.size(); }
 
-IsoValue* IsoValueCollection::getIsoValue(size_t i) { return values_[i].get(); }
+IsoValue& IsoValueCollection::getIsoValue(size_t i) { return *values_[i].get(); }
 
-const IsoValue* IsoValueCollection::getIsoValue(size_t i) const { return values_[i].get(); }
+const IsoValue& IsoValueCollection::getIsoValue(size_t i) const { return *values_[i].get(); }
 
 std::vector<IsoValueData> IsoValueCollection::getIsoValues() const {
     std::vector<IsoValueData> values;
-    std::transform(values_.begin(), values_.end(), std::back_inserter(values), [](auto &v) { return v->get(); });
+    std::transform(values_.begin(), values_.end(), std::back_inserter(values),
+                   [](auto& v) { return v->get(); });
     return values;
 }
 
 std::vector<IsoValueData> IsoValueCollection::getSortedIsoValues() const {
     std::vector<IsoValueData> values;
-    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(values), [](auto &v) { return v->get(); });
+    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(values),
+                   [](auto& v) { return v->get(); });
     return values;
 }
 
@@ -104,7 +109,7 @@ std::pair<std::vector<float>, std::vector<vec4>> IsoValueCollection::getShaderUn
     std::pair<std::vector<float>, std::vector<vec4>> result;
     result.first.reserve(sorted_.size());
     result.second.reserve(sorted_.size());
-    for (auto &v : sorted_) {
+    for (auto& v : sorted_) {
         result.first.push_back(v->getIsoValue());
         result.second.push_back(v->getColor());
     }

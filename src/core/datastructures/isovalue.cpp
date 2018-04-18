@@ -33,9 +33,9 @@
 
 namespace inviwo {
 
-void IsoValueObserver::onIsoValueChange(const IsoValue*) {}
+void IsoValueObserver::onIsoValueChange(const IsoValue&) {}
 
-IsoValue::IsoValue(float value, const vec4& color) : data_({ value, color }) {}
+IsoValue::IsoValue(float value, const vec4& color) : data_({value, color}) {}
 
 IsoValue::IsoValue(const IsoValue& rhs) : data_(rhs.data_) {}
 
@@ -48,16 +48,15 @@ IsoValue& IsoValue::operator=(const IsoValue& rhs) {
 }
 
 void IsoValue::set(float value, const vec4& color) {
-    if ((color != data_.color) || glm::epsilonNotEqual(value, data_.isovalue, glm::epsilon<float>())) {
+    if ((color != data_.color) ||
+        glm::epsilonNotEqual(value, data_.isovalue, glm::epsilon<float>())) {
         data_.isovalue = value;
         data_.color = color;
         notifyIsoValueObservers();
     }
 }
 
-void IsoValue::set(const IsoValueData& value) {
-    set(value.isovalue, value.color);
-}
+void IsoValue::set(const IsoValueData& value) { set(value.isovalue, value.color); }
 
 void IsoValue::setIsoValue(const float& value) {
     if (glm::epsilonNotEqual(value, data_.isovalue, glm::epsilon<float>())) {
@@ -74,7 +73,7 @@ void IsoValue::setColor(const vec4& color) {
 }
 
 void IsoValue::notifyIsoValueObservers() {
-    forEachObserver([&](IsoValueObserver* o) { o->onIsoValueChange(this); });
+    forEachObserver([&](IsoValueObserver* o) { o->onIsoValueChange(*this); });
 }
 
 void IsoValue::serialize(Serializer& s) const {
@@ -106,5 +105,22 @@ bool operator>(const IsoValue& lhs, const IsoValue& rhs) { return rhs < lhs; }
 bool operator<=(const IsoValue& lhs, const IsoValue& rhs) { return !(rhs < lhs); }
 
 bool operator>=(const IsoValue& lhs, const IsoValue& rhs) { return !(lhs < rhs); }
+
+bool operator==(const IsoValueData& lhs, const IsoValueData& rhs) {
+    return glm::epsilonEqual(lhs.isovalue, rhs.isovalue, glm::epsilon<float>()) &&
+           (lhs.color == rhs.color);
+}
+
+bool operator!=(const IsoValueData& lhs, const IsoValueData& rhs) { return !operator==(lhs, rhs); }
+
+bool operator<(const IsoValueData& lhs, const IsoValueData& rhs) {
+    return lhs.isovalue < rhs.isovalue;
+}
+
+bool operator>(const IsoValueData& lhs, const IsoValueData& rhs) { return rhs < lhs; }
+
+bool operator<=(const IsoValueData& lhs, const IsoValueData& rhs) { return !(rhs < lhs); }
+
+bool operator>=(const IsoValueData& lhs, const IsoValueData& rhs) { return !(lhs < rhs); }
 
 }  // namespace inviwo

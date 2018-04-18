@@ -83,7 +83,7 @@ void IsoValuePropertyWidgetQt::setPropertyValue() {
         if (ss.fail()) {
             break;
         }
-        isovalues.push_back({value, color::html2rgba(str)});
+        isovalues.push_back({value, color::hex2rgba(str)});
     }
 
     property_->set(isovalues);
@@ -96,9 +96,9 @@ void IsoValuePropertyWidgetQt::updateFromProperty() {
     // convert isovalue/color values to string
     std::ostringstream ss;
     for (size_t i = 0; i < property_->get().getNumIsoValues(); ++i) {
-        auto isoValue = property_->get().getIsoValue(i);
+        const auto& isoValue = property_->get().getIsoValue(i);
         // write color as HTML color code
-        ss << isoValue->getIsoValue() << " " << color::rgba2html(isoValue->getColor()) << "\n";
+        ss << isoValue.getIsoValue() << " " << color::rgba2hex(isoValue.getColor()) << "\n";
     }
 
     QString newContents(utilqt::toQString(ss.str()));

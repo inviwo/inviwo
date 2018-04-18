@@ -67,14 +67,15 @@ class IVW_CORE_API IsoValueCollection : public Serializable,
 public:
     IsoValueCollection(const std::vector<IsoValueData>& values = {});
     IsoValueCollection(const IsoValueCollection& rhs);
+    IsoValueCollection(IsoValueCollection&& rhs);
+    IsoValueCollection& operator=(const IsoValueCollection& rhs);
     virtual ~IsoValueCollection() = default;
 
-    IsoValueCollection& operator=(const IsoValueCollection& rhs);
 
     size_t getNumIsoValues() const;
 
-    IsoValue* getIsoValue(size_t i);
-    const IsoValue* getIsoValue(size_t i) const;
+    IsoValue& getIsoValue(size_t i);
+    const IsoValue& getIsoValue(size_t i) const;
 
     std::vector<IsoValueData> getIsoValues() const;
     std::vector<IsoValueData> getSortedIsoValues() const;

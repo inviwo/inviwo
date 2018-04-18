@@ -41,7 +41,7 @@ class IsoValue;
 
 class IVW_CORE_API IsoValueObserver : public Observer {
 public:
-    virtual void onIsoValueChange(const IsoValue* v);
+    virtual void onIsoValueChange(const IsoValue& v);
 };
 
 struct IVW_CORE_API IsoValueData {
@@ -58,19 +58,20 @@ class IVW_CORE_API IsoValue : public Observable<IsoValueObserver>, public Serial
 public:
     IsoValue(float value = 0.0f, const vec4& color = vec4(0.0f));
     IsoValue(const IsoValue& rhs);
+    IsoValue(IsoValue&& rhs) = default;
+    IsoValue& operator=(const IsoValue& rhs);
     virtual ~IsoValue() = default;
 
-    IsoValue& operator=(const IsoValue& rhs);
 
     void set(float value, const vec4& color);
     void set(const IsoValueData& value);
-    inline const IsoValueData& get() const { return data_; }
+    const IsoValueData& get() const;
 
     void setIsoValue(const float& value);
-    inline const float& getIsoValue() const { return data_.isovalue; }
+    const float& getIsoValue() const;
 
     void setColor(const vec4& color);
-    inline const vec4& getColor() const { return data_.color; }
+    const vec4& getColor() const;
 
     void notifyIsoValueObservers();
 
@@ -81,12 +82,26 @@ private:
     IsoValueData data_;
 };
 
+inline const IsoValueData& IsoValue::get() const { return data_; }
+
+inline const float& IsoValue::getIsoValue() const { return data_.isovalue; }
+
+inline const vec4& IsoValue::getColor() const { return data_.color; }
+
+
 IVW_CORE_API bool operator==(const IsoValue& lhs, const IsoValue& rhs);
 IVW_CORE_API bool operator!=(const IsoValue& lhs, const IsoValue& rhs);
 IVW_CORE_API bool operator<(const IsoValue& lhs, const IsoValue& rhs);
 IVW_CORE_API bool operator>(const IsoValue& lhs, const IsoValue& rhs);
 IVW_CORE_API bool operator<=(const IsoValue& lhs, const IsoValue& rhs);
 IVW_CORE_API bool operator>=(const IsoValue& lhs, const IsoValue& rhs);
+
+IVW_CORE_API bool operator==(const IsoValueData& lhs, const IsoValueData& rhs);
+IVW_CORE_API bool operator!=(const IsoValueData& lhs, const IsoValueData& rhs);
+IVW_CORE_API bool operator<(const IsoValueData& lhs, const IsoValueData& rhs);
+IVW_CORE_API bool operator>(const IsoValueData& lhs, const IsoValueData& rhs);
+IVW_CORE_API bool operator<=(const IsoValueData& lhs, const IsoValueData& rhs);
+IVW_CORE_API bool operator>=(const IsoValueData& lhs, const IsoValueData& rhs);
 
 }  // namespace inviwo
 

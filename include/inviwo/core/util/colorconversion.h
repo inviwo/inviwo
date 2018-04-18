@@ -38,24 +38,26 @@ namespace inviwo {
 namespace color {
 
 /**
- * \brief convert from html color code to RGBA
+ * \brief convert from hexadecimal html color code to RGBA
  *
- * An html color code is converted to RGBA
+ * A hexadecimal html color code is converted to RGBA. Supports both 6 and 8 digit 
+ * hexcodes with a leading '#'. In case of 6 digits, alpha is set to 1.0.
  *
- * @param str    html color code in the form of "#10a0b0ff"
+ * @param str    html color code in the form of "#10a0b0ff" or "#a0b0c0"
  * @return RGBA color in [0 1]^3 range
+ * @throw Exception if string is malformed
  */
-IVW_CORE_API vec4 html2rgba(const std::string &str);
+IVW_CORE_API vec4 hex2rgba(const std::string &str);
 
 /**
-* \brief convert from rgba to html color code
+* \brief convert from rgba to hexadecimal html color code
 *
-* RGBA is converted to an html color code
+* RGBA is converted to a 8 digit hexadecimal html color code with leading '#'
 *
  * @param rgba   RGBA color in [0 1]^3 range
  * @return html color code in the form of "#10a0b0ff"
 */
-IVW_CORE_API std::string rgba2html(const vec4 &rgba);
+IVW_CORE_API std::string rgba2hex(const vec4 &rgba);
 
 /**
  * \brief reference white point D65 in CIE XYZ color space
