@@ -300,7 +300,7 @@ void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::st
     shader.setUniform(name + ".colors", data.second.size(), data.second.data());
 }
 
-void addShaderDefinesBGPort(Shader& shader, ImageInport port) {
+void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {
     std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {
         shader.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
