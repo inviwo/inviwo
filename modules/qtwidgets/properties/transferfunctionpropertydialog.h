@@ -36,6 +36,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <modules/qtwidgets/properties/transferfunctioneditor.h>
 #include <modules/qtwidgets/properties/transferfunctioneditorview.h>
 #include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
@@ -63,7 +64,7 @@ class RangeSliderQt;
 class TransferFunctionPropertyWidgetQt;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
-                                                                public TransferFunctionObserver {
+                                                                public TFPrimitiveSetObserver {
 public:
     TransferFunctionPropertyDialog(TransferFunctionProperty* property);
     ~TransferFunctionPropertyDialog();
@@ -72,9 +73,9 @@ public:
     TransferFunctionEditorView* getEditorView() const;
 
 protected:
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p) override;
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p) override;
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p) override;
+    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
 
     virtual void setReadOnly(bool readonly) override;
 

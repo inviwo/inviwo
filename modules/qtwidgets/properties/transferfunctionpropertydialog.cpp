@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/colorwheel.h>
 #include <modules/qtwidgets/rangesliderqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
@@ -55,7 +56,6 @@ namespace inviwo {
 
 TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty)
     : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", "TransferFunctionEditorWidget")
-    , TransferFunctionObserver()
     , sliderRange_(static_cast<int>(tfProperty->get().getTextureSize()))
     , tfProperty_(tfProperty)
     , tfEditor_(nullptr)
@@ -227,14 +227,14 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
 
     for (size_t i = 0; i < transFunc.getNumPoints(); i++) {
         const auto curPoint = transFunc.getPoint(i);
-        vec4 curColor = curPoint->getRGBA();
+        vec4 curColor = curPoint->getColor();
 
         // increase alpha to allow better visibility by 1 - (a - 1)^4
         const float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
         curColor.a = 1.0f - factor * factor;
 
         gradientStops.append(QGradientStop(
-            curPoint->getPos(), QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
+            curPoint->getPosition(), utilqt::toQColor(curColor)));
     }
 
     gradient_.setStops(gradientStops);
@@ -363,17 +363,17 @@ void TransferFunctionPropertyDialog::showEvent(QShowEvent* event) {
     PropertyEditorWidgetQt::showEvent(event);
 }
 
-void TransferFunctionPropertyDialog::onControlPointAdded(TransferFunctionDataPoint* p) {
+void TransferFunctionPropertyDialog::onTFPrimitiveAdded(TFPrimitive* p) {
     tfEditor_->onControlPointAdded(p);
     updateFromProperty();
 }
 
-void TransferFunctionPropertyDialog::onControlPointRemoved(TransferFunctionDataPoint* p) {
+void TransferFunctionPropertyDialog::onTFPrimitiveRemoved(TFPrimitive* p) {
     tfEditor_->onControlPointRemoved(p);
     updateFromProperty();
 }
 
-void TransferFunctionPropertyDialog::onControlPointChanged(const TransferFunctionDataPoint* p) {
+void TransferFunctionPropertyDialog::onTFPrimitiveChanged(const TFPrimitive* p) {
     tfEditor_->onControlPointChanged(p);
     updateFromProperty();
 }

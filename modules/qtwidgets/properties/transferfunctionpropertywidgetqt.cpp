@@ -31,6 +31,9 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <inviwo/core/datastructures/tfprimitive.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -109,15 +112,15 @@ void TFPushButton::updateFromProperty() {
     TransferFunction& transFunc = tfProperty_->get();
     QVector<QGradientStop> gradientStops;
     for (size_t i = 0; i < transFunc.getNumPoints(); i++) {
-        TransferFunctionDataPoint* curPoint = transFunc.getPoint(i);
-        vec4 curColor = curPoint->getRGBA();
+        TFPrimitive* curPoint = transFunc.getPoint(i);
+        vec4 curColor = curPoint->getColor();
 
         // increase alpha to allow better visibility by 1 - (a - 1)^4
         float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
         curColor.a = 1.0f - factor * factor;
 
         gradientStops.append(QGradientStop(
-            curPoint->getPos(), QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
+            curPoint->getPosition(), utilqt::toQColor(curColor)));
     }
 
     QLinearGradient gradient;

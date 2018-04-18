@@ -31,8 +31,8 @@
 #define IVW_TRANSFERFUNCTION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/transferfunctiondatapoint.h>
-#include <inviwo/core/util/observer.h>
+
+#include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
@@ -42,100 +42,63 @@ class Layer;
 template <typename T>
 class LayerRAMPrecision;
 
-class IVW_CORE_API TransferFunctionObserver : public Observer {
-public:
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p);
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p);
-};
-class IVW_CORE_API TransferFunctionObservable : public Observable<TransferFunctionObserver> {
-protected:
-    void notifyControlPointAdded(TransferFunctionDataPoint* p);
-    void notifyControlPointRemoved(TransferFunctionDataPoint* p);
-    void notifyControlPointChanged(const TransferFunctionDataPoint* p);
-};
-
 /**
  * \ingroup datastructures
- * \brief for holding 1D transfer function data.
- *  This class holds 1D transfer function data, currently one parameter in the variable data_.
+ * \class TransferFunction
+ * \brief data structure for holding 1D transfer function data
  */
-class IVW_CORE_API TransferFunction : public Serializable,
-                                      public TransferFunctionObservable,
-                                      public TransferFunctionPointObserver {
-
+class IVW_CORE_API TransferFunction : public TFPrimitiveSet {
 public:
-    using Point = TransferFunctionDataPoint::Point;
-
     TransferFunction(size_t textureSize = 1024);
-    TransferFunction(const std::vector<Point>& points, size_t textureSize = 1024);
+    TransferFunction(const std::vector<TFPrimitiveData>& values, size_t textureSize = 1024);
+    TransferFunction(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type,
+                     size_t textureSize = 1024);
     TransferFunction(const TransferFunction& rhs);
     TransferFunction& operator=(const TransferFunction& rhs);
 
     virtual ~TransferFunction();
 
     const Layer* getData() const;
+    size_t getTextureSize() const;
+
+    //[[deprecated("was declared deprecated. Use `size()` instead")]]
     size_t getNumPoints() const;
-    size_t getTextureSize();
 
-    TransferFunctionDataPoint* getPoint(size_t i);
-    const TransferFunctionDataPoint* getPoint(size_t i) const;
+    //[[deprecated("was declared deprecated. Use `get(size_t i)` instead")]]
+    TFPrimitive* getPoint(size_t i);
+    //[[deprecated("was declared deprecated. Use `get(size_t i) const` instead")]]
+    const TFPrimitive* getPoint(size_t i) const;
 
-    /**
-     * Add a transfer function point at pos with value color
-     *
-     * @param pos     position of TF point in range [0,1]
-     * @param color   color and opacity, i.e. rgba, of the TF point
-     * @throws RangeException if pos is outside [0,1]
-     */
+    //[[deprecated("was declared deprecated. Use `add(const float& pos, const vec4& color)` instead")]]
     void addPoint(const float& pos, const vec4& color);
 
-    /**
-     * Add a transfer function point
-     *
-     * @param point   TF point to be added
-     * @throws RangeException if position of point is outside [0,1]
-     */
-    void addPoint(const Point& point);
+    //[[deprecated("was declared deprecated. Use `add(const TFPrimitiveData& data)` instead")]]
+    void addPoint(const TFPrimitiveData& point);
 
-    /**
-     * Add a transfer function point at pos.x() where pos.y is used as alpha and the color is
-     * interpolated from existing TF points before and after the given position
-     *
-     * @param pos     pos.x refers to the position of TF point in range [0,1], pos.y will be mapped
-     *                to alpha
-     * @throws RangeException if pos.x is outside [0,1]
-     */
+    //[[deprecated("was declared deprecated. Use `add(const vec2& pos)` instead")]]
     void addPoint(const vec2& pos);
 
-    /**
-     * Add a transfer function points
-     *
-     * @throws RangeException if any of the given points is outside [0,1]
-     */
-    void addPoints(const std::vector<Point>& points);
+    //[[deprecated("was declared deprecated. Use `add(const std::vector<TFPrimitiveData>& primitives)` instead")]]
+    void addPoints(const std::vector<TFPrimitiveData>& points);
 
-    /**
-     * Deprecated. Add a transfer function point at pos.x() with value color, pos.y is not used.
-     */
-    [[deprecated("was declared deprecated. Use `addPoint(const float& pos, const vec4& color)` instead")]]
+    //[[deprecated("was declared deprecated. Use `addPoint(const float& pos, const vec4& color)` instead")]]
     void addPoint(const vec2& pos, const vec4& color);
 
-    void removePoint(TransferFunctionDataPoint* dataPoint);
+    //[[deprecated("was declared deprecated. Use `remove(TFPrimitive* primitive)` instead")]]
+    void removePoint(TFPrimitive* dataPoint);
 
+    //[[deprecated("was declared deprecated. Use `clear()` instead")]]
     void clearPoints();
 
-    float getMaskMin() const;
     void setMaskMin(float maskMin);
-    float getMaskMax() const;
+    float getMaskMin() const;
     void setMaskMax(float maskMax);
+    float getMaskMax() const;
 
     /**
      * Notify that the layer data (texture) needs to be updated next time it is requested.
      */
-    void invalidate();
-
-    virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p);
+    virtual void invalidate() override;
 
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
@@ -163,16 +126,11 @@ public:
     void load(const std::string& filename, const FileExtension& ext = FileExtension());
 
 protected:
-    void addPoint(std::unique_ptr<TransferFunctionDataPoint> dataPoint);
-    void removePoint(std::vector<std::unique_ptr<TransferFunctionDataPoint>>::iterator pos);
-    void sort();
     void calcTransferValues() const;
 
 private:
     float maskMin_;
     float maskMax_;
-    std::vector<std::unique_ptr<TransferFunctionDataPoint>> points_;
-    std::vector<TransferFunctionDataPoint*> sorted_;
 
     mutable bool invalidData_;
     std::shared_ptr<LayerRAMPrecision<vec4>> dataRepr_;
@@ -183,4 +141,5 @@ bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
 
 }  // namespace inviwo
+
 #endif  // IVW_TRANSFERFUNCTION_H

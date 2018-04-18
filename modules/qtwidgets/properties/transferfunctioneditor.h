@@ -31,6 +31,7 @@
 #define IVW_TRANSFERFUNCTIONEDITOR_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
 #include <inviwo/core/datastructures/datamapper.h>
 
 #include <warn/push>
@@ -51,7 +52,7 @@ class TransferFunction;
 class TransferFunctionProperty;
 class TransferFunctionEditorControlPoint;
 class TransferFunctionControlPointConnection;
-class TransferFunctionDataPoint;
+class TFPrimitive;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene {
 #include <warn/push>
@@ -62,28 +63,16 @@ public:
     TransferFunctionEditor(TransferFunctionProperty* tfProperty, QWidget* parent = nullptr);
     virtual ~TransferFunctionEditor();
 
-    float getZoomRangeXMin() const;
-    void setZoomRangeXMin(float min);
-    float getZoomRangeXMax() const;
-    void setZoomRangeXMax(float max);
-    float getZoomRangeYMin() const;
-    void setZoomRangeYMin(float min);
 
-    float getZoomRangeYMax() const;
-    void setZoomRangeYMax(float max);
+    virtual void onControlPointAdded(TFPrimitive* p);
+    virtual void onControlPointRemoved(TFPrimitive* p);
+    virtual void onControlPointChanged(const TFPrimitive* p);
+
     void updateConnections();
-    int getMoveMode() const;
+
     void setMoveMode(int i);
+    int getMoveMode() const;
 
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p);
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p);
-
-    /**
-     * \brief Get the display size of the control points.
-     * @see TransferFunctionEditorControlPoint::setSize
-     */
-    float getControlPointSize() const { return controlPointSize_; }
     /**
      * \brief Set the display size of the control points.
      *
@@ -91,8 +80,17 @@ public:
      * @param val Display size
      */
     void setControlPointSize(float val);
+    /**
+     * \brief Get the display size of the control points.
+     * @see TransferFunctionEditorControlPoint::setSize
+     */
+    float getControlPointSize() const { return controlPointSize_; }
 
     void setPointColor(const QColor& color);
+
+    const DataMapper& getDataMapper() const;
+
+    TransferFunctionProperty* getTransferFunctionProperty();
 
 signals:
     void colorChanged(const QColor& color);
@@ -126,11 +124,7 @@ private:
 
     float controlPointSize_ = 15.f;  ///< Size of control points
 
-    float zoomRangeXMin_;
-    float zoomRangeXMax_;
-    float zoomRangeYMin_;
-    float zoomRangeYMax_;
-
+    TransferFunctionProperty* tfProperty_;
     TransferFunction* transferFunction_;  ///< Pointer to widget's member variable
 
     using PointVec = std::vector<TransferFunctionEditorControlPoint*>;

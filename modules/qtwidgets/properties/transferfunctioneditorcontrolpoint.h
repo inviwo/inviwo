@@ -24,109 +24,98 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTIONEDITORCONTROLPOINT_H
 #define IVW_TRANSFERFUNCTIONEDITORCONTROLPOINT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
+
+#include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/datastructures/transferfunctiondatapoint.h>
-#include <inviwo/core/datastructures/datamapper.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsItem>
-#include <QPainterPath>
-#include <warn/pop>
-
-class QGraphicsScene;
-class QGraphicsSceneHoverEvent;
-class QPainter;
 
 namespace inviwo {
 
-
 class TransferFunctionControlPointConnection;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorControlPoint : public QGraphicsItem,
-                                                             public TransferFunctionPointObserver {
+class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorControlPoint
+    : public TransferFunctionEditorPrimitive,
+      public TFPrimitiveObserver {
 public:
-    enum InviwoWidgetGraphicsItemType {
-        TransferFunctionEditorControlPointType = 30,
-        TransferFunctionControlPointConnectionType,
-        Number_of_InviwoWidgetGraphicsItemTypes
-    };
-
-    TransferFunctionEditorControlPoint(TransferFunctionDataPoint* dataPoint, QGraphicsScene* scene,
-                                       const DataMapper& dataMap, float size = 14.0f);
+    TransferFunctionEditorControlPoint(TFPrimitive* primitive, QGraphicsScene* scene,
+                                       float size = 14.0f);
     ~TransferFunctionEditorControlPoint() = default;
-
-    void setDataPoint(TransferFunctionDataPoint* dataPoint);
-    TransferFunctionDataPoint* getPoint() const;
-
-    void setDataMap(const DataMapper& dataMap);
-    DataMapper getDataMap() const;
-
+    
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + TransferFunctionEditorControlPointType };
+    enum { Type = UserType + TransferFunctionEditorPrimitive::TFEditorControlPointType };
     int type() const { return Type; }
 
-    virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p);
-    const QPointF& getCurrentPos() const;
-    void setPos(const QPointF & pos);
-
-    void setSize(float s);
-    float getSize() const;
+    virtual void onTFPrimitiveChange(const TFPrimitive* p) override;
     
     friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
-                           const TransferFunctionEditorControlPoint& rhs);
+                                                    const TransferFunctionEditorControlPoint& rhs);
 
     // Compare points by their "x" value
     friend IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionEditorControlPoint& lhs,
-                          const TransferFunctionEditorControlPoint& rhs);
+                                                   const TransferFunctionEditorControlPoint& rhs);
 
-    TransferFunctionControlPointConnection* left_;   // Non-owning reference
-    TransferFunctionControlPointConnection* right_;  // Non-owning reference
-
-    void setHovered(bool hover);
+    TransferFunctionControlPointConnection* left_ = nullptr;   // Non-owning reference
+    TransferFunctionControlPointConnection* right_ = nullptr;  // Non-owning reference
 
 protected:
-    // Overload
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
-    virtual QRectF boundingRect() const;
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-    virtual QPainterPath shape() const;
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
+    virtual QRectF boundingRect() const override;
+    virtual QPainterPath shape() const override;
 
 private:
-    QRectF calculateLabelRect() const;
+    /**
+     * draws the primitive. Gets called from within paint()
+     *
+     * @param painter   painter for drawing the object, pen and brush are set up to match
+     *                  primitive color and selection status
+     */
+    virtual void paintPrimitive(QPainter* painter) override;
 
-    static const double textWidth_;
-    static const double textHeight_;
-    float size_;
-    bool showLabel_;
-    bool isEditingPoint_;
-    TransferFunctionDataPoint* dataPoint_;
-    DataMapper dataMap_;
-    QPointF currentPos_;
-    bool hovered_;
+    /**
+     * Adjust the position prior updating the graphicsitem position considering
+     * movement restrictions of the TF point ("restrict" or "push").
+     * This function is called in itemChange() before calling onItemPositionChange.
+     *
+     * Side effects: Neighboring control points will be adjusted in turn.
+     *
+     * @param pos   candidate for new position (in scene coords)
+     * @return modified position which is used instead of pos
+     */
+    virtual QPointF prepareItemPositionChange(const QPointF& pos) override;
+
+    /**
+     * gets called in itemChange() after a position change of the item. The position
+     * is already adjusted to lie within the scene bounding box and normalized.
+     *
+     * @param newPos   new, normalized position of the primitive
+     */
+    virtual void onItemPositionChange(const vec2& newPos) override;
+
+    /**
+     * gets called in itemChange() when a scene change has happend
+     */
+    virtual void onItemSceneHasChanged() override;
 };
 
 IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
-                                  const TransferFunctionEditorControlPoint& rhs);
+                                         const TransferFunctionEditorControlPoint& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator!=(const TransferFunctionEditorControlPoint& lhs,
-                                  const TransferFunctionEditorControlPoint& rhs);
+                                         const TransferFunctionEditorControlPoint& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionEditorControlPoint& lhs,
-                                 const TransferFunctionEditorControlPoint& rhs);
+    const TransferFunctionEditorControlPoint& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator>(const TransferFunctionEditorControlPoint& lhs,
-                                 const TransferFunctionEditorControlPoint& rhs);
+                                        const TransferFunctionEditorControlPoint& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator<=(const TransferFunctionEditorControlPoint& lhs,
-                                  const TransferFunctionEditorControlPoint& rhs);
+                                         const TransferFunctionEditorControlPoint& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator>=(const TransferFunctionEditorControlPoint& lhs,
-                                  const TransferFunctionEditorControlPoint& rhs);
+                                         const TransferFunctionEditorControlPoint& rhs);
 
-}  // namespace
+}  // namespace inviwo
+
 #endif  // IVW_TRANSFERFUNCTIONEDITORCONTROLPOINT_H

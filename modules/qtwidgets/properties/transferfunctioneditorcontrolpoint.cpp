@@ -24,140 +24,65 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <modules/qtwidgets/properties/transferfunctioncontrolpointconnection.h>
-#include <inviwo/core/datastructures/transferfunctiondatapoint.h>
+
 #include <modules/qtwidgets/properties/transferfunctioneditor.h>
 #include <modules/qtwidgets/properties/transferfunctioneditorview.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QTextStream>
-#include <QGraphicsLineItem>
 #include <QGraphicsScene>
-#include <QGraphicsSceneEvent>
-#include <QGraphicsView>
 #include <QPainter>
-#include <QKeyEvent>
 #include <warn/pop>
 
 namespace inviwo {
 
-TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(
-    TransferFunctionDataPoint* datapoint, QGraphicsScene* scene, const DataMapper& dataMap, float size)
-    : QGraphicsItem()
-    , left_(nullptr)
-    , right_(nullptr)
-    , size_(size)
-    , showLabel_(false)
-    , isEditingPoint_(false)
-    , dataPoint_(datapoint)
-    , dataMap_(dataMap)
-    , currentPos_()
-    , hovered_(false) {
-    setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
-             ItemSendsGeometryChanges);
-    setZValue(1);
-    setAcceptHoverEvents(true);
-    scene->addItem(this);
-
-    auto pos = QPointF(datapoint->getPos() * scene->sceneRect().width(),
-                       datapoint->getRGBA().a * scene->sceneRect().height());
-
-    currentPos_ = pos;
-    setPos(pos);
-
-    datapoint->addObserver(this);
+TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(TFPrimitive* primitive,
+                                                                       QGraphicsScene* scene,
+                                                                       float size)
+    : TransferFunctionEditorPrimitive(primitive, scene,
+                                      vec2(primitive->getPosition(), primitive->getAlpha()), size) {
+    data_->addObserver(this);
 }
 
-void TransferFunctionEditorControlPoint::paint(QPainter* painter,
-                                               const QStyleOptionGraphicsItem* options,
-                                               QWidget* widget) {
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
-    painter->setRenderHint(QPainter::Antialiasing, true);
-    QPen pen = QPen();
-    pen.setWidthF(3.0);
-    pen.setCosmetic(true);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setStyle(Qt::SolidLine);
-    isSelected() ? pen.setColor(QColor(213, 79, 79)) : pen.setColor(QColor(66, 66, 66));
-    QBrush brush = QBrush(QColor::fromRgbF(dataPoint_->getRGBA().r,
-                                           dataPoint_->getRGBA().g,
-                                           dataPoint_->getRGBA().b));
-    painter->setPen(pen);
-    painter->setBrush(brush);
-    const auto radius = getSize() * 0.5;
-    painter->drawEllipse(QPointF(0.0, 0.0), radius, radius);
-
-    if (showLabel_) {
-        auto label(QString("a(%1)=%2")
-            .arg(dataMap_.valueRange.x +
-                 dataPoint_->getPos() * (dataMap_.valueRange.y - dataMap_.valueRange.x))
-            .arg(dataPoint_->getRGBA().a, 0, 'f', 3) );
-
-        Qt::AlignmentFlag align;
-        if (dataPoint_->getPos() > 0.5f) {
-            align = Qt::AlignRight;
-        } else {
-            align = Qt::AlignLeft;
-        }
-        QRectF rect = calculateLabelRect();
-
-        pen.setColor(QColor(46, 46, 46));
-        painter->setPen(pen);
-        QFont font;
-        font.setPixelSize(14);
-        painter->setFont(font);
-        painter->drawText(rect, align, label);
-    }
+void TransferFunctionEditorControlPoint::onTFPrimitiveChange(const TFPrimitive* p) {
+    setTFPosition(vec2(p->getPosition(), p->getAlpha()));
 }
 
 QRectF TransferFunctionEditorControlPoint::boundingRect() const {
-    double bBoxSize = getSize() + 5.0; //<! consider size of pen 
+    double bBoxSize = getSize() + 5.0;  //<! consider size of pen
     auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0, bBoxSize, bBoxSize);
-    if (showLabel_) {
-        QRectF rect = calculateLabelRect();
-        return rect.united(bRect);
-    } else {
-        return bRect;
-    }
+
+    return bRect;
 }
 
 QPainterPath TransferFunctionEditorControlPoint::shape() const {
     QPainterPath path;
-    const auto radius = getSize() * 0.5 + 1.5; //<! consider size of pen 
+    const auto radius = getSize() * 0.5 + 1.5;  //<! consider size of pen
     path.addEllipse(QPointF(0.0, 0.0), radius, radius);
     return path;
 }
 
-void TransferFunctionEditorControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent*) {
-    setHovered(true);
+void TransferFunctionEditorControlPoint::paintPrimitive(QPainter* painter) {
+    const auto radius = getSize() * 0.5;
+    painter->drawEllipse(QPointF(0.0, 0.0), radius, radius);
 }
 
-void TransferFunctionEditorControlPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent*) {
-    setHovered(false);
-}
+QPointF TransferFunctionEditorControlPoint::prepareItemPositionChange(const QPointF& pos) {
+    QPointF adjustedPos(pos);
 
-QVariant TransferFunctionEditorControlPoint::itemChange(GraphicsItemChange change,
-                                                        const QVariant& value) {
-    TransferFunctionEditor* tfe = qobject_cast<TransferFunctionEditor*>(scene());
-
-    if (change == QGraphicsItem::ItemPositionChange && tfe) {
-        // constrain positions to valid view positions
-        currentPos_ = value.toPointF();
+    if (auto tfe = qobject_cast<TransferFunctionEditor*>(scene())) {
         QRectF rect = scene()->sceneRect();
+        const double d = 2.0 * rect.width() * glm::epsilon<float>();
 
-        int moveMode = tfe->getMoveMode();
+        const int moveMode = tfe->getMoveMode();
 
-        if (!rect.contains(currentPos_)) {
-            currentPos_.setX(qMin(rect.right(), qMax(currentPos_.x(), rect.left())));
-            currentPos_.setY(qMin(rect.bottom(), qMax(currentPos_.y(), rect.top())));
-        }
-
-        float d = 2.0f * static_cast<float>(rect.width()) * std::numeric_limits<float>::epsilon();
+        // need to update position prior to updating connections
+        currentPos_ = adjustedPos;
 
         if (left_) {
             if (left_->left_ && *(left_->left_) > *this) {
@@ -165,16 +90,19 @@ QVariant TransferFunctionEditorControlPoint::itemChange(GraphicsItemChange chang
                     case 0:  // Free
                         break;
                     case 1:  // Restrict
-                        currentPos_.setX(left_->left_->getCurrentPos().x() + d);
+                        adjustedPos.setX(left_->left_->getCurrentPos().x() + d);
+                        // need to update position prior to updating connections
+                        currentPos_ = adjustedPos;
                         break;
                     case 2:  // Push
                         left_->left_->setPos(
-                            QPointF(currentPos_.x() - d, left_->left_->getCurrentPos().y()));
+                            QPointF(adjustedPos.x() - d, left_->left_->getCurrentPos().y()));
                         break;
                 }
 
                 tfe->updateConnections();
             } else {
+                currentPos_ = adjustedPos;
                 left_->updateShape();
             }
         }
@@ -184,112 +112,37 @@ QVariant TransferFunctionEditorControlPoint::itemChange(GraphicsItemChange chang
                     case 0:  // Free
                         break;
                     case 1:  // Restrict
-                        currentPos_.setX(right_->right_->getCurrentPos().x() - d);
+                        adjustedPos.setX(right_->right_->getCurrentPos().x() - d);
+                        // need to update position prior to updating connections
+                        currentPos_ = adjustedPos;
                         break;
                     case 2:  // Push
                         right_->right_->setPos(
-                            QPointF(currentPos_.x() + d, right_->right_->getCurrentPos().y()));
+                            QPointF(adjustedPos.x() + d, right_->right_->getCurrentPos().y()));
                         break;
                 }
+
                 tfe->updateConnections();
             } else {
                 right_->updateShape();
             }
         }
-
-        // update the associated transfer function data point
-        if (!isEditingPoint_) {
-            isEditingPoint_ = true;
-            dataPoint_->setPosA(static_cast<float>(currentPos_.x() / rect.width()),
-                                static_cast<float>(currentPos_.y() / rect.height()));
-            isEditingPoint_ = false;
-        }
-
-        // return the constraint position
-        return currentPos_;
-    } else if (change == QGraphicsItem::ItemSceneHasChanged) {
-        onTransferFunctionPointChange(dataPoint_);
     }
 
-    return QGraphicsItem::itemChange(change, value);
+    return adjustedPos;
 }
 
-void TransferFunctionEditorControlPoint::onTransferFunctionPointChange(
-    const TransferFunctionDataPoint* p) {
-    if (!isEditingPoint_) {
-        isEditingPoint_ = true;
-        QRectF rect = scene()->sceneRect();
-        QPointF newpos(p->getPos() * rect.width(), p->getRGBA().a * rect.height());
-        if (newpos != pos()) setPos(newpos);
-        isEditingPoint_ = false;
-        update();
-    }
+void TransferFunctionEditorControlPoint::onItemPositionChange(const vec2& newPos) {
+    data_->setPositionAlpha(newPos);
 }
 
-QRectF TransferFunctionEditorControlPoint::calculateLabelRect() const {
-    QRectF rect;
-    auto size = getSize();
-    if (dataPoint_->getPos() > 0.5f) {
-        rect.setX(-0.5 * size - textWidth_);
-    } else {
-        rect.setX(0.5 * size);
-    }
-    if (dataPoint_->getRGBA().a > 0.5f) {
-        rect.setY(0.5 * size);
-    } else {
-        rect.setY(-0.5 * size - textHeight_);
-    }
-    rect.setHeight(textHeight_);
-    rect.setWidth(textWidth_);
-    return rect;
+void TransferFunctionEditorControlPoint::onItemSceneHasChanged() {
+    onTFPrimitiveChange(data_);
 }
-
-void TransferFunctionEditorControlPoint::setDataMap(const DataMapper& dataMap) {
-    dataMap_ = dataMap;
-}
-
-DataMapper TransferFunctionEditorControlPoint::getDataMap() const {
-    return dataMap_;
-}
-
-void TransferFunctionEditorControlPoint::setDataPoint(TransferFunctionDataPoint* dataPoint) {
-    dataPoint_ = dataPoint;
-}
-
-TransferFunctionDataPoint* TransferFunctionEditorControlPoint::getPoint() const {
-    return dataPoint_;
-}
-
-void TransferFunctionEditorControlPoint::setPos(const QPointF & pos) {
-    currentPos_ = pos;
-    QGraphicsItem::setPos(pos);
-}
-
-void TransferFunctionEditorControlPoint::setSize(float s) {
-    prepareGeometryChange();
-    size_ = s;
-    update();
-}
-
-float TransferFunctionEditorControlPoint::getSize() const {
-    return hovered_ ? size_ + 5.0f : size_;
-}
-
-void TransferFunctionEditorControlPoint::setHovered(bool hover) {
-    prepareGeometryChange();
-    hovered_ = hover;
-    showLabel_ = hover;
-    update();
-}
-
-const QPointF& TransferFunctionEditorControlPoint::getCurrentPos() const{
-    return currentPos_;
-}
-
 
 bool operator==(const TransferFunctionEditorControlPoint& lhs,
                 const TransferFunctionEditorControlPoint& rhs) {
-    return *lhs.dataPoint_ == *rhs.dataPoint_;
+    return *lhs.data_ == *rhs.data_;
 }
 
 bool operator!=(const TransferFunctionEditorControlPoint& lhs,
@@ -317,10 +170,4 @@ bool operator>=(const TransferFunctionEditorControlPoint& lhs,
     return !(lhs < rhs);
 }
 
-const double TransferFunctionEditorControlPoint::textHeight_ = 20;
-const double TransferFunctionEditorControlPoint::textWidth_ = 180;
-
-}  // namespace
-
-
-
+}  // namespace inviwo
