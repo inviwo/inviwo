@@ -34,6 +34,13 @@
 #  define MAX_ISOVALUE_COUNT 5
 #endif // MAX_ISOVALUE_COUNT
 
+// need to ensure there is always at least one isovalue due to the use of the macro
+// as array size in IsovalueParameters which will cause an error for size = 0.
+#if MAX_ISOVALUE_COUNT < 1
+#  undef MAX_ISOVALUE_COUNT
+#  define MAX_ISOVALUE_COUNT 1
+#endif
+
 struct IsovalueParameters {
     float values[MAX_ISOVALUE_COUNT];
     vec4 colors[MAX_ISOVALUE_COUNT];
@@ -109,15 +116,16 @@ vec4 drawIsosurfaces(in vec4 curResult, in IsovalueParameters isoparams,
                      in vec3 rayPosition, in vec3 rayDirection, in vec3 toCameraDir,
                      in float t, in float tIncr, inout float tDepth) {
 
-#if MAX_ISOVALUE_COUNT < 1
-    // no isovalues, return current color
-    return curResult;
-#elif MAX_ISOVALUE_COUNT == 1
-    vec4 result = drawIsosurface(curResult, isoparams.values[0], isoparams.colors[0],
-                                 voxel, previousVoxel, volume, volumeParameters, channel,
-                                 camera, lighting, rayPosition, rayDirection, toCameraDir, t, tIncr, tDepth);
-#else // MAX_ISOVALUE_COUNT
+    // in case of zero no isovalues return current color
     vec4 result = curResult;
+
+#if defined(ISOSURFACE_ENABLED)
+
+#if MAX_ISOVALUE_COUNT == 1
+    result = drawIsosurface(result, isoparams.values[0], isoparams.colors[0],
+                            voxel, previousVoxel, volume, volumeParameters, channel,
+                            camera, lighting, rayPosition, rayDirection, toCameraDir, t, tIncr, tDepth);
+#else // MAX_ISOVALUE_COUNT
     // multiple isosurfaces, need to determine order of traversal
     if (voxel[channel] - previousVoxel[channel] > 0) {
         for (int i = 0; i < MAX_ISOVALUE_COUNT; ++i) {
@@ -133,6 +141,7 @@ vec4 drawIsosurfaces(in vec4 curResult, in IsovalueParameters isoparams,
         }
     }
 #endif // MAX_ISOVALUE_COUNT
+#endif // ISOSURFACE_ENABLED
 
     return result;
 }

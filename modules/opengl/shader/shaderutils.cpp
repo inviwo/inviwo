@@ -272,10 +272,14 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
 }
 
 void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
-    shader.getFragmentShaderObject()->addShaderDefine("MAX_ISOVALUE_COUNT",
-                                                      toString(property.get().getNumIsoValues()));
+    auto isovalueCount = property.get().getNumIsoValues();
 
-    if (property.getEnabled()) {
+    // need to ensure there is always at least one isovalue due to the use of the macro
+    // as array size in IsovalueParameters
+    shader.getFragmentShaderObject()->addShaderDefine("MAX_ISOVALUE_COUNT",
+                                                      toString(std::max<size_t>(1, isovalueCount)));
+
+    if (property.getEnabled() && (property.get().getNumIsoValues()) > 0) {
         shader.getFragmentShaderObject()->addShaderDefine("ISOSURFACE_ENABLED");
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("ISOSURFACE_ENABLED");
