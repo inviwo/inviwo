@@ -45,8 +45,6 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
 
-
-
 namespace inviwo {
 
 void exposeVolume(pybind11::module &m) {
@@ -81,30 +79,7 @@ void exposeVolume(pybind11::module &m) {
             },
             [](Volume *volume, py::array data) {
                 auto rep = volume->getEditableRepresentation<VolumeRAM>();
-
-                if (data.dtype() != pyutil::toNumPyFormat(rep->getDataFormat())) {
-                    throw Exception("Invalid data format", IvwContextCustom("Python"));
-                }
-                if (data.ndim() == 3) {
-                    if (rep->getDataFormat()->getComponents() != 1) {
-                        throw Exception("Invalid data format", IvwContextCustom("Python"));
-                    }
-                } else if (data.ndim() == 4) {
-                    if (data.shape(4) != rep->getDataFormat()->getComponents()) {
-                        throw Exception("Invalid data format", IvwContextCustom("Python"));
-                    }
-                } else {
-                    throw Exception("Invalid data rank", IvwContextCustom("Python"));
-                }
-                if (data.shape(0) != rep->getDimensions()[0]) {
-                    throw Exception("Invalid data dimensions", IvwContextCustom("Python"));
-                }
-                if (data.shape(1) != rep->getDimensions()[1]) {
-                    throw Exception("Invalid data dimensions", IvwContextCustom("Python"));
-                }
-                if (data.shape(2) != rep->getDimensions()[2]) {
-                    throw Exception("Invalid data dimensions", IvwContextCustom("Python"));
-                }
+                pyutil::checkDataFormat<3>(rep->getDataFormat(), rep->getDimensions(), data);
 
                 memcpy(rep->getData(), data.data(0), data.nbytes());
             })

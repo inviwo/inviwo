@@ -85,10 +85,8 @@ public:
     *
     * @return true, if script execution has been successful
     */
-    bool run(const std::unordered_map<std::string, pybind11::object>& locals,
-             std::function<void(pybind11::dict)> callback = nullptr);
-
-    bool run(pybind11::dict locals = pybind11::dict(),
+    bool run(const std::unordered_map<std::string, pybind11::object>& locals =
+                 std::unordered_map<std::string, pybind11::object>{},
              std::function<void(pybind11::dict)> callback = nullptr);
 
     bool run(std::function<void(pybind11::dict)> callback);
@@ -130,17 +128,17 @@ public:
     virtual void setFilename(const std::string& filename) override;
 
     /**
-    * Register a callback that will be called once the file has changed on disk.
-    */
+     * Register a callback that will be called once the file has changed on disk.
+     */
     const BaseCallBack* onChange(std::function<void()> callback);
     /**
-    * Remove a callback from the list of callbacks
-    */
+     * Remove a callback from the list of callbacks
+     */
     void removeOnChange(const BaseCallBack* callback);
 
 private:
     void readFileAndSetSource();
-    
+
     virtual void fileChanged(const std::string& fileName) override;
 
     CallBackList onChangeCallbacks_;

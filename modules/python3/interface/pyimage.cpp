@@ -89,28 +89,7 @@ void exposeImage(py::module &m) {
             },
             [](Layer *layer, py::array data) {
                 auto rep = layer->getEditableRepresentation<LayerRAM>();
-
-                if (data.dtype() != pyutil::toNumPyFormat(rep->getDataFormat())) {
-                    throw Exception("Invalid data format", IvwContextCustom("Python"));
-                }
-
-                if (data.ndim() == 2) {
-                    if (rep->getDataFormat()->getComponents() != 1) {
-                        throw Exception("Invalid data format", IvwContextCustom("Python"));
-                    }
-                } else if (data.ndim() == 3) {
-                    if (data.shape(4) != rep->getDataFormat()->getComponents()) {
-                        throw Exception("Invalid data format", IvwContextCustom("Python"));
-                    }
-                } else {
-                    throw Exception("Invalid data rank", IvwContextCustom("Python"));
-                }
-                if (data.shape(0) != rep->getDimensions()[0]) {
-                    throw Exception("Invalid data dimensions", IvwContextCustom("Python"));
-                }
-                if (data.shape(1) != rep->getDimensions()[1]) {
-                    throw Exception("Invalid data dimensions", IvwContextCustom("Python"));
-                }
+                pyutil::checkDataFormat<2>(rep->getDataFormat(), rep->getDimensions(), data);
 
                 memcpy(rep->getData(), data.data(0), data.nbytes());
             });
