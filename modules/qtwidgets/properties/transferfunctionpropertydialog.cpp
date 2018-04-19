@@ -122,7 +122,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
         return toString(static_cast<float>(val) / range);
     });
 
-    colorWheel_ = util::make_unique<ColorWheel>();
+    colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
     connect(colorWheel_.get(), &ColorWheel::colorChange, tfEditor_.get(),
             &TransferFunctionEditor::setPointColor);
 
