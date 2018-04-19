@@ -34,12 +34,11 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 
 #include <memory>
 
 namespace inviwo {
-class BasicMesh;
 
 namespace meshutil {
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> ellipse(
@@ -91,7 +90,7 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> coordindicator(const vec3& center
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset,
                                                            const vec4& color);
 
-IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> boundingBoxAdjacency(const mat4& basisandoffset,
+IVW_MODULE_BASE_API std::shared_ptr<NewSimpleMesh> boundingBoxAdjacency(const mat4& basisandoffset,
                                                                     const vec4& color);
 
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> torus(const vec3& center,
@@ -100,10 +99,10 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> torus(const vec3& center,
                                                      const ivec2& subdivisions = ivec2(32, 8),
                                                      vec4 color = vec4(1, 1, 1, 1));
 
-IVW_MODULE_BASE_API std::shared_ptr<Mesh> cameraFrustum(
-    const Camera& camera, vec4 color, std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>());
+IVW_MODULE_BASE_API std::shared_ptr<ColoredMesh> cameraFrustum(
+    const Camera& camera, vec4 color, std::shared_ptr<ColoredMesh> mesh = std::make_shared<ColoredMesh>());
 
-}  // namespace util
+}  // namespace meshutil
 
 }  // namespace inviwo
 
