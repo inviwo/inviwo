@@ -158,9 +158,10 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         }
     }
 
-    if (bgTDepth > tEnd) {
+    // composite background if lying beyond the last volume sample, which is located at tEnd - tIncr*0.5
+    if (bgTDepth > tEnd - tIncr * 0.5) {
         result =
-            DRAW_BACKGROUND(result, bgTDepth, tIncr, backgroundColor, bgTDepth, tDepth);
+            DRAW_BACKGROUND(result, bgTDepth, tIncr * 0.5, backgroundColor, bgTDepth, tDepth);
     }
 
     if (tDepth != -1.0) {
