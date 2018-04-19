@@ -59,12 +59,16 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
 Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
 
-    auto inviwopy = pybind11::module::import("inviwopy");
-    auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
+    try {
+        auto inviwopy = pybind11::module::import("inviwopy");
+        auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
 
-    m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
-          pybind11::arg("defaultResponse") = "");
-    m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+        m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
+              pybind11::arg("defaultResponse") = "");
+        m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+    } catch (const std::exception& e) {
+        throw ModuleInitException(e.what(), IvwContext);
+    }
 }
 
 Python3QtModule::~Python3QtModule() = default;

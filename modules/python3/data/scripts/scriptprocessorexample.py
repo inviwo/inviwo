@@ -1,24 +1,37 @@
+import inviwopy
+from inviwopy.glm import *
+from inviwopy.properties import IntVec3Property
+from inviwopy.properties import IntVec3Property
+from inviwopy.data import VolumeOutport
+from inviwopy.data import Volume
+
+import numpy
+
 def init(self):
-	import inviwopy
+	"""
+	The PythonScriptProcessor will call the init function on construction and whenever this
+	script changes. Hence one needs to take care not to add ports and properties multiple times.
+	The argument 'self' represents the PythonScriptProcessor.
+	"""
 	self.displayName = "Test Volume"
 	if not hasattr(self, "outport"):
-		self.outport = inviwopy.data.VolumeOutport("outport")
+		# Need to assing the port to self, since addOutport does not take onwership
+		self.outport = VolumeOutport("outport")
 		self.addOutport(self.outport, "default")
 	if not hasattr(self, "dim"):
-		self.dim = inviwopy.properties.IntVec3Property("mydim", "dim", 
-			inviwopy.glm.ivec3(5), 
-			inviwopy.glm.ivec3(0), 
-			inviwopy.glm.ivec3(20))
+		# Need to assing the property to self, since addProperty does not take onwership
+		self.dim = IntVec3Property("dim", "dim", ivec3(5), ivec3(0), ivec3(20))
 		self.addProperty(self.dim)
 
 def process(self):
-	import numpy
-	import inviwopy
-	## create a small float volume filled with random noise
+	"""
+	The PythonScriptProcessor will call this process function whenever the processor process 
+	function is called. The argument 'self' represents the PythonScriptProcessor.
+	"""
 	numpy.random.seed(546465)
-	volume = inviwopy.data.Volume(
-		numpy.random.rand(self.dim.value[0], self.dim.value[1], self.dim.value[2]).astype(numpy.float32)) 
-	volume.dataMap.dataRange = inviwopy.glm.dvec2(0.0, 1.0)
-	volume.dataMap.valueRange = volume.dataMap.dataRange
+	dim = self.dim.value;
+	## create a small float volume filled with random noise
+	volume = Volume(numpy.random.rand(dim[0], dim[1], dim[2]).astype(numpy.float32))
+	volume.dataMap.dataRange = dvec2(0.0, 1.0)
+	volume.dataMap.valueRange = dvec2(0.0, 1.0)
 	self.outport.setData(volume)
-

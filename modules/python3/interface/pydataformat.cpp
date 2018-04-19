@@ -47,16 +47,30 @@ struct DataFormatHelper {
 void exposeDataFormat(pybind11::module &m) {
     namespace py = pybind11;
 
+    py::enum_<NumericType>(m, "NumericType")
+        .value("NotSpecialized", NumericType::NotSpecialized)
+        .value("Float", NumericType::Float)
+        .value("UnsignedInteger", NumericType::UnsignedInteger)
+        .value("SignedInteger", NumericType::SignedInteger);
+
+    py::enum_<DataFormatId> dfid(m, "DataFormatId");
+    dfid.value("NotSpecialized", DataFormatId::NotSpecialized);
+    for(int i = 1; i < static_cast<int>(DataFormatId::NumberOfFormats); ++i) {
+        auto format = DataFormatBase::get(static_cast<DataFormatId>(i));
+        dfid.value(format->getString(), static_cast<DataFormatId>(i));
+    }
+    dfid.value("NumberOfFormats", DataFormatId::NumberOfFormats);
+
     py::class_<DataFormatBase>(m, "DataFormat")
         .def_property_readonly("size", &DataFormatBase::getSize)
         .def_property_readonly("components", &DataFormatBase::getComponents)
         .def_property_readonly("precision", &DataFormatBase::getPrecision)
-        //.def_property_readonly("numericType", &DataFormatBase::getNumericTypve)
-        //.def_property_readonly("id", &DataFormatBase::getId)
+        .def_property_readonly("numericType", &DataFormatBase::getNumericType)
+        .def_property_readonly("id", &DataFormatBase::getId)
         .def_property_readonly("max", &DataFormatBase::getMax)
         .def_property_readonly("min", &DataFormatBase::getMin)
         .def_property_readonly("lowest", &DataFormatBase::getLowest)
-        .def_property_readonly("__str__", &DataFormatBase::getString);
+        .def_property_readonly("__repr__", &DataFormatBase::getString);
 
     util::for_each_type<DefaultDataFormats>{}(DataFormatHelper{}, m);
 }

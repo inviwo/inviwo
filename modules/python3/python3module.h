@@ -37,9 +37,7 @@
 
 
 namespace inviwo {
-
 class PythonInterpreter;
-class PyBindModule;
 
 class IVW_MODULE_PYTHON3_API Python3Module : public InviwoModule {
 public:
@@ -51,10 +49,8 @@ public:
 private:
     std::unique_ptr<PythonInterpreter> pythonInterpreter_;
     TCLAP::ValueArg<std::string> pythonScriptArg_;
+    CommandLineArgHolder argHolder_;
     PythonLogger pythonLogger_;
-
-    // Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
 };
 
 }  // namespace
