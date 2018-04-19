@@ -82,7 +82,7 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
         if (a >= 1.0) return result;
         
         // adjust length of remaining ray segment
-        tIncr -= (1.0 - a) * raySegmentLen;
+        tIncr = a * raySegmentLen;
 
         vec3 isopos = rayPosition - raySegmentLen * a * rayDirection;
 
@@ -102,15 +102,14 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
 #endif // SHADING_ENABLED
 
         // apply compositing of volumetric media from last sampling position up till isosurface
-        vec4 isoSample = mix(voxel, previousVoxel, a);
-        vec4 voxelColor = APPLY_CHANNEL_CLASSIFICATION(transferFunction, isoSample, channel);
+        vec4 voxelColor = APPLY_CHANNEL_CLASSIFICATION(transferFunction, vec4(isovalue), channel);
         if (voxelColor.a > 0) {
 #if defined(SHADING_ENABLED)
             voxelColor.rgb = APPLY_LIGHTING(lighting, voxelColor.rgb, voxelColor.rgb, vec3(1.0),
                                        isoposWorld, -gradient, toCameraDir);
 #endif // SHADING_ENABLED
 
-            result = APPLY_COMPOSITING(result, voxelColor, isopos, isoSample, gradient, camera,
+            result = APPLY_COMPOSITING(result, voxelColor, isopos, vec4(isovalue), gradient, camera,
                                        isovalue, t - tIncr, tDepth, raySegmentLen - tIncr);
         }
 
