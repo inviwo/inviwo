@@ -28,12 +28,49 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/util/exception.h>
 
 #include <algorithm>
+#include <string>
+#include <sstream>
 
 namespace inviwo {
 
 namespace color {
+
+vec4 hex2rgba(const std::string &str) {
+    vec4 result;
+    if ((str[0] == '#') && ((str.size() != 7) || (str.size() != 9))) {
+        // extract rgba values from HTML color code
+        try {
+            unsigned long v = std::stoul("0x" + str.substr(1), nullptr, 16);
+            unsigned char *c = reinterpret_cast<unsigned char*>(&v);
+            result = vec4(c[3], c[2], c[1], c[0]) / 255.0f;
+            if (str.size() == 7) {
+                // no alpha provided in hex code, set to 1.0
+                result.a = 1.0;
+            }
+        } catch (...) {
+            // string was not properly formatted, ignore
+        }
+    } else {
+        std::ostringstream oss;
+        oss << "Invalid hex code \"" << str << "\".";
+        throw Exception(oss.str(), IvwContextCustom("color::hex2rgba"));
+    }
+    return result;
+}
+
+std::string rgba2hex(const vec4 &rgba) {
+    glm::u8vec4 color(rgba * 255.0f);
+    // change byte order
+    std::swap(color.r, color.a);
+    std::swap(color.g, color.b);
+
+    std::ostringstream ss;
+    ss << "#" << std::hex << *reinterpret_cast<unsigned int*>(&color);
+    return ss.str();
+}
 
 vec3 getD65WhitePoint() {
     // whiteD65 = rgb2XYZ(vec3(1.0f, 1.0f, 1.0f);

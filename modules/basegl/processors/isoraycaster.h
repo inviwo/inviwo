@@ -100,4 +100,4 @@ private:
 
 } // namespace
 
-#endif // IVW_SIMPLERAYCASTER_H
+#endif // IVW_ISORAYCASTER_H

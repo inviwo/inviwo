@@ -54,6 +54,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerrepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/isovalue.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/isovaluecollection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/directionallight.h
@@ -199,6 +201,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageeditorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/isotfproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/isovalueproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
@@ -349,6 +353,8 @@ set(SOURCE_FILES
     datastructures/image/layerramconverter.cpp
     datastructures/image/layerramprecision.cpp
     datastructures/image/layerrepresentation.cpp
+    datastructures/isovalue.cpp
+    datastructures/isovaluecollection.cpp
     datastructures/light/baselightsource.cpp
     datastructures/representationconvertermetafactory.cpp
     datastructures/spatialdata.cpp
@@ -460,6 +466,8 @@ set(SOURCE_FILES
     properties/filepatternproperty.cpp
     properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
+    properties/isotfproperty.cpp
+    properties/isovalueproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp

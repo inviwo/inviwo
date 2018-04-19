@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/imageeditorproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -53,6 +54,7 @@
 #include <modules/qtwidgets/properties/eventpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/fontsizepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/isovaluepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
@@ -171,6 +173,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::PythonEditor);
     registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
+    registerPropertyWidget<IsoValuePropertyWidgetQt, IsoValueProperty>("Default");
     registerPropertyWidget<TransferFunctionPropertyWidgetQt, TransferFunctionProperty>("Default");
 
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
