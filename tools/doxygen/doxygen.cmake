@@ -217,6 +217,7 @@ DOT_CLEANUP            = YES
 PREDEFINED             = DOXYGEN_SHOULD_SKIP_THIS
 SHOW_INCLUDE_FILES     = YES
 ALPHABETICAL_INDEX     = YES
+HTML_TIMESTAMP         = YES
 
 ${additional_flags}
 ")
