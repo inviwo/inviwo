@@ -34,7 +34,6 @@
 #include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
 
 #include <inviwo/core/datastructures/tfprimitive.h>
-#include <inviwo/core/datastructures/transferfunctiondatapoint.h>
 
 namespace inviwo {
 

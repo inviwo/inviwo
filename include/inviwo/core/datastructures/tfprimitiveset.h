@@ -152,14 +152,14 @@ protected:
     void sort();
 
     /**
-     * Interpolate the color between TFPrimitives at position v and return the respective color and
+     * Interpolate the color between TFPrimitives at position t and return the respective color and
      * opacity (rgba). The range of all TFPrimitives is [0,1] when TF type is relative
      *
-     * @param v   sampling position, if TF type is relative and v is outside the range [0,1] it is
+     * @param t   sampling position, if TF type is relative and t is outside the range [0,1] it is
      *            clamped to [0,1]
-     * @return color and opacity at position v
+     * @return color and opacity at position t
      */
-    vec4 interpolateColor(float v) const;
+    vec4 interpolateColor(float t) const;
 
     void setSerializationKey(const std::string& key, const std::string& itemKey);
 
