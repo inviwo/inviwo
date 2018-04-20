@@ -617,8 +617,8 @@ std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& c
 }
 
 //! [Using Simple Mesh]
-std::shared_ptr<NewSimpleMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color) {
-    auto mesh = std::make_shared<NewSimpleMesh>();
+std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color) {
+    auto mesh = std::make_shared<PosTexColorMesh>();
     mesh->setModelMatrix(basisandoffset);
 
     mesh->addVertices({{vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), color},

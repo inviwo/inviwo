@@ -67,13 +67,13 @@ void addIndices(SimpleMesh* mesh, T index, Args... args) {
     mesh->addIndex(index);
     addIndices(mesh, args...);
 }
-}
+}  // namespace detail
 
 template <typename... Args>
 void SimpleMesh::addIndices(Args&&... args) {
     detail::addIndices<Args...>(this, args...);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SIMPLEMESHRAM_H

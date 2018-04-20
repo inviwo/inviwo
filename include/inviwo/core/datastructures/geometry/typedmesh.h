@@ -55,33 +55,21 @@ namespace inviwo {
  * \ingroup typedmesh
  */
 namespace buffertraits {
-
-namespace detail {
-template <typename T, typename... Ts>
-struct get_index;
-
-template <typename T, typename... Ts>
-struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
-
-template <typename T, typename Tail, typename... Ts>
-struct get_index<T, Tail, Ts...>
-    : std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {};
-
-}  // namespace detail
-
 /**
  * \ingroup typedmesh
- * Struct used to tell TypedMesh what buffers to create.
- * The first two template parameters, 'typename T, unsigned DIM' is used rather than
- * ´´´Vector<DIM,T>´´´ or glm::TvecX due to compiler issues related to the clone function.
- * Similarly, The template parameter ´´´int attrib´´´ needs can't be a strongly typed enum
- * (inviwo::BufferType) and hence it is an int.
+ * Based class used to decorate TypedMesh with buffers. Handles creation of buffers and adds it to
+ * the mesh. Also has convince functions to access the buffers and its data containers.
+ * **Note on Template parameters**
+ * The first two template parameters, `typename T, unsigned DIM` is used instead of
+ * `Vector<DIM,T>` or glm::TvecX, this is due to compiler issues related to the clone function.
+ * Similarly, The template parameter `int attrib` can't be a strongly typed enum
+ * (inviwo::BufferType) and therefor it is an int.
  *
  * \see TypedMesh
  * \see typedmesh
  */
 template <typename T, unsigned DIM, int attrib, int location = attrib>
-class BufferTrait {
+class TypedMeshBufferBase {
 public:
     using type = Vector<DIM, T>;
     static inviwo::Mesh::BufferInfo bi() {
@@ -89,15 +77,15 @@ public:
     }
 
 #if _MSC_VER <= 1900
-    BufferTrait(type t) : t(t) {}
+    TypedMeshBufferBase(type t) : t(t) {}
     type t;
     operator type() const { return t; }
 #endif
 
-    BufferTrait() {}
-    virtual ~BufferTrait() = default;
+    TypedMeshBufferBase() {}
+    virtual ~TypedMeshBufferBase() = default;
 
-    BufferTrait(Mesh &mesh) { mesh.addBuffer(bi(), buffer_); }
+    TypedMeshBufferBase(Mesh &mesh) { mesh.addBuffer(bi(), buffer_); }
 
     // Convenience functions
     auto getTypedRAMRepresentation() const { return buffer_->getRAMRepresentation(); }
@@ -114,16 +102,17 @@ public:
  * \ingroup typedmesh
  * BufferTrait for Position buffers (glm::vec3)
  */
-class PositionsBuffer : public BufferTrait<float, 3, static_cast<int>(BufferType::PositionAttrib)> {
+class PositionsBuffer
+    : public TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)> {
 public:
-    using Base = BufferTrait<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
+    using Base = TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<type>> getVertices() const { return Base::buffer_; }
     std::shared_ptr<Buffer<type>> getEditableVertices() { return Base::buffer_; }
 
-    void setVertexPosition(size_t index, vec3 pos){
-        getEditableVertices()->getEditableRAMRepresentation()->set(index,pos);
+    void setVertexPosition(size_t index, vec3 pos) {
+        getEditableVertices()->getEditableRAMRepresentation()->set(index, pos);
     }
 };
 
@@ -131,16 +120,17 @@ public:
  * \ingroup typedmesh
  * BufferTrait for Normal buffers (glm::vec3)
  */
-class NormalBuffer : public BufferTrait<float, 3, static_cast<int>(BufferType::NormalAttrib)> {
+class NormalBuffer
+    : public TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::NormalAttrib)> {
 public:
-    using Base = BufferTrait<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
+    using Base = TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<type>> getNormals() const { return Base::buffer_; }
     std::shared_ptr<Buffer<type>> getEditableNormals() { return Base::buffer_; }
 
-    void setVertexNormal(size_t index, vec3 normal){
-        getEditableNormals()->getEditableRAMRepresentation()->set(index,normal);
+    void setVertexNormal(size_t index, vec3 normal) {
+        getEditableNormals()->getEditableRAMRepresentation()->set(index, normal);
     }
 };
 
@@ -148,33 +138,36 @@ public:
  * \ingroup typedmesh
  * BufferTrait for Colors buffers (glm::vec4)
  */
-class ColorsBuffer : public BufferTrait<float, 4, static_cast<int>(BufferType::ColorAttrib)> {
+class ColorsBuffer
+    : public TypedMeshBufferBase<float, 4, static_cast<int>(BufferType::ColorAttrib)> {
 public:
-    using Base = BufferTrait<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
+    using Base = TypedMeshBufferBase<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<type>> getColors() const { return Base::buffer_; }
     std::shared_ptr<Buffer<type>> getEditableColors() { return Base::buffer_; }
 
-    void setVertexColor(size_t index, vec4 color){
-        getEditableColors()->getEditableRAMRepresentation()->set(index,color);
+    void setVertexColor(size_t index, vec4 color) {
+        getEditableColors()->getEditableRAMRepresentation()->set(index, color);
     }
 };
 
 /**
  * \ingroup typedmesh
- * BufferTrait for Texture Coordinate buffers (glm::vec3)
+ * BufferTrait for Texture Coordinate buffers
  */
-class TexcoordBuffer : public BufferTrait<float, 3, static_cast<int>(BufferType::TexcoordAttrib)> {
+template <unsigned DIMS = 3>
+class TexcoordBuffer
+    : public TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)> {
 public:
-    using Base = BufferTrait<float, 3, static_cast<int>(BufferType::TexcoordAttrib)>;
+    using Base = TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<type>> getTexCoords() const { return Base::buffer_; }
     std::shared_ptr<Buffer<type>> getEditableTexCoords() { return Base::buffer_; }
 
-    void setVertexTexCoord(size_t index, vec3 texCoord){
-        getEditableTexCoords()->getEditableRAMRepresentation()->set(index,texCoord);
+    void setVertexTexCoord(size_t index, vec3 texCoord) {
+        getEditableTexCoords()->getEditableRAMRepresentation()->set(index, texCoord);
     }
 };
 
@@ -183,16 +176,16 @@ public:
  * BufferTrait for Curvature buffers (float)
  */
 class CurvatureBuffer
-    : public BufferTrait<float, 1, static_cast<int>(BufferType::CurvatureAttrib)> {
+    : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::CurvatureAttrib)> {
 public:
-    using Base = BufferTrait<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
+    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<type>> getCurvatures() const { return Base::buffer_; }
     std::shared_ptr<Buffer<type>> getEditableCurvatures() { return Base::buffer_; }
 
-    void setVertexCurvature(size_t index, float curvature){
-        getEditableCurvatures()->getEditableRAMRepresentation()->set(index,curvature);
+    void setVertexCurvature(size_t index, float curvature) {
+        getEditableCurvatures()->getEditableRAMRepresentation()->set(index, curvature);
     }
 };
 
@@ -200,7 +193,7 @@ public:
  * \ingroup typedmesh
  * BufferTrait for Uint32 buffers
  */
-using IndexBuffer = BufferTrait<uint32_t, 1, static_cast<int>(BufferType::IndexAttrib)>;
+using IndexBuffer = TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::IndexAttrib)>;
 
 /**
  * \ingroup typedmesh
@@ -208,16 +201,16 @@ using IndexBuffer = BufferTrait<uint32_t, 1, static_cast<int>(BufferType::IndexA
  * \see SphereMesh
  */
 class RadiiBuffer
-    : public BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)> {
+    : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)> {
 public:
-    using Base = BufferTrait<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)>;
+    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<type>> getRadii() const { return Base::buffer_; }
     std::shared_ptr<Buffer<type>> getEditableRadii() { return Base::buffer_; }
 
-    void setVertexRadius(size_t index, float radius){
-        getEditableRadii()->getEditableRAMRepresentation()->set(index,radius);
+    void setVertexRadius(size_t index, float radius) {
+        getEditableRadii()->getEditableRAMRepresentation()->set(index, radius);
     }
 };
 }  // namespace buffertraits
@@ -243,7 +236,7 @@ public:
  * mesh.addVertex(vec3(1.0f), vec4(0,1,0,1) );
  * \endcode
  *
- * If texture coordinates is also needed for each vertex in the mesh then one could instead use:
+ * If texture coordinates are also needed for each vertex in the mesh then one could instead use:
  *
  * \code{.cpp}
  * using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer,
@@ -251,7 +244,7 @@ public:
  * mesh.addVertex(vec3(1.0f), vec3(1.0f), vec4(0,1,0,1) );
  * \endcode
  *
- * For meshes when more than a few vertices is added is more efficient to add all vertices to the
+ * For meshes with more than a couple of vertices, it is more efficient to add all vertices to the
  * mesh at the same time. This can be done by using a std::vector containing
  * TypedMesh::Vertex instead, as described by the following example:
  *
@@ -265,11 +258,11 @@ public:
  * \endcode
  *
  * When creating meshes it is very common to also have Index buffers, in addition to the vertex
- * buffers. To add a index buffer to the mesh you can use the function addIndexBuffer as demonstrate
- * by the following example.
+ * buffers. To add a index buffer to the mesh you can use the function addIndexBuffer as
+ * demonstrated by the following example.
  *
  * \code{.cpp}
- * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
+ * using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * // Add vertices as above
  * auto ib = mesh.addIndexBuffer(DrawType::Lines, ConnectivityType::None);
@@ -292,24 +285,29 @@ public:
  * \snippet modules/base/algorithm/meshutils.cpp Using Colored Mesh
  *
  */
-
-// TypedMesh<buffertraits::IndexBuffer,buffertraits::PositionBuffer> test;
-
 template <typename... BufferTraits>
 class TypedMesh : public Mesh, public BufferTraits... {
 public:
 #if defined(_MSC_VER) && _MSC_VER <= 1900
+    // On visual studio 2015 Alias templates is not supported
+    // (https://blogs.msdn.microsoft.com/vcblog/2016/06/07/expression-sfinae-improvements-in-vs-2015-update-3/)
     using Vertex = std::tuple<BufferTraits...>;
 #else
     template <typename T>
     using TypeAlias = typename T::type;
-
     using VertexTuple = std::tuple<TypeAlias<BufferTraits>...>;
+
+#if defined(_MSC_VER) && _MSC_VER > 1900
+    using Vertex = VertexTuple;
+#else
+    // On GCC 5.4 Vertex x = {...} does not compile. Used when for example creating a vector of
+    // vertices from initializer lists.
     class Vertex : public VertexTuple {
     public:
         Vertex() = default;
-        Vertex(TypeAlias<BufferTraits>... vals) : VertexTuple(vals...) { }
+        Vertex(TypeAlias<BufferTraits>... vals) : VertexTuple(vals...) {}
     };
+#endif
 #endif
 
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
@@ -459,8 +457,8 @@ private:
  * Type definition of a TypedMesh useful for Spheres, consists of a vec3-buffer for position, a
  * float-buffer for radii and vec4 for colors.
  */
-using SphereMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::RadiiBuffer,
-                                 buffertraits::ColorsBuffer>;
+using SphereMesh =
+    TypedMesh<buffertraits::PositionsBuffer, buffertraits::RadiiBuffer, buffertraits::ColorsBuffer>;
 
 /**
  * \ingroup typedmesh
@@ -470,20 +468,23 @@ using SphereMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::RadiiB
  */
 using ColoredMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 
-
 /**
  * \ingroup typedmesh
  * Type definition of a TypedMesh having positions(vec3), normals(vec3), texture
- * coordinates(vec3) and colors(vec4). Example usage:
+ * coordinates(vec3) and colors(vec4).
  */
 using BasicMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
-                                buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer>;
+                            buffertraits::TexcoordBuffer<3>, buffertraits::ColorsBuffer>;
 
+/**
+ * \ingroup typedmesh
+ * Type definition of a TypedMesh having positions(vec3), texture
+ * coordinates(vec3) and colors(vec4). Example usage:
+ * \snippet modules/base/algorithm/meshutils.cpp Using Simple Mesh
+ */
+using PosTexColorMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer<3>,
+                                  buffertraits::ColorsBuffer>;
 
-
-
-using NewSimpleMesh = TypedMesh<buffertraits::PositionsBuffer,
-    buffertraits::TexcoordBuffer, buffertraits::ColorsBuffer>;
 }  // namespace inviwo
 
 #endif  // IVW_TYPEDMESH_H

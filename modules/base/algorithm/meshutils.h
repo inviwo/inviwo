@@ -90,7 +90,7 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> coordindicator(const vec3& center
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset,
                                                            const vec4& color);
 
-IVW_MODULE_BASE_API std::shared_ptr<NewSimpleMesh> boundingBoxAdjacency(const mat4& basisandoffset,
+IVW_MODULE_BASE_API std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisandoffset,
                                                                     const vec4& color);
 
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> torus(const vec3& center,
