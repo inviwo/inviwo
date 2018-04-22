@@ -96,26 +96,52 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     return *this;
 }
 
+dvec2 TFPrimitiveSet::getRange() const {
+    switch (type_) {
+        case TFPrimitiveSetType::Absolute: {
+            if (sorted_.empty()) {
+                return dvec2(0.0, 1.0);
+            }
+            return dvec2(sorted_.front()->getPosition(), sorted_.back()->getPosition());
+        }
+        case TFPrimitiveSetType::Relative:
+        default:
+            return dvec2(0.0, 1.0);
+    }
+}
+
 size_t TFPrimitiveSet::size() const { return values_.size(); }
 
-TFPrimitive* TFPrimitiveSet::operator[](size_t i) { return values_[i].get(); }
+TFPrimitive* TFPrimitiveSet::operator[](size_t i) { return sorted_[i]; }
 
-const TFPrimitive* TFPrimitiveSet::operator[](size_t i) const { return values_[i].get(); }
+const TFPrimitive* TFPrimitiveSet::operator[](size_t i) const { return sorted_[i]; }
 
-TFPrimitive* TFPrimitiveSet::get(size_t i) { return values_[i].get(); }
+TFPrimitiveSet::iterator TFPrimitiveSet::begin() { return sorted_.begin(); }
 
-const TFPrimitive* TFPrimitiveSet::get(size_t i) const { return values_[i].get(); }
+TFPrimitiveSet::iterator TFPrimitiveSet::end() { return sorted_.end(); }
+
+TFPrimitiveSet::const_iterator TFPrimitiveSet::begin() const { return sorted_.cbegin(); }
+
+TFPrimitiveSet::const_iterator TFPrimitiveSet::end() const { return sorted_.cend(); }
+
+TFPrimitiveSet::const_iterator TFPrimitiveSet::cbegin() const { return sorted_.cbegin(); }
+
+TFPrimitiveSet::const_iterator TFPrimitiveSet::cend() const { return sorted_.cend(); }
+
+TFPrimitive* TFPrimitiveSet::get(size_t i) { return sorted_[i]; }
+
+const TFPrimitive* TFPrimitiveSet::get(size_t i) const { return sorted_[i]; }
 
 std::vector<TFPrimitiveData> TFPrimitiveSet::get() const {
     std::vector<TFPrimitiveData> values;
-    std::transform(values_.begin(), values_.end(), std::back_inserter(values),
+    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(values),
                    [](auto& v) { return v->getData(); });
     return values;
 }
 
-std::vector<TFPrimitiveData> TFPrimitiveSet::getSorted() const {
+std::vector<TFPrimitiveData> TFPrimitiveSet::getUnsorted() const {
     std::vector<TFPrimitiveData> values;
-    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(values),
+    std::transform(values_.begin(), values_.end(), std::back_inserter(values),
                    [](auto& v) { return v->getData(); });
     return values;
 }

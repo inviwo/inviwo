@@ -132,8 +132,8 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfPrope
     }
 
     // initialize editor with current tf
-    for (size_t i = 0; i < transferFunction_->size(); ++i) {
-        onControlPointAdded(transferFunction_->getPoint(i));
+    for (auto p : *transferFunction_) {
+        onControlPointAdded(p);
     }
 
     for (int i = 0; i < 10; ++i) {

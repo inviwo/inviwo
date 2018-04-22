@@ -67,6 +67,9 @@ class IVW_CORE_API TFPrimitiveSet : public Serializable,
                                     public TFPrimitiveSetObservable,
                                     public TFPrimitiveObserver {
 public:
+    using iterator = std::vector<TFPrimitive*>::iterator;
+    using const_iterator = std::vector<TFPrimitive*>::const_iterator;
+
     TFPrimitiveSet(const std::vector<TFPrimitiveData>& values = {},
                    TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
     TFPrimitiveSet(const TFPrimitiveSet& rhs);
@@ -76,16 +79,35 @@ public:
 
     TFPrimitiveSetType getType() const;
 
+    /**
+    * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
+    * absolute TF the range between first and last TF primitive is returned. If there are no
+    * primitives in the TF [0,1] will be returned.
+    *
+    * @return range of TF
+    */
+    dvec2 getRange() const;
+
     size_t size() const;
 
+    // functions for accessing individual TF primitives which are sorted according to their position
     TFPrimitive* operator[](size_t i);
     const TFPrimitive* operator[](size_t i) const;
+
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+    const_iterator cbegin() const;
+    const_iterator cend() const;
 
     TFPrimitive* get(size_t i);
     const TFPrimitive* get(size_t i) const;
 
     std::vector<TFPrimitiveData> get() const;
-    std::vector<TFPrimitiveData> getSorted() const;
+
+    // get a list of TF primitives in the order they were created
+    std::vector<TFPrimitiveData> getUnsorted() const;
 
     /**
      * Access TFPrimitives as pair of vectors which can be used, e.g., for setting uniforms of a
