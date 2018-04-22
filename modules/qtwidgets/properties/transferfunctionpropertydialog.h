@@ -45,15 +45,9 @@
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/util/observer.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGradientStops>
-#include <warn/pop>
-
 class QPushButton;
 class QComboBox;
 class QLabel;
-class QPixmap;
 class QResizeEvent;
 class QShowEvent;
 
@@ -112,9 +106,6 @@ private:
     QComboBox* pointMoveMode_;
 
     QLabel* tfPreview_;  ///< View that contains the scene for the painted transfer function
-    std::unique_ptr<QPixmap> tfPixmap_;
-
-    QLinearGradient gradient_;
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
