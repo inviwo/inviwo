@@ -44,16 +44,16 @@ namespace inviwo {
 class IVW_CORE_API IsoValuePropertyObserver : public Observer {
 public:
     virtual void onEnabledChange(bool enabled);
-    virtual void onZoomHChange(const vec2& zoomH);
-    virtual void onZoomVChange(const vec2& zoomV);
+    virtual void onZoomHChange(const dvec2& zoomH);
+    virtual void onZoomVChange(const dvec2& zoomV);
     virtual void onHistogramModeChange(HistogramMode mode);
 };
 
 class IVW_CORE_API IsoValuePropertyObservable : public Observable<IsoValuePropertyObserver> {
 protected:
     virtual void notifyEnabledChange(bool enabled);
-    virtual void notifyZoomHChange(const vec2& zoomH);
-    virtual void notifyZoomVChange(const vec2& zoomV);
+    virtual void notifyZoomHChange(const dvec2& zoomH);
+    virtual void notifyZoomVChange(const dvec2& zoomV);
     virtual void notifyHistogramModeChange(HistogramMode mode);
 };
 
@@ -70,7 +70,7 @@ public:
 
     IsoValueProperty(const std::string& identifier, const std::string& displayName,
                      const IsoValueCollection& value =
-                         IsoValueCollection({{0.5f, vec4(1.0f, 1.0f, 1.0f, 0.5f)}}),
+                         IsoValueCollection({{0.5, vec4(1.0f, 1.0f, 1.0f, 0.5f)}}),
                      VolumeInport* volumeInport = nullptr,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
@@ -89,11 +89,11 @@ public:
     bool getEnabled() const;
     void setEnabled(bool enable);
 
-    const vec2& getZoomH() const;
-    void setZoomH(float zoomHMin, float zoomHMax);
+    const dvec2& getZoomH() const;
+    void setZoomH(double zoomHMin, double zoomHMax);
 
-    const vec2& getZoomV() const;
-    void setZoomV(float zoomVMin, float zoomVMax);
+    const dvec2& getZoomV() const;
+    void setZoomV(double zoomVMin, double zoomVMax);
 
     void setHistogramMode(HistogramMode mode);
     HistogramMode getHistogramMode();
@@ -115,8 +115,8 @@ public:
 
 private:
     ValueWrapper<bool> enabled_;
-    ValueWrapper<vec2> zoomH_;
-    ValueWrapper<vec2> zoomV_;
+    ValueWrapper<dvec2> zoomH_;
+    ValueWrapper<dvec2> zoomV_;
     ValueWrapper<HistogramMode> histogramMode_;
 
     VolumeInport* volumeInport_;

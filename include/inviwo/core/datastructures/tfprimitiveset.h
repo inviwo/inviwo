@@ -115,7 +115,8 @@ public:
      *
      * @return vectors of TFPrimitives' position and color sorted increasingly regarding position
      */
-    std::pair<std::vector<float>, std::vector<vec4>> getVectors() const;
+    std::pair<std::vector<double>, std::vector<vec4>> getVectors() const;
+    std::pair<std::vector<float>, std::vector<vec4>> getVectorsf() const;
 
     /**
      * Add a TFPrimitive
@@ -133,7 +134,7 @@ public:
      *                to alpha
      * @throws RangeException if TF type is relative and pos.x is outside [0,1]
      */
-    void add(const vec2& pos);
+    void add(const dvec2& pos);
 
     /**
      * Add a TFPrimitive
@@ -181,7 +182,7 @@ protected:
      *            clamped to [0,1]
      * @return color and opacity at position t
      */
-    vec4 interpolateColor(float t) const;
+    vec4 interpolateColor(double t) const;
 
     void setSerializationKey(const std::string& key, const std::string& itemKey);
 

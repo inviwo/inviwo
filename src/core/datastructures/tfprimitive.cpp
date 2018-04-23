@@ -33,7 +33,7 @@ namespace inviwo {
 
 void TFPrimitiveObserver::onTFPrimitiveChange(const TFPrimitive*) {}
 
-TFPrimitive::TFPrimitive(float pos, const vec4& color) : data_({pos, color}) {}
+TFPrimitive::TFPrimitive(double pos, const vec4& color) : data_({pos, color}) {}
 
 TFPrimitive::TFPrimitive(const TFPrimitiveData& data) : data_(data) {}
 
@@ -53,7 +53,7 @@ void TFPrimitive::setData(const TFPrimitiveData& data) {
     }
 }
 
-void TFPrimitive::setPosition(float pos) {
+void TFPrimitive::setPosition(double pos) {
     if (pos != data_.pos) {
         data_.pos = pos;
         notifyTFPrimitiveObservers();
@@ -67,7 +67,7 @@ void TFPrimitive::setAlpha(float alpha) {
     }
 }
 
-void TFPrimitive::setPositionAlpha(float pos, float alpha) {
+void TFPrimitive::setPositionAlpha(double pos, float alpha) {
     if ((pos != data_.pos) || (alpha != data_.color.a)) {
         data_.pos = pos;
         data_.color.a = alpha;
@@ -75,8 +75,8 @@ void TFPrimitive::setPositionAlpha(float pos, float alpha) {
     }
 }
 
-void TFPrimitive::setPositionAlpha(const vec2& p) {
-    setPositionAlpha(p.x, p.y);
+void TFPrimitive::setPositionAlpha(const dvec2& p) {
+    setPositionAlpha(p.x, static_cast<float>(p.y));
 }
 
 void TFPrimitive::setColor(const vec3& color) {
@@ -105,7 +105,7 @@ void TFPrimitive::serialize(Serializer& s) const {
 }
 
 void TFPrimitive::deserialize(Deserializer& d) {
-    float pos = 0.0f;
+    double pos = 0.0;
     vec4 color;
     d.deserialize("pos", pos);
     d.deserialize("rgba", color);

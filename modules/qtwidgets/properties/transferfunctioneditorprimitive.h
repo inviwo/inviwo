@@ -73,8 +73,8 @@ public:
     void setPrimitive(TFPrimitive* primitive);
     TFPrimitive* getPrimitive();
     
-    void setPosition(float pos);
-    float getPosition() const;
+    void setPosition(double pos);
+    double getPosition() const;
 
     void setColor(const vec4& color);
     void setColor(const vec3& color);
@@ -87,7 +87,7 @@ public:
      *
      * @param tfpos   normalized position [0,1] corresponding to scalar value and opacity
      */
-    void setTFPosition(const vec2& tfpos);
+    void setTFPosition(const dvec2& tfpos);
 
     virtual const QPointF& getCurrentPos() const;
 

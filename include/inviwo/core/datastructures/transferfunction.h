@@ -69,19 +69,19 @@ public:
     //[[deprecated("was declared deprecated. Use `get(size_t i) const` instead")]]
     const TFPrimitive* getPoint(size_t i) const;
 
-    //[[deprecated("was declared deprecated. Use `add(const float& pos, const vec4& color)` instead")]]
+    //[[deprecated("was declared deprecated. Use `add(const double& pos, const vec4& color)` instead")]]
     void addPoint(const float& pos, const vec4& color);
 
     //[[deprecated("was declared deprecated. Use `add(const TFPrimitiveData& data)` instead")]]
     void addPoint(const TFPrimitiveData& point);
 
-    //[[deprecated("was declared deprecated. Use `add(const vec2& pos)` instead")]]
+    //[[deprecated("was declared deprecated. Use `add(const dvec2& pos)` instead")]]
     void addPoint(const vec2& pos);
 
     //[[deprecated("was declared deprecated. Use `add(const std::vector<TFPrimitiveData>& primitives)` instead")]]
     void addPoints(const std::vector<TFPrimitiveData>& points);
 
-    //[[deprecated("was declared deprecated. Use `addPoint(const float& pos, const vec4& color)` instead")]]
+    //[[deprecated("was declared deprecated. Use `addPoint(const double& pos, const vec4& color)` instead")]]
     void addPoint(const vec2& pos, const vec4& color);
 
     //[[deprecated("was declared deprecated. Use `remove(TFPrimitive* primitive)` instead")]]
@@ -90,10 +90,10 @@ public:
     //[[deprecated("was declared deprecated. Use `clear()` instead")]]
     void clearPoints();
 
-    void setMaskMin(float maskMin);
-    float getMaskMin() const;
-    void setMaskMax(float maskMax);
-    float getMaskMax() const;
+    void setMaskMin(double maskMin);
+    double getMaskMin() const;
+    void setMaskMax(double maskMax);
+    double getMaskMax() const;
 
     /**
      * Notify that the layer data (texture) needs to be updated next time it is requested.
@@ -129,8 +129,8 @@ protected:
     void calcTransferValues() const;
 
 private:
-    float maskMin_;
-    float maskMax_;
+    double maskMin_;
+    double maskMax_;
 
     mutable bool invalidData_;
     std::shared_ptr<LayerRAMPrecision<vec4>> dataRepr_;

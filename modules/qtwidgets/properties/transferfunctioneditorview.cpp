@@ -52,7 +52,7 @@ TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty*
     , tfProperty_(tfProperty)
     , volumeInport_(tfProperty->getVolumeInport())
     , histogramMode_(tfProperty->getHistogramMode())
-    , maskHorizontal_(0.0f, 1.0f) {
+    , maskHorizontal_(0.0, 1.0) {
 
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
@@ -98,16 +98,16 @@ TransferFunctionEditorView::~TransferFunctionEditorView() {
     }
 }
 
-void TransferFunctionEditorView::onMaskChange(const vec2& mask) {
+void TransferFunctionEditorView::onMaskChange(const dvec2& mask) {
     if (maskHorizontal_ != mask) {
         maskHorizontal_ = mask;
         update();
     }
 }
 
-void TransferFunctionEditorView::onZoomHChange(const vec2&) { updateZoom(); }
+void TransferFunctionEditorView::onZoomHChange(const dvec2&) { updateZoom(); }
 
-void TransferFunctionEditorView::onZoomVChange(const vec2&) { updateZoom(); }
+void TransferFunctionEditorView::onZoomVChange(const dvec2&) { updateZoom(); }
 
 void TransferFunctionEditorView::onHistogramModeChange(HistogramMode mode) {
     if (histogramMode_ != mode) {
@@ -133,7 +133,7 @@ void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF&
 
     QRectF sRect = sceneRect();
 
-    if (maskHorizontal_.x > 0.0f) {
+    if (maskHorizontal_.x > 0.0) {
         double leftMaskBorder = maskHorizontal_.x * sRect.width();
         QRectF r(0.0, rect.top(), leftMaskBorder, rect.height());
         QLineF line(leftMaskBorder, rect.top(), leftMaskBorder, rect.bottom());
@@ -141,7 +141,7 @@ void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF&
         painter->drawLine(line);
     }
 
-    if (maskHorizontal_.y < 1.0f) {
+    if (maskHorizontal_.y < 1.0) {
         double rightMaskBorder = maskHorizontal_.y * sRect.width();
         QRectF r(rightMaskBorder, rect.top(), sRect.right() - rightMaskBorder, rect.height());
         QLineF line(rightMaskBorder, rect.top(), rightMaskBorder, rect.bottom());
@@ -188,7 +188,7 @@ void TransferFunctionEditorView::updateHistogram() {
         double height;
         double maxCount = (*histCont)[channel].getMaximumBinValue();
 
-        histograms_.back() << QPointF(0.0f, 0.0f);
+        histograms_.back() << QPointF(0.0, 0.0);
 
         for (double i = 0; i < histSize; i++) {
             if (histogramMode_ == HistogramMode::Log) {
