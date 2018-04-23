@@ -229,31 +229,31 @@ void TFPrimitiveSet::serialize(Serializer& s) const {
 void TFPrimitiveSet::deserialize(Deserializer& d) {
     util::IndexedDeserializer<std::unique_ptr<TFPrimitive>>(serializationKey_,
                                                             serializationItemKey_)
-        .onNew([&](std::unique_ptr<TFPrimitive>& v) {
-            v->addObserver(this);
-            auto it = std::upper_bound(sorted_.begin(), sorted_.end(), v.get(), comparePtr{});
-            sorted_.insert(it, v.get());
-            notifyTFPrimitiveAdded(v.get());
+        .onNew([&](std::unique_ptr<TFPrimitive>& p) {
+            p->addObserver(this);
+            auto it = std::upper_bound(sorted_.begin(), sorted_.end(), p.get(), comparePtr{});
+            sorted_.insert(it, p.get());
+            notifyTFPrimitiveAdded(p.get());
         })
-        .onRemove([&](std::unique_ptr<TFPrimitive>& v) {
-            util::erase_remove(sorted_, v.get());
-            notifyTFPrimitiveRemoved(v.get());
+        .onRemove([&](std::unique_ptr<TFPrimitive>& p) {
+            util::erase_remove(sorted_, p.get());
+            notifyTFPrimitiveRemoved(p.get());
         })(d, values_);
     invalidate();
 }
 
 void TFPrimitiveSet::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }
 
-vec4 TFPrimitiveSet::interpolateColor(float v) const {
+vec4 TFPrimitiveSet::interpolateColor(float t) const {
     if (sorted_.empty()) return vec4(1.0f);
 
-    if (v <= 0.0f) {
+    if (t <= 0.0f) {
         return sorted_.front()->getColor();
-    } else if (v >= 1.0f) {
+    } else if (t >= 1.0f) {
         return sorted_.back()->getColor();
     }
 
-    auto it = std::upper_bound(sorted_.begin(), sorted_.end(), v,
+    auto it = std::upper_bound(sorted_.begin(), sorted_.end(), t,
                                [](float val, const auto& p) { return val < p->getPosition(); });
 
     if (it == sorted_.begin()) {
@@ -263,7 +263,7 @@ vec4 TFPrimitiveSet::interpolateColor(float v) const {
     }
 
     auto next = it--;
-    float x = (v - (*it)->getPosition()) / ((*next)->getPosition() - (*it)->getPosition());
+    float x = (t - (*it)->getPosition()) / ((*next)->getPosition() - (*it)->getPosition());
     return Interpolation<vec4, float>::linear((*it)->getColor(), (*next)->getColor(), x);
 }
 
