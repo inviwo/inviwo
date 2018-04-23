@@ -55,8 +55,8 @@ TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values, s
 TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type,
                  size_t textureSize)
     : TFPrimitiveSet(values, type)
-    , maskMin_(0.0f)
-    , maskMax_(1.0f)
+    , maskMin_(0.0)
+    , maskMax_(1.0)
     , invalidData_(true)
     , dataRepr_{std::make_shared<LayerRAMPrecision<vec4>>(size2_t(textureSize, 1))}
     , data_(util::make_unique<Layer>(dataRepr_)) {
@@ -119,19 +119,19 @@ void TransferFunction::removePoint(TFPrimitive* dataPoint) { remove(dataPoint); 
 
 void TransferFunction::clearPoints() { clear(); }
 
-void TransferFunction::setMaskMin(float maskMin) {
+void TransferFunction::setMaskMin(double maskMin) {
     maskMin_ = maskMin;
     invalidate();
 }
 
-float TransferFunction::getMaskMin() const { return maskMin_; }
+double TransferFunction::getMaskMin() const { return maskMin_; }
 
-void TransferFunction::setMaskMax(float maskMax) {
+void TransferFunction::setMaskMax(double maskMax) {
     maskMax_ = maskMax;
     invalidate();
 }
 
-float TransferFunction::getMaskMax() const { return maskMax_; }
+double TransferFunction::getMaskMax() const { return maskMax_; }
 
 void TransferFunction::invalidate() { invalidData_ = true; }
 
@@ -148,7 +148,7 @@ void TransferFunction::deserialize(Deserializer& d) {
     TFPrimitiveSet::deserialize(d);
 }
 
-vec4 TransferFunction::sample(double v) const { return interpolateColor(static_cast<float>(v)); }
+vec4 TransferFunction::sample(double v) const { return interpolateColor(v); }
 
 vec4 TransferFunction::sample(float v) const { return interpolateColor(v); }
 
@@ -255,8 +255,9 @@ void TransferFunction::calcTransferValues() const {
             dataArray[i] = vec4(val, val, val, 1.0);
         }
     } else if (sorted_.size() == 1) {  // in case of 1 point
+        const auto color = sorted_.front()->getColor();
         for (size_t i = 0; i < size; ++i) {
-            dataArray[i] = sorted_.front()->getColor();
+            dataArray[i] = color;
         }
     } else {  // in case of more than 1 points
         size_t leftX = toInd(sorted_.front());
@@ -274,9 +275,9 @@ void TransferFunction::calcTransferValues() const {
             while (n < toInd(*pRight)) {
                 const auto lrgba = (*pLeft)->getColor();
                 const auto rrgba = (*pRight)->getColor();
-                const float lx = (*pLeft)->getPosition() * (size - 1);
-                const float rx = (*pRight)->getPosition() * (size - 1);
-                const float alpha = (n - lx) / (rx - lx);
+                const auto lx = (*pLeft)->getPosition() * (size - 1);
+                const auto rx = (*pRight)->getPosition() * (size - 1);
+                const float alpha = static_cast<float>((n - lx) / (rx - lx));
                 dataArray[n] = glm::mix(lrgba, rrgba, alpha);
                 n++;
             }

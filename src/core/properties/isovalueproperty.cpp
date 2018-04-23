@@ -36,9 +36,9 @@ PropertyClassIdentifier(IsoValueProperty, "org.inviwo.IsoValueProperty");
 
 void IsoValuePropertyObserver::onEnabledChange(bool) {}
 
-void IsoValuePropertyObserver::onZoomHChange(const vec2&) {}
+void IsoValuePropertyObserver::onZoomHChange(const dvec2&) {}
 
-void IsoValuePropertyObserver::onZoomVChange(const vec2&) {}
+void IsoValuePropertyObserver::onZoomVChange(const dvec2&) {}
 
 void IsoValuePropertyObserver::onHistogramModeChange(HistogramMode) {}
 
@@ -46,11 +46,11 @@ void IsoValuePropertyObservable::notifyEnabledChange(bool enabled) {
     forEachObserver([&](IsoValuePropertyObserver* o) { o->onEnabledChange(enabled); });
 }
 
-void IsoValuePropertyObservable::notifyZoomHChange(const vec2& zoomH) {
+void IsoValuePropertyObservable::notifyZoomHChange(const dvec2& zoomH) {
     forEachObserver([&](IsoValuePropertyObserver* o) { o->onZoomHChange(zoomH); });
 }
 
-void IsoValuePropertyObservable::notifyZoomVChange(const vec2& zoomV) {
+void IsoValuePropertyObservable::notifyZoomVChange(const dvec2& zoomV) {
     forEachObserver([&](IsoValuePropertyObserver* o) { o->onZoomVChange(zoomV); });
 }
 
@@ -64,8 +64,8 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
     : TemplateProperty<IsoValueCollection>(identifier, displayName, value, invalidationLevel,
                                            semantics)
     , enabled_("enabled", true)
-    , zoomH_("zoomH_", vec2(0.0f, 1.0f))
-    , zoomV_("zoomV_", vec2(0.0f, 1.0f))
+    , zoomH_("zoomH_", dvec2(0.0, 1.0))
+    , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , volumeInport_(volumeInport) {
 
@@ -115,33 +115,33 @@ void IsoValueProperty::setEnabled(bool enable) {
 
 bool IsoValueProperty::getEnabled() const { return enabled_; }
 
-void IsoValueProperty::setZoomH(float zoomHMin, float zoomHMax) {
+void IsoValueProperty::setZoomH(double zoomHMin, double zoomHMax) {
     if (zoomHMax < zoomHMin) {
         zoomHMax = zoomHMin;
     }
 
-    const auto newZoomH = vec2(zoomHMin, zoomHMax);
+    const auto newZoomH = dvec2(zoomHMin, zoomHMax);
     if (zoomH_ != newZoomH) {
         zoomH_ = newZoomH;
         notifyZoomHChange(zoomH_);
     }
 }
 
-const vec2& IsoValueProperty::getZoomH() const { return zoomH_; }
+const dvec2& IsoValueProperty::getZoomH() const { return zoomH_; }
 
-void IsoValueProperty::setZoomV(float zoomVMin, float zoomVMax) {
+void IsoValueProperty::setZoomV(double zoomVMin, double zoomVMax) {
     if (zoomVMax < zoomVMin) {
         zoomVMax = zoomVMin;
     }
 
-    const auto newZoomV = vec2(zoomVMin, zoomVMax);
+    const auto newZoomV = dvec2(zoomVMin, zoomVMax);
     if (zoomV_ != newZoomV) {
         zoomV_ = newZoomV;
         notifyZoomVChange(zoomV_);
     }
 }
 
-const vec2& IsoValueProperty::getZoomV() const { return zoomV_; }
+const dvec2& IsoValueProperty::getZoomV() const { return zoomV_; }
 
 void IsoValueProperty::setHistogramMode(HistogramMode mode) {
     if (histogramMode_ != mode) {

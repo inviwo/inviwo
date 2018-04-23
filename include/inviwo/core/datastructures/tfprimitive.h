@@ -44,7 +44,7 @@ public:
 };
 
 struct IVW_CORE_API TFPrimitiveData {
-    float pos;
+    double pos;
     vec4 color;
 };
 
@@ -54,7 +54,7 @@ struct IVW_CORE_API TFPrimitiveData {
  */
 class IVW_CORE_API TFPrimitive : public Observable<TFPrimitiveObserver>, public Serializable {
 public:
-    TFPrimitive(float pos = 0.0f, const vec4& color = vec4(0.0f));
+    TFPrimitive(double pos = 0.0f, const vec4& color = vec4(0.0f));
     TFPrimitive(const TFPrimitiveData& data);
     TFPrimitive(const TFPrimitive& rhs) = default;
     TFPrimitive(TFPrimitive&& rhs) = default;
@@ -64,14 +64,14 @@ public:
     void setData(const TFPrimitiveData& data);
     inline const TFPrimitiveData& getData() const;
     
-    void setPosition(float pos);
-    inline float getPosition() const;
+    void setPosition(double pos);
+    inline double getPosition() const;
     
     void setAlpha(float alpha);
     inline float getAlpha() const;
 
-    void setPositionAlpha(float pos, float alpha);
-    void setPositionAlpha(const vec2& p);
+    void setPositionAlpha(double pos, float alpha);
+    void setPositionAlpha(const dvec2& p);
 
     void setColor(const vec3& color);
     void setColor(const vec4& color);
@@ -87,7 +87,7 @@ private:
 };
 
 inline const TFPrimitiveData& TFPrimitive::getData() const { return data_; }
-inline float TFPrimitive::getPosition() const { return data_.pos; }
+inline double TFPrimitive::getPosition() const { return data_.pos; }
 inline float TFPrimitive::getAlpha() const { return data_.color.a; }
 inline const vec4& TFPrimitive::getColor() const { return data_.color; }
 

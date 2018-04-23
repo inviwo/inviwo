@@ -63,9 +63,9 @@ protected:
     void updateZoom();
 
     // TransferFunctionPropertyObserver overloads
-    virtual void onMaskChange(const vec2& mask) override;
-    virtual void onZoomHChange(const vec2& zoomH) override;
-    virtual void onZoomVChange(const vec2& zoomV) override;
+    virtual void onMaskChange(const dvec2& mask) override;
+    virtual void onZoomHChange(const dvec2& zoomH) override;
+    virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
 
 private:
@@ -78,7 +78,7 @@ private:
     bool stopHistCalculation_ = false;
     std::future<void> histCalculation_;
 
-    vec2 maskHorizontal_;
+    dvec2 maskHorizontal_;
 
     const BaseCallBack *callbackOnInvalid = nullptr;
     const BaseCallBack *callbackOnChange = nullptr;

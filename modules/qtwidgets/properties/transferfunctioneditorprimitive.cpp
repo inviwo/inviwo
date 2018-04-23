@@ -72,9 +72,9 @@ void TransferFunctionEditorPrimitive::setPrimitive(TFPrimitive* primitive) { dat
 
 TFPrimitive* TransferFunctionEditorPrimitive::getPrimitive() { return data_; }
 
-void TransferFunctionEditorPrimitive::setPosition(float pos) { data_->setPosition(pos); }
+void TransferFunctionEditorPrimitive::setPosition(double pos) { data_->setPosition(pos); }
 
-float TransferFunctionEditorPrimitive::getPosition() const { return data_->getPosition(); }
+double TransferFunctionEditorPrimitive::getPosition() const { return data_->getPosition(); }
 
 void TransferFunctionEditorPrimitive::setColor(const vec4& color) { data_->setColor(color); }
 
@@ -84,7 +84,7 @@ void TransferFunctionEditorPrimitive::setAlpha(float alpha) { data_->setAlpha(al
 
 const vec4& TransferFunctionEditorPrimitive::getColor() const { return data_->getColor(); }
 
-void TransferFunctionEditorPrimitive::setTFPosition(const vec2& tfpos) {
+void TransferFunctionEditorPrimitive::setTFPosition(const dvec2& tfpos) {
     if (!isEditingPoint_) {
         isEditingPoint_ = true;
         QRectF rect = scene()->sceneRect();

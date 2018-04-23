@@ -287,14 +287,14 @@ void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
 }
 
 void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
-    auto data = property.get().getVectors();
+    auto data = property.get().getVectorsf();
 
     shader.setUniform("isovalues", data.first.size(), data.first.data());
     shader.setUniform("isosurfaceColors", data.second.size(), data.second.data());
 }
 
 void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::string name) {
-    auto data = property.get().getVectors();
+    auto data = property.get().getVectorsf();
 
     shader.setUniform(name + ".values", data.first.size(), data.first.data());
     shader.setUniform(name + ".colors", data.second.size(), data.second.data());

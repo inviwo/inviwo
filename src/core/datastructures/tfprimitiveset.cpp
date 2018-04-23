@@ -146,12 +146,24 @@ std::vector<TFPrimitiveData> TFPrimitiveSet::getUnsorted() const {
     return values;
 }
 
-std::pair<std::vector<float>, std::vector<vec4>> TFPrimitiveSet::getVectors() const {
+std::pair<std::vector<double>, std::vector<vec4>> TFPrimitiveSet::getVectors() const {
+    std::pair<std::vector<double>, std::vector<vec4>> result;
+    result.first.reserve(sorted_.size());
+    result.second.reserve(sorted_.size());
+    for (auto& v : sorted_) {
+        result.first.push_back(static_cast<float>(v->getPosition()));
+        result.second.push_back(v->getColor());
+    }
+
+    return result;
+}
+
+std::pair<std::vector<float>, std::vector<vec4>> TFPrimitiveSet::getVectorsf() const {
     std::pair<std::vector<float>, std::vector<vec4>> result;
     result.first.reserve(sorted_.size());
     result.second.reserve(sorted_.size());
     for (auto& v : sorted_) {
-        result.first.push_back(v->getPosition());
+        result.first.push_back(static_cast<float>(v->getPosition()));
         result.second.push_back(v->getColor());
     }
 
@@ -162,8 +174,8 @@ void TFPrimitiveSet::add(const TFPrimitive& primitive) {
     add(util::make_unique<TFPrimitive>(primitive));
 }
 
-void TFPrimitiveSet::add(const vec2& pos) {
-    const vec4 color(vec3(interpolateColor(pos.x)), pos.y);
+void TFPrimitiveSet::add(const dvec2& pos) {
+    const vec4 color(vec3(interpolateColor(pos.x)), static_cast<float>(pos.y));
     add(util::make_unique<TFPrimitive>(pos.x, color));
 }
 
@@ -244,17 +256,17 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
 
 void TFPrimitiveSet::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }
 
-vec4 TFPrimitiveSet::interpolateColor(float t) const {
-    if (sorted_.empty()) return vec4(1.0f);
+vec4 TFPrimitiveSet::interpolateColor(double t) const {
+    if (sorted_.empty()) return vec4(1.0);
 
-    if (t <= 0.0f) {
+    if (t <= sorted_.front()->getPosition()) {
         return sorted_.front()->getColor();
-    } else if (t >= 1.0f) {
+    } else if (t >= sorted_.back()->getPosition()) {
         return sorted_.back()->getColor();
     }
 
     auto it = std::upper_bound(sorted_.begin(), sorted_.end(), t,
-                               [](float val, const auto& p) { return val < p->getPosition(); });
+                               [](double val, const auto& p) { return val < p->getPosition(); });
 
     if (it == sorted_.begin()) {
         return sorted_.front()->getColor();
@@ -263,8 +275,9 @@ vec4 TFPrimitiveSet::interpolateColor(float t) const {
     }
 
     auto next = it--;
-    float x = (t - (*it)->getPosition()) / ((*next)->getPosition() - (*it)->getPosition());
-    return Interpolation<vec4, float>::linear((*it)->getColor(), (*next)->getColor(), x);
+    const double x = (t - (*it)->getPosition()) / ((*next)->getPosition() - (*it)->getPosition());
+    return Interpolation<vec4, float>::linear((*it)->getColor(), (*next)->getColor(),
+                                              static_cast<float>(x));
 }
 
 void TFPrimitiveSet::setSerializationKey(const std::string& key, const std::string& itemKey) {

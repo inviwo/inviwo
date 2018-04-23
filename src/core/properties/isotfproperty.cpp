@@ -49,8 +49,8 @@ IsoTFProperty::IsoTFProperty(const std::string& identifier, const std::string& d
                              VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : IsoTFProperty(identifier, displayName,
-                    IsoValueCollection({{0.5f, vec4(1.0f, 1.0f, 1.0f, 0.5f)}}),
-                    TransferFunction({{0.0f, vec4(0.0f)}, {1.0f, vec4(1.0f)}}), volumeInport,
+                    IsoValueCollection({{0.5, vec4(1.0f, 1.0f, 1.0f, 0.5f)}}),
+                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), volumeInport,
                     invalidationLevel, semantics) {}
 
 IsoTFProperty::IsoTFProperty(const IsoTFProperty& rhs)
