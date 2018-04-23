@@ -206,10 +206,10 @@ void IsoValueProperty::set(const Property* property) {
     }
 }
 
-void IsoValueProperty::onIsoValueAdded(IsoValue*) { propertyModified(); }
+void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive*) { propertyModified(); }
 
-void IsoValueProperty::onIsoValueRemoved(IsoValue*) { propertyModified(); }
+void IsoValueProperty::onTFPrimitiveRemoved(TFPrimitive*) { propertyModified(); }
 
-void IsoValueProperty::onIsoValueChanged(const IsoValue*) { propertyModified(); }
+void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitive*) { propertyModified(); }
 
 }  // namespace inviwo

@@ -44,7 +44,10 @@
 #include <QMenu>
 #include <QAction>
 #include <QMenuBar>
+#include <QPainter>
+#include <QLinearGradient>
 #include <warn/pop>
+
 #include <ios>
 #include <exception>
 
@@ -118,6 +121,65 @@ QMainWindow* getApplicationMainWindow() {
     } else {
         return nullptr;
     }
+}
+
+QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size) {
+    QVector<QGradientStop> gradientStops;
+    for (auto tfpoint : tfproperty.get()) {
+        vec4 curColor = tfpoint->getColor();
+        // increase alpha to allow better visibility by 1 - (1 - a)^4
+        curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
+
+        gradientStops.append(QGradientStop(tfpoint->getPosition(), utilqt::toQColor(curColor)));
+    }
+
+    const auto tfRange = tfproperty.get().getRange();
+
+    // set bounds of the gradient
+    QLinearGradient gradient;
+    gradient.setStops(gradientStops);
+
+    // gradient should stretch entire pixmap from left to right
+    gradient.setStart(QPointF(0.0, 0.0));
+    gradient.setFinalStop(QPointF(size.width(), 0.0));
+
+    QPixmap tfPixmap(size);
+    QPainter tfPainter(&tfPixmap);
+
+    QPixmap checkerBoard(10, 10);
+    QPainter checkerBoardPainter(&checkerBoard);
+    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
+    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
+    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
+    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
+    checkerBoardPainter.end();
+
+    QRect r(QPoint(0, 0), size);
+    // fill pixmap background with a checkerboard
+    tfPainter.fillRect(r, QBrush(checkerBoard));
+    // draw TF gradient on top
+    tfPainter.fillRect(r, gradient);
+
+    // draw masking indicators
+    const QColor maskColor(25, 25, 25, 150);
+    if (tfproperty.getMask().x > tfRange.x) {
+        // normalize mask position with respect to TF range
+        const double maskPos = (tfproperty.getMask().x - tfRange.x) / (tfRange.y - tfRange.x);
+        QRect rectMask(QPoint(0, 0),
+                       QSize(static_cast<int>(maskPos * size.width()), size.height()));
+        tfPainter.fillRect(rectMask, maskColor);
+        tfPainter.drawLine(rectMask.bottomRight(), rectMask.topRight());
+    }
+
+    if (tfproperty.getMask().y < tfRange.y) {
+        // normalize mask position with respect to TF range
+        const double maskPos = (tfproperty.getMask().y - tfRange.x) / (tfRange.y - tfRange.x);
+        QRect rectMask(QPoint(static_cast<int>(maskPos * size.width()), 0),
+                       QPoint(size.width(), size.height()));
+        tfPainter.fillRect(rectMask, maskColor);
+        tfPainter.drawLine(rectMask.bottomLeft(), rectMask.topLeft());
+    }
+    return tfPixmap;
 }
 
 QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,

@@ -44,7 +44,6 @@
 namespace inviwo {
 
 class TransferFunctionProperty;
-class TransferFunctionDataPoint;
 class VolumeRAM;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorView

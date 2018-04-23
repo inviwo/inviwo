@@ -33,138 +33,30 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/datastructures/isovalue.h>
-#include <inviwo/core/util/observer.h>
+#include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/util/fileextension.h>
 
-#include <ostream>
-
 namespace inviwo {
-
-class IVW_CORE_API IsoValueCollectionObserver : public Observer {
-public:
-    virtual void onIsoValueAdded(IsoValue* v);
-    virtual void onIsoValueRemoved(IsoValue* v);
-    virtual void onIsoValueChanged(const IsoValue* v);
-};
-class IVW_CORE_API IsoValueCollectionObservable : public Observable<IsoValueCollectionObserver> {
-protected:
-    void notifyIsoValueAdded(IsoValue* v);
-    void notifyIsoValueRemoved(IsoValue* v);
-    void notifyIsoValueChanged(const IsoValue* v);
-};
 
 /**
  * \ingroup datastructures
  * \class IsoValueCollection
- * \brief data structure managing multiple isovalues
+ * \brief data structure representing isovalues
  *
  * \see IsoValue
  */
-class IVW_CORE_API IsoValueCollection : public Serializable,
-                                        public IsoValueCollectionObservable,
-                                        public IsoValueObserver {
+class IVW_CORE_API IsoValueCollection : public TFPrimitiveSet {
 public:
-    IsoValueCollection(const std::vector<IsoValueData>& values = {});
-    IsoValueCollection(const IsoValueCollection& rhs);
-    IsoValueCollection(IsoValueCollection&& rhs);
-    IsoValueCollection& operator=(const IsoValueCollection& rhs);
+    IsoValueCollection(const std::vector<TFPrimitiveData>& values = {},
+                       TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
+    IsoValueCollection(const IsoValueCollection& rhs) = default;
+    IsoValueCollection(IsoValueCollection&& rhs) = default;
+    IsoValueCollection& operator=(const IsoValueCollection& rhs) = default;
     virtual ~IsoValueCollection() = default;
-
-
-    size_t getNumIsoValues() const;
-
-    IsoValue& getIsoValue(size_t i);
-    const IsoValue& getIsoValue(size_t i) const;
-
-    std::vector<IsoValueData> getIsoValues() const;
-    std::vector<IsoValueData> getSortedIsoValues() const;
-
-    /**
-     * Access isovalues as pair of vectors which can be used for setting uniforms of a shader.
-     *
-     * @return vectors of isovalues and colors sorted increasingly regarding isovalue
-     */
-    std::pair<std::vector<float>, std::vector<vec4>> getShaderUniformData() const;
-
-    /**
-     * Add an isovalue at pos with value color
-     *
-     * @param value   scalar value of isovalue in range [0,1]
-     * @param color   color and opacity, i.e. rgba, of the isovalue
-     * @throws RangeException if isovalue is outside [0,1]
-     */
-    void addIsoValue(const float value, const vec4& color);
-
-    /**
-     * Add an isovalue
-     *
-     * @param value   isovalue to be added
-     * @throws RangeException if position of point is outside [0,1]
-     */
-    void addIsoValue(const IsoValue& value);
-
-    /**
-     * Add an isovalue at pos.x() where pos.y is used as alpha and the color is
-     * interpolated from existing isovalues before and after the given position
-     *
-     * @param pos     pos.x refers to the scalar isovalue in range [0,1], pos.y will be mapped
-     *                to alpha
-     * @throws RangeException if pos.x is outside [0,1]
-     */
-    void addIsoValue(const vec2& pos);
-
-    /**
-     * Add an isovalue
-     *
-     * @param value   isovalue to be added
-     * @throws RangeException if position of point is outside [0,1]
-     */
-    void addIsoValue(const IsoValueData& value);
-
-    /**
-     * Add multiple isovalues
-     *
-     * @param values  isovalues to be added
-     * @throws RangeException if any of the given points is outside [0,1]
-     */
-    void addIsoValues(const std::vector<IsoValueData>& values);
-
-    void removeIsoValue(IsoValue* value);
-
-    void clearIsoValues();
-
-    virtual void onIsoValueChange(const IsoValue* v);
-
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
-
-    friend bool operator==(const IsoValueCollection& lhs, const IsoValueCollection& rhs);
 
     void save(const std::string& filename, const FileExtension& ext = FileExtension()) const;
     void load(const std::string& filename, const FileExtension& ext = FileExtension());
-
-protected:
-    void addIsoValue(std::unique_ptr<IsoValue> value);
-    void removeIsoValue(std::vector<std::unique_ptr<IsoValue>>::iterator it);
-    void sort();
-
-    /**
-     * Interpolate the color between isovalues at position v and return the respective color and
-     * opacity (rgba). The range of all isovalues is [0,1].
-     *
-     * @param v   sampling position, if v is outside the range [0,1] it is clamped to [0,1]
-     * @return color and opacity at position v
-     */
-    vec4 interpolateColor(float v) const;
-
-private:
-    std::vector<std::unique_ptr<IsoValue>> values_;
-    std::vector<IsoValue*> sorted_;
 };
-
-bool operator==(const IsoValueCollection& lhs, const IsoValueCollection& rhs);
-bool operator!=(const IsoValueCollection& lhs, const IsoValueCollection& rhs);
 
 }  // namespace inviwo
 

@@ -35,6 +35,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <locale>
 #include <ios>
@@ -49,6 +50,7 @@
 #include <QColor>
 #include <QMainWindow>
 #include <QImage>
+#include <QPixmap>
 #include <warn/pop>
 
 
@@ -112,6 +114,8 @@ IVW_MODULE_QTWIDGETS_API ivec4 toivec4(const QColor&);
 
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec4&);
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec4&);
+
+IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size);
 
 /**
  * \brief Retrieve the QMainWindow named "InviwoMainWindow" from QApplication.

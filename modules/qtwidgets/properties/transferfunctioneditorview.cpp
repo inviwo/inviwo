@@ -243,21 +243,50 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
     painter->fillRect(rect, QColor(89, 89, 89));
 
     // overlay grid
-    int gridSpacing = 25;
-    QRectF sRect = sceneRect();
-    qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
-    QVarLengthArray<QLineF, 100> lines;
+    const QColor colorGrid(102, 102, 102);
+    const QColor colorOrigin(102, 106, 115);
+    const int gridSpacing = 50;
 
-    for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
-        lines.append(QLineF(x, sRect.top(), x, sRect.bottom()));
+    QRectF sRect = sceneRect();
+    QPen gridPen;
+    gridPen.setCosmetic(true);    
+    
+    double gridOrigin = sRect.left();  // horizontal origin of the grid
+    // adjust grid origin if there is a data mapper available
+    if (volumeInport_ && volumeInport_->hasData()) {
+        auto& datamap = volumeInport_->getData()->dataMap_;
+        if ((datamap.valueRange.x < 0.0) && (datamap.valueRange.y > 0.0)) {
+            gridOrigin = datamap.mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
+
+            // draw line at zero
+            gridPen.setWidthF(3.0f);
+            gridPen.setColor(colorOrigin);
+            painter->setPen(gridPen);
+            painter->drawLine(
+                QLineF(QPointF(gridOrigin, sRect.bottom()), QPointF(gridOrigin, sRect.top())));
+        }
     }
 
-    QPen gridPen;
-    gridPen.setColor(QColor(102, 102, 102));
+    QVector<QLineF> lines;
+    
+    // add grid lines left of origin
+    double x = gridOrigin - gridSpacing;
+    while (x > sRect.left()) {
+        lines.push_back(QLineF(x, sRect.bottom(), x, sRect.top()));
+        x -= gridSpacing;
+    }
+    // add grid lines right of origin
+    x = gridOrigin + gridSpacing;
+    while (x < sRect.right()) {
+        lines.push_back(QLineF(x, sRect.bottom(), x, sRect.top()));
+        x += gridSpacing;
+    }
+
+    // draw grid
+    gridPen.setColor(colorGrid);
     gridPen.setWidthF(1.0);
-    gridPen.setCosmetic(true);
     painter->setPen(gridPen);
-    painter->drawLines(lines.data(), lines.size());
+    painter->drawLines(lines);
 
     // histogram
     if (histogramMode_ != HistogramMode::Off) {

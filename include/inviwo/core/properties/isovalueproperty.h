@@ -63,7 +63,7 @@ protected:
  * \brief property managing a collection of isovalues
  */
 class IVW_CORE_API IsoValueProperty : public TemplateProperty<IsoValueCollection>,
-                                      public IsoValueCollectionObserver,
+                                      public TFPrimitiveSetObserver,
                                       public IsoValuePropertyObservable {
 public:
     InviwoPropertyInfo();
@@ -109,9 +109,9 @@ public:
     // Overrides
     virtual void set(const IsoValueCollection& c) override;
     virtual void set(const Property* property) override;
-    virtual void onIsoValueAdded(IsoValue* v) override;
-    virtual void onIsoValueRemoved(IsoValue* v) override;
-    virtual void onIsoValueChanged(const IsoValue* v) override;
+    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
 
 private:
     ValueWrapper<bool> enabled_;

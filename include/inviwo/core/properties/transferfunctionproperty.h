@@ -30,6 +30,8 @@
 #ifndef IVW_TRANSFERFUNCTIONPROPERTY_H
 #define IVW_TRANSFERFUNCTIONPROPERTY_H
 
+#include <inviwo/core/common/inviwocoredefine.h>
+
 #include <inviwo/core/properties/templateproperty.h>
 
 #include <inviwo/core/datastructures/transferfunction.h>
@@ -61,7 +63,7 @@ protected:
  */
 class IVW_CORE_API TransferFunctionProperty 
     : public TemplateProperty<TransferFunction>
-    , public TransferFunctionObserver
+    , public TFPrimitiveSetObserver
     , public TransferFunctionPropertyObservable {
 
 public:
@@ -107,9 +109,9 @@ public:
     // Override
     virtual void set(const TransferFunction& property) override;
     virtual void set(const Property *property) override;
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p) override;
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p) override;
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p) override;
+    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
 
 private:
     ValueWrapper<vec2> zoomH_;

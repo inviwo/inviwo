@@ -24,26 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/datamapper.h>
 
 namespace inviwo {
 
-DataMapper::DataMapper(const DataFormatBase* format){
-    initWithFormat(format);
-}
+DataMapper::DataMapper(const DataFormatBase* format) { initWithFormat(format); }
 
-DataMapper::DataMapper() {
-    initWithFormat(DataUInt8::get());
-}
+DataMapper::DataMapper() { initWithFormat(DataUInt8::get()); }
 
 DataMapper::DataMapper(const DataMapper& rhs)
-    : dataRange(rhs.dataRange)
-    , valueRange(rhs.valueRange)
-    , valueUnit(rhs.valueUnit) {
-}
+    : dataRange(rhs.dataRange), valueRange(rhs.valueRange), valueUnit(rhs.valueUnit) {}
 
 DataMapper& DataMapper::operator=(const DataMapper& that) {
     if (this != &that) {
@@ -53,11 +46,8 @@ DataMapper& DataMapper::operator=(const DataMapper& that) {
     }
     return *this;
 }
-DataMapper* DataMapper::clone() const {
-    return new DataMapper(*this);
-}
 
-void DataMapper::initWithFormat(const DataFormatBase* format){
+void DataMapper::initWithFormat(const DataFormatBase* format) {
     dataRange.y = format->getMax();
     switch (format->getNumericType()) {
         case NumericType::Float:
@@ -73,10 +63,9 @@ void DataMapper::initWithFormat(const DataFormatBase* format){
             dataRange.x = format->getMin();
             break;
     }
-    
+
     valueRange = dataRange;
     valueUnit = "arb. unit.";
 }
 
-} // namespace
-
+}  // namespace inviwo

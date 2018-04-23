@@ -272,14 +272,14 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
 }
 
 void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
-    auto isovalueCount = property.get().getNumIsoValues();
+    auto isovalueCount = property.get().size();
 
     // need to ensure there is always at least one isovalue due to the use of the macro
     // as array size in IsovalueParameters
     shader.getFragmentShaderObject()->addShaderDefine("MAX_ISOVALUE_COUNT",
                                                       toString(std::max<size_t>(1, isovalueCount)));
 
-    if (property.getEnabled() && (property.get().getNumIsoValues()) > 0) {
+    if (property.getEnabled() && (property.get().size()) > 0) {
         shader.getFragmentShaderObject()->addShaderDefine("ISOSURFACE_ENABLED");
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("ISOSURFACE_ENABLED");
@@ -287,14 +287,14 @@ void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
 }
 
 void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
-    auto data = property.get().getShaderUniformData();
+    auto data = property.get().getVectors();
 
     shader.setUniform("isovalues", data.first.size(), data.first.data());
     shader.setUniform("isosurfaceColors", data.second.size(), data.second.data());
 }
 
 void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::string name) {
-    auto data = property.get().getShaderUniformData();
+    auto data = property.get().getVectors();
 
     shader.setUniform(name + ".values", data.first.size(), data.first.data());
     shader.setUniform(name + ".colors", data.second.size(), data.second.data());
