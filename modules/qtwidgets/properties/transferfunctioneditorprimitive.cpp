@@ -158,6 +158,22 @@ QVariant TransferFunctionEditorPrimitive::itemChange(GraphicsItemChange change,
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
         auto newpos = value.toPointF();
+        
+        const bool shiftPressed =
+            ((QGuiApplication::queryKeyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier);
+        // restrict movement to either horizontal or vertical direction while shift is pressed
+        if (shiftPressed) {
+            // adjust position of mouse event
+            auto delta = newpos - cachedPosition_;
+            if (std::abs(delta.x()) > std::abs(delta.y())) {
+                // horizontal movement is dominating
+                newpos.ry() = cachedPosition_.y();
+            } else {
+                // vertical movement is dominating
+                newpos.rx() = cachedPosition_.x();
+            }
+        }
+
         QRectF rect = scene()->sceneRect();
 
         if (!rect.contains(newpos)) {
