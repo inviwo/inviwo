@@ -72,6 +72,16 @@ std::string rgba2hex(const vec4 &rgba) {
     return ss.str();
 }
 
+std::string rgb2hex(const vec3 &rgb) {
+    glm::u8vec3 color(rgb * 255.0f);
+    // change byte order
+    std::swap(color.r, color.b);
+
+    std::ostringstream ss;
+    ss << "#" << std::hex << *reinterpret_cast<unsigned int*>(&color);
+    return ss.str();
+}
+
 vec3 getD65WhitePoint() {
     // whiteD65 = rgb2XYZ(vec3(1.0f, 1.0f, 1.0f);
     return vec3(0.95047f, 1.0f, 1.08883f);
