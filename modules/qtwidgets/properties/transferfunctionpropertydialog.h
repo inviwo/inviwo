@@ -50,12 +50,14 @@ class QComboBox;
 class QLabel;
 class QResizeEvent;
 class QShowEvent;
+class QColorDialog;
 
 namespace inviwo {
 
 class ColorWheel;
 class RangeSliderQt;
 class TransferFunctionPropertyWidgetQt;
+class TFSelectionWatcher;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
                                                                 public TFPrimitiveSetObserver {
@@ -90,12 +92,15 @@ private:
     const int sliderRange_;
 
     std::unique_ptr<ColorWheel> colorWheel_;
+    std::unique_ptr<QColorDialog> colorDialog_;
 
     // Pointer to property, for get and invalidation in the widget
     TransferFunctionProperty* tfProperty_;
 
     // TransferFunctionEditor inherited from QGraphicsScene
     std::unique_ptr<TransferFunctionEditor> tfEditor_;
+
+    std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
 
     TransferFunctionEditorView* tfEditorView_;  ///< View that contains the editor
     QPushButton* btnClearTF_;

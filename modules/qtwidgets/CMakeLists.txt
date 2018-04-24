@@ -28,6 +28,7 @@ set(MOC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rangesliderqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tfselectionwatcher.h
 )
 
 #--------------------------------------------------------------------
@@ -135,6 +136,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/rangesliderqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rawdatareaderdialogqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tfselectionwatcher.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -50,7 +50,6 @@
 #include <QLineF>
 #include <QPainter>
 #include <QPen>
-#include <QColorDialog>
 #include <warn/pop>
 
 namespace inviwo {
@@ -83,38 +82,6 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfPrope
 
     // The default bsp tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
-
-    colorDialog_ = util::make_unique<QColorDialog>(parent);
-    colorDialog_->hide();
-    colorDialog_->setOption(QColorDialog::ShowAlphaChannel, false);
-    colorDialog_->setOption(QColorDialog::NoButtons, true);
-    colorDialog_->setWindowModality(Qt::NonModal);
-    colorDialog_->setWindowTitle(QString::fromStdString(tfProperty->getDisplayName()));
-
-    auto updateTFPointColor = [&](QColor color) {
-        const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
-
-        for (auto& elem : selectedItems()) {
-            if (auto v = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
-                v->setColor(newRgb);
-            }
-        }
-        emit colorChanged(color);
-    };
-    connect(colorDialog_.get(), &QColorDialog::currentColorChanged, updateTFPointColor);
-
-    auto updateColor = [&]() {
-        if (selectedItems().size() > 0) {
-            const auto tfPrimitive =
-                qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(selectedItems().at(0));
-            if (tfPrimitive) {
-                QColor c(utilqt::toQColor(tfPrimitive->getColor()));
-                setColorDialogColor(c);
-                emit colorChanged(c);
-            }
-        }
-    };
-    connect(this, &QGraphicsScene::selectionChanged, updateColor);
 
     if (auto port = tfProperty->getVolumeInport()) {
 
@@ -257,12 +224,7 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 void TransferFunctionEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
     mouseDoubleClick_ = true;
-    if (selectedItems().size() > 0) {
-        colorDialog_->show();
-        e->accept();
-    } else {
-        QGraphicsScene::mouseDoubleClickEvent(e);
-    }
+    QGraphicsScene::mouseDoubleClickEvent(e);
 }
 
 void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
@@ -498,6 +460,10 @@ TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraph
     return nullptr;
 }
 
+void TransferFunctionEditor::onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive*) {
+    emit showColorDialog();
+}
+
 void TransferFunctionEditor::onControlPointAdded(TFPrimitive* p) {
     auto newpoint = new TransferFunctionEditorControlPoint(p, this, controlPointSize_);
     auto it = std::upper_bound(points_.begin(), points_.end(), newpoint, comparePtr{});
@@ -566,28 +532,21 @@ void TransferFunctionEditor::setControlPointSize(float val) {
     }
 }
 
-void TransferFunctionEditor::setPointColor(const QColor& color) {
-    // update Color dialog to reflect the color changes
-    setColorDialogColor(color);
-
-    const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
-    for (auto& elem : selectedItems()) {
-        if (auto p = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
-            p->setColor(newRgb);
-        }
-    }
-}
-
 const DataMapper& TransferFunctionEditor::getDataMapper() const { return dataMap_; }
 
 TransferFunctionProperty* TransferFunctionEditor::getTransferFunctionProperty() {
     return tfProperty_;
 }
 
-void TransferFunctionEditor::setColorDialogColor(const QColor& c) {
-    colorDialog_->blockSignals(true);
-    colorDialog_->setCurrentColor(c);
-    colorDialog_->blockSignals(false);
+std::vector<TFPrimitive *> TransferFunctionEditor::getSelectedPrimitives() const {
+    std::vector<TFPrimitive *> selection;
+    for (auto& elem : selectedItems()) {
+        if (auto p = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
+            selection.push_back(p->getPrimitive());
+        }
+    }
+
+    return selection;
 }
 
 }  // namespace inviwo

@@ -32,8 +32,9 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
-#include <modules/qtwidgets/colorwheel.h>
 #include <modules/qtwidgets/rangesliderqt.h>
+#include <modules/qtwidgets/colorwheel.h>
+#include <modules/qtwidgets/tfselectionwatcher.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/util/filesystem.h>
@@ -50,6 +51,7 @@
 #include <QComboBox>
 #include <QGradientStops>
 #include <QPixmap>
+#include <QColorDialog>
 #include <warn/pop>
 
 namespace inviwo {
@@ -64,13 +66,10 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     tfProperty_->get().addObserver(this);
 
     tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_, this);
+    tfSelectionWatcher_ = util::make_unique<TFSelectionWatcher>(tfEditor_.get(), tfProperty_);
 
-    connect(tfEditor_.get(), &TransferFunctionEditor::colorChanged, this,
-            [this](const QColor& color) {
-                colorWheel_->blockSignals(true);
-                colorWheel_->setColor(color);
-                colorWheel_->blockSignals(false);
-            });
+    connect(tfEditor_.get(), &TransferFunctionEditor::selectionChanged, this,
+            [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
 
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
 
@@ -120,9 +119,18 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
         return toString(static_cast<float>(val) / range);
     });
 
-    colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
-    connect(colorWheel_.get(), &ColorWheel::colorChange, tfEditor_.get(),
-            &TransferFunctionEditor::setPointColor);
+    // set up color wheel
+    {
+        colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
+                colorWheel_.get(), [cw = colorWheel_.get()](const QColor& c, bool /*ambiguous*/) {
+                    cw->blockSignals(true);
+                    cw->setColor(c);
+                    cw->blockSignals(false);
+                });
+        connect(colorWheel_.get(), &ColorWheel::colorChange, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setColor);
+    }
 
     btnClearTF_ = new QPushButton("Reset");
     connect(btnClearTF_, &QPushButton::clicked, [this]() { tfEditor_->resetTransferFunction(); });
@@ -200,6 +208,36 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
 
     setWidget(mainPanel);
 
+    // set up color dialog
+    {
+        colorDialog_ = util::make_unique<QColorDialog>(this);
+        colorDialog_->hide();
+        // we don't want to see alpha in the color dialog
+        colorDialog_->setOption(QColorDialog::ShowAlphaChannel, false);
+        colorDialog_->setOption(QColorDialog::NoButtons, true);
+        colorDialog_->setWindowModality(Qt::NonModal);
+        colorDialog_->setWindowTitle(QString("TF Primitive Color - %1")
+                                         .arg(utilqt::toQString(tfProperty_->getDisplayName())));
+
+        connect(tfEditor_.get(), &TransferFunctionEditor::showColorDialog,
+                colorDialog_.get(), [dialog = colorDialog_.get()]() { dialog->show(); });
+
+        connect(
+            tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
+            colorDialog_.get(), [dialog = colorDialog_.get()](const QColor& c, bool /*ambiguous*/) {
+                dialog->blockSignals(true);
+                if (c.isValid()) {
+                    dialog->setCurrentColor(c);
+                } else {
+                    // nothing selected
+                    dialog->setCurrentColor(QColor("#95baff"));
+                }
+                dialog->blockSignals(false);
+            });
+        connect(colorDialog_.get(), &QColorDialog::currentColorChanged, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setColor);
+    }
+
     updateFromProperty();
     if (!tfProperty_->getVolumeInport()) {
         chkShowHistogram_->setVisible(false);
@@ -225,7 +263,7 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
 
 void TransferFunctionPropertyDialog::updateTFPreview() {
     auto pixmap = utilqt::toQPixmap(*tfProperty_, QSize(tfPreview_->width(), 20));
-   tfPreview_->setPixmap(pixmap);
+    tfPreview_->setPixmap(pixmap);
 }
 
 void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {

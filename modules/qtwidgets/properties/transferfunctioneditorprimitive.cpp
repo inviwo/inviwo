@@ -42,14 +42,21 @@
 
 namespace inviwo {
 
+void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive*) {
+}
+
 TransferFunctionEditorPrimitive::TransferFunctionEditorPrimitive(TFPrimitive* primitive,
                                                                  QGraphicsScene* scene,
                                                                  const vec2& pos, float size)
     : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
-    setZValue(10);
+    setZValue(defaultZValue_);
     setAcceptHoverEvents(true);
+
+    if (auto tfe = qobject_cast<TransferFunctionEditor*>(scene)) {
+        addObserver(tfe);
+    }
 
     // create label for annotating TF primitives
     tfPrimitiveLabel_ = util::make_unique<QGraphicsSimpleTextItem>(this);
@@ -58,12 +65,12 @@ TransferFunctionEditorPrimitive::TransferFunctionEditorPrimitive(TFPrimitive* pr
     font.setPixelSize(14);
     tfPrimitiveLabel_->setFont(font);
 
-    // update position first, then add to scene to avoid calling the virtual
-    // function onItemPositionChange()
-    updatePosition(
-        QPointF(pos.x * scene->sceneRect().width(), pos.y * scene->sceneRect().height()));
-
     if (scene) {
+        // update position first, then add to scene to avoid calling the virtual
+        // function onItemPositionChange()
+        updatePosition(
+            QPointF(pos.x * scene->sceneRect().width(), pos.y * scene->sceneRect().height()));
+
         scene->addItem(this);
     }
 }
@@ -184,7 +191,12 @@ void TransferFunctionEditorPrimitive::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
 void TransferFunctionEditorPrimitive::hoverLeaveEvent(QGraphicsSceneHoverEvent*) {
     setHovered(false);
-    setZValue(10);
+    setZValue(defaultZValue_);
+}
+
+void TransferFunctionEditorPrimitive::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
+    forEachObserver([&](TFEditorPrimitiveObserver* o) { o->onTFPrimitiveDoubleClicked(this); });
+    QGraphicsItem::mouseDoubleClickEvent(event);
 }
 
 void TransferFunctionEditorPrimitive::updatePosition(const QPointF& pos) {

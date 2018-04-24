@@ -44,7 +44,6 @@
 
 class QGraphicsView;
 class QGraphicsPathItem;
-class QColorDialog;
 
 namespace inviwo {
 
@@ -54,7 +53,8 @@ class TransferFunctionEditorControlPoint;
 class TransferFunctionControlPointConnection;
 class TFPrimitive;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene {
+class IVW_MODULE_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene,
+                                                        public TFEditorPrimitiveObserver {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -62,7 +62,6 @@ class IVW_MODULE_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene {
 public:
     TransferFunctionEditor(TransferFunctionProperty* tfProperty, QWidget* parent = nullptr);
     virtual ~TransferFunctionEditor();
-
 
     virtual void onControlPointAdded(TFPrimitive* p);
     virtual void onControlPointRemoved(TFPrimitive* p);
@@ -86,14 +85,14 @@ public:
      */
     float getControlPointSize() const { return controlPointSize_; }
 
-    void setPointColor(const QColor& color);
-
     const DataMapper& getDataMapper() const;
 
     TransferFunctionProperty* getTransferFunctionProperty();
 
+    std::vector<TFPrimitive*> getSelectedPrimitives() const;
+
 signals:
-    void colorChanged(const QColor& color);
+    void showColorDialog();
 
 public slots:
     void resetTransferFunction();
@@ -119,9 +118,9 @@ protected:
 
     TransferFunctionEditorControlPoint* getControlPointGraphicsItemAt(const QPointF pos) const;
 
-private:
-    void setColorDialogColor(const QColor& c);
+    virtual void onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive* p) override;
 
+private:
     float controlPointSize_ = 15.f;  ///< Size of control points
 
     TransferFunctionProperty* tfProperty_;
@@ -140,8 +139,6 @@ private:
 
     std::vector<std::vector<TransferFunctionEditorControlPoint*> > groups_;
     int moveMode_;
-
-    std::unique_ptr<QColorDialog> colorDialog_;
 };
 
 }  // namespace inviwo

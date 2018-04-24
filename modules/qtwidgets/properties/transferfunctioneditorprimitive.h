@@ -33,6 +33,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
 #include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/util/observer.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,10 +44,22 @@ class QGraphicsScene;
 class QGraphicsSceneHoverEvent;
 class QPainter;
 class QGraphicsSimpleTextItem;
+class QGraphicsMouseEvent;
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorPrimitive : public QGraphicsItem {
+class TransferFunctionEditorPrimitive;
+
+class IVW_MODULE_QTWIDGETS_API TFEditorPrimitiveObserver : public Observer {
+public:
+    virtual ~TFEditorPrimitiveObserver() = default;
+
+    virtual void onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive* p);
+};
+
+class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorPrimitive
+    : public QGraphicsItem,
+      public Observable<TFEditorPrimitiveObserver> {
 public:
     enum ItemType {
         TFEditorControlPointType = 30,
@@ -72,7 +85,7 @@ public:
 
     void setPrimitive(TFPrimitive* primitive);
     TFPrimitive* getPrimitive();
-    
+
     void setPosition(double pos);
     double getPosition() const;
 
@@ -113,6 +126,7 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
     /**
      * draws the primitive. Gets called from within paint()
@@ -144,6 +158,8 @@ protected:
      * gets called in itemChange() when a scene change has happend
      */
     virtual void onItemSceneHasChanged() {}
+
+    int defaultZValue_ = 10;
 
     float size_;
     bool isEditingPoint_;
