@@ -112,6 +112,7 @@ public:
     virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
     virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
 
 private:
     ValueWrapper<dvec2> zoomH_;

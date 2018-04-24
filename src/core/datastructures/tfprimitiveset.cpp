@@ -44,6 +44,9 @@ void TFPrimitiveSetObserver::onTFPrimitiveRemoved(TFPrimitive*) {}
 
 void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitive*) {}
 
+void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet *) {
+}
+
 void TFPrimitiveSetObservable::notifyTFPrimitiveAdded(TFPrimitive* p) {
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveAdded(p); });
 }
@@ -56,8 +59,12 @@ void TFPrimitiveSetObservable::notifyTFPrimitiveChanged(const TFPrimitive* p) {
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveChanged(p); });
 }
 
+void TFPrimitiveSetObservable::notifyTFTypeChanged(const TFPrimitiveSet* primitiveSet) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFTypeChanged(primitiveSet); });
+}
+
 TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type)
-    : type_(type) {
+    : type_("type", type) {
     add(values);
 }
 
@@ -73,12 +80,13 @@ TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs)
 TFPrimitiveSet::TFPrimitiveSet(TFPrimitiveSet&& rhs)
     : values_(std::move(rhs.values_))
     , sorted_(std::move(rhs.sorted_))
-    , type_(rhs.type_)
+    , type_(std::move(rhs.type_))
     , serializationKey_(std::move(rhs.serializationKey_))
     , serializationItemKey_(std::move(rhs.serializationItemKey_)) {}
 
 TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     if (this != &rhs) {
+        type_ = rhs.type_;
         serializationKey_ = rhs.serializationKey_;
         serializationItemKey_ = rhs.serializationItemKey_;
 
@@ -94,6 +102,14 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
         invalidate();
     }
     return *this;
+}
+
+void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
+    if (type_ == type) {
+        return;
+    }
+    type_ = type;
+    notifyTFTypeChanged(this);
 }
 
 dvec2 TFPrimitiveSet::getRange() const {
@@ -235,10 +251,15 @@ void TFPrimitiveSet::onTFPrimitiveChange(const TFPrimitive* p) {
 }
 
 void TFPrimitiveSet::serialize(Serializer& s) const {
+    type_.serialize(s, PropertySerializationMode::All);
     s.serialize(serializationKey_, values_, serializationItemKey_);
 }
 
 void TFPrimitiveSet::deserialize(Deserializer& d) {
+    if (type_.deserialize(d, PropertySerializationMode::All)) {
+        notifyTFTypeChanged(this);
+    }
+
     util::IndexedDeserializer<std::unique_ptr<TFPrimitive>>(serializationKey_,
                                                             serializationItemKey_)
         .onNew([&](std::unique_ptr<TFPrimitive>& p) {

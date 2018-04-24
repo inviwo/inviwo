@@ -35,6 +35,7 @@
 
 #include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/util/observer.h>
+#include <inviwo/core/properties/valuewrapper.h>
 
 namespace inviwo {
 
@@ -43,17 +44,21 @@ enum class TFPrimitiveSetType {
     Absolute,  //<! absolute positioning of TF primitives
 };
 
+class TFPrimitiveSet;
+
 class IVW_CORE_API TFPrimitiveSetObserver : public Observer {
 public:
     virtual void onTFPrimitiveAdded(TFPrimitive* p);
     virtual void onTFPrimitiveRemoved(TFPrimitive* p);
     virtual void onTFPrimitiveChanged(const TFPrimitive* p);
+    virtual void onTFTypeChanged(const TFPrimitiveSet *primitiveSet);
 };
 class IVW_CORE_API TFPrimitiveSetObservable : public Observable<TFPrimitiveSetObserver> {
 protected:
     void notifyTFPrimitiveAdded(TFPrimitive* p);
     void notifyTFPrimitiveRemoved(TFPrimitive* p);
     void notifyTFPrimitiveChanged(const TFPrimitive* p);
+    void notifyTFTypeChanged(const TFPrimitiveSet *primitiveSet);
 };
 
 /**
@@ -77,6 +82,7 @@ public:
     TFPrimitiveSet& operator=(const TFPrimitiveSet& rhs);
     virtual ~TFPrimitiveSet() = default;
 
+    void setType(TFPrimitiveSetType type);
     TFPrimitiveSetType getType() const;
 
     /**
@@ -190,7 +196,7 @@ protected:
     std::vector<TFPrimitive*> sorted_;
 
 private:
-    const TFPrimitiveSetType type_;
+    ValueWrapper<TFPrimitiveSetType> type_;
     std::string serializationKey_ = "TFPrimitives";
     std::string serializationItemKey_ = "TFPrimitive";
 };

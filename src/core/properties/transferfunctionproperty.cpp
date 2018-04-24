@@ -200,6 +200,10 @@ void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive*) { propertyModi
 
 void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive*) { propertyModified(); }
 
+void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet*) {
+    propertyModified();
+}
+
 void TransferFunctionPropertyObservable::notifyMaskChange(const dvec2& mask) {
     forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onMaskChange(mask); });
 }
