@@ -48,6 +48,11 @@
 #include <algorithm>
 #include <cmath>
 
+template <typename T>
+T clamp(const T& val, const T& min, const T& max) {
+    return (val > max ? max : (val < min ? min : val));
+}
+
 namespace inviwo {
 
 ColorWheel::ColorWheel(const QSize& initialSize, QWidget* parent)
@@ -133,8 +138,8 @@ void ColorWheel::setColorFromSquare(const QPoint& point) {
     QPoint p = point - QPoint(static_cast<int>(m), static_cast<int>(m));
     qreal SquareWidth = (ir * qSqrt(2));
     svChanged(QColor::fromHsv(static_cast<int>(currentColor_.hueF()),
-                              glm::clamp(static_cast<int>(p.x() / SquareWidth * 255.0), 0, 255),
-                              glm::clamp(static_cast<int>(p.y() / SquareWidth * 255.0), 0, 255)));
+                              clamp(static_cast<int>(p.x() / SquareWidth * 255.0), 0, 255),
+                              clamp(static_cast<int>(p.y() / SquareWidth * 255.0), 0, 255)));
 }
 
 QSize ColorWheel::sizeHint() const { return QSize(height(), height()); }
