@@ -564,8 +564,8 @@ void TransferFunctionEditor::addControlPointPeak(const QPointF& pos) {
 
     // add point to the right
     if (p.y < 1.0) {
-        // compute intercept on y by using p.y - p.y / offset * p.x
-        double y = std::max(0.0, (p.y - 1.0) * (1.0 + p.x / normalizedOffset));
+        // compute intercept on y by using p.y + p.y / offset * (p.x - 1.0)
+        double y = std::max(0.0, p.y * (1.0 + (p.x - 1.0) / normalizedOffset));
         transferFunction_->add(dvec2(std::min(p.x + normalizedOffset, 1.0), y));
     }
 }
