@@ -74,6 +74,10 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
 
     connect(tfEditor_.get(), &TransferFunctionEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
+    connect(tfEditor_.get(), &TransferFunctionEditor::importTF, this,
+            &TransferFunctionPropertyDialog::importTransferFunction);
+    connect(tfEditor_.get(), &TransferFunctionEditor::exportTF, this,
+            &TransferFunctionPropertyDialog::exportTransferFunction);
 
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
 
@@ -112,17 +116,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     zoomHSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(static_cast<float>(val) / range);
     });
-
-    maskSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
-    maskSlider_->setRange(0, sliderRange_);
-    maskSlider_->setValue(static_cast<int>(tfProperty_->getMask().x * sliderRange_),
-                          static_cast<int>(tfProperty_->getMask().y * sliderRange_));
-    connect(maskSlider_, &RangeSliderQt::valuesChanged, this,
-            &TransferFunctionPropertyDialog::changeMask);
-    maskSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
-        return toString(static_cast<float>(val) / range);
-    });
-
+    
     // set up color wheel
     {
         colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
@@ -221,7 +215,6 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     leftLayout->addWidget(tfEditorView_, 0, 1);
     leftLayout->addWidget(zoomHSlider_, 1, 1);
     leftLayout->addWidget(tfPreview_, 2, 1);
-    leftLayout->addWidget(maskSlider_, 3, 1);
     leftPanel->setLayout(leftLayout);
 
     QFrame* rightPanel = new QFrame(this);
@@ -229,9 +222,9 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(7);
     rightLayout->setAlignment(Qt::AlignTop);
-    rightLayout->addWidget(colorWheel_.get());
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
+    rightLayout->addWidget(colorWheel_.get());
 
     auto primitivePropLayout = new QGridLayout();
     primitivePropLayout->addWidget(new QLabel("Scalar"), 1, 1);
@@ -322,6 +315,7 @@ void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax
     const auto zoomMinF = static_cast<float>(sliderRange_ - zoomMax) / sliderRange_;
 
     tfProperty_->setZoomV(zoomMinF, zoomMaxF);
+    tfEditor_->setPrimitiveOffset(getPrimitiveOffset());
 }
 
 void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
@@ -329,15 +323,7 @@ void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomM
     const auto zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
 
     tfProperty_->setZoomH(zoomMinF, zoomMaxF);
-}
-
-// Connected to valuesChanged on the maskSlider
-void TransferFunctionPropertyDialog::changeMask(int maskMin, int maskMax) {
-    const auto maskMinF = static_cast<float>(maskMin) / sliderRange_;
-    const auto maskMaxF = static_cast<float>(maskMax) / sliderRange_;
-    tfProperty_->setMask(maskMinF, maskMaxF);
-
-    updateTFPreview();
+    tfEditor_->setPrimitiveOffset(getPrimitiveOffset());
 }
 
 void TransferFunctionPropertyDialog::importTransferFunction() {
@@ -387,6 +373,9 @@ void TransferFunctionPropertyDialog::showHistogram(int type) {
 
 void TransferFunctionPropertyDialog::resizeEvent(QResizeEvent* event) {
     PropertyEditorWidgetQt::resizeEvent(event);
+
+    tfEditor_->setPrimitiveOffset(getPrimitiveOffset());
+
     updateTFPreview();
 }
 
@@ -437,7 +426,6 @@ void TransferFunctionPropertyDialog::setReadOnly(bool readonly) {
     btnClearTF_->setDisabled(readonly);
     btnImportTF_->setDisabled(readonly);
     pointMoveMode_->setDisabled(readonly);
-    maskSlider_->setDisabled(readonly);
 }
 
 void TransferFunctionPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
@@ -445,6 +433,17 @@ void TransferFunctionPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveM
 void TransferFunctionPropertyDialog::updateTFPreview() {
     auto pixmap = utilqt::toQPixmap(*tfProperty_, QSize(tfPreview_->width(), 20));
     tfPreview_->setPixmap(pixmap);
+}
+
+dvec2 TransferFunctionPropertyDialog::getPrimitiveOffset() const {
+    // to determine the offset in scene coords, map a square where each side has length
+    // defaultOffset_ to the scene. We assume that there is no rotation or non-linear view
+    // transformation.
+    auto rect =
+        tfEditorView_->mapToScene(QRect(QPoint(0, 0), QSize(defaultOffset_, defaultOffset_)))
+            .boundingRect();
+
+    return dvec2(rect.width(), rect.height());
 }
 
 }  // namespace inviwo

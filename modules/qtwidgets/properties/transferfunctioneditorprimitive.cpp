@@ -38,6 +38,9 @@
 #include <QPainter>
 #include <QGraphicsSimpleTextItem>
 #include <QFont>
+#include <QGuiApplication>
+#include <QGraphicsSceneMouseEvent>
+#include <QMenu>
 #include <warn/pop>
 
 namespace inviwo {
@@ -47,7 +50,7 @@ void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TransferFunctio
 
 TransferFunctionEditorPrimitive::TransferFunctionEditorPrimitive(TFPrimitive* primitive,
                                                                  QGraphicsScene* scene,
-                                                                 const vec2& pos, float size)
+                                                                 const vec2& pos, double size)
     : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
@@ -104,13 +107,13 @@ void TransferFunctionEditorPrimitive::setTFPosition(const dvec2& tfpos) {
 
 const QPointF& TransferFunctionEditorPrimitive::getCurrentPos() const { return currentPos_; }
 
-void TransferFunctionEditorPrimitive::setSize(float s) {
+void TransferFunctionEditorPrimitive::setSize(double s) {
     prepareGeometryChange();
     size_ = s;
     update();
 }
 
-float TransferFunctionEditorPrimitive::getSize() const { return hovered_ ? size_ + 5.0f : size_; }
+double TransferFunctionEditorPrimitive::getSize() const { return hovered_ ? size_ + 5.0 : size_; }
 
 void TransferFunctionEditorPrimitive::setHovered(bool hover) {
     prepareGeometryChange();
@@ -120,6 +123,10 @@ void TransferFunctionEditorPrimitive::setHovered(bool hover) {
     updateLabel();
 
     update();
+}
+
+void TransferFunctionEditorPrimitive::beginMouseDrag() {
+    cachedPosition_ = currentPos_;
 }
 
 void TransferFunctionEditorPrimitive::paint(QPainter* painter,

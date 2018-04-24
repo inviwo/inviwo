@@ -81,7 +81,6 @@ protected:
 
     virtual void setReadOnly(bool readonly) override;
 
-    void changeMask(int maskMin, int maskMax);
     void changeVerticalZoom(int zoomMin, int zoomMax);
     void changeHorizontalZoom(int zoomMin, int zoomMax);
     void importTransferFunction();
@@ -94,8 +93,14 @@ protected:
 
 private:
     void updateTFPreview();
+    /**
+     * calculate the horizontal and vertical offset in scene coordinates based on the current
+     * viewport size and zoom. The offset then corresponds to defaultOffset pixels on screen.
+     */
+    dvec2 getPrimitiveOffset() const;
 
     const int sliderRange_;
+    const int defaultOffset_ = 20;  //!< offset in pixel
 
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
@@ -125,7 +130,6 @@ private:
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
-    RangeSliderQt* maskSlider_;
 };
 
 }  // namespace inviwo

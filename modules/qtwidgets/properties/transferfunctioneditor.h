@@ -44,6 +44,7 @@
 
 class QGraphicsView;
 class QGraphicsPathItem;
+class QGraphicsSceneContextMenuEvent;
 
 namespace inviwo {
 
@@ -78,12 +79,15 @@ public:
      * @see TransferFunctionEditorControlPoint::setSize
      * @param val Display size
      */
-    void setControlPointSize(float val);
+    void setControlPointSize(double val);
     /**
      * \brief Get the display size of the control points.
      * @see TransferFunctionEditorControlPoint::setSize
      */
-    float getControlPointSize() const { return controlPointSize_; }
+    double getControlPointSize() const;
+
+    void setPrimitiveOffset(const dvec2& offset);
+    const dvec2& getPrimitiveOffset() const;
 
     const DataMapper& getDataMapper() const;
 
@@ -93,53 +97,71 @@ public:
 
 signals:
     void showColorDialog();
+    void importTF();
+    void exportTF();
 
 public slots:
     void resetTransferFunction();
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent* e);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent* e);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
-    void keyPressEvent(QKeyEvent* keyEvent);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
     /**
-     * \brief Adds a new control point at the event position
+     * \brief adds a new control point at the given position
      *
      * Adds a new control point the the points_ array, adds a new line item to the lines_ array,
      * sorts the points_ array and updates the line items to go to and from the correct points.
      * Runs CalcTransferValues to update the TransferFunction data Image
      */
-    void addControlPoint(QPointF pos);
-    void addControlPoint(QPointF pos, vec4 color);
+    void addControlPoint(const QPointF& pos);
+    void addControlPoint(double pos, const vec4& color);
 
-    void removeControlPoint(TransferFunctionEditorControlPoint* p);
+    /**
+     * \brief adds a new TF Peak at the given position
+     *
+     * Adds a control point as well as two more points with 0 alpha, one point to the left and the
+     * second to the right using the current primitive offset.
+     */
+    void addControlPointPeak(const QPointF& pos);
 
-    TransferFunctionEditorControlPoint* getControlPointGraphicsItemAt(const QPointF pos) const;
+    void removeControlPoint(TransferFunctionEditorPrimitive* p);
+
+    TransferFunctionEditorPrimitive* getTFPrimitiveItemAt(const QPointF& pos) const;
 
     virtual void onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive* p) override;
 
 private:
-    float controlPointSize_ = 15.f;  ///< Size of control points
+    std::vector<TransferFunctionEditorPrimitive*> getSelectedPrimitiveItems() const;
+
+    double controlPointSize_ = 15.0;       //!< size of TF primitives
+    dvec2 primitiveOffset_ = dvec2(10.0);  //!< offset for duplicating TF primitives
 
     TransferFunctionProperty* tfProperty_;
-    TransferFunction* transferFunction_;  ///< Pointer to widget's member variable
+    TransferFunction* transferFunction_;  //!< pointer to TF inside TF property
 
     using PointVec = std::vector<TransferFunctionEditorControlPoint*>;
     using ConnectionVec = std::vector<TransferFunctionControlPointConnection*>;
     PointVec points_;
     ConnectionVec connections_;
-    QList<QGraphicsItem*>
-        selectedItemsAtPress_;  // The items selected when user pressed mouse button.
     bool mouseDrag_;
-    bool mouseMovedSincePress_ = false;  // Mouse moved since click
+    bool mouseMovedSincePress_ = false;
     bool mouseDoubleClick_ = false;
     DataMapper dataMap_;
 
-    std::vector<std::vector<TransferFunctionEditorControlPoint*> > groups_;
+    std::vector<std::vector<TransferFunctionEditorPrimitive*> > groups_;
     int moveMode_;
+
+    bool selectNewPrimitives_;
 };
+
+inline double TransferFunctionEditor::getControlPointSize() const { return controlPointSize_; }
+inline const dvec2& TransferFunctionEditor::getPrimitiveOffset() const { return primitiveOffset_; }
 
 }  // namespace inviwo
 
