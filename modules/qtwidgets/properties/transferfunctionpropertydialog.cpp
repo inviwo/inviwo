@@ -36,6 +36,8 @@
 #include <modules/qtwidgets/colorwheel.h>
 #include <modules/qtwidgets/tfselectionwatcher.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/tflineedit.h>
+#include <modules/qtwidgets/tfcoloredit.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
@@ -52,6 +54,7 @@
 #include <QGradientStops>
 #include <QPixmap>
 #include <QColorDialog>
+#include <QGridLayout>
 #include <warn/pop>
 
 namespace inviwo {
@@ -170,6 +173,45 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     connect(pointMoveMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &TransferFunctionPropertyDialog::changeMoveMode);
 
+    // set up TF primitive widgets
+    {
+        primitivePos_ = new TFLineEdit();
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetPosition, primitivePos_,
+                &TFLineEdit::setValue);
+        connect(primitivePos_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setPosition);
+
+        // ensure that the range of primitive scalar is matching value range of volume data
+        if (auto port = tfProperty_->getVolumeInport()) {
+            const auto portChange = [this, port]() {
+                auto range =
+                    port->hasData() ? port->getData()->dataMap_.valueRange : dvec2(0.0, 1.0);
+                primitivePos_->setValueMapping(
+                    tfProperty_->get().getType() == TFPrimitiveSetType::Relative, range);
+            };
+
+            port->onChange(portChange);
+            port->onConnect(portChange);
+            port->onDisconnect(portChange);
+        }
+        // update value mapping for position widget with respect to TF type and port
+        onTFTypeChanged(nullptr);
+
+        primitiveAlpha_ = new TFLineEdit();
+        // only accept values in [0, 1]
+        primitiveAlpha_->setValidRange(dvec2(0.0, 1.0));
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetAlpha, primitiveAlpha_,
+                &TFLineEdit::setValue);
+        connect(primitiveAlpha_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setAlpha);
+
+        primitiveColor_ = new TFColorEdit();
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, primitiveColor_,
+                &TFColorEdit::setColor);
+        connect(primitiveColor_, &TFColorEdit::colorChanged, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setColor);
+    }
+
     QFrame* leftPanel = new QFrame(this);
     QGridLayout* leftLayout = new QGridLayout();
     leftLayout->setContentsMargins(0, 0, 0, 0);
@@ -189,6 +231,16 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     rightLayout->addWidget(colorWheel_.get());
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
+
+    auto primitivePropLayout = new QGridLayout();
+    primitivePropLayout->addWidget(new QLabel("Scalar"), 1, 1);
+    primitivePropLayout->addWidget(primitivePos_, 1, 2);
+    primitivePropLayout->addWidget(new QLabel("Alpha"), 2, 1);
+    primitivePropLayout->addWidget(primitiveAlpha_, 2, 2);
+    primitivePropLayout->addWidget(new QLabel("Color"), 3, 1);
+    primitivePropLayout->addWidget(primitiveColor_, 3, 2);
+    rightLayout->addLayout(primitivePropLayout);
+
     rightLayout->addStretch(3);
     QHBoxLayout* rowLayout = new QHBoxLayout();
     rowLayout->addWidget(btnClearTF_);
@@ -361,6 +413,18 @@ void TransferFunctionPropertyDialog::onTFPrimitiveRemoved(TFPrimitive* p) {
 void TransferFunctionPropertyDialog::onTFPrimitiveChanged(const TFPrimitive* p) {
     tfEditor_->onControlPointChanged(p);
     updateFromProperty();
+}
+
+void TransferFunctionPropertyDialog::onTFTypeChanged(const TFPrimitiveSet*) {
+    // adjust value mapping in primitive widget for position
+    dvec2 valueRange(0.0, 1.0);
+    if (auto port = tfProperty_->getVolumeInport()) {
+        if (port->hasData()) {
+            valueRange = port->getData()->dataMap_.valueRange;
+        }
+    }
+    primitivePos_->setValueMapping(tfProperty_->get().getType() == TFPrimitiveSetType::Relative,
+                                   valueRange);
 }
 
 TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() const {

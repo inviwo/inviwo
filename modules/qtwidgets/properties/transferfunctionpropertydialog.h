@@ -58,6 +58,8 @@ class ColorWheel;
 class RangeSliderQt;
 class TransferFunctionPropertyWidgetQt;
 class TFSelectionWatcher;
+class TFLineEdit;
+class TFColorEdit;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
                                                                 public TFPrimitiveSetObserver {
@@ -72,6 +74,7 @@ protected:
     virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
     virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
 
     virtual void setReadOnly(bool readonly) override;
 
@@ -109,6 +112,11 @@ private:
     QComboBox* chkShowHistogram_;
 
     QComboBox* pointMoveMode_;
+
+    // widgets for directly editing the currently selected TF primitives
+    TFLineEdit* primitivePos_;
+    TFLineEdit* primitiveAlpha_;
+    TFColorEdit* primitiveColor_;
 
     QLabel* tfPreview_;  ///< View that contains the scene for the painted transfer function
 
