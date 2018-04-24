@@ -66,6 +66,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     , tfEditor_(nullptr)
     , tfEditorView_(nullptr) {
 
+    tfProperty->TransferFunctionPropertyObservable::addObserver(this);
     tfProperty_->get().addObserver(this);
 
     tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_, this);
@@ -313,11 +314,6 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
     updateTFPreview();
 }
 
-void TransferFunctionPropertyDialog::updateTFPreview() {
-    auto pixmap = utilqt::toQPixmap(*tfProperty_, QSize(tfPreview_->width(), 20));
-    tfPreview_->setPixmap(pixmap);
-}
-
 void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     // normalize zoom values, as sliders in TransferFunctionPropertyDialog
     // have the range [0...100]
@@ -427,6 +423,10 @@ void TransferFunctionPropertyDialog::onTFTypeChanged(const TFPrimitiveSet*) {
                                    valueRange);
 }
 
+void TransferFunctionPropertyDialog::onMaskChange(const dvec2&) {
+    updateTFPreview();
+}
+
 TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() const {
     return tfEditorView_;
 }
@@ -441,5 +441,10 @@ void TransferFunctionPropertyDialog::setReadOnly(bool readonly) {
 }
 
 void TransferFunctionPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
+
+void TransferFunctionPropertyDialog::updateTFPreview() {
+    auto pixmap = utilqt::toQPixmap(*tfProperty_, QSize(tfPreview_->width(), 20));
+    tfPreview_->setPixmap(pixmap);
+}
 
 }  // namespace inviwo

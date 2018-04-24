@@ -44,8 +44,7 @@ void TFPrimitiveSetObserver::onTFPrimitiveRemoved(TFPrimitive*) {}
 
 void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitive*) {}
 
-void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet *) {
-}
+void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet*) {}
 
 void TFPrimitiveSetObservable::notifyTFPrimitiveAdded(TFPrimitive* p) {
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveAdded(p); });
@@ -127,6 +126,8 @@ dvec2 TFPrimitiveSet::getRange() const {
 }
 
 size_t TFPrimitiveSet::size() const { return values_.size(); }
+
+bool TFPrimitiveSet::empty() const { return values_.empty(); }
 
 TFPrimitive* TFPrimitiveSet::operator[](size_t i) { return sorted_[i]; }
 

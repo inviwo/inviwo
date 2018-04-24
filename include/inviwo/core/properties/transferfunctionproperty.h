@@ -90,6 +90,8 @@ public:
     const dvec2 getMask() const;
     void setMask(double maskMin, double maskMax);
 
+    void clearMask();
+
     const dvec2& getZoomH() const;
     void setZoomH(double zoomHMin, double zoomHMax);
 

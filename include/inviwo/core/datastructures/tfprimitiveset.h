@@ -96,6 +96,8 @@ public:
 
     size_t size() const;
 
+    bool empty() const;
+
     // functions for accessing individual TF primitives which are sorted according to their position
     TFPrimitive* operator[](size_t i);
     const TFPrimitive* operator[](size_t i) const;

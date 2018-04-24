@@ -60,6 +60,7 @@ TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values, T
     , invalidData_(true)
     , dataRepr_{std::make_shared<LayerRAMPrecision<vec4>>(size2_t(textureSize, 1))}
     , data_(util::make_unique<Layer>(dataRepr_)) {
+    clearMask();
     setSerializationKey("Points", "Point");
 }
 
@@ -132,6 +133,12 @@ void TransferFunction::setMaskMax(double maskMax) {
 }
 
 double TransferFunction::getMaskMax() const { return maskMax_; }
+
+void TransferFunction::clearMask() {
+    maskMin_ = (getType() == TFPrimitiveSetType::Relative) ? 0.0 : std::numeric_limits<double>::lowest();
+    maskMax_ = (getType() == TFPrimitiveSetType::Relative) ? 1.0 : std::numeric_limits<double>::max();
+    invalidate();
+}
 
 void TransferFunction::invalidate() { invalidData_ = true; }
 

@@ -62,7 +62,8 @@ class TFLineEdit;
 class TFColorEdit;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
-                                                                public TFPrimitiveSetObserver {
+                                                                public TFPrimitiveSetObserver,
+                                                                public TransferFunctionPropertyObserver {
 public:
     TransferFunctionPropertyDialog(TransferFunctionProperty* property);
     ~TransferFunctionPropertyDialog();
@@ -75,6 +76,8 @@ protected:
     virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
     virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
+
+    virtual void onMaskChange(const dvec2& mask) override;
 
     virtual void setReadOnly(bool readonly) override;
 

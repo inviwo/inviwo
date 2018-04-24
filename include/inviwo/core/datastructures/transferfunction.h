@@ -95,6 +95,8 @@ public:
     void setMaskMax(double maskMax);
     double getMaskMax() const;
 
+    void clearMask();
+
     /**
      * Notify that the layer data (texture) needs to be updated next time it is requested.
      */
