@@ -29,6 +29,7 @@
 
 #include <inviwo/qt/editor/processormimedata.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
