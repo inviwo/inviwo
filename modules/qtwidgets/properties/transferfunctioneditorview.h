@@ -41,6 +41,8 @@
 #include <QGraphicsView>
 #include <warn/pop>
 
+class QWheelEvent;
+
 namespace inviwo {
 
 class TransferFunctionProperty;
@@ -67,6 +69,8 @@ protected:
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
+
+    virtual void wheelEvent(QWheelEvent *event) override;
 
 private:
     TransferFunctionProperty* tfProperty_;
