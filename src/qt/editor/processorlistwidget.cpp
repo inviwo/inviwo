@@ -39,6 +39,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/qt/editor/processorpreview.h>
+#include <inviwo/qt/editor/processormimedata.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -486,23 +487,20 @@ void ProcessorTreeWidget::currentItemChanged(QTreeWidgetItem* current,
     if (!current) return;
     auto classname =
         utilqt::fromQString(current->data(0, ProcessorTree::identifierRole).toString());
-    if (!classname.empty()) helpWidget_->showDocForClassName(classname);
+    if (!classname.empty()) {
+        helpWidget_->showDocForClassName(classname);
+    }
 }
 
 static QString mimeType = "inviwo/ProcessorDragObject";
 
-ProcessorDragObject::ProcessorDragObject(QWidget* source, const QString className) : QDrag(source) {
-    QByteArray byteData;
-    {
-        QDataStream ds(&byteData, QIODevice::WriteOnly);
-        ds << className;
-    }
-    QMimeData* mimeData = new QMimeData;
-    mimeData->setData(mimeType, byteData);
-    mimeData->setData("text/plain", className.toLatin1().data());
-    setMimeData(mimeData);
-    auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(className, 0.8));
+ProcessorDragObject::ProcessorDragObject(QWidget* source, const QString& className) : QDrag(source) {
+    std::string cid = utilqt::fromQString(className);
+    auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
+    auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(processor.get(), 0.8));
     setPixmap(img);
+    auto mime = new ProcessorMimeData(std::move(processor));
+    setMimeData(mime);
     setHotSpot(QPoint(img.width() / 2, img.height() / 2));
     start(Qt::MoveAction);
 }

@@ -70,7 +70,7 @@
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
-#include <modules/qtwidgets/propertylistwidget.h>
+#include <inviwo/qt/editor/processormimedata.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
@@ -829,8 +829,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 void NetworkEditor::dragEnterEvent(QGraphicsSceneDragDropEvent* e) { dragMoveEvent(e); }
 
 void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
-    if (ProcessorDragObject::canDecode(e->mimeData())) {
-        // e->setAccepted(true);
+    if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
         e->acceptProposedAction();
 
         auto connectionItem = getConnectionGraphicsItemAt(e->scenePos());
@@ -841,8 +840,7 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
 
             validConnectionTarget_ = false;
             try {
-                auto factory = mainwindow_->getInviwoApplication()->getProcessorFactory();
-                auto processor = factory->create(className.toLocal8Bit().constData());
+                auto processor = mime->processor();
 
                 bool inputmatch =
                     util::any_of(processor->getInports(), [&connectionItem](Inport* inport) {
@@ -883,60 +881,56 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
 }
 
 void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
-    if (ProcessorDragObject::canDecode(e->mimeData())) {
-        QString name;
-        ProcessorDragObject::decode(e->mimeData(), name);
-        std::string className = name.toLocal8Bit().constData();
-
+    if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
         NetworkLock lock(network_);
 
-        if (!className.empty()) {
-            e->setAccepted(true);
-            e->acceptProposedAction();
+        e->setAccepted(true);
+        e->acceptProposedAction();
 
-            try {
-                // activate default render context
-                RenderContext::getPtr()->activateDefaultRenderContext();
+        try {
+            // activate default render context
+            RenderContext::getPtr()->activateDefaultRenderContext();
 
-                // create processor, add it to processor network, and generate it's widgets
-                auto factory = mainwindow_->getInviwoApplication()->getProcessorFactory();
-                Processor* processor = factory->create(className).release();
+            auto processor = mime->get();
+            if (!processor) {
+                LogError("Unable to get processor from drag object");
+                return;
+            }
+            clearSelection();
 
-                clearSelection();
+            auto meta =
+                processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 
-                auto meta =
-                    processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-
-                if (oldProcessorTarget_) {
-                    meta->setPosition(vec2(oldProcessorTarget_->scenePos().x(),
-                                           oldProcessorTarget_->scenePos().y()));
-                } else {
-                    QPointF spos = snapToGrid(e->scenePos());
-                    meta->setPosition(vec2(spos.x(), spos.y()));
-                }
-
-                network_->addProcessor(processor);
-                util::autoLinkProcessor(network_, processor);
-
-                if (oldConnectionTarget_) {
-                    placeProcessorOnConnection(processor, oldConnectionTarget_);
-                } else if (oldProcessorTarget_) {
-                    placeProcessorOnProcessor(processor, oldProcessorTarget_->getProcessor());
-                }
-            } catch (Exception& exception) {
-                if (oldConnectionTarget_) {
-                    oldConnectionTarget_->resetBorderColors();
-                }
-                util::log(
-                    exception.getContext(),
-                    "Unable to create processor " + className + " due to " + exception.getMessage(),
-                    LogLevel::Error);
+            if (oldProcessorTarget_) {
+                meta->setPosition(
+                    vec2(oldProcessorTarget_->scenePos().x(), oldProcessorTarget_->scenePos().y()));
+            } else {
+                QPointF spos = snapToGrid(e->scenePos());
+                meta->setPosition(vec2(spos.x(), spos.y()));
             }
 
-            // clear oldDragTarget
-            oldConnectionTarget_ = nullptr;
-            oldProcessorTarget_ = nullptr;
+            auto p = processor.get();
+            network_->addProcessor(processor.release());
+            util::autoLinkProcessor(network_, p);
+
+            if (oldConnectionTarget_) {
+                placeProcessorOnConnection(p, oldConnectionTarget_);
+            } else if (oldProcessorTarget_) {
+                placeProcessorOnProcessor(p, oldProcessorTarget_->getProcessor());
+            }
+        } catch (Exception& exception) {
+            if (oldConnectionTarget_) {
+                oldConnectionTarget_->resetBorderColors();
+            }
+            util::log(exception.getContext(),
+                      "Unable to create processor " + utilqt::fromQString(mime->text()) +
+                          " due to " + exception.getMessage(),
+                      LogLevel::Error);
         }
+
+        // clear oldDragTarget
+        oldConnectionTarget_ = nullptr;
+        oldProcessorTarget_ = nullptr;
     }
 }
 

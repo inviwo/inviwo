@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,43 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HELPWIDGET_H
-#define IVW_HELPWIDGET_H
+#ifndef IVW_PROCESSORMIMEDATA_H
+#define IVW_PROCESSORMIMEDATA_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
+#include <inviwo/core/common/inviwo.h>
 
-class QObject;
-class QHelpEngineCore;
-class QResizeEvent;
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMimeData>
+#include <warn/pop>
 
 namespace inviwo {
 
-class QCHFileObserver;
-class HelpBrowser;
+class Processor;
 
-
-class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
+class IVW_QTEDITOR_API ProcessorMimeData : public QMimeData {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    HelpWidget(InviwoMainWindow* parent);
-    virtual ~HelpWidget();
-    HelpWidget(const HelpWidget&) = delete;
-    HelpWidget& operator=(const HelpWidget&) = delete;
+    ProcessorMimeData(std::unique_ptr<Processor> processor);
+    virtual ~ProcessorMimeData() = default;
 
-    void showDocForClassName(std::string className);
-    void registerQCHFiles();
-protected:
-    virtual void resizeEvent(QResizeEvent* event) override;
+    std::unique_ptr<Processor> get() const;
+    Processor* processor() const;
+
+    static const std::string& getMimeTag();
+
+
+    static const ProcessorMimeData* toProcessorMimeData(const QMimeData* data);
+
 
 private:
-    void updateDoc();
-
-    InviwoMainWindow* mainwindow_;
-    QHelpEngineCore* helpEngine_;
-    HelpBrowser* helpBrowser_;
-    std::string requested_;
-    std::string current_;
-    std::unique_ptr<QCHFileObserver> fileObserver_;
-    
-    // Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    // Called before modules have been unregistered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
+    mutable std::unique_ptr<Processor> processor_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif  // IVW_HELPWIDGET_H
+#endif  // IVW_PROCESSORMIMEDATA_H
