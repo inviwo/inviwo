@@ -47,9 +47,6 @@ public:
 
     bool runString(std::string code);
 
-protected:
-    void init(Python3Module* module);
-
 private:
     bool isInit_;
 };

@@ -28,10 +28,10 @@
  *********************************************************************************/
 
 #include <modules/python3/interface/pypropertyowner.h>
+#include <inviwo/core/properties/propertyowner.h>
 
 #include <modules/python3/interface/inviwopy.h>
-
-#include <inviwo/core/properties/propertyowner.h>
+#include <modules/python3/interface/vectoridentifierwrapper.h>
 
 #include <pybind11/detail/common.h>
 
@@ -44,6 +44,9 @@ namespace inviwo {
 void exposePropertyOwner(pybind11::module &m) {
     namespace py = pybind11;
 
+    using PropertyVecWrapper = VectorIdentifierWrapper<std::vector<Property *>>;
+    exposeVectorIdentifierWrapper<std::vector<Property *>>(m, "PropertyVecWrapper");
+
     py::class_<PropertyOwner, std::unique_ptr<PropertyOwner, py::nodelete>>(m, "PropertyOwner")
         .def("getPath", &PropertyOwner::getPath)
         .def_property_readonly("properties", &PropertyOwner::getProperties,
@@ -52,15 +55,21 @@ void exposePropertyOwner(pybind11::module &m) {
              [](PropertyOwner &po, const std::string &key) {
                  auto prop = po.getPropertyByIdentifier(key);
                  if (prop) {
-                      return pybind11::cast(prop);
+                     return pybind11::cast(prop);
                  } else {
-                     throw py::attribute_error{};
+                     throw py::attribute_error{"PropertyOwner (" + joinString(po.getPath(), ".") +
+                                               ") does not have a property with identifier: '" +
+                                               key + "'"};
                  }
              },
              py::return_value_policy::reference)
+        .def_property_readonly(
+            "properties", [](PropertyOwner &po) { return PropertyVecWrapper(po.getProperties()); })
         .def("getPropertiesRecursive", &PropertyOwner::getPropertiesRecursive)
-        .def("addProperty",
-             [](PropertyOwner &po, Property *prop) { po.addProperty(prop); })
+        .def("addProperty", [](PropertyOwner &po, Property *prop) { po.addProperty(prop); },
+             py::keep_alive<1, 2>{})
+        .def("removeProperty",
+             [](PropertyOwner &po, Property *prop) { return po.removeProperty(prop); })
         .def("getPropertyByIdentifier", &PropertyOwner::getPropertyByIdentifier,
              py::return_value_policy::reference, py::arg("identifier"),
              py::arg("recursiveSearch") = false)

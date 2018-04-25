@@ -40,11 +40,24 @@
 
 namespace inviwo {
 
+namespace detail {
+template <typename T>
+struct PortDeleter {
+    void operator()(T* p) {
+        if (p && p->getProcessor() == nullptr) delete p;
+    }
+};
+}  // namespace detail
+
+template <typename T>
+using PortPtr = std::unique_ptr<T, detail::PortDeleter<T>>;
+
 template <typename Port>
-pybind11::class_<Port, Outport> exposeOutport(pybind11::module& m, const std::string& name) {
+pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m,
+                                                             const std::string& name) {
     namespace py = pybind11;
     using T = typename Port::type;
-    return pybind11::class_<Port, Outport>(m, (name + "Outport").c_str())
+    return pybind11::class_<Port, Outport, PortPtr<Port>>(m, (name + "Outport").c_str())
         .def(py::init<std::string>())
         .def("getData", &Port::getData)
         .def("detatchData", &Port::detachData)
@@ -53,9 +66,10 @@ pybind11::class_<Port, Outport> exposeOutport(pybind11::module& m, const std::st
 }
 
 template <typename Port>
-pybind11::class_<Port, Inport> exposeInport(pybind11::module& m, const std::string& name) {
+pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
+                                                           const std::string& name) {
     namespace py = pybind11;
-    return pybind11::class_<Port, Inport>(m, (name + "Inport").c_str())
+    return pybind11::class_<Port, Inport, PortPtr<Port>>(m, (name + "Inport").c_str())
         .def(py::init<std::string>())
         .def("getData", &Port::getData)
         .def("getVectorData", &Port::getVectorData)

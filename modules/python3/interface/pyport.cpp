@@ -37,7 +37,7 @@ namespace inviwo {
 
 void exposePort(pybind11::module& m) {
     namespace py = pybind11;
-    py::class_<Port>(m, "Port")
+    py::class_<Port, PortPtr<Port>>(m, "Port")
         .def_property_readonly("identifier", &Port::getIdentifier)
         .def_property_readonly("processor", &Port::getProcessor, py::return_value_policy::reference)
         .def_property_readonly("classIdentifier", &Port::getClassIdentifier)
@@ -45,7 +45,7 @@ void exposePort(pybind11::module& m) {
         .def("isConnected", &Port::isConnected)
         .def("isReady", &Port::isReady);
 
-    py::class_<Inport, Port>(m, "Inport")
+    py::class_<Inport, Port, PortPtr<Inport>>(m, "Inport")
         .def_property("optional", &Inport::isOptional, &Inport::setOptional)
         .def("canConnectTo", &Inport::canConnectTo)
         .def("connectTo", &Inport::connectTo)
@@ -59,7 +59,7 @@ void exposePort(pybind11::module& m) {
         .def("getNumberOfConnections", &Inport::getNumberOfConnections)
         .def("getChangedOutports", &Inport::getChangedOutports, py::return_value_policy::reference);
 
-    py::class_<Outport, Port>(m, "Outport")
+    py::class_<Outport, Port, PortPtr<Outport>>(m, "Outport")
         .def("isConnectedTo", &Outport::isConnectedTo)
         .def("getConnectedInports", &Outport::getConnectedInports,
              py::return_value_policy::reference);

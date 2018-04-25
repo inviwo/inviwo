@@ -42,6 +42,8 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <modules/python3/processors/pythonscriptprocessor.h>
+
 namespace inviwo {
 
 class ProcessorTrampoline : public Processor {
@@ -138,8 +140,8 @@ void exposeProcessors(pybind11::module &m) {
         .def_property("displayName", &Processor::getDisplayName, &Processor::setDisplayName)
         .def("getProcessorInfo", &Processor::getProcessorInfo)
         .def_property_readonly("category", &Processor::getCategory)
-        .def_property_readonly("codeState", &Processor::getCodeState)  // TODO expose states
-        .def_property_readonly("tags", &Processor::getTags)            // TODO expose tags
+        .def_property_readonly("codeState", &Processor::getCodeState)
+        .def_property_readonly("tags", &Processor::getTags)
         .def_property("identifier", &Processor::getIdentifier, &Processor::setIdentifier)
         .def("hasProcessorWidget", &Processor::hasProcessorWidget)
         .def_property_readonly("widget", &Processor::getProcessorWidget)
@@ -152,10 +154,19 @@ void exposeProcessors(pybind11::module &m) {
         .def("getPort", &Processor::getPort, py::return_value_policy::reference)
         .def("getInport", &Processor::getInport, py::return_value_policy::reference)
         .def("getOutport", &Processor::getOutport, py::return_value_policy::reference)
-        .def("addInport", [](Processor &p, Inport &port,
-                             const std::string &group = "default") { p.addPort(port, group); })
-        .def("addOutport", [](Processor &p, Outport &port,
-                              const std::string &group = "default") { p.addPort(port, group); })
+        .def("addInport",
+             [](Processor &p, Inport *port, const std::string &group = "default") {
+                 p.addPort(*port, group);
+             },
+             py::arg("inport"), py::arg("group") = "default", py::keep_alive<1, 2>{})
+        .def("addOutport",
+             [](Processor &p, Outport *port, const std::string &group = "default") {
+                 p.addPort(*port, group);
+             },
+             py::arg("outport"), py::arg("group") = "default", py::keep_alive<1, 2>{})
+        .def("removeInport", [](Processor &p, Inport *port) { return p.removePort(port); })
+        .def("removeOutport", [](Processor &p, Outport *port) { return p.removePort(port); })
+
         .def_property_readonly(
             "meta",
             [](Processor *p) {
@@ -165,9 +176,7 @@ void exposeProcessors(pybind11::module &m) {
         .def("initializeResources", &Processor::initializeResources)
         .def("process", &Processor::process);
 
-    py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>> canvasPorcessor(
-        m, "CanvasProcessor");
-    canvasPorcessor
+    py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>>(m, "CanvasProcessor")
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)
@@ -189,5 +198,10 @@ void exposeProcessors(pybind11::module &m) {
             auto layer = canvas->getVisibleLayer();
             writer->writeData(layer, filepath);
         });
+
+    py::class_<PythonScriptProcessor, Processor, ProcessorPtr<PythonScriptProcessor>>(
+        m, "PythonScriptProcessor")
+        .def("setInitializeResources", &PythonScriptProcessor::setInitializeResources)
+        .def("setProcess", &PythonScriptProcessor::setProcess);
 }
 }  // namespace inviwo

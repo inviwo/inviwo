@@ -44,27 +44,28 @@ const ProcessorInfo PythonScriptProcessor::processorInfo_{
 };
 const ProcessorInfo PythonScriptProcessor::getProcessorInfo() const { return processorInfo_; }
 
-PythonScriptProcessor::PythonScriptProcessor()
-    : Processor(), script_(""), scriptFileName_("scriptFileName", "File Name", "") {
+PythonScriptProcessor::PythonScriptProcessor(InviwoApplication* app)
+    : Processor()
+    , scriptFileName_("scriptFileName", "File Name",
+                      app->getModuleByType<Python3Module>()->getPath(ModulePath::Data) +
+                          "/scripts/scriptprocessorexample.py",
+                      "python", InvalidationLevel::InvalidOutput, PropertySemantics::PythonEditor)
+    , script_(scriptFileName_.get()) {
+
     namespace py = pybind11;
+
     isSink_.setUpdate([]() { return true; });
 
     auto runscript = [this]() {
-        locals_ = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));   
-
-        locals_["processor"] = pybind11::cast(static_cast<Processor*>(this));
-        script_.run(locals_);
-
-        if (locals_.contains("init")) {
-            try {
-                locals_["init"](pybind11::cast(static_cast<Processor*>(this)));
-            } catch (std::exception& e) {
-                LogError(e.what());
-            }
+        auto locals = py::globals();
+        locals["self"] = pybind11::cast(this);
+        try {
+            script_.run(locals);
+        } catch (std::exception& e) {
+            LogError(e.what())
         }
         invalidate(InvalidationLevel::InvalidOutput);
     };
-
     addProperty(scriptFileName_);
 
     scriptFileName_.onChange([this, runscript]() {
@@ -72,21 +73,22 @@ PythonScriptProcessor::PythonScriptProcessor()
         runscript();
     });
 
-    script_.onChange([this, runscript]() {
-        runscript();
-    });
+    script_.onChange([this, runscript]() { runscript(); });
 
     runscript();
 }
 
-void PythonScriptProcessor::process() {
-    if (locals_.contains("process") != 0) {
-        try {
-            locals_["process"](pybind11::cast(static_cast<Processor*>(this)));
-        } catch (std::exception& e) {
-            LogError(e.what());
-        }
-    }
+void PythonScriptProcessor::initializeResources() {
+    if (initializeResources_) initializeResources_(pybind11::cast(this));
 }
+
+void PythonScriptProcessor::process() {
+    if (process_) process_(pybind11::cast(this));
+}
+
+void PythonScriptProcessor::setInitializeResources(pybind11::function func) {
+    initializeResources_ = func;
+}
+void PythonScriptProcessor::setProcess(pybind11::function func) { process_ = func; }
 
 }  // namespace inviwo

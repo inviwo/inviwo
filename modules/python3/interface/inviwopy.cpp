@@ -96,9 +96,10 @@ PYBIND11_MODULE(inviwopy, m) {
 
     py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
 
-    m.def("logInfo", [](std::string msg) { LogInfoCustom("inviwopy", msg); });
-    m.def("logWarn", [](std::string msg) { LogWarnCustom("inviwopy", msg); });
-    m.def("logError", [](std::string msg) { LogErrorCustom("inviwopy", msg); });
+    m.def("logInfo", [](const std::string& msg) { LogInfoCustom("inviwopy", msg); });
+    m.def("logWarn", [](const std::string& msg) { LogWarnCustom("inviwopy", msg); });
+    m.def("logError", [](const std::string& msg) { LogErrorCustom("inviwopy", msg); });
+    m.def("debugBreak", []() { util::debugBreak(); });
 
     try {
         if (auto app = util::getInviwoApplication()) {

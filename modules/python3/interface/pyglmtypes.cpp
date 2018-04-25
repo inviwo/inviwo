@@ -30,6 +30,7 @@
 #include <modules/python3/interface/pyglmtypes.h>
 
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 
 #include <pybind11/operators.h>
 #include <pybind11/numpy.h>
@@ -215,7 +216,7 @@ void floatOnlyVecs(py::module &m) {
 
 template <typename T, int Dim>
 void vecx(py::module &m, std::string prefix, std::string name = "vec", std::string postfix = "") {
-    
+
     std::stringstream classname;
     classname << prefix << name << Dim << postfix;
     py::class_<Vector<Dim, T>> pyv(m, classname.str().c_str());
@@ -226,12 +227,16 @@ void vecx(py::module &m, std::string prefix, std::string name = "vec", std::stri
         .def(py::self *= py::self)
         .def(py::self /= py::self)
         .def_property_readonly(
-            "array",
-            [](Vector<Dim, T> &self) { return py::array_t<T>(Dim, glm::value_ptr(self)); })
+            "array", [](Vector<Dim, T> &self) { return py::array_t<T>(Dim, glm::value_ptr(self)); })
         .def("__repr__",
              [](Vector<Dim, T> &v) {
                  std::ostringstream oss;
-                 oss << v;
+                 // oss << v; This fails for some reason on GCC 5.4
+
+                 oss << "[";
+                 std::copy(glm::value_ptr(v), glm::value_ptr(v) + Dim,
+                           util::make_ostream_joiner(oss, " "));
+                 oss << "]";
                  return oss.str();
              })
         .def("__setitem__", [](Vector<Dim, T> &v, int idx, T &t) { return v[idx] = t; });
@@ -306,7 +311,16 @@ void matxx(py::module &m, std::string prefix, std::string name = "mat", std::str
         .def("__setitem__", [](M &m, int idx, int idy, T &t) { return m[idx][idy] = t; })
         .def("__repr__", [](M &m) {
             std::ostringstream oss;
-            oss << m;
+            // oss << m; This fails for some reason on GCC 5.4
+
+            oss << "[";
+            for (int col = 0; col < COLS; col++) {
+                oss << "[";
+                std::copy(&m[col], &m[col] + ROWS, util::make_ostream_joiner(oss, " "));
+                oss << "]";
+            }
+            oss << "]";
+
             return oss.str();
         });
 }

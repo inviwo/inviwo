@@ -40,8 +40,6 @@
 
 namespace inviwo {
 
-PythonInterpreter::PythonInterpreter(Python3Module* module) : isInit_(false) { init(module); }
-
 PYBIND11_EMBEDDED_MODULE(inviwo_internal, m) {
     // `m` is a `py::module` which is used to bind functions and classes
     m.def("ivwPrint", [](const std::string& msg, int isStderr) {
@@ -59,11 +57,11 @@ PYBIND11_EMBEDDED_MODULE(inviwo_internal, m) {
     });
 }
 
-void PythonInterpreter::init(Python3Module* module) {
+PythonInterpreter::PythonInterpreter(Python3Module* module) : isInit_(false) {
     namespace py = pybind11;
 
     if (isInit_) {
-        throw Exception("Python already initialized", IvwContext);
+        throw ModuleInitException("Python already initialized", IvwContext);
     }
 
     LogInfo("Python version: " + toString(Py_GetVersion()));
@@ -82,19 +80,24 @@ void PythonInterpreter::init(Python3Module* module) {
 
     addModulePath(module->getPath() + "/scripts");
 
-    py::exec(R"(
-        import sys
-        class OutputRedirectStdout:
-            def write(self, string):
-                inviwo_internal.ivwPrint(string, 0)
+    try {
+        py::exec(R"(
+            import sys
+            class OutputRedirectStdout:
+                def write(self, string):
+                    inviwo_internal.ivwPrint(string, 0)
 
-        class OutputRedirectStderr:
-            def write(self, string):
-                inviwo_internal.ivwPrint(string, 1)
+            class OutputRedirectStderr:
+                def write(self, string):
+                    inviwo_internal.ivwPrint(string, 1)
 
-        sys.stdout = OutputRedirectStdout()  
-        sys.stderr = OutputRedirectStderr() 
-    )", py::globals());
+            sys.stdout = OutputRedirectStdout()  
+            sys.stderr = OutputRedirectStderr() 
+        )",
+                 py::globals());
+    } catch (const py::error_already_set& e) {
+        throw ModuleInitException(e.what(), IvwContext);
+    }
 
 #if defined(__unix__) || defined(__APPLE__)
     auto execpath = filesystem::getExecutablePath();

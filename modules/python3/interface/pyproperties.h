@@ -39,15 +39,17 @@
 
 namespace inviwo {
 
+namespace detail {
 template <typename T>
-struct HasOwnerDeleter {
+struct PropertyDeleter {
     void operator()(T *p) {
         if (p && p->getOwner() == nullptr) delete p;
     }
 };
+}  // namespace detail
 
 template <typename T>
-using PropertyPtr = std::unique_ptr<T, HasOwnerDeleter<T>>;
+using PropertyPtr = std::unique_ptr<T, detail::PropertyDeleter<T>>;
 
 template <typename T, typename P, typename C>
 void pyTemplateProperty(C &prop) {

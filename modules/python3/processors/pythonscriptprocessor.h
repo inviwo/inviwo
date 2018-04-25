@@ -96,18 +96,23 @@ namespace inviwo {
  */
 class IVW_MODULE_PYTHON3_API PythonScriptProcessor : public Processor {
 public:
-    PythonScriptProcessor();
+    PythonScriptProcessor(InviwoApplication* app);
     virtual ~PythonScriptProcessor() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
+    void setInitializeResources(pybind11::function func);
+    void setProcess(pybind11::function func);
+    
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
 private:
-    pybind11::dict locals_;
-    PythonScriptDisk script_;
     FileProperty scriptFileName_;
+    PythonScriptDisk script_;
+
+    pybind11::function initializeResources_;
+    pybind11::function process_;
 };
 
 }  // namespace inviwo
