@@ -52,8 +52,10 @@ TFLineEdit::TFLineEdit(QWidget* parent)
     connect(this, &QLineEdit::editingFinished, this, [this]() {
         value_ = getValueFromText();
         // set same value again to get proper formatting in the line edit
-        QSignalBlocker block(this);
-        setValue(value_, ambiguous_);
+        {
+            QSignalBlocker block(this);
+            setValue(value_, false);
+        }
 
         emit valueChanged(value_);
     });

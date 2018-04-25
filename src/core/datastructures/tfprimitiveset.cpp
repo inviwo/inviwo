@@ -35,6 +35,7 @@
 #include <inviwo/core/util/interpolation.h>
 
 #include <algorithm>
+#include <set>
 
 namespace inviwo {
 

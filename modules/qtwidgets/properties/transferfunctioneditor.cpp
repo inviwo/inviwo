@@ -230,8 +230,9 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
         }
 
     } else if (k == Qt::Key_Delete || k == Qt::Key_Backspace) {  // Delete selected
+        auto selection = getSelectedPrimitiveItems();
         clearSelection();
-        for (auto& item : getSelectedPrimitiveItems()) {
+        for (auto& item : selection) {
             removeControlPoint(item);
         }
 
@@ -435,8 +436,10 @@ void TransferFunctionEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e)
             util::KeepTrueWhileInScope k(&selectNewPrimitives_);
             auto selection = getSelectedPrimitiveItems();
             for (auto& elem : selection) {
-                addControlPoint(elem->pos().x() + relativeSceneOffset_.x,
+                addControlPoint(elem->pos().x() + relativeSceneOffset_.x * 5.0,
                                 elem->getPrimitive()->getColor());
+                // deselect source primitives
+                elem->setSelected(false);
             }
         });
 
