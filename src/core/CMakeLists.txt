@@ -723,7 +723,7 @@ ivw_register_license_file(NAME "UTF8-CPP" TARGET utfcpp MODULE Core
 )
 
 if (TARGET vld-interface)
-    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" TARGET vld-interface MODULE Core
+    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core
         URL "https://kinddragon.github.io/vld/"
         TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
         FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
