@@ -316,7 +316,10 @@ void matxx(py::module &m, std::string prefix, std::string name = "mat", std::str
             oss << "[";
             for (int col = 0; col < COLS; col++) {
                 oss << "[";
-                std::copy(&m[col], &m[col] + ROWS, util::make_ostream_joiner(oss, " "));
+                for (int row = 0; row < ROWS; row++) {
+                    if (row != 0) oss << " ";
+                    oss << m[col][row];
+                }
                 oss << "]";
             }
             oss << "]";
