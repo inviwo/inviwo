@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -42,27 +43,23 @@ TFSelectionWatcher::TFSelectionWatcher(TransferFunctionEditor *editor,
     : tfEditor_(editor), tfProperty_(property) {}
 
 void TFSelectionWatcher::setPosition(double pos) {
+    NetworkLock lock(tfProperty_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    for (auto p : selectedPrimitives_) {
-        p->setPosition(pos);
-    }
+    tfProperty_->get().setPosition(selectedPrimitives_, pos);
     emit updateWidgetPosition(pos, false);
 }
 
 void TFSelectionWatcher::setAlpha(double alpha) {
+    NetworkLock lock(tfProperty_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    for (auto p : selectedPrimitives_) {
-        p->setAlpha(static_cast<float>(alpha));
-    }
+    tfProperty_->get().setAlpha(selectedPrimitives_, alpha);
     emit updateWidgetAlpha(alpha, false);
 }
 
 void TFSelectionWatcher::setColor(const QColor &c) {
+    NetworkLock lock(tfProperty_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    const vec3 color(utilqt::tovec3(c));
-    for (auto p : selectedPrimitives_) {
-        p->setColor(color);
-    }
+    tfProperty_->get().setColor(selectedPrimitives_, utilqt::tovec3(c));
     emit updateWidgetColor(c, false);
 }
 

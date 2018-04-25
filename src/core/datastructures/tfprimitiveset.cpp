@@ -76,13 +76,6 @@ TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs)
     }
 }
 
-TFPrimitiveSet::TFPrimitiveSet(TFPrimitiveSet&& rhs)
-    : values_(std::move(rhs.values_))
-    , sorted_(std::move(rhs.sorted_))
-    , type_(std::move(rhs.type_))
-    , serializationKey_(std::move(rhs.serializationKey_))
-    , serializationItemKey_(std::move(rhs.serializationItemKey_)) {}
-
 TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     if (this != &rhs) {
         type_ = rhs.type_;
@@ -242,6 +235,45 @@ void TFPrimitiveSet::remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator 
 void TFPrimitiveSet::clear() {
     while (values_.size() > 0) {
         remove(--values_.end());
+    }
+}
+
+void TFPrimitiveSet::setPosition(const std::vector<TFPrimitive*> primitives, double pos) {
+    // selected primitives need to be moved in correct order to maintain overall order of TF
+    // That is, TF primitives closest to pos must be moved first
+    std::set<TFPrimitive*> primitiveSet(primitives.begin(), primitives.end());
+
+    std::vector<TFPrimitive*> sortedSelection;
+    std::copy_if(sorted_.begin(), sorted_.end(), std::back_inserter(sortedSelection),
+                 [&primitiveSet](auto item) { return primitiveSet.count(item) > 0; });
+
+    // partition set of primitives at position pos
+    auto partition =
+        std::lower_bound(sortedSelection.begin(), sortedSelection.end(), pos,
+                         [](const auto& p, double val) { return p->getPosition() < val; });
+
+    // update upper half, i.e. all elements to the right of pos in ascending order
+    for (auto it = partition; it != sortedSelection.end(); ++it) {
+        (*it)->setPosition(pos);
+    }
+
+    // update lower half, i.e. all elements to the left of pos in descending order
+    // to do this reverse sorted primitives from begin to the partition point
+    std::reverse(sortedSelection.begin(), partition);
+    for (auto it = sortedSelection.begin(); it != partition; ++it) {
+        (*it)->setPosition(pos);
+    }
+}
+
+void TFPrimitiveSet::setAlpha(const std::vector<TFPrimitive*> primitives, double alpha) {
+    for (auto p : primitives) {
+        p->setAlpha(static_cast<float>(alpha));
+    }
+}
+
+void TFPrimitiveSet::setColor(const std::vector<TFPrimitive*> primitives, const vec3& color) {
+    for (auto p : primitives) {
+        p->setColor(color);
     }
 }
 

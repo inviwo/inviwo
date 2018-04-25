@@ -78,7 +78,7 @@ public:
     TFPrimitiveSet(const std::vector<TFPrimitiveData>& values = {},
                    TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
     TFPrimitiveSet(const TFPrimitiveSet& rhs);
-    TFPrimitiveSet(TFPrimitiveSet&& rhs);
+    TFPrimitiveSet(TFPrimitiveSet&& rhs) = default;
     TFPrimitiveSet& operator=(const TFPrimitiveSet& rhs);
     virtual ~TFPrimitiveSet() = default;
 
@@ -163,6 +163,10 @@ public:
     void remove(TFPrimitive* primitive);
 
     void clear();
+
+    void setPosition(const std::vector<TFPrimitive*> primitives, double pos);
+    void setAlpha(const std::vector<TFPrimitive*> primitives, double alpha);
+    void setColor(const std::vector<TFPrimitive*> primitives, const vec3& color);
 
     virtual void onTFPrimitiveChange(const TFPrimitive* p);
 
