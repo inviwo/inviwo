@@ -198,6 +198,7 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
     serializer.writeFile(ss);
 
     vector[0]->id_ = "c";
+    delete vector.back();
     vector.pop_back();
     vector.insert(vector.begin(), new Item("d", 1));
 
@@ -273,6 +274,7 @@ TEST(ContainerSerialitionTest, ContainerTest4) {
     serializer.writeFile(ss);
 
     vector[0]->id_ = "c";
+    delete vector.back();
     vector.pop_back();
     vector.insert(vector.begin(), new Item("d",1));
 
