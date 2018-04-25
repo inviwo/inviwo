@@ -43,6 +43,8 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
+#include <modules/qtwidgets/qtwidgetssettings.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -62,9 +64,10 @@
 namespace inviwo {
 
 TextEditorDockWidget::TextEditorDockWidget(Property* property)
-    : PropertyEditorWidgetQt(property, "Edit " + property->getDisplayName(), "TextEditorDockWidget")
+    : PropertyEditorWidgetQt(property, "Edit", "TextEditorDockWidget")
     , fileProperty_{dynamic_cast<FileProperty*>(property)}
-    , stringProperty_{dynamic_cast<StringProperty*>(property)} {
+    , stringProperty_{dynamic_cast<StringProperty*>(property)}
+    , observer_{*this, util::getInviwoApplication(property)} {
 
     QMainWindow* mainWindow = new QMainWindow();
     mainWindow->setContextMenuPolicy(Qt::NoContextMenu);
@@ -81,28 +84,27 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     editor_->createStandardContextMenu();
     mainWindow->setCentralWidget(editor_);
 
-    // setting a monospace font explicitely is necessary despite providing a font-family in css
-    // Otherwise, the editor will not feature a fixed-width font face.
-    QFont fixedFont("Monospace");
-    fixedFont.setPointSize(10);
-    fixedFont.setStyleHint(QFont::TypeWriter);
-    editor_->setFont(fixedFont);
+    QObject::connect(editor_, &QTextEdit::textChanged, this, [this]() { setTitle(true); });
 
     QString bgString;
     if (property->getSemantics() == PropertySemantics::ShaderEditor) {
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<GLSL>(editor_->document());
+        if (auto app = util::getInviwoApplication(property)) {
+            app->getSettingsByType<QtWidgetsSettings>()->glslSyntax_.onChange(
+                this, &TextEditorDockWidget::updateStyle);
+        }
     } else if (property->getSemantics() == PropertySemantics::PythonEditor) {
-        syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<Python>(editor_->document());
+        syntaxHighligther_ =
+            SyntaxHighligther::createSyntaxHighligther<Python>(editor_->document());
+        if (auto app = util::getInviwoApplication(property)) {
+            app->getSettingsByType<QtWidgetsSettings>()->pythonSyntax_.onChange(
+                this, &TextEditorDockWidget::updateStyle);
+        }
     } else {
         syntaxHighligther_ = SyntaxHighligther::createSyntaxHighligther<None>(editor_->document());
     }
 
-    // set background of text editor matching syntax highlighting
-    const QColor bgColor = syntaxHighligther_->getBackgroundColor();
-    QString styleSheet(QString("QTextEdit#%1 { background-color: %2; }")
-                           .arg(editor_->objectName())
-                           .arg(bgColor.name()));
-    editor_->setStyleSheet(styleSheet);
+    updateStyle();
 
     {
         auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save"));
@@ -111,15 +113,57 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
         mainWindow->addAction(save);
         connect(save, &QAction::triggered, this, [this]() {
             if (editor_->document()->isModified()) {
+                editor_->document()->setModified(false);
                 if (fileProperty_) {
+                    observer_.stopAllObservation();
                     if (auto f = filesystem::ofstream(fileProperty_->get())) {
                         f << utilqt::fromQString(editor_->toPlainText());
                     }
+                    observer_.startFileObservation(fileProperty_->get());
                 } else if (stringProperty_) {
                     stringProperty_->set(utilqt::fromQString(editor_->toPlainText()));
                 }
+                setTitle(false);
             }
         });
+    }
+
+    if (fileProperty_) {
+        fileCallback_ = fileProperty_->onChange([this]() {
+            observer_.stopAllObservation();
+            fileChanged();
+            observer_.startFileObservation(fileProperty_->get());
+        });
+        observer_.startFileObservation(fileProperty_->get());
+
+        auto saveas = toolBar->addAction(QIcon(":/icons/saveas.png"), tr("&Save Script As..."));
+        saveas->setShortcut(QKeySequence::SaveAs);
+        saveas->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        saveas->setToolTip("Save Script As...");
+        mainWindow->addAction(saveas);
+        connect(saveas, &QAction::triggered, this, [this]() {
+            InviwoFileDialog saveFileDialog(this, "Save File ...", fileProperty_->getContentType());
+
+            saveFileDialog.setFileMode(FileMode::AnyFile);
+            saveFileDialog.setAcceptMode(AcceptMode::Save);
+            saveFileDialog.setConfirmOverwrite(true);
+
+            for (const auto& filter : fileProperty_->getNameFilters()) {
+                saveFileDialog.addExtension(filter);
+            }
+            if (saveFileDialog.exec()) {
+                observer_.stopFileObservation(fileProperty_->get());
+                QString path = saveFileDialog.selectedFiles().at(0);
+
+                if (auto f = filesystem::ofstream(utilqt::fromQString(path))) {
+                    f << utilqt::fromQString(editor_->toPlainText());
+                }
+                editor_->document()->setModified(false);
+                fileProperty_->set(utilqt::fromQString(path));
+            }
+        });
+    } else if (stringProperty_) {
+        stringCallback_ = stringProperty_->onChange([this]() { fileChanged(); });
     }
 
     {
@@ -158,6 +202,46 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
 
 SyntaxHighligther* TextEditorDockWidget::getSyntaxHighligther() { return syntaxHighligther_; }
 
+TextEditorDockWidget::~TextEditorDockWidget() {
+}
+
+void TextEditorDockWidget::updateStyle() {
+    auto getBGColorandFontSize = [&]() {
+        if (auto app = util::getInviwoApplication(property_)) {
+            auto settings = app->getSettingsByType<QtWidgetsSettings>();
+            if (property_->getSemantics() == PropertySemantics::ShaderEditor) {
+                auto color = settings->glslBackgroundColor_.get();
+                auto size = settings->pyFontSize_.get();
+                return std::make_tuple(color, size);
+            } else if (property_->getSemantics() == PropertySemantics::PythonEditor) {
+                auto color = settings->pyBGColor_.get();
+                auto size = settings->pyFontSize_.get();
+                return std::make_tuple(color, size);
+            }
+        }
+        return std::make_tuple(ivec4(0xb0, 0xb0, 0xbc, 255), 11);
+    };
+
+    auto colorSize = getBGColorandFontSize();
+
+    std::stringstream ss;
+    ss << "background-color: rgb(" << std::get<0>(colorSize).r << ", " << std::get<0>(colorSize).g
+       << ", " << std::get<0>(colorSize).b << ");\n"
+       << "font-size: " << std::get<1>(colorSize) << "px;\n";
+    editor_->setStyleSheet(ss.str().c_str());
+    syntaxHighligther_->rehighlight();
+
+    // setting a monospace font explicitely is necessary despite providing a font-family in css
+    // Otherwise, the editor will not feature a fixed-width font face.
+    auto font = editor_->font();
+    font.setFamily("Monospace");
+    font.setStyleHint(QFont::Monospace);
+    editor_->setFont(font);
+
+    QFontMetrics metrics(font);
+    editor_->setTabStopWidth(4 * metrics.width(' '));
+}
+
 void TextEditorDockWidget::updateFromProperty() {
     if (fileProperty_) {
         if (auto f = filesystem::ifstream(fileProperty_->get())) {
@@ -170,15 +254,23 @@ void TextEditorDockWidget::updateFromProperty() {
     } else if (stringProperty_) {
         editor_->setPlainText(utilqt::toQString(stringProperty_->get()));
     }
+    setTitle(false);
 }
 
 void TextEditorDockWidget::closeEvent(QCloseEvent* e) {
-    if (stringProperty_->get() != utilqt::fromQString(editor_->toPlainText())) {
-        auto ret = QMessageBox::warning(
-            this, utilqt::toQString("Edit " + stringProperty_->getDisplayName()),
-            tr("The document has been modified.\n"
-               "Do you want to save your changes?"),
-            QMessageBox::Save | QMessageBox::Discard);
+    if (fileProperty_ && fileCallback_) {
+        observer_.stopAllObservation();
+        fileProperty_->removeOnChange(fileCallback_);
+    }
+    if (stringProperty_ && stringCallback_) {
+        stringProperty_->removeOnChange(stringCallback_);
+    }
+
+    if (editor_->document()->isModified()) {
+        auto ret = QMessageBox::warning(this, "Save",
+                                        tr("The document has been modified.\n"
+                                           "Do you want to save your changes?"),
+                                        QMessageBox::Save | QMessageBox::Discard);
 
         if (ret == QMessageBox::Save) {
             if (fileProperty_) {
@@ -190,13 +282,47 @@ void TextEditorDockWidget::closeEvent(QCloseEvent* e) {
             }
         }
     }
+
     PropertyEditorWidgetQt::closeEvent(e);
 }
 
 void TextEditorDockWidget::onSetDisplayName(Property*, const std::string& displayName) {
-    setWindowTitle(QString::fromStdString(displayName));
+    setTitle(editor_->document()->isModified());
 }
 
 void TextEditorDockWidget::setReadOnly(bool readonly) { editor_->setReadOnly(readonly); }
+
+void TextEditorDockWidget::setTitle(bool modified) {
+    if (fileProperty_) {
+        setWindowTitle(utilqt::toQString("Edit " + fileProperty_->get() + (modified ? "*" : "")));
+    } else if (stringProperty_) {
+        setWindowTitle(
+            utilqt::toQString("Edit " + stringProperty_->getDisplayName() + (modified ? "*" : "")));
+    }
+}
+
+void TextEditorDockWidget::fileChanged() {
+    if (editor_->document()->isModified()) {
+        auto ret =
+            QMessageBox::warning(this, "Update",
+                                 tr("The file has been modified.\n"
+                                    "Do you want to update the editor, discarding your changes?"),
+                                 QMessageBox::Yes | QMessageBox::Cancel);
+
+        if (ret == QMessageBox::Yes) {
+            updateFromProperty();
+        }
+    } else {
+        updateFromProperty();
+    }
+}
+
+TextEditorDockWidget::ScriptObserver::ScriptObserver(TextEditorDockWidget& widget,
+                                                     InviwoApplication* app)
+    : FileObserver(app), widget_(widget) {}
+
+void TextEditorDockWidget::ScriptObserver::fileChanged(const std::string& dir) {
+    widget_.fileChanged();
+};
 
 }  // namespace inviwo
