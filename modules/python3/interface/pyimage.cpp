@@ -94,8 +94,8 @@ void exposeImage(py::module &m) {
                 memcpy(rep->getData(), data.data(0), data.nbytes());
             });
 
-    //exposeInport<ImageInport>(m, "Image");
-    //exposeOutport<ImageOutport>(m, "Image")
-    //    .def_property_readonly("dimensions", &ImageOutport::getDimensions);
+    exposeInport<ImageInport>(m, "Image");
+    exposeOutport<ImageOutport>(m, "Image")
+        .def_property_readonly("dimensions", &ImageOutport::getDimensions);
 }
 }  // namespace inviwo
