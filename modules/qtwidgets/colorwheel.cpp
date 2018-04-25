@@ -48,9 +48,13 @@
 #include <algorithm>
 #include <cmath>
 
+namespace {
+
 template <typename T>
 T clamp(const T& val, const T& min, const T& max) {
     return (val > max ? max : (val < min ? min : val));
+}
+
 }
 
 namespace inviwo {

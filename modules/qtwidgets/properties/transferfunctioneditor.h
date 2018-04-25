@@ -86,8 +86,8 @@ public:
      */
     double getControlPointSize() const;
 
-    void setPrimitiveOffset(const dvec2& offset);
-    const dvec2& getPrimitiveOffset() const;
+    void setRelativeSceneOffset(const dvec2& offset);
+    const dvec2& getRelativeSceneOffset() const;
 
     const DataMapper& getDataMapper() const;
 
@@ -99,9 +99,6 @@ signals:
     void showColorDialog();
     void importTF();
     void exportTF();
-
-public slots:
-    void resetTransferFunction();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
@@ -139,8 +136,8 @@ protected:
 private:
     std::vector<TransferFunctionEditorPrimitive*> getSelectedPrimitiveItems() const;
 
-    double controlPointSize_ = 15.0;       //!< size of TF primitives
-    dvec2 primitiveOffset_ = dvec2(10.0);  //!< offset for duplicating TF primitives
+    double controlPointSize_ = 15.0;           //!< size of TF primitives
+    dvec2 relativeSceneOffset_ = dvec2(10.0);  //!< offset for duplicating TF primitives
 
     TransferFunctionProperty* tfProperty_;
     TransferFunction* transferFunction_;  //!< pointer to TF inside TF property
@@ -161,7 +158,9 @@ private:
 };
 
 inline double TransferFunctionEditor::getControlPointSize() const { return controlPointSize_; }
-inline const dvec2& TransferFunctionEditor::getPrimitiveOffset() const { return primitiveOffset_; }
+inline const dvec2& TransferFunctionEditor::getRelativeSceneOffset() const {
+    return relativeSceneOffset_;
+}
 
 }  // namespace inviwo
 

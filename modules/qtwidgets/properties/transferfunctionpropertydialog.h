@@ -61,9 +61,10 @@ class TFSelectionWatcher;
 class TFLineEdit;
 class TFColorEdit;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
-                                                                public TFPrimitiveSetObserver,
-                                                                public TransferFunctionPropertyObserver {
+class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog
+    : public PropertyEditorWidgetQt,
+      public TFPrimitiveSetObserver,
+      public TransferFunctionPropertyObserver {
 public:
     TransferFunctionPropertyDialog(TransferFunctionProperty* property);
     ~TransferFunctionPropertyDialog();
@@ -78,6 +79,8 @@ protected:
     virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
 
     virtual void onMaskChange(const dvec2& mask) override;
+    virtual void onZoomHChange(const dvec2& zoomH) override;
+    virtual void onZoomVChange(const dvec2& zoomV) override;
 
     virtual void setReadOnly(bool readonly) override;
 
@@ -97,10 +100,10 @@ private:
      * calculate the horizontal and vertical offset in scene coordinates based on the current
      * viewport size and zoom. The offset then corresponds to defaultOffset pixels on screen.
      */
-    dvec2 getPrimitiveOffset() const;
+    dvec2 getRelativeSceneOffset() const;
 
     const int sliderRange_;
-    const int defaultOffset_ = 20;  //!< offset in pixel
+    const int defaultOffset_ = 5;  //!< offset in pixel
 
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
@@ -114,9 +117,6 @@ private:
     std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
 
     TransferFunctionEditorView* tfEditorView_;  ///< View that contains the editor
-    QPushButton* btnClearTF_;
-    QPushButton* btnImportTF_;
-    QPushButton* btnExportTF_;
     QComboBox* chkShowHistogram_;
 
     QComboBox* pointMoveMode_;

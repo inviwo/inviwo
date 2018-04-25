@@ -110,6 +110,7 @@ public:
     void setHovered(bool hover);
 
     void beginMouseDrag();
+    void stopMouseDrag();
 
     friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorPrimitive& lhs,
                                                     const TransferFunctionEditorPrimitive& rhs);
@@ -177,6 +178,7 @@ private:
     std::unique_ptr<QGraphicsSimpleTextItem> tfPrimitiveLabel_;
 
     QPointF cachedPosition_;  //!< used for restricting to horizontal/vertical movement
+    bool mouseDrag_;
 };
 
 IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorPrimitive& lhs,

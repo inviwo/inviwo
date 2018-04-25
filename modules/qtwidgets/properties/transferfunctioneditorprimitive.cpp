@@ -51,7 +51,7 @@ void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TransferFunctio
 TransferFunctionEditorPrimitive::TransferFunctionEditorPrimitive(TFPrimitive* primitive,
                                                                  QGraphicsScene* scene,
                                                                  const vec2& pos, double size)
-    : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive) {
+    : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive), mouseDrag_(false) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
     setZValue(defaultZValue_);
@@ -127,6 +127,11 @@ void TransferFunctionEditorPrimitive::setHovered(bool hover) {
 
 void TransferFunctionEditorPrimitive::beginMouseDrag() {
     cachedPosition_ = currentPos_;
+    mouseDrag_ = true;
+}
+
+void TransferFunctionEditorPrimitive::stopMouseDrag() {
+    mouseDrag_ = false;
 }
 
 void TransferFunctionEditorPrimitive::paint(QPainter* painter,
@@ -158,11 +163,11 @@ QVariant TransferFunctionEditorPrimitive::itemChange(GraphicsItemChange change,
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
         auto newpos = value.toPointF();
-        
+
         const bool shiftPressed =
             ((QGuiApplication::queryKeyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier);
         // restrict movement to either horizontal or vertical direction while shift is pressed
-        if (shiftPressed) {
+        if (mouseDrag_&& shiftPressed) {
             // adjust position of mouse event
             auto delta = newpos - cachedPosition_;
             if (std::abs(delta.x()) > std::abs(delta.y())) {
