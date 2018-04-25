@@ -32,6 +32,7 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,8 +40,6 @@
 #include <warn/pop>
 
 namespace inviwo {
-
-class Processor;
 
 class IVW_QTEDITOR_API ProcessorMimeData : public QMimeData {
 #include <warn/push>

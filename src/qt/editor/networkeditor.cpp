@@ -73,6 +73,7 @@
 #include <inviwo/qt/editor/processormimedata.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
