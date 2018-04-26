@@ -34,7 +34,7 @@
 #ifndef IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
 #define IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <modules/qtwidgets/properties/transferfunctioneditor.h>
@@ -69,9 +69,12 @@ public:
     TransferFunctionPropertyDialog(TransferFunctionProperty* property);
     ~TransferFunctionPropertyDialog();
 
+    virtual QSize sizeHint() const override;
+    virtual QSize minimumSizeHint() const override;
+    
     void updateFromProperty();
     TransferFunctionEditorView* getEditorView() const;
-
+    
 protected:
     virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
     virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;

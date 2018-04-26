@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,48 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
+#ifndef IVW_TFHELPWINDOW_H
+#define IVW_TFHELPWINDOW_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tfhelpwindow.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QObject>
+#include <warn/pop>
+
+class QAction;
+class QWidget;
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
+class IVW_MODULE_QTWIDGETS_API TFHelpWindow : public InviwoDockWidget {
 public:
-    QtWidgetsModule(InviwoApplication* app);
-    virtual ~QtWidgetsModule();
-
-    TFHelpWindow* getTFHelpWindow() const;
-
-    void showTFHelpWindow() const;
-
-private:
-    std::unique_ptr<TFMenuHelper> tfMenuHelper_;
+    explicit TFHelpWindow(QWidget* parent = nullptr);
+    virtual ~TFHelpWindow() = default;
 };
 
-}  // namespace
+class IVW_MODULE_QTWIDGETS_API TFMenuHelper : public QObject {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
+public:
+    TFMenuHelper();
+    virtual ~TFMenuHelper();
 
-#endif  // IVW_QTWIDGETMODULE_H
+    TFHelpWindow* getWindow() const;
+    QAction* getAction() const;
+
+    void showWindow() const;
+
+private:
+    mutable std::unique_ptr<TFHelpWindow> helpWindow_;
+    std::unique_ptr<QAction> showAction_;
+};
+
+}  // namespace inviwo
+
+#endif  // IVW_TFHELPWINDOW_H

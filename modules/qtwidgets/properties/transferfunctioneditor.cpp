@@ -55,6 +55,7 @@
 #include <QPen>
 #include <QMenu>
 #include <QAction>
+#include <QGraphicsPixmapItem>
 #include <warn/pop>
 
 namespace inviwo {
@@ -184,6 +185,9 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
                 for (auto& item : getSelectedPrimitiveItems()) {
                     item->stopMouseDrag();
                 }
+            } else {
+                // disable rubber band selection
+                views().front()->setDragMode(QGraphicsView::NoDrag);
             }
             break;
         case Qt::RightButton:
@@ -698,6 +702,10 @@ std::vector<TransferFunctionEditorPrimitive*> TransferFunctionEditor::getSelecte
     }
 
     return selection;
+}
+
+void TransferFunctionEditor::showHelpText(bool show) {
+
 }
 
 }  // namespace inviwo

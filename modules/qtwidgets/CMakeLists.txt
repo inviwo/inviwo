@@ -31,12 +31,12 @@ set(MOC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tfcoloredit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tflineedit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tfselectionwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tfhelpwindow.h
 )
 
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${MOC_FILES}
     ${CMAKE_CURRENT_SOURCE_DIR}/eventconverterqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoqtutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyboardutils.h
@@ -75,6 +75,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmoduledefine.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetssettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rawdatareaderdialogqt.h
+    ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -139,6 +140,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/rawdatareaderdialogqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tfcoloredit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tfhelpwindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tflineedit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tfselectionwatcher.cpp
 )

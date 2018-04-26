@@ -43,7 +43,6 @@
 #include <vector>
 
 class QGraphicsView;
-class QGraphicsPathItem;
 class QGraphicsSceneContextMenuEvent;
 
 namespace inviwo {
@@ -94,6 +93,8 @@ public:
     TransferFunctionProperty* getTransferFunctionProperty();
 
     std::vector<TFPrimitive*> getSelectedPrimitives() const;
+
+    void showHelpText(bool show);
 
 signals:
     void showColorDialog();

@@ -38,11 +38,16 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/tflineedit.h>
 #include <modules/qtwidgets/tfcoloredit.h>
+#include <modules/qtwidgets/inviwodockwidgettitlebar.h>
+#include <modules/qtwidgets/qtwidgetsmodule.h>
+#include <modules/qtwidgets/tfhelpwindow.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -56,16 +61,35 @@
 #include <QColorDialog>
 #include <QGridLayout>
 #include <QSignalBlocker>
+#include <QHBoxLayout>
+#include <QToolButton>
+#include <QSettings>
 #include <warn/pop>
 
 namespace inviwo {
 
 TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty)
-    : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", "TransferFunctionEditorWidget")
+    : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(static_cast<int>(tfProperty->get().getTextureSize()))
     , tfProperty_(tfProperty)
     , tfEditor_(nullptr)
     , tfEditorView_(nullptr) {
+
+    if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
+        if (auto layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
+            QToolButton* helpBtn = new QToolButton();
+            helpBtn->setIcon(QIcon(":/stylesheets/images/dock-help.png"));
+            helpBtn->setObjectName("helpBtn");
+
+            layout->insertWidget(1, helpBtn);
+
+            auto module = util::getInviwoApplication(tfProperty)
+                ->getModuleByType<QtWidgetsModule>();
+            QObject::connect(helpBtn, &QToolButton::clicked, this, [this, module]() {
+                module->showTFHelpWindow();
+            });
+        }
+    }
 
     tfProperty->TransferFunctionPropertyObservable::addObserver(this);
     tfProperty_->get().addObserver(this);
@@ -269,6 +293,22 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
                 &TFSelectionWatcher::setColor);
     }
 
+    // ensure that the TF dialog has its minimal size when showing up for the first time
+    resize(100, 100);
+
+    {
+        // make sure the help dialog for the TF editor is shown once
+        QSettings settings;
+        settings.beginGroup(objectName());
+        if (!settings.contains("shownonce") || !settings.value("shownonce").toBool()) {
+            settings.setValue("shownonce", true);
+
+            util::getInviwoApplication(tfProperty)
+                ->getModuleByType<QtWidgetsModule>()->showTFHelpWindow();
+        }
+        settings.endGroup();
+    }
+
     updateFromProperty();
     if (!tfProperty_->getVolumeInport()) {
         chkShowHistogram_->setVisible(false);
@@ -280,6 +320,12 @@ TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
     tfEditor_->disconnect();
     hide();
 }
+
+QSize TransferFunctionPropertyDialog::minimumSizeHint() const {
+    return TransferFunctionPropertyDialog::sizeHint();
+}
+
+QSize TransferFunctionPropertyDialog::sizeHint() const { return layout()->sizeHint(); }
 
 void TransferFunctionPropertyDialog::updateFromProperty() {
     if (!tfProperty_->getOwner()) return;
