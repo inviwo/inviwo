@@ -704,8 +704,4 @@ std::vector<TransferFunctionEditorPrimitive*> TransferFunctionEditor::getSelecte
     return selection;
 }
 
-void TransferFunctionEditor::showHelpText(bool show) {
-
-}
-
 }  // namespace inviwo
