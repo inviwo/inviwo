@@ -122,7 +122,7 @@ exported and imported.</p>)";
 
 TFMenuHelper::TFMenuHelper() {
     if (utilqt::getApplicationMainWindow()) {
-        showAction_ = util::make_unique<QAction>(QString("&Transfer Function"));
+        showAction_ = util::make_unique<QAction>(QString("&Transfer Function"), nullptr);
         QObject::connect(showAction_.get(), &QAction::triggered, this, [this]() {
             auto window = getWindow(); 
             window->activateWindow();
@@ -143,7 +143,7 @@ TFMenuHelper::TFMenuHelper() {
 }
 
 TFMenuHelper::~TFMenuHelper() {
-    if (auto win = utilqt::getApplicationMainWindow()) {
+    if (utilqt::getApplicationMainWindow()) {
         // remove menu action from help menu and delete help window since
         // the MainWindow is parent and will not delete the the window until after
         // module has been de-initialized.
