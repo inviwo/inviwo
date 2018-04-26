@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,40 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
+#include <modules/qtwidgets/tfcoloredit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tfhelpwindow.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/colorconversion.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSizePolicy>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
-public:
-    QtWidgetsModule(InviwoApplication* app);
-    virtual ~QtWidgetsModule();
+TFColorEdit::TFColorEdit(QWidget* parent) : QLineEdit(parent) {
+    // accept only 6-digit hex codes
+    setInputMask("\\#HHHHHH");
 
-    TFHelpWindow* getTFHelpWindow() const;
+    connect(this, &QLineEdit::editingFinished, this, [this]() {
+        // QColor(QString) should only be used for 6-digit hex codes, since
+        // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
+        emit colorChanged(QColor(text()));
+    });
 
-    void showTFHelpWindow() const;
+    setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
+}
 
-private:
-    std::unique_ptr<TFMenuHelper> tfMenuHelper_;
-};
+QSize TFColorEdit::sizeHint() const { return QSize(18, 18); }
 
-}  // namespace
+void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
+    if (ambiguous) {
+        // clear text field
+        clear();
+    } else {
+        setText(color.name());
+    }
+}
 
-#endif  // IVW_QTWIDGETMODULE_H
+}  // namespace inviwo

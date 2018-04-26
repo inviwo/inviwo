@@ -43,7 +43,7 @@ namespace inviwo {
 
 TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(TFPrimitive* primitive,
                                                                        QGraphicsScene* scene,
-                                                                       float size)
+                                                                       double size)
     : TransferFunctionEditorPrimitive(primitive, scene,
                                       vec2(primitive->getPosition(), primitive->getAlpha()), size) {
     data_->addObserver(this);

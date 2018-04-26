@@ -32,14 +32,22 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
-#include <modules/qtwidgets/colorwheel.h>
 #include <modules/qtwidgets/rangesliderqt.h>
+#include <modules/qtwidgets/colorwheel.h>
+#include <modules/qtwidgets/tfselectionwatcher.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/tflineedit.h>
+#include <modules/qtwidgets/tfcoloredit.h>
+#include <modules/qtwidgets/inviwodockwidgettitlebar.h>
+#include <modules/qtwidgets/qtwidgetsmodule.h>
+#include <modules/qtwidgets/tfhelpwindow.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,27 +58,51 @@
 #include <QComboBox>
 #include <QGradientStops>
 #include <QPixmap>
+#include <QColorDialog>
+#include <QGridLayout>
+#include <QSignalBlocker>
+#include <QHBoxLayout>
+#include <QToolButton>
+#include <QSettings>
 #include <warn/pop>
 
 namespace inviwo {
 
 TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty)
-    : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", "TransferFunctionEditorWidget")
+    : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(static_cast<int>(tfProperty->get().getTextureSize()))
     , tfProperty_(tfProperty)
     , tfEditor_(nullptr)
     , tfEditorView_(nullptr) {
 
+    if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
+        if (auto layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
+            QToolButton* helpBtn = new QToolButton();
+            helpBtn->setIcon(QIcon(":/stylesheets/images/dock-help.png"));
+            helpBtn->setObjectName("helpBtn");
+
+            layout->insertWidget(1, helpBtn);
+
+            auto module = util::getInviwoApplication(tfProperty)
+                ->getModuleByType<QtWidgetsModule>();
+            QObject::connect(helpBtn, &QToolButton::clicked, this, [this, module]() {
+                module->showTFHelpWindow();
+            });
+        }
+    }
+
+    tfProperty->TransferFunctionPropertyObservable::addObserver(this);
     tfProperty_->get().addObserver(this);
 
     tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_, this);
+    tfSelectionWatcher_ = util::make_unique<TFSelectionWatcher>(tfEditor_.get(), tfProperty_);
 
-    connect(tfEditor_.get(), &TransferFunctionEditor::colorChanged, this,
-            [this](const QColor& color) {
-                colorWheel_->blockSignals(true);
-                colorWheel_->setColor(color);
-                colorWheel_->blockSignals(false);
-            });
+    connect(tfEditor_.get(), &TransferFunctionEditor::selectionChanged, this,
+            [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
+    connect(tfEditor_.get(), &TransferFunctionEditor::importTF, this,
+            &TransferFunctionPropertyDialog::importTransferFunction);
+    connect(tfEditor_.get(), &TransferFunctionEditor::exportTF, this,
+            &TransferFunctionPropertyDialog::exportTransferFunction);
 
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
 
@@ -88,9 +120,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     zoomVSlider_->setRange(0, sliderRange_);
     zoomVSlider_->setMinSeparation(5);
     // flip slider values to compensate for vertical slider layout
-    zoomVSlider_->setValue(
-        sliderRange_ - static_cast<int>(tfProperty_->getZoomV().y * sliderRange_),
-        sliderRange_ - static_cast<int>(tfProperty_->getZoomV().x * sliderRange_));
+    onZoomVChange(tfProperty_->getZoomV());
     connect(zoomVSlider_, &RangeSliderQt::valuesChanged, this,
             &TransferFunctionPropertyDialog::changeVerticalZoom);
 
@@ -101,8 +131,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     zoomHSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
     zoomHSlider_->setRange(0, sliderRange_);
     zoomHSlider_->setMinSeparation(5);
-    zoomHSlider_->setValue(static_cast<int>(tfProperty_->getZoomH().x * sliderRange_),
-                           static_cast<int>(tfProperty_->getZoomH().y * sliderRange_));
+    onZoomHChange(tfProperty_->getZoomH());
     connect(zoomHSlider_, &RangeSliderQt::valuesChanged, this,
             &TransferFunctionPropertyDialog::changeHorizontalZoom);
 
@@ -110,31 +139,17 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
         return toString(static_cast<float>(val) / range);
     });
 
-    maskSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
-    maskSlider_->setRange(0, sliderRange_);
-    maskSlider_->setValue(static_cast<int>(tfProperty_->getMask().x * sliderRange_),
-                          static_cast<int>(tfProperty_->getMask().y * sliderRange_));
-    connect(maskSlider_, &RangeSliderQt::valuesChanged, this,
-            &TransferFunctionPropertyDialog::changeMask);
-    maskSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
-        return toString(static_cast<float>(val) / range);
-    });
-
-    colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
-    connect(colorWheel_.get(), &ColorWheel::colorChange, tfEditor_.get(),
-            &TransferFunctionEditor::setPointColor);
-
-    btnClearTF_ = new QPushButton("Reset");
-    connect(btnClearTF_, &QPushButton::clicked, [this]() { tfEditor_->resetTransferFunction(); });
-    btnClearTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
-
-    btnImportTF_ = new QPushButton("Import");
-    connect(btnImportTF_, &QPushButton::clicked, [this]() { importTransferFunction(); });
-    btnImportTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
-
-    btnExportTF_ = new QPushButton("Export");
-    connect(btnExportTF_, &QPushButton::clicked, [this]() { exportTransferFunction(); });
-    btnExportTF_->setStyleSheet(QString("min-width: 30px; padding-left: 7px; padding-right: 7px;"));
+    // set up color wheel
+    {
+        colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
+                colorWheel_.get(), [cw = colorWheel_.get()](const QColor& c, bool /*ambiguous*/) {
+                    QSignalBlocker block(cw);
+                    cw->setColor(c);
+                });
+        connect(colorWheel_.get(), &ColorWheel::colorChange, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setColor);
+    }
 
     tfPreview_ = new QLabel();
     tfPreview_->setMinimumSize(1, 20);
@@ -162,6 +177,45 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     connect(pointMoveMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &TransferFunctionPropertyDialog::changeMoveMode);
 
+    // set up TF primitive widgets
+    {
+        primitivePos_ = new TFLineEdit();
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetPosition, primitivePos_,
+                &TFLineEdit::setValue);
+        connect(primitivePos_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setPosition);
+
+        // ensure that the range of primitive scalar is matching value range of volume data
+        if (auto port = tfProperty_->getVolumeInport()) {
+            const auto portChange = [this, port]() {
+                auto range =
+                    port->hasData() ? port->getData()->dataMap_.valueRange : dvec2(0.0, 1.0);
+                primitivePos_->setValueMapping(
+                    tfProperty_->get().getType() == TFPrimitiveSetType::Relative, range);
+            };
+
+            port->onChange(portChange);
+            port->onConnect(portChange);
+            port->onDisconnect(portChange);
+        }
+        // update value mapping for position widget with respect to TF type and port
+        onTFTypeChanged(nullptr);
+
+        primitiveAlpha_ = new TFLineEdit();
+        // only accept values in [0, 1]
+        primitiveAlpha_->setValidRange(dvec2(0.0, 1.0));
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetAlpha, primitiveAlpha_,
+                &TFLineEdit::setValue);
+        connect(primitiveAlpha_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setAlpha);
+
+        primitiveColor_ = new TFColorEdit();
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, primitiveColor_,
+                &TFColorEdit::setColor);
+        connect(primitiveColor_, &TFColorEdit::colorChanged, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setColor);
+    }
+
     QFrame* leftPanel = new QFrame(this);
     QGridLayout* leftLayout = new QGridLayout();
     leftLayout->setContentsMargins(0, 0, 0, 0);
@@ -170,7 +224,6 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     leftLayout->addWidget(tfEditorView_, 0, 1);
     leftLayout->addWidget(zoomHSlider_, 1, 1);
     leftLayout->addWidget(tfPreview_, 2, 1);
-    leftLayout->addWidget(maskSlider_, 3, 1);
     leftPanel->setLayout(leftLayout);
 
     QFrame* rightPanel = new QFrame(this);
@@ -178,15 +231,20 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(7);
     rightLayout->setAlignment(Qt::AlignTop);
-    rightLayout->addWidget(colorWheel_.get());
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
+    rightLayout->addWidget(colorWheel_.get());
+
+    auto primitivePropLayout = new QGridLayout();
+    primitivePropLayout->addWidget(new QLabel("Scalar"), 1, 1);
+    primitivePropLayout->addWidget(primitivePos_, 1, 2);
+    primitivePropLayout->addWidget(new QLabel("Alpha"), 2, 1);
+    primitivePropLayout->addWidget(primitiveAlpha_, 2, 2);
+    primitivePropLayout->addWidget(new QLabel("Color"), 3, 1);
+    primitivePropLayout->addWidget(primitiveColor_, 3, 2);
+    rightLayout->addLayout(primitivePropLayout);
+
     rightLayout->addStretch(3);
-    QHBoxLayout* rowLayout = new QHBoxLayout();
-    rowLayout->addWidget(btnClearTF_);
-    rowLayout->addWidget(btnImportTF_);
-    rowLayout->addWidget(btnExportTF_);
-    rightLayout->addLayout(rowLayout);
 
     rightPanel->setLayout(rightLayout);
 
@@ -200,6 +258,57 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
 
     setWidget(mainPanel);
 
+    // set up color dialog
+    {
+        colorDialog_ = util::make_unique<QColorDialog>(this);
+        colorDialog_->hide();
+        // we don't want to see alpha in the color dialog
+        colorDialog_->setOption(QColorDialog::ShowAlphaChannel, false);
+        colorDialog_->setOption(QColorDialog::NoButtons, true);
+        colorDialog_->setWindowModality(Qt::NonModal);
+        colorDialog_->setWindowTitle(QString("TF Primitive Color - %1")
+                                         .arg(utilqt::toQString(tfProperty_->getDisplayName())));
+
+        connect(tfEditor_.get(), &TransferFunctionEditor::showColorDialog,
+                colorDialog_.get(), [dialog = colorDialog_.get()]() {
+#ifdef __APPLE__
+                    // OSX Bug workaround: hide the dialog, due to some Mac issues
+                    dialog->hide();
+#endif  // __APPLE__
+                    dialog->show();
+                });
+
+        connect(
+            tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
+            colorDialog_.get(), [dialog = colorDialog_.get()](const QColor& c, bool /*ambiguous*/) {
+                QSignalBlocker block(dialog);
+                if (c.isValid()) {
+                    dialog->setCurrentColor(c);
+                } else {
+                    // nothing selected
+                    dialog->setCurrentColor(QColor("#95baff"));
+                }
+            });
+        connect(colorDialog_.get(), &QColorDialog::currentColorChanged, tfSelectionWatcher_.get(),
+                &TFSelectionWatcher::setColor);
+    }
+
+    // ensure that the TF dialog has its minimal size when showing up for the first time
+    resize(100, 100);
+
+    {
+        // make sure the help dialog for the TF editor is shown once
+        QSettings settings;
+        settings.beginGroup(objectName());
+        if (!settings.contains("shownonce") || !settings.value("shownonce").toBool()) {
+            settings.setValue("shownonce", true);
+
+            util::getInviwoApplication(tfProperty)
+                ->getModuleByType<QtWidgetsModule>()->showTFHelpWindow();
+        }
+        settings.endGroup();
+    }
+
     updateFromProperty();
     if (!tfProperty_->getVolumeInport()) {
         chkShowHistogram_->setVisible(false);
@@ -212,6 +321,12 @@ TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
     hide();
 }
 
+QSize TransferFunctionPropertyDialog::minimumSizeHint() const {
+    return TransferFunctionPropertyDialog::sizeHint();
+}
+
+QSize TransferFunctionPropertyDialog::sizeHint() const { return layout()->sizeHint(); }
+
 void TransferFunctionPropertyDialog::updateFromProperty() {
     if (!tfProperty_->getOwner()) return;
 
@@ -223,11 +338,6 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
     updateTFPreview();
 }
 
-void TransferFunctionPropertyDialog::updateTFPreview() {
-    auto pixmap = utilqt::toQPixmap(*tfProperty_, QSize(tfPreview_->width(), 20));
-   tfPreview_->setPixmap(pixmap);
-}
-
 void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     // normalize zoom values, as sliders in TransferFunctionPropertyDialog
     // have the range [0...100]
@@ -236,6 +346,7 @@ void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax
     const auto zoomMinF = static_cast<float>(sliderRange_ - zoomMax) / sliderRange_;
 
     tfProperty_->setZoomV(zoomMinF, zoomMaxF);
+    tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
 }
 
 void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
@@ -243,15 +354,7 @@ void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomM
     const auto zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
 
     tfProperty_->setZoomH(zoomMinF, zoomMaxF);
-}
-
-// Connected to valuesChanged on the maskSlider
-void TransferFunctionPropertyDialog::changeMask(int maskMin, int maskMax) {
-    const auto maskMinF = static_cast<float>(maskMin) / sliderRange_;
-    const auto maskMaxF = static_cast<float>(maskMax) / sliderRange_;
-    tfProperty_->setMask(maskMinF, maskMaxF);
-
-    updateTFPreview();
+    tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
 }
 
 void TransferFunctionPropertyDialog::importTransferFunction() {
@@ -301,6 +404,9 @@ void TransferFunctionPropertyDialog::showHistogram(int type) {
 
 void TransferFunctionPropertyDialog::resizeEvent(QResizeEvent* event) {
     PropertyEditorWidgetQt::resizeEvent(event);
+
+    tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
+
     updateTFPreview();
 }
 
@@ -325,6 +431,30 @@ void TransferFunctionPropertyDialog::onTFPrimitiveChanged(const TFPrimitive* p) 
     updateFromProperty();
 }
 
+void TransferFunctionPropertyDialog::onTFTypeChanged(const TFPrimitiveSet*) {
+    // adjust value mapping in primitive widget for position
+    dvec2 valueRange(0.0, 1.0);
+    if (auto port = tfProperty_->getVolumeInport()) {
+        if (port->hasData()) {
+            valueRange = port->getData()->dataMap_.valueRange;
+        }
+    }
+    primitivePos_->setValueMapping(tfProperty_->get().getType() == TFPrimitiveSetType::Relative,
+                                   valueRange);
+}
+
+void TransferFunctionPropertyDialog::onMaskChange(const dvec2&) { updateTFPreview(); }
+
+void TransferFunctionPropertyDialog::onZoomHChange(const dvec2& zoomH) {
+    zoomHSlider_->setValue(static_cast<int>(zoomH.x * sliderRange_),
+                           static_cast<int>(zoomH.y * sliderRange_));
+}
+
+void TransferFunctionPropertyDialog::onZoomVChange(const dvec2& zoomV) {
+    zoomVSlider_->setValue(sliderRange_ - static_cast<int>(zoomV.y * sliderRange_),
+                           sliderRange_ - static_cast<int>(zoomV.x * sliderRange_));
+}
+
 TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() const {
     return tfEditorView_;
 }
@@ -332,12 +462,28 @@ TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() cons
 void TransferFunctionPropertyDialog::setReadOnly(bool readonly) {
     colorWheel_->setDisabled(readonly);
     tfEditorView_->setDisabled(readonly);
-    btnClearTF_->setDisabled(readonly);
-    btnImportTF_->setDisabled(readonly);
+    primitivePos_->setDisabled(readonly);
+    primitiveAlpha_->setDisabled(readonly);
+    primitiveColor_->setDisabled(readonly);
     pointMoveMode_->setDisabled(readonly);
-    maskSlider_->setDisabled(readonly);
 }
 
 void TransferFunctionPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
+
+void TransferFunctionPropertyDialog::updateTFPreview() {
+    auto pixmap = utilqt::toQPixmap(*tfProperty_, QSize(tfPreview_->width(), 20));
+    tfPreview_->setPixmap(pixmap);
+}
+
+dvec2 TransferFunctionPropertyDialog::getRelativeSceneOffset() const {
+    // to determine the offset in scene coords, map a square where each side has length
+    // defaultOffset_ to the scene. We assume that there is no rotation or non-linear view
+    // transformation.
+    auto rect =
+        tfEditorView_->mapToScene(QRect(QPoint(0, 0), QSize(defaultOffset_, defaultOffset_)))
+            .boundingRect();
+
+    return dvec2(rect.width(), rect.height());
+}
 
 }  // namespace inviwo

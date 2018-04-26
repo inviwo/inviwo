@@ -35,6 +35,7 @@
 #include <inviwo/core/util/interpolation.h>
 
 #include <algorithm>
+#include <set>
 
 namespace inviwo {
 
@@ -43,6 +44,8 @@ void TFPrimitiveSetObserver::onTFPrimitiveAdded(TFPrimitive*) {}
 void TFPrimitiveSetObserver::onTFPrimitiveRemoved(TFPrimitive*) {}
 
 void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitive*) {}
+
+void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet*) {}
 
 void TFPrimitiveSetObservable::notifyTFPrimitiveAdded(TFPrimitive* p) {
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveAdded(p); });
@@ -56,8 +59,12 @@ void TFPrimitiveSetObservable::notifyTFPrimitiveChanged(const TFPrimitive* p) {
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveChanged(p); });
 }
 
+void TFPrimitiveSetObservable::notifyTFTypeChanged(const TFPrimitiveSet* primitiveSet) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFTypeChanged(primitiveSet); });
+}
+
 TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type)
-    : type_(type) {
+    : type_("type", type) {
     add(values);
 }
 
@@ -70,15 +77,9 @@ TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs)
     }
 }
 
-TFPrimitiveSet::TFPrimitiveSet(TFPrimitiveSet&& rhs)
-    : values_(std::move(rhs.values_))
-    , sorted_(std::move(rhs.sorted_))
-    , type_(rhs.type_)
-    , serializationKey_(std::move(rhs.serializationKey_))
-    , serializationItemKey_(std::move(rhs.serializationItemKey_)) {}
-
 TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     if (this != &rhs) {
+        type_ = rhs.type_;
         serializationKey_ = rhs.serializationKey_;
         serializationItemKey_ = rhs.serializationItemKey_;
 
@@ -96,6 +97,14 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     return *this;
 }
 
+void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
+    if (type_ == type) {
+        return;
+    }
+    type_ = type;
+    notifyTFTypeChanged(this);
+}
+
 dvec2 TFPrimitiveSet::getRange() const {
     switch (type_) {
         case TFPrimitiveSetType::Absolute: {
@@ -111,6 +120,8 @@ dvec2 TFPrimitiveSet::getRange() const {
 }
 
 size_t TFPrimitiveSet::size() const { return values_.size(); }
+
+bool TFPrimitiveSet::empty() const { return values_.empty(); }
 
 TFPrimitive* TFPrimitiveSet::operator[](size_t i) { return sorted_[i]; }
 
@@ -228,6 +239,45 @@ void TFPrimitiveSet::clear() {
     }
 }
 
+void TFPrimitiveSet::setPosition(const std::vector<TFPrimitive*> primitives, double pos) {
+    // selected primitives need to be moved in correct order to maintain overall order of TF
+    // That is, TF primitives closest to pos must be moved first
+    std::set<TFPrimitive*> primitiveSet(primitives.begin(), primitives.end());
+
+    std::vector<TFPrimitive*> sortedSelection;
+    std::copy_if(sorted_.begin(), sorted_.end(), std::back_inserter(sortedSelection),
+                 [&primitiveSet](auto item) { return primitiveSet.count(item) > 0; });
+
+    // partition set of primitives at position pos
+    auto partition =
+        std::lower_bound(sortedSelection.begin(), sortedSelection.end(), pos,
+                         [](const auto& p, double val) { return p->getPosition() < val; });
+
+    // update upper half, i.e. all elements to the right of pos in ascending order
+    for (auto it = partition; it != sortedSelection.end(); ++it) {
+        (*it)->setPosition(pos);
+    }
+
+    // update lower half, i.e. all elements to the left of pos in descending order
+    // to do this reverse sorted primitives from begin to the partition point
+    std::reverse(sortedSelection.begin(), partition);
+    for (auto it = sortedSelection.begin(); it != partition; ++it) {
+        (*it)->setPosition(pos);
+    }
+}
+
+void TFPrimitiveSet::setAlpha(const std::vector<TFPrimitive*> primitives, double alpha) {
+    for (auto p : primitives) {
+        p->setAlpha(static_cast<float>(alpha));
+    }
+}
+
+void TFPrimitiveSet::setColor(const std::vector<TFPrimitive*> primitives, const vec3& color) {
+    for (auto p : primitives) {
+        p->setColor(color);
+    }
+}
+
 void TFPrimitiveSet::onTFPrimitiveChange(const TFPrimitive* p) {
     sort();
     invalidate();
@@ -235,10 +285,15 @@ void TFPrimitiveSet::onTFPrimitiveChange(const TFPrimitive* p) {
 }
 
 void TFPrimitiveSet::serialize(Serializer& s) const {
+    type_.serialize(s, PropertySerializationMode::All);
     s.serialize(serializationKey_, values_, serializationItemKey_);
 }
 
 void TFPrimitiveSet::deserialize(Deserializer& d) {
+    if (type_.deserialize(d, PropertySerializationMode::All)) {
+        notifyTFTypeChanged(this);
+    }
+
     util::IndexedDeserializer<std::unique_ptr<TFPrimitive>>(serializationKey_,
                                                             serializationItemKey_)
         .onNew([&](std::unique_ptr<TFPrimitive>& p) {

@@ -90,6 +90,8 @@ public:
     const dvec2 getMask() const;
     void setMask(double maskMin, double maskMax);
 
+    void clearMask();
+
     const dvec2& getZoomH() const;
     void setZoomH(double zoomHMin, double zoomHMax);
 
@@ -112,6 +114,7 @@ public:
     virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
     virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
 
 private:
     ValueWrapper<dvec2> zoomH_;

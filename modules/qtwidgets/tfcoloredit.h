@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,51 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
+#ifndef IVW_TFCOLOREDIT_H
+#define IVW_TFCOLOREDIT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tfhelpwindow.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QLineEdit>
+#include <QColor>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
+/**
+ * \class TFColorEdit
+ * \brief widget in TF dialog for entering six digit HTML hex color codes
+ */
+class IVW_MODULE_QTWIDGETS_API TFColorEdit : public QLineEdit {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    QtWidgetsModule(InviwoApplication* app);
-    virtual ~QtWidgetsModule();
+    TFColorEdit(QWidget* parent = nullptr);
+    virtual ~TFColorEdit() = default;
 
-    TFHelpWindow* getTFHelpWindow() const;
+    virtual QSize sizeHint() const override;
 
-    void showTFHelpWindow() const;
+    /**
+     * set the color value of the line edit, if the value is ambiguous nothing will be shown.
+     * Otherwise the rgb components of the color are shown as hexadecimal color code, e.g.
+     * "#f9a033".
+     *
+     * @param color   rgb components are converted into a hexadecimal color code
+     */
+    void setColor(const QColor& color, bool ambiguous);
 
-private:
-    std::unique_ptr<TFMenuHelper> tfMenuHelper_;
+signals:
+    /**
+     * signal when a new valid color hex code has been entered.
+     */
+    void colorChanged(const QColor& color);
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif  // IVW_QTWIDGETMODULE_H
+#endif  // IVW_TFCOLOREDIT_H

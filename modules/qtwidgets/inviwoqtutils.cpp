@@ -103,9 +103,17 @@ QSizeF toQSize(dvec2 v) { return QSizeF(v.x, v.y); }
 
 QSize toQSize(ivec2 v) { return QSize(v.x, v.y); }
 
+vec3 tovec3(const QColor& c) { return vec3(c.redF(), c.greenF(), c.blueF()); }
+
+ivec3 toivec3(const QColor& c) { return ivec3(c.red(), c.green(), c.blue()); }
+
 vec4 tovec4(const QColor& c) { return vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()); }
 
-ivec4 toivec4(const QColor& c) { return vec4(c.red(), c.green(), c.blue(), c.alpha()); }
+ivec4 toivec4(const QColor& c) { return ivec4(c.red(), c.green(), c.blue(), c.alpha()); }
+
+QColor toQColor(const vec3& v) { return toQColor(ivec3(v * 255.0f)); }
+
+QColor toQColor(const ivec3& v) { return QColor(v.r, v.g, v.b); }
 
 QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
 

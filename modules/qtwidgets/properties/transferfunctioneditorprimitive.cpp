@@ -38,18 +38,28 @@
 #include <QPainter>
 #include <QGraphicsSimpleTextItem>
 #include <QFont>
+#include <QGuiApplication>
+#include <QGraphicsSceneMouseEvent>
+#include <QMenu>
 #include <warn/pop>
 
 namespace inviwo {
 
+void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive*) {
+}
+
 TransferFunctionEditorPrimitive::TransferFunctionEditorPrimitive(TFPrimitive* primitive,
                                                                  QGraphicsScene* scene,
-                                                                 const vec2& pos, float size)
-    : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive) {
+                                                                 const vec2& pos, double size)
+    : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive), mouseDrag_(false) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
-    setZValue(10);
+    setZValue(defaultZValue_);
     setAcceptHoverEvents(true);
+
+    if (auto tfe = qobject_cast<TransferFunctionEditor*>(scene)) {
+        addObserver(tfe);
+    }
 
     // create label for annotating TF primitives
     tfPrimitiveLabel_ = util::make_unique<QGraphicsSimpleTextItem>(this);
@@ -58,12 +68,12 @@ TransferFunctionEditorPrimitive::TransferFunctionEditorPrimitive(TFPrimitive* pr
     font.setPixelSize(14);
     tfPrimitiveLabel_->setFont(font);
 
-    // update position first, then add to scene to avoid calling the virtual
-    // function onItemPositionChange()
-    updatePosition(
-        QPointF(pos.x * scene->sceneRect().width(), pos.y * scene->sceneRect().height()));
-
     if (scene) {
+        // update position first, then add to scene to avoid calling the virtual
+        // function onItemPositionChange()
+        updatePosition(
+            QPointF(pos.x * scene->sceneRect().width(), pos.y * scene->sceneRect().height()));
+
         scene->addItem(this);
     }
 }
@@ -97,13 +107,13 @@ void TransferFunctionEditorPrimitive::setTFPosition(const dvec2& tfpos) {
 
 const QPointF& TransferFunctionEditorPrimitive::getCurrentPos() const { return currentPos_; }
 
-void TransferFunctionEditorPrimitive::setSize(float s) {
+void TransferFunctionEditorPrimitive::setSize(double s) {
     prepareGeometryChange();
     size_ = s;
     update();
 }
 
-float TransferFunctionEditorPrimitive::getSize() const { return hovered_ ? size_ + 5.0f : size_; }
+double TransferFunctionEditorPrimitive::getSize() const { return hovered_ ? size_ + 5.0 : size_; }
 
 void TransferFunctionEditorPrimitive::setHovered(bool hover) {
     prepareGeometryChange();
@@ -113,6 +123,15 @@ void TransferFunctionEditorPrimitive::setHovered(bool hover) {
     updateLabel();
 
     update();
+}
+
+void TransferFunctionEditorPrimitive::beginMouseDrag() {
+    cachedPosition_ = currentPos_;
+    mouseDrag_ = true;
+}
+
+void TransferFunctionEditorPrimitive::stopMouseDrag() {
+    mouseDrag_ = false;
 }
 
 void TransferFunctionEditorPrimitive::paint(QPainter* painter,
@@ -144,6 +163,22 @@ QVariant TransferFunctionEditorPrimitive::itemChange(GraphicsItemChange change,
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
         auto newpos = value.toPointF();
+
+        const bool shiftPressed =
+            ((QGuiApplication::queryKeyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier);
+        // restrict movement to either horizontal or vertical direction while shift is pressed
+        if (mouseDrag_&& shiftPressed) {
+            // adjust position of mouse event
+            auto delta = newpos - cachedPosition_;
+            if (std::abs(delta.x()) > std::abs(delta.y())) {
+                // horizontal movement is dominating
+                newpos.ry() = cachedPosition_.y();
+            } else {
+                // vertical movement is dominating
+                newpos.rx() = cachedPosition_.x();
+            }
+        }
+
         QRectF rect = scene()->sceneRect();
 
         if (!rect.contains(newpos)) {
@@ -184,7 +219,12 @@ void TransferFunctionEditorPrimitive::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
 void TransferFunctionEditorPrimitive::hoverLeaveEvent(QGraphicsSceneHoverEvent*) {
     setHovered(false);
-    setZValue(10);
+    setZValue(defaultZValue_);
+}
+
+void TransferFunctionEditorPrimitive::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
+    forEachObserver([&](TFEditorPrimitiveObserver* o) { o->onTFPrimitiveDoubleClicked(this); });
+    QGraphicsItem::mouseDoubleClickEvent(event);
 }
 
 void TransferFunctionEditorPrimitive::updatePosition(const QPointF& pos) {

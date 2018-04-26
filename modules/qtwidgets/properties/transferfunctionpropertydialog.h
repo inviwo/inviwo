@@ -34,7 +34,7 @@
 #ifndef IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
 #define IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <modules/qtwidgets/properties/transferfunctioneditor.h>
@@ -50,30 +50,43 @@ class QComboBox;
 class QLabel;
 class QResizeEvent;
 class QShowEvent;
+class QColorDialog;
 
 namespace inviwo {
 
 class ColorWheel;
 class RangeSliderQt;
 class TransferFunctionPropertyWidgetQt;
+class TFSelectionWatcher;
+class TFLineEdit;
+class TFColorEdit;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
-                                                                public TFPrimitiveSetObserver {
+class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog
+    : public PropertyEditorWidgetQt,
+      public TFPrimitiveSetObserver,
+      public TransferFunctionPropertyObserver {
 public:
     TransferFunctionPropertyDialog(TransferFunctionProperty* property);
     ~TransferFunctionPropertyDialog();
 
+    virtual QSize sizeHint() const override;
+    virtual QSize minimumSizeHint() const override;
+    
     void updateFromProperty();
     TransferFunctionEditorView* getEditorView() const;
-
+    
 protected:
     virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
     virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
+
+    virtual void onMaskChange(const dvec2& mask) override;
+    virtual void onZoomHChange(const dvec2& zoomH) override;
+    virtual void onZoomVChange(const dvec2& zoomV) override;
 
     virtual void setReadOnly(bool readonly) override;
 
-    void changeMask(int maskMin, int maskMax);
     void changeVerticalZoom(int zoomMin, int zoomMax);
     void changeHorizontalZoom(int zoomMin, int zoomMax);
     void importTransferFunction();
@@ -86,10 +99,17 @@ protected:
 
 private:
     void updateTFPreview();
+    /**
+     * calculate the horizontal and vertical offset in scene coordinates based on the current
+     * viewport size and zoom. The offset then corresponds to defaultOffset pixels on screen.
+     */
+    dvec2 getRelativeSceneOffset() const;
 
     const int sliderRange_;
+    const int defaultOffset_ = 5;  //!< offset in pixel
 
     std::unique_ptr<ColorWheel> colorWheel_;
+    std::unique_ptr<QColorDialog> colorDialog_;
 
     // Pointer to property, for get and invalidation in the widget
     TransferFunctionProperty* tfProperty_;
@@ -97,19 +117,22 @@ private:
     // TransferFunctionEditor inherited from QGraphicsScene
     std::unique_ptr<TransferFunctionEditor> tfEditor_;
 
+    std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
+
     TransferFunctionEditorView* tfEditorView_;  ///< View that contains the editor
-    QPushButton* btnClearTF_;
-    QPushButton* btnImportTF_;
-    QPushButton* btnExportTF_;
     QComboBox* chkShowHistogram_;
 
     QComboBox* pointMoveMode_;
+
+    // widgets for directly editing the currently selected TF primitives
+    TFLineEdit* primitivePos_;
+    TFLineEdit* primitiveAlpha_;
+    TFColorEdit* primitiveColor_;
 
     QLabel* tfPreview_;  ///< View that contains the scene for the painted transfer function
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
-    RangeSliderQt* maskSlider_;
 };
 
 }  // namespace inviwo
