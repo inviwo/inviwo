@@ -454,6 +454,7 @@ set(SOURCE_FILES
     processors/processorwidgetfactoryobject.cpp
     processors/processorwidgetobserver.cpp
     processors/progressbar.cpp
+    processors/progressbarowner.cpp
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp

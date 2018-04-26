@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,59 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROGRESSBAROWNER_H
-#define IVW_PROGRESSBAROWNER_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/processors/progressbar.h>
+#include <inviwo/core/processors/progressbarowner.h>
 
 namespace inviwo {
 
-/** \class ProgressBarOwner
- *
- * Class to support processors owning a ProgressBar.
- * This class allows a progress bar contained within a processor to be visible in the network.
- *
- * \section example Example
- * Example of how to apply it to a processor.
- * @code
- *    class IVW_XXX_API MyProcessor: public Processor, public ProgressBarOwner {
- *    public:
- *        MyProcessor(): Processor(), ProgressBarOwner() {};
- *        // Need to overload serialize/deseralize
- *        virtual void serialize(Serializer& s) const {
- *           Processor::serialize(s);
- *           s.serialize("ProgressBar", getProgressBar());
- *        }
- *        virtual void deserialize(Deserializer& d) {
- *           Processor::deserialize(d);
- *           d.deserialize("ProgressBar", getProgressBar());
- *        }
- *    };
- *
- * @endcode
- * @see ProgressBar
- * @see ProgressBarObservable
- */
-class IVW_CORE_API ProgressBarOwner {
-public:
-    ProgressBarOwner() = default;
-    virtual ~ProgressBarOwner() = default;
-
-    ProgressBar& getProgressBar();
-    const ProgressBar& getProgressBar() const;
-
-    // Helper function
-    inline void updateProgress(float progress);
-
-protected:
-    ProgressBar progressBar_;
-};
-
-inline void ProgressBarOwner::updateProgress(float progress) {
-    progressBar_.updateProgress(progress);
-}
+ProgressBar& ProgressBarOwner::getProgressBar() { return progressBar_; };
+const ProgressBar& ProgressBarOwner::getProgressBar() const { return progressBar_; };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROGRESSBAROWNER_H

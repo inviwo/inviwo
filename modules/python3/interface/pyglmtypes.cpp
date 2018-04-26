@@ -84,7 +84,7 @@ void common(py::module &m, py::class_<GLM> &pyc, std::string name) {
 }
 
 template <typename T, typename V>
-void floatOnlyVecs(py::module &m, std::false_type) {}
+void floatOnlyVecs(py::module &, std::false_type) {}
 
 template <typename T, typename V>
 void floatOnlyVecs(py::module &m, std::true_type) {

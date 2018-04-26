@@ -206,38 +206,35 @@ TextEditorDockWidget::~TextEditorDockWidget() {
 }
 
 void TextEditorDockWidget::updateStyle() {
-    auto getBGColorandFontSize = [&]() {
+    auto getBGColorAndSizeAndFont = [&]() {
         if (auto app = util::getInviwoApplication(property_)) {
             auto settings = app->getSettingsByType<QtWidgetsSettings>();
             if (property_->getSemantics() == PropertySemantics::ShaderEditor) {
                 auto color = settings->glslBackgroundColor_.get();
-                auto size = settings->pyFontSize_.get();
-                return std::make_tuple(color, size);
+                auto size = settings->glslFontSize_.get();
+                auto family = settings->glslFont_.get();
+                return std::make_tuple(color, size, family);
             } else if (property_->getSemantics() == PropertySemantics::PythonEditor) {
                 auto color = settings->pyBGColor_.get();
                 auto size = settings->pyFontSize_.get();
-                return std::make_tuple(color, size);
+                auto family = settings->pythonFont_.get();
+                return std::make_tuple(color, size, family);
             }
         }
-        return std::make_tuple(ivec4(0xb0, 0xb0, 0xbc, 255), 11);
+        return std::make_tuple(ivec4(0xb0, 0xb0, 0xbc, 255), 11, std::string{"Courier New"});
     };
 
-    auto colorSize = getBGColorandFontSize();
+    auto csf = getBGColorAndSizeAndFont();
 
     std::stringstream ss;
-    ss << "background-color: rgb(" << std::get<0>(colorSize).r << ", " << std::get<0>(colorSize).g
-       << ", " << std::get<0>(colorSize).b << ");\n"
-       << "font-size: " << std::get<1>(colorSize) << "px;\n";
+    ss << "background-color: rgb(" << std::get<0>(csf).r << ", " << std::get<0>(csf).g
+       << ", " << std::get<0>(csf).b << ");\n"
+       << "font-size: " << std::get<1>(csf) << "px;\n"
+       << "font-family: " << std::get<2>(csf) << ";\n";
     editor_->setStyleSheet(ss.str().c_str());
     syntaxHighligther_->rehighlight();
 
-    // setting a monospace font explicitely is necessary despite providing a font-family in css
-    // Otherwise, the editor will not feature a fixed-width font face.
     auto font = editor_->font();
-    font.setFamily("Monospace");
-    font.setStyleHint(QFont::Monospace);
-    editor_->setFont(font);
-
     QFontMetrics metrics(font);
     editor_->setTabStopWidth(4 * metrics.width(' '));
 }
@@ -286,7 +283,7 @@ void TextEditorDockWidget::closeEvent(QCloseEvent* e) {
     PropertyEditorWidgetQt::closeEvent(e);
 }
 
-void TextEditorDockWidget::onSetDisplayName(Property*, const std::string& displayName) {
+void TextEditorDockWidget::onSetDisplayName(Property*, const std::string&) {
     setTitle(editor_->document()->isModified());
 }
 
@@ -321,7 +318,7 @@ TextEditorDockWidget::ScriptObserver::ScriptObserver(TextEditorDockWidget& widge
                                                      InviwoApplication* app)
     : FileObserver(app), widget_(widget) {}
 
-void TextEditorDockWidget::ScriptObserver::fileChanged(const std::string& dir) {
+void TextEditorDockWidget::ScriptObserver::fileChanged(const std::string&) {
     widget_.fileChanged();
 };
 

@@ -35,6 +35,7 @@
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
@@ -48,6 +49,8 @@ public:
     virtual ~QtWidgetsSettings() = default;
 
     CompositeProperty glslSyntax_;
+    OptionPropertyString glslFont_;
+    IntProperty glslFontSize_;
     IntVec4Property glslTextColor_;
     IntVec4Property glslBackgroundColor_;
     IntVec4Property glslQualifierColor_;
@@ -60,6 +63,7 @@ public:
     IntVec4Property glslVoidMainColor_;
 
     CompositeProperty pythonSyntax_;
+    OptionPropertyString pythonFont_;
     IntProperty pyFontSize_;
     IntVec4Property pyBGColor_;
     IntVec4Property pyTextColor_;
