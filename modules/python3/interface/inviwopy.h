@@ -34,11 +34,15 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/pytypes.h>
+#include <pybind11/detail/common.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 
 namespace pybind11 {
+
+PYBIND11_RUNTIME_EXCEPTION(attribute_error, PyExc_AttributeError)
+
 namespace detail {
 using namespace inviwo;
 

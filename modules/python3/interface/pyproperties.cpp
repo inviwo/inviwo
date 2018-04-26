@@ -95,12 +95,30 @@ void exposeProperties(py::module &m) {
         .def("hasWidgets", &Property::hasWidgets)
         .def("setCurrentStateAsDefault", &Property::setCurrentStateAsDefault)
         .def("resetToDefaultState", &Property::resetToDefaultState)
-        .def("onChange",
-             [](Property *p, std::function<void()> func) {
-                 p->onChange(func);
-             });
+        .def("onChange", [](Property *p, std::function<void()> func) { p->onChange(func); });
 
-    PyPropertyClass<CompositeProperty, Property, PropertyOwner>(m, "CompositeProperty");
+    PyPropertyClass<CompositeProperty, Property, PropertyOwner>(m, "CompositeProperty")
+        .def(py::init([](const std::string &identifier, const std::string &displayName,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new CompositeProperty(identifier, displayName, invalidationLevel,
+                                              semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"),
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def("setCollapsed", &CompositeProperty::setCollapsed)
+        .def("isCollapsed", &CompositeProperty::isCollapsed)
+        .def("__getattr__",
+             [](PropertyOwner &po, const std::string &key) {
+                 if (auto prop = po.getPropertyByIdentifier(key)) {
+                     return prop;
+                 } else {
+                     throw py::attribute_error{
+                         "CompositeProperty (" + joinString(po.getPath(), ".") +
+                         ") does not have a property with identifier: '" + key + "'"};
+                 }
+             },
+             py::return_value_policy::reference);
 
     PyPropertyClass<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
@@ -180,8 +198,7 @@ void exposeProperties(py::module &m) {
                  return new TransferFunctionProperty(identifier, displayName, value, volumeInport,
                                                      invalidationLevel, semantics);
              }),
-             py::arg("identifier"), py::arg("displayName"),
-             py::arg("value"),
+             py::arg("identifier"), py::arg("displayName"), py::arg("value"),
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
              py::arg("semantics") = PropertySemantics::Default)

@@ -36,6 +36,47 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+
+namespace pybind11 {
+namespace detail {
+using namespace inviwo;
+
+/*
+ * The python type caster for polymorphic types only can lookup exact
+ * matches. I.e. if we have a property Basis that derives from CompositeProperty
+ * which derives from Property, and we try to cast a Property pointer pointing to a Basis
+ * and only Property and CompositeProperty are exposed to python and not Basis. Python will
+ * not find a exact match, and the returned wrapper will be of the Pointer class used.
+ * In this cases Property. To get at least some support for unexposed properties 
+ * derived from CompositeProperty and BaseOptionProperty we add a specialization here 
+ * that will mean that in the example above we will get a CompositeProperty wrapper instead of
+ * of a Property wrapper.
+ */
+template <>
+struct type_caster<Property> : type_caster_base<Property> {
+    static handle cast(Property &&src, return_value_policy, handle parent) {
+        return cast(&src, return_value_policy::move, parent);
+    }
+    static handle cast(const Property &src, return_value_policy policy, handle parent) {
+        if (policy == return_value_policy::automatic ||
+            policy == return_value_policy::automatic_reference)
+            policy = return_value_policy::copy;
+        return cast(&src, policy, parent);
+    }
+    static handle cast(const Property *prop, return_value_policy policy, handle parent) {
+        if (auto cp = dynamic_cast<const CompositeProperty *>(prop)) {
+           return type_caster_base<CompositeProperty>::cast(cp, policy, parent);
+        } else if (auto op = dynamic_cast<const BaseOptionProperty *>(prop)) {
+            return type_caster_base<BaseOptionProperty>::cast(op, policy, parent);
+        } else {
+            return type_caster_base<Property>::cast(prop, policy, parent);
+        }
+    }
+};
+}  // namespace detail
+}  // namespace pybind11
 
 namespace inviwo {
 

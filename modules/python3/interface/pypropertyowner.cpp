@@ -32,12 +32,9 @@
 
 #include <modules/python3/interface/inviwopy.h>
 #include <modules/python3/interface/vectoridentifierwrapper.h>
+#include <modules/python3/interface/pyproperties.h>
 
 #include <pybind11/detail/common.h>
-
-namespace pybind11 {
-PYBIND11_RUNTIME_EXCEPTION(attribute_error, PyExc_AttributeError)
-}
 
 namespace inviwo {
 
@@ -48,14 +45,10 @@ void exposePropertyOwner(pybind11::module &m) {
     exposeVectorIdentifierWrapper<std::vector<Property *>>(m, "PropertyVecWrapper");
 
     py::class_<PropertyOwner, std::unique_ptr<PropertyOwner, py::nodelete>>(m, "PropertyOwner")
-        .def("getPath", &PropertyOwner::getPath)
-        .def_property_readonly("properties", &PropertyOwner::getProperties,
-                               py::return_value_policy::reference)
         .def("__getattr__",
              [](PropertyOwner &po, const std::string &key) {
-                 auto prop = po.getPropertyByIdentifier(key);
-                 if (prop) {
-                     return pybind11::cast(prop);
+                 if (auto prop = po.getPropertyByIdentifier(key)) {
+                     return prop;
                  } else {
                      throw py::attribute_error{"PropertyOwner (" + joinString(po.getPath(), ".") +
                                                ") does not have a property with identifier: '" +
@@ -75,6 +68,7 @@ void exposePropertyOwner(pybind11::module &m) {
              py::arg("recursiveSearch") = false)
         .def("getPropertyByPath", &PropertyOwner::getPropertyByPath,
              py::return_value_policy::reference)
+         .def("getPath", &PropertyOwner::getPath)
         .def("size", &PropertyOwner::size)
         .def("setValid", &PropertyOwner::setValid)
         .def("getInvalidationLevel", &PropertyOwner::getInvalidationLevel)
