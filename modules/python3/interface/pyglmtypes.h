@@ -29,9 +29,11 @@
 
 #ifndef IVW_PYGLMTYPES_H
 #define IVW_PYGLMTYPES_H
-#include <pybind11/pybind11.h>
 
 #include <inviwo/core/util/glm.h>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl_bind.h>
 
 // Manually expand PYBIND11_MAKE_OPAQUE because macros and commas in template arguments mix poorly.
 namespace pybind11 {
