@@ -43,20 +43,12 @@ CImgVolumeReader::CImgVolumeReader() : DataReaderType<Volume>() {
 CImgVolumeReader* CImgVolumeReader::clone() const { return new CImgVolumeReader(*this); }
 
 std::shared_ptr<Volume> CImgVolumeReader::readData(const std::string& filePath) {
-    std::string fileName = filePath; 
-    if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
-
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        }
-        else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
-        }
+    if (!filesystem::fileExists(filePath)) {
+        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
     }
 
     auto volume = std::make_shared<Volume>();
-    auto volumeDisk = std::make_shared<VolumeDisk>(fileName);
+    auto volumeDisk = std::make_shared<VolumeDisk>(filePath);
     volumeDisk->setLoader(new CImgVolumeRAMLoader(volumeDisk.get()));
     volume->addRepresentation(volumeDisk);
 
@@ -71,11 +63,9 @@ void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::st
     }
 }
 
-CImgVolumeRAMLoader::CImgVolumeRAMLoader(VolumeDisk* volumeDisk) :volumeDisk_(volumeDisk) {}
+CImgVolumeRAMLoader::CImgVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk) {}
 
-CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const {
-    return new CImgVolumeRAMLoader(*this);
-}
+CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeRAMLoader(*this); }
 
 std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation() const {
     void* data = nullptr;
@@ -123,4 +113,4 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
     volumeDisk_->setDimensions(dimensions);
 }
 
-}  // namespace
+}  // namespace inviwo

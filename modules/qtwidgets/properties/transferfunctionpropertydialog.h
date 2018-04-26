@@ -36,6 +36,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <modules/qtwidgets/properties/transferfunctioneditor.h>
 #include <modules/qtwidgets/properties/transferfunctioneditorview.h>
 #include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
@@ -44,15 +45,9 @@
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/util/observer.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGradientStops>
-#include <warn/pop>
-
 class QPushButton;
 class QComboBox;
 class QLabel;
-class QPixmap;
 class QResizeEvent;
 class QShowEvent;
 
@@ -63,7 +58,7 @@ class RangeSliderQt;
 class TransferFunctionPropertyWidgetQt;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
-                                                                public TransferFunctionObserver {
+                                                                public TFPrimitiveSetObserver {
 public:
     TransferFunctionPropertyDialog(TransferFunctionProperty* property);
     ~TransferFunctionPropertyDialog();
@@ -72,9 +67,9 @@ public:
     TransferFunctionEditorView* getEditorView() const;
 
 protected:
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p) override;
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p) override;
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p) override;
+    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
 
     virtual void setReadOnly(bool readonly) override;
 
@@ -111,9 +106,6 @@ private:
     QComboBox* pointMoveMode_;
 
     QLabel* tfPreview_;  ///< View that contains the scene for the painted transfer function
-    std::unique_ptr<QPixmap> tfPixmap_;
-
-    QLinearGradient gradient_;
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;

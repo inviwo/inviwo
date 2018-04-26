@@ -33,6 +33,8 @@
 #include <inviwo/core/interaction/trackball.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
+#include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
+#include <modules/base/algorithm/mesh/meshcameraalgorithms.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/shader/shader.h>
@@ -96,9 +98,19 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     imageInport_.setOptional(true);
 
     addProperty(camera_);
-    centerViewOnGeometry_.onChange([this]() { centerViewOnGeometry(); });
+
+    centerViewOnGeometry_.onChange([&]() {
+        if (!inport_.hasData()) return;
+        meshutil::centerViewOnMeshes(inport_.getVectorData(), camera_);
+    });
     addProperty(centerViewOnGeometry_);
-    setNearFarPlane_.onChange([this]() { setNearFarPlane(); });
+    setNearFarPlane_.onChange([&]() {
+        if (!inport_.hasData()) return;
+        auto nearFar = meshutil::computeNearFarPlanes(
+            meshutil::axisAlignedBoundingBox(inport_.getVectorData()), camera_);
+        camera_.setNearFarPlaneDist(nearFar.first, nearFar.second);
+    });
+
     addProperty(setNearFarPlane_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     addProperty(resetViewParams_);
@@ -209,71 +221,6 @@ void MeshRenderProcessorGL::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-}
-
-std::pair<vec3, vec3> MeshRenderProcessorGL::calcWorldBoundingBox() const {
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
-    for (const auto& mesh : inport_) {
-        const auto& buffers = mesh->getBuffers();
-        auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
-            return buff.first.type == BufferType::PositionAttrib;
-        });
-        if (it != buffers.end()) {
-            auto minmax = util::bufferMinMax(it->second.get());
-
-            mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
-            worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
-            worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
-        }
-    }
-    return {worldMin, worldMax};
-}
-
-void MeshRenderProcessorGL::centerViewOnGeometry() {
-    if (!inport_.hasData()) return;
-
-    auto minmax = calcWorldBoundingBox();
-    camera_.setLook(camera_.getLookFrom(), 0.5f * (minmax.first + minmax.second),
-                    camera_.getLookUp());
-}
-
-void MeshRenderProcessorGL::setNearFarPlane() {
-    if (!inport_.hasData()) return;
-
-    auto geom = inport_.getData();
-
-    auto posBuffer =
-        dynamic_cast<const Vec3BufferRAM*>(geom->getBuffer(0)->getRepresentation<BufferRAM>());
-
-    if (posBuffer == nullptr) return;
-
-    auto pos = posBuffer->getDataContainer();
-
-    if (pos.empty()) return;
-
-    float nearDist = std::numeric_limits<float>::infinity();
-    float farDist = 0;
-    vec3 nearPos;
-    vec3 farPos;
-    const vec3 camPos{geom->getCoordinateTransformer().getWorldToModelMatrix() *
-                      vec4(camera_.getLookFrom(), 1.0)};
-    for (auto& po : pos) {
-        auto d = glm::distance2(po, camPos);
-        if (d < nearDist) {
-            nearDist = d;
-            nearPos = po;
-        }
-        if (d > farDist) {
-            farDist = d;
-            farPos = po;
-        }
-    }
-
-    mat4 m = camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
-
-    camera_.setNearPlaneDist(std::max(0.0f, 0.5f * std::abs((m * vec4(nearPos, 1.0f)).z)));
-    camera_.setFarPlaneDist(std::max(0.0f, 2.0f * std::abs((m * vec4(farPos, 1.0f)).z)));
 }
 
 void MeshRenderProcessorGL::updateDrawers() {

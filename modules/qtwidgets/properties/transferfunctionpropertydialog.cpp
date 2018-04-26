@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/colorwheel.h>
 #include <modules/qtwidgets/rangesliderqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
@@ -55,13 +56,10 @@ namespace inviwo {
 
 TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty)
     : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", "TransferFunctionEditorWidget")
-    , TransferFunctionObserver()
     , sliderRange_(static_cast<int>(tfProperty->get().getTextureSize()))
     , tfProperty_(tfProperty)
     , tfEditor_(nullptr)
-    , tfEditorView_(nullptr)
-    , tfPixmap_(nullptr)
-    , gradient_(0, 0, 100, 20) {
+    , tfEditorView_(nullptr) {
 
     tfProperty_->get().addObserver(this);
 
@@ -122,7 +120,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
         return toString(static_cast<float>(val) / range);
     });
 
-    colorWheel_ = util::make_unique<ColorWheel>();
+    colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
     connect(colorWheel_.get(), &ColorWheel::colorChange, tfEditor_.get(),
             &TransferFunctionEditor::setPointColor);
 
@@ -222,63 +220,12 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
         "Transfer Function Editor - " + tfProperty_->getDisplayName() + " (" + processorName + ")";
     setWindowTitle(utilqt::toQString(windowTitle));
 
-    TransferFunction& transFunc = tfProperty_->get();
-    QVector<QGradientStop> gradientStops;
-
-    for (size_t i = 0; i < transFunc.getNumPoints(); i++) {
-        const auto curPoint = transFunc.getPoint(i);
-        vec4 curColor = curPoint->getRGBA();
-
-        // increase alpha to allow better visibility by 1 - (a - 1)^4
-        const float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
-        curColor.a = 1.0f - factor * factor;
-
-        gradientStops.append(QGradientStop(
-            curPoint->getPos(), QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
-    }
-
-    gradient_.setStops(gradientStops);
     updateTFPreview();
 }
 
 void TransferFunctionPropertyDialog::updateTFPreview() {
-    int gradientWidth = tfPreview_->width();
-    gradient_.setFinalStop(gradientWidth, 0);
-
-    if (!tfPixmap_ || gradientWidth != tfPixmap_->width()) {
-        tfPixmap_ = util::make_unique<QPixmap>(gradientWidth, 20);
-    }
-
-    QPainter tfPainter(tfPixmap_.get());
-    QPixmap checkerBoard(10, 10);
-    QPainter checkerBoardPainter(&checkerBoard);
-    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
-    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
-    checkerBoardPainter.end();
-    tfPainter.fillRect(0, 0, gradientWidth, 20, QBrush(checkerBoard));
-    tfPainter.fillRect(0, 0, gradientWidth, 20, gradient_);
-
-    // draw masking indicators
-    if (tfProperty_->getMask().x > 0.0f) {
-        tfPainter.fillRect(0, 0, static_cast<int>(tfProperty_->getMask().x * gradientWidth), 20,
-                           QColor(25, 25, 25, 100));
-
-        tfPainter.drawLine(static_cast<int>(tfProperty_->getMask().x * gradientWidth), 0,
-                           static_cast<int>(tfProperty_->getMask().x * gradientWidth), 20);
-    }
-
-    if (tfProperty_->getMask().y < 1.0f) {
-        tfPainter.fillRect(static_cast<int>(tfProperty_->getMask().y * gradientWidth), 0,
-                           static_cast<int>((1.0f - tfProperty_->getMask().y) * gradientWidth) + 1,
-                           20, QColor(25, 25, 25, 150));
-
-        tfPainter.drawLine(static_cast<int>(tfProperty_->getMask().y * gradientWidth), 0,
-                           static_cast<int>(tfProperty_->getMask().y * gradientWidth), 20);
-    }
-
-    tfPreview_->setPixmap(*tfPixmap_);
+    auto pixmap = utilqt::toQPixmap(*tfProperty_, QSize(tfPreview_->width(), 20));
+   tfPreview_->setPixmap(pixmap);
 }
 
 void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
@@ -363,17 +310,17 @@ void TransferFunctionPropertyDialog::showEvent(QShowEvent* event) {
     PropertyEditorWidgetQt::showEvent(event);
 }
 
-void TransferFunctionPropertyDialog::onControlPointAdded(TransferFunctionDataPoint* p) {
+void TransferFunctionPropertyDialog::onTFPrimitiveAdded(TFPrimitive* p) {
     tfEditor_->onControlPointAdded(p);
     updateFromProperty();
 }
 
-void TransferFunctionPropertyDialog::onControlPointRemoved(TransferFunctionDataPoint* p) {
+void TransferFunctionPropertyDialog::onTFPrimitiveRemoved(TFPrimitive* p) {
     tfEditor_->onControlPointRemoved(p);
     updateFromProperty();
 }
 
-void TransferFunctionPropertyDialog::onControlPointChanged(const TransferFunctionDataPoint* p) {
+void TransferFunctionPropertyDialog::onTFPrimitiveChanged(const TFPrimitive* p) {
     tfEditor_->onControlPointChanged(p);
     updateFromProperty();
 }

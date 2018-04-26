@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -40,9 +40,8 @@ TransferFunctionProperty::TransferFunctionProperty(
     VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : TemplateProperty<TransferFunction>(identifier, displayName, value, invalidationLevel,
                                          semantics)
-    , TransferFunctionObserver()
-    , zoomH_("zoomH_", vec2(0.0f, 1.0f))
-    , zoomV_("zoomV_", vec2(0.0f, 1.0f))
+    , zoomH_("zoomH_", dvec2(0.0, 1.0))
+    , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , volumeInport_(volumeInport) {
 
@@ -57,13 +56,12 @@ TransferFunctionProperty::TransferFunctionProperty(const std::string& identifier
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
     : TransferFunctionProperty(identifier, displayName,
-                               TransferFunction({{0.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
-                                                 {1.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+                               TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                                 {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
                                volumeInport, invalidationLevel, semantics) {}
 
 TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionProperty& rhs)
     : TemplateProperty<TransferFunction>(rhs)
-    , TransferFunctionObserver()
     , zoomH_(rhs.zoomH_)
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
@@ -72,7 +70,8 @@ TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionPropert
     this->value_.value.addObserver(this);
 }
 
-TransferFunctionProperty& TransferFunctionProperty::operator=(const TransferFunctionProperty& that) {
+TransferFunctionProperty& TransferFunctionProperty::operator=(
+    const TransferFunctionProperty& that) {
     if (this != &that) {
         this->value_.value.removeObserver(this);
         TemplateProperty<TransferFunction>::operator=(that);
@@ -91,8 +90,8 @@ TransferFunctionProperty* TransferFunctionProperty::clone() const {
 
 TransferFunctionProperty::~TransferFunctionProperty() { volumeInport_ = nullptr; }
 
-void TransferFunctionProperty::setHistogramMode(HistogramMode mode) { 
-    if(histogramMode_ != mode) {
+void TransferFunctionProperty::setHistogramMode(HistogramMode mode) {
+    if (histogramMode_ != mode) {
         histogramMode_ = mode;
         notifyHistogramModeChange(histogramMode_);
     }
@@ -136,7 +135,7 @@ void TransferFunctionProperty::deserialize(Deserializer& d) {
     if (modified) propertyModified();
 }
 
-void TransferFunctionProperty::setMask(float maskMin, float maskMax) {
+void TransferFunctionProperty::setMask(double maskMin, double maskMax) {
     if (maskMax < maskMin) {
         maskMax = maskMin;
     }
@@ -151,36 +150,32 @@ void TransferFunctionProperty::setMask(float maskMin, float maskMax) {
     }
 }
 
-const vec2 TransferFunctionProperty::getMask() const {
-    return vec2(this->value_.value.getMaskMin(), this->value_.value.getMaskMax());
+const dvec2 TransferFunctionProperty::getMask() const {
+    return dvec2(this->value_.value.getMaskMin(), this->value_.value.getMaskMax());
 }
 
-const vec2& TransferFunctionProperty::getZoomH() const {
-    return zoomH_;
-}
+const dvec2& TransferFunctionProperty::getZoomH() const { return zoomH_; }
 
-void TransferFunctionProperty::setZoomH(float zoomHMin, float zoomHMax) {
+void TransferFunctionProperty::setZoomH(double zoomHMin, double zoomHMax) {
     if (zoomHMax < zoomHMin) {
         zoomHMax = zoomHMin;
     }
 
-    const auto newZoomH = vec2(zoomHMin, zoomHMax);;
+    const auto newZoomH = dvec2(zoomHMin, zoomHMax);
     if (zoomH_ != newZoomH) {
-      zoomH_ = newZoomH;
-      notifyZoomHChange(zoomH_);
+        zoomH_ = newZoomH;
+        notifyZoomHChange(zoomH_);
     }
 }
 
-const vec2& TransferFunctionProperty::getZoomV() const {
-    return zoomV_;
-}
+const dvec2& TransferFunctionProperty::getZoomV() const { return zoomV_; }
 
-void TransferFunctionProperty::setZoomV(float zoomVMin, float zoomVMax) {
+void TransferFunctionProperty::setZoomV(double zoomVMin, double zoomVMax) {
     if (zoomVMax < zoomVMin) {
         zoomVMax = zoomVMin;
     }
 
-    const auto newZoomV = vec2(zoomVMin, zoomVMax);;
+    const auto newZoomV = dvec2(zoomVMin, zoomVMax);
     if (zoomV_ != newZoomV) {
         zoomV_ = newZoomV;
         notifyZoomVChange(zoomV_);
@@ -193,31 +188,27 @@ void TransferFunctionProperty::set(const TransferFunction& value) {
     this->value_.value.addObserver(this);
 }
 
-void TransferFunctionProperty::set(const Property *property) {
+void TransferFunctionProperty::set(const Property* property) {
     if (auto tfp = dynamic_cast<const TransferFunctionProperty*>(property)) {
         TemplateProperty<TransferFunction>::set(tfp);
     }
 }
 
-void TransferFunctionProperty::onControlPointAdded(TransferFunctionDataPoint*) {
-    propertyModified();
-}
-void TransferFunctionProperty::onControlPointRemoved(TransferFunctionDataPoint*) {
-    propertyModified();
-}
-void TransferFunctionProperty::onControlPointChanged(const TransferFunctionDataPoint*) {
-    propertyModified();
-}
+void TransferFunctionProperty::onTFPrimitiveAdded(TFPrimitive*) { propertyModified(); }
 
-void TransferFunctionPropertyObservable::notifyMaskChange(const vec2& mask) {
+void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive*) { propertyModified(); }
+
+void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive*) { propertyModified(); }
+
+void TransferFunctionPropertyObservable::notifyMaskChange(const dvec2& mask) {
     forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onMaskChange(mask); });
 }
 
-void TransferFunctionPropertyObservable::notifyZoomHChange(const vec2& zoomH) {
+void TransferFunctionPropertyObservable::notifyZoomHChange(const dvec2& zoomH) {
     forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onZoomHChange(zoomH); });
 }
 
-void TransferFunctionPropertyObservable::notifyZoomVChange(const vec2& zoomV) {
+void TransferFunctionPropertyObservable::notifyZoomVChange(const dvec2& zoomV) {
     forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onZoomVChange(zoomV); });
 }
 
@@ -225,12 +216,12 @@ void TransferFunctionPropertyObservable::notifyHistogramModeChange(HistogramMode
     forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onHistogramModeChange(mode); });
 }
 
-void TransferFunctionPropertyObserver::onMaskChange(const vec2&) {}
+void TransferFunctionPropertyObserver::onMaskChange(const dvec2&) {}
 
-void TransferFunctionPropertyObserver::onZoomHChange(const vec2&) {}
+void TransferFunctionPropertyObserver::onZoomHChange(const dvec2&) {}
 
-void TransferFunctionPropertyObserver::onZoomVChange(const vec2&) {}
+void TransferFunctionPropertyObserver::onZoomVChange(const dvec2&) {}
 
 void TransferFunctionPropertyObserver::onHistogramModeChange(HistogramMode) {}
 
-} // namespace
+}  // namespace inviwo

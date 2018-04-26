@@ -30,6 +30,8 @@
 #ifndef IVW_TRANSFERFUNCTIONPROPERTY_H
 #define IVW_TRANSFERFUNCTIONPROPERTY_H
 
+#include <inviwo/core/common/inviwocoredefine.h>
+
 #include <inviwo/core/properties/templateproperty.h>
 
 #include <inviwo/core/datastructures/transferfunction.h>
@@ -41,17 +43,17 @@ namespace inviwo {
 
 class IVW_CORE_API TransferFunctionPropertyObserver : public Observer {
 public:
-    virtual void onMaskChange(const vec2& mask);
-    virtual void onZoomHChange(const vec2& zoomH);
-    virtual void onZoomVChange(const vec2& zoomV);
+    virtual void onMaskChange(const dvec2& mask);
+    virtual void onZoomHChange(const dvec2& zoomH);
+    virtual void onZoomVChange(const dvec2& zoomV);
     virtual void onHistogramModeChange(HistogramMode mode);
 };
 class IVW_CORE_API TransferFunctionPropertyObservable
     : public Observable<TransferFunctionPropertyObserver> {
 protected:
-    virtual void notifyMaskChange(const vec2& mask);
-    virtual void notifyZoomHChange(const vec2& zoomH);
-    virtual void notifyZoomVChange(const vec2& zoomV);
+    virtual void notifyMaskChange(const dvec2& mask);
+    virtual void notifyZoomHChange(const dvec2& zoomH);
+    virtual void notifyZoomVChange(const dvec2& zoomV);
     virtual void notifyHistogramModeChange(HistogramMode mode);
 };
 
@@ -61,7 +63,7 @@ protected:
  */
 class IVW_CORE_API TransferFunctionProperty 
     : public TemplateProperty<TransferFunction>
-    , public TransferFunctionObserver
+    , public TFPrimitiveSetObserver
     , public TransferFunctionPropertyObservable {
 
 public:
@@ -69,8 +71,8 @@ public:
 
     TransferFunctionProperty(
         const std::string& identifier, const std::string& displayName,
-        const TransferFunction& value = TransferFunction({{0.0f, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
-                                                          {1.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+        const TransferFunction& value = TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                                          {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
         VolumeInport* volumeInport = nullptr,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
@@ -85,14 +87,14 @@ public:
     virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 
-    const vec2 getMask() const;
-    void setMask(float maskMin, float maskMax);
+    const dvec2 getMask() const;
+    void setMask(double maskMin, double maskMax);
 
-    const vec2& getZoomH() const;
-    void setZoomH(float zoomHMin, float zoomHMax);
+    const dvec2& getZoomH() const;
+    void setZoomH(double zoomHMin, double zoomHMax);
 
-    const vec2& getZoomV() const;
-    void setZoomV(float zoomVMin, float zoomVMax);
+    const dvec2& getZoomV() const;
+    void setZoomV(double zoomVMin, double zoomVMax);
 
     void setHistogramMode(HistogramMode type);
     HistogramMode getHistogramMode();
@@ -107,13 +109,13 @@ public:
     // Override
     virtual void set(const TransferFunction& property) override;
     virtual void set(const Property *property) override;
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p) override;
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p) override;
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p) override;
+    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
 
 private:
-    ValueWrapper<vec2> zoomH_;
-    ValueWrapper<vec2> zoomV_;
+    ValueWrapper<dvec2> zoomH_;
+    ValueWrapper<dvec2> zoomV_;
     ValueWrapper<HistogramMode> histogramMode_;
 
     VolumeInport* volumeInport_;

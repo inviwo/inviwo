@@ -29,11 +29,12 @@
 
 #include <modules/pvm/mpvmvolumereader.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/util/exception.h>
+
 #include "ext/tidds/ddsbase.h"
 #include "pvmvolumereader.h"
 
@@ -46,27 +47,17 @@ MPVMVolumeReader::MPVMVolumeReader() : DataReaderType<Volume>() {
 MPVMVolumeReader* MPVMVolumeReader::clone() const { return new MPVMVolumeReader(*this); }
 
 std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) {
-    std::string fileName = filePath;
-    if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
 
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
-        }
-    }
-
-    std::string fileDirectory = filesystem::getFileDirectory(fileName);
+    std::string fileDirectory = filesystem::getFileDirectory(filePath);
 
     // Read the mpvm file content
 
     std::string textLine;
     std::vector<std::string> files;
     {
-        auto f = filesystem::ifstream(fileName);
+        auto f = filesystem::ifstream(filePath);
         if (!f.is_open()) {
-            throw FileException("Could not open input file: " + fileName, IvwContext);
+            throw FileException("Could not open input file: " + filePath, IvwContext);
         }
 
         while (!f.eof()) {
@@ -77,10 +68,10 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     }
 
     if (files.empty())
-        throw DataReaderException("Error: No PVM files found in " + fileName, IvwContext);
+        throw DataReaderException("Error: No PVM files found in " + filePath, IvwContext);
 
     if (files.size() > 4)
-        throw DataReaderException("Error: Maximum 4 pvm files are supported, file: " + fileName,
+        throw DataReaderException("Error: Maximum 4 pvm files are supported, file: " + filePath,
                                   IvwContext);
 
     // Read all pvm volumes
@@ -94,7 +85,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     }
 
     if (volumes.empty())
-        throw DataReaderException("No PVM volumes could be read from file: " + fileName,
+        throw DataReaderException("No PVM volumes could be read from file: " + filePath,
                                   IvwContext);
 
     if (volumes.size() == 1) {
@@ -161,7 +152,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     }
 
     volume->addRepresentation(mvolRAM);
-    printPVMMeta(*volume, fileName);
+    printPVMMeta(*volume, filePath);
     return volume;
 }
 
@@ -185,4 +176,4 @@ void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::st
     }
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -33,6 +33,8 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditorprimitive.h
     ${MOC_FILES}
     eventconverterqt.h
     inviwoqtutils.h
@@ -50,13 +52,13 @@ set(HEADER_FILES
     properties/fontsizepropertywidgetqt.h
     properties/lightpropertywidgetqt.h
     properties/multifilepropertywidgetqt.h
-    properties/propertywidgetqt.h
     properties/optionpropertywidgetqt.h
     properties/ordinalminmaxpropertywidgetqt.h
     properties/ordinalminmaxtextpropertywidgetqt.h
     properties/ordinalpropertywidgetqt.h
     properties/propertyeditorwidgetqt.h
     properties/propertysettingswidgetqt.h
+    properties/propertywidgetqt.h
     properties/stringpropertywidgetqt.h
     properties/syntaxhighlighter.h
     properties/texteditorwidgetqt.h
@@ -68,7 +70,7 @@ set(HEADER_FILES
     qstringhelper.h
     qtwidgetsmodule.h
     qtwidgetsmoduledefine.h
-	qtwidgetssettings.h
+    qtwidgetssettings.h
     rawdatareaderdialogqt.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -76,6 +78,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditorprimitive.cpp
     angleradiuswidget.cpp
     colorwheel.cpp
     customdoublespinboxqt.cpp
@@ -127,7 +131,7 @@ set(SOURCE_FILES
     properties/transferfunctionpropertywidgetqt.cpp 
     propertylistwidget.cpp
     qtwidgetsmodule.cpp
-	qtwidgetssettings.cpp
+    qtwidgetssettings.cpp
     rangesliderqt.cpp
     rawdatareaderdialogqt.cpp
     sliderwidgetqt.cpp

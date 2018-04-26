@@ -28,12 +28,10 @@
  *********************************************************************************/
 
 #include "volumeraycaster.h"
-#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -48,7 +46,7 @@ const ProcessorInfo VolumeRaycaster::processorInfo_{
     "Volume Raycaster",            // Display name
     "Volume Rendering",            // Category
     CodeState::Stable,             // Code state
-    Tags::GL                       // Tags
+    "GL, DVR, Raycasting"          // Tags
 };
 
 VolumeRaycaster::VolumeRaycaster()
@@ -59,6 +57,7 @@ VolumeRaycaster::VolumeRaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
+    , isoValues_("isovalues", "Isovalues", &volumePort_)
     , transferFunction_("transferFunction", "Transfer function", &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
@@ -113,6 +112,7 @@ VolumeRaycaster::VolumeRaycaster()
     });
 
     addProperty(channel_);
+    addProperty(isoValues_);
     addProperty(transferFunction_);
     addProperty(raycasting_);
     addProperty(camera_);
@@ -124,10 +124,7 @@ VolumeRaycaster::VolumeRaycaster()
 const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 void VolumeRaycaster::initializeResources() {
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
-    utilgl::addShaderDefines(shader_, positionIndicator_);
+    utilgl::addDefines(shader_, raycasting_, isoValues_, camera_, lighting_, positionIndicator_);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
 }
@@ -169,7 +166,7 @@ void VolumeRaycaster::process() {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
-                        channel_);
+                        channel_, isoValues_);
 
     utilgl::singleDrawImagePlaneRect();
 

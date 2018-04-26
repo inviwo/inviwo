@@ -222,8 +222,8 @@ VolumeSliceGL::VolumeSliceGL()
     // Transfer Function
     tfGroup_.addProperty(tfMappingEnabled_);
     // Make sure that opacity does not affect the mapped color.
-    if (transferFunction_.get().getNumPoints() > 0) {
-        transferFunction_.get().getPoint(0)->setA(1.f);
+    if (transferFunction_.get().size() > 0) {
+        transferFunction_.get().getPoint(0)->setAlpha(1.f);
     }
     transferFunction_.setCurrentStateAsDefault();
     tfGroup_.addProperty(transferFunction_);

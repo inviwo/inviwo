@@ -273,6 +273,28 @@ void CameraProperty::setNearPlaneDist(float v) {
 void CameraProperty::setFarPlaneDist(float v) {
     farPlane_.set(glm::clamp(v, farPlane_.getMinValue(), farPlane_.getMaxValue()));
 }
+void CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
+                                         float minMaxRatio) {
+    NetworkLock lock(this);
+
+    // TODO: Change when issue #41 has been fixed
+    // nearPlane_.set(nearPlaneDist,
+    //    std::min(nearPlane_.getMinValue(), nearPlaneDist * 0.1f),
+    //    std::max(nearPlane_.getMaxValue(), nearPlaneDist * 100.f),
+    //    nearPlane_.getIncrement());
+
+    // farPlane_.set(farPlaneDist,
+    //    std::min(farPlane_.getMinValue(), farPlaneDist * 0.1f),
+    //    std::max(farPlane_.getMaxValue(), farPlaneDist * 100.f),
+    //    farPlane_.getIncrement());
+    nearPlane_.setMinValue(std::min(nearPlane_.getMinValue(), nearPlaneDist / minMaxRatio));
+    nearPlane_.setMaxValue(std::max(nearPlane_.getMaxValue(), nearPlaneDist * minMaxRatio));
+    nearPlane_.set(nearPlaneDist);
+
+    farPlane_.setMinValue(std::min(farPlane_.getMinValue(), farPlaneDist / minMaxRatio));
+    farPlane_.setMaxValue(std::max(farPlane_.getMaxValue(), farPlaneDist * minMaxRatio));
+    farPlane_.set(farPlaneDist);
+}
 
 inviwo::vec3 CameraProperty::getLookFromMinValue() const { return lookFrom_.getMinValue(); }
 

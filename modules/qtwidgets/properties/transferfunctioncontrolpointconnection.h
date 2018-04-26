@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTIONCONTROLPOINTCONNECTION_H
@@ -32,39 +32,36 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsItem>
-#include <QPainterPath>
-#include <QPointF>
 #include <warn/pop>
 
 namespace inviwo {
+
 class TransferFunctionEditorControlPoint;
 
 class IVW_MODULE_QTWIDGETS_API TransferFunctionControlPointConnection : public QGraphicsItem {
 public:
-    enum InviwoWidgetGraphicsItemType {
-        TransferFunctionEditorControlPointType = 30,
-        TransferFunctionControlPointConnectionType,
-        Number_of_InviwoWidgetGraphicsItemTypes
-    };
-
     TransferFunctionControlPointConnection();
     virtual ~TransferFunctionControlPointConnection();
 
     void updateShape();
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + TransferFunctionControlPointConnectionType };
+    enum { Type = UserType + TransferFunctionEditorPrimitive::TFControlPointConnectionType };
     int type() const { return Type; }
 
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionControlPointConnection& lhs,
-                           const TransferFunctionControlPointConnection& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator==(
+        const TransferFunctionControlPointConnection& lhs,
+        const TransferFunctionControlPointConnection& rhs);
 
     // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionControlPointConnection& lhs,
-                          const TransferFunctionControlPointConnection& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator<(
+        const TransferFunctionControlPointConnection& lhs,
+        const TransferFunctionControlPointConnection& rhs);
 
     TransferFunctionEditorControlPoint* left_;   // Non-owning reference
     TransferFunctionEditorControlPoint* right_;  // Non-owning reference
@@ -85,18 +82,18 @@ private:
 };
 
 IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionControlPointConnection& lhs,
-                                  const TransferFunctionControlPointConnection& rhs);
+                                         const TransferFunctionControlPointConnection& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator!=(const TransferFunctionControlPointConnection& lhs,
-                                  const TransferFunctionControlPointConnection& rhs);
+                                         const TransferFunctionControlPointConnection& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionControlPointConnection& lhs,
-                                 const TransferFunctionControlPointConnection& rhs);
+                                        const TransferFunctionControlPointConnection& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator>(const TransferFunctionControlPointConnection& lhs,
-                                 const TransferFunctionControlPointConnection& rhs);
+                                        const TransferFunctionControlPointConnection& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator<=(const TransferFunctionControlPointConnection& lhs,
-                                  const TransferFunctionControlPointConnection& rhs);
+                                         const TransferFunctionControlPointConnection& rhs);
 IVW_MODULE_QTWIDGETS_API bool operator>=(const TransferFunctionControlPointConnection& lhs,
-                                  const TransferFunctionControlPointConnection& rhs);
+                                         const TransferFunctionControlPointConnection& rhs);
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TRANSFERFUNCTIONCONTROLPOINTCONNECTION_H

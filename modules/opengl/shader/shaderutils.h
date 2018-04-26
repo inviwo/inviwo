@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
@@ -88,7 +89,18 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const SimpleRaycastingProperty& property,
                                              std::string name);
 
-IVW_MODULE_OPENGL_API void addShaderDefinesBGPort(Shader& shader, ImageInport port);
+// IsoValueProperty
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
+                                            const IsoValueProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
+                                             const IsoValueProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
+                                             const IsoValueProperty& property,
+                                             std::string name);
+
+// Background Image
+IVW_MODULE_OPENGL_API void addShaderDefinesBGPort(Shader& shader, const ImageInport& port);
+
 // VolumeIndicatorProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
                                             const VolumeIndicatorProperty& property);
@@ -122,6 +134,16 @@ void setShaderUniforms(Shader& shader, const MinMaxProperty<T>& property, std::s
 }
 
 // Template magic...
+template <typename T, typename std::enable_if<std::is_base_of<Property, T>::value, int>::type = 0>
+void addDefines(Shader& shader, const T& property) {
+    addShaderDefines(shader, property);
+}
+template <typename T, typename... Ts>
+void addDefines(Shader& shader, const T& elem, const Ts&... elements) {
+    addDefines(shader, elem);
+    addDefines(shader, elements...);
+}
+
 template <typename T, typename std::enable_if<std::is_base_of<Property, T>::value, int>::type = 0>
 void setUniforms(Shader& shader, const T& property) {
     setShaderUniforms(shader, property, property.getIdentifier());

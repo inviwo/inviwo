@@ -81,18 +81,11 @@ void RawVolumeReader::setParameters(const DataFormatBase* format, ivec3 dimensio
 }
 
 std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
-    std::string fileName = filePath;
-    if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
-
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
-        }
+    if (!filesystem::fileExists(filePath)) {
+        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
     }
 
-    rawFile_ = fileName;
+    rawFile_ = filePath;
 
     if (!parametersSet_) {
         auto readerDialog = util::dynamic_unique_ptr_cast<DataReaderDialog>(
@@ -128,7 +121,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
         volume->setWorldMatrix(wtm);
         volume->setDimensions(dimensions_);
         volume->setDataFormat(format_);
-        auto vd = std::make_shared<VolumeDisk>(fileName, dimensions_, format_);
+        auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
 
         auto loader =
             util::make_unique<RawVolumeRAMLoader>(rawFile_, 0u, dimensions_, littleEndian_, format_);
@@ -136,7 +129,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
         volume->addRepresentation(vd);
         std::string size = util::formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
                                                (format_->getSize()));
-        LogInfo("Loaded volume: " << fileName << " size: " << size);
+        LogInfo("Loaded volume: " << filePath << " size: " << size);
         return volume;
     } else {
         throw DataReaderException("Raw data import could not determine format", IvwContext);

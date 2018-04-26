@@ -126,6 +126,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/depth.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/gradients.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/intersection.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/isosurface.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/pickingutils.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/raycastgeometry.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/sampler2d.glsl

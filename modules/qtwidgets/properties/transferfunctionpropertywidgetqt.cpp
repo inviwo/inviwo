@@ -31,6 +31,9 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <inviwo/core/datastructures/tfprimitive.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -104,61 +107,10 @@ TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
     : IvwPushButton(parent), tfProperty_(property) {}
 
 void TFPushButton::updateFromProperty() {
-    QSize gradientSize = this->size() - QSize(2, 2);
-
-    TransferFunction& transFunc = tfProperty_->get();
-    QVector<QGradientStop> gradientStops;
-    for (size_t i = 0; i < transFunc.getNumPoints(); i++) {
-        TransferFunctionDataPoint* curPoint = transFunc.getPoint(i);
-        vec4 curColor = curPoint->getRGBA();
-
-        // increase alpha to allow better visibility by 1 - (a - 1)^4
-        float factor = (1.0f - curColor.a) * (1.0f - curColor.a);
-        curColor.a = 1.0f - factor * factor;
-
-        gradientStops.append(QGradientStop(
-            curPoint->getPos(), QColor::fromRgbF(curColor.r, curColor.g, curColor.b, curColor.a)));
-    }
-
-    QLinearGradient gradient;
-    gradient.setStops(gradientStops);
-    gradient.setFinalStop(gradientSize.width(), 0);
-
-    QPixmap tfPixmap(gradientSize);
-    QPainter tfPainter(&tfPixmap);
-    QPixmap checkerBoard(10, 10);
-    QPainter checkerBoardPainter(&checkerBoard);
-    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
-    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
-    checkerBoardPainter.end();
-    tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), QBrush(checkerBoard));
-    tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), gradient);
-
-    // draw masking indicators
-    if (tfProperty_->getMask().x > 0.0f) {
-        tfPainter.fillRect(0, 0, static_cast<int>(tfProperty_->getMask().x * gradientSize.width()),
-                           this->height(), QColor(25, 25, 25, 100));
-
-        tfPainter.drawLine(static_cast<int>(tfProperty_->getMask().x * gradientSize.width()), 0,
-                           static_cast<int>(tfProperty_->getMask().x * gradientSize.width()),
-                           this->height());
-    }
-
-    if (tfProperty_->getMask().y < 1.0f) {
-        tfPainter.fillRect(
-            static_cast<int>(tfProperty_->getMask().y * gradientSize.width()), 0,
-            static_cast<int>((1.0f - tfProperty_->getMask().y) * gradientSize.width()) + 1,
-            this->height(), QColor(25, 25, 25, 150));
-
-        tfPainter.drawLine(static_cast<int>(tfProperty_->getMask().y * gradientSize.width()), 0,
-                           static_cast<int>(tfProperty_->getMask().y * gradientSize.width()),
-                           this->height());
-    }
-
-    this->setIcon(tfPixmap);
-    this->setIconSize(gradientSize);
+    const QSize size = this->size() - QSize(2, 2);
+    
+    setIcon(utilqt::toQPixmap(*tfProperty_, size));
+    setIconSize(size);
 }
 
 void TFPushButton::resizeEvent(QResizeEvent* event) {
