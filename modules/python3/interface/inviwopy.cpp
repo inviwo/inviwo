@@ -46,6 +46,7 @@
 #include <modules/python3/interface/pydatamapper.h>
 #include <modules/python3/interface/pybuffer.h>
 #include <modules/python3/interface/pymesh.h>
+#include <modules/python3/interface/pytfprimitiveset.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -93,6 +94,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeVolume(dataModule);
     exposeBuffer(dataModule);
     exposeMesh(dataModule);
+    exposeTFPrimitiveSet(dataModule);
 
     py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
 
