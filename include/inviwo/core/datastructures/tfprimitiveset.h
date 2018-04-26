@@ -51,14 +51,14 @@ public:
     virtual void onTFPrimitiveAdded(TFPrimitive* p);
     virtual void onTFPrimitiveRemoved(TFPrimitive* p);
     virtual void onTFPrimitiveChanged(const TFPrimitive* p);
-    virtual void onTFTypeChanged(const TFPrimitiveSet *primitiveSet);
+    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet);
 };
 class IVW_CORE_API TFPrimitiveSetObservable : public Observable<TFPrimitiveSetObserver> {
 protected:
     void notifyTFPrimitiveAdded(TFPrimitive* p);
     void notifyTFPrimitiveRemoved(TFPrimitive* p);
     void notifyTFPrimitiveChanged(const TFPrimitive* p);
-    void notifyTFTypeChanged(const TFPrimitiveSet *primitiveSet);
+    void notifyTFTypeChanged(const TFPrimitiveSet* primitiveSet);
 };
 
 /**
@@ -86,12 +86,12 @@ public:
     TFPrimitiveSetType getType() const;
 
     /**
-    * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
-    * absolute TF the range between first and last TF primitive is returned. If there are no
-    * primitives in the TF [0,1] will be returned.
-    *
-    * @return range of TF
-    */
+     * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
+     * absolute TF the range between first and last TF primitive is returned. If there are no
+     * primitives in the TF [0,1] will be returned.
+     *
+     * @return range of TF
+     */
     dvec2 getRange() const;
 
     size_t size() const;
@@ -133,6 +133,15 @@ public:
      * @throws RangeException if TF type is relative and the primitive position is outside [0,1]
      */
     void add(const TFPrimitive& primitive);
+
+    /**
+     * Add a TFPrimitive
+     *
+     * @param pos     refers to the position of the TFPrimitive
+     * @param color   color of the TFPrimitive including alpha
+     * @throws RangeException if TF type is relative and pos is outside [0,1]
+     */
+    void add(double pos, const vec4& color);
 
     /**
      * Add a TFPrimitive at pos.x where pos.y is used as alpha and the color is

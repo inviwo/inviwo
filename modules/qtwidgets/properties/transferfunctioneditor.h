@@ -94,8 +94,6 @@ public:
 
     std::vector<TFPrimitive*> getSelectedPrimitives() const;
 
-    void showHelpText(bool show);
-
 signals:
     void showColorDialog();
     void importTF();
