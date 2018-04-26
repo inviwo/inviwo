@@ -155,7 +155,7 @@ void addOrdinalPropertyIterator(M &m, PC &pc, std::true_type) {
 }
 
 template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &m, PC &pc, std::false_type) {}
+void addOrdinalPropertyIterator(M &/*m*/, PC &/*pc*/, std::false_type) {}
 
 template <typename T, typename P, typename M, typename PC>
 void addOrdinalPropertyIterator(M &m, PC &pc) {

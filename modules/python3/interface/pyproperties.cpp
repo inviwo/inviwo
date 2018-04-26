@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
@@ -42,6 +43,9 @@
 #include <inviwo/core/properties/propertyeditorwidget.h>
 
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/datastructures/tfprimitive.h>
+//#include <inviwo/core/datastructures/tfprimitiveset.h>
 
 #include <pybind11/functional.h>
 
@@ -212,11 +216,79 @@ void exposeProperties(py::module &m) {
              [](TransferFunctionProperty *tf, std::string filename) { tf->get().save(filename); })
         .def("load",
              [](TransferFunctionProperty *tf, std::string filename) { tf->get().load(filename); })
-        .def("clear", [](TransferFunctionProperty &tp) { tp.get().clearPoints(); })
-        .def("addPoint", [](TransferFunctionProperty &tp, vec2 pos,
-                            vec3 color) { tp.get().addPoint(pos.x, vec4(color, pos.y)); })
-        .def("addPoint", [](TransferFunctionProperty &tp, float pos, vec4 color) {
-            tp.get().addPoint(pos, color);
+        .def("clear", [](TransferFunctionProperty &tp) { tp.get().clear(); })
+        .def_property("value",
+                      py::cpp_function([](TransferFunctionProperty &tp)->TransferFunction & { return tp.get(); },
+                                       py::return_value_policy::reference_internal),
+                      py::overload_cast<const TransferFunction &>(&TransferFunctionProperty::set))
+
+        .def("add", [](TransferFunctionProperty &tp, double value,
+                       const vec4 &color) { tp.get().add(value, color); })
+        .def("add", [](TransferFunctionProperty &tp, const dvec2 &pos) { tp.get().add(pos); })
+        .def("add", [](TransferFunctionProperty &tp, const TFPrimitiveData &v) { tp.get().add(v); })
+        .def("add", [](TransferFunctionProperty &tp,
+                       const std::vector<TFPrimitiveData> &values) { tp.get().add(values); })
+        .def("setValues",
+             [](TransferFunctionProperty &tp, const std::vector<TFPrimitiveData> &values) {
+                 tp.get().clear();
+                 tp.get().add(values);
+             })
+        .def("getValues",
+             [](TransferFunctionProperty &tp) -> std::vector<TFPrimitiveData> {
+                 return tp.get().get();
+             })
+        .def("__repr__", [](const TransferFunctionProperty &tp) {
+            std::ostringstream oss;
+            oss << "<TransferFunctionProperty:  " << tp.get().size() << " TF points";
+            for (auto &p : tp.get()) {
+                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+            }
+            oss << ">";
+            return oss.str();
+        });
+
+    PyPropertyClass<IsoValueProperty>(m, "IsoValueProperty")
+        .def(py::init([](const std::string &identifier, const std::string &displayName,
+                         const IsoValueCollection &value, VolumeInport *volumeInport,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new IsoValueProperty(identifier, displayName, value, volumeInport,
+                                             invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("value"),
+             py::arg("inport") = nullptr,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def_property("enabled", &IsoValueProperty::getEnabled, &IsoValueProperty::setEnabled)
+        .def_property("zoomH", &IsoValueProperty::getZoomH, &IsoValueProperty::setZoomH)
+        .def_property("zoomV", &IsoValueProperty::getZoomV, &IsoValueProperty::setZoomV)
+        .def("save", [](IsoValueProperty *ivp, std::string filename) { ivp->get().save(filename); })
+        .def("load", [](IsoValueProperty *ivp, std::string filename) { ivp->get().load(filename); })
+        .def("clear", [](IsoValueProperty &ivp) { ivp.get().clear(); })
+        .def_property(
+            "value",
+            py::cpp_function([](IsoValueProperty &tp)->IsoValueCollection & { return tp.get(); }, py::return_value_policy::reference_internal),
+            py::overload_cast<const IsoValueCollection &>(&IsoValueProperty::set))
+        .def("add", [](IsoValueProperty &ivp, double value,
+                       const vec4 &color) { ivp.get().add(value, color); })
+        .def("add", [](IsoValueProperty &ivp, const dvec2 &pos) { ivp.get().add(pos); })
+        .def("add", [](IsoValueProperty &ivp, const TFPrimitiveData &v) { ivp.get().add(v); })
+        .def("add", [](IsoValueProperty &ivp,
+                       const std::vector<TFPrimitiveData> &values) { ivp.get().add(values); })
+        .def("setValues",
+             [](IsoValueProperty &ivp, const std::vector<TFPrimitiveData> &values) {
+                 ivp.get().clear();
+                 ivp.get().add(values);
+             })
+        .def("getValues",
+             [](IsoValueProperty &ivp) -> std::vector<TFPrimitiveData> { return ivp.get().get(); })
+        .def("__repr__", [](const IsoValueProperty &ivp) {
+            std::ostringstream oss;
+            oss << "<IsoValueProperty:  " << ivp.get().size() << " isovalues";
+            for (auto &p : ivp.get()) {
+                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+            }
+            oss << ">";
+            return oss.str();
         });
 
     PyPropertyClass<StringProperty, Property> strProperty(m, "StringProperty");
