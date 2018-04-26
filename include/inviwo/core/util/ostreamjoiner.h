@@ -44,12 +44,18 @@ namespace util {
 // and http://en.cppreference.com/w/cpp/experimental/ostream_joiner
 
 template <class DelimT, class charT = char, class traits = std::char_traits<charT> >
-class ostream_joiner : public std::iterator<std::output_iterator_tag, void, void, void, void> {
+class ostream_joiner {
     std::basic_ostream<charT, traits> *os;
     std::basic_string<charT> delimiter;
     bool need_delimiter = false;
 
 public:
+    using iterator_category = std::output_iterator_tag;
+    using value_type = void;
+    using difference_type = void;
+    using pointer = void;
+    using reference = void;
+
     using char_type = charT;
     using traits_type = traits;
     using ostream_type = std::basic_ostream<charT, traits>;

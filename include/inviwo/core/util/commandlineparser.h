@@ -51,7 +51,7 @@ namespace inviwo {
 
 class InviwoApplication;
 
-class IVW_CORE_API WildCardArg : public TCLAP::Arg {
+class WildCardArg : public TCLAP::Arg {
 public:
     WildCardArg();
     virtual bool processArg(int* i, std::vector<std::string>& args) override;
