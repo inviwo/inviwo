@@ -60,14 +60,7 @@ TFHelpWindow::TFHelpWindow(QWidget* parent)
     textedit->setReadOnly(true);
     textedit->setUndoRedoEnabled(false);
     textedit->setAcceptRichText(true);
-
-    using P = Document::PathComponent;
-    using H = utildoc::TableBuilder::Header;
-
-    auto escape = [](const std::string& str) -> std::string {
-        return utilqt::fromQString(utilqt::toQString(str).toHtmlEscaped());
-    };
-
+    
     const std::string contents = R"(<h1 style='color:white;'>Transfer Function Editor</h1>
 <p>The Transfer Function Editor allows to create and modify a 1D transfer
 function (TF) for mapping scalar values to color and opacity. A TF consists of
@@ -121,7 +114,7 @@ exported and imported.</p>)";
                                "{color: #9d9995; background-color: #323235; font: 400 14px/18px"
                                "Calibra, sans-serif;}\n "
                                "h1, h2, h3, h4 {color: #c8ccd0; margin-bottom:3px;}");
-    auto body = html.append("body", contents, {{"style", "margin: 7px;"}});
+    html.append("body", contents, {{"style", "margin: 7px;"}});
 
     std::string str = doc;
     textedit->setHtml(utilqt::toQString(str));
@@ -129,7 +122,7 @@ exported and imported.</p>)";
 
 TFMenuHelper::TFMenuHelper() {
     if (utilqt::getApplicationMainWindow()) {
-        showAction_ = util::make_unique<QAction>("&Transfer Function");
+        showAction_ = util::make_unique<QAction>(QString("&Transfer Function"));
         QObject::connect(showAction_.get(), &QAction::triggered, this, [this]() {
             auto window = getWindow(); 
             window->activateWindow();
