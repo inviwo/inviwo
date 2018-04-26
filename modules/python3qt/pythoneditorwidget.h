@@ -90,7 +90,7 @@ public:
     void loadFile(std::string fileName, bool askForSave = true);
 
     virtual void onPyhonExecutionOutput(const std::string& msg,
-                                        const PythonExecutionOutputStream& outputType) override;
+                                        PythonOutputType outputType) override;
 
     bool hasFocus() const;
 

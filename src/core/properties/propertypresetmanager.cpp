@@ -171,8 +171,7 @@ void PropertyPresetManager::appendPropertyPresets(Property* target, Property* so
     }
 }
 
-inviwo::util::OnScopeExit PropertyPresetManager::scopedSerializationModeAll(
-    Property* property) {
+inviwo::util::OnScopeExit PropertyPresetManager::scopedSerializationModeAll(Property* property) {
     std::vector<std::pair<Property*, PropertySerializationMode>> toReset;
     std::function<void(Property*)> setPSM = [&](Property* p) {
         if (p->getSerializationMode() != PropertySerializationMode::All) {
@@ -202,22 +201,18 @@ std::vector<std::string> PropertyPresetManager::getAvailablePresets(
                        [&](const auto& pair) { return pair.first; });
     }
     if (types & PropertyPresetType::Workspace) {
-        std::accumulate(workspacePresets_.begin(), workspacePresets_.end(),
-                        std::back_inserter(result), [&](auto it, const auto& item) {
-                            if (item.classIdentifier == property->getClassIdentifier()) {
-                                *(it++) = item.name;
-                            }
-                            return it;
-                        });
+        for (auto& item : workspacePresets_) {
+            if (item.classIdentifier == property->getClassIdentifier()) {
+                result.push_back(item.name);
+            }
+        }
     }
     if (types & PropertyPresetType::Application) {
-        std::accumulate(appPresets_.begin(), appPresets_.end(), std::back_inserter(result),
-                        [&](auto it, const auto& item) {
-                            if (item.classIdentifier == property->getClassIdentifier()) {
-                                *(it++) = item.name;
-                            }
-                            return it;
-                        });
+        for (auto& item : appPresets_) {
+            if (item.classIdentifier == property->getClassIdentifier()) {
+                result.push_back(item.name);
+            }
+        }
     }
     return result;
 }

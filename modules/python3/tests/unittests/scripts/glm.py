@@ -4,16 +4,10 @@ from inviwopy.glm import *
 v1 = vec3(1,2,3)
 v2 = size2_t(4,5)
 
-
-
-
 m1 = mat4(1)
 m2 = mat3(0,1,0,-1,0,0,0,0,2)
 
 v3 = m2 * v1
-
-
-
 
 v4 = vec4(1,2,3,4)
 w = v4.w

@@ -62,7 +62,7 @@ NumPyMeshCreateTest::NumPyMeshCreateTest()
 }
     
 void NumPyMeshCreateTest::process() {
-    script_.run( { } , [&](pybind11::dict dict){
+    script_.run([&](pybind11::dict dict){
         auto pyMesh  = dict["mesh"];
         auto mesh = std::shared_ptr<BasicMesh>(pyMesh.cast<BasicMesh*>());
         pyMesh.cast<pybind11::object>().release();

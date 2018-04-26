@@ -51,32 +51,33 @@ Python3Module::Python3Module(InviwoApplication* app)
     , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
                        "Path to the file containing the script")
-    , inviwopyPyModule_(nullptr) {
+    , argHolder_{app, pythonScriptArg_,
+                 [this]() {
+                     auto filename = pythonScriptArg_.getValue();
+                     if (!filesystem::fileExists(filename)) {
+                         LogWarn("Could not run script, file does not exist: " << filename);
+                         return;
+                     }
+                     PythonScriptDisk s(filename);
+                     s.run();
+                 },
+                 100}
+    , pythonLogger_{} {
+
+    pythonInterpreter_->addObserver(&pythonLogger_);
 
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();
     registerProcessor<NumPyMeshCreateTest>();
     registerProcessor<PythonScriptProcessor>();
 
-    pythonInterpreter_->addObserver(&pythonLogger_);
-    app->getCommandLineParser().add(
-        &pythonScriptArg_,
-        [this]() {
-            auto filename = pythonScriptArg_.getValue();
-            if (!filesystem::fileExists(filename)) {
-                LogWarn("Could not run script, file does not exist: " << filename);
-                return;
-            }
-            PythonScriptDisk s(filename);
-            s.run();
-        },
-        100);
-
     // We need to import inviwopy to trigger the initialization code in inviwopy.cpp, this is needed
-    // to be able to cast cpp/inviwo objects to python objects. Needs to be called after the module
-    // is loaded since inviwopy.cpp will try to find the python3 module using the InviwoApplication.
-    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister(
-        [this]() { pythonInterpreter_->runString("import inviwopy"); });
+    // to be able to cast cpp/inviwo objects to python objects.
+    try {
+        pybind11::module::import("inviwopy");
+    } catch (const std::exception& e) {
+        throw ModuleInitException(e.what(), IvwContext);
+    }
 }
 
 Python3Module::~Python3Module() {
@@ -85,16 +86,5 @@ Python3Module::~Python3Module() {
 }
 
 PythonInterpreter* Python3Module::getPythonInterpreter() { return pythonInterpreter_.get(); }
-
-std::shared_ptr<pybind11::module> Python3Module::getInviwopyModule() {
-    if (!inviwopyPyModule_) {
-        pythonInterpreter_->runString("import inviwopy");
-    }
-    return inviwopyPyModule_;
-}
-
-void Python3Module::setInviwopyModule(std::shared_ptr<pybind11::module> m) {
-    inviwopyPyModule_ = m;
-}
 
 }  // namespace inviwo

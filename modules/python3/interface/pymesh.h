@@ -32,10 +32,10 @@
 
 #include <pybind11/pybind11.h>
 
-
 namespace inviwo {
 
 void exposeMesh(pybind11::module &m);
-}
+
+}  // namespace inviwo
 
 #endif  // IVW_PYMESH_H

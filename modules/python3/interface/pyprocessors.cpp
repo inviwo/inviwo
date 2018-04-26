@@ -30,7 +30,9 @@
 #include <modules/python3/interface/pyprocessors.h>
 
 #include <modules/python3/interface/inviwopy.h>
+#include <modules/python3/interface/vectoridentifierwrapper.h>
 
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
@@ -40,11 +42,61 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 
-namespace py = pybind11;
+#include <modules/python3/processors/pythonscriptprocessor.h>
 
 namespace inviwo {
 
-void exposeProcessors(py::module &m) {
+class ProcessorTrampoline : public Processor {
+public:
+    /* Inherit the constructors */
+    using Processor::Processor;
+
+    /* Trampoline (need one for each virtual function) */
+    virtual void initializeResources() override {
+        PYBIND11_OVERLOAD(void, Processor, initializeResources);
+    }
+    virtual void process() override { PYBIND11_OVERLOAD(void, Processor, process); }
+    virtual const ProcessorInfo getProcessorInfo() const override {
+        PYBIND11_OVERLOAD_PURE(const ProcessorInfo, Processor, getProcessorInfo);
+    }
+};
+
+void exposeProcessors(pybind11::module &m) {
+    namespace py = pybind11;
+
+    py::enum_<CodeState>(m, "CodeState")
+        .value("Broken", CodeState::Broken)
+        .value("Experimental", CodeState::Experimental)
+        .value("Stable", CodeState::Stable);
+
+    py::class_<Tag>(m, "Tag")
+        .def(py::init())
+        .def(py::init<std::string>())
+        .def(py::init<Tag>())
+        .def("getString", &Tag::getString);
+
+    py::class_<Tags>(m, "Tags")
+        .def(py::init())
+        .def(py::init<std::string>())
+        .def(py::init<Tags>())
+        .def("addTag", &Tags::addTag)
+        .def("addTags", &Tags::addTags)
+        .def("size", &Tags::size)
+        .def("empty", &Tags::empty)
+        .def("getString", &Tags::getString)
+        .def("getMatches", &Tags::getMatches)
+        .def_readwrite("tags", &Tags::tags_)
+        .def(py::self == py::self)
+        .def(py::self < py::self);
+
+    py::class_<ProcessorInfo>(m, "ProcessorInfo")
+        .def(py::init<std::string, std::string, std::string, CodeState, Tags, bool>())
+        .def_readonly("classIdentifier", &ProcessorInfo::classIdentifier)
+        .def_readonly("displayName", &ProcessorInfo::displayName)
+        .def_readonly("category", &ProcessorInfo::category)
+        .def_readonly("codeState", &ProcessorInfo::codeState)
+        .def_readonly("tags", &ProcessorInfo::tags)
+        .def_readonly("visible", &ProcessorInfo::visible);
 
     py::class_<ProcessorFactory>(m, "ProcessorFactory")
         .def("hasKey", [](ProcessorFactory *pf, std::string key) { return pf->hasKey(key); })
@@ -53,11 +105,12 @@ void exposeProcessors(py::module &m) {
              [](ProcessorFactory *pf, std::string key) { return pf->create(key).release(); })
         .def("create", [](ProcessorFactory *pf, std::string key, ivec2 pos) {
             auto p = pf->create(key);
-            if (!p)
-                throw Exception("failed to create processor of type '" + key + "'",
-                                IvwContextCustom("inviwopy"));
+            if (!p) {
+                throw py::key_error("failed to create processor of type '" + key + "'");
+            }
             p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
                 ->setPosition(pos);
+
             return p.release();
         });
 
@@ -69,59 +122,61 @@ void exposeProcessors(py::module &m) {
         .def("show", &ProcessorWidget::show)
         .def("hide", &ProcessorWidget::hide);
 
-    py::class_<Processor, PropertyOwner, ProcessorPtr<Processor>>(m, "Processor")
-        .def("__getattr__", &getPropertyById<Processor>, py::return_value_policy::reference)
+    py::class_<ProcessorMetaData>(m, "ProcessorMetaData")
+        .def_property("position", &ProcessorMetaData::getPosition, &ProcessorMetaData::setPosition)
+        .def_property("selected", &ProcessorMetaData::isSelected, &ProcessorMetaData::setSelected)
+        .def_property("visible", &ProcessorMetaData::isVisible, &ProcessorMetaData::setVisible);
+
+    using InportVecWrapper = VectorIdentifierWrapper<std::vector<Inport *>>;
+    exposeVectorIdentifierWrapper<std::vector<Inport *>>(m, "InportVectorWrapper");
+
+    using OutportVecWrapper = VectorIdentifierWrapper<std::vector<Outport *>>;
+    exposeVectorIdentifierWrapper<std::vector<Outport *>>(m, "OutportVectorWrapper");
+
+    py::class_<Processor, ProcessorTrampoline, PropertyOwner, ProcessorPtr<Processor>>(
+        m, "Processor", py::dynamic_attr{})
+        .def(py::init<const std::string &, const std::string &>())
         .def_property_readonly("classIdentifier", &Processor::getClassIdentifier)
-        .def_property_readonly("displayName", &Processor::getDisplayName)
+        .def_property("displayName", &Processor::getDisplayName, &Processor::setDisplayName)
+        .def("getProcessorInfo", &Processor::getProcessorInfo)
         .def_property_readonly("category", &Processor::getCategory)
-        .def_property_readonly("codeState", &Processor::getCodeState)  // TODO expose states
-        .def_property_readonly("tags", &Processor::getTags)            // TODO expose tags
+        .def_property_readonly("codeState", &Processor::getCodeState)
+        .def_property_readonly("tags", &Processor::getTags)
         .def_property("identifier", &Processor::getIdentifier, &Processor::setIdentifier)
         .def("hasProcessorWidget", &Processor::hasProcessorWidget)
         .def_property_readonly("widget", &Processor::getProcessorWidget)
         .def_property_readonly("network", &Processor::getNetwork,
                                py::return_value_policy::reference)
-        .def_property_readonly("inports", &Processor::getInports,
-                               py::return_value_policy::reference)
-        .def_property_readonly("outports", &Processor::getOutports,
-                               py::return_value_policy::reference)
+        .def_property_readonly("inports",
+                               [](Processor *p) { return InportVecWrapper(p->getInports()); })
+        .def_property_readonly("outports",
+                               [](Processor *p) { return OutportVecWrapper(p->getOutports()); })
         .def("getPort", &Processor::getPort, py::return_value_policy::reference)
         .def("getInport", &Processor::getInport, py::return_value_policy::reference)
         .def("getOutport", &Processor::getOutport, py::return_value_policy::reference)
-        .def_property("position",
-                      [](Processor *p) {
-                          return p
-                              ->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                              ->getPosition();
-                      },
-                      [](Processor *p, ivec2 pos) {
-                          p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                              ->setPosition(pos);
-                      })
-        .def_property("selected",
-                      [](Processor *p) {
-                          return p
-                              ->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                              ->isSelected();
-                      },
-                      [](Processor *p, bool selected) {
-                          p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                              ->setSelected(selected);
-                      })
-        .def_property("visible",
-                      [](Processor *p) {
-                          return p
-                              ->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                              ->isVisible();
-                      },
-                      [](Processor *p, bool selected) {
-                          p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                              ->setVisible(selected);
-                      });
+        .def("addInport",
+             [](Processor &p, Inport *port, const std::string &group = "default") {
+                 p.addPort(*port, group);
+             },
+             py::arg("inport"), py::arg("group") = "default", py::keep_alive<1, 2>{})
+        .def("addOutport",
+             [](Processor &p, Outport *port, const std::string &group = "default") {
+                 p.addPort(*port, group);
+             },
+             py::arg("outport"), py::arg("group") = "default", py::keep_alive<1, 2>{})
+        .def("removeInport", [](Processor &p, Inport *port) { return p.removePort(port); })
+        .def("removeOutport", [](Processor &p, Outport *port) { return p.removePort(port); })
 
-    py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>> canvasPorcessor(
-        m, "CanvasProcessor");
-    canvasPorcessor
+        .def_property_readonly(
+            "meta",
+            [](Processor *p) {
+                return p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            },
+            py::return_value_policy::reference)
+        .def("initializeResources", &Processor::initializeResources)
+        .def("process", &Processor::process);
+
+    py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>>(m, "CanvasProcessor")
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)
@@ -137,13 +192,16 @@ void exposeProcessors(py::module &m) {
                               ->getDataWriterFactory()
                               ->getWriterForTypeAndExtension<Layer>(ext);
             if (!writer) {
-                std::stringstream ss;
-                ss << "No write for extension " << ext;
-                throw Exception(ss.str().c_str());
+                throw Exception("No write for extension " + ext);
             }
 
             auto layer = canvas->getVisibleLayer();
             writer->writeData(layer, filepath);
         });
+
+    py::class_<PythonScriptProcessor, Processor, ProcessorPtr<PythonScriptProcessor>>(
+        m, "PythonScriptProcessor")
+        .def("setInitializeResources", &PythonScriptProcessor::setInitializeResources)
+        .def("setProcess", &PythonScriptProcessor::setProcess);
 }
 }  // namespace inviwo

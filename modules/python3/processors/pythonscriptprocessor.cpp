@@ -31,7 +31,6 @@
 #include <modules/python3/python3module.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <pybind11/pybind11.h>
 
 namespace inviwo {
 
@@ -45,42 +44,51 @@ const ProcessorInfo PythonScriptProcessor::processorInfo_{
 };
 const ProcessorInfo PythonScriptProcessor::getProcessorInfo() const { return processorInfo_; }
 
-PythonScriptProcessor::PythonScriptProcessor()
+PythonScriptProcessor::PythonScriptProcessor(InviwoApplication* app)
     : Processor()
-    , script_("")
-    , scriptFileName_("scriptFileName", "File Name", "")
-    , mesh_("mesh")
-    , volume_("volume") {
-    addPort(mesh_);
-    addPort(volume_);
+    , scriptFileName_("scriptFileName", "File Name",
+                      app->getModuleByType<Python3Module>()->getPath(ModulePath::Data) +
+                          "/scripts/scriptprocessorexample.py",
+                      "python", InvalidationLevel::InvalidOutput, PropertySemantics::PythonEditor)
+    , script_(scriptFileName_.get()) {
 
+    namespace py = pybind11;
+
+    isSink_.setUpdate([]() { return true; });
+
+    auto runscript = [this]() {
+        auto locals = py::globals();
+        locals["self"] = pybind11::cast(this);
+        try {
+            script_.run(locals);
+        } catch (std::exception& e) {
+            LogError(e.what())
+        }
+        invalidate(InvalidationLevel::InvalidOutput);
+    };
     addProperty(scriptFileName_);
 
-    scriptFileName_.onChange([this]() { script_.setFilename(scriptFileName_.get()); });
+    scriptFileName_.onChange([this, runscript]() {
+        script_.setFilename(scriptFileName_.get());
+        runscript();
+    });
 
-    script_.onChange([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    script_.onChange([this, runscript]() { runscript(); });
+
+    runscript();
+}
+
+void PythonScriptProcessor::initializeResources() {
+    if (initializeResources_) initializeResources_(pybind11::cast(this));
 }
 
 void PythonScriptProcessor::process() {
-    if (script_.getSource().empty()) {
-        mesh_.setData(std::make_shared<Mesh>());
-        return;
-    }
-    script_.run({}, [&](pybind11::dict dict) {
-        if (dict.contains("mesh")) {
-            auto pyMesh = dict["mesh"];
-            auto mesh = std::shared_ptr<BasicMesh>(pyMesh.cast<BasicMesh*>());
-            pyMesh.cast<pybind11::object>().release();
-            mesh_.setData(mesh);
-        }
-
-        if (dict.contains("volume")) {
-            auto pyVolume = dict["volume"];
-            auto volume = std::shared_ptr<Volume>(pyVolume.cast<Volume*>());
-            pyVolume.cast<pybind11::object>().release();
-            volume_.setData(volume);
-        }
-    });
+    if (process_) process_(pybind11::cast(this));
 }
+
+void PythonScriptProcessor::setInitializeResources(pybind11::function func) {
+    initializeResources_ = func;
+}
+void PythonScriptProcessor::setProcess(pybind11::function func) { process_ = func; }
 
 }  // namespace inviwo

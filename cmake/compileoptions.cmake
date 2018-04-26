@@ -47,7 +47,6 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "-Wall")
             list(APPEND comp_opts "-Wextra")
             list(APPEND comp_opts "-pedantic")
-            list(APPEND comp_opts "-Wno-mismatched-tags") # gives lots of warnings about redefinitions of structs as class.
             list(APPEND comp_opts "-Wno-unused-parameter") # not sure we want to remove them.
             list(APPEND comp_opts "-Wno-missing-braces")   # http://stackoverflow.com/questions/13905200/is-it-wise-to-ignore-gcc-clangs-wmissing-braces-warning
         elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
@@ -71,6 +70,10 @@ function(ivw_define_standard_properties)
                 #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
             endif()
         endif()
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+            list(APPEND comp_opts "-Wno-mismatched-tags") # gives lots of warnings about redefinitions of structs as class.
+        endif()
+
         list(REMOVE_DUPLICATES comp_opts)
         set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
 

@@ -336,7 +336,6 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-protected:
     /**
      * Add inport to processor.
      * @note Port group is a concept for event propagation. Currently only used for
@@ -363,6 +362,8 @@ protected:
     Inport* removePort(Inport* port);
     Outport* removePort(Outport* port);
 
+protected:
+
     std::unique_ptr<ProcessorWidget> processorWidget_;
     StateCoordinator<bool> isReady_;
     StateCoordinator<bool> isSink_;
@@ -380,8 +381,8 @@ protected:
     void removePortFromGroups(Port* port);
 
 private:
-    void addPort(Inport* port, const std::string& portGroup);
-    void addPort(Outport* port, const std::string& portGroup);
+    void addPortInternal(Inport* port, const std::string& portGroup);
+    void addPortInternal(Outport* port, const std::string& portGroup);
 
     std::string identifier_;
     std::string displayName_;

@@ -28,8 +28,24 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
+
+
+CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg)
+    : app_{app}, arg_{arg} {
+    app_->getCommandLineParser().add(&arg);
+}
+
+CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg, std::function<void()> callback,
+                     int priority)
+    : app_{app}, arg_{arg} {
+    app_->getCommandLineParser().add(&arg, std::move(callback), priority);
+}
+CommandLineArgHolder::~CommandLineArgHolder() {
+    app_->getCommandLineParser().remove(&arg_);
+}
 
 CommandLineParser::CommandLineParser() : CommandLineParser(0, nullptr) {}
 
@@ -53,8 +69,8 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     , wildcard_()
     , helpQuiet_("h", "help", "")
     , versionQuiet_("v", "version", "")
-    , disableResourceManager_("", "no-resource-manager", "Pass this flag to disable the resource manager")
-{
+    , disableResourceManager_("", "no-resource-manager",
+                              "Pass this flag to disable the resource manager") {
     cmdQuiet_.add(workspace_);
     cmdQuiet_.add(outputPath_);
     cmdQuiet_.add(quitAfterStartup_);
@@ -113,13 +129,9 @@ void CommandLineParser::parse(int argc, char** argv, Mode mode) {
 
 void CommandLineParser::parse(Mode mode) { parse(argc_, argv_, mode); }
 
-void CommandLineParser::setArgc(int argc) {
-    argc_ = argc;
-}
+void CommandLineParser::setArgc(int argc) { argc_ = argc; }
 
-void CommandLineParser::setArgv(char** argv) {
-    argv_ = argv;
-}
+void CommandLineParser::setArgv(char** argv) { argv_ = argv; }
 
 const std::string CommandLineParser::getOutputPath() const {
     if (outputPath_.isSet()) return (outputPath_.getValue());
@@ -169,28 +181,22 @@ bool CommandLineParser::getLogToFile() const {
     return false;
 }
 
-bool CommandLineParser::getLogToConsole() const {
-    return logConsole_.isSet();
-}
+bool CommandLineParser::getLogToConsole() const { return logConsole_.isSet(); }
 
 bool CommandLineParser::getDisableResourceManager() const {
     return disableResourceManager_.isSet();
 }
 
-int CommandLineParser::getARGC() const {
-    return argc_;
-}
+int CommandLineParser::getARGC() const { return argc_; }
 
-char** CommandLineParser::getARGV() const {
-    return argv_;
-}
+char** CommandLineParser::getARGV() const { return argv_; }
 
 void CommandLineParser::processCallbacks() {
-    std::sort(callbacks_.begin(), callbacks_.end(),
-    [](const decltype(callbacks_)::value_type& a,
-       const decltype(callbacks_)::value_type& b) {
-        return std::get<0>(a) < std::get<0>(b);
-    });
+    std::sort(
+        callbacks_.begin(), callbacks_.end(),
+        [](const decltype(callbacks_)::value_type& a, const decltype(callbacks_)::value_type& b) {
+            return std::get<0>(a) < std::get<0>(b);
+        });
     for (auto& elem : callbacks_) {
         if (std::get<1>(elem)->isSet()) {
             std::get<2>(elem)();
@@ -207,14 +213,16 @@ void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int
 
 void CommandLineParser::remove(TCLAP::Arg* arg) {
     auto& args = cmd_.getArgList();
-    auto argIt = std::find_if(std::begin(args), std::end(args), [arg](const auto& arg_) { return arg_ == arg; });
+    auto argIt = std::find_if(std::begin(args), std::end(args),
+                              [arg](const auto& arg_) { return arg_ == arg; });
     if (argIt != args.end()) {
         args.erase(argIt);
     }
-    auto it = std::find_if(std::begin(callbacks_), std::end(callbacks_), [arg](const auto& callback) { return std::get<1>(callback) == arg; });
+    auto it = std::find_if(std::begin(callbacks_), std::end(callbacks_),
+                           [arg](const auto& callback) { return std::get<1>(callback) == arg; });
     if (it != callbacks_.end()) {
         callbacks_.erase(it);
     }
 }
 
-}  // namespace
+}  // namespace inviwo

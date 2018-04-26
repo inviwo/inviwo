@@ -86,65 +86,65 @@ const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr) {
 }
 
 struct BufferFromArrayDispatcher {
-    using type = std::shared_ptr<BufferBase>;
+    using type = std::unique_ptr<BufferBase>;
 
     template <typename T>
-    std::shared_ptr<BufferBase> dispatch(pybind11::array &arr) {
+    std::unique_ptr<BufferBase> dispatch(pybind11::array &arr) {
         using Type = typename T::type;
-        auto buf = std::make_shared<Buffer<Type>>(arr.shape(0));
+        auto buf = std::make_unique<Buffer<Type>>(arr.shape(0));
         memcpy(buf->getEditableRAMRepresentation()->getData(), arr.data(0), arr.nbytes());
         return buf;
     }
 };
 
 struct LayerFromArrayDispatcher {
-    using type = std::shared_ptr<Layer>;
+    using type = std::unique_ptr<Layer>;
 
     template <typename T>
-    std::shared_ptr<Layer> dispatch(pybind11::array &arr) {
+    std::unique_ptr<Layer> dispatch(pybind11::array &arr) {
         using Type = typename T::type;
         size2_t dims(arr.shape(0), arr.shape(1));
         auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
         memcpy(layerRAM->getData(), arr.data(0), arr.nbytes());
-        return std::make_shared<Layer>(layerRAM);
+        return std::make_unique<Layer>(layerRAM);
     }
 };
 
 struct VolumeFromArrayDispatcher {
-    using type = std::shared_ptr<Volume>;
+    using type = std::unique_ptr<Volume>;
 
     template <typename T>
-    std::shared_ptr<Volume> dispatch(pybind11::array &arr) {
+    std::unique_ptr<Volume> dispatch(pybind11::array &arr) {
         using Type = typename T::type;
         size3_t dims(arr.shape(0), arr.shape(1), arr.shape(2));
         auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
         memcpy(volumeRAM->getData(), arr.data(0), arr.nbytes());
-        return std::make_shared<Volume>(volumeRAM);
+        return std::make_unique<Volume>(volumeRAM);
     }
 };
 
-std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr) {
+std::unique_ptr<BufferBase> createBuffer(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
     auto df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
-    BufferFromArrayDispatcher bufferFromArrayDistpatcher;
-    return df->dispatch(bufferFromArrayDistpatcher, arr);
+    BufferFromArrayDispatcher dispatcher{};
+    return df->dispatch(dispatcher, arr);
 }
 
-std::shared_ptr<Layer> createLayer(pybind11::array &arr) {
+std::unique_ptr<Layer> createLayer(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 2 || ndim == 3, "Ndims must be either 2 or 3");
     auto df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
-    LayerFromArrayDispatcher bufferFromArrayDistpatcher;
-    return df->dispatch(bufferFromArrayDistpatcher, arr);
+    LayerFromArrayDispatcher dispatcher{};
+    return df->dispatch(dispatcher, arr);
 }
 
-std::shared_ptr<Volume> createVolume(pybind11::array &arr) {
+std::unique_ptr<Volume> createVolume(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 3 || ndim == 4, "Ndims must be either 3 or 4");
     auto df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);
-    VolumeFromArrayDispatcher bufferFromArrayDistpatcher;
-    return df->dispatch(bufferFromArrayDistpatcher, arr);
+    VolumeFromArrayDispatcher dispatcher{};
+    return df->dispatch(dispatcher, arr);
 }
 
 }  // namespace pyutil

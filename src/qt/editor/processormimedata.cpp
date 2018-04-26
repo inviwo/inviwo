@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,42 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HELPWIDGET_H
-#define IVW_HELPWIDGET_H
+#include <inviwo/qt/editor/processormimedata.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-
-class QObject;
-class QHelpEngineCore;
-class QResizeEvent;
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QByteArray>
+#include <QDataStream>
+#include <warn/pop>
 
 namespace inviwo {
 
-class QCHFileObserver;
-class HelpBrowser;
+ProcessorMimeData::ProcessorMimeData(std::unique_ptr<Processor> processor)
+    : QMimeData{}, processor_{std::move(processor)} {
 
+    auto cid = utilqt::toQString(processor_->getClassIdentifier());
 
-class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
-public:
-    HelpWidget(InviwoMainWindow* parent);
-    virtual ~HelpWidget();
-    HelpWidget(const HelpWidget&) = delete;
-    HelpWidget& operator=(const HelpWidget&) = delete;
+    QByteArray byteData;
+    {
+        QDataStream ds(&byteData, QIODevice::WriteOnly);
+        ds << cid;
+    }
+    setData(utilqt::toQString(getMimeTag()), byteData);
+    setText(cid);
+}
 
-    void showDocForClassName(std::string className);
-    void registerQCHFiles();
-protected:
-    virtual void resizeEvent(QResizeEvent* event) override;
+std::unique_ptr<Processor> ProcessorMimeData::get() const { return std::move(processor_); }
 
-private:
-    void updateDoc();
+Processor* ProcessorMimeData::processor() const { return processor_.get(); }
 
-    InviwoMainWindow* mainwindow_;
-    QHelpEngineCore* helpEngine_;
-    HelpBrowser* helpBrowser_;
-    std::string requested_;
-    std::string current_;
-    std::unique_ptr<QCHFileObserver> fileObserver_;
-    
-    // Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    // Called before modules have been unregistered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
-};
+const std::string& ProcessorMimeData::getMimeTag() {
+    static std::string tag{"application/x.vnd.inviwo.processor+txt"};
+    return tag;
+}
 
-}  // namespace
+const ProcessorMimeData* ProcessorMimeData::toProcessorMimeData(const QMimeData* data) {
+    return qobject_cast<const ProcessorMimeData*>(data);
+}
 
-#endif  // IVW_HELPWIDGET_H
+}  // namespace inviwo

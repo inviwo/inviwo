@@ -36,18 +36,61 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+
+namespace pybind11 {
+namespace detail {
+using namespace inviwo;
+
+/*
+ * The python type caster for polymorphic types only can lookup exact
+ * matches. I.e. if we have a property Basis that derives from CompositeProperty
+ * which derives from Property, and we try to cast a Property pointer pointing to a Basis
+ * and only Property and CompositeProperty are exposed to python and not Basis. Python will
+ * not find a exact match, and the returned wrapper will be of the Pointer class used.
+ * In this cases Property. To get at least some support for unexposed properties 
+ * derived from CompositeProperty and BaseOptionProperty we add a specialization here 
+ * that will mean that in the example above we will get a CompositeProperty wrapper instead of
+ * of a Property wrapper.
+ */
+template <>
+struct type_caster<Property> : type_caster_base<Property> {
+    static handle cast(Property &&src, return_value_policy, handle parent) {
+        return cast(&src, return_value_policy::move, parent);
+    }
+    static handle cast(const Property &src, return_value_policy policy, handle parent) {
+        if (policy == return_value_policy::automatic ||
+            policy == return_value_policy::automatic_reference)
+            policy = return_value_policy::copy;
+        return cast(&src, policy, parent);
+    }
+    static handle cast(const Property *prop, return_value_policy policy, handle parent) {
+        if (auto cp = dynamic_cast<const CompositeProperty *>(prop)) {
+           return type_caster_base<CompositeProperty>::cast(cp, policy, parent);
+        } else if (auto op = dynamic_cast<const BaseOptionProperty *>(prop)) {
+            return type_caster_base<BaseOptionProperty>::cast(op, policy, parent);
+        } else {
+            return type_caster_base<Property>::cast(prop, policy, parent);
+        }
+    }
+};
+}  // namespace detail
+}  // namespace pybind11
 
 namespace inviwo {
 
+namespace detail {
 template <typename T>
-struct HasOwnerDeleter {
+struct PropertyDeleter {
     void operator()(T *p) {
         if (p && p->getOwner() == nullptr) delete p;
     }
 };
+}  // namespace detail
 
 template <typename T>
-using PropertyPtr = std::unique_ptr<T, HasOwnerDeleter<T>>;
+using PropertyPtr = std::unique_ptr<T, detail::PropertyDeleter<T>>;
 
 template <typename T, typename P, typename C>
 void pyTemplateProperty(C &prop) {
@@ -57,13 +100,6 @@ void pyTemplateProperty(C &prop) {
 
 template <typename PropertyType, typename T>
 struct OrdinalPropertyIterator {
-    PropertyType *property_;
-    T cur;
-    T inc;
-
-    T begin;
-    T end;
-
     OrdinalPropertyIterator(PropertyType *prop)
         : property_(prop)
         , cur(prop->getMinValue())
@@ -94,6 +130,12 @@ struct OrdinalPropertyIterator {
             return cur - inc;
         }
     }
+
+    PropertyType *property_;
+    T cur;
+    T inc;
+    T begin;
+    T end;
 };
 
 template <typename T, typename P, typename M, typename PC>
@@ -132,13 +174,15 @@ struct OrdinalPropertyHelper {
         auto classname = Defaultvalues<T>::getName() + "Property";
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string &identifier, const std::string &name,
-                             const T &value = Defaultvalues<T>::getVal(),
-                             const T &min = Defaultvalues<T>::getMin(),
-                             const T &max = Defaultvalues<T>::getMax(),
-                             const T &increment = Defaultvalues<T>::getInc()) {
-                return new P(identifier, name, value, min, max, increment);
-            }))
+        prop.def(py::init([](const std::string &identifier, const std::string &name, const T &value,
+                             const T &min, const T &max, const T &increment) {
+                     return new P(identifier, name, value, min, max, increment);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("value") = Defaultvalues<T>::getVal(),
+                 py::arg("min") = Defaultvalues<T>::getMin(),
+                 py::arg("max") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc())
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement);
@@ -161,15 +205,17 @@ struct MinMaxHelper {
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
         prop.def(py::init([](const std::string &identifier, const std::string &name,
-                             const T &valueMin = Defaultvalues<T>::getMin(),
-                             const T &valueMax = Defaultvalues<T>::getMax(),
-                             const T &rangeMin = Defaultvalues<T>::getMin(),
-                             const T &rangeMax = Defaultvalues<T>::getMax(),
-                             const T &increment = Defaultvalues<T>::getInc(),
-                             const T &minSeperation = 0) {
-                return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax, increment,
-                             minSeperation);
-            }))
+                             const T &valueMin, const T &valueMax, const T &rangeMin,
+                             const T &rangeMax, const T &increment, const T &minSeperation = 0) {
+                     return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
+                                  increment, minSeperation);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("valueMin") = Defaultvalues<T>::getMin(),
+                 py::arg("valueMax") = Defaultvalues<T>::getMax(),
+                 py::arg("rangeMin") = Defaultvalues<T>::getMin(),
+                 py::arg("rangeMax") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0)
             .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
             .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
@@ -226,6 +272,7 @@ struct OptionPropertyHelper {
 };
 
 void exposeProperties(pybind11::module &m);
+
 }  // namespace inviwo
 
 #endif  // IVW_PYPROPERTIES_H

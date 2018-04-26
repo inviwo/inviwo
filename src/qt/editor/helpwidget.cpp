@@ -53,6 +53,7 @@
 #include <QImage>
 #include <QUrlQuery>
 #include <QTextBrowser>
+#include <QTabWidget>
 #include <warn/pop>
 
 namespace inviwo {
@@ -126,7 +127,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     , helpBrowser_(nullptr) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500)); // default size
+    resize(QSize(500, 500));  // default size
 
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
@@ -173,6 +174,8 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
         app->getModuleManager().onModulesDidRegister([this]() { registerQCHFiles(); });
     onModulesWillUnregister_ =
         app->getModuleManager().onModulesWillUnregister([this]() { fileObserver_->removeAll(); });
+
+    connect(this, &HelpWidget::visibilityChanged, this, &HelpWidget::updateDoc);
 }
 
 HelpWidget::~HelpWidget() = default;
@@ -190,29 +193,37 @@ void HelpWidget::registerQCHFiles() {
 
 void HelpWidget::showDocForClassName(std::string classIdentifier) {
     if (!helpEngine_) return;
-
-    current_ = classIdentifier;
-
-    const QString path("qthelp:///doc/docpage-%1.html");
-    QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
-    if (foundUrl.isValid()) {
-        helpBrowser_->setSource(foundUrl);
-        return;
-    }
-
-    replaceInString(classIdentifier, ".", "_8");
-    foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
-    if (foundUrl.isValid()) {
-        helpBrowser_->setSource(foundUrl);
-        return;
-    }
-
-    helpBrowser_->setText(QString::fromStdString("No documentation available for: " + current_));
+    requested_ = classIdentifier;
+    updateDoc();
 }
 
 void HelpWidget::resizeEvent(QResizeEvent* event) {
     helpBrowser_->reload();
     InviwoDockWidget::resizeEvent(event);
+}
+
+void HelpWidget::updateDoc() {
+    if (current_ == requested_) return;
+
+    if (visibleRegion().isEmpty()) return;
+
+    const QString path("qthelp:///doc/docpage-%1.html");
+    QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(requested_))));
+    if (foundUrl.isValid()) {
+        helpBrowser_->setSource(foundUrl);
+        return;
+    }
+
+    replaceInString(requested_, ".", "_8");
+    foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(requested_))));
+    if (foundUrl.isValid()) {
+        helpBrowser_->setSource(foundUrl);
+        return;
+    }
+
+    helpBrowser_->setText(QString::fromStdString("No documentation available for: " + requested_));
+
+    current_ = requested_;
 }
 
 HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine)

@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -135,11 +136,14 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
 }
 
 QImage utilqt::generateProcessorPreview(const QString& classIdentifier, double opacity) {
-    std::string cid = classIdentifier.toLocal8Bit().constData();
+    std::string cid = utilqt::fromQString(classIdentifier);
+    auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
+    return generateProcessorPreview(processor.get(), opacity);
+}
 
+QImage utilqt::generateProcessorPreview(Processor* processor, double opacity) {
     try {
-        auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
-        auto item = new ProcessorGraphicsItem(processor.get());
+        auto item = new ProcessorGraphicsItem(processor);
         auto scene = util::make_unique<QGraphicsScene>(nullptr);
         scene->addItem(item);
                 
@@ -169,7 +173,7 @@ QImage utilqt::generateProcessorPreview(const QString& classIdentifier, double o
     } catch (Exception&) {
         // We will just ignore this...
         return QImage();
-    }
+    }  
 }
 
 void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {

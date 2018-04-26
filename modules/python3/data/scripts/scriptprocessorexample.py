@@ -1,39 +1,41 @@
-from inviwopy.data import *
-from inviwopy.glm import *
-from inviwopy.data.formats import *
 import inviwopy
-
+from inviwopy.glm import ivec3, dvec2
+from inviwopy.properties import IntVec3Property
+from inviwopy.data import VolumeOutport
+from inviwopy.data import Volume
 import numpy
 
-## the PythonScriptProcessor will fetch data from the "mesh" object and the "volume" object
+"""
+The PythonScriptProcessor will run this script on construction and whenever this
+it changes. Hence one needs to take care not to add ports and properties multiple times.
+The PythonScriptProcessor is exposed as the local variable 'self'.
+"""
 
-## create a  mesh
-mesh = BasicMesh()
- 
+#if not "dim" in self.properties:
+#	self.addProperty(IntVec3Property("dim", "dim", ivec3(5), ivec3(0), ivec3(20)))
 
-mesh.addVertex(vec3(-0.2, -0.2, -0.1), vec3(0, 0, 1), vec3(0, 0, 0), vec4(0.1, 0.1, 0.1, 0.9))
-mesh.addVertex(vec3(0.75, -0.2, -0.1), vec3(0, 0, 1), vec3(0, 0, 0), vec4(0.6, 0.1, 0.1, 0.9))
-mesh.addVertex(vec3(0.75, 0.75, -0.1), vec3(0, 0, 1), vec3(0, 0, 0), vec4(0.1, 0.6, 0.1, 0.9))
-mesh.addVertex(vec3(-0.2, 0.75, -0.1), vec3(0, 0, 1), vec3(0, 0, 0), vec4(0.1, 0.1, 0.6, 0.9))
+#if not "outport" in self.outports:
+#	self.addOutport(VolumeOutport("outport"))
 
-## create matching index buffer
-ind = mesh.addIndexBuffer(DrawType.Triangles , ConnectivityType.None_ );
-ind.size = 6
-idx = 0
-for i in [0, 1, 2, 0, 2, 3] :
-    ind.data[idx] = i
-    idx += 1
+def process(self):
+	"""
+	The PythonScriptProcessor will call this process function whenever the processor process 
+	function is called. The argument 'self' represents the PythonScriptProcessor.
+	"""
+	# create a small float volume filled with random noise
+	#numpy.random.seed(546465)
+	#dim = self.properties.dim.value;
+	#volume = Volume(numpy.random.rand(dim[0], dim[1], dim[2]).astype(numpy.float32))
+	#volume.dataMap.dataRange = dvec2(0.0, 1.0)
+	#volume.dataMap.valueRange = dvec2(0.0, 1.0)
+	#self.outports.outport.setData(volume)
+	pass
 
+def initializeResources(self):
+	pass
 
+# Tell the PythonScriptProcessor about the 'initializeResources' function we want to use
+self.setInitializeResources(initializeResources)
 
-## create a small float volume filled with random noise
-dim = size3_t(12, 12, 12)
-
-volume = Volume(dim, DataFLOAT32) 
-volume.dataMap.dataRange = dvec2(0.0, 1.0)
-volume.dataMap.valueRange = volume.dataMap.dataRange
-
-numpy.random.seed(546465)
-data = numpy.random.rand(dim[0], dim[1], dim[2]).astype(numpy.float32)
-
-volume.setData(data)
+# Tell the PythonScriptProcessor about the 'process' function we want to use
+self.setProcess(process)
