@@ -45,8 +45,9 @@
 
 namespace inviwo {
 
+namespace py = pybind11;
+
 void exposeMesh(pybind11::module &m) {
-    namespace py = pybind11;
     py::class_<Mesh::MeshInfo>(m, "MeshInfo")
         .def(py::init<>())
         .def(py::init<DrawType, ConnectivityType>())
