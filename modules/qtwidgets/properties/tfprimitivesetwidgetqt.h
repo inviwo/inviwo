@@ -27,37 +27,68 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ISOVALUEPROPERTYWIDGETQT_H
-#define IVW_ISOVALUEPROPERTYWIDGETQT_H
+#ifndef IVW_TFPRIMITIVESETWIDGETQT_H
+#define IVW_TFPRIMITIVESETWIDGETQT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/tf/tfpropertydialog.h>
+
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
 class IsoValueProperty;
-class IvwPushButton;
+class TransferFunctionProperty;
+class MultilineTextEdit;
 class EditableLabelQt;
 
-class IVW_MODULE_QTWIDGETS_API IsoValuePropertyWidgetQt : public PropertyWidgetQt {
+class TFPrimitiveSet;
+
+/**
+ * \class TFPrimitiveSetWidgetQt
+ * \brief text-based widget for editing TF primitives
+ *
+ * This is a text-based widget for editing a TFPrimitiveSet, i.e. a TransferFunction or
+ * IsoValueCollection. The individual TF primitives are represented by "position alpha #RRGGBB".
+ * If the type of the TFPrimitiveSet is relative, the positions are mapped to the value range of
+ * the property unless the PropertySemantics are equal to "Text (Normalized)".
+ */
+class IVW_MODULE_QTWIDGETS_API TFPrimitiveSetWidgetQt : public PropertyWidgetQt {
 public:
-    IsoValuePropertyWidgetQt(IsoValueProperty* property);
-    virtual ~IsoValuePropertyWidgetQt() = default;
+    TFPrimitiveSetWidgetQt(IsoValueProperty* property);
+    TFPrimitiveSetWidgetQt(TransferFunctionProperty* property);
+    virtual ~TFPrimitiveSetWidgetQt() = default;
 
-    virtual TFPropertyDialog* getEditorWidget() const override;
-    virtual bool hasEditorWidget() const override;
-    
     virtual void updateFromProperty() override;
-
-    virtual void setReadOnly(bool readonly) override;
+    void setPropertyValue();
 
 private:
+    void initializeWidget();
+
+    struct Concept {
+        virtual ~Concept() = default;
+        virtual TFPrimitiveSet& get() = 0;
+        virtual VolumeInport* getVolumePort() = 0;
+    };
+
+    template <typename U>
+    class Model : public Concept {
+    public:
+        Model(U data) : data_(data) {}
+
+        virtual TFPrimitiveSet& get() override { return data_->get(); }
+        virtual VolumeInport* getVolumePort() override { return data_->getVolumeInport(); }
+
+    private:
+        U data_;
+    };
+
+    std::unique_ptr<Concept> propertyPtr_;
+
+    MultilineTextEdit* textEdit_;
     EditableLabelQt* label_;
-    IvwPushButton* btnOpenTF_;
-    mutable std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_ISOVALUEPROPERTYWIDGETQT_H
+#endif  // IVW_TFPRIMITIVESETWIDGETQT_H

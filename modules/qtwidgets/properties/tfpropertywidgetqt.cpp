@@ -49,14 +49,13 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(
     , btnOpenTF_{new TFPushButton(static_cast<TransferFunctionProperty*>(property_), this)} {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
-    hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(7);
+    setSpacingAndMargins(hLayout);
 
     hLayout->addWidget(label_);
 
     connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
         if (!transferFunctionDialog_) {
-            transferFunctionDialog_ = util::make_unique<TFPropertyDialog>(
+            transferFunctionDialog_ = std::make_unique<TFPropertyDialog>(
                 static_cast<TransferFunctionProperty*>(property_));
             transferFunctionDialog_->setVisible(true);
         } else {

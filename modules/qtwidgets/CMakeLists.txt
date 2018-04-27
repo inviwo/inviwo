@@ -64,6 +64,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/syntaxhighlighter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/texteditorwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfprimitivesetwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qstringhelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.h
@@ -126,6 +127,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/syntaxhighlighter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/texteditorwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfprimitivesetwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.cpp
@@ -135,13 +137,13 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcoloredit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcontrolpointconnection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorcontrolpoint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorprimitive.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorview.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tflineedit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfpropertydialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfselectionwatcher.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorview.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tfhelpwindow.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

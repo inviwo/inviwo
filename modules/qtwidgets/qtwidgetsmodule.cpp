@@ -64,6 +64,7 @@
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>
+#include <modules/qtwidgets/properties/tfprimitivesetwidgetqt.h>
 #include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 
 #include <inviwo/core/io/rawvolumereader.h>
@@ -176,6 +177,10 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
     registerPropertyWidget<IsoValuePropertyWidgetQt, IsoValueProperty>("Default");
     registerPropertyWidget<TFPropertyWidgetQt, TransferFunctionProperty>("Default");
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>("Text");
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>("Text (Normalized)");
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, TransferFunctionProperty>("Text");
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, TransferFunctionProperty>("Text (Normalized)");
 
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
     registerDialog<InviwoFileDialog>("FileDialog");
