@@ -32,7 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 
 namespace inviwo {
@@ -41,13 +41,13 @@ class EditableLabelQt;
 class TransferFunctionProperty;
 class TFPushButton;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_QTWIDGETS_API TFPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    TransferFunctionPropertyWidgetQt(TransferFunctionProperty* property);
-    virtual ~TransferFunctionPropertyWidgetQt();
+    TFPropertyWidgetQt(TransferFunctionProperty* property);
+    virtual ~TFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
-    virtual TransferFunctionPropertyDialog* getEditorWidget() const override;
+    virtual TFPropertyDialog* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
 
     virtual void setReadOnly(bool readonly) override;
@@ -55,7 +55,7 @@ public:
 private:
     EditableLabelQt* label_ = nullptr;
     TFPushButton* btnOpenTF_ = nullptr;
-    mutable std::unique_ptr<TransferFunctionPropertyDialog> transferFunctionDialog_ = nullptr;
+    mutable std::unique_ptr<TFPropertyDialog> transferFunctionDialog_ = nullptr;
 };
 
 class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {

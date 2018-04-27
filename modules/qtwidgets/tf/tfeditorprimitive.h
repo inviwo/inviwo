@@ -48,18 +48,17 @@ class QGraphicsMouseEvent;
 
 namespace inviwo {
 
-class TransferFunctionEditorPrimitive;
+class TFEditorPrimitive;
 
 class IVW_MODULE_QTWIDGETS_API TFEditorPrimitiveObserver : public Observer {
 public:
     virtual ~TFEditorPrimitiveObserver() = default;
 
-    virtual void onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive* p);
+    virtual void onTFPrimitiveDoubleClicked(const TFEditorPrimitive* p);
 };
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorPrimitive
-    : public QGraphicsItem,
-      public Observable<TFEditorPrimitiveObserver> {
+class IVW_MODULE_QTWIDGETS_API TFEditorPrimitive : public QGraphicsItem,
+                                                   public Observable<TFEditorPrimitiveObserver> {
 public:
     enum ItemType {
         TFEditorControlPointType = 30,
@@ -78,10 +77,9 @@ public:
      * @param pos      normalized position of primitive (scalar value and opacity)
      * @param size     base size of primitive
      */
-    TransferFunctionEditorPrimitive(TFPrimitive* primitive = nullptr,
-                                    QGraphicsScene* scene = nullptr, const vec2& pos = vec2(),
-                                    double size = 14.0);
-    virtual ~TransferFunctionEditorPrimitive() = default;
+    TFEditorPrimitive(TFPrimitive* primitive = nullptr, QGraphicsScene* scene = nullptr,
+                      const vec2& pos = vec2(), double size = 14.0);
+    virtual ~TFEditorPrimitive() = default;
 
     void setPrimitive(TFPrimitive* primitive);
     TFPrimitive* getPrimitive();
@@ -112,12 +110,12 @@ public:
     void beginMouseDrag();
     void stopMouseDrag();
 
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorPrimitive& lhs,
-                                                    const TransferFunctionEditorPrimitive& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorPrimitive& lhs,
+                                                    const TFEditorPrimitive& rhs);
 
     // compare TF primitives points by their scalar value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionEditorPrimitive& lhs,
-                                                   const TransferFunctionEditorPrimitive& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorPrimitive& lhs,
+                                                   const TFEditorPrimitive& rhs);
 
 protected:
     /**
@@ -130,7 +128,7 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-    
+
     /**
      * draws the primitive. Gets called from within paint()
      *
@@ -181,18 +179,16 @@ private:
     bool mouseDrag_;
 };
 
-IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorPrimitive& lhs,
-                                         const TransferFunctionEditorPrimitive& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TransferFunctionEditorPrimitive& lhs,
-                                         const TransferFunctionEditorPrimitive& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionEditorPrimitive& lhs,
-                                        const TransferFunctionEditorPrimitive& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TransferFunctionEditorPrimitive& lhs,
-                                        const TransferFunctionEditorPrimitive& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TransferFunctionEditorPrimitive& lhs,
-                                         const TransferFunctionEditorPrimitive& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TransferFunctionEditorPrimitive& lhs,
-                                         const TransferFunctionEditorPrimitive& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorPrimitive& lhs,
+                                         const TFEditorPrimitive& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator!=(const TFEditorPrimitive& lhs,
+                                         const TFEditorPrimitive& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorPrimitive& lhs, const TFEditorPrimitive& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator>(const TFEditorPrimitive& lhs, const TFEditorPrimitive& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator<=(const TFEditorPrimitive& lhs,
+                                         const TFEditorPrimitive& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorPrimitive& lhs,
+                                         const TFEditorPrimitive& rhs);
 
 }  // namespace inviwo
 

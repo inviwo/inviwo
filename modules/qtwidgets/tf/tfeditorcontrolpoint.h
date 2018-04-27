@@ -31,37 +31,35 @@
 #define IVW_TRANSFERFUNCTIONEDITORCONTROLPOINT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
 
 #include <inviwo/core/datastructures/tfprimitive.h>
 
 namespace inviwo {
 
-class TransferFunctionControlPointConnection;
+class TFControlPointConnection;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorControlPoint
-    : public TransferFunctionEditorPrimitive,
-      public TFPrimitiveObserver {
+class IVW_MODULE_QTWIDGETS_API TFEditorControlPoint : public TFEditorPrimitive,
+                                                      public TFPrimitiveObserver {
 public:
-    TransferFunctionEditorControlPoint(TFPrimitive* primitive, QGraphicsScene* scene,
-                                       double size = 14.0);
-    ~TransferFunctionEditorControlPoint() = default;
-    
+    TFEditorControlPoint(TFPrimitive* primitive, QGraphicsScene* scene, double size = 14.0);
+    ~TFEditorControlPoint() = default;
+
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + TransferFunctionEditorPrimitive::TFEditorControlPointType };
+    enum { Type = UserType + TFEditorPrimitive::TFEditorControlPointType };
     int type() const { return Type; }
 
     virtual void onTFPrimitiveChange(const TFPrimitive* p) override;
-    
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
-                                                    const TransferFunctionEditorControlPoint& rhs);
+
+    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorControlPoint& lhs,
+                                                    const TFEditorControlPoint& rhs);
 
     // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionEditorControlPoint& lhs,
-                                                   const TransferFunctionEditorControlPoint& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorControlPoint& lhs,
+                                                   const TFEditorControlPoint& rhs);
 
-    TransferFunctionControlPointConnection* left_ = nullptr;   // Non-owning reference
-    TransferFunctionControlPointConnection* right_ = nullptr;  // Non-owning reference
+    TFControlPointConnection* left_ = nullptr;   // Non-owning reference
+    TFControlPointConnection* right_ = nullptr;  // Non-owning reference
 
 protected:
     virtual QRectF boundingRect() const override;
@@ -102,18 +100,18 @@ private:
     virtual void onItemSceneHasChanged() override;
 };
 
-IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
-                                         const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TransferFunctionEditorControlPoint& lhs,
-                                         const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionEditorControlPoint& lhs,
-    const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TransferFunctionEditorControlPoint& lhs,
-                                        const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TransferFunctionEditorControlPoint& lhs,
-                                         const TransferFunctionEditorControlPoint& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TransferFunctionEditorControlPoint& lhs,
-                                         const TransferFunctionEditorControlPoint& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorControlPoint& lhs,
+                                         const TFEditorControlPoint& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator!=(const TFEditorControlPoint& lhs,
+                                         const TFEditorControlPoint& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorControlPoint& lhs,
+                                        const TFEditorControlPoint& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator>(const TFEditorControlPoint& lhs,
+                                        const TFEditorControlPoint& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator<=(const TFEditorControlPoint& lhs,
+                                         const TFEditorControlPoint& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorControlPoint& lhs,
+                                         const TFEditorControlPoint& rhs);
 
 }  // namespace inviwo
 

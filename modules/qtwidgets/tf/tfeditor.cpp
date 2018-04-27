@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/transferfunctioneditor.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
 
-#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
-#include <modules/qtwidgets/properties/transferfunctioncontrolpointconnection.h>
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
+#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/network/networklock.h>
@@ -63,10 +63,8 @@ namespace inviwo {
 class ControlPointEquals {
 public:
     ControlPointEquals(const TFPrimitive* p) : p_(p) {}
-    bool operator()(TransferFunctionEditorPrimitive* editorPoint) {
-        return editorPoint->getPrimitive() == p_;
-    }
-    bool operator<(TransferFunctionEditorPrimitive* editorPoint) {
+    bool operator()(TFEditorPrimitive* editorPoint) { return editorPoint->getPrimitive() == p_; }
+    bool operator<(TFEditorPrimitive* editorPoint) {
         return editorPoint->getPrimitive()->getPosition() < p_->getPosition();
     }
 
@@ -74,8 +72,7 @@ private:
     const TFPrimitive* p_;
 };
 
-TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfProperty,
-                                               QWidget* parent)
+TFEditor::TFEditor(TransferFunctionProperty* tfProperty, QWidget* parent)
     : QGraphicsScene(parent)
     , tfProperty_(tfProperty)
     , transferFunction_(&tfProperty->get())
@@ -111,11 +108,11 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfPrope
     }
 
     for (int i = 0; i < 10; ++i) {
-        groups_.push_back(std::vector<TransferFunctionEditorPrimitive*>());
+        groups_.push_back(std::vector<TFEditorPrimitive*>());
     }
 }
 
-TransferFunctionEditor::~TransferFunctionEditor() {
+TFEditor::~TFEditor() {
     for (auto& elem : points_) delete elem;
     points_.clear();
 
@@ -123,7 +120,7 @@ TransferFunctionEditor::~TransferFunctionEditor() {
     connections_.clear();
 }
 
-void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
+void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (e->button()) {
@@ -151,7 +148,7 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     QGraphicsScene::mousePressEvent(e);
 }
 
-void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
+void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
     mouseMovedSincePress_ = true;
     if (mouseDrag_ && ((e->buttons() & Qt::LeftButton) == Qt::LeftButton)) {
         // Prevent network evaluations while moving control point
@@ -162,7 +159,7 @@ void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
     }
 }
 
-void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
+void TFEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     // left mouse button and no movement -> add new point if there is no selection
 
     const bool controlPressed =
@@ -205,12 +202,12 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     }
 }
 
-void TransferFunctionEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
+void TFEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
     mouseDoubleClick_ = true;
     QGraphicsScene::mouseDoubleClickEvent(e);
 }
 
-void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
+void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
     // these factors are applied when holding shift (increasing step size) or alt (decreasing step
     // size) when moving control points with the keyboard
     const double stepUpScalingFactor = 5.0;
@@ -279,10 +276,9 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
                 k == 'I' || k == 'J' || k == 'K' || k == 'L')) {
         QList<QGraphicsItem*> selitems = selectedItems();
 
-        std::vector<TransferFunctionEditorControlPoint*> points;
+        std::vector<TFEditorControlPoint*> points;
         for (auto& selitem : selitems) {
-            if (auto p = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitem))
-                points.push_back(p);
+            if (auto p = qgraphicsitem_cast<TFEditorControlPoint*>(selitem)) points.push_back(p);
         }
         std::stable_sort(points.begin(), points.end(), comparePtr{});
 
@@ -377,7 +373,7 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
         if (keyEvent->modifiers() & Qt::ControlModifier) {  // Create group
             groups_[group].clear();
-            for (auto& item: getSelectedPrimitiveItems()) {
+            for (auto& item : getSelectedPrimitiveItems()) {
                 groups_[group].push_back(item);
             }
         } else {
@@ -396,7 +392,7 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
     }
 }
 
-void TransferFunctionEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
+void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     const QPointF pos(e->scenePos());
 
     auto primitiveUnderMouse = getTFPrimitiveItemAt(pos);
@@ -432,7 +428,7 @@ void TransferFunctionEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e)
 
     {
         editColor->setEnabled(!selectionEmpty);
-        connect(editColor, &QAction::triggered, this, &TransferFunctionEditor::showColorDialog);
+        connect(editColor, &QAction::triggered, this, &TFEditor::showColorDialog);
 
         duplicatePrimitive->setEnabled(!selectionEmpty);
         connect(duplicatePrimitive, &QAction::triggered, this, [this, pos]() {
@@ -533,8 +529,8 @@ void TransferFunctionEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e)
             NetworkLock lock(tfProperty_);
             tfProperty_->resetToDefaultState();
         });
-        connect(importTF, &QAction::triggered, this, &TransferFunctionEditor::importTF);
-        connect(exportTF, &QAction::triggered, this, &TransferFunctionEditor::exportTF);
+        connect(importTF, &QAction::triggered, this, &TFEditor::importTF);
+        connect(exportTF, &QAction::triggered, this, &TFEditor::exportTF);
     }
 
     if (menu.exec(e->screenPos())) {
@@ -542,14 +538,14 @@ void TransferFunctionEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e)
     }
 }
 
-void TransferFunctionEditor::addControlPoint(const QPointF& pos) {
+void TFEditor::addControlPoint(const QPointF& pos) {
     dvec2 p(glm::clamp(pos.x() / width(), 0.0, 1.0), glm::clamp(pos.y() / height(), 0.0, 1.0));
 
     NetworkLock lock(tfProperty_);
     transferFunction_->add(p);
 }
 
-void TransferFunctionEditor::addControlPoint(double pos, const vec4& color) {
+void TFEditor::addControlPoint(double pos, const vec4& color) {
     // add control point to transfer function
     pos = glm::clamp(pos / width(), 0.0, 1.0);
 
@@ -557,7 +553,7 @@ void TransferFunctionEditor::addControlPoint(double pos, const vec4& color) {
     transferFunction_->add(TFPrimitiveData{pos, color});
 }
 
-void TransferFunctionEditor::addControlPointPeak(const QPointF& pos) {
+void TFEditor::addControlPointPeak(const QPointF& pos) {
     dvec2 p(glm::clamp(pos.x() / width(), 0.0, 1.0), glm::clamp(pos.y() / height(), 0.0, 1.0));
 
     NetworkLock lock(tfProperty_);
@@ -580,17 +576,16 @@ void TransferFunctionEditor::addControlPointPeak(const QPointF& pos) {
     }
 }
 
-void TransferFunctionEditor::removeControlPoint(TransferFunctionEditorPrimitive* controlPoint) {
+void TFEditor::removeControlPoint(TFEditorPrimitive* controlPoint) {
     NetworkLock lock(tfProperty_);
     transferFunction_->removePoint(controlPoint->getPrimitive());
 }
 
-TransferFunctionEditorPrimitive* TransferFunctionEditor::getTFPrimitiveItemAt(
-    const QPointF& pos) const {
+TFEditorPrimitive* TFEditor::getTFPrimitiveItemAt(const QPointF& pos) const {
     QList<QGraphicsItem*> graphicsItems = items(pos);
 
     for (auto& graphicsItem : graphicsItems) {
-        if (auto item = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(graphicsItem)) {
+        if (auto item = qgraphicsitem_cast<TFEditorPrimitive*>(graphicsItem)) {
             return item;
         }
     }
@@ -598,12 +593,10 @@ TransferFunctionEditorPrimitive* TransferFunctionEditor::getTFPrimitiveItemAt(
     return nullptr;
 }
 
-void TransferFunctionEditor::onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive*) {
-    emit showColorDialog();
-}
+void TFEditor::onTFPrimitiveDoubleClicked(const TFEditorPrimitive*) { emit showColorDialog(); }
 
-void TransferFunctionEditor::onControlPointAdded(TFPrimitive* p) {
-    auto newpoint = new TransferFunctionEditorControlPoint(p, this, controlPointSize_);
+void TFEditor::onControlPointAdded(TFPrimitive* p) {
+    auto newpoint = new TFEditorControlPoint(p, this, controlPointSize_);
     if (selectNewPrimitives_) {
         newpoint->setSelected(true);
     }
@@ -612,7 +605,7 @@ void TransferFunctionEditor::onControlPointAdded(TFPrimitive* p) {
     updateConnections();
 }
 
-void TransferFunctionEditor::onControlPointRemoved(TFPrimitive* p) {
+void TFEditor::onControlPointRemoved(TFPrimitive* p) {
     // remove point from all groups
     for (auto& elem : groups_) {
         auto it = std::find_if(elem.begin(), elem.end(), ControlPointEquals(p));
@@ -628,13 +621,13 @@ void TransferFunctionEditor::onControlPointRemoved(TFPrimitive* p) {
     }
 }
 
-void TransferFunctionEditor::onControlPointChanged(const TFPrimitive*) {}
+void TFEditor::onControlPointChanged(const TFPrimitive*) {}
 
-void TransferFunctionEditor::updateConnections() {
+void TFEditor::updateConnections() {
     std::stable_sort(points_.begin(), points_.end(), comparePtr{});
 
     while (connections_.size() < points_.size() + 1) {
-        auto c = new TransferFunctionControlPointConnection();
+        auto c = new TFControlPointConnection();
         connections_.push_back(c);
         addItem(c);
     }
@@ -660,31 +653,27 @@ void TransferFunctionEditor::updateConnections() {
     }
 }
 
-void TransferFunctionEditor::setMoveMode(int i) { moveMode_ = i; }
+void TFEditor::setMoveMode(int i) { moveMode_ = i; }
 
-int TransferFunctionEditor::getMoveMode() const { return moveMode_; }
+int TFEditor::getMoveMode() const { return moveMode_; }
 
-void TransferFunctionEditor::setControlPointSize(double val) {
+void TFEditor::setControlPointSize(double val) {
     controlPointSize_ = val;
     for (auto e : points_) {
         e->setSize(controlPointSize_);
     }
 }
 
-void TransferFunctionEditor::setRelativeSceneOffset(const dvec2& offset) {
-    relativeSceneOffset_ = offset;
-}
+void TFEditor::setRelativeSceneOffset(const dvec2& offset) { relativeSceneOffset_ = offset; }
 
-const DataMapper& TransferFunctionEditor::getDataMapper() const { return dataMap_; }
+const DataMapper& TFEditor::getDataMapper() const { return dataMap_; }
 
-TransferFunctionProperty* TransferFunctionEditor::getTransferFunctionProperty() {
-    return tfProperty_;
-}
+TransferFunctionProperty* TFEditor::getTransferFunctionProperty() { return tfProperty_; }
 
-std::vector<TFPrimitive*> TransferFunctionEditor::getSelectedPrimitives() const {
+std::vector<TFPrimitive*> TFEditor::getSelectedPrimitives() const {
     std::vector<TFPrimitive*> selection;
     for (auto& elem : selectedItems()) {
-        if (auto p = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
+        if (auto p = qgraphicsitem_cast<TFEditorPrimitive*>(elem)) {
             selection.push_back(p->getPrimitive());
         }
     }
@@ -692,11 +681,10 @@ std::vector<TFPrimitive*> TransferFunctionEditor::getSelectedPrimitives() const 
     return selection;
 }
 
-std::vector<TransferFunctionEditorPrimitive*> TransferFunctionEditor::getSelectedPrimitiveItems()
-    const {
-    std::vector<TransferFunctionEditorPrimitive*> selection;
+std::vector<TFEditorPrimitive*> TFEditor::getSelectedPrimitiveItems() const {
+    std::vector<TFEditorPrimitive*> selection;
     for (auto& elem : selectedItems()) {
-        if (auto p = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
+        if (auto p = qgraphicsitem_cast<TFEditorPrimitive*>(elem)) {
             selection.push_back(p);
         }
     }

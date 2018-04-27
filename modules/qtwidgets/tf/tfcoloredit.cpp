@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/tfcoloredit.h>
+#include <modules/qtwidgets/tf/tfcoloredit.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/util/colorconversion.h>

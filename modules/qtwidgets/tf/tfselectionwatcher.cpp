@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/tfselectionwatcher.h>
-#include <modules/qtwidgets/properties/transferfunctioneditor.h>
+#include <modules/qtwidgets/tf/tfselectionwatcher.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -38,8 +38,7 @@
 
 namespace inviwo {
 
-TFSelectionWatcher::TFSelectionWatcher(TransferFunctionEditor *editor,
-                                       TransferFunctionProperty *property)
+TFSelectionWatcher::TFSelectionWatcher(TFEditor *editor, TransferFunctionProperty *property)
     : tfEditor_(editor), tfProperty_(property) {}
 
 void TFSelectionWatcher::setPosition(double pos) {

@@ -27,17 +27,17 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
-#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
+#include <modules/qtwidgets/tf/tfselectionwatcher.h>
+#include <modules/qtwidgets/tf/tflineedit.h>
+#include <modules/qtwidgets/tf/tfcoloredit.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/rangesliderqt.h>
 #include <modules/qtwidgets/colorwheel.h>
-#include <modules/qtwidgets/tfselectionwatcher.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/tflineedit.h>
-#include <modules/qtwidgets/tfcoloredit.h>
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>
 #include <modules/qtwidgets/qtwidgetsmodule.h>
 #include <modules/qtwidgets/tfhelpwindow.h>
@@ -68,7 +68,7 @@
 
 namespace inviwo {
 
-TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty)
+TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* tfProperty)
     : PropertyEditorWidgetQt(tfProperty, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(static_cast<int>(tfProperty->get().getTextureSize()))
     , tfProperty_(tfProperty)
@@ -94,17 +94,15 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     tfProperty->TransferFunctionPropertyObservable::addObserver(this);
     tfProperty_->get().addObserver(this);
 
-    tfEditor_ = util::make_unique<TransferFunctionEditor>(tfProperty_, this);
+    tfEditor_ = util::make_unique<TFEditor>(tfProperty_, this);
     tfSelectionWatcher_ = util::make_unique<TFSelectionWatcher>(tfEditor_.get(), tfProperty_);
 
-    connect(tfEditor_.get(), &TransferFunctionEditor::selectionChanged, this,
+    connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
-    connect(tfEditor_.get(), &TransferFunctionEditor::importTF, this,
-            &TransferFunctionPropertyDialog::importTransferFunction);
-    connect(tfEditor_.get(), &TransferFunctionEditor::exportTF, this,
-            &TransferFunctionPropertyDialog::exportTransferFunction);
+    connect(tfEditor_.get(), &TFEditor::importTF, this, &TFPropertyDialog::importTransferFunction);
+    connect(tfEditor_.get(), &TFEditor::exportTF, this, &TFPropertyDialog::exportTransferFunction);
 
-    tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
+    tfEditorView_ = new TFEditorView(tfProperty_);
 
     // put origin to bottom left corner
     ivec2 minEditorDims = vec2(255, 100);
@@ -122,7 +120,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     // flip slider values to compensate for vertical slider layout
     onZoomVChange(tfProperty_->getZoomV());
     connect(zoomVSlider_, &RangeSliderQt::valuesChanged, this,
-            &TransferFunctionPropertyDialog::changeVerticalZoom);
+            &TFPropertyDialog::changeVerticalZoom);
 
     zoomVSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(1.0f - static_cast<float>(val) / range);
@@ -133,7 +131,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     zoomHSlider_->setMinSeparation(5);
     onZoomHChange(tfProperty_->getZoomH());
     connect(zoomHSlider_, &RangeSliderQt::valuesChanged, this,
-            &TransferFunctionPropertyDialog::changeHorizontalZoom);
+            &TFPropertyDialog::changeHorizontalZoom);
 
     zoomHSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
         return toString(static_cast<float>(val) / range);
@@ -167,7 +165,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     chkShowHistogram_->setCurrentIndex(static_cast<int>(tfProperty_->getHistogramMode()));
     connect(chkShowHistogram_,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
-            &TransferFunctionPropertyDialog::showHistogram);
+            &TFPropertyDialog::showHistogram);
 
     pointMoveMode_ = new QComboBox();
     pointMoveMode_->addItem("Point Movement: Free");
@@ -175,7 +173,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     pointMoveMode_->addItem("Point Movement: Push");
     pointMoveMode_->setCurrentIndex(0);
     connect(pointMoveMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, &TransferFunctionPropertyDialog::changeMoveMode);
+            this, &TFPropertyDialog::changeMoveMode);
 
     // set up TF primitive widgets
     {
@@ -269,7 +267,7 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
         colorDialog_->setWindowTitle(QString("TF Primitive Color - %1")
                                          .arg(utilqt::toQString(tfProperty_->getDisplayName())));
 
-        connect(tfEditor_.get(), &TransferFunctionEditor::showColorDialog,
+        connect(tfEditor_.get(), &TFEditor::showColorDialog,
                 colorDialog_.get(), [dialog = colorDialog_.get()]() {
 #ifdef __APPLE__
                     // OSX Bug workaround: hide the dialog, due to some Mac issues
@@ -316,18 +314,18 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     loadState();
 }
 
-TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
+TFPropertyDialog::~TFPropertyDialog() {
     tfEditor_->disconnect();
     hide();
 }
 
-QSize TransferFunctionPropertyDialog::minimumSizeHint() const {
-    return TransferFunctionPropertyDialog::sizeHint();
+QSize TFPropertyDialog::minimumSizeHint() const {
+    return TFPropertyDialog::sizeHint();
 }
 
-QSize TransferFunctionPropertyDialog::sizeHint() const { return layout()->sizeHint(); }
+QSize TFPropertyDialog::sizeHint() const { return layout()->sizeHint(); }
 
-void TransferFunctionPropertyDialog::updateFromProperty() {
+void TFPropertyDialog::updateFromProperty() {
     if (!tfProperty_->getOwner()) return;
 
     auto processorName = tfProperty_->getOwner()->getProcessor()->getDisplayName();
@@ -338,8 +336,8 @@ void TransferFunctionPropertyDialog::updateFromProperty() {
     updateTFPreview();
 }
 
-void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
-    // normalize zoom values, as sliders in TransferFunctionPropertyDialog
+void TFPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
+    // normalize zoom values, as sliders in TFPropertyDialog
     // have the range [0...100]
     // and flip/rescale values to compensate slider layout
     const auto zoomMaxF = static_cast<float>(sliderRange_ - zoomMin) / sliderRange_;
@@ -349,7 +347,7 @@ void TransferFunctionPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax
     tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
 }
 
-void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
+void TFPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
     const auto zoomMinF = static_cast<float>(zoomMin) / sliderRange_;
     const auto zoomMaxF = static_cast<float>(zoomMax) / sliderRange_;
 
@@ -357,7 +355,7 @@ void TransferFunctionPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomM
     tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
 }
 
-void TransferFunctionPropertyDialog::importTransferFunction() {
+void TFPropertyDialog::importTransferFunction() {
     InviwoFileDialog importFileDialog(this, "Import transfer function", "transferfunction");
     importFileDialog.setAcceptMode(AcceptMode::Open);
     importFileDialog.setFileMode(FileMode::ExistingFile);
@@ -377,7 +375,7 @@ void TransferFunctionPropertyDialog::importTransferFunction() {
     }
 }
 
-void TransferFunctionPropertyDialog::exportTransferFunction() {
+void TFPropertyDialog::exportTransferFunction() {
     InviwoFileDialog exportFileDialog(this, "Export transfer function", "transferfunction");
     exportFileDialog.setAcceptMode(AcceptMode::Save);
     exportFileDialog.setFileMode(FileMode::AnyFile);
@@ -398,11 +396,11 @@ void TransferFunctionPropertyDialog::exportTransferFunction() {
     }
 }
 
-void TransferFunctionPropertyDialog::showHistogram(int type) {
+void TFPropertyDialog::showHistogram(int type) {
     tfProperty_->setHistogramMode(static_cast<HistogramMode>(type));
 }
 
-void TransferFunctionPropertyDialog::resizeEvent(QResizeEvent* event) {
+void TFPropertyDialog::resizeEvent(QResizeEvent* event) {
     PropertyEditorWidgetQt::resizeEvent(event);
 
     tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
@@ -410,28 +408,28 @@ void TransferFunctionPropertyDialog::resizeEvent(QResizeEvent* event) {
     updateTFPreview();
 }
 
-void TransferFunctionPropertyDialog::showEvent(QShowEvent* event) {
+void TFPropertyDialog::showEvent(QShowEvent* event) {
     updateTFPreview();
     tfEditorView_->update();
     PropertyEditorWidgetQt::showEvent(event);
 }
 
-void TransferFunctionPropertyDialog::onTFPrimitiveAdded(TFPrimitive* p) {
+void TFPropertyDialog::onTFPrimitiveAdded(TFPrimitive* p) {
     tfEditor_->onControlPointAdded(p);
     updateFromProperty();
 }
 
-void TransferFunctionPropertyDialog::onTFPrimitiveRemoved(TFPrimitive* p) {
+void TFPropertyDialog::onTFPrimitiveRemoved(TFPrimitive* p) {
     tfEditor_->onControlPointRemoved(p);
     updateFromProperty();
 }
 
-void TransferFunctionPropertyDialog::onTFPrimitiveChanged(const TFPrimitive* p) {
+void TFPropertyDialog::onTFPrimitiveChanged(const TFPrimitive* p) {
     tfEditor_->onControlPointChanged(p);
     updateFromProperty();
 }
 
-void TransferFunctionPropertyDialog::onTFTypeChanged(const TFPrimitiveSet*) {
+void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet*) {
     // adjust value mapping in primitive widget for position
     dvec2 valueRange(0.0, 1.0);
     if (auto port = tfProperty_->getVolumeInport()) {
@@ -443,23 +441,21 @@ void TransferFunctionPropertyDialog::onTFTypeChanged(const TFPrimitiveSet*) {
                                    valueRange);
 }
 
-void TransferFunctionPropertyDialog::onMaskChange(const dvec2&) { updateTFPreview(); }
+void TFPropertyDialog::onMaskChange(const dvec2&) { updateTFPreview(); }
 
-void TransferFunctionPropertyDialog::onZoomHChange(const dvec2& zoomH) {
+void TFPropertyDialog::onZoomHChange(const dvec2& zoomH) {
     zoomHSlider_->setValue(static_cast<int>(zoomH.x * sliderRange_),
                            static_cast<int>(zoomH.y * sliderRange_));
 }
 
-void TransferFunctionPropertyDialog::onZoomVChange(const dvec2& zoomV) {
+void TFPropertyDialog::onZoomVChange(const dvec2& zoomV) {
     zoomVSlider_->setValue(sliderRange_ - static_cast<int>(zoomV.y * sliderRange_),
                            sliderRange_ - static_cast<int>(zoomV.x * sliderRange_));
 }
 
-TransferFunctionEditorView* TransferFunctionPropertyDialog::getEditorView() const {
-    return tfEditorView_;
-}
+TFEditorView* TFPropertyDialog::getEditorView() const { return tfEditorView_; }
 
-void TransferFunctionPropertyDialog::setReadOnly(bool readonly) {
+void TFPropertyDialog::setReadOnly(bool readonly) {
     colorWheel_->setDisabled(readonly);
     tfEditorView_->setDisabled(readonly);
     primitivePos_->setDisabled(readonly);
@@ -468,14 +464,14 @@ void TransferFunctionPropertyDialog::setReadOnly(bool readonly) {
     pointMoveMode_->setDisabled(readonly);
 }
 
-void TransferFunctionPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
+void TFPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
 
-void TransferFunctionPropertyDialog::updateTFPreview() {
+void TFPropertyDialog::updateTFPreview() {
     auto pixmap = utilqt::toQPixmap(*tfProperty_, QSize(tfPreview_->width(), 20));
     tfPreview_->setPixmap(pixmap);
 }
 
-dvec2 TransferFunctionPropertyDialog::getRelativeSceneOffset() const {
+dvec2 TFPropertyDialog::getRelativeSceneOffset() const {
     // to determine the offset in scene coords, map a square where each side has length
     // defaultOffset_ to the scene. We assume that there is no rotation or non-linear view
     // transformation.

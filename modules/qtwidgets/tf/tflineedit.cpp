@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/tflineedit.h>
+#include <modules/qtwidgets/tf/tflineedit.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

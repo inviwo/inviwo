@@ -29,10 +29,10 @@
 
 #include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorview.h>
-#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
-#include <modules/qtwidgets/properties/transferfunctioneditor.h>
+#include <modules/qtwidgets/tf/tfeditorview.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 #include <warn/push>
@@ -48,7 +48,7 @@
 
 namespace inviwo {
 
-TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty* tfProperty)
+TFEditorView::TFEditorView(TransferFunctionProperty* tfProperty)
     : QGraphicsView()
     , tfProperty_(tfProperty)
     , volumeInport_(tfProperty->getVolumeInport())
@@ -89,7 +89,7 @@ TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty*
     updateHistogram();
 }
 
-TransferFunctionEditorView::~TransferFunctionEditorView() {
+TFEditorView::~TFEditorView() {
     stopHistCalculation_ = true;
     if (volumeInport_) {
         volumeInport_->removeOnInvalid(callbackOnInvalid);
@@ -99,18 +99,18 @@ TransferFunctionEditorView::~TransferFunctionEditorView() {
     }
 }
 
-void TransferFunctionEditorView::onMaskChange(const dvec2& mask) {
+void TFEditorView::onMaskChange(const dvec2& mask) {
     if (maskHorizontal_ != mask) {
         maskHorizontal_ = mask;
         update();
     }
 }
 
-void TransferFunctionEditorView::onZoomHChange(const dvec2&) { updateZoom(); }
+void TFEditorView::onZoomHChange(const dvec2&) { updateZoom(); }
 
-void TransferFunctionEditorView::onZoomVChange(const dvec2&) { updateZoom(); }
+void TFEditorView::onZoomVChange(const dvec2&) { updateZoom(); }
 
-void TransferFunctionEditorView::onHistogramModeChange(HistogramMode mode) {
+void TFEditorView::onHistogramModeChange(HistogramMode mode) {
     if (histogramMode_ != mode) {
         histogramMode_ = mode;
         if (histogramMode_ != HistogramMode::Off) updateHistogram();
@@ -119,7 +119,7 @@ void TransferFunctionEditorView::onHistogramModeChange(HistogramMode mode) {
     }
 }
 
-void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
+void TFEditorView::wheelEvent(QWheelEvent* event) {
     const QPointF numPixels = event->pixelDelta() / 5.0;
     const QPointF numDegrees = event->angleDelta() / 8.0 / 15;
 
@@ -142,7 +142,7 @@ void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
 
         dvec2 horizontal = tfProperty_->getZoomH();
         double zoomExtent = horizontal.y - horizontal.x;
-        
+
         // off-center zooming
         // relative position within current zoom range
         auto zoomCenter = event->posF().x() / width() * zoomExtent + horizontal.x;
@@ -190,13 +190,13 @@ void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
     event->accept();
 }
 
-void TransferFunctionEditorView::resizeEvent(QResizeEvent* event) {
+void TFEditorView::resizeEvent(QResizeEvent* event) {
     QGraphicsView::resizeEvent(event);
     resetCachedContent();
     updateZoom();
 }
 
-void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
+void TFEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
     QPen pen;
     pen.setCosmetic(true);
     pen.setWidthF(1.5);
@@ -224,7 +224,7 @@ void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF&
     QGraphicsView::drawForeground(painter, rect);
 }
 
-void TransferFunctionEditorView::updateHistogram() {
+void TFEditorView::updateHistogram() {
     histograms_.clear();
     QRectF sRect = sceneRect();
 
@@ -280,7 +280,7 @@ void TransferFunctionEditorView::updateHistogram() {
     }
 }
 
-const HistogramContainer* TransferFunctionEditorView::getNormalizedHistograms() {
+const HistogramContainer* TFEditorView::getNormalizedHistograms() {
     if (volumeInport_ && volumeInport_->hasData()) {
         if (const auto volumeRAM = volumeInport_->getData()->getRepresentation<VolumeRAM>()) {
             if (volumeRAM->hasHistograms()) {
@@ -311,7 +311,7 @@ const HistogramContainer* TransferFunctionEditorView::getNormalizedHistograms() 
     return nullptr;
 }
 
-void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
+void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->fillRect(rect, QColor(89, 89, 89));
 
     // overlay grid
@@ -379,7 +379,7 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
     }
 }
 
-void TransferFunctionEditorView::updateZoom() {
+void TFEditorView::updateZoom() {
     const auto rect = scene()->sceneRect();
     const auto zh = tfProperty_->getZoomH();
     const auto zv = tfProperty_->getZoomV();

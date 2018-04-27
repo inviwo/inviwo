@@ -27,10 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/datastructures/tfprimitive.h>
@@ -43,7 +42,7 @@
 
 namespace inviwo {
 
-TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
+TFPropertyWidgetQt::TFPropertyWidgetQt(
     TransferFunctionProperty* property)
     : PropertyWidgetQt(property)
     , label_{new EditableLabelQt(this, property_)}
@@ -57,7 +56,7 @@ TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
 
     connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
         if (!transferFunctionDialog_) {
-            transferFunctionDialog_ = util::make_unique<TransferFunctionPropertyDialog>(
+            transferFunctionDialog_ = util::make_unique<TFPropertyDialog>(
                 static_cast<TransferFunctionProperty*>(property_));
             transferFunctionDialog_->setVisible(true);
         } else {
@@ -87,21 +86,21 @@ TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
     setSizePolicy(sp);
 }
 
-TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
+TFPropertyWidgetQt::~TFPropertyWidgetQt() {
     if (transferFunctionDialog_) transferFunctionDialog_->hide();
 }
 
-void TransferFunctionPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
+void TFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
-TransferFunctionPropertyDialog* TransferFunctionPropertyWidgetQt::getEditorWidget() const {
+TFPropertyDialog* TFPropertyWidgetQt::getEditorWidget() const {
     return transferFunctionDialog_.get();
 }
 
-bool TransferFunctionPropertyWidgetQt::hasEditorWidget() const {
+bool TFPropertyWidgetQt::hasEditorWidget() const {
     return transferFunctionDialog_ != nullptr;
 }
 
-void TransferFunctionPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
+void TFPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
     : IvwPushButton(parent), tfProperty_(property) {}

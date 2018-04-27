@@ -31,7 +31,7 @@
 #define IVW_TRANSFERFUNCTIONEDITOR_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
 #include <inviwo/core/datastructures/datamapper.h>
 
 #include <warn/push>
@@ -49,19 +49,18 @@ namespace inviwo {
 
 class TransferFunction;
 class TransferFunctionProperty;
-class TransferFunctionEditorControlPoint;
-class TransferFunctionControlPointConnection;
+class TFEditorControlPoint;
+class TFControlPointConnection;
 class TFPrimitive;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene,
-                                                        public TFEditorPrimitiveObserver {
+class IVW_MODULE_QTWIDGETS_API TFEditor : public QGraphicsScene, public TFEditorPrimitiveObserver {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    TransferFunctionEditor(TransferFunctionProperty* tfProperty, QWidget* parent = nullptr);
-    virtual ~TransferFunctionEditor();
+    TFEditor(TransferFunctionProperty* tfProperty, QWidget* parent = nullptr);
+    virtual ~TFEditor();
 
     virtual void onControlPointAdded(TFPrimitive* p);
     virtual void onControlPointRemoved(TFPrimitive* p);
@@ -126,14 +125,14 @@ protected:
      */
     void addControlPointPeak(const QPointF& pos);
 
-    void removeControlPoint(TransferFunctionEditorPrimitive* p);
+    void removeControlPoint(TFEditorPrimitive* p);
 
-    TransferFunctionEditorPrimitive* getTFPrimitiveItemAt(const QPointF& pos) const;
+    TFEditorPrimitive* getTFPrimitiveItemAt(const QPointF& pos) const;
 
-    virtual void onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive* p) override;
+    virtual void onTFPrimitiveDoubleClicked(const TFEditorPrimitive* p) override;
 
 private:
-    std::vector<TransferFunctionEditorPrimitive*> getSelectedPrimitiveItems() const;
+    std::vector<TFEditorPrimitive*> getSelectedPrimitiveItems() const;
 
     double controlPointSize_ = 15.0;           //!< size of TF primitives
     dvec2 relativeSceneOffset_ = dvec2(10.0);  //!< offset for duplicating TF primitives
@@ -141,8 +140,8 @@ private:
     TransferFunctionProperty* tfProperty_;
     TransferFunction* transferFunction_;  //!< pointer to TF inside TF property
 
-    using PointVec = std::vector<TransferFunctionEditorControlPoint*>;
-    using ConnectionVec = std::vector<TransferFunctionControlPointConnection*>;
+    using PointVec = std::vector<TFEditorControlPoint*>;
+    using ConnectionVec = std::vector<TFControlPointConnection*>;
     PointVec points_;
     ConnectionVec connections_;
     bool mouseDrag_;
@@ -150,16 +149,14 @@ private:
     bool mouseDoubleClick_ = false;
     DataMapper dataMap_;
 
-    std::vector<std::vector<TransferFunctionEditorPrimitive*> > groups_;
+    std::vector<std::vector<TFEditorPrimitive*> > groups_;
     int moveMode_;
 
     bool selectNewPrimitives_;
 };
 
-inline double TransferFunctionEditor::getControlPointSize() const { return controlPointSize_; }
-inline const dvec2& TransferFunctionEditor::getRelativeSceneOffset() const {
-    return relativeSceneOffset_;
-}
+inline double TFEditor::getControlPointSize() const { return controlPointSize_; }
+inline const dvec2& TFEditor::getRelativeSceneOffset() const { return relativeSceneOffset_; }
 
 }  // namespace inviwo
 

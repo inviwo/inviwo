@@ -24,13 +24,13 @@ set(MOC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processordockwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processorwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringmultilinepropertywidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rangesliderqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/tfcoloredit.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/tflineedit.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/tfselectionwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcoloredit.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tflineedit.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfselectionwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tfhelpwindow.h
 )
 
@@ -64,17 +64,17 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/syntaxhighlighter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/texteditorwidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioncontrolpointconnection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditorcontrolpoint.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditorprimitive.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditorview.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctionpropertydialog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctionpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qstringhelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmoduledefine.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetssettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rawdatareaderdialogqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcontrolpointconnection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorcontrolpoint.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorprimitive.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorview.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfpropertydialog.h
     ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -126,23 +126,23 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/syntaxhighlighter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/texteditorwidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioncontrolpointconnection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditorcontrolpoint.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditorprimitive.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctioneditorview.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctionpropertydialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/transferfunctionpropertywidgetqt.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetssettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangesliderqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rawdatareaderdialogqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tfcoloredit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcoloredit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcontrolpointconnection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorcontrolpoint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorprimitive.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tflineedit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfpropertydialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfselectionwatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorview.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tfhelpwindow.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tflineedit.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tfselectionwatcher.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

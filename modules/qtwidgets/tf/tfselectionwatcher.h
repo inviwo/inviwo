@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-class TransferFunctionEditor;
+class TFEditor;
 class TransferFunctionProperty;
 
 /**
@@ -56,7 +56,7 @@ class IVW_MODULE_QTWIDGETS_API TFSelectionWatcher : public QObject, public TFPri
     Q_OBJECT
 #include <warn/pop>
 public:
-    TFSelectionWatcher(TransferFunctionEditor *editor, TransferFunctionProperty *property);
+    TFSelectionWatcher(TFEditor *editor, TransferFunctionProperty *property);
     virtual ~TFSelectionWatcher() = default;
 
 signals:
@@ -100,7 +100,7 @@ private:
 
     std::vector<TFPrimitive *> selectedPrimitives_;
 
-    TransferFunctionEditor *tfEditor_;
+    TFEditor *tfEditor_;
     TransferFunctionProperty *tfProperty_;
 
     bool updateInProgress_ = false;

@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
-#include <modules/qtwidgets/properties/transferfunctioncontrolpointconnection.h>
-
-#include <modules/qtwidgets/properties/transferfunctioneditor.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorview.h>
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
+#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
+#include <modules/qtwidgets/tf/tfeditorview.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -41,41 +40,40 @@
 
 namespace inviwo {
 
-TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(TFPrimitive* primitive,
-                                                                       QGraphicsScene* scene,
-                                                                       double size)
-    : TransferFunctionEditorPrimitive(primitive, scene,
-                                      vec2(primitive->getPosition(), primitive->getAlpha()), size) {
+TFEditorControlPoint::TFEditorControlPoint(TFPrimitive* primitive, QGraphicsScene* scene,
+                                           double size)
+    : TFEditorPrimitive(primitive, scene, vec2(primitive->getPosition(), primitive->getAlpha()),
+                        size) {
     data_->addObserver(this);
 }
 
-void TransferFunctionEditorControlPoint::onTFPrimitiveChange(const TFPrimitive* p) {
+void TFEditorControlPoint::onTFPrimitiveChange(const TFPrimitive* p) {
     setTFPosition(vec2(p->getPosition(), p->getAlpha()));
 }
 
-QRectF TransferFunctionEditorControlPoint::boundingRect() const {
+QRectF TFEditorControlPoint::boundingRect() const {
     double bBoxSize = getSize() + 5.0;  //<! consider size of pen
     auto bRect = QRectF(-bBoxSize / 2.0, -bBoxSize / 2.0, bBoxSize, bBoxSize);
 
     return bRect;
 }
 
-QPainterPath TransferFunctionEditorControlPoint::shape() const {
+QPainterPath TFEditorControlPoint::shape() const {
     QPainterPath path;
     const auto radius = getSize() * 0.5 + 1.5;  //<! consider size of pen
     path.addEllipse(QPointF(0.0, 0.0), radius, radius);
     return path;
 }
 
-void TransferFunctionEditorControlPoint::paintPrimitive(QPainter* painter) {
+void TFEditorControlPoint::paintPrimitive(QPainter* painter) {
     const auto radius = getSize() * 0.5;
     painter->drawEllipse(QPointF(0.0, 0.0), radius, radius);
 }
 
-QPointF TransferFunctionEditorControlPoint::prepareItemPositionChange(const QPointF& pos) {
+QPointF TFEditorControlPoint::prepareItemPositionChange(const QPointF& pos) {
     QPointF adjustedPos(pos);
 
-    if (auto tfe = qobject_cast<TransferFunctionEditor*>(scene())) {
+    if (auto tfe = qobject_cast<TFEditor*>(scene())) {
         QRectF rect = scene()->sceneRect();
         const double d = 2.0 * rect.width() * glm::epsilon<float>();
 
@@ -132,41 +130,33 @@ QPointF TransferFunctionEditorControlPoint::prepareItemPositionChange(const QPoi
     return adjustedPos;
 }
 
-void TransferFunctionEditorControlPoint::onItemPositionChange(const vec2& newPos) {
+void TFEditorControlPoint::onItemPositionChange(const vec2& newPos) {
     data_->setPositionAlpha(newPos);
 }
 
-void TransferFunctionEditorControlPoint::onItemSceneHasChanged() {
-    onTFPrimitiveChange(data_);
-}
+void TFEditorControlPoint::onItemSceneHasChanged() { onTFPrimitiveChange(data_); }
 
-bool operator==(const TransferFunctionEditorControlPoint& lhs,
-                const TransferFunctionEditorControlPoint& rhs) {
+bool operator==(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
     return *lhs.data_ == *rhs.data_;
 }
 
-bool operator!=(const TransferFunctionEditorControlPoint& lhs,
-                const TransferFunctionEditorControlPoint& rhs) {
+bool operator!=(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
     return !operator==(lhs, rhs);
 }
 
-bool operator<(const TransferFunctionEditorControlPoint& lhs,
-               const TransferFunctionEditorControlPoint& rhs) {
+bool operator<(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
     return lhs.currentPos_.x() < rhs.currentPos_.x();
 }
 
-bool operator>(const TransferFunctionEditorControlPoint& lhs,
-               const TransferFunctionEditorControlPoint& rhs) {
+bool operator>(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
     return rhs < lhs;
 }
 
-bool operator<=(const TransferFunctionEditorControlPoint& lhs,
-                const TransferFunctionEditorControlPoint& rhs) {
+bool operator<=(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
     return !(rhs < lhs);
 }
 
-bool operator>=(const TransferFunctionEditorControlPoint& lhs,
-                const TransferFunctionEditorControlPoint& rhs) {
+bool operator>=(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
     return !(lhs < rhs);
 }
 
