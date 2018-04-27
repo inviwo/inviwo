@@ -103,6 +103,7 @@ set(INTERFACE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyprocessors.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyproperties.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pypropertyowner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pytfprimitiveset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyvolume.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/vectoridentifierwrapper.h
 )
@@ -121,6 +122,7 @@ set(INTERFACE_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyprocessors.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyproperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pypropertyowner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pytfprimitiveset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyvolume.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/vectoridentifierwrapper.cpp
 )

@@ -185,6 +185,10 @@ void TFPrimitiveSet::add(const TFPrimitive& primitive) {
     add(util::make_unique<TFPrimitive>(primitive));
 }
 
+void TFPrimitiveSet::add(double pos, const vec4& color) {
+    add(util::make_unique<TFPrimitive>(pos, color));
+}
+
 void TFPrimitiveSet::add(const dvec2& pos) {
     const vec4 color(vec3(interpolateColor(pos.x)), static_cast<float>(pos.y));
     add(util::make_unique<TFPrimitive>(pos.x, color));

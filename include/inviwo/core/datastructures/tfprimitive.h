@@ -54,7 +54,7 @@ struct IVW_CORE_API TFPrimitiveData {
  */
 class IVW_CORE_API TFPrimitive : public Observable<TFPrimitiveObserver>, public Serializable {
 public:
-    TFPrimitive(double pos = 0.0f, const vec4& color = vec4(0.0f));
+    TFPrimitive(double pos = 0.0, const vec4& color = vec4(0.0f));
     TFPrimitive(const TFPrimitiveData& data);
     TFPrimitive(const TFPrimitive& rhs) = default;
     TFPrimitive(TFPrimitive&& rhs) = default;

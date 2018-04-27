@@ -81,7 +81,7 @@ public:
     //[[deprecated("was declared deprecated. Use `add(const std::vector<TFPrimitiveData>& primitives)` instead")]]
     void addPoints(const std::vector<TFPrimitiveData>& points);
 
-    //[[deprecated("was declared deprecated. Use `addPoint(const double& pos, const vec4& color)` instead")]]
+    //[[deprecated("was declared deprecated. Use `add(const double& pos, const vec4& color)` instead")]]
     void addPoint(const vec2& pos, const vec4& color);
 
     //[[deprecated("was declared deprecated. Use `remove(TFPrimitive* primitive)` instead")]]
