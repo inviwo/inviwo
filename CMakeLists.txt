@@ -60,6 +60,11 @@ if(POLICY CMP0057)
     cmake_policy(SET CMP0057 NEW)
 endif()
 
+if(POLICY CMP0066)
+    # Honor per-config flags in ``try_compile()`` source-file signature.
+    cmake_policy(SET CMP0066 NEW)
+endif()
+
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 # option for setting the project/solution name of the Inviwo project
