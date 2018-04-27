@@ -45,12 +45,12 @@
 
 namespace inviwo {
 
-UndoManager::UndoManager(InviwoMainWindow* mainWindow)
+UndoManager::UndoManager(InviwoMainWindow *mainWindow)
     : mainWindow_(mainWindow)
     , manager_{mainWindow_->getInviwoApplication()->getWorkspaceManager()}
     , refPath_{filesystem::findBasePath()} {
 
-    mainWindow_->getInviwoApplicationQt()->setUndoTrigger([this](){pushStateIfDirty();});
+    mainWindow_->getInviwoApplicationQt()->setUndoTrigger([this]() { pushStateIfDirty(); });
     mainWindow_->getInviwoApplication()->getProcessorNetwork()->addObserver(this);
 
     undoAction_ = new QAction(QIcon(":/icons/undo.png"), QAction::tr("&Undo"), mainWindow_);
@@ -61,11 +61,11 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
     redoAction_->setShortcut(QKeySequence::Redo);
     redoAction_->connect(redoAction_, &QAction::triggered, this, [&]() { redoState(); });
 
-    clearHandle_ = manager_->onClear([&]() { 
+    clearHandle_ = manager_->onClear([&]() {
         clear();
         pushState();
     });
-    loadHandle_ = manager_->onLoad([&](Deserializer&) { 
+    loadHandle_ = manager_->onLoad([&](Deserializer &) {
         if (isRestoring) return;
         clear();
         pushState();
@@ -76,11 +76,9 @@ UndoManager::UndoManager(InviwoMainWindow* mainWindow)
 }
 
 void UndoManager::pushStateIfDirty() {
-    if(dirty_) pushState();
+    if (dirty_) pushState();
 }
-void UndoManager::markDirty() {
-    dirty_ = true;
-}
+void UndoManager::markDirty() { dirty_ = true; }
 
 void UndoManager::pushState() {
     if (isRestoring) return;
@@ -88,14 +86,15 @@ void UndoManager::pushState() {
     std::stringstream stream;
     manager_->save(stream, refPath_);
     auto str = stream.str();
-   
-    if (head_ >= 0 && str == undoBuffer_[head_]) return; // No Change
-   
+
+    dirty_ = false;
+    if (head_ >= 0 && str == undoBuffer_[head_]) return;  // No Change
+
     ++head_;
     auto offset = std::min(std::distance(undoBuffer_.begin(), undoBuffer_.end()), head_);
     undoBuffer_.erase(undoBuffer_.begin() + offset, undoBuffer_.end());
     undoBuffer_.emplace_back(str);
-    dirty_ = false;
+
     updateActions();
 }
 void UndoManager::undoState() {
@@ -112,13 +111,13 @@ void UndoManager::undoState() {
     }
 }
 void UndoManager::redoState() {
-    if (head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size())-1) {
+    if (head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size()) - 1) {
 
         util::KeepTrueWhileInScope restore(&isRestoring);
         ++head_;
-        
+
         std::stringstream stream;
-        stream << undoBuffer_[head_];     
+        stream << undoBuffer_[head_];
         manager_->load(stream, refPath_);
 
         dirty_ = false;
@@ -131,16 +130,12 @@ void UndoManager::clear() {
     undoBuffer_.clear();
 }
 
-QAction* UndoManager::getUndoAction() const {
-    return undoAction_;
-}
+QAction *UndoManager::getUndoAction() const { return undoAction_; }
 
-QAction* UndoManager::getRedoAction() const {
-    return redoAction_;
-}
+QAction *UndoManager::getRedoAction() const { return redoAction_; }
 
 void UndoManager::updateActions() {
-    undoAction_->setEnabled(head_>0);
+    undoAction_->setEnabled(head_ > 0);
     redoAction_->setEnabled(head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size()) - 1);
 }
 
@@ -151,4 +146,4 @@ void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection &) { d
 void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection &) { dirty_ = true; }
 void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink &) { dirty_ = true; }
 void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink &) { dirty_ = true; }
-}  // namespace
+}  // namespace inviwo
