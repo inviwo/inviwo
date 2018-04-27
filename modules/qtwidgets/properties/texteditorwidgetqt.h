@@ -32,8 +32,12 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/property.h>
+
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
+#include <inviwo/core/util/fileobserver.h>
 
 class QTextEdit;
 
@@ -49,8 +53,10 @@ class IVW_MODULE_QTWIDGETS_API TextEditorDockWidget : public PropertyEditorWidge
 public:
     TextEditorDockWidget(Property* property);
     SyntaxHighligther* getSyntaxHighligther();
-
+    virtual ~TextEditorDockWidget();
     void updateFromProperty();
+
+    void updateStyle();
 
 protected:
     virtual void closeEvent(QCloseEvent*) override;
@@ -58,11 +64,26 @@ protected:
 
     virtual void setReadOnly(bool readonly) override;
 
+    void setTitle(bool modified);
+    void fileChanged();
+
 private:
+    class ScriptObserver : public FileObserver {
+    public:
+        ScriptObserver(TextEditorDockWidget& widget, InviwoApplication* app);
+        virtual void fileChanged(const std::string& dir) override;
+    private:
+        TextEditorDockWidget& widget_;
+    };
+
+
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;
     QTextEdit* editor_;
     SyntaxHighligther* syntaxHighligther_;
+    ScriptObserver observer_;
+    const BaseCallBack* fileCallback_ = nullptr;
+    const BaseCallBack* stringCallback_ = nullptr;
 };
 
 }  // namespace inviwo

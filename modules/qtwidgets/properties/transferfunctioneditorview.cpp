@@ -43,6 +43,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QBrush>
+#include <QWheelEvent>
 #include <warn/pop>
 
 namespace inviwo {
@@ -116,6 +117,77 @@ void TransferFunctionEditorView::onHistogramModeChange(HistogramMode mode) {
         resetCachedContent();
         update();
     }
+}
+
+void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
+    const QPointF numPixels = event->pixelDelta() / 5.0;
+    const QPointF numDegrees = event->angleDelta() / 8.0 / 15;
+
+    const dvec2 scrollStep(0.2, 0.2);
+
+    dvec2 delta;
+    if (!numPixels.isNull()) {
+        delta = dvec2(numPixels.x(), numPixels.y());
+    } else if (!numDegrees.isNull()) {
+        delta = dvec2(numDegrees.x(), numDegrees.y());
+    } else {
+        return;
+    }
+
+    NetworkLock lock(tfProperty_);
+
+    if (event->modifiers() == Qt::ControlModifier) {
+        // zoom only horizontally relative to wheel event position
+        double zoomFactor = std::pow(1.05, std::max(-15.0, std::min(15.0, -delta.y)));
+
+        dvec2 horizontal = tfProperty_->getZoomH();
+        double zoomExtent = horizontal.y - horizontal.x;
+        
+        // off-center zooming
+        // relative position within current zoom range
+        auto zoomCenter = event->posF().x() / width() * zoomExtent + horizontal.x;
+
+        double lower = zoomCenter + (horizontal.x - zoomCenter) * zoomFactor;
+        double upper = zoomCenter + (horizontal.y - zoomCenter) * zoomFactor;
+
+        tfProperty_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
+    } else {
+        // vertical scrolling (+ optional horizontal if two-axis wheel)
+
+        if (event->modifiers() & Qt::ShiftModifier) {
+            // horizontal scrolling: map vertical wheel movement to horizontal direction
+            delta.x = -delta.y;
+            delta.y = 0.0;
+        }
+
+        dvec2 horizontal = tfProperty_->getZoomH();
+        dvec2 vertical = tfProperty_->getZoomV();
+        dvec2 extent(horizontal.y - horizontal.x, vertical.y - vertical.x);
+        // scale scroll step with current zoom range
+        delta *= scrollStep * extent;
+
+        // separate horizontal and vertical scrolling
+        if (delta.x < 0.0) {
+            horizontal.x = std::max(0.0, horizontal.x + delta.x);
+            horizontal.y = horizontal.x + extent.x;
+        } else if (delta.x > 0.0) {
+            horizontal.y = std::min(1.0, horizontal.y + delta.x);
+            horizontal.x = horizontal.y - extent.x;
+        }
+        // vertical
+        if (delta.y < 0.0) {
+            vertical.x = std::max(0.0, vertical.x + delta.y);
+            vertical.y = vertical.x + extent.y;
+        } else if (delta.y > 0.0) {
+            vertical.y = std::min(1.0, vertical.y + delta.y);
+            vertical.x = vertical.y - extent.y;
+        }
+
+        tfProperty_->setZoomH(horizontal.x, horizontal.y);
+        tfProperty_->setZoomV(vertical.x, vertical.y);
+    }
+
+    event->accept();
 }
 
 void TransferFunctionEditorView::resizeEvent(QResizeEvent* event) {
@@ -249,8 +321,8 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
 
     QRectF sRect = sceneRect();
     QPen gridPen;
-    gridPen.setCosmetic(true);    
-    
+    gridPen.setCosmetic(true);
+
     double gridOrigin = sRect.left();  // horizontal origin of the grid
     // adjust grid origin if there is a data mapper available
     if (volumeInport_ && volumeInport_->hasData()) {
@@ -268,7 +340,7 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
     }
 
     QVector<QLineF> lines;
-    
+
     // add grid lines left of origin
     double x = gridOrigin - gridSpacing;
     while (x > sRect.left()) {

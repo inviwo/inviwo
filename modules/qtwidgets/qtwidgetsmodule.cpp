@@ -78,7 +78,8 @@
 
 namespace inviwo {
 
-QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "QtWidgets") {
+QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
+    : InviwoModule(app, "QtWidgets"), tfMenuHelper_(util::make_unique<TFMenuHelper>()) {
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before QtWidgetsModule");
     }
@@ -180,5 +181,10 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerDialog<InviwoFileDialog>("FileDialog");
 }
 
-} // namespace
+QtWidgetsModule::~QtWidgetsModule() = default;
 
+TFHelpWindow* QtWidgetsModule::getTFHelpWindow() const { return tfMenuHelper_->getWindow(); }
+
+void QtWidgetsModule::showTFHelpWindow() const { tfMenuHelper_->showWindow(); }
+
+}  // namespace inviwo

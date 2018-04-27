@@ -32,12 +32,12 @@
 namespace inviwo {
 
 void PythonLogger::onPyhonExecutionOutput(const std::string &msg,
-                                          const PythonExecutionOutputStream &outputType) {
+                                          PythonOutputType outputType) {
     switch (outputType) {
-        case PythonExecutionOutputStream::sysstderr:
+        case PythonOutputType::sysstderr:
             LogError(msg);
             break;
-        case PythonExecutionOutputStream::sysstdout:
+        case PythonOutputType::sysstdout:
         default:
             LogInfo(msg);
     }

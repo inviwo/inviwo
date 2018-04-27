@@ -38,6 +38,7 @@
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/interface/pyport.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -47,53 +48,54 @@ namespace py = pybind11;
 namespace inviwo {
 
 auto getLayers = [](Image *img) {
-    std::vector<Layer *> layers;
+    pybind11::list list;
     for (size_t idx = 0; idx < img->getNumberOfColorLayers(); idx++) {
-        layers.push_back(img->getColorLayer(idx));
+        list.append(py::cast(img->getColorLayer(idx), py::return_value_policy::reference_internal,
+                             py::cast(img)));
     }
-    return layers;
+    return list;
 };
 
 void exposeImage(py::module &m) {
 
-    py::class_<Image>(m, "Image")
+    py::class_<Image, std::shared_ptr<Image>>(m, "Image")
         .def(py::init<size2_t, const DataFormatBase *>())
         .def_property_readonly("dimensions", &Image::getDimensions)
         .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); },
-                               py::return_value_policy::reference)
+                               py::return_value_policy::reference_internal)
         .def_property_readonly("picking", [](Image &img) { return img.getPickingLayer(); },
-                               py::return_value_policy::reference)
-        .def_property_readonly("colorLayers", getLayers, py::return_value_policy::reference);
+                               py::return_value_policy::reference_internal)
+        .def_property_readonly("colorLayers", getLayers);
 
-    py::class_<Layer>(m, "Layer")
+    py::class_<Layer, std::shared_ptr<Layer>>(m, "Layer")
         .def(py::init<size2_t, const DataFormatBase *>())
         .def_property_readonly("dimensions", &Layer::getDimensions)
-        .def_property_readonly("data", [&](Layer *layer) -> py::array {
+        .def_property(
+            "data",
+            [&](Layer *layer) -> py::array {
+                auto df = layer->getDataFormat();
+                auto dims = layer->getDimensions();
 
-            auto df = layer->getDataFormat();
-            auto dims = layer->getDimensions();
+                std::vector<size_t> shape = {dims.x, dims.y};
+                std::vector<size_t> strides = {df->getSize(), df->getSize() * dims.x};
 
+                if (df->getComponents() > 1) {
+                    shape.push_back(df->getComponents());
+                    strides.push_back(df->getSize() / df->getComponents());
+                }
 
-            std::vector<size_t> shape = {dims.x, dims.y};
-            std::vector<size_t> strides = {df->getSize(), 
-                                           df->getSize() * dims.x};
-
-            if(df->getComponents()>1){
-                shape.push_back(df->getComponents());
-                strides.push_back(df->getSize() / df->getComponents());
-            }
-
-            auto data = layer->getRepresentation<LayerRAM>()->getData();
-
-            bool readOnly = false;
-            if (readOnly) {
-                return py::array(pyutil::toNumPyFormat(df), shape, strides, data);
-            } else {
+                auto data = layer->getEditableRepresentation<LayerRAM>()->getData();
                 return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
-            }
-        });
+            },
+            [](Layer *layer, py::array data) {
+                auto rep = layer->getEditableRepresentation<LayerRAM>();
+                pyutil::checkDataFormat<2>(rep->getDataFormat(), rep->getDimensions(), data);
 
+                memcpy(rep->getData(), data.data(0), data.nbytes());
+            });
+
+    exposeInport<ImageInport>(m, "Image");
     exposeOutport<ImageOutport>(m, "Image")
         .def_property_readonly("dimensions", &ImageOutport::getDimensions);
 }
-}  // namespace
+}  // namespace inviwo

@@ -43,33 +43,36 @@
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/interface/pyport.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-
-namespace py = pybind11;
 
 namespace inviwo {
 
 struct BufferRAMHelper {
     template <typename DataFormat>
     auto operator()(pybind11::module &m) {
+        namespace py = pybind11;
         using T = typename DataFormat::type;
 
         std::ostringstream className;
         className << "Buffer" << DataFormat::str();
-        py::class_<Buffer<T, BufferTarget::Data>, BufferBase>(m, className.str().c_str())
+        py::class_<Buffer<T, BufferTarget::Data>, BufferBase,
+                   std::shared_ptr<Buffer<T, BufferTarget::Data>>>(m, className.str().c_str())
             .def(py::init<size_t>())
             .def(py::init<size_t, BufferUsage>());
 
         className << "Index";
-        py::class_<Buffer<T, BufferTarget::Index>, BufferBase>(m, className.str().c_str())
+        py::class_<Buffer<T, BufferTarget::Index>, BufferBase,
+                   std::shared_ptr<Buffer<T, BufferTarget::Index>>>(m, className.str().c_str())
             .def(py::init<size_t>())
             .def(py::init<size_t, BufferUsage>());
     }
 };
 
-void exposeBuffer(py::module &m) {
+void exposeBuffer(pybind11::module &m) {
+    namespace py = pybind11;
 
     py::enum_<BufferType>(m, "BufferType")
         .value("PositionAttrib", BufferType::PositionAttrib)
@@ -101,26 +104,32 @@ void exposeBuffer(py::module &m) {
         .value("Adjacency", ConnectivityType::Adjacency)
         .value("StripAdjacency", ConnectivityType::StripAdjacency);
 
-    py::class_<BufferBase>(m, "Buffer")
+    py::class_<BufferBase, std::shared_ptr<BufferBase>>(m, "Buffer")
         .def_property("size", &BufferBase::getSize, &BufferBase::setSize)
-        .def_property_readonly("data", [&](BufferBase *buffer)->py::array {
+        .def_property(
+            "data",
+            [&](BufferBase *buffer) -> py::array {
+                auto df = buffer->getDataFormat();
+                std::vector<size_t> shape = {buffer->getSize()};
+                std::vector<size_t> strides = {df->getSize()};
 
-            auto df = buffer->getDataFormat();
+                if (df->getComponents() > 1) {
+                    shape.push_back(df->getComponents());
+                    strides.push_back(df->getSize() / df->getComponents());
+                }
 
-            std::vector<size_t> shape = {buffer->getSize(), df->getComponents()};
-            std::vector<size_t> strides = {df->getSize(),df->getSize() / df->getComponents()};
-            auto data = buffer->getRepresentation<BufferRAM>()->getData();
-
-            bool readOnly = false;
-            if (readOnly) {
-                return py::array(pyutil::toNumPyFormat(df), shape, strides, data);
-            } else {
+                auto data = buffer->getEditableRepresentation<BufferRAM>()->getData();
                 return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
-            }
-        });
+            },
+            [](BufferBase *buffer, py::array data) {
+                auto rep = buffer->getEditableRepresentation<BufferRAM>();
+                pyutil::checkDataFormat<1>(rep->getDataFormat(), rep->getSize(), data);
+
+                memcpy(rep->getData(), data.data(0), data.nbytes());
+            });
 
     util::for_each_type<DefaultDataFormats>{}(BufferRAMHelper{}, m);
 
-    exposeOutport<BufferOutport>(m, "Buffer");
+    exposeStandardDataPorts<BufferBase>(m, "Buffer");
 }
-}  // namespace
+}  // namespace inviwo

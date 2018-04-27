@@ -202,8 +202,6 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     if (app_) {
         app_->getSettingsByType<QtWidgetsSettings>()->pythonSyntax_.onChange(
             this, &PythonEditorWidget::updateStyle);
-        app_->getSettingsByType<QtWidgetsSettings>()->pyFontSize_.onChange(
-            this, &PythonEditorWidget::updateStyle);
     }
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(QSize(500, 700));  // default size
@@ -260,14 +258,17 @@ void PythonEditorWidget::focusInEvent(QFocusEvent* event) {
 }
 
 void PythonEditorWidget::updateStyle() {
-    auto color =
-        InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>()->pyBGColor_.get();
-    auto size =
-        InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>()->pyFontSize_.get();
+    auto settings = app_->getSettingsByType<QtWidgetsSettings>();
+    auto color = settings->pyBGColor_.get();
+    auto size = settings->pyFontSize_.get();
+    auto family = settings->pythonFont_.get();
+    
     std::stringstream ss;
     ss << "background-color: rgb(" << color.r << ", " << color.g << ", " << color.b << ");"
-       << std::endl;
-    ss << "font-size: " << size << "px;";
+       << "\n"
+       << "font-size: " << size << "px;"
+       << "font-family: " << family << ";\n";
+
     pythonCode_->setStyleSheet(ss.str().c_str());
     syntaxHighligther_->rehighlight();
 }
@@ -327,8 +328,8 @@ void PythonEditorWidget::queryReloadFile() {
 }
 
 void PythonEditorWidget::onPyhonExecutionOutput(const std::string& msg,
-                                                const PythonExecutionOutputStream& outputType) {
-    appendToOutput(msg, outputType != sysstdout);
+                                                PythonOutputType outputType) {
+    appendToOutput(msg, outputType != PythonOutputType::sysstdout);
 }
 
 void PythonEditorWidget::save() {

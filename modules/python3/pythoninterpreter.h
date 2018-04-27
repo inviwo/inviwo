@@ -32,12 +32,9 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
-#include <pybind11/pybind11.h>
 
 namespace inviwo {
-class PyModule;
 class Python3Module;
 
 class IVW_MODULE_PYTHON3_API PythonInterpreter : public PythonExecutionOutputObservable {
@@ -50,15 +47,8 @@ public:
 
     bool runString(std::string code);
 
-protected:
-    void init(Python3Module* module);
-    void initOutputRedirector(Python3Module* module);
-
 private:
     bool isInit_;
-    PyObject* dict_;
-
-    std::vector<PyModule*> registeredModules_;
 };
 
 }  // namespace

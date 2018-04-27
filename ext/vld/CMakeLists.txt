@@ -51,7 +51,6 @@ add_library(vld-interface INTERFACE)
 target_link_libraries(vld-interface INTERFACE ${IVW_EXTENSIONS_DIR}/vld/lib/${arch}/vld.lib)
 target_compile_definitions(vld-interface INTERFACE IVW_ENABLE_MSVC_MEM_LEAK_TEST)
 add_dependencies(vld-interface vld)
-set_target_properties(vld-interface PROPERTIES VERSION 2.5.1 SOVERSION 2.5)
 
 # package
 install(FILES 

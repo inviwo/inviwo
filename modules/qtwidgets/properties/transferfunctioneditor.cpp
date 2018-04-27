@@ -39,10 +39,13 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
+#include <QGuiApplication>
 #include <QBrush>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
@@ -50,7 +53,9 @@
 #include <QLineF>
 #include <QPainter>
 #include <QPen>
-#include <QColorDialog>
+#include <QMenu>
+#include <QAction>
+#include <QGraphicsPixmapItem>
 #include <warn/pop>
 
 namespace inviwo {
@@ -58,10 +63,10 @@ namespace inviwo {
 class ControlPointEquals {
 public:
     ControlPointEquals(const TFPrimitive* p) : p_(p) {}
-    bool operator()(TransferFunctionEditorControlPoint* editorPoint) {
+    bool operator()(TransferFunctionEditorPrimitive* editorPoint) {
         return editorPoint->getPrimitive() == p_;
     }
-    bool operator<(TransferFunctionEditorControlPoint* editorPoint) {
+    bool operator<(TransferFunctionEditorPrimitive* editorPoint) {
         return editorPoint->getPrimitive()->getPosition() < p_->getPosition();
     }
 
@@ -76,45 +81,14 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfPrope
     , transferFunction_(&tfProperty->get())
     , dataMap_()
     , groups_()
-    , moveMode_(0) {
+    , moveMode_(0)
+    , selectNewPrimitives_(false) {
 
     setSceneRect(0.0, 0.0, 512.0, 512.0);
     mouseDrag_ = false;
 
     // The default bsp tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
-
-    colorDialog_ = util::make_unique<QColorDialog>(parent);
-    colorDialog_->hide();
-    colorDialog_->setOption(QColorDialog::ShowAlphaChannel, false);
-    colorDialog_->setOption(QColorDialog::NoButtons, true);
-    colorDialog_->setWindowModality(Qt::NonModal);
-    colorDialog_->setWindowTitle(QString::fromStdString(tfProperty->getDisplayName()));
-
-    auto updateTFPointColor = [&](QColor color) {
-        const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
-
-        for (auto& elem : selectedItems()) {
-            if (auto v = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
-                v->setColor(newRgb);
-            }
-        }
-        emit colorChanged(color);
-    };
-    connect(colorDialog_.get(), &QColorDialog::currentColorChanged, updateTFPointColor);
-
-    auto updateColor = [&]() {
-        if (selectedItems().size() > 0) {
-            const auto tfPrimitive =
-                qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(selectedItems().at(0));
-            if (tfPrimitive) {
-                QColor c(utilqt::toQColor(tfPrimitive->getColor()));
-                setColorDialogColor(c);
-                emit colorChanged(c);
-            }
-        }
-    };
-    connect(this, &QGraphicsScene::selectionChanged, updateColor);
 
     if (auto port = tfProperty->getVolumeInport()) {
 
@@ -137,7 +111,7 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunctionProperty* tfPrope
     }
 
     for (int i = 0; i < 10; ++i) {
-        groups_.push_back(std::vector<TransferFunctionEditorControlPoint*>());
+        groups_.push_back(std::vector<TransferFunctionEditorPrimitive*>());
     }
 }
 
@@ -149,31 +123,24 @@ TransferFunctionEditor::~TransferFunctionEditor() {
     connections_.clear();
 }
 
-void TransferFunctionEditor::resetTransferFunction() {
-    NetworkLock lock;
-    transferFunction_->clear();
-    addControlPoint(QPointF(0.0 * (width() - 1), 0.0 * (height() - 1)), vec4(0.0f));
-    addControlPoint(QPointF(1.0 * (width() - 1), 1.0 * (height() - 1)), vec4(1.0f));
-}
-
 void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-
-    TransferFunctionEditorControlPoint* controlPointGraphicsItem =
-        getControlPointGraphicsItemAt(e->scenePos());
-
-    // Need to store these since they are deselected in mousePressEvent.
-    selectedItemsAtPress_ = QGraphicsScene::selectedItems();
-
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (e->button()) {
         case Qt::LeftButton:
-            if (controlPointGraphicsItem) {
+            if (getTFPrimitiveItemAt(e->scenePos())) {
                 mouseDrag_ = true;
+                // inform all selected TF primitives about imminent move (need to cache position)
+                for (auto& item : getSelectedPrimitiveItems()) {
+                    item->beginMouseDrag();
+                }
+
             } else {
                 views().front()->setDragMode(QGraphicsView::RubberBandDrag);
             }
 
+            break;
+        case Qt::RightButton:
             break;
         default:
             break;
@@ -186,7 +153,7 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 
 void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
     mouseMovedSincePress_ = true;
-    if (mouseDrag_) {
+    if (mouseDrag_ && ((e->buttons() & Qt::LeftButton) == Qt::LeftButton)) {
         // Prevent network evaluations while moving control point
         NetworkLock lock;
         QGraphicsScene::mouseMoveEvent(e);
@@ -196,52 +163,34 @@ void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
-// left mouse button and no movement -> add new point if there is no selection
+    // left mouse button and no movement -> add new point if there is no selection
+
+    const bool controlPressed =
+        ((QGuiApplication::queryKeyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier);
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (e->button()) {
         case Qt::LeftButton:
             if (!mouseMovedSincePress_) {
-                // Add a new point if nothing was selected when clicking
-                if (selectedItemsAtPress_.size() < 1 && !mouseDoubleClick_ && !mouseDrag_) {
+                // add new TF primitive when control is pressed and nothing is below the cursor
+                if (controlPressed && !mouseDoubleClick_ && !mouseDrag_) {
                     this->clearSelection();
+
+                    util::KeepTrueWhileInScope k(&selectNewPrimitives_);
                     addControlPoint(e->scenePos());
-                    auto controlPointGraphicsItem = getControlPointGraphicsItemAt(e->scenePos());
-                    if (controlPointGraphicsItem) {
-                        // controlPointGraphicsItem->setHovered(true);
-                    }
+                    e->accept();
                 }
-                e->accept();
+            }
+            if (mouseDrag_) {
+                for (auto& item : getSelectedPrimitiveItems()) {
+                    item->stopMouseDrag();
+                }
+            } else {
+                // disable rubber band selection
+                views().front()->setDragMode(QGraphicsView::NoDrag);
             }
             break;
         case Qt::RightButton:
-            if (!mouseDrag_) {
-                auto controlPointGraphicsItem = getControlPointGraphicsItemAt(e->scenePos());
-                if (selectedItemsAtPress_.size() <= 1) {
-                    // One or no selection, check whether there is a TF point under the mouse
-
-                    if (controlPointGraphicsItem) {
-                        removeControlPoint(controlPointGraphicsItem);
-                    }
-                } else {
-                    auto pressedOnSelectedItem =
-                        std::find(std::begin(selectedItemsAtPress_),
-                                  std::end(selectedItemsAtPress_),
-                                  controlPointGraphicsItem) != selectedItemsAtPress_.end();
-                    this->clearSelection();
-                    if (pressedOnSelectedItem) {
-                        NetworkLock lock;
-                        for (auto& elem : selectedItemsAtPress_) {
-                            auto point =
-                                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
-                            if (point) {
-                                removeControlPoint(point);
-                            }
-                        }
-                    }
-                }
-                e->accept();
-            }
             break;
         default:
             break;
@@ -249,6 +198,7 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 #include <warn/pop>
     mouseDrag_ = false;
     mouseDoubleClick_ = false;
+    mouseMovedSincePress_ = false;
 
     if (!e->isAccepted()) {
         QGraphicsScene::mouseReleaseEvent(e);
@@ -257,19 +207,19 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 void TransferFunctionEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
     mouseDoubleClick_ = true;
-    if (selectedItems().size() > 0) {
-        colorDialog_->show();
-        e->accept();
-    } else {
-        QGraphicsScene::mouseDoubleClickEvent(e);
-    }
+    QGraphicsScene::mouseDoubleClickEvent(e);
 }
 
 void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
+    // these factors are applied when holding shift (increasing step size) or alt (decreasing step
+    // size) when moving control points with the keyboard
+    const double stepUpScalingFactor = 5.0;
+    const double stepDownScalingFactor = 0.2;
+
     int k = keyEvent->key();
     keyEvent->accept();
 
-    NetworkLock lock;
+    NetworkLock lock(tfProperty_);
 
     if (k == Qt::Key_A && keyEvent->modifiers() == Qt::ControlModifier) {  // Select all
         QList<QGraphicsItem*> itemList = items();
@@ -284,43 +234,39 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
         }
 
     } else if (k == Qt::Key_Delete || k == Qt::Key_Backspace) {  // Delete selected
-        QList<QGraphicsItem*> itemList = selectedItems();
+        auto selection = getSelectedPrimitiveItems();
         clearSelection();
-        for (auto& elem : itemList) {
-            TransferFunctionEditorControlPoint* p =
-                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
-            if (p) {
-                removeControlPoint(p);
-            }
+        for (auto& item : selection) {
+            removeControlPoint(item);
         }
 
     } else if (!(keyEvent->modifiers() & Qt::ControlModifier) &&  // Move points
                (k == Qt::Key_Left || k == Qt::Key_Right || k == Qt::Key_Up || k == Qt::Key_Down ||
                 k == 'I' || k == 'J' || k == 'K' || k == 'L')) {
         QPointF delta;
-        double x = sceneRect().width() / 1000.f;
-        double y = sceneRect().height() / 1000.f;
         switch (k) {
             case Qt::Key_Left:
             case 'J':
-                delta = QPointF(-x, 0.0f);
+                delta = QPointF(-relativeSceneOffset_.x, 0.0f);
                 break;
             case Qt::Key_Right:
             case 'L':
-                delta = QPointF(x, 0.0f);
+                delta = QPointF(relativeSceneOffset_.x, 0.0f);
                 break;
             case Qt::Key_Up:
             case 'I':
-                delta = QPointF(0.0f, y);
+                delta = QPointF(0.0f, relativeSceneOffset_.y);
                 break;
             case Qt::Key_Down:
             case 'K':
-                delta = QPointF(0.0f, -y);
+                delta = QPointF(0.0f, -relativeSceneOffset_.y);
                 break;
         }
 
-        if (keyEvent->modifiers() & Qt::ShiftModifier || keyEvent->modifiers() & Qt::AltModifier) {
-            delta *= 10.0;
+        if (keyEvent->modifiers() & Qt::ShiftModifier) {
+            delta *= stepUpScalingFactor;
+        } else if (keyEvent->modifiers() & Qt::AltModifier) {
+            delta *= stepDownScalingFactor;
         }
 
         QList<QGraphicsItem*> selitems = selectedItems();
@@ -429,18 +375,15 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
                 break;
         }
 
-        QList<QGraphicsItem*> selitems = selectedItems();
         if (keyEvent->modifiers() & Qt::ControlModifier) {  // Create group
             groups_[group].clear();
-            for (auto& selitem : selitems) {
-                TransferFunctionEditorControlPoint* p =
-                    qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitem);
-                if (p) groups_[group].push_back(p);
+            for (auto& item: getSelectedPrimitiveItems()) {
+                groups_[group].push_back(item);
             }
         } else {
             if (!(keyEvent->modifiers() & Qt::ShiftModifier)) {
-                for (auto& selitem : selitems) {
-                    selitem->setSelected(false);
+                for (auto& item : getSelectedPrimitiveItems()) {
+                    item->setSelected(false);
                 }
             }
             for (auto& elem : groups_[group]) {
@@ -453,44 +396,201 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
     }
 }
 
-void TransferFunctionEditor::addControlPoint(QPointF pos) {
-    if (pos.x() < 0.0) {
-        pos.setX(0.0);
-    } else if (pos.x() > width()) {
-        pos.setX(width());
+void TransferFunctionEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
+    const QPointF pos(e->scenePos());
+
+    auto primitiveUnderMouse = getTFPrimitiveItemAt(pos);
+
+    // change selection if primitive under the mouse is not yet in selection
+    if (primitiveUnderMouse && !primitiveUnderMouse->isSelected()) {
+        clearSelection();
+        primitiveUnderMouse->setSelected(true);
     }
-    if (pos.y() < 0.0) {
-        pos.setY(0.0);
-    } else if (pos.y() > height()) {
-        pos.setY(height());
+    const bool selectionEmpty = getSelectedPrimitiveItems().empty();
+
+    QMenu menu;
+    if (!primitiveUnderMouse) {
+        // auto addIsovalue = menu.addAction("Add &Isovalue");
+        auto addTFpoint = menu.addAction("Add TF &Point");
+        auto addTFpeak = menu.addAction("Add TF P&eak");
+        menu.addSeparator();
+
+        // connect(addIsovalue, &QAction::triggered, this, [this, pos]() {});
+        connect(addTFpoint, &QAction::triggered, this, [this, pos]() {
+            util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+            addControlPoint(pos);
+        });
+        connect(addTFpeak, &QAction::triggered, this, [this, pos]() {
+            util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+            addControlPointPeak(pos);
+        });
     }
-    transferFunction_->addPoint(vec2(pos.x() / width(), pos.y() / height()));
+    auto editColor = menu.addAction("Edit &Color");
+    auto duplicatePrimitive = menu.addAction("D&uplicate");
+    auto deletePrimitive = menu.addAction("&Delete");
+    menu.addSeparator();
+
+    {
+        editColor->setEnabled(!selectionEmpty);
+        connect(editColor, &QAction::triggered, this, &TransferFunctionEditor::showColorDialog);
+
+        duplicatePrimitive->setEnabled(!selectionEmpty);
+        connect(duplicatePrimitive, &QAction::triggered, this, [this, pos]() {
+            NetworkLock lock(tfProperty_);
+            util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+            auto selection = getSelectedPrimitiveItems();
+            for (auto& elem : selection) {
+                addControlPoint(elem->pos().x() + relativeSceneOffset_.x * 5.0,
+                                elem->getPrimitive()->getColor());
+                // deselect source primitives
+                elem->setSelected(false);
+            }
+        });
+
+        deletePrimitive->setEnabled(!selectionEmpty);
+        connect(deletePrimitive, &QAction::triggered, this, [this, pos]() {
+            if (transferFunction_->empty()) return;
+            NetworkLock lock(tfProperty_);
+            auto selection = getSelectedPrimitiveItems();
+            clearSelection();
+            for (auto& elem : selection) {
+                transferFunction_->removePoint(elem->getPrimitive());
+            }
+        });
+    }
+
+    auto maskMenu = menu.addMenu("&Mask");
+    {
+        // TF masking
+        auto maskBegin = maskMenu->addAction("Set &Begin");
+        auto maskEnd = maskMenu->addAction("Set &End");
+        maskMenu->addSeparator();
+        auto clearAction = maskMenu->addAction("&Clear");
+
+        connect(maskBegin, &QAction::triggered, this, [this, pos]() {
+            tfProperty_->setMask(pos.x() / width(), tfProperty_->getMask().y);
+        });
+        connect(maskEnd, &QAction::triggered, this, [this, pos]() {
+            tfProperty_->setMask(tfProperty_->getMask().x, pos.x() / width());
+        });
+
+        connect(clearAction, &QAction::triggered, this, [this]() { tfProperty_->clearMask(); });
+    }
+
+    menu.addSeparator();
+
+    // group selection / assignment
+    auto groupSelectMenu = menu.addMenu("&Select Group");
+    auto groupAssignMenu = menu.addMenu("Assign &Group");
+    {
+        // select TF primitives which were stored as group
+        for (auto&& i : util::make_sequence(1, 11, 1)) {
+            QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
+            auto action = groupSelectMenu->addAction(str);
+            action->setEnabled(!groups_[i % 10].empty());
+            connect(action, &QAction::triggered, [ this, group = i % 10 ]() {
+                auto selection = getSelectedPrimitiveItems();
+
+                const bool addToSelection = ((QGuiApplication::queryKeyboardModifiers() &
+                                              Qt::ShiftModifier) == Qt::ShiftModifier);
+                if (!addToSelection) {
+                    for (auto& item : selection) {
+                        item->setSelected(false);
+                    }
+                }
+                for (auto& item : groups_[group]) {
+                    item->setSelected(true);
+                }
+            });
+        }
+
+        // assign current selection to a group
+        for (auto&& i : util::make_sequence(1, 11, 1)) {
+            QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
+            auto action = groupAssignMenu->addAction(str);
+            connect(action, &QAction::triggered, [ this, group = i % 10 ]() {
+                groups_[group].clear();
+                for (auto& item : getSelectedPrimitiveItems()) {
+                    groups_[group].push_back(item);
+                }
+            });
+        }
+    }
+
+    menu.addSeparator();
+    auto tfMenu = menu.addMenu("&Transfer Function");
+    {
+        auto clearTF = tfMenu->addAction("&Clear");
+        auto resetTF = tfMenu->addAction("&Reset");
+        auto importTF = tfMenu->addAction("&Import TF...");
+        auto exportTF = tfMenu->addAction("&Export TF...");
+
+        connect(clearTF, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfProperty_);
+            transferFunction_->clear();
+        });
+        connect(resetTF, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfProperty_);
+            tfProperty_->resetToDefaultState();
+        });
+        connect(importTF, &QAction::triggered, this, &TransferFunctionEditor::importTF);
+        connect(exportTF, &QAction::triggered, this, &TransferFunctionEditor::exportTF);
+    }
+
+    if (menu.exec(e->screenPos())) {
+        e->accept();
+    }
 }
 
-void TransferFunctionEditor::addControlPoint(QPointF pos, vec4 color) {
+void TransferFunctionEditor::addControlPoint(const QPointF& pos) {
+    dvec2 p(glm::clamp(pos.x() / width(), 0.0, 1.0), glm::clamp(pos.y() / height(), 0.0, 1.0));
+
+    NetworkLock lock(tfProperty_);
+    transferFunction_->add(p);
+}
+
+void TransferFunctionEditor::addControlPoint(double pos, const vec4& color) {
     // add control point to transfer function
-    if (pos.x() < 0.0) {
-        pos.setX(0.0);
-    } else if (pos.x() > width()) {
-        pos.setX(width());
-    }
-    NetworkLock lock;
-    transferFunction_->addPoint(static_cast<float>(pos.x() / width()), color);
+    pos = glm::clamp(pos / width(), 0.0, 1.0);
+
+    NetworkLock lock(tfProperty_);
+    transferFunction_->add(TFPrimitiveData{pos, color});
 }
 
-void TransferFunctionEditor::removeControlPoint(TransferFunctionEditorControlPoint* controlPoint) {
-    if (transferFunction_->getNumPoints() > 1) {
-        NetworkLock lock;
-        transferFunction_->removePoint(controlPoint->getPrimitive());
+void TransferFunctionEditor::addControlPointPeak(const QPointF& pos) {
+    dvec2 p(glm::clamp(pos.x() / width(), 0.0, 1.0), glm::clamp(pos.y() / height(), 0.0, 1.0));
+
+    NetworkLock lock(tfProperty_);
+    transferFunction_->add(p);
+
+    double normalizedOffset = relativeSceneOffset_.x * 5.0 / width();
+
+    // add point to the left
+    if (p.x > 0.0) {
+        // compute intercept on y by using p.y - p.y / offset * p.x
+        double y = std::max(0.0, p.y * (1.0 - p.x / normalizedOffset));
+        transferFunction_->add(dvec2(std::max(p.x - normalizedOffset, 0.0), y));
+    }
+
+    // add point to the right
+    if (p.y < 1.0) {
+        // compute intercept on y by using p.y + p.y / offset * (p.x - 1.0)
+        double y = std::max(0.0, p.y * (1.0 + (p.x - 1.0) / normalizedOffset));
+        transferFunction_->add(dvec2(std::min(p.x + normalizedOffset, 1.0), y));
     }
 }
 
-TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraphicsItemAt(
-    const QPointF pos) const {
+void TransferFunctionEditor::removeControlPoint(TransferFunctionEditorPrimitive* controlPoint) {
+    NetworkLock lock(tfProperty_);
+    transferFunction_->removePoint(controlPoint->getPrimitive());
+}
+
+TransferFunctionEditorPrimitive* TransferFunctionEditor::getTFPrimitiveItemAt(
+    const QPointF& pos) const {
     QList<QGraphicsItem*> graphicsItems = items(pos);
 
     for (auto& graphicsItem : graphicsItems) {
-        if (auto item = qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(graphicsItem)) {
+        if (auto item = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(graphicsItem)) {
             return item;
         }
     }
@@ -498,24 +598,29 @@ TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraph
     return nullptr;
 }
 
+void TransferFunctionEditor::onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive*) {
+    emit showColorDialog();
+}
+
 void TransferFunctionEditor::onControlPointAdded(TFPrimitive* p) {
     auto newpoint = new TransferFunctionEditorControlPoint(p, this, controlPointSize_);
+    if (selectNewPrimitives_) {
+        newpoint->setSelected(true);
+    }
     auto it = std::upper_bound(points_.begin(), points_.end(), newpoint, comparePtr{});
     it = points_.insert(it, newpoint);
     updateConnections();
 }
 
 void TransferFunctionEditor::onControlPointRemoved(TFPrimitive* p) {
-    std::vector<TransferFunctionEditorControlPoint*>::iterator it;
-
     // remove point from all groups
     for (auto& elem : groups_) {
-        it = std::find_if(elem.begin(), elem.end(), ControlPointEquals(p));
+        auto it = std::find_if(elem.begin(), elem.end(), ControlPointEquals(p));
         if (it != elem.end()) elem.erase(it);
     }
 
-    // remove item.
-    it = std::find_if(points_.begin(), points_.end(), ControlPointEquals(p));
+    // remove item from list of control points
+    auto it = std::find_if(points_.begin(), points_.end(), ControlPointEquals(p));
     if (it != points_.end()) {
         delete *it;
         points_.erase(it);
@@ -559,23 +664,15 @@ void TransferFunctionEditor::setMoveMode(int i) { moveMode_ = i; }
 
 int TransferFunctionEditor::getMoveMode() const { return moveMode_; }
 
-void TransferFunctionEditor::setControlPointSize(float val) {
+void TransferFunctionEditor::setControlPointSize(double val) {
     controlPointSize_ = val;
     for (auto e : points_) {
-        e->setSize(getControlPointSize());
+        e->setSize(controlPointSize_);
     }
 }
 
-void TransferFunctionEditor::setPointColor(const QColor& color) {
-    // update Color dialog to reflect the color changes
-    setColorDialogColor(color);
-
-    const auto newRgb = vec3(color.redF(), color.greenF(), color.blueF());
-    for (auto& elem : selectedItems()) {
-        if (auto p = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
-            p->setColor(newRgb);
-        }
-    }
+void TransferFunctionEditor::setRelativeSceneOffset(const dvec2& offset) {
+    relativeSceneOffset_ = offset;
 }
 
 const DataMapper& TransferFunctionEditor::getDataMapper() const { return dataMap_; }
@@ -584,10 +681,31 @@ TransferFunctionProperty* TransferFunctionEditor::getTransferFunctionProperty() 
     return tfProperty_;
 }
 
-void TransferFunctionEditor::setColorDialogColor(const QColor& c) {
-    colorDialog_->blockSignals(true);
-    colorDialog_->setCurrentColor(c);
-    colorDialog_->blockSignals(false);
+std::vector<TFPrimitive*> TransferFunctionEditor::getSelectedPrimitives() const {
+    std::vector<TFPrimitive*> selection;
+    for (auto& elem : selectedItems()) {
+        if (auto p = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
+            selection.push_back(p->getPrimitive());
+        }
+    }
+
+    return selection;
+}
+
+std::vector<TransferFunctionEditorPrimitive*> TransferFunctionEditor::getSelectedPrimitiveItems()
+    const {
+    std::vector<TransferFunctionEditorPrimitive*> selection;
+    for (auto& elem : selectedItems()) {
+        if (auto p = qgraphicsitem_cast<TransferFunctionEditorPrimitive*>(elem)) {
+            selection.push_back(p);
+        }
+    }
+
+    return selection;
+}
+
+void TransferFunctionEditor::showHelpText(bool show) {
+
 }
 
 }  // namespace inviwo

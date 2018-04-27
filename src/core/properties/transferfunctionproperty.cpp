@@ -144,10 +144,20 @@ void TransferFunctionProperty::setMask(double maskMin, double maskMax) {
         this->value_.value.setMaskMin(maskMin);
         this->value_.value.setMaskMax(maskMax);
 
-        notifyMaskChange(vec2(maskMin, maskMax));
+        notifyMaskChange(dvec2(maskMin, maskMax));
 
         propertyModified();
     }
+}
+
+void TransferFunctionProperty::clearMask() {
+    auto prevMask = getMask();
+
+    this->value_.value.clearMask();
+    if (getMask() != prevMask) {
+        notifyMaskChange(getMask());
+    }
+    propertyModified();
 }
 
 const dvec2 TransferFunctionProperty::getMask() const {
@@ -199,6 +209,10 @@ void TransferFunctionProperty::onTFPrimitiveAdded(TFPrimitive*) { propertyModifi
 void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive*) { propertyModified(); }
 
 void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive*) { propertyModified(); }
+
+void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet*) {
+    propertyModified();
+}
 
 void TransferFunctionPropertyObservable::notifyMaskChange(const dvec2& mask) {
     forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onMaskChange(mask); });

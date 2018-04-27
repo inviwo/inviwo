@@ -48,6 +48,14 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
                                vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , lookFrom_("lookFrom", "Look from", eye, -vec3(100.0f), vec3(100.0f), vec3(0.1f),
+                InvalidationLevel::InvalidOutput, PropertySemantics("Spherical"))
+    , lookTo_("lookTo", "Look to", center, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
+    , lookUp_("lookUp", "Look up", lookUp, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
+    , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f)
+    , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
+    , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
+
     , cameraType_("cameraType", "Camera Type",
                   []() {
                       std::vector<OptionPropertyStringOption> options;
@@ -57,14 +65,6 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
                       return options;
                   }(),
                   0)
-    , lookFrom_("lookFrom", "Look from", eye, -vec3(100.0f), vec3(100.0f), vec3(0.1f),
-                InvalidationLevel::InvalidOutput, PropertySemantics("Spherical"))
-    , lookTo_("lookTo", "Look to", center, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
-    , lookUp_("lookUp", "Look up", lookUp, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
-    , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f)
-    , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
-    , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
-
     , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true)
     , camera_()
     , inport_(inport)
@@ -105,13 +105,13 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
-    , cameraType_(rhs.cameraType_)
     , lookFrom_(rhs.lookFrom_)
     , lookTo_(rhs.lookTo_)
     , lookUp_(rhs.lookUp_)
     , aspectRatio_(rhs.aspectRatio_)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
+    , cameraType_(rhs.cameraType_)
     , adjustCameraOnDataChange_(rhs.adjustCameraOnDataChange_)
     , camera_()
     , inport_(rhs.inport_)

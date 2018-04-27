@@ -60,7 +60,7 @@ Processor::Processor(const std::string& identifier, const std::string& displayNa
 
 Processor::~Processor() = default;
 
-void Processor::addPort(Inport* port, const std::string& portGroup) {
+void Processor::addPortInternal(Inport* port, const std::string& portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
         throw Exception("Processor \"" + getIdentifier() + "\" Can't add inport, identifier \"" +
                             port->getIdentifier() + "\" already exist.",
@@ -82,13 +82,13 @@ void Processor::addPort(Inport* port, const std::string& portGroup) {
     isReady_.update();
 }
 
-void Processor::addPort(Inport& port, const std::string& portGroup) { addPort(&port, portGroup); }
+void Processor::addPort(Inport& port, const std::string& portGroup) { addPortInternal(&port, portGroup); }
 void Processor::addPort(std::unique_ptr<Inport> port, const std::string& portGroup) {
-    addPort(port.get(), portGroup);
+    addPortInternal(port.get(), portGroup);
     ownedInports_.push_back(std::move(port));
 }
 
-void Processor::addPort(Outport* port, const std::string& portGroup) {
+void Processor::addPortInternal(Outport* port, const std::string& portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
         throw Exception("Processor \"" + getIdentifier() + "\" Can't add outport, identifier \"" +
                             port->getIdentifier() + "\" already exist.",
@@ -109,11 +109,11 @@ void Processor::addPort(Outport* port, const std::string& portGroup) {
 }
 
 void Processor::addPort(Outport& port, const std::string& portDependencySet) {
-    addPort(&port, portDependencySet);
+    addPortInternal(&port, portDependencySet);
 }
 
 void Processor::addPort(std::unique_ptr<Outport> port, const std::string& portGroup) {
-    addPort(port.get(), portGroup);
+    addPortInternal(port.get(), portGroup);
     ownedOutports_.push_back(std::move(port));
 }
 

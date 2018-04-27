@@ -33,6 +33,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
 #include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/util/observer.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,10 +44,22 @@ class QGraphicsScene;
 class QGraphicsSceneHoverEvent;
 class QPainter;
 class QGraphicsSimpleTextItem;
+class QGraphicsMouseEvent;
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorPrimitive : public QGraphicsItem {
+class TransferFunctionEditorPrimitive;
+
+class IVW_MODULE_QTWIDGETS_API TFEditorPrimitiveObserver : public Observer {
+public:
+    virtual ~TFEditorPrimitiveObserver() = default;
+
+    virtual void onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive* p);
+};
+
+class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorPrimitive
+    : public QGraphicsItem,
+      public Observable<TFEditorPrimitiveObserver> {
 public:
     enum ItemType {
         TFEditorControlPointType = 30,
@@ -67,12 +80,12 @@ public:
      */
     TransferFunctionEditorPrimitive(TFPrimitive* primitive = nullptr,
                                     QGraphicsScene* scene = nullptr, const vec2& pos = vec2(),
-                                    float size = 14.0f);
+                                    double size = 14.0);
     virtual ~TransferFunctionEditorPrimitive() = default;
 
     void setPrimitive(TFPrimitive* primitive);
     TFPrimitive* getPrimitive();
-    
+
     void setPosition(double pos);
     double getPosition() const;
 
@@ -91,10 +104,13 @@ public:
 
     virtual const QPointF& getCurrentPos() const;
 
-    void setSize(float s);
-    float getSize() const;
+    void setSize(double s);
+    double getSize() const;
 
     void setHovered(bool hover);
+
+    void beginMouseDrag();
+    void stopMouseDrag();
 
     friend IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorPrimitive& lhs,
                                                     const TransferFunctionEditorPrimitive& rhs);
@@ -113,7 +129,8 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+    
     /**
      * draws the primitive. Gets called from within paint()
      *
@@ -145,7 +162,9 @@ protected:
      */
     virtual void onItemSceneHasChanged() {}
 
-    float size_;
+    int defaultZValue_ = 10;
+
+    double size_;
     bool isEditingPoint_;
     QPointF currentPos_;  //!< position within scene rect (not normalized)
     bool hovered_;
@@ -157,6 +176,9 @@ private:
     void updateLabel();
 
     std::unique_ptr<QGraphicsSimpleTextItem> tfPrimitiveLabel_;
+
+    QPointF cachedPosition_;  //!< used for restricting to horizontal/vertical movement
+    bool mouseDrag_;
 };
 
 IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionEditorPrimitive& lhs,

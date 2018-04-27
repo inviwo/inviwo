@@ -51,13 +51,11 @@
 
 #include <inviwo/core/properties/optionproperty.h>
 
-#include <modules/python3/python3module.h>
-
-#include <modules/python3/interface/pybuffer.h>
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/python3module.h>
+#include <modules/python3/interface/pybuffer.h>
 
 #include <glm/gtc/epsilon.hpp>
 
@@ -112,17 +110,14 @@ TEST(Python3Scripts, PassValues) {
                 {"b", pybind11::cast(b)},
                 {"c", pybind11::cast(c)},
                 {"d", pybind11::cast(d)}
-
                },
                [&](pybind11::dict dict) {
-
                    EXPECT_TRUE(pybind11::cast<bool>(dict["A"])) << "Pass value as int";
                    EXPECT_TRUE(pybind11::cast<bool>(dict["B"])) << "Pass value as float";
                    EXPECT_TRUE(pybind11::cast<bool>(dict["C"])) << "Pass value as string";
                    EXPECT_TRUE(pybind11::cast<bool>(dict["D1"])) << "Pass value as int list";
                    EXPECT_TRUE(pybind11::cast<bool>(dict["D2"])) << "Pass value as int list";
                    EXPECT_TRUE(pybind11::cast<bool>(dict["D3"])) << "Pass value as int list";
-
                    status = true;
                });
 
@@ -202,7 +197,6 @@ TEST(Python3Scripts, OptionPropertyTest) {
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
-
         auto prop = dict["p"].cast<Property *>();
         ASSERT_TRUE(prop != nullptr);
         auto optionProperty = dynamic_cast<OptionPropertyInt *>(prop);

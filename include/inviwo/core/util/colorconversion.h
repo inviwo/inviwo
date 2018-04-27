@@ -40,7 +40,7 @@ namespace color {
 /**
  * \brief convert from hexadecimal html color code to RGBA
  *
- * A hexadecimal html color code is converted to RGBA. Supports both 6 and 8 digit 
+ * A hexadecimal html color code is converted to RGBA. Supports both 6 and 8 digit
  * hexcodes with a leading '#'. In case of 6 digits, alpha is set to 1.0.
  *
  * @param str    html color code in the form of "#10a0b0ff" or "#a0b0c0"
@@ -50,14 +50,24 @@ namespace color {
 IVW_CORE_API vec4 hex2rgba(const std::string &str);
 
 /**
-* \brief convert from rgba to hexadecimal html color code
-*
-* RGBA is converted to a 8 digit hexadecimal html color code with leading '#'
-*
+ * \brief convert from rgba to 8-digit hexadecimal html color code
+ *
+ * RGBA is converted to a 8 digit hexadecimal html color code with leading '#'
+ *
  * @param rgba   RGBA color in [0 1]^3 range
- * @return html color code in the form of "#10a0b0ff"
-*/
+ * @return html color code in the form of "#RRGGBBAA"
+ */
 IVW_CORE_API std::string rgba2hex(const vec4 &rgba);
+
+/**
+* \brief convert from rgb to 6-digit hexadecimal html color code
+*
+* RGB is converted to a 6 digit hexadecimal html color code with leading '#'
+*
+* @param rgb   RGB color in [0 1]^3 range
+* @return html color code in the form of "#RRGGBB"
+*/
+IVW_CORE_API std::string rgb2hex(const vec3 &rgb);
 
 /**
  * \brief reference white point D65 in CIE XYZ color space

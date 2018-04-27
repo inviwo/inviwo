@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWOQTUTILS_H
@@ -53,24 +53,23 @@
 #include <QPixmap>
 #include <warn/pop>
 
-
 namespace inviwo {
 
 class Property;
 
 namespace utilqt {
-    
-/** 
+
+/**
  * \brief getCurrentStdLocale
  * This function returns the current system locale provided by Qt.
- * If the Qt application has not been initialized, the returned 
+ * If the Qt application has not been initialized, the returned
  * value is the environment's default locale.
- * 
+ *
  * @return std::locale   Qt locale converted to std::locale
  */
 IVW_MODULE_QTWIDGETS_API std::locale getCurrentStdLocale();
 
-/** 
+/**
  * \brief localize
  * The given stream is imbued with the currently set system locale provided by Qt.
  *
@@ -89,8 +88,8 @@ IVW_MODULE_QTWIDGETS_API QString toLocalQString(const std::string&);
 IVW_MODULE_QTWIDGETS_API std::string fromLocalQString(const QString& input);
 
 /**
-* \brief create a QString from a UTF8-encoded std::string
-*/
+ * \brief create a QString from a UTF8-encoded std::string
+ */
 IVW_MODULE_QTWIDGETS_API QString toQString(const std::string&);
 /**
  * \brief create a UTF8-encoded std::string from a QString
@@ -109,13 +108,23 @@ IVW_MODULE_QTWIDGETS_API ivec2 toGLM(QSize);
 IVW_MODULE_QTWIDGETS_API QSizeF toQSize(dvec2);
 IVW_MODULE_QTWIDGETS_API QSize toQSize(ivec2);
 
+IVW_MODULE_QTWIDGETS_API vec3 tovec3(const QColor&);
+IVW_MODULE_QTWIDGETS_API ivec3 toivec3(const QColor&);
+
 IVW_MODULE_QTWIDGETS_API vec4 tovec4(const QColor&);
 IVW_MODULE_QTWIDGETS_API ivec4 toivec4(const QColor&);
+
+IVW_MODULE_QTWIDGETS_API vec4 fromQColor(const QColor&);
+IVW_MODULE_QTWIDGETS_API ivec4 fromQColori(const QColor&);
+
+IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec3&);
+IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec3&);
 
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec4&);
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec4&);
 
-IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size);
+IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfproperty,
+                                           const QSize& size);
 
 /**
  * \brief Retrieve the QMainWindow named "InviwoMainWindow" from QApplication.
@@ -123,41 +132,39 @@ IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfpro
  */
 IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
 
-/** 
+/**
  * \brief Moves point to become relative to the main window and thereby visible.
- * 
+ *
  * Positions saved for one screen setup may end up outside on other setups.
  * Apply this function to make sure that the widget ends up visible on the screen.
  * @see CanvasProcessorWidgetQt
  * @param point The previous screen position of the widget
  * @param size The size of the widget
- * @param bool decorationOffset Offset widget below top horizontal window bar 
+ * @param bool decorationOffset Offset widget below top horizontal window bar
  * @return The adapted point on the screen, same as input point if no adjustment was necessary
  */
-IVW_MODULE_QTWIDGETS_API QPoint movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset = true);
+IVW_MODULE_QTWIDGETS_API QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,
+                                                     bool decorationOffset = true);
 
 /**
-* \brief Offset widgets based on order added such that they do not end up on top of each other.
-* Base offset of (350, 100). The offset will be increased by (40, 40) every time the function is called.
-* Furthermore, the horizontal offset will be increased by 200 every tenth time.
-* @return
-*/
+ * \brief Offset widgets based on order added such that they do not end up on top of each other.
+ * Base offset of (350, 100). The offset will be increased by (40, 40) every time the function is
+ * called. Furthermore, the horizontal offset will be increased by 200 every tenth time.
+ * @return
+ */
 IVW_MODULE_QTWIDGETS_API QPoint offsetWidget();
 
-
-
 IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, std::string before);
-IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, QMenu * before = nullptr);
+IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, QMenu* before = nullptr);
 IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string menuName, bool createIfNotFound = false);
 
-IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer &layer);
+IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer& layer);
 
 IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
                                               LayerType visibleLayer = LayerType::Color,
                                               size_t visibleIndex = 10000);
 
-} // namespace utilqt
-
+}  // namespace utilqt
 
 template <class T>
 std::string toLocalizedString(T value) {
@@ -177,6 +184,6 @@ T localizedStringTo(const std::string& str) {
     return result;
 }
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_INVIWOQTUTILS_H
+#endif  // IVW_INVIWOQTUTILS_H

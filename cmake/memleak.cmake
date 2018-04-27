@@ -37,6 +37,6 @@ ENDIF()
 
 function(ivw_memleak_setup target)
     if(WIN32 AND MSVC AND IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        target_link_libraries(${target} vld-interface)
+        target_link_libraries(${target} PUBLIC vld-interface)
     endif()
 endfunction()

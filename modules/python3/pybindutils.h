@@ -43,6 +43,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -54,10 +55,43 @@ namespace pyutil {
 
 IVW_MODULE_PYTHON3_API pybind11::dtype toNumPyFormat(const DataFormatBase *df);
 IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Layer> createLayer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::shared_ptr<Volume> createVolume(pybind11::array &arr);
+IVW_MODULE_PYTHON3_API std::unique_ptr<BufferBase> createBuffer(pybind11::array &arr);
+IVW_MODULE_PYTHON3_API std::unique_ptr<Layer> createLayer(pybind11::array &arr);
+IVW_MODULE_PYTHON3_API std::unique_ptr<Volume> createVolume(pybind11::array &arr);
 
+template <int Dim>
+void checkDataFormat(const DataFormatBase *format, const Vector<Dim, size_t> &dim,
+                     const pybind11::array &data) {
+    namespace py = pybind11;
+    const auto expectedType = pyutil::toNumPyFormat(format);
+    if (!data.dtype().is(expectedType)) {
+        throw py::value_error("Invalid data format, got: '" +
+                              data.dtype().cast<std::string>() + "' expected: '" +
+                              expectedType.cast<std::string>() + "'");
+    }
+
+    const auto expectedComponents = format->getComponents();
+
+    std::vector<size_t> expectedDimensions;
+    for (int i = 0; i < Dim; i++) {
+        expectedDimensions.push_back(util::glmcomp(dim, i));
+    }
+    if (expectedComponents != 1) {
+        expectedDimensions.push_back(expectedComponents);
+    }
+
+    if (static_cast<size_t>(data.ndim()) != expectedDimensions.size()) {
+        throw py::value_error("Invalid data rank, get: '" + toString(data.ndim()) +
+                              "' expected: '" + toString(expectedDimensions.size()) + "'");
+    }
+
+    for (size_t i = 0; i < expectedDimensions.size(); i++) {
+        if (static_cast<size_t>(data.shape(i)) != expectedDimensions[i]) {
+            throw py::value_error("Invalid data dimensions, got '" + toString(data.shape(i)) +
+                                  "' expected: '" + toString(expectedDimensions[i]) + "'");
+        }
+    }
+}
 
 template <typename T>
 pybind11::dtype toNumPyFormat() {
@@ -73,16 +107,15 @@ T toPyBindObjectSteal(PyObject *obj) {
     return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
 }
 
-
-template<typename T> 
-pybind11::array toNpArray(const std::vector<T> &v){
+template <typename T>
+pybind11::array toNpArray(const std::vector<T> &v) {
     auto df = DataFormat<T>::get();
     auto componentSize = df->getSize();
 
-    std::vector<size_t> shape = { v.size(), df->getComponents() };
-    std::vector<size_t> strides = { componentSize * df->getComponents(), componentSize };
+    std::vector<size_t> shape = {v.size(), df->getComponents()};
+    std::vector<size_t> strides = {componentSize * df->getComponents(), componentSize};
 
-    if(shape.back()==1){
+    if (shape.back() == 1) {
         shape.pop_back();
         strides.pop_back();
     }
@@ -90,9 +123,10 @@ pybind11::array toNpArray(const std::vector<T> &v){
     bool readOnly = false;
     if (readOnly) {
         return pybind11::array(pyutil::toNumPyFormat(df), shape, strides, v.data());
-    }
-    else {
-        return pybind11::array(/*pyutil::toNumPyFormat(df)*/ pybind11::dtype::of<typename DataFormat<T>::primitive>(), shape, strides, v.data(), pybind11::cast<>(1));
+    } else {
+        return pybind11::array(
+            /*pyutil::toNumPyFormat(df)*/ pybind11::dtype::of<typename DataFormat<T>::primitive>(),
+            shape, strides, v.data(), pybind11::cast<>(1));
     }
 }
 

@@ -128,7 +128,7 @@ private:
 
 class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {
 public:
-    ProcessorDragObject(QWidget* source, const QString className);
+    ProcessorDragObject(QWidget* source, const QString& className);
 
     static bool canDecode(const QMimeData* mimeData);
     static bool decode(const QMimeData* mimeData, QString& className);

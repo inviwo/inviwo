@@ -9,6 +9,7 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
 )
 
 #--------------------------------------------------------------------
@@ -67,6 +68,7 @@ set(SOURCE_FILES
     processorgraphicsitem.cpp
     processorlinkgraphicsitem.cpp
     processorlistwidget.cpp
+    processormimedata.cpp
     processorportgraphicsitem.cpp
     processorpreview.cpp
     processorprogressgraphicsitem.cpp

@@ -64,7 +64,7 @@ public:
 
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
-    QColor color();
+    QColor color() const;
 
 signals:
     void colorChange(const QColor& color);
@@ -80,11 +80,13 @@ protected:
     void paintEvent(QPaintEvent*);
 
 protected slots:
-    void hueChanged(const int& hue);
+    void hueChanged(int hue);
     void svChanged(const QColor& newcolor);
 
 private:
-    QColor posColor(const QPoint& point);
+    void setColorFromWheel(const QPoint &point);
+    void setColorFromSquare(const QPoint &point);
+
     void drawOuterRing(QPainter& painter);
     void drawIndicator(QPainter& painter);
     void drawPicker(QPainter& painter);

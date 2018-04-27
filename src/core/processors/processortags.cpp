@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/processors/processortags.h>
@@ -33,34 +33,21 @@
 
 namespace inviwo {
 
-Tag::Tag() : tag_("") {}
-
-Tag::Tag(std::string tag) : tag_(tag) {}
-
-Tag::Tag(const Tag& rhs) : tag_(rhs.tag_) {}
-    
-Tag& Tag::operator=(const Tag& that) {
-    if (this != &that) tag_ = that.tag_;
-    return *this;
-}
+Tag::Tag(const std::string& tag) : tag_(tag) {}
 
 Tag& Tag::operator=(const std::string& that) {
     tag_ = that;
     return *this;
 }
 
-const std::string& Tag::getString() const {
-    return tag_;
-}
+const std::string& Tag::getString() const { return tag_; }
 
 std::ostream& operator<<(std::ostream& os, const Tag& obj) {
     os << obj.tag_;
     return os;
 }
 
-Tags::Tags() {}
-
-Tags::Tags(const std::string tags) {
+Tags::Tags(const std::string& tags) {
     std::vector<std::string> strings = splitString(tags, ',');
     for (auto& strings_it : strings) {
         addTag(Tag(trim(strings_it)));
@@ -75,16 +62,6 @@ Tags::Tags(const char* chartags) {
     }
 }
 
-Tags::Tags(const Tags& rhs) {
-    tags_ = rhs.tags_;
-}
-
-Tags& Tags::operator=(const Tags& that) {
-    if (this != &that) tags_ = that.tags_;
-
-    return *this;
-}
-
 Tags& Tags::operator=(const std::string& that) {
     tags_.clear();
     std::vector<std::string> strings = splitString(that, ',');
@@ -94,25 +71,21 @@ Tags& Tags::operator=(const std::string& that) {
     return *this;
 }
 
-void Tags::addTag(Tag t){
+void Tags::addTag(Tag t) {
     if (!util::contains(tags_, t)) {
         tags_.push_back(t);
     }
 }
 
-void Tags::addTags(const Tags &t) {
+void Tags::addTags(const Tags& t) {
     for (auto& tag : t.tags_) {
         addTag(tag);
     }
 }
 
-size_t Tags::size() const {
-    return tags_.size();
-}
+size_t Tags::size() const { return tags_.size(); }
 
-bool Tags::empty() const {
-    return tags_.empty();
-}
+bool Tags::empty() const { return tags_.empty(); }
 
 std::string Tags::getString() const {
     std::stringstream ss;
@@ -120,7 +93,7 @@ std::string Tags::getString() const {
     return ss.str();
 }
 
-int Tags::getMatches(const Tags& input) const{
+int Tags::getMatches(const Tags& input) const {
     int matches = 0;
     for (auto& elem : input.tags_) {
         for (auto& t : tags_) {
@@ -133,8 +106,7 @@ int Tags::getMatches(const Tags& input) const{
 }
 
 std::ostream& operator<<(std::ostream& os, const Tags& obj) {
-    for (std::vector<Tag>::const_iterator it = obj.tags_.begin(); it != obj.tags_.end();
-         ++it) {
+    for (std::vector<Tag>::const_iterator it = obj.tags_.begin(); it != obj.tags_.end(); ++it) {
         os << *it;
         if (std::distance(it, obj.tags_.end()) > 1) {
             os << ", ";
@@ -169,6 +141,6 @@ Tags getPlatformTags(const Tags& t) {
     return result;
 }
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo

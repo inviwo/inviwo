@@ -44,7 +44,7 @@ class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorControlPoint
       public TFPrimitiveObserver {
 public:
     TransferFunctionEditorControlPoint(TFPrimitive* primitive, QGraphicsScene* scene,
-                                       float size = 14.0f);
+                                       double size = 14.0);
     ~TransferFunctionEditorControlPoint() = default;
     
     // override for qgraphicsitem_cast (refer qt documentation)

@@ -49,8 +49,9 @@ static void SphereOld(benchmark::State& state) {
 
     for (auto _ : state) {
         auto mesh = util::marchingcubes(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
-        state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
-        state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
+        state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
+        state.counters["Indices"] =
+            static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
     state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
@@ -62,8 +63,9 @@ static void SphereNew(benchmark::State& state) {
 
     for (auto _ : state) {
         auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
-        state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
-        state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
+        state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
+        state.counters["Indices"] =
+            static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
     state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
@@ -75,8 +77,9 @@ static void RippleOld(benchmark::State& state) {
 
     for (auto _ : state) {
         auto mesh = util::marchingcubes(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
-        state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
-        state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
+        state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
+        state.counters["Indices"] =
+            static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
     state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
@@ -88,8 +91,9 @@ static void RippleNew(benchmark::State& state) {
 
     for (auto _ : state) {
         auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
-        state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
-        state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
+        state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
+        state.counters["Indices"] =
+            static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
     state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
@@ -101,8 +105,9 @@ static void MiniOld(benchmark::State& state) {
 
     for (auto _ : state) {
         auto mesh = util::marchingcubes(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
-        state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
-        state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
+        state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
+        state.counters["Indices"] =
+            static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
     state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
@@ -114,26 +119,27 @@ static void MiniNew(benchmark::State& state) {
 
     for (auto _ : state) {
         auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
-        state.counters["Vertices"] = mesh->getBuffer(0)->getSize();
-        state.counters["Indices"] = mesh->getIndexBuffers().front().second->getSize();
+        state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
+        state.counters["Indices"] =
+            static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
     state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
 }
 
- BENCHMARK(SphereOld)->RangeMultiplier(2)->Range(8, 8 << 5);
- BENCHMARK(SphereNew)->RangeMultiplier(2)->Range(8, 8 << 6);
- 
- BENCHMARK(RippleOld)->RangeMultiplier(2)->Range(8, 8 << 4);
- BENCHMARK(RippleNew)->RangeMultiplier(2)->Range(8, 8 << 5);
+BENCHMARK(SphereOld)->RangeMultiplier(2)->Range(8, 8 << 5);
+BENCHMARK(SphereNew)->RangeMultiplier(2)->Range(8, 8 << 6);
 
- //BENCHMARK(MiniOld)->RangeMultiplier(2)->Range(8, 8 << 5);
- //BENCHMARK(MiniNew)->RangeMultiplier(2)->Range(8, 8 << 5);
+BENCHMARK(RippleOld)->RangeMultiplier(2)->Range(8, 8 << 4);
+BENCHMARK(RippleNew)->RangeMultiplier(2)->Range(8, 8 << 5);
 
-//BENCHMARK(MiniOld)->Arg(3);
-//BENCHMARK(MiniNew)->Arg(3);
+// BENCHMARK(MiniOld)->RangeMultiplier(2)->Range(8, 8 << 5);
+// BENCHMARK(MiniNew)->RangeMultiplier(2)->Range(8, 8 << 5);
 
-//BENCHMARK(SphereNew)->Arg(5);
+// BENCHMARK(MiniOld)->Arg(3);
+// BENCHMARK(MiniNew)->Arg(3);
+
+// BENCHMARK(SphereNew)->Arg(5);
 
 int main(int argc, char** argv) {
 
