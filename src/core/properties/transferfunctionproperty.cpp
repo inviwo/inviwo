@@ -35,6 +35,37 @@ namespace inviwo {
 
 PropertyClassIdentifier(TransferFunctionProperty, "org.inviwo.TransferFunctionProperty");
 
+void TFPropertyObserver::onMaskChange(const dvec2&) {}
+
+void TFPropertyObserver::onZoomHChange(const dvec2&) {}
+
+void TFPropertyObserver::onZoomVChange(const dvec2&) {}
+
+void TFPropertyObserver::onHistogramModeChange(HistogramMode) {}
+
+void TFPropertyObserver::onEnabledChange(bool) {}
+
+void TFPropertyObservable::notifyMaskChange(const dvec2& mask) {
+    forEachObserver([&](TFPropertyObserver* o) { o->onMaskChange(mask); });
+}
+
+void TFPropertyObservable::notifyZoomHChange(const dvec2& zoomH) {
+    forEachObserver([&](TFPropertyObserver* o) { o->onZoomHChange(zoomH); });
+}
+
+void TFPropertyObservable::notifyZoomVChange(const dvec2& zoomV) {
+    forEachObserver([&](TFPropertyObserver* o) { o->onZoomVChange(zoomV); });
+}
+
+void TFPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
+    forEachObserver([&](TFPropertyObserver* o) { o->onHistogramModeChange(mode); });
+}
+
+void TFPropertyObservable::notifyEnabledChange(bool enabled) {
+    forEachObserver([&](TFPropertyObserver* o) { o->onEnabledChange(enabled); });
+}
+
+
 TransferFunctionProperty::TransferFunctionProperty(
     const std::string& identifier, const std::string& displayName, const TransferFunction& value,
     VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
@@ -213,29 +244,5 @@ void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive*) { proper
 void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet*) {
     propertyModified();
 }
-
-void TransferFunctionPropertyObservable::notifyMaskChange(const dvec2& mask) {
-    forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onMaskChange(mask); });
-}
-
-void TransferFunctionPropertyObservable::notifyZoomHChange(const dvec2& zoomH) {
-    forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onZoomHChange(zoomH); });
-}
-
-void TransferFunctionPropertyObservable::notifyZoomVChange(const dvec2& zoomV) {
-    forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onZoomVChange(zoomV); });
-}
-
-void TransferFunctionPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
-    forEachObserver([&](TransferFunctionPropertyObserver* o) { o->onHistogramModeChange(mode); });
-}
-
-void TransferFunctionPropertyObserver::onMaskChange(const dvec2&) {}
-
-void TransferFunctionPropertyObserver::onZoomHChange(const dvec2&) {}
-
-void TransferFunctionPropertyObserver::onZoomVChange(const dvec2&) {}
-
-void TransferFunctionPropertyObserver::onHistogramModeChange(HistogramMode) {}
 
 }  // namespace inviwo

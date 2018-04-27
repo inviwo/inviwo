@@ -61,7 +61,7 @@ TFEditorView::TFEditorView(TransferFunctionProperty* tfProperty)
 
     this->setCacheMode(QGraphicsView::CacheBackground);
 
-    tfProperty_->TransferFunctionPropertyObservable::addObserver(this);
+    tfProperty_->TFPropertyObservable::addObserver(this);
 
     if (volumeInport_) {
         const auto portChange = [this]() {

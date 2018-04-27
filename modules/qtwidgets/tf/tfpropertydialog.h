@@ -35,7 +35,6 @@
 #define IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <modules/qtwidgets/tf/tfeditor.h>
 #include <modules/qtwidgets/tf/tfeditorview.h>
@@ -60,12 +59,17 @@ class TFPropertyWidgetQt;
 class TFSelectionWatcher;
 class TFLineEdit;
 class TFColorEdit;
+class TransferFunctionProperty;
+class IsoValueProperty;
+class IsoTFProperty;
 
 class IVW_MODULE_QTWIDGETS_API TFPropertyDialog : public PropertyEditorWidgetQt,
                                                   public TFPrimitiveSetObserver,
-                                                  public TransferFunctionPropertyObserver {
+                                                  public TFPropertyObserver {
 public:
-    TFPropertyDialog(TransferFunctionProperty* property);
+    TFPropertyDialog(TransferFunctionProperty* tfProperty);
+    TFPropertyDialog(IsoValueProperty* isoProperty);
+    TFPropertyDialog(IsoTFProperty* isotfProperty);
     ~TFPropertyDialog();
 
     virtual QSize sizeHint() const override;
@@ -97,6 +101,7 @@ protected:
     virtual void showEvent(QShowEvent*) override;
 
 private:
+    void initializeDialog();
     void updateTFPreview();
     /**
      * calculate the horizontal and vertical offset in scene coordinates based on the current
@@ -112,6 +117,7 @@ private:
 
     // Pointer to property, for get and invalidation in the widget
     TransferFunctionProperty* tfProperty_;
+    IsoValueProperty* ivProperty_;
 
     // TransferFunctionEditor inherited from QGraphicsScene
     std::unique_ptr<TFEditor> tfEditor_;

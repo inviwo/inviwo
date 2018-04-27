@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <inviwo/core/datastructures/isovaluecollection.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -41,22 +42,6 @@
 
 namespace inviwo {
 
-class IVW_CORE_API IsoValuePropertyObserver : public Observer {
-public:
-    virtual void onEnabledChange(bool enabled);
-    virtual void onZoomHChange(const dvec2& zoomH);
-    virtual void onZoomVChange(const dvec2& zoomV);
-    virtual void onHistogramModeChange(HistogramMode mode);
-};
-
-class IVW_CORE_API IsoValuePropertyObservable : public Observable<IsoValuePropertyObserver> {
-protected:
-    virtual void notifyEnabledChange(bool enabled);
-    virtual void notifyZoomHChange(const dvec2& zoomH);
-    virtual void notifyZoomVChange(const dvec2& zoomV);
-    virtual void notifyHistogramModeChange(HistogramMode mode);
-};
-
 /**
  * \ingroup properties
  * \class IsoValueProperty
@@ -64,7 +49,7 @@ protected:
  */
 class IVW_CORE_API IsoValueProperty : public TemplateProperty<IsoValueCollection>,
                                       public TFPrimitiveSetObserver,
-                                      public IsoValuePropertyObservable {
+                                      public TFPropertyObservable {
 public:
     InviwoPropertyInfo();
 

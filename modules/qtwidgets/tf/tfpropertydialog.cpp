@@ -28,6 +28,11 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
+
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
+
 #include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
@@ -74,7 +79,33 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* tfProperty)
     , tfProperty_(tfProperty)
     , tfEditor_(nullptr)
     , tfEditorView_(nullptr) {
+    initializeDialog();
+}
 
+TFPropertyDialog::TFPropertyDialog(IsoValueProperty* isoProperty)
+    : PropertyEditorWidgetQt(isoProperty, "Transfer Function Editor", "TFEditorWidget")
+    , sliderRange_(1024)
+    , tfProperty_(nullptr)
+    , tfEditor_(nullptr)
+    , tfEditorView_(nullptr) {
+    initializeDialog();
+}
+
+TFPropertyDialog::TFPropertyDialog(IsoTFProperty* isotfProperty)
+    : PropertyEditorWidgetQt(isotfProperty, "Transfer Function Editor", "TFEditorWidget")
+    , sliderRange_(static_cast<int>(isotfProperty->tf_.get().getTextureSize()))
+    , tfProperty_(&isotfProperty->tf_)
+    , tfEditor_(nullptr)
+    , tfEditorView_(nullptr) {
+    initializeDialog();
+}
+
+TFPropertyDialog::~TFPropertyDialog() {
+    tfEditor_->disconnect();
+    hide();
+}
+
+void TFPropertyDialog::initializeDialog() {
     if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
         if (auto layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
             QToolButton* helpBtn = new QToolButton();
@@ -83,7 +114,7 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* tfProperty)
 
             layout->insertWidget(1, helpBtn);
 
-            auto module = util::getInviwoApplication(tfProperty)
+            auto module = util::getInviwoApplication(tfProperty_)
                 ->getModuleByType<QtWidgetsModule>();
             QObject::connect(helpBtn, &QToolButton::clicked, this, [this, module]() {
                 module->showTFHelpWindow();
@@ -91,7 +122,7 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* tfProperty)
         }
     }
 
-    tfProperty->TransferFunctionPropertyObservable::addObserver(this);
+    tfProperty_->TFPropertyObservable::addObserver(this);
     tfProperty_->get().addObserver(this);
 
     tfEditor_ = util::make_unique<TFEditor>(tfProperty_, this);
@@ -142,9 +173,9 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* tfProperty)
         colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
         connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
                 colorWheel_.get(), [cw = colorWheel_.get()](const QColor& c, bool /*ambiguous*/) {
-                    QSignalBlocker block(cw);
-                    cw->setColor(c);
-                });
+            QSignalBlocker block(cw);
+            cw->setColor(c);
+        });
         connect(colorWheel_.get(), &ColorWheel::colorChange, tfSelectionWatcher_.get(),
                 &TFSelectionWatcher::setColor);
     }
@@ -265,28 +296,28 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* tfProperty)
         colorDialog_->setOption(QColorDialog::NoButtons, true);
         colorDialog_->setWindowModality(Qt::NonModal);
         colorDialog_->setWindowTitle(QString("TF Primitive Color - %1")
-                                         .arg(utilqt::toQString(tfProperty_->getDisplayName())));
+                                     .arg(utilqt::toQString(tfProperty_->getDisplayName())));
 
         connect(tfEditor_.get(), &TFEditor::showColorDialog,
                 colorDialog_.get(), [dialog = colorDialog_.get()]() {
 #ifdef __APPLE__
-                    // OSX Bug workaround: hide the dialog, due to some Mac issues
-                    dialog->hide();
+            // OSX Bug workaround: hide the dialog, due to some Mac issues
+            dialog->hide();
 #endif  // __APPLE__
-                    dialog->show();
-                });
+            dialog->show();
+        });
 
         connect(
             tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
             colorDialog_.get(), [dialog = colorDialog_.get()](const QColor& c, bool /*ambiguous*/) {
-                QSignalBlocker block(dialog);
-                if (c.isValid()) {
-                    dialog->setCurrentColor(c);
-                } else {
-                    // nothing selected
-                    dialog->setCurrentColor(QColor("#95baff"));
-                }
-            });
+            QSignalBlocker block(dialog);
+            if (c.isValid()) {
+                dialog->setCurrentColor(c);
+            } else {
+                // nothing selected
+                dialog->setCurrentColor(QColor("#95baff"));
+            }
+        });
         connect(colorDialog_.get(), &QColorDialog::currentColorChanged, tfSelectionWatcher_.get(),
                 &TFSelectionWatcher::setColor);
     }
@@ -301,7 +332,7 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* tfProperty)
         if (!settings.contains("shownonce") || !settings.value("shownonce").toBool()) {
             settings.setValue("shownonce", true);
 
-            util::getInviwoApplication(tfProperty)
+            util::getInviwoApplication(tfProperty_)
                 ->getModuleByType<QtWidgetsModule>()->showTFHelpWindow();
         }
         settings.endGroup();
@@ -312,11 +343,6 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* tfProperty)
         chkShowHistogram_->setVisible(false);
     }
     loadState();
-}
-
-TFPropertyDialog::~TFPropertyDialog() {
-    tfEditor_->disconnect();
-    hide();
 }
 
 QSize TFPropertyDialog::minimumSizeHint() const {
@@ -335,6 +361,8 @@ void TFPropertyDialog::updateFromProperty() {
 
     updateTFPreview();
 }
+
+TFEditorView* TFPropertyDialog::getEditorView() const { return tfEditorView_; }
 
 void TFPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     // normalize zoom values, as sliders in TFPropertyDialog
@@ -452,8 +480,6 @@ void TFPropertyDialog::onZoomVChange(const dvec2& zoomV) {
     zoomVSlider_->setValue(sliderRange_ - static_cast<int>(zoomV.y * sliderRange_),
                            sliderRange_ - static_cast<int>(zoomV.x * sliderRange_));
 }
-
-TFEditorView* TFPropertyDialog::getEditorView() const { return tfEditorView_; }
 
 void TFPropertyDialog::setReadOnly(bool readonly) {
     colorWheel_->setDisabled(readonly);

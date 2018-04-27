@@ -34,30 +34,6 @@ namespace inviwo {
 
 PropertyClassIdentifier(IsoValueProperty, "org.inviwo.IsoValueProperty");
 
-void IsoValuePropertyObserver::onEnabledChange(bool) {}
-
-void IsoValuePropertyObserver::onZoomHChange(const dvec2&) {}
-
-void IsoValuePropertyObserver::onZoomVChange(const dvec2&) {}
-
-void IsoValuePropertyObserver::onHistogramModeChange(HistogramMode) {}
-
-void IsoValuePropertyObservable::notifyEnabledChange(bool enabled) {
-    forEachObserver([&](IsoValuePropertyObserver* o) { o->onEnabledChange(enabled); });
-}
-
-void IsoValuePropertyObservable::notifyZoomHChange(const dvec2& zoomH) {
-    forEachObserver([&](IsoValuePropertyObserver* o) { o->onZoomHChange(zoomH); });
-}
-
-void IsoValuePropertyObservable::notifyZoomVChange(const dvec2& zoomV) {
-    forEachObserver([&](IsoValuePropertyObserver* o) { o->onZoomVChange(zoomV); });
-}
-
-void IsoValuePropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
-    forEachObserver([&](IsoValuePropertyObserver* o) { o->onHistogramModeChange(mode); });
-}
-
 IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
                                    const IsoValueCollection& value, VolumeInport* volumeInport,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)

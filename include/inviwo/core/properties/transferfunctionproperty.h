@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTIONPROPERTY_H
@@ -41,30 +41,30 @@
 
 namespace inviwo {
 
-class IVW_CORE_API TransferFunctionPropertyObserver : public Observer {
+class IVW_CORE_API TFPropertyObserver : public Observer {
 public:
     virtual void onMaskChange(const dvec2& mask);
     virtual void onZoomHChange(const dvec2& zoomH);
     virtual void onZoomVChange(const dvec2& zoomV);
     virtual void onHistogramModeChange(HistogramMode mode);
+    virtual void onEnabledChange(bool enabled);
 };
-class IVW_CORE_API TransferFunctionPropertyObservable
-    : public Observable<TransferFunctionPropertyObserver> {
+class IVW_CORE_API TFPropertyObservable : public Observable<TFPropertyObserver> {
 protected:
     virtual void notifyMaskChange(const dvec2& mask);
     virtual void notifyZoomHChange(const dvec2& zoomH);
     virtual void notifyZoomVChange(const dvec2& zoomV);
     virtual void notifyHistogramModeChange(HistogramMode mode);
+    virtual void notifyEnabledChange(bool enabled);
 };
 
 /**
  * \ingroup properties
  * A property holding a TransferFunction data structure
  */
-class IVW_CORE_API TransferFunctionProperty 
-    : public TemplateProperty<TransferFunction>
-    , public TFPrimitiveSetObserver
-    , public TransferFunctionPropertyObservable {
+class IVW_CORE_API TransferFunctionProperty : public TemplateProperty<TransferFunction>,
+                                              public TFPrimitiveSetObserver,
+                                              public TFPropertyObservable {
 
 public:
     InviwoPropertyInfo();
@@ -83,7 +83,7 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
-    TransferFunctionProperty& operator=(const TransferFunctionProperty& that);  
+    TransferFunctionProperty& operator=(const TransferFunctionProperty& that);
     virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 
@@ -110,7 +110,7 @@ public:
 
     // Override
     virtual void set(const TransferFunction& property) override;
-    virtual void set(const Property *property) override;
+    virtual void set(const Property* property) override;
     virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
     virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
@@ -124,6 +124,6 @@ private:
     VolumeInport* volumeInport_;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_TRANSFERFUNCTIONPROPERTY_H
+#endif  // IVW_TRANSFERFUNCTIONPROPERTY_H

@@ -49,6 +49,10 @@ namespace inviwo {
 
 class TransferFunction;
 class TransferFunctionProperty;
+
+class IsoValueCollection;
+class IsoValueProperty;
+
 class TFEditorControlPoint;
 class TFControlPointConnection;
 class TFPrimitive;
@@ -139,6 +143,9 @@ private:
 
     TransferFunctionProperty* tfProperty_;
     TransferFunction* transferFunction_;  //!< pointer to TF inside TF property
+
+    IsoValueProperty* isoProperty_;
+    IsoValueCollection* isoValues_; //!< pointer to isovalues inside isovalue property
 
     using PointVec = std::vector<TFEditorControlPoint*>;
     using ConnectionVec = std::vector<TFControlPointConnection*>;

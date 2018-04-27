@@ -48,8 +48,7 @@ namespace inviwo {
 class TransferFunctionProperty;
 class VolumeRAM;
 
-class IVW_MODULE_QTWIDGETS_API TFEditorView : public QGraphicsView,
-                                              public TransferFunctionPropertyObserver {
+class IVW_MODULE_QTWIDGETS_API TFEditorView : public QGraphicsView, public TFPropertyObserver {
 public:
     TFEditorView(TransferFunctionProperty* tfProperty);
     ~TFEditorView();
