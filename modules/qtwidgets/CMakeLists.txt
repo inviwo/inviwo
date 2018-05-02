@@ -51,6 +51,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/eventpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/filepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontsizepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/isotfpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/lightpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/multifilepropertywidgetqt.h
@@ -112,6 +113,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/filepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontsizepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/glslsyntaxhighlighter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/isotfpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/lightpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/multifilepropertywidgetqt.cpp

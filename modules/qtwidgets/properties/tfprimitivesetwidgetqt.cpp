@@ -44,19 +44,20 @@
 #include <warn/pop>
 
 #include <sstream>
+#include <algorithm>
 
 namespace inviwo {
 
-TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(IsoValueProperty* property)
+TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(IsoValueProperty *property)
     : PropertyWidgetQt(property)
-    , propertyPtr_(std::make_unique<Model<IsoValueProperty*>>(property)) {
+    , propertyPtr_(std::make_unique<Model<IsoValueProperty *>>(property)) {
 
     initializeWidget();
 }
 
-TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(TransferFunctionProperty* property)
+TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(TransferFunctionProperty *property)
     : PropertyWidgetQt(property)
-    , propertyPtr_(std::make_unique<Model<TransferFunctionProperty*>>(property)) {
+    , propertyPtr_(std::make_unique<Model<TransferFunctionProperty *>>(property)) {
 
     initializeWidget();
 }
@@ -64,24 +65,7 @@ TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(TransferFunctionProperty* propert
 void TFPrimitiveSetWidgetQt::setPropertyValue() {
     property_->setInitiatingWidget(this);
 
-    // convert string back to position, alpha, and RGB color values
-    std::vector<TFPrimitiveData> primitives;
-
-    std::istringstream ss(utilqt::fromQString(textEdit_->toPlainText()));
-    std::string str;
-    while (ss.good()) {
-        double pos = 0.0;
-        double alpha = 0.0;
-
-        // TODO: trim white space, separate by line, separate by white space
-        ss >> pos >> alpha >> str;
-        if (ss.fail()) {
-            LogError("Could not extract TF primitive ('position alpha #RRGGBB') from: \""
-                     << ss.str() << "\"");
-            break;
-        }
-        primitives.push_back({pos, vec4(vec3(color::hex2rgba(str)), static_cast<float>(alpha))});
-    }
+    auto primitives = extractPrimitiveData(utilqt::fromQString(textEdit_->toPlainText()));
 
     // need to undo value mapping in case of relative TF and PropertySemantics
     // being "Text (normalized)"
@@ -137,13 +121,12 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
     if (textEdit_->toPlainText() != newContents) {
         textEdit_->setPlainText(newContents);
         textEdit_->moveCursor(QTextCursor::Start);
-
         textEdit_->adjustHeight();
     }
 }
 
 void TFPrimitiveSetWidgetQt::initializeWidget() {
-    QHBoxLayout* hLayout = new QHBoxLayout;
+    QHBoxLayout *hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
     label_ = new EditableLabelQt(this, property_);
@@ -162,6 +145,75 @@ void TFPrimitiveSetWidgetQt::initializeWidget() {
     connect(textEdit_, &MultilineTextEdit::editingFinished, [this]() { setPropertyValue(); });
 
     updateFromProperty();
+}
+
+std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
+    const std::string &str) const {
+    std::string errorMsg;
+
+    auto convertToDouble = [&errorMsg](double &retVal, const std::string &str,
+                                       const std::string &errSource, size_t line) {
+        try {
+            size_t idx;
+            retVal = std::stod(str, &idx);
+            if (idx != str.size()) {
+                // there was some excess data after the number
+                throw std::invalid_argument("excess information");
+            }
+        } catch (std::invalid_argument &) {
+            errorMsg += "\n(" + std::to_string(line) + ") Invalid " + errSource + ": '" + str +
+                        "'. Expected a double value.";
+            return false;
+        }
+        return true;
+    };
+
+    // tokenize line using space or tab (multiple spaces will be collapsed)
+    auto tokenize = [](const std::string &str) {
+        std::vector<std::string> tokens;
+        size_t tokenStart = str.find_first_not_of(" \t");
+        while (tokenStart != std::string::npos) {
+            auto tokenEnd = str.find_first_of(" \t", tokenStart);
+            tokens.push_back(str.substr(tokenStart, tokenEnd - tokenStart));
+            tokenStart = str.find_first_not_of(" \t", tokenEnd);
+        }
+        return tokens;
+    };
+
+    // convert string back to position, alpha, and RGB color values
+    std::vector<TFPrimitiveData> primitives;
+
+    std::istringstream ss(str);
+    // proceed line by line
+    size_t lineCount = 0;
+    std::string line;
+    while (std::getline(ss, line)) {
+        ++lineCount;
+        if (line.empty()) continue;
+
+        auto tokens = tokenize(line);
+        if (tokens.empty()) continue;
+
+        if (tokens.size() < 3) {
+            errorMsg += "\n(" + std::to_string(lineCount) + ") Invalid TF primitive: '" + line +
+                        "'. Expected 'double double #RRGGBB' (position alpha color).";
+        } else {
+            double pos = 0.0;
+            double alpha = 0.0;
+            if (!convertToDouble(pos, tokens[0], "position", lineCount)) continue;
+            if (!convertToDouble(alpha, tokens[1], "alpha", lineCount)) continue;
+            try {
+                primitives.push_back(
+                    {pos, vec4(vec3(color::hex2rgba(tokens[2])), static_cast<float>(alpha))});
+            } catch (Exception &e) {
+                errorMsg += "\n(" + std::to_string(lineCount) + ") " + e.getMessage();
+            }
+        }
+    }
+    if (!errorMsg.empty()) {
+        LogError("Parse error(s):" << errorMsg);
+    }
+    return primitives;
 }
 
 }  // namespace inviwo

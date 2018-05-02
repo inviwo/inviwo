@@ -37,7 +37,7 @@
 namespace inviwo {
 
 class IsoValueProperty;
-class IvwPushButton;
+class TFPushButton;
 class EditableLabelQt;
 
 class IVW_MODULE_QTWIDGETS_API IsoValuePropertyWidgetQt : public PropertyWidgetQt {
@@ -47,14 +47,14 @@ public:
 
     virtual TFPropertyDialog* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
-    
+
     virtual void updateFromProperty() override;
 
     virtual void setReadOnly(bool readonly) override;
 
 private:
     EditableLabelQt* label_;
-    IvwPushButton* btnOpenTF_;
+    TFPushButton* btnOpenTF_;
     mutable std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
 };
 

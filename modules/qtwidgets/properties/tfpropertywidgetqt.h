@@ -35,11 +35,15 @@
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 
+#include <inviwo/core/properties/tfpropertyconcept.h>
+
 namespace inviwo {
 
 class EditableLabelQt;
 class TransferFunctionProperty;
 class TFPushButton;
+class IsoValueProperty;
+class IsoTFProperty;
 
 class IVW_MODULE_QTWIDGETS_API TFPropertyWidgetQt : public PropertyWidgetQt {
 public:
@@ -61,13 +65,15 @@ private:
 class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
 public:
     TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
+    TFPushButton(IsoValueProperty* property, QWidget* parent = nullptr);
+    TFPushButton(IsoTFProperty* property, QWidget* parent = nullptr);
     virtual ~TFPushButton() = default;
     void updateFromProperty();
 
 private:
     void resizeEvent(QResizeEvent* event) override;
 
-    TransferFunctionProperty* tfProperty_ = nullptr;
+    std::unique_ptr<util::TFPropertyConcept> propertyPtr_ = nullptr;
 };
 
 }  // namespace

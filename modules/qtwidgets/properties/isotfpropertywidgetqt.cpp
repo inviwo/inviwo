@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/isovaluepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/isotfpropertywidgetqt.h>
 
-#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
 #include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
+IsoTFPropertyWidgetQt::IsoTFPropertyWidgetQt(IsoTFProperty* property)
     : PropertyWidgetQt(property)
     , label_{new EditableLabelQt(this, property_)}
     , btnOpenTF_{new TFPushButton(property, this)} {
@@ -56,10 +56,10 @@ IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
     setLayout(hLayout);
     updateFromProperty();
 
-    connect(btnOpenTF_, &IvwPushButton::clicked, [this]() {
+    connect(btnOpenTF_, &IvwPushButton::clicked, [this, property]() {
         if (!tfDialog_) {
             tfDialog_ =
-                std::make_unique<TFPropertyDialog>(static_cast<IsoValueProperty*>(property_));
+                std::make_unique<TFPropertyDialog>(property);
             tfDialog_->setVisible(true);
         } else {
             tfDialog_->setVisible(!tfDialog_->isVisible());
@@ -71,12 +71,16 @@ IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
     setSizePolicy(sp);
 }
 
-TFPropertyDialog* IsoValuePropertyWidgetQt::getEditorWidget() const { return tfDialog_.get(); }
+IsoTFPropertyWidgetQt::~IsoTFPropertyWidgetQt() {
+    if (tfDialog_) tfDialog_->hide();
+}
 
-bool IsoValuePropertyWidgetQt::hasEditorWidget() const { return tfDialog_ != nullptr; }
+void IsoTFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
-void IsoValuePropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
+TFPropertyDialog* IsoTFPropertyWidgetQt::getEditorWidget() const { return tfDialog_.get(); }
 
-void IsoValuePropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
+bool IsoTFPropertyWidgetQt::hasEditorWidget() const { return tfDialog_ != nullptr; }
+
+void IsoTFPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
 
 }  // namespace inviwo
