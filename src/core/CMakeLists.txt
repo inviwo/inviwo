@@ -564,6 +564,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
+    tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/dataformats-test.cpp
     tests/unittests/dispatch-test.cpp
