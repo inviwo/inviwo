@@ -105,11 +105,11 @@ public:
 class PositionsBuffer
     : public TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)> {
 public:
-    using Base = TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
+    using Base = typename TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
     using Base::Base;
 
-    std::shared_ptr<const Buffer<type>> getVertices() const { return Base::buffer_; }
-    std::shared_ptr<Buffer<type>> getEditableVertices() { return Base::buffer_; }
+    std::shared_ptr<const Buffer<Base::type>> getVertices() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<Base::type>> getEditableVertices() { return Base::buffer_; }
 
     void setVertexPosition(size_t index, vec3 pos) {
         getEditableVertices()->getEditableRAMRepresentation()->set(index, pos);
@@ -123,11 +123,11 @@ public:
 class NormalBuffer
     : public TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::NormalAttrib)> {
 public:
-    using Base = TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
+    using Base = typename TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
     using Base::Base;
 
-    std::shared_ptr<const Buffer<type>> getNormals() const { return Base::buffer_; }
-    std::shared_ptr<Buffer<type>> getEditableNormals() { return Base::buffer_; }
+    std::shared_ptr<const Buffer<Base::type>> getNormals() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<Base::type>> getEditableNormals() { return Base::buffer_; }
 
     void setVertexNormal(size_t index, vec3 normal) {
         getEditableNormals()->getEditableRAMRepresentation()->set(index, normal);
@@ -141,11 +141,11 @@ public:
 class ColorsBuffer
     : public TypedMeshBufferBase<float, 4, static_cast<int>(BufferType::ColorAttrib)> {
 public:
-    using Base = TypedMeshBufferBase<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
+    using Base = typename TypedMeshBufferBase<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
     using Base::Base;
 
-    std::shared_ptr<const Buffer<type>> getColors() const { return Base::buffer_; }
-    std::shared_ptr<Buffer<type>> getEditableColors() { return Base::buffer_; }
+    std::shared_ptr<const Buffer<Base::type>> getColors() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<Base::type>> getEditableColors() { return Base::buffer_; }
 
     void setVertexColor(size_t index, vec4 color) {
         getEditableColors()->getEditableRAMRepresentation()->set(index, color);
@@ -160,11 +160,11 @@ template <unsigned DIMS = 3>
 class TexcoordBuffer
     : public TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)> {
 public:
-    using Base = TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)>;
+    using Base = typename TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)>;
     using Base::Base;
 
-    std::shared_ptr<const Buffer<type>> getTexCoords() const { return Base::buffer_; }
-    std::shared_ptr<Buffer<type>> getEditableTexCoords() { return Base::buffer_; }
+    std::shared_ptr<const Buffer<typename Base::type>> getTexCoords() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<typename Base::type>> getEditableTexCoords() { return Base::buffer_; }
 
     void setVertexTexCoord(size_t index, vec3 texCoord) {
         getEditableTexCoords()->getEditableRAMRepresentation()->set(index, texCoord);
@@ -178,11 +178,11 @@ public:
 class CurvatureBuffer
     : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::CurvatureAttrib)> {
 public:
-    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
+    using Base = typename TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
     using Base::Base;
 
-    std::shared_ptr<const Buffer<type>> getCurvatures() const { return Base::buffer_; }
-    std::shared_ptr<Buffer<type>> getEditableCurvatures() { return Base::buffer_; }
+    std::shared_ptr<const Buffer<Base::type>> getCurvatures() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<Base::type>> getEditableCurvatures() { return Base::buffer_; }
 
     void setVertexCurvature(size_t index, float curvature) {
         getEditableCurvatures()->getEditableRAMRepresentation()->set(index, curvature);
@@ -203,11 +203,11 @@ using IndexBuffer = TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType
 class RadiiBuffer
     : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)> {
 public:
-    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)>;
+    using Base = typename TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)>;
     using Base::Base;
 
-    std::shared_ptr<const Buffer<type>> getRadii() const { return Base::buffer_; }
-    std::shared_ptr<Buffer<type>> getEditableRadii() { return Base::buffer_; }
+    std::shared_ptr<const Buffer<Base::type>> getRadii() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<Base::type>> getEditableRadii() { return Base::buffer_; }
 
     void setVertexRadius(size_t index, float radius) {
         getEditableRadii()->getEditableRAMRepresentation()->set(index, radius);
