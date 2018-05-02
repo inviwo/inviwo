@@ -132,33 +132,33 @@ private:
 
 // TransferFunctionProperty
 template <>
-TFPrimitiveSet* TFPropertyModel<TransferFunctionProperty*>::getTFInternal() const;
+IVW_CORE_API TFPrimitiveSet* TFPropertyModel<TransferFunctionProperty*>::getTFInternal() const;
 template <>
-bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const;
+IVW_CORE_API bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const;
 
 // IsoValueProperty
 template <>
-TFPrimitiveSet* TFPropertyModel<IsoValueProperty*>::getIsovaluesInternal() const;
+IVW_CORE_API TFPrimitiveSet* TFPropertyModel<IsoValueProperty*>::getIsovaluesInternal() const;
 template <>
-bool TFPropertyModel<IsoValueProperty*>::hasIsovaluesInternal() const;
+IVW_CORE_API bool TFPropertyModel<IsoValueProperty*>::hasIsovaluesInternal() const;
 template <>
-bool TFPropertyModel<IsoValueProperty*>::supportsMaskInternal() const;
+IVW_CORE_API bool TFPropertyModel<IsoValueProperty*>::supportsMaskInternal() const;
 template <>
-void TFPropertyModel<IsoValueProperty*>::setMaskInternal(double, double);
+IVW_CORE_API void TFPropertyModel<IsoValueProperty*>::setMaskInternal(double, double);
 template <>
-const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() const;
+IVW_CORE_API const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() const;
 template <>
-void TFPropertyModel<IsoValueProperty*>::clearMaskInternal();
+IVW_CORE_API void TFPropertyModel<IsoValueProperty*>::clearMaskInternal();
 
 // IsoTFProperty
 template <>
-TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getTFInternal() const;
+IVW_CORE_API TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getTFInternal() const;
 template <>
-TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getIsovaluesInternal() const;
+IVW_CORE_API TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getIsovaluesInternal() const;
 template <>
-bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const;
+IVW_CORE_API bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const;
 template <>
-bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const;
+IVW_CORE_API bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const;
 
 }  // namespace util
 
