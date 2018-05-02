@@ -43,8 +43,6 @@ void TFPropertyObserver::onZoomVChange(const dvec2&) {}
 
 void TFPropertyObserver::onHistogramModeChange(HistogramMode) {}
 
-void TFPropertyObserver::onEnabledChange(bool) {}
-
 void TFPropertyObservable::notifyMaskChange(const dvec2& mask) {
     forEachObserver([&](TFPropertyObserver* o) { o->onMaskChange(mask); });
 }
@@ -59,10 +57,6 @@ void TFPropertyObservable::notifyZoomVChange(const dvec2& zoomV) {
 
 void TFPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
     forEachObserver([&](TFPropertyObserver* o) { o->onHistogramModeChange(mode); });
-}
-
-void TFPropertyObservable::notifyEnabledChange(bool enabled) {
-    forEachObserver([&](TFPropertyObserver* o) { o->onEnabledChange(enabled); });
 }
 
 

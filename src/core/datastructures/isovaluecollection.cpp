@@ -39,8 +39,14 @@
 namespace inviwo {
 
 IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
-                                       TFPrimitiveSetType type) : TFPrimitiveSet(values, type) {
+                                       TFPrimitiveSetType type)
+    : TFPrimitiveSet(values, type) {
+    setTitle("Isovalues");
     setSerializationKey("IsoValues", "IsoValue");
+}
+
+std::vector<FileExtension> IsoValueCollection::getSupportedExtensions() const {
+    return {{"iiv", "Inviwo Isovalues"}};
 }
 
 void IsoValueCollection::save(const std::string& filename, const FileExtension& ext) const {

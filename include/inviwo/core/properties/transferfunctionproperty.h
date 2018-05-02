@@ -47,7 +47,6 @@ public:
     virtual void onZoomHChange(const dvec2& zoomH);
     virtual void onZoomVChange(const dvec2& zoomV);
     virtual void onHistogramModeChange(HistogramMode mode);
-    virtual void onEnabledChange(bool enabled);
 };
 class IVW_CORE_API TFPropertyObservable : public Observable<TFPropertyObserver> {
 protected:
@@ -55,7 +54,6 @@ protected:
     virtual void notifyZoomHChange(const dvec2& zoomH);
     virtual void notifyZoomVChange(const dvec2& zoomV);
     virtual void notifyHistogramModeChange(HistogramMode mode);
-    virtual void notifyEnabledChange(bool enabled);
 };
 
 /**
@@ -87,16 +85,15 @@ public:
     virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 
-    const dvec2 getMask() const;
     void setMask(double maskMin, double maskMax);
-
+    const dvec2 getMask() const;
     void clearMask();
 
-    const dvec2& getZoomH() const;
     void setZoomH(double zoomHMin, double zoomHMax);
+    const dvec2& getZoomH() const;
 
-    const dvec2& getZoomV() const;
     void setZoomV(double zoomVMin, double zoomVMax);
+    const dvec2& getZoomV() const;
 
     void setHistogramMode(HistogramMode type);
     HistogramMode getHistogramMode();

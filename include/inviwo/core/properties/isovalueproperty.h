@@ -71,14 +71,11 @@ public:
     IsoValueProperty& operator=(const IsoValueProperty& rhs);
     virtual IsoValueProperty* clone() const override;
 
-    bool getEnabled() const;
-    void setEnabled(bool enable);
-
-    const dvec2& getZoomH() const;
     void setZoomH(double zoomHMin, double zoomHMax);
+    const dvec2& getZoomH() const;
 
-    const dvec2& getZoomV() const;
     void setZoomV(double zoomVMin, double zoomVMax);
+    const dvec2& getZoomV() const;
 
     void setHistogramMode(HistogramMode mode);
     HistogramMode getHistogramMode();
@@ -99,7 +96,6 @@ public:
     virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
 
 private:
-    ValueWrapper<bool> enabled_;
     ValueWrapper<dvec2> zoomH_;
     ValueWrapper<dvec2> zoomV_;
     ValueWrapper<HistogramMode> histogramMode_;

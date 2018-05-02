@@ -52,8 +52,8 @@ TransferFunction::TransferFunction(size_t textureSize)
 TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values, size_t textureSize)
     : TransferFunction(values, TFPrimitiveSetType::Relative, textureSize) {}
 
-TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type,
-                 size_t textureSize)
+TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values,
+                                   TFPrimitiveSetType type, size_t textureSize)
     : TFPrimitiveSet(values, type)
     , maskMin_(0.0)
     , maskMax_(1.0)
@@ -61,6 +61,7 @@ TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values, T
     , dataRepr_{std::make_shared<LayerRAMPrecision<vec4>>(size2_t(textureSize, 1))}
     , data_(util::make_unique<Layer>(dataRepr_)) {
     clearMask();
+    setTitle("Transfer Function");
     setSerializationKey("Points", "Point");
 }
 
@@ -135,8 +136,10 @@ void TransferFunction::setMaskMax(double maskMax) {
 double TransferFunction::getMaskMax() const { return maskMax_; }
 
 void TransferFunction::clearMask() {
-    maskMin_ = (getType() == TFPrimitiveSetType::Relative) ? 0.0 : std::numeric_limits<double>::lowest();
-    maskMax_ = (getType() == TFPrimitiveSetType::Relative) ? 1.0 : std::numeric_limits<double>::max();
+    maskMin_ =
+        (getType() == TFPrimitiveSetType::Relative) ? 0.0 : std::numeric_limits<double>::lowest();
+    maskMax_ =
+        (getType() == TFPrimitiveSetType::Relative) ? 1.0 : std::numeric_limits<double>::max();
     invalidate();
 }
 
@@ -158,6 +161,10 @@ void TransferFunction::deserialize(Deserializer& d) {
 vec4 TransferFunction::sample(double v) const { return interpolateColor(v); }
 
 vec4 TransferFunction::sample(float v) const { return interpolateColor(v); }
+
+std::vector<FileExtension> TransferFunction::getSupportedExtensions() const {
+    return {{"itf", "Inviwo Transfer Function"}, {"png", "Transfer Function Image"}};
+}
 
 void TransferFunction::save(const std::string& filename, const FileExtension& ext) const {
     std::string extension = toLower(filesystem::getFileExtension(filename));

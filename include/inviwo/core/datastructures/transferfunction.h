@@ -124,8 +124,9 @@ public:
 
     friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 
-    void save(const std::string& filename, const FileExtension& ext = FileExtension()) const;
-    void load(const std::string& filename, const FileExtension& ext = FileExtension());
+    virtual std::vector<FileExtension> getSupportedExtensions() const override;
+    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const override;
+    virtual void load(const std::string& filename, const FileExtension& ext = FileExtension()) override;
 
 protected:
     void calcTransferValues() const;

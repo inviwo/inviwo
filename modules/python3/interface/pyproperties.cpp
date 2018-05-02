@@ -258,7 +258,6 @@ void exposeProperties(py::module &m) {
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
              py::arg("semantics") = PropertySemantics::Default)
-        .def_property("enabled", &IsoValueProperty::getEnabled, &IsoValueProperty::setEnabled)
         .def_property("zoomH", &IsoValueProperty::getZoomH, &IsoValueProperty::setZoomH)
         .def_property("zoomV", &IsoValueProperty::getZoomV, &IsoValueProperty::setZoomV)
         .def("save", [](IsoValueProperty *ivp, std::string filename) { ivp->get().save(filename); })

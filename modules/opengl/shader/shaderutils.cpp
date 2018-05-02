@@ -279,7 +279,7 @@ void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
     shader.getFragmentShaderObject()->addShaderDefine("MAX_ISOVALUE_COUNT",
                                                       toString(std::max<size_t>(1, isovalueCount)));
 
-    if (property.getEnabled() && (property.get().size()) > 0) {
+    if (!property.get().empty()) {
         shader.getFragmentShaderObject()->addShaderDefine("ISOSURFACE_ENABLED");
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("ISOSURFACE_ENABLED");
