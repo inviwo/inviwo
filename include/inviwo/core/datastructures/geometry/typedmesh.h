@@ -105,7 +105,7 @@ public:
 class PositionsBuffer
     : public TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)> {
 public:
-    using Base = typename TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
+    using Base = TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<Base::type>> getVertices() const { return Base::buffer_; }
@@ -123,7 +123,7 @@ public:
 class NormalBuffer
     : public TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::NormalAttrib)> {
 public:
-    using Base = typename TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
+    using Base = TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::NormalAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<Base::type>> getNormals() const { return Base::buffer_; }
@@ -141,7 +141,7 @@ public:
 class ColorsBuffer
     : public TypedMeshBufferBase<float, 4, static_cast<int>(BufferType::ColorAttrib)> {
 public:
-    using Base = typename TypedMeshBufferBase<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
+    using Base = TypedMeshBufferBase<float, 4, static_cast<int>(BufferType::ColorAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<Base::type>> getColors() const { return Base::buffer_; }
@@ -178,7 +178,7 @@ public:
 class CurvatureBuffer
     : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::CurvatureAttrib)> {
 public:
-    using Base = typename TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
+    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::CurvatureAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<Base::type>> getCurvatures() const { return Base::buffer_; }
@@ -203,7 +203,7 @@ using IndexBuffer = TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType
 class RadiiBuffer
     : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)> {
 public:
-    using Base = typename TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)>;
+    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<Base::type>> getRadii() const { return Base::buffer_; }
