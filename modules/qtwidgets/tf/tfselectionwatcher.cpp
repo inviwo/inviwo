@@ -38,32 +38,39 @@
 
 namespace inviwo {
 
-TFSelectionWatcher::TFSelectionWatcher(TFEditor *editor, TransferFunctionProperty *property)
-    : tfEditor_(editor), tfProperty_(property) {}
+TFSelectionWatcher::TFSelectionWatcher(TFEditor *editor, Property *property,
+                                       const std::vector<TFPrimitiveSet *> &primitiveSets)
+    : tfEditor_(editor), property_(property), tfSets_(primitiveSets) {}
 
 void TFSelectionWatcher::setPosition(double pos) {
-    NetworkLock lock(tfProperty_);
+    NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    tfProperty_->get().setPosition(selectedPrimitives_, pos);
+    for (auto &elem : tfSets_) {
+        elem->setPosition(selectedPrimitives_, pos);
+    }
     emit updateWidgetPosition(pos, false);
 }
 
 void TFSelectionWatcher::setAlpha(double alpha) {
-    NetworkLock lock(tfProperty_);
+    NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    tfProperty_->get().setAlpha(selectedPrimitives_, alpha);
+    for (auto &elem : tfSets_) {
+        elem->setAlpha(selectedPrimitives_, alpha);
+    }
     emit updateWidgetAlpha(alpha, false);
 }
 
 void TFSelectionWatcher::setColor(const QColor &c) {
-    NetworkLock lock(tfProperty_);
+    NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    tfProperty_->get().setColor(selectedPrimitives_, utilqt::tovec3(c));
+    for (auto &elem : tfSets_) {
+        elem->setColor(selectedPrimitives_, utilqt::tovec3(c));
+    }
     emit updateWidgetColor(c, false);
 }
 
 void TFSelectionWatcher::updateSelection(const std::vector<TFPrimitive *> selection) {
-    // deregister all primitive callbacks
+    // de-register all primitive callbacks
     for (auto p : selectedPrimitives_) {
         p->removeObserver(this);
     }

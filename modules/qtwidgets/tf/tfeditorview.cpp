@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogram.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/tfpropertyconcept.h>
 #include <modules/qtwidgets/tf/tfeditorview.h>
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
 #include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
@@ -48,9 +48,9 @@
 
 namespace inviwo {
 
-TFEditorView::TFEditorView(TransferFunctionProperty* tfProperty)
+TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty)
     : QGraphicsView()
-    , tfProperty_(tfProperty)
+    , tfPropertyPtr_(tfProperty)
     , volumeInport_(tfProperty->getVolumeInport())
     , histogramMode_(tfProperty->getHistogramMode())
     , maskHorizontal_(0.0, 1.0) {
@@ -61,7 +61,7 @@ TFEditorView::TFEditorView(TransferFunctionProperty* tfProperty)
 
     this->setCacheMode(QGraphicsView::CacheBackground);
 
-    tfProperty_->TFPropertyObservable::addObserver(this);
+    tfPropertyPtr_->addObserver(this);
 
     if (volumeInport_) {
         const auto portChange = [this]() {
@@ -134,13 +134,13 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
         return;
     }
 
-    NetworkLock lock(tfProperty_);
+    NetworkLock lock(tfPropertyPtr_->getProperty());
 
     if (event->modifiers() == Qt::ControlModifier) {
         // zoom only horizontally relative to wheel event position
         double zoomFactor = std::pow(1.05, std::max(-15.0, std::min(15.0, -delta.y)));
 
-        dvec2 horizontal = tfProperty_->getZoomH();
+        dvec2 horizontal = tfPropertyPtr_->getZoomH();
         double zoomExtent = horizontal.y - horizontal.x;
 
         // off-center zooming
@@ -150,7 +150,7 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
         double lower = zoomCenter + (horizontal.x - zoomCenter) * zoomFactor;
         double upper = zoomCenter + (horizontal.y - zoomCenter) * zoomFactor;
 
-        tfProperty_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
+        tfPropertyPtr_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
     } else {
         // vertical scrolling (+ optional horizontal if two-axis wheel)
 
@@ -160,8 +160,8 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
             delta.y = 0.0;
         }
 
-        dvec2 horizontal = tfProperty_->getZoomH();
-        dvec2 vertical = tfProperty_->getZoomV();
+        dvec2 horizontal = tfPropertyPtr_->getZoomH();
+        dvec2 vertical = tfPropertyPtr_->getZoomV();
         dvec2 extent(horizontal.y - horizontal.x, vertical.y - vertical.x);
         // scale scroll step with current zoom range
         delta *= scrollStep * extent;
@@ -183,8 +183,8 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
             vertical.x = vertical.y - extent.y;
         }
 
-        tfProperty_->setZoomH(horizontal.x, horizontal.y);
-        tfProperty_->setZoomV(vertical.x, vertical.y);
+        tfPropertyPtr_->setZoomH(horizontal.x, horizontal.y);
+        tfPropertyPtr_->setZoomV(vertical.x, vertical.y);
     }
 
     event->accept();
@@ -381,8 +381,8 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
 
 void TFEditorView::updateZoom() {
     const auto rect = scene()->sceneRect();
-    const auto zh = tfProperty_->getZoomH();
-    const auto zv = tfProperty_->getZoomV();
+    const auto zh = tfPropertyPtr_->getZoomH();
+    const auto zv = tfPropertyPtr_->getZoomV();
     fitInView(zh.x * rect.width(), zv.x * rect.height(), (zh.y - zh.x) * rect.width(),
               (zv.y - zv.x) * rect.height(), Qt::IgnoreAspectRatio);
 }

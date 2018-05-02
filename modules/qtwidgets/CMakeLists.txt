@@ -74,6 +74,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/rawdatareaderdialogqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcontrolpointconnection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorcontrolpoint.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorisovalue.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorprimitive.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorview.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfpropertydialog.h
@@ -141,6 +142,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcontrolpointconnection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorcontrolpoint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorisovalue.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorprimitive.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorview.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tf/tflineedit.cpp

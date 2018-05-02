@@ -45,12 +45,15 @@ class QWheelEvent;
 
 namespace inviwo {
 
-class TransferFunctionProperty;
+namespace util {
+struct TFPropertyConcept;
+}
+
 class VolumeRAM;
 
 class IVW_MODULE_QTWIDGETS_API TFEditorView : public QGraphicsView, public TFPropertyObserver {
 public:
-    TFEditorView(TransferFunctionProperty* tfProperty);
+    TFEditorView(util::TFPropertyConcept* tfProperty);
     ~TFEditorView();
 
 protected:
@@ -71,7 +74,7 @@ protected:
     virtual void wheelEvent(QWheelEvent* event) override;
 
 private:
-    TransferFunctionProperty* tfProperty_;
+    util::TFPropertyConcept* tfPropertyPtr_;
     VolumeInport* volumeInport_;
     HistogramMode histogramMode_;
 

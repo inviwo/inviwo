@@ -42,6 +42,7 @@ namespace inviwo {
 
 TFControlPointConnection::TFControlPointConnection()
     : QGraphicsItem(), left_(nullptr), right_(nullptr), path_(), shape_(), rect_() {
+    setZValue(8.0);
     updateShape();
 }
 

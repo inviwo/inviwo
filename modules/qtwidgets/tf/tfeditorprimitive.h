@@ -61,7 +61,8 @@ class IVW_MODULE_QTWIDGETS_API TFEditorPrimitive : public QGraphicsItem,
                                                    public Observable<TFEditorPrimitiveObserver> {
 public:
     enum ItemType {
-        TFEditorControlPointType = 30,
+        TFEditorUnknownPrimitiveType = 30,
+        TFEditorControlPointType,
         TFControlPointConnectionType,
         TFEditorIsovalueType,
         Number_of_InviwoWidgetGraphicsItemTypes
