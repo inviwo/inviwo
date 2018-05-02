@@ -160,7 +160,7 @@ template <unsigned DIMS = 3>
 class TexcoordBuffer
     : public TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)> {
 public:
-    using Base = typename TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)>;
+    using Base = TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<typename Base::type>> getTexCoords() const { return Base::buffer_; }
@@ -221,7 +221,7 @@ public:
  * \ingroup typedmesh
  *
  *
- *  TypedMesh is a templated data structure for creating meshes with a custom amount of vertex
+ * TypedMesh is a templated data structure for creating meshes with a custom amount of vertex
  * buffers. It uses a variadic set of BufferTraits to define its interface. For example, a Mesh with
  * a position and color per vertex would be defined as
  * `TypedMesh<PositionsBufferTrait,ColorsBufferTrait>`. Depending on the Traits specified in the
