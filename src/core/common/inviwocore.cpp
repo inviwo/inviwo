@@ -83,6 +83,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/advancedmaterialproperty.h>
+#include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/stipplingproperty.h>
@@ -295,6 +296,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<OptionPropertyString>();
     registerProperty<PlaneProperty>();
     registerProperty<PositionProperty>();
+    registerProperty<RaycastingProperty>();
     registerProperty<SimpleLightingProperty>();
     registerProperty<SimpleRaycastingProperty>();
     registerProperty<StipplingProperty>();

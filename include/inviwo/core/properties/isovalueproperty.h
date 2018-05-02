@@ -54,8 +54,7 @@ public:
     InviwoPropertyInfo();
 
     IsoValueProperty(const std::string& identifier, const std::string& displayName,
-                     const IsoValueCollection& value =
-                         IsoValueCollection({{0.5, vec4(1.0f, 1.0f, 1.0f, 0.5f)}}),
+                     const IsoValueCollection& value = {},
                      VolumeInport* volumeInport = nullptr,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);

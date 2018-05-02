@@ -224,6 +224,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/raycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stipplingproperty.h
@@ -488,6 +489,7 @@ set(SOURCE_FILES
     properties/propertywidget.cpp
     properties/propertywidgetfactory.cpp
     properties/propertywidgetfactoryobject.cpp
+    properties/raycastingproperty.cpp
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp
     properties/stipplingproperty.cpp

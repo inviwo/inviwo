@@ -166,10 +166,19 @@ void IsoValueProperty::set(const Property* property) {
     }
 }
 
-void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive*) { propertyModified(); }
+void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive*) {
+    setInvalidationLevel(InvalidationLevel::InvalidResources);
+    propertyModified();
+}
 
-void IsoValueProperty::onTFPrimitiveRemoved(TFPrimitive*) { propertyModified(); }
+void IsoValueProperty::onTFPrimitiveRemoved(TFPrimitive*) {
+    setInvalidationLevel(InvalidationLevel::InvalidResources);
+    propertyModified();
+}
 
-void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitive*) { propertyModified(); }
+void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitive*) {
+    setInvalidationLevel(InvalidationLevel::InvalidOutput);
+    propertyModified();
+}
 
 }  // namespace inviwo

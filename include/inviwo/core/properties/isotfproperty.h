@@ -73,9 +73,7 @@ public:
     virtual IsoTFProperty* clone() const override;
 
     virtual std::string getClassIdentifierForWidget() const override;
-
-    virtual void setSemantics(const PropertySemantics& semantics) override;
-
+    
     void setMask(double maskMin, double maskMax);
     const dvec2 getMask() const;
     void clearMask();
@@ -98,8 +96,6 @@ protected:
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
-
-    virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
 };
 
 }  // namespace inviwo

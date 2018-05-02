@@ -38,8 +38,8 @@ IsoTFProperty::IsoTFProperty(const std::string& identifier, const std::string& d
                              VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , isovalues_("isoValues", "Iso Values", isovalues, volumeInport)
-    , tf_("tf", "Transfer Function", tf, volumeInport) {
+    , isovalues_("isovalues", "Iso Values", isovalues, volumeInport)
+    , tf_("transferFunction", "Transfer Function", tf, volumeInport) {
 
     addProperty(isovalues_);
     addProperty(tf_);
@@ -69,10 +69,6 @@ IsoTFProperty* IsoTFProperty::clone() const { return new IsoTFProperty(*this); }
 
 std::string IsoTFProperty::getClassIdentifierForWidget() const {
     return IsoTFProperty::CLASS_IDENTIFIER;
-}
-
-void IsoTFProperty::setSemantics(const PropertySemantics& semantics) {
-    CompositeProperty::setSemantics(semantics);
 }
 
 void IsoTFProperty::setMask(double maskMin, double maskMax) { tf_.setMask(maskMin, maskMax); }
@@ -111,12 +107,5 @@ void IsoTFProperty::onZoomHChange(const dvec2& zoomH) { notifyZoomHChange(zoomH)
 void IsoTFProperty::onZoomVChange(const dvec2& zoomV) { notifyZoomVChange(zoomV); }
 
 void IsoTFProperty::onHistogramModeChange(HistogramMode mode) { notifyHistogramModeChange(mode); }
-
-void IsoTFProperty::onSetSemantics(Property* property, const PropertySemantics& semantics) {
-    if (property == this) {
-        tf_.setSemantics(semantics);
-        isovalues_.setSemantics(semantics);
-    }
-}
 
 }  // namespace inviwo
