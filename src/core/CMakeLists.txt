@@ -229,6 +229,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stipplingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stringproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/templateproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/tfpropertyconcept.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
@@ -491,6 +492,7 @@ set(SOURCE_FILES
     properties/simpleraycastingproperty.cpp
     properties/stipplingproperty.cpp
     properties/stringproperty.cpp
+    properties/tfpropertyconcept.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
     rendering/meshdrawerfactory.cpp
