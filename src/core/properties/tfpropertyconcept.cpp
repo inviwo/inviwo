@@ -31,4 +31,58 @@
 
 namespace inviwo {
 
+namespace util {
+
+// TransferFunctionProperty
+template <>
+TFPrimitiveSet* TFPropertyModel<TransferFunctionProperty*>::getTFInternal() const {
+    return &data_->get();
+}
+template <>
+bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const {
+    return true;
+}
+
+// IsoValueProperty
+template <>
+TFPrimitiveSet* TFPropertyModel<IsoValueProperty*>::getIsovaluesInternal() const {
+    return &data_->get();
+}
+template <>
+bool TFPropertyModel<IsoValueProperty*>::hasIsovaluesInternal() const {
+    return true;
+}
+template <>
+bool TFPropertyModel<IsoValueProperty*>::supportsMaskInternal() const {
+    return false;
+}
+template <>
+void TFPropertyModel<IsoValueProperty*>::setMaskInternal(double, double) {}
+template <>
+const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() const {
+    return {};
+}
+template <>
+void TFPropertyModel<IsoValueProperty*>::clearMaskInternal() {}
+
+// IsoTFProperty
+template <>
+TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getTFInternal() const {
+    return &data_->tf_.get();
+}
+template <>
+TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getIsovaluesInternal() const {
+    return &data_->isovalues_.get();
+}
+template <>
+bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const {
+    return true;
+}
+template <>
+bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const {
+    return true;
+}
+
+}  // namespace util
+
 }  // namespace inviwo

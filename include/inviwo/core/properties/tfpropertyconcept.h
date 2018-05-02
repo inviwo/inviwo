@@ -132,53 +132,33 @@ private:
 
 // TransferFunctionProperty
 template <>
-TFPrimitiveSet* TFPropertyModel<TransferFunctionProperty*>::getTFInternal() const {
-    return &data_->get();
-}
+TFPrimitiveSet* TFPropertyModel<TransferFunctionProperty*>::getTFInternal() const;
 template <>
-bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const {
-    return true;
-}
+bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const;
 
 // IsoValueProperty
 template <>
-TFPrimitiveSet* TFPropertyModel<IsoValueProperty*>::getIsovaluesInternal() const {
-    return &data_->get();
-}
+TFPrimitiveSet* TFPropertyModel<IsoValueProperty*>::getIsovaluesInternal() const;
 template <>
-bool TFPropertyModel<IsoValueProperty*>::hasIsovaluesInternal() const {
-    return true;
-}
+bool TFPropertyModel<IsoValueProperty*>::hasIsovaluesInternal() const;
 template <>
-bool TFPropertyModel<IsoValueProperty*>::supportsMaskInternal() const {
-    return false;
-}
+bool TFPropertyModel<IsoValueProperty*>::supportsMaskInternal() const;
 template <>
-void TFPropertyModel<IsoValueProperty*>::setMaskInternal(double, double) {}
+void TFPropertyModel<IsoValueProperty*>::setMaskInternal(double, double);
 template <>
-const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() const {
-    return {};
-}
+const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() const;
 template <>
-void TFPropertyModel<IsoValueProperty*>::clearMaskInternal() {}
+void TFPropertyModel<IsoValueProperty*>::clearMaskInternal();
 
 // IsoTFProperty
 template <>
-TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getTFInternal() const {
-    return &data_->tf_.get();
-}
+TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getTFInternal() const;
 template <>
-TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getIsovaluesInternal() const {
-    return &data_->isovalues_.get();
-}
+TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getIsovaluesInternal() const;
 template <>
-bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const {
-    return true;
-}
+bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const;
 template <>
-bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const {
-    return true;
-}
+bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const;
 
 }  // namespace util
 
