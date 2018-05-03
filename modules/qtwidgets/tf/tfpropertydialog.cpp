@@ -147,7 +147,7 @@ void TFPropertyDialog::initializeDialog() {
     connect(tfEditor_.get(), &TFEditor::importTF, this, &TFPropertyDialog::importFromFile);
     connect(tfEditor_.get(), &TFEditor::exportTF, this, &TFPropertyDialog::exportToFile);
 
-    tfEditorView_ = new TFEditorView(propertyPtr_.get());
+    tfEditorView_ = new TFEditorView(propertyPtr_.get(), tfEditor_.get());
 
     // put origin to bottom left corner
     ivec2 minEditorDims = vec2(255, 100);
@@ -157,7 +157,6 @@ void TFPropertyDialog::initializeDialog() {
     tfEditorView_->setMinimumSize(minEditorDims.x, minEditorDims.y);
     tfEditorView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     tfEditorView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    tfEditorView_->setScene(tfEditor_.get());
 
     zoomVSlider_ = new RangeSliderQt(Qt::Vertical, this, true);
     zoomVSlider_->setRange(0, sliderRange_);

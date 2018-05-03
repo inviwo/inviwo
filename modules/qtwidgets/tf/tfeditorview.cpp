@@ -48,8 +48,9 @@
 
 namespace inviwo {
 
-TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty)
-    : QGraphicsView()
+TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* scene,
+                           QWidget* parent)
+    : QGraphicsView(scene, parent)
     , tfPropertyPtr_(tfProperty)
     , volumeInport_(tfProperty->getVolumeInport())
     , histogramMode_(tfProperty->getHistogramMode())
@@ -85,8 +86,8 @@ TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty)
             resetCachedContent();
             update();
         });
+        updateHistogram();
     }
-    updateHistogram();
 }
 
 TFEditorView::~TFEditorView() {

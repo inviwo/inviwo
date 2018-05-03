@@ -53,7 +53,8 @@ class VolumeRAM;
 
 class IVW_MODULE_QTWIDGETS_API TFEditorView : public QGraphicsView, public TFPropertyObserver {
 public:
-    TFEditorView(util::TFPropertyConcept* tfProperty);
+    TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* scene = nullptr,
+                 QWidget* parent = nullptr);
     ~TFEditorView();
 
 protected:
