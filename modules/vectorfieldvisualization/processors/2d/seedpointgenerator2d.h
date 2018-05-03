@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,33 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_PATHLINES_H
-#define IVW_PATHLINES_H
+#ifndef IVW_SEEDPOINTGENERATOR2D_H
+#define IVW_SEEDPOINTGENERATOR2D_H
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
-#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
-#include <inviwo/core/util/spatial4dsampler.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <random>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.PathLines, Path Lines}
- * ![](org.inviwo.PathLines.png?classIdentifier=org.inviwo.PathLines)
+/** \docpage{org.inviwo.SeedPointGenerator2D, Seed Point Generator2D}
+ * ![](org.inviwo.SeedPointGenerator2D.png?classIdentifier=org.inviwo.SeedPointGenerator2D)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -58,43 +53,52 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- *
+ * 
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLinesDeprecated : public Processor {
+
+
+/**
+ * \class SeedPointGenerator2D
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator2D : public Processor { 
 public:
-    enum class ColoringMethod { Velocity, Timestamp, ColorPort };
-    PathLinesDeprecated();
-    virtual ~PathLinesDeprecated() = default;
+    enum class Generator{
+        Random,
+        HaltonSequence
+    };
+
+    SeedPointGenerator2D();
+    virtual ~SeedPointGenerator2D() = default;
+     
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+private:
+    SeedPoints2DOutport seeds_;
 
-    virtual void process() override;
+    TemplateOptionProperty<Generator> generator_;
 
-    virtual void deserialize(Deserializer& d) override;
+    IntSizeTProperty numPoints_;
+    IntSizeTProperty haltonXBase_;
+    IntSizeTProperty haltonYBase_;
+
+    CompositeProperty randomness_;
+    BoolProperty useSameSeed_;///< Use the same seed for each call to process.
+    IntProperty seed_;///<  The seed used to initialize the random sequence
 
 private:
-    DataInport<Spatial4DSampler<3, double>> sampler_;
-    SeedPointsInport<3> seedPoints_;
-    DataInport<std::vector<vec4>> colors_;
-    VolumeSequenceInport volume_;
-    IntegralLineSetOutport lines_;
+    std::random_device rd_;
+    std::mt19937 mt_;
 
-    MeshOutport linesStripsMesh_;
-
-    PathLineProperties pathLineProperties_;
-
-    TransferFunctionProperty tf_;
-    TemplateOptionProperty<ColoringMethod> coloringMethod_;
-    FloatProperty velocityScale_;
-    StringProperty maxVelocity_;
-
-    BoolProperty allowLooping_;
 };
 
-}  // namespace inviwo
+} // namespace
 
-#endif  // IVW_PATHLINES_H
+#endif // IVW_SEEDPOINTGENERATOR2D_H
+

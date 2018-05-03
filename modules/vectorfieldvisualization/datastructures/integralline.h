@@ -32,9 +32,13 @@
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/bufferutils.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/util/interpolation.h>
 
 namespace inviwo {
-
 /**
  * \class IntegralLine
  *
@@ -50,12 +54,14 @@ public:
         Steps
     };
 
-    IntegralLine();
-    IntegralLine(const IntegralLine &rhs);
+    IntegralLine() = default;
+    IntegralLine(const IntegralLine &rhs) = default;
+    IntegralLine(IntegralLine &&rhs) = default;
 
-    IntegralLine &operator=(const IntegralLine &that);
+    IntegralLine &operator=(const IntegralLine &that) = default;
+    IntegralLine &operator=(IntegralLine &&that) = default;
 
-    virtual ~IntegralLine();
+    virtual ~IntegralLine() = default;
 
     void setTerminationReason(TerminationReason terminationReason) {
         terminationReason_ = terminationReason;
@@ -64,10 +70,65 @@ public:
     const std::vector<dvec3> &getPositions() const;
     std::vector<dvec3> &getPositions();
 
-    const std::vector<dvec3> &getMetaData(const std::string &name) const;
-    std::vector<dvec3> &getMetaData(const std::string &name);
+    std::shared_ptr<const BufferBase> getMetaDataBuffer(const std::string &name) const;
+    std::shared_ptr<BufferBase> getMetaDataBuffer(const std::string &name);
+    
+    template<typename T>
+    std::shared_ptr<Buffer<T>> createMetaData(const std::string &name){
+        if(hasMetaData(name)){
+            throw  Exception("Meta data with name " + name + " already exists");
+        }
+        auto md = std::make_shared<Buffer<T>>();
+        metaData_[name] = md;
+        return md;
+    }
 
-    std::vector<dvec3> &createMetaData(const std::string &name);
+    void reverse(){
+        std::reverse(positions_.begin(),positions_.end());  
+        for (auto &m : metaData_) {
+            util::reverse(*m.second);
+        }
+    }
+
+    template<typename T>
+    const std::vector<T> &getMetaData(const std::string &name) const{
+        auto it = metaData_.find(name);
+        if (it == metaData_.end()) {
+            throw Exception("No meta data with name: " + name, IvwContext);
+        }
+        auto askedDF = DataFormat<T>::get();
+        auto isDF = it->second->getDataFormat();
+        if ( isDF != askedDF ){
+            std::ostringstream oss;
+            oss << "Incorrect dataformat for metadata " << name << " asking for " << askedDF->getString() << " but is" << isDF->getString();
+            throw Exception(oss.str() , IvwContext);
+        }
+
+        return static_cast<Buffer<T>*>(it->second.get())->getRAMRepresentation()->getDataContainer();
+    }
+
+    template<typename T>
+    std::vector<T> &getMetaData(const std::string &name, bool create = false) {
+        auto it = metaData_.find(name);
+        if (it == metaData_.end() && !create) {
+            throw Exception("No meta data with name: " + name, IvwContext);
+        }else if(it == metaData_.end()){
+            auto md = createMetaData<T>(name);
+            return md->getEditableRAMRepresentation()->getDataContainer();
+        }
+        auto askedDF = DataFormat<T>::get();
+        auto isDF = it->second->getDataFormat();
+        if ( isDF != askedDF ){
+            std::ostringstream oss;
+            oss << "Incorrect dataformat for metadata " << name << " asking for " << askedDF->getString() << " but is " << isDF->getString();
+            throw Exception(oss.str() , IvwContext);
+        }
+
+        return static_cast<Buffer<T>*>(it->second.get())->getEditableRAMRepresentation()->getDataContainer();
+    }
+
+    const std::map<std::string , std::shared_ptr<BufferBase>> &getMetaDataBuffers() const{return metaData_;}
+
     bool hasMetaData(const std::string &name) const;
 
     std::vector<std::string> getMetaDataKeys() const;
@@ -75,9 +136,47 @@ public:
 
     double getLength()const;
 
-    double distBetweenPoints(size_t a,size_t b) const;
+    double distBetweenPoints(size_t a, size_t b) const;
 
     dvec3 getPointAtDistance(double d)const;
+
+    template<typename T>
+    T getMetaDataAtDistance(std::string md , double d)const{
+        if (d<0 || d > getLength()) {
+            return T(0);
+        }
+
+        if(!hasMetaData(md)){
+            return T(0);
+        }
+
+        auto &metaData = getMetaData<T>(md);
+
+        if (d == 0) {
+            return metaData.front();
+        }
+
+
+        double distPrev = 0, distNext = 0;
+        auto next = positions_.begin();
+        auto prev = next;
+        auto nextMD = metaData.begin();
+        auto prevMD = nextMD;
+
+        while (distNext < d) {
+            prev = next++;
+            prevMD = nextMD++;
+            distPrev = distNext;
+            distNext += glm::distance(*prev, *next);
+        }
+
+        double x = (d - distPrev) / (distNext - distPrev);
+        //using F = typename std::conditional< std::is_same< typename util::value_type<T>::type,float >::value , float , double >::type;
+        //using TV = typename std::conditional<util::extent<T>::value==1 , double , Vector<util::extent<T>::value ,double> >::type;
+        using TV = typename util::same_extent<T,double>::type;    
+            
+        return static_cast<T>( Interpolation<TV, double>::linear( static_cast<TV>(*prevMD), static_cast<TV>(*nextMD), x));
+    }
 
     size_t getIndex()const { return idx_; }
     void setIndex(size_t idx ) { idx_  = idx; }
@@ -86,10 +185,11 @@ private:
     double calcLength( std::vector<dvec3>::const_iterator start ,   std::vector<dvec3>::const_iterator end ) const;
 
     std::vector<dvec3> positions_;
-    std::map<std::string, std::vector<dvec3>> metaData_;
-    TerminationReason terminationReason_;
+    //std::map<std::string, std::vector<dvec3>> metaData_;
+    std::map<std::string , std::shared_ptr<BufferBase>> metaData_;
+    TerminationReason terminationReason_ = TerminationReason::Steps;
 
-    mutable double length_;
+    mutable double length_ = -1;
 
     size_t idx_;
 

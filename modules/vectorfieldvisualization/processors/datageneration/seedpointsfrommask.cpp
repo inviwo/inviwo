@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/volumeramutils.h>
