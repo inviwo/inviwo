@@ -163,10 +163,12 @@ public:
     using Base = TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)>;
     using Base::Base;
 
-    std::shared_ptr<const Buffer<typename Base::type>> getTexCoords() const { return Base::buffer_; }
+    std::shared_ptr<const Buffer<typename Base::type>> getTexCoords() const {
+        return Base::buffer_;
+    }
     std::shared_ptr<Buffer<typename Base::type>> getEditableTexCoords() { return Base::buffer_; }
 
-    void setVertexTexCoord(size_t index, vec3 texCoord) {
+    void setVertexTexCoord(size_t index, typename Base::type texCoord) {
         getEditableTexCoords()->getEditableRAMRepresentation()->set(index, texCoord);
     }
 };
@@ -240,7 +242,9 @@ public:
  *
  * \code{.cpp}
  * using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer,
- * buffertraits::ColorsBuffer>; MyMesh mesh; mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
+ * buffertraits::ColorsBuffer>;
+ * MyMesh mesh;
+ * mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
  * mesh.addVertex(vec3(1.0f), vec3(1.0f), vec4(0,1,0,1) );
  * \endcode
  *
@@ -275,7 +279,7 @@ public:
  * The following code snippet uses a SimpleMesh2 to create bounding box for a given basisandoffset
  * matrix. It is the code used in meshutil::boundingBoxAdjacency
  *
- * \snippet modules/base/algorithm/meshutils.cpp Using Simple Mesh
+ * \snippet modules/base/algorithm/meshutils.cpp Using PosTexColorMesh
  *
  *
  * ## Creating camera frustum
@@ -335,6 +339,8 @@ public:
     }
 
 #if defined(_MSC_VER) && _MSC_VER <= 1900
+    // On visual studio 2015 Alias templates is not supported
+    // (https://blogs.msdn.microsoft.com/vcblog/2016/06/07/expression-sfinae-improvements-in-vs-2015-update-3/)
     uint32_t addVertex(BufferTraits... args) {
         using BT = typename std::tuple_element<0, std::tuple<BufferTraits...>>::type;
         addVertexImpl<0>(args...);
@@ -480,7 +486,7 @@ using BasicMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalB
  * \ingroup typedmesh
  * Type definition of a TypedMesh having positions(vec3), texture
  * coordinates(vec3) and colors(vec4). Example usage:
- * \snippet modules/base/algorithm/meshutils.cpp Using Simple Mesh
+ * \snippet modules/base/algorithm/meshutils.cpp Using PosTexColorMesh
  */
 using PosTexColorMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer<3>,
                                   buffertraits::ColorsBuffer>;

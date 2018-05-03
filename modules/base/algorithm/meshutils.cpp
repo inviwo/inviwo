@@ -616,7 +616,7 @@ std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& c
     return mesh;
 }
 
-//! [Using Simple Mesh]
+//! [Using PosTexColorMesh]
 std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color) {
     auto mesh = std::make_shared<PosTexColorMesh>();
     mesh->setModelMatrix(basisandoffset);
@@ -644,7 +644,7 @@ std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisandoffset
 
     return mesh;
 }
-//! [Using Simple Mesh 2]
+//! [Using PosTexColorMesh]
 
 std::shared_ptr<BasicMesh> torus(const vec3& center, const vec3& up_, float r1, float r2,
                                  const ivec2& subdivisions, vec4 color) {
