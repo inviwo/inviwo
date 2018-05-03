@@ -31,35 +31,11 @@
 #include <inviwo/core/util/interpolation.h>
 
 namespace inviwo {
-
-IntegralLine::IntegralLine()
-    : positions_(), metaData_(), terminationReason_(TerminationReason::Steps) , length_(-1)
-{}
-
-IntegralLine::IntegralLine(const IntegralLine &rhs)
-    : positions_(rhs.positions_)
-    , metaData_(rhs.metaData_)
-    , terminationReason_(rhs.terminationReason_)
-    , length_(rhs.length_)
-    , idx_(rhs.idx_) {}
-
-inviwo::IntegralLine &IntegralLine::operator=(const IntegralLine &that) {
-    if (&that != this) {
-        positions_ = that.positions_;
-        metaData_ = that.metaData_;
-        terminationReason_ = that.terminationReason_;
-        length_ = that.length_;
-        idx_ = that.idx_;
-    }
-    return *this;
-}
-
-IntegralLine::~IntegralLine() {}
-
+    
 const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
 std::vector<dvec3> &IntegralLine::getPositions() { return positions_; }
 
-const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
+std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::string &name) const {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception("No meta data with name: " + name, IvwContext);
@@ -67,23 +43,15 @@ const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) con
     return it->second;
 }
 
-std::vector<dvec3>& IntegralLine::getMetaData(const std::string & name) {
+std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string &name)  {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
-        metaData_.emplace(name, std::vector<dvec3>());
-        return metaData_.find(name)->second;
+        throw Exception("No meta data with name: " + name, IvwContext);
     }
     return it->second;
 }
 
-std::vector<dvec3> & IntegralLine::createMetaData(const std::string &name)
-{
-    auto it = metaData_.find(name);
-    if (it != metaData_.end()) {
-        throw Exception("Meta data already exists: " + name, IvwContext);
-    }
-    return metaData_[name];
-}
+
 
 bool IntegralLine::hasMetaData(const std::string &name) const
 {
@@ -125,6 +93,9 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
     if (d<0 || d > getLength()) {
         return dvec3(0);
     }
+    if(d==0){
+        return positions_.front();
+    }
 
     double distPrev = 0,distNext = 0;
     auto next = positions_.begin();
@@ -137,11 +108,9 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
     
     double x = (d - distPrev) / (distNext - distPrev);
     return Interpolation<dvec3, double>::linear(*prev, *next, x);
-
-
-
-
 }
+
+
 
 double IntegralLine::calcLength(std::vector<dvec3>::const_iterator start,
                                 std::vector<dvec3>::const_iterator end) const {

@@ -53,12 +53,15 @@ Seed3Dto4D::Seed3Dto4D()
 }
 
 void Seed3Dto4D::process() {
-    auto inData = seed3d_.getData();
-    auto inVec = *inData;
+
     auto outvec = std::make_shared<SeedPoint4DVector>();
-    outvec->reserve(inVec.size());
-    for (const auto &p : inVec) {
-        outvec->emplace_back(p, w_.get());
+    for(auto &inData : seed3d_.getVectorData()){
+       // auto inData = seed3d_.getData();
+        auto inVec = *inData;
+        outvec->reserve(inVec.size());
+        for (const auto &p : inVec) {
+            outvec->emplace_back(p, w_.get());
+        }
     }
     seed4d_.setData(outvec);
 }

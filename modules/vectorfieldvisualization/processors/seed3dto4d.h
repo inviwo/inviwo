@@ -55,7 +55,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    SeedPointsInport seed3d_;
+    SeedPointsInport<3> seed3d_;
     SeedPoints4DOutport seed4d_;
 
     FloatProperty w_;
