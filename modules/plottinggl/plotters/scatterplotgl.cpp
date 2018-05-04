@@ -184,8 +184,8 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indices) {
     vec2 pixelSize = vec2(1) / vec2(dims);
 
     TextureUnitContainer cont;
-    shader_.setUniform("minmaxX", minmaxX_);
-    shader_.setUniform("minmaxY", minmaxY_);
+    shader_.setUniform("minmaxX", vec2(properties_.xAxis_.range_.get()));
+    shader_.setUniform("minmaxY", vec2(properties_.yAxis_.range_.get()));
     shader_.setUniform("borderWidth", properties_.borderWidth_.get());
     shader_.setUniform("borderColor", properties_.borderColor_.get());
 
@@ -241,7 +241,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indices) {
 
     shader_.setUniform("minRadius", minRadius);
     shader_.setUniform("maxRadius", maxRadius);
-    shader_.setUniform("margins", margins + vec4(maxRadius, maxRadius, maxRadius, maxRadius));
+    shader_.setUniform("margins", margins);
 
     utilgl::GlBoolState depth(GL_DEPTH_TEST, radius_ != nullptr);
     if (radius_) {
