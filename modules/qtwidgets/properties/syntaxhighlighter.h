@@ -89,7 +89,7 @@ private:
 
 template <SyntaxType T>
 void SyntaxHighligther::setSyntax() {
-    clearFormaters();
+    formaters_.clear();
     loadConfig<T>();
 }
 
