@@ -50,14 +50,14 @@ namespace inviwo {
 
 TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(IsoValueProperty *property)
     : PropertyWidgetQt(property)
-    , propertyPtr_(std::make_unique<Model<IsoValueProperty *>>(property)) {
+    , propertyPtr_(std::make_unique<PropertyModel<IsoValueProperty *>>(property)) {
 
     initializeWidget();
 }
 
 TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(TransferFunctionProperty *property)
     : PropertyWidgetQt(property)
-    , propertyPtr_(std::make_unique<Model<TransferFunctionProperty *>>(property)) {
+    , propertyPtr_(std::make_unique<PropertyModel<TransferFunctionProperty *>>(property)) {
 
     initializeWidget();
 }

@@ -291,11 +291,6 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
             painter.drawPolygon(QPolygonF(
                 {QPointF(pos - halfWidth, size.height()), QPointF(pos + halfWidth, size.height()),
                  QPointF(pos - halfWidth, 0.0), QPointF(pos + halfWidth, 0.0)}));
-            // painter.drawConvexPolygon(
-            //    QPolygonF({QPointF(pos, size.height() * 0.5), QPointF(pos + 8.0, size.height()),
-            //               QPointF(pos - 8.0, size.height())}));
-
-            // painter.drawLine(QPointF(pos, 0.0), QPointF(pos, size.height()));
         }
 
         painter.restore();

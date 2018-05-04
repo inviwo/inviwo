@@ -66,18 +66,18 @@ public:
 private:
     void initializeWidget();
 
-    std::vector<TFPrimitiveData> extractPrimitiveData(const std::string &str) const;
+    std::vector<TFPrimitiveData> extractPrimitiveData(const std::string& str) const;
 
-    struct Concept {
-        virtual ~Concept() = default;
+    struct PropertyConcept {
+        virtual ~PropertyConcept() = default;
         virtual TFPrimitiveSet& get() = 0;
         virtual VolumeInport* getVolumePort() = 0;
     };
 
     template <typename U>
-    class Model : public Concept {
+    class PropertyModel : public PropertyConcept {
     public:
-        Model(U data) : data_(data) {}
+        PropertyModel(U data) : data_(data) {}
 
         virtual TFPrimitiveSet& get() override { return data_->get(); }
         virtual VolumeInport* getVolumePort() override { return data_->getVolumeInport(); }
@@ -86,7 +86,7 @@ private:
         U data_;
     };
 
-    std::unique_ptr<Concept> propertyPtr_;
+    std::unique_ptr<PropertyConcept> propertyPtr_;
 
     MultilineTextEdit* textEdit_;
     EditableLabelQt* label_;
