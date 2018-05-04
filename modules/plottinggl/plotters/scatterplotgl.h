@@ -81,12 +81,14 @@ public:
     ScatterPlotGL();
     virtual ~ScatterPlotGL() = default;
 
-    void plot(Image &dest, IndexBuffer *indices = nullptr);
-    void plot(Image &dest, const Image &src, IndexBuffer *indices = nullptr);
-    void plot(ImageOutport &dest, IndexBuffer *indices = nullptr);
-    void plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices = nullptr);
-
-    void plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices = nullptr);
+    void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
+    void plot(Image &dest, const Image &src, IndexBuffer *indices = nullptr,
+              bool useAxisRanges = false);
+    void plot(ImageOutport &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
+    void plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices = nullptr,
+              bool useAxisRanges = false);
+    void plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices = nullptr,
+              bool useAxisRanges = false);
 
     void setXAxisLabel(const std::string &label);
 
@@ -105,7 +107,7 @@ public:
     Shader shader_;
 
 protected:
-    void plot(const size2_t &dims, IndexBuffer *indices);
+    void plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges);
     void renderAxis(const size2_t &dims);
 
     std::shared_ptr<const BufferBase> xAxis_;

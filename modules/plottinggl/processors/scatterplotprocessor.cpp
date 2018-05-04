@@ -103,10 +103,10 @@ void ScatterPlotProcessor::process() {
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
                      [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });
 
-        scatterPlot_.plot(outport_, &indicies);
+        scatterPlot_.plot(outport_, &indicies, true);
 
     } else {
-        scatterPlot_.plot(outport_);
+        scatterPlot_.plot(outport_, nullptr, true);
     }
 }
 

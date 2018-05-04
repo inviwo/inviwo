@@ -145,36 +145,38 @@ ScatterPlotGL::ScatterPlotGL(Processor *processor) : ScatterPlotGL() {
     shader_.onReload([=]() { processor->invalidate(InvalidationLevel::InvalidOutput); });
 }
 
-void ScatterPlotGL::plot(Image &dest, IndexBuffer *indices) {
+void ScatterPlotGL::plot(Image &dest, IndexBuffer *indices, bool useAxisRanges) {
     utilgl::activateAndClearTarget(dest);
-    plot(dest.getDimensions(), indices);
+    plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(Image &dest, const Image &src, IndexBuffer *indices) {
+void ScatterPlotGL::plot(Image &dest, const Image &src, IndexBuffer *indices, bool useAxisRanges) {
     utilgl::activateTargetAndCopySource(dest, src);
-    plot(dest.getDimensions(), indices);
+    plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(ImageOutport &dest, IndexBuffer *indices) {
+void ScatterPlotGL::plot(ImageOutport &dest, IndexBuffer *indices, bool useAxisRanges) {
     utilgl::activateAndClearTarget(dest);
-    plot(dest.getDimensions(), indices);
+    plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices) {
+void ScatterPlotGL::plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices,
+                         bool useAxisRanges) {
     utilgl::activateTargetAndCopySource(dest, src);
-    plot(dest.getDimensions(), indices);
+    plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices) {
+void ScatterPlotGL::plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices,
+                         bool useAxisRanges) {
     utilgl::ViewportState viewport(start.x, start.y, size.x, size.y);
-    plot(size, indices);
+    plot(size, indices, useAxisRanges);
 }
 
-void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indices) {
+void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges) {
 
     // adjust all margins by axis margin
     vec4 margins = properties_.margins_.getAsVec4() + properties_.axisMargin_.get();
@@ -184,8 +186,13 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indices) {
     vec2 pixelSize = vec2(1) / vec2(dims);
 
     TextureUnitContainer cont;
-    shader_.setUniform("minmaxX", vec2(properties_.xAxis_.range_.get()));
-    shader_.setUniform("minmaxY", vec2(properties_.yAxis_.range_.get()));
+    if (useAxisRanges) {
+        shader_.setUniform("minmaxX", vec2(properties_.xAxis_.range_.get()));
+        shader_.setUniform("minmaxY", vec2(properties_.yAxis_.range_.get()));
+    } else {
+        shader_.setUniform("minmaxX", minmaxX_);
+        shader_.setUniform("minmaxY", minmaxY_);
+    }
     shader_.setUniform("borderWidth", properties_.borderWidth_.get());
     shader_.setUniform("borderColor", properties_.borderColor_.get());
 
