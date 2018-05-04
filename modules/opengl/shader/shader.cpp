@@ -98,9 +98,9 @@ Shader::Shader(const Shader &rhs) : id_{glCreateProgram()}, warningLevel_{rhs.wa
 }
 
 Shader::Shader(Shader &&rhs) : id_{rhs.id_}, ready_(rhs.ready_), warningLevel_{rhs.warningLevel_} {
-    
+
     ShaderManager::getPtr()->unregisterShader(&rhs);
-        
+
     rhs.id_ = 0;
     rhs.objectCallbacks_.clear();
     rhs.ready_ = false;
@@ -108,14 +108,21 @@ Shader::Shader(Shader &&rhs) : id_{rhs.id_}, ready_(rhs.ready_), warningLevel_{r
     shaderObjects_ = std::move(rhs.shaderObjects_);
 
     for (auto &elem : shaderObjects_) {
-        objectCallbacks_.push_back(elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
+        objectCallbacks_.push_back(
+            elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
     }
-        
+
     ShaderManager::getPtr()->registerShader(this);
 }
 
 Shader &Shader::operator=(const Shader &that) {
     if (this != &that) {
+        bool needRegister = false;
+        if (id_ == 0) {
+            needRegister = true;
+            id_ = glCreateProgram();
+        }
+
         shaderObjects_.clear();
         for (auto &elem : that.shaderObjects_) {
             createAndAddShader(util::make_unique<ShaderObject>(*(elem.second.get())));
@@ -123,29 +130,35 @@ Shader &Shader::operator=(const Shader &that) {
         warningLevel_ = that.warningLevel_;
 
         if (that.isReady()) build();
+
+        if (needRegister) ShaderManager::getPtr()->registerShader(this);
     }
     return *this;
 }
 
 Shader &Shader::operator=(Shader &&that) {
     if (this != &that) {
-        ShaderManager::getPtr()->unregisterShader(this);
-
-        shaderObjects_.clear();
-        objectCallbacks_.clear();
-        glDeleteProgram(id_);
+        if (id_ != 0) {
+            // Re-register this since we change id, which some observers might depend on
+            ShaderManager::getPtr()->unregisterShader(this);
+            shaderObjects_.clear();
+            objectCallbacks_.clear();
+            glDeleteProgram(id_);
+        }
+        ShaderManager::getPtr()->unregisterShader(&that);
 
         id_ = that.id_;
         ready_ = that.ready_;
         warningLevel_ = that.warningLevel_;
 
         that.id_ = 0;
-        ready_ = false;
+        that.ready_ = false;
         that.objectCallbacks_.clear();
 
         shaderObjects_ = std::move(that.shaderObjects_);
         for (auto &elem : shaderObjects_) {
-            objectCallbacks_.push_back(elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
+            objectCallbacks_.push_back(
+                elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
         }
         ShaderManager::getPtr()->registerShader(this);
     }
@@ -153,14 +166,12 @@ Shader &Shader::operator=(Shader &&that) {
 }
 
 Shader::~Shader() {
-    // clear shader objects before the program is deleted
-    shaderObjects_.clear();
-
     if (id_ != 0) {
         ShaderManager::getPtr()->unregisterShader(this);
+        // clear shader objects before the program is deleted
+        shaderObjects_.clear();
         glDeleteProgram(id_);
     }
-    LGL_ERROR;
 }
 
 void Shader::createAndAddShader(ShaderType type, std::string fileName) {
@@ -250,9 +261,10 @@ void Shader::rebuildShader(ShaderObject *obj) {
 
         onReloadCallback_.invokeAll();
 
-        util::log(IvwContext, "Id: " + toString(id_) + ", resource: " + obj->getFileName() +
-                                  " successfully reloaded",
-                  LogLevel::Info, LogAudience::User);
+        util::log(
+            IvwContext,
+            "Id: " + toString(id_) + ", resource: " + obj->getFileName() + " successfully reloaded",
+            LogLevel::Info, LogAudience::User);
     } catch (OpenGLException &e) {
         util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
     }
@@ -298,8 +310,8 @@ std::string Shader::processLog(std::string log) const {
             auto res = obj->resolveLine(origLineNumber - 1);
             auto lineNumber = res.second;
             auto fileName = res.first;
-            result << "\n" << fileName << " (" << lineNumber
-                   << "): " << line.substr(line.find(":") + 1);
+            result << "\n"
+                   << fileName << " (" << lineNumber << "): " << line.substr(line.find(":") + 1);
         } else {
             result << "\n" << line;
         }
@@ -373,12 +385,13 @@ GLint Shader::findUniformLocation(const std::string &name) const {
         uniformLookup_[name] = location;
 
         if (warningLevel_ == UniformWarning::Throw && location == -1) {
-            throw OpenGLException("Unable to set uniform " + name + " in shader id: " +
-                                      toString(id_) + " " + shaderNames(),
+            throw OpenGLException("Unable to set uniform " + name +
+                                      " in shader id: " + toString(id_) + " " + shaderNames(),
                                   IvwContext);
         } else if (warningLevel_ == UniformWarning::Warn && location == -1) {
-            util::log(IvwContext, "Unable to set uniform " + name + " in shader " +
-                                      " in shader id: " + toString(id_) + " " + shaderNames(),
+            util::log(IvwContext,
+                      "Unable to set uniform " + name + " in shader " +
+                          " in shader id: " + toString(id_) + " " + shaderNames(),
                       LogLevel::Warn, LogAudience::User);
         }
 
@@ -386,9 +399,7 @@ GLint Shader::findUniformLocation(const std::string &name) const {
     }
 }
 
-ShaderObject* Shader::operator[](ShaderType type) const {
-    return getShaderObject(type);
-}
+ShaderObject *Shader::operator[](ShaderType type) const { return getShaderObject(type); }
 
 ShaderObject *Shader::getShaderObject(ShaderType type) const {
     return util::map_find_or_null(shaderObjects_, type,
@@ -405,4 +416,4 @@ ShaderObject *Shader::getGeometryShaderObject() const {
 
 ShaderObject *Shader::getVertexShaderObject() const { return getShaderObject(ShaderType::Vertex); }
 
-}  // namespace
+}  // namespace inviwo

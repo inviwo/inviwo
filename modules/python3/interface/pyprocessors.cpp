@@ -156,12 +156,12 @@ void exposeProcessors(pybind11::module &m) {
         .def("getOutport", &Processor::getOutport, py::return_value_policy::reference)
         .def("addInport",
              [](Processor &p, Inport *port, const std::string &group = "default") {
-                 p.addPort(*port, group);
+                 p.addPort(std::unique_ptr<Inport>(port), group);
              },
              py::arg("inport"), py::arg("group") = "default", py::keep_alive<1, 2>{})
         .def("addOutport",
              [](Processor &p, Outport *port, const std::string &group = "default") {
-                 p.addPort(*port, group);
+                 p.addPort(std::unique_ptr<Outport>(port), group);
              },
              py::arg("outport"), py::arg("group") = "default", py::keep_alive<1, 2>{})
         .def("removeInport", [](Processor &p, Inport *port) { return p.removePort(port); })

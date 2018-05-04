@@ -37,6 +37,7 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeedit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/eventconverterqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoqtutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyboardutils.h
@@ -86,6 +87,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/angleradiuswidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeedit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/colorwheel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/customdoublespinboxqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/editablelabelqt.cpp

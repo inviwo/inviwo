@@ -208,8 +208,30 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    /**
+     * Add an on change callback to the property.
+     * The callback is run when ever propertyModified is called. Usually when even the value of
+     * property changes. The return value is a RAII guard for the callback and will remove the 
+     * callback on destruction. Hence one must keep the return value around as long as the 
+     * callback should be active. To remove the callback one only need to destruct or reset the 
+     * return value. Multiple callbacks can be registered at the same time. 
+     */
+    std::shared_ptr<std::function<void()>> onChangeScoped(std::function<void()> callback);
+    
+    /**
+     * Add an on change callback to the property.
+     * The callback is run when ever propertyModified is called. Usually when even the value of
+     * property changes. The return value can be passed to removeOnChange to remove the callback.
+     * Prefer onChangeScoped when the callback need to be removed.
+     * Multiple callbacks can be registered at the same time. 
+     */
     const BaseCallBack* onChange(std::function<void()> callback);
+    
+    /**
+     * Remove an on change callback registered using onChange.
+     */
     void removeOnChange(const BaseCallBack* callback);
+
     template <typename T>
     [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
     const BaseCallBack* onChange(T* object, void (T::*method)());

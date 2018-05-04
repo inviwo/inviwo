@@ -41,19 +41,9 @@ namespace inviwo {
 class ShaderObject;
 
 class IVW_MODULE_OPENGLQT_API ShaderWidget : public InviwoDockWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 public:
     ShaderWidget(const ShaderObject*, QWidget* parent = nullptr);
     virtual ~ShaderWidget();
-
-signals:
-    void widgetClosed();
-
-protected:
-    virtual void closeEvent(QCloseEvent * event) override;
 
 private:
     const ShaderObject* obj_;

@@ -60,8 +60,8 @@ public:
     };
 
     virtual Result eval(const QString& text, const int& previousBlockState) = 0;
-    SyntaxFormater() {}
-    virtual ~SyntaxFormater() {}
+    SyntaxFormater() = default;
+    virtual ~SyntaxFormater() = default;
 };
 
 class IVW_MODULE_QTWIDGETS_API SyntaxHighligther : public QSyntaxHighlighter {
@@ -75,7 +75,6 @@ public:
     const QColor& getBackgroundColor() const;
 
 protected:
-    void clearFormaters();
     SyntaxHighligther(QTextDocument* parent);
     void highlightBlock(const QString& text);
 
@@ -83,8 +82,8 @@ private:
     template <SyntaxType T>
     void loadConfig();
     QTextCharFormat defaultFormat_;
-    std::vector<SyntaxFormater*> formaters_;
-
+    std::vector<std::unique_ptr<SyntaxFormater>> formaters_;
+    std::shared_ptr<std::function<void()>> callback_;
     QColor backgroundColor_;
 };
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,61 +27,67 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTEDITORWIDGETQT_H
-#define IVW_TEXTEDITORWIDGETQT_H
+#ifndef IVW_CODEEDIT_H
+#define IVW_CODEEDIT_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/property.h>
 
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
-#include <inviwo/core/util/fileobserver.h>
+#include <modules/qtwidgets/properties/syntaxhighlighter.h>
+
+#include <QPlainTextEdit>
+#include <QObject>
+
+class QPaintEvent;
+class QResizeEvent;
+class QSize;
+class QWidget;
+
+class LineNumberArea;
 
 namespace inviwo {
 
-class CodeEdit;
-class Property;
-class FileProperty;
-class StringProperty;
-class SyntaxHighligther;
-
-
-class IVW_MODULE_QTWIDGETS_API TextEditorDockWidget : public PropertyEditorWidgetQt {
+class IVW_MODULE_QTWIDGETS_API CodeEdit : public QPlainTextEdit {
 public:
-    TextEditorDockWidget(Property* property);
-    SyntaxHighligther* getSyntaxHighligther();
-    virtual ~TextEditorDockWidget();
-    void updateFromProperty();
+    CodeEdit(SyntaxType type = None, QWidget *parent = nullptr);
+    virtual ~CodeEdit() = default;
+
+    void setSyntax(SyntaxType type);
+
+    // QPlainTextEdit overrides
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+
+    void setLineAnnotation(std::function<std::string(int)>);
+    void setAnnotationSpace(std::function<int(int)>);
 
 protected:
-    virtual void closeEvent(QCloseEvent*) override;
-    virtual void onSetDisplayName(Property*, const std::string& displayName) override;
+    void lineNumberAreaPaintEvent(QPaintEvent *event);
+    int lineNumberAreaWidth();
 
-    virtual void setReadOnly(bool readonly) override;
-
-    void setTitle(bool modified);
-    void fileChanged();
-
-private:
-    class ScriptObserver : public FileObserver {
+    class LineNumberArea : public QWidget {
     public:
-        ScriptObserver(TextEditorDockWidget& widget, InviwoApplication* app);
-        virtual void fileChanged(const std::string& dir) override;
-    private:
-        TextEditorDockWidget& widget_;
+        LineNumberArea(CodeEdit *editor) : QWidget(editor) { codeEdit_ = editor; }
+        QSize sizeHint() const override { return QSize(codeEdit_->lineNumberAreaWidth(), 0); }
+
+    protected:
+        void paintEvent(QPaintEvent *event) override { codeEdit_->lineNumberAreaPaintEvent(event); }
+        CodeEdit *codeEdit_;
     };
 
+    void resizeEvent(QResizeEvent *event) override;
 
-    FileProperty* fileProperty_;
-    StringProperty* stringProperty_;
-    CodeEdit* editor_;
-    SyntaxHighligther* syntaxHighligther_;
-    ScriptObserver observer_;
-    std::shared_ptr<std::function<void()>> propertyCallback_;
+    void updateLineNumberAreaWidth(int newBlockCount);
+    void highlightCurrentLine();
+    void updateLineNumberArea(const QRect &, int);
+
+    QWidget *lineNumberArea_;
+    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
+    ivec4 textColor_;
+    ivec4 highLightColor_;
+    std::function<std::string(int)> annotateLine_;
+    std::function<int(int)> annotationSpace_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_TEXTEDITORWIDGETQT_H
+#endif  // IVW_CODEEDIT_H
