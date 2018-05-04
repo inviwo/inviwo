@@ -76,7 +76,7 @@ public:
         return {static_cast<inviwo::BufferType>(attrib), location};
     }
 
-#if _MSC_VER <= 1900
+#if defined(_MSC_VER) && _MSC_VER <= 1900
     TypedMeshBufferBase(type t) : t(t) {}
     type t;
     operator type() const { return t; }
