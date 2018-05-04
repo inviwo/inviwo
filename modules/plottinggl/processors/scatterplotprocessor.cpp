@@ -29,6 +29,7 @@
 
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <inviwo/core/util/zip.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -84,6 +85,8 @@ ScatterPlotProcessor::ScatterPlotProcessor()
 }
 
 void ScatterPlotProcessor::process() {
+    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     if (brushing_.isConnected()) {
         auto dataframe = dataFrame_.getData();
         auto dfSize = dataframe->getNumberOfRows();
