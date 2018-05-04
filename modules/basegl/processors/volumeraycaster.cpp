@@ -57,10 +57,10 @@ VolumeRaycaster::VolumeRaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
-    , isoValues_("isovalues", "Isovalues", &volumePort_)
-    , transferFunction_("transferFunction", "Transfer function", &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
+    , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_,
+                      InvalidationLevel::InvalidResources)
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator")
@@ -100,21 +100,22 @@ VolumeRaycaster::VolumeRaycaster()
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     // change the currently selected channel when a pre-computed gradient is selected
-    raycasting_.gradientComputationMode_.onChange([this]() {
+    raycasting_.gradientComputation_.onChange([this]() {
         if (channel_.size() == 4) {
-            if (raycasting_.gradientComputationMode_.isSelectedIdentifier("precomputedXYZ")) {
+            if (raycasting_.gradientComputation_.get() ==
+                RaycastingProperty::GradientComputation::PrecomputedXYZ) {
                 channel_.set(3);
-            } else if (raycasting_.gradientComputationMode_.isSelectedIdentifier(
-                           "precomputedYZW")) {
+            } else if (raycasting_.gradientComputation_.get() ==
+                       RaycastingProperty::GradientComputation::PrecomputedYZW) {
                 channel_.set(0);
             }
         }
     });
 
     addProperty(channel_);
-    addProperty(isoValues_);
-    addProperty(transferFunction_);
     addProperty(raycasting_);
+    addProperty(isotfComposite_);
+
     addProperty(camera_);
     addProperty(lighting_);
     addProperty(positionIndicator_);
@@ -124,7 +125,8 @@ VolumeRaycaster::VolumeRaycaster()
 const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 void VolumeRaycaster::initializeResources() {
-    utilgl::addDefines(shader_, raycasting_, isoValues_, camera_, lighting_, positionIndicator_);
+    utilgl::addDefines(shader_, raycasting_, isotfComposite_, camera_, lighting_,
+                       positionIndicator_);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
 }
@@ -159,14 +161,14 @@ void VolumeRaycaster::process() {
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *loadedVolume_, "volume");
-    utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
+    utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     if (backgroundPort_.isConnected()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
-                        channel_, isoValues_);
+                        channel_, isotfComposite_);
 
     utilgl::singleDrawImagePlaneRect();
 

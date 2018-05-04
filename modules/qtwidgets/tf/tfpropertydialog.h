@@ -27,22 +27,18 @@
  *
  *********************************************************************************/
 
-/** \ Widget for containing the TransferFunctionEditor QGraphicsScene
- *       Widget that contains the TransferFunctionEditor and the painted representation
- */
-
 #ifndef IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
 #define IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
-#include <modules/qtwidgets/properties/transferfunctioneditor.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorview.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
+#include <modules/qtwidgets/tf/tfeditorview.h>
 #include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
 #include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/properties/tfpropertyconcept.h>
 #include <inviwo/core/util/observer.h>
 
 class QPushButton;
@@ -56,25 +52,32 @@ namespace inviwo {
 
 class ColorWheel;
 class RangeSliderQt;
-class TransferFunctionPropertyWidgetQt;
+class TFPropertyWidgetQt;
 class TFSelectionWatcher;
 class TFLineEdit;
 class TFColorEdit;
+class TransferFunctionProperty;
+class IsoValueProperty;
+class IsoTFProperty;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyDialog
-    : public PropertyEditorWidgetQt,
-      public TFPrimitiveSetObserver,
-      public TransferFunctionPropertyObserver {
+class IVW_MODULE_QTWIDGETS_API TFPropertyDialog : public PropertyEditorWidgetQt,
+                                                  public TFPrimitiveSetObserver,
+                                                  public TFPropertyObserver {
 public:
-    TransferFunctionPropertyDialog(TransferFunctionProperty* property);
-    ~TransferFunctionPropertyDialog();
+    TFPropertyDialog(TransferFunctionProperty* tfProperty,
+                     const std::vector<TFPrimitiveSet*>& primitiveSets = {});
+    TFPropertyDialog(IsoValueProperty* isoProperty,
+                     const std::vector<TFPrimitiveSet*>& primitiveSets = {});
+    TFPropertyDialog(IsoTFProperty* isotfProperty,
+                     const std::vector<TFPrimitiveSet*>& primitiveSets = {});
+    ~TFPropertyDialog();
 
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
-    
+
     void updateFromProperty();
-    TransferFunctionEditorView* getEditorView() const;
-    
+    TFEditorView* getEditorView() const;
+
 protected:
     virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
     virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
@@ -89,8 +92,8 @@ protected:
 
     void changeVerticalZoom(int zoomMin, int zoomMax);
     void changeHorizontalZoom(int zoomMin, int zoomMax);
-    void importTransferFunction();
-    void exportTransferFunction();
+    void importFromFile(TFPrimitiveSet &primitiveSet);
+    void exportToFile(const TFPrimitiveSet &primitiveSet);
     void showHistogram(int type);
     void changeMoveMode(int i);
 
@@ -98,6 +101,7 @@ protected:
     virtual void showEvent(QShowEvent*) override;
 
 private:
+    void initializeDialog();
     void updateTFPreview();
     /**
      * calculate the horizontal and vertical offset in scene coordinates based on the current
@@ -108,18 +112,17 @@ private:
     const int sliderRange_;
     const int defaultOffset_ = 5;  //!< offset in pixel
 
+    std::unique_ptr<util::TFPropertyConcept> propertyPtr_;
+    std::vector<TFPrimitiveSet*> tfSets_;
+
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
 
-    // Pointer to property, for get and invalidation in the widget
-    TransferFunctionProperty* tfProperty_;
-
-    // TransferFunctionEditor inherited from QGraphicsScene
-    std::unique_ptr<TransferFunctionEditor> tfEditor_;
+    std::unique_ptr<TFEditor> tfEditor_; //!< inherited from QGraphicsScene
 
     std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
 
-    TransferFunctionEditorView* tfEditorView_;  ///< View that contains the editor
+    TFEditorView* tfEditorView_;  //!< View that contains the editor
     QComboBox* chkShowHistogram_;
 
     QComboBox* pointMoveMode_;

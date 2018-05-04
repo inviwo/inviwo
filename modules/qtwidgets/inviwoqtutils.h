@@ -36,6 +36,8 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/tfpropertyconcept.h>
 
 #include <locale>
 #include <ios>
@@ -124,6 +126,11 @@ IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec4&);
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec4&);
 
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfproperty,
+                                           const QSize& size);
+
+IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size);
+
+IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept,
                                            const QSize& size);
 
 /**

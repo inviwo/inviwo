@@ -27,13 +27,11 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-
-#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,21 +41,19 @@
 
 namespace inviwo {
 
-TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
-    TransferFunctionProperty* property)
+TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
     : PropertyWidgetQt(property)
-    , label_{new EditableLabelQt(this, property_)}
-    , btnOpenTF_{new TFPushButton(static_cast<TransferFunctionProperty*>(property_), this)} {
+    , label_{new EditableLabelQt(this, property)}
+    , btnOpenTF_{new TFPushButton(property, this)} {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
-    hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(7);
+    setSpacingAndMargins(hLayout);
 
     hLayout->addWidget(label_);
 
     connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
         if (!transferFunctionDialog_) {
-            transferFunctionDialog_ = util::make_unique<TransferFunctionPropertyDialog>(
+            transferFunctionDialog_ = std::make_unique<TFPropertyDialog>(
                 static_cast<TransferFunctionProperty*>(property_));
             transferFunctionDialog_->setVisible(true);
         } else {
@@ -87,29 +83,36 @@ TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
     setSizePolicy(sp);
 }
 
-TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
+TFPropertyWidgetQt::~TFPropertyWidgetQt() {
     if (transferFunctionDialog_) transferFunctionDialog_->hide();
 }
 
-void TransferFunctionPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
+void TFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
-TransferFunctionPropertyDialog* TransferFunctionPropertyWidgetQt::getEditorWidget() const {
+TFPropertyDialog* TFPropertyWidgetQt::getEditorWidget() const {
     return transferFunctionDialog_.get();
 }
 
-bool TransferFunctionPropertyWidgetQt::hasEditorWidget() const {
-    return transferFunctionDialog_ != nullptr;
-}
+bool TFPropertyWidgetQt::hasEditorWidget() const { return transferFunctionDialog_ != nullptr; }
 
-void TransferFunctionPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
+void TFPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
-    : IvwPushButton(parent), tfProperty_(property) {}
+    : IvwPushButton(parent)
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty*>>(property)) {}
+
+TFPushButton::TFPushButton(IsoValueProperty* property, QWidget* parent)
+    : IvwPushButton(parent)
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty*>>(property)) {}
+
+TFPushButton::TFPushButton(IsoTFProperty* property, QWidget* parent)
+    : IvwPushButton(parent)
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty*>>(property)) {}
 
 void TFPushButton::updateFromProperty() {
     const QSize size = this->size() - QSize(2, 2);
-    
-    setIcon(utilqt::toQPixmap(*tfProperty_, size));
+
+    setIcon(utilqt::toQPixmap(*propertyPtr_, size));
     setIconSize(size);
 }
 

@@ -44,24 +44,26 @@ namespace inviwo {
 /**
  * \ingroup properties
  * \class IsoTFProperty
- * \brief composite property combining transferfunction and isovalue properties
+ * \brief composite property combining transfer function and isovalue properties
  */
-class IVW_CORE_API IsoTFProperty : public CompositeProperty {
+class IVW_CORE_API IsoTFProperty : public CompositeProperty,
+                                   public PropertyObserver,
+                                   public TFPropertyObservable,
+                                   public TFPropertyObserver {
 public:
     InviwoPropertyInfo();
 
     IsoTFProperty(const std::string& identifier, const std::string& displayName,
-                  const IsoValueCollection& isovalues =
-                      IsoValueCollection({{0.5f, vec4(1.0f, 1.0f, 1.0f, 0.5f)}}),
+                  const IsoValueCollection& isovalues = {},
                   const TransferFunction& tf = TransferFunction({{0.0f, vec4(0.0f)},
                                                                  {1.0f, vec4(1.0f)}}),
                   VolumeInport* volumeInport = nullptr,
-                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
     IsoTFProperty(const std::string& identifier, const std::string& displayName,
                   VolumeInport* volumeInport,
-                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
     IsoTFProperty(const IsoTFProperty& rhs);
@@ -70,8 +72,30 @@ public:
     IsoTFProperty& operator=(const IsoTFProperty& rhs) = default;
     virtual IsoTFProperty* clone() const override;
 
-    IsoValueProperty isoValues_;
+    virtual std::string getClassIdentifierForWidget() const override;
+    
+    void setMask(double maskMin, double maskMax);
+    const dvec2 getMask() const;
+    void clearMask();
+
+    void setZoomH(double zoomHMin, double zoomHMax);
+    const dvec2& getZoomH() const;
+
+    void setZoomV(double zoomVMin, double zoomVMax);
+    const dvec2& getZoomV() const;
+
+    void setHistogramMode(HistogramMode type);
+    HistogramMode getHistogramMode();
+    VolumeInport* getVolumeInport();
+
+    IsoValueProperty isovalues_;
     TransferFunctionProperty tf_;
+
+protected:
+    virtual void onMaskChange(const dvec2& mask) override;
+    virtual void onZoomHChange(const dvec2& zoomH) override;
+    virtual void onZoomVChange(const dvec2& zoomV) override;
+    virtual void onHistogramModeChange(HistogramMode mode) override;
 };
 
 }  // namespace inviwo

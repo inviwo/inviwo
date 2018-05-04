@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
-#include <modules/qtwidgets/properties/transferfunctioneditor.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/datastructures/datamapper.h>
 
@@ -45,19 +45,17 @@
 
 namespace inviwo {
 
-void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TransferFunctionEditorPrimitive*) {
-}
+void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TFEditorPrimitive*) {}
 
-TransferFunctionEditorPrimitive::TransferFunctionEditorPrimitive(TFPrimitive* primitive,
-                                                                 QGraphicsScene* scene,
-                                                                 const vec2& pos, double size)
+TFEditorPrimitive::TFEditorPrimitive(TFPrimitive* primitive, QGraphicsScene* scene, const vec2& pos,
+                                     double size)
     : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive), mouseDrag_(false) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
     setZValue(defaultZValue_);
     setAcceptHoverEvents(true);
 
-    if (auto tfe = qobject_cast<TransferFunctionEditor*>(scene)) {
+    if (auto tfe = qobject_cast<TFEditor*>(scene)) {
         addObserver(tfe);
     }
 
@@ -78,23 +76,23 @@ TransferFunctionEditorPrimitive::TransferFunctionEditorPrimitive(TFPrimitive* pr
     }
 }
 
-void TransferFunctionEditorPrimitive::setPrimitive(TFPrimitive* primitive) { data_ = primitive; }
+void TFEditorPrimitive::setPrimitive(TFPrimitive* primitive) { data_ = primitive; }
 
-TFPrimitive* TransferFunctionEditorPrimitive::getPrimitive() { return data_; }
+TFPrimitive* TFEditorPrimitive::getPrimitive() { return data_; }
 
-void TransferFunctionEditorPrimitive::setPosition(double pos) { data_->setPosition(pos); }
+void TFEditorPrimitive::setPosition(double pos) { data_->setPosition(pos); }
 
-double TransferFunctionEditorPrimitive::getPosition() const { return data_->getPosition(); }
+double TFEditorPrimitive::getPosition() const { return data_->getPosition(); }
 
-void TransferFunctionEditorPrimitive::setColor(const vec4& color) { data_->setColor(color); }
+void TFEditorPrimitive::setColor(const vec4& color) { data_->setColor(color); }
 
-void TransferFunctionEditorPrimitive::setColor(const vec3& color) { data_->setColor(color); }
+void TFEditorPrimitive::setColor(const vec3& color) { data_->setColor(color); }
 
-void TransferFunctionEditorPrimitive::setAlpha(float alpha) { data_->setAlpha(alpha); }
+void TFEditorPrimitive::setAlpha(float alpha) { data_->setAlpha(alpha); }
 
-const vec4& TransferFunctionEditorPrimitive::getColor() const { return data_->getColor(); }
+const vec4& TFEditorPrimitive::getColor() const { return data_->getColor(); }
 
-void TransferFunctionEditorPrimitive::setTFPosition(const dvec2& tfpos) {
+void TFEditorPrimitive::setTFPosition(const dvec2& tfpos) {
     if (!isEditingPoint_) {
         isEditingPoint_ = true;
         QRectF rect = scene()->sceneRect();
@@ -105,17 +103,17 @@ void TransferFunctionEditorPrimitive::setTFPosition(const dvec2& tfpos) {
     }
 }
 
-const QPointF& TransferFunctionEditorPrimitive::getCurrentPos() const { return currentPos_; }
+const QPointF& TFEditorPrimitive::getCurrentPos() const { return currentPos_; }
 
-void TransferFunctionEditorPrimitive::setSize(double s) {
+void TFEditorPrimitive::setSize(double s) {
     prepareGeometryChange();
     size_ = s;
     update();
 }
 
-double TransferFunctionEditorPrimitive::getSize() const { return hovered_ ? size_ + 5.0 : size_; }
+double TFEditorPrimitive::getSize() const { return hovered_ ? size_ + 5.0 : size_; }
 
-void TransferFunctionEditorPrimitive::setHovered(bool hover) {
+void TFEditorPrimitive::setHovered(bool hover) {
     prepareGeometryChange();
     hovered_ = hover;
 
@@ -125,18 +123,15 @@ void TransferFunctionEditorPrimitive::setHovered(bool hover) {
     update();
 }
 
-void TransferFunctionEditorPrimitive::beginMouseDrag() {
+void TFEditorPrimitive::beginMouseDrag() {
     cachedPosition_ = currentPos_;
     mouseDrag_ = true;
 }
 
-void TransferFunctionEditorPrimitive::stopMouseDrag() {
-    mouseDrag_ = false;
-}
+void TFEditorPrimitive::stopMouseDrag() { mouseDrag_ = false; }
 
-void TransferFunctionEditorPrimitive::paint(QPainter* painter,
-                                            const QStyleOptionGraphicsItem* options,
-                                            QWidget* widget) {
+void TFEditorPrimitive::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
+                              QWidget* widget) {
     IVW_UNUSED_PARAM(options);
     IVW_UNUSED_PARAM(widget);
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -157,8 +152,7 @@ void TransferFunctionEditorPrimitive::paint(QPainter* painter,
     paintPrimitive(painter);
 }
 
-QVariant TransferFunctionEditorPrimitive::itemChange(GraphicsItemChange change,
-                                                     const QVariant& value) {
+QVariant TFEditorPrimitive::itemChange(GraphicsItemChange change, const QVariant& value) {
     // check for scene() here in order to avoid callbacks as long as item is not added to scene
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
@@ -167,7 +161,7 @@ QVariant TransferFunctionEditorPrimitive::itemChange(GraphicsItemChange change,
         const bool shiftPressed =
             ((QGuiApplication::queryKeyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier);
         // restrict movement to either horizontal or vertical direction while shift is pressed
-        if (mouseDrag_&& shiftPressed) {
+        if (mouseDrag_ && shiftPressed) {
             // adjust position of mouse event
             auto delta = newpos - cachedPosition_;
             if (std::abs(delta.x()) > std::abs(delta.y())) {
@@ -211,34 +205,34 @@ QVariant TransferFunctionEditorPrimitive::itemChange(GraphicsItemChange change,
     return QGraphicsItem::itemChange(change, value);
 }
 
-void TransferFunctionEditorPrimitive::hoverEnterEvent(QGraphicsSceneHoverEvent*) {
+void TFEditorPrimitive::hoverEnterEvent(QGraphicsSceneHoverEvent*) {
     // ensure that this primitive is showing up on top for the duration of the hover
     setZValue(1000);
     setHovered(true);
 }
 
-void TransferFunctionEditorPrimitive::hoverLeaveEvent(QGraphicsSceneHoverEvent*) {
+void TFEditorPrimitive::hoverLeaveEvent(QGraphicsSceneHoverEvent*) {
     setHovered(false);
     setZValue(defaultZValue_);
 }
 
-void TransferFunctionEditorPrimitive::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
+void TFEditorPrimitive::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
     forEachObserver([&](TFEditorPrimitiveObserver* o) { o->onTFPrimitiveDoubleClicked(this); });
     QGraphicsItem::mouseDoubleClickEvent(event);
 }
 
-void TransferFunctionEditorPrimitive::updatePosition(const QPointF& pos) {
+void TFEditorPrimitive::updatePosition(const QPointF& pos) {
     currentPos_ = pos;
     QGraphicsItem::setPos(pos);
 }
 
-void TransferFunctionEditorPrimitive::updateLabel() {
+void TFEditorPrimitive::updateLabel() {
     if (!tfPrimitiveLabel_->isVisible()) {
         return;
     }
 
     QString label;
-    if (auto tfe = qobject_cast<TransferFunctionEditor*>(scene())) {
+    if (auto tfe = qobject_cast<TFEditor*>(scene())) {
         label = QString("%1 (%2) / %3")
                     .arg(tfe->getDataMapper().mapFromNormalizedToValue(getPosition()))
                     .arg(getPosition(), 0, 'g', 3)
@@ -264,34 +258,22 @@ void TransferFunctionEditorPrimitive::updateLabel() {
     tfPrimitiveLabel_->setPos(pos);
 }
 
-bool operator==(const TransferFunctionEditorPrimitive& lhs,
-                const TransferFunctionEditorPrimitive& rhs) {
+bool operator==(const TFEditorPrimitive& lhs, const TFEditorPrimitive& rhs) {
     return (lhs.getPosition() == rhs.getPosition()) && (lhs.getColor() == rhs.getColor());
 }
 
-bool operator!=(const TransferFunctionEditorPrimitive& lhs,
-                const TransferFunctionEditorPrimitive& rhs) {
+bool operator!=(const TFEditorPrimitive& lhs, const TFEditorPrimitive& rhs) {
     return !operator==(lhs, rhs);
 }
 
-bool operator<(const TransferFunctionEditorPrimitive& lhs,
-               const TransferFunctionEditorPrimitive& rhs) {
+bool operator<(const TFEditorPrimitive& lhs, const TFEditorPrimitive& rhs) {
     return lhs.getPosition() < rhs.getPosition();
 }
 
-bool operator>(const TransferFunctionEditorPrimitive& lhs,
-               const TransferFunctionEditorPrimitive& rhs) {
-    return rhs < lhs;
-}
+bool operator>(const TFEditorPrimitive& lhs, const TFEditorPrimitive& rhs) { return rhs < lhs; }
 
-bool operator<=(const TransferFunctionEditorPrimitive& lhs,
-                const TransferFunctionEditorPrimitive& rhs) {
-    return !(rhs < lhs);
-}
+bool operator<=(const TFEditorPrimitive& lhs, const TFEditorPrimitive& rhs) { return !(rhs < lhs); }
 
-bool operator>=(const TransferFunctionEditorPrimitive& lhs,
-                const TransferFunctionEditorPrimitive& rhs) {
-    return !(lhs < rhs);
-}
+bool operator>=(const TFEditorPrimitive& lhs, const TFEditorPrimitive& rhs) { return !(lhs < rhs); }
 
 }  // namespace inviwo

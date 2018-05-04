@@ -39,8 +39,10 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -76,6 +78,16 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const CameraPropert
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Camera& property,
                                              std::string name);
 
+// RaycastingProperty
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const RaycastingProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RaycastingProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RaycastingProperty& property,
+                                             std::string name);
+
+IVW_MODULE_OPENGL_API void setShaderDefines(
+    Shader& shader, const TemplateOptionProperty<RaycastingProperty::GradientComputation>& property,
+    bool voxelClassification = false);
+
 // SpatialEntity
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object,
                                              const std::string& name);
@@ -90,12 +102,15 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              std::string name);
 
 // IsoValueProperty
-IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
-                                            const IsoValueProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
-                                             const IsoValueProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
-                                             const IsoValueProperty& property,
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const IsoValueProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoValueProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoValueProperty& property,
+                                             std::string name);
+
+// IsoTFProperty
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const IsoTFProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoTFProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoTFProperty& property,
                                              std::string name);
 
 // Background Image

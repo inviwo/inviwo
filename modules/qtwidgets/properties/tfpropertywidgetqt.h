@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2013-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,55 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ISOVALUEPROPERTYWIDGETQT_H
-#define IVW_ISOVALUEPROPERTYWIDGETQT_H
+#ifndef IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
+#define IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
+
+#include <inviwo/core/properties/tfpropertyconcept.h>
 
 namespace inviwo {
 
-class IsoValueProperty;
-class TFPushButton;
 class EditableLabelQt;
+class TransferFunctionProperty;
+class TFPushButton;
+class IsoValueProperty;
+class IsoTFProperty;
 
-class IVW_MODULE_QTWIDGETS_API IsoValuePropertyWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_QTWIDGETS_API TFPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    IsoValuePropertyWidgetQt(IsoValueProperty* property);
-    virtual ~IsoValuePropertyWidgetQt() = default;
-
-    virtual TFPropertyDialog* getEditorWidget() const override;
-    virtual bool hasEditorWidget() const override;
+    TFPropertyWidgetQt(TransferFunctionProperty* property);
+    virtual ~TFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
+    virtual TFPropertyDialog* getEditorWidget() const override;
+    virtual bool hasEditorWidget() const override;
 
     virtual void setReadOnly(bool readonly) override;
 
 private:
-    EditableLabelQt* label_;
-    TFPushButton* btnOpenTF_;
-    mutable std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
+    EditableLabelQt* label_ = nullptr;
+    TFPushButton* btnOpenTF_ = nullptr;
+    mutable std::unique_ptr<TFPropertyDialog> transferFunctionDialog_ = nullptr;
 };
 
-}  // namespace inviwo
+class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
+public:
+    TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
+    TFPushButton(IsoValueProperty* property, QWidget* parent = nullptr);
+    TFPushButton(IsoTFProperty* property, QWidget* parent = nullptr);
+    virtual ~TFPushButton() = default;
+    void updateFromProperty();
 
-#endif  // IVW_ISOVALUEPROPERTYWIDGETQT_H
+private:
+    void resizeEvent(QResizeEvent* event) override;
+
+    std::unique_ptr<util::TFPropertyConcept> propertyPtr_ = nullptr;
+};
+
+}  // namespace
+
+#endif  // IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H

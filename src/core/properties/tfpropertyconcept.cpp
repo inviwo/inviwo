@@ -27,49 +27,62 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/isovaluecollection.h>
-
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/properties/tfpropertyconcept.h>
 
 namespace inviwo {
 
-IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
-                                       TFPrimitiveSetType type)
-    : TFPrimitiveSet(values, type) {
-    setTitle("Isovalues");
-    setSerializationKey("IsoValues", "IsoValue");
+namespace util {
+
+// TransferFunctionProperty
+template <>
+TFPrimitiveSet* TFPropertyModel<TransferFunctionProperty*>::getTFInternal() const {
+    return &data_->get();
+}
+template <>
+bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const {
+    return true;
 }
 
-std::vector<FileExtension> IsoValueCollection::getSupportedExtensions() const {
-    return {{"iiv", "Inviwo Isovalues"}};
+// IsoValueProperty
+template <>
+TFPrimitiveSet* TFPropertyModel<IsoValueProperty*>::getIsovaluesInternal() const {
+    return &data_->get();
+}
+template <>
+bool TFPropertyModel<IsoValueProperty*>::hasIsovaluesInternal() const {
+    return true;
+}
+template <>
+bool TFPropertyModel<IsoValueProperty*>::supportsMaskInternal() const {
+    return false;
+}
+template <>
+void TFPropertyModel<IsoValueProperty*>::setMaskInternal(double, double) {}
+template <>
+const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() const {
+    return {};
+}
+template <>
+void TFPropertyModel<IsoValueProperty*>::clearMaskInternal() {}
+
+// IsoTFProperty
+template <>
+TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getTFInternal() const {
+    return &data_->tf_.get();
+}
+template <>
+TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getIsovaluesInternal() const {
+    return &data_->isovalues_.get();
+}
+template <>
+bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const {
+    return true;
+}
+template <>
+bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const {
+    return true;
 }
 
-void IsoValueCollection::save(const std::string& filename, const FileExtension& ext) const {
-    std::string extension = toLower(filesystem::getFileExtension(filename));
-
-    if (ext.extension_ == "iiv" || (ext.empty() && extension == "iiv")) {
-        Serializer serializer(filename);
-        serialize(serializer);
-        serializer.writeFile();
-    } else {
-        throw DataWriterException("Unsupported format for saving isovalues", IvwContext);
-    }
-}
-
-void IsoValueCollection::load(const std::string& filename, const FileExtension& ext) {
-    std::string extension = toLower(filesystem::getFileExtension(filename));
-
-    if (ext.extension_ == "iiv" || (ext.empty() && extension == "iiv")) {
-        Deserializer deserializer(filename);
-        deserialize(deserializer);
-    } else {
-        throw DataReaderException("Unsupported format for loading isovalues", IvwContext);
-    }
-}
+}  // namespace util
 
 }  // namespace inviwo

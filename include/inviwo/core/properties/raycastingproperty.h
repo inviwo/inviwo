@@ -27,39 +27,64 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ISOVALUECOLLECTION_H
-#define IVW_ISOVALUECOLLECTION_H
+#ifndef IVW_RAYCASTINGPROPERTY_H
+#define IVW_RAYCASTINGPROPERTY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/datastructures/tfprimitiveset.h>
-#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
 /**
- * \ingroup datastructures
- * \class IsoValueCollection
- * \brief data structure representing isovalues
- *
- * \see IsoValue
+ * \ingroup properties
+ * \class RaycastingProperty
+ * \brief composite property holding parameters for volume raycasting
  */
-class IVW_CORE_API IsoValueCollection : public TFPrimitiveSet {
+class IVW_CORE_API RaycastingProperty : public CompositeProperty {
 public:
-    IsoValueCollection(const std::vector<TFPrimitiveData>& values = {},
-                       TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
-    IsoValueCollection(const IsoValueCollection& rhs) = default;
-    IsoValueCollection(IsoValueCollection&& rhs) = default;
-    IsoValueCollection& operator=(const IsoValueCollection& rhs) = default;
-    virtual ~IsoValueCollection() = default;
+    InviwoPropertyInfo();
 
-    virtual std::vector<FileExtension> getSupportedExtensions() const override;
+    enum class RenderingType { Dvr, DvrIsosurface, Isosurface };
+    enum class Classification { None, TF, Voxel };
+    enum class CompositingType {
+        Dvr,
+        MaximumIntensity,
+        FirstHitPoints,
+        FirstHitNormals,
+        FirstHistNormalsView,
+        FirstHitDepth
+    };
+    enum class GradientComputation {
+        None,
+        Forward,
+        Backward,
+        Central,
+        CentralHigherOrder,
+        PrecomputedXYZ,
+        PrecomputedYZW
+    };
 
-    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const override;
-    virtual void load(const std::string& filename, const FileExtension& ext = FileExtension()) override;
+    RaycastingProperty(std::string identifier, std::string displayName,
+                       InvalidationLevel = InvalidationLevel::InvalidResources,
+                       PropertySemantics semantics = PropertySemantics::Default);
+
+    RaycastingProperty(const RaycastingProperty& rhs);
+    RaycastingProperty& operator=(const RaycastingProperty& rhs);
+    virtual ~RaycastingProperty() = default;
+
+    virtual RaycastingProperty* clone() const override;
+
+    TemplateOptionProperty<RenderingType> renderingType_;
+    TemplateOptionProperty<Classification> classification_;
+    TemplateOptionProperty<CompositingType> compositing_;
+    TemplateOptionProperty<GradientComputation> gradientComputation_;
+
+    FloatProperty samplingRate_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_ISOVALUECOLLECTION_H
+#endif  // IVW_RAYCASTINGPROPERTY_H

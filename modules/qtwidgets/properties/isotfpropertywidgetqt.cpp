@@ -27,40 +27,60 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/tfcoloredit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/isotfpropertywidgetqt.h>
 
-#include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QSizePolicy>
+#include <QHBoxLayout>
 #include <warn/pop>
 
 namespace inviwo {
 
-TFColorEdit::TFColorEdit(QWidget* parent) : QLineEdit(parent) {
-    // accept only 6-digit hex codes
-    setInputMask("\\#HHHHHH");
+IsoTFPropertyWidgetQt::IsoTFPropertyWidgetQt(IsoTFProperty* property)
+    : PropertyWidgetQt(property)
+    , label_{new EditableLabelQt(this, property_)}
+    , btnOpenTF_{new TFPushButton(property, this)} {
 
-    connect(this, &QLineEdit::editingFinished, this, [this]() {
-        // QColor(QString) should only be used for 6-digit hex codes, since
-        // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
-        emit colorChanged(QColor(text()));
+    QHBoxLayout* hLayout = new QHBoxLayout;
+    setSpacingAndMargins(hLayout);
+
+    hLayout->addWidget(label_);
+    hLayout->addWidget(btnOpenTF_);
+
+    setLayout(hLayout);
+    updateFromProperty();
+
+    connect(btnOpenTF_, &IvwPushButton::clicked, [this, property]() {
+        if (!tfDialog_) {
+            tfDialog_ =
+                std::make_unique<TFPropertyDialog>(property);
+            tfDialog_->setVisible(true);
+        } else {
+            tfDialog_->setVisible(!tfDialog_->isVisible());
+        }
     });
 
-    setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
+    QSizePolicy sp = sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Fixed);
+    setSizePolicy(sp);
 }
 
-QSize TFColorEdit::sizeHint() const { return QSize(18, 18); }
-
-void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
-    if (ambiguous) {
-        // clear text field
-        clear();
-    } else {
-        setText(color.name());
-    }
+IsoTFPropertyWidgetQt::~IsoTFPropertyWidgetQt() {
+    if (tfDialog_) tfDialog_->hide();
 }
+
+void IsoTFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
+
+TFPropertyDialog* IsoTFPropertyWidgetQt::getEditorWidget() const { return tfDialog_.get(); }
+
+bool IsoTFPropertyWidgetQt::hasEditorWidget() const { return tfDialog_ != nullptr; }
+
+void IsoTFPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
 
 }  // namespace inviwo

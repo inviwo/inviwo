@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
@@ -84,6 +85,9 @@ public:
 
     void setType(TFPrimitiveSetType type);
     TFPrimitiveSetType getType() const;
+
+    void setTitle(const std::string& title);
+    const std::string& getTitle() const;
 
     /**
      * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
@@ -187,6 +191,10 @@ public:
      * the observers. Can be used to invalidate the internal state of derived classes.
      */
     virtual void invalidate() {}
+    
+    virtual std::vector<FileExtension> getSupportedExtensions() const;
+    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const;
+    virtual void load(const std::string& filename, const FileExtension& ext = FileExtension());
 
     friend bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 
@@ -214,9 +222,12 @@ private:
     ValueWrapper<TFPrimitiveSetType> type_;
     std::string serializationKey_ = "TFPrimitives";
     std::string serializationItemKey_ = "TFPrimitive";
+
+    std::string title_ = "TFPrimitiveSet";
 };
 
 inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
+inline const std::string& TFPrimitiveSet::getTitle() const { return title_; }
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);

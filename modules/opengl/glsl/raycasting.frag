@@ -71,6 +71,9 @@ uniform int channel;
 
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
 
+#if (!defined(INCLUDE_DVR) && !defined(INCLUDE_ISOSURFACES))
+#  define INCLUDE_DVR
+#endif
 
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth) {
@@ -113,7 +116,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
 
         // check for isosurfaces
-#if defined(ISOSURFACE_ENABLED)
+#if defined(ISOSURFACE_ENABLED) && defined(INCLUDE_ISOSURFACES)
         // make sure that tIncr has the correct length since drawIsoSurface will modify it
         tIncr = tEnd / samples;
         result = drawIsosurfaces(result, isovalues, voxel, previousVoxel, 
@@ -129,6 +132,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator, t, tDepth);
 #endif // #if defined(PLANES_ENABLED)
 
+#if defined(INCLUDE_DVR)
         color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
         if (color.a > 0) {
             vec3 gradient =
@@ -146,11 +150,13 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
             result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera,
                                        raycaster.isoValue, t, tDepth, tIncr);
         }
+#endif // INCLUDE_DVR
+
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
             t = tEnd;
         } else {
-#if defined(ISOSURFACE_ENABLED)
+#if defined(ISOSURFACE_ENABLED) && defined(INCLUDE_ISOSURFACES)
             // make sure that tIncr has the correct length since drawIsoSurface will modify it
             tIncr = tEnd / samples;
 #endif // ISOSURFACE_ENABLED

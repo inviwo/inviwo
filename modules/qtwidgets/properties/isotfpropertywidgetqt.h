@@ -27,49 +27,36 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/isovaluecollection.h>
+#ifndef IVW_ISOTFPROPERTYWIDGETQT_H
+#define IVW_ISOTFPROPERTYWIDGETQT_H
 
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/io/datareaderexception.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
 
 namespace inviwo {
 
-IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
-                                       TFPrimitiveSetType type)
-    : TFPrimitiveSet(values, type) {
-    setTitle("Isovalues");
-    setSerializationKey("IsoValues", "IsoValue");
-}
+class IsoTFProperty;
+class EditableLabelQt;
+class TFPushButton;
 
-std::vector<FileExtension> IsoValueCollection::getSupportedExtensions() const {
-    return {{"iiv", "Inviwo Isovalues"}};
-}
+class IVW_MODULE_QTWIDGETS_API IsoTFPropertyWidgetQt : public PropertyWidgetQt {
+public:
+    IsoTFPropertyWidgetQt(IsoTFProperty *property);
+    virtual ~IsoTFPropertyWidgetQt();
 
-void IsoValueCollection::save(const std::string& filename, const FileExtension& ext) const {
-    std::string extension = toLower(filesystem::getFileExtension(filename));
+    virtual void updateFromProperty() override;
+    virtual TFPropertyDialog* getEditorWidget() const override;
+    virtual bool hasEditorWidget() const override;
 
-    if (ext.extension_ == "iiv" || (ext.empty() && extension == "iiv")) {
-        Serializer serializer(filename);
-        serialize(serializer);
-        serializer.writeFile();
-    } else {
-        throw DataWriterException("Unsupported format for saving isovalues", IvwContext);
-    }
-}
+    virtual void setReadOnly(bool readonly) override;
 
-void IsoValueCollection::load(const std::string& filename, const FileExtension& ext) {
-    std::string extension = toLower(filesystem::getFileExtension(filename));
-
-    if (ext.extension_ == "iiv" || (ext.empty() && extension == "iiv")) {
-        Deserializer deserializer(filename);
-        deserialize(deserializer);
-    } else {
-        throw DataReaderException("Unsupported format for loading isovalues", IvwContext);
-    }
-}
+private:
+    EditableLabelQt* label_ = nullptr;
+    TFPushButton* btnOpenTF_ = nullptr;
+    mutable std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
+};
 
 }  // namespace inviwo
+
+#endif  // IVW_ISOTFPROPERTYWIDGETQT_H
