@@ -28,14 +28,14 @@
  *********************************************************************************/
 
 #if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/not-inlined` used without `warn/push`"
+#   error "`warn/ignore/size_t-conversion` used without `warn/push`"
 #endif
 
-#if defined(WARN_IGNORE_NOT_INLINED)
-#   error "`warn/ignore/not-inlined` already included"
+#if defined(WARN_IGNORE_SIZE_T_CONVERSION)
+#   error "`warn/ignore/size_t-conversion` already included"
 #endif
 
-#define WARN_IGNORE_NOT_INLINED
+#define WARN_IGNORE_SIZE_T_CONVERSION
 
 #if defined(__clang__)
 //  Not available
@@ -43,6 +43,6 @@
 //  Not available
 #elif defined(_MSC_VER)
 #   if (_MSC_FULL_VER >= 130000000)
-#       pragma warning(disable: 4710)
+#       pragma warning(disable: 4267)
 #   endif
 #endif

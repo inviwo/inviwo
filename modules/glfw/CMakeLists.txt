@@ -35,6 +35,6 @@ target_link_libraries(inviwo-module-glfw PUBLIC glfw)
 ivw_register_license_file(NAME "GLFW" VERSION 3.2.1 MODULE GLFW
     URL http://www.glfw.org
     TYPE "The zlib/libpng License"
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/COPYING.txt
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/glfw/COPYING.txt
 )
 ivw_make_package(InviwoGLFWModule inviwo-module-glfw)

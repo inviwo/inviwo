@@ -68,6 +68,7 @@ shorten-64-to-32                 | *same* (3.2)       | *no*                 | *
 sign-compare                     | *same* (3.2)       | *same* (3.4)         | C4389 (13)   
 sign-conversion                  | *same* (3.2)       | *same* (4.3)         | C4365 (14)   
 signed-unsigned-compare          | sign-compare (3.2) | sign-compare (3.4)   | C4388 (18)   
+size_t-conversion                | *no*               | *no*                 | C4267 (13)   
 static-ctor-not-thread-safe      | *no*               | *no*                 | C4640 (13)   
 switch                           | *same* (3.2)       | *same* (3.4)         | C4062 (13)   
 switch-enum                      | *same* (3.2)       | *same* (3.4)         | C4061 (13)   
