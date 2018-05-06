@@ -32,6 +32,10 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
+#include <functional>
+#include <memory>
+#include <vector>
+
 // QT includes
 #include <warn/push>
 #include <warn/ignore/all>
