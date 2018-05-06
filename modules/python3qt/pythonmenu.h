@@ -32,9 +32,13 @@
 
 #include <modules/python3qt/python3qtmoduledefine.h>
 
+#include <memory>
+#include <vector>
 
 class QMenu;
+
 namespace inviwo {
+
 class PythonEditorWidget;
 class InviwoApplication;
 
@@ -42,6 +46,7 @@ class IVW_MODULE_PYTHON3QT_API PythonMenu {
 public:
     PythonMenu(InviwoApplication* app);
     virtual ~PythonMenu();
+
 private:
     std::vector<std::unique_ptr<PythonEditorWidget>> editors_;
     std::unique_ptr<QMenu> menu_;

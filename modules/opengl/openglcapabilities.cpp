@@ -97,7 +97,7 @@ OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
 
     preferredProfile_ = settings->selectedOpenGLProfile_.getSelectedIdentifier();
 
-    settings->btnOpenGLInfo_.onChange(this, &OpenGLCapabilities::printDetailedInfo);
+    settings->btnOpenGLInfo_.onChange([this](){printDetailedInfo();});
 
     bool hasOutputedGLSLVersionOnce = false;
     settings->selectedOpenGLProfile_.onChange(
