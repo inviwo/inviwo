@@ -44,12 +44,34 @@ namespace inviwo {
 
 PythonMenu::PythonMenu(InviwoApplication* app) {
     if (auto win = utilqt::getApplicationMainWindow()) {
-        menu_ = utilqt::addMenu("&Python");
+
+        menu_.reset(utilqt::addMenu("&Python"));
+        win->connect(menu_.get(), &QMenu::destroyed, [this](QObject*) { menu_.release(); });
+
         auto pythonEditorOpen = menu_->addAction(QIcon(":/icons/python.png"), "&Python Editor");
-        editor_ = new PythonEditorWidget(win, app);
-        editor_->setVisible(false);
-        editor_->loadState();
-        win->connect(pythonEditorOpen, &QAction::triggered, editor_, &PythonEditorWidget::show);
+
+        win->connect(pythonEditorOpen, &QAction::triggered, [this, win, app]() {
+            auto editor = std::make_unique<PythonEditorWidget>(win, app);
+            editor->loadState();
+            editor->setAttribute(Qt::WA_DeleteOnClose);
+            if (!editors_.empty()) {
+                auto newPos = editors_.back()->pos() + QPoint(40,40);
+                if (newPos.x() > 800) newPos.setX(350);
+                if (newPos.y() > 800) newPos.setX(100);
+                editor->move(newPos);
+            }   
+            win->connect(editor.get(), &PythonEditorWidget::destroyed, [this](QObject* obj) {
+                auto it = std::find_if(editors_.begin(), editors_.end(),
+                                       [&](auto& elem) { return elem.get() == obj; });
+                if (it != editors_.end()) {
+                    it->release();
+                    editors_.erase(it);
+                }
+            });
+
+            editor->setVisible(true);
+            editors_.push_back(std::move(editor));
+        });
 
         auto pyPropertoes = menu_->addAction("&List unexposed properties");
         win->connect(pyPropertoes, &QAction::triggered, [app]() {
@@ -59,16 +81,6 @@ PythonMenu::PythonMenu(InviwoApplication* app) {
     }
 }
 
-PythonMenu::~PythonMenu() {
-    if (auto win = utilqt::getApplicationMainWindow()) {
-        // Delete menu_ and editor_ since the MainWindow is parent and will
-        // not delete menu_ until after module has been deinitialized.
-        // Destructors will remove the created widgets, actions and signals
-        delete menu_;
-        delete editor_;
-    }
-}
-
-PythonEditorWidget* PythonMenu::getEditor() const { return editor_; }
+PythonMenu::~PythonMenu() = default;
 
 }  // namespace inviwo

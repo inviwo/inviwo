@@ -9,7 +9,6 @@ find_package(Qt5OpenGL QUIET REQUIRED)
 set(MOC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmenu.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shaderwidget.h
 )
 
 #--------------------------------------------------------------------
@@ -22,6 +21,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtcapabilities.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmoduledefine.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaderwidget.h
     ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})

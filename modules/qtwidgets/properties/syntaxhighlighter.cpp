@@ -43,32 +43,14 @@ namespace inviwo {
 
 SyntaxHighligther::SyntaxHighligther(QTextDocument* parent) : QSyntaxHighlighter(parent) {}
 
-SyntaxHighligther::~SyntaxHighligther() {
-    clearFormaters();
-    // Remove observer created in loadConfig
-    // Why remove from python and glsl?
-    // A workaround since we do not know which loadConfig template
-    // that was used after creation...
-    // Preferably, the loadConfig should return an object that can be destroyed.
-    auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
-    settings->pythonSyntax_.removeOnChange(this);
-    settings->glslSyntax_.removeOnChange(this);
-}
+SyntaxHighligther::~SyntaxHighligther() = default;
 
 const QColor& SyntaxHighligther::getBackgroundColor() const { return backgroundColor_; }
 
-void SyntaxHighligther::clearFormaters() {
-    while (!formaters_.empty()) {
-        delete formaters_.back();
-        formaters_.pop_back();
-    }
-}
-
 void SyntaxHighligther::highlightBlock(const QString& text) {
     setFormat(0, text.size(), defaultFormat_);
-    std::vector<SyntaxFormater*>::iterator it;
 
-    for (it = formaters_.begin(); it != formaters_.end(); ++it) {
+    for (auto it = formaters_.begin(); it != formaters_.end(); ++it) {
         SyntaxFormater::Result res = (*it)->eval(text, previousBlockState());
 
         for (size_t i = 0; i < res.start.size(); i++) {

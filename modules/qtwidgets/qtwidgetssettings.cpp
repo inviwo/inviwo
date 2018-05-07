@@ -84,59 +84,52 @@ const ivec4 sea_green(166, 228, 48, 255);
 
 QtWidgetsSettings::QtWidgetsSettings()
     : Settings("Syntax Highlighting")
+    , font_("font", "Font", getMonoSpaceFonts(), getDefaultFontIndex())
+    , fontSize_("fontSize", "Size", 11, 1, 72)
     , glslSyntax_("glslSyntax", "GLSL Syntax Highlighting")
-    , glslFont_("glslFont", "Font", getMonoSpaceFonts(), getDefaultFontIndex())
-    , glslFontSize_("glslFontSize", "Size", 11, 1, 72)
-    , glslTextColor_("glslTextColor", "Text", light_ghost_white, ivec4(0, 0, 0, 1),
-                     ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
-                     PropertySemantics::Color)
-    , glslBackgroundColor_("glslBackgroundColor", "Background", dark_gray, ivec4(0, 0, 0, 1),
-                           ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                           InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , glslQualifierColor_("glslQualifierColor", "Qualifiers", pink, ivec4(0, 0, 0, 1),
-                          ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
+    , glslTextColor_("glslTextColor", "Text", light_ghost_white, ivec4(0), ivec4(255), ivec4(1),
+                     InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , glslBackgroundColor_("glslBackgroundColor", "Background", dark_gray, ivec4(0), ivec4(255),
+                           ivec4(1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , glslBackgroundHighLightColor_("glslBackgroundHighLightColor", "High Light",
+                                    ivec4{33, 34, 29, 255}, ivec4(0), ivec4(255), ivec4(1),
+                                    InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , glslQualifierColor_("glslQualifierColor", "Qualifiers", pink, ivec4(0), ivec4(255), ivec4(1),
                           InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , glslBuiltinsColor_("glslBultinsColor", "Builtins", orange, ivec4(0, 0, 0, 1),
-                         ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
+    , glslBuiltinsColor_("glslBultinsColor", "Builtins", orange, ivec4(0), ivec4(255), ivec4(1),
                          InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , glslTypeColor_("glslTypeColor", "Types", blue, ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1),
-                     ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , glslGlslBuiltinsColor_("glslGlslBultinsColor", "GLSL Builtins", blue, ivec4(0, 0, 0, 1),
-                             ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , glslCommentColor_("glslCommentColor", "Comments", gray, ivec4(0, 0, 0, 1),
-                        ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
+    , glslTypeColor_("glslTypeColor", "Types", blue, ivec4(0), ivec4(255), ivec4(1),
+                     InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , glslGlslBuiltinsColor_("glslGlslBultinsColor", "GLSL Builtins", blue, ivec4(0), ivec4(255),
+                             ivec4(1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , glslCommentColor_("glslCommentColor", "Comments", gray, ivec4(0), ivec4(255), ivec4(1),
                         InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , glslPreProcessorColor_("glslPreProcessorColor", "Pre Processor", pink, ivec4(0, 0, 0, 1),
-                             ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , glslConstantsColor_("glslConstantsColor", "Constants", purple, ivec4(0, 0, 0, 1),
-                          ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
+    , glslPreProcessorColor_("glslPreProcessorColor", "Pre Processor", pink, ivec4(0), ivec4(255),
+                             ivec4(1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , glslConstantsColor_("glslConstantsColor", "Constants", purple, ivec4(0), ivec4(255), ivec4(1),
                           InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , glslVoidMainColor_("glslVoidMainColor", "void main", sea_green, ivec4(0, 0, 0, 1),
-                         ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                         InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , glslVoidMainColor_("glslVoidMainColor", "void main", sea_green, ivec4(0), ivec4(255),
+                         ivec4(1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , pythonSyntax_("pythonSyntax", "Python Syntax Highlighting")
-    , pythonFont_("pythonFont", "Font", getMonoSpaceFonts(), getDefaultFontIndex())
-    , pyFontSize_("pyFontSize", "Size", 11, 1, 72)
-    , pyBGColor_("pyBGColor", "Background", ivec4(0xb0, 0xb0, 0xbc, 255), ivec4(0, 0, 0, 1),
-                 ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
-                 PropertySemantics::Color)
-    , pyTextColor_("pyTextColor", "Text", ivec4(0x11, 0x11, 0x11, 255), ivec4(0, 0, 0, 1),
-                   ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
-                   PropertySemantics::Color)
-    , pyTypeColor_("pyTypeColor", "Types", ivec4(0x14, 0x3C, 0xA6, 255), ivec4(0, 0, 0, 1),
-                   ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
-                   PropertySemantics::Color)
-    , pyCommentsColor_("pyCommentsColor", "Comments", ivec4(0x00, 0x66, 0x00, 255),
-                       ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                       InvalidationLevel::InvalidOutput, PropertySemantics::Color) {
-    addProperty(pythonSyntax_);
-    addProperty(glslSyntax_);
+    , pyBGColor_("pyBGColor", "Background", ivec4(0xb0, 0xb0, 0xbc, 255), ivec4(0), ivec4(255),
+                 ivec4(1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , pyBGHighLightColor_("pyBGHighLightColor", "High Light", ivec4(0xd0, 0xd0, 0xdc, 255),
+                          ivec4(0), ivec4(255), ivec4(1), InvalidationLevel::InvalidOutput,
+                          PropertySemantics::Color)
+    , pyTextColor_("pyTextColor", "Text", ivec4(0x11, 0x11, 0x11, 255), ivec4(0), ivec4(255),
+                   ivec4(1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , pyTypeColor_("pyTypeColor", "Types", ivec4(0x14, 0x3C, 0xA6, 255), ivec4(0), ivec4(255),
+                   ivec4(1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , pyCommentsColor_("pyCommentsColor", "Comments", ivec4(0x00, 0x66, 0x00, 255), ivec4(0),
+                       ivec4(255), ivec4(1), InvalidationLevel::InvalidOutput,
+                       PropertySemantics::Color) {
 
-    glslSyntax_.addProperty(glslFont_);
-    glslSyntax_.addProperty(glslFontSize_);
+    addProperty(font_);
+    addProperty(fontSize_);
+
+    addProperty(glslSyntax_);
     glslSyntax_.addProperty(glslBackgroundColor_);
+    glslSyntax_.addProperty(glslBackgroundHighLightColor_);
     glslSyntax_.addProperty(glslTextColor_);
     glslSyntax_.addProperty(glslCommentColor_);
     glslSyntax_.addProperty(glslTypeColor_);
@@ -147,9 +140,9 @@ QtWidgetsSettings::QtWidgetsSettings()
     glslSyntax_.addProperty(glslConstantsColor_);
     glslSyntax_.addProperty(glslVoidMainColor_);
 
-    pythonSyntax_.addProperty(pythonFont_);
-    pythonSyntax_.addProperty(pyFontSize_);
+    addProperty(pythonSyntax_);
     pythonSyntax_.addProperty(pyBGColor_);
+    pythonSyntax_.addProperty(pyBGHighLightColor_);
     pythonSyntax_.addProperty(pyTextColor_);
     pythonSyntax_.addProperty(pyCommentsColor_);
     pythonSyntax_.addProperty(pyTypeColor_);
