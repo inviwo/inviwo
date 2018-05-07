@@ -32,29 +32,30 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
 
 namespace inviwo {
 
 class IsoValueProperty;
-class MultilineTextEdit;
+class TFPushButton;
 class EditableLabelQt;
 
-/**
- * \class IsoValuePropertyWidgetQt
- * \brief Property widget for 
- */
 class IVW_MODULE_QTWIDGETS_API IsoValuePropertyWidgetQt : public PropertyWidgetQt {
 public:
     IsoValuePropertyWidgetQt(IsoValueProperty* property);
     virtual ~IsoValuePropertyWidgetQt() = default;
 
+    virtual TFPropertyDialog* getEditorWidget() const override;
+    virtual bool hasEditorWidget() const override;
+
     virtual void updateFromProperty() override;
-    void setPropertyValue();
+
+    virtual void setReadOnly(bool readonly) override;
 
 private:
-    IsoValueProperty* property_;
-    MultilineTextEdit* textEdit_;
     EditableLabelQt* label_;
+    TFPushButton* btnOpenTF_;
+    mutable std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
 };
 
 }  // namespace inviwo

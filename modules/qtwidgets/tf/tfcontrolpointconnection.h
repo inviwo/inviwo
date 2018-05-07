@@ -32,7 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorprimitive.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -41,30 +41,30 @@
 
 namespace inviwo {
 
-class TransferFunctionEditorControlPoint;
+class TFEditorControlPoint;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionControlPointConnection : public QGraphicsItem {
+class IVW_MODULE_QTWIDGETS_API TFControlPointConnection : public QGraphicsItem {
 public:
-    TransferFunctionControlPointConnection();
-    virtual ~TransferFunctionControlPointConnection();
+    TFControlPointConnection();
+    virtual ~TFControlPointConnection();
 
     void updateShape();
 
     // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + TransferFunctionEditorPrimitive::TFControlPointConnectionType };
+    enum { Type = UserType + TFEditorPrimitive::TFControlPointConnectionType };
     int type() const { return Type; }
 
     friend IVW_MODULE_QTWIDGETS_API bool operator==(
-        const TransferFunctionControlPointConnection& lhs,
-        const TransferFunctionControlPointConnection& rhs);
+        const TFControlPointConnection& lhs,
+        const TFControlPointConnection& rhs);
 
     // Compare points by their "x" value
     friend IVW_MODULE_QTWIDGETS_API bool operator<(
-        const TransferFunctionControlPointConnection& lhs,
-        const TransferFunctionControlPointConnection& rhs);
+        const TFControlPointConnection& lhs,
+        const TFControlPointConnection& rhs);
 
-    TransferFunctionEditorControlPoint* left_;   // Non-owning reference
-    TransferFunctionEditorControlPoint* right_;  // Non-owning reference
+    TFEditorControlPoint* left_;   // Non-owning reference
+    TFEditorControlPoint* right_;  // Non-owning reference
 
     QPointF getStart() const;
     QPointF getStop() const;
@@ -81,18 +81,18 @@ private:
     QRectF rect_;
 };
 
-IVW_MODULE_QTWIDGETS_API bool operator==(const TransferFunctionControlPointConnection& lhs,
-                                         const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TransferFunctionControlPointConnection& lhs,
-                                         const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TransferFunctionControlPointConnection& lhs,
-                                        const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TransferFunctionControlPointConnection& lhs,
-                                        const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TransferFunctionControlPointConnection& lhs,
-                                         const TransferFunctionControlPointConnection& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TransferFunctionControlPointConnection& lhs,
-                                         const TransferFunctionControlPointConnection& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator==(const TFControlPointConnection& lhs,
+                                         const TFControlPointConnection& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator!=(const TFControlPointConnection& lhs,
+                                         const TFControlPointConnection& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator<(const TFControlPointConnection& lhs,
+                                        const TFControlPointConnection& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator>(const TFControlPointConnection& lhs,
+                                        const TFControlPointConnection& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator<=(const TFControlPointConnection& lhs,
+                                         const TFControlPointConnection& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator>=(const TFControlPointConnection& lhs,
+                                         const TFControlPointConnection& rhs);
 
 }  // namespace inviwo
 

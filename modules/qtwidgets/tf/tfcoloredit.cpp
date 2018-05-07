@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,40 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
-#define IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
+#include <modules/qtwidgets/tf/tfcoloredit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
-#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <inviwo/core/util/colorconversion.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSizePolicy>
+#include <warn/pop>
 
 namespace inviwo {
 
-class EditableLabelQt;
-class TransferFunctionProperty;
-class TFPushButton;
+TFColorEdit::TFColorEdit(QWidget* parent) : QLineEdit(parent) {
+    // accept only 6-digit hex codes
+    setInputMask("\\#HHHHHH");
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
-public:
-    TransferFunctionPropertyWidgetQt(TransferFunctionProperty* property);
-    virtual ~TransferFunctionPropertyWidgetQt();
+    connect(this, &QLineEdit::editingFinished, this, [this]() {
+        // QColor(QString) should only be used for 6-digit hex codes, since
+        // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
+        emit colorChanged(QColor(text()));
+    });
 
-    virtual void updateFromProperty() override;
-    virtual TransferFunctionPropertyDialog* getEditorWidget() const override;
-    virtual bool hasEditorWidget() const override;
+    setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
+}
 
-    virtual void setReadOnly(bool readonly) override;
+QSize TFColorEdit::sizeHint() const { return QSize(18, 18); }
 
-private:
-    EditableLabelQt* label_ = nullptr;
-    TFPushButton* btnOpenTF_ = nullptr;
-    mutable std::unique_ptr<TransferFunctionPropertyDialog> transferFunctionDialog_ = nullptr;
-};
+void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
+    if (ambiguous) {
+        // clear text field
+        clear();
+    } else {
+        setText(color.name());
+    }
+}
 
-class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
-public:
-    TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
-    virtual ~TFPushButton() = default;
-    void updateFromProperty();
-
-private:
-    void resizeEvent(QResizeEvent* event) override;
-
-    TransferFunctionProperty* tfProperty_ = nullptr;
-};
-
-}  // namespace
-
-#endif  // IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
+}  // namespace inviwo

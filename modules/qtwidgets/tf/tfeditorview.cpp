@@ -28,11 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogram.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorview.h>
-#include <modules/qtwidgets/properties/transferfunctionpropertydialog.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
-#include <modules/qtwidgets/properties/transferfunctioneditor.h>
+#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfeditorview.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 #include <warn/push>
@@ -48,9 +48,10 @@
 
 namespace inviwo {
 
-TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty* tfProperty)
-    : QGraphicsView()
-    , tfProperty_(tfProperty)
+TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* scene,
+                           QWidget* parent)
+    : QGraphicsView(scene, parent)
+    , tfPropertyPtr_(tfProperty)
     , volumeInport_(tfProperty->getVolumeInport())
     , histogramMode_(tfProperty->getHistogramMode())
     , maskHorizontal_(0.0, 1.0) {
@@ -61,7 +62,7 @@ TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty*
 
     this->setCacheMode(QGraphicsView::CacheBackground);
 
-    tfProperty_->TransferFunctionPropertyObservable::addObserver(this);
+    tfPropertyPtr_->addObserver(this);
 
     if (volumeInport_) {
         const auto portChange = [this]() {
@@ -85,11 +86,11 @@ TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty*
             resetCachedContent();
             update();
         });
+        updateHistogram();
     }
-    updateHistogram();
 }
 
-TransferFunctionEditorView::~TransferFunctionEditorView() {
+TFEditorView::~TFEditorView() {
     stopHistCalculation_ = true;
     if (volumeInport_) {
         volumeInport_->removeOnInvalid(callbackOnInvalid);
@@ -99,18 +100,18 @@ TransferFunctionEditorView::~TransferFunctionEditorView() {
     }
 }
 
-void TransferFunctionEditorView::onMaskChange(const dvec2& mask) {
+void TFEditorView::onMaskChange(const dvec2& mask) {
     if (maskHorizontal_ != mask) {
         maskHorizontal_ = mask;
         update();
     }
 }
 
-void TransferFunctionEditorView::onZoomHChange(const dvec2&) { updateZoom(); }
+void TFEditorView::onZoomHChange(const dvec2&) { updateZoom(); }
 
-void TransferFunctionEditorView::onZoomVChange(const dvec2&) { updateZoom(); }
+void TFEditorView::onZoomVChange(const dvec2&) { updateZoom(); }
 
-void TransferFunctionEditorView::onHistogramModeChange(HistogramMode mode) {
+void TFEditorView::onHistogramModeChange(HistogramMode mode) {
     if (histogramMode_ != mode) {
         histogramMode_ = mode;
         if (histogramMode_ != HistogramMode::Off) updateHistogram();
@@ -119,7 +120,7 @@ void TransferFunctionEditorView::onHistogramModeChange(HistogramMode mode) {
     }
 }
 
-void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
+void TFEditorView::wheelEvent(QWheelEvent* event) {
     const QPointF numPixels = event->pixelDelta() / 5.0;
     const QPointF numDegrees = event->angleDelta() / 8.0 / 15;
 
@@ -134,15 +135,15 @@ void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
         return;
     }
 
-    NetworkLock lock(tfProperty_);
+    NetworkLock lock(tfPropertyPtr_->getProperty());
 
     if (event->modifiers() == Qt::ControlModifier) {
         // zoom only horizontally relative to wheel event position
         double zoomFactor = std::pow(1.05, std::max(-15.0, std::min(15.0, -delta.y)));
 
-        dvec2 horizontal = tfProperty_->getZoomH();
+        dvec2 horizontal = tfPropertyPtr_->getZoomH();
         double zoomExtent = horizontal.y - horizontal.x;
-        
+
         // off-center zooming
         // relative position within current zoom range
         auto zoomCenter = event->posF().x() / width() * zoomExtent + horizontal.x;
@@ -150,7 +151,7 @@ void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
         double lower = zoomCenter + (horizontal.x - zoomCenter) * zoomFactor;
         double upper = zoomCenter + (horizontal.y - zoomCenter) * zoomFactor;
 
-        tfProperty_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
+        tfPropertyPtr_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
     } else {
         // vertical scrolling (+ optional horizontal if two-axis wheel)
 
@@ -160,8 +161,8 @@ void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
             delta.y = 0.0;
         }
 
-        dvec2 horizontal = tfProperty_->getZoomH();
-        dvec2 vertical = tfProperty_->getZoomV();
+        dvec2 horizontal = tfPropertyPtr_->getZoomH();
+        dvec2 vertical = tfPropertyPtr_->getZoomV();
         dvec2 extent(horizontal.y - horizontal.x, vertical.y - vertical.x);
         // scale scroll step with current zoom range
         delta *= scrollStep * extent;
@@ -183,20 +184,20 @@ void TransferFunctionEditorView::wheelEvent(QWheelEvent* event) {
             vertical.x = vertical.y - extent.y;
         }
 
-        tfProperty_->setZoomH(horizontal.x, horizontal.y);
-        tfProperty_->setZoomV(vertical.x, vertical.y);
+        tfPropertyPtr_->setZoomH(horizontal.x, horizontal.y);
+        tfPropertyPtr_->setZoomV(vertical.x, vertical.y);
     }
 
     event->accept();
 }
 
-void TransferFunctionEditorView::resizeEvent(QResizeEvent* event) {
+void TFEditorView::resizeEvent(QResizeEvent* event) {
     QGraphicsView::resizeEvent(event);
     resetCachedContent();
     updateZoom();
 }
 
-void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
+void TFEditorView::drawForeground(QPainter* painter, const QRectF& rect) {
     QPen pen;
     pen.setCosmetic(true);
     pen.setWidthF(1.5);
@@ -224,7 +225,7 @@ void TransferFunctionEditorView::drawForeground(QPainter* painter, const QRectF&
     QGraphicsView::drawForeground(painter, rect);
 }
 
-void TransferFunctionEditorView::updateHistogram() {
+void TFEditorView::updateHistogram() {
     histograms_.clear();
     QRectF sRect = sceneRect();
 
@@ -280,7 +281,7 @@ void TransferFunctionEditorView::updateHistogram() {
     }
 }
 
-const HistogramContainer* TransferFunctionEditorView::getNormalizedHistograms() {
+const HistogramContainer* TFEditorView::getNormalizedHistograms() {
     if (volumeInport_ && volumeInport_->hasData()) {
         if (const auto volumeRAM = volumeInport_->getData()->getRepresentation<VolumeRAM>()) {
             if (volumeRAM->hasHistograms()) {
@@ -311,7 +312,7 @@ const HistogramContainer* TransferFunctionEditorView::getNormalizedHistograms() 
     return nullptr;
 }
 
-void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
+void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->fillRect(rect, QColor(89, 89, 89));
 
     // overlay grid
@@ -379,10 +380,10 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
     }
 }
 
-void TransferFunctionEditorView::updateZoom() {
+void TFEditorView::updateZoom() {
     const auto rect = scene()->sceneRect();
-    const auto zh = tfProperty_->getZoomH();
-    const auto zv = tfProperty_->getZoomV();
+    const auto zh = tfPropertyPtr_->getZoomH();
+    const auto zv = tfPropertyPtr_->getZoomV();
     fitInView(zh.x * rect.width(), zv.x * rect.height(), (zh.y - zh.x) * rect.width(),
               (zv.y - zv.x) * rect.height(), Qt::IgnoreAspectRatio);
 }

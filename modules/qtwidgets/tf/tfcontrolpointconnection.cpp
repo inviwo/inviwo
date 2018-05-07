@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/transferfunctioncontrolpointconnection.h>
-#include <modules/qtwidgets/properties/transferfunctioneditorcontrolpoint.h>
+#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -40,16 +40,16 @@
 
 namespace inviwo {
 
-TransferFunctionControlPointConnection::TransferFunctionControlPointConnection()
+TFControlPointConnection::TFControlPointConnection()
     : QGraphicsItem(), left_(nullptr), right_(nullptr), path_(), shape_(), rect_() {
+    setZValue(8.0);
     updateShape();
 }
 
-TransferFunctionControlPointConnection::~TransferFunctionControlPointConnection() {}
+TFControlPointConnection::~TFControlPointConnection() {}
 
-void TransferFunctionControlPointConnection::paint(QPainter* p,
-                                                   const QStyleOptionGraphicsItem* options,
-                                                   QWidget* widget) {
+void TFControlPointConnection::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                                     QWidget* widget) {
     IVW_UNUSED_PARAM(options);
     IVW_UNUSED_PARAM(widget);
 
@@ -65,7 +65,7 @@ void TransferFunctionControlPointConnection::paint(QPainter* p,
     p->restore();
 }
 
-void TransferFunctionControlPointConnection::updateShape() {
+void TFControlPointConnection::updateShape() {
     if (left_ == nullptr && right_ == nullptr) {
         path_ = QPainterPath();
     }
@@ -83,7 +83,7 @@ void TransferFunctionControlPointConnection::updateShape() {
     update();
 }
 
-QPointF TransferFunctionControlPointConnection::getStart() const {
+QPointF TFControlPointConnection::getStart() const {
     QPointF start;
     if (left_) {
         start = left_->getCurrentPos();
@@ -93,7 +93,7 @@ QPointF TransferFunctionControlPointConnection::getStart() const {
     return start;
 }
 
-QPointF TransferFunctionControlPointConnection::getStop() const {
+QPointF TFControlPointConnection::getStop() const {
     QPointF stop;
     if (right_) {
         stop = right_->getCurrentPos();
@@ -103,38 +103,32 @@ QPointF TransferFunctionControlPointConnection::getStop() const {
     return stop;
 }
 
-QRectF TransferFunctionControlPointConnection::boundingRect() const { return rect_; }
+QRectF TFControlPointConnection::boundingRect() const { return rect_; }
 
-QPainterPath TransferFunctionControlPointConnection::shape() const { return shape_; }
+QPainterPath TFControlPointConnection::shape() const { return shape_; }
 
-bool operator==(const TransferFunctionControlPointConnection& lhs,
-                const TransferFunctionControlPointConnection& rhs) {
+bool operator==(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
     return lhs.getStart() == rhs.getStart() && lhs.getStop() == rhs.getStop();
 }
 
-bool operator!=(const TransferFunctionControlPointConnection& lhs,
-                const TransferFunctionControlPointConnection& rhs) {
+bool operator!=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
     return !operator==(lhs, rhs);
 }
 
-bool operator<(const TransferFunctionControlPointConnection& lhs,
-               const TransferFunctionControlPointConnection& rhs) {
+bool operator<(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
     return 0.5f * (lhs.getStart().x() + lhs.getStop().x()) <
            0.5f * (rhs.getStart().x() + rhs.getStop().x());
 }
 
-bool operator>(const TransferFunctionControlPointConnection& lhs,
-               const TransferFunctionControlPointConnection& rhs) {
+bool operator>(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
     return rhs < lhs;
 }
 
-bool operator<=(const TransferFunctionControlPointConnection& lhs,
-                const TransferFunctionControlPointConnection& rhs) {
+bool operator<=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
     return !(rhs < lhs);
 }
 
-bool operator>=(const TransferFunctionControlPointConnection& lhs,
-                const TransferFunctionControlPointConnection& rhs) {
+bool operator>=(const TFControlPointConnection& lhs, const TFControlPointConnection& rhs) {
     return !(lhs < rhs);
 }
 

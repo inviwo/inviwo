@@ -101,6 +101,7 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
                            isoposWorld, -gradient, toCameraDir);
 #endif // SHADING_ENABLED
 
+#if defined(INCLUDE_DVR)
         // apply compositing of volumetric media from last sampling position up till isosurface
         vec4 voxelColor = APPLY_CHANNEL_CLASSIFICATION(transferFunction, vec4(isovalue), channel);
         if (voxelColor.a > 0) {
@@ -112,6 +113,7 @@ vec4 drawIsosurface(in vec4 curResult, in float isovalue, in vec4 isosurfaceColo
             result = APPLY_COMPOSITING(result, voxelColor, isopos, vec4(isovalue), gradient, camera,
                                        isovalue, t - tIncr, tDepth, raySegmentLen - tIncr);
         }
+#endif // INCLUDE_DVR
 
         // blend isosurface color and adjust first-hit depth if necessary
         if (tDepth < 0.0) {

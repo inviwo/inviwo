@@ -54,8 +54,10 @@ public:
     IsoValueCollection& operator=(const IsoValueCollection& rhs) = default;
     virtual ~IsoValueCollection() = default;
 
-    void save(const std::string& filename, const FileExtension& ext = FileExtension()) const;
-    void load(const std::string& filename, const FileExtension& ext = FileExtension());
+    virtual std::vector<FileExtension> getSupportedExtensions() const override;
+
+    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const override;
+    virtual void load(const std::string& filename, const FileExtension& ext = FileExtension()) override;
 };
 
 }  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTIONEDITORVIEW_H
@@ -45,15 +45,17 @@ class QWheelEvent;
 
 namespace inviwo {
 
-class TransferFunctionProperty;
+namespace util {
+struct TFPropertyConcept;
+}
+
 class VolumeRAM;
 
-class IVW_MODULE_QTWIDGETS_API TransferFunctionEditorView
-    : public QGraphicsView,
-      public TransferFunctionPropertyObserver {
+class IVW_MODULE_QTWIDGETS_API TFEditorView : public QGraphicsView, public TFPropertyObserver {
 public:
-    TransferFunctionEditorView(TransferFunctionProperty* tfProperty);
-    ~TransferFunctionEditorView();
+    TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* scene = nullptr,
+                 QWidget* parent = nullptr);
+    ~TFEditorView();
 
 protected:
     const HistogramContainer* getNormalizedHistograms();
@@ -70,10 +72,10 @@ protected:
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
 
-    virtual void wheelEvent(QWheelEvent *event) override;
+    virtual void wheelEvent(QWheelEvent* event) override;
 
 private:
-    TransferFunctionProperty* tfProperty_;
+    util::TFPropertyConcept* tfPropertyPtr_;
     VolumeInport* volumeInport_;
     HistogramMode histogramMode_;
 
@@ -84,12 +86,12 @@ private:
 
     dvec2 maskHorizontal_;
 
-    const BaseCallBack *callbackOnInvalid = nullptr;
-    const BaseCallBack *callbackOnChange = nullptr;
-    const BaseCallBack *callbackOnConnect = nullptr;
-    const BaseCallBack *callbackOnDisconnect = nullptr;
+    const BaseCallBack* callbackOnInvalid = nullptr;
+    const BaseCallBack* callbackOnChange = nullptr;
+    const BaseCallBack* callbackOnConnect = nullptr;
+    const BaseCallBack* callbackOnDisconnect = nullptr;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_TRANSFERFUNCTIONEDITORVIEW_H
+#endif  // IVW_TRANSFERFUNCTIONEDITORVIEW_H

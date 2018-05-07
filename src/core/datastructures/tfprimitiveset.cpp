@@ -105,6 +105,8 @@ void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
     notifyTFTypeChanged(this);
 }
 
+void TFPrimitiveSet::setTitle(const std::string& title) { title_ = title; }
+
 dvec2 TFPrimitiveSet::getRange() const {
     switch (type_) {
         case TFPrimitiveSetType::Absolute: {
@@ -312,6 +314,10 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
         })(d, values_);
     invalidate();
 }
+
+std::vector<FileExtension> TFPrimitiveSet::getSupportedExtensions() const { return {}; }
+void TFPrimitiveSet::save(const std::string&, const FileExtension&) const {}
+void TFPrimitiveSet::load(const std::string&, const FileExtension&){};
 
 void TFPrimitiveSet::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }
 

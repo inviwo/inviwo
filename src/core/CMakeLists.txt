@@ -224,11 +224,13 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/raycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stipplingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stringproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/templateproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/tfpropertyconcept.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
@@ -487,10 +489,12 @@ set(SOURCE_FILES
     properties/propertywidget.cpp
     properties/propertywidgetfactory.cpp
     properties/propertywidgetfactoryobject.cpp
+    properties/raycastingproperty.cpp
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp
     properties/stipplingproperty.cpp
     properties/stringproperty.cpp
+    properties/tfpropertyconcept.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
     rendering/meshdrawerfactory.cpp
@@ -564,6 +568,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
+    tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/dataformats-test.cpp
     tests/unittests/dispatch-test.cpp

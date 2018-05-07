@@ -30,84 +30,53 @@
 #include <modules/qtwidgets/properties/isovaluepropertywidgetqt.h>
 
 #include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/util/colorconversion.h>
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>
 #include <warn/pop>
 
-#include <sstream>
-
 namespace inviwo {
 
 IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
-    : PropertyWidgetQt(property), property_(property) {
+    : PropertyWidgetQt(property)
+    , label_{new EditableLabelQt(this, property_)}
+    , btnOpenTF_{new TFPushButton(property, this)} {
 
     QHBoxLayout* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
-    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
-
-    textEdit_ = new MultilineTextEdit;
-
-    QSizePolicy sp = textEdit_->sizePolicy();
-    sp.setHorizontalStretch(3);
-    sp.setVerticalPolicy(QSizePolicy::Preferred);
-    textEdit_->setSizePolicy(sp);
-
-    hLayout->addWidget(textEdit_);
+    hLayout->addWidget(btnOpenTF_);
 
     setLayout(hLayout);
-    connect(textEdit_, &MultilineTextEdit::editingFinished, [this]() { setPropertyValue(); });
-
     updateFromProperty();
-}
 
-void IsoValuePropertyWidgetQt::setPropertyValue() {
-    std::string valueStr = utilqt::fromQString(textEdit_->toPlainText());
-    property_->setInitiatingWidget(this);
-
-    // convert string back to isovalue/color values
-    std::vector<TFPrimitiveData> isovalues;
-
-    std::istringstream ss(valueStr);
-    std::string str;
-    while (ss.good()) {
-        float value = 0.0f;
-        ss >> value >> str;
-        if (ss.fail()) {
-            break;
+    connect(btnOpenTF_, &IvwPushButton::clicked, [this]() {
+        if (!tfDialog_) {
+            tfDialog_ =
+                std::make_unique<TFPropertyDialog>(static_cast<IsoValueProperty*>(property_));
+            tfDialog_->setVisible(true);
+        } else {
+            tfDialog_->setVisible(!tfDialog_->isVisible());
         }
-        isovalues.push_back({value, color::hex2rgba(str)});
-    }
+    });
 
-    property_->set(isovalues);
-
-    property_->clearInitiatingWidget();
+    QSizePolicy sp = sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Fixed);
+    setSizePolicy(sp);
 }
 
-void IsoValuePropertyWidgetQt::updateFromProperty() {
+TFPropertyDialog* IsoValuePropertyWidgetQt::getEditorWidget() const { return tfDialog_.get(); }
 
-    // convert isovalue/color values to string
-    std::ostringstream ss;
-    for (size_t i = 0; i < property_->get().size(); ++i) {
-        const auto& isoValue = property_->get().get(i);
-        // write color as HTML color code
-        ss << isoValue->getPosition() << " " << color::rgba2hex(isoValue->getColor()) << "\n";
-    }
+bool IsoValuePropertyWidgetQt::hasEditorWidget() const { return tfDialog_ != nullptr; }
 
-    QString newContents(utilqt::toQString(ss.str()));
-    if (textEdit_->toPlainText() != newContents) {
-        textEdit_->setPlainText(newContents);
-        textEdit_->moveCursor(QTextCursor::Start);
+void IsoValuePropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
-        textEdit_->adjustHeight();
-    }
-}
+void IsoValuePropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
 
 }  // namespace inviwo

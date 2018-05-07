@@ -407,6 +407,21 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
     cont.push_back(std::move(unit));
 }
 
+void bindTexture(const IsoTFProperty& property, const TextureUnit& texUnit) {
+    if (auto tfLayer = property.tf_.get().getData()) {
+        auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
+        transferFunctionGL->bindTexture(texUnit.getEnum());
+    }
+}
+
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+                        const IsoTFProperty& property) {
+    TextureUnit unit;
+    bindTexture(property, unit);
+    shader.setUniform(property.tf_.getIdentifier(), unit);
+    cont.push_back(std::move(unit));
+}
+
 void bindTexture(const Volume& volume, const TextureUnit& texUnit) {
     if (auto volumeGL = volume.getRepresentation<VolumeGL>()) {
         volumeGL->bindTexture(texUnit.getEnum());
