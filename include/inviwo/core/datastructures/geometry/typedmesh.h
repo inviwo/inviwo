@@ -330,10 +330,22 @@ public:
 
     virtual ~TypedMesh() = default;
 
+    /**
+     * \brief Append another TypedMesh to the current TypedMesh
+     *
+     * @see Mesh::append
+     * @param mesh The mesh to append
+     */
     void append(const TypedMesh *mesh) {
         if (mesh) Mesh::append(*mesh);
     }
 
+    /**
+     * \brief Adds a vector of vertices to the mesh
+     *
+     * This method is often faster than adding the vertices one at a time with
+     * TypedMesh::addVertex()
+     */
     void addVertices(const std::vector<Vertex> &vertices) {
         addVerticesImpl<0, BufferTraits...>(vertices);
     }
@@ -349,54 +361,114 @@ public:
 
     void setVertex(size_t index, BufferTraits... args) { setVertiesImpl<0>(index, args...); }
 #else
+    /**
+     * \brief Adds a vertex
+     *
+     * Adds a vertex to the mesh. The arguments to the function are automatically determined by the
+     * buffers of the mesh. For example:
+     * \code{.cpp}
+     * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
+     * MyMesh mesh;
+     * mesh.addVertex(vec3(0.0f), vec4(1,0,0,1) );
+     * mesh.addVertex(vec3(1.0f), vec4(0,1,0,1) );
+     * \endcode
+     *
+     * @param args the arguments, needs to match the buffers of the mesh
+     * @return uint32_t the position of the new vertex is the buffers.
+     */
     uint32_t addVertex(TypeAlias<BufferTraits>... args) {
         using BT = typename std::tuple_element<0, std::tuple<BufferTraits...>>::type;
         addVertexImpl<0>(args...);
         return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
     }
 
+    /**
+     * \brief Sets a specific vertex.
+     *
+     * The arguments to the function are automatically determined by the buffers of the mesh.
+     *
+     * @see addVertex
+     * @param index vertex index to update
+     * @param args the arguments, needs to match the buffers of the mesh
+     */
     void setVertex(size_t index, TypeAlias<BufferTraits>... args) {
         setVertiesImpl<0>(index, args...);
     }
 #endif
 
+    /**
+     * \brief Updates the a specific value in specific buffer
+     *
+     * The following example will set the color of vertex with index 5 to read: 
+     * \code{.cpp}
+     * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
+     * MyMesh mesh;
+     * // ... add some vertices
+     * mesh.setVertex<buffertraits::ColorsBuffer>(5 , vec4(1,0,0,1) );
+     * \endcode
+     *
+     * @param index vertex index to update
+     * @param v the new value
+     */
     template <typename BT>
     void setVertex(size_t index, const typename BT::type &v) {
         getTypedDataContainer<BT>().at(index) = v;
     }
 
-    std::shared_ptr<IndexBufferRAM> addIndexBuffer(DrawType dt, ConnectivityType ct) {
-        auto indicesRam = std::make_shared<IndexBufferRAM>();
-        auto indices = std::make_shared<IndexBuffer>(indicesRam);
-        addIndicies(Mesh::MeshInfo(dt, ct), indices);
-        return indicesRam;
-    }
-
+    /**
+     * \brief Returns a specific buffer. 
+     * The following example shows how to get the color buffer:  
+     * \code{.cpp}
+     * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
+     * MyMesh mesh;
+     * auto colorBuffer = mesh.getTypedBuffer<buffertraits::ColorsBuffer>(); 
+     * \endcode
+    */
     template <typename BT>
     auto getTypedBuffer() {
         return BT::buffer_;
     }
 
+    /**
+     * Returns a specific buffer
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto getTypedBuffer() const {
         return BT::buffer_;
     }
 
+    /**
+    * Returns the RAM Representation of a specific buffer. 
+    * @see getTypedBuffer()
+    */
     template <typename BT>
     auto getTypedRAMRepresentation() const {
         return BT::getTypedRAMRepresentation();
     }
 
+    /**
+    * Returns the Editable RAM Representation of a specific buffer. 
+    * @see getTypedBuffer()
+    */
     template <typename BT>
     auto getTypedEditableRAMRepresentation() {
         return BT::getTypedEditableRAMRepresentation();
     }
 
+    /**
+    * Returns the Data Container of a specific buffer. 
+    * @see getTypedBuffer()
+    */
     template <typename BT>
     auto &getTypedDataContainer() const {
         return BT::getTypedDataContainer();
     }
 
+    /**
+    * Returns the Data Container of a specific buffer. 
+    * @see getTypedBuffer()
+    */
     template <typename BT>
     auto &getTypedDataContainer() {
         return BT::getTypedDataContainer();

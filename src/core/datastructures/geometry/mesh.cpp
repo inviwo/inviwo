@@ -109,6 +109,13 @@ void Mesh::addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
     indices_.push_back(std::make_pair(info, ind));
 }
 
+std::shared_ptr<inviwo::IndexBufferRAM> Mesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
+    auto indicesRam = std::make_shared<IndexBufferRAM>();
+    auto indices = std::make_shared<IndexBuffer>(indicesRam);
+    addIndicies(Mesh::MeshInfo(dt, ct), indices);
+    return indicesRam;
+}
+
 void Mesh::removeIndexBuffer(size_t idx) {
     if (idx < indices_.size()) {
         indices_.erase(indices_.begin() + idx);
