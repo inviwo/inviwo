@@ -151,30 +151,30 @@ protected:
 
 template <typename T>
 ind BufferChannel<T>::getNumElements() const {
-    ivwAssert(buffer_.size() % NumComponents == 0, "Buffer size not multiple of component size");
+    ivwAssert(buffer_.size() % numComponents_ == 0, "Buffer size not multiple of component size");
 
-    return buffer_.size() / NumComponents;
+    return buffer_.size() / numComponents_;
 }
 
 template <typename T>
 T* BufferChannel<T>::get(const ind index) {
     ivwAssert(index >= 0 && index < getNumElements(), "Index out of bounds: " << index);
 
-    return buffer_.data() + index * NumComponents;
+    return buffer_.data() + index * numComponents_;
 }
 
 template <typename T>
 const T* BufferChannel<T>::get(const ind index) const {
     ivwAssert(index >= 0 && index < getNumElements(), "Index out of bounds: " << index);
 
-    return buffer_.data() + index * NumComponents;
+    return buffer_.data() + index * numComponents_;
 }
 
 template <typename T>
 void BufferChannel<T>::fill(T* const dest, const ind index) const {
     ivwAssert(index >= 0 && index < getNumElements(), "Index out of bounds: " << index);
 
-    memcpy(dest, buffer_.data() + (index * NumComponents), sizeof(T) * NumComponents);
+    memcpy(dest, buffer_.data() + (index * numComponents_), sizeof(T) * numComponents_);
 }
 
 /*--------------------------------------------------------------*
