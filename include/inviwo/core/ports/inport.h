@@ -179,21 +179,25 @@ private:
 };
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
 const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) {
     return onChangeCallback_.addMemberFunction(o, m);
 }
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `onInvalid(std::function<void()>)` instead")]]
 const BaseCallBack* Inport::onInvalid(T* o, void (T::*m)()) {
     return onInvalidCallback_.addMemberFunction(o, m);
 }
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
 void Inport::removeOnChange(T* o) {
     onChangeCallback_.removeMemberFunction(o);
 }
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `removeOnInvalid(const BaseCallBack*)` instead")]]
 void Inport::removeOnInvalid(T* o) {
     onInvalidCallback_.removeMemberFunction(o);
 }
