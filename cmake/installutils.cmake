@@ -48,30 +48,40 @@ endmacro()
 # A helper funtion to install targets
 # usage: ivw_default_install_comp_targets(<cpack component> <list of targets)
 function(ivw_default_install_comp_targets comp)
-    #if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-        if(WIN32)
-            install(TARGETS ${ARGN} EXPORT "${ARGN}-targets"
-                    RUNTIME DESTINATION bin
-                    ARCHIVE DESTINATION bin
-                    LIBRARY DESTINATION bin
-                    COMPONENT ${comp})
-        elseif(APPLE)
-            install(TARGETS ${ARGN}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION .
-                    ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-                    LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                    COMPONENT ${comp})
-        
-        else()
-            install(TARGETS ${ARGN}
-                    RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION bin
-                    ARCHIVE DESTINATION lib
-                    LIBRARY DESTINATION lib
-                    COMPONENT ${comp})
-        endif()
-    #endif()
+    if(NOT IVW_PACKAGE_PROJECT)
+        return()
+    endif()
+
+    # Dest type         Applies to
+    #------------------------------------------------
+    # ARCHIVE           Static libs, .lib
+    # LIBRARY           Module libraries .so 
+    # RUNTIME           Executables, DLLs
+    # OBJECTS           Object libraries
+    # FRAMEWORK         Targets marked as FRAMEWORK
+    # BUNDLE            Targets marked as BUNDLE
+
+    if(WIN32)
+        install(TARGETS ${ARGN} 
+                EXPORT "${ARGN}-targets"
+                RUNTIME DESTINATION bin
+                ARCHIVE DESTINATION bin
+                LIBRARY DESTINATION bin
+                COMPONENT ${comp})
+    elseif(APPLE)
+        install(TARGETS ${ARGN}
+                RUNTIME DESTINATION bin
+                BUNDLE DESTINATION .
+                ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
+                LIBRARY DESTINATION Inviwo.app/Contents/MacOS
+                COMPONENT ${comp})
+    else()
+        install(TARGETS ${ARGN}
+                RUNTIME DESTINATION bin
+                ARCHIVE DESTINATION lib
+                LIBRARY DESTINATION lib
+                COMPONENT ${comp})
+    endif()
 endfunction()
 
 #--------------------------------------------------------------------
