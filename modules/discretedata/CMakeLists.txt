@@ -5,18 +5,18 @@ ivw_module(DiscreteData)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/analyticchannel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/bufferchannel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/channeliterator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/channeliterator.inl
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectioniterator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datachannel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datachannel.inl
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/analyticchannel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/bufferchannel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/channeliterator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/channeliterator.inl
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.inl
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectioniterator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectivity.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/elementiterator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/structuredgrid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataset.inl
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementiterator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/structuredgrid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/util.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -24,12 +24,12 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectioniterator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datachannel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectioniterator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectivity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/elementiterator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/structuredgrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataset.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementiterator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/structuredgrid.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
