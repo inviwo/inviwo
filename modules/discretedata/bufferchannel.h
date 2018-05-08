@@ -35,6 +35,7 @@
 #include "datachannel.h"
 
 namespace inviwo {
+namespace dd {
 
 /** \class DataBuffer
     \brief Data channel as array data
@@ -195,3 +196,4 @@ void BufferChannel<T>::fill(T* const dest, const ind index) const {
  typedef BufferChannel<unsigned long long>  BufferChannelULongLong;
 
 }  // namespace
+}

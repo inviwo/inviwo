@@ -14,6 +14,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
+namespace dd {
 
 /** \struct ChannelIterator
 *   Generalized iterator over any DataChannel.
@@ -97,6 +98,7 @@ ChannelIterator<T> operator-(ind offset, ChannelIterator<T>& iter) {
 }
 
 }  // namespace
+}
 
 // Circumvent circular reference.
 #include "datachannel.h"

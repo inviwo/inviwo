@@ -34,6 +34,7 @@
 #include <inviwo/core/metadata/metadataowner.h>
 
 namespace inviwo {
+namespace dd {
 
 /** Discretedata index type **/
 typedef signed long long ind;
@@ -162,6 +163,7 @@ public:
 };
 
 }  // namespace
+}
 
 // Circumvent circular reference.
 #include "channeliterator.h"

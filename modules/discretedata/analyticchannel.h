@@ -36,6 +36,8 @@
 #include "datachannel.h"
 
 namespace inviwo {
+namespace dd {
+
 /** \class DataAnalytic
     \brief Data channel by function evaluated at each (linear) index.
 
@@ -117,3 +119,4 @@ typedef AnalyticChannel<unsigned long>      AnalyticChannelULong;
 typedef AnalyticChannel<unsigned long long> AnalyticChannelULongLong;
 
 }  // namespace
+}

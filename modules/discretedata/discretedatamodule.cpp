@@ -10,11 +10,9 @@
 
 #include <discretedata/discretedatamodule.h>
 
-namespace inviwo
-{
+namespace inviwo {
 
-DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata")
-{
+DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
 }
 
 } // namespace

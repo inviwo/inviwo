@@ -16,8 +16,8 @@
 namespace inviwo
 {
 
-class IVW_MODULE_DISCRETEDATA_API DiscreteDataModule : public InviwoModule
-{
+class IVW_MODULE_DISCRETEDATA_API DiscreteDataModule : public InviwoModule {
+
 public:
     DiscreteDataModule(InviwoApplication* app);
     virtual ~DiscreteDataModule() = default;

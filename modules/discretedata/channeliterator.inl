@@ -11,7 +11,7 @@
 #pragma once
 
 template <typename T>
-T* inviwo::ChannelIterator<T>::operator*() {
+T* inviwo::dd::ChannelIterator<T>::operator*() {
     ivwAssert(Parent, "No channel to iterate is set.");
 
     // If our parent is a buffer, return a direct data pointer.
