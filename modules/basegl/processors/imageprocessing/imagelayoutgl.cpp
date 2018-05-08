@@ -92,22 +92,22 @@ ImageLayoutGL::ImageLayoutGL()
     addProperty(layout_);
 
     horizontalSplitter_.setVisible(false);
-    horizontalSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
+    horizontalSplitter_.onChange([this]() { onStatusChange(); });
     addProperty(horizontalSplitter_);
 
     verticalSplitter_.setVisible(false);
-    verticalSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
+    verticalSplitter_.onChange([this]() { onStatusChange(); });
     addProperty(verticalSplitter_);
 
     vertical3Left1RightSplitter_.setVisible(false);
-    vertical3Left1RightSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
+    vertical3Left1RightSplitter_.onChange([this]() { onStatusChange(); });
     addProperty(vertical3Left1RightSplitter_);
 
     vertical3Right1LeftSplitter_.setVisible(false);
-    vertical3Right1LeftSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
+    vertical3Right1LeftSplitter_.onChange([this]() { onStatusChange(); });
     addProperty(vertical3Right1LeftSplitter_);
 
-    layout_.onChange(this, &ImageLayoutGL::onStatusChange);
+    layout_.onChange([this]() { onStatusChange(); });
 }
 
 ImageLayoutGL::~ImageLayoutGL() = default;
@@ -350,4 +350,4 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     currentLayout_ = layout_.get();
 }
 
-}  // namespace
+}  // namespace inviwo

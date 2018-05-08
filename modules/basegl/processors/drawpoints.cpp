@@ -69,7 +69,7 @@ DrawPoints::DrawPoints()
     addProperty(pointSize_);
     pointColor_.setSemantics(PropertySemantics::Color);
     addProperty(pointColor_);
-    clearButton_.onChange(this, &DrawPoints::clearPoints);
+    clearButton_.onChange([this]() { clearPoints(); });
     addProperty(clearButton_);
 
     addProperty(mouseDraw_);

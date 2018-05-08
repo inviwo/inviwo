@@ -301,13 +301,15 @@ private:
 };
 
 template <typename T>
-void Property::removeOnChange(T* o) {
-    onChangeCallback_.removeMemberFunction(o);
+[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
+const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
+    return onChangeCallback_.addLambdaCallback([o, m]() {if (m) (*o.*m)(); });
 }
 
 template <typename T>
-const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
-    return onChangeCallback_.addLambdaCallback([o, m]() {if (m) (*o.*m)(); });
+[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
+void Property::removeOnChange(T* o) {
+    onChangeCallback_.removeMemberFunction(o);
 }
 
 template <typename T, typename U>
