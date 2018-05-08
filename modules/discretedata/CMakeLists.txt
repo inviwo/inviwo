@@ -36,6 +36,10 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-unittest-main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/dataset-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-access-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
