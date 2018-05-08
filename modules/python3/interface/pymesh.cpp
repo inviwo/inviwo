@@ -121,7 +121,9 @@ void exposeMesh(pybind11::module &m) {
         .def("addVertex", &BasicMesh::addVertex)
         .def("addVertices", &BasicMesh::addVertices)
 
-        .def("setVertex", &BasicMesh::setVertex)
+        .def("setVertex", [](BasicMesh &self , size_t i , vec3 pos, vec3 norm, vec3 texCoord, vec4 color){
+        self.setVertex(i,pos,norm,texCoord,color);
+    })
         .def("setVertexPosition", &BasicMesh::setVertexPosition)
         .def("setVertexNormal", &BasicMesh::setVertexNormal)
         .def("setVertexTexCoord", &BasicMesh::setVertexTexCoord)
@@ -137,7 +139,9 @@ void exposeMesh(pybind11::module &m) {
         .def("getVertices", &BasicMesh::getEditableVertices, py::return_value_policy::reference)
         .def("getTexCoords", &BasicMesh::getEditableTexCoords, py::return_value_policy::reference)
         .def("getColors", &BasicMesh::getEditableColors, py::return_value_policy::reference)
-        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference);
+        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference)
+    
+    ;
 
     exposeStandardDataPorts<Mesh>(m, "Mesh");
 }

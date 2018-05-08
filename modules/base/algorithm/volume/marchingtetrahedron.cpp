@@ -210,7 +210,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
                     }
 
                     for (auto &t : marchingtetrahedron::tetras) {
-                        marchingtetrahedron::evaluateTetra(vertexTree, indexBuffer, positions,
+                        marchingtetrahedron::evaluateTetra(vertexTree, indexBuffer.get(), positions,
                                                            normals, pos[t[0]], values[t[0]],
                                                            pos[t[1]], values[t[1]], pos[t[2]],
                                                            values[t[2]], pos[t[3]], values[t[3]]);
@@ -223,7 +223,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
         }
 
         if (enclose) {
-            marching::encloseSurfce(src, dim, indexBuffer, positions, normals, iso, invert, dx, dy,
+            marching::encloseSurfce(src, dim, indexBuffer.get(), positions, normals, iso, invert, dx, dy,
                                     dz);
         }
 
