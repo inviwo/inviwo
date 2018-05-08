@@ -28,7 +28,7 @@
 *********************************************************************************/
 
 #include "dataset.h"
-#include "bufferchannel.h"
+#include "discretedata/channels/bufferchannel.h"
 
 namespace inviwo {
 namespace dd {

@@ -28,8 +28,8 @@
 *********************************************************************************/
 
 #include "structuredgrid.h"
-#include "analyticchannel.h"
-#include "elementiterator.h"
+#include "discretedata/channels/analyticchannel.h"
+#include "discretedata/connectivity/elementiterator.h"
 
 namespace inviwo {
 namespace dd {

@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "discretedata/connectivity.h"
+#include "discretedata/connectivity/connectivity.h"
 #include "discretedata/util.h"
 
 namespace inviwo {

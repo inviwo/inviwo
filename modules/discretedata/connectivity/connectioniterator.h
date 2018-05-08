@@ -32,9 +32,9 @@
 #include <discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include "datachannel.h"
-#include "connectivity.h"
-#include "elementiterator.h"
+#include "discretedata/channels/datachannel.h"
+#include "discretedata/connectivity/connectivity.h"
+#include "discretedata/connectivity/elementiterator.h"
 
 namespace inviwo {
 namespace dd {

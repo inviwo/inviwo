@@ -33,8 +33,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datatraits.h>
 
-#include "bufferchannel.h"
-#include "connectivity.h"
+#include "channels/bufferchannel.h"
+#include "connectivity/connectivity.h"
 
 namespace inviwo {
 namespace dd {

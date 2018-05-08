@@ -32,8 +32,8 @@
 #include <discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include "discretedata/connectivity.h"
-#include "discretedata/elementiterator.h"
+#include "discretedata/connectivity/connectivity.h"
+#include "discretedata/connectivity/elementiterator.h"
 
 namespace inviwo {
 namespace dd {

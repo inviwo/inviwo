@@ -27,8 +27,8 @@
 *
 *********************************************************************************/
 
-#include <discretedata/elementiterator.h>
-#include <discretedata/connectioniterator.h>
+#include <discretedata/connectivity/elementiterator.h>
+#include <discretedata/connectivity/connectioniterator.h>
 
 namespace inviwo {
 namespace dd {
