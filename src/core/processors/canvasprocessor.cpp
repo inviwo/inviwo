@@ -133,7 +133,7 @@ CanvasProcessor::CanvasProcessor()
     addProperty(saveLayerDirectory_);
     addProperty(imageTypeExt_);
 
-    saveLayerButton_.onChange(this, &CanvasProcessor::saveImageLayer);
+    saveLayerButton_.onChange([this](){saveImageLayer();});
     addProperty(saveLayerButton_);
 
     saveLayerToFileButton_.onChange([this]() {

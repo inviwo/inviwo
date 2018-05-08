@@ -37,6 +37,8 @@
         <file>icons/log-clearonrun.png</file>
         <file>icons/newfile.png</file>
         <file>icons/open.png</file>
+        <file>icons/precompiled.png</file>
+        <file>icons/precompiled-disabled.png</file>
         <file>icons/processor_broken.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>

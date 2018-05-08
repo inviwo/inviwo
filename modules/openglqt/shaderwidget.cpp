@@ -36,6 +36,8 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <modules/qtwidgets/codeedit.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QTextEdit>
@@ -69,27 +71,9 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     toolBar->setMovable(false);
     setWidget(mainWindow);
 
-    auto shadercode = new QTextEdit(nullptr);
+    auto shadercode = new CodeEdit{GLSL};
     shadercode->setObjectName("shaderwidgetcode");
-    shadercode->setReadOnly(false);
-    shadercode->setText(utilqt::toQString(obj->print(false, false)));
-    shadercode->setWordWrapMode(QTextOption::NoWrap);
-    auto syntaxHighlighter =
-        SyntaxHighligther::createSyntaxHighligther<GLSL>(shadercode->document());
-
-    // setting a monospace font explicitely is necessary despite providing a font-family in css
-    // Otherwise, the editor will not feature a fixed-width font face.
-    QFont fixedFont("Monospace");
-    fixedFont.setPointSize(10);
-    fixedFont.setStyleHint(QFont::TypeWriter);
-    shadercode->setFont(fixedFont);
-
-    // set background color matching syntax highlighting
-    const QColor bgColor = syntaxHighlighter->getBackgroundColor();
-    QString styleSheet(QString("QTextEdit#%1 { background-color: %2; }")
-                           .arg(shadercode->objectName())
-                           .arg(bgColor.name()));
-    shadercode->setStyleSheet(styleSheet);
+    shadercode->setPlainText(utilqt::toQString(obj->print(false, false)));
 
     auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save shader"));
     save->setShortcut(QKeySequence::Save);
@@ -109,24 +93,50 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
         }
     });
 
-    auto showSource = toolBar->addAction("Show Sources");
-    showSource->setChecked(false);
-    showSource->setCheckable(true);
+    QPixmap enabled(":/icons/precompiled.png");
+    QPixmap disabled(":/icons/precompiled-disabled.png");
+    QIcon preicon;
+    preicon.addPixmap(enabled, QIcon::Normal, QIcon::Off);
+    preicon.addPixmap(disabled, QIcon::Normal, QIcon::On);
 
-    auto preprocess = toolBar->addAction("Show preprocess");
+    auto preprocess = toolBar->addAction(preicon, "Show Preprocessed");
     preprocess->setChecked(false);
     preprocess->setCheckable(true);
 
-    auto update = [=](int /*state*/) {
-        shadercode->setText(obj->print(showSource->isChecked(), preprocess->isChecked()).c_str());
-        shadercode->setReadOnly(showSource->isChecked() || preprocess->isChecked());
-        save->setEnabled(!showSource->isChecked() && !preprocess->isChecked());
-        showSource->setText(showSource->isChecked() ? "Hide Sources" : "Show Sources");
+    auto updateState = [=]() {
+        const auto code = obj_->print(false, preprocess->isChecked());
+        shadercode->setPlainText(utilqt::toQString(code));
+        if (preprocess->isChecked()) {
+            const auto lines = std::count(code.begin(), code.end(), '\n') + 1;
+            std::string::size_type width = 0;
+            for (size_t l = 0; l < static_cast<size_t>(lines); ++l) {
+                auto info = obj_->resolveLine(l);
+                auto pos = info.first.find_last_of('/');
+                width = std::max(width, info.first.size() - (pos + 1));  // note string::npos+1==0
+            }
+            const auto numberSize = std::to_string(lines).size();
+            shadercode->setLineAnnotation([this, width, numberSize](int line) {
+                const auto info = obj_->resolveLine(line - 1);
+                const auto pos = info.first.find_last_of('/');
+                const auto file = info.first.substr(pos + 1);
+                std::stringstream out;
+                out << std::left << std::setw(width + 1u) << file << std::right
+                    << std::setw(numberSize) << info.second;
+                return out.str();
+            });
+            shadercode->setAnnotationSpace(
+                [width, numberSize](int) { return static_cast<int>(width + 1 + numberSize); });
+        } else {
+            shadercode->setLineAnnotation([](int line) { return std::to_string(line); });
+            shadercode->setAnnotationSpace([](int maxDigits) { return maxDigits; });
+        }
+
+        shadercode->setReadOnly(preprocess->isChecked());
+        save->setEnabled(!preprocess->isChecked());
         preprocess->setText(preprocess->isChecked() ? "Hide Preprocessed" : "Show Preprocessed");
     };
-
-    connect(showSource, &QAction::triggered, update);
-    connect(preprocess, &QAction::triggered, update);
+    connect(preprocess, &QAction::triggered, this, updateState);
+    updateState();
 
     mainWindow->setCentralWidget(shadercode);
 
@@ -134,12 +144,5 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
 }
 
 ShaderWidget::~ShaderWidget() = default;
-
-void ShaderWidget::closeEvent(QCloseEvent* event) {
-    saveState();
-    event->accept();
-    emit widgetClosed();
-    this->deleteLater();
-}
 
 }  // namespace inviwo

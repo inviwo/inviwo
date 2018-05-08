@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <modules/opengl/shader/shadermanager.h>
-
+#include <modules/openglqt/shaderwidget.h>
 #include <unordered_map>
 
 #include <warn/push>
@@ -46,7 +46,6 @@
 namespace inviwo {
 
 class ShaderObject;
-class ShaderWidget;
 
 class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QMenu {
     #include <warn/push>
@@ -65,7 +64,7 @@ private:
 
     //QMenu* menu_;
     std::unordered_map<unsigned int, QMenu*> shadersItems_;
-    std::unordered_map<unsigned int, ShaderWidget*> editors_;
+    std::unordered_map<unsigned int, std::unique_ptr<ShaderWidget>> editors_;
     
     std::shared_ptr<ShaderManager::Callback> onAddShader_;
     std::shared_ptr<ShaderManager::Callback> onRemoveShader_;

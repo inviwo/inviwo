@@ -107,7 +107,7 @@ dvec3 TouchPoint::ndc() const {
 }
     
 TouchDevice::TouchDevice(DeviceType type, std::string name)
-    : type_(type), name_(name) {};
+    : type_(type), name_(name) {}
 
 TouchEvent::TouchEvent() = default;
 

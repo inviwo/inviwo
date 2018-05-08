@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-ProgressBar& ProgressBarOwner::getProgressBar() { return progressBar_; };
-const ProgressBar& ProgressBarOwner::getProgressBar() const { return progressBar_; };
+ProgressBar& ProgressBarOwner::getProgressBar() { return progressBar_; }
+const ProgressBar& ProgressBarOwner::getProgressBar() const { return progressBar_; }
 
 }  // namespace inviwo

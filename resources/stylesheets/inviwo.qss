@@ -54,7 +54,7 @@ QWidget#NetworkSearch {
 }
 
 QStatusBar {
-    background-color: #252527;
+    background-color: #323235;
 }
 QMainWindow::separator {
     background: #444;

@@ -5,3 +5,4 @@ option(GLFW_INSTALL "Generate installation target" OFF)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 add_subdirectory(glfw)
+ivw_folder(glfw ext)
