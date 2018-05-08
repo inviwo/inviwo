@@ -46,34 +46,24 @@ if(IVW_PACKAGE_PROJECT)
     set(CPACK_PACKAGE_DESCRIPTION_FILE    "${IVW_ROOT_DIR}/README.md")
     set(CPACK_RESOURCE_FILE_LICENSE       "${IVW_ROOT_DIR}/LICENSE")
 
+    set(CPACK_PACKAGE_FILE_NAME         "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
+    
     if(WIN32)
-        set(CPACK_PACKAGE_ICON "${IVW_ROOT_DIR}\\\\resources\\\\icons\\\\inviwo_light.png")
         # Need backslash for correct subdirectory paths with NSIS
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8 )
-            set(CPACK_PACKAGE_FILE_NAME         "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}-64bit")
-            set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inviwo\\\\${IVW_VERSION}\\\\64bit")
-            set(CPACK_NSIS_DISPLAY_NAME         "${CPACK_PACKAGE_NAME} ${IVW_VERSION} 64-bit")
-        else()
-            set(CPACK_PACKAGE_FILE_NAME         "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}-32bit")
-            set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inviwo\\\\${IVW_VERSION}\\\\32bit")
-            set(CPACK_NSIS_DISPLAY_NAME         "${CPACK_PACKAGE_NAME} ${IVW_VERSION} 32-bit")
-        endif()
+        set(CPACK_PACKAGE_ICON              "${IVW_ROOT_DIR}\\\\resources\\\\icons\\\\inviwo_light.png")
+        set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inviwo\\\\${IVW_VERSION}")
     else()
         set(CPACK_PACKAGE_ICON              "${IVW_ROOT_DIR}/resources/icons/inviwo_light.png")
-        set(CPACK_PACKAGE_FILE_NAME         "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
         set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inviwo/${IVW_VERSION}")
     endif()
 
-    set(CPACK_PACKAGE_EXECUTABLES "inviwo;Inviwo") 
+    set(CPACK_PACKAGE_EXECUTABLES "inviwo" "inviwo")
+    set(CPACK_CREATE_DESKTOP_LINKS "inviwo")
     option(IVW_PACKAGE_INSTALLER "Use NSIS to create installer" OFF)
     
     if(WIN32)
         if(IVW_PACKAGE_INSTALLER)
             set(CPACK_GENERATOR "ZIP;NSIS")
-            # Create the desktop link
-            set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "CreateShortCut '$DESKTOP\\\\${CPACK_NSIS_DISPLAY_NAME}.lnk' '$INSTDIR\\\\bin\\\\inviwo.exe' ")
-            # Delete the desktop link
-            set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "Delete '$DESKTOP\\\\${CPACK_NSIS_DISPLAY_NAME}.lnk' ")
             # The icon to start the application.
             set(CPACK_NSIS_MUI_ICON "${IVW_ROOT_DIR}\\\\resources\\\\icons\\\\inviwo_light.ico")
             # Add a link to the application website in the startup menu.
@@ -86,7 +76,10 @@ if(IVW_PACKAGE_PROJECT)
             set(CPACK_NSIS_URL_INFO_ABOUT "http://www.inviwo.org")
             # Help URL
             set(CPACK_NSIS_HELP_LINK "http://www.inviwo.org")
-
+            set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${IVW_VERSION}")
+            set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "CreateShortCut '$INSTDIR\\\\inviwo.lnk' '$INSTDIR\\\\bin\\\\inviwo.exe'")
+            set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+            set(CPACK_NSIS_MUI_FINISHPAGE_RUN "Inviwo")
         else()
             set(CPACK_GENERATOR "ZIP")
         endif()
