@@ -119,7 +119,7 @@ protected:
 
 public:
     /** Vertex positions */
-    std::shared_ptr<const Channel> Vertices;
+    std::shared_ptr<const Channel> vertices_;
 };
 
 }  // namespace

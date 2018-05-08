@@ -66,14 +66,14 @@ protected:
     double computeHexVolume(ind index) const;
 
 protected:
-    std::vector<ind> NumCellsPerDimension;
+    std::vector<ind> numCellsPerDimension_;
 };
 
 template <typename T>
 double StructuredGrid::computeHexVolume(ind index) const {
     // Work with respective type
     std::shared_ptr<const DataChannel<T>> doubleVertices =
-        std::dynamic_pointer_cast<const DataChannel<T>, const Channel>(Vertices);
+        std::dynamic_pointer_cast<const DataChannel<T>, const Channel>(vertices_);
     if (!doubleVertices) return -1;
 
     // Get all corner points.
