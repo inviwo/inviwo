@@ -42,7 +42,16 @@ typedef signed long long ind;
 *   Assign channels to any dimensions this way.
 *   If these do not suffice, cast the respective short.
 */
-enum GridPrimitive : char { Vertex = 0, Edge = 1, Face = 2, Volume = 3, HyperVolume = 4 };
+enum GridPrimitive : char {
+    Vertex = 0,
+    Edge = 1,
+    Face = 2,
+    Volume = 3,
+    HyperVolume = 4
+};
+
+template<typename T>
+class ChannelIterator;
 
 /** \class Channel
     \brief An untyped scalar or vector component of a data set.
@@ -146,8 +155,15 @@ public:
     *   @param index Linear point index
     */
     void operator()(T* dest, ind index) const { fill(dest, index); }
+
+    ChannelIterator<T> begin();
+
+    ChannelIterator<T> end();
 };
 
 }  // namespace
+
+// Circumvent circular reference.
+#include "channeliterator.h"
 
 #include "datachannel.inl"

@@ -5,6 +5,10 @@ ivw_module(DiscreteData)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/analyticchannel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/bufferchannel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/channeliterator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/channeliterator.inl
     ${CMAKE_CURRENT_SOURCE_DIR}/datachannel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datachannel.inl
 )

@@ -57,4 +57,14 @@ DataChannel<T>::DataChannel(ind numComponents, const std::string& name, GridPrim
     if (std::is_same<T, glm::u64>::value) setDataFormatId(DataFormatId::UInt64);
 }
 
+template<typename T>
+ChannelIterator<T> DataChannel<T>::begin() {
+    return ChannelIterator<T>(this, 0);
+}
+
+template<typename T>
+ChannelIterator<T> DataChannel<T>::end() {
+    return ChannelIterator<T>(this, getNumElements());
+}
+
 }  // namespace
