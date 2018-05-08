@@ -53,7 +53,7 @@ ImageResample::ImageResample()
     interpolationType_.addOption("bilinear", "Bilinear", 0);
     interpolationType_.addOption("bicubic", "Bicubic", 1);
     interpolationType_.set(0);
-    interpolationType_.onChange(this, &ImageResample::interpolationTypeChanged);
+    interpolationType_.onChange([this]() { interpolationTypeChanged(); });
     interpolationType_.setCurrentStateAsDefault();
     addProperty(interpolationType_);
 
@@ -62,10 +62,10 @@ ImageResample::ImageResample()
     outputSizeMode_.addOption("custom", "Custom Dimensions", 2);
     outputSizeMode_.set(0);
     outputSizeMode_.setCurrentStateAsDefault();
-    outputSizeMode_.onChange(this, &ImageResample::dimensionSourceChanged);
+    outputSizeMode_.onChange([this]() { dimensionSourceChanged(); });
     addProperty(outputSizeMode_);
 
-    targetResolution_.onChange(this, &ImageResample::dimensionChanged);
+    targetResolution_.onChange([this]() { dimensionChanged(); });
     addProperty(targetResolution_);
 }
 

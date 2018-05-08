@@ -151,7 +151,7 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
     , trackball_(this)
     , interactionEventOption_(0) {
     // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
-    camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged);
+    camera_->onChange([this]() { onCameraChanged(); });
 }
 
 PointLightInteractionHandler::~PointLightInteractionHandler() {}

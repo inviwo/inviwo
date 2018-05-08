@@ -69,7 +69,7 @@ DrawLines::DrawLines()
     addProperty(lineSize_);
     lineColor_.setSemantics(PropertySemantics::Color);
     addProperty(lineColor_);
-    clearButton_.onChange(this, &DrawLines::clearLines);
+    clearButton_.onChange([this]() { clearLines(); });
     addProperty(clearButton_);
 
     addProperty(mouseDraw_);

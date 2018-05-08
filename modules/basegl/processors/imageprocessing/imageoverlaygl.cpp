@@ -209,7 +209,7 @@ ImageOverlayGL::ImageOverlayGL()
     border_.addProperty(borderWidth_);
     addProperty(border_);
 
-    overlayProperty_.onChange(this, &ImageOverlayGL::onStatusChange);
+    overlayProperty_.onChange([this]() { onStatusChange(); });
 }
 
 ImageOverlayGL::~ImageOverlayGL() = default;

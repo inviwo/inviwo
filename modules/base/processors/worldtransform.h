@@ -178,12 +178,12 @@ WorldTransform<T>::WorldTransform()
 
     addProperty(matrix_);
 
-    type_.onChange(this, &WorldTransform::changeVisibility);
-    translate_.onChange(this, &WorldTransform::updateValues);
-    scale_.onChange(this, &WorldTransform::updateValues);
-    rotationAxis_.onChange(this, &WorldTransform::updateValues);
-    rotationAngle_.onChange(this, &WorldTransform::updateValues);
-    matrix_.onChange(this, &WorldTransform::onMatrixChange);
+    type_.onChange([this]() { changeVisibility(); });
+    translate_.onChange([this]() { updateValues(); });
+    scale_.onChange([this]() { updateValues(); });
+    rotationAxis_.onChange([this]() { updateValues(); });
+    rotationAngle_.onChange([this]() { updateValues(); });
+    matrix_.onChange([this]() { onMatrixChange(); });
     changeVisibility();
 }
 
