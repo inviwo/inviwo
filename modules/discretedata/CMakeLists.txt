@@ -13,6 +13,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datachannel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datachannel.inl
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataset.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataset.inl
     ${CMAKE_CURRENT_SOURCE_DIR}/elementiterator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/structuredgrid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/util.h
@@ -25,6 +27,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/connectioniterator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datachannel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementiterator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/structuredgrid.cpp
 )
