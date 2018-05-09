@@ -840,9 +840,9 @@ void ParallelCoordinates::renderText(size2_t outputsize, std::vector<AxisBase *>
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     const vec2 outputSizeWOMargins(
-        static_cast<float>(outputsize.x) - margins_.getRight() + margins_.getLeft() +
-            extraMargins.y + extraMargins.w,
-        static_cast<float>(outputsize.y) - margins_.getTop() + margins_.getBottom());
+        static_cast<float>(outputsize.x) -
+            (margins_.getRight() + margins_.getLeft() + extraMargins.y + extraMargins.w),
+        static_cast<float>(outputsize.y) - (margins_.getTop() + margins_.getBottom()));
 
     float dx = 1.0f / (enabledAxis.size() - 1);
 
