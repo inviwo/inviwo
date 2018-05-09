@@ -74,7 +74,8 @@ std::vector<ind> StructuredGrid::getConnections(ind idxLin, GridPrimitive from,
     if (from == to && from == gridDimension_) {
         // Linear Index to nD Cell Index.
         ind idxCutoff = idxLin;
-        std::vector<ind> index(numCellsPerDimension_.size(), -1);
+        std::vector<ind> index;
+        index.reserve(numCellsPerDimension_.size());
         for (ind dim = 0; dim < (ind)numCellsPerDimension_.size(); ++dim) {
             ind dimSize = numCellsPerDimension_[dim];
             index[dim] = idxCutoff % dimSize;
