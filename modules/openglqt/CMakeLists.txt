@@ -48,8 +48,11 @@ qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Create module
-ivw_create_module(${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-openglqt PRIVATE Qt5::OpenGL)
+
+ivw_compile_optimize_on_target(inviwo-module-openglqt)
+
 ivw_make_package(InviwoOpenGLQtModule inviwo-module-openglqt)
 ivw_qt_add_to_install(qt_modules Qt5OpenGL)
 

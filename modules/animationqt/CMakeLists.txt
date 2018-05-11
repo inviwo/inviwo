@@ -38,6 +38,9 @@ qt5_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc"
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
 target_link_libraries(inviwo-module-animationqt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+
+ivw_compile_optimize_on_target(inviwo-module-eigenutils)
+
 ivw_make_package(InviwoAnimationQtModule inviwo-module-animationqt)
