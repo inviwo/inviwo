@@ -56,13 +56,13 @@ OpenCLSettings::OpenCLSettings(OpenCLCapabilities* openclInfo) :
     openCLDeviceProperty_.setCurrentStateAsDefault();
     addProperty(openCLDeviceProperty_);
     addProperty(enableOpenGLSharing_);
-    openCLDeviceProperty_.onChange(this, &OpenCLSettings::changeDevice);
-    enableOpenGLSharing_.onChange(this, &OpenCLSettings::changeDevice);
+    openCLDeviceProperty_.onChange([this]() { changeDevice(); });
+    enableOpenGLSharing_.onChange([this]() { changeDevice(); });
 
     addProperty(btnOpenCLInfo_);
 
     if (openclInfo) {
-        btnOpenCLInfo_.onChange(openclInfo, &OpenCLCapabilities::printDetailedInfo);
+        btnOpenCLInfo_.onChange([openclInfo]() { openclInfo->printDetailedInfo(); });
     }
 
     load();

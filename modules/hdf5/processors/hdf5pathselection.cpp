@@ -51,7 +51,7 @@ PathSelection::PathSelection()
     addProperty(selection_);
     selection_.setSerializationMode(PropertySerializationMode::All);
 
-    inport_.onChange(this, &PathSelection::onDataChange);
+    inport_.onChange([this]() { onDataChange(); });
 }
 
 void PathSelection::process() {

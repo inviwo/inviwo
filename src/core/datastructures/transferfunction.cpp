@@ -220,7 +220,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
         }
         auto layer = reader->readData(filename);
 
-        clearPoints();
+        clear();
 
         layer->getRepresentation<LayerRAM>()->dispatch<void>([this](auto lrprecision) {
             auto data = lrprecision->getDataTyped();
@@ -246,7 +246,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             uniquePoints.emplace_back(std::ptrdiff_t(size - 1), points.back());
 
             for (const auto& p : uniquePoints) {
-                this->addPoint(float(p.first) / (size - 1), p.second);
+                this->add(static_cast<double>(p.first) / (size - 1), p.second);
             }
         });
     }

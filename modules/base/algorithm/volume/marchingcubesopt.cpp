@@ -203,7 +203,6 @@ std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8>
     std::vector<EdgeId> res;
 
     // Check which edges that are involved add group neighboring nodes
-    const std::array<int, 12> edgeToCache = {{0, 2, 0, 2, 4, 4, 5, 5, 1, 3, 1, 3}};
     for (NodeId i = 0; i < 8; ++i) {
         if (corners[i]) {
             for (NodeId j : nodeNeighbours[i]) {
