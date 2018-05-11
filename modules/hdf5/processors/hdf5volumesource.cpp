@@ -93,10 +93,10 @@ HDF5ToVolume::HDF5ToVolume()
 
     addPort(inport_);
     addPort(outport_);
-    inport_.onChange(this, &HDF5ToVolume::onDataChange);    
+    inport_.onChange([this]() { onDataChange(); });    
 
     addProperty(volumeSelection_);
-    volumeSelection_.onChange(this, &HDF5ToVolume::onSelectionChange);
+    volumeSelection_.onChange([this]() { onSelectionChange(); });
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
     addProperty(automaticEvaluation_);
@@ -108,7 +108,7 @@ HDF5ToVolume::HDF5ToVolume()
     basisGroup_.addProperty(spacing_);
     basisGroup_.addProperty(basis_);
     addProperty(basisGroup_);
-    basisSelection_.onChange(this, &HDF5ToVolume::onBasisSelecionChange);
+    basisSelection_.onChange([this]() { onBasisSelecionChange(); });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
 
     dataDimensions_.setReadOnly(true);

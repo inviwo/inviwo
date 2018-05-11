@@ -74,10 +74,10 @@ LIC3D::LIC3D()
     addProperty(velocityScale_);
     addProperty(alphaScale_);
 
-    tf_.get().clearPoints();
-    tf_.get().addPoint(0.0f, vec4(0, 0, 1, 1));
-    tf_.get().addPoint(0.5f, vec4(1, 1, 0, 1));
-    tf_.get().addPoint(1.0f, vec4(1, 0, 0, 1));
+    tf_.get().clear();
+    tf_.get().add(0.0, vec4(0, 0, 1, 1));
+    tf_.get().add(0.5, vec4(1, 1, 0, 1));
+    tf_.get().add(1.0, vec4(1, 0, 0, 1));
 
     setAllPropertiesCurrentStateAsDefault();
 

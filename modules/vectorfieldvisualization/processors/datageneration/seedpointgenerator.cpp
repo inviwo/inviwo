@@ -80,7 +80,7 @@ SeedPointGenerator::SeedPointGenerator()
     generator_.addOption("plane", "Plane", PLANE);
     generator_.addOption("sphere", "Sphere", SPHERE);
     generator_.setCurrentStateAsDefault();
-    generator_.onChange(this, &SeedPointGenerator::onGeneratorChange);
+    generator_.onChange([this]() { onGeneratorChange(); });
     addProperty(generator_);
 
     lineGroup_.addProperty(lineStart_);

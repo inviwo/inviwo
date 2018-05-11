@@ -317,7 +317,7 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
 
 std::vector<FileExtension> TFPrimitiveSet::getSupportedExtensions() const { return {}; }
 void TFPrimitiveSet::save(const std::string&, const FileExtension&) const {}
-void TFPrimitiveSet::load(const std::string&, const FileExtension&){};
+void TFPrimitiveSet::load(const std::string&, const FileExtension&) {}
 
 void TFPrimitiveSet::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }
 

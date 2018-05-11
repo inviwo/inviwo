@@ -56,8 +56,8 @@ SimpleRaycaster::SimpleRaycaster()
     , entryPort_("entry")
     , exitPort_("exit")
     , outport_("outport")
-    , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
     , channel_("channel", "Render Channel", {{"channel1", "Channel 1", 0}})
+    , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
     , samplingRate_("samplingRate", "Sampling Rate", 2.0f, 1.0f, 10.0f)
     , camera_("camera", "Camera") {
 
