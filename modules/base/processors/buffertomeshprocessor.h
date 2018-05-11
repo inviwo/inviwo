@@ -66,7 +66,7 @@ namespace inviwo {
 /**
  * \class BufferToMeshProcessor
  * \brief Put buffers into mesh without copying data.
- * Supported buffer types are specified in @BufferType
+ * Supported buffer types are specified in BufferType
  */
 class IVW_MODULE_BASE_API BufferToMeshProcessor : public Processor { 
 public:

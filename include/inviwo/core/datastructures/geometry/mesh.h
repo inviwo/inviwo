@@ -44,7 +44,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API Mesh : public DataGroup<Mesh, MeshRepresentation>,
                           public SpatialEntity<3>,
@@ -62,7 +62,7 @@ public:
         BufferInfo(BufferType atype, int alocation) : type(atype), location(alocation) {}
 
         BufferType type;
-        int location; //<! attribute location of buffer in GLSL shader 
+        int location;  //<! attribute location of buffer in GLSL shader
     };
 
     using IndexVector = std::vector<std::pair<MeshInfo, std::shared_ptr<IndexBuffer>>>;
@@ -86,20 +86,20 @@ public:
     void addBuffer(BufferInfo info, std::shared_ptr<BufferBase> att);
 
     /**
-    * Add a buffer with rendering data, such as positions/colors/normals, and associate it with its
-    * default attrib location.
-    *
-    * @param type  buffer type (Position, Color, Normal, etc.)
-    * @param att   buffer data used during rendering
-    */
+     * Add a buffer with rendering data, such as positions/colors/normals, and associate it with its
+     * default attrib location.
+     *
+     * @param type  buffer type (Position, Color, Normal, etc.)
+     * @param att   buffer data used during rendering
+     */
     void addBuffer(BufferType type, std::shared_ptr<BufferBase> att);
-    
+
     /**
-    * Removes buffer at given position, all subsequent buffers will be moved.
-    * Does nothing if index is out of range.
-    *
-    * @param idx   position of buffer to be removed
-    */
+     * Removes buffer at given position, all subsequent buffers will be moved.
+     * Does nothing if index is out of range.
+     *
+     * @param idx   position of buffer to be removed
+     */
     void removeBuffer(size_t idx);
 
     /**
@@ -132,11 +132,21 @@ public:
     void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
 
     /**
-    * Removes index buffer at given position, all subsequent index buffers will be moved.
-    * Does nothing if index is out of range.
-    *
-    * @param idx   position of index buffer to be removed
-    */
+     * Creates and add a new index buffer to the mesh
+     *
+     * @see addIndicies
+     * @param dt DrawType of the new buffer
+     * @param ct ConnectivityType of the new buffer
+     * @return returns the RAM Representation of the new buffer.
+     */
+    std::shared_ptr<IndexBufferRAM> addIndexBuffer(DrawType dt, ConnectivityType ct);
+
+    /**
+     * Removes index buffer at given position, all subsequent index buffers will be moved.
+     * Does nothing if index is out of range.
+     *
+     * @param idx   position of index buffer to be removed
+     */
     void removeIndexBuffer(size_t idx);
 
     /**
@@ -169,7 +179,13 @@ public:
     size_t getNumberOfIndicies() const;
 
     /**
-     * Append a mesh. requires that the meshes have a matching set of buffers.
+     * \brief Append another mesh to this mesh
+     *
+     * Requires that both meshes has the same type and number of vertex buffers.
+     * Will append the contents of each vertex buffer in mesh to each vertex in this.
+     * Index buffers are copied and each index is incremented with an offset.
+     *
+     * @param mesh The mesh to copy values from
      */
     void append(const Mesh& mesh);
 
@@ -190,19 +206,16 @@ protected:
 inline bool operator==(const Mesh::BufferInfo& a, const Mesh::BufferInfo& b) {
     return (a.type == b.type) && (a.location == b.location);
 }
-inline bool operator!=(const Mesh::BufferInfo& a, const Mesh::BufferInfo& b) {
-    return !(a==b);
-}
+inline bool operator!=(const Mesh::BufferInfo& a, const Mesh::BufferInfo& b) { return !(a == b); }
 
 inline bool operator==(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) {
     return (a.ct == b.ct) && (a.dt == b.dt);
 }
-inline bool operator!=(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) {
-    return !(a == b);
-}
+inline bool operator!=(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) { return !(a == b); }
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, Mesh::BufferInfo info) {
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             Mesh::BufferInfo info) {
     ss << info.type << " (location = " << info.location << ")";
     return ss;
 }
@@ -213,8 +226,8 @@ IVW_CORE_API bool hasPickIDBuffer(const Mesh* mesh);
 
 IVW_CORE_API bool hasRadiiBuffer(const Mesh* mesh);
 
-} // namespace meshutil
+}  // namespace meshutil
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MESH_H
