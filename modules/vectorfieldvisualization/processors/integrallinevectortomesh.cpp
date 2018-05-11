@@ -145,10 +145,10 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     tf_.autoLinkToProperty<PathLines>("transferFunction");
     tf_.autoLinkToProperty<StreamLines>("transferFunction");
 
-    tf_.get().clear();
-    tf_.get().add(0.0, vec4(0, 0, 1, 1));
-    tf_.get().add(0.5, vec4(1, 1, 0, 1));
-    tf_.get().add(1.0, vec4(1, 0, 0, 1));
+    tf_.get().clearPoints();
+    tf_.get().addPoint(0.0, vec4(0, 0, 1, 1));
+    tf_.get().addPoint(0.5, vec4(1, 1, 0, 1));
+    tf_.get().addPoint(1.0, vec4(1, 0, 0, 1));
 
     setAllPropertiesCurrentStateAsDefault();
 
