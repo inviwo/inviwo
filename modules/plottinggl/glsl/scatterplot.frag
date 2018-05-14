@@ -36,6 +36,8 @@ uniform int circle = 1;
 uniform float borderWidth = 1;
 uniform vec4 borderColor;
 
+uniform float antialising = 1.5; // [pixel]
+
 void main(void) {
     float r = 0;
     if (circle == 1) {
@@ -43,15 +45,23 @@ void main(void) {
     } else {
         r = max(abs(gPos.x), abs(gPos.y));
     }
-
     if (r > gR) {
         discard;
-    }
-    if (r > gR - borderWidth) {
-        FragData0 = borderColor;
-    } else {
-        FragData0 = gColor;
+		FragData0 = vec4(1.0, 0.0, 0.0, 1.0);
+		return;
     }
 
+	float glyphRadius = gR - borderWidth;
+
+    // pseudo antialiasing with the help of the alpha channel
+    // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
+    float outerglyphRadius = glyphRadius + borderWidth - antialising; // used for adjusting the alpha value of the outer rim
+
+    float borderValue = clamp(mix(0.0, 1.0, (r - glyphRadius) / 1.0), 0.0, 1.0);
+    float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / antialising), 0.0, 1.0);
+
+    vec4 color = mix(gColor, borderColor, borderValue);
+
+    FragData0 = vec4(color.rgb, color.a * borderAlpha);
     gl_FragDepth = gDepth;
 }

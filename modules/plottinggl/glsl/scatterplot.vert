@@ -32,7 +32,6 @@ layout(location = 1) in float Y;
 layout(location = 2) in float C;
 layout(location = 3) in float R;
 
-
 #include "plotting/common.glsl"
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
@@ -49,46 +48,34 @@ uniform vec2 minmaxC;
 uniform vec2 minmaxR;
 uniform vec4 default_color;
 
-
 uniform float minRadius;
 uniform float maxRadius;
 
 uniform int has_color;
 uniform int has_radius;
 
-
-float norm(in float v, in vec2 mm ){
-    return (v - mm.x) /(mm.y - mm.x);
-
+float norm(in float v, in vec2 mm) { 
+    return (v - mm.x) / (mm.y - mm.x); 
 }
 
 void main(void) {
-    float x = norm(X,minmaxX);
-    float y = norm(Y,minmaxY);
-
-    vec2 pixel = getPixelCoordsWithSpacing(vec2(x,y));
-
-
-    float c = 1;
-
-    if(has_color==1){
-        c = norm(C,minmaxC);
-        vColor = texture(transferFunction , vec2(c,0.5));
-    }else{
+    if (has_color == 1) {
+        float c = norm(C, minmaxC);
+        vColor = texture(transferFunction, vec2(c, 0.5));
+    } else {
         vColor = default_color;
     }
 
-    if(has_radius==1){
-        float r = norm(R,minmaxR);
+    if (has_radius == 1) {
+        float r = norm(R, minmaxR);
         vDepth = r;
-        vRadius = minRadius + r * (maxRadius-minRadius);    
-    }else{
+        vRadius = minRadius + r * (maxRadius - minRadius);
+    } else {
         vRadius = maxRadius;
         vDepth = 0.5;
     }
-
-     
-
-    gl_Position = vec4(pixel,0,0);
+    
+    float x = norm(X, minmaxX);
+    float y = norm(Y, minmaxY);
+    gl_Position = vec4(x, y, 0, 0);
 }
- 
