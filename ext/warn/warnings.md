@@ -74,7 +74,7 @@ switch                           | *same* (3.2)       | *same* (3.4)         | C
 switch-enum                      | *same* (3.2)       | *same* (3.4)         | C4061 (13)   
 this-used-in-init                | *no*               | *no*                 | C4355 (13)   
 undef                            | *no*               | *same* (3.4)         | C4668 (13)   
-uninitialized                    | *same* (3.2)       | *same* (3.4)         | *no*         
+uninitialized                    | *same* (3.2)       | *same* (3.4)         | C4701 (13)   
 unknown-pragmas                  | *same* (3.2)       | *same* (3.4)         | *no*         
 unreachable-code                 | *same* (3.5)       | *same* (3.4)         | C4702 (13)   
 unreachable-code-return          | *same* (3.5)       | *no*                 | *no*         
