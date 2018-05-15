@@ -181,19 +181,19 @@ void BufferChannel<T>::fill(T* const dest, const ind index) const {
 *  Exported Types                                               *
 *--------------------------------------------------------------*/
 
- typedef BufferChannel<float>      BufferChannelFloat;
- typedef BufferChannel<double>     BufferChannelDouble;
- typedef BufferChannel<char>       BufferChannelChar;
- typedef BufferChannel<short>      BufferChannelShort;
- typedef BufferChannel<int>        BufferChannelInt;
- typedef BufferChannel<long>       BufferChannelLong;
- typedef BufferChannel<long long>  BufferChannelLongLong;
+using BufferChannelFloat    = BufferChannel<float>;
+using BufferChannelDouble   = BufferChannel<double>;
+using BufferChannelChar     = BufferChannel<char>;
+using BufferChannelShort    = BufferChannel<short>;
+using BufferChannelInt      = BufferChannel<int>;
+using BufferChannelLong     = BufferChannel<long>;
+using BufferChannelLongLong = BufferChannel<long long>;
 
- typedef BufferChannel<unsigned char>       BufferChannelUChar;
- typedef BufferChannel<unsigned short>      BufferChannelUShort;
- typedef BufferChannel<unsigned int>        BufferChannelUInt;
- typedef BufferChannel<unsigned long>       BufferChannelULong;
- typedef BufferChannel<unsigned long long>  BufferChannelULongLong;
+using BufferChannelUChar     = BufferChannel<unsigned char>;
+using BufferChannelUShort    = BufferChannel<unsigned short>;
+using BufferChannelUInt      = BufferChannel<unsigned int>;
+using BufferChannelULong     = BufferChannel<unsigned long>;
+using BufferChannelULongLong = BufferChannel<unsigned long long>;
 
 }  // namespace
 }

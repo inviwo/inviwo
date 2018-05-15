@@ -104,19 +104,19 @@ void AnalyticChannel<T>::fill(T* const dest, const ind index) const {
 *  Exported Types                                               *
 *--------------------------------------------------------------*/
 
-typedef AnalyticChannel<float>      AnalyticChannelFloat;
-typedef AnalyticChannel<double>     AnalyticChannelDouble;
-typedef AnalyticChannel<char>       AnalyticChannelChar;
-typedef AnalyticChannel<short>      AnalyticChannelShort;
-typedef AnalyticChannel<int>        AnalyticChannelInt;
-typedef AnalyticChannel<long>       AnalyticChannelLong;
-typedef AnalyticChannel<long long>  AnalyticChannelLongLong;
+using AnalyticChannelFloat    = AnalyticChannel<float>;
+using AnalyticChannelDouble   = AnalyticChannel<double>;
+using AnalyticChannelChar     = AnalyticChannel<char>;
+using AnalyticChannelShort    = AnalyticChannel<short>;
+using AnalyticChannelInt      = AnalyticChannel<int>;
+using AnalyticChannelLong     = AnalyticChannel<long>;
+using AnalyticChannelLongLong = AnalyticChannel<long long>;
 
-typedef AnalyticChannel<unsigned char>      AnalyticChannelUChar;
-typedef AnalyticChannel<unsigned short>     AnalyticChannelUShort;
-typedef AnalyticChannel<unsigned int>       AnalyticChannelUInt;
-typedef AnalyticChannel<unsigned long>      AnalyticChannelULong;
-typedef AnalyticChannel<unsigned long long> AnalyticChannelULongLong;
+using AnalyticChannelUChar     = AnalyticChannel<unsigned char>;
+using AnalyticChannelUShort    = AnalyticChannel<unsigned short>;
+using AnalyticChannelUInt      = AnalyticChannel<unsigned int>;
+using AnalyticChannelULong     = AnalyticChannel<unsigned long>;
+using AnalyticChannelULongLong = AnalyticChannel<unsigned long long>;
 
 }  // namespace
 }
