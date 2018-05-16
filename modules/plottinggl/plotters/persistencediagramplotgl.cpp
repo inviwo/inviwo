@@ -327,7 +327,8 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
     }
 
     std::vector<vec2> xyPairs(xAxis_->getSize());
-    auto copyBufferToComponent = [&](auto buffer, int targetComponent) {
+    auto copyBufferToComponent = [&](std::shared_ptr<const BufferBase> buffer,
+                                     int targetComponent) {
         buffer->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto bufferpr) {
                 bufferpr->getDataContainer();
