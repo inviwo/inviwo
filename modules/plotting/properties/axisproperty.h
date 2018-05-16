@@ -63,14 +63,11 @@ public:
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
-    void setTitle(const std::string& title) {
-        caption_.title_.set(title);
-    }
-    void setLabelFormat(const std::string& formatStr) {
-        labels_.title_.set(formatStr);
-    }
+    void setTitle(const std::string& title);
+    const std::string& getTitle() const;
+    void setLabelFormat(const std::string& formatStr);
     /** 
-     * \brief sets range property of axis and ensures the min/max ranges are adjusted accordingly
+     * \brief sets range property of axis and ensures the min/max limits are adjusted accordingly
      * 
      * @param range   new axis range
      */

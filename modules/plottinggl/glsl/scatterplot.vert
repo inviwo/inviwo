@@ -73,16 +73,15 @@ void main(void) {
 
     if (has_radius == 1) {
         float r = norm(R, minmaxR);
-        vDepth = r;
         vRadius = minRadius + r * (maxRadius - minRadius);
     } else {
         vRadius = maxRadius;
-        vDepth = 0.5;
     }
-    
+    vDepth = 0.5;
+
     float x = norm(X, minmaxX);
     float y = norm(Y, minmaxY);
-    gl_Position = vec4(x, y, 0, 0);
+    gl_Position = vec4(x, y, 0.5, 1);
     
     pickColors_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }

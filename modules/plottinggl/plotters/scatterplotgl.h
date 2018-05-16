@@ -68,12 +68,15 @@ public:
         FloatProperty radiusRange_;
         FloatProperty minRadius_;
         FloatVec4Property color_;
+        FloatVec4Property hoverColor_;
         TransferFunctionProperty tf_;
         MarginProperty margins_;
         FloatProperty axisMargin_;
 
         FloatProperty borderWidth_;
         FloatVec4Property borderColor_;
+
+        BoolProperty hovering_;
 
         AxisProperty xAxis_;
         AxisProperty yAxis_;
@@ -104,6 +107,7 @@ public:
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);
     void setColorData(std::shared_ptr<const BufferBase> buffer);
     void setRadiusData(std::shared_ptr<const BufferBase> buffer);
+    void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
     Properties properties_;
     Shader shader_;
@@ -112,10 +116,16 @@ protected:
     void plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges);
     void renderAxis(const size2_t &dims);
 
+    void objectPicked(PickingEvent *p);
+    uint32_t getGlobalPickId(uint32_t localIndex) const;
+
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
     std::shared_ptr<const BufferBase> color_;
     std::shared_ptr<const BufferBase> radius_;
+    std::shared_ptr<const TemplateColumn<uint32_t>> indexColumn_;
+
+    std::shared_ptr<BufferBase> pickIds_;
 
     vec2 minmaxX_;
     vec2 minmaxY_;
@@ -123,6 +133,10 @@ protected:
     vec2 minmaxR_;
 
     std::array<AxisRenderer, 2> axisRenderers_;
+
+    PickingMapper picking_;
+    std::set<uint32_t> hoveredIndices_;
+    Processor *processor_ = nullptr;
 };
 
 }  // namespace plot
