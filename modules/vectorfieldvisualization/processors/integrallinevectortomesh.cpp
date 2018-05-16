@@ -117,7 +117,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
                 auto size = line.getPositions().size();
                 if (size == 0) continue;
 
-                if (isNotFiltered(line, idx)) {
+                if (this->isFiltered(line, idx)) {
                     continue;
                 }
 
@@ -196,7 +196,7 @@ void IntegralLineVectorToMesh::process() {
         util::OnScopeExit incIdx = [&idx]() { idx++; };
         auto size = line.getPositions().size();
 
-        if (size == 0 || isNotFiltered(line, idx)) continue;
+        if (size == 0 || isFiltered(line, idx)) continue;
 
         auto indexBuffer = [&, this]() -> std::shared_ptr<IndexBufferRAM> {
             if (output == Output::Lines) {
@@ -212,7 +212,7 @@ void IntegralLineVectorToMesh::process() {
         }();
 
         auto coloring = [&, this](auto sample, size_t lineIndex, size_t lineNumber) -> vec4 {
-            if (isSelected(line, idx)) {
+            if (this->isSelected(line, idx)) {
                 return selectedColor_.get();
             }
 

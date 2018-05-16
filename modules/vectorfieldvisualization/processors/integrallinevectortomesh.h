@@ -188,15 +188,15 @@ private:
 
     FloatVec4Property selectedColor_;
 
-    bool isNotFiltered(const IntegralLine& line, size_t idx) const {
+    bool isFiltered(const IntegralLine& line, size_t idx) const {
         switch (brushBy_.get()) {
             case BrushBy::LineIndex:
-                return !brushingList_.isFiltered(line.getIndex());
+                return brushingList_.isFiltered(line.getIndex());
             case BrushBy::VectorPosition:
-                return !brushingList_.isFiltered(idx);
+                return brushingList_.isFiltered(idx);
             case BrushBy::Never:
             default:
-                return true;
+                return false;
         }
     }
 
