@@ -41,8 +41,8 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo StreamRibbonsDeprecated::processorInfo_{
-    "org.inviwo.StreamRibbons",    // Class identifier
-    "Stream Ribbons",              // Display name
+    "org.inviwo.StreamRibbonsDeprecated",    // Class identifier
+    "Stream Ribbons (Deprecated)",              // Display name
     "Vector Field Visualization",  // Category
     CodeState::Experimental,       // Code state
     Tags::CPU,                     // Tags
@@ -109,27 +109,33 @@ StreamRibbonsDeprecated::StreamRibbonsDeprecated()
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
     addProperty(maxVorticity_);
+
+    LogWarn(
+        "This Stream Ribbons Processor is Deprecated, use the new Stream Lines processor together "
+        "with the IntegralLineToMesh processor.");
 }
 
 void StreamRibbonsDeprecated::process() {
-    auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double> > {
-        if (sampler_.isConnected()) return sampler_.getData();
-        else return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
+    auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double>> {
+        if (sampler_.isConnected())
+            return sampler_.getData();
+        else
+            return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
     }();
 
-    
     auto vorticitySampler = [&]() -> std::shared_ptr<const StreamLine3DTracer::Sampler> {
-        if (vorticitySampler_.isConnected()) return vorticitySampler_.getData();
-        else return std::make_shared<VolumeDoubleSampler<3>>(vorticityVolume_.getData());
+        if (vorticitySampler_.isConnected())
+            return vorticitySampler_.getData();
+        else
+            return std::make_shared<VolumeDoubleSampler<3>>(vorticityVolume_.getData());
     }();
-
 
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(sampler->getModelMatrix());
     mesh->setWorldMatrix(sampler->getWorldMatrix());
 
-    auto m = streamLineProperties_.getSeedPointTransformationMatrix(
-        sampler->getCoordinateTransformer());
+    auto m =
+        streamLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
     double maxVelocity = 0;
     double maxVorticity = 0;
     StreamLine3DTracer tracer(sampler, streamLineProperties_);
@@ -138,7 +144,6 @@ void StreamRibbonsDeprecated::process() {
     //  mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
     mat3 invBasis;
     std::vector<BasicMesh::Vertex> vertices;
-
 
     bool hasColors = colors_.hasData();
     size_t lineId = 0;
@@ -157,18 +162,15 @@ void StreamRibbonsDeprecated::process() {
             auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
             indexBuffer->getDataContainer().reserve(size);
 
-
             vec4 c;
             if (hasColors) {
                 if (lineId >= colors_.getData()->size()) {
                     LogWarn("The vector of colors is smaller then the vector of seed points");
-                }
-                else {
+                } else {
                     c = colors_.getData()->at(lineId);
                 }
             }
             lineId++;
-
 
             for (size_t i = 0; i < size; i++) {
                 auto vort = invBasis * glm::normalize(vec3(*vorticity));
@@ -184,33 +186,33 @@ void StreamRibbonsDeprecated::process() {
                 vec3 p0 = vec3(*position) - vort;
                 vec3 p1 = vec3(*position) + vort;
 
-
                 float d;
-                switch (coloringMethod_.get())
-                {
-                case ColoringMethod::Vorticity:
-                    d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(), 0.0f, 1.0f);
-                    c = vec4(tf.sample(dvec2(d, 0.0)));
-                    break;
-                case ColoringMethod::ColorPort:
-                    if (hasColors) { 
+                switch (coloringMethod_.get()) {
+                    case ColoringMethod::Vorticity:
+                        d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
+                                       0.0f, 1.0f);
+                        c = vec4(tf.sample(dvec2(d, 0.0)));
                         break;
-                    }
-                    else {
-                        LogWarn("No colors in the color port, using velocity for coloring instead ");
-                    }
-                case ColoringMethod::Velocity:
-                    d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(), 0.0f, 1.0f);
-                    c = vec4(tf.sample(dvec2(d, 0.0)));
-                default:
-                    break;
+                    case ColoringMethod::ColorPort:
+                        if (hasColors) {
+                            break;
+                        } else {
+                            LogWarn(
+                                "No colors in the color port, using velocity for coloring "
+                                "instead ");
+                        }
+                    case ColoringMethod::Velocity:
+                        d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
+                                       0.0f, 1.0f);
+                        c = vec4(tf.sample(dvec2(d, 0.0)));
+                    default:
+                        break;
                 }
 
-
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                indexBuffer->add(static_cast<std::uint32_t>(vertices.size()+1));
-                vertices.push_back({ p0, N, p0, c });
-                vertices.push_back({ p1, N, p1, c });
+                indexBuffer->add(static_cast<std::uint32_t>(vertices.size() + 1));
+                vertices.push_back({p0, N, p0, c});
+                vertices.push_back({p1, N, p1, c});
 
                 position++;
                 velocity++;

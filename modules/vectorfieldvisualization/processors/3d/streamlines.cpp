@@ -50,7 +50,7 @@ namespace inviwo {
 
 const ProcessorInfo StreamLinesDeprecated::processorInfo_{
     "org.inviwo.StreamLinesDepricated",  // Class identifier
-    "Stream Lines (Depricated)",         // Display name
+    "Stream Lines (Deprecated)",         // Display name
     "Vector Field Visualization",        // Category
     CodeState::Experimental,             // Code state
     Tags::CPU,                           // Tags
@@ -107,6 +107,10 @@ StreamLinesDeprecated::StreamLinesDeprecated()
     tf_.get().addPoint(vec2(1, 1), vec4(1, 0, 0, 1));
 
     setAllPropertiesCurrentStateAsDefault();
+
+    LogWarn(
+        "This Stream Lines Processor is Deprecated, use the new Stream Lines processor together "
+        "with the IntegralLineToMesh processor.");
 }
 
 StreamLinesDeprecated::~StreamLinesDeprecated() {}

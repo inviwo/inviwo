@@ -103,6 +103,10 @@ PathLinesDeprecated::PathLinesDeprecated()
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
     addProperty(allowLooping_);
+
+    LogWarn(
+        "This Path Lines Processor is Deprecated, use the new Path Lines processor together "
+        "with the IntegralLineToMesh processor.");
 }
 
 void PathLinesDeprecated::process() {
