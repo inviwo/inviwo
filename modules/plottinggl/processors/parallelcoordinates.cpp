@@ -331,15 +331,15 @@ ParallelCoordinates::ParallelCoordinates()
     labelPosition_.setSelectedIndex(2);
 
     TransferFunction tf;
-    tf.clearPoints();
-    tf.addPoint(0.0f, vec4(1, 0, 0, 1));
-    tf.addPoint(0.5f, vec4(1, 1, 0, 1));
-    tf.addPoint(1.0f, vec4(0, 1, 0, 1));
+    tf.clear();
+    tf.add(0.0, vec4(1, 0, 0, 1));
+    tf.add(0.5, vec4(1, 1, 0, 1));
+    tf.add(1.0, vec4(0, 1, 0, 1));
     tf_.set(tf);
     tf_.setCurrentStateAsDefault();
 
-    tf.clearPoints();
-    tf.addPoint(0.5f, vec4(1, 0, 0, 1));
+    tf.clear();
+    tf.add(0.5, vec4(1, 0, 0, 1));
     tfSelection_.set(tf);
     tfSelection_.setCurrentStateAsDefault();
 

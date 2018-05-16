@@ -502,7 +502,7 @@ private:
     }
 
     template <unsigned I>
-    void addVerticesImpl(const std::vector<Vertex> &vertices) {}  // sink
+    void addVerticesImpl(const std::vector<Vertex> &) {}  // sink
 
     template <unsigned I, typename T, typename... ARGS>
     void addVerticesImpl(const std::vector<Vertex> &vertices) {

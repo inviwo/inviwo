@@ -27,41 +27,37 @@
  *
  *********************************************************************************/
 
-in vec4 gColor;
-in vec2 gPos;
-in float gR;
-flat in vec4 pickColor_;
+layout(location = 4) in uint in_PickId;
 
-uniform int circle = 1;
-uniform float borderWidth = 1;
-uniform vec4 borderColor;
+#include "plotting/common.glsl"
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/pickingutils.glsl"
 
-uniform float antialiasing = 1.5; // [pixel]
+uniform sampler2D transferFunction;
 
-void main(void) {
-    float r = 0;
-    if (circle == 1) {
-        r = length(gPos);
-    } else {
-        r = max(abs(gPos.x), abs(gPos.y));
-    }
-    if (r > gR + antialiasing) {
-        discard;
-    }
+uniform vec2 minmaxX;
+uniform vec2 minmaxY;
 
-    float innerGlyphRadius = gR - borderWidth;
+uniform float maxRadius;
 
-    // pseudo antialiasing with the help of the alpha channel
-    // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
-    vec4 color = gColor;
-    if (borderWidth > 0.0) {
-        float borderValue = clamp(mix(0.0, 1.0, (r - innerGlyphRadius) / 1.0), 0.0, 1.0);
-        color = mix(color, borderColor, borderValue);
-    }
-    float borderAlpha = clamp(mix(1.0, 0.0, (r - gR) / antialiasing), 0.0, 1.0);
+uniform bool pickingEnabled = true;
 
-    color.rgb *= color.a;
-    FragData0 = color * borderAlpha;
-    //FragData0 = pickColor_;
-    PickingData = pickColor_;
+out vec4 vColor;
+out float vRadius;
+out float vDepth;
+flat out vec4 pickColors_;
+
+float norm(in float v, in vec2 mm) { 
+    return (v - mm.x) / (mm.y - mm.x); 
+}
+
+void main(void) {   
+    vColor = in_Color;
+    vRadius = maxRadius;
+    vDepth = 0.5;
+    
+    vec2 point = vec2(norm(in_Vertex.x, minmaxX), norm(in_Vertex.y, minmaxY));
+    gl_Position = vec4(point, 0.5, 1.0);
+    pickColors_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }
