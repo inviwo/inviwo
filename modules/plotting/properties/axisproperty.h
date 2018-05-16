@@ -69,7 +69,12 @@ public:
     void setLabelFormat(const std::string& formatStr) {
         labels_.title_.set(formatStr);
     }
-    void setRange(const dvec2& range) { range_.set(range); }
+    /** 
+     * \brief sets range property of axis and ensures the min/max ranges are adjusted accordingly
+     * 
+     * @param range   new axis range
+     */
+    void setRange(const dvec2& range);
 
     // general properties
     BoolProperty visible_;
