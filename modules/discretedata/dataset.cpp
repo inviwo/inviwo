@@ -60,11 +60,28 @@ SharedConstChannel DataChannelMap::getFirstChannel() const {
 
 SharedConstChannel DataChannelMap::getChannel(const std::string& name,
                                               const GridPrimitive definedOn) const {
-    auto it = ChannelSet.find(std::make_pair(name, definedOn));
+    auto key = std::make_pair(name, definedOn);
+    return getChannel(key);
+}
+
+SharedConstChannel DataChannelMap::getChannel(std::pair<std::string, GridPrimitive>& key) const {
+    auto it = ChannelSet.find(key);
 
     if (it == ChannelSet.end()) return SharedConstChannel();
 
     return it->second;
+}
+
+std::vector<std::pair<std::string, GridPrimitive>> DataChannelMap::getChannelNames() const {
+    ind numChannels = getNumChannels();
+
+    std::vector<std::pair<std::string, GridPrimitive>> channelNames;
+    channelNames.reserve(numChannels);
+    for (auto& key : ChannelSet) {
+        channelNames.push_back(key.first);
+    }
+
+    return channelNames;
 }
 
 }  // namespace

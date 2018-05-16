@@ -50,10 +50,8 @@ struct ChannelCompare {
 };
 // Map used for storing and querying channels by name and GridPrimitive type.
 typedef std::map<
-    std::pair<std::string, GridPrimitive>  // Hashing by both name and GridPrimitive type
-    ,
-    SharedConstChannel  // Shared channels, type information only as meta property
-    ,
+    std::pair<std::string, GridPrimitive>,  // Hashing by both name and GridPrimitive type
+    SharedConstChannel,  // Shared channels, type information only as meta property
     ChannelCompare>  // Lesser operator on string-Primitve pairs
     BaseChannelMap;
 
@@ -95,6 +93,12 @@ public:
                                   GridPrimitive definedOn = GridPrimitive::Vertex) const;
 
     /** Returns the specified channel if it is in the desired format, returns first instance found
+    *   @param key Unique name and GridPrimitive type the channel is defined on
+    */
+    SharedConstChannel getChannel(
+        std::pair<std::string, GridPrimitive>& key) const;
+
+    /** Returns the specified channel if it is in the desired format, returns first instance found
     *   @param name Unique name of requested channel
     *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
     */
@@ -127,10 +131,12 @@ public:
 
     /** Number of channels currently held
     */
-    ind numChannels() const { return ChannelSet.size(); }
+    ind getNumChannels() const { return ChannelSet.size(); }
+
+    std::vector<std::pair<std::string, GridPrimitive>> getChannelNames() const;
 
     // Attributes
-public:
+protected:
     /** Set of data channels
     *   Indexed by name and defining dimension (0D vertices, 1D edges etc).
     */
@@ -191,12 +197,15 @@ struct DataTraits<dd::DataSet> {
     static uvec3 colorCode() { return uvec3(255, 144, 1); }
     static Document info(const dd::DataSet& data) {
         std::ostringstream oss;
-        oss << "Data set with " << data.Channels.numChannels() << " channels.";
-        if (!data.Channels.ChannelSet.empty())
-            for (auto& channel : data.Channels.ChannelSet) {
-                oss << "      " << channel.first.first << '[' << channel.second->getNumComponents()
-                    << "][" << channel.second->getNumElements() << ']' << "(Dim "
-                    << channel.first.second << ')';
+        oss << "Data set with " << data.Channels.getNumChannels() << " channels.";
+
+        auto channelKeyList = data.Channels.getChannelNames();
+        if (channelKeyList.size() != 0)
+            for (auto& channelKey : channelKeyList) {
+                auto channel = data.Channels.getChannel(channelKey);
+                oss << "      " << channelKey.first << '[' << channel->getNumComponents()
+                    << "][" << channel->getNumElements() << ']' << "(Dim "
+                    << channelKey.second << ')';
             }
         Document doc;
         doc.append("p", oss.str());

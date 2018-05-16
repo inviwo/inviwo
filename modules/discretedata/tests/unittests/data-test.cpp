@@ -79,7 +79,6 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     // Copy buffer.
     BufferFloat* copyBuffer = new BufferFloat(*testBuffer);
     copyBuffer->setName("MonomialBufferCopy");
-    BufferFloat* sharedBuffer(testBuffer);
 
     // Add to DataSet
     dataset.Channels.addChannel(testBuffer);
