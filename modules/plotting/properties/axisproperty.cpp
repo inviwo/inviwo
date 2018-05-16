@@ -29,6 +29,8 @@
 
 #include <modules/plotting/properties/axisproperty.h>
 
+#include <inviwo/core/network/networklock.h>
+
 namespace inviwo {
 
 namespace plot {
@@ -158,6 +160,17 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
 }
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
+
+void AxisProperty::setRange(const dvec2& range) {
+    NetworkLock lock(&range_);
+    if (range_.getRangeMin() > range.x) {
+        range_.setRangeMin(range.x);
+    }
+    if (range_.getRangeMax() < range.y) {
+        range_.setRangeMax(range.y);
+    }
+    range_.set(range);
+}
 
 }  // namespace plot
 
