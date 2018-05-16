@@ -210,6 +210,7 @@
                 <Processors>
                     <Processor content="org.inviwo.AxisRenderProcessor" />
                     <Processor content="org.inviwo.ParallelCoordinates" />
+                    <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
                     <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
                     <Processor content="org.inviwo.ScatterPlotProcessor" />
                     <Processor content="org.inviwo.VolumeAxis" />
@@ -231,15 +232,6 @@
                 </Processors>
             </Module>
             <Module name="PVM" version="0" />
-            <Module name="Python3" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.NumPyVolume" />
-                    <Processor content="org.inviwo.NumpyMandelbrot" />
-                    <Processor content="org.inviwo.NumPyMeshCreateTest" />
-                    <Processor content="org.inviwo.PythonScriptProcessor" />
-                </Processors>
-            </Module>
-            <Module name="Python3Qt" version="0" />
             <Module name="UserInterfaceGL" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CameraWidget" />
@@ -372,44 +364,16 @@
                     <Processor content="org.inviwo.TFColorSpaceMapping" />
                 </Processors>
             </Module>
-            <Module name="testing" version="0">
+            <Module name="TopologyToolKit" version="0">
                 <Processors>
-                    <Processor content="org.inviwo.CameraTest" />
-                    <Processor content="org.inviwo.CaseImages" />
-                    <Processor content="org.inviwo.CompositePropertyTest" />
-                    <Processor content="org.inviwo.TestProcessor" />
-                    <Processor content="org.inviwo.TransferFunTestProc" />
-                    <Processor content="org.inviwo.TestInvalidation" />
-                    <Processor content="org.inviwo.FloatSliderTest" />
-                    <Processor content="org.inviwo.DoubleSliderTest" />
-                    <Processor content="org.inviwo.IntSliderTest" />
-                    <Processor content="org.inviwo.FloatRangeTest" />
-                    <Processor content="org.inviwo.DoubleRangeTest" />
-                    <Processor content="org.inviwo.IntRangeTest" />
-                    <Processor content="org.inviwo.Size_tRangeTest" />
-                    <Processor content="org.inviwo.OptionPropertIntTest" />
-                    <Processor content="org.inviwo.OptionPropertFloatTest" />
-                    <Processor content="org.inviwo.OptionPropertDoubleTest" />
-                    <Processor content="org.inviwo.OptionPropertStringTest" />
-                    <Processor content="org.inviwo.TestMinMaxSlider" />
-                    <Processor content="org.inviwo.TestDynamicProperties" />
-                    <Processor content="org.inviwo.PortTestOut" />
-                    <Processor content="org.inviwo.PortTestIn" />
-                    <Processor content="org.inviwo.TestPropertyStates" />
-                    <Processor content="org.inviwo.TestBackgroundTask" />
-                    <Processor content="org.inviwo.ColorPropertyTest" />
-                    <Processor content="org.inviwo.MeshTest" />
-                    <Processor content="org.inviwo.ImageSequenceCreator" />
-                    <Processor content="org.inviwo.ImageEventPrinter" />
-                    <Processor content="org.inviwo.VolumeEventPrinter" />
-                    <Processor content="org.inviwo.MeshEventPrinter" />
-                    <Processor content="org.inviwo.TestDynamicPorts" />
-                </Processors>
-            </Module>
-            <Module name="TestingQT" version="0" />
-            <Module name="ttk" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.TTKTestProcessor" />
+                    <Processor content="org.inviwo.ttk.TTKTestProcessor" />
+                    <Processor content="org.inviwo.ttk.MeshToTriangulation" />
+                    <Processor content="org.inviwo.ttk.VolumeToTriangulation" />
+                    <Processor content="org.inviwo.ttk.TriangulationToMesh" />
+                    <Processor content="org.inviwo.ttk.PersistenceCurve" />
+                    <Processor content="org.inviwo.ttk.TopologicalSimplification" />
+                    <Processor content="org.inviwo.ttk.PersistenceDiagram" />
+                    <Processor content="org.inviwo.ttk.TriangulationToVolume" />
                 </Processors>
             </Module>
         </Modules>
@@ -459,7 +423,7 @@
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref3" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref2" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -481,7 +445,7 @@
                         <collapsed content="0" />
                     </Property>
                     <Property type="org.inviwo.IntVec2Property" identifier="position">
-                        <value x="92" y="211" />
+                        <value x="2072" y="221" />
                     </Property>
                     <Property type="org.inviwo.OptionPropertyEnumInt" identifier="visibleLayer" />
                     <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
@@ -527,7 +491,7 @@
                         <selection content="0" />
                     </MetaDataItem>
                     <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                        <position x="92" y="211" />
+                        <position x="2072" y="221" />
                         <dimensions x="600" y="600" />
                         <visibility content="1" />
                     </MetaDataItem>
@@ -540,11 +504,11 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.DataFrame.inport" identifier="dataFrame" id="ref4" />
+                    <InPort type="org.inviwo.DataFrame.inport" identifier="dataFrame" id="ref3" />
                     <InPort type="BrushingAndLinkingInport" identifier="brushing_" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref5" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref4" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.ScatterPlotGL.Properties" identifier="scatterPlotproperties">
@@ -558,6 +522,12 @@
                             </Property>
                             <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction">
                                 <MetaDataMap>
+                                    <MetaDataItem type="org.inviwo.IntMetaData" key="PropertyEditorWidgetDockStatus">
+                                        <MetaData content="0" />
+                                    </MetaDataItem>
+                                    <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetFloating">
+                                        <MetaData content="1" />
+                                    </MetaDataItem>
                                     <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
                                         <MetaData x="462" y="212" />
                                     </MetaDataItem>
@@ -579,32 +549,36 @@
                                     <Points>
                                         <Point>
                                             <pos content="0" />
-                                            <rgba x="0.89411765" y="0.10196079" z="0.10980392" w="1" />
+                                            <rgba x="0.89411765" y="0.10196079" z="0.10980392" w="0.21875" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.3333332199999999856387944419111590832472" />
-                                            <rgba x="0.89411765" y="0.10196079" z="0.10980392" w="1" />
+                                            <pos content="0.3333332240581512451171875" />
+                                            <rgba x="0.89411765" y="0.10196079" z="0.10980392" w="0.21875" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.3333333399999999779872439376049442216754" />
-                                            <rgba x="0.21568628" y="0.49411765" z="0.72156864" w="1" />
+                                            <pos content="0.3333333432674407958984375" />
+                                            <rgba x="0.21568628" y="0.49411765" z="0.72156864" w="0.21875" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.6666665699999999583624799015524331480265" />
-                                            <rgba x="0.21568628" y="0.49411765" z="0.72156864" w="1" />
+                                            <pos content="0.666666567325592041015625" />
+                                            <rgba x="0.21568628" y="0.49411765" z="0.72156864" w="0.21875" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.6666666900000000062220806285040453076363" />
-                                            <rgba x="0.3019608" y="0.68627453" z="0.29019609" w="1" />
+                                            <pos content="0.666666686534881591796875" />
+                                            <rgba x="0.3019608" y="0.68627453" z="0.29019609" w="0.21875" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.9999998799999999521403992730483878403902" />
-                                            <rgba x="0.3019608" y="0.68627453" z="0.29019609" w="1" />
+                                            <pos content="0.99999988079071044921875" />
+                                            <rgba x="0.3019608" y="0.68627453" z="0.29019609" w="0.21875" />
                                         </Point>
                                     </Points>
                                 </TransferFunction>
                             </Property>
                             <Property type="org.inviwo.FloatVec4Property" identifier="color">
+                                <visible content="0" />
+                            </Property>
+                            <Property type="org.inviwo.FloatVec4Property" identifier="hoverColor">
+                                <semantics semantics="Color" />
                                 <visible content="0" />
                             </Property>
                             <Property type="org.inviwo.MarginProperty" identifier="margins">
@@ -622,6 +596,9 @@
                             </Property>
                             <Property type="org.inviwo.FloatVec4Property" identifier="borderColor">
                                 <semantics semantics="Color" />
+                            </Property>
+                            <Property type="org.inviwo.BoolProperty" identifier="hovering">
+                                <visible content="0" />
                             </Property>
                             <Property type="org.inviwo.AxisProperty" identifier="xAxis">
                                 <Properties>
@@ -960,12 +937,23 @@
                     </Property>
                     <Property type="org.inviwo.CompositeProperty" identifier="labels">
                         <Properties>
-                            <Property type="org.inviwo.OptionPropertyInt" identifier="fontSize" />
-                            <Property type="org.inviwo.OptionPropertyInt" identifier="statsFontSize">
-                                <selectedIdentifier content="16" />
-                            </Property>
                             <Property type="org.inviwo.FloatVec4Property" identifier="fontColor">
                                 <semantics semantics="Color" />
+                            </Property>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="fontFace" />
+                            <Property type="org.inviwo.IntProperty" identifier="fontSize">
+                                <semantics semantics="Fontsize" />
+                                <MetaDataMap>
+                                    <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState" />
+                                </MetaDataMap>
+                                <value content="18" />
+                            </Property>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="fontFaceStats" />
+                            <Property type="org.inviwo.IntProperty" identifier="statsFontSize">
+                                <semantics semantics="Fontsize" />
+                                <MetaDataMap>
+                                    <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState" />
+                                </MetaDataMap>
                             </Property>
                         </Properties>
                         <collapsed content="0" />
@@ -1003,7 +991,7 @@
                     <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
                         <position x="-125" y="-175" />
                         <visibility content="1" />
-                        <selection content="1" />
+                        <selection content="0" />
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
@@ -1012,7 +1000,7 @@
                     <PortGroup content="default" key="data" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.DataFrame.outport" identifier="data" id="ref2" />
+                    <OutPort type="org.inviwo.DataFrame.outport" identifier="data" id="ref5" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FileProperty" identifier="inputFile_">
@@ -1044,15 +1032,15 @@
         <Connections>
             <Connection>
                 <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref1" />
-                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref3" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref2" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref5" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref4" />
                 <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref0" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.DataFrame.outport" identifier="data" reference="ref2" />
-                <InPort type="org.inviwo.DataFrame.inport" identifier="dataFrame" reference="ref4" />
+                <OutPort type="org.inviwo.DataFrame.outport" identifier="data" reference="ref5" />
+                <InPort type="org.inviwo.DataFrame.inport" identifier="dataFrame" reference="ref3" />
             </Connection>
         </Connections>
     </ProcessorNetwork>
