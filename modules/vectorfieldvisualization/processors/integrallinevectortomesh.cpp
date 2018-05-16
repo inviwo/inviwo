@@ -113,7 +113,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
             size_t idx = 0;
             for (auto &line : (*lines_.getData())) {
-                util::OnScopeExit incIdx = [&idx]() { idx++; };
+                util::OnScopeExit incIdx ([&idx]() { idx++; });
                 auto size = line.getPositions().size();
                 if (size == 0) continue;
 
@@ -193,7 +193,7 @@ void IntegralLineVectorToMesh::process() {
 
     size_t idx = 0;
     for (auto &line : (*lines_.getData())) {
-        util::OnScopeExit incIdx = [&idx]() { idx++; };
+        util::OnScopeExit incIdx ( [&idx]() { idx++; });
         auto size = line.getPositions().size();
 
         if (size == 0 || isFiltered(line, idx)) continue;
