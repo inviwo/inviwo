@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#pragma optimize("", off)
-
 #include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
+
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 

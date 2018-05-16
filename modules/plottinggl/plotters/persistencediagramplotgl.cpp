@@ -35,6 +35,7 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
@@ -317,10 +318,8 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
         if (std::get<0>(clipped)) {
             uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
 
-            vertices.push_back(
-                std::make_tuple(std::get<1>(clipped), properties_.pointColor_.get(), 0));
-            vertices.push_back(
-                std::make_tuple(std::get<2>(clipped), properties_.pointColor_.get(), 0));
+            vertices.push_back({std::get<1>(clipped), properties_.pointColor_.get(), 0});
+            vertices.push_back({std::get<2>(clipped), properties_.pointColor_.get(), 0});
 
             indicesDiag.push_back(indexOffset);
             indicesDiag.push_back(indexOffset + 1);
@@ -331,8 +330,6 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
     auto copyBufferToComponent = [&](auto buffer, int targetComponent) {
         buffer->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto bufferpr) {
-                using ValueType = util::PrecsionValueType<decltype(bufferpr)>;
-
                 bufferpr->getDataContainer();
                 for (auto &&i : util::zip(xyPairs, bufferpr->getDataContainer())) {
                     get<0>(i)[targetComponent] = static_cast<float>(get<1>(i));
@@ -362,10 +359,10 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
             auto clipped = detail::clipLineCohenSutherland(vec2(point.x), vec2(point.x, point.y),
                                                            rectMin, rectMax);
             if (std::get<0>(clipped)) {
-                vertices.push_back(std::make_tuple(
-                    std::get<1>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)));
-                vertices.push_back(std::make_tuple(
-                    std::get<2>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)));
+                vertices.push_back(
+                    {std::get<1>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)});
+                vertices.push_back(
+                    {std::get<2>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)});
 
                 indicesLines.push_back(indexOffset++);
                 indicesLines.push_back(indexOffset++);
@@ -400,11 +397,11 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
 
             const vec4 color = getColor(index);
             if (detail::insideRect(pLower, rectMin, rectMax)) {
-                vertices.push_back(std::make_tuple(pLower, color, getGlobalPickId(index)));
+                vertices.push_back({pLower, color, getGlobalPickId(index)});
                 indicesPoints.push_back(indexOffset++);
             }
             if (detail::insideRect(pUpper, rectMin, rectMax)) {
-                vertices.push_back(std::make_tuple(pUpper, color, getGlobalPickId(index)));
+                vertices.push_back({pUpper, color, getGlobalPickId(index)});
                 indicesPoints.push_back(indexOffset++);
             }
         }
