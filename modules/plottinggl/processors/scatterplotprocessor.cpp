@@ -81,11 +81,15 @@ ScatterPlotProcessor::ScatterPlotProcessor()
         onYAxisChange();
         onColorChange();
         onRadiusChange();
+
+        if (dataFrame_.hasData()) {
+            scatterPlot_.setIndexColumn(dataFrame_.getData()->getIndexColumn());
+        }
     });
 }
 
 void ScatterPlotProcessor::process() {
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     if (brushing_.isConnected()) {
         auto dataframe = dataFrame_.getData();

@@ -36,14 +36,16 @@ layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
 #include "plotting/common.glsl"
+#include "utils/pickingutils.glsl"
 
 uniform vec2 pixelSize;
 uniform float borderWidth = 1;
+uniform float antialiasing = 1.5; // [pixel]
 
 in vec4 vColor[1];
 in float vRadius[1];
 in float vDepth[1];
-flat in vec4 pickColors_[1];
+flat in vec4 pickColors_[];
 
 out vec4 gColor;
 out vec2 gPos;
@@ -54,7 +56,7 @@ void emit(vec2 c, float r, int x, int y) {
 
     float outerRadius = r + 0.5 * borderWidth;
 
-    vec2 pos =  vec2(outerRadius * x, outerRadius * y);
+    vec2 pos =  vec2((outerRadius + antialiasing) * x, (outerRadius + antialiasing) * y);
 
     gl_Position = vec4(getGLPositionFromPixel(c + pos), vDepth[0], 1);
     gColor = vColor[0];
