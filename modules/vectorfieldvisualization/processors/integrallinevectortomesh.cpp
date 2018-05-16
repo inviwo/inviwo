@@ -57,9 +57,9 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     , colors_("colors")
     , mesh_("mesh")
     , brushBy_("brushBy_", "Brush Line by",
-               {{BrushBy::Never, "never", "Ignore brushing list"},
-                {BrushBy::LineIndex, "lineindex", "Use Line Index (seed point index)"},
-                {BrushBy::VectorPosition, "vectorposition", "Use position in input vector."}})
+               {{"never", "Ignore brushing list", BrushBy::Never},
+                {"lineindex", "Use Line Index (seed point index)", BrushBy::LineIndex},
+                {"vectorposition", "Use position in input vector.", BrushBy::VectorPosition}})
 
     , stride_("stride", "Vertex stride", 1, 1, 10)
 
@@ -111,11 +111,13 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
             double minT = std::numeric_limits<double>::max();
             double maxT = std::numeric_limits<double>::lowest();
 
+            size_t idx = 0;
             for (auto &line : (*lines_.getData())) {
+                util::OnScopeExit incIdx = [&idx]() { idx++; };
                 auto size = line.getPositions().size();
                 if (size == 0) continue;
 
-                if (!ignoreBrushingList_.get() && brushingList_.isFiltered(line.getIndex())) {
+                if (isNotFiltered(line, idx)) {
                     continue;
                 }
 
