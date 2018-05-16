@@ -46,15 +46,14 @@
 
 #include <bitset>
 
-
 namespace inviwo {
 
 const ProcessorInfo StreamLinesDeprecated::processorInfo_{
-    "org.inviwo.StreamLines",      // Class identifier
-    "Stream Lines (Depricated)",   // Display name
-    "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
-    Tags::CPU,                     // Tags
+    "org.inviwo.StreamLinesDepricated",  // Class identifier
+    "Stream Lines (Depricated)",         // Display name
+    "Vector Field Visualization",        // Category
+    CodeState::Experimental,             // Code state
+    Tags::CPU,                           // Tags
 };
 const ProcessorInfo StreamLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
 
@@ -78,7 +77,6 @@ StreamLinesDeprecated::StreamLinesDeprecated()
     addPort(lines_);
     addPort(linesStripsMesh_);
 
-
     isReady_.setUpdate([this]() {
         if (allInportsAreReady()) {
             return true;
@@ -93,7 +91,6 @@ StreamLinesDeprecated::StreamLinesDeprecated()
         }
         return false;
     });
-
 
     maxVelocity_.setReadOnly(true);
 
