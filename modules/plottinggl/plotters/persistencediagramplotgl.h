@@ -37,6 +37,8 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
@@ -44,13 +46,13 @@
 #include <modules/plotting/datastructures/dataframe.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/axisproperty.h>
-
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 namespace inviwo {
 
 class Processor;
 using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
+class PickingEvent;
 
 namespace plot {
 
@@ -79,12 +81,15 @@ public:
         FloatProperty lineWidthDiagonal_;
         FloatVec4Property pointColor_;
         FloatVec4Property lineColor_;
+        FloatVec4Property hoverColor_;
         TransferFunctionProperty tf_;
         MarginProperty margins_;
         FloatProperty axisMargin_;
 
         FloatProperty borderWidth_;
         FloatVec4Property borderColor_;
+
+        BoolProperty hovering_;
 
         AxisProperty xAxis_;
         AxisProperty yAxis_;
@@ -115,6 +120,8 @@ public:
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);
     void setColorData(std::shared_ptr<const BufferBase> buffer);
 
+    void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
+
     Properties properties_;
     Shader pointShader_;
     Shader lineShader_;
@@ -127,9 +134,13 @@ protected:
     void renderPoints(const size2_t &dims, const std::vector<uint32_t> &indices);
     void renderAxis(const size2_t &dims);
 
+    void objectPicked(PickingEvent *p);
+    uint32_t getGlobalPickId(uint32_t localIndex) const;
+
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
     std::shared_ptr<const BufferBase> color_;
+    std::shared_ptr<const TemplateColumn<uint32_t>> indexColumn_;
 
     vec2 minmaxX_;
     vec2 minmaxY_;
@@ -137,6 +148,10 @@ protected:
     vec2 minmaxR_;
 
     std::array<AxisRenderer, 2> axisRenderers_;
+
+    PickingMapper picking_;
+    std::set<uint32_t> hoveredIndices_;
+    Processor *processor_ = nullptr;
 };
 
 }  // namespace plot

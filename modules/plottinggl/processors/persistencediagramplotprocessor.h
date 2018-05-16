@@ -34,11 +34,13 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
-#include <modules/plotting/datastructures/dataframe.h>
 
+#include <modules/plotting/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/persistencediagramplotgl.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
+#include <set>
 
 namespace inviwo {
 
@@ -75,6 +77,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void onXAxisChange();
+    void onYAxisChange();
+    void onColorChange();
+
     DataFrameInport dataFrame_;
     BrushingAndLinkingInport brushing_;
     ImageOutport outport_;
@@ -84,10 +90,6 @@ private:
     DataFrameColumnProperty xAxis_;
     DataFrameColumnProperty yAxis_;
     DataFrameColumnProperty colorCol_;
-
-    void onXAxisChange();
-    void onYAxisChange();
-    void onColorChange();
 };
 
 }  // namespace plot

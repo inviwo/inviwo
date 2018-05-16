@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-layout(location = 3) in float C;
 layout(location = 4) in uint in_PickId;
 
 #include "plotting/common.glsl"
@@ -39,13 +38,9 @@ uniform sampler2D transferFunction;
 
 uniform vec2 minmaxX;
 uniform vec2 minmaxY;
-uniform vec2 minmaxC;
-uniform vec2 minmaxR;
-uniform vec4 default_color;
 
 uniform float maxRadius;
 
-uniform int has_color = 0;
 uniform bool pickingEnabled = true;
 
 out vec4 vColor;
@@ -57,14 +52,8 @@ float norm(in float v, in vec2 mm) {
     return (v - mm.x) / (mm.y - mm.x); 
 }
 
-void main(void) {
-    if (has_color == 1) {
-        float c = norm(C, minmaxC);
-        vColor = texture(transferFunction, vec2(c, 0.5));
-    } else {
-        vColor = in_Color;
-    }
-
+void main(void) {   
+    vColor = in_Color;
     vRadius = maxRadius;
     vDepth = 0.5;
     

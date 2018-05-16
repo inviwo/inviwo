@@ -76,6 +76,10 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
         onXAxisChange();
         onYAxisChange();
         onColorChange();
+
+        if (dataFrame_.hasData()) {
+            persistenceDiagramPlot_.setIndexColumn(dataFrame_.getData()->getIndexColumn());
+        }
     });
 }
 
@@ -87,17 +91,16 @@ void PersistenceDiagramPlotProcessor::process() {
         auto iCol = dataframe->getIndexColumn();
         auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-        auto brushedIndicies = brushing_.getFilteredIndices();
+        auto filteredIndicies = brushing_.getFilteredIndices();
         IndexBuffer indicies;
         auto &vec = indicies.getEditableRAMRepresentation()->getDataContainer();
-        vec.reserve(dfSize - brushedIndicies.size());
+        vec.reserve(dfSize - filteredIndicies.size());
 
         auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
                      [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });
 
         persistenceDiagramPlot_.plot(outport_, &indicies, true);
-
     } else {
         persistenceDiagramPlot_.plot(outport_, nullptr, true);
     }
@@ -128,7 +131,6 @@ void PersistenceDiagramPlotProcessor::onColorChange() {
         persistenceDiagramPlot_.setColorData(buffer);
     }
 }
-
 
 }  // namespace plot
 

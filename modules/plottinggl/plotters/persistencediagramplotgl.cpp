@@ -27,8 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma optimize("", off)
-
 #include <modules/plottinggl/plotters/persistencediagramplotgl.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
@@ -36,9 +34,11 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 
 #include <tuple>
 
@@ -61,6 +61,7 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
                   vec4(1), vec4(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , lineColor_("lineColor", "Line Color", vec4(vec3(34, 96, 150) / 255.0f, 1.0f), vec4(0),
                  vec4(1), vec4(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , hoverColor_("hoverColor", "Hover color", vec4(1.0f, 0.77f, 0.25f, 1))
     , tf_("transferFunction", "Transfer Function",
           TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
     , margins_("margins", "Margins", 5, 5, 5, 5)
@@ -68,6 +69,7 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
 
     , borderWidth_("borderWidth", "Border width", 2, 0, 20)
     , borderColor_("borderColor", "Border color", vec4(0, 0, 0, 1))
+    , hovering_("hovering", "Enable Hovering", true)
 
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical) {
@@ -77,13 +79,17 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
     addProperty(lineWidthDiagonal_);
     addProperty(pointColor_);
     addProperty(lineColor_);
+    hoverColor_.setSemantics(PropertySemantics::Color);
+    addProperty(hoverColor_);
     addProperty(tf_);
     addProperty(margins_);
     addProperty(axisMargin_);
 
+    borderColor_.setSemantics(PropertySemantics::Color);
     addProperty(borderWidth_);
     addProperty(borderColor_);
-    borderColor_.setSemantics(PropertySemantics::Color);
+
+    addProperty(hovering_);
 
     addProperty(xAxis_);
     addProperty(yAxis_);
@@ -100,11 +106,13 @@ PersistenceDiagramPlotGL::Properties::Properties(const PersistenceDiagramPlotGL:
     , lineWidthDiagonal_(rhs.lineWidthDiagonal_)
     , pointColor_(rhs.pointColor_)
     , lineColor_(rhs.lineColor_)
+    , hoverColor_(rhs.hoverColor_)
     , tf_(rhs.tf_)
     , margins_(rhs.margins_)
     , axisMargin_(rhs.axisMargin_)
     , borderWidth_(rhs.borderWidth_)
     , borderColor_(rhs.borderColor_)
+    , hovering_(rhs.hovering_)
     , xAxis_(rhs.xAxis_)
     , yAxis_(rhs.yAxis_) {
     addProperty(showPoints_);
@@ -113,11 +121,13 @@ PersistenceDiagramPlotGL::Properties::Properties(const PersistenceDiagramPlotGL:
     addProperty(lineWidthDiagonal_);
     addProperty(pointColor_);
     addProperty(lineColor_);
+    addProperty(hoverColor_);
     addProperty(tf_);
     addProperty(margins_);
     addProperty(axisMargin_);
-    addProperty(borderWidth_);
     addProperty(borderColor_);
+    addProperty(borderWidth_);
+    addProperty(hovering_);
     addProperty(xAxis_);
     addProperty(yAxis_);
 }
@@ -132,11 +142,13 @@ PersistenceDiagramPlotGL::Properties &PersistenceDiagramPlotGL::Properties::oper
         lineWidthDiagonal_ = that.lineWidthDiagonal_;
         pointColor_ = that.pointColor_;
         lineColor_ = that.lineColor_;
+        hoverColor_ = that.hoverColor_;
         tf_ = that.tf_;
         margins_ = that.margins_;
         axisMargin_ = that.axisMargin_;
         borderWidth_ = that.borderWidth_;
         borderColor_ = that.borderColor_;
+        hovering_ = that.hovering_;
         xAxis_ = that.xAxis_;
         yAxis_ = that.yAxis_;
     }
@@ -154,10 +166,15 @@ PersistenceDiagramPlotGL::PersistenceDiagramPlotGL()
     , xAxis_(nullptr)
     , yAxis_(nullptr)
     , color_(nullptr)
-    , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}}) {}
+    , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}}) {
+    properties_.hovering_.onChange([this]() { picking_.setEnabled(properties_.hovering_.get()); });
+}
 
 PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
     : PersistenceDiagramPlotGL() {
+    processor_ = processor;
+    picking_ = PickingMapper(processor, 1, [this](PickingEvent *p) { objectPicked(p); });
+
     pointShader_.onReload([=]() { processor->invalidate(InvalidationLevel::InvalidOutput); });
     lineShader_.onReload([=]() { processor->invalidate(InvalidationLevel::InvalidOutput); });
 }
@@ -237,7 +254,7 @@ std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec
             // compute intersection
             vec2 p;
             if (outcode & 0x0001) {  // left
-                p.x = rectMax.x;
+                p.x = rectMin.x;
                 p.y = p1.y + (p2.y - p1.y) * (rectMin.x - p1.x) / (p2.x - p1.x);
             } else if (outcode & 0x0010) {  // right
                 p.x = rectMax.x;
@@ -246,7 +263,7 @@ std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec
                 p.x = p1.x + (p2.x - p1.x) * (rectMin.y - p1.y) / (p2.y - p1.y);
                 p.y = rectMin.y;
             } else if (outcode & 0x1000) {  // top
-                p.x = p1.x + (p2.x - p1.x) * (rectMin.y - p1.y) / (p2.y - p1.y);
+                p.x = p1.x + (p2.x - p1.x) * (rectMax.y - p1.y) / (p2.y - p1.y);
                 p.y = rectMax.y;
             }
             // adjust point matching selected outcode
@@ -291,7 +308,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
         useAxisRanges ? vec2(properties_.xAxis_.range_.get().y, properties_.yAxis_.range_.get().y)
                       : vec2(minmaxX_.y, minmaxY_.y);
 
-    {
+    if (properties_.lineWidthDiagonal_.get() > 0.0f) {
         // diagonal from (x_min,x_min) to (x_max,x_max)
         auto clipped =
             detail::clipLineCohenSutherland(vec2(minmaxX_.x), vec2(minmaxX_.y), rectMin, rectMax);
@@ -326,9 +343,8 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
 
     std::vector<uint32_t> selectedIndices;
     if (indices) {
-        // copy selected indices and ensure that indices are stored in ascending order
+        // copy selected indices
         selectedIndices = indices->getRAMRepresentation()->getDataContainer();
-        std::sort(selectedIndices.begin(), selectedIndices.end());
     } else {
         // no indices given, draw all data points
         auto seq = util::make_sequence<uint32_t>(0, static_cast<uint32_t>(xyPairs.size()), 1);
@@ -344,10 +360,10 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
             auto clipped = detail::clipLineCohenSutherland(vec2(point.x), vec2(point.x, point.y),
                                                            rectMin, rectMax);
             if (std::get<0>(clipped)) {
-                vertices.push_back(std::make_tuple(std::get<1>(clipped),
-                                                   properties_.pointColor_.get(), index + 1));
-                vertices.push_back(std::make_tuple(std::get<2>(clipped),
-                                                   properties_.pointColor_.get(), index + 1));
+                vertices.push_back(std::make_tuple(
+                    std::get<1>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)));
+                vertices.push_back(std::make_tuple(
+                    std::get<2>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)));
 
                 indicesLines.push_back(indexOffset++);
                 indicesLines.push_back(indexOffset++);
@@ -357,19 +373,36 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
 
     // data points
     if (properties_.showPoints_.get()) {
+        auto normalizeValue = [range = minmaxC_](double value) {
+            return (value - range.x) / (range.y - range.x);
+        };
+        auto colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
+        
+        auto getColor = [
+            this, hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
+            buffer = colorBuffer, normalizeValue
+        ](uint32_t index) {
+            if (hoverEnabled && util::contains(hoveredIndices_, index)) {
+                return properties_.hoverColor_.get();
+            } else if (color_) {
+                return properties_.tf_.get().sample(normalizeValue(buffer->getAsDouble(index)));
+            } else {
+                return properties_.pointColor_.get();
+            }
+        };
+
         uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
         for (auto &index : selectedIndices) {
             const vec2 pLower(xyPairs[index].x);
             const vec2 pUpper(xyPairs[index].x, xyPairs[index].y);
 
+            const vec4 color = getColor(index);
             if (detail::insideRect(pLower, rectMin, rectMax)) {
-                vertices.push_back(
-                    std::make_tuple(pLower, properties_.pointColor_.get(), index + 1));
+                vertices.push_back(std::make_tuple(pLower, color, getGlobalPickId(index)));
                 indicesPoints.push_back(indexOffset++);
             }
             if (detail::insideRect(pUpper, rectMin, rectMax)) {
-                vertices.push_back(
-                    std::make_tuple(pUpper, properties_.pointColor_.get(), index + 1));
+                vertices.push_back(std::make_tuple(pUpper, color, getGlobalPickId(index)));
                 indicesPoints.push_back(indexOffset++);
             }
         }
@@ -378,17 +411,9 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
     mesh.addVertices(vertices);
     LogGLError(__FILE__, __FUNCTION__, __LINE__);
 
-    // mesh.addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
-    //                 util::makeIndexBuffer(std::move(indicesDiag)));
-    // mesh.addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
-    //                 util::makeIndexBuffer(std::move(indicesPoints)));
-    // mesh.addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
-    //                 util::makeIndexBuffer(std::move(indicesLines)));
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo());
 
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     vec2 minmaxX = useAxisRanges ? vec2(properties_.xAxis_.range_.get()) : minmaxX_;
@@ -404,6 +429,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
     utilgl::setShaderUniforms(lineShader_, mesh, "geometry");
 
     renderLines(dims, indicesDiag, indicesLines);
+    lineShader_.deactivate();
 
     if (properties_.showPoints_.get()) {
         pointShader_.activate();
@@ -412,6 +438,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
         pointShader_.setUniform("margins", margins);
 
         renderPoints(dims, indicesPoints);
+        pointShader_.deactivate();
     }
 
     renderAxis(dims);
@@ -441,34 +468,14 @@ void PersistenceDiagramPlotGL::renderLines(const size2_t &dims,
 
 void PersistenceDiagramPlotGL::renderPoints(const size2_t &dims,
                                             const std::vector<uint32_t> &indices) {
-    TextureUnitContainer cont;
     pointShader_.setUniform("pixelSize", vec2(1.0f) / vec2(dims));
     pointShader_.setUniform("dims", ivec2(dims));
     pointShader_.setUniform("maxRadius", properties_.radius_.get());
     pointShader_.setUniform("borderWidth", properties_.borderWidth_.get());
     pointShader_.setUniform("borderColor", properties_.borderColor_.get());
 
-    if (color_) {
-        utilgl::bindAndSetUniforms(pointShader_, cont, properties_.tf_);
-        pointShader_.setUniform("minmaxC", minmaxC_);
-        pointShader_.setUniform("has_color", 1);
-
-        auto cbuf = color_->getRepresentation<BufferGL>();
-        auto cbufObj = cbuf->getBufferObject();
-        glEnableVertexAttribArray((GLuint)3);
-        cbufObj->bind();
-        glVertexAttribPointer(3, cbufObj->getGLFormat().channels, cbufObj->getGLFormat().type,
-                              GL_FALSE, 0, (void *)nullptr);
-    } else {
-        pointShader_.setUniform("has_color", 0);
-        pointShader_.setUniform("default_color", properties_.pointColor_.get());
-    }
-
     glDrawElements(GL_POINTS, static_cast<uint32_t>(indices.size()), GL_UNSIGNED_INT,
                    indices.data());
-    if (color_) {
-        glDisableVertexAttribArray(3);
-    }
 }
 
 void PersistenceDiagramPlotGL::setXAxisLabel(const std::string &label) {
@@ -525,6 +532,15 @@ void PersistenceDiagramPlotGL::setColorData(std::shared_ptr<const BufferBase> bu
     properties_.tf_.setVisible(buffer != nullptr);
 }
 
+void PersistenceDiagramPlotGL::setIndexColumn(
+    std::shared_ptr<const TemplateColumn<uint32_t>> indexcol) {
+    indexColumn_ = indexcol;
+
+    if (indexColumn_) {
+        picking_.resize(indexColumn_->getSize());
+    }
+}
+
 void PersistenceDiagramPlotGL::renderAxis(const size2_t &dims) {
 
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
@@ -539,6 +555,72 @@ void PersistenceDiagramPlotGL::renderAxis(const size2_t &dims) {
     // draw vertical axis
     axisRenderers_[1].render(dims, lowerLeft + size2_t(0, padding),
                              size2_t(lowerLeft.x, upperRight.y - padding));
+}
+
+void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
+    auto idToDataFrameIndex = [this](uint32_t id) -> std::tuple<bool, uint32_t> {
+        if (!indexColumn_) {
+            return {false, 0};
+        }
+
+        auto &indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
+        auto it = util::find(indexCol, static_cast<uint32_t>(id));
+        if (it != indexCol.end()) {
+            return {true, *it};
+        } else {
+            return {false, 0};
+        }
+    };
+
+    const uint32_t id = static_cast<uint32_t>(p->getPickedId());
+    auto rowIndex = idToDataFrameIndex(id);
+
+    if (p->getState() == PickingState::Started) {
+        hoveredIndices_.insert(id);
+        processor_->invalidate(InvalidationLevel::InvalidOutput);
+    } else if (p->getState() == PickingState::Finished) {
+        hoveredIndices_.erase(id);
+        processor_->invalidate(InvalidationLevel::InvalidOutput);
+    }
+
+    auto logRowData = [&]() {
+        if (std::get<0>(rowIndex) && xAxis_ && yAxis_) {
+            LogWarn("Index: " << std::get<1>(rowIndex) << "\n"
+                              << properties_.xAxis_.getTitle() << ": "
+                              << xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id) << "\n"
+                              << properties_.yAxis_.getTitle() << ": "
+                              << yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id));
+        }
+    };
+
+    if (p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = p->getEventAs<MouseEvent>();
+        if (me->button() == MouseButton::Left) {
+            if (me->state() == MouseState::Release) {
+                // print information on current element
+                logRowData();
+            }
+            me->markAsUsed();
+        }
+    } else if (p->getEvent()->hash() == TouchEvent::chash()) {
+        auto touchEvent = p->getEventAs<TouchEvent>();
+
+        if (touchEvent->touchPoints().size() == 1) {
+            // allow interaction only for a single touch point
+            const auto &touchPoint = touchEvent->touchPoints().front();
+
+            if (touchPoint.state() == TouchState::Started) {
+                // print information on current element
+                logRowData();
+            }
+            p->markAsUsed();
+        }
+    }
+}
+
+uint32_t PersistenceDiagramPlotGL::getGlobalPickId(uint32_t localIndex) const {
+    return static_cast<uint32_t>(picking_.getPickingId(localIndex));
 }
 
 }  // namespace plot
