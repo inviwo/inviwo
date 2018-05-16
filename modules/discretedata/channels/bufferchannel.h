@@ -69,7 +69,7 @@ public:
     *   @param name Name associated with the channel
     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
     */
-    BufferChannel(std::vector<T>& data, ind numComponents, const std::string& name,
+    BufferChannel(const std::vector<T>& data, ind numComponents, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T>(numComponents, name, definedOn), buffer_(data) {
         ivwAssert(data.size() % numComponents == 0, "Data size not multiple of numComponents.");
