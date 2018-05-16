@@ -114,10 +114,10 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
         scatterPlotproperties_.color_.setVisible(buf == nullptr);
     });
 
-    correlectionTF_.get().clearPoints();
-    correlectionTF_.get().addPoint(0.0f, vec4(1, 0, 0, 1));
-    correlectionTF_.get().addPoint(0.5f, vec4(1, 1, 1, 1));
-    correlectionTF_.get().addPoint(1.0f, vec4(0, 0, 1, 1));
+    correlectionTF_.get().clear();
+    correlectionTF_.get().add(0.0, vec4(1, 0, 0, 1));
+    correlectionTF_.get().add(0.5, vec4(1, 1, 1, 1));
+    correlectionTF_.get().add(1.0, vec4(0, 0, 1, 1));
     correlectionTF_.setCurrentStateAsDefault();
 
     labels_.addProperty(fontSize_);

@@ -43,11 +43,12 @@ uniform float borderWidth = 1;
 in vec4 vColor[1];
 in float vRadius[1];
 in float vDepth[1];
+flat in vec4 pickColors_[1];
 
 out vec4 gColor;
 out vec2 gPos;
-out float gDepth;
 out float gR;
+flat out vec4 pickColor_;
 
 void emit(vec2 c, float r, int x, int y) {
 
@@ -55,9 +56,8 @@ void emit(vec2 c, float r, int x, int y) {
 
     vec2 pos =  vec2(outerRadius * x, outerRadius * y);
 
-    gl_Position = vec4(getGLPositionFromPixel(c + pos), 0, 1);
+    gl_Position = vec4(getGLPositionFromPixel(c + pos), vDepth[0], 1);
     gColor = vColor[0];
-    gDepth = vDepth[0];
     gR = outerRadius;
     gPos = pos;
     EmitVertex();
@@ -83,6 +83,8 @@ void main(void) {
     }
 
     c = getPixelCoordsWithSpacing(c);
+
+    pickColor_ = pickColors_[0];
 
     emit(c, vRadius[0], 1, 1);
     emit(c, vRadius[0], 1, -1);
