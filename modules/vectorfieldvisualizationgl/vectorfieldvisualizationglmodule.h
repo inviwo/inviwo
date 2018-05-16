@@ -52,7 +52,6 @@ private:
 
 
     private:
-        bool integralLineTracerMetaDataProperty(TxElement* root);
         int version_;
     };
 };

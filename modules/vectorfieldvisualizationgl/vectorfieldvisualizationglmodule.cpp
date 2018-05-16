@@ -76,7 +76,7 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<VectorFieldGenerator4D>();
 }
 
-int VectorFieldVisualizationGLModule::getVersion() const { return 3; }
+int VectorFieldVisualizationGLModule::getVersion() const { return 1; }
 
 std::unique_ptr<VersionConverter> VectorFieldVisualizationGLModule::getConverter(
     int version) const {
@@ -108,54 +108,12 @@ bool VectorFieldVisualizationGLModule::Converter::convert(TxElement* root) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
         }
-        case 1: {
-            for (const auto& fromTO : std::vector<std::pair<std::string, std::string>>{
-                     {"StreamLines", "StreamLinesDepricated"},
-                     {"PathLines", "PathLinesDepricated"},
-                     {"StreamLines2", "StreamLines3D"},
-                     {"PathLines2", "PathLines3D"},
-                     {"SeedPointGenerator", "SeedPointGenerator3D"}}) {
-                res |= xml::changeAttribute(
-                    root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
-                    "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
-            }
-        }
-        case 2: {
-            res |= integralLineTracerMetaDataProperty(root);
-        }
             return res;
 
         default:
             return false;  // No changes
     }
     return true;
-}
-
-bool VectorFieldVisualizationGLModule::Converter::integralLineTracerMetaDataProperty(
-    TxElement* root) {
-    std::vector<xml::ElementMatcher> selectors;
-    xml::ElementMatcher popertiesMatcher;
-    popertiesMatcher.name = "Properties";
-    for (std::string id : {/*"PathLines", "StreamLines",*/ "StreamLines2D"}) {
-        auto kind = xml::Kind::processor("org.inviwo." + id);
-        selectors.insert(selectors.end(), kind.getMatchers().begin(), kind.getMatchers().end());
-        selectors.push_back(popertiesMatcher);
-    }
-    bool res = false;
-    xml::visitMatchingNodes(root, selectors, [&res, this](TxElement* node) {
-        for (std::string id : {"calculateCurvature", "calculateTortuosity"}) {
-            TxElement prop("Property");
-            prop.SetAttribute("type", "org.inviwo.BoolProperty");
-            prop.SetAttribute("identifier", id);
-            TxElement val("value");
-            val.SetAttribute("content", "1");
-            prop.InsertEndChild(val);
-            node->InsertEndChild(prop);
-        }
-        res |= true;
-    });
-
-    return res;
 }
 
 }  // namespace inviwo

@@ -55,6 +55,7 @@ private:
         bool updateAllowLooping(TxElement* node);
 
     private:
+        bool integralLineTracerMetaDataProperty(TxElement* root);
         int version_;
     };
 
