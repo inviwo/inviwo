@@ -77,9 +77,9 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     tf_.setVisible(!color_.getVisible());
     minRadius_.setVisible(false);
 
-    tf_.get().clearPoints();
-    tf_.get().addPoint(0.0f, vec4(1));
-    tf_.get().addPoint(1.0f, vec4(1));
+    tf_.get().clear();
+    tf_.get().add(0.0, vec4(1));
+    tf_.get().add(1.0, vec4(1));
     tf_.setCurrentStateAsDefault();
 }
 

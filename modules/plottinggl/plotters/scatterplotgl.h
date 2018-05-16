@@ -45,6 +45,8 @@
 
 namespace inviwo {
 
+using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
+
 namespace plot {
 
 class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {

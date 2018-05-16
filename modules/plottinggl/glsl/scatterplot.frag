@@ -29,8 +29,8 @@
 
 in vec4 gColor;
 in vec2 gPos;
-in float gDepth;
 in float gR;
+flat in vec4 pickColor_;
 
 uniform int circle = 1;
 uniform float borderWidth = 1;
@@ -47,11 +47,11 @@ void main(void) {
     }
     if (r > gR) {
         discard;
-		FragData0 = vec4(1.0, 0.0, 0.0, 1.0);
-		return;
+        FragData0 = vec4(1.0, 0.0, 0.0, 1.0);
+        return;
     }
 
-	float glyphRadius = gR - borderWidth;
+    float glyphRadius = gR - borderWidth;
 
     // pseudo antialiasing with the help of the alpha channel
     // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
@@ -63,5 +63,6 @@ void main(void) {
     vec4 color = mix(gColor, borderColor, borderValue);
 
     FragData0 = vec4(color.rgb, color.a * borderAlpha);
-    gl_FragDepth = gDepth;
+    
+    PickingData = pickColor_;
 }
