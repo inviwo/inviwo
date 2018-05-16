@@ -33,6 +33,7 @@
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
@@ -45,6 +46,7 @@
 
 namespace inviwo {
 
+class PickingEvent;
 using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
 
 namespace plot {

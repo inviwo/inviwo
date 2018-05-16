@@ -35,10 +35,12 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 
 #include <tuple>
 
@@ -377,7 +379,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
             return (value - range.x) / (range.y - range.x);
         };
         auto colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
-        
+
         auto getColor = [
             this, hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
             buffer = colorBuffer, normalizeValue
