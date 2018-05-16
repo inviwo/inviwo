@@ -35,37 +35,41 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/foreach.h>
 #include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
-//#include <modules/vectorfieldvisualization/vectorvisnetworkconverter.h>
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-#include <inviwo/core/ports/datainport.h>
 
 namespace inviwo {
 
 template <typename Tracer>
 class IntegralLineTracerProcessor : public Processor {
 public:
-    //friend void vectorvis::convertProcessor(StreamLinesDeprecated*);
-    //friend void vectorvis::convertProcessor(StreamRibbonsDeprecated*);
-    //friend void vectorvis::convertProcessor(PathLinesDeprecated*);
-
 
     IntegralLineTracerProcessor()
         : sampler_("sampler")
         , seeds_("seeds")
         , annotationSamplers_("annotationSamplers")
         , lines_("lines")
-        , properties_("properties", "Properties") {
+        , properties_("properties", "Properties")
+
+        , metaData_("metaData", "Meta Data")
+        , calculateCurvature_("calculateCurvature", "Calculate Curvature", false)
+        , calculateTortuosity_("calculateTortuosity", "Calculate Tortuosity", false) {
         addPort(sampler_);
         addPort(seeds_);
         addPort(annotationSamplers_);
         addPort(lines_);
 
         addProperty(properties_);
+        addProperty(metaData_);
+        metaData_.addProperty(calculateCurvature_);
+        metaData_.addProperty(calculateTortuosity_);
 
         properties_.normalizeSamples_.set(!Tracer::IsTimeDependent);
         properties_.normalizeSamples_.setCurrentStateAsDefault();
@@ -77,8 +81,7 @@ public:
     virtual void process() override {
         auto sampler = sampler_.getData();
         auto lines = std::make_shared<IntegralLineSet>(mat4(1));
-        // auto lines =
-        // std::make_shared<IntegralLineSet>(sampler->getModelMatrix(),sampler->getWorldMatrix());
+
         Tracer tracer(sampler, properties_);
         tracer.setTransformToWorldSpace(true);
 
@@ -102,8 +105,12 @@ public:
             startID += seeds->size();
         }
 
-        util::curvature(*lines);
-        util::tortuosity(*lines);
+        if (calculateCurvature_) {
+            util::curvature(*lines);
+        }
+        if (calculateTortuosity_) {
+            util::tortuosity(*lines);
+        }
 
         lines_.setData(lines);
     }
@@ -118,6 +125,10 @@ private:
     IntegralLineSetOutport lines_;
 
     IntegralLineProperties properties_;
+
+    CompositeProperty metaData_;
+    BoolProperty calculateCurvature_;
+    BoolProperty calculateTortuosity_;
 };
 
 using StreamLines2D = IntegralLineTracerProcessor<StreamLine2DTracer>;
@@ -141,7 +152,7 @@ template <>
 struct ProcessorTraits<StreamLines3D> {
     static ProcessorInfo getProcessorInfo() {
         return {
-            "org.inviwo.StreamLines2",  // Class identifier
+            "org.inviwo.StreamLines3D",  // Class identifier
             "Stream Lines 3D",          // Display name
             "Integral Line Tracer",     // Category
             CodeState::Experimental,    // Code state
@@ -154,8 +165,8 @@ template <>
 struct ProcessorTraits<PathLines3D> {
     static ProcessorInfo getProcessorInfo() {
         return {
-            "org.inviwo.PathLines2",  // Class identifier
-            "Path Lines 3D",             // Display name
+            "org.inviwo.PathLines3D",  // Class identifier
+            "Path Lines 3D",          // Display name
             "Integral Line Tracer",   // Category
             CodeState::Experimental,  // Code state
             Tags::CPU                 // Tags

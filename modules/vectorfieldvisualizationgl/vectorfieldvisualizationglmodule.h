@@ -50,7 +50,9 @@ private:
         Converter(int version);
         virtual bool convert(TxElement* root) override;
 
+
     private:
+        bool integralLineTracerMetaDataProperty(TxElement* root);
         int version_;
     };
 };
