@@ -32,6 +32,7 @@
 #include <modules/opengl/buffer/bufferobject.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/processors/processor.h>
@@ -560,16 +561,16 @@ void PersistenceDiagramPlotGL::renderAxis(const size2_t &dims) {
 void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
     auto idToDataFrameIndex = [this](uint32_t id) -> std::tuple<bool, uint32_t> {
         if (!indexColumn_) {
-            return {false, 0};
+            return std::tuple<bool, uint32_t>{false, 0};
         }
 
         auto &indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         auto it = util::find(indexCol, static_cast<uint32_t>(id));
         if (it != indexCol.end()) {
-            return {true, *it};
+            return std::tuple<bool, uint32_t>{true, *it};
         } else {
-            return {false, 0};
+            return std::tuple<bool, uint32_t>{false, 0};
         }
     };
 
