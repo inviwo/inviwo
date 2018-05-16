@@ -39,11 +39,11 @@
 namespace inviwo {
 
 const ProcessorInfo PathLinesDeprecated::processorInfo_{
-    "org.inviwo.PathLines",        // Class identifier
-    "Path Lines",                  // Display name
-    "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
-    Tags::CPU,                     // Tags
+    "org.inviwo.PathLinesDepricated",  // Class identifier
+    "Path Lines",                      // Display name
+    "Vector Field Visualization",      // Category
+    CodeState::Experimental,           // Code state
+    Tags::CPU,                         // Tags
 };
 
 const ProcessorInfo PathLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
@@ -96,7 +96,7 @@ PathLinesDeprecated::PathLinesDeprecated()
 
     maxVelocity_.setReadOnly(true);
     allowLooping_.setVisible(false);
-        
+
     addProperty(pathLineProperties_);
     addProperty(tf_);
     addProperty(coloringMethod_);

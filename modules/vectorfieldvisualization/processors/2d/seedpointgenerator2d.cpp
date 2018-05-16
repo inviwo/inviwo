@@ -36,20 +36,20 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SeedPointGenerator2D::processorInfo_{
     "org.inviwo.SeedPointGenerator2D",  // Class identifier
-    "Seed Point Generator2D",           // Display name
+    "Seed Point Generator 2D",          // Display name
     "Data Creation",                    // Category
     CodeState::Experimental,            // Code state
     Tags::None,                         // Tags
 };
-const ProcessorInfo SeedPointGenerator2D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo SeedPointGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
 SeedPointGenerator2D::SeedPointGenerator2D()
     : Processor()
     , seeds_("seeds")
 
-    ,generator_("generator","Generator" , {{"random","Random" , Generator::Random},{"haltonSequence","Halton Sequence" , Generator::HaltonSequence}})
+    , generator_("generator", "Generator",
+                 {{"random", "Random", Generator::Random},
+                  {"haltonSequence", "Halton Sequence", Generator::HaltonSequence}})
 
     , numPoints_("numPoints", "Number of points", 100, 1, 1000)
     , haltonXBase_("haltonXBase", "Base for x values", 2, 2, 32)
@@ -61,7 +61,7 @@ SeedPointGenerator2D::SeedPointGenerator2D()
     , rd_()
     , mt_(rd_())
 
-{    
+{
     addPort(seeds_);
 
     addProperty(generator_);
@@ -73,50 +73,42 @@ SeedPointGenerator2D::SeedPointGenerator2D()
     randomness_.addProperty(seed_);
     useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
 
-
     auto typeOnChange = [&]() {
         haltonXBase_.setVisible(generator_.getSelectedValue() == Generator::HaltonSequence);
         haltonYBase_.setVisible(generator_.getSelectedValue() == Generator::HaltonSequence);
-        
+
         randomness_.setVisible(generator_.getSelectedValue() == Generator::Random);
 
     };
 
     generator_.onChange(typeOnChange);
-
-
 }
-    
+
 void SeedPointGenerator2D::process() {
     auto seeds = std::make_shared<std::vector<vec2>>();
     seeds->reserve(numPoints_.get());
-    
-    switch (generator_.get())
-    {
-    case Generator::Random:
-    {
-        std::uniform_real_distribution<float> dis(0, 1);
-        seeds->resize(numPoints_.get());
-        util::randomSequence<float>(reinterpret_cast<float*>(seeds->data()), numPoints_.get() * 2,
-                                    mt_, dis);
-        break;
-    }
-    case Generator::HaltonSequence:
-    {
-        auto x = util::haltonSequence<float>(haltonXBase_.get(), numPoints_);
-        auto y = util::haltonSequence<float>(haltonYBase_.get(), numPoints_);
-        for(auto && it : util::zip(x,y)){
-            seeds->emplace_back(get<0>(it),get<1>(it));
+
+    switch (generator_.get()) {
+        case Generator::Random: {
+            std::uniform_real_distribution<float> dis(0, 1);
+            seeds->resize(numPoints_.get());
+            util::randomSequence<float>(reinterpret_cast<float*>(seeds->data()),
+                                        numPoints_.get() * 2, mt_, dis);
+            break;
         }
-    }
+        case Generator::HaltonSequence: {
+            auto x = util::haltonSequence<float>(haltonXBase_.get(), numPoints_);
+            auto y = util::haltonSequence<float>(haltonYBase_.get(), numPoints_);
+            for (auto&& it : util::zip(x, y)) {
+                seeds->emplace_back(get<0>(it), get<1>(it));
+            }
+        }
 
-    default:
-        break;
+        default:
+            break;
     }
-
 
     seeds_.setData(seeds);
 }
 
-} // namespace
-
+}  // namespace inviwo
