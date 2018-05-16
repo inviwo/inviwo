@@ -312,7 +312,6 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         // sort according to radii, larger first
         radius_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [this, &indices](auto bufferpr) {
-                using ValueType = util::PrecsionValueType<decltype(bufferpr)>;
                 auto &radii = bufferpr->getDataContainer();
                 std::sort(
                     indices.begin(), indices.end(),
@@ -441,16 +440,14 @@ void ScatterPlotGL::renderAxis(const size2_t &dims) {
 void ScatterPlotGL::objectPicked(PickingEvent *p) {
     auto idToDataFrameIndex = [this](uint32_t id) -> std::tuple<bool, uint32_t> {
         if (!indexColumn_) {
-            return {false, 0};
+            return std::tuple<bool, uint32_t>{false, 0};
         }
-
         auto &indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-
         auto it = util::find(indexCol, static_cast<uint32_t>(id));
         if (it != indexCol.end()) {
-            return {true, *it};
+            return std::tuple<bool, uint32_t>{true, *it};
         } else {
-            return {false, 0};
+            return std::tuple<bool, uint32_t>{false, 0};
         }
     };
 

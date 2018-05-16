@@ -27,31 +27,37 @@
  *
  *********************************************************************************/
 
-#include <modules/plottinggl/plottingglmodule.h>
-#include <modules/plotting/plottingmodule.h>
+layout(location = 4) in uint in_PickId;
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include "plotting/common.glsl"
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/pickingutils.glsl"
 
-#include <modules/plottinggl/processors/axisrenderprocessor.h>
-#include <modules/plottinggl/processors/parallelcoordinates.h>
-#include <modules/plottinggl/processors/scatterplotmatrixprocessor.h>
-#include <modules/plottinggl/processors/scatterplotprocessor.h>
-#include <modules/plottinggl/processors/volumeaxis.h>
-#include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
+uniform sampler2D transferFunction;
 
-namespace inviwo {
+uniform vec2 minmaxX;
+uniform vec2 minmaxY;
 
-PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "PlottingGL") {
+uniform float maxRadius;
 
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+uniform bool pickingEnabled = true;
 
-    registerProcessor<plot::AxisRenderProcessor>();
-    registerProcessor<plot::ParallelCoordinates>();
-    registerProcessor<plot::PersistenceDiagramPlotProcessor>();
-    registerProcessor<plot::ScatterPlotMatrixProcessor>();
-    registerProcessor<plot::ScatterPlotProcessor>();
-    registerProcessor<plot::VolumeAxis>();
+out vec4 vColor;
+out float vRadius;
+out float vDepth;
+flat out vec4 pickColors_;
+
+float norm(in float v, in vec2 mm) { 
+    return (v - mm.x) / (mm.y - mm.x); 
 }
 
-}  // namespace inviwo
+void main(void) {   
+    vColor = in_Color;
+    vRadius = maxRadius;
+    vDepth = 0.5;
+    
+    vec2 point = vec2(norm(in_Vertex.x, minmaxX), norm(in_Vertex.y, minmaxY));
+    gl_Position = vec4(point, 0.5, 1.0);
+    pickColors_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
+}

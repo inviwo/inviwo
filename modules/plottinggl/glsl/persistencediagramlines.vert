@@ -27,31 +27,39 @@
  *
  *********************************************************************************/
 
-#include <modules/plottinggl/plottingglmodule.h>
-#include <modules/plotting/plottingmodule.h>
+layout(location = 4) in uint in_PickId;
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include "plotting/common.glsl"
+#include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
-#include <modules/plottinggl/processors/axisrenderprocessor.h>
-#include <modules/plottinggl/processors/parallelcoordinates.h>
-#include <modules/plottinggl/processors/scatterplotmatrixprocessor.h>
-#include <modules/plottinggl/processors/scatterplotprocessor.h>
-#include <modules/plottinggl/processors/volumeaxis.h>
-#include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
+uniform GeometryParameters geometry;
 
-namespace inviwo {
+// initialize camera matrices with the identity matrix to enable default rendering
+// without any transformation, i.e. all lines in clip space
+uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
+                                    mat4(1), mat4(1), vec3(0), 0, 1);
 
-PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "PlottingGL") {
+uniform vec2 minmaxX;
+uniform vec2 minmaxY;
 
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+uniform bool pickingEnabled = false;
 
-    registerProcessor<plot::AxisRenderProcessor>();
-    registerProcessor<plot::ParallelCoordinates>();
-    registerProcessor<plot::PersistenceDiagramPlotProcessor>();
-    registerProcessor<plot::ScatterPlotMatrixProcessor>();
-    registerProcessor<plot::ScatterPlotProcessor>();
-    registerProcessor<plot::VolumeAxis>();
+out vec4 worldPosition_;
+out vec4 vertexColor_;
+flat out vec4 pickColors_;
+ 
+float norm(in float v, in vec2 mm) { 
+    return (v - mm.x) / (mm.y - mm.x); 
 }
 
-}  // namespace inviwo
+void main() {
+    vertexColor_ = in_Color;
+
+    worldPosition_ = in_Vertex;
+
+    vec2 point = vec2(norm(in_Vertex.x, minmaxX), norm(in_Vertex.y, minmaxY));
+
+    gl_Position = vec4(getGLPositionFromPixel(getPixelCoordsWithSpacing(point)), 0.5, 1.0);
+    pickColors_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
+}
