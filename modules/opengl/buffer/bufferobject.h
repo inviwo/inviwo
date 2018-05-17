@@ -60,6 +60,13 @@ public:
     void unbind() const;
 
     /**
+     * \brief bind the buffer object and set the vertex attribute pointer
+     *
+     * @param location   used to set the vertex attribute location
+     */
+    void bindAndSetAttribPointer(GLuint location) const;
+
+    /**
      * Set the size of the buffer in bytes.
      * Convenience function for calling initialize(nullptr, sizeInBytes)
      * @param sizeInBytes

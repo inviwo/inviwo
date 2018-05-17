@@ -47,13 +47,13 @@ BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, Buf
             break;
     }
     switch (target) {
-    case BufferTarget::Index:
-        target_ = GL_ELEMENT_ARRAY_BUFFER;
-        break;
-    case BufferTarget::Data:
-    default:
-        target_ = GL_ARRAY_BUFFER;
-        break;
+        case BufferTarget::Index:
+            target_ = GL_ELEMENT_ARRAY_BUFFER;
+            break;
+        case BufferTarget::Data:
+        default:
+            target_ = GL_ARRAY_BUFFER;
+            break;
     }
 
     glGenBuffers(1, &id_);
@@ -76,7 +76,7 @@ BufferObject::BufferObject(const BufferObject& rhs)
 
 BufferObject::BufferObject(BufferObject&& rhs)
     : Observable<BufferObjectObserver>(std::move(rhs))
-    , id_(rhs.id_) // Steal buffer
+    , id_(rhs.id_)  // Steal buffer
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
@@ -105,7 +105,6 @@ BufferObject& BufferObject::operator=(const BufferObject& rhs) {
         glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
         // Copy data (OpenGL 3.1 functionality...)
         glCopyBufferSubData(GL_COPY_READ_BUFFER, target_, 0, 0, sizeInBytes_);
-
     }
     return *this;
 }
@@ -130,7 +129,7 @@ BufferObject& BufferObject::operator=(BufferObject&& rhs) {
 
         // Release resources from source object
         rhs.id_ = 0;
-        
+
         forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });
     }
     return *this;
@@ -150,9 +149,18 @@ void BufferObject::bind() const { glBindBuffer(target_, id_); }
 
 void BufferObject::unbind() const { glBindBuffer(target_, 0); }
 
-void BufferObject::setSize(GLsizeiptr sizeInBytes) {
-    initialize(nullptr, sizeInBytes);
+void BufferObject::bindAndSetAttribPointer(GLuint location) const {
+    bind();
+    if (getDataFormat()->getNumericType() == NumericType::Float) {
+        glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type, GL_FALSE, 0,
+                              (void*)nullptr);
+    } else {
+        glVertexAttribIPointer(location, getGLFormat().channels, getGLFormat().type, 0,
+                               (void*)nullptr);
+    }
 }
+
+void BufferObject::setSize(GLsizeiptr sizeInBytes) { initialize(nullptr, sizeInBytes); }
 
 void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     sizeInBytes_ = sizeInBytes;
@@ -189,4 +197,4 @@ void BufferObject::download(void* data) const {
     }
 }
 
-}  // namespace
+}  // namespace inviwo
