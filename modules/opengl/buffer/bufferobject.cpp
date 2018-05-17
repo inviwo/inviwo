@@ -149,14 +149,48 @@ void BufferObject::bind() const { glBindBuffer(target_, id_); }
 
 void BufferObject::unbind() const { glBindBuffer(target_, 0); }
 
-void BufferObject::bindAndSetAttribPointer(GLuint location) const {
+void BufferObject::bindAndSetAttribPointer(GLuint location, BindingType bindingType) const {
     bind();
-    if (getDataFormat()->getNumericType() == NumericType::Float) {
-        glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type, GL_FALSE, 0,
-                              (void*)nullptr);
-    } else {
-        glVertexAttribIPointer(location, getGLFormat().channels, getGLFormat().type, 0,
-                               (void*)nullptr);
+    switch (bindingType) {
+        case BindingType::Native:
+            if (getDataFormat()->getNumericType() == NumericType::Float) {
+                if (getDataFormat()->getPrecision() == static_cast<size_t>(64)) {
+                    // double
+                    glVertexAttribLPointer(location, getGLFormat().channels, GL_DOUBLE, 0,
+                                           (void*)nullptr);
+                } else {
+                    // other floating point types
+                    glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type,
+                                          GL_FALSE, 0, (void*)nullptr);
+                }
+            } else {
+                // integral types
+                glVertexAttribIPointer(location, getGLFormat().channels, getGLFormat().type, 0,
+                                       (void*)nullptr);
+            }
+            break;
+        case BindingType::ForceFloat:
+            if ((getDataFormat()->getNumericType() == NumericType::Float) &&
+                (getDataFormat()->getPrecision() == static_cast<size_t>(64))) {
+                // special case for double precision since it is not part of GLFormats
+                glVertexAttribPointer(location, getGLFormat().channels, GL_DOUBLE, GL_FALSE, 0,
+                                      (void*)nullptr);
+            } else {
+                glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type,
+                                      GL_FALSE, 0, (void*)nullptr);
+            }
+            break;
+        case BindingType::ForceNormalizedFloat:
+            if ((getDataFormat()->getNumericType() == NumericType::Float) &&
+                (getDataFormat()->getPrecision() == static_cast<size_t>(64))) {
+                // special case for double precision since it is not part of GLFormats
+                glVertexAttribPointer(location, getGLFormat().channels, GL_DOUBLE, GL_FALSE, 0,
+                                      (void*)nullptr);
+            } else {
+                glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type, GL_TRUE,
+                                      0, (void*)nullptr);
+            }
+            break;
     }
 }
 
