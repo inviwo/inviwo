@@ -165,24 +165,26 @@ PersistenceDiagramPlotGL::Properties *PersistenceDiagramPlotGL::Properties::clon
     return new Properties(*this);
 }
 
-PersistenceDiagramPlotGL::PersistenceDiagramPlotGL()
+PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
     : properties_("persistenceDiagram", "PersistenceDiagram")
     , pointShader_("persistencediagram.vert", "scatterplot.geom", "scatterplot.frag")
     , lineShader_("persistencediagramlines.vert", "linerenderer.geom", "linerenderer.frag")
     , xAxis_(nullptr)
     , yAxis_(nullptr)
     , color_(nullptr)
-    , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}}) {
-    properties_.hovering_.onChange([this]() { picking_.setEnabled(properties_.hovering_.get()); });
-}
+    , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
+    , picking_(processor, 1, [this](PickingEvent *p) { objectPicked(p); })
+    , processor_(processor) {
 
-PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
-    : PersistenceDiagramPlotGL() {
-    processor_ = processor;
-    picking_ = PickingMapper(processor, 1, [this](PickingEvent *p) { objectPicked(p); });
-
-    pointShader_.onReload([=]() { processor->invalidate(InvalidationLevel::InvalidOutput); });
-    lineShader_.onReload([=]() { processor->invalidate(InvalidationLevel::InvalidOutput); });
+    if (processor_) {
+        pointShader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
+        lineShader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
+    }
+    properties_.hovering_.onChange([this]() {
+        if (!properties_.hovering_.get()) {
+            hoveredIndices_.clear();
+        }
+    });
 }
 
 void PersistenceDiagramPlotGL::plot(Image &dest, IndexBuffer *indices, bool useAxisRanges) {
@@ -400,6 +402,7 @@ void PersistenceDiagramPlotGL::renderPoints(const size2_t &dims,
     pointShader_.setUniform("maxRadius", properties_.radius_.get());
     pointShader_.setUniform("borderWidth", properties_.borderWidth_.get());
     pointShader_.setUniform("borderColor", properties_.borderColor_.get());
+    pointShader_.setUniform("pickingEnabled", true);
 
     glDrawElements(GL_POINTS, static_cast<uint32_t>(indices.size()), GL_UNSIGNED_INT,
                    indices.data());
@@ -442,7 +445,6 @@ void PersistenceDiagramPlotGL::setYAxisData(std::shared_ptr<const BufferBase> bu
     yAxis_ = buffer;
     if (buffer) {
         auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
-        // minmaxY_.x = static_cast<float>(minmax.first.x);
         minmaxY_.y = static_cast<float>(minmax.second.x);
 
         properties_.yAxis_.setRange(dvec2(properties_.yAxis_.range_.get().x, minmaxY_.y));
@@ -505,10 +507,14 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
 
     if (p->getState() == PickingState::Started) {
         hoveredIndices_.insert(id);
-        processor_->invalidate(InvalidationLevel::InvalidOutput);
+        if (processor_) {
+            processor_->invalidate(InvalidationLevel::InvalidOutput);
+        }
     } else if (p->getState() == PickingState::Finished) {
         hoveredIndices_.erase(id);
-        processor_->invalidate(InvalidationLevel::InvalidOutput);
+        if (processor_) {
+            processor_->invalidate(InvalidationLevel::InvalidOutput);
+        }
     }
 
     auto logRowData = [&]() {

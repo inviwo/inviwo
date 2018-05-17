@@ -31,17 +31,14 @@ layout(location = 4) in uint in_PickId;
 
 #include "plotting/common.glsl"
 #include "utils/structs.glsl"
-#include "utils/sampler2d.glsl"
 #include "utils/pickingutils.glsl"
-
-uniform sampler2D transferFunction;
 
 uniform vec2 minmaxX;
 uniform vec2 minmaxY;
 
 uniform float maxRadius;
 
-uniform bool pickingEnabled = true;
+uniform bool pickingEnabled = false;
 
 out vec4 vColor;
 out float vRadius;

@@ -102,7 +102,7 @@ void ScatterPlotProcessor::process() {
         IndexBuffer indicies;
         auto &vec = indicies.getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - brushedIndicies.size());
-        
+
         auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
                      [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });

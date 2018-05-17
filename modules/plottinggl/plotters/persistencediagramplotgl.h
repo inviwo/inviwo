@@ -95,8 +95,7 @@ public:
         AxisProperty yAxis_;
     };
 
-    PersistenceDiagramPlotGL(Processor *processor);
-    PersistenceDiagramPlotGL();
+    explicit PersistenceDiagramPlotGL(Processor *processor = nullptr);
     virtual ~PersistenceDiagramPlotGL() = default;
 
     void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
@@ -151,7 +150,8 @@ protected:
 
     PickingMapper picking_;
     std::set<uint32_t> hoveredIndices_;
-    Processor *processor_ = nullptr;
+
+    Processor* processor_;
 };
 
 }  // namespace plot

@@ -33,6 +33,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
@@ -150,22 +151,25 @@ ScatterPlotGL::Properties &ScatterPlotGL::Properties::operator=(
     return *this;
 }
 
-ScatterPlotGL::ScatterPlotGL()
+ScatterPlotGL::ScatterPlotGL(Processor *processor)
     : properties_("scatterplot", "Scatterplot")
     , shader_("scatterplot.vert", "scatterplot.geom", "scatterplot.frag")
     , xAxis_(nullptr)
     , yAxis_(nullptr)
     , color_(nullptr)
     , radius_(nullptr)
-    , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}}) {
-    properties_.hovering_.onChange([this]() { if (!properties_.hovering_.get()) { hoveredIndices_.clear(); } });
-}
+    , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
+    , picking_(processor, 1, [this](PickingEvent *p) { objectPicked(p); })
+    , processor_(processor) {
 
-ScatterPlotGL::ScatterPlotGL(Processor *processor) : ScatterPlotGL() {
-    processor_ = processor;
-    picking_ = PickingMapper(processor, 1, [this](PickingEvent *p) { objectPicked(p); });
-
-    shader_.onReload([=]() { processor->invalidate(InvalidationLevel::InvalidOutput); });
+    if (processor_) {
+        shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
+    }
+    properties_.hovering_.onChange([this]() {
+        if (!properties_.hovering_.get()) {
+            hoveredIndices_.clear();
+        }
+    });
 }
 
 void ScatterPlotGL::plot(Image &dest, IndexBuffer *indices, bool useAxisRanges) {
@@ -274,7 +278,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     shader_.setUniform("minRadius", minRadius);
     shader_.setUniform("maxRadius", maxRadius);
     shader_.setUniform("margins", margins);
-    
+
     utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     if (radius_) {
@@ -316,8 +320,9 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         // draw hovered points on top
         shader_.setUniform("has_color", 0);
         shader_.setUniform("default_color", properties_.hoverColor_.get());
-        glDrawElements(GL_POINTS, static_cast<uint32_t>(hoveredIndices_.size()), GL_UNSIGNED_INT,
-                       std::vector<uint32_t>(hoveredIndices_.begin(), hoveredIndices_.end()).data());
+        glDrawElements(
+            GL_POINTS, static_cast<uint32_t>(hoveredIndices_.size()), GL_UNSIGNED_INT,
+            std::vector<uint32_t>(hoveredIndices_.begin(), hoveredIndices_.end()).data());
     }
 
     shader_.deactivate();
@@ -447,10 +452,14 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
     if (properties_.hovering_.get()) {
         if (p->getState() == PickingState::Started) {
             hoveredIndices_.insert(id);
-            processor_->invalidate(InvalidationLevel::InvalidOutput);
+            if (processor_) {
+                processor_->invalidate(InvalidationLevel::InvalidOutput);
+            }
         } else if (p->getState() == PickingState::Finished) {
             hoveredIndices_.erase(id);
-            processor_->invalidate(InvalidationLevel::InvalidOutput);
+            if (processor_) {
+                processor_->invalidate(InvalidationLevel::InvalidOutput);
+            }
         }
     }
 

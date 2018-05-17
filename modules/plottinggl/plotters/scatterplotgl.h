@@ -46,6 +46,7 @@
 
 namespace inviwo {
 
+class Processor;
 class PickingEvent;
 using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
 
@@ -84,8 +85,7 @@ public:
         AxisProperty yAxis_;
     };
 
-    ScatterPlotGL(Processor *processor);
-    ScatterPlotGL();
+    explicit ScatterPlotGL(Processor* processor = nullptr);
     virtual ~ScatterPlotGL() = default;
 
     void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
@@ -138,7 +138,8 @@ protected:
 
     PickingMapper picking_;
     std::set<uint32_t> hoveredIndices_;
-    Processor *processor_ = nullptr;
+
+    Processor* processor_;
 };
 
 }  // namespace plot
