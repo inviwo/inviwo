@@ -237,10 +237,10 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     glBindVertexArray(vao);
 
     glEnableVertexAttribArray((GLuint)0);
-    xbufObj->bindAndSetAttribPointer((GLuint)0);
+    xbufObj->bindAndSetAttribPointer((GLuint)0, BufferObject::BindingType::ForceFloat);
 
     glEnableVertexAttribArray((GLuint)1);
-    ybufObj->bindAndSetAttribPointer((GLuint)1);
+    ybufObj->bindAndSetAttribPointer((GLuint)1, BufferObject::BindingType::ForceFloat);
 
     if (picking_.isEnabled() && pickIds_) {
         // bind picking buffer
@@ -258,7 +258,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         auto cbuf = color_->getRepresentation<BufferGL>();
         auto cbufObj = cbuf->getBufferObject();
         glEnableVertexAttribArray((GLuint)2);
-        cbufObj->bindAndSetAttribPointer((GLuint)2);
+        cbufObj->bindAndSetAttribPointer((GLuint)2, BufferObject::BindingType::ForceFloat);
         shader_.setUniform("has_color", 1);
     } else {
         shader_.setUniform("has_color", 0);
@@ -287,7 +287,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         auto rbuf = radius_->getRepresentation<BufferGL>();
         auto rbufObj = rbuf->getBufferObject();
         glEnableVertexAttribArray((GLuint)3);
-        rbufObj->bindAndSetAttribPointer((GLuint)3);
+        rbufObj->bindAndSetAttribPointer((GLuint)3, BufferObject::BindingType::ForceFloat);
         shader_.setUniform("has_radius", 1);
     } else {
         shader_.setUniform("has_radius", 0);
