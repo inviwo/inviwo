@@ -521,8 +521,7 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
         }
     };
 
-    if (p->getEvent()->hash() == MouseEvent::chash()) {
-        auto me = p->getEventAs<MouseEvent>();
+    if (auto me = p->getEventAs<MouseEvent>()) {
         if (me->button() == MouseButton::Left) {
             if (me->state() == MouseState::Release) {
                 // print information on current element
@@ -530,9 +529,7 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
             }
             me->markAsUsed();
         }
-    } else if (p->getEvent()->hash() == TouchEvent::chash()) {
-        auto touchEvent = p->getEventAs<TouchEvent>();
-
+    } else if (auto touchEvent = p->getEventAs<TouchEvent>()) {
         if (touchEvent->touchPoints().size() == 1) {
             // allow interaction only for a single touch point
             const auto &touchPoint = touchEvent->touchPoints().front();

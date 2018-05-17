@@ -233,23 +233,17 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     glBindVertexArray(vao);
 
     glEnableVertexAttribArray((GLuint)0);
-    xbufObj->bind();
-    glVertexAttribPointer(0, xbufObj->getGLFormat().channels, xbufObj->getGLFormat().type, GL_FALSE,
-                          0, (void *)nullptr);
+    xbufObj->bindAndSetAttribPointer((GLuint)0);
 
     glEnableVertexAttribArray((GLuint)1);
-    ybufObj->bind();
-    glVertexAttribPointer(1, ybufObj->getGLFormat().channels, ybufObj->getGLFormat().type, GL_FALSE,
-                          0, (void *)nullptr);
+    ybufObj->bindAndSetAttribPointer((GLuint)1);
 
     if (picking_.isEnabled() && pickIds_) {
         // bind picking buffer
         auto pickIdsBufferGL = pickIds_->getRepresentation<BufferGL>();
         auto pickIdsGL = pickIdsBufferGL->getBufferObject();
-        pickIdsGL->bind();
-        glVertexAttribIPointer(4, pickIdsGL->getGLFormat().channels, pickIdsGL->getGLFormat().type,
-                               0, (void *)nullptr);
         glEnableVertexAttribArray((GLuint)4);
+        pickIdsGL->bindAndSetAttribPointer((GLuint)4);
     }
     shader_.setUniform("pickingEnabled", picking_.isEnabled());
 
@@ -260,9 +254,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         auto cbuf = color_->getRepresentation<BufferGL>();
         auto cbufObj = cbuf->getBufferObject();
         glEnableVertexAttribArray((GLuint)2);
-        cbufObj->bind();
-        glVertexAttribPointer(2, cbufObj->getGLFormat().channels, cbufObj->getGLFormat().type,
-                              GL_FALSE, 0, (void *)nullptr);
+        cbufObj->bindAndSetAttribPointer((GLuint)2);
         shader_.setUniform("has_color", 1);
     } else {
         shader_.setUniform("has_color", 0);
@@ -291,9 +283,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         auto rbuf = radius_->getRepresentation<BufferGL>();
         auto rbufObj = rbuf->getBufferObject();
         glEnableVertexAttribArray((GLuint)3);
-        rbufObj->bind();
-        glVertexAttribPointer(3, rbufObj->getGLFormat().channels, rbufObj->getGLFormat().type,
-                              GL_FALSE, 0, (void *)nullptr);
+        rbufObj->bindAndSetAttribPointer((GLuint)3);
         shader_.setUniform("has_radius", 1);
     } else {
         shader_.setUniform("has_radius", 0);
@@ -482,8 +472,7 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
         }
     };
 
-    if (p->getEvent()->hash() == MouseEvent::chash()) {
-        auto me = p->getEventAs<MouseEvent>();
+    if (auto me = p->getEventAs<MouseEvent>()) {
         if (me->button() == MouseButton::Left) {
             if (me->state() == MouseState::Release) {
                 // print information on current element
@@ -491,9 +480,7 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
             }
             me->markAsUsed();
         }
-    } else if (p->getEvent()->hash() == TouchEvent::chash()) {
-        auto touchEvent = p->getEventAs<TouchEvent>();
-
+    } else if (auto touchEvent = p->getEventAs<TouchEvent>()) {
         if (touchEvent->touchPoints().size() == 1) {
             // allow interaction only for a single touch point
             const auto &touchPoint = touchEvent->touchPoints().front();
