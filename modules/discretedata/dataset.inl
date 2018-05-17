@@ -44,14 +44,6 @@ std::shared_ptr<const DataChannel<T>> DataChannelMap::getChannel(const std::stri
 }
 
 template <typename T>
-std::shared_ptr<const DataChannel<T>> DataChannelMap::getChannel(const char* name,
-                                                                 GridPrimitive definedOn) const {
-    SharedConstChannel channel = getChannel(name, definedOn);
-
-    return std::dynamic_pointer_cast<const DataChannel<T>, const Channel>(channel);
-}
-
-template <typename T>
 std::shared_ptr<const BufferChannel<T>> DataChannelMap::getAsBuffer(const std::string& name,
                                                                     GridPrimitive definedOn) const {
     SharedConstChannel channel = getChannel(name, definedOn);

@@ -106,14 +106,6 @@ public:
     std::shared_ptr<const DataChannel<T>> getChannel(
         const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex) const;
 
-    /** Returns the specified channel if it is in the desired format, returns first instance found
-    *   @param name Unique name of requested channel
-    *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
-    */
-    template <typename T>
-    std::shared_ptr<const DataChannel<T>> getChannel(
-        const char* name, GridPrimitive definedOn = GridPrimitive::Vertex) const;
-
     /** Returns the specified buffer, converts to buffer or copies
     *   @param name Unique name of requested buffer
     *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
