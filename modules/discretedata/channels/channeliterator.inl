@@ -52,4 +52,4 @@ T* inviwo::dd::ChannelIterator<T>::operator*() {
     // Always return data.
     // If the iterator is changed and dereferenced, the pointer becomes invalid.
     return Data;
-};
+}

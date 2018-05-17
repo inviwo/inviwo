@@ -59,13 +59,13 @@ public:
     //*** Random Access Iteration ***\\
 
     /** Increment randomly */
-    ChannelIterator operator+(ind offset) { return ChannelIterator(Parent, Index + offset); }
+    ChannelIterator operator+(ind offset) { return ChannelIterator<T>(Parent, Index + offset); }
 
     /** Increment randomly */
     ChannelIterator operator+=(ind offset) { Index += offset; }
 
     /** Decrement randomly */
-    ChannelIterator operator-(ind offset) { return ChannelIterator(Parent, Index - offset); }
+    ChannelIterator operator-(ind offset) { return ChannelIterator<T>(Parent, Index - offset); }
 
     /** Decrement randomly */
     ChannelIterator operator-=(ind offset) { Index -= offset; }
