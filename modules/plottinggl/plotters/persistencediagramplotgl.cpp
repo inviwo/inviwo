@@ -35,6 +35,8 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/base/algorithm/cohensutherland.h>
+
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
@@ -215,81 +217,6 @@ void PersistenceDiagramPlotGL::plot(const ivec2 &start, const ivec2 &size, Index
     plot(size, indices, useAxisRanges);
 }
 
-namespace detail {
-
-// clip line at the given rectangle using Cohen-Sutherland algorithm
-std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec2 &rectMin,
-                                                     const vec2 &rectMax) {
-    // outcodes used by algorithm:
-    //    0x0000: inside
-    //    0x0001: left
-    //    0x0010: right
-    //    0x0100: bottom
-    //    0x1000: top
-    auto getOutcode = [&](const vec2 &pos) {
-        int outcode = 0;
-        if (pos.x < rectMin.x) {
-            outcode |= 0x0001;  // on left outside
-        } else if (pos.x > rectMax.x) {
-            outcode |= 0x0010;  // on right outside
-        }
-        if (pos.y < rectMin.y) {
-            outcode |= 0x0100;  // below rect
-        } else if (pos.y > rectMax.y) {
-            outcode |= 0x1000;  // above rect
-        }
-        return outcode;
-    };
-
-    int outcodeP1 = getOutcode(p1);
-    int outcodeP2 = getOutcode(p2);
-
-    bool acceptLine = true;
-    while (true) {
-        if (!outcodeP1 && !outcodeP2) {  // both points inside -> accept
-            break;
-        } else if (outcodeP1 & outcodeP2) {  // common shared outside -> reject
-            acceptLine = false;
-            break;
-        } else {
-            // pick one outside code
-            int outcode = outcodeP1 ? outcodeP1 : outcodeP2;
-
-            // compute intersection
-            vec2 p;
-            if (outcode & 0x0001) {  // left
-                p.x = rectMin.x;
-                p.y = p1.y + (p2.y - p1.y) * (rectMin.x - p1.x) / (p2.x - p1.x);
-            } else if (outcode & 0x0010) {  // right
-                p.x = rectMax.x;
-                p.y = p1.y + (p2.y - p1.y) * (rectMax.x - p1.x) / (p2.x - p1.x);
-            } else if (outcode & 0x0100) {  // bottom
-                p.x = p1.x + (p2.x - p1.x) * (rectMin.y - p1.y) / (p2.y - p1.y);
-                p.y = rectMin.y;
-            } else if (outcode & 0x1000) {  // top
-                p.x = p1.x + (p2.x - p1.x) * (rectMax.y - p1.y) / (p2.y - p1.y);
-                p.y = rectMax.y;
-            }
-            // adjust point matching selected outcode
-            if (outcode == outcodeP1) {
-                p1 = p;
-                outcodeP1 = getOutcode(p1);
-            } else {
-                p2 = p;
-                outcodeP2 = getOutcode(p2);
-            }
-        }
-    }
-    return std::make_tuple(acceptLine, p1, p2);
-}
-
-bool insideRect(const vec2 &point, const vec2 &rectMin, const vec2 &rectMax) {
-    vec2 s = glm::step(rectMin, point) - (1.0f - glm::step(point, rectMax));
-    return s.x * s.y > 0.0;
-}
-
-}  // namespace detail
-
 void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges) {
     // create a new mesh
     using PosBuffer =
@@ -314,8 +241,8 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
 
     if (properties_.lineWidthDiagonal_.get() > 0.0f) {
         // diagonal from (x_min,x_min) to (x_max,x_max)
-        auto clipped =
-            detail::clipLineCohenSutherland(vec2(minmaxX_.x), vec2(minmaxX_.y), rectMin, rectMax);
+        auto clipped = algorithm::clipLineCohenSutherland(vec2(minmaxX_.x), vec2(minmaxX_.y),
+                                                          rectMin, rectMax);
         if (std::get<0>(clipped)) {
             uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
 
@@ -358,8 +285,8 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
         for (auto &index : selectedIndices) {
             auto &point = xyPairs[index];
 
-            auto clipped = detail::clipLineCohenSutherland(vec2(point.x), vec2(point.x, point.y),
-                                                           rectMin, rectMax);
+            auto clipped = algorithm::clipLineCohenSutherland(vec2(point.x), vec2(point.x, point.y),
+                                                              rectMin, rectMax);
             if (std::get<0>(clipped)) {
                 vertices.push_back(
                     {std::get<1>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)});
@@ -398,11 +325,11 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
             const vec2 pUpper(xyPairs[index].x, xyPairs[index].y);
 
             const vec4 color = getColor(index);
-            if (detail::insideRect(pLower, rectMin, rectMax)) {
+            if (algorithm::insideRect(pLower, rectMin, rectMax)) {
                 vertices.push_back({pLower, color, getGlobalPickId(index)});
                 indicesPoints.push_back(indexOffset++);
             }
-            if (detail::insideRect(pUpper, rectMin, rectMax)) {
+            if (algorithm::insideRect(pUpper, rectMin, rectMax)) {
                 vertices.push_back({pUpper, color, getGlobalPickId(index)});
                 indicesPoints.push_back(indexOffset++);
             }
@@ -410,7 +337,6 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
     }
 
     mesh.addVertices(vertices);
-    LogGLError(__FILE__, __FUNCTION__, __LINE__);
 
     MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo());
 
