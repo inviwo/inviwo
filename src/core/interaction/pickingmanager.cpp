@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
-
 namespace inviwo {
 
 PickingManager* PickingManager::instance_ = nullptr;
@@ -59,6 +58,11 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
     if (!pickObj) {
         pickingActions_.push_back(util::make_unique<PickingAction>(lastIndex_, size));
         lastIndex_ += size;
+        // we can only differentiate up to 2^24-1 picking IDs due to the use of u8vec3 for picking colors
+        if (lastIndex_ >= (1 << 24)) {
+            LogWarn("More than " << (1 << 24)
+                                 << " picking IDs in use. Unreliable picking behavior expected.");
+        }
         pickObj = pickingActions_.back().get();
     }
     pickObj->setAction(std::move(action));
@@ -69,7 +73,7 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
 bool PickingManager::unregisterPickingAction(const PickingAction* p) {
     auto it1 = std::find(unusedObjects_.begin(), unusedObjects_.end(), p);
     if (it1 == unusedObjects_.end()) {
-        
+
         auto it2 = util::find_if(
             pickingActions_, [p](const std::unique_ptr<PickingAction>& o) { return p == o.get(); });
 
@@ -80,7 +84,8 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
 
             // clean-up unused queue
             while (!pickingActions_.empty()) {
-                auto it = std::find(unusedObjects_.begin(), unusedObjects_.end(), pickingActions_.back().get());
+                auto it = std::find(unusedObjects_.begin(), unusedObjects_.end(),
+                                    pickingActions_.back().get());
                 if (it == unusedObjects_.end()) {
                     break;
                 }
@@ -109,7 +114,7 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
 
 PickingManager::Result PickingManager::getPickingActionFromColor(const uvec3& c) {
     auto index = colorToIndex(c);
-    if (index == 0) return {index, nullptr}; 
+    if (index == 0) return {index, nullptr};
 
     // This will find the first picking object with an start greater then index.
     auto pIt = std::upper_bound(pickingActions_.begin(), pickingActions_.end(), index,
@@ -181,5 +186,4 @@ size_t PickingManager::colorToIndex(uvec3 color) {
     return index;
 }
 
-
-}  // namespace
+}  // namespace inviwo
