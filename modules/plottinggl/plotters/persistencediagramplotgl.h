@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SCATTERPLOTGL_H
-#define IVW_SCATTERPLOTGL_H
+#ifndef IVW_PERSISTENCEDIAGRAMPLOTGL_H
+#define IVW_PERSISTENCEDIAGRAMPLOTGL_H
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/interaction/pickingmapper.h>
+
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
@@ -41,18 +46,21 @@
 #include <modules/plotting/datastructures/dataframe.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/axisproperty.h>
-
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 namespace inviwo {
 
 class Processor;
-class PickingEvent;
 using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
+class PickingEvent;
 
 namespace plot {
 
-class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {
+/**
+ * \class PersistenceDiagramPlotGL
+ * \brief base class for plotting a persistence diagram using OpenGL
+ */
+class IVW_MODULE_PLOTTINGGL_API PersistenceDiagramPlotGL {
 public:
     class Properties : public CompositeProperty {
     public:
@@ -67,10 +75,12 @@ public:
         virtual Properties *clone() const override;
         virtual ~Properties() = default;
 
-        BoolProperty useCircle_;
-        FloatProperty radiusRange_;
-        FloatProperty minRadius_;
-        FloatVec4Property color_;
+        BoolProperty showPoints_;
+        FloatProperty radius_;
+        FloatProperty lineWidth_;
+        FloatProperty lineWidthDiagonal_;
+        FloatVec4Property pointColor_;
+        FloatVec4Property lineColor_;
         FloatVec4Property hoverColor_;
         TransferFunctionProperty tf_;
         MarginProperty margins_;
@@ -85,8 +95,8 @@ public:
         AxisProperty yAxis_;
     };
 
-    explicit ScatterPlotGL(Processor* processor = nullptr);
-    virtual ~ScatterPlotGL() = default;
+    explicit PersistenceDiagramPlotGL(Processor *processor = nullptr);
+    virtual ~PersistenceDiagramPlotGL() = default;
 
     void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
     void plot(Image &dest, const Image &src, IndexBuffer *indices = nullptr,
@@ -108,14 +118,19 @@ public:
     void setXAxisData(std::shared_ptr<const BufferBase> buffer);
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);
     void setColorData(std::shared_ptr<const BufferBase> buffer);
-    void setRadiusData(std::shared_ptr<const BufferBase> buffer);
+
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
     Properties properties_;
-    Shader shader_;
+    Shader pointShader_;
+    Shader lineShader_;
 
 protected:
     void plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges);
+
+    void renderLines(const size2_t &dims, const std::vector<uint32_t> &diagonalIndices,
+                     const std::vector<uint32_t> &indices);
+    void renderPoints(const size2_t &dims, const std::vector<uint32_t> &indices);
     void renderAxis(const size2_t &dims);
 
     void objectPicked(PickingEvent *p);
@@ -124,10 +139,7 @@ protected:
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
     std::shared_ptr<const BufferBase> color_;
-    std::shared_ptr<const BufferBase> radius_;
     std::shared_ptr<const TemplateColumn<uint32_t>> indexColumn_;
-
-    std::shared_ptr<BufferBase> pickIds_;
 
     vec2 minmaxX_;
     vec2 minmaxY_;
@@ -146,4 +158,4 @@ protected:
 
 }  // namespace inviwo
 
-#endif  // IVW_SCATTERPLOT_H
+#endif  // IVW_PERSISTENCEDIAGRAMPLOTGL_H

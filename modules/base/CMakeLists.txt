@@ -6,14 +6,15 @@ ivw_module(Base)
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/algorithmoptions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cohensutherland.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhull.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhullmesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
-	${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.h
-	${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshcameraalgorithms.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshcameraalgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.h
@@ -35,10 +36,10 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumesequencereader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumewriter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumereader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumewriter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.h
@@ -81,10 +82,10 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/vectorelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.h
@@ -109,13 +110,14 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/algorithmoptions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cohensutherland.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/convexhullmesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/cubeproxygeometry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshcameraalgorithms.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshcameraalgorithms.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubesopt.cpp
@@ -135,10 +137,10 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/io/binarystlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumesequencereader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/datvolumewriter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumereader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfsequencevolumewriter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumereader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/io/ivfvolumewriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/stlwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/io/wavefrontwriter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/buffertomeshprocessor.cpp
@@ -177,10 +179,10 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.cpp

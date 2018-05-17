@@ -55,6 +55,7 @@ public:
     virtual ~PickingManager();
 
     template <typename T>
+    [[deprecated("was declared deprecated. Use `registerPickingAction(Processor*, PickingAction::Callback, size_t)` instead")]]
     PickingAction* registerPickingAction(Processor* processor, T* o,
                                          void (T::*m)(PickingEvent*), size_t size = 1);
     PickingAction* registerPickingAction(Processor* processor,
@@ -85,6 +86,7 @@ private:
 };
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `registerPickingAction(Processor*, PickingAction::Callback, size_t)` instead")]]
 PickingAction* PickingManager::registerPickingAction(Processor* processor, T* o,
                                                      void (T::*m)(PickingEvent*),
                                                      size_t size) {

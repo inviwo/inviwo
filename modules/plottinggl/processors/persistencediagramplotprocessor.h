@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,49 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SCATTERPLOTMATRIXPROCESSOR_H
-#define IVW_SCATTERPLOTMATRIXPROCESSOR_H
+#ifndef IVW_PERSISTENCEDIAGRAMPLOTPROCESSOR_H
+#define IVW_PERSISTENCEDIAGRAMPLOTPROCESSOR_H
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/eventproperty.h>
 
 #include <modules/plotting/datastructures/dataframe.h>
-#include <modules/plottinggl/plotters/scatterplotgl.h>
+#include <modules/plottinggl/plotters/persistencediagramplotgl.h>
 #include <modules/plotting/properties/dataframeproperty.h>
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/rendering/texturequadrenderer.h>
-#include <modules/fontrendering/textrenderer.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
+#include <set>
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.ScatterPlotMatrixProcessor, Scatter Plot Matrix}
-* ![](org.inviwo.ScatterPlotMatrixProcessor.png?classIdentifier=org.inviwo.ScatterPlotMatrixProcessor)
-* This processor creates a scatter plot matrix for a given DataFrame.
-*
-* ### Inports
-*   * __DataFrame__  data input for plotting
-*   * __BrushingAndLinking__   inport for brushing & linking interactions
-*
-* ### Outports
-*   * __outport__   rendered image of the scatter plot matrix
-*
-*/
+/** \docpage{org.inviwo.PersistenceDiagramPlotProcessor, Persistence Diagram Plot Processor}
+ * ![](org.inviwo.PersistenceDiagramPlotProcessor.png?classIdentifier=org.inviwo.PersistenceDiagramPlotProcessor)
+ * Plots a persistence diagram of extremum-saddle pairs. It uses x-y pairs and draws vertical lines
+ * from y_low(x) = x to y_high(x) = y. Thus, the x coordinate of each pair corresponds
+ * to the birth of the extremum pair as well as the lower y coordinate. The higher y coordinate
+ * matches the point of death.
+ *
+ * ### Inports
+ *   * __DataFrame__  DataFrame with at least two columns corresponding to birth and death of
+ *                    extremum-saddle pairs
+ *   * __BrushingAndLinking__   inport for brushing & linking interactions
+ *
+ * ### Outports
+ *   * __outport__    rendered image of the persistence diagram
+ */
 
-class IVW_MODULE_PLOTTINGGL_API ScatterPlotMatrixProcessor : public Processor {
+/**
+ * \class PersistenceDiagramPlotProcessor
+ * \brief plots a persistence diagram of extremum-saddle pairs with vertical lines
+ */
+class IVW_MODULE_PLOTTINGGL_API PersistenceDiagramPlotProcessor : public Processor {
 public:
-    ScatterPlotMatrixProcessor();
-    virtual ~ScatterPlotMatrixProcessor() = default;
+    PersistenceDiagramPlotProcessor();
+    virtual ~PersistenceDiagramPlotProcessor() = default;
 
     virtual void process() override;
 
@@ -76,45 +77,23 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void onXAxisChange();
+    void onYAxisChange();
+    void onColorChange();
+
     DataFrameInport dataFrame_;
     BrushingAndLinkingInport brushing_;
     ImageOutport outport_;
 
-    std::vector<std::unique_ptr<ScatterPlotGL>> plots_;
+    PersistenceDiagramPlotGL persistenceDiagramPlot_;
 
-    void createScatterPlots();
-    void createLabels();
-    void createStatsLabels();
-    size_t numParams_;
-
-    ScatterPlotGL::Properties scatterPlotproperties_;
-    DataFrameColumnProperty color_;
-
-    DataFrameColumnProperty selectedX_;
-    DataFrameColumnProperty selectedY_;
-
-    CompositeProperty labels_;
-    FloatVec4Property fontColor_;
-    OptionPropertyString fontFace_;
-    IntProperty fontSize_;
-    OptionPropertyString fontFaceStats_;
-    IntProperty statsFontSize_;
-    BoolProperty showCorrelationValues_; // Show numerical correlation values
-
-    TransferFunctionProperty correlectionTF_;
-
-    std::vector<std::shared_ptr<Texture2D>> labelsTextures_;
-    std::vector<std::shared_ptr<Texture2D>> statsTextures_;
-    std::vector<std::shared_ptr<Texture2D>> bgTextures_;
-
-    TextRenderer textRenderer_;
-    TextureQuadRenderer textureQuadRenderer_;
-
-    EventProperty mouseEvent_;
+    DataFrameColumnProperty xAxis_;
+    DataFrameColumnProperty yAxis_;
+    DataFrameColumnProperty colorCol_;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
 
-#endif  // IVW_SCATTERPLOTMATRIXPROCESSOR_H
+#endif  // IVW_PERSISTENCEDIAGRAMPLOTPROCESSOR_H

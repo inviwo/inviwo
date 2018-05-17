@@ -61,9 +61,7 @@ BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
     return *this;
 }
 
-BufferObjectArray::~BufferObjectArray() { 
-    glDeleteVertexArrays(1, &id_);
-}
+BufferObjectArray::~BufferObjectArray() { glDeleteVertexArrays(1, &id_); }
 
 GLuint BufferObjectArray::getId() const { return id_; }
 
@@ -86,15 +84,7 @@ void BufferObjectArray::bind() const {
         for (GLuint location = 0; location < attachedBuffers_.size(); ++location) {
             if (auto bufferObject = attachedBuffers_[location]) {
                 glEnableVertexAttribArray(location);
-                bufferObject->bind();
-                if (bufferObject->getDataFormat()->getNumericType() == NumericType::Float) {
-                    glVertexAttribPointer(location, bufferObject->getGLFormat().channels,
-                                          bufferObject->getGLFormat().type, GL_FALSE, 0,
-                                          (void*)nullptr);
-                } else {
-                    glVertexAttribIPointer(location, bufferObject->getGLFormat().channels,
-                                           bufferObject->getGLFormat().type, 0, (void*)nullptr);
-                }
+                bufferObject->bindAndSetAttribPointer(location);
             } else {
                 glDisableVertexAttribArray(location);
             }
@@ -110,10 +100,11 @@ void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint locati
 #ifdef IVW_DEBUG
         // print warning if a different buffer is already attached to this location
         if (attachedBuffers_[location] && bo && (attachedBuffers_[location] != bo)) {
-            LogWarn("BufferObjectArray (" << id_ << "): location "
-                    << location << " is already bound to different buffer object (id "
-                    << attachedBuffers_[location]->getId()
-                    << "). Replacing with new buffer object (id " << bo->getId() << ").");
+            LogWarn("BufferObjectArray (" << id_ << "): location " << location
+                                          << " is already bound to different buffer object (id "
+                                          << attachedBuffers_[location]->getId()
+                                          << "). Replacing with new buffer object (id "
+                                          << bo->getId() << ").");
         }
 #endif
         attachedBuffers_[location] = bo;
@@ -129,4 +120,4 @@ const BufferObject* BufferObjectArray::getBufferObject(size_t location) const {
         return nullptr;
 }
 
-}  // namespace
+}  // namespace inviwo

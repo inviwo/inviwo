@@ -32,8 +32,10 @@
 
 #include <modules/plotting/utils/statsutils.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <modules/fontrendering/util/fontutils.h>
 
 namespace inviwo {
 
@@ -61,8 +63,10 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , selectedY_("selectedY", "Select Y", dataFrame_, true)
     , labels_("labels", "Labels")
     , fontColor_("fontColor", "Font Color", vec4(0, 0, 0, 1))
-    , fontSize_("fontSize", "Font size")
-    , statsFontSize_("statsFontSize", "Font size (stats)")
+    , fontFace_("fontFace", "Font Face")
+    , fontSize_("fontSize", "Font size", 20, 0, 144, 1)
+    , fontFaceStats_("fontFaceStats", "Font Face (stats)")
+    , statsFontSize_("statsFontSize", "Font size (stats)", 14, 0, 144, 1)
     , showCorrelationValues_("showStatistics", "Show correlation values", true)
     , correlectionTF_("correlectionTF", "Correlation TF")
 
@@ -94,6 +98,8 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
 
     selectedX_.setVisible(false);
     selectedY_.setVisible(false);
+    scatterPlotproperties_.hoverColor_.setVisible(false);
+    scatterPlotproperties_.hovering_.setVisible(false);
 
     addProperty(scatterPlotproperties_);
     addProperty(color_);
@@ -114,30 +120,36 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
         scatterPlotproperties_.color_.setVisible(buf == nullptr);
     });
 
-    correlectionTF_.get().clearPoints();
-    correlectionTF_.get().addPoint(0.0f, vec4(1, 0, 0, 1));
-    correlectionTF_.get().addPoint(0.5f, vec4(1, 1, 1, 1));
-    correlectionTF_.get().addPoint(1.0f, vec4(0, 0, 1, 1));
+    correlectionTF_.get().clear();
+    correlectionTF_.get().add(0.0, vec4(1, 0, 0, 1));
+    correlectionTF_.get().add(0.5, vec4(1, 1, 1, 1));
+    correlectionTF_.get().add(1.0, vec4(0, 0, 1, 1));
     correlectionTF_.setCurrentStateAsDefault();
-
-    labels_.addProperty(fontSize_);
-    labels_.addProperty(statsFontSize_);
-    labels_.addProperty(fontColor_);
-    fontColor_.setSemantics(PropertySemantics::Color);
-
-    std::vector<int> fontSizes = {8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96};
-    for (auto size : fontSizes) {
-        std::string str = toString(size);
-        fontSize_.addOption(str, str, size);
-        statsFontSize_.addOption(str, str, size);
+    
+    for (auto font : util::getAvailableFonts()) {
+        auto name = filesystem::getFileNameWithoutExtension(font.second);
+        // use the file name w/o extension as identifier
+        fontFace_.addOption(name, font.first, font.second);
+        fontFaceStats_.addOption(name, font.first, font.second);
     }
-    fontSize_.setSelectedIndex(6);
-    statsFontSize_.setSelectedIndex(4);
-    fontSize_.setCurrentStateAsDefault();
-    statsFontSize_.setCurrentStateAsDefault();
+    fontFace_.setSelectedIdentifier("OpenSans-Semibold");
+    fontFace_.setCurrentStateAsDefault();
+    fontFaceStats_.setSelectedIdentifier("OpenSans-Regular");
+    fontFaceStats_.setCurrentStateAsDefault();
+
+    fontSize_.setSemantics(PropertySemantics("Fontsize"));
+    statsFontSize_.setSemantics(PropertySemantics("Fontsize"));
+
+    labels_.addProperty(fontColor_);
+    labels_.addProperty(fontFace_);
+    labels_.addProperty(fontSize_);
+    labels_.addProperty(fontFaceStats_);
+    labels_.addProperty(statsFontSize_);
+    fontColor_.setSemantics(PropertySemantics::Color);
 
     auto updateLabels = [&]() { labelsTextures_.clear(); };
     auto updateStatsLabels = [&]() { statsTextures_.clear(); };
+    fontFace_.onChange(updateLabels);
     fontSize_.onChange(updateLabels);
     fontColor_.onChange(updateLabels);
 
@@ -286,15 +298,19 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
     if (outport_.hasData()) {
         statsTextures_.clear();
         bgTextures_.clear();
+        
+        textRenderer_.setFont(fontFaceStats_.get());
+        textRenderer_.setFontSize(statsFontSize_.get());
+
         auto &dataFrame = *dataFrame_.getData();
         for (auto x = dataFrame.begin() + 1; x != dataFrame.end(); ++x) {
             for (auto y = x + 1; y != dataFrame.end(); ++y) {
                 auto res = statsutil::linearRegresion(*(*x)->getBuffer(), *(*y)->getBuffer());
 
                 std::ostringstream oss;
-                oss << std::setprecision(2);
-                oss << "corr: " << res.corr << std::endl;
-                oss << "r^2: " << res.r2;
+                oss << std::setprecision(2)
+                    << "corr ρ = " << res.corr << std::endl
+                    << "r² = " << res.r2;
 
                 auto tex = util::createTextTexture(textRenderer_, oss.str(), statsFontSize_.get(),
                                                    fontColor_.get());
@@ -321,6 +337,9 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
 void ScatterPlotMatrixProcessor::createLabels() {
     if (outport_.hasData()) {
         labelsTextures_.clear();
+        textRenderer_.setFont(fontFace_.get());
+        textRenderer_.setFontSize(fontSize_.get());
+
         auto &dataFrame = *dataFrame_.getData();
         for (auto x = dataFrame.begin() + 1; x != dataFrame.end(); ++x) {
             auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontSize_.get(),
