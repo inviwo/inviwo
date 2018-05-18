@@ -32,6 +32,7 @@
 #include <modules/webbrowser/renderhandlergl.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
 
@@ -52,13 +53,25 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
         }
         case MouseEvent::chash(): {
             auto mouseEvent = static_cast<MouseEvent*>(event);
+            // Only handle events if pressed on non-transparent pixels
+            auto pixel = renderHandler_->getPixel(static_cast<int>(mouseEvent->x()), static_cast<int>(mouseEvent->y()));
+            if (mouseEvent->state() == MouseState::Press) {
+                if (pixel.w != 0) {
+                    pressedNonTransparentPixel = true;
+                } else {
+                    pressedNonTransparentPixel = false;
+                }
+            }
             updateMouseStates(mouseEvent);
             auto cefMouseEvent = mapMouseEvent(mouseEvent);
-            if (MouseState::Move & mouseEvent->state()) {
+            if (MouseState::Move & mouseEvent->state() &&
+                (pressedNonTransparentPixel || pixel.w != 0)) {
                 bool mouseLeave = false;
                 host_->SendMouseMoveEvent(cefMouseEvent, mouseLeave);
-            } else {
+                event->markAsUsed();
+            } else if (pressedNonTransparentPixel) {
                 CefBrowserHost::MouseButtonType type;
+                
                 if (mouseEvent->button() & MouseButton::Left) {
                     type = MBT_LEFT;
                 } else if (mouseEvent->button() & MouseButton::Middle) {
@@ -69,9 +82,65 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
                 bool mouseUp = MouseState::Release & mouseEvent->state() ? true : false;
                 int clickCount = MouseState::DoubleClick & mouseEvent->state() ? 2 : 1;
                 host_->SendMouseClickEvent(cefMouseEvent, type, mouseUp, clickCount);
+                event->markAsUsed();
             }
-            event->markAsUsed();
+            if (MouseState::Release & mouseEvent->state()) {
+                // Clear flag
+                pressedNonTransparentPixel = false;
+            }
             break;
+        }
+        case TouchEvent::chash(): {
+            auto touchEvent = static_cast<TouchEvent*>(event);
+            if (!touchEvent->hasTouchPoints()) {
+                break;
+            }
+            TouchDevice::DeviceType type = touchEvent->getDevice() ? touchEvent->getDevice()->getType() : TouchDevice::DeviceType::TouchScreen;
+            if (type == TouchDevice::DeviceType::TouchPad) {
+                // Mouse events are emulated on touch pads for single touch point
+                // but we need to consume multi-touch events if user pressed on
+                // non-transparent pixel
+                if (pressedNonTransparentPixel) {
+                    event->markAsUsed();
+                }
+                break;
+                
+            }
+            const auto& touchPoints = touchEvent->touchPoints();
+
+            // Only single touch point is currently supported
+            const auto& activeTouchPoint = touchPoints[0];
+            TouchStates moveState = (TouchState::Updated | TouchState::Stationary);
+            TouchStates pressState = (TouchState::Started | TouchState::Finished);
+            
+            // Only handle events if pressed on non-transparent pixels
+            auto pixel = renderHandler_->getPixel(static_cast<int>(activeTouchPoint.pos().x), static_cast<int>(activeTouchPoint.pos().y));
+            if (activeTouchPoint.state() == TouchState::Started) {
+                if (pixel.w != 0) {
+                    pressedNonTransparentPixel = true;
+                } else {
+                    pressedNonTransparentPixel = false;
+                }
+            }
+            auto cefEvent = mapTouchEvent(&activeTouchPoint);
+            if (activeTouchPoint.state() & moveState &&
+                (pressedNonTransparentPixel || pixel.w != 0)) {
+                bool mouseLeave = false;
+                host_->SendMouseMoveEvent(cefEvent, mouseLeave);
+                event->markAsUsed();
+            } else if (activeTouchPoint.state() & pressState) {
+                // Emulate mouse press
+                CefBrowserHost::MouseButtonType button;
+                button = MBT_LEFT;
+                bool mouseUp = activeTouchPoint.state() & (TouchState::Finished) ? true : false;
+                int clickCount = 1;
+                host_->SendMouseClickEvent(cefEvent, button, mouseUp, clickCount);
+                event->markAsUsed();
+            }
+            if (TouchState::Finished & activeTouchPoint.state()) {
+                // Clear flag
+                pressedNonTransparentPixel = false;
+            }
         }
         case WheelEvent::chash(): {
             auto wheelEvent = static_cast<WheelEvent*>(event);
@@ -84,15 +153,23 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
     }
 }
 
-CefMouseEvent CEFInteractionHandler::mapMouseEvent(MouseInteractionEvent* e) {
+CefMouseEvent CEFInteractionHandler::mapMouseEvent(const MouseInteractionEvent* e) {
     CefMouseEvent cefEvent;
     cefEvent.x = static_cast<int>(e->x());
     cefEvent.y = static_cast<int>(e->canvasSize().y) - static_cast<int>(e->y());
     cefEvent.modifiers = modifiers_;
     return cefEvent;
 }
+    
+CefMouseEvent CEFInteractionHandler::mapTouchEvent(const TouchPoint* p) {
+    CefMouseEvent cefEvent;
+    cefEvent.x = static_cast<int>(p->pos().x);
+    cefEvent.y = static_cast<int>(p->canvasSize().y) - static_cast<int>(p->pos().y);
+    cefEvent.modifiers = modifiers_;
+    return cefEvent;
+}
 
-CefKeyEvent CEFInteractionHandler::mapKeyEvent(KeyboardEvent* e) {
+CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
     CefKeyEvent cefEvent;
 
     // TODO: Fix key code translation to match the ones used in CEF

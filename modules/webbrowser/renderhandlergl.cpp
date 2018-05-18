@@ -47,7 +47,7 @@ bool RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) 
 void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                               const RectList& dirtyRects, const void* buffer, int width,
                               int height) {
-
+    buffer_ = buffer;
     auto dims = texture2D_.getDimensions();
     if (dims.x == static_cast<size_t>(width) && dims.y == static_cast<size_t>(height)) {
         // CPU implementation using LayerRAM
@@ -94,6 +94,21 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
 
         // Notify that we are done copying
         onWebPageCopiedCallback();
+    }
+}
+    
+uvec4 RenderHandlerGL::getPixel(int x, int y) {
+    auto dims = texture2D_.getDimensions();
+    if (x < 0 || y < 0 || static_cast<int>(dims.x) <= x || static_cast<int>(dims.y) <= y) {
+        return uvec4(0);
+    } else if (buffer_) {
+        // Flip y
+        auto index = (dims.y - y - 1) * dims.x + x;
+        auto data = static_cast<const glm::tvec4<unsigned char>*>(buffer_);
+        auto pixel = data[index];
+        return uvec4(pixel[2],pixel[1], pixel[0], pixel[3]);
+    } else {
+        return uvec4(0);
     }
 }
 

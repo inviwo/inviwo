@@ -37,5 +37,11 @@ void main() {
 	// Flip y-coord
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
 	texCoords.y = 1.0 - texCoords.y;
-    FragData0 = texture(inport_, texCoords);
+    vec4 color = texture(inport_, texCoords);
+    if (color.w > 0) {
+        FragData0 = texture(inport_, texCoords);
+    } else {
+        discard;
+    }
+    
 }

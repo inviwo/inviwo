@@ -42,6 +42,7 @@
 
 namespace inviwo {
 class RenderHandlerGL;
+class TouchPoint;
 /*\class CEFInteractionHandler
  * Translates Inviwo events to CEF events and injects them into provided CefBrowserHost.
  */
@@ -68,13 +69,15 @@ public:
     RenderHandlerGL* getRenderHandler() const { return renderHandler_; }
 
 private:
-    CefKeyEvent mapKeyEvent(KeyboardEvent* e);
-    CefMouseEvent mapMouseEvent(MouseInteractionEvent* e);
+    CefKeyEvent mapKeyEvent(const KeyboardEvent* e);
+    CefMouseEvent mapMouseEvent(const MouseInteractionEvent* e);
+    CefMouseEvent mapTouchEvent(const TouchPoint* p);
 
     void updateMouseStates(MouseEvent* e);
     uint32 modifiers_ = 0;
     CefRefPtr<CefBrowserHost> host_;
     RenderHandlerGL* renderHandler_ = nullptr; ///< Forward resize event if set
+    bool pressedNonTransparentPixel = false;
 };
 
 };  // namespace inviwo

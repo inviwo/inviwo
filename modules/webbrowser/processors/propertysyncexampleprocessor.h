@@ -77,6 +77,7 @@ public:
 private:
     // Returns "file:/path/modules/webbrowser/data/workspaces/web_property_sync.html"
     std::string getTestWebpageUrl();
+    ImageInport background_;
     ImageOutport outport_;
     
     StringProperty url_; ///< Web page to show

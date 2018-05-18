@@ -53,6 +53,7 @@ const ProcessorInfo PropertySyncExampleProcessor::getProcessorInfo() const { ret
 PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     : Processor()
     // Output from CEF is 8-bits per channel
+    , background_("background")
     , outport_("webpage", DataVec4UInt8::get())
     , url_("URL", "URL", getTestWebpageUrl())
     , reload_("reload", "Reload")
@@ -70,7 +71,8 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     }))
     , browserClient_(new WebBrowserClient(renderHandler_))
 {
-    
+    addPort(background_);
+    background_.setOptional(true);
     addPort(outport_);
 
     CefWindowInfo window_info;
@@ -125,7 +127,7 @@ void PropertySyncExampleProcessor::process() {
     }
     //LogInfo("Process")
     // Vertical flip of CEF output image
-    cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_);
+    cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }
     
 std::string PropertySyncExampleProcessor::getTestWebpageUrl() {

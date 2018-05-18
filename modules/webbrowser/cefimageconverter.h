@@ -42,15 +42,13 @@ namespace inviwo {
 
 /* \class CefImageConverter
  * Flips vertical component of Cef output image.
- * TODO: Add picking id where image is not transparent.
- * Will enable better event handling since Cef does not say if an event has been used.
  * @see RenderHandlerGL
  */
 class CefImageConverter {
 public:
     CefImageConverter() = default;
     
-    void convert(const Texture2D& fromCefOutput, ImageOutport &toInviwOutput);
+    void convert(const Texture2D& fromCefOutput, ImageOutport &toInviwOutput, const ImageInport* background = nullptr);
 
 protected:
      Shader shader_{"img_convert_cef.frag", true};  ///< Flip image y compoenent
