@@ -5,3 +5,4 @@ tools/doxygen/doc-qt
 *.pyc
 pyconfig.ini
 .idea
+cmake-*-*
