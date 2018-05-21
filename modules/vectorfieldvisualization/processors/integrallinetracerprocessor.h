@@ -50,70 +50,10 @@ namespace inviwo {
 template <typename Tracer>
 class IntegralLineTracerProcessor : public Processor {
 public:
+    IntegralLineTracerProcessor();
+    virtual ~IntegralLineTracerProcessor();
 
-    IntegralLineTracerProcessor()
-        : sampler_("sampler")
-        , seeds_("seeds")
-        , annotationSamplers_("annotationSamplers")
-        , lines_("lines")
-        , properties_("properties", "Properties")
-
-        , metaData_("metaData", "Meta Data")
-        , calculateCurvature_("calculateCurvature", "Calculate Curvature", false)
-        , calculateTortuosity_("calculateTortuosity", "Calculate Tortuosity", false) {
-        addPort(sampler_);
-        addPort(seeds_);
-        addPort(annotationSamplers_);
-        addPort(lines_);
-
-        addProperty(properties_);
-        addProperty(metaData_);
-        metaData_.addProperty(calculateCurvature_);
-        metaData_.addProperty(calculateTortuosity_);
-
-        properties_.normalizeSamples_.set(!Tracer::IsTimeDependent);
-        properties_.normalizeSamples_.setCurrentStateAsDefault();
-
-        annotationSamplers_.setOptional(true);
-    }
-    virtual ~IntegralLineTracerProcessor(){};
-
-    virtual void process() override {
-        auto sampler = sampler_.getData();
-        auto lines = std::make_shared<IntegralLineSet>(mat4(1));
-
-        Tracer tracer(sampler, properties_);
-        tracer.setTransformToWorldSpace(true);
-
-        for (auto meta : annotationSamplers_.getSourceVectorData()) {
-            auto key = meta.first->getProcessor()->getIdentifier();
-            key = util::stripIdentifier(key);
-            tracer.addMetaDataSampler(key, meta.second);
-        }
-
-        std::mutex mutex;
-        size_t startID = 0;
-        for (const auto &seeds : seeds_) {
-            util::forEachParallel(*seeds, [&](const auto &p, size_t i) {
-                IntegralLine line = tracer.traceFrom(p);
-                auto size = line.getPositions().size();
-                if (size > 1) {
-                    std::lock_guard<std::mutex> lock(mutex);
-                    lines->push_back(line, startID + i);
-                }
-            });
-            startID += seeds->size();
-        }
-
-        if (calculateCurvature_) {
-            util::curvature(*lines);
-        }
-        if (calculateTortuosity_) {
-            util::tortuosity(*lines);
-        }
-
-        lines_.setData(lines);
-    }
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
 
@@ -130,6 +70,74 @@ private:
     BoolProperty calculateCurvature_;
     BoolProperty calculateTortuosity_;
 };
+
+template <typename Tracer>
+IntegralLineTracerProcessor<Tracer>::IntegralLineTracerProcessor()
+    : sampler_("sampler")
+    , seeds_("seeds")
+    , annotationSamplers_("annotationSamplers")
+    , lines_("lines")
+    , properties_("properties", "Properties")
+
+    , metaData_("metaData", "Meta Data")
+    , calculateCurvature_("calculateCurvature", "Calculate Curvature", false)
+    , calculateTortuosity_("calculateTortuosity", "Calculate Tortuosity", false) {
+    addPort(sampler_);
+    addPort(seeds_);
+    addPort(annotationSamplers_);
+    addPort(lines_);
+
+    addProperty(properties_);
+    addProperty(metaData_);
+    metaData_.addProperty(calculateCurvature_);
+    metaData_.addProperty(calculateTortuosity_);
+
+    properties_.normalizeSamples_.set(!Tracer::IsTimeDependent);
+    properties_.normalizeSamples_.setCurrentStateAsDefault();
+
+    annotationSamplers_.setOptional(true);
+}
+
+template <typename Tracer>
+IntegralLineTracerProcessor<Tracer>::~IntegralLineTracerProcessor() {}
+
+template <typename Tracer>
+void IntegralLineTracerProcessor<Tracer>::process() {
+    auto sampler = sampler_.getData();
+    auto lines = std::make_shared<IntegralLineSet>(mat4(1));
+
+    Tracer tracer(sampler, properties_);
+    tracer.setTransformOutputToWorldSpace(true);
+
+    for (auto meta : annotationSamplers_.getSourceVectorData()) {
+        auto key = meta.first->getProcessor()->getIdentifier();
+        key = util::stripIdentifier(key);
+        tracer.addMetaDataSampler(key, meta.second);
+    }
+
+    std::mutex mutex;
+    size_t startID = 0;
+    for (const auto &seeds : seeds_) {
+        util::forEachParallel(*seeds, [&](const auto &p, size_t i) {
+            IntegralLine line = tracer.traceFrom(p);
+            auto size = line.getPositions().size();
+            if (size > 1) {
+                std::lock_guard<std::mutex> lock(mutex);
+                lines->push_back(line, startID + i);
+            }
+        });
+        startID += seeds->size();
+    }
+
+    if (calculateCurvature_) {
+        util::curvature(*lines);
+    }
+    if (calculateTortuosity_) {
+        util::tortuosity(*lines);
+    }
+
+    lines_.setData(lines);
+}
 
 using StreamLines2D = IntegralLineTracerProcessor<StreamLine2DTracer>;
 using StreamLines3D = IntegralLineTracerProcessor<StreamLine3DTracer>;
@@ -153,10 +161,10 @@ struct ProcessorTraits<StreamLines3D> {
     static ProcessorInfo getProcessorInfo() {
         return {
             "org.inviwo.StreamLines3D",  // Class identifier
-            "Stream Lines 3D",          // Display name
-            "Integral Line Tracer",     // Category
-            CodeState::Experimental,    // Code state
-            Tags::CPU                   // Tags
+            "Stream Lines 3D",           // Display name
+            "Integral Line Tracer",      // Category
+            CodeState::Experimental,     // Code state
+            Tags::CPU                    // Tags
         };
     }
 };
@@ -166,10 +174,10 @@ struct ProcessorTraits<PathLines3D> {
     static ProcessorInfo getProcessorInfo() {
         return {
             "org.inviwo.PathLines3D",  // Class identifier
-            "Path Lines 3D",          // Display name
-            "Integral Line Tracer",   // Category
-            CodeState::Experimental,  // Code state
-            Tags::CPU                 // Tags
+            "Path Lines 3D",           // Display name
+            "Integral Line Tracer",    // Category
+            CodeState::Experimental,   // Code state
+            Tags::CPU                  // Tags
         };
     }
 };
