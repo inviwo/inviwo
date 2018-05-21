@@ -17,6 +17,7 @@ set(MOC_FILES
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiongraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgrapicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/fileassociations.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/helpwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoaboutwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoeditmenu.h
@@ -51,6 +52,7 @@ set(SOURCE_FILES
     connectiongraphicsitem.cpp
     consolewidget.cpp
     editorgrapicsitem.cpp
+    fileassociations.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
     inviwoeditmenu.cpp

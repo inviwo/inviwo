@@ -61,6 +61,8 @@
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositeprocessorutils.h>
 
+#include <inviwo/qt/editor/fileassociations.h>
+
 #include <inviwomodulespaths.h>
 
 #include <warn/push>
@@ -93,6 +95,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
     , networkEditor_(nullptr)
+    , fileAssociations_{std::make_unique<FileAssociations>(this)}
     , maximized_(false)
     , untitledWorkspaceName_("untitled")
     , snapshotArg_("s", "snapshot",
@@ -120,6 +123,22 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     consoleWidget_ = std::make_shared<ConsoleWidget>(this);
     LogCentral::getPtr()->registerLogger(consoleWidget_);
     currentWorkspaceFileName_ = "";
+
+    app_->installNativeEventFilter(fileAssociations_.get());
+
+    fileAssociations_->registerFileType(
+        "Inviwo.workspace",  // Document type name
+        "Inviwo Workspace",  // User readable file type name
+        ".inv",              // file extension
+        0,                   // index of the icon to use for the files.
+        {{"Open", "-w %1", "open",
+          [this](const std::string& file) {
+              if (askToSaveWorkspaceChanges()) {
+                  openWorkspace(utilqt::toQString(file));
+              }
+          }},
+         {"Append", "-w %1", "append",
+          [this](const std::string& file) { appendWorkspace(file); }}});
 
     const QDesktopWidget dw;
     auto screen = dw.screenGeometry(this);
@@ -149,13 +168,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                                     },
                                     1000);
 
-    app->getCommandLineParser().add(&saveProcessorPreviews_,
-                                    [this]() {
-                                        utilqt::saveProcessorPreviews(
-                                            app_, saveProcessorPreviews_.getValue());
-
-                                    },
-                                    1200);
+    app->getCommandLineParser().add(
+        &saveProcessorPreviews_,
+        [this]() { utilqt::saveProcessorPreviews(app_, saveProcessorPreviews_.getValue()); }, 1200);
 
     app->getCommandLineParser().add(&updateWorkspaces_, [this]() { util::updateWorkspaces(app_); },
                                     1250);
@@ -719,6 +734,32 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
     openWorkspace(workspaceFileName, false);
 }
 
+void InviwoMainWindow::openLastWorkspace(std::string workspace) {
+    workspace = filesystem::cleanupPath(workspace);
+    if (!workspace.empty()) {
+        openWorkspace(utilqt::toQString(workspace));
+    } else if (!workspaceOnLastSuccessfulExit_.isEmpty()) {
+        openWorkspace(workspaceOnLastSuccessfulExit_);
+    } else {
+        newWorkspace();
+    }
+}
+
+void InviwoMainWindow::openWorkspace() {
+    if (askToSaveWorkspaceChanges()) {
+        InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
+        openFileDialog.addSidebarPath(PathType::Workspaces);
+        openFileDialog.addSidebarPath(workspaceFileDir_);
+        openFileDialog.addExtension("inv", "Inviwo File");
+        openFileDialog.setFileMode(FileMode::AnyFile);
+
+        if (openFileDialog.exec()) {
+            QString path = openFileDialog.selectedFiles().at(0);
+            openWorkspace(path);
+        }
+    }
+}
+
 void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWorkspace) {
     std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
@@ -763,30 +804,15 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
     getNetworkEditor()->setModified(false);
 }
 
-void InviwoMainWindow::openLastWorkspace(std::string workspace) {
-    workspace = filesystem::cleanupPath(workspace);
-    if (!workspace.empty()) {
-        openWorkspace(utilqt::toQString(workspace));
-    } else if (!workspaceOnLastSuccessfulExit_.isEmpty()) {
-        openWorkspace(workspaceOnLastSuccessfulExit_);
-    } else {
-        newWorkspace();
+void InviwoMainWindow::appendWorkspace(const std::string& file) {
+    NetworkLock lock(app_->getProcessorNetwork());
+    std::ifstream fs(file);
+    if (!fs) {
+        LogError("Could not open workspace file: " << file);
+        return;
     }
-}
-
-void InviwoMainWindow::openWorkspace() {
-    if (askToSaveWorkspaceChanges()) {
-        InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
-        openFileDialog.addSidebarPath(PathType::Workspaces);
-        openFileDialog.addSidebarPath(workspaceFileDir_);
-        openFileDialog.addExtension("inv", "Inviwo File");
-        openFileDialog.setFileMode(FileMode::AnyFile);
-
-        if (openFileDialog.exec()) {
-            QString path = openFileDialog.selectedFiles().at(0);
-            openWorkspace(path);
-        }
-    }
+    networkEditor_->append(fs, file);
+    app_->processEvents();  // make sure the gui is ready before we unlock.
 }
 
 void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
