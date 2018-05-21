@@ -1072,6 +1072,7 @@ QByteArray NetworkEditor::cut() {
 }
 
 void NetworkEditor::paste(QByteArray mimeData) {
+    NetworkLock lock(network_);
     try {
         auto orgBounds = util::getBoundingBox(network_->getProcessors());
 
@@ -1121,6 +1122,46 @@ void NetworkEditor::paste(QByteArray mimeData) {
         LogWarn("Paste operation failed");
     }
 }
+
+void NetworkEditor::append(std::istream& is, const std::string& refPath) {
+    NetworkLock lock(network_);
+    try {
+        const auto orgBounds = util::getBoundingBox(network_->getProcessors());
+
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        const auto added =
+            util::appendDeserialized(network_, is, refPath, mainwindow_->getInviwoApplication());
+
+        const auto bounds = util::getBoundingBox(added);
+
+        // add to top right
+        const auto offset = ivec2{orgBounds.second.x, orgBounds.first.y} + ivec2{gridSpacing_, 0} +
+                      ivec2{ProcessorGraphicsItem::size_.width(), 0} -
+                      ivec2{bounds.first.x, bounds.first.y};
+
+        util::offsetPosition(added, offset);
+
+        // Make sure the pasted processors are in the view
+        auto selection = selectedItems();
+        util::erase_remove_if(selection, [](auto i) {
+            return qgraphicsitem_cast<ProcessorGraphicsItem*>(i) == nullptr;
+        });
+
+        QRectF rect;
+        for (auto item : added) {
+            auto pgi = getProcessorGraphicsItem(item);
+            rect = rect.united(pgi->sceneBoundingRect());
+        }
+        for (auto v : views()) {
+            v->ensureVisible(rect);
+        }
+
+    } catch (const Exception& e) {
+        util::log(e.getContext(), "Unable to load network " + refPath + " due to " + e.getMessage(),
+                  LogLevel::Error);
+    }
+
+}  // namespace inviwo
 
 void NetworkEditor::selectAll() {
     for (auto i : items()) i->setSelected(true);
