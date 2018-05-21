@@ -48,11 +48,7 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
 public:
-    enum class TerminationReason {
-        OutOfBounds, 
-        ZeroVelocity, 
-        Steps
-    };
+    enum class TerminationReason { OutOfBounds, ZeroVelocity, Steps, StartPoint, Unknown };
 
     IntegralLine() = default;
     IntegralLine(const IntegralLine &rhs) = default;
@@ -63,140 +59,149 @@ public:
 
     virtual ~IntegralLine() = default;
 
-    void setTerminationReason(TerminationReason terminationReason) {
-        terminationReason_ = terminationReason;
-    }
-
     const std::vector<dvec3> &getPositions() const;
     std::vector<dvec3> &getPositions();
 
     std::shared_ptr<const BufferBase> getMetaDataBuffer(const std::string &name) const;
     std::shared_ptr<BufferBase> getMetaDataBuffer(const std::string &name);
-    
-    template<typename T>
-    std::shared_ptr<Buffer<T>> createMetaData(const std::string &name){
-        if(hasMetaData(name)){
-            throw  Exception("Meta data with name " + name + " already exists");
-        }
-        auto md = std::make_shared<Buffer<T>>();
-        metaData_[name] = md;
-        return md;
-    }
 
-    void reverse(){
-        std::reverse(positions_.begin(),positions_.end());  
-        for (auto &m : metaData_) {
-            util::reverse(*m.second);
-        }
-    }
+    template <typename T>
+    std::shared_ptr<Buffer<T>> createMetaData(const std::string &name);
 
-    template<typename T>
-    const std::vector<T> &getMetaData(const std::string &name) const{
-        auto it = metaData_.find(name);
-        if (it == metaData_.end()) {
-            throw Exception("No meta data with name: " + name, IvwContext);
-        }
-        auto askedDF = DataFormat<T>::get();
-        auto isDF = it->second->getDataFormat();
-        if ( isDF != askedDF ){
-            std::ostringstream oss;
-            oss << "Incorrect dataformat for metadata " << name << " asking for " << askedDF->getString() << " but is" << isDF->getString();
-            throw Exception(oss.str() , IvwContext);
-        }
+    void reverse();
 
-        return static_cast<Buffer<T>*>(it->second.get())->getRAMRepresentation()->getDataContainer();
-    }
+    template <typename T>
+    const std::vector<T> &getMetaData(const std::string &name) const;
 
-    template<typename T>
-    std::vector<T> &getMetaData(const std::string &name, bool create = false) {
-        auto it = metaData_.find(name);
-        if (it == metaData_.end() && !create) {
-            throw Exception("No meta data with name: " + name, IvwContext);
-        }else if(it == metaData_.end()){
-            auto md = createMetaData<T>(name);
-            return md->getEditableRAMRepresentation()->getDataContainer();
-        }
-        auto askedDF = DataFormat<T>::get();
-        auto isDF = it->second->getDataFormat();
-        if ( isDF != askedDF ){
-            std::ostringstream oss;
-            oss << "Incorrect dataformat for metadata " << name << " asking for " << askedDF->getString() << " but is " << isDF->getString();
-            throw Exception(oss.str() , IvwContext);
-        }
+    template <typename T>
+    std::vector<T> &getMetaData(const std::string &name, bool create = false);
 
-        return static_cast<Buffer<T>*>(it->second.get())->getEditableRAMRepresentation()->getDataContainer();
-    }
-
-    const std::map<std::string , std::shared_ptr<BufferBase>> &getMetaDataBuffers() const{return metaData_;}
+    const std::map<std::string, std::shared_ptr<BufferBase>> &getMetaDataBuffers() const;
 
     bool hasMetaData(const std::string &name) const;
 
     std::vector<std::string> getMetaDataKeys() const;
 
-
-    double getLength()const;
+    double getLength() const;
 
     double distBetweenPoints(size_t a, size_t b) const;
 
-    dvec3 getPointAtDistance(double d)const;
+    dvec3 getPointAtDistance(double d) const;
 
-    template<typename T>
-    T getMetaDataAtDistance(std::string md , double d)const{
-        if (d<0 || d > getLength()) {
-            return T(0);
-        }
+    template <typename T>
+    T getMetaDataAtDistance(std::string md, double d) const;
 
-        if(!hasMetaData(md)){
-            return T(0);
-        }
+    size_t getIndex() const;
+    void setIndex(size_t idx);
 
-        auto &metaData = getMetaData<T>(md);
+    void setBackwardTerminationReason(TerminationReason terminationReason);
+    void setForwardTerminationReason(TerminationReason terminationReason);
 
-        if (d == 0) {
-            return metaData.front();
-        }
-
-
-        double distPrev = 0, distNext = 0;
-        auto next = positions_.begin();
-        auto prev = next;
-        auto nextMD = metaData.begin();
-        auto prevMD = nextMD;
-
-        while (distNext < d) {
-            prev = next++;
-            prevMD = nextMD++;
-            distPrev = distNext;
-            distNext += glm::distance(*prev, *next);
-        }
-
-        double x = (d - distPrev) / (distNext - distPrev);
-        //using F = typename std::conditional< std::is_same< typename util::value_type<T>::type,float >::value , float , double >::type;
-        //using TV = typename std::conditional<util::extent<T>::value==1 , double , Vector<util::extent<T>::value ,double> >::type;
-        using TV = typename util::same_extent<T,double>::type;    
-            
-        return static_cast<T>( Interpolation<TV, double>::linear( static_cast<TV>(*prevMD), static_cast<TV>(*nextMD), x));
-    }
-
-    size_t getIndex()const { return idx_; }
-    void setIndex(size_t idx ) { idx_  = idx; }
+    TerminationReason getBackwardTerminationReason() const;
+    TerminationReason getForwardTerminationReason() const;
 
 private:
-    double calcLength( std::vector<dvec3>::const_iterator start ,   std::vector<dvec3>::const_iterator end ) const;
+    double calcLength(std::vector<dvec3>::const_iterator start,
+                      std::vector<dvec3>::const_iterator end) const;
 
     std::vector<dvec3> positions_;
-    //std::map<std::string, std::vector<dvec3>> metaData_;
-    std::map<std::string , std::shared_ptr<BufferBase>> metaData_;
-    TerminationReason terminationReason_ = TerminationReason::Steps;
+    std::map<std::string, std::shared_ptr<BufferBase>> metaData_;
+
+    TerminationReason forwardTerminationReason_ = TerminationReason::Unknown;
+    TerminationReason backwardTerminationReason_ = TerminationReason::Unknown;
 
     mutable double length_ = -1;
 
     size_t idx_;
-
-
-
 };
 
-}  // namespace
+template <typename T>
+std::shared_ptr<Buffer<T>> IntegralLine::createMetaData(const std::string &name) {
+    if (hasMetaData(name)) {
+        throw Exception("Meta data with name " + name + " already exists");
+    }
+    auto md = std::make_shared<Buffer<T>>();
+    metaData_[name] = md;
+    return md;
+}
+
+template <typename T>
+const std::vector<T> &IntegralLine::getMetaData(const std::string &name) const {
+    auto it = metaData_.find(name);
+    if (it == metaData_.end()) {
+        throw Exception("No meta data with name: " + name, IvwContext);
+    }
+    auto askedDF = DataFormat<T>::get();
+    auto isDF = it->second->getDataFormat();
+    if (isDF != askedDF) {
+        std::ostringstream oss;
+        oss << "Incorrect dataformat for metadata " << name << " asking for "
+            << askedDF->getString() << " but is" << isDF->getString();
+        throw Exception(oss.str(), IvwContext);
+    }
+
+    return static_cast<Buffer<T> *>(it->second.get())->getRAMRepresentation()->getDataContainer();
+}
+
+template <typename T>
+std::vector<T> &IntegralLine::getMetaData(const std::string &name, bool create) {
+    auto it = metaData_.find(name);
+    if (it == metaData_.end() && !create) {
+        throw Exception("No meta data with name: " + name, IvwContext);
+    } else if (it == metaData_.end()) {
+        auto md = createMetaData<T>(name);
+        return md->getEditableRAMRepresentation()->getDataContainer();
+    }
+    auto askedDF = DataFormat<T>::get();
+    auto isDF = it->second->getDataFormat();
+    if (isDF != askedDF) {
+        std::ostringstream oss;
+        oss << "Incorrect dataformat for metadata " << name << " asking for "
+            << askedDF->getString() << " but is " << isDF->getString();
+        throw Exception(oss.str(), IvwContext);
+    }
+
+    return static_cast<Buffer<T> *>(it->second.get())
+        ->getEditableRAMRepresentation()
+        ->getDataContainer();
+}
+
+template <typename T>
+T IntegralLine::getMetaDataAtDistance(std::string md, double d) const {
+    if (d < 0 || d > getLength()) {
+        return T(0);
+    }
+
+    if (!hasMetaData(md)) {
+        return T(0);
+    }
+
+    auto &metaData = getMetaData<T>(md);
+
+    if (d == 0) {
+        return metaData.front();
+    }
+
+    double distPrev = 0, distNext = 0;
+    auto next = positions_.begin();
+    auto prev = next;
+    auto nextMD = metaData.begin();
+    auto prevMD = nextMD;
+
+    while (distNext < d) {
+        prev = next++;
+        prevMD = nextMD++;
+        distPrev = distNext;
+        distNext += glm::distance(*prev, *next);
+    }
+
+    double x = (d - distPrev) / (distNext - distPrev);
+    using TV = typename util::same_extent<T, double>::type;
+
+    return static_cast<T>(
+        Interpolation<TV, double>::linear(static_cast<TV>(*prevMD), static_cast<TV>(*nextMD), x));
+}
+
+}  // namespace inviwo
 
 #endif  // IVW_INTEGRALLINE_H

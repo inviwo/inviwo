@@ -152,7 +152,7 @@ public:
         , seedTransformation_(
               properties.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer()))
         , toWorld_(sampler->getCoordinateTransformer().getDataToWorldMatrix())
-        , transformToWorldSpace_{false} {}
+        , transformOutputToWorldSpace_{false} {}
     virtual ~IntegralLineTracer() {}
 
     Result traceFrom(const SpatialVector &pIn) {
@@ -162,11 +162,9 @@ public:
         Result res;
         IntegralLine &line = res.line;
 
-        bool fwd = dir_ == IntegralLineProperties::Direction::BOTH ||
-                   dir_ == IntegralLineProperties::Direction::FWD;
-        bool bwd = dir_ == IntegralLineProperties::Direction::BOTH ||
-                   dir_ == IntegralLineProperties::Direction::BWD;
-        bool both = fwd && bwd;
+        bool both = dir_ == IntegralLineProperties::Direction::BOTH;
+        bool fwd = both || dir_ == IntegralLineProperties::Direction::FWD;
+        bool bwd = both || dir_ == IntegralLineProperties::Direction::BWD;
 
         size_t stepsFWD = 0;
         size_t stepsBWD = 0;
@@ -175,8 +173,10 @@ public:
             stepsBWD = steps_ / 2;
             stepsFWD = steps_ - stepsBWD;
         } else if (fwd) {
+            line.setBackwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
             stepsFWD = steps_;
         } else if (bwd) {
+            line.setForwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
             stepsBWD = steps_;
         }
 
@@ -218,19 +218,20 @@ public:
         return seedTransformation_;
     }
 
-    void setTransformToWorldSpace(bool transform) { transformToWorldSpace_ = transform; }
-    bool isTransformingToWorldSpace() const { return transformToWorldSpace_; }
+    void setTransformOutputToWorldSpace(bool transform) {
+        transformOutputToWorldSpace_ = transform;
+    }
+    bool isTransformingOutputToWorldSpace() const { return transformOutputToWorldSpace_; }
 
 private:
     bool addPoint(IntegralLine &line, SpatialVector pos) {
         auto worldVelocty = sampler_->sample(pos);
 
         if (glm::length(worldVelocty) < std::numeric_limits<double>::epsilon()) {
-            line.setTerminationReason(IntegralLine::TerminationReason::ZeroVelocity);
             return false;
         }
 
-        if (transformToWorldSpace_) {
+        if (transformOutputToWorldSpace_) {
             SpatialVector worldPos =
                 detail::seedTransform<Sampler, DataVector, DataHomogenousVector>(
                     typename std::integral_constant<bool, TimeDependent>::type(), toWorld_, pos);
@@ -256,7 +257,11 @@ private:
     void integrate(size_t steps, SpatialVector pos, IntegralLine &line, bool fwd) {
         for (int i = 0; i < steps; i++) {
             if (!sampler_->withinBounds(pos)) {
-                line.setTerminationReason(IntegralLine::TerminationReason::OutOfBounds);
+                if (fwd) {
+                    line.setForwardTerminationReason(IntegralLine::TerminationReason::OutOfBounds);
+                } else {
+                    line.setBackwardTerminationReason(IntegralLine::TerminationReason::OutOfBounds);
+                }
                 break;
             }
 
@@ -264,7 +269,21 @@ private:
                 pos, integrationScheme_, stepSize_ * (fwd ? 1.0 : -1.0), invBasis_,
                 normalizeSamples_, *sampler_);
 
-            if (!addPoint(line, pos)) break;
+            if (!addPoint(line, pos)) {
+                if (fwd) {
+                    line.setForwardTerminationReason(IntegralLine::TerminationReason::ZeroVelocity);
+                } else {
+                    line.setBackwardTerminationReason(
+                        IntegralLine::TerminationReason::ZeroVelocity);
+                }
+
+                break;
+            }
+        }
+        if (fwd) {
+            line.setForwardTerminationReason(IntegralLine::TerminationReason::Steps);
+        } else {
+            line.setBackwardTerminationReason(IntegralLine::TerminationReason::Steps);
         }
     }
 
@@ -281,7 +300,7 @@ private:
     DataMatrix invBasis_;
     DataHomogenouSpatialMatrixrix seedTransformation_;
     DataHomogenouSpatialMatrixrix toWorld_;
-    bool transformToWorldSpace_;
+    bool transformOutputToWorldSpace_;
 };
 
 using StreamLine2DTracer = IntegralLineTracer<SpatialSampler<2, 2, double>>;
