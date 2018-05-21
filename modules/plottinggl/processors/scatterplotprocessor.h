@@ -33,7 +33,6 @@
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/plotting/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>

@@ -27,41 +27,39 @@
  *
  *********************************************************************************/
 
-in vec4 gColor;
-in vec2 gPos;
-in float gR;
-flat in vec4 pickColor_;
+layout(location = 4) in uint in_PickId;
 
-uniform int circle = 1;
-uniform float borderWidth = 1;
-uniform vec4 borderColor;
+#include "plotting/common.glsl"
+#include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
-uniform float antialiasing = 1.5; // [pixel]
+uniform GeometryParameters geometry;
 
-void main(void) {
-    float r = 0;
-    if (circle == 1) {
-        r = length(gPos);
-    } else {
-        r = max(abs(gPos.x), abs(gPos.y));
-    }
-    if (r > gR + antialiasing) {
-        discard;
-    }
+// initialize camera matrices with the identity matrix to enable default rendering
+// without any transformation, i.e. all lines in clip space
+uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
+                                    mat4(1), mat4(1), vec3(0), 0, 1);
 
-    float innerGlyphRadius = gR - borderWidth;
+uniform vec2 minmaxX;
+uniform vec2 minmaxY;
 
-    // pseudo antialiasing with the help of the alpha channel
-    // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
-    vec4 color = gColor;
-    if (borderWidth > 0.0) {
-        float borderValue = clamp(mix(0.0, 1.0, (r - innerGlyphRadius) / 1.0), 0.0, 1.0);
-        color = mix(color, borderColor, borderValue);
-    }
-    float borderAlpha = clamp(mix(1.0, 0.0, (r - gR) / antialiasing), 0.0, 1.0);
+uniform bool pickingEnabled = false;
 
-    color.rgb *= color.a;
-    FragData0 = color * borderAlpha;
-    //FragData0 = pickColor_;
-    PickingData = pickColor_;
+out vec4 worldPosition_;
+out vec4 vertexColor_;
+flat out vec4 pickColors_;
+ 
+float norm(in float v, in vec2 mm) { 
+    return (v - mm.x) / (mm.y - mm.x); 
+}
+
+void main() {
+    vertexColor_ = in_Color;
+
+    worldPosition_ = in_Vertex;
+
+    vec2 point = vec2(norm(in_Vertex.x, minmaxX), norm(in_Vertex.y, minmaxY));
+
+    gl_Position = vec4(getGLPositionFromPixel(getPixelCoordsWithSpacing(point)), 0.5, 1.0);
+    pickColors_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }

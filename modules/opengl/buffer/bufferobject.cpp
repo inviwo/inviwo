@@ -47,13 +47,13 @@ BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, Buf
             break;
     }
     switch (target) {
-    case BufferTarget::Index:
-        target_ = GL_ELEMENT_ARRAY_BUFFER;
-        break;
-    case BufferTarget::Data:
-    default:
-        target_ = GL_ARRAY_BUFFER;
-        break;
+        case BufferTarget::Index:
+            target_ = GL_ELEMENT_ARRAY_BUFFER;
+            break;
+        case BufferTarget::Data:
+        default:
+            target_ = GL_ARRAY_BUFFER;
+            break;
     }
 
     glGenBuffers(1, &id_);
@@ -76,7 +76,7 @@ BufferObject::BufferObject(const BufferObject& rhs)
 
 BufferObject::BufferObject(BufferObject&& rhs)
     : Observable<BufferObjectObserver>(std::move(rhs))
-    , id_(rhs.id_) // Steal buffer
+    , id_(rhs.id_)  // Steal buffer
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
@@ -105,7 +105,6 @@ BufferObject& BufferObject::operator=(const BufferObject& rhs) {
         glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
         // Copy data (OpenGL 3.1 functionality...)
         glCopyBufferSubData(GL_COPY_READ_BUFFER, target_, 0, 0, sizeInBytes_);
-
     }
     return *this;
 }
@@ -130,7 +129,7 @@ BufferObject& BufferObject::operator=(BufferObject&& rhs) {
 
         // Release resources from source object
         rhs.id_ = 0;
-        
+
         forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });
     }
     return *this;
@@ -150,9 +149,52 @@ void BufferObject::bind() const { glBindBuffer(target_, id_); }
 
 void BufferObject::unbind() const { glBindBuffer(target_, 0); }
 
-void BufferObject::setSize(GLsizeiptr sizeInBytes) {
-    initialize(nullptr, sizeInBytes);
+void BufferObject::bindAndSetAttribPointer(GLuint location, BindingType bindingType) const {
+    bind();
+    switch (bindingType) {
+        case BindingType::Native:
+            if (getDataFormat()->getNumericType() == NumericType::Float) {
+                if (getDataFormat()->getPrecision() == static_cast<size_t>(64)) {
+                    // double
+                    glVertexAttribLPointer(location, getGLFormat().channels, GL_DOUBLE, 0,
+                                           (void*)nullptr);
+                } else {
+                    // other floating point types
+                    glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type,
+                                          GL_FALSE, 0, (void*)nullptr);
+                }
+            } else {
+                // integral types
+                glVertexAttribIPointer(location, getGLFormat().channels, getGLFormat().type, 0,
+                                       (void*)nullptr);
+            }
+            break;
+        case BindingType::ForceFloat:
+            if ((getDataFormat()->getNumericType() == NumericType::Float) &&
+                (getDataFormat()->getPrecision() == static_cast<size_t>(64))) {
+                // special case for double precision since it is not part of GLFormats
+                glVertexAttribPointer(location, getGLFormat().channels, GL_DOUBLE, GL_FALSE, 0,
+                                      (void*)nullptr);
+            } else {
+                glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type,
+                                      GL_FALSE, 0, (void*)nullptr);
+            }
+            break;
+        case BindingType::ForceNormalizedFloat:
+            if ((getDataFormat()->getNumericType() == NumericType::Float) &&
+                (getDataFormat()->getPrecision() == static_cast<size_t>(64))) {
+                // special case for double precision since it is not part of GLFormats
+                glVertexAttribPointer(location, getGLFormat().channels, GL_DOUBLE, GL_FALSE, 0,
+                                      (void*)nullptr);
+            } else {
+                glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type, GL_TRUE,
+                                      0, (void*)nullptr);
+            }
+            break;
+    }
 }
+
+void BufferObject::setSize(GLsizeiptr sizeInBytes) { initialize(nullptr, sizeInBytes); }
 
 void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     sizeInBytes_ = sizeInBytes;
@@ -189,4 +231,4 @@ void BufferObject::download(void* data) const {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

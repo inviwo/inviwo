@@ -228,9 +228,9 @@ class App:
 		printfun("List of regression tests")
 		printfun("-"*80)
 
-		selected = self.filterTests(testrange, testfilter)
+		selected, reasons = self.filterTests(testrange, testfilter)
 		for i, test in enumerate(self.tests):
-			active = "Enabled" if i in selected and testfilter(test) else "Disabled"
+			active = "Enabled" if i in selected and testfilter(test) else "Disabled (Reason: %s)" % reasons[i]
 			printfun("{:3d} {:8s} {}".format(i, active, test))
 
 	def saveJson(self):

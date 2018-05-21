@@ -36,46 +36,62 @@ layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
 #include "plotting/common.glsl"
-
+#include "utils/pickingutils.glsl"
 
 uniform vec2 pixelSize;
+uniform float borderWidth = 1;
+uniform float antialiasing = 1.5; // [pixel]
 
 in vec4 vColor[1];
 in float vRadius[1];
 in float vDepth[1];
-
+flat in vec4 pickColors_[];
 
 out vec4 gColor;
 out vec2 gPos;
-out float gDepth;
 out float gR;
+flat out vec4 pickColor_;
 
+void emit(vec2 c, float r, int x, int y) {
 
-void emit(vec2 c,float r,int x,int y){
+    float outerRadius = r + 0.5 * borderWidth;
 
-    vec2 pos = getGLPositionFromPixel(c + vec2(r*x+x*2,r*y+y*2));
+    vec2 pos =  vec2((outerRadius + antialiasing) * x, (outerRadius + antialiasing) * y);
 
-    gl_Position = vec4( pos , 0 ,1);
+    gl_Position = vec4(getGLPositionFromPixel(c + pos), vDepth[0], 1);
     gColor = vColor[0];
-    gDepth = vDepth[0];
-    gR =r;
-    gPos = vec2(r*x+x*2,r*y+y*2);
+    gR = outerRadius;
+    gPos = pos;
     EmitVertex();
+}
+
+bool insideBox(vec2 pos, vec2 bottomLeft, vec2 topRight) {
+    vec2 s = step(bottomLeft, pos) - (1 - step(pos, topRight));
+    return s.x * s.y > 0.0;
 }
 
 void main(void) {
 
-#ifndef GLSL_VERSION_150  
+#ifndef GLSL_VERSION_150
     vec2 c = gl_PositionIn[0].xy;
 #else
     vec2 c = gl_in[0].gl_Position.xy;
-#endif 
-    
-    emit(c,vRadius[0],1,1);
-    emit(c,vRadius[0],1,-1);
-    emit(c,vRadius[0],-1,1);
-    emit(c,vRadius[0],-1,-1);
+#endif
+
+    // discard primitive if outside unit square
+    if (!insideBox(c, vec2(0.0), vec2(1.0))) {
+        EndPrimitive();
+        return;
+    }
+
+    c = getPixelCoordsWithSpacing(c);
+
+    pickColor_ = pickColors_[0];
+
+    emit(c, vRadius[0], 1, 1);
+    emit(c, vRadius[0], 1, -1);
+    emit(c, vRadius[0], -1, 1);
+    emit(c, vRadius[0], -1, -1);
 
     EndPrimitive();
 }
- 

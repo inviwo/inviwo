@@ -38,6 +38,7 @@
 #include <modules/plottinggl/processors/scatterplotmatrixprocessor.h>
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <modules/plottinggl/processors/volumeaxis.h>
+#include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
 
 namespace inviwo {
 
@@ -47,6 +48,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
 
     registerProcessor<plot::AxisRenderProcessor>();
     registerProcessor<plot::ParallelCoordinates>();
+    registerProcessor<plot::PersistenceDiagramPlotProcessor>();
     registerProcessor<plot::ScatterPlotMatrixProcessor>();
     registerProcessor<plot::ScatterPlotProcessor>();
     registerProcessor<plot::VolumeAxis>();
