@@ -63,6 +63,7 @@ class NetworkSearch;
 class InviwoEditMenu;
 class InviwoAboutWindow;
 class ResourceManagerDockWidget;
+class FileAssociations;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -113,7 +114,8 @@ private:
 
     void openWorkspace(QString workspaceFileName, bool exampleWorkspace);
     void saveWorkspace(QString workspaceFileName);
-
+    void appendWorkspace(const std::string& workspaceFileName);
+    
     void addActions();
 
     void closeEvent(QCloseEvent* event) override;
@@ -161,6 +163,8 @@ private:
     InviwoEditMenu* editMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;
     QMenu* testMenu_ = nullptr;
+
+    std::unique_ptr<FileAssociations> fileAssociations_;
 
     // settings
     bool maximized_;

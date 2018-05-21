@@ -54,6 +54,7 @@ public:
     ~NetworkEditorView();
 
     void hideNetwork(bool);
+    void fitNetwork();
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
     void exportViewToFile(const QString& filename, bool entireScene, bool backgroundVisible);
@@ -72,8 +73,6 @@ protected:
 
 private:
     void zoom(double dz);
-    void fitNetwork();
-
     virtual void onSceneSizeChanged() override;
 
     InviwoMainWindow* mainwindow_;
