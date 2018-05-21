@@ -827,12 +827,18 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 /////////////////////////////////////////
 //   PROCESSOR DRAG AND DROP METHODS   //
 /////////////////////////////////////////
-void NetworkEditor::dragEnterEvent(QGraphicsSceneDragDropEvent* e) { dragMoveEvent(e); }
+void NetworkEditor::dragEnterEvent(QGraphicsSceneDragDropEvent* e) {
+    if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
+        e->acceptProposedAction();
+        dragMoveEvent(e);
+    } else {
+        e->ignore();
+    }
+}
 
 void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
     if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
-        e->acceptProposedAction();
-
+        e->accept();
         auto connectionItem = getConnectionGraphicsItemAt(e->scenePos());
 
         if (connectionItem && !oldConnectionTarget_) {  //< New connection found
@@ -878,15 +884,15 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
                 oldProcessorTarget_ = nullptr;
             }
         }
+    } else {
+        e->ignore();
     }
 }
 
 void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
     if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
+        e->accept();
         NetworkLock lock(network_);
-
-        e->setAccepted(true);
-        e->acceptProposedAction();
 
         try {
             // activate default render context
@@ -932,6 +938,8 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
         // clear oldDragTarget
         oldConnectionTarget_ = nullptr;
         oldProcessorTarget_ = nullptr;
+    } else {
+        e->ignore();
     }
 }
 
@@ -1136,8 +1144,8 @@ void NetworkEditor::append(std::istream& is, const std::string& refPath) {
 
         // add to top right
         const auto offset = ivec2{orgBounds.second.x, orgBounds.first.y} + ivec2{gridSpacing_, 0} +
-                      ivec2{ProcessorGraphicsItem::size_.width(), 0} -
-                      ivec2{bounds.first.x, bounds.first.y};
+                            ivec2{ProcessorGraphicsItem::size_.width(), 0} -
+                            ivec2{bounds.first.x, bounds.first.y};
 
         util::offsetPosition(added, offset);
 
