@@ -322,7 +322,8 @@ void Property::setStateAsDefault(T& property, const U& state) {
 
 template <typename P>
 void Property::autoLinkToProperty(const std::string& propertyPath) {
-    autoLinkTo_.push_back(std::make_pair(P::processorInfo_.classIdentifier, propertyPath));
+    autoLinkTo_.push_back(
+        std::make_pair(ProcessorTraits<P>::getProcessorInfo().classIdentifier, propertyPath));
 }
 
 }  // namespace inviwo
