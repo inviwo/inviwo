@@ -127,16 +127,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     app_->installNativeEventFilter(fileAssociations_.get());
 
     fileAssociations_->registerFileType(
-        "Inviwo.workspace",  // Document type name
-        "Inviwo Workspace",  // User readable file type name
-        ".inv",              // file extension
-        0,                   // index of the icon to use for the files.
+        "Inviwo.workspace", "Inviwo Workspace", ".inv", 0,
         {{"Open", "-w %1", "open",
-          [this](const std::string& file) {
-              if (askToSaveWorkspaceChanges()) {
-                  openWorkspace(utilqt::toQString(file));
-              }
-          }},
+          [this](const std::string& file) { openWorkspaceAskToSave(utilqt::toQString(file)); }},
          {"Append", "-w %1", "append",
           [this](const std::string& file) { appendWorkspace(file); }}});
 
@@ -734,6 +727,15 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
     openWorkspace(workspaceFileName, false);
 }
 
+bool InviwoMainWindow::openWorkspaceAskToSave(QString workspaceFileName) {
+    if (askToSaveWorkspaceChanges()) {
+        openWorkspace(workspaceFileName, false);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     workspace = filesystem::cleanupPath(workspace);
     if (!workspace.empty()) {
@@ -1036,6 +1038,34 @@ InviwoApplicationQt* InviwoMainWindow::getInviwoApplicationQt() const { return a
 
 InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const { return editMenu_; }
 
+void InviwoMainWindow::dragEnterEvent(QDragEnterEvent* event) {
+    auto mimeData = event->mimeData();
+    if (mimeData->hasUrls()) {
+        if (event->keyboardModifiers() & Qt::ControlModifier) {
+            event->setDropAction(Qt::CopyAction);
+        } else {
+            event->setDropAction(Qt::MoveAction);
+        }
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
+void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
+    auto mimeData = event->mimeData();
+    if (mimeData->hasUrls()) {
+        if (event->keyboardModifiers() & Qt::ControlModifier) {
+            event->setDropAction(Qt::CopyAction);
+        } else {
+            event->setDropAction(Qt::MoveAction);
+        }
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
 void InviwoMainWindow::dropEvent(QDropEvent* event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
@@ -1044,11 +1074,16 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
 
         // pick first url
         auto filename = urlList.front().toLocalFile();
-        openWorkspace(filename);
-        event->acceptProposedAction();
+
+        if (event->keyboardModifiers() & Qt::ControlModifier) {
+            appendWorkspace(utilqt::fromQString(filename));
+        } else {
+            openWorkspaceAskToSave(filename);
+        }
+        event->accept();
+    } else {
+        event->ignore();
     }
 }
-
-void InviwoMainWindow::dragEnterEvent(QDragEnterEvent* event) { event->acceptProposedAction(); }
 
 }  // namespace inviwo
