@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/metadata/metadataowner.h>
