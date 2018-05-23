@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "volumesource.h"
+#include <modules/base/processors/volumesource.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -53,10 +53,11 @@ const ProcessorInfo VolumeSource::processorInfo_{
 };
 const ProcessorInfo VolumeSource::getProcessorInfo() const { return processorInfo_; }
 
-VolumeSource::VolumeSource()
+VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     : Processor()
+    , app_(app)
     , outport_("data")
-    , file_("filename", "File")
+    , file_("filename", "File", file, "volume")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
@@ -84,9 +85,8 @@ VolumeSource::VolumeSource()
 void VolumeSource::load(bool deserialize) {
     if (file_.get().empty()) return;
 
-    auto app = InviwoApplication::getPtr();
-    auto rf = app->getDataReaderFactory();
-    auto rm = app->getResourceManager();
+    auto rf = app_->getDataReaderFactory();
+    auto rm = app_->getResourceManager();
     std::string ext = filesystem::getFileExtension(file_.get());
 
     // use resource unless the "Reload data"-button (reload_) was pressed,
@@ -124,7 +124,7 @@ void VolumeSource::load(bool deserialize) {
 }
 
 void VolumeSource::addFileNameFilters() {
-    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
+    auto rf = app_->getDataReaderFactory();
 
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));

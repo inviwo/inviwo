@@ -73,6 +73,7 @@ class PortInspectorFactoryObject;
 class MeshDrawer;
 class PropertyConverter;
 class VersionConverter;
+class DataVisualizer;
 
 enum class ModulePath {
     Data,             // /data
@@ -196,6 +197,8 @@ protected:
 
     void registerPortInspector(std::string portClassIdentifier, std::string inspectorPath);
 
+    void registerDataVisualizer(std::unique_ptr<DataVisualizer> visualizer);
+
     /**
      * Register port type T, PortTraits<T>::classIdentifier has to be defined and return a non
      * empty and unique string. We use reverse DNS for class identifiers, i.e. org.inviwo.classname
@@ -294,6 +297,7 @@ private:
     std::vector<std::unique_ptr<BaseRepresentationConverterFactory>>
         representationConverterFactories_;
     std::vector<std::unique_ptr<Settings>> settings_;
+    std::vector<std::unique_ptr<DataVisualizer>> dataVisualizers_;
 };
 
 template <typename T>

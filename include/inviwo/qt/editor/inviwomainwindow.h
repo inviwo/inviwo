@@ -146,15 +146,17 @@ private:
     void updateWindowTitle();
 
     InviwoApplicationQt* app_;
+    InviwoEditMenu* editMenu_ = nullptr;
+    QMenu* exampleMenu_ = nullptr;
+    QMenu* testMenu_ = nullptr;
+    std::shared_ptr<ConsoleWidget> consoleWidget_;
     std::unique_ptr<NetworkEditor> networkEditor_;
     NetworkEditorView* networkEditorView_;
  
-    // dock widgets
     SettingsWidget* settingsWidget_;
     ProcessorTreeWidget* processorTreeWidget_;
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
-    std::shared_ptr<ConsoleWidget> consoleWidget_;
     HelpWidget* helpWidget_;
     NetworkSearch* networkSearch_;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
@@ -162,10 +164,6 @@ private:
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
-
-    InviwoEditMenu* editMenu_ = nullptr;
-    QMenu* exampleMenu_ = nullptr;
-    QMenu* testMenu_ = nullptr;
 
     std::unique_ptr<FileAssociations> fileAssociations_;
 
@@ -183,6 +181,7 @@ private:
     TCLAP::ValueArg<std::string> snapshotArg_;
     TCLAP::ValueArg<std::string> screenGrabArg_;
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
+    TCLAP::ValueArg<std::string> openData_;
     TCLAP::SwitchArg updateWorkspaces_;
     
     UndoManager undoManager_;

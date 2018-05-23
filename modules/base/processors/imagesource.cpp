@@ -46,16 +46,17 @@ const ProcessorInfo ImageSource::processorInfo_{
 };
 const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo_; }
 
-ImageSource::ImageSource()
+ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     : Processor()
+    , app_(app)
     , outport_("image", DataVec4UInt8::get(), false)
-    , file_("imageFileName", "File name", "", "image")
+    , file_("imageFileName", "File name", file, "image")
     , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
                       InvalidationLevel::Valid, PropertySemantics("Text")) {
 
     addPort(outport_);
 
-    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
+    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
     file_.addNameFilters(rf->getExtensionsForType<Layer>());
@@ -73,7 +74,7 @@ void ImageSource::process() {
     if (file_.get().empty()) return;
 
     std::string ext = filesystem::getFileExtension(file_.get());
-    auto factory = getNetwork()->getApplication()->getDataReaderFactory();
+    auto factory = app_->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
         try {
             auto outLayer = reader->readData(file_.get());
@@ -103,7 +104,7 @@ void ImageSource::process() {
 
 void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
+    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
     file_.addNameFilters(rf->getExtensionsForType<Layer>());
