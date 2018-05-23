@@ -92,9 +92,9 @@ namespace inviwo {
 class FileAssociationData {
 public:
     FileAssociationData(FileAssociations& fa, QMainWindow* win) : fa_{fa}, win_{win} {
-
         QFileInfo fi(qApp->applicationFilePath());
         appAtomName_ = fi.baseName();
+
         appAtom_ = ::GlobalAddAtomW((const wchar_t*)appAtomName_.utf16());
         systemTopicAtom_ = ::GlobalAddAtomW((const wchar_t*)systemTopicAtomName_.utf16());
     }
@@ -103,6 +103,17 @@ public:
         if (0 != appAtom_) {
             ::GlobalDeleteAtom(appAtom_);
         }
+
+        auto atom = ::GlobalFindAtom((const wchar_t*)appAtomName_.utf16());
+
+        if (atom == 0) {  // last inviwo running;
+            // remove dde commands when not running to avoid
+            // "There was a problem sending the command to the program." errors
+            for (const auto& ddeCommand : ddeCommandsToRemove_) {
+                ::RegDeleteTree(HKEY_CURRENT_USER, (const wchar_t*)ddeCommand.utf16());
+            }
+        }
+
         if (0 != systemTopicAtom_) {
             ::GlobalDeleteAtom(systemTopicAtom_);
         }
@@ -163,11 +174,13 @@ public:
             }
 
             if (!command.ddeCommand_.empty()) {
-                if (!SetHkcrUserRegKey(QString("%1\\shell\\%2\\ddeexec").arg(dId).arg(cmd),
-                                       QString("[%1(\"%2\")]")
-                                           .arg(utilqt::toQString(command.ddeCommand_))
-                                           .arg("%1")))
+                auto verb = QString("%1\\shell\\%2\\ddeexec").arg(dId).arg(cmd);
+                if (!SetHkcrUserRegKey(verb, QString("[%1(\"%2\")]")
+                                                 .arg(utilqt::toQString(command.ddeCommand_))
+                                                 .arg("%1")))
                     return;
+
+                ddeCommandsToRemove_.push_back("Software\\Classes\\" + verb);
 
                 if (!SetHkcrUserRegKey(
                         QString("%1\\shell\\%2\\ddeexec\\application").arg(dId).arg(cmd),
@@ -191,10 +204,7 @@ public:
 
         if (lResult != ERROR_SUCCESS || temp.isEmpty() || temp == dId) {
             // no association for that suffix
-            if (!SetHkcrUserRegKey(ext, dId)) return;
-
-            SetHkcrUserRegKey(QString("%1\\ShellNew").arg(ext), QLatin1String(""),
-                              QLatin1String("NullFile"));
+            SetHkcrUserRegKey(ext, dId);
         }
     }
 
@@ -206,11 +216,11 @@ private:
             (HIWORD(message->lParam) == systemTopicAtom_)) {
 
             // make duplicates of the incoming atoms (really adding a reference)
-            wchar_t atomName[_MAX_PATH];
-            IVW_ASSERT(::GlobalGetAtomNameW(appAtom_, atomName, _MAX_PATH - 1) != 0, "");
-            IVW_ASSERT(::GlobalAddAtomW(atomName) == appAtom_, "");
-            IVW_ASSERT(::GlobalGetAtomNameW(systemTopicAtom_, atomName, _MAX_PATH - 1) != 0, "");
-            IVW_ASSERT(::GlobalAddAtomW(atomName) == systemTopicAtom_, "");
+            //wchar_t atomName[_MAX_PATH];
+            //IVW_ASSERT(::GlobalGetAtomNameW(appAtom_, atomName, _MAX_PATH - 1) != 0, "");
+            //IVW_ASSERT(::GlobalAddAtomW(atomName) == appAtom_, "");
+            //IVW_ASSERT(::GlobalGetAtomNameW(systemTopicAtom_, atomName, _MAX_PATH - 1) != 0, "");
+            //IVW_ASSERT(::GlobalAddAtomW(atomName) == systemTopicAtom_, "");
 
             // send the WM_DDE_ACK (caller will delete duplicate atoms)
             ::SendMessage((HWND)message->wParam, WM_DDE_ACK, (WPARAM)win_->winId(),
@@ -251,7 +261,7 @@ private:
         return true;
     }
 
-    bool ddeTerminate(MSG* message, long* result) {
+    bool ddeTerminate(MSG* message, long*) {
         // The client or server application should respond by posting a WM_DDE_TERMINATE message.
         ::PostMessageW((HWND)message->wParam, WM_DDE_TERMINATE, (WPARAM)win_->winId(),
                        message->lParam);
@@ -276,20 +286,21 @@ private:
 
             if (::RegCloseKey(hKey) == ERROR_SUCCESS && lResult == ERROR_SUCCESS) return true;
 
-            LogError("Error in setting Registry values: ",
-                     << "registration database update failed for key '" << key << "'.");
+            LogError("Error in setting Registry value: '"
+                     << utilqt::fromQString(value) << "' for key '" << utilqt::fromQString(key)
+                     << "'.");
         } else {
             wchar_t buffer[4096];
             ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, 0, lRetVal, 0, buffer, 4096, 0);
             QString szText = QString::fromUtf16((const ushort*)buffer);
-            LogError("Error in setting Registry values: " << utilqt::fromQString(szText));
+            LogError("Error in setting Registry value: " << utilqt::fromQString(szText));
         }
         return false;
     }
 
     FileAssociations& fa_;
     QMainWindow* win_;
-
+    std::vector<QString> ddeCommandsToRemove_;
     // the name of the application, without file extension
     QString appAtomName_ = "";
     // the name of the system topic atom, typically "System"

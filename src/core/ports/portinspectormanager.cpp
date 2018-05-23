@@ -74,6 +74,11 @@ std::unique_ptr<PortInspector> PortInspectorManager::getPortInspector(Outport* o
     }
 }
 
+bool PortInspectorManager::isPortInspectorSupported(const Outport* outport) {
+    auto factory = app_->getPortInspectorFactory();
+    return factory->hasKey(outport->getClassIdentifier());
+}
+
 void PortInspectorManager::returnPortInspector(std::unique_ptr<PortInspector> pi) {
     unUsedInspectors_.push_back(std::move(pi));
 }

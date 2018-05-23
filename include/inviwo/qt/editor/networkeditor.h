@@ -115,8 +115,6 @@ public:
     void initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos);
 
     // Port inspectors
-    bool addPortInspector(Outport* port, QPointF pos);
-    void removePortInspector(Outport* port);
     std::shared_ptr<const Image> renderPortInspectorImage(Outport* port);
     
     ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
@@ -132,8 +130,6 @@ public:
     QRectF getProcessorsBoundingRect() const;
 
     static std::string getMimeTag();
-public slots:
-    void contextMenuShowInspector(EditorGraphicsItem*);
     void resetAllTimeMeasurements();
 
 protected:

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,52 +24,42 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESOURCE_H
-#define IVW_IMAGESOURCE_H
+#ifndef IVW_VOLUMESLICEVISUALIZER_H
+#define IVW_VOLUMESLICEVISUALIZER_H
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageSource, Image Source}
- * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
- *
- * Loads a image
- * 
- * ### Outports
- *   * __Outport__ The loaded image
- * 
- * ### Properties
- *   * __File name__ The name of the file to load
- *   * __Dimensions__ Readonly, the dimensions of the loaded image.
- */
-
-class IVW_MODULE_BASE_API ImageSource : public Processor {
+class IVW_MODULE_BASEGL_API VolumeSliceVisualizer : public DataVisualizer {
 public:
-    ImageSource(InviwoApplication* app, const std::string& file = "");
-    virtual ~ImageSource() = default;
+    VolumeSliceVisualizer(InviwoApplication* app);
+    virtual ~VolumeSliceVisualizer() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
 
-    virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
+
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
 
 private:
     InviwoApplication* app_;
-    ImageOutport outport_;
-    FileProperty file_;
-    IntVec2Property imageDimension_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGESOURCE_H
+#endif  // IVW_VOLUMESLICEVISUALIZER_H

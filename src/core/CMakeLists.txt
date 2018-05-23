@@ -34,7 +34,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datatraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/basicmesh.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/typedmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/edge.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrytype.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/mesh.h
@@ -44,6 +43,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/polygon.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemeshcreator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/typedmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/image.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imageram.h
@@ -183,6 +183,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processortags.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processortraits.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactoryobject.h
@@ -235,6 +236,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/datavisualizer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/datavisualizermanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawerfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resourcemanager/resource.h
@@ -452,6 +455,7 @@ set(SOURCE_FILES
     processors/processorinfo.cpp
     processors/processorpair.cpp
     processors/processortags.cpp
+    processors/processorutils.cpp
     processors/processorwidget.cpp
     processors/processorwidgetfactory.cpp
     processors/processorwidgetfactoryobject.cpp
@@ -498,6 +502,8 @@ set(SOURCE_FILES
     properties/tfpropertyconcept.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
+    rendering/datavisualizer.cpp
+    rendering/datavisualizermanager.cpp
     rendering/meshdrawerfactory.cpp
     resourcemanager/resource.cpp
     resourcemanager/resourcemanager.cpp

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,52 +24,57 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESOURCE_H
-#define IVW_IMAGESOURCE_H
+#include <inviwo/core/processors/processorutils.h>
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/metadata/processormetadata.h>
 
 namespace inviwo {
+namespace util {
 
-/** \docpage{org.inviwo.ImageSource, Image Source}
- * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
- *
- * Loads a image
- * 
- * ### Outports
- *   * __Outport__ The loaded image
- * 
- * ### Properties
- *   * __File name__ The name of the file to load
- *   * __Dimensions__ Readonly, the dimensions of the loaded image.
- */
+const ProcessorMetaData* getMetaData(const Processor* processor) {
+    if (processor) {
+        return processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    }
+    return nullptr;
+}
 
-class IVW_MODULE_BASE_API ImageSource : public Processor {
-public:
-    ImageSource(InviwoApplication* app, const std::string& file = "");
-    virtual ~ImageSource() = default;
+ProcessorMetaData* getMetaData(Processor* processor) {
+    if (processor) {
+        return processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    }
+    return nullptr;
+}
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+ivec2 getPosition(const Processor* processor) {
+    if (auto meta = getMetaData(processor)) {
+        return meta->getPosition();
+    }
+    return {0, 0};
+}
 
-    virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
+void setPosition(Processor* processor, ivec2 pos) {
+    if (auto meta = getMetaData(processor)) {
+        meta->setPosition(pos);
+    }
+}
 
-private:
-    InviwoApplication* app_;
-    ImageOutport outport_;
-    FileProperty file_;
-    IntVec2Property imageDimension_;
-};
+bool isSelected(const Processor* processor) {
+    if (auto meta = getMetaData(processor)) {
+        return meta->isSelected();
+    }
+    return false;
+}
 
-} // namespace
+void setSelected(Processor* processor, bool selected) {
+    if (auto meta = getMetaData(processor)) {
+        meta->setSelected(selected);
+    }
+}
 
-#endif // IVW_IMAGESOURCE_H
+}  // namespace util
+
+}  // namespace inviwo

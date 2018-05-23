@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "entryexitpointsprocessor.h"
+#include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/serialization/versionconverter.h>

@@ -60,6 +60,8 @@ public:
     PortInspectorManager& operator=(const PortInspectorManager& that) = delete;
     PortInspectorManager& operator=(PortInspectorManager&& that) = default;
 
+    bool isPortInspectorSupported(const Outport* outport);
+
     bool hasPortInspector(Outport* outport) const;
     ProcessorWidget* addPortInspector(Outport* outport, ivec2 pos);
     void removePortInspector(Outport* outport);
