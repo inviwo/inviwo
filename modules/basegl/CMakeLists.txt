@@ -7,6 +7,10 @@ ivw_module(BaseGL)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/imagevisualizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/meshvisualizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeraycastvisualizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeslicevisualizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cuberenderer.h
@@ -67,6 +71,10 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/imagevisualizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/meshvisualizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeraycastvisualizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeslicevisualizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/cuberenderer.cpp

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,52 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESOURCE_H
-#define IVW_IMAGESOURCE_H
+#ifndef IVW_DATAOPENER_H
+#define IVW_DATAOPENER_H
 
-#include <modules/base/basemoduledefine.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageSource, Image Source}
- * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
- *
- * Loads a image
- * 
- * ### Outports
- *   * __Outport__ The loaded image
- * 
- * ### Properties
- *   * __File name__ The name of the file to load
- *   * __Dimensions__ Readonly, the dimensions of the loaded image.
- */
+class ProcessorNetwork;
 
-class IVW_MODULE_BASE_API ImageSource : public Processor {
-public:
-    ImageSource(InviwoApplication* app, const std::string& file = "");
-    virtual ~ImageSource() = default;
+namespace util {
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+void IVW_QTEDITOR_API insertNetworkForData(const std::string& dataFile, ProcessorNetwork* net,
+                                           bool alwaysFirst = false, bool onlySource = false);
 
-    virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
+}
 
-private:
-    InviwoApplication* app_;
-    ImageOutport outport_;
-    FileProperty file_;
-    IntVec2Property imageDimension_;
-};
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_IMAGESOURCE_H
+#endif  // IVW_DATAOPENER_H

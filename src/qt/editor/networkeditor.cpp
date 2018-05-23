@@ -50,6 +50,7 @@
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -74,6 +75,8 @@
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/propertylistwidget.h>
+
+#include <inviwo/core/rendering/datavisualizermanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -279,20 +282,6 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
 //////////////////////////////////////
 //   PORT INSPECTOR FUNCTIONALITY   //
 //////////////////////////////////////
-bool NetworkEditor::addPortInspector(Outport* outport, QPointF pos) {
-    auto pim = mainwindow_->getInviwoApplication()->getPortInspectorManager();
-    if (!pim->hasPortInspector(outport)) {
-        pim->addPortInspector(outport, ivec2(pos.x(), pos.y()));
-        return true;
-    } else {
-        return false;
-    }
-}
-
-void NetworkEditor::removePortInspector(Outport* outport) {
-    mainwindow_->getInviwoApplication()->getPortInspectorManager()->removePortInspector(outport);
-}
-
 std::shared_ptr<const Image> NetworkEditor::renderPortInspectorImage(Outport* outport) {
     auto pim = mainwindow_->getInviwoApplication()->getPortInspectorManager();
     return pim->renderPortInspectorImage(outport);
@@ -490,42 +479,84 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
 }
 
 void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
+
+    auto addVisualizers = [this](QMenu& menu, ProcessorOutportGraphicsItem* ogi) {
+        auto outport = ogi->getPort();
+
+        auto app = mainwindow_->getInviwoApplication();
+        auto pim = app->getPortInspectorManager();
+
+        if (pim->isPortInspectorSupported(outport)) {
+            auto pos = ogi->mapPosToSceen(ogi->rect().center());
+            auto hasInspector = pim->hasPortInspector(outport);
+            auto showPortInsector =
+                menu.addAction(tr(hasInspector ? "Hide Port Inspector" : "Show Port &Inspector"));
+            showPortInsector->setCheckable(true);
+            showPortInsector->setChecked(hasInspector);
+            connect(showPortInsector, &QAction::triggered, [this, pim, outport, pos]() {
+                if (!pim->hasPortInspector(outport)) {
+                    pim->addPortInspector(outport, ivec2(pos.x(), pos.y()));
+                } else {
+                    pim->removePortInspector(outport);
+                }
+            });
+        }
+
+        auto dataVis = app->getDataVisualizerManager()->getDataVisualizersForOutport(outport);
+        if (!dataVis.empty()) {
+            auto subMenu = menu.addMenu("Add Visualizers");
+            for (auto vis : dataVis) {
+                auto action = subMenu->addAction(utilqt::toQString(vis->getName()));
+                connect(action, &QAction::triggered, [this, vis, outport]() {
+                    auto pos = util::getPosition(outport->getProcessor());
+                    auto oldPos = util::getPositions(network_);
+                    auto added = vis->addVisualizerNetwork(outport, network_);
+                    // add bellow pos
+                    const auto bounds = util::getBoundingBox(added);
+                    for (auto p : oldPos) {
+                        if ((p.x > pos.x - ProcessorGraphicsItem::size_.width() / 2) &&
+                            (p.x <
+                             pos.x + bounds.second.x + ProcessorGraphicsItem::size_.width() / 2)) {
+                            pos.y = std::max(p.y, pos.y);
+                        }
+                    }
+
+                    const auto offset = pos + ivec2{0, 25 + ProcessorGraphicsItem::size_.height()} -
+                                        ivec2{bounds.first.x, bounds.first.y};
+                    util::offsetPosition(added, offset);
+                });
+            }
+        }
+
+        if (auto imagePort = dynamic_cast<ImageOutport*>(outport)) {
+            if (auto image = imagePort->getData()) {
+                menu.addSeparator();
+                utilqt::addImageActions(menu, *image);
+            }
+        }
+    };
+
     QMenu menu;
     ProcessorGraphicsItem* clickedProcessor = nullptr;
-    auto pim = mainwindow_->getInviwoApplication()->getPortInspectorManager();
 
     for (auto& item : items(e->scenePos())) {
         if (auto outport = qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)) {
-            QAction* showPortInsector = menu.addAction(tr("Port &Inspector"));
-            showPortInsector->setCheckable(true);
-            if (pim->hasPortInspector(outport->getPort())) {
-                showPortInsector->setChecked(true);
-            }
-            connect(showPortInsector, &QAction::triggered,
-                    [this, outport]() { contextMenuShowInspector(outport); });
-
-            if (auto imgPort = dynamic_cast<ImageOutport*>(outport->getPort())) {
-                if (auto img = imgPort->getData()) {
-                    menu.addSeparator();
-                    utilqt::addImageActions(menu, *img);
-                }
-            }
-
+            addVisualizers(menu, outport);
             break;
-        }
 
-        if (auto inport = qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item)) {
-            QAction* showPortInsector = menu.addAction(tr("Port &Inspector"));
-            showPortInsector->setCheckable(true);
-            if (pim->hasPortInspector(inport->getPort()->getConnectedOutport())) {
-                showPortInsector->setChecked(true);
+        } else if (auto inport = qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item)) {
+            if (inport->getPort()->isConnected()) {
+                auto port = inport->getConnections().front()->getOutportGraphicsItem();
+                addVisualizers(menu, port);
             }
-            connect(showPortInsector, &QAction::triggered,
-                    [this, inport]() { contextMenuShowInspector(inport); });
             break;
-        }
 
-        if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+        } else if (auto connection = qgraphicsitem_cast<ConnectionGraphicsItem*>(item)) {
+            auto port = connection->getOutportGraphicsItem();
+            addVisualizers(menu, port);
+            break;
+
+        } else if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             clickedProcessor = processor;
 
             auto editName = menu.addAction(tr("Edit Name"));
@@ -613,30 +644,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             });
 
             break;
-        }
 
-        if (auto connection = qgraphicsitem_cast<ConnectionGraphicsItem*>(item)) {
-            QAction* showPortInsector = menu.addAction(tr("Show Port Inspector"));
-            showPortInsector->setCheckable(true);
-            if (pim->hasPortInspector(connection->getOutportGraphicsItem()->getPort())) {
-                showPortInsector->setChecked(true);
-            }
-            connect(showPortInsector, &QAction::triggered, [this, connection]() {
-                contextMenuShowInspector(connection->getOutportGraphicsItem());
-            });
-
-            if (auto imgPort =
-                    dynamic_cast<ImageOutport*>(connection->getOutportGraphicsItem()->getPort())) {
-                if (auto img = imgPort->getData()) {
-                    menu.addSeparator();
-                    utilqt::addImageActions(menu, *img);
-                }
-            }
-
-            break;
-        }
-
-        if (auto link = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
+        } else if (auto link = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
             QAction* editLink = menu.addAction(tr("Edit Links"));
             connect(editLink, &QAction::triggered, [this, link]() {
                 showLinkDialog(link->getSrcProcessorGraphicsItem()->getProcessor(),
@@ -827,12 +836,18 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 /////////////////////////////////////////
 //   PROCESSOR DRAG AND DROP METHODS   //
 /////////////////////////////////////////
-void NetworkEditor::dragEnterEvent(QGraphicsSceneDragDropEvent* e) { dragMoveEvent(e); }
+void NetworkEditor::dragEnterEvent(QGraphicsSceneDragDropEvent* e) {
+    if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
+        e->acceptProposedAction();
+        dragMoveEvent(e);
+    } else {
+        e->ignore();
+    }
+}
 
 void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
     if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
-        e->acceptProposedAction();
-
+        e->accept();
         auto connectionItem = getConnectionGraphicsItemAt(e->scenePos());
 
         if (connectionItem && !oldConnectionTarget_) {  //< New connection found
@@ -878,15 +893,15 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
                 oldProcessorTarget_ = nullptr;
             }
         }
+    } else {
+        e->ignore();
     }
 }
 
 void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
     if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
+        e->accept();
         NetworkLock lock(network_);
-
-        e->setAccepted(true);
-        e->acceptProposedAction();
 
         try {
             // activate default render context
@@ -932,6 +947,8 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
         // clear oldDragTarget
         oldConnectionTarget_ = nullptr;
         oldProcessorTarget_ = nullptr;
+    } else {
+        e->ignore();
     }
 }
 
@@ -1072,8 +1089,9 @@ QByteArray NetworkEditor::cut() {
 }
 
 void NetworkEditor::paste(QByteArray mimeData) {
+    NetworkLock lock(network_);
     try {
-        auto orgBounds = util::getBoundingBox(network_->getProcessors());
+        auto orgBounds = util::getBoundingBox(network_);
 
         std::stringstream ss;
         for (auto d : mimeData) ss << d;
@@ -1121,6 +1139,46 @@ void NetworkEditor::paste(QByteArray mimeData) {
         LogWarn("Paste operation failed");
     }
 }
+
+void NetworkEditor::append(std::istream& is, const std::string& refPath) {
+    NetworkLock lock(network_);
+    try {
+        const auto orgBounds = util::getBoundingBox(network_);
+
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        const auto added =
+            util::appendDeserialized(network_, is, refPath, mainwindow_->getInviwoApplication());
+
+        const auto bounds = util::getBoundingBox(added);
+
+        // add to top right
+        const auto offset = ivec2{orgBounds.second.x, orgBounds.first.y} + ivec2{gridSpacing_, 0} +
+                            ivec2{ProcessorGraphicsItem::size_.width(), 0} -
+                            ivec2{bounds.first.x, bounds.first.y};
+
+        util::offsetPosition(added, offset);
+
+        // Make sure the pasted processors are in the view
+        auto selection = selectedItems();
+        util::erase_remove_if(selection, [](auto i) {
+            return qgraphicsitem_cast<ProcessorGraphicsItem*>(i) == nullptr;
+        });
+
+        QRectF rect;
+        for (auto item : added) {
+            auto pgi = getProcessorGraphicsItem(item);
+            rect = rect.united(pgi->sceneBoundingRect());
+        }
+        for (auto v : views()) {
+            v->ensureVisible(rect);
+        }
+
+    } catch (const Exception& e) {
+        util::log(e.getContext(), "Unable to load network " + refPath + " due to " + e.getMessage(),
+                  LogLevel::Error);
+    }
+
+}  // namespace inviwo
 
 void NetworkEditor::selectAll() {
     for (auto i : items()) i->setSelected(true);
@@ -1247,27 +1305,6 @@ void NetworkEditor::helpEvent(QGraphicsSceneHelpEvent* e) {
         };
     }
     QGraphicsScene::helpEvent(e);
-}
-
-void NetworkEditor::contextMenuShowInspector(EditorGraphicsItem* item) {
-    Outport* port = nullptr;
-    QPointF pos;
-    if (auto pin = qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item)) {
-        pos = pin->mapPosToSceen(pin->rect().center());
-        port = pin->getPort()->getConnectedOutport();
-    } else if (auto pout = qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)) {
-        pos = pout->mapPosToSceen(pout->rect().center());
-        port = pout->getPort();
-    } else {
-        return;
-    }
-
-    auto pim = mainwindow_->getInviwoApplication()->getPortInspectorManager();
-    if (!pim->hasPortInspector(port)) {
-        addPortInspector(port, pos);
-    } else {
-        removePortInspector(port);
-    }
 }
 
 void NetworkEditor::onProcessorNetworkDidAddProcessor(Processor* processor) {

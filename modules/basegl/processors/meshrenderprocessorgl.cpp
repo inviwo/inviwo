@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "meshrenderprocessorgl.h"
+#include <modules/basegl/processors/meshrenderprocessorgl.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/trackball.h>

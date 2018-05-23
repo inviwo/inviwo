@@ -52,6 +52,7 @@
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
+#include <inviwo/core/rendering/datavisualizermanager.h>
 #include <inviwo/core/resourcemanager/resourcemanager.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/dialogfactory.h>
@@ -132,32 +133,33 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         PickingManager::deleteInstance();
         RenderContext::deleteInstance();
     }}
-    , resourceManager_{util::make_unique<ResourceManager>()}
-    , cameraFactory_{util::make_unique<CameraFactory>()}
-    , dataReaderFactory_{util::make_unique<DataReaderFactory>()}
-    , dataWriterFactory_{util::make_unique<DataWriterFactory>()}
-    , dialogFactory_{util::make_unique<DialogFactory>()}
-    , meshDrawerFactory_{util::make_unique<MeshDrawerFactory>()}
-    , metaDataFactory_{util::make_unique<MetaDataFactory>()}
-    , outportFactory_{util::make_unique<OutportFactory>()}
-    , inportFactory_{util::make_unique<InportFactory>()}
-    , portInspectorFactory_{util::make_unique<PortInspectorFactory>()}
-    , processorFactory_{util::make_unique<ProcessorFactory>(this)}
-    , processorWidgetFactory_{util::make_unique<ProcessorWidgetFactory>()}
-    , propertyConverterManager_{util::make_unique<PropertyConverterManager>()}
-    , propertyFactory_{util::make_unique<PropertyFactory>()}
-    , propertyWidgetFactory_{util::make_unique<PropertyWidgetFactory>()}
-    , representationConverterMetaFactory_{util::make_unique<RepresentationConverterMetaFactory>()}
+    , resourceManager_{std::make_unique<ResourceManager>()}
+    , cameraFactory_{std::make_unique<CameraFactory>()}
+    , dataReaderFactory_{std::make_unique<DataReaderFactory>()}
+    , dataWriterFactory_{std::make_unique<DataWriterFactory>()}
+    , dialogFactory_{std::make_unique<DialogFactory>()}
+    , meshDrawerFactory_{std::make_unique<MeshDrawerFactory>()}
+    , metaDataFactory_{std::make_unique<MetaDataFactory>()}
+    , outportFactory_{std::make_unique<OutportFactory>()}
+    , inportFactory_{std::make_unique<InportFactory>()}
+    , portInspectorFactory_{std::make_unique<PortInspectorFactory>()}
+    , dataVisualizerManager_{std::make_unique<DataVisualizerManager>()}
+    , processorFactory_{std::make_unique<ProcessorFactory>(this)}
+    , processorWidgetFactory_{std::make_unique<ProcessorWidgetFactory>()}
+    , propertyConverterManager_{std::make_unique<PropertyConverterManager>()}
+    , propertyFactory_{std::make_unique<PropertyFactory>()}
+    , propertyWidgetFactory_{std::make_unique<PropertyWidgetFactory>()}
+    , representationConverterMetaFactory_{std::make_unique<RepresentationConverterMetaFactory>()}
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , systemCapabilities_{std::make_unique<SystemCapabilities>()}
     , moduleCallbackActions_{}
     , moduleManager_{this}
-    , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
-    , processorNetworkEvaluator_{util::make_unique<ProcessorNetworkEvaluator>(
+    , processorNetwork_{std::make_unique<ProcessorNetwork>(this)}
+    , processorNetworkEvaluator_{std::make_unique<ProcessorNetworkEvaluator>(
           processorNetwork_.get())}
-    , workspaceManager_{util::make_unique<WorkspaceManager>(this)}
-    , propertyPresetManager_{util::make_unique<PropertyPresetManager>(this)}
-    , portInspectorManager_{util::make_unique<PortInspectorManager>(this)} {
+    , workspaceManager_{std::make_unique<WorkspaceManager>(this)}
+    , propertyPresetManager_{std::make_unique<PropertyPresetManager>(this)}
+    , portInspectorManager_{std::make_unique<PortInspectorManager>(this)} {
 
     // Keep the pool at size 0 if are quiting directly to make sure that we don't have
     // unfinished results in the worker threads
@@ -270,6 +272,10 @@ PropertyPresetManager* InviwoApplication::getPropertyPresetManager() {
 
 PortInspectorManager* InviwoApplication::getPortInspectorManager() {
     return portInspectorManager_.get();
+}
+
+DataVisualizerManager* InviwoApplication::getDataVisualizerManager() {
+    return dataVisualizerManager_.get();
 }
 
 const CommandLineParser& InviwoApplication::getCommandLineParser() const {
@@ -396,7 +402,7 @@ void InviwoApplication::waitForPool() {
 
 TimerThread& InviwoApplication::getTimerThread() {
     if (!timerThread_) {
-        timerThread_ = util::make_unique<TimerThread>();
+        timerThread_ = std::make_unique<TimerThread>();
     }
     return *timerThread_;
 }

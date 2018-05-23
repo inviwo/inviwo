@@ -63,6 +63,7 @@ class NetworkSearch;
 class InviwoEditMenu;
 class InviwoAboutWindow;
 class ResourceManagerDockWidget;
+class FileAssociations;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -75,6 +76,7 @@ public:
 
     void openLastWorkspace(std::string workspace = "");
     void openWorkspace(QString workspaceFileName);
+    bool openWorkspaceAskToSave(QString workspaceFileName);
     std::string getCurrentWorkspace();
 
     NetworkEditor* getNetworkEditor() const;
@@ -104,7 +106,9 @@ public:
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
+    virtual void dragMoveEvent(QDragMoveEvent* event) override;
     virtual void dropEvent(QDropEvent* event) override;
+
 
 private:
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
@@ -113,7 +117,8 @@ private:
 
     void openWorkspace(QString workspaceFileName, bool exampleWorkspace);
     void saveWorkspace(QString workspaceFileName);
-
+    void appendWorkspace(const std::string& workspaceFileName);
+    
     void addActions();
 
     void closeEvent(QCloseEvent* event) override;
@@ -141,15 +146,17 @@ private:
     void updateWindowTitle();
 
     InviwoApplicationQt* app_;
+    InviwoEditMenu* editMenu_ = nullptr;
+    QMenu* exampleMenu_ = nullptr;
+    QMenu* testMenu_ = nullptr;
+    std::shared_ptr<ConsoleWidget> consoleWidget_;
     std::unique_ptr<NetworkEditor> networkEditor_;
     NetworkEditorView* networkEditorView_;
  
-    // dock widgets
     SettingsWidget* settingsWidget_;
     ProcessorTreeWidget* processorTreeWidget_;
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
-    std::shared_ptr<ConsoleWidget> consoleWidget_;
     HelpWidget* helpWidget_;
     NetworkSearch* networkSearch_;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
@@ -158,9 +165,7 @@ private:
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
 
-    InviwoEditMenu* editMenu_ = nullptr;
-    QMenu* exampleMenu_ = nullptr;
-    QMenu* testMenu_ = nullptr;
+    std::unique_ptr<FileAssociations> fileAssociations_;
 
     // settings
     bool maximized_;
@@ -176,6 +181,7 @@ private:
     TCLAP::ValueArg<std::string> snapshotArg_;
     TCLAP::ValueArg<std::string> screenGrabArg_;
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
+    TCLAP::ValueArg<std::string> openData_;
     TCLAP::SwitchArg updateWorkspaces_;
     
     UndoManager undoManager_;

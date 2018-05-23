@@ -48,7 +48,7 @@ Property::Property(const std::string& identifier, const std::string& displayName
     , semantics_("semantics", semantics)
     , usageMode_("usageMode", UsageMode::Development)
     , visible_("visible", true)
-    , propertyModified_(false)
+    , propertyModified_(true)
     , invalidationLevel_(invalidationLevel)
     , owner_(nullptr)
     , initiatingWidget_(nullptr) {

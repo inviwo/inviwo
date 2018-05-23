@@ -54,6 +54,7 @@ public:
     ~NetworkEditorView();
 
     void hideNetwork(bool);
+    void fitNetwork();
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
     void exportViewToFile(const QString& filename, bool entireScene, bool backgroundVisible);
@@ -66,14 +67,9 @@ protected:
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     virtual void focusOutEvent(QFocusEvent*) override;
-    
-    virtual void dragEnterEvent(QDragEnterEvent* event) override;
-    virtual void dropEvent(QDropEvent* event) override;
 
 private:
     void zoom(double dz);
-    void fitNetwork();
-
     virtual void onSceneSizeChanged() override;
 
     InviwoMainWindow* mainwindow_;
