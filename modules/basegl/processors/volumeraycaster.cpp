@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "volumeraycaster.h"
+#include <modules/basegl/processors/volumeraycaster.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>

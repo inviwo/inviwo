@@ -160,10 +160,26 @@ private:
     std::map<const Property*, vec2> cache_;
 };
 
+
+/**
+ * Retrieve the positions of the processors in the list.
+ */
+IVW_CORE_API std::vector<ivec2> getPositions(const std::vector<Processor*>& processors);
+
+/**
+ * Retrieve the positions of the processors in the network.
+ */
+IVW_CORE_API std::vector<ivec2> getPositions(ProcessorNetwork* network);
+
 /**
  * Retrieve the mean position of the processors in the list.
  */
 IVW_CORE_API ivec2 getCenterPosition(const std::vector<Processor*>& processors);
+
+/**
+ * Retrieve the mean position of the processors in the network.
+ */
+IVW_CORE_API ivec2 getCenterPosition(ProcessorNetwork* network);
 
 /**
  * Retrieve bounding box of the processors in the list.
@@ -172,9 +188,15 @@ IVW_CORE_API ivec2 getCenterPosition(const std::vector<Processor*>& processors);
 IVW_CORE_API std::pair<ivec2, ivec2> getBoundingBox(const std::vector<Processor*>& processors);
 
 /**
+ * Retrieve bounding box of the processors in the network.
+ * The return value is pair of the min x,y and the max x,y
+ */
+IVW_CORE_API std::pair<ivec2, ivec2> getBoundingBox(ProcessorNetwork* network);
+
+/**
  * Offset all the positions of the processors in the list by offset
  */
-IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, const ivec2& offset);
+IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, ivec2 offset);
 
 /**
  * Set the listed processors as selected or unSelected.
@@ -182,7 +204,6 @@ IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, cons
 IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
 
 IVW_CORE_API void autoLinkProcessor(ProcessorNetwork* network, Processor* processor);
-
 
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::string& refPath);

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "volumeboundingbox.h"
+#include <modules/base/processors/volumeboundingbox.h>
 #include <modules/base/algorithm/meshutils.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 
@@ -38,7 +38,7 @@ const ProcessorInfo VolumeBoundingBox::processorInfo_{
     "org.inviwo.VolumeBoundingBox",  // Class identifier
     "Volume Bounding Box",           // Display name
     "Volume Operation",              // Category
-    CodeState::Experimental,         // Code state
+    CodeState::Stable,               // Code state
     Tags::None,                      // Tags
 };
 const ProcessorInfo VolumeBoundingBox::getProcessorInfo() const { return processorInfo_; }
@@ -47,8 +47,7 @@ VolumeBoundingBox::VolumeBoundingBox()
     : Processor()
     , volume_("volume")
     , mesh_("mesh")
-    , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f))
-{
+    , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f)) {
 
     addPort(volume_);
     addPort(mesh_);

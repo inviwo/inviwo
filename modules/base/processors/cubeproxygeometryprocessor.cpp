@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "cubeproxygeometryprocessor.h"
+#include <modules/base/processors/cubeproxygeometryprocessor.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/volumeutils.h>

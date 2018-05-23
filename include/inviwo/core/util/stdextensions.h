@@ -388,6 +388,20 @@ bool contains_if(T& cont, Pred pred) {
     return std::find_if(begin(cont), end(cont), pred) != end(cont);
 }
 
+template <typename T, typename V>
+bool contains(const T& cont, const V& elem) {
+    using std::cbegin;
+    using std::cend;
+    return std::find(cbegin(cont), cend(cont), elem) != end(cont);
+}
+
+template <typename T, typename Pred>
+bool contains_if(const T& cont, Pred pred) {
+    using std::cbegin;
+    using std::cend;
+    return std::find_if(cbegin(cont), cend(cont), pred) != end(cont);
+}
+
 template <typename T, typename P>
 auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
     using std::begin;

@@ -42,6 +42,8 @@
 
 namespace inviwo {
 
+class InviwoApplication;
+
 /** \docpage{org.inviwo.VolumeSource, Volume Source}
  * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
  *
@@ -59,7 +61,7 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    VolumeSource();
+    VolumeSource(InviwoApplication* app, const std::string& file = "");
     virtual ~VolumeSource() = default;
 
     virtual void deserialize(Deserializer& d) override;
@@ -69,6 +71,7 @@ private:
     void load(bool deserialize = false);
     void addFileNameFilters();
 
+    InviwoApplication* app_;
     std::shared_ptr<VolumeSequence> volumes_;
 
     VolumeOutport outport_;

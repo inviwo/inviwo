@@ -56,6 +56,12 @@ ProcessorNetwork::~ProcessorNetwork() {
     clear();
 }
 
+Processor* ProcessorNetwork::addProcessor(std::unique_ptr<Processor> processor) {
+    auto p = processor.get();
+    addProcessor(processor.release());
+    return p;
+}
+
 bool ProcessorNetwork::addProcessor(Processor* processor) {
     NetworkLock lock(this);
 

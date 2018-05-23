@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,52 +24,47 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESOURCE_H
-#define IVW_IMAGESOURCE_H
-
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/rendering/datavisualizermanager.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageSource, Image Source}
- * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
- *
- * Loads a image
- * 
- * ### Outports
- *   * __Outport__ The loaded image
- * 
- * ### Properties
- *   * __File name__ The name of the file to load
- *   * __Dimensions__ Readonly, the dimensions of the loaded image.
- */
+DataVisualizerManager::DataVisualizerManager() {}
 
-class IVW_MODULE_BASE_API ImageSource : public Processor {
-public:
-    ImageSource(InviwoApplication* app, const std::string& file = "");
-    virtual ~ImageSource() = default;
+void DataVisualizerManager::registerObject(DataVisualizer* visualizer) {
+    visualizers_.push_back(visualizer);
+}
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+void DataVisualizerManager::unRegisterObject(DataVisualizer* visualizer) {
+    util::erase_remove(visualizers_, visualizer);
+}
 
-    virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
+std::vector<FileExtension> DataVisualizerManager::getSupportedFileExtensions() const {
+    std::vector<FileExtension> res;
+    for (auto& visualizer : visualizers_) {
+        auto exts = visualizer->getSupportedFileExtensions();
+        res.insert(res.end(), exts.begin(), exts.end());
+    }
+    return res;
+}
 
-private:
-    InviwoApplication* app_;
-    ImageOutport outport_;
-    FileProperty file_;
-    IntVec2Property imageDimension_;
-};
+std::vector<DataVisualizer*> DataVisualizerManager::getDataVisualizersForExtension(
+    const std::string& ext) const {
+    return util::copy_if(visualizers_, [&](auto& visualizer) {
+        return util::contains_if(visualizer->getSupportedFileExtensions(), [&](const auto& item) {
+            return item.extension_ == ext;
+        });
+    });
+}
 
-} // namespace
+std::vector<DataVisualizer*> DataVisualizerManager::getDataVisualizersForOutport(
+    const Outport* port) const {
+    return util::copy_if(visualizers_,
+                         [&](auto& visualizer) { return visualizer->isOutportSupported(port); });
+}
 
-#endif // IVW_IMAGESOURCE_H
+}  // namespace inviwo
