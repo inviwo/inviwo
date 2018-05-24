@@ -40,7 +40,7 @@ namespace inviwo {
 
 /**
  * The Data Visualizer Manager keeps track of all registered Data Visualizers.
- * One can ask the Data Visualizer Manager for all Data Visualizer supporting a file extension or a
+ * One can ask the Data Visualizer Manager for all Data Visualizer supporting a file extension or an
  * Outport type.
  * @see DataVisualizer
  */
@@ -55,14 +55,14 @@ public:
 
     /**
      * Register a Data Visualizer, does not take ownership.
-     * Own would usually not call this function manually but use the functionality of
+     * One would usually not call this function manually. Instead use the functionality of
      * InviwoModule::registerDataVisualizer which will call registerObject and the unRegisterObject
      * automatically.
      * @see InviwoModule
      */
     void registerObject(DataVisualizer* visualizer);
     /**
-     * Unregister a Data Visualizer. This is usually call by InviwoModule.
+     * Unregister a Data Visualizer. This is usually called by InviwoModule.
      * @see InviwoModule
      */
     void unRegisterObject(DataVisualizer* visualizer);
