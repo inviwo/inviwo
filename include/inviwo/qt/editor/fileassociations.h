@@ -80,6 +80,8 @@
 #include <functional>
 #include <warn/pop>
 
+class QMainWindow;
+
 namespace inviwo {
 
 /*
