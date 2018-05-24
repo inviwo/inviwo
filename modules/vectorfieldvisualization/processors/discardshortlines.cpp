@@ -114,4 +114,4 @@ void DiscardShortLines::process() {
     removedLines_.setData(filteredLinesData);
 }
 
-}  // namespace
+}  // namespace inviwo

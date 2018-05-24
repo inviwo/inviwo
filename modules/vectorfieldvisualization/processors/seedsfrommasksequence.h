@@ -62,6 +62,6 @@ private:
     FloatProperty randomSampling_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SEEDSFROMMASKSEQUENCE_H

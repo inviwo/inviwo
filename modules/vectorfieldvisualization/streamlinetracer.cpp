@@ -55,7 +55,7 @@ void StreamLineTracer::addMetaSampler(const std::string &name,
 
 inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p) {
     IntegralLine line;
-    auto& positions = line.getPositions();
+    auto &positions = line.getPositions();
 
     bool fwd = dir_ == IntegralLineProperties::Direction::BOTH ||
                dir_ == IntegralLineProperties::Direction::FWD;
@@ -74,13 +74,13 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p) {
     }
     if (both && !positions.empty()) {
         std::reverse(positions.begin(),
-            positions.end());  // reverse is faster than insert first
+                     positions.end());  // reverse is faster than insert first
         positions.pop_back();           // dont repeat first step
         auto keys = line.getMetaDataKeys();
         for (auto &key : keys) {
             auto m = line.getMetaData(key);
             std::reverse(m.begin(), m.end());  // reverse is faster than insert first
-            m.pop_back();                             // dont repeat first step
+            m.pop_back();                      // dont repeat first step
         }
     }
     if (fwd) {
@@ -90,12 +90,10 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p) {
     return line;
 }
 
-inviwo::IntegralLine StreamLineTracer::traceFrom(const vec3 &p) {
-    return traceFrom(dvec3(p));
-}
+inviwo::IntegralLine StreamLineTracer::traceFrom(const vec3 &p) { return traceFrom(dvec3(p)); }
 
-void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd) {
-    auto& positions = line.getPositions();
+void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, bool fwd) {
+    auto &positions = line.getPositions();
 
     for (int i = 0; i <= steps; i++) {
         if (!volumeSampler_->withinBounds(curPos)) {
@@ -104,25 +102,22 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
         }
 
         dvec3 v;
-        switch (integrationScheme_)
-        {
-        case IntegralLineProperties::IntegrationScheme::RK4:
-            v = rk4(curPos, invBasis_ , fwd);
-            break;
-        case IntegralLineProperties::IntegrationScheme::Euler:
-        default:
-            v = euler(curPos);
-            break;
+        switch (integrationScheme_) {
+            case IntegralLineProperties::IntegrationScheme::RK4:
+                v = rk4(curPos, invBasis_, fwd);
+                break;
+            case IntegralLineProperties::IntegrationScheme::Euler:
+            default:
+                v = euler(curPos);
+                break;
         }
-        
+
         if (glm::length(v) < std::numeric_limits<double>::epsilon()) {
             line.setTerminationReason(IntegralLine::TerminationReason::ZeroVelocity);
             break;
         }
 
-        
         const dvec3 worldVelocty{volumeSampler_->sample(curPos)};
-
 
         if (normalizeSample_) v = glm::normalize(v);
         dvec3 velocity = invBasis_ * (v * stepSize_ * (fwd ? 1.0 : -1.0));
@@ -136,11 +131,9 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line,bool fwd
     }
 }
 
-dvec3 StreamLineTracer::euler(const dvec3 &curPos) {
-    return dvec3(volumeSampler_->sample(curPos));
-}
+dvec3 StreamLineTracer::euler(const dvec3 &curPos) { return dvec3(volumeSampler_->sample(curPos)); }
 
-dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
+dvec3 StreamLineTracer::rk4(const dvec3 &curPos, const dmat3 &m, bool fwd) {
     auto h = stepSize_;
     if (!fwd) h = -h;
     auto h2 = h / 2;
@@ -149,8 +142,7 @@ dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
         auto l = glm::length(k);
         if (l == 0) {
             return k;
-        }
-        else {
+        } else {
             return k / l;
         }
     };
@@ -170,4 +162,4 @@ dvec3 StreamLineTracer::rk4(const dvec3 &curPos ,const  dmat3 &m , bool fwd ) {
     return (k1 + 2.0 * (k2 + k3) + k4) / 6.0;
 }
 
-}  // namespace
+}  // namespace inviwo

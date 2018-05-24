@@ -38,8 +38,7 @@ IntegralLineProperties::IntegralLineProperties(std::string identifier, std::stri
     , stepDirection_("stepDirection", "Step Direction")
     , integrationScheme_("integrationScheme", "Integration Scheme")
     , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
-    , normalizeSamples_("normalizeSamples", "Normalize Samples", true) 
-{
+    , normalizeSamples_("normalizeSamples", "Normalize Samples", true) {
     setUpProperties();
 }
 
@@ -49,9 +48,8 @@ IntegralLineProperties::IntegralLineProperties(const IntegralLineProperties& rhs
     , stepSize_(rhs.stepSize_)
     , stepDirection_(rhs.stepDirection_)
     , integrationScheme_(rhs.integrationScheme_)
-    , seedPointsSpace_(rhs.seedPointsSpace_) 
-    , normalizeSamples_(rhs.normalizeSamples_)
-{
+    , seedPointsSpace_(rhs.seedPointsSpace_)
+    , normalizeSamples_(rhs.normalizeSamples_) {
     setUpProperties();
 }
 
@@ -117,4 +115,4 @@ void IntegralLineProperties::setUpProperties() {
     setAllPropertiesCurrentStateAsDefault();
 }
 
-}  // namespace
+}  // namespace inviwo

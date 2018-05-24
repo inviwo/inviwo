@@ -45,7 +45,7 @@ IntegralLineSet curvature(const IntegralLineSet &lines) {
 void curvature(IntegralLine &line, dmat4 toWorld) {
     if (line.hasMetaData("curvature")) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
-    if(positions.size()<=1) return;
+    if (positions.size() <= 1) return;
     auto dt = static_cast<float>(positions.size() - 1);
     dt = 1 / dt;
 
@@ -81,13 +81,12 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
 
             double a = std::abs(0.5 * glm::length(pp - p));
             double b = std::abs(0.5 * glm::length(p - pm));
-            double c = a+b;
+            double c = a + b;
 
-            if(c==0){
+            if (c == 0) {
                 K.emplace_back(0);
-            }
-            else {
-                K.emplace_back(angle/c);
+            } else {
+                K.emplace_back(angle / c);
             }
         }
     }
@@ -112,7 +111,7 @@ IntegralLineSet tortuosity(const IntegralLineSet &lines) {
 void tortuosity(IntegralLine &line, dmat4 toWorld) {
     if (line.hasMetaData("tortuosity")) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
-    if(positions.size()<=1) return;
+    if (positions.size() <= 1) return;
     float dt = static_cast<float>(positions.size() - 1);
     dt = 1 / dt;
 

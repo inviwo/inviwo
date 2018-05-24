@@ -41,11 +41,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo StreamRibbonsDeprecated::processorInfo_{
-    "org.inviwo.StreamRibbonsDeprecated",    // Class identifier
-    "Stream Ribbons (Deprecated)",              // Display name
-    "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
-    Tags::CPU,                     // Tags
+    "org.inviwo.StreamRibbonsDeprecated",  // Class identifier
+    "Stream Ribbons (Deprecated)",         // Display name
+    "Vector Field Visualization",          // Category
+    CodeState::Experimental,               // Code state
+    Tags::CPU,                             // Tags
 };
 const ProcessorInfo StreamRibbonsDeprecated::getProcessorInfo() const { return processorInfo_; }
 
