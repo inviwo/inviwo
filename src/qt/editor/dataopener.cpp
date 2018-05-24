@@ -46,6 +46,8 @@
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QRadioButton>
+#include <QButtonGroup>
 #include <QCheckBox>
 #include <QTextEdit>
 #include <warn/pop>
@@ -62,36 +64,38 @@ public:
         setWindowTitle("Select Data Visualizer");
 
         auto mainLayout = new QGridLayout(this);
-        auto fileNameLabel = new QLabel(utilqt::toQString(file));
-        mainLayout->addWidget(fileNameLabel, 0, 0);
+        mainLayout->setSpacing(15);
 
-        int i = 1;
+        int row = 0;
+
+        auto fileNameLabel = new QLabel(utilqt::toQString(file));
+        mainLayout->addWidget(fileNameLabel, row, 0, 1, 2);
+        {
+            loader_ = new QCheckBox("Data Loader");
+            mainLayout->addWidget(loader_, ++row, 0, 1, 1);
+            auto text = new QLabel("Add a data source processor");
+            text->setWordWrap(true);
+            mainLayout->addWidget(text, row, 1, 1, 1);
+        }
+
         for (auto visualizer : visualizers) {
-            auto box = new QGroupBox(utilqt::toQString(visualizer->getName()), this);
-            mainLayout->addWidget(box, i++, 0);
-            auto layout = new QGridLayout();
-            box->setLayout(layout);
-            auto use = new QCheckBox("Use");
-            layout->addWidget(use, 0, 0, Qt::AlignLeft);
+            auto use = new QCheckBox(utilqt::toQString(visualizer->getName()));
             useVisualuzers.push_back(use);
-            auto source = new QCheckBox("Source Only");
-            layout->addWidget(source, 1, 0, Qt::AlignLeft);
-            sourceVisualuzers.push_back(source);
+            mainLayout->addWidget(use, ++row, 0, 1, 1);
             auto text = new QLabel(utilqt::toQString(visualizer->getDescription()));
             text->setWordWrap(true);
-            // text->setReadOnly(true);
-            layout->addWidget(text, 0, 1, 2, 1);
+            mainLayout->addWidget(text, row, 1, 1, 1);
         }
 
         auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
         connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
-        mainLayout->addWidget(buttons, i++, 0);
+        mainLayout->addWidget(buttons, ++row, 0, 1, 2, Qt::AlignRight);
     }
     virtual ~SelectVisualizerDialog() = default;
 
     std::vector<QCheckBox*> useVisualuzers;
-    std::vector<QCheckBox*> sourceVisualuzers;
+    QCheckBox* loader_;
 };
 
 }  // namespace
@@ -109,7 +113,7 @@ void util::insertNetworkForData(const std::string& dataFile, ProcessorNetwork* n
         const auto orgBounds = util::getBoundingBox(net);
 
         std::vector<Processor*> added;
-        if(onlySource) {
+        if (onlySource || !visualizer->hasVisualizerNetwork()) {
             auto addedAndSource = visualizer->addSourceProcessor(dataFile, net);
             added.push_back(addedAndSource.first);
         } else {
@@ -129,9 +133,12 @@ void util::insertNetworkForData(const std::string& dataFile, ProcessorNetwork* n
     } else {
         auto dialog = new SelectVisualizerDialog(dataFile, visualizers);
         if (dialog->exec() == QDialog::Accepted) {
+            if (dialog->loader_->isChecked()) {
+                addVisualizer(visualizers.front(), true);
+            }
             for (int i = 0; i < visualizers.size(); ++i) {
                 if (dialog->useVisualuzers[i]->isChecked()) {
-                    addVisualizer(visualizers[i], dialog->sourceVisualuzers[i]->isChecked());
+                    addVisualizer(visualizers[i], false);
                 }
             }
         }

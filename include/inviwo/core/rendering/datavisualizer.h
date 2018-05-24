@@ -43,15 +43,20 @@
 namespace inviwo {
 
 /**
- * A Data Visualizer can be used to quickly add a visualization of a data type.
+ * A Data Visualizer can be used to easily add a visualization of a data type.
  * The DataVisualizerManager keeps a list of registered Data Visualizers.
- * A Inviwo module can call registerDataVisualizer to register a Data Visualizer
- * With the DataVisualizerManager
- * Three mode are available:
+ * An Inviwo module can create a new Data Visualizer by deriving from DataVisualizer and 
+ * implementing all the virtual functions and then call registerDataVisualizer to register it with
+*  the DataVisualizerManager
+ * A Data Visualizer has two parts the "Source Processor" that can be used to load data from disk.
+ * And a "Visualizer Network" that will get data from a Outport like the one in the 
+ * "Source Processor" and generate some useful visualization. Both parts a optional, and can 
+ * be used independently or together, like:
  *    1) Adding a source processor that can load the requested file
  *    2) Adding a set of processors that will take input from a existing port to create
  *       a visualization
  *    3) Both 1 and 2
+ * @see DataVisualizerManager
  */
 class IVW_CORE_API DataVisualizer {
 public:
@@ -90,6 +95,7 @@ public:
 
     /**
      * Adds a source processor with the requested file to the network
+     * hasSourceProcessor should return true for this function to be called.
      * @param filename The file to load in the source processor. The extension of the filename
      *        should be in the list of extensions returned by getSupportedFileExtensions.
      * @param network The network to add the processor to.
@@ -100,8 +106,11 @@ public:
                                                                ProcessorNetwork* network) const = 0;
     /**
      * Adds a set of processors that generate a visualization of the data in the given outport.
-     * @param outport The port to get data from.
-     * @param network The network to add the processor to.
+     * Is isOutportSupported of outport should return true for this function to work. Other wise
+     * call will likely not add any processors.
+     * hasVisualizationNetwork should return true for this function to be called.
+     * @param outport The port to get data from. It will be connected to the added network.
+     * @param network The network to add the Visualizer Network into.
      * @return A list of added processors.
      */
     virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
@@ -110,6 +119,8 @@ public:
     /**
      * Adds a source processor with the requested file and a set of processors that generate
      * a visualization of the data.
+     * hasSourceProcessor and hasVisualizationNetwork should return true for this function to be
+     * called.
      * @param filename The file to load in the source processor. The extension of the filename
      *        should be in the list of extensions returned by getSupportedFileExtensions.
      * @param network The network to add the processor to.

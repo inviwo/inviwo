@@ -76,6 +76,12 @@ public:
 
     void openLastWorkspace(std::string workspace = "");
     void openWorkspace(QString workspaceFileName);
+
+    /**
+     * Open the given workspaceFileName but only after asking whether to save the
+     * current workspace. The use can also abort the open bu pressing cancel.
+     * @return true if the workspace was opened, otherwise false.
+     */
     bool openWorkspaceAskToSave(QString workspaceFileName);
     std::string getCurrentWorkspace();
 

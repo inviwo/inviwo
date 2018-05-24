@@ -118,3 +118,9 @@ ivw_compile_optimize_on_target(inviwo-qteditor)
 ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
 ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql) # Qt5Sql is needed by Qt5Help
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
+
+ivw_register_license_file(NAME "DocumentWindow" MODULE QtEditor
+    URL "https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows"
+    TYPE "Simplified BSD License"
+    FILES ${IVW_INCLUDE_DIR}/inviwo/qt/editor/fileassociations.license.txt
+)

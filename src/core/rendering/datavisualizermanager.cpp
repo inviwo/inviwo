@@ -55,16 +55,17 @@ std::vector<FileExtension> DataVisualizerManager::getSupportedFileExtensions() c
 std::vector<DataVisualizer*> DataVisualizerManager::getDataVisualizersForExtension(
     const std::string& ext) const {
     return util::copy_if(visualizers_, [&](auto& visualizer) {
-        return util::contains_if(visualizer->getSupportedFileExtensions(), [&](const auto& item) {
-            return item.extension_ == ext;
-        });
+        return visualizer->hasSourceProcessor() &&
+               util::contains_if(visualizer->getSupportedFileExtensions(),
+                                 [&](const auto& item) { return item.extension_ == ext; });
     });
 }
 
 std::vector<DataVisualizer*> DataVisualizerManager::getDataVisualizersForOutport(
     const Outport* port) const {
-    return util::copy_if(visualizers_,
-                         [&](auto& visualizer) { return visualizer->isOutportSupported(port); });
+    return util::copy_if(visualizers_, [&](auto& visualizer) {
+        return visualizer->hasVisualizerNetwork() && visualizer->isOutportSupported(port);
+    });
 }
 
 }  // namespace inviwo
