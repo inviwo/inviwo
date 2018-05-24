@@ -43,19 +43,20 @@
 namespace inviwo {
 
 /**
- * A Data Visualizer can be used to easily add a visualization of a data type.
- * The DataVisualizerManager keeps a list of registered Data Visualizers.
- * An Inviwo module can create a new Data Visualizer by deriving from DataVisualizer and 
- * implementing all the virtual functions and then call registerDataVisualizer to register it with
-*  the DataVisualizerManager
- * A Data Visualizer has two parts the "Source Processor" that can be used to load data from disk.
- * And a "Visualizer Network" that will get data from a Outport like the one in the 
- * "Source Processor" and generate some useful visualization. Both parts a optional, and can 
+ * A DataVisualizer can be used to easily add a visualization of a data type.
+ * A DataVisualizer has two tasks. The first is to create a "Source Processor" which can be used to load data
+ * of the supported type.
+ * The second is to create a "Visualizer Network", which gets data (from an Outport) or loads data (from a 
+ * "Source Processor") and generates some useful visualization. Both parts a optional, and can 
  * be used independently or together, like:
  *    1) Adding a source processor that can load the requested file
  *    2) Adding a set of processors that will take input from a existing port to create
  *       a visualization
  *    3) Both 1 and 2
+ *
+ * An Inviwo module can add new DataVisualizer by deriving from DataVisualizer,  
+ * implementing all the virtual functions, and then add register it using
+ * DataVisualizerManager::registerDataVisualizer.
  * @see DataVisualizerManager
  */
 class IVW_CORE_API DataVisualizer {
@@ -94,20 +95,19 @@ public:
     virtual bool hasVisualizerNetwork() const = 0;
 
     /**
-     * Adds a source processor with the requested file to the network
+     * Adds a source processor with the requested file to the network.
      * hasSourceProcessor should return true for this function to be called.
      * @param filename The file to load in the source processor. The extension of the filename
      *        should be in the list of extensions returned by getSupportedFileExtensions.
      * @param network The network to add the processor to.
-     * @return a pair or the added source processor and the outport in the source processor
-     *         with data from the given file.
+     * @return The added source processor and the outport in the source processor
+     *         containing data from the given file.
      */
     virtual std::pair<Processor*, Outport*> addSourceProcessor(const std::string& filename,
                                                                ProcessorNetwork* network) const = 0;
     /**
-     * Adds a set of processors that generate a visualization of the data in the given outport.
-     * Is isOutportSupported of outport should return true for this function to work. Other wise
-     * call will likely not add any processors.
+     * Adds a set of processors visualizing the data in the given outport.
+     * Nothing will be added to the network if outport is not supported (isOutportSupported returns false). 
      * hasVisualizationNetwork should return true for this function to be called.
      * @param outport The port to get data from. It will be connected to the added network.
      * @param network The network to add the Visualizer Network into.
@@ -117,10 +117,10 @@ public:
                                                          ProcessorNetwork* network) const = 0;
 
     /**
-     * Adds a source processor with the requested file and a set of processors that generate
-     * a visualization of the data.
-     * hasSourceProcessor and hasVisualizationNetwork should return true for this function to be
-     * called.
+     * Adds a source processor with the requested file and a set of processors 
+     * visualizing the data.
+     * Nothing will be added to the network if outport is not supported (isOutportSupported returns false). 
+     * Only source processor will be added if hasVisualizationNetwork returns false.
      * @param filename The file to load in the source processor. The extension of the filename
      *        should be in the list of extensions returned by getSupportedFileExtensions.
      * @param network The network to add the processor to.
