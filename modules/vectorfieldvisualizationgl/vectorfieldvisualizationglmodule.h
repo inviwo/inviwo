@@ -50,12 +50,11 @@ private:
         Converter(int version);
         virtual bool convert(TxElement* root) override;
 
-
     private:
         int version_;
     };
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VECTORFIELDVISUALIZATIONGLMODULE_H

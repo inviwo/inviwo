@@ -93,6 +93,6 @@ private:
     FrameBufferObject fbo_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TMIP_H

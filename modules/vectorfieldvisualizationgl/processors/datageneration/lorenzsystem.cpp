@@ -44,9 +44,7 @@ const ProcessorInfo LorenzSystem::processorInfo_{
     CodeState::Experimental,    // Code state
     Tags::GL,                   // Tags
 };
-const ProcessorInfo LorenzSystem::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo LorenzSystem::getProcessorInfo() const { return processorInfo_; }
 
 LorenzSystem::LorenzSystem()
     : Processor()
@@ -130,5 +128,4 @@ void LorenzSystem::process() {
     fbo_.deactivate();
 }
 
-}  // namespace
-
+}  // namespace inviwo
