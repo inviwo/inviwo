@@ -39,7 +39,10 @@
 namespace inviwo {
 
 /**
- *
+ * The Data Visualizer Manager keeps track of all registered Data Visualizers.
+ * One can ask the Data Visualizer Manager for all Data Visualizer supporting a file extension or a
+ * Outport type.
+ * @see DataVisualizer
  */
 class IVW_CORE_API DataVisualizerManager {
 public:
@@ -50,12 +53,33 @@ public:
     DataVisualizerManager& operator=(const DataVisualizerManager& that) = delete;
     DataVisualizerManager& operator=(DataVisualizerManager&& that) = default;
 
+    /**
+     * Register a Data Visualizer, does not take ownership.
+     * Own would usually not call this function manually but use the functionality of
+     * InviwoModule::registerDataVisualizer which will call registerObject and the unRegisterObject
+     * automatically.
+     * @see InviwoModule
+     */
     void registerObject(DataVisualizer* visualizer);
+    /**
+     * Unregister a Data Visualizer. This is usually call by InviwoModule.
+     * @see InviwoModule
+     */
     void unRegisterObject(DataVisualizer* visualizer);
 
+    /**
+     * Return a list of all supported file extensions from all Data Visualizers
+     */
     std::vector<FileExtension> getSupportedFileExtensions() const;
 
+    /**
+     * Get a list of Data Visualizers supporting the supplied extension.
+     */
     std::vector<DataVisualizer*> getDataVisualizersForExtension(const std::string& ext) const;
+
+    /**
+     * Get a list of Data Visualizers supporting the supplied outport.
+     */
     std::vector<DataVisualizer*> getDataVisualizersForOutport(const Outport* port) const;
 
 private:

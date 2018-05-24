@@ -48,7 +48,7 @@ Document ImageVisualizer::getDescription() const {
     Document doc;
     using P = Document::PathComponent;
     auto b = doc.append("html").append("body");
-    b.append("", "Construct a image source and canvas");
+    b.append("", "Construct an image source and canvas");
     return doc;
 }
 

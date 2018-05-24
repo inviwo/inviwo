@@ -61,16 +61,18 @@ IVW_CORE_API ivec2 getPosition(const Processor* processor);
 IVW_CORE_API void setPosition(Processor* processor, ivec2 pos);
 
 /**
- * Retrieve the position of the processor.
+ * Retrieve the selection state of processor.
  */
 IVW_CORE_API bool isSelected(const Processor* processor);
 
 /**
- * Set the position of processor to pos
+ * Set the selection state of processor
  */
 IVW_CORE_API void setSelected(Processor* processor, bool selected);
 
-
+/**
+ * A utility class to place processors on the "grid" in the editor 
+ */ 
 struct IVW_CORE_API GridPos {
     GridPos(int x, int y) : pos_{x, y} {};
     explicit GridPos(ivec2 pos) : pos_{pos} {}
@@ -83,6 +85,8 @@ private:
 
 /**
  * A utility function to create a processor and set identifier, display name, and position
+ * @param pos Sets the position meta data of the Processor
+ * @param args Any extra arguments to supply to the Processor constructor
  */
 template <typename T, typename... Args>
 std::unique_ptr<Processor> makeProcessor(ivec2 pos, Args&&... args) {
