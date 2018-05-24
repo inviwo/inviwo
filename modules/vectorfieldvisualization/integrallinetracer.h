@@ -198,14 +198,14 @@ public:
             return res;  // Zero velocity at seed point
         }
 
-        integrate(stepsBWD, p, line, false);
+        line.setBackwardTerminationReason(integrate(stepsBWD, p, line, false));
 
         if (!line.getPositions().empty()) {
             line.reverse();
             res.seedIndex = line.getPositions().size() - 1;
         }
 
-        integrate(stepsFWD, p, line, true);
+        line.setForwardTerminationReason(integrate(stepsFWD, p, line, true));
 
         return res;
     }
@@ -254,15 +254,12 @@ private:
         return true;
     }
 
-    void integrate(size_t steps, SpatialVector pos, IntegralLine &line, bool fwd) {
+    IntegralLine::TerminationReason integrate(size_t steps, SpatialVector pos, IntegralLine &line,
+                                              bool fwd) {
+        if (steps == 0) return IntegralLine::TerminationReason::StartPoint;
         for (int i = 0; i < steps; i++) {
             if (!sampler_->withinBounds(pos)) {
-                if (fwd) {
-                    line.setForwardTerminationReason(IntegralLine::TerminationReason::OutOfBounds);
-                } else {
-                    line.setBackwardTerminationReason(IntegralLine::TerminationReason::OutOfBounds);
-                }
-                break;
+                return IntegralLine::TerminationReason::OutOfBounds;
             }
 
             pos = detail::step<TimeDependent, SpatialVector, DataVector>(
@@ -270,21 +267,10 @@ private:
                 normalizeSamples_, *sampler_);
 
             if (!addPoint(line, pos)) {
-                if (fwd) {
-                    line.setForwardTerminationReason(IntegralLine::TerminationReason::ZeroVelocity);
-                } else {
-                    line.setBackwardTerminationReason(
-                        IntegralLine::TerminationReason::ZeroVelocity);
-                }
-
-                break;
+                return IntegralLine::TerminationReason::ZeroVelocity;
             }
         }
-        if (fwd) {
-            line.setForwardTerminationReason(IntegralLine::TerminationReason::Steps);
-        } else {
-            line.setBackwardTerminationReason(IntegralLine::TerminationReason::Steps);
-        }
+        return IntegralLine::TerminationReason::Steps;
     }
 
     IntegralLineProperties::IntegrationScheme integrationScheme_;
