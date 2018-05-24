@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/metadata/metadataowner.h>
@@ -322,7 +323,8 @@ void Property::setStateAsDefault(T& property, const U& state) {
 
 template <typename P>
 void Property::autoLinkToProperty(const std::string& propertyPath) {
-    autoLinkTo_.push_back(std::make_pair(P::processorInfo_.classIdentifier, propertyPath));
+    autoLinkTo_.push_back(
+        std::make_pair(ProcessorTraits<P>::getProcessorInfo().classIdentifier, propertyPath));
 }
 
 }  // namespace inviwo
