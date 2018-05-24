@@ -67,6 +67,8 @@
 #include <inviwo/qt/editor/fileassociations.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <inviwo/core/util/filesystem.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 
@@ -79,6 +81,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <dde.h>
 #endif
 
+#include <QMainWindow>
 #include <QMessageBox>
 #include <QApplication>
 #include <QDir>
@@ -216,11 +219,11 @@ private:
             (HIWORD(message->lParam) == systemTopicAtom_)) {
 
             // make duplicates of the incoming atoms (really adding a reference)
-            //wchar_t atomName[_MAX_PATH];
-            //IVW_ASSERT(::GlobalGetAtomNameW(appAtom_, atomName, _MAX_PATH - 1) != 0, "");
-            //IVW_ASSERT(::GlobalAddAtomW(atomName) == appAtom_, "");
-            //IVW_ASSERT(::GlobalGetAtomNameW(systemTopicAtom_, atomName, _MAX_PATH - 1) != 0, "");
-            //IVW_ASSERT(::GlobalAddAtomW(atomName) == systemTopicAtom_, "");
+            // wchar_t atomName[_MAX_PATH];
+            // IVW_ASSERT(::GlobalGetAtomNameW(appAtom_, atomName, _MAX_PATH - 1) != 0, "");
+            // IVW_ASSERT(::GlobalAddAtomW(atomName) == appAtom_, "");
+            // IVW_ASSERT(::GlobalGetAtomNameW(systemTopicAtom_, atomName, _MAX_PATH - 1) != 0, "");
+            // IVW_ASSERT(::GlobalAddAtomW(atomName) == systemTopicAtom_, "");
 
             // send the WM_DDE_ACK (caller will delete duplicate atoms)
             ::SendMessage((HWND)message->wParam, WM_DDE_ACK, (WPARAM)win_->winId(),
@@ -316,7 +319,7 @@ class FileAssociationData {
 public:
     FileAssociationData(FileAssociations& fa, QMainWindow* win) : fa_{fa}, win_{win} {}
 
-    bool nativeEvent(void* message, long* result) {}
+    bool nativeEvent(void* message, long* result) { return false; }
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex,
                           const std::vector<FileAssociationCommand>& commands) {}
