@@ -70,14 +70,14 @@ protected:
     FloatMinMaxProperty yRange_;
     FloatMinMaxProperty zRange_;
 
-    FloatProperty rhoValue_;    
-    FloatProperty sigmaValue_;  
-    FloatProperty betaValue_;   
+    FloatProperty rhoValue_;
+    FloatProperty sigmaValue_;
+    FloatProperty betaValue_;
 
     Shader shader_;
     FrameBufferObject fbo_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LORENZSYSTEM_H

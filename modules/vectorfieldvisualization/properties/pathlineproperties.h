@@ -53,7 +53,7 @@ public:
     virtual PathLineProperties* clone() const override;
     virtual ~PathLineProperties();
 
-    double getStartT()const { return startT_.get(); }
+    double getStartT() const { return startT_.get(); }
 
 private:
     void setUpProperties();
@@ -62,6 +62,6 @@ protected:
     DoubleProperty startT_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PATHLINEPROPERTIES_H

@@ -29,7 +29,4 @@
 
 #include "integrallinetracer.h"
 
-namespace inviwo {
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

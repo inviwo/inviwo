@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LIC2D_H
@@ -45,16 +45,14 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     LIC2D();
-    virtual ~LIC2D(){}
-     
-    virtual void process() override;
-    
-protected:
+    virtual ~LIC2D() {}
 
+    virtual void process() override;
+
+protected:
     ImageInport vectorField_;
     ImageInport noiseTexture_;
     ImageOutport LIC2D_;
-
 
     IntProperty samples_;
     FloatProperty stepLength_;
@@ -64,12 +62,9 @@ protected:
 
     Shader shader_;
 
-
 private:
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LIC2D_H
-
+#endif  // IVW_LIC2D_H

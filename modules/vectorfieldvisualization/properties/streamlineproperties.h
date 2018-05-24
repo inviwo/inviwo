@@ -53,6 +53,6 @@ public:
     virtual ~StreamLineProperties();
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_STREAMLINEPROPERTIES_H

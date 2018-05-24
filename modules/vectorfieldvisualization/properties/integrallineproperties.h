@@ -58,8 +58,9 @@ public:
     virtual IntegralLineProperties* clone() const override;
     virtual ~IntegralLineProperties();
 
-    template<unsigned int N >
-    Matrix<N+1,float> getSeedPointTransformationMatrix(const SpatialCoordinateTransformer<N>& T) const;
+    template <unsigned int N>
+    Matrix<N + 1, float> getSeedPointTransformationMatrix(
+        const SpatialCoordinateTransformer<N>& T) const;
 
     int getNumberOfSteps() const;
     float getStepSize() const;
@@ -82,12 +83,12 @@ public:
     TemplateOptionProperty<CoordinateSpace> seedPointsSpace_;
 };
 
-
-template<unsigned int N >
-Matrix<N + 1, float> IntegralLineProperties::getSeedPointTransformationMatrix(const SpatialCoordinateTransformer<N>& T) const{
-    return T.getMatrix(seedPointsSpace_.get(), CoordinateSpace::Data);    
+template <unsigned int N>
+Matrix<N + 1, float> IntegralLineProperties::getSeedPointTransformationMatrix(
+    const SpatialCoordinateTransformer<N>& T) const {
+    return T.getMatrix(seedPointsSpace_.get(), CoordinateSpace::Data);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INTEGRALLINEPROPERTIES_H

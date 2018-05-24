@@ -95,4 +95,4 @@ void SeedsFromMaskSequence::process() {
     seeds_.setData(outvec);
 }
 
-}  // namespace
+}  // namespace inviwo

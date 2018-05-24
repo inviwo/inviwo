@@ -46,7 +46,7 @@ class VolumeRAM;
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLinesDeprecated : public Processor {
 public:
-    //friend void vectorvis::convertProcessor(StreamLinesDeprecated*);
+    // friend void vectorvis::convertProcessor(StreamLinesDeprecated*);
     StreamLinesDeprecated();
     virtual ~StreamLinesDeprecated();
 

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SEEDPOINTGENERATOR2D_H
@@ -53,32 +53,29 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
 
 /**
  * \class SeedPointGenerator2D
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator2D : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator2D : public Processor {
 public:
-    enum class Generator{
-        Random,
-        HaltonSequence
-    };
+    enum class Generator { Random, HaltonSequence };
 
     SeedPointGenerator2D();
     virtual ~SeedPointGenerator2D() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     SeedPoints2DOutport seeds_;
 
@@ -89,16 +86,14 @@ private:
     IntSizeTProperty haltonYBase_;
 
     CompositeProperty randomness_;
-    BoolProperty useSameSeed_;///< Use the same seed for each call to process.
-    IntProperty seed_;///<  The seed used to initialize the random sequence
+    BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
+    IntProperty seed_;          ///<  The seed used to initialize the random sequence
 
 private:
     std::random_device rd_;
     std::mt19937 mt_;
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SEEDPOINTGENERATOR2D_H
-
+#endif  // IVW_SEEDPOINTGENERATOR2D_H

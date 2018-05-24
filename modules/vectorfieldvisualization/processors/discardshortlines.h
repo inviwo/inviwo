@@ -79,6 +79,6 @@ private:
     DoubleProperty dataMaxLength_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DISCARDSHORTLINES_H

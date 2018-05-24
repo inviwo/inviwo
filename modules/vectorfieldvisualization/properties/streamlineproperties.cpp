@@ -34,13 +34,10 @@ namespace inviwo {
 PropertyClassIdentifier(StreamLineProperties, "org.inviwo.StreamLineProperties");
 
 StreamLineProperties::StreamLineProperties(std::string identifier, std::string displayName)
-    : IntegralLineProperties(identifier, displayName)
-{
-}
+    : IntegralLineProperties(identifier, displayName) {}
 
 StreamLineProperties::StreamLineProperties(const StreamLineProperties& rhs)
-    : IntegralLineProperties(rhs) {
-}
+    : IntegralLineProperties(rhs) {}
 
 StreamLineProperties* StreamLineProperties::clone() const {
     return new StreamLineProperties(*this);
@@ -55,4 +52,4 @@ StreamLineProperties& StreamLineProperties::operator=(const StreamLineProperties
     return *this;
 }
 
-}  // namespace
+}  // namespace inviwo

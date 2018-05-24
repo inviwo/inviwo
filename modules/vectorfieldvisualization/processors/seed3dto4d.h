@@ -61,6 +61,6 @@ private:
     FloatProperty w_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SEED3DTO4D_H

@@ -422,13 +422,13 @@ void IntegralLineVectorToMesh::process() {
             }
         };
 
-        auto lineLoop = [&coloring, &vertices, &indexBuffer, &lineIdx, this](const IntegralLine &line,
-                                                                         auto mdContainter) {
+        auto lineLoop = [&coloring, &vertices, &indexBuffer, &lineIdx, this](
+                            const IntegralLine &line, auto mdContainter) {
             size_t pointIdx = 0;
             for (auto &&sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
                                            mdContainter)) {
                 util::OnScopeExit incPointIdx([&pointIdx]() { pointIdx++; });
-                bool first = pointIdx <= 1; 
+                bool first = pointIdx <= 1;
                 bool last = pointIdx >= line.getPositions().size() - 2;
                 // need to keep the two first and two last when using adjendency information
                 if (!first && !last && pointIdx % stride_.get() != 0) {
@@ -445,8 +445,8 @@ void IntegralLineVectorToMesh::process() {
             }
         };
 
-        auto ribbonLoop = [&coloring, &vertices, &indexBuffer, &lineIdx, this](const IntegralLine &line,
-                                                                           auto mdContainter) {
+        auto ribbonLoop = [&coloring, &vertices, &indexBuffer, &lineIdx, this](
+                              const IntegralLine &line, auto mdContainter) {
             for (auto &&sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
                                            mdContainter, line.getMetaData<dvec3>("vorticity"))) {
                 vec3 pos = get<0>(sample);

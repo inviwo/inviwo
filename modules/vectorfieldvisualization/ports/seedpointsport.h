@@ -37,13 +37,13 @@
 
 namespace inviwo {
 
-template<unsigned Dims>
-using SeedPointVector = std::vector<Vector<Dims,float>>;
+template <unsigned Dims>
+using SeedPointVector = std::vector<Vector<Dims, float>>;
 
-template<unsigned Dims>
+template <unsigned Dims>
 using SeedPointsInport = DataInport<SeedPointVector<Dims>, 0>;
 
-template<unsigned Dims>
+template <unsigned Dims>
 using SeedPointsOutport = DataOutport<SeedPointVector<Dims>>;
 
 using SeedPoint2DVector = SeedPointVector<2>;
@@ -58,6 +58,6 @@ using SeedPoint4DVector = SeedPointVector<4>;
 using SeedPoints4DInport = DataInport<SeedPoint4DVector, 0>;
 using SeedPoints4DOutport = DataOutport<SeedPoint4DVector>;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SEEDPOINTSPORT_H

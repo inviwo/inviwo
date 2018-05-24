@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VECTOR3DCURL_H
@@ -48,7 +48,7 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
@@ -64,7 +64,6 @@ protected:
     virtual void postProcess() override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VECTOR3DCURL_H
-
+#endif  // IVW_VECTOR3DCURL_H
