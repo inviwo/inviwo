@@ -44,7 +44,7 @@ public:
     NetworkTest() : network(InviwoApplication::getPtr()) {};
 protected:
     virtual void SetUp() {
-       Processor* p1 = new VolumeSource();
+       Processor* p1 = new VolumeSource(InviwoApplication::getPtr());
        p1->setIdentifier("volumeSource");
        network.addProcessor(p1);
 

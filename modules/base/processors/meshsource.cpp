@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "meshsource.h"
@@ -38,15 +38,11 @@ const ProcessorInfo MeshSource::processorInfo_{
     CodeState::Stable,            // Code state
     Tags::CPU,                    // Tags
 };
-const ProcessorInfo MeshSource::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo MeshSource::getProcessorInfo() const { return processorInfo_; }
 
-MeshSource::MeshSource() : DataSource<Mesh, MeshOutport>() {
-    DataSource<Mesh, MeshOutport>::file_.setContentType("geometry");
+MeshSource::MeshSource(InviwoApplication* app, const std::string& file)
+    : DataSource<Mesh, MeshOutport>(app, file, "geometry") {
     DataSource<Mesh, MeshOutport>::file_.setDisplayName("Geometry file");
 }
 
-} // namespace
-
-
+}  // namespace inviwo

@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#include "canvasprocessorgl.h"
-#include "canvasgl.h"
+#include <modules/opengl/canvasprocessorgl.h>
+#include <modules/opengl/canvasgl.h>
 #include <inviwo/core/processors/processor.h>
 
 namespace inviwo {

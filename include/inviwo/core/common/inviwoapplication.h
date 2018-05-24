@@ -82,6 +82,8 @@ class InportFactory;
 class PortInspectorFactory;
 class PortInspectorManager;
 
+class DataVisualizerManager;
+
 class Settings;
 class SystemSettings;
 class Capabilities;
@@ -167,6 +169,7 @@ public:
     WorkspaceManager* getWorkspaceManager();
     PropertyPresetManager* getPropertyPresetManager();
     PortInspectorManager* getPortInspectorManager();
+    DataVisualizerManager* getDataVisualizerManager();
 
     CommandLineParser& getCommandLineParser();
     const CommandLineParser& getCommandLineParser() const;
@@ -327,6 +330,7 @@ protected:
     std::unique_ptr<OutportFactory> outportFactory_;
     std::unique_ptr<InportFactory> inportFactory_;
     std::unique_ptr<PortInspectorFactory> portInspectorFactory_;
+    std::unique_ptr<DataVisualizerManager> dataVisualizerManager_;
     std::unique_ptr<ProcessorFactory> processorFactory_;
     std::unique_ptr<ProcessorWidgetFactory> processorWidgetFactory_;
     std::unique_ptr<PropertyConverterManager> propertyConverterManager_;
@@ -342,7 +346,6 @@ protected:
     std::unique_ptr<WorkspaceManager> workspaceManager_;
     std::unique_ptr<PropertyPresetManager> propertyPresetManager_;
     std::unique_ptr<PortInspectorManager> portInspectorManager_;
-
     WorkspaceManager::ClearHandle networkClearHandle_;
     WorkspaceManager::SerializationHandle networkSerializationHandle_;
     WorkspaceManager::DeserializationHandle networkDeserializationHandle_;
