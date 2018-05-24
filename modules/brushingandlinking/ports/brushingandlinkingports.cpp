@@ -37,7 +37,7 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
 
     onConnect([&]() {
         sendFilterEvent(filterCache_);
-        sendSelectionEvent(selctionCache_);
+        sendSelectionEvent(selectionCache_);
     });
 }
 
@@ -49,9 +49,9 @@ void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> 
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
-    if (selctionCache_.size() == 0 && indices.size() == 0) return;
-    selctionCache_ = indices;
-    SelectionEvent event(this, selctionCache_);
+    if (selectionCache_.size() == 0 && indices.size() == 0) return;
+    selectionCache_ = indices;
+    SelectionEvent event(this, selectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
@@ -67,7 +67,7 @@ bool BrushingAndLinkingInport::isSelected(size_t idx) const {
     if (isConnected()) {
         return getData()->isSelected(idx);
     } else {
-        return selctionCache_.find(idx) != selctionCache_.end();
+        return selectionCache_.find(idx) != selectionCache_.end();
     }
 }
 
@@ -75,7 +75,7 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices()
     if (isConnected()) {
         return getData()->getSelectedIndices();
     } else {
-        return selctionCache_;
+        return selectionCache_;
     }
 }
 
