@@ -504,7 +504,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         auto dataVis = app->getDataVisualizerManager()->getDataVisualizersForOutport(outport);
         if (!dataVis.empty()) {
-            auto subMenu = menu.addMenu("Add Visualizers");
+            auto subMenu = menu.addMenu("Add Visualizer");
             for (auto vis : dataVis) {
                 auto action = subMenu->addAction(utilqt::toQString(vis->getName()));
                 connect(action, &QAction::triggered, [this, vis, outport]() {
