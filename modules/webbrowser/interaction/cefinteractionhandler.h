@@ -78,6 +78,7 @@ private:
     CefMouseEvent mapTouchEvent(const TouchPoint* p);
 
     void updateMouseStates(MouseEvent* e);
+	void updateMouseStates(TouchEvent* e);
     uint32 modifiers_ = 0;
     CefRefPtr<CefBrowserHost> host_;
     RenderHandlerGL* renderHandler_ = nullptr; ///< Forward resize event if set
