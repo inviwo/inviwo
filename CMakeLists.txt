@@ -93,6 +93,8 @@ set(PythonLibsNew_FIND_VERSION 3)
 set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
 find_package(PythonLibsNew 3)
 
+include(cmake/verifysubmodules.cmake)
+verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 
 include(cmake/globalconfig.cmake)
 
