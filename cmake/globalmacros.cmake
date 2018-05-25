@@ -90,7 +90,7 @@ endfunction()
 # Generate header for modules
 function(ivw_generate_module_paths_header)
     set(dirs "")
-    foreach(dir ${IVW_ROOT_DIR}/modules ${IVW_EXTERNAL_MODULES})
+    foreach(dir ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
         if(IS_DIRECTORY ${dir})
             list(APPEND dirs ${dir})
         else()
