@@ -50,12 +50,14 @@ const ProcessorInfo WebBrowserProcessor::processorInfo_{
 const ProcessorInfo WebBrowserProcessor::getProcessorInfo() const { return processorInfo_; }
 
 WebBrowserProcessor::WebBrowserProcessor()
-    : Processor()
-    , background_("background")
-    // Output from CEF is 8-bits per channel
-    , outport_("webpage", DataVec4UInt8::get())
-    , url_("URL", "URL", "http://www.google.com")
-    , reload_("reload", "Reload")
+	: Processor()
+	, background_("background")
+	// Output from CEF is 8-bits per channel
+	, outport_("webpage", DataVec4UInt8::get())
+	, url_("URL", "URL", "http://www.google.com")
+	, reload_("reload", "Reload")
+	, picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
+	, cefToInviwoImageConverter_(picking_.getColor())
     , renderHandler_(new RenderHandlerGL([&]() {
         // Called as soon as new content is available
         // Queue an invalidation

@@ -41,12 +41,12 @@
 namespace inviwo {
 
 /* \class CefImageConverter
- * Flips vertical component of Cef output image.
+ * Flips vertical component of Cef output image and write to picking layer on non-transparent areas.
  * @see RenderHandlerGL
  */
 class CefImageConverter {
 public:
-    CefImageConverter() = default;
+	CefImageConverter(vec3 pickingColor);
     
     void convert(const Texture2D& fromCefOutput, ImageOutport &toInviwOutput, const ImageInport* background = nullptr);
 

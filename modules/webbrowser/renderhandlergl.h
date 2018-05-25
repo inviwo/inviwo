@@ -63,7 +63,7 @@ public:
      * (0,1) -- (1,1)
      */
     Texture2D &getTexture2D() { return texture2D_; }
-    
+
     /*
      * Get RGBA color of pixel given top-left as pixel origin.
      * The coordinate system looks like this:
@@ -77,8 +77,6 @@ private:
     Texture2D texture2D_;
     std::function<void()>
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
-    const void *buffer_ = nullptr; /// Buffer sent into OnPaint, BGRA image with upper-left origin
-    ivec2 bufferDimensions_ = {0, 0}; // Size of buffer_. Might be different than texture2D_ when resizing
 public:
     IMPLEMENT_REFCOUNTING(RenderHandlerGL)
 };

@@ -88,14 +88,15 @@ private:
     ButtonProperty buttonProp_;
     StringProperty stringProp_;
     
-    CefImageConverter cefToInviwoImageConverter_;
+	CEFInteractionHandler cefInteractionHandler_;
+	PickingMapper picking_;
+	CefImageConverter cefToInviwoImageConverter_;
     
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
-    
-    CEFInteractionHandler cefInteractionHandler_;
+   
 };
 
 }  // namespace inviwo

@@ -29,6 +29,7 @@
 
 #include "utils/structs.glsl"
 
+uniform vec3 pickingColor;
 uniform ImageParameters outportParameters_;
 
 uniform sampler2D inport_;
@@ -40,6 +41,7 @@ void main() {
     vec4 color = texture(inport_, texCoords);
     if (color.w > 0) {
         FragData0 = texture(inport_, texCoords);
+        PickingData = vec4(pickingColor, 1.0);
     } else {
         discard;
     }

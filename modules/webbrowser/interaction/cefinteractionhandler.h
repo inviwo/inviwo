@@ -43,8 +43,10 @@
 namespace inviwo {
 class RenderHandlerGL;
 class TouchPoint;
+class PickingEvent;
 /*\class CEFInteractionHandler
  * Translates Inviwo events to CEF events and injects them into provided CefBrowserHost.
+ * Assumes that PickingEvent is sent for mouse and touch events
  */
 class IVW_MODULE_WEBBROWSER_API CEFInteractionHandler : public InteractionHandler {
 public:
@@ -58,6 +60,8 @@ public:
     virtual std::string getClassIdentifier() const override { return "org.inviwo.cefinteractionhandler"; }
 
     virtual void invokeEvent(Event* event) override;
+
+	void handlePickingEvent(PickingEvent* p); 
     
     void setHost(CefRefPtr<CefBrowserHost> host) { host_ = host; }
     CefRefPtr<CefBrowserHost> getHost() const { return host_; }
@@ -77,7 +81,6 @@ private:
     uint32 modifiers_ = 0;
     CefRefPtr<CefBrowserHost> host_;
     RenderHandlerGL* renderHandler_ = nullptr; ///< Forward resize event if set
-    bool pressedNonTransparentPixel = false;
 };
 
 };  // namespace inviwo

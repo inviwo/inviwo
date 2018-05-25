@@ -32,14 +32,21 @@
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
-void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport &toInviwOutput, const ImageInport* background) {
+CefImageConverter::CefImageConverter(vec3 pickingColor) {
+    shader_.activate();
+    shader_.setUniform("pickingColor", pickingColor);
+    shader_.deactivate();
+}
+
+void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& toInviwOutput,
+                                const ImageInport* background) {
     if (background && background->isConnected()) {
         utilgl::activateTargetAndCopySource(toInviwOutput, *background);
     } else {
         utilgl::activateAndClearTarget(toInviwOutput, ImageType::ColorOnly);
     }
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
     shader_.activate();
 
     utilgl::setShaderUniforms(shader_, toInviwOutput, "outportParameters_");

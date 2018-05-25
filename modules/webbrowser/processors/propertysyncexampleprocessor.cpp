@@ -63,6 +63,8 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     , boolProp_("boolProperty", "Bool", true, InvalidationLevel::Valid)
     , buttonProp_("buttonProperty", "Button", InvalidationLevel::Valid)
     , stringProp_("stringProperty", "String", "Edit me", InvalidationLevel::Valid)
+	, picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
+	, cefToInviwoImageConverter_(picking_.getColor())
     , renderHandler_(new RenderHandlerGL([&]() {
         // Called as soon as new content is available
         // Queue an invalidation

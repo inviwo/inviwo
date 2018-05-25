@@ -35,6 +35,7 @@
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
 #include <modules/webbrowser/cefimageconverter.h>
 
+#include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -80,6 +81,8 @@ private:
     StringProperty url_; ///< Web page to show
     ButtonProperty reload_; ///< Force reload url
 
+	CEFInteractionHandler cefInteractionHandler_;
+	PickingMapper picking_;
     CefImageConverter cefToInviwoImageConverter_;
 
     // create browser-window
@@ -87,7 +90,7 @@ private:
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
 
-    CEFInteractionHandler cefInteractionHandler_;
+
 };
 
 }  // namespace inviwo
