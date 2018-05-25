@@ -49,6 +49,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
                               int height) {
     buffer_ = buffer;
     auto dims = texture2D_.getDimensions();
+    bufferDimensions_ = ivec2(width, height);
     if (dims.x == static_cast<size_t>(width) && dims.y == static_cast<size_t>(height)) {
         // CPU implementation using LayerRAM
 
@@ -98,12 +99,13 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
 }
     
 uvec4 RenderHandlerGL::getPixel(int x, int y) {
-    auto dims = texture2D_.getDimensions();
-    if (x < 0 || y < 0 || static_cast<int>(dims.x) <= x || static_cast<int>(dims.y) <= y) {
+    if (x < 0 || y < 0 ||
+        static_cast<int>(bufferDimensions_.x) <= x ||
+        static_cast<int>(bufferDimensions_.y) <= y) {
         return uvec4(0);
     } else if (buffer_) {
         // Flip y
-        auto index = (dims.y - y - 1) * dims.x + x;
+        auto index = (bufferDimensions_.y - y - 1) * bufferDimensions_.x + x;
         auto data = static_cast<const glm::tvec4<unsigned char>*>(buffer_);
         auto pixel = data[index];
         return uvec4(pixel[2],pixel[1], pixel[0], pixel[3]);

@@ -78,6 +78,7 @@ private:
     std::function<void()>
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
     const void *buffer_ = nullptr; /// Buffer sent into OnPaint, BGRA image with upper-left origin
+    ivec2 bufferDimensions_ = {0, 0}; // Size of buffer_. Might be different than texture2D_ when resizing
 public:
     IMPLEMENT_REFCOUNTING(RenderHandlerGL)
 };

@@ -74,6 +74,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    ImageInport background_;
     ImageOutport outport_;
 
     StringProperty url_; ///< Web page to show

@@ -144,10 +144,13 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
         }
         case WheelEvent::chash(): {
             auto wheelEvent = static_cast<WheelEvent*>(event);
-            auto cefMouseEvent = mapMouseEvent(wheelEvent);
-            host_->SendMouseWheelEvent(cefMouseEvent, static_cast<int>(wheelEvent->delta().x),
-                                       static_cast<int>(wheelEvent->delta().y));
-            event->markAsUsed();
+            auto pixel = renderHandler_->getPixel(static_cast<int>(wheelEvent->x()), static_cast<int>(wheelEvent->y()));
+            if (pixel.w != 0) {
+                auto cefMouseEvent = mapMouseEvent(wheelEvent);
+                host_->SendMouseWheelEvent(cefMouseEvent, static_cast<int>(wheelEvent->delta().x),
+                                           static_cast<int>(wheelEvent->delta().y));
+                event->markAsUsed();
+            }
             break;
         }
     }

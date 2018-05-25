@@ -66,8 +66,9 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     , renderHandler_(new RenderHandlerGL([&]() {
         // Called as soon as new content is available
         // Queue an invalidation
-        getNetwork()->getApplication()->dispatchFront(
-                                                      [this]() { invalidate(InvalidationLevel::InvalidOutput); });
+        // Note: no need to queue invalidation using dispathFront since
+        // RenderHandler calls will be made from the same thread.
+        invalidate(InvalidationLevel::InvalidOutput);
     }))
     , browserClient_(new WebBrowserClient(renderHandler_))
 {
@@ -78,8 +79,8 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     CefWindowInfo window_info;
     
     CefBrowserSettings browserSettings;
-    
-    browserSettings.windowless_frame_rate = 60;  // 30 is default
+
+    browserSettings.windowless_frame_rate = 30; // Must be between 1-60, 30 is default
     
     // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause
     // some render errors, in context-menu and plugins.
@@ -125,7 +126,7 @@ void PropertySyncExampleProcessor::process() {
     if (url_.isModified() || reload_.isModified()) {
         browser_->GetMainFrame()->LoadURL(url_.get());
     }
-    //LogInfo("Process")
+
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }
@@ -136,7 +137,7 @@ std::string PropertySyncExampleProcessor::getTestWebpageUrl() {
     auto module = app->getModuleByType<WebBrowserModule>();
     auto path = module->getPath(ModulePath::Workspaces) + "/web_property_sync.html";
     if (!filesystem::fileExists(path)) {
-        LogError("Could not find " + path);
+        throw Exception("Could not find " + path);
     }
     return "file://" + path;
 }

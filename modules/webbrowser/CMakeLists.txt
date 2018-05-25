@@ -7,7 +7,11 @@
 
 # Specify the CEF distribution version.
 # http://opensource.spotify.com/cefbuilds/index.html
-set(CEF_VERSION "3.3202.1680.g700054b")
+# Test before upgrading version since they are sometimes unstable:
+# 3.3202.1680.g700054b Problems with event handling of html-range elements (sliders)
+# 3.3359.1774.gd49d25f Crashes when creating browsers
+# 3.3325.1758.g9aea513 Crashes on scroll event (Mac)
+set(CEF_VERSION "3.3325.1758.g9aea513")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -194,32 +198,43 @@ ivw_suppress_compiler_warnings(${CEF_HELPER_TARGET})
 ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
 
 if (OS_MACOSX)
-    # Output paths for the app bundles.
-    # Inviwo: We would like to get all bundle executables but they have not been created yet.  
-    # Note: Your custom app will need to add these commands using:
-    # set(CEF_APP "CEF_APP = $<TARGET_BUNDLE_DIR:your_target_app_name>")
-    set(CEF_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>/../inviwo.app")
+    # Output paths for the app bundles: bin/configuration, for example bin/Debug.
+    set(CEF_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>/../")
     set(CEF_HELPER_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>") # full/path/to/helper.app
 
-    # Copy files into the main app bundle.
+    # Copy files into the bin directory (used during development)
     add_custom_command(
         TARGET inviwo-module-webbrowser
         POST_BUILD
-        # Copy the helper app bundle into the Frameworks directory.
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CEF_HELPER_APP}"
-        "${CEF_APP}/Contents/Frameworks/${CEF_HELPER_TARGET}.app"
         # Copy the CEF framework into the Frameworks directory.
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-        "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
+        "${CEF_APP}/Frameworks/Chromium Embedded Framework.framework"
         VERBATIM
     )
+    # Copy the helper app bundle into the Frameworks directory (used by installer)
+    install(DIRECTORY "${CEF_HELPER_APP}"
+            DESTINATION "Inviwo.app/Contents/Frameworks/${CEF_HELPER_TARGET}.app"
+            COMPONENT inviwo-module-webbrowser)
+    # Copy the CEF framework into the Frameworks directory (used by installer)
+    install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
+            DESTINATION "Inviwo.app/Contents/Frameworks/Chromium Embedded Framework.framework"
+            COMPONENT inviwo-module-webbrowser)
 
     # Fix the framework rpath in the main executable.
-    FIX_MACOSX_MAIN_FRAMEWORK_RPATH(inviwo-module-webbrowser)
-    # Fix the framework rpath in the helper executable.
-    FIX_MACOSX_HELPER_FRAMEWORK_RPATH(${CEF_HELPER_TARGET})
+    # The main app is at $app_name.app/Contents/MacOS/$app_name
+    # Set rpath to both Contents/ (used by installed app), and output binary dir (during development)
+    # so that the loader can find Frameworks/.
+    set_target_properties(inviwo-module-webbrowser PROPERTIES INSTALL_RPATH
+        "@executable_path/..;@executable_path/../../..")
+    set_target_properties(inviwo-module-webbrowser PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+
+    # The helper is installed in $app_name.app/Contents/Frameworks/inviwo_web_helper.app/Contents/MacOS/
+    # Set rpath up to Contents/ (used by installed app), and output binary dir (during development)
+    # so that the loader can find the Frameworks directory.
+    set_target_properties(${CEF_HELPER_TARGET} PROPERTIES INSTALL_RPATH
+        "@executable_path/../../../..;@executable_path/../../..")
+    set_target_properties(${CEF_HELPER_TARGET} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
 
     set_target_properties(${CEF_HELPER_TARGET} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/helper-Info.plist
@@ -228,6 +243,12 @@ else()
     # Copy CEF binary and resource files to the target output directory.
     COPY_FILES("inviwo-module-webbrowser" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
     COPY_FILES("inviwo-module-webbrowser" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+
+    # Copy files into the bin directory (used by installer)
+    install(DIRECTORY "${CEF_BINARY_DIR}"
+            "${CEF_RESOURCE_DIR}"
+            DESTINATION bin
+            COMPONENT inviwo-module-webbrowser)
 endif()
 
 

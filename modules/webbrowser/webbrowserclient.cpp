@@ -91,9 +91,9 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 }
 
 bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                            CefRefPtr<CefFrame> frame,
-                            CefRefPtr<CefRequest> request,
-                            bool is_redirect) {
+                                      CefRefPtr<CefFrame> frame,
+                                      CefRefPtr<CefRequest> request,
+                                      bool is_redirect) {
     CEF_REQUIRE_UI_THREAD();
     
     message_router_->OnBeforeBrowse(browser, frame);

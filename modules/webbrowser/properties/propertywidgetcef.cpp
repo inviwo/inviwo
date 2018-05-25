@@ -33,7 +33,7 @@
 
 namespace inviwo {
     
-    PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string htmlId): PropertyWidget(prop), htmlId_(htmlId), frame_(frame) {
+PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string htmlId): PropertyWidget(prop), htmlId_(htmlId), frame_(frame) {
     if (prop) {
         prop->addObserver(this);
     }
