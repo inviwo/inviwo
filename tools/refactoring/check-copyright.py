@@ -88,29 +88,30 @@ def checkline(line):
 		# no copyright info / misformed
 		return CopyrightState.Missing
 
-def checkfile(filehandle):
+def checkfile(filehandle, filename):
 	copyrightfound = False
 	for (i,line) in enumerate(filehandle):
 		result = checkline(line)
 		if result == CopyrightState.Outdated:
-			print_warn("Copyright outdated in " + str(file))
+			print_warn("Copyright outdated in " + str(filename))
 			print(str(i) + ": " + line.rstrip())
 			return 1 # flag copyright error
 		elif result == CopyrightState.MalformedYear:
-			print_warn("Copyright year malformed in " + str(file))
+			print_warn("Copyright year malformed in " + str(filename))
 			print(str(i) + ": " + line.rstrip())
 			print("Expecting either '201x' or '201x-201y'")
 			return 1 # flag copyright error
 		elif result == CopyrightState.Correct:
 			return 0
 	# did not find a valid copyright line
-	return 1 # flag copyright error
+	print_warn("Copyright information missing in " + str(filename))
+	return 0 # TODO: flag copyright error
 
 
 def test(file):
 	with open(file, 'r', encoding="UTF-8") as f:
 		try:
-			return checkfile(f)
+			return checkfile(f, file)
 		except UnicodeDecodeError:
 			print_warn(file + ": File not utf-8 encoded, fall-back to Western encoding (Windows 1252)")
 			with open(file, 'r', encoding="cp1252") as f:
