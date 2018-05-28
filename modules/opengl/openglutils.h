@@ -42,10 +42,9 @@ namespace inviwo {
 
 namespace utilgl {
 
-std::array<GLint, 4> IVW_MODULE_OPENGL_API convertSwizzleMaskToGL(const SwizzleMask &mask);
+std::array<GLint, 4> IVW_MODULE_OPENGL_API convertSwizzleMaskToGL(const SwizzleMask& mask);
 
-SwizzleMask IVW_MODULE_OPENGL_API convertSwizzleMaskFromGL(const std::array<GLint, 4> &maskGL);
-
+SwizzleMask IVW_MODULE_OPENGL_API convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL);
 
 struct IVW_MODULE_OPENGL_API TexParameter {
     TexParameter() = delete;
@@ -191,14 +190,15 @@ struct IVW_MODULE_OPENGL_API ClearColor {
     ClearColor& operator=(ClearColor&& that);
 
     virtual ~ClearColor();
+
 protected:
     vec4 color_;
     vec4 oldColor_;
 };
 
 struct IVW_MODULE_OPENGL_API Viewport {
-    Viewport() : view_({ {0, 0, 0, 0} }) {}
-    Viewport(GLint x, GLint y, GLsizei width, GLsizei height) : view_({ {x, y, width, height} }) {}
+    Viewport() : view_({{0, 0, 0, 0}}) {}
+    Viewport(GLint x, GLint y, GLsizei width, GLsizei height) : view_({{x, y, width, height}}) {}
     void get();
     void set();
 
@@ -208,6 +208,7 @@ struct IVW_MODULE_OPENGL_API Viewport {
     GLsizei height() const { return view_[3]; }
 
     friend bool IVW_MODULE_OPENGL_API operator==(const Viewport& a, const Viewport& b);
+
 private:
     std::array<GLint, 4> view_;
 };
@@ -215,7 +216,9 @@ private:
 inline bool IVW_MODULE_OPENGL_API operator==(const Viewport& a, const Viewport& b) {
     return a.view_ == b.view_;
 }
-inline bool IVW_MODULE_OPENGL_API operator!=(const Viewport& lhs, const Viewport& rhs) { return !(lhs == rhs); }
+inline bool IVW_MODULE_OPENGL_API operator!=(const Viewport& lhs, const Viewport& rhs) {
+    return !(lhs == rhs);
+}
 
 struct IVW_MODULE_OPENGL_API ViewportState {
     ViewportState() = delete;
@@ -223,7 +226,7 @@ struct IVW_MODULE_OPENGL_API ViewportState {
     ViewportState& operator=(ViewportState const& that) = delete;
 
     ViewportState(GLint x, GLint y, GLsizei width, GLsizei height);
-    ViewportState(const ivec4 &coords);
+    ViewportState(const ivec4& coords);
 
     ViewportState(ViewportState&& rhs);
     ViewportState& operator=(ViewportState&& that);
@@ -235,13 +238,57 @@ private:
     Viewport oldCoords_;
 };
 
+struct IVW_MODULE_OPENGL_API ScissorBox {
+    ScissorBox() : box_({{0, 0, 0, 0}}) {}
+    ScissorBox(GLint x, GLint y, GLsizei width, GLsizei height) : box_({{x, y, width, height}}) {}
+    void get();
+    void set();
+
+    GLint x() const { return box_[0]; }
+    GLint y() const { return box_[1]; }
+    GLsizei width() const { return box_[2]; }
+    GLsizei height() const { return box_[3]; }
+
+    friend bool IVW_MODULE_OPENGL_API operator==(const ScissorBox& a, const ScissorBox& b);
+
+private:
+    std::array<GLint, 4> box_;
+};
+
+inline bool IVW_MODULE_OPENGL_API operator==(const ScissorBox& a, const ScissorBox& b) {
+    return a.box_ == b.box_;
+}
+inline bool IVW_MODULE_OPENGL_API operator!=(const ScissorBox& lhs, const ScissorBox& rhs) {
+    return !(lhs == rhs);
+}
+
+struct IVW_MODULE_OPENGL_API ScissorState {
+    ScissorState() = delete;
+    ScissorState(ScissorState const&) = delete;
+    ScissorState& operator=(ScissorState const& that) = delete;
+
+    ScissorState(GLint x, GLint y, GLsizei width, GLsizei height);
+    ScissorState(const ivec4& coords);
+
+    ScissorState(ScissorState&& rhs);
+    ScissorState& operator=(ScissorState&& that);
+
+    ~ScissorState();
+
+private:
+    ScissorBox box_;
+    ScissorBox oldBox_;
+};
+
 template <typename T>
-T passThrough(T x) {return x;}
+T passThrough(T x) {
+    return x;
+}
 
 template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
           void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1) = &passThrough<T1>>
-    struct SimpleState {
-    
+struct SimpleState {
+
     SimpleState() = delete;
     SimpleState(SimpleState<T1, T2, Entity, Getter, Setter, Validator> const&) = delete;
     SimpleState<T1, T2, Entity, Getter, Setter, Validator>& operator=(
@@ -307,8 +354,10 @@ SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width);
 
 using DepthFuncState = SimpleState<GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc>;
-using DepthMaskState = SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask>;
-using LineWidthState = SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth, validateLineWidth>;
+using DepthMaskState =
+    SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask>;
+using LineWidthState =
+    SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth, validateLineWidth>;
 using PointSizeState = SimpleState<GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize>;
 
 template <typename T>
@@ -325,8 +374,8 @@ private:
     const T* item_;
 };
 
-}  // namespace
+}  // namespace utilgl
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_OPENGLUTILS_H
