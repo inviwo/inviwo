@@ -46,12 +46,13 @@ namespace inviwo {
  */
 class CefImageConverter {
 public:
-	CefImageConverter(vec3 pickingColor);
-    
-    void convert(const Texture2D& fromCefOutput, ImageOutport &toInviwOutput, const ImageInport* background = nullptr);
+    CefImageConverter(vec3 pickingColor);
+
+    void convert(const Texture2D& fromCefOutput, ImageOutport& toInviwOutput,
+                 const ImageInport* optionalBackground = nullptr);
 
 protected:
-     Shader shader_{"img_convert_cef.frag", true};  ///< Flip image y compoenent
+    Shader shader_{"img_convert_cef.frag", true};  ///< Flip image y compoenent
 };
 
 }  // namespace inviwo

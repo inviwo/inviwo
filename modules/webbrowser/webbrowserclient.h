@@ -56,37 +56,36 @@ public:
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return propertyCefSynchronizer_; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
-    
+
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
-    
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                  CefProcessId source_process,
+
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) override;
-    
+
     // CefLifeSpanHandler methods:
     void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
     bool DoClose(CefRefPtr<CefBrowser> browser) override;
     void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
-    
+
     // CefRequestHandler methods:
-    bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                        CefRefPtr<CefFrame> frame,
-                        CefRefPtr<CefRequest> request,
-                        bool is_redirect) override;
+    bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                        CefRefPtr<CefRequest> request, bool is_redirect) override;
 
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                    TerminationStatus status) override;
-    
+
     CefRefPtr<PropertyCefSynchronizer> propertyCefSynchronizer_;
+
 protected:
     InviwoApplication* app_;
     CefRefPtr<CefRenderHandler> renderHandler_;
     // Handles the browser side of query routing.
     CefRefPtr<CefMessageRouterBrowserSide> message_router_;
-    
-    //scoped_ptr<CefMessageRouterBrowserSide::Handler> message_handler_;
+
+    // scoped_ptr<CefMessageRouterBrowserSide::Handler> message_handler_;
     // Track the number of browsers using this Client.
     int browser_ct_ = 0;
+
 private:
     IMPLEMENT_REFCOUNTING(WebBrowserClient)
     DISALLOW_COPY_AND_ASSIGN(WebBrowserClient);

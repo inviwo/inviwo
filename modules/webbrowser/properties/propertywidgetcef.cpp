@@ -32,19 +32,18 @@
 #include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
-    
-PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string htmlId): PropertyWidget(prop), htmlId_(htmlId), frame_(frame) {
+
+PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string htmlId)
+    : PropertyWidget(prop), htmlId_(htmlId), frame_(frame) {
     if (prop) {
         prop->addObserver(this);
     }
 }
 
-bool PropertyWidgetCEF::OnQuery(CefRefPtr<CefBrowser> browser,
-             CefRefPtr<CefFrame> frame,
-             int64 query_id,
-             const CefString& request,
-             bool persistent,
-             CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
+bool PropertyWidgetCEF::onQuery(
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+    const CefString& request, bool persistent,
+    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
     if (onQueryBlocker_ > 0) {
         onQueryBlocker_--;
         callback->Success("");
@@ -58,11 +57,11 @@ bool PropertyWidgetCEF::OnQuery(CefRefPtr<CefBrowser> browser,
         deserializer.deserialize("Property", *property_);
         callback->Success("");
         property_->clearInitiatingWidget();
-        
-    } catch(SerializationException& ex) {
+
+    } catch (SerializationException& ex) {
         callback->Failure(0, ex.getMessage());
         LogWarn(ex.getMessage());
-    } catch(AbortException& ex) {
+    } catch (AbortException& ex) {
         callback->Failure(0, ex.getMessage());
         LogWarn(ex.getMessage());
     }
@@ -73,8 +72,7 @@ void PropertyWidgetCEF::onSetReadOnly(Property* property, bool readonly) {
     std::stringstream script;
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";
     script << "property.readonly=" << (readonly ? "true" : "false") << ";";
-    frame_->ExecuteJavaScript(script.str(),
-                             frame_->GetURL(), 0);
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 
 }  // namespace inviwo

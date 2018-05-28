@@ -41,7 +41,6 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_base.h>
@@ -51,18 +50,19 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.WebBrowser, Chromium Processor}
  * ![](org.inviwo.WebBrowser.png?classIdentifier=org.inviwo.WebBrowser)
- * Renders webpage, including transparency, into output image color layer. 
- * Forwards events to webpage but does not consume them.
+ * Renders webpage including transparency on top of optional background.
  *
  * ### Outports
+ *   * __background__ Background to render web page ontop of.
  *   * __webpage__ Rendered web page.
  *
  * ### Properties
  *   * __URL__ Link to webpage, online or file path.
+ *   * __Reload__ Fetch page again.
  */
 /**
  * \class WebBrowser
- * \brief Render webpage into the color layer (OpenGL).
+ * \brief Render webpage into the color and picking layers (OpenGL).
  */
 class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor {
 public:
@@ -78,19 +78,17 @@ private:
     ImageInport background_;
     ImageOutport outport_;
 
-    StringProperty url_; ///< Web page to show
-    ButtonProperty reload_; ///< Force reload url
+    StringProperty url_;     ///< Web page to show
+    ButtonProperty reload_;  ///< Force reload url
 
-	CEFInteractionHandler cefInteractionHandler_;
-	PickingMapper picking_;
+    CEFInteractionHandler cefInteractionHandler_;
+    PickingMapper picking_;
     CefImageConverter cefToInviwoImageConverter_;
 
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
-
-
 };
 
 }  // namespace inviwo

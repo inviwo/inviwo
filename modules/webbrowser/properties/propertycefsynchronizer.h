@@ -42,7 +42,6 @@
 #include "include/wrapper/cef_message_router.h"
 #include <warn/pop>
 
-
 namespace inviwo {
 
 /** \class PropertyCefSynchronizer
@@ -70,49 +69,38 @@ class PropertyCefSynchronizer : public CefMessageRouterBrowserSide::Handler, pub
 public:
     explicit PropertyCefSynchronizer();
     virtual ~PropertyCefSynchronizer() = default;
-    /*
+    /**
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
      */
-    virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefFrame> frame,
+    virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                            int httpStatusCode) override;
-    
-    // Called due to cefQuery execution in message_router.html.
-    bool OnQuery(CefRefPtr<CefBrowser> browser,
-                 CefRefPtr<CefFrame> frame,
-                 int64 query_id,
-                 const CefString& request,
-                 bool persistent,
-                 CefRefPtr<Callback> callback) OVERRIDE {
-        
-        const std::string& message_name = request;
-        auto widget = std::find_if(std::begin(widgets_), std::end(widgets_),
-                                   [message_name](const auto& widget) {
-                                       return message_name.find(widget->getHtmlId()) != std::string::npos;
-                                   });
-        if (widget != widgets_.end()) {
-            return (*widget)->OnQuery(browser, frame, query_id, request,
-                                      persistent, callback);
-        }
-        
-        return false;
-    }
-    
-    void addProperty(Property* property) {
-        // We cannot use path since Processor is not set until after construction.
-        //auto path = property->getPath();
-        //auto htmlId = std::accumulate(std::next(path.begin()), path.end(), path[0],
-        //                                     [](std::string &s, const std::string &piece) ->
-        //                                     decltype(auto) { return s += "." + piece; });
-        auto htmlId = property->getIdentifier();
-        auto widget = dynamic_cast<PropertyWidgetCEF*>(htmlWidgetFactory_.create(property).release());
-        if (!widget) {
-            throw Exception("No HTML property widget for " + property->getClassIdentifier());
-        }
-        widget->setHtmlId(htmlId);
-        //auto widget = std::make_unique<OrdinalPropertyWidgetCEF<T>>(property, browser_->GetMainFrame(), htmlId);
-        widgets_.emplace_back(std::move(widget));
-    }
+
+    /**
+     * Called due to cefQuery execution in message_router.html.
+     */
+    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+                         const CefString& request, bool persistent,
+                         CefRefPtr<Callback> callback) override;
+    /**
+     * Add property to synchronize using property identifier as HTML-element id.
+     * Stops synchronizing property when this object
+     * is destroyed or when stopSynchronize is called.
+     * @param property Property to synchronize
+     */
+    void startSynchronize(Property* property);
+    /**
+     * Add property to synchronize using supplied identifier as HTML-element id.
+     * Stops synchronizing property when this object
+     * is destroyed or when stopSynchronize is called.
+     * @param property Property to synchronize
+     * @param htmlId HTML element id of corresponding property
+     */
+    void startSynchronize(Property* property, std::string htmlId);
+    /**
+     * Stop property from being synchronized.
+     * @param property Property to remove
+     */
+    void stopSynchronize(Property* property);
 
 private:
     // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
@@ -124,7 +112,7 @@ private:
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer)
 };
-    
+
 template <typename T, typename P>
 void PropertyCefSynchronizer::registerPropertyWidget(PropertySemantics semantics) {
     auto propertyWidget = util::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics);

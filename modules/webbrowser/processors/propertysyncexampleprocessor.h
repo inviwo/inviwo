@@ -40,7 +40,6 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_base.h>
@@ -53,8 +52,12 @@ namespace inviwo {
  * Demonstrates synchronization of properties between browser and Inviwo.
  *
  * ### Outports
+ *   * __background__ Background to render web page ontop of.
  *   * __webpage__ GUI elements rendered by web browser.
  *
+ * ### Properties
+ *   * __URL__ Link to webpage, online or file path.
+ *   * __Reload__ Fetch page again.
  */
 
 /**
@@ -62,7 +65,8 @@ namespace inviwo {
  * \brief Demonstrates synchronization of properties between browser and Inviwo.
  * Synchronization requires two things:
  * 1. Properties must be added to PropertyCefSynchronizer in WebBrowserClient
- * 2. Javascript functions must be added to the html page, see /data/workspaces/web_property_sync.html
+ * 2. Javascript functions must be added to the html page, see
+ * /data/workspaces/web_property_sync.html
  */
 class IVW_MODULE_WEBBROWSER_API PropertySyncExampleProcessor : public Processor {
 public:
@@ -73,30 +77,29 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
 private:
     // Returns "file:/path/modules/webbrowser/data/workspaces/web_property_sync.html"
     std::string getTestWebpageUrl();
     ImageInport background_;
     ImageOutport outport_;
-    
-    StringProperty url_; ///< Web page to show
-    ButtonProperty reload_; ///< Force reload url
-    
+
+    StringProperty url_;     ///< Web page to show
+    ButtonProperty reload_;  ///< Force reload url
+
     FloatProperty ordinalProp_;
     BoolProperty boolProp_;
     ButtonProperty buttonProp_;
     StringProperty stringProp_;
-    
-	CEFInteractionHandler cefInteractionHandler_;
-	PickingMapper picking_;
-	CefImageConverter cefToInviwoImageConverter_;
-    
+
+    CEFInteractionHandler cefInteractionHandler_;
+    PickingMapper picking_;
+    CefImageConverter cefToInviwoImageConverter_;
+
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
-   
 };
 
 }  // namespace inviwo

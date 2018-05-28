@@ -44,20 +44,20 @@ const ProcessorInfo WebBrowserProcessor::processorInfo_{
     "org.inviwo.webbrowser",  // Class identifier
     "Web browser",            // Display name
     "Web",                    // Category
-    CodeState::Experimental,  // Code state
-    Tags::GL,                 // Tags
+    CodeState::Stable,        // Code state
+    "GL, Web Browser",        // Tags
 };
 const ProcessorInfo WebBrowserProcessor::getProcessorInfo() const { return processorInfo_; }
 
 WebBrowserProcessor::WebBrowserProcessor()
-	: Processor()
-	, background_("background")
-	// Output from CEF is 8-bits per channel
-	, outport_("webpage", DataVec4UInt8::get())
-	, url_("URL", "URL", "http://www.google.com")
-	, reload_("reload", "Reload")
-	, picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
-	, cefToInviwoImageConverter_(picking_.getColor())
+    : Processor()
+    , background_("background")
+    // Output from CEF is 8-bits per channel
+    , outport_("webpage", DataVec4UInt8::get())
+    , url_("URL", "URL", "http://www.google.com")
+    , reload_("reload", "Reload")
+    , picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
+    , cefToInviwoImageConverter_(picking_.getColor())
     , renderHandler_(new RenderHandlerGL([&]() {
         // Called as soon as new content is available
         // Queue an invalidation
@@ -85,8 +85,8 @@ WebBrowserProcessor::WebBrowserProcessor()
 
         // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in
         // destructor
-        browser_ = CefBrowserHost::CreateBrowserSync(
-            window_info, browserClient_, url_.get(), browserSettings, nullptr);
+        browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, url_.get(),
+                                                     browserSettings, nullptr);
     }
 
     addProperty(url_);

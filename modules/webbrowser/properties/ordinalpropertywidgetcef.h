@@ -42,51 +42,54 @@ namespace inviwo {
  * <input type="range">
  * <input type="number">
  */
-template<typename T>
+template <typename T>
 class OrdinalPropertyWidgetCEF : public PropertyWidgetCEF {
 public:
     OrdinalPropertyWidgetCEF() = default;
-    
+
     /**
      * The PropertyWidget will register it self with the property.
      */
-    OrdinalPropertyWidgetCEF(OrdinalProperty<T>* property, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
-    
+    OrdinalPropertyWidgetCEF(OrdinalProperty<T>* property, CefRefPtr<CefFrame> frame = nullptr,
+                             std::string htmlId = "");
+
     /**
      * The PropertyWidget will deregister it self with the property.
      */
     virtual ~OrdinalPropertyWidgetCEF() = default;
-    
+
     /**
      * Update HTML widget using calls javascript oninput() function on element.
      * Assumes that widget is HTML input attribute.
      */
-    virtual void updateFromProperty() {
-        //LogInfo("updateFromProperty");
-        auto property = static_cast<OrdinalProperty<T>*>(property_);
-        
-        std::stringstream script;
-        script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-        script << "property.min=" << property->getMinValue() << ";";
-        script << "property.max=" << property->getMaxValue() << ";";
-        script << "property.step=" << property->getIncrement() << ";";
-        script << "property.value=" << property->get() << ";";
-        // Send oninput event to update element
-        script << "property.oninput();";
-        // Need to figure out how to make sure the frame is drawn after changing values.
-        //script << "window.focus();";
-        // Block OnQuery, called due to property.oninput()
-        onQueryBlocker_++;
-        frame_->ExecuteJavaScript(script.str(),
-                                  frame_->GetURL(), 0);
-    };
+    virtual void updateFromProperty();
+    ;
 };
 
-template<typename T>
+template <typename T>
 OrdinalPropertyWidgetCEF<T>::OrdinalPropertyWidgetCEF(OrdinalProperty<T>* property,
-                                                   CefRefPtr<CefFrame> frame, std::string htmlId)
+                                                      CefRefPtr<CefFrame> frame, std::string htmlId)
     : PropertyWidgetCEF(property, frame, htmlId) {}
 
+template <typename T>
+inline void OrdinalPropertyWidgetCEF<T>::updateFromProperty() {
+    // LogInfo("updateFromProperty");
+    auto property = static_cast<OrdinalProperty<T>*>(property_);
+
+    std::stringstream script;
+    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+    script << "property.min=" << property->getMinValue() << ";";
+    script << "property.max=" << property->getMaxValue() << ";";
+    script << "property.step=" << property->getIncrement() << ";";
+    script << "property.value=" << property->get() << ";";
+    // Send oninput event to update element
+    script << "property.oninput();";
+    // Need to figure out how to make sure the frame is drawn after changing values.
+    // script << "window.focus();";
+    // Block OnQuery, called due to property.oninput()
+    onQueryBlocker_++;
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 
 using FloatPropertyWidgetCEF = OrdinalPropertyWidgetCEF<float>;
 

@@ -57,10 +57,10 @@ namespace inviwo {
  * var slider = document.getElementById("PropertyIdentifier");
  * slider.oninput = function() {
  *     window.cefQuery({
- *        request: '<Properties><Property type="org.inviwo.FloatProperty" identifier="Processor.PropertyIdentifier"><value
- *            content="' + document.getElementById("Webbrowser.demo").value + '" /></Properties>',
- *         onSuccess: function(response) {},
- *         onFailure: function(error_code, error_message) {}
+ *        request: '<Properties><Property type="org.inviwo.FloatProperty"
+ * identifier="Processor.PropertyIdentifier"><value content="' +
+ * document.getElementById("Webbrowser.demo").value + '" /></Properties>', onSuccess:
+ * function(response) {}, onFailure: function(error_code, error_message) {}
  *     });
  * }
  * </script>
@@ -72,19 +72,21 @@ namespace inviwo {
  *
  * @see OrdinalPropertyWidgetCEF
  */
-class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF: public PropertyWidget
-                                                 , public PropertyObserver {
+class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget, public PropertyObserver {
 public:
     PropertyWidgetCEF() = default;
     PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
-        
+
     virtual ~PropertyWidgetCEF() = default;
-    
+
     void setFrame(CefRefPtr<CefFrame> frame) { frame_ = frame; }
-                                                     
-    void setHtmlId(std::string id) { htmlId_ = id;}
+    /*
+     * Set id of corresponding element in HTML-webpage.
+     * @param id HTML element id in webpage.
+     */
+    void setHtmlId(std::string id) { htmlId_ = id; }
     const std::string& getHtmlId() const { return htmlId_; }
-    
+
     /*
      * Deserializes property from request message if onQueryBlocker_ > 0,
      * otherwise decrements onQueryBlocker_ and returns true.
@@ -101,20 +103,17 @@ public:
      * Callback method must be executed either in this method or asynchronously
      * to complete the query.
      */
-    virtual bool OnQuery(CefRefPtr<CefBrowser> browser,
-                 CefRefPtr<CefFrame> frame,
-                 int64 query_id,
-                 const CefString& request,
-                 bool persistent,
-                 CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback);
-                                                     
+    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+                         const CefString& request, bool persistent,
+                         CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback);
+
 protected:
     // PropertyObservable overrides
     virtual void onSetReadOnly(Property* property, bool readonly) override;
 
-    std::string htmlId_; /// Id in used in html, usually Processor.PropertyId
-    CefRefPtr<CefFrame> frame_; /// Browser frame containing corresponding properties
-    int onQueryBlocker_ = 0; /// Block jacascript callback queries
+    std::string htmlId_;         /// Id in used in html, usually Processor.PropertyId
+    CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding properties
+    int onQueryBlocker_ = 0;     /// Block jacascript callback queries
 };
 
 }  // namespace inviwo

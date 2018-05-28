@@ -95,7 +95,7 @@ void CEFInteractionHandler::handlePickingEvent(PickingEvent* p) {
             return;
         }
         const auto& touchPoints = touchEvent->touchPoints();
-		updateMouseStates(touchEvent);
+        updateMouseStates(touchEvent);
         // Only single touch point is currently supported
         const auto& activeTouchPoint = touchPoints[0];
         TouchStates moveState = (TouchState::Updated | TouchState::Stationary);
@@ -180,14 +180,13 @@ void CEFInteractionHandler::updateMouseStates(MouseEvent* e) {
     }
 }
 void CEFInteractionHandler::updateMouseStates(TouchEvent* e) {
-	if (e->touchPoints().front().state() & TouchState::Finished) {
-		// Remove modifiers
-		modifiers_ &= ~(EVENTFLAG_LEFT_MOUSE_BUTTON | EVENTFLAG_MIDDLE_MOUSE_BUTTON |
-			EVENTFLAG_MIDDLE_MOUSE_BUTTON);
-	}
-	else {
-		// Add modifiers
-		modifiers_ |= (EVENTFLAG_LEFT_MOUSE_BUTTON);
-	}
+    if (e->touchPoints().front().state() & TouchState::Finished) {
+        // Remove modifiers
+        modifiers_ &= ~(EVENTFLAG_LEFT_MOUSE_BUTTON | EVENTFLAG_MIDDLE_MOUSE_BUTTON |
+                        EVENTFLAG_MIDDLE_MOUSE_BUTTON);
+    } else {
+        // Add modifiers
+        modifiers_ |= (EVENTFLAG_LEFT_MOUSE_BUTTON);
+    }
 }
 };  // namespace inviwo

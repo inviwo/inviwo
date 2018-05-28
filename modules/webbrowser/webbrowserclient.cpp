@@ -42,31 +42,30 @@ WebBrowserClient::WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler)
 void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler) {
     renderHandler_ = renderHandler;
 }
-    
+
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                      CefProcessId source_process,
-                                      CefRefPtr<CefProcessMessage> message) {
+                                                CefProcessId source_process,
+                                                CefRefPtr<CefProcessMessage> message) {
     CEF_REQUIRE_UI_THREAD();
-    
-    return message_router_->OnProcessMessageReceived(browser, source_process,
-                                                     message);
+
+    return message_router_->OnProcessMessageReceived(browser, source_process, message);
 }
 
 void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
-    
+
     if (!message_router_) {
         // Create the browser-side router for query handling.
         CefMessageRouterConfig config;
         message_router_ = CefMessageRouterBrowserSide::Create(config);
-        
+
         // Register handlers with the router.
         propertyCefSynchronizer_ = new PropertyCefSynchronizer();
         message_router_->AddHandler(propertyCefSynchronizer_.get(), false);
     }
-    
+
     browser_ct_++;
-    
+
     // Call the default shared implementation.
     CefLifeSpanHandler::OnAfterCreated(browser);
 }
@@ -78,32 +77,30 @@ bool WebBrowserClient::DoClose(CefRefPtr<CefBrowser> browser) {
 
 void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
-    
+
     if (--browser_ct_ == 0) {
         // Free the router when the last browser is closed.
         message_router_->RemoveHandler(propertyCefSynchronizer_.get());
         propertyCefSynchronizer_ = nullptr;
         message_router_ = NULL;
     }
-    
+
     // Call the default shared implementation.
     CefLifeSpanHandler::OnBeforeClose(browser);
 }
 
-bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                                      CefRefPtr<CefFrame> frame,
-                                      CefRefPtr<CefRequest> request,
-                                      bool is_redirect) {
+bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                      CefRefPtr<CefRequest> request, bool is_redirect) {
     CEF_REQUIRE_UI_THREAD();
-    
+
     message_router_->OnBeforeBrowse(browser, frame);
     return false;
 }
 
 void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                       TerminationStatus status) {
+                                                 TerminationStatus status) {
     CEF_REQUIRE_UI_THREAD();
-    
+
     message_router_->OnRenderProcessTerminated(browser);
 }
 

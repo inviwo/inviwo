@@ -31,6 +31,28 @@
 
 namespace inviwo {
 
-StringPropertyWidgetCEF::StringPropertyWidgetCEF(StringProperty* property, CefRefPtr<CefFrame> frame, std::string htmlId) : PropertyWidgetCEF(property, frame, htmlId) {}
+StringPropertyWidgetCEF::StringPropertyWidgetCEF(StringProperty* property,
+                                                 CefRefPtr<CefFrame> frame, std::string htmlId)
+    : PropertyWidgetCEF(property, frame, htmlId) {}
+
+/**
+ * Update HTML widget using calls javascript oninput() function on element.
+ * Assumes that widget is HTML input attribute.
+ */
+
+void StringPropertyWidgetCEF::updateFromProperty() {
+    auto property = static_cast<StringProperty*>(property_);
+
+    std::stringstream script;
+    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+    script << "property.value='" << property->get() << "';";
+    // Send oninput event to update element
+    script << "property.oninput();";
+    // Need to figure out how to make sure the frame is drawn after changing values.
+    // script << "window.focus();";
+    // Block OnQuery, called due to property.oninput()
+    onQueryBlocker_++;
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 
 }  // namespace inviwo

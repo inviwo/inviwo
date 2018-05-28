@@ -29,6 +29,4 @@
 
 #include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

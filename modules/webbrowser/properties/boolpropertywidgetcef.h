@@ -39,32 +39,19 @@ namespace inviwo {
 
 /**
  * \class BoolPropertyWidgetCEF
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * Widget for synchronizing HTML elements:
+ * <input type="checkbox">
  */
 class IVW_MODULE_WEBBROWSER_API BoolPropertyWidgetCEF : public PropertyWidgetCEF {
 public:
-    BoolPropertyWidgetCEF(BoolProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
+    BoolPropertyWidgetCEF(BoolProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr,
+                          std::string htmlId = "");
     virtual ~BoolPropertyWidgetCEF() = default;
     /**
      * Update HTML widget using calls javascript oninput() function on element.
      * Assumes that widget is HTML input attribute.
      */
-    virtual void updateFromProperty() {
-        //LogInfo("updateFromProperty");
-        auto property = static_cast<BoolProperty*>(property_);
-        
-        std::stringstream script;
-        script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-        // Use click instead of setting value to make sure that appropriate events are fired.
-        script << "if (property.checked !=" << (property->get() ? "true" : "false") << "){property.click();}";
-        // Need to figure out how to make sure the frame is drawn after changing values.
-        //script << "window.focus();";
-        // Block OnQuery, called due to property.oninput()
-        onQueryBlocker_++;
-        frame_->ExecuteJavaScript(script.str(),
-                                  frame_->GetURL(), 0);
-    };
+	virtual void updateFromProperty() override;
 };
 
 }  // namespace inviwo

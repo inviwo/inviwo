@@ -42,13 +42,15 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo PropertySyncExampleProcessor::processorInfo_{
-    "org.inviwo.PropertySyncExampleProcessor",      // Class identifier
-    "Property Sync Example",                // Display name
-    "Webbrowser",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.PropertySyncExampleProcessor",  // Class identifier
+    "Property Sync Example",                    // Display name
+    "Webbrowser",                               // Category
+    CodeState::Experimental,                    // Code state
+    "GL, Web Browser, Test",                    // Tags
 };
-const ProcessorInfo PropertySyncExampleProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo PropertySyncExampleProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     : Processor()
@@ -63,8 +65,8 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     , boolProp_("boolProperty", "Bool", true, InvalidationLevel::Valid)
     , buttonProp_("buttonProperty", "Button", InvalidationLevel::Valid)
     , stringProp_("stringProperty", "String", "Edit me", InvalidationLevel::Valid)
-	, picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
-	, cefToInviwoImageConverter_(picking_.getColor())
+    , picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
+    , cefToInviwoImageConverter_(picking_.getColor())
     , renderHandler_(new RenderHandlerGL([&]() {
         // Called as soon as new content is available
         // Queue an invalidation
@@ -72,27 +74,26 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
         // RenderHandler calls will be made from the same thread.
         invalidate(InvalidationLevel::InvalidOutput);
     }))
-    , browserClient_(new WebBrowserClient(renderHandler_))
-{
+    , browserClient_(new WebBrowserClient(renderHandler_)) {
     addPort(background_);
     background_.setOptional(true);
     addPort(outport_);
 
     CefWindowInfo window_info;
-    
+
     CefBrowserSettings browserSettings;
 
-    browserSettings.windowless_frame_rate = 30; // Must be between 1-60, 30 is default
-    
+    browserSettings.windowless_frame_rate = 30;  // Must be between 1-60, 30 is default
+
     // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause
     // some render errors, in context-menu and plugins.
     window_info.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
-    
+
     // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in
     // destructor
     auto url = getTestWebpageUrl();
-    browser_ = CefBrowserHost::CreateBrowserSync(
-                                                 window_info, browserClient_, url, browserSettings, nullptr);
+    browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, url, browserSettings,
+                                                 nullptr);
     browser_->GetMainFrame()->LoadURL(url);
     url_.setReadOnly(true);
     addProperty(url_);
@@ -107,12 +108,11 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     addProperty(boolProp_);
     addProperty(buttonProp_);
     addProperty(stringProp_);
-        
-    browserClient_->propertyCefSynchronizer_->addProperty(&ordinalProp_);
-    browserClient_->propertyCefSynchronizer_->addProperty(&boolProp_);
-    browserClient_->propertyCefSynchronizer_->addProperty(&buttonProp_);
-    browserClient_->propertyCefSynchronizer_->addProperty(&stringProp_);
-    
+
+    browserClient_->propertyCefSynchronizer_->startSynchronize(&ordinalProp_);
+    browserClient_->propertyCefSynchronizer_->startSynchronize(&boolProp_);
+    browserClient_->propertyCefSynchronizer_->startSynchronize(&buttonProp_);
+    browserClient_->propertyCefSynchronizer_->startSynchronize(&stringProp_);
 }
 
 PropertySyncExampleProcessor::~PropertySyncExampleProcessor() {
@@ -123,7 +123,6 @@ PropertySyncExampleProcessor::~PropertySyncExampleProcessor() {
     browserClient_->SetRenderHandler(NULL);
 }
 
-    
 void PropertySyncExampleProcessor::process() {
     if (url_.isModified() || reload_.isModified()) {
         browser_->GetMainFrame()->LoadURL(url_.get());
@@ -132,9 +131,10 @@ void PropertySyncExampleProcessor::process() {
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }
-    
+
 std::string PropertySyncExampleProcessor::getTestWebpageUrl() {
-    // Cannot use this->getInviwoApplication in processor since it has not been set upon construction.
+    // Cannot use this->getInviwoApplication in processor since it has not been set upon
+    // construction.
     auto app = InviwoApplication::getPtr();
     auto module = app->getModuleByType<WebBrowserModule>();
     auto path = module->getPath(ModulePath::Workspaces) + "/web_property_sync.html";

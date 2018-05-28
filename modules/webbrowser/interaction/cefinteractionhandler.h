@@ -57,12 +57,14 @@ public:
     CEFInteractionHandler(CefRefPtr<CefBrowserHost> host = nullptr);
     virtual ~CEFInteractionHandler() = default;
 
-    virtual std::string getClassIdentifier() const override { return "org.inviwo.cefinteractionhandler"; }
+    virtual std::string getClassIdentifier() const override {
+        return "org.inviwo.cefinteractionhandler";
+    }
 
     virtual void invokeEvent(Event* event) override;
 
-	void handlePickingEvent(PickingEvent* p); 
-    
+    void handlePickingEvent(PickingEvent* p);
+
     void setHost(CefRefPtr<CefBrowserHost> host) { host_ = host; }
     CefRefPtr<CefBrowserHost> getHost() const { return host_; }
     /*
@@ -78,10 +80,10 @@ private:
     CefMouseEvent mapTouchEvent(const TouchPoint* p);
 
     void updateMouseStates(MouseEvent* e);
-	void updateMouseStates(TouchEvent* e);
+    void updateMouseStates(TouchEvent* e);
     uint32 modifiers_ = 0;
     CefRefPtr<CefBrowserHost> host_;
-    RenderHandlerGL* renderHandler_ = nullptr; ///< Forward resize event if set
+    RenderHandlerGL* renderHandler_ = nullptr;  ///< Forward resize event if set
 };
 
 };  // namespace inviwo

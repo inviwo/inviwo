@@ -31,6 +31,36 @@
 
 namespace inviwo {
 
-ButtonPropertyWidgetCEF::ButtonPropertyWidgetCEF(ButtonProperty* property, CefRefPtr<CefFrame> frame, std::string htmlId) : PropertyWidgetCEF(property, frame, htmlId) {}
+ButtonPropertyWidgetCEF::ButtonPropertyWidgetCEF(ButtonProperty* property,
+                                                 CefRefPtr<CefFrame> frame, std::string htmlId)
+    : PropertyWidgetCEF(property, frame, htmlId) {}
+
+inline void ButtonPropertyWidgetCEF::updateFromProperty() {
+
+    std::stringstream script;
+    // Send click button event
+    script << "var property = document.getElementById(\"" << htmlId_ << "\").click();";
+    // Block OnQuery, called due to property.click()
+    onQueryBlocker_++;
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
+
+bool ButtonPropertyWidgetCEF::onQuery(
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+    const CefString& request, bool persistent,
+    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
+    if (onQueryBlocker_ > 0) {
+        // LogInfo("blocked");
+        onQueryBlocker_--;
+        callback->Success("");
+        return true;
+    }
+    // Prevent calling updateFromProperty() for this widget
+    property_->setInitiatingWidget(this);
+    static_cast<ButtonProperty*>(property_)->pressButton();
+    callback->Success("");
+    property_->clearInitiatingWidget();
+    return true;
+}
 
 }  // namespace inviwo

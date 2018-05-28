@@ -39,44 +39,21 @@ namespace inviwo {
 
 /**
  * \class ButtonPropertyWidgetCEF
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * Widget for synchronizing HTML elements:
+ * <input type="button">
  */
 class IVW_MODULE_WEBBROWSER_API ButtonPropertyWidgetCEF : public PropertyWidgetCEF {
 public:
-    
-    ButtonPropertyWidgetCEF(ButtonProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
+    ButtonPropertyWidgetCEF(ButtonProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr,
+                            std::string htmlId = "");
     virtual ~ButtonPropertyWidgetCEF() = default;
-    virtual void updateFromProperty() {
 
-        std::stringstream script;
-        // Send click button event
-        script << "var property = document.getElementById(\"" << htmlId_ << "\").click();";
-        // Block OnQuery, called due to property.click()
-        onQueryBlocker_++;
-        frame_->ExecuteJavaScript(script.str(),
-                                  frame_->GetURL(), 0);
-    };
+	virtual void updateFromProperty() override;
+
     // Override callback from javascript, use pressButton instead of deserialize
-    virtual bool OnQuery(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame,
-                                    int64 query_id,
-                                    const CefString& request,
-                                    bool persistent,
-                                    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
-        if (onQueryBlocker_ > 0) {
-            //LogInfo("blocked");
-            onQueryBlocker_--;
-            callback->Success("");
-            return true;
-        }
-        // Prevent calling updateFromProperty() for this widget
-        property_->setInitiatingWidget(this);
-        static_cast<ButtonProperty*>(property_)->pressButton();
-        callback->Success("");
-        property_->clearInitiatingWidget();
-        return true;
-    }
+    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+                         const CefString& request, bool persistent,
+		CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override;
 };
 
 }  // namespace inviwo

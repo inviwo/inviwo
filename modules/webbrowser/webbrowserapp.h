@@ -50,34 +50,31 @@ public:
     WebBrowserApp();
 
     CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
-    
+
     // CefRenderProcessHandler methods:
     void OnWebKitInitialized() OVERRIDE {
         // Create the renderer-side router for query handling.
         CefMessageRouterConfig config;
         message_router_ = CefMessageRouterRendererSide::Create(config);
     }
-    
-    void OnContextCreated(CefRefPtr<CefBrowser> browser,
-                          CefRefPtr<CefFrame> frame,
+
+    void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                           CefRefPtr<CefV8Context> context) OVERRIDE {
         // Register the JavaScripts functions with the new context.
         message_router_->OnContextCreated(browser, frame, context);
     }
-    
-    void OnContextReleased(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefFrame> frame,
+
+    void OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                            CefRefPtr<CefV8Context> context) OVERRIDE {
-        
+
         message_router_->OnContextReleased(browser, frame, context);
     }
-    
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                  CefProcessId source_process,
+
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) OVERRIDE {
-        return message_router_->OnProcessMessageReceived(browser, source_process,
-                                                         message);
+        return message_router_->OnProcessMessageReceived(browser, source_process, message);
     }
+
 private:
     // Handles the renderer side of query routing.
     // Adds JavaScript function "cefQuery" to the 'window' object for sending a query.
