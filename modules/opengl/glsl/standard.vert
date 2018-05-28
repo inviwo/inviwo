@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-uniform mat4 dataToClip;
+uniform mat4 dataToClip = mat4(1);
 
 out vec4 color_;
 out vec3 texCoord_;
