@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/metadata/metadataowner.h>
@@ -143,13 +144,13 @@ public:
      * Register a widget for the property. Registered widgets will receive updateFromProperty calls
      * when the value state of the property changes. One Property can have multiple widgets.
      * The property does not take ownership of the widget.
-     * @see deregisterProperty 
+     * @see deregisterProperty
      * @see PropertyWidget
      */
     void registerWidget(PropertyWidget* propertyWidget);
 
     /**
-     * Deregister a widget, the widget will no longer receive updateFromProperty calls. 
+     * Deregister a widget, the widget will no longer receive updateFromProperty calls.
      * @see registerProperty
      * @see PropertyWidget
      */
@@ -208,11 +209,35 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    /**
+     * Add an on change callback to the property.
+     * The callback is run when ever propertyModified is called. Usually when even the value of
+     * property changes. The return value is a RAII guard for the callback and will remove the 
+     * callback on destruction. Hence one must keep the return value around as long as the 
+     * callback should be active. To remove the callback one only need to destruct or reset the 
+     * return value. Multiple callbacks can be registered at the same time. 
+     */
+    std::shared_ptr<std::function<void()>> onChangeScoped(std::function<void()> callback);
+    
+    /**
+     * Add an on change callback to the property.
+     * The callback is run when ever propertyModified is called. Usually when even the value of
+     * property changes. The return value can be passed to removeOnChange to remove the callback.
+     * Prefer onChangeScoped when the callback need to be removed.
+     * Multiple callbacks can be registered at the same time. 
+     */
     const BaseCallBack* onChange(std::function<void()> callback);
+    
+    /**
+     * Remove an on change callback registered using onChange.
+     */
     void removeOnChange(const BaseCallBack* callback);
+
     template <typename T>
+    [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
     const BaseCallBack* onChange(T* object, void (T::*method)());
     template <typename T>
+    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
     void removeOnChange(T* object);
 
     virtual void setUsageMode(UsageMode usageMode);
@@ -277,13 +302,15 @@ private:
 };
 
 template <typename T>
-void inviwo::Property::removeOnChange(T* o) {
-    onChangeCallback_.removeMemberFunction(o);
+[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
+const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
+    return onChangeCallback_.addLambdaCallback([o, m]() {if (m) (*o.*m)(); });
 }
 
 template <typename T>
-const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
-    return onChangeCallback_.addMemberFunction(o, m);
+[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
+void Property::removeOnChange(T* o) {
+    onChangeCallback_.removeMemberFunction(o);
 }
 
 template <typename T, typename U>
@@ -296,7 +323,8 @@ void Property::setStateAsDefault(T& property, const U& state) {
 
 template <typename P>
 void Property::autoLinkToProperty(const std::string& propertyPath) {
-    autoLinkTo_.push_back(std::make_pair(P::processorInfo_.classIdentifier, propertyPath));
+    autoLinkTo_.push_back(
+        std::make_pair(ProcessorTraits<P>::getProcessorInfo().classIdentifier, propertyPath));
 }
 
 }  // namespace inviwo

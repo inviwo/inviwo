@@ -40,7 +40,7 @@
 #include <QTextBlock>
 #include <warn/pop>
 
-static const std::vector<std::string>  python_keywords = {
+static const std::vector<std::string> python_keywords = {
     "\\band\\b",      "\\bas\\b",     "\\bassert\\b",  "\\bbreak\\b", "\\bclass\\b",
     "\\bcontinue\\b", "\\bdef\\b",    "\\bdel\\b",     "\\belif\\b",  "\\belse\\b",
     "\\bexcept\\b",   "\\bexec\\b",   "\\bfinally\\b", "\\bfor\\b",   "\\bfrom\\b",
@@ -53,8 +53,7 @@ namespace inviwo {
 
 class PythonCommentFormater : public SyntaxFormater {
 public:
-    PythonCommentFormater(const QTextCharFormat& format)
-        : format_(format){}
+    PythonCommentFormater(const QTextCharFormat& format) : format_(format) {}
 
     virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
         Result res;
@@ -121,15 +120,12 @@ void SyntaxHighligther::loadConfig<Python>() {
     commentformat.setBackground(bgColor);
     commentformat.setForeground(ivec4toQtColor(sysSettings->pyCommentsColor_.get()));
     if (formaters_.empty()) {
-        sysSettings->pythonSyntax_.onChange(this, &SyntaxHighligther::loadConfig<Python>);
+        callback_ = sysSettings->pythonSyntax_.onChangeScoped([this]() { loadConfig<Python>(); });
     } else {
-        while (!formaters_.empty()) {
-            delete formaters_.back();
-            formaters_.pop_back();
-        }
+        formaters_.clear();
     }
-    formaters_.push_back(new PythonKeywordFormater(typeformat, python_keywords));
-    formaters_.push_back(new PythonCommentFormater(commentformat));
+    formaters_.push_back(std::make_unique<PythonKeywordFormater>(typeformat, python_keywords));
+    formaters_.push_back(std::make_unique<PythonCommentFormater>(commentformat));
 }
 
-}  // namespace
+}  // namespace inviwo

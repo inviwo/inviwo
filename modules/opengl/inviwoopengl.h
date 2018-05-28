@@ -67,7 +67,7 @@ IVW_MODULE_OPENGL_API std::string getGLErrorString(GLenum err);
 IVW_MODULE_OPENGL_API void LogGLError(const char* fileName, const char* functionName,
                                       int lineNumber);
 
-#if defined(IVW_DEBUG)
+#if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
 #define LGL_ERROR inviwo::LogGLError(__FILE__, __FUNCTION__, __LINE__)
 #define LGL_ERROR_SUPPRESS glGetError()
 #else

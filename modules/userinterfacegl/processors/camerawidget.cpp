@@ -183,24 +183,23 @@ void CameraWidget::process() {
         loadMesh();
     }
 
-    // determine size of the widget
-    const vec2 referenceSize(
-        300.0f);  // reference size (width/height) in pixel for scale equal to 1.0
-    ivec2 widgetSize(scaling_.get() * referenceSize);
-
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    updateWidgetTexture(widgetSize);
-
     // combine the previously rendered widget image with the input
     if (inport_.isConnected()) {
         utilgl::activateTargetAndCopySource(outport_, inport_);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
     }
+
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // determine size of the widget
+    const vec2 referenceSize(
+        300.0f);  // reference size (width/height) in pixel for scale equal to 1.0
+    ivec2 widgetSize(scaling_.get() * referenceSize);
+    
+    updateWidgetTexture(widgetSize);
     drawWidgetTexture();
-    overlayShader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
@@ -285,6 +284,8 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
 
         meshDrawers_[3]->draw();
     }
+
+    widgetImageGL_->deactivateBuffer();
 }
 
 void CameraWidget::drawWidgetTexture() {
@@ -320,6 +321,8 @@ void CameraWidget::drawWidgetTexture() {
         layer->bindTexture(pickingTexUnit);
     }
     utilgl::singleDrawImagePlaneRect();
+
+    overlayShader_.deactivate();
 }
 
 void CameraWidget::objectPicked(PickingEvent *p) {

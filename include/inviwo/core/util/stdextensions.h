@@ -177,7 +177,7 @@ void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
 
 /**
  * A utility for iterating over types in a list.
- * Example: 
+ * Example:
  *     struct Functor {
  *         template <typename T>
  *         auto operator()(std::vector<Property*>& properties) {
@@ -195,7 +195,8 @@ template <typename T>
 struct for_each_type<std::tuple<T>> {
     template <class F, class... Args>
     auto operator()(F&& f, Args&&... args) {
-#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
+// Old versions of VS does not handle this correctly
+#if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 191200000
         f.operator()<T>(std::forward<Args>(args)...);
 #else
         f.template operator()<T>(std::forward<Args>(args)...);
@@ -208,7 +209,8 @@ template <class T, class... Types>
 struct for_each_type<std::tuple<T, Types...>> {
     template <class F, class... Args>
     auto operator()(F&& f, Args&&... args) {
-#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
+// Old versions of VS does not handle this correctly
+#if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 191200000
         f.operator()<T>(std::forward<Args>(args)...);
 #else
         f.template operator()<T>(std::forward<Args>(args)...);
@@ -220,7 +222,7 @@ struct for_each_type<std::tuple<T, Types...>> {
 
 /**
  * A utility for iterating over all permutations of pairs from two lists of types.
- * Example: 
+ * Example:
  *     struct Functor {
  *         template <typename T, typename U>
  *         auto operator()(std::vector<Converter*>& converters) {
@@ -241,7 +243,8 @@ private:
     struct nestedhelper {
         template <typename BType, class F, class... Args>
         auto operator()(F&& f, Args&&... args) {
-#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
+// Old versions of VS does not handle this correctly
+#if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 191200000
             f.operator()<AType, BType>(std::forward<Args>(args)...);
 #else
             f.template operator()<AType, BType>(std::forward<Args>(args)...);
@@ -253,8 +256,8 @@ private:
     struct helper {
         template <typename AType, class F, class... Args>
         auto operator()(F&& f, Args&&... args) {
-           for_each_type<BTs>{}(nestedhelper<AType>{}, std::forward<F>(f),
-                                std::forward<Args>(args)...);
+            for_each_type<BTs>{}(nestedhelper<AType>{}, std::forward<F>(f),
+                                 std::forward<Args>(args)...);
         }
     };
 
@@ -383,6 +386,20 @@ bool contains_if(T& cont, Pred pred) {
     using std::begin;
     using std::end;
     return std::find_if(begin(cont), end(cont), pred) != end(cont);
+}
+
+template <typename T, typename V>
+bool contains(const T& cont, const V& elem) {
+    using std::cbegin;
+    using std::cend;
+    return std::find(cbegin(cont), cend(cont), elem) != end(cont);
+}
+
+template <typename T, typename Pred>
+bool contains_if(const T& cont, Pred pred) {
+    using std::cbegin;
+    using std::cend;
+    return std::find_if(cbegin(cont), cend(cont), pred) != end(cont);
 }
 
 template <typename T, typename P>
@@ -622,7 +639,7 @@ struct is_dereferenceable<T, void_t<decltype(*std::declval<T>())>> : std::true_t
  */
 template <typename Type, typename... Arguments>
 struct is_constructible {
-    template <typename U, decltype(U(std::declval<Arguments>()...)) * = nullptr>
+    template <typename U, decltype(U(std::declval<Arguments>()...))* = nullptr>
     static std::true_type check(int);
     template <class>
     static std::false_type check(...);

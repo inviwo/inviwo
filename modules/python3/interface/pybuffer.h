@@ -33,12 +33,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
-
 namespace inviwo {
-
 
 void exposeBuffer(pybind11::module &m);
 
-}
+}  // namespace inviwo
 
 #endif  // IVW_PYBUFFER_H

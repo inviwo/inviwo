@@ -196,15 +196,13 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
     return triangles;
 }
 
-std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8> corners,
-                                                                  bool flip) {
+std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8> corners, bool) {
     if (corners.count() > 4) {
         return calcEdges(~corners, true);
     }
     std::vector<EdgeId> res;
 
     // Check which edges that are involved add group neighboring nodes
-    const std::array<int, 12> edgeToCache = {{0, 2, 0, 2, 4, 4, 5, 5, 1, 3, 1, 3}};
     for (NodeId i = 0; i < 8; ++i) {
         if (corners[i]) {
             for (NodeId j : nodeNeighbours[i]) {
@@ -218,7 +216,7 @@ std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8>
     return res;
 }
 
-std::array<size_t, 8> marching::Config::calcIncrenents(std::bitset<8> corners, bool flip) {
+std::array<size_t, 8> marching::Config::calcIncrenents(std::bitset<8> corners, bool) {
     if (corners.count() > 4) {
         return calcIncrenents(~corners, true);
     }
@@ -372,7 +370,7 @@ struct OffsetIndexMasks {
 template <typename T, typename IsoTest>
 class Index {
 public:
-    Index(const T *src, const util::IndexMapper3D &im, const T &iso, const IsoTest &test)
+    Index(const T *src, const util::IndexMapper3D &im, const IsoTest &test)
         : offsets0_{[&]() {
             std::array<size_t, 4> tmp;
             std::transform(oim_.begin(), oim_.end(), tmp.begin(),
@@ -387,14 +385,13 @@ public:
             return tmp;
         }()}
         , src_{src}
-        , iso_{iso}
         , test_{test} {}
 
     void init(const size_t &gridIndex) {
         int next = 0;
         for (int v = 0; v < 4; ++v) {
             const auto val = src_[gridIndex + offsets0_[v]];
-            if (test_(val, iso_)) {
+            if (test_(val)) {
                 next |= 1 << oim_[v].nextMask;
             }
         }
@@ -406,7 +403,7 @@ public:
         int next = 0;
         for (int v = 0; v < 4; ++v) {
             const auto val = src_[gridIndex + offsets1_[v]];
-            if (test_(val, iso_)) {
+            if (test_(val)) {
                 next |= 1 << oim_[v].nextMask;
                 curr |= 1 << oim_[v].currMask;
             }
@@ -423,7 +420,6 @@ private:
     const std::array<size_t, 4> offsets1_;
 
     const T *src_;
-    const T iso_;
     const IsoTest &test_;
     int next_;
     int curr_;
@@ -473,15 +469,14 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
             return tmp;
         }();
 
-        const auto interpolate = [src, im, &mapValue, &doffs, tiso = util::glm_convert<T>(iso)](
-                                     const size3_t &ind, const dvec3 &pos,
-                                     marching::Config::EdgeId e) {
+        const auto interpolate = [src, im, &mapValue, &doffs](const size3_t &ind, const dvec3 &pos,
+                                                              marching::Config::EdgeId e) {
             const auto a = cube.edges[e][0];
             const auto b = cube.edges[e][1];
             const auto tv0 = src[im(ind + cube.vertices[a])];
-            const auto v0 = util::glm_convert<double>(mapValue(tv0, tiso));
+            const auto v0 = mapValue(tv0);
             const auto tv1 = src[im(ind + cube.vertices[b])];
-            const auto v1 = util::glm_convert<double>(mapValue(tv1, tiso));
+            const auto v1 = mapValue(tv1);
 
             const auto t = v0 / (v0 - v1);
             const auto r0 = pos + doffs[a];
@@ -490,11 +485,12 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
         };
 
         VCache vcache(size2_t{dim.x, dim.y});
-        Index<T, decltype(isoTest)> index(src, im, util::glm_convert<T>(iso), isoTest);
+        Index<T, decltype(isoTest)> index(src, im, isoTest);
         size3_t ind;
         dvec3 pos;
 
-        const float err = 4.0f * glm::epsilon<float>() * glm::epsilon<float>() * dr.x * dr.y;
+        const float err =
+            static_cast<float>(4.0 * glm::epsilon<double>() * glm::epsilon<double>() * dr.x * dr.y);
 
         for (ind.z = 0, pos.z = 0.0; ind.z < dim1.z; ++ind.z, pos.z += dr.z) {
             vcache.incZ();
@@ -547,14 +543,18 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
     if (invert) {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
-                mc(ram, [](auto &&val, auto &&iso) { return val > iso; },
-                   [](auto &&val, auto &&iso) { return val - iso; });
+                using ValueType = util::PrecsionValueType<decltype(ram)>;
+                mc(ram,
+                   [tiso = util::glm_convert<ValueType>(iso)](auto &&val) { return val > tiso; },
+                   [iso](auto &&val) { return util::glm_convert<double>(val) - iso; });
             });
     } else {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
-                mc(ram, [](auto &&val, auto &&iso) { return val < iso; },
-                   [](auto &&val, auto &&iso) { return -(val - iso); });
+                using ValueType = util::PrecsionValueType<decltype(ram)>;
+                mc(ram,
+                   [tiso = util::glm_convert<ValueType>(iso)](auto &&val) { return val < tiso; },
+                   [iso](auto &&val) { return -(util::glm_convert<double>(val) - iso); });
             });
     }
 

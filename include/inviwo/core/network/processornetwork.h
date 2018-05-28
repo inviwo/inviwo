@@ -83,6 +83,14 @@ public:
      * @param[in] processor The Processor to be added.
      * @see removeProcessor(), Processor::setIdentifier()
      */
+    Processor* addProcessor(std::unique_ptr<Processor> processor);
+
+    /**
+     * Adds a Processor to the ProcessorNetwork. The identifiers of all processors in the
+     * ProcessorNetwork should be unique.
+     * @param[in] processor The Processor to be added. The network will take ownership.
+     * @see removeProcessor(), Processor::setIdentifier()
+     */
     bool addProcessor(Processor* processor);
 
     /**

@@ -36,18 +36,61 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+
+namespace pybind11 {
+namespace detail {
+using namespace inviwo;
+
+/*
+ * The python type caster for polymorphic types only can lookup exact
+ * matches. I.e. if we have a property Basis that derives from CompositeProperty
+ * which derives from Property, and we try to cast a Property pointer pointing to a Basis
+ * and only Property and CompositeProperty are exposed to python and not Basis. Python will
+ * not find a exact match, and the returned wrapper will be of the Pointer class used.
+ * In this cases Property. To get at least some support for unexposed properties 
+ * derived from CompositeProperty and BaseOptionProperty we add a specialization here 
+ * that will mean that in the example above we will get a CompositeProperty wrapper instead of
+ * of a Property wrapper.
+ */
+template <>
+struct type_caster<Property> : type_caster_base<Property> {
+    static handle cast(Property &&src, return_value_policy, handle parent) {
+        return cast(&src, return_value_policy::move, parent);
+    }
+    static handle cast(const Property &src, return_value_policy policy, handle parent) {
+        if (policy == return_value_policy::automatic ||
+            policy == return_value_policy::automatic_reference)
+            policy = return_value_policy::copy;
+        return cast(&src, policy, parent);
+    }
+    static handle cast(const Property *prop, return_value_policy policy, handle parent) {
+        if (auto cp = dynamic_cast<const CompositeProperty *>(prop)) {
+           return type_caster_base<CompositeProperty>::cast(cp, policy, parent);
+        } else if (auto op = dynamic_cast<const BaseOptionProperty *>(prop)) {
+            return type_caster_base<BaseOptionProperty>::cast(op, policy, parent);
+        } else {
+            return type_caster_base<Property>::cast(prop, policy, parent);
+        }
+    }
+};
+}  // namespace detail
+}  // namespace pybind11
 
 namespace inviwo {
 
+namespace detail {
 template <typename T>
-struct HasOwnerDeleter {
+struct PropertyDeleter {
     void operator()(T *p) {
         if (p && p->getOwner() == nullptr) delete p;
     }
 };
+}  // namespace detail
 
 template <typename T>
-using PropertyPtr = std::unique_ptr<T, HasOwnerDeleter<T>>;
+using PropertyPtr = std::unique_ptr<T, detail::PropertyDeleter<T>>;
 
 template <typename T, typename P, typename C>
 void pyTemplateProperty(C &prop) {
@@ -57,13 +100,6 @@ void pyTemplateProperty(C &prop) {
 
 template <typename PropertyType, typename T>
 struct OrdinalPropertyIterator {
-    PropertyType *property_;
-    T cur;
-    T inc;
-
-    T begin;
-    T end;
-
     OrdinalPropertyIterator(PropertyType *prop)
         : property_(prop)
         , cur(prop->getMinValue())
@@ -94,6 +130,12 @@ struct OrdinalPropertyIterator {
             return cur - inc;
         }
     }
+
+    PropertyType *property_;
+    T cur;
+    T inc;
+    T begin;
+    T end;
 };
 
 template <typename T, typename P, typename M, typename PC>
@@ -113,7 +155,7 @@ void addOrdinalPropertyIterator(M &m, PC &pc, std::true_type) {
 }
 
 template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &m, PC &pc, std::false_type) {}
+void addOrdinalPropertyIterator(M &, PC &, std::false_type) {}
 
 template <typename T, typename P, typename M, typename PC>
 void addOrdinalPropertyIterator(M &m, PC &pc) {
@@ -124,68 +166,65 @@ void addOrdinalPropertyIterator(M &m, PC &pc) {
 }
 
 struct OrdinalPropertyHelper {
-
     template <typename T>
     auto operator()(pybind11::module &m) {
+        namespace py = pybind11;
         using P = OrdinalProperty<T>;
 
         auto classname = Defaultvalues<T>::getName() + "Property";
 
-        pybind11::class_<P, Property, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOrdinal(
-            m, classname.c_str());
-        pyOrdinal
-            .def("__init__",
-                 [](P &instance, const std::string &identifier, const std::string &displayName,
-                    const T &value = Defaultvalues<T>::getVal(),
-                    const T &minValue = Defaultvalues<T>::getMin(),
-                    const T &maxValue = Defaultvalues<T>::getMax(),
-                    const T &increment = Defaultvalues<T>::getInc()) {
-                     new (&instance)
-                         P(identifier, displayName, value, minValue, maxValue, increment);
-                 })
-
+        py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
+        prop.def(py::init([](const std::string &identifier, const std::string &name, const T &value,
+                             const T &min, const T &max, const T &increment) {
+                     return new P(identifier, name, value, min, max, increment);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("value") = Defaultvalues<T>::getVal(),
+                 py::arg("min") = Defaultvalues<T>::getMin(),
+                 py::arg("max") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc())
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement);
-        pyTemplateProperty<T, P>(pyOrdinal);
 
-        addOrdinalPropertyIterator<T, P>(m, pyOrdinal);
+        pyTemplateProperty<T, P>(prop);
+        addOrdinalPropertyIterator<T, P>(m, prop);
 
-        return pyOrdinal;
+        return prop;
     }
 };
 
 struct MinMaxHelper {
-
     template <typename T>
     auto operator()(pybind11::module &m) {
+        namespace py = pybind11;
         using P = MinMaxProperty<T>;
         using range_type = glm::tvec2<T, glm::defaultp>;
 
         auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
 
-        pybind11::class_<P, Property, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOrdinal(
-            m, classname.c_str());
-        pyOrdinal
-            .def("__init__",
-                 [](P &instance, const std::string &identifier, const std::string &displayName,
-                    const T &valueMin = Defaultvalues<T>::getMin(),
-                    const T &valueMax = Defaultvalues<T>::getMax(),
-                    const T &rangeMin = Defaultvalues<T>::getMin(),
-                    const T &rangeMax = Defaultvalues<T>::getMax(),
-                    const T &increment = Defaultvalues<T>::getInc(), const T &minSeperation = 0) {
-                     new (&instance) P(identifier, displayName, valueMin, valueMax, rangeMin,
-                                       rangeMax, increment, minSeperation);
-                 })
+        py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
+        prop.def(py::init([](const std::string &identifier, const std::string &name,
+                             const T &valueMin, const T &valueMax, const T &rangeMin,
+                             const T &rangeMax, const T &increment, const T &minSeperation = 0) {
+                     return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
+                                  increment, minSeperation);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("valueMin") = Defaultvalues<T>::getMin(),
+                 py::arg("valueMax") = Defaultvalues<T>::getMax(),
+                 py::arg("rangeMin") = Defaultvalues<T>::getMin(),
+                 py::arg("rangeMax") = Defaultvalues<T>::getMax(),
+                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0)
             .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
             .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def_property("minSeparation", &P::getMinSeparation, &P::setMinSeparation)
             .def_property("range", &P::getRange, &P::setRange);
 
-        pyTemplateProperty<range_type, P>(pyOrdinal);
+        pyTemplateProperty<range_type, P>(prop);
 
-        return pyOrdinal;
+        return prop;
     }
 };
 
@@ -193,29 +232,28 @@ struct OptionPropertyHelper {
 
     template <typename T>
     auto operator()(pybind11::module &m) {
-        using namespace inviwo;
+        namespace py = pybind11;
         using P = TemplateOptionProperty<T>;
         using O = OptionPropertyOption<T>;
 
         auto classname = "OptionProperty" + Defaultvalues<T>::getName();
         auto optionclassname = Defaultvalues<T>::getName() + "Option";
 
-        pybind11::class_<O>(m, optionclassname.c_str())
-            .def(pybind11::init<>())
-            .def(pybind11::init<const std::string &, const std::string &, const T &>())
+        py::class_<O>(m, optionclassname.c_str())
+            .def(py::init<>())
+            .def(py::init<const std::string &, const std::string &, const T &>())
             .def_readwrite("id", &O::id_)
             .def_readwrite("name", &O::name_)
             .def_readwrite("value", &O::value_);
 
-        pybind11::class_<P, BaseOptionProperty, std::unique_ptr<P, HasOwnerDeleter<P>>> pyOption(
-            m, classname.c_str());
-        pyOption.def(pybind11::init<const std::string &, const std::string &>())
+        py::class_<P, BaseOptionProperty, PropertyPtr<P>> prop(m, classname.c_str());
+        prop.def(py::init<const std::string &, const std::string &>())
             .def("addOption", [](P *p, const std::string &id, const std::string &displayName,
                                  const T &t) { p->addOption(id, displayName, t); })
 
             .def_property_readonly("values", &P::getValues)
-            .def("removeOption", static_cast<void(P::*)(size_t)>(&P::removeOption))
-            .def("removeOption", static_cast<void(P::*)(const std::string&)>(&P::removeOption))
+            .def("removeOption", py::overload_cast<size_t>(&P::removeOption))
+            .def("removeOption", py::overload_cast<const std::string &>(&P::removeOption))
 
             .def_property("value", [](P *p) { return p->get(); }, [](P *p, T &t) { p->set(t); })
             .def_property("selectedValue", &P::getSelectedValue, &P::setSelectedValue)
@@ -225,18 +263,16 @@ struct OptionPropertyHelper {
                     const std::vector<std::string> &displayNames,
                     const std::vector<T> &values) { p->replaceOptions(ids, displayNames, values); })
 
-            .def("replaceOptions",
-                 [](P *p, std::vector<OptionPropertyOption<T>> options) {
-                     p->replaceOptions(options);
-                 })
+            .def("replaceOptions", [](P *p, std::vector<OptionPropertyOption<T>> options) {
+                p->replaceOptions(options);
+            });
 
-            ;
-
-        return pyOption;
+        return prop;
     }
 };
 
 void exposeProperties(pybind11::module &m);
+
 }  // namespace inviwo
 
 #endif  // IVW_PYPROPERTIES_H

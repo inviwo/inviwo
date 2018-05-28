@@ -557,7 +557,7 @@ void evaluateCube(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffe
         auto interpolate = [&](auto a, auto b) {
             auto v0 = values[a];
             auto v1 = values[b];
-            float t = v0 / (v0 - v1);
+            float t = static_cast<float>(v0 / (v0 - v1));
             return pos[a] + t * (pos[b] - pos[a]);
         };
         vec3 p0 = interpolate(t.e0a, t.e0b);
@@ -625,7 +625,7 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
                         values[l] = marching::getValue(src, size3_t(i, j, k) + o, dim, iso, invert);
                     }
 
-                    marchingcubes::evaluateCube(vertexTree, indexBuffer, positions, normals, pos,
+                    marchingcubes::evaluateCube(vertexTree, indexBuffer.get(), positions, normals, pos,
                                                 values);
                 }
             }
@@ -635,7 +635,7 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
         }
 
         if (enclose) {
-            marching::encloseSurfce(src, dim, indexBuffer, positions, normals, iso, invert, dx, dy,
+            marching::encloseSurfce(src, dim, indexBuffer.get(), positions, normals, iso, invert, dx, dy,
                                     dz);
         }
 

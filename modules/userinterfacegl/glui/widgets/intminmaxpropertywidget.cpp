@@ -95,7 +95,7 @@ void IntMinMaxPropertyWidget::onSetDisplayName(Property *, const std::string &di
     property_->propertyModified();
 }
 
-void IntMinMaxPropertyWidget::onSetReadOnly(Property *property, bool readonly) {
+void IntMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) {
     setEnabled(!readonly);
 }
 

@@ -36,21 +36,20 @@
 
 namespace inviwo {
 
-enum IVW_MODULE_PYTHON3_API PythonExecutionOutputStream { sysstdout, sysstderr };
+enum class PythonOutputType { sysstdout, sysstderr };
 
 class IVW_MODULE_PYTHON3_API PythonExecutionOutputObeserver : public Observer {
 public:
     virtual void onPyhonExecutionOutput(const std::string &msg,
-                                        const PythonExecutionOutputStream &outputType) = 0;
+                                        PythonOutputType outputType) = 0;
 };
 
 class IVW_MODULE_PYTHON3_API PythonExecutionOutputObservable
     : public Observable<PythonExecutionOutputObeserver> {
 public:
-    void pythonExecutionOutputEvent(const std::string &msg,
-                                    const PythonExecutionOutputStream &outputType);
+    void pythonExecutionOutputEvent(const std::string &msg, PythonOutputType outputType);
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PYTHONEXECUTIONOUTPUTOBSERVABLE_H

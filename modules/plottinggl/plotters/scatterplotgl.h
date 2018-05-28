@@ -33,6 +33,7 @@
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
@@ -44,6 +45,10 @@
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 namespace inviwo {
+
+class Processor;
+class PickingEvent;
+using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
 
 namespace plot {
 
@@ -66,6 +71,7 @@ public:
         FloatProperty radiusRange_;
         FloatProperty minRadius_;
         FloatVec4Property color_;
+        FloatVec4Property hoverColor_;
         TransferFunctionProperty tf_;
         MarginProperty margins_;
         FloatProperty axisMargin_;
@@ -73,20 +79,23 @@ public:
         FloatProperty borderWidth_;
         FloatVec4Property borderColor_;
 
+        BoolProperty hovering_;
+
         AxisProperty xAxis_;
         AxisProperty yAxis_;
     };
 
-    ScatterPlotGL(Processor *processor);
-    ScatterPlotGL();
+    explicit ScatterPlotGL(Processor* processor = nullptr);
     virtual ~ScatterPlotGL() = default;
 
-    void plot(Image &dest, IndexBuffer *indices = nullptr);
-    void plot(Image &dest, const Image &src, IndexBuffer *indices = nullptr);
-    void plot(ImageOutport &dest, IndexBuffer *indices = nullptr);
-    void plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices = nullptr);
-
-    void plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices = nullptr);
+    void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
+    void plot(Image &dest, const Image &src, IndexBuffer *indices = nullptr,
+              bool useAxisRanges = false);
+    void plot(ImageOutport &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
+    void plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices = nullptr,
+              bool useAxisRanges = false);
+    void plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices = nullptr,
+              bool useAxisRanges = false);
 
     void setXAxisLabel(const std::string &label);
 
@@ -100,18 +109,25 @@ public:
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);
     void setColorData(std::shared_ptr<const BufferBase> buffer);
     void setRadiusData(std::shared_ptr<const BufferBase> buffer);
+    void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
     Properties properties_;
     Shader shader_;
 
 protected:
-    void plot(const size2_t &dims, IndexBuffer *indices);
+    void plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges);
     void renderAxis(const size2_t &dims);
+
+    void objectPicked(PickingEvent *p);
+    uint32_t getGlobalPickId(uint32_t localIndex) const;
 
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
     std::shared_ptr<const BufferBase> color_;
     std::shared_ptr<const BufferBase> radius_;
+    std::shared_ptr<const TemplateColumn<uint32_t>> indexColumn_;
+
+    std::shared_ptr<BufferBase> pickIds_;
 
     vec2 minmaxX_;
     vec2 minmaxY_;
@@ -119,6 +135,11 @@ protected:
     vec2 minmaxR_;
 
     std::array<AxisRenderer, 2> axisRenderers_;
+
+    PickingMapper picking_;
+    std::set<uint32_t> hoveredIndices_;
+
+    Processor* processor_;
 };
 
 }  // namespace plot

@@ -80,10 +80,10 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     addProperty(lighting_);
     addProperty(camera_);
 
-    samplingRate_.onChange(this, &VolumeRaycasterCLProcessor::onParameterChanged);
-    workGroupSize_.onChange(this, &VolumeRaycasterCLProcessor::onParameterChanged);
-    useGLSharing_.onChange(this, &VolumeRaycasterCLProcessor::onParameterChanged);
-    lighting_.onChange(this, &VolumeRaycasterCLProcessor::onParameterChanged);
+    samplingRate_.onChange([this]() { onParameterChanged(); });
+    workGroupSize_.onChange([this]() { onParameterChanged(); });
+    useGLSharing_.onChange([this]() { onParameterChanged(); });
+    lighting_.onChange([this]() { onParameterChanged(); });
 
     volumeRaycaster_.addObserver(this);
     volumeRaycaster_.setCamera(&camera_);

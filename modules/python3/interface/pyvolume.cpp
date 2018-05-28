@@ -35,9 +35,9 @@
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/interface/pyport.h>
 
 #include <pybind11/pybind11.h>
-#include <pybind11/common.h>
 #include <pybind11/numpy.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -45,47 +45,56 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
 
-namespace py = pybind11;
-
 namespace inviwo {
 
-void exposeVolume(py::module &m) {
-
-
-    py::class_<Volume>(m, "Volume")
+void exposeVolume(pybind11::module &m) {
+    namespace py = pybind11;
+    py::class_<Volume, std::shared_ptr<Volume>>(m, "Volume")
         .def(py::init<size3_t, const DataFormatBase *>())
-        .def("clone" ,[](Volume &self){ return self.clone(); })
+        .def(py::init([](py::array data) { return pyutil::createVolume(data).release(); }))
+        .def("clone", [](Volume &self) { return self.clone(); })
         .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)
         .def_property("worldMatrix", &Volume::getWorldMatrix, &Volume::setWorldMatrix)
-        .def("copyMetaDataFrom", [](Volume &self,Volume &other){ self.copyMetaDataFrom(other); } )
-        .def("copyMetaDataTo", [](Volume &self,Volume &other){ self.copyMetaDataTo(other); } )
+        .def("copyMetaDataFrom", [](Volume &self, Volume &other) { self.copyMetaDataFrom(other); })
+        .def("copyMetaDataTo", [](Volume &self, Volume &other) { self.copyMetaDataTo(other); })
         .def_property_readonly("dimensions", &Volume::getDimensions)
-        .def_property_readonly("data", [&](Volume *volume) -> py::array {
+        .def_readwrite("dataMap", &Volume::dataMap_)
+        .def_property(
+            "data",
+            [&](Volume *volume) -> py::array {
+                auto df = volume->getDataFormat();
+                auto dims = volume->getDimensions();
 
-            auto df = volume->getDataFormat();
-            auto dims = volume->getDimensions();
+                std::vector<size_t> shape = {dims.x, dims.y, dims.z};
+                std::vector<size_t> strides = {df->getSize(), df->getSize() * dims.x,
+                                               df->getSize() * dims.x * dims.y};
 
-            std::vector<size_t> shape = {dims.x, dims.y, dims.z};
-            std::vector<size_t> strides = {df->getSize(),
-                                           df->getSize() * dims.x,
-                                           df->getSize() * dims.x * dims.y};
+                if (df->getComponents() > 1) {
+                    shape.push_back(df->getComponents());
+                    strides.push_back(df->getSize() / df->getComponents());
+                }
 
-            if(df->getComponents()>1){
-                shape.push_back(df->getComponents());
-                strides.push_back(df->getSize() / df->getComponents());
-            }
-
-            auto data = volume->getRepresentation<VolumeRAM>()->getData();
-
-            bool readOnly = false;
-            if (readOnly) {
-                return py::array(pyutil::toNumPyFormat(df), shape, strides, data);
-            } else {
+                auto data = volume->getEditableRepresentation<VolumeRAM>()->getData();
                 return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
-            }
+            },
+            [](Volume *volume, py::array data) {
+                auto rep = volume->getEditableRepresentation<VolumeRAM>();
+                pyutil::checkDataFormat<3>(rep->getDataFormat(), rep->getDimensions(), data);
 
+                memcpy(rep->getData(), data.data(0), data.nbytes());
+            })
+        .def("__repr__", [](const Volume &volume) {
+            std::ostringstream oss;
+            oss << "<Volume:\n  dimensions = " << volume.getDimensions()
+                << "\n  modelMatrix = " << volume.getModelMatrix()
+                << "\n  worldMatrix = " << volume.getWorldMatrix()
+                << "\n  <DataMapper:  dataRange = " << volume.dataMap_.dataRange
+                << ",  valueRange = " << volume.dataMap_.valueRange << ",  valueUnit = \""
+                << volume.dataMap_.valueUnit << "\"> >";
+            return oss.str();
         });
 
-    exposeOutport<VolumeOutport>(m, "Volume");
+    exposeStandardDataPorts<Volume>(m, "Volume");
 }
-}  // namespace
+
+}  // namespace inviwo

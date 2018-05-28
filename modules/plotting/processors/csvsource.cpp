@@ -52,7 +52,7 @@ CSVSource::CSVSource()
     : Processor()
     , data_("data")
     , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
-    , inputFile_("inputFile_", "CSV File")
+    , inputFile_("inputFile_", "CSV File", "", "dataframe")
     , delimiters_("delimiters", "Delimiters", ",")
     , reloadData_("reloadData", "Reload Data") {
 

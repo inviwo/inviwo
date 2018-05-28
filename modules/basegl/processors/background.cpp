@@ -55,6 +55,8 @@ Background::Background()
                          BackgroundStyle::LinearVertical},
                         {"linearGradientHorizontal", "Linear gradient (Horizontal)",
                          BackgroundStyle::LinearHorizontal},
+                        { "linearGradientSpherical", "Linear gradient (Spherical)",
+                        BackgroundStyle::LinearSpherical },
                         {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
                         {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard}},
                        0, InvalidationLevel::InvalidResources)
@@ -102,6 +104,10 @@ void Background::initializeResources() {
             break;
         case BackgroundStyle::LinearHorizontal:  // linear gradient
             bgStyleValue = "linearGradientHorizontal(texCoord)";
+            checkerBoardSize_.setVisible(false);
+            break;
+        case BackgroundStyle::LinearSpherical:  // linear spherical gradient
+            bgStyleValue = "linearGradientSpherical(texCoord)";
             checkerBoardSize_.setVisible(false);
             break;
         case BackgroundStyle::Uniform:  // uniform color

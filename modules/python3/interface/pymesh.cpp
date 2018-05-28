@@ -34,20 +34,20 @@
 #include <modules/python3/interface/inviwopy.h>
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
+#include <modules/python3/interface/pyport.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/ports/meshport.h>
 
 #include <pybind11/pybind11.h>
-#include <pybind11/common.h>
 #include <pybind11/numpy.h>
-
-namespace py = pybind11;
 
 namespace inviwo {
 
-void exposeMesh(py::module &m) {
+namespace py = pybind11;
+
+void exposeMesh(pybind11::module &m) {
     py::class_<Mesh::MeshInfo>(m, "MeshInfo")
         .def(py::init<>())
         .def(py::init<DrawType, ConnectivityType>())
@@ -73,18 +73,19 @@ void exposeMesh(py::module &m) {
         .def_readwrite("type", &Mesh::BufferInfo::type)
         .def_readwrite("location", &Mesh::BufferInfo::location);
 
-    auto getBuffers = [](auto &buffers) {
+    auto getBuffers = [](auto buffers, auto &parent) {
         pybind11::list list;
         for (auto &buffer : buffers) {
             auto tupl = py::tuple(2);
             tupl[0] = py::cast(buffer.first);
-            tupl[1] = py::cast(buffer.second.get(), py::return_value_policy::reference);
+            tupl[1] = py::cast(buffer.second.get(), py::return_value_policy::reference_internal,
+                               py::cast(parent));
             list.append(tupl);
         }
         return list;
     };
 
-    py::class_<Mesh>(m, "Mesh")
+    py::class_<Mesh, std::shared_ptr<Mesh>>(m, "Mesh")
         .def(py::init<>())
         .def_property_readonly("dataInfo", &Mesh::getInfo)
         .def("addBuffer", [](Mesh *m, Mesh::BufferInfo info,
@@ -93,8 +94,10 @@ void exposeMesh(py::module &m) {
                              std::shared_ptr<BufferBase> att) { m->addBuffer(type, att); })
         .def("removeBuffer", [](Mesh *m, size_t idx) { m->removeBuffer(idx); })
 
-        .def("replaceBuffer", [](Mesh *m, size_t idx, Mesh::BufferInfo info,
-                             std::shared_ptr<BufferBase> att) { m->replaceBuffer(idx, info, att); })
+        .def("replaceBuffer",
+             [](Mesh *m, size_t idx, Mesh::BufferInfo info, std::shared_ptr<BufferBase> att) {
+                 m->replaceBuffer(idx, info, att);
+             })
         .def("addIndicies", [](Mesh *m, Mesh::MeshInfo info,
                                std::shared_ptr<IndexBuffer> ind) { m->addIndicies(info, ind); })
         .def("removeIndexBuffer", [](Mesh *m, size_t idx) { m->removeIndexBuffer(idx); })
@@ -102,31 +105,30 @@ void exposeMesh(py::module &m) {
         .def("reserveSizeInVertexBuffer", &Mesh::reserveSizeInVertexBuffer)
         .def("reserveIndexBuffers", &Mesh::reserveIndexBuffers)
 
-        .def_property_readonly("buffers", [&](Mesh *m) { return getBuffers(m->getBuffers());})
-        .def_property_readonly("indexBuffers", [&](Mesh *m) { return getBuffers(m->getIndexBuffers());})
-            
-        ;
+        .def_property_readonly("buffers",
+                               [&](Mesh *mesh) { return getBuffers(mesh->getBuffers(), mesh); })
+        .def_property_readonly(
+            "indexBuffers", [&](Mesh *mesh) { return getBuffers(mesh->getIndexBuffers(), mesh); });
 
     py::class_<BasicMesh::Vertex>(m, "BasicMeshVertex")
         .def(py::init<>())
-        .def("__init__",
-             [](BasicMesh::Vertex &instance, vec3 pos, vec3 normal, vec3 tex, vec4 color) {
-                 new (&instance) BasicMesh::Vertex{pos, normal, tex, color};
-             });
+        .def(py::init([](vec3 pos, vec3 normal, vec3 tex, vec4 color) {
+            return BasicMesh::Vertex{pos, normal, tex, color};
+        }));
 
-    py::class_<BasicMesh, Mesh>(m, "BasicMesh")
-        .def(pybind11::init<>())
+    py::class_<BasicMesh, Mesh, std::shared_ptr<BasicMesh>>(m, "BasicMesh")
         .def(py::init<>())
         .def("addVertex", &BasicMesh::addVertex)
         .def("addVertices", &BasicMesh::addVertices)
 
-        .def("setVertex", &BasicMesh::setVertex)
+        .def("setVertex", [](BasicMesh &self , size_t i , vec3 pos, vec3 norm, vec3 texCoord, vec4 color){
+        self.setVertex(i,pos,norm,texCoord,color);
+    })
         .def("setVertexPosition", &BasicMesh::setVertexPosition)
         .def("setVertexNormal", &BasicMesh::setVertexNormal)
         .def("setVertexTexCoord", &BasicMesh::setVertexTexCoord)
         .def("setVertexColor", &BasicMesh::setVertexColor)
 
-        //.def("addIndexBuffer", &BasicMesh::addIndexBuffer2, py::return_value_policy::reference)
         .def("addIndexBuffer",
              [](BasicMesh *mesh, DrawType dt, ConnectivityType ct) {
                  mesh->addIndexBuffer(dt, ct);
@@ -137,8 +139,10 @@ void exposeMesh(py::module &m) {
         .def("getVertices", &BasicMesh::getEditableVertices, py::return_value_policy::reference)
         .def("getTexCoords", &BasicMesh::getEditableTexCoords, py::return_value_policy::reference)
         .def("getColors", &BasicMesh::getEditableColors, py::return_value_policy::reference)
-        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference);
+        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference)
+    
+    ;
 
-    exposeOutport<MeshOutport>(m, "Mesh");
+    exposeStandardDataPorts<Mesh>(m, "Mesh");
 }
-}  // namespace
+}  // namespace inviwo

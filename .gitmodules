@@ -1,6 +1,6 @@
 [submodule "modules/eigenutils/ext/eigen"]
     path = modules/eigenutils/ext/eigen
-    url = https://github.com/RLovelett/eigen
+    url = https://github.com/eigenteam/eigen-git-mirror.git
 [submodule "modules/hdf5/ext/hdf5"]
     path = modules/hdf5/ext/hdf5
     url = https://github.com/live-clones/hdf5.git
@@ -11,7 +11,7 @@
     url = https://github.com/pybind/pybind11.git
 [submodule "tools/codegen/warn/warn"]
     path = tools/codegen/warn/warn
-    url = https://petersteneteg@github.com/petersteneteg/warn.git
+    url = https://github.com/petersteneteg/warn.git
 [submodule "ext/utf/utfcpp"]
     path = ext/utf/utfcpp
     url = https://github.com/nemtrif/utfcpp
@@ -21,3 +21,6 @@
 [submodule "ext/gtest/gtest"]
 	path = ext/gtest/gtest
 	url = https://github.com/inviwo/googletest.git
+[submodule "modules/glfw/ext/glfw/glfw"]
+	path = modules/glfw/ext/glfw/glfw
+	url = https://github.com/inviwo/glfw.git

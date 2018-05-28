@@ -161,8 +161,6 @@ public:
 protected:
     virtual void process() override;
 
-    void handleInteractionEventsChanged();
-
     /**
      * Update light source parameters. Transformation will be given in texture space.
      *

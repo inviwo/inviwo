@@ -104,6 +104,9 @@ private:
     
     Dispatcher<void(GLuint)> shaderAddCallbacks_;
     Dispatcher<void(GLuint)> shaderRemoveCallbacks_;
+
+    friend Singleton<ShaderManager>;
+    static ShaderManager* instance_;
 };
 
 template <typename T>

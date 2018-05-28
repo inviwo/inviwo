@@ -48,26 +48,18 @@
 #include <warn/pop>
 
 class QPlainTextEdit;
+class QFocusEvent;
+class QMainWindow;
 
 namespace inviwo {
 
-class IVW_MODULE_PYTHON3QT_API PythonTextEditor : public QPlainTextEdit {
-public:
-    PythonTextEditor(QWidget* parent) : QPlainTextEdit(parent) {}
-    virtual ~PythonTextEditor() {}
-    virtual void keyPressEvent(QKeyEvent* keyEvent);
-};
-
 class InviwoApplication;
 class SyntaxHighligther;
+class CodeEdit;
 
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
                                                     public FileObserver,
                                                     public PythonExecutionOutputObeserver {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
 
 public:
     PythonEditorWidget(QWidget* parent, InviwoApplication* app);
@@ -78,11 +70,10 @@ public:
     void loadFile(std::string fileName, bool askForSave = true);
 
     virtual void onPyhonExecutionOutput(const std::string& msg,
-                                        const PythonExecutionOutputStream& outputType) override;
+                                        PythonOutputType outputType) override;
 
     bool hasFocus() const;
 
-    void updateStyle();
     void save();
     void saveAs();
     void open();
@@ -91,17 +82,25 @@ public:
     void setDefaultText();
     void clearOutput();
 
-public slots:
     void onTextChange();
 
+    virtual void loadState() override;
+
 protected:
+    bool eventFilter(QObject* obj, QEvent* event) override;
     virtual void closeEvent(QCloseEvent *event) override;
+    virtual void focusInEvent(QFocusEvent *event) override;
 
 private:
     void setFileName(const std::string filename);
     void updateTitleBar();
+    void queryReloadFile();
 
-    PythonTextEditor* pythonCode_;
+
+    void saveState();
+
+    QMainWindow* mainWindow_;
+    CodeEdit* pythonCode_;
     QTextEdit* pythonOutput_;
 
     QColor infoTextColor_;
@@ -113,9 +112,12 @@ private:
     std::string scriptFileName_;
 
     bool unsavedChanges_;
+    bool fileChangedInBackground_ = false;
+    bool reloadQueryInProgress_ = false;
     void readFile();
 
     SyntaxHighligther* syntaxHighligther_;
+    std::shared_ptr<std::function<void()>> syntaxCallback_;
 
     static PythonEditorWidget* instance_;
 

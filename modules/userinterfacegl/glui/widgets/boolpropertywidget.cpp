@@ -58,7 +58,7 @@ void BoolPropertyWidget::onSetDisplayName(Property *, const std::string &display
     setLabel(displayName);
 }
 
-void BoolPropertyWidget::onSetReadOnly(Property *property, bool readonly) { setEnabled(!readonly); }
+void BoolPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

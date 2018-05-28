@@ -74,7 +74,22 @@ ISORaycaster::ISORaycaster()
 
     backgroundPort_.setOptional(true);
 
-    volumePort_.onChange(this, &ISORaycaster::onVolumeChange);
+    volumePort_.onChange([this]() {
+        if (volumePort_.hasData()) {
+            std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+
+            if (channels == channel_.size())
+                return;
+
+            channel_.clearOptions();
+            for (int i = 0; i < static_cast<int>(channels); i++) {
+                std::stringstream ss;
+                ss << "Channel " << i;
+                channel_.addOption(ss.str(), ss.str(), i);
+            }
+            channel_.setCurrentStateAsDefault();
+        }
+    });
 
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
@@ -101,23 +116,6 @@ void ISORaycaster::initializeResources(){
     utilgl::addShaderDefines(shader_, lighting_);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
-}
-    
-void ISORaycaster::onVolumeChange(){
-    if (volumePort_.hasData()) {
-        std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-
-        if (channels == channel_.size())
-            return;
-
-        channel_.clearOptions();
-        for (int i = 0; i < static_cast<int>(channels); i++) {
-            std::stringstream ss;
-            ss << "Channel " << i;
-            channel_.addOption(ss.str(), ss.str(), i);
-        }
-        channel_.setCurrentStateAsDefault();
-    }
 }
 
 void ISORaycaster::process() {

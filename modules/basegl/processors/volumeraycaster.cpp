@@ -27,13 +27,11 @@
  *
  *********************************************************************************/
 
-#include "volumeraycaster.h"
-#include <inviwo/core/ports/imageport.h>
+#include <modules/basegl/processors/volumeraycaster.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -48,7 +46,7 @@ const ProcessorInfo VolumeRaycaster::processorInfo_{
     "Volume Raycaster",            // Display name
     "Volume Rendering",            // Category
     CodeState::Stable,             // Code state
-    Tags::GL                       // Tags
+    "GL, DVR, Raycasting"          // Tags
 };
 
 VolumeRaycaster::VolumeRaycaster()
@@ -59,22 +57,23 @@ VolumeRaycaster::VolumeRaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
-    , transferFunction_("transferFunction", "Transfer function", &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
+    , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_,
+                      InvalidationLevel::InvalidResources)
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator")
     , toggleShading_("toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); },
                      IvwKey::L) {
-                     
+
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
-    addPort(backgroundPort_ ,"ImagePortGroup1");
+    addPort(backgroundPort_, "ImagePortGroup1");
 
     backgroundPort_.setOptional(true);
 
@@ -82,58 +81,54 @@ VolumeRaycaster::VolumeRaycaster()
     channel_.setSerializationMode(PropertySerializationMode::All);
     channel_.setCurrentStateAsDefault();
 
-    volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);
+    volumePort_.onChange([this]() {
+        if (volumePort_.hasData()) {
+            size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+
+            if (channels == channel_.size()) return;
+
+            std::vector<OptionPropertyIntOption> channelOptions;
+            for (size_t i = 0; i < channels; i++) {
+                channelOptions.emplace_back("Channel " + toString(i + 1),
+                                            "Channel " + toString(i + 1), static_cast<int>(i));
+            }
+            channel_.replaceOptions(channelOptions);
+            channel_.setCurrentStateAsDefault();
+        }
+    });
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     // change the currently selected channel when a pre-computed gradient is selected
-    raycasting_.gradientComputationMode_.onChange([this]() {
+    raycasting_.gradientComputation_.onChange([this]() {
         if (channel_.size() == 4) {
-            if (raycasting_.gradientComputationMode_.isSelectedIdentifier("precomputedXYZ")) {
+            if (raycasting_.gradientComputation_.get() ==
+                RaycastingProperty::GradientComputation::PrecomputedXYZ) {
                 channel_.set(3);
-            } else if (raycasting_.gradientComputationMode_.isSelectedIdentifier(
-                           "precomputedYZW")) {
+            } else if (raycasting_.gradientComputation_.get() ==
+                       RaycastingProperty::GradientComputation::PrecomputedYZW) {
                 channel_.set(0);
             }
         }
     });
 
     addProperty(channel_);
-    addProperty(transferFunction_);
     addProperty(raycasting_);
+    addProperty(isotfComposite_);
+
     addProperty(camera_);
     addProperty(lighting_);
     addProperty(positionIndicator_);
     addProperty(toggleShading_);
 }
 
-const ProcessorInfo VolumeRaycaster::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 void VolumeRaycaster::initializeResources() {
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
-    utilgl::addShaderDefines(shader_, positionIndicator_);
+    utilgl::addDefines(shader_, raycasting_, isotfComposite_, camera_, lighting_,
+                       positionIndicator_);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
-}
-
-void VolumeRaycaster::onVolumeChange() {
-    if (volumePort_.hasData()) {
-        size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-
-        if (channels == channel_.size()) return;
-
-        std::vector<OptionPropertyIntOption> channelOptions;
-        for (size_t i = 0; i < channels; i++) {
-            channelOptions.emplace_back("Channel " + toString(i+1), "Channel " + toString(i+1),
-                                        static_cast<int>(i));
-        }
-        channel_.replaceOptions(channelOptions);
-        channel_.setCurrentStateAsDefault();
-    }
 }
 
 void VolumeRaycaster::process() {
@@ -166,14 +161,14 @@ void VolumeRaycaster::process() {
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *loadedVolume_, "volume");
-    utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
+    utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-    if(backgroundPort_.isConnected()){
+    if (backgroundPort_.isConnected()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
-                        channel_);
+                        channel_, isotfComposite_);
 
     utilgl::singleDrawImagePlaneRect();
 
@@ -195,4 +190,4 @@ void VolumeRaycaster::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-}  // namespace
+}  // namespace inviwo

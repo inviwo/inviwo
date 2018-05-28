@@ -31,11 +31,7 @@
 #include <pybind11/pybind11.h>
 #include <modules/python3qt/python3qtmodule.h>
 #include <modules/python3qt/pythoneditorwidget.h>
-#include <modules/python3/pythoninterpreter.h>
-#include <modules/python3/pybindutils.h>
 #include <modules/python3qt/pythonmenu.h>
-
-#include <inviwo/core/util/exception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -62,19 +58,16 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
-    auto module = app->getModuleByType<Python3Module>();
-    if (module) {
-        if (auto ivwmodule = module->getInviwopyModule()) {
-            auto m = ivwmodule->def_submodule("qt", "Qt dependent stuff");
 
-            m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
-                  pybind11::arg("defaultResponse") = "");
-            m.def("update", []() { QCoreApplication::instance()->processEvents(); });
-        } else {
-            throw ModuleInitException("Failed to get inviwopy");
-        }
-    } else {
-        throw ModuleInitException("Failed to get Python3Module");
+    try {
+        auto inviwopy = pybind11::module::import("inviwopy");
+        auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
+
+        m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
+              pybind11::arg("defaultResponse") = "");
+        m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+    } catch (const std::exception& e) {
+        throw ModuleInitException(e.what(), IvwContext);
     }
 }
 

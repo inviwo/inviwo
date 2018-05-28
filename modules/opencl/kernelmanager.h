@@ -116,6 +116,10 @@ private:
     ProgramMap programs_;
     KernelMap kernels_;
     KernelOwnerMap kernelOwners_;
+
+    friend Singleton<KernelManager>;
+    static KernelManager* instance_;
+
 };
 
 } // namespace

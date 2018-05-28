@@ -221,8 +221,8 @@ static const char* glsl_preprocessor[] = {
     "\\bdefine\\b", "\\binclude\\b", "\\bif\\b",    "\\bifdef\\b",  "\\bifndef\\b", "\\belse\\b",
     "\\belif\\b",   "\\bendif\\b",   "\\berror\\b", "\\bpragma\\b", "\\bline\\b",   "\\bversion\\b",
 };
-static const char* glsl_operators[] = {"\\+", "-", "\\*", "\\/", "<",   ">",
-                                       "=", "!", "&", "\\|", "\\^", "%", "\\?", ":"};
+static const char* glsl_operators[] = {"\\+", "-", "\\*", "\\/", "<", ">",   "=",
+                                       "!",   "&", "\\|", "\\^", "%", "\\?", ":"};
 static const char* glsl_preprocessorAdditional[] = {"\\b__LINE__\\b", "\\b__FILE__\\b",
                                                     "\\b__VERSION__\\b", nullptr};
 
@@ -409,24 +409,21 @@ void SyntaxHighligther::loadConfig<GLSL>() {
     mainformat.setForeground(utilqt::toQColor(sysSettings->glslVoidMainColor_.get()));
 
     if (formaters_.empty()) {
-        sysSettings->glslSyntax_.onChange(this, &SyntaxHighligther::loadConfig<GLSL>);
+        callback_ = sysSettings->glslSyntax_.onChangeScoped([this]() { loadConfig<GLSL>(); });
     } else {
-        while (!formaters_.empty()) {
-            delete formaters_.back();
-            formaters_.pop_back();
-        }
+        formaters_.clear();
     }
 
-    formaters_.push_back(new GLSLKeywordFormater(typeformat, glsl_types));
-    formaters_.push_back(new GLSLKeywordFormater(qualifiersformat, glsl_qualifiers));
-    formaters_.push_back(new GLSLKeywordFormater(builtins_varformat, glsl_builtins_var));
-    formaters_.push_back(new GLSLKeywordFormater(glsl_builtins_funcformat, glsl_builtins_func));
-    formaters_.push_back(new GLSLKeywordFormater(preprocessorformat, glsl_operators));
-    formaters_.push_back(new GLSLNumberFormater(constantsformat));
-    formaters_.push_back(new GLSLKeywordFormater(mainformat, voidmain));
-    formaters_.push_back(new GLSLPreProcessorFormater(preprocessorformat, glsl_preprocessor));
-    formaters_.push_back(new GLSLKeywordFormater(preprocessorformat, glsl_preprocessorAdditional));
-    formaters_.push_back(new GLSLCommentFormater(commentformat));
+    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(typeformat, glsl_types));
+    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(qualifiersformat, glsl_qualifiers));
+    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(builtins_varformat, glsl_builtins_var));
+    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(glsl_builtins_funcformat, glsl_builtins_func));
+    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(preprocessorformat, glsl_operators));
+    formaters_.push_back(std::make_unique<GLSLNumberFormater>(constantsformat));
+    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(mainformat, voidmain));
+    formaters_.push_back(std::make_unique<GLSLPreProcessorFormater>(preprocessorformat, glsl_preprocessor));
+    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(preprocessorformat, glsl_preprocessorAdditional));
+    formaters_.push_back(std::make_unique<GLSLCommentFormater>(commentformat));
 }
 
 }  // namespace inviwo

@@ -54,6 +54,7 @@ public:
 
     OptionPropertyString fontFace_;
     IntProperty fontSize_;
+    FloatProperty lineSpacing_;
     FloatVec2Property anchorPos_;
 };
 

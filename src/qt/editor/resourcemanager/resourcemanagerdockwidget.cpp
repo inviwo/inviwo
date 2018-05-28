@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ class ResourceManagerItemModel : public QStandardItemModel {
 public:
     ResourceManagerItemModel(QObject *parent) : QStandardItemModel(parent) { setColumnCount(3); }
 
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const override {
+    virtual Qt::ItemFlags flags(const QModelIndex &/*index*/) const override {
         return Qt::ItemIsEnabled;
     }
 

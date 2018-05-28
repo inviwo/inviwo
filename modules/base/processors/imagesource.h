@@ -54,7 +54,7 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API ImageSource : public Processor {
 public:
-    ImageSource();
+    ImageSource(InviwoApplication* app, const std::string& file = "");
     virtual ~ImageSource() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -64,6 +64,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
+    InviwoApplication* app_;
     ImageOutport outport_;
     FileProperty file_;
     IntVec2Property imageDimension_;

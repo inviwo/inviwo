@@ -50,7 +50,7 @@ class Inport;
 /**
  * \ingroup properties
  * A property wrapping the Camera data structure
- * @see Camera 
+ * @see Camera
  */
 class IVW_CORE_API CameraProperty : public CompositeProperty, public TrackballObject {
 public:
@@ -68,7 +68,7 @@ public:
     operator const Camera&() const;
 
     virtual CameraProperty* clone() const override;
-    virtual ~CameraProperty() = default;
+    virtual ~CameraProperty();
 
     virtual Camera& get();
     virtual const Camera& get() const;
@@ -90,7 +90,11 @@ public:
 
     void setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
-
+    /**
+     * Sets given camera properties while respecting their min/max ranges. 
+     * Locks and unlocks processor network before and after changing property values.
+     * @note Parameters will be capped by their min/max.
+     */
     virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
 
     virtual float getNearPlaneDist() const override;
@@ -98,6 +102,12 @@ public:
 
     void setNearPlaneDist(float v);
     void setFarPlaneDist(float v);
+    /**
+     * Set near and far plane distance values and adjust their min/max ranges.
+     * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value.
+     * Locks and unlocks processor network before and after changing property values.
+     */
+    void setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist, float minMaxRatio = 10.f);
 
     virtual vec3 getLookFromMinValue() const override;
     virtual vec3 getLookFromMaxValue() const override;
@@ -113,11 +123,11 @@ public:
     virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
 
     /**
-    * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
-    * @param ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for
-    * perspective division.
-    * @return Clip space position
-    */
+     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
+     * @param ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for
+     * perspective division.
+     * @return Clip space position
+     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
     virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
@@ -132,26 +142,25 @@ public:
 
     void setInport(Inport* inport);
 
-    /** 
+    /**
      * \brief Translates and scales camera to match new data and fit new object into view.
+     * Locks and unlocks processor network before and after changing property values.
      * @param newDataToWorldMatrix Matrix of new object
      */
     void adjustCameraToData(const mat4& newDataToWorldMatrix);
-    /** 
+    /**
      * \brief Reset the camera adjustment matrix to currently set inport data.
      */
     void resetAdjustCameraToData();
+    /**
+     * \brief Calls adjustCameraToData if "Adjust camera on data change" is set to true.
+     */
     void inportChanged();
-    
-private:
-    void changeCamera(std::unique_ptr<Camera> newCamera);
-    void updatePropertyFromValue();
-
-    OptionPropertyString cameraType_;
 
     // These properties enable linking of individual
     // camera properties but requires them to be synced
-    // with the camera
+    // with the camera.
+    // Use NetworkLock if editing multiple properties at the same time
     FloatVec3Property lookFrom_;
     FloatVec3Property lookTo_;
     FloatVec3Property lookUp_;
@@ -159,16 +168,25 @@ private:
     FloatProperty nearPlane_;
     FloatProperty farPlane_;
 
+private:
+    void changeCamera(std::unique_ptr<Camera> newCamera);
+    void updatePropertyFromValue();
+
+    OptionPropertyString cameraType_;
+
     BoolProperty adjustCameraOnDataChange_;
 
     std::unique_ptr<Camera> camera_;
 
     Inport* inport_;  ///< Allows the camera to be positioned relative to new data (VolumeInport,
-                      ///MeshInport)
+                      /// MeshInport)
     const SpatialEntity<3>* data_;  //< non-owning reference;
+
     mat4 prevDataToWorldMatrix_; //< Data-to-world matrix of object currently being viewed
+
+    const BaseCallBack* callbackInportOnChange_ = nullptr;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CAMERAPROPERTY_H

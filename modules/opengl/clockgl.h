@@ -79,6 +79,9 @@ private:
  * Usage is simplified by the macros (does nothing unless IVW_PROFILING is defined)
  * IVW_OPENGL_PROFILING("My message")
  *
+ * Note: The render context of the current thread needs to be active when using this clock!
+ *       Otherwise there is a high likelyhood that the ScopedClock will wait forever.
+ * \see RenderContext::activateDefaultRenderContext, RenderContext::activateLocalRenderContext
  */
 class ScopedClockGL {
 public:
@@ -91,7 +94,7 @@ public:
         clock_.stop();
         if (clock_.getElapsedTime() > logIfAtLeastMilliSec_) {
             std::stringstream message;
-            message << logMessage_ << ": " << clock_.getElapsedTime() << " ms";
+            message << logMessage_ << ": " << clock_.getElapsedTime() << "ms";
             LogCentral::getPtr()->log(logSource_, LogLevel::Info, LogAudience::Developer, __FILE__,
                                       __FUNCTION__, __LINE__, message.str());
         }
@@ -106,6 +109,8 @@ private:
     float logIfAtLeastMilliSec_;
 };
 
+
+    
 #if IVW_PROFILING
 #define IVW_OPENGL_PROFILING(message)                                                 \
     std::ostringstream ADDLINE(__stream);                                             \

@@ -141,7 +141,7 @@ void StreamRibbons::process() {
         [&]() -> std::function<vec4(double, double, size_t)> {
         switch (coloringMethod_.get()) {
             case ColoringMethod::Vorticity: {
-                return [&](double vortictyMagnitude, double velocityMagnitude, size_t lineId) {
+                return [&](double vortictyMagnitude, double /*velocityMagnitude*/, size_t /*lineId*/) {
                     auto d = glm::clamp(
                         static_cast<float>(vortictyMagnitude) / velocityScale_.get(), 0.0f, 1.0f);
                     return vec4(tf.sample(dvec2(d, 0.0)));
@@ -149,7 +149,7 @@ void StreamRibbons::process() {
             }
             case ColoringMethod::ColorPort:
                 if (colors_.hasData()) {
-                    return [&](double vortictyMagnitude, double velocityMagnitude, size_t lineId) {
+                    return [&](double /*vortictyMagnitude*/, double /*velocityMagnitude*/, size_t lineId) {
                         if (lineId < colors_.getData()->size()) {
                             return (*colors_.getData())[lineId];
                         } else if (lineId == colors_.getData()->size()) {
@@ -168,7 +168,7 @@ void StreamRibbons::process() {
                 }
             default:
             case ColoringMethod::Velocity: {
-                return [&](double vortictyMagnitude, double velocityMagnitude, size_t lineId) {
+                return [&](double /*vortictyMagnitude*/, double velocityMagnitude, size_t /*lineId*/) {
                     auto d = glm::clamp(
                         static_cast<float>(velocityMagnitude) / velocityScale_.get(), 0.0f, 1.0f);
                     return vec4(tf.sample(dvec2(d, 0.0)));

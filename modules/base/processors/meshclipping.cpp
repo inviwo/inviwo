@@ -73,7 +73,6 @@ MeshClipping::MeshClipping()
     addPort(clippingPlane_);
     addProperty(clippingEnabled_);
     addProperty(movePointAlongNormal_);
-    movePointAlongNormal_.onChange(this, &MeshClipping::onMovePointAlongNormalToggled);
     addProperty(moveCameraAlongNormal_);
     addProperty(pointPlaneMove_);
 
@@ -82,10 +81,18 @@ MeshClipping::MeshClipping()
 
     addProperty(alignPlaneNormalToCameraNormal_);
     alignPlaneNormalToCameraNormal_.onChange(
-        this, &MeshClipping::onAlignPlaneNormalToCameraNormalPressed);
+        [this]() { onAlignPlaneNormalToCameraNormalPressed(); });
 
     addProperty(camera_);
 
+    auto onMovePointAlongNormalToggled = [this]() {
+        planePoint_.setReadOnly(movePointAlongNormal_.get());
+        pointPlaneMove_.set(0.f);
+        previousPointPlaneMove_ = 0.f;
+        pointPlaneMove_.setVisible(movePointAlongNormal_.get());
+    };
+
+    movePointAlongNormal_.onChange(onMovePointAlongNormalToggled);
     onMovePointAlongNormalToggled();
 }
 
@@ -135,13 +142,6 @@ void MeshClipping::process() {
         outport_.setData(inport_.getData());
     }
     clippingPlane_.setData(plane);
-}
-
-void MeshClipping::onMovePointAlongNormalToggled() {
-    planePoint_.setReadOnly(movePointAlongNormal_.get());
-    pointPlaneMove_.set(0.f);
-    previousPointPlaneMove_ = 0.f;
-    pointPlaneMove_.setVisible(movePointAlongNormal_.get());
 }
 
 void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
@@ -365,8 +365,10 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                             newColors.push_back(colorList->at(idx[j]));
                         } else {  // Case 2
                             // Add Intersection
-                            vec3 intersection = plane.getIntersection(vertexList->at(idx[i]),
-                                                                      vertexList->at(idx[j])).intersection_;
+                            vec3 intersection =
+                                plane
+                                    .getIntersection(vertexList->at(idx[i]), vertexList->at(idx[j]))
+                                    .intersection_;
                             newVertices.push_back(intersection);
                             vec3 interBC =
                                 barycentricTriangle(intersection, vertexList->at(idx[0]),
@@ -393,8 +395,10 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                     } else {
                         if (plane.isInside(vertexList->at(idx[j]))) {  // Case 3
                             // Add Intersection
-                            vec3 intersection = plane.getIntersection(vertexList->at(idx[i]),
-                                                                      vertexList->at(idx[j])).intersection_;
+                            vec3 intersection =
+                                plane
+                                    .getIntersection(vertexList->at(idx[i]), vertexList->at(idx[j]))
+                                    .intersection_;
                             newVertices.push_back(intersection);
                             vec3 interBC =
                                 barycentricTriangle(intersection, vertexList->at(idx[0]),

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAMAPPER_H
@@ -49,12 +49,10 @@ public:
     DataMapper(const DataFormatBase* format);
     DataMapper(const DataMapper& rhs);
     DataMapper& operator=(const DataMapper& that);
-    virtual DataMapper* clone() const;
-    virtual ~DataMapper() {}
 
-    dvec2 dataRange;       ///< Minimum and maximum data range
-    dvec2 valueRange;      ///< Minimum and maximum value range
-    std::string valueUnit; ///< Unit, i.e. Hounsfield/absorption/W.
+    dvec2 dataRange;        ///< Minimum and maximum data range
+    dvec2 valueRange;       ///< Minimum and maximum value range
+    std::string valueUnit;  ///< Unit, i.e. Hounsfield/absorption/W.
 
     void initWithFormat(const DataFormatBase* format);
 
@@ -64,15 +62,27 @@ public:
                                   (dataRange.y - dataRange.x) * (valueRange.y - valueRange.x) +
                               valueRange.x);
     }
-    
+
     template <typename T>
     T mapFromValueToData(T val) const {
         return static_cast<T>((static_cast<double>(val) - valueRange.x) /
                                   (valueRange.y - valueRange.x) * (dataRange.y - dataRange.x) +
                               dataRange.x);
     }
+
+    template <typename T>
+    T mapFromValueToNormalized(T val) const {
+        return static_cast<T>((static_cast<double>(val) - valueRange.x) /
+                              (valueRange.y - valueRange.x));
+    }
+
+    template <typename T>
+    T mapFromNormalizedToValue(T val) const {
+        return static_cast<T>(valueRange.x +
+                              static_cast<double>(val) * (valueRange.y - valueRange.x));
+    }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATAMAPPER_H

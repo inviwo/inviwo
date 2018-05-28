@@ -105,6 +105,7 @@ public:
      * going to be called.
      */
     template <typename T>
+    [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
     const BaseCallBack* onChange(T* o, void (T::*m)());
     const BaseCallBack* onChange(std::function<void()> lambda);
 
@@ -113,6 +114,7 @@ public:
      *    called once for each transition from valid to invalid.
      */
     template <typename T>
+    [[deprecated("was declared deprecated. Use `onInvalid(std::function<void()>)` instead")]]
     const BaseCallBack* onInvalid(T* o, void (T::*m)());
     const BaseCallBack* onInvalid(std::function<void()> lambda);
 
@@ -121,10 +123,12 @@ public:
 
     void removeOnChange(const BaseCallBack* callback);
     template <typename T>
+    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
     void removeOnChange(T* o);
 
     void removeOnInvalid(const BaseCallBack* callback);
     template <typename T>
+    [[deprecated("was declared deprecated. Use `removeOnInvalid(const BaseCallBack*)` instead")]]
     void removeOnInvalid(T* o);
 
     void removeOnConnect(const BaseCallBack* callback);
@@ -175,21 +179,25 @@ private:
 };
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
 const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) {
     return onChangeCallback_.addMemberFunction(o, m);
 }
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `onInvalid(std::function<void()>)` instead")]]
 const BaseCallBack* Inport::onInvalid(T* o, void (T::*m)()) {
     return onInvalidCallback_.addMemberFunction(o, m);
 }
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
 void Inport::removeOnChange(T* o) {
     onChangeCallback_.removeMemberFunction(o);
 }
 
 template <typename T>
+[[deprecated("was declared deprecated. Use `removeOnInvalid(const BaseCallBack*)` instead")]]
 void Inport::removeOnInvalid(T* o) {
     onInvalidCallback_.removeMemberFunction(o);
 }

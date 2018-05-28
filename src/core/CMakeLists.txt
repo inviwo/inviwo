@@ -43,6 +43,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/polygon.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemeshcreator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/typedmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/image.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imageram.h
@@ -54,6 +55,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerrepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/isovaluecollection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/directionallight.h
@@ -64,8 +66,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconvertermetafactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/spatialdata.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitive.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitiveset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunction.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunctiondatapoint.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volume.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeborder.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumedisk.h
@@ -180,6 +183,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processortags.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processortraits.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactoryobject.h
@@ -199,6 +203,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageeditorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/isotfproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/isovalueproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
@@ -220,14 +226,18 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/raycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stipplingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/stringproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/templateproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/tfpropertyconcept.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/datavisualizer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/datavisualizermanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawerfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resourcemanager/resource.h
@@ -349,11 +359,13 @@ set(SOURCE_FILES
     datastructures/image/layerramconverter.cpp
     datastructures/image/layerramprecision.cpp
     datastructures/image/layerrepresentation.cpp
+    datastructures/isovaluecollection.cpp
     datastructures/light/baselightsource.cpp
     datastructures/representationconvertermetafactory.cpp
     datastructures/spatialdata.cpp
+    datastructures/tfprimitive.cpp
+    datastructures/tfprimitiveset.cpp
     datastructures/transferfunction.cpp
-    datastructures/transferfunctiondatapoint.cpp
     datastructures/volume/volume.cpp
     datastructures/volume/volumeborder.cpp
     datastructures/volume/volumedisk.cpp
@@ -443,11 +455,13 @@ set(SOURCE_FILES
     processors/processorinfo.cpp
     processors/processorpair.cpp
     processors/processortags.cpp
+    processors/processorutils.cpp
     processors/processorwidget.cpp
     processors/processorwidgetfactory.cpp
     processors/processorwidgetfactoryobject.cpp
     processors/processorwidgetobserver.cpp
     processors/progressbar.cpp
+    processors/progressbarowner.cpp
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp
@@ -460,6 +474,8 @@ set(SOURCE_FILES
     properties/filepatternproperty.cpp
     properties/fileproperty.cpp
     properties/imageeditorproperty.cpp
+    properties/isotfproperty.cpp
+    properties/isovalueproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp
@@ -478,12 +494,16 @@ set(SOURCE_FILES
     properties/propertywidget.cpp
     properties/propertywidgetfactory.cpp
     properties/propertywidgetfactoryobject.cpp
+    properties/raycastingproperty.cpp
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp
     properties/stipplingproperty.cpp
     properties/stringproperty.cpp
+    properties/tfpropertyconcept.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
+    rendering/datavisualizer.cpp
+    rendering/datavisualizermanager.cpp
     rendering/meshdrawerfactory.cpp
     resourcemanager/resource.cpp
     resourcemanager/resourcemanager.cpp
@@ -555,6 +575,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
+    tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/dataformats-test.cpp
     tests/unittests/dispatch-test.cpp
@@ -723,7 +744,7 @@ ivw_register_license_file(NAME "UTF8-CPP" TARGET utfcpp MODULE Core
 )
 
 if (TARGET vld-interface)
-    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" TARGET vld-interface MODULE Core
+    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core
         URL "https://kinddragon.github.io/vld/"
         TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
         FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt

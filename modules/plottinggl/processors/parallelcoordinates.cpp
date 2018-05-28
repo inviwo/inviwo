@@ -69,18 +69,15 @@ namespace {
  * @param range to use for filtering
  * @return true if if value is outside range and not missing data.
  */
-template<typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
-bool filterValue(const T& value, const vec2& range) {
+template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
+bool filterValue(const T &value, const vec2 &range) {
     // Do not filter missing data (NaN)
-    return !util::isnan(value) &&
-        (value < range.x ||
-            value > range.y);
+    return !util::isnan(value) && (value < range.x || value > range.y);
 }
 // Filter specialization for integer types
-template<typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
-bool filterValue(const T& value, const vec2& range) { 
-    return value < range.x ||
-            value > range.y;
+template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
+bool filterValue(const T &value, const vec2 &range) {
+    return value < range.x || value > range.y;
 }
 
 template <typename T>
@@ -96,7 +93,7 @@ struct Axis : public ParallelCoordinates::AxisBase {
         : AxisBase(columnId, name, boolCompositeProperty, usePercentiles, buffer)
         , range_(range)
         , dataVector_(dataVector) {
-        auto pecentiles = statsutil::percentiles(*dataVector_, { 0., 0.25, 0.75, 1. });
+        auto pecentiles = statsutil::percentiles(*dataVector_, {0., 0.25, 0.75, 1.});
         p0_ = pecentiles[0];
         p25_ = pecentiles[1];
         p75_ = pecentiles[2];
@@ -116,7 +113,7 @@ struct Axis : public ParallelCoordinates::AxisBase {
             if (v >= p100_) {
                 return 1;
             }
-            float minV, maxV;
+            T minV, maxV;
             float o, r;
             if (v < p25_) {
                 minV = p0_;
@@ -135,45 +132,50 @@ struct Axis : public ParallelCoordinates::AxisBase {
                 r = 0.25f;
             }
 
-            float t = (v - minV) / (maxV - minV);
+            float t = (v - static_cast<float>(minV)) / static_cast<float>(maxV - minV);
             return o + t * r;
         } else {
-            return (v - range_->getRangeMin()) / (range_->getRangeMax() - range_->getRangeMin());
+            return static_cast<float>(static_cast<T>(v) - range_->getRangeMin()) /
+                   static_cast<float>(range_->getRangeMax() - range_->getRangeMin());
         }
     }
     virtual float getValue(float v) const override {
         if (usePercentiles_ && usePercentiles_->get()) {
+            T retval;
             if (v <= 0)
-                return p0_;
+                retval = p0_;
             else if (v >= 1)
-                return p100_;
+                retval = p100_;
             else if (v < 0.25f) {
                 v /= 0.25f;
-                return p0_ + v * (p25_ - p0_);
+                retval = p0_ + static_cast<T>(v) * (p25_ - p0_);
             } else if (v < 0.75f) {
                 v -= 0.25f;
                 v /= 0.5f;
-                return p25_ + v * (p75_ - p25_);
+                retval = p25_ + static_cast<T>(v) * (p75_ - p25_);
             } else {
                 v -= 0.75f;
                 v /= 0.25f;
-                return p75_ + v * (p100_ - p75_);
+                retval = p75_ + static_cast<T>(v) * (p100_ - p75_);
             }
+            return static_cast<float>(retval);
         } else {
-            return v * (range_->getRangeMax() - range_->getRangeMin()) + range_->getRangeMin();
+            return v * static_cast<float>(range_->getRangeMax() - range_->getRangeMin()) +
+                   static_cast<float>(range_->getRangeMin());
         }
     }
-    virtual float at(size_t idx) const override { return (*dataVector_)[idx]; }
+    virtual float at(size_t idx) const override { return static_cast<float>((*dataVector_)[idx]); }
 
     virtual vec2 getRange() const override { return vec2(range_->get()); }
 
-    virtual float getRangeMin() const override { return range_->getRangeMin(); }
-    virtual float getRangeMax() const override { return range_->getRangeMax(); }
+    virtual float getRangeMin() const override { return static_cast<float>(range_->getRangeMin()); }
+    virtual float getRangeMax() const override { return static_cast<float>(range_->getRangeMax()); }
 
     virtual void updateBrushing(std::unordered_set<size_t> &brushed) override {
         auto range = range_->get();
         // Increase range to avoid conversion issues
-        range += vec2(-std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon());
+        range +=
+            glm::tvec2<T>(-std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon());
         auto &vec = *dataVector_;
         for (size_t i = 0; i < vec.size(); i++) {
             if (filterValue(vec[i], range)) {
@@ -183,20 +185,20 @@ struct Axis : public ParallelCoordinates::AxisBase {
     }
 
     virtual void updateRange(bool upper, float y) override {
-        auto range = range_->get();
+        auto range = glm::tvec2<T>(range_->get());
 
-        y = getValue(y);
+        T v = static_cast<T>(getValue(y));
 
         if (upper) {
-            if (y < range.x) {
-                y = range.x;
+            if (v < range.x) {
+                v = range.x;
             }
-            range.y = y;
+            range.y = v;
         } else {
-            if (y > range.y) {
-                y = range.y;
+            if (v > range.y) {
+                v = range.y;
             }
-            range.x = y;
+            range.x = v;
         }
 
         range_->set(range);
@@ -243,9 +245,9 @@ ParallelCoordinates::ParallelCoordinates()
     , selectedLineWidth_("selectedLineWidth", "Line Width (selected lines)", 3.0f, 1.0f, 10.0f)
 
     , handleSize_("handleSize", "Handle Size", vec2(handleW, handleH), vec2(1), vec2(100), vec2(1))
-    
+
     , margins_("margins", "Margins", 0, 0, 0, 0)
-    
+
     , selectedAxisName_("selectedAxis", "Selected Axis", "", InvalidationLevel::Valid)
     , selectedAxisId_("selectedAxisId", "Selected AxisID", 0, 0, 100, 1, InvalidationLevel::Valid)
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_, false, 1)
@@ -273,8 +275,7 @@ ParallelCoordinates::ParallelCoordinates()
     , brushingDirty_(true)  // needs to be true after deserialization
     , extraMarginsLabel_(0, 0, 0, 0)
     , extraMarginsValues_(0, 0, 0, 0)
-    , extraMarginsHandles_(handleH, handleW / 2, handleH, handleW / 2)
-{
+    , extraMarginsHandles_(handleH, handleW / 2, handleH, handleW / 2) {
     addPort(dataFrame_);
     addPort(brushingAndLinking_);
     addPort(outport_);
@@ -330,15 +331,15 @@ ParallelCoordinates::ParallelCoordinates()
     labelPosition_.setSelectedIndex(2);
 
     TransferFunction tf;
-    tf.clearPoints();
-    tf.addPoint(vec2(0, 1), vec4(1, 0, 0, 1));
-    tf.addPoint(vec2(0.5, 1), vec4(1, 1, 0, 1));
-    tf.addPoint(vec2(1, 1), vec4(0, 1, 0, 1));
+    tf.clear();
+    tf.add(0.0, vec4(1, 0, 0, 1));
+    tf.add(0.5, vec4(1, 1, 0, 1));
+    tf.add(1.0, vec4(0, 1, 0, 1));
     tf_.set(tf);
     tf_.setCurrentStateAsDefault();
 
-    tf.clearPoints();
-    tf.addPoint(vec2(0.5, 1), vec4(1, 0, 0, 1));
+    tf.clear();
+    tf.add(0.5, vec4(1, 0, 0, 1));
     tfSelection_.set(tf);
     tfSelection_.setCurrentStateAsDefault();
 
@@ -491,7 +492,6 @@ void ParallelCoordinates::createOrUpdateProperties() {
                     auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
                     double minV = minMax.first.x;
                     double maxV = minMax.second.x;
-
 
                     std::string displayName = c->getHeader();
                     std::string identifier = displayName;  // remove non alpha num
@@ -792,7 +792,7 @@ void ParallelCoordinates::drawLines(size2_t size, std::vector<AxisBase *> enable
 }
 
 static const size_t valLabelXoffest = 16;
-void ParallelCoordinates::buildTextCache(size2_t size, std::vector<AxisBase *> enabledAxis) {
+void ParallelCoordinates::buildTextCache(size2_t, std::vector<AxisBase *> enabledAxis) {
     auto pos = labelPosition_.get();
     if (textCacheDirty_) {
         textCacheDirty_ = false;
@@ -816,16 +816,16 @@ void ParallelCoordinates::buildTextCache(size2_t size, std::vector<AxisBase *> e
 
             if (i == 0) {
                 if (pos == LabelPosition::Above) {
-                    extraMarginsLabel_.x = labelSize.y;
+                    extraMarginsLabel_.x = static_cast<float>(labelSize.y);
                 } else {
-                    extraMarginsLabel_.z = labelSize.y;
+                    extraMarginsLabel_.z = static_cast<float>(labelSize.y);
                 }
-                extraMarginsLabel_.w = labelSize.x / 2.0f;
+                extraMarginsLabel_.w = static_cast<float>(labelSize.x) / 2.0f;
             }
             if (i == enabledAxis.size() - 1) {
                 extraMarginsLabel_.y = labelSize.x / 2.0f;
-                extraMarginsValues_.y =
-                    std::max(minVLabelSize.x + valLabelXoffest, maxVLabelSize.x + valLabelXoffest);
+                extraMarginsValues_.y = static_cast<float>(
+                    std::max(minVLabelSize.x + valLabelXoffest, maxVLabelSize.x + valLabelXoffest));
             }
             i++;
         }
@@ -839,10 +839,10 @@ void ParallelCoordinates::renderText(size2_t outputsize, std::vector<AxisBase *>
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto outputSizeWOMarings = outputsize;
-    outputSizeWOMarings.x -=
-        margins_.getRight() + margins_.getLeft() + extraMargins.y + extraMargins.w;
-    outputSizeWOMarings.y -= margins_.getTop() + margins_.getBottom();
+    const vec2 outputSizeWOMargins(
+        static_cast<float>(outputsize.x) -
+            (margins_.getRight() + margins_.getLeft() + extraMargins.y + extraMargins.w),
+        static_cast<float>(outputsize.y) - (margins_.getTop() + margins_.getBottom()));
 
     float dx = 1.0f / (enabledAxis.size() - 1);
 
@@ -853,20 +853,20 @@ void ParallelCoordinates::renderText(size2_t outputsize, std::vector<AxisBase *>
 
         for (auto axes : enabledAxis) {
             float x = i++ * dx;
-            ivec2 textPos(0);
+            vec2 textPos(0);
             textPos.x =
-                x * outputSizeWOMarings.x + margins_.getLeft() + extraMargins.w + valLabelXoffest;
+                x * outputSizeWOMargins.x + margins_.getLeft() + extraMargins.w + valLabelXoffest;
             if (pos == LabelPosition::Below) {
                 textPos.y = extraMarginsLabel_.z;
             }
 
             textureRenderer_.render(axes->minValTexture_, textPos, outputsize);
 
-            textPos.y = outputsize.y - axes->maxValTexture_->getDimensions().y;
+            textPos.y = outputsize.y - static_cast<float>(axes->maxValTexture_->getDimensions().y);
             if (pos == LabelPosition::Above) {
                 textPos.y -= extraMarginsLabel_.x;
             }
-            textureRenderer_.render(axes->maxValTexture_, textPos, outputsize);
+            textureRenderer_.render(axes->maxValTexture_, ivec2(textPos), outputsize);
         }
     }
 
@@ -881,15 +881,15 @@ void ParallelCoordinates::renderText(size2_t outputsize, std::vector<AxisBase *>
 
             vec2 size(axes->labelTexture_->getDimensions());
 
-            ivec2 textPos(0);
+            vec2 textPos(0);
             textPos.x =
-                x * outputSizeWOMarings.x + margins_.getLeft() + extraMargins.w - size.x / 2.0f;
+                x * outputSizeWOMargins.x + margins_.getLeft() + extraMargins.w - size.x / 2.0f;
 
             if (pos == LabelPosition::Above) {
                 textPos.y = outputsize.y - size.y;
             }
 
-            textureRenderer_.render(axes->labelTexture_, textPos, outputsize);
+            textureRenderer_.render(axes->labelTexture_, ivec2(textPos), outputsize);
         }
     }
 }
@@ -928,7 +928,7 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
         // auto axis = axisVector_[axisID].get();
         selectedAxisId_.set(static_cast<int>(axisID));
 
-        axisVector_[axisID]->updateRange(upper, newY);
+        axisVector_[axisID]->updateRange(upper, static_cast<float>(newY));
         mouseEvent->markAsUsed();
     }
 }

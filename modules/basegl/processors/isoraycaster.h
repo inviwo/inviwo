@@ -81,8 +81,6 @@ protected:
     Shader shader_;
 
 private:
-    void onVolumeChange();
-
     VolumeInport volumePort_;
     ImageInport entryPort_;
     ImageInport exitPort_;
@@ -102,4 +100,4 @@ private:
 
 } // namespace
 
-#endif // IVW_SIMPLERAYCASTER_H
+#endif // IVW_ISORAYCASTER_H

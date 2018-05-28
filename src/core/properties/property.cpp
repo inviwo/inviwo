@@ -48,7 +48,7 @@ Property::Property(const std::string& identifier, const std::string& displayName
     , semantics_("semantics", semantics)
     , usageMode_("usageMode", UsageMode::Development)
     , visible_("visible", true)
-    , propertyModified_(false)
+    , propertyModified_(true)
     , invalidationLevel_(invalidationLevel)
     , owner_(nullptr)
     , initiatingWidget_(nullptr) {
@@ -319,8 +319,12 @@ const std::vector<PropertyWidget*>& Property::getWidgets() const { return proper
 PropertySerializationMode Property::getSerializationMode() const { return serializationMode_; }
 void Property::setSerializationMode(PropertySerializationMode mode) { serializationMode_ = mode; }
 
+std::shared_ptr<std::function<void()>> Property::onChangeScoped(std::function<void()> callback) {
+    return onChangeCallback_.addLambdaCallbackRaii(std::move(callback));
+}
+
 const BaseCallBack* Property::onChange(std::function<void()> callback) {
-    return onChangeCallback_.addLambdaCallback(callback);
+    return onChangeCallback_.addLambdaCallback(std::move(callback));
 }
 
 void Property::removeOnChange(const BaseCallBack* callback) { onChangeCallback_.remove(callback); }

@@ -64,6 +64,9 @@ private:
     std::unique_ptr<Shader> textureShader_;
     std::unique_ptr<Shader> noiseShader_;
     std::unordered_map<std::size_t, std::unique_ptr<Shader>> imgCopyShaders_;
+
+    friend Singleton<SharedOpenGLResources>;
+    static SharedOpenGLResources* instance_;
 };
 
 } // namespace

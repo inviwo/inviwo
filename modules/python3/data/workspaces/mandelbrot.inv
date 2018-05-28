@@ -2,8 +2,65 @@
 <InviwoWorkspace version="2">
     <InviwoSetup>
         <Modules>
-            <Module name="Core" version="0" />
-            <Module name="assimp" version="0" />
+            <Module name="Core" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.Image.outport.metasource" />
+                    <Processor content="org.inviwo.Image.outport.metasink" />
+                    <Processor content="org.inviwo.CompositeProcessor" />
+                    <Processor content="org.inviwo.Mesh.outport.metasink" />
+                    <Processor content="org.inviwo.Mesh.outport.metasource" />
+                    <Processor content="org.inviwo.Volume.outport.metasink" />
+                    <Processor content="org.inviwo.Volume.outport.metasource" />
+                    <Processor content="org.inviwo.Buffer.outport.metasink" />
+                    <Processor content="org.inviwo.Buffer.outport.metasource" />
+                    <Processor content="org.inviwo.LightSource.outport.metasink" />
+                    <Processor content="org.inviwo.LightSource.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.CompositeProcessorCUserspetst55AppDataRoamingInviwocompositesComptestinv" />
+                    <Processor content="org.inviwo.CompositeProcessorCUserspetst55AppDataRoamingInviwocompositesRaycasterinv" />
+                    <Processor content="org.inviwo.CompositeProcessorCUserspetst55WorkInviwoInviwodevdataworkspacescompositesVolumeRaycasterCompositeinv" />
+                </Processors>
+            </Module>
+            <Module name="OpenGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CanvasGL" />
+                </Processors>
+            </Module>
             <Module name="Base" version="2">
                 <Processors>
                     <Processor content="org.inviwo.ConvexHull2DProcessor" />
@@ -20,6 +77,7 @@
                     <Processor content="org.inviwo.LayerDistanceTransformRAM" />
                     <Processor content="org.inviwo.MeshClipping" />
                     <Processor content="org.inviwo.MeshCreator" />
+                    <Processor content="org.inviwo.MeshMapping" />
                     <Processor content="org.inviwo.NoiseProcessor" />
                     <Processor content="org.inviwo.PixelToBufferProcessor" />
                     <Processor content="org.inviwo.Pointlightsource" />
@@ -55,14 +113,13 @@
                     <Processor content="org.inviwo.RandomMeshGenerator" />
                     <Processor content="org.inviwo.RandomSphereGenerator" />
                     <Processor content="org.inviwo.NoiseVolumeProcessor" />
+                    <Processor content="org.inviwo.BufferToMeshProcessor" />
+                    <Processor content="org.inviwo.CameraFrustum" />
+                    <Processor content="org.inviwo.VolumeSequenceSingleTimestepSampler" />
+                    <Processor content="org.inviwo.VolumeCreator" />
                     <Processor content="org.inviwo.Volume.InputSelector" />
                     <Processor content="org.inviwo.Mesh.InputSelector" />
                     <Processor content="org.inviwo.Image.InputSelector" />
-                </Processors>
-            </Module>
-            <Module name="OpenGL" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CanvasGL" />
                 </Processors>
             </Module>
             <Module name="BaseGL" version="3">
@@ -118,6 +175,26 @@
                     <Processor content="org.inviwo.VolumeShader" />
                 </Processors>
             </Module>
+            <Module name="ABufferGL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
+                </Processors>
+            </Module>
+            <Module name="Animation" version="0" />
+            <Module name="QtWidgets" version="0" />
+            <Module name="AnimationQt" version="0" />
+            <Module name="assimp" version="0" />
+            <Module name="OpenGLQt" version="0" />
+            <Module name="OpenCL" version="0" />
+            <Module name="BaseCL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.EntryExitPointsCL" />
+                    <Processor content="org.inviwo.GrayscaleCL" />
+                    <Processor content="org.inviwo.VolumeFirstHitCL" />
+                    <Processor content="org.inviwo.VolumeMaxCL" />
+                    <Processor content="org.inviwo.VolumeRaycasterCL" />
+                </Processors>
+            </Module>
             <Module name="BrushingAndLinking" version="0">
                 <Processors>
                     <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
@@ -129,6 +206,15 @@
                     <Processor content="org.inviwo.EigenMatrixToImage" />
                     <Processor content="org.inviwo.EigenMix" />
                     <Processor content="org.inviwo.EigenNormalize" />
+                    <Processor content="EigenMatrixXf.outport.metasink" />
+                    <Processor content="EigenMatrixXf.outport.metasource" />
+                </Processors>
+            </Module>
+            <Module name="Example" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.ExampleProcessor" />
+                    <Processor content="org.inviwo.ExampleProgressBar" />
+                    <Processor content="org.inviwo.SimpleRaycaster" />
                 </Processors>
             </Module>
             <Module name="FontRendering" version="3">
@@ -136,21 +222,29 @@
                     <Processor content="org.inviwo.TextOverlayGL" />
                 </Processors>
             </Module>
+            <Module name="HDF5" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.hdf5.Source" />
+                    <Processor content="org.inviwo.hdf5.ToVolume" />
+                    <Processor content="org.inviwo.hdf5.PathSelection" />
+                </Processors>
+            </Module>
             <Module name="Nifti" version="0" />
-            <Module name="QtWidgets" version="0" />
-            <Module name="OpenGLQt" version="0" />
-            <Module name="OpenCL" version="0" />
             <Module name="Plotting" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CSVSource" />
                     <Processor content="org.inviwo.DataFrameColumnToColorVector" />
+                    <Processor content="org.inviwo.DataFrameExporter" />
+                    <Processor content="org.inviwo.ImageToDataFrame" />
                     <Processor content="org.inviwo.SyntheticDataFrame" />
+                    <Processor content="org.inviwo.VolumeToDataFrame" />
                 </Processors>
             </Module>
             <Module name="PlottingGL" version="0">
                 <Processors>
                     <Processor content="org.inviwo.AxisRenderProcessor" />
                     <Processor content="org.inviwo.ParallelCoordinates" />
+                    <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
                     <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
                     <Processor content="org.inviwo.ScatterPlotProcessor" />
                     <Processor content="org.inviwo.VolumeAxis" />
@@ -160,6 +254,7 @@
                 <Processors>
                     <Processor content="org.inviwo.SSAO" />
                     <Processor content="org.inviwo.FXAA" />
+                    <Processor content="org.inviwo.Fog" />
                     <Processor content="org.inviwo.Tonemapping" />
                     <Processor content="org.inviwo.HdrBloom" />
                     <Processor content="org.inviwo.ImageBrightnessContrast" />
@@ -176,6 +271,7 @@
                     <Processor content="org.inviwo.NumPyVolume" />
                     <Processor content="org.inviwo.NumpyMandelbrot" />
                     <Processor content="org.inviwo.NumPyMeshCreateTest" />
+                    <Processor content="org.inviwo.PythonScriptProcessor" />
                 </Processors>
             </Module>
             <Module name="Python3Qt" version="0" />
@@ -223,14 +319,14 @@
         </Modules>
     </InviwoSetup>
     <ProcessorNetwork>
-        <ProcessorNetworkVersion content="15" />
+        <ProcessorNetworkVersion content="16" />
         <Processors>
-            <Processor type="org.inviwo.NumpyMandelbrot" identifier="Numpy Mandelbrot">
+            <Processor type="org.inviwo.NumpyMandelbrot" identifier="Numpy Mandelbrot" displayName="NumPy Mandelbrot">
                 <PortGroups>
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref4" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref4" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.IntSize2Property" identifier="size">
@@ -251,12 +347,12 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.CanvasGL" identifier="Canvas">
+            <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref5" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref5" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -312,6 +408,9 @@
                     <Property type="org.inviwo.EventProperty" identifier="fullscreen">
                         <Event />
                     </Property>
+                    <Property type="org.inviwo.EventProperty" identifier="saveLayerEvent">
+                        <Event />
+                    </Property>
                     <Property type="org.inviwo.BoolProperty" identifier="allowContextMenu" />
                 </Properties>
                 <MetaDataMap>
@@ -327,16 +426,16 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.ImageNormalization" identifier="Image Normalization">
+            <Processor type="org.inviwo.ImageNormalization" identifier="Image Normalization" displayName="Image Normalization">
                 <PortGroups>
                     <PortGroup content="default" key="inputImage" />
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref2" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inputImage" id="ref2" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref3" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outputImage" id="ref3" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.BoolProperty" identifier="normalizeSeparately" />
@@ -356,1050 +455,1056 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.ImageMapping" identifier="Image Mapping">
+            <Processor type="org.inviwo.ImageMapping" identifier="Image Mapping" displayName="Image Mapping">
                 <PortGroups>
                     <PortGroup content="default" key="inputImage" />
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inputImage" id="ref0" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inputImage" id="ref0" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" id="ref1" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outputImage" id="ref1" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction">
                         <MetaDataMap>
-                            <MetaDataItem type="org.inviwo.PropertyEditorWidgetMetaData" key="org.inviwo.PropertyEditorWidgetMetaData">
-                                <position x="1034" y="415" />
-                                <dimensions x="537" y="343" />
-                                <visibility content="1" />
-                                <dockstatus content="Floating" />
-                                <stickyflag content="0" />
+                            <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
+                                <MetaData x="1034" y="415" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
+                                <MetaData x="537" y="343" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
+                                <MetaData content="0" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetVisible">
+                                <MetaData content="1" />
                             </MetaDataItem>
                         </MetaDataMap>
                         <TransferFunction>
                             <maskMin content="0" />
                             <maskMax content="1" />
+                            <type content="0" />
                             <Points>
                                 <Point>
                                     <pos content="0" />
                                     <rgba x="0.001462" y="0.000466" z="0.013866" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.0039215689" />
+                                    <pos content="0.003921568900000000149064227628059597918764" />
                                     <rgba x="0.002267" y="0.00127" z="0.01857" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.0078431377" />
+                                    <pos content="0.007843137700000000697708735231117316288874" />
                                     <rgba x="0.003299" y="0.0022489999" z="0.024239" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.011764706" />
+                                    <pos content="0.01176470599999999977480769075555144809186" />
                                     <rgba x="0.0045469999" y="0.003392" z="0.030909" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.015686275" />
+                                    <pos content="0.01568627499999999952429163840861292555928" />
                                     <rgba x="0.0060060001" y="0.0046919999" z="0.038557999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.019607844" />
+                                    <pos content="0.0196078439999999992737755860616744030267" />
                                     <rgba x="0.0076759998" y="0.0061360002" z="0.046836" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.023529412" />
+                                    <pos content="0.02352941199999999954961538151110289618373" />
                                     <rgba x="0.0095610004" y="0.0077129998" z="0.055142999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.027450981" />
+                                    <pos content="0.02745098099999999929909932916416437365115" />
                                     <rgba x="0.011663" y="0.0094170002" z="0.06346" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.031372551" />
+                                    <pos content="0.03137255099999999852222742902085883542895" />
                                     <rgba x="0.013995" y="0.011225" z="0.071861997" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.035294119" />
+                                    <pos content="0.03529411899999999879806722447028732858598" />
                                     <rgba x="0.016561" y="0.013136" z="0.080282003" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.039215688" />
+                                    <pos content="0.0392156879999999985475511721233488060534" />
                                     <rgba x="0.019373" y="0.015133" z="0.088767" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.043137256" />
+                                    <pos content="0.04313725599999999882339096757277729921043" />
                                     <rgba x="0.022446999" y="0.017199" z="0.097327001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.047058824" />
+                                    <pos content="0.04705882399999999909923076302220579236746" />
                                     <rgba x="0.025792999" y="0.019331001" z="0.10593" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.050980393" />
+                                    <pos content="0.05098039299999999884871471067526726983488" />
                                     <rgba x="0.029432001" y="0.021503" z="0.114621" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.054901961" />
+                                    <pos content="0.05490196099999999912455450612469576299191" />
                                     <rgba x="0.033385001" y="0.023701999" z="0.123397" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.05882353" />
+                                    <pos content="0.05882352999999999887403845377775724045932" />
                                     <rgba x="0.037668001" y="0.025921" z="0.132232" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.062745102" />
+                                    <pos content="0.06274510199999999704445485804171767085791" />
                                     <rgba x="0.042252999" y="0.028139001" z="0.141141" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.06666667" />
+                                    <pos content="0.06666666999999999732029465349114616401494" />
                                     <rgba x="0.046914998" y="0.030324001" z="0.15016399" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.070588239" />
+                                    <pos content="0.07058823899999999706977860114420764148235" />
                                     <rgba x="0.051644001" y="0.032474" z="0.159254" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.074509807" />
+                                    <pos content="0.07450980699999999734561839659363613463938" />
                                     <rgba x="0.056449" y="0.034568999" z="0.168414" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.078431375" />
+                                    <pos content="0.07843137499999999762145819204306462779641" />
                                     <rgba x="0.06134" y="0.036589999" z="0.177642" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.082352944" />
+                                    <pos content="0.08235294399999999737094213969612610526383" />
                                     <rgba x="0.066330999" y="0.038504001" z="0.18696199" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.086274512" />
+                                    <pos content="0.08627451199999999764678193514555459842086" />
                                     <rgba x="0.071428999" y="0.040293999" z="0.196354" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.090196081" />
+                                    <pos content="0.09019608099999999739626588279861607588828" />
                                     <rgba x="0.076637" y="0.041905001" z="0.205799" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.094117649" />
+                                    <pos content="0.09411764899999999767210567824804456904531" />
                                     <rgba x="0.081961997" y="0.043327998" z="0.215289" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.098039217" />
+                                    <pos content="0.09803921699999999794794547369747306220233" />
                                     <rgba x="0.087411001" y="0.044555999" z="0.224813" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.10196079" />
+                                    <pos content="0.1019607899999999955920060301650664769113" />
                                     <rgba x="0.092990004" y="0.045582999" z="0.234358" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.10588235" />
+                                    <pos content="0.1058823500000000000786926079854310955852" />
                                     <rgba x="0.098701999" y="0.046402" z="0.24390399" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.10980392" />
+                                    <pos content="0.109803919999999999301820707842125557363" />
                                     <rgba x="0.104551" y="0.047008" z="0.25343001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.11372549" />
+                                    <pos content="0.1137254899999999985249488076988200191408" />
                                     <rgba x="0.110536" y="0.047398999" z="0.26291201" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.11764706" />
+                                    <pos content="0.1176470599999999977480769075555144809186" />
                                     <rgba x="0.116656" y="0.047573999" z="0.27232099" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.12156863" />
+                                    <pos content="0.1215686299999999969712050074122089426965" />
                                     <rgba x="0.122908" y="0.047536001" z="0.28162399" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.1254902" />
+                                    <pos content="0.1254901999999999961943331072689034044743" />
                                     <rgba x="0.12928499" y="0.047293" z="0.29078799" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.12941177" />
+                                    <pos content="0.1294117700000000092952490149400546215475" />
                                     <rgba x="0.13577799" y="0.046856001" z="0.29977599" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.13333334" />
+                                    <pos content="0.1333333399999999946405893069822923280299" />
                                     <rgba x="0.142378" y="0.046241999" z="0.30855301" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.13725491" />
+                                    <pos content="0.1372549100000000077415052146534435451031" />
                                     <rgba x="0.149073" y="0.045467999" z="0.317085" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.14117648" />
+                                    <pos content="0.1411764799999999930868455066956812515855" />
                                     <rgba x="0.15584999" y="0.044558998" z="0.32533801" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.14509805" />
+                                    <pos content="0.1450980500000000061877614143668324686587" />
                                     <rgba x="0.162689" y="0.043554001" z="0.33327699" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.14901961" />
+                                    <pos content="0.1490196099999999967966601843727403320372" />
                                     <rgba x="0.16957501" y="0.042489" z="0.34087399" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.15294118" />
+                                    <pos content="0.1529411800000000098975760920438915491104" />
                                     <rgba x="0.176493" y="0.041402001" z="0.348111" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.15686275" />
+                                    <pos content="0.1568627499999999952429163840861292555928" />
                                     <rgba x="0.183429" y="0.040329002" z="0.35497099" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.16078432" />
+                                    <pos content="0.160784320000000008343832291757280472666" />
                                     <rgba x="0.190367" y="0.039308999" z="0.36144701" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.16470589" />
+                                    <pos content="0.1647058899999999936891725837995181791484" />
                                     <rgba x="0.19729701" y="0.038400002" z="0.367535" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.16862746" />
+                                    <pos content="0.1686274600000000067900884914706693962216" />
                                     <rgba x="0.204209" y="0.037632" z="0.373238" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.17254902" />
+                                    <pos content="0.1725490199999999973989872614765772596002" />
                                     <rgba x="0.21109501" y="0.03703" z="0.37856299" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.17647059" />
+                                    <pos content="0.1764705900000000104999031691477284766734" />
                                     <rgba x="0.217949" y="0.036614999" z="0.383522" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.18039216" />
+                                    <pos content="0.1803921599999999958452434611899661831558" />
                                     <rgba x="0.22476301" y="0.036405001" z="0.388129" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.18431373" />
+                                    <pos content="0.184313730000000008946159368861117400229" />
                                     <rgba x="0.231538" y="0.036405001" z="0.3924" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.1882353" />
+                                    <pos content="0.1882352999999999942914996609033551067114" />
                                     <rgba x="0.23827299" y="0.036621001" z="0.39635301" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.19215687" />
+                                    <pos content="0.1921568700000000073924155685745063237846" />
                                     <rgba x="0.244967" y="0.037055001" z="0.40000701" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.19607843" />
+                                    <pos content="0.1960784299999999980013143385804141871631" />
                                     <rgba x="0.25161999" y="0.037705" z="0.40337801" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.2" />
+                                    <pos content="0.2000000000000000111022302462515654042363" />
                                     <rgba x="0.25823399" y="0.038571" z="0.40648499" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.20392157" />
+                                    <pos content="0.2039215699999999964475705382938031107187" />
                                     <rgba x="0.26481" y="0.039647002" z="0.409345" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.20784314" />
+                                    <pos content="0.2078431400000000095484864459649543277919" />
                                     <rgba x="0.27134699" y="0.040922001" z="0.41197601" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.21176471" />
+                                    <pos content="0.2117647099999999948938267380071920342743" />
                                     <rgba x="0.27785" y="0.042353" z="0.41439199" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.21568628" />
+                                    <pos content="0.2156862800000000079947426456783432513475" />
                                     <rgba x="0.28432101" y="0.043933" z="0.41660801" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.21960784" />
+                                    <pos content="0.2196078399999999986036414156842511147261" />
                                     <rgba x="0.29076299" y="0.045644" z="0.41863701" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.22352941" />
+                                    <pos content="0.2235294100000000117045573233554023317993" />
                                     <rgba x="0.297178" y="0.04747" z="0.42049101" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.22745098" />
+                                    <pos content="0.2274509799999999970498976153976400382817" />
                                     <rgba x="0.30356801" y="0.049396001" z="0.42218199" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.23137255" />
+                                    <pos content="0.2313725500000000101508135230687912553549" />
                                     <rgba x="0.309935" y="0.051406998" z="0.42372099" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.23529412" />
+                                    <pos content="0.2352941199999999954961538151110289618373" />
                                     <rgba x="0.316282" y="0.053490002" z="0.425116" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.23921569" />
+                                    <pos content="0.2392156900000000085970697227821801789105" />
                                     <rgba x="0.32260999" y="0.055633999" z="0.426377" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.24313726" />
+                                    <pos content="0.2431372599999999939424100148244178853929" />
                                     <rgba x="0.32892099" y="0.057827" z="0.42751101" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.24705882" />
+                                    <pos content="0.2470588200000000123068844004592392593622" />
                                     <rgba x="0.335217" y="0.060059998" z="0.42852399" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.25098041" />
+                                    <pos content="0.2509804099999999871251077365741366520524" />
                                     <rgba x="0.34150001" y="0.062325001" z="0.429425" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.25490198" />
+                                    <pos content="0.2549019799999999724704480286163743585348" />
                                     <rgba x="0.34777099" y="0.064616002" z="0.430217" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.25882354" />
+                                    <pos content="0.2588235400000000185904980298801092430949" />
                                     <rgba x="0.35403201" y="0.066924997" z="0.430906" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.26274511" />
+                                    <pos content="0.2627451100000000039358383219223469495773" />
                                     <rgba x="0.360284" y="0.069247" z="0.43149701" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.26666668" />
+                                    <pos content="0.2666666799999999892811786139645846560597" />
                                     <rgba x="0.36652899" y="0.071579002" z="0.43199399" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.27058825" />
+                                    <pos content="0.2705882499999999746265189060068223625422" />
                                     <rgba x="0.37276801" y="0.073914997" z="0.43239999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.27450982" />
+                                    <pos content="0.2745098200000000154830104293068870902061" />
                                     <rgba x="0.37900099" y="0.076252997" z="0.43271899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.27843139" />
+                                    <pos content="0.2784313900000000008283507213491247966886" />
                                     <rgba x="0.38522801" y="0.078590997" z="0.432955" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.28235295" />
+                                    <pos content="0.2823529499999999914372494913550326600671" />
                                     <rgba x="0.391453" y="0.080926999" z="0.43310899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.28627452" />
+                                    <pos content="0.2862745199999999767825897833972703665495" />
                                     <rgba x="0.39767399" y="0.083256997" z="0.43318301" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.29019609" />
+                                    <pos content="0.2901960900000000176390813066973350942135" />
                                     <rgba x="0.40389401" y="0.085579999" z="0.43317899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.29411766" />
+                                    <pos content="0.2941176600000000029844215987395728006959" />
                                     <rgba x="0.41011301" y="0.087895997" z="0.43309799" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.29803923" />
+                                    <pos content="0.2980392299999999883297618907818105071783" />
                                     <rgba x="0.41633099" y="0.090203002" z="0.43294299" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.3019608" />
+                                    <pos content="0.3019607999999999736751021828240482136607" />
                                     <rgba x="0.42254901" y="0.092501" z="0.43271399" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.30588236" />
+                                    <pos content="0.3058823600000000197951521840877830982208" />
                                     <rgba x="0.42876801" y="0.094789997" z="0.432412" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.30980393" />
+                                    <pos content="0.3098039300000000051404924761300208047032" />
                                     <rgba x="0.43498701" y="0.097069003" z="0.43203899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.3137255" />
+                                    <pos content="0.3137254999999999904858327681722585111856" />
                                     <rgba x="0.44120699" y="0.099338003" z="0.43159401" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.31764707" />
+                                    <pos content="0.3176470699999999758311730602144962176681" />
                                     <rgba x="0.44742799" y="0.101597" z="0.43108001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.32156864" />
+                                    <pos content="0.3215686400000000166876645835145609453321" />
                                     <rgba x="0.45365101" y="0.103848" z="0.430498" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.32549021" />
+                                    <pos content="0.3254902100000000020330048755567986518145" />
                                     <rgba x="0.45987499" y="0.106089" z="0.42984599" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.32941177" />
+                                    <pos content="0.329411769999999992641903645562706515193" />
                                     <rgba x="0.46610001" y="0.108322" z="0.42912501" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.33333334" />
+                                    <pos content="0.3333333399999999779872439376049442216754" />
                                     <rgba x="0.47232801" y="0.110547" z="0.428334" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.33725491" />
+                                    <pos content="0.3372549100000000188437354609050089493394" />
                                     <rgba x="0.478558" y="0.112764" z="0.42747501" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.34117648" />
+                                    <pos content="0.3411764800000000041890757529472466558218" />
                                     <rgba x="0.48478901" y="0.114974" z="0.426548" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.34509805" />
+                                    <pos content="0.3450980499999999895344160449894843623042" />
                                     <rgba x="0.49102199" y="0.117179" z="0.42555201" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.34901962" />
+                                    <pos content="0.3490196199999999748797563370317220687866" />
                                     <rgba x="0.49725699" y="0.119379" z="0.42448801" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.35294119" />
+                                    <pos content="0.3529411900000000157362478603317867964506" />
                                     <rgba x="0.50349301" y="0.121575" z="0.423356" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.35686275" />
+                                    <pos content="0.3568627500000000063451466303376946598291" />
                                     <rgba x="0.50972998" y="0.123769" z="0.42215601" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.36078432" />
+                                    <pos content="0.3607843199999999916904869223799323663116" />
                                     <rgba x="0.51596701" y="0.12596001" z="0.42088699" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.36470589" />
+                                    <pos content="0.364705889999999977035827214422170072794" />
                                     <rgba x="0.52220601" y="0.12815" z="0.41954899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.36862746" />
+                                    <pos content="0.368627460000000017892318737722234800458" />
                                     <rgba x="0.52844399" y="0.13034099" z="0.41814199" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.37254903" />
+                                    <pos content="0.3725490300000000032376590297644725069404" />
                                     <rgba x="0.53468299" y="0.132534" z="0.41666701" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.3764706" />
+                                    <pos content="0.3764705999999999885829993218067102134228" />
                                     <rgba x="0.54092002" y="0.134729" z="0.41512299" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.38039216" />
+                                    <pos content="0.3803921599999999791918980918126180768013" />
                                     <rgba x="0.54715699" y="0.13692901" z="0.41351101" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.38431373" />
+                                    <pos content="0.3843137300000000200483896151126828044653" />
                                     <rgba x="0.55339199" y="0.139134" z="0.41182899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.3882353" />
+                                    <pos content="0.3882353000000000053937299071549205109477" />
                                     <rgba x="0.55962402" y="0.14134599" z="0.41007799" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.39215687" />
+                                    <pos content="0.3921568699999999907390701991971582174301" />
                                     <rgba x="0.56585401" y="0.143567" z="0.40825799" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.39607844" />
+                                    <pos content="0.3960784399999999760844104912393959239125" />
                                     <rgba x="0.57208103" y="0.145797" z="0.406369" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.40000001" />
+                                    <pos content="0.4000000100000000169409020145394606515765" />
                                     <rgba x="0.57830399" y="0.148039" z="0.40441099" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.40392157" />
+                                    <pos content="0.403921570000000007549800784545368514955" />
                                     <rgba x="0.584521" y="0.15029401" z="0.402385" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.40784314" />
+                                    <pos content="0.4078431399999999928951410765876062214375" />
                                     <rgba x="0.590734" y="0.15256301" z="0.40029001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.41176471" />
+                                    <pos content="0.4117647099999999782404813686298439279199" />
                                     <rgba x="0.59693998" y="0.15484799" z="0.39812499" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.41568628" />
+                                    <pos content="0.4156862800000000190969728919299086555839" />
                                     <rgba x="0.60313898" y="0.157151" z="0.39589101" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.41960785" />
+                                    <pos content="0.4196078500000000044423131839721463620663" />
                                     <rgba x="0.60933" y="0.159474" z="0.39358899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.42352942" />
+                                    <pos content="0.4235294199999999897876534760143840685487" />
                                     <rgba x="0.61551303" y="0.161817" z="0.39121899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.42745098" />
+                                    <pos content="0.4274509799999999803965522460202919319272" />
                                     <rgba x="0.62168503" y="0.164184" z="0.38878101" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.43137255" />
+                                    <pos content="0.4313725500000000212530437693203566595912" />
                                     <rgba x="0.62784702" y="0.166575" z="0.38627601" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.43529412" />
+                                    <pos content="0.4352941200000000065983840613625943660736" />
                                     <rgba x="0.63399798" y="0.168992" z="0.38370401" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.43921569" />
+                                    <pos content="0.439215689999999991943724353404832072556" />
                                     <rgba x="0.64013499" y="0.17143799" z="0.38106501" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.44313726" />
+                                    <pos content="0.4431372599999999772890646454470697790384" />
                                     <rgba x="0.64626002" y="0.173914" z="0.37835899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.44705883" />
+                                    <pos content="0.4470588300000000181455561687471345067024" />
                                     <rgba x="0.65236902" y="0.176421" z="0.375586" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.4509804" />
+                                    <pos content="0.4509804000000000034908964607893722131848" />
                                     <rgba x="0.658463" y="0.17896201" z="0.37274799" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.45490196" />
+                                    <pos content="0.4549019599999999940997952307952800765634" />
                                     <rgba x="0.66453999" y="0.181539" z="0.36984599" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.45882353" />
+                                    <pos content="0.4588235299999999794451355228375177830458" />
                                     <rgba x="0.67059898" y="0.18415301" z="0.36687899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.4627451" />
+                                    <pos content="0.4627451000000000203016270461375825107098" />
                                     <rgba x="0.67663801" y="0.18680701" z="0.36384901" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.46666667" />
+                                    <pos content="0.4666666700000000056469673381798202171922" />
                                     <rgba x="0.68265599" y="0.189501" z="0.36075699" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.47058824" />
+                                    <pos content="0.4705882399999999909923076302220579236746" />
                                     <rgba x="0.68865299" y="0.192239" z="0.35760301" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.47450981" />
+                                    <pos content="0.474509809999999976337647922264295630157" />
                                     <rgba x="0.69462699" y="0.195021" z="0.354388" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.47843137" />
+                                    <pos content="0.4784313700000000224576979235280305147171" />
                                     <rgba x="0.70057601" y="0.197851" z="0.35111299" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.48235294" />
+                                    <pos content="0.4823529400000000078030382155702682211995" />
                                     <rgba x="0.70649999" y="0.200728" z="0.34777701" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.48627451" />
+                                    <pos content="0.4862745099999999931483785076125059276819" />
                                     <rgba x="0.71239603" y="0.203656" z="0.344383" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.49019608" />
+                                    <pos content="0.4901960799999999784937187996547436341643" />
                                     <rgba x="0.71826398" y="0.206636" z="0.340931" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.49411765" />
+                                    <pos content="0.4941176500000000193502103229548083618283" />
                                     <rgba x="0.72410297" y="0.20967001" z="0.33742401" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.49803922" />
+                                    <pos content="0.4980392200000000046955506149970460683107" />
                                     <rgba x="0.729909" y="0.212759" z="0.33386099" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.50196081" />
+                                    <pos content="0.5019608100000000350249251823697704821825" />
                                     <rgba x="0.73568302" y="0.21590599" z="0.33024499" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.50588238" />
+                                    <pos content="0.5058823799999999648591142431541811674833" />
                                     <rgba x="0.74142301" y="0.21911199" z="0.32657599" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.50980395" />
+                                    <pos content="0.5098039500000000057156057664542458951473" />
                                     <rgba x="0.747127" y="0.222378" z="0.32285601" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.51372552" />
+                                    <pos content="0.5137255200000000465720972897543106228113" />
                                     <rgba x="0.75279403" y="0.225706" z="0.319085" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.51764709" />
+                                    <pos content="0.5176470899999999764062863505387213081121" />
                                     <rgba x="0.75842202" y="0.22909699" z="0.31526601" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.52156866" />
+                                    <pos content="0.5215686600000000172627778738387860357761" />
                                     <rgba x="0.76401001" y="0.232554" z="0.31139901" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.52549022" />
+                                    <pos content="0.5254902200000000078716766438446938991547" />
                                     <rgba x="0.76955599" y="0.236077" z="0.30748501" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.52941179" />
+                                    <pos content="0.5294117900000000487281681671447586268187" />
                                     <rgba x="0.77505898" y="0.239667" z="0.30352601" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.53333336" />
+                                    <pos content="0.5333333599999999785623572279291693121195" />
                                     <rgba x="0.78051698" y="0.24332701" z="0.299523" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.53725493" />
+                                    <pos content="0.5372549300000000194188487512292340397835" />
                                     <rgba x="0.78592902" y="0.24705601" z="0.295477" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.5411765" />
+                                    <pos content="0.5411764999999999492530378120136447250843" />
                                     <rgba x="0.79129303" y="0.25085601" z="0.29139" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.54509807" />
+                                    <pos content="0.5450980699999999901095293353137094527483" />
                                     <rgba x="0.79660702" y="0.25472799" z="0.28726399" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.54901963" />
+                                    <pos content="0.5490196299999999807184281053196173161268" />
                                     <rgba x="0.801871" y="0.258674" z="0.283099" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.5529412" />
+                                    <pos content="0.5529412000000000215749196286196820437908" />
                                     <rgba x="0.807082" y="0.262692" z="0.278898" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.55686277" />
+                                    <pos content="0.5568627699999999514091086894040927290916" />
                                     <rgba x="0.81223899" y="0.26678601" z="0.274661" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.56078434" />
+                                    <pos content="0.5607843399999999922656002127041574567556" />
                                     <rgba x="0.81734103" y="0.27095401" z="0.27039" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.56470591" />
+                                    <pos content="0.5647059100000000331220917360042221844196" />
                                     <rgba x="0.82238603" y="0.275197" z="0.266085" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.56862748" />
+                                    <pos content="0.5686274799999999629562807967886328697205" />
                                     <rgba x="0.82737201" y="0.27951699" z="0.26175001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.57254905" />
+                                    <pos content="0.5725490500000000038127723200886975973845" />
                                     <rgba x="0.83229899" y="0.28391299" z="0.25738299" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.57647061" />
+                                    <pos content="0.576470609999999994421671090094605460763" />
                                     <rgba x="0.837165" y="0.288385" z="0.25298801" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.58039218" />
+                                    <pos content="0.580392180000000035278162613394670188427" />
                                     <rgba x="0.84196901" y="0.29293299" z="0.248564" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.58431375" />
+                                    <pos content="0.5843137499999999651123516741790808737278" />
                                     <rgba x="0.84670901" y="0.29755899" z="0.244113" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.58823532" />
+                                    <pos content="0.5882353200000000059688431974791456013918" />
                                     <rgba x="0.85138398" y="0.30226001" z="0.239636" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.59215689" />
+                                    <pos content="0.5921568900000000468253347207792103290558" />
                                     <rgba x="0.85599202" y="0.30703801" z="0.23513301" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.59607846" />
+                                    <pos content="0.5960784599999999766595237815636210143566" />
                                     <rgba x="0.860533" y="0.311892" z="0.230606" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.60000002" />
+                                    <pos content="0.6000000199999999672684225515695288777351" />
                                     <rgba x="0.86500603" y="0.31682199" z="0.226055" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.60392159" />
+                                    <pos content="0.6039215900000000081249140748695936053991" />
                                     <rgba x="0.86940902" y="0.32182699" z="0.22148199" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.60784316" />
+                                    <pos content="0.6078431600000000489814055981696583330631" />
                                     <rgba x="0.87374097" y="0.326906" z="0.216886" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.61176473" />
+                                    <pos content="0.611764729999999978815594658954069018364" />
                                     <rgba x="0.87800097" y="0.33206001" z="0.21226799" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.6156863" />
+                                    <pos content="0.6156863000000000196720861822541337460279" />
                                     <rgba x="0.88218802" y="0.33728701" z="0.207628" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.61960787" />
+                                    <pos content="0.6196078699999999495062752430385444313288" />
                                     <rgba x="0.88630199" y="0.34258601" z="0.202968" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.62352943" />
+                                    <pos content="0.6235294300000000511374764755601063370705" />
                                     <rgba x="0.89034098" y="0.34795699" z="0.198286" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.627451" />
+                                    <pos content="0.6274509999999999809716655363445170223713" />
                                     <rgba x="0.89430499" y="0.35339901" z="0.193584" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.63137257" />
+                                    <pos content="0.6313725700000000218281570596445817500353" />
                                     <rgba x="0.89819199" y="0.35891101" z="0.18886" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.63529414" />
+                                    <pos content="0.6352941399999999516623461204289924353361" />
                                     <rgba x="0.90200299" y="0.364492" z="0.18411601" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.63921571" />
+                                    <pos content="0.6392157099999999925188376437290571630001" />
                                     <rgba x="0.90573502" y="0.37013999" z="0.17935" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.64313728" />
+                                    <pos content="0.6431372800000000333753291670291218906641" />
                                     <rgba x="0.90938997" y="0.37585601" z="0.17456301" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.64705884" />
+                                    <pos content="0.6470588400000000239842279370350297540426" />
                                     <rgba x="0.91296601" y="0.38163599" z="0.169755" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.65098041" />
+                                    <pos content="0.6509804099999999538184169978194404393435" />
                                     <rgba x="0.916462" y="0.387481" z="0.164924" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.65490198" />
+                                    <pos content="0.6549019799999999946749085211195051670074" />
                                     <rgba x="0.91987902" y="0.39338899" z="0.16007" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.65882355" />
+                                    <pos content="0.6588235500000000355314000444195698946714" />
                                     <rgba x="0.92321497" y="0.39935899" z="0.155193" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.66274512" />
+                                    <pos content="0.6627451199999999653655891052039805799723" />
                                     <rgba x="0.92646998" y="0.40538901" z="0.15029199" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.66666669" />
+                                    <pos content="0.6666666900000000062220806285040453076363" />
                                     <rgba x="0.92964399" y="0.411479" z="0.145367" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.67058825" />
+                                    <pos content="0.6705882499999999968309793985099531710148" />
                                     <rgba x="0.93273699" y="0.41762701" z="0.14041699" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.67450982" />
+                                    <pos content="0.6745098200000000376874709218100178986788" />
                                     <rgba x="0.93574703" y="0.42383099" z="0.13544001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.67843139" />
+                                    <pos content="0.6784313899999999675216599825944285839796" />
                                     <rgba x="0.93867499" y="0.43009099" z="0.130438" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.68235296" />
+                                    <pos content="0.6823529600000000083781515058944933116436" />
                                     <rgba x="0.94152099" y="0.436405" z="0.12540901" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.68627453" />
+                                    <pos content="0.6862745300000000492346430291945580393076" />
                                     <rgba x="0.94428498" y="0.442772" z="0.120354" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.6901961" />
+                                    <pos content="0.6901960999999999790688320899789687246084" />
                                     <rgba x="0.94696498" y="0.449191" z="0.115272" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.69411767" />
+                                    <pos content="0.6941176700000000199253236132790334522724" />
                                     <rgba x="0.94956201" y="0.45565999" z="0.110164" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.69803923" />
+                                    <pos content="0.6980392300000000105342223832849413156509" />
                                     <rgba x="0.952075" y="0.46217799" z="0.105031" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.7019608" />
+                                    <pos content="0.7019608000000000513907139065850060433149" />
                                     <rgba x="0.95450598" y="0.46874401" z="0.099873997" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.70588237" />
+                                    <pos content="0.7058823699999999812249029673694167286158" />
                                     <rgba x="0.95685202" y="0.47535601" z="0.094695002" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.70980394" />
+                                    <pos content="0.7098039400000000220813944906694814562798" />
                                     <rgba x="0.95911402" y="0.482014" z="0.089498997" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.71372551" />
+                                    <pos content="0.7137255099999999519155835514538921415806" />
                                     <rgba x="0.96129298" y="0.48871601" z="0.084288999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.71764708" />
+                                    <pos content="0.7176470799999999927720750747539568692446" />
                                     <rgba x="0.96338701" y="0.495462" z="0.079072997" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.72156864" />
+                                    <pos content="0.7215686399999999833809738447598647326231" />
                                     <rgba x="0.965397" y="0.502249" z="0.073858999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.72549021" />
+                                    <pos content="0.7254902100000000242374653680599294602871" />
                                     <rgba x="0.96732199" y="0.50907803" z="0.068659" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.72941178" />
+                                    <pos content="0.7294117799999999540716544288443401455879" />
                                     <rgba x="0.969163" y="0.51594597" z="0.063487999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.73333335" />
+                                    <pos content="0.7333333499999999949281459521444048732519" />
                                     <rgba x="0.97091901" y="0.52285302" z="0.058366999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.73725492" />
+                                    <pos content="0.7372549200000000357846374754444696009159" />
                                     <rgba x="0.97259003" y="0.52979797" z="0.053323999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.74117649" />
+                                    <pos content="0.7411764899999999656188265362288802862167" />
                                     <rgba x="0.97417599" y="0.53678" z="0.048392002" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.74509805" />
+                                    <pos content="0.7450980499999999562277253062347881495953" />
                                     <rgba x="0.97567701" y="0.54379803" z="0.043618001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.74901962" />
+                                    <pos content="0.7490196199999999970842168295348528772593" />
                                     <rgba x="0.97709203" y="0.55084997" z="0.039050002" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.75294119" />
+                                    <pos content="0.7529411900000000379407083528349176049232" />
                                     <rgba x="0.97842199" y="0.55793703" z="0.034931" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.75686276" />
+                                    <pos content="0.7568627599999999677748974136193282902241" />
                                     <rgba x="0.97966599" y="0.56505698" z="0.031408999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.76078433" />
+                                    <pos content="0.7607843300000000086313889369193930178881" />
                                     <rgba x="0.98082399" y="0.572209" z="0.028508" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.7647059" />
+                                    <pos content="0.7647059000000000494878804602194577455521" />
                                     <rgba x="0.98189503" y="0.57939202" z="0.026249999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.76862746" />
+                                    <pos content="0.7686274600000000400967792302253656089306" />
                                     <rgba x="0.98288101" y="0.58660603" z="0.024661001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.77254903" />
+                                    <pos content="0.7725490299999999699309682910097762942314" />
                                     <rgba x="0.98377901" y="0.593849" z="0.023770001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.7764706" />
+                                    <pos content="0.7764706000000000107874598143098410218954" />
                                     <rgba x="0.98459101" y="0.60112202" z="0.023606" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.78039217" />
+                                    <pos content="0.7803921700000000516439513376099057495594" />
                                     <rgba x="0.98531502" y="0.60842198" z="0.024202" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.78431374" />
+                                    <pos content="0.7843137399999999814781403983943164348602" />
                                     <rgba x="0.98595202" y="0.61575001" z="0.025591999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.78823531" />
+                                    <pos content="0.7882353100000000223346319216943811625242" />
                                     <rgba x="0.98650199" y="0.62310499" z="0.027814001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.79215688" />
+                                    <pos content="0.7921568799999999521688209824787918478251" />
                                     <rgba x="0.98696399" y="0.630485" z="0.030908" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.79607844" />
+                                    <pos content="0.7960784400000000538000222150003537535667" />
                                     <rgba x="0.98733699" y="0.63788998" z="0.034915999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.80000001" />
+                                    <pos content="0.8000000099999999836342112757847644388676" />
                                     <rgba x="0.98762202" y="0.64532" z="0.039886001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.80392158" />
+                                    <pos content="0.8039215800000000244907027990848291665316" />
                                     <rgba x="0.98781902" y="0.65277302" z="0.045581002" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.80784315" />
+                                    <pos content="0.8078431499999999543248918598692398518324" />
                                     <rgba x="0.98792601" y="0.66025001" z="0.051750001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.81176472" />
+                                    <pos content="0.8117647199999999951813833831693045794964" />
                                     <rgba x="0.98794502" y="0.66774797" z="0.058329001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.81568629" />
+                                    <pos content="0.8156862900000000360378749064693693071604" />
                                     <rgba x="0.98787397" y="0.67526698" z="0.065256998" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.81960785" />
+                                    <pos content="0.8196078500000000266467736764752771705389" />
                                     <rgba x="0.98771399" y="0.68280703" z="0.072489001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.82352942" />
+                                    <pos content="0.8235294199999999564809627372596878558397" />
                                     <rgba x="0.98746401" y="0.69036603" z="0.07999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.82745099" />
+                                    <pos content="0.8274509899999999973374542605597525835037" />
                                     <rgba x="0.98712403" y="0.69794399" z="0.087730996" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.83137256" />
+                                    <pos content="0.8313725600000000381939457838598173111677" />
                                     <rgba x="0.98669398" y="0.70554" z="0.095693998" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.83529413" />
+                                    <pos content="0.8352941299999999680281348446442279964685" />
                                     <rgba x="0.986175" y="0.713153" z="0.103863" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.8392157" />
+                                    <pos content="0.8392157000000000088846263679442927241325" />
                                     <rgba x="0.98556602" y="0.72078198" z="0.112229" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.84313726" />
+                                    <pos content="0.8431372599999999994935251379502005875111" />
                                     <rgba x="0.98486501" y="0.72842699" z="0.120785" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.84705883" />
+                                    <pos content="0.8470588300000000403500166612502653151751" />
                                     <rgba x="0.98407501" y="0.73608702" z="0.129527" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.8509804" />
+                                    <pos content="0.8509803999999999701842057220346760004759" />
                                     <rgba x="0.98319602" y="0.74375802" z="0.13845301" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.85490197" />
+                                    <pos content="0.8549019700000000110406972453347407281399" />
                                     <rgba x="0.98222798" y="0.75144202" z="0.14756501" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.85882354" />
+                                    <pos content="0.8588235400000000518971887686348054558039" />
                                     <rgba x="0.98117298" y="0.75913501" z="0.156863" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.86274511" />
+                                    <pos content="0.8627451099999999817313778294192161411047" />
                                     <rgba x="0.98003203" y="0.766837" z="0.166353" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.86666667" />
+                                    <pos content="0.8666666699999999723402765994251240044832" />
                                     <rgba x="0.97880602" y="0.77454501" z="0.176037" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.87058824" />
+                                    <pos content="0.8705882400000000131967681227251887321472" />
                                     <rgba x="0.97749698" y="0.78225797" z="0.185923" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.87450981" />
+                                    <pos content="0.8745098100000000540532596460252534598112" />
                                     <rgba x="0.97610801" y="0.78997397" z="0.196018" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.87843138" />
+                                    <pos content="0.878431379999999983887448706809664145112" />
                                     <rgba x="0.97463799" y="0.797692" z="0.206332" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.88235295" />
+                                    <pos content="0.882352950000000024743940230109728872776" />
                                     <rgba x="0.97308803" y="0.80540901" z="0.216877" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.88627452" />
+                                    <pos content="0.8862745199999999545781292908941395580769" />
                                     <rgba x="0.97146797" y="0.81312197" z="0.227658" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.89019608" />
+                                    <pos content="0.8901960799999999451870280609000474214554" />
                                     <rgba x="0.96978301" y="0.82082498" z="0.238686" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.89411765" />
+                                    <pos content="0.8941176499999999860435195842001121491194" />
                                     <rgba x="0.968041" y="0.82851499" z="0.249972" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.89803922" />
+                                    <pos content="0.8980392200000000269000111075001768767834" />
                                     <rgba x="0.96624303" y="0.836191" z="0.26153401" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.90196079" />
+                                    <pos content="0.9019607899999999567342001682845875620842" />
                                     <rgba x="0.96439397" y="0.84384799" z="0.27339101" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.90588236" />
+                                    <pos content="0.9058823599999999975906916915846522897482" />
                                     <rgba x="0.96251702" y="0.85147601" z="0.285546" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.90980393" />
+                                    <pos content="0.9098039300000000384471832148847170174122" />
                                     <rgba x="0.96062601" y="0.85906899" z="0.29800999" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.9137255" />
+                                    <pos content="0.913725499999999968281372275669127702713" />
                                     <rgba x="0.95872003" y="0.866624" z="0.31082001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.91764706" />
+                                    <pos content="0.9176470599999999588902710456750355660915" />
                                     <rgba x="0.95683402" y="0.874129" z="0.32397401" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.92156863" />
+                                    <pos content="0.9215686299999999997467625689751002937555" />
                                     <rgba x="0.954997" y="0.88156903" z="0.337475" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.9254902" />
+                                    <pos content="0.9254902000000000406032540922751650214195" />
                                     <rgba x="0.953215" y="0.888942" z="0.35136899" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.92941177" />
+                                    <pos content="0.9294117699999999704374431530595757067204" />
                                     <rgba x="0.95154601" y="0.89622599" z="0.36562699" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.93333334" />
+                                    <pos content="0.9333333400000000112939346763596404343843" />
                                     <rgba x="0.95001799" y="0.903409" z="0.38027099" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.93725491" />
+                                    <pos content="0.9372549100000000521504261996597051620483" />
                                     <rgba x="0.94868302" y="0.91047299" z="0.395289" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.94117647" />
+                                    <pos content="0.9411764700000000427593249696656130254269" />
                                     <rgba x="0.94759399" y="0.91739899" z="0.41066501" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.94509804" />
+                                    <pos content="0.9450980399999999725935140304500237107277" />
                                     <rgba x="0.94680899" y="0.92416799" z="0.426373" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.94901961" />
+                                    <pos content="0.9490196100000000134500055537500884383917" />
                                     <rgba x="0.946392" y="0.93076098" z="0.44236699" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.95294118" />
+                                    <pos content="0.9529411800000000543064970770501531660557" />
                                     <rgba x="0.94640303" y="0.937159" z="0.458592" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.95686275" />
+                                    <pos content="0.9568627499999999841406861378345638513565" />
                                     <rgba x="0.94690299" y="0.94334799" z="0.47497001" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.96078432" />
+                                    <pos content="0.9607843200000000249971776611346285790205" />
                                     <rgba x="0.94793701" y="0.94931799" z="0.49142599" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.96470588" />
+                                    <pos content="0.964705880000000015606076431140536442399" />
                                     <rgba x="0.94954503" y="0.95506299" z="0.50786" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.96862745" />
+                                    <pos content="0.9686274499999999454402654919249471276999" />
                                     <rgba x="0.95174003" y="0.96058702" z="0.524203" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.97254902" />
+                                    <pos content="0.9725490199999999862967570152250118553638" />
                                     <rgba x="0.95452899" y="0.96589601" z="0.54036099" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.97647059" />
+                                    <pos content="0.9764705900000000271532485385250765830278" />
                                     <rgba x="0.95789599" y="0.971003" z="0.55627501" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.98039216" />
+                                    <pos content="0.9803921599999999569874375993094872683287" />
                                     <rgba x="0.96181202" y="0.97592402" z="0.57192498" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.98431373" />
+                                    <pos content="0.9843137299999999978439291226095519959927" />
                                     <rgba x="0.96624899" y="0.98067802" z="0.58720601" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.98823529" />
+                                    <pos content="0.9882352899999999884528278926154598593712" />
                                     <rgba x="0.97116202" y="0.985282" z="0.60215402" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.99215686" />
+                                    <pos content="0.9921568600000000293093194159155245870352" />
                                     <rgba x="0.976511" y="0.98975301" z="0.61676002" w="1" />
                                 </Point>
                                 <Point>
-                                    <pos content="0.99607843" />
+                                    <pos content="0.996078429999999959143508476699935272336" />
                                     <rgba x="0.98225701" y="0.99410897" z="0.63101703" w="1" />
                                 </Point>
                                 <Point>
@@ -1421,18 +1526,19 @@
         </Processors>
         <Connections>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref3" />
-                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref0" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outputImage" reference="ref3" />
+                <InPort type="org.inviwo.Image.inport" identifier="inputImage" reference="ref0" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outputImage" reference="ref1" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref5" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outputImage" reference="ref1" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref5" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref4" />
-                <InPort type="org.inviwo.ImageInport" identifier="inputImage" reference="ref2" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref4" />
+                <InPort type="org.inviwo.Image.inport" identifier="inputImage" reference="ref2" />
             </Connection>
         </Connections>
     </ProcessorNetwork>
     <PortInspectors />
+    <Animation />
 </InviwoWorkspace>

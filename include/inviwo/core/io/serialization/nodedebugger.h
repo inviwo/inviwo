@@ -39,6 +39,8 @@ namespace ticpp {
     class Element;
 }
 
+typedef ticpp::Element TxElement;
+
 namespace inviwo {
 
 struct IVW_CORE_API NodeDebugger {
@@ -50,7 +52,7 @@ struct IVW_CORE_API NodeDebugger {
         int line;
     };
 
-    NodeDebugger(ticpp::Element* node);
+    NodeDebugger(TxElement* node);
 
     const Node& operator[](std::size_t idx) const;
     std::string toString(std::size_t idx) const;

@@ -45,7 +45,7 @@ PlaneProperty::PlaneProperty(std::string identifier, std::string displayName,
     addProperty(normal_);
     addProperty(color_);
 
-    mode_.onChange(this, &PlaneProperty::onModeChange);
+    mode_.onChange([this](){onModeChange();});
     mode_.addOption("plane", "Plane", 0);
 
     setAllPropertiesCurrentStateAsDefault();
@@ -67,7 +67,7 @@ PlaneProperty::PlaneProperty(const PlaneProperty& rhs)
     addProperty(normal_);
     addProperty(color_);
 
-    mode_.onChange(this, &PlaneProperty::onModeChange);
+    mode_.onChange([this](){onModeChange();});
     setAllPropertiesCurrentStateAsDefault();
 }
 
@@ -85,7 +85,7 @@ PlaneProperty& PlaneProperty::operator=(const PlaneProperty& that) {
 
 PlaneProperty* PlaneProperty::clone() const { return new PlaneProperty(*this); }
 
-PlaneProperty::~PlaneProperty() {}
+PlaneProperty::~PlaneProperty() = default;
 
 void PlaneProperty::onModeChange() {}
 

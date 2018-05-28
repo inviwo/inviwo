@@ -28,118 +28,77 @@
  *********************************************************************************/
 
 #include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
+
 #include <modules/python3/pythoninterpreter.h>
-
 #include <modules/python3/python3module.h>
-#include <inviwo/core/util/filesystem.h>
-
 #include <modules/python3/pythonscript.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
-
-#if defined(__unix__)
-#include <unistd.h>
-#elif defined(__APPLE__)
-#include <libproc.h>  // proc_pidpath
-#endif
 
 namespace inviwo {
 
-static PyObject* py_stdout(PyObject* /*self*/, PyObject* args) {
-    char* msg;
-    int len;
-    int isStderr;
-
-    if (!PyArg_ParseTuple(args, "s#i", &msg, &len, &isStderr)) {
-        LogWarnCustom("inviwo.Python.py_print", "failed to parse log message");
-    } else {
-        if (len != 0) {
-            if (!(len == 1 && (msg[0] == '\n' || msg[0] == '\r' || msg[0] == '\0')))
-                if (auto app = InviwoApplication::getPtr()) {
-                    if (auto module = app->getModuleByType<Python3Module>()) {
-                        if (auto interpreter = module->getPythonInterpreter()) {
-                            interpreter->pythonExecutionOutputEvent(
-                                msg, (isStderr == 0) ? sysstdout : sysstderr);
-                        }
-                    }
+PYBIND11_EMBEDDED_MODULE(inviwo_internal, m) {
+    // `m` is a `py::module` which is used to bind functions and classes
+    m.def("ivwPrint", [](const std::string& msg, int isStderr) {
+        auto tmsg = trim(msg);
+        if (tmsg.empty()) return;
+        if (auto app = InviwoApplication::getPtr()) {
+            if (auto module = app->getModuleByType<Python3Module>()) {
+                if (auto interpreter = module->getPythonInterpreter()) {
+                    interpreter->pythonExecutionOutputEvent(msg, (isStderr == 0)
+                                                                     ? PythonOutputType::sysstdout
+                                                                     : PythonOutputType::sysstderr);
                 }
+            }
         }
-    }
-
-    Py_RETURN_NONE;
+    });
 }
 
-PythonInterpreter::PythonInterpreter(Python3Module* module) : isInit_(false) { init(module); }
+PythonInterpreter::PythonInterpreter(Python3Module* module) : isInit_(false) {
+    namespace py = pybind11;
 
-PythonInterpreter::~PythonInterpreter() { Py_Finalize(); }
-
-void PythonInterpreter::addModulePath(const std::string& path) {
-    if (!Py_IsInitialized()) {
-        LogWarn("addModulePath(): Python is not initialized");
-        return;
+    if (isInit_) {
+        throw ModuleInitException("Python already initialized", IvwContext);
     }
 
-    std::string pathConv = path;
-    replaceInString(pathConv, "\\", "/");
-    std::string code = "import sys\n";
-    code.append(std::string("sys.path.append('") + pathConv + std::string("')"));
-    if (!runString(code)) {
-        LogWarn("Failed to add '" + pathConv + "' to Python module search path");
-    }
-}
-
-#include <warn/push>
-#include <warn/ignore/missing-field-initializers>
-
-static PyMethodDef Inviwo_Internals_METHODS[] = {
-    {"ivwPrint", py_stdout, METH_VARARGS, "A simple example of an embedded function."}, nullptr};
-
-#include <warn/pop>
-
-struct PyModuleDef Inviwo_Internals_Module_Def = {PyModuleDef_HEAD_INIT,
-                                                  "inviwo_internal",
-                                                  nullptr,
-                                                  -1,
-                                                  Inviwo_Internals_METHODS,
-                                                  nullptr,
-                                                  nullptr,
-                                                  nullptr,
-                                                  nullptr};
-
-void PythonInterpreter::init(Python3Module* module) {
-    if (isInit_) return;
-
-    isInit_ = true;
     LogInfo("Python version: " + toString(Py_GetVersion()));
-    wchar_t programName[] = L"PyInviwo";
+    static wchar_t programName[] = L"PyInviwo";
     Py_SetProgramName(programName);
 
-    Py_InitializeEx(false);
+    py::initialize_interpreter(false);
+    isInit_ = true;
 
     if (!Py_IsInitialized()) {
-        LogError("Python is not Initialized");
-        return;
+        throw ModuleInitException("Python is not Initialized", IvwContext);
     }
 
-    PyEval_InitThreads();
-    importModule("builtins");
-    importModule("sys");
-
-    dict_ = PyImport_GetModuleDict();
-
-    PyObject* internalModule = PyModule_Create(&Inviwo_Internals_Module_Def);
-    if (!internalModule) {
-        LogError("Failed to init inviwo_internal");
-    } else {
-        PyDict_SetItemString(dict_, "inviwo_internal", internalModule);
-    }
+    auto dict = py::globals();
+    dict["inviwo_internal"] = py::module::import("inviwo_internal");
 
     addModulePath(module->getPath() + "/scripts");
-    initOutputRedirector(module);
 
+    try {
+        py::exec(R"(
+            import sys
+            class OutputRedirectStdout:
+                def write(self, string):
+                    inviwo_internal.ivwPrint(string, 0)
 
-    
+            class OutputRedirectStderr:
+                def write(self, string):
+                    inviwo_internal.ivwPrint(string, 1)
+
+            sys.stdout = OutputRedirectStdout()  
+            sys.stderr = OutputRedirectStderr() 
+        )",
+                 py::globals());
+    } catch (const py::error_already_set& e) {
+        throw ModuleInitException(e.what(), IvwContext);
+    }
+
 #if defined(__unix__) || defined(__APPLE__)
     auto execpath = filesystem::getExecutablePath();
     auto folder = filesystem::getFileDirectory(execpath);
@@ -151,20 +110,31 @@ void PythonInterpreter::init(Python3Module* module) {
 #endif
 }
 
-void PythonInterpreter::importModule(const std::string& moduleName) {
-    auto mainDict = PyImport_GetModuleDict();
-    const static std::string __key__ = "__";
-    char* key = new char[moduleName.size() + 5];
-    sprintf(key, "__%s__", moduleName.c_str());
-    if (PyDict_GetItemString(mainDict, key) == nullptr) {
-        PyObject* pMod = PyImport_ImportModule(moduleName.c_str());
-        if (nullptr != pMod) {
-            PyDict_SetItemString(mainDict, key, pMod);
-        } else {
-            LogWarn("Failed to import python module: " << moduleName);
-        }
+PythonInterpreter::~PythonInterpreter() {
+    namespace py = pybind11;
+    py::finalize_interpreter();
+}
+
+void PythonInterpreter::addModulePath(const std::string& path) {
+    namespace py = pybind11;
+    using namespace pybind11::literals;
+
+    if (!Py_IsInitialized()) {
+        LogWarn("addModulePath(): Python is not initialized");
+        return;
     }
-    delete[] key;
+
+    std::string pathConv = path;
+    replaceInString(pathConv, "\\", "/");
+
+    py::module::import("sys").attr("path").cast<py::list>().append(pathConv);
+}
+
+void PythonInterpreter::importModule(const std::string& moduleName) {
+    namespace py = pybind11;
+
+    auto dict = py::globals();
+    dict[moduleName.c_str()] = py::module::import(moduleName.c_str());
 }
 
 bool PythonInterpreter::runString(std::string code) {
@@ -172,18 +142,4 @@ bool PythonInterpreter::runString(std::string code) {
     return ret == 0;
 }
 
-void PythonInterpreter::initOutputRedirector(Python3Module* module) {
-    std::string directorFileName = module->getPath() + "/scripts/outputredirector.py";
-
-    if (!filesystem::fileExists(directorFileName)) {
-        LogError("Could not open outputredirector.py");
-        return;
-    }
-
-    PythonScriptDisk outputCatcher(directorFileName);
-    if (!outputCatcher.run()) {
-        LogWarn("Python init script failed to run");
-    }
-}
-
-}  // namespace
+}  // namespace inviwo

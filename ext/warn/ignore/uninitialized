@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,5 +48,7 @@
 #       pragma GCC diagnostic ignored "-Wuninitialized"
 #   endif
 #elif defined(_MSC_VER)
-//  Not available
+#   if (_MSC_FULL_VER >= 130000000)
+#       pragma warning(disable: 4701)
+#   endif
 #endif

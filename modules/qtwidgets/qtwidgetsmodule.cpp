@@ -37,6 +37,8 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/imageeditorproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -53,6 +55,8 @@
 #include <modules/qtwidgets/properties/eventpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/fontsizepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/isotfpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/isovaluepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
@@ -62,7 +66,8 @@
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>
-#include <modules/qtwidgets/properties/transferfunctionpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/tfprimitivesetwidgetqt.h>
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 
 #include <inviwo/core/io/rawvolumereader.h>
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>
@@ -76,7 +81,8 @@
 
 namespace inviwo {
 
-QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "QtWidgets") {
+QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
+    : InviwoModule(app, "QtWidgets"), tfMenuHelper_(util::make_unique<TFMenuHelper>()) {
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before QtWidgetsModule");
     }
@@ -98,6 +104,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::TextEditor);
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
+    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::PythonEditor);
     registerPropertyWidget<FontSizePropertyWidgetQt, IntProperty>("Fontsize");
     registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
 
@@ -168,12 +175,25 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app) : InviwoModule(app, "Qt
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Password");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::TextEditor);
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
+    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::PythonEditor);
     registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
-    registerPropertyWidget<TransferFunctionPropertyWidgetQt, TransferFunctionProperty>("Default");
+    registerPropertyWidget<IsoValuePropertyWidgetQt, IsoValueProperty>("Default");
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>("Text");
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>("Text (Normalized)");
+    registerPropertyWidget<TFPropertyWidgetQt, TransferFunctionProperty>("Default");
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, TransferFunctionProperty>("Text");
+    registerPropertyWidget<TFPrimitiveSetWidgetQt, TransferFunctionProperty>("Text (Normalized)");
+    registerPropertyWidget<IsoTFPropertyWidgetQt, IsoTFProperty>("Default");
+    registerPropertyWidget<CompositePropertyWidgetQt, IsoTFProperty>("Composite");
 
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
     registerDialog<InviwoFileDialog>("FileDialog");
 }
 
-} // namespace
+QtWidgetsModule::~QtWidgetsModule() = default;
 
+TFHelpWindow* QtWidgetsModule::getTFHelpWindow() const { return tfMenuHelper_->getWindow(); }
+
+void QtWidgetsModule::showTFHelpWindow() const { tfMenuHelper_->showWindow(); }
+
+}  // namespace inviwo

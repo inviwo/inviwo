@@ -50,20 +50,13 @@ IvfVolumeReader::IvfVolumeReader()
 IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
 
 std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
-    std::string fileName = filePath;
-    if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
-
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
-        }
+    if (!filesystem::fileExists(filePath)) {
+        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
     }
 
-    std::string fileDirectory = filesystem::getFileDirectory(fileName);
+    std::string fileDirectory = filesystem::getFileDirectory(filePath);
 
-    Deserializer d(fileName);
+    Deserializer d(filePath);
 
     d.registerFactory(InviwoApplication::getPtr()->getMetaDataFactory());
     d.deserialize("RawFile", rawFile_);

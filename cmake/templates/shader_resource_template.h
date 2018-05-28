@@ -3,6 +3,10 @@
 
 #include <modules/opengl/shader/shadermanager.h>
 
+#ifndef IVW_UNUSED_PARAM
+#define IVW_UNUSED_PARAM(param) (void)param
+#endif
+
 @ADD_INCLUDES@
 
 namespace inviwo {
@@ -10,6 +14,7 @@ namespace inviwo {
 namespace @L_MODULE@ {
 
 inline void addGeneratedShaderResources(ShaderManager* manager) {
+    IVW_UNUSED_PARAM(manager);
 @ADD_RESOURCES@
 }
 

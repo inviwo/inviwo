@@ -62,11 +62,11 @@ public:
     /**
      * Called after the identifier has been changed.
      */
-    virtual void onProcessorIdentifierChanged(Processor*, const std::string& oldIdentifier){};
+    virtual void onProcessorIdentifierChanged(Processor*, const std::string& /*oldIdentifier*/){};
     /**
      * Called after the displayName has been changed.
      */
-    virtual void onProcessorDisplayNameChanged(Processor*, const std::string& oldDisplayName){};
+    virtual void onProcessorDisplayNameChanged(Processor*, const std::string& /*oldDisplayName*/){};
 
     virtual void onProcessorPortAdded(Processor*, Port*){};
     virtual void onProcessorPortRemoved(Processor*, Port*){};

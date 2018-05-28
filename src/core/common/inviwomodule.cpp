@@ -45,6 +45,8 @@
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
+#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/core/rendering/datavisualizermanager.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/settings.h>
@@ -110,6 +112,10 @@ InviwoModule::~InviwoModule() {
     for (auto& elem : representationConverterFactories_) {
         app_->getRepresentationConverterMetaFactory()->unRegisterObject(elem.get());
     }
+    for (auto& elem : dataVisualizers_) {
+        app_->getDataVisualizerManager()->unRegisterObject(elem.get());
+    }
+
     // Remove any potential ModuleCallbackAction associated with this module
     auto& callbackActions = app_->getCallbackActions();
     util::erase_remove_if(callbackActions, [&](auto& a) {
@@ -288,6 +294,11 @@ void InviwoModule::registerPortInspector(std::string portClassIdentifier,
     if (app_->getPortInspectorFactory()->registerObject(portInspector.get())) {
         portInspectors_.push_back(std::move(portInspector));
     }
+}
+
+void InviwoModule::registerDataVisualizer(std::unique_ptr<DataVisualizer> visualizer) {
+    app_->getDataVisualizerManager()->registerObject(visualizer.get());
+    dataVisualizers_.push_back(std::move(visualizer));
 }
 
 }  // namespace

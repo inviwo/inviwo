@@ -24,15 +24,15 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 /*********************************************************************************
-* Parts of code is courtesy of (viewed latest at 2014-02-18):
-* https://github.com/liuyanghejerry/Qt-Plus
-* README text:
-* Welcome to the small world of QtPlus.info.
-* All the code here is free for you.
+ * Parts of code is courtesy of (viewed latest at 2014-02-18):
+ * https://github.com/liuyanghejerry/Qt-Plus
+ * README text:
+ * Welcome to the small world of QtPlus.info.
+ * All the code here is free for you.
  *********************************************************************************/
 
 #ifndef IVW_COLORWHEEL_H
@@ -60,11 +60,11 @@ class IVW_MODULE_QTWIDGETS_API ColorWheel : public QWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit ColorWheel(QWidget* parent = 0);
+    explicit ColorWheel(const QSize& initialSize = QSize(200, 200), QWidget* parent = 0);
 
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
-    QColor color();
+    QColor color() const;
 
 signals:
     void colorChange(const QColor& color);
@@ -80,15 +80,17 @@ protected:
     void paintEvent(QPaintEvent*);
 
 protected slots:
-    void hueChanged(const int& hue);
+    void hueChanged(int hue);
     void svChanged(const QColor& newcolor);
 
 private:
-    QColor posColor(const QPoint& point);
-    void drawOuterRing(QPainter &painter);
-    void drawIndicator(QPainter &painter);
-    void drawPicker(QPainter &painter);
-    
+    void setColorFromWheel(const QPoint &point);
+    void setColorFromSquare(const QPoint &point);
+
+    void drawOuterRing(QPainter& painter);
+    void drawIndicator(QPainter& painter);
+    void drawPicker(QPainter& painter);
+
     void updateSquareImage(const int& hue);
 
     const QSize initSize_;
@@ -104,6 +106,6 @@ private:
     bool inSquare_;
 };
 
-} //namespace
+}  // namespace inviwo
 
-#endif // IVW_COLORWHEEL_H
+#endif  // IVW_COLORWHEEL_H

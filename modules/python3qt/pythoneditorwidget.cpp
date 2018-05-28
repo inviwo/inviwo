@@ -34,6 +34,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/qtwidgets/properties/syntaxhighlighter.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -42,6 +43,8 @@
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pythoninterpreter.h>
+
+#include <modules/qtwidgets/codeedit.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -58,13 +61,15 @@
 #include <QHBoxLayout>
 #include <QFrame>
 #include <QPalette>
+#include <QStatusBar>
 #include <warn/pop>
+
+#include <sstream>
 
 namespace inviwo {
 
-
 const static std::string defaultSource =
-"#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = app.network\n";
+    "#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = app.network\n";
 
 PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Python Editor"), parent, "PythonEditorWidget")
@@ -74,41 +79,41 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     , script_()
     , unsavedChanges_(false)
     , app_(app)
-    , appendLog_(nullptr)
-{
+    , appendLog_(nullptr) {
     setWindowIcon(QIcon(":/icons/python.png"));
 
-    QMainWindow* mainWindow = new QMainWindow();
-    mainWindow->setContextMenuPolicy(Qt::NoContextMenu);
+    mainWindow_ = new QMainWindow();
+    mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
     QToolBar* toolBar = new QToolBar();
-    mainWindow->addToolBar(toolBar);
+    mainWindow_->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
-    setWidget(mainWindow);
+    setWidget(mainWindow_);
+    mainWindow_->statusBar();
 
     {
         runAction_ = toolBar->addAction(QIcon(":/icons/python.png"), "Compile and Run");
         runAction_->setShortcut(QKeySequence(tr("F5")));
         runAction_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         runAction_->setToolTip("Compile and Run Script");
-        mainWindow->addAction(runAction_);
-        connect(runAction_, &QAction::triggered, [this]() {run(); });
+        mainWindow_->addAction(runAction_);
+        connect(runAction_, &QAction::triggered, [this]() { run(); });
     }
     {
-        auto action = toolBar->addAction(QIcon(":/icons/new.png"), tr("&New Script"));
+        auto action = toolBar->addAction(QIcon(":/icons/newfile.png"), tr("&New Script"));
         action->setShortcut(QKeySequence::New);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("New Script");
-        mainWindow->addAction(action);
-        connect(action, &QAction::triggered, [this](){setDefaultText();});
+        mainWindow_->addAction(action);
+        connect(action, &QAction::triggered, [this]() { setDefaultText(); });
     }
     {
         auto action = toolBar->addAction(QIcon(":/icons/open.png"), tr("&Open Script"));
         action->setShortcut(QKeySequence::Open);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Open Script");
-        mainWindow->addAction(action);
-        connect(action, &QAction::triggered, [this](){open();});
+        mainWindow_->addAction(action);
+        connect(action, &QAction::triggered, [this]() { open(); });
     }
 
     {
@@ -116,16 +121,16 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         action->setShortcut(QKeySequence::Save);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Save Script");
-        mainWindow->addAction(action);
-        connect(action, &QAction::triggered, [this](){save();});
+        mainWindow_->addAction(action);
+        connect(action, &QAction::triggered, [this]() { save(); });
     }
     {
         auto action = toolBar->addAction(QIcon(":/icons/saveas.png"), tr("&Save Script As..."));
         action->setShortcut(QKeySequence::SaveAs);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Save Script As...");
-        mainWindow->addAction(action);
-        connect(action, &QAction::triggered, [this](){saveAs();});
+        mainWindow_->addAction(action);
+        connect(action, &QAction::triggered, [this]() { saveAs(); });
     }
     {
         QIcon icon;
@@ -138,8 +143,8 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         appendLog_->setCheckable(true);
         appendLog_->setChecked(true);
         appendLog_->setToolTip("Append Log");
-        mainWindow->addAction(appendLog_);
-        connect(appendLog_, &QAction::toggled, [this](bool toggle) { 
+        mainWindow_->addAction(appendLog_);
+        connect(appendLog_, &QAction::toggled, [this](bool toggle) {
             // update tooltip and menu entry
             QString tglstr = (toggle ? "Append Log" : "Clear Log on Run");
             appendLog_->setText(tglstr);
@@ -151,23 +156,21 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         action->setShortcut(Qt::ControlModifier + Qt::Key_E);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Clear Log Output");
-        mainWindow->addAction(action);
-        connect(action, &QAction::triggered, [this](){clearOutput();});
+        mainWindow_->addAction(action);
+        connect(action, &QAction::triggered, [this]() { clearOutput(); });
     }
 
     // Done creating buttons
     QSplitter* splitter = new QSplitter(nullptr);
     splitter->setOrientation(Qt::Vertical);
-    pythonCode_ = new PythonTextEditor(nullptr);
+    pythonCode_ = new CodeEdit{Python};
     pythonCode_->setObjectName("pythonEditor");
-    pythonCode_->setUndoRedoEnabled(true);
+
     setDefaultText();
     pythonOutput_ = new QTextEdit(nullptr);
     pythonOutput_->setObjectName("pythonConsole");
     pythonOutput_->setReadOnly(true);
     pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    syntaxHighligther_ =
-        SyntaxHighligther::createSyntaxHighligther<Python>(pythonCode_->document());
 
     splitter->addWidget(pythonCode_);
     splitter->addWidget(pythonOutput_);
@@ -177,70 +180,71 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     // enable QSplitter:hover stylesheet
     // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
     splitter->handle(1)->setAttribute(Qt::WA_Hover);
-    mainWindow->setCentralWidget(splitter);
+    mainWindow_->setCentralWidget(splitter);
 
-    QObject::connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
+    QObject::connect(pythonCode_, &CodeEdit::textChanged, this, &PythonEditorWidget::onTextChange);
+    pythonCode_->installEventFilter(this);
 
-    updateStyle();
-
-    if (app_) {
-        app_->getSettingsByType<QtWidgetsSettings>()->pythonSyntax_.onChange(
-            this, &PythonEditorWidget::updateStyle);
-        app_->getSettingsByType<QtWidgetsSettings>()->pyFontSize_.onChange(
-            this, &PythonEditorWidget::updateStyle);
-    }
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 700)); // default size
-
-    {
-        // Restore state
-        QSettings settings;
-        settings.beginGroup(objectName());
-        QString lastFile = settings.value("lastScript", "").toString();
-        if (!lastFile.isEmpty()) loadFile(lastFile.toLocal8Bit().constData(), false);
-        
-        auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
-        appendLog_->setChecked(append);
-        settings.endGroup();
-    }
+    resize(QSize(500, 700));  // default size
 
     unsavedChanges_ = false;
 }
 
-PythonEditorWidget::~PythonEditorWidget() {
-    // Remove added callbacks 
-    auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
-    settings->pythonSyntax_.removeOnChange(this);
-    settings->pyFontSize_.removeOnChange(this);
+PythonEditorWidget::~PythonEditorWidget() = default;
+
+void PythonEditorWidget::loadState() {
+    InviwoDockWidget::loadState();
+
+    // Restore state
+    QSettings settings;
+    settings.beginGroup(objectName());
+    QString lastFile = settings.value("lastScript", "").toString();
+    // If the script was saved to disk, the load it, else we use the script that was in the
+    // editor at last script execution or when inviwo closed (CloseEvent)
+    if (!lastFile.isEmpty()) {
+        loadFile(utilqt::fromQString(lastFile), false);
+    } else {
+        QString src = settings.value("source", "").toString();
+        if (src.length() != 0) {
+            pythonCode_->setPlainText(src);
+            script_.setSource(utilqt::fromQString(src));
+        }
+    }
+
+    auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
+    appendLog_->setChecked(append);
+
+    settings.endGroup();
 }
 
 void PythonEditorWidget::closeEvent(QCloseEvent* event) {
     if (unsavedChanges_) {
-        int ret =
-            QMessageBox::question(this, "Python Editor", "Do you want to save unsaved changes?",
-                                     "Save", "Discard");
+        int ret = QMessageBox::question(this, "Python Editor",
+                                        "Do you want to save unsaved changes?", "Save", "Discard");
         if (ret == 0) save();
     }
-    QSettings settings;
-    settings.beginGroup(objectName());
-    settings.setValue("appendLog", appendLog_->isChecked());
-    settings.setValue("lastScript", scriptFileName_.c_str());
-    settings.endGroup();
-
     InviwoDockWidget::closeEvent(event);
 }
 
-void PythonEditorWidget::updateStyle() {
-    auto color = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>()->pyBGColor_.get();
-    auto size = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>()->pyFontSize_.get();
-    std::stringstream ss;
-    ss << "background-color: rgb(" << color.r << ", " << color.g << ", " << color.b << ");"
-        << std::endl;
-    ss << "font-size: " << size << "px;";
-    pythonCode_->setStyleSheet(ss.str().c_str());
-    syntaxHighligther_->rehighlight();
+bool PythonEditorWidget::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::FocusIn) {
+        if (fileChangedInBackground_) {
+            queryReloadFile();
+        }
+        return false;
+    } else {
+        // standard event processing
+        return QObject::eventFilter(obj, event);
+    }
 }
 
+void PythonEditorWidget::focusInEvent(QFocusEvent* event) {
+    InviwoDockWidget::focusInEvent(event);
+    if (fileChangedInBackground_) {
+        queryReloadFile();
+    }
+}
 
 void PythonEditorWidget::appendToOutput(const std::string& msg, bool error) {
     pythonOutput_->setTextColor(error ? errorTextColor_ : infoTextColor_);
@@ -248,50 +252,73 @@ void PythonEditorWidget::appendToOutput(const std::string& msg, bool error) {
 }
 
 void PythonEditorWidget::fileChanged(const std::string& /*fileName*/) {
-    std::string msg = "The file " + filesystem::getFileNameWithExtension(scriptFileName_) +
-                      " has been modified outside of Inwivo, do you want to reload its contents";
-    int ret = QMessageBox::question(this, "Python Editor", msg.c_str(), "Yes", "No");
-
-    if (ret == 0) {  // yes
-        readFile();
-    } else {
-        unsavedChanges_ = true;
-        // set code change to true so that we can quick save without making more changes
+    if (!fileChangedInBackground_) {
+        fileChangedInBackground_ = true;
+        queryReloadFile();
     }
 }
 
 void PythonEditorWidget::loadFile(std::string fileName, bool askForSave) {
     if (askForSave && unsavedChanges_) {
-        int ret =
-            QMessageBox::question(this, "Python Editor", "Do you want to save unsaved changes?",
-                                     "Save", "Discard", "Cancel");
+        QMessageBox msgBox(QMessageBox::Question, "Python Editor",
+                           "Do you want to save unsaved changes?",
+                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
 
-        if (ret == 0) save();
-
-        if (ret == 2)  // Cancel
+        int retval = msgBox.exec();
+        if (retval == static_cast<int>(QMessageBox::Save)) {
+            save();
+        } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
             return;
+        }
     }
-    setFileName(fileName);    
+
+    stopFileObservation(scriptFileName_);
+    setFileName(fileName);
+    startFileObservation(scriptFileName_);
     readFile();
 }
 
+void PythonEditorWidget::queryReloadFile() {
+    if (this->hasFocus() && fileChangedInBackground_ && !reloadQueryInProgress_) {
+        reloadQueryInProgress_ = true;
+        std::string msg =
+            "The file " + filesystem::getFileNameWithExtension(scriptFileName_) +
+            " has been modified outside of Inwivo, do you want to reload its contents?";
+
+        QMessageBox msgBox(QMessageBox::Question, "Python Editor", utilqt::toQString(msg),
+                           QMessageBox::Yes | QMessageBox::No, this);
+        msgBox.setWindowModality(Qt::WindowModal);
+
+        if (msgBox.exec() == static_cast<int>(QMessageBox::Yes)) {
+            readFile();
+        } else {
+            unsavedChanges_ = true;
+            // set code change to true so that we can quick save without making more changes
+        }
+        fileChangedInBackground_ = false;
+        reloadQueryInProgress_ = false;
+    }
+}
+
 void PythonEditorWidget::onPyhonExecutionOutput(const std::string& msg,
-                                                const PythonExecutionOutputStream& outputType) {
-    appendToOutput(msg, outputType != sysstdout);
+                                                PythonOutputType outputType) {
+    appendToOutput(msg, outputType != PythonOutputType::sysstdout);
 }
 
 void PythonEditorWidget::save() {
     if (script_.getSource() == defaultSource) return;  // nothing to be saved
 
-    if (scriptFileName_.size() == 0) {
+    if (scriptFileName_.empty()) {
         saveAs();
     } else if (unsavedChanges_) {
         stopFileObservation(scriptFileName_);
+
         auto file = filesystem::ofstream(scriptFileName_);
-        file << pythonCode_->toPlainText().toLocal8Bit().constData();
+        file << utilqt::fromQString(pythonCode_->toPlainText());
         file.close();
+
         startFileObservation(scriptFileName_);
-        LogInfo("Python Script saved(" << scriptFileName_ << ")");
+        mainWindow_->statusBar()->showMessage(utilqt::toQString("Saved " + scriptFileName_));
         unsavedChanges_ = false;
         updateTitleBar();
     }
@@ -302,7 +329,7 @@ void PythonEditorWidget::readFile() {
     std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
     replaceInString(text, "\t", "    ");
-    pythonCode_->setPlainText(text.c_str());
+    pythonCode_->setPlainText(utilqt::toQString(text));
     script_.setSource(text);
     script_.setFilename(scriptFileName_);
     unsavedChanges_ = false;
@@ -317,33 +344,21 @@ bool PythonEditorWidget::hasFocus() const {
     return false;
 }
 
-void PythonTextEditor::keyPressEvent(QKeyEvent* keyEvent) {
-    if (keyEvent->key() == Qt::Key_Tab) {
-        keyEvent->accept();
-        insertPlainText("    ");
-    } else {
-        QPlainTextEdit::keyPressEvent(keyEvent);
-    }
-}
-
 void PythonEditorWidget::saveAs() {
     InviwoFileDialog saveFileDialog(this, "Save Python Script ...", "script");
 
     saveFileDialog.setFileMode(FileMode::AnyFile);
     saveFileDialog.setAcceptMode(AcceptMode::Save);
     saveFileDialog.setConfirmOverwrite(true);
-
     saveFileDialog.addSidebarPath(PathType::Scripts);
-
     saveFileDialog.addExtension("py", "Python Script");
 
     if (saveFileDialog.exec()) {
-        stopFileObservation(scriptFileName_);
         QString path = saveFileDialog.selectedFiles().at(0);
 
         if (!path.endsWith(".py")) path.append(".py");
 
-        setFileName(path.toLocal8Bit().constData());
+        setFileName(utilqt::fromQString(path));
         unsavedChanges_ = true;
         save();
     }
@@ -351,69 +366,58 @@ void PythonEditorWidget::saveAs() {
 
 void PythonEditorWidget::open() {
     if (unsavedChanges_) {
-        int ret =
-            QMessageBox::information(this, "Python Editor", "Do you want to save unsaved changes?",
-                                     "Save", "Discard", "Cancel");
+        QMessageBox msgBox(QMessageBox::Question, "Python Editor",
+                           "Do you want to save unsaved changes?",
+                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
 
-        if (ret == 0) save();
-
-        if (ret == 2)  // Cancel
+        int retval = msgBox.exec();
+        if (retval == static_cast<int>(QMessageBox::Save)) {
+            save();
+        } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
             return;
+        }
     }
 
     InviwoFileDialog openFileDialog(this, "Open Python Script ...", "script");
-
     openFileDialog.setFileMode(FileMode::AnyFile);
-
     openFileDialog.addSidebarPath(PathType::Scripts);
-
     openFileDialog.addExtension("py", "Python Script");
 
     if (openFileDialog.exec()) {
         unsavedChanges_ = false;
-        stopFileObservation(scriptFileName_);
-        setFileName(openFileDialog.selectedFiles().at(0).toLocal8Bit().constData());
-        startFileObservation(scriptFileName_);
-        readFile();
+        loadFile(utilqt::fromQString(openFileDialog.selectedFiles().at(0)), false);
     }
 }
 
 void PythonEditorWidget::run() {
-    if (unsavedChanges_ && scriptFileName_.size() != 0)  // save if needed
-        save();
-
     runAction_->setDisabled(true);
-    util::OnScopeExit reenable([&]() {
-        runAction_->setEnabled(true);
-    });
-    InviwoApplication::getPtr()
-        ->getModuleByType<Python3Module>()
-        ->getPythonInterpreter()
-        ->addObserver(this);
+    util::OnScopeExit reenable([&]() { runAction_->setEnabled(true); });
+    app_->getModuleByType<Python3Module>()->getPythonInterpreter()->addObserver(this);
     if (!appendLog_->isChecked()) {
         clearOutput();
     }
 
+    // save the current code to QSettings such that it can be recovered in case of a crash or if the
+    // user forgets to save it as a file.
+    saveState();
+
+    mainWindow_->statusBar()->showMessage("Running");
     Clock c;
     c.start();
     bool ok = script_.run();
     c.tick();
 
-    if (ok) {
-        LogInfo("Python Script Executed successfully");
-    }
+    std::stringstream ss;
+    ss << (ok ? "Executed Successfully" : "Failed");
+    ss << " (" << c.getElapsedMiliseconds() << " ms)";
+    mainWindow_->statusBar()->showMessage(utilqt::toQString(ss.str()));
 
-    LogInfo("Execution time: " << c.getElapsedMiliseconds() << " ms");
-    InviwoApplication::getPtr()
-        ->getModuleByType<Python3Module>()
-        ->getPythonInterpreter()
-        ->removeObserver(this);
+    app_->getModuleByType<Python3Module>()->getPythonInterpreter()->removeObserver(this);
 }
 
 void PythonEditorWidget::show() {
     InviwoDockWidget::show();
     raise();
-    updateStyle();
     setVisible(true);
 }
 
@@ -429,7 +433,7 @@ void PythonEditorWidget::setDefaultText() {
             return;
     }
 
-    pythonCode_->setPlainText(defaultSource.c_str());
+    pythonCode_->setPlainText(utilqt::toQString(defaultSource));
     unsavedChanges_ = false;
     script_.setSource(defaultSource);
     stopFileObservation(scriptFileName_);
@@ -439,7 +443,7 @@ void PythonEditorWidget::setDefaultText() {
 void PythonEditorWidget::clearOutput() { pythonOutput_->setText(""); }
 
 void PythonEditorWidget::onTextChange() {
-    std::string source = pythonCode_->toPlainText().toLocal8Bit().constData();
+    std::string source = utilqt::fromQString(pythonCode_->toPlainText());
 
     script_.setSource(source);
     unsavedChanges_ = true;
@@ -456,12 +460,20 @@ void PythonEditorWidget::updateTitleBar() {
     QString str;
     if (scriptFileName_.empty()) {
         str = "(unnamed file)";
-    }
-    else {
+    } else {
         str = QString::fromStdString(scriptFileName_);
     }
 
     setWindowTitle(QString("Python Editor - %1%2").arg(str).arg(unsavedChanges_ ? "*" : ""));
 }
 
-}  // namespace
+void PythonEditorWidget::saveState() {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    settings.setValue("appendLog", appendLog_->isChecked());
+    settings.setValue("lastScript", utilqt::toQString(scriptFileName_));
+    settings.setValue("source", pythonCode_->toPlainText());
+    settings.endGroup();
+}
+
+}  // namespace inviwo

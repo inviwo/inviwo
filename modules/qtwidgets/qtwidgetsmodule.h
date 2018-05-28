@@ -31,6 +31,7 @@
 #define IVW_QTWIDGETMODULE_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/tfhelpwindow.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwomodule.h>
 
@@ -39,7 +40,14 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
 public:
     QtWidgetsModule(InviwoApplication* app);
-    virtual ~QtWidgetsModule() = default;
+    virtual ~QtWidgetsModule();
+
+    TFHelpWindow* getTFHelpWindow() const;
+
+    void showTFHelpWindow() const;
+
+private:
+    std::unique_ptr<TFMenuHelper> tfMenuHelper_;
 };
 
 }  // namespace

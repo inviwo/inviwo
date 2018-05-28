@@ -82,6 +82,8 @@ class InportFactory;
 class PortInspectorFactory;
 class PortInspectorManager;
 
+class DataVisualizerManager;
+
 class Settings;
 class SystemSettings;
 class Capabilities;
@@ -167,6 +169,7 @@ public:
     WorkspaceManager* getWorkspaceManager();
     PropertyPresetManager* getPropertyPresetManager();
     PortInspectorManager* getPortInspectorManager();
+    DataVisualizerManager* getDataVisualizerManager();
 
     CommandLineParser& getCommandLineParser();
     const CommandLineParser& getCommandLineParser() const;
@@ -306,8 +309,8 @@ protected:
 
     std::string displayName_;
     CommandLineParser commandLineParser_;
-    std::shared_ptr<FileLogger> filelogger_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
+    std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
 
     ThreadPool pool_;
@@ -327,6 +330,7 @@ protected:
     std::unique_ptr<OutportFactory> outportFactory_;
     std::unique_ptr<InportFactory> inportFactory_;
     std::unique_ptr<PortInspectorFactory> portInspectorFactory_;
+    std::unique_ptr<DataVisualizerManager> dataVisualizerManager_;
     std::unique_ptr<ProcessorFactory> processorFactory_;
     std::unique_ptr<ProcessorWidgetFactory> processorWidgetFactory_;
     std::unique_ptr<PropertyConverterManager> propertyConverterManager_;
@@ -342,7 +346,6 @@ protected:
     std::unique_ptr<WorkspaceManager> workspaceManager_;
     std::unique_ptr<PropertyPresetManager> propertyPresetManager_;
     std::unique_ptr<PortInspectorManager> portInspectorManager_;
-
     WorkspaceManager::ClearHandle networkClearHandle_;
     WorkspaceManager::SerializationHandle networkSerializationHandle_;
     WorkspaceManager::DeserializationHandle networkDeserializationHandle_;
@@ -351,6 +354,9 @@ protected:
     WorkspaceManager::SerializationHandle presetsSerializationHandle_;
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
     std::unique_ptr<TimerThread> timerThread_;
+private:
+    friend Singleton<InviwoApplication>;
+    static InviwoApplication* instance_;
 };
 
 template <class F, class... Args>

@@ -57,9 +57,12 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
+    void updateDoc();
+
     InviwoMainWindow* mainwindow_;
     QHelpEngineCore* helpEngine_;
     HelpBrowser* helpBrowser_;
+    std::string requested_;
     std::string current_;
     std::unique_ptr<QCHFileObserver> fileObserver_;
     

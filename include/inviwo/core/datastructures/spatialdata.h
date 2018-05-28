@@ -323,12 +323,12 @@ StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimension
         basis[i][i] = dimensions[i] * spacing[i];
     }
     
-    setBasis(basis);
+    this->setBasis(basis);
     Vector<N, float> offset(0.0f);
     for (int i = 0; i < N; ++i) {
         offset += basis[i];
     }
-    setOffset(-0.5f * offset);
+    this->setOffset(-0.5f * offset);
 }
 
 template <unsigned int N>

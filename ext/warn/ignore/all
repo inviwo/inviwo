@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,6 +95,7 @@
 #include <warn/ignore/sign-compare>
 #include <warn/ignore/sign-conversion>
 #include <warn/ignore/signed-unsigned-compare>
+#include <warn/ignore/size_t-conversion>
 #include <warn/ignore/static-ctor-not-thread-safe>
 #include <warn/ignore/switch>
 #include <warn/ignore/switch-enum>

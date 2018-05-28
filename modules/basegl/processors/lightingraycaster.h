@@ -84,8 +84,6 @@ protected:
     Shader shader_;
 
 private:
-    void onVolumeChange();
-
     VolumeInport volumePort_;
     ImageInport entryPort_;
     ImageInport exitPort_;

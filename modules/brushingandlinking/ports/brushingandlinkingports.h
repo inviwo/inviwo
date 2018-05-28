@@ -61,7 +61,7 @@ public:
     virtual std::string getClassIdentifier() const override;
 
     std::unordered_set<size_t> filterCache_;
-    std::unordered_set<size_t> selctionCache_;
+    std::unordered_set<size_t> selectionCache_;
 };
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport

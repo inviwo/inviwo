@@ -71,7 +71,7 @@ pybind11::dtype toNumPyFormat(const DataFormatBase *df) {
     return pybind11::dtype(format);
 }
 
-const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr) {
+const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr) {
     auto k = arr.dtype().kind();
     auto numType = [&]() {
         if (k == 'f')
@@ -85,66 +85,66 @@ const DataFormatBase *getDataFomrat(size_t components, pybind11::array &arr) {
     return DataFormatBase::get(numType, components, arr.itemsize() * 8);
 }
 
-struct BufferFromArrayDistpatcher {
-    using type = std::shared_ptr<BufferBase>;
+struct BufferFromArrayDispatcher {
+    using type = std::unique_ptr<BufferBase>;
 
     template <typename T>
-    std::shared_ptr<BufferBase> dispatch(pybind11::array &arr) {
+    std::unique_ptr<BufferBase> dispatch(pybind11::array &arr) {
         using Type = typename T::type;
-        auto buf = std::make_shared<Buffer<Type>>(arr.shape(0));
+        auto buf = std::make_unique<Buffer<Type>>(arr.shape(0));
         memcpy(buf->getEditableRAMRepresentation()->getData(), arr.data(0), arr.nbytes());
         return buf;
     }
 };
 
-struct LayerFromArrayDistpatcher {
-    using type = std::shared_ptr<Layer>;
+struct LayerFromArrayDispatcher {
+    using type = std::unique_ptr<Layer>;
 
     template <typename T>
-    std::shared_ptr<Layer> dispatch(pybind11::array &arr) {
+    std::unique_ptr<Layer> dispatch(pybind11::array &arr) {
         using Type = typename T::type;
         size2_t dims(arr.shape(0), arr.shape(1));
         auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
         memcpy(layerRAM->getData(), arr.data(0), arr.nbytes());
-        return std::make_shared<Layer>(layerRAM);
+        return std::make_unique<Layer>(layerRAM);
     }
 };
 
-struct VolumeFromArrayDistpatcher {
-    using type = std::shared_ptr<Volume>;
+struct VolumeFromArrayDispatcher {
+    using type = std::unique_ptr<Volume>;
 
     template <typename T>
-    std::shared_ptr<Volume> dispatch(pybind11::array &arr) {
+    std::unique_ptr<Volume> dispatch(pybind11::array &arr) {
         using Type = typename T::type;
         size3_t dims(arr.shape(0), arr.shape(1), arr.shape(2));
         auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
         memcpy(volumeRAM->getData(), arr.data(0), arr.nbytes());
-        return std::make_shared<Volume>(volumeRAM);
+        return std::make_unique<Volume>(volumeRAM);
     }
 };
 
-std::shared_ptr<BufferBase> createBuffer(pybind11::array &arr) {
+std::unique_ptr<BufferBase> createBuffer(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
-    auto df = pyutil::getDataFomrat(ndim == 1 ? 1 : arr.shape(1), arr);
-    BufferFromArrayDistpatcher bufferFromArrayDistpatcher;
-    return df->dispatch(bufferFromArrayDistpatcher, arr);
+    auto df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
+    BufferFromArrayDispatcher dispatcher{};
+    return df->dispatch(dispatcher, arr);
 }
 
-std::shared_ptr<Layer> createLayer(pybind11::array &arr) {
+std::unique_ptr<Layer> createLayer(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 2 || ndim == 3, "Ndims must be either 2 or 3");
-    auto df = pyutil::getDataFomrat(ndim == 2 ? 1 : arr.shape(2), arr);
-    LayerFromArrayDistpatcher bufferFromArrayDistpatcher;
-    return df->dispatch(bufferFromArrayDistpatcher, arr);
+    auto df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
+    LayerFromArrayDispatcher dispatcher{};
+    return df->dispatch(dispatcher, arr);
 }
 
-std::shared_ptr<Volume> createVolume(pybind11::array &arr) {
+std::unique_ptr<Volume> createVolume(pybind11::array &arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 3 || ndim == 4, "Ndims must be either 3 or 4");
-    auto df = pyutil::getDataFomrat(ndim == 3 ? 1 : arr.shape(3), arr);
-    VolumeFromArrayDistpatcher bufferFromArrayDistpatcher;
-    return df->dispatch(bufferFromArrayDistpatcher, arr);
+    auto df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);
+    VolumeFromArrayDispatcher dispatcher{};
+    return df->dispatch(dispatcher, arr);
 }
 
 }  // namespace pyutil

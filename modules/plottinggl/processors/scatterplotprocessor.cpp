@@ -29,6 +29,7 @@
 
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <inviwo/core/util/zip.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -80,10 +81,16 @@ ScatterPlotProcessor::ScatterPlotProcessor()
         onYAxisChange();
         onColorChange();
         onRadiusChange();
+
+        if (dataFrame_.hasData()) {
+            scatterPlot_.setIndexColumn(dataFrame_.getData()->getIndexColumn());
+        }
     });
 }
 
 void ScatterPlotProcessor::process() {
+    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
     if (brushing_.isConnected()) {
         auto dataframe = dataFrame_.getData();
         auto dfSize = dataframe->getNumberOfRows();
@@ -95,15 +102,15 @@ void ScatterPlotProcessor::process() {
         IndexBuffer indicies;
         auto &vec = indicies.getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - brushedIndicies.size());
-        
+
         auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
                      [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });
 
-        scatterPlot_.plot(outport_, &indicies);
+        scatterPlot_.plot(outport_, &indicies, true);
 
     } else {
-        scatterPlot_.plot(outport_);
+        scatterPlot_.plot(outport_, nullptr, true);
     }
 }
 

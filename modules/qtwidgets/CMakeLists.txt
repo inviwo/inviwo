@@ -9,128 +9,148 @@ find_package(Qt5Widgets QUIET REQUIRED)
 #-------------------------------------------------------------------- 
 # Add MOC files
 set(MOC_FILES
-    angleradiuswidget.h
-    colorwheel.h
-    customdoublespinboxqt.h
-    editablelabelqt.h
-    filepathlineeditqt.h
-    inviwodockwidget.h
-    inviwodockwidgettitlebar.h
-    inviwofiledialog.h
-    inviwowidgetsqt.h
-    lightpositionwidgetqt.h
-    lineeditqt.h
-    ordinaleditorwidget.h
-    processors/processordockwidgetqt.h
-    processors/processorwidgetqt.h
-    properties/propertywidgetqt.h
-    properties/stringmultilinepropertywidgetqt.h
-    properties/texteditorwidgetqt.h
-    properties/transferfunctioneditor.h
-    properties/transferfunctionpropertydialog.h
-    propertylistwidget.h
-    rangesliderqt.h
-    sliderwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/angleradiuswidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorwheel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/customdoublespinboxqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/editablelabelqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/filepathlineeditqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwodockwidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwodockwidgettitlebar.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwofiledialog.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwowidgetsqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/lightpositionwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/lineeditqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ordinaleditorwidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/processordockwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/processorwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringmultilinepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/rangesliderqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcoloredit.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tflineedit.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfselectionwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tfhelpwindow.h
 )
 
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeedit.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/eventconverterqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwoqtutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/keyboardutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/labelgraphicsitem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/anglepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolcompositepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/buttonpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/collapsiblegroupboxwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/colorpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/compositepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/eventpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/filepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontsizepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/isotfpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/lightpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/multifilepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/optionpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalminmaxpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalminmaxtextpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertyeditorwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertysettingswidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/syntaxhighlighter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/texteditorwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfprimitivesetwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qstringhelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmoduledefine.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetssettings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/rawdatareaderdialogqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcontrolpointconnection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorcontrolpoint.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorisovalue.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorprimitive.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorview.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfpropertydialog.h
     ${MOC_FILES}
-    eventconverterqt.h
-    inviwoqtutils.h
-    keyboardutils.h
-    labelgraphicsitem.h
-    properties/anglepropertywidgetqt.h
-    properties/boolcompositepropertywidgetqt.h
-    properties/boolpropertywidgetqt.h
-    properties/buttonpropertywidgetqt.h
-    properties/collapsiblegroupboxwidgetqt.h
-    properties/colorpropertywidgetqt.h
-    properties/compositepropertywidgetqt.h
-    properties/eventpropertywidgetqt.h
-    properties/filepropertywidgetqt.h
-    properties/fontsizepropertywidgetqt.h
-    properties/lightpropertywidgetqt.h
-    properties/multifilepropertywidgetqt.h
-    properties/optionpropertywidgetqt.h
-    properties/ordinalminmaxpropertywidgetqt.h
-    properties/ordinalminmaxtextpropertywidgetqt.h
-    properties/ordinalpropertywidgetqt.h
-    properties/propertyeditorwidgetqt.h
-    properties/propertysettingswidgetqt.h
-    properties/stringpropertywidgetqt.h
-    properties/syntaxhighlighter.h
-    properties/transferfunctioncontrolpointconnection.h
-    properties/transferfunctioneditorcontrolpoint.h
-    properties/transferfunctioneditorview.h
-    properties/transferfunctionpropertywidgetqt.h
-    qstringhelper.h
-    qtwidgetsmodule.h
-    qtwidgetsmoduledefine.h
-	qtwidgetssettings.h
-    rawdatareaderdialogqt.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    angleradiuswidget.cpp
-    colorwheel.cpp
-    customdoublespinboxqt.cpp
-    editablelabelqt.cpp
-    eventconverterqt.cpp
-    filepathlineeditqt.cpp
-    inviwodockwidget.cpp
-    inviwodockwidgettitlebar.cpp
-    inviwofiledialog.cpp
-    inviwoqtutils.cpp
-    inviwowidgetsqt.cpp
-    keyboardutils.cpp
-    labelgraphicsitem.cpp
-    lightpositionwidgetqt.cpp
-    lineeditqt.cpp
-    ordinaleditorwidget.cpp
-    processors/processordockwidgetqt.cpp
-    processors/processorwidgetqt.cpp
-    properties/anglepropertywidgetqt.cpp
-    properties/boolcompositepropertywidgetqt.cpp
-    properties/boolpropertywidgetqt.cpp
-    properties/buttonpropertywidgetqt.cpp  
-    properties/collapsiblegroupboxwidgetqt.cpp
-    properties/colorpropertywidgetqt.cpp
-    properties/compositepropertywidgetqt.cpp
-    properties/eventpropertywidgetqt.cpp
-    properties/filepropertywidgetqt.cpp
-    properties/fontsizepropertywidgetqt.cpp
-    properties/glslsyntaxhighlighter.cpp
-    properties/lightpropertywidgetqt.cpp
-    properties/multifilepropertywidgetqt.cpp
-    properties/optionpropertywidgetqt.cpp
-    properties/ordinalminmaxpropertywidgetqt.cpp
-    properties/ordinalminmaxtextpropertywidgetqt.cpp
-    properties/ordinalpropertywidgetqt.cpp
-    properties/propertyeditorwidgetqt.cpp
-    properties/propertysettingswidgetqt.cpp
-    properties/propertywidgetqt.cpp
-    properties/pythonsyntaxhighlighter.cpp
-    properties/stringmultilinepropertywidgetqt.cpp
-    properties/stringpropertywidgetqt.cpp
-    properties/syntaxhighlighter.cpp
-    properties/texteditorwidgetqt.cpp
-    properties/transferfunctioncontrolpointconnection.cpp
-    properties/transferfunctioneditor.cpp
-    properties/transferfunctioneditorcontrolpoint.cpp
-    properties/transferfunctioneditorview.cpp
-    properties/transferfunctionpropertydialog.cpp
-    properties/transferfunctionpropertywidgetqt.cpp 
-    propertylistwidget.cpp
-    qtwidgetsmodule.cpp
-	qtwidgetssettings.cpp
-    rangesliderqt.cpp
-    rawdatareaderdialogqt.cpp
-    sliderwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/angleradiuswidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeedit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorwheel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/customdoublespinboxqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/editablelabelqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eventconverterqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/filepathlineeditqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwodockwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwodockwidgettitlebar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwofiledialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwoqtutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwowidgetsqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/keyboardutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/labelgraphicsitem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/lightpositionwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/lineeditqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ordinaleditorwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/processordockwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/processorwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/anglepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolcompositepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/buttonpropertywidgetqt.cpp  
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/collapsiblegroupboxwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/colorpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/compositepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/eventpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/filepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontsizepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/glslsyntaxhighlighter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/isotfpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/lightpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/multifilepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/optionpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalminmaxpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalminmaxtextpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertyeditorwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertysettingswidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/pythonsyntaxhighlighter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringmultilinepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/syntaxhighlighter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/texteditorwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfprimitivesetwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetssettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rangesliderqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rawdatareaderdialogqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcoloredit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfcontrolpointconnection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorcontrolpoint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorisovalue.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorprimitive.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfeditorview.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tflineedit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfpropertydialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tf/tfselectionwatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tfhelpwindow.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -141,8 +161,11 @@ source_group("MOC Files" FILES ${MOCED_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+
+ivw_compile_optimize_on_target(inviwo-module-qtwidgets)
+
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
 ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets)
 

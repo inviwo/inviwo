@@ -40,6 +40,7 @@
 #include <modules/opengl/texture/texture.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
 
 namespace inviwo {
 
@@ -167,6 +168,11 @@ IVW_MODULE_OPENGL_API void bindTexture(const TransferFunctionProperty& tf,
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               const TransferFunctionProperty& tf);
 
+IVW_MODULE_OPENGL_API void bindTexture(const IsoTFProperty& property, const TextureUnit& texUnit);
+
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+                                              const IsoTFProperty& property);
+
 // Volume texture bindings
 IVW_MODULE_OPENGL_API void bindTexture(const Volume& volume, const TextureUnit& texUnit);
 IVW_MODULE_OPENGL_API void bindTexture(const VolumeInport& inport, const TextureUnit& texUnit);
@@ -189,7 +195,7 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const ImageOutport&
  *  (-1,1)----(1,-1)
  *
  * @return std::unique_ptr<Mesh>
-*/
+ */
 IVW_MODULE_OPENGL_API std::unique_ptr<Mesh> planeRect();
 IVW_MODULE_OPENGL_API void singleDrawImagePlaneRect();
 IVW_MODULE_OPENGL_API void multiDrawImagePlaneRect(int instances);
@@ -202,7 +208,7 @@ IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContain
                                               ImageInport& image, ImageType type);
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               ImageOutport& image, ImageType type);
-}
-}  // namespace
+}  // namespace utilgl
+}  // namespace inviwo
 
 #endif  // IVW_TEXTUREUTILS_H

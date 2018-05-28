@@ -343,18 +343,18 @@ namespace util {
  * notifications for example. 
  * Example usage, serialize as usual  
  * ```{.cpp}
- *     s.serialize("dataPoints", points_, "point");
+ *     s.serialize("TFPrimitives", values_, "point");
  *      
  * ```
  * Then deserialize with notifications:
  * ```{.cpp}
- *    util::IndexedDeserializer<std::unique_ptr<TransferFunctionDataPoint>>("dataPoints", "point")
- *       .onNew([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
- *           notifyControlPointAdded(point.get());
+ *    util::IndexedDeserializer<std::unique_ptr<TFPrimitiveSet>>("TFPrimitives", "point")
+ *       .onNew([&](std::unique_ptr<TFPrimitiveSet>& primitive) {
+ *           notifyControlPointAdded(primitive.get());
  *       })
- *       .onRemove([&](std::unique_ptr<TransferFunctionDataPoint>& point) {
- *           notifyControlPointRemoved(point.get());
- *       })(d, points_);
+ *       .onRemove([&](std::unique_ptr<TFPrimitiveSet>& primitive) {
+ *           notifyControlPointRemoved(primitive.get());
+ *       })(d, values_);
  * ```
  */
 template <typename T>

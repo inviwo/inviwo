@@ -72,6 +72,8 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
 #include <inviwo/core/properties/imageeditorproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -81,6 +83,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/advancedmaterialproperty.h>
+#include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/stipplingproperty.h>
@@ -213,6 +216,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerPort<ImageOutport>();
     registerProcessor<CompositeSource<ImageInport, ImageOutport>>();
     registerProcessor<CompositeSink<ImageInport, ImageOutport>>();
+    registerProcessor<CompositeProcessor>();
 
     registerDefaultsForDataType<Mesh>();
     registerDefaultsForDataType<Volume>();
@@ -284,12 +288,15 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<IntSize2Property>();
     registerProperty<IntSize3Property>();
     registerProperty<IntSize4Property>();
+    registerProperty<IsoValueProperty>();
+    registerProperty<IsoTFProperty>();
     registerProperty<OptionPropertyDouble>();
     registerProperty<OptionPropertyFloat>();
     registerProperty<OptionPropertyInt>();
     registerProperty<OptionPropertyString>();
     registerProperty<PlaneProperty>();
     registerProperty<PositionProperty>();
+    registerProperty<RaycastingProperty>();
     registerProperty<SimpleLightingProperty>();
     registerProperty<SimpleRaycastingProperty>();
     registerProperty<StipplingProperty>();

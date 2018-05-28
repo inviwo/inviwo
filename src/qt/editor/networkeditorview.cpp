@@ -73,8 +73,6 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
 
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-    setAcceptDrops(true);
-
     loadHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
         [this](Deserializer&) { fitNetwork(); });
 
@@ -323,30 +321,6 @@ void NetworkEditorView::exportViewToFile(const QString& filename, bool entireSce
     }
 
     networkEditor_->setBackgroundVisible(true);
-}
-
-void NetworkEditorView::dropEvent(QDropEvent* event) {
-    auto mimeData = event->mimeData();
-    if (mimeData->hasUrls()) {
-        QStringList pathList;
-        QList<QUrl> urlList = mimeData->urls();
-
-        // pick first url
-        auto filename = urlList.front().toLocalFile();
-        mainwindow_->openWorkspace(filename);
-        event->acceptProposedAction();
-    } else {
-        QGraphicsView::dropEvent(event);
-    }
-}
-
-void NetworkEditorView::dragEnterEvent(QDragEnterEvent* event) {
-    auto mimeData = event->mimeData();
-    if (mimeData->hasUrls()) {
-        event->acceptProposedAction();
-    } else {
-        QGraphicsView::dragEnterEvent(event);
-    }
 }
 
 }  // namespace inviwo

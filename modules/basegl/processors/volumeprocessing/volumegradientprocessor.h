@@ -76,8 +76,6 @@ protected:
     virtual void initializeResources() override;
 
 private:
-    void onVolumeChange();
-
     OptionPropertyInt channel_;
     BoolProperty dataInChannel4_;
 };

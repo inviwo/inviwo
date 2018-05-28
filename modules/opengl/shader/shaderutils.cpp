@@ -48,32 +48,38 @@ void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
 
     switch (mode) {
         case ShadingMode::Ambient:
-            shadingValue = "shadeAmbient(lighting, materialAmbientColor);";
+            shadingValue = "shadeAmbient(lighting, materialAmbientColor)";
             break;
         case ShadingMode::Diffuse:
-            shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal);";
+            shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal)";
             break;
         case ShadingMode::Specular:
             shadingValue =
-                "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir);";
+                "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir)";
             break;
         case ShadingMode::BlinnPhong:
             shadingValue =
                 "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir);";
+                "materialSpecularColor, position, normal, toCameraDir)";
             break;
         case ShadingMode::Phong:
             shadingValue =
                 "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir);";
+                "materialSpecularColor, position, normal, toCameraDir)";
             break;
         case ShadingMode::None:
         default:
-            shadingValue = "materialAmbientColor;";
+            shadingValue = "materialAmbientColor";
             break;
     }
 
     shader.getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
+
+    if (mode == ShadingMode::None) {
+        shader.getFragmentShaderObject()->removeShaderDefine("SHADING_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->addShaderDefine("SHADING_ENABLED");
+    }
 }
 
 void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, std::string name) {
@@ -111,6 +117,168 @@ void setShaderUniforms(Shader& shader, const Camera& property, std::string name)
     shader.setUniform(name + ".position", property.getLookFrom());
     shader.setUniform(name + ".nearPlane", property.getNearPlaneDist());
     shader.setUniform(name + ".farPlane", property.getFarPlaneDist());
+}
+
+void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
+    {
+        // rendering type
+        switch (property.renderingType_.get()) {
+            case RaycastingProperty::RenderingType::DvrIsosurface:
+                shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_DVR");
+                shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_ISOSURFACES");
+                break;
+            case RaycastingProperty::RenderingType::Isosurface:
+                shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_ISOSURFACES");
+                shader.getFragmentShaderObject()->removeShaderDefine("INCLUDE_DVR");
+                break;
+            case RaycastingProperty::RenderingType::Dvr:
+            default:
+                shader.getFragmentShaderObject()->addShaderDefine("INCLUDE_DVR");
+                shader.getFragmentShaderObject()->removeShaderDefine("INCLUDE_ISOSURFACES");
+                break;
+        }
+    }
+
+    {
+        // classification (default (red channel) or specific channel)
+        std::string value;
+        std::string valueMulti;
+        switch (property.classification_.get()) {
+            case RaycastingProperty::Classification::None:
+                value = "vec4(voxel.r)";
+                valueMulti = "vec4(voxel[channel])";
+                break;
+            case RaycastingProperty::Classification::TF:
+                value = "applyTF(transferFunc, voxel.r)";
+                valueMulti = "applyTF(transferFunc, voxel, channel)";
+                break;
+            case RaycastingProperty::Classification::Voxel:
+            default:
+                value = "voxel";
+                valueMulti = "voxel";
+                break;
+        }
+        const std::string key = "APPLY_CLASSIFICATION(transferFunc, voxel)";
+        const std::string keyMulti = "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
+        shader.getFragmentShaderObject()->addShaderDefine(key, value);
+        shader.getFragmentShaderObject()->addShaderDefine(keyMulti, valueMulti);
+    }
+
+    {
+        // compositing
+        std::string value;
+        switch (property.compositing_.get()) {
+            case RaycastingProperty::CompositingType::Dvr:
+                value = "compositeDVR(result, color, t, tDepth, tIncr)";
+                break;
+            case RaycastingProperty::CompositingType::MaximumIntensity:
+                value = "compositeMIP(result, color, t, tDepth)";
+                break;
+            case RaycastingProperty::CompositingType::FirstHitPoints:
+                value = "compositeFHP(result, color, samplePos, t, tDepth)";
+                break;
+            case RaycastingProperty::CompositingType::FirstHitNormals:
+                value = "compositeFHN(result, color, gradient, t, tDepth)";
+                break;
+            case RaycastingProperty::CompositingType::FirstHistNormalsView:
+                value = "compositeFHN_VS(result, color, gradient, t, camera, tDepth)";
+                break;
+            case RaycastingProperty::CompositingType::FirstHitDepth:
+                value = "compositeFHD(result, color, t, tDepth)";
+                break;
+            default:
+                value = "result";
+                break;
+        }
+        const std::string key =
+            "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, "
+            "tDepth, tIncr)";
+        shader.getFragmentShaderObject()->addShaderDefine(key, value);
+    }
+
+    // gradients
+    setShaderDefines(shader, property.gradientComputation_,
+                     property.classification_.get() == RaycastingProperty::Classification::Voxel);
+}
+
+void setShaderDefines(
+    Shader& shader, const TemplateOptionProperty<RaycastingProperty::GradientComputation>& property,
+    bool voxelClassification) {
+
+    const std::string channel = (voxelClassification ? "3" : "channel");
+    const std::string channelDef = (voxelClassification ? "3" : "0");
+
+    std::string value;         // compute gradient for default channel
+    std::string valueChannel;  // compute gradient for specific channel
+    std::string valueAll;      // compute gradient for all channels
+    switch (property.get()) {
+        case RaycastingProperty::GradientComputation::None:
+        default:
+            value = "vec3(0)";
+            valueChannel = "vec3(0)";
+            valueAll = "mat4x3(0)";
+            break;
+        case RaycastingProperty::GradientComputation::Forward:
+            value =
+                "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channelDef + ")";
+            valueChannel =
+                "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            valueAll = "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos)";
+            break;
+        case RaycastingProperty::GradientComputation::Backward:
+            value =
+                "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channelDef + ")";
+            valueChannel =
+                "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            valueAll = "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos)";
+            break;
+        case RaycastingProperty::GradientComputation::Central:
+            value =
+                "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channelDef + ")";
+            valueChannel =
+                "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            valueAll = "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos)";
+            break;
+        case RaycastingProperty::GradientComputation::CentralHigherOrder:
+            value =
+                "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channelDef + ")";
+            valueChannel =
+                "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            valueAll = "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos)";
+            break;
+        case RaycastingProperty::GradientComputation::PrecomputedXYZ:
+            value = valueChannel = valueAll = "gradientPrecomputedXYZ(voxel, volumeParams)";
+            break;
+        case RaycastingProperty::GradientComputation::PrecomputedYZW:
+            value = valueChannel = valueAll = "gradientPrecomputedYZW(voxel, volumeParams)";
+            break;
+    }
+
+    // gradient for channel 1
+    const std::string key = "COMPUTE_GRADIENT(voxel, volume, volumeParams, samplePos)";
+    // gradient for specific channel
+    const std::string keyChannel =
+        "COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParams, samplePos, channel)";
+    // gradients for all channels
+    const std::string keyAll = "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
+
+    shader.getFragmentShaderObject()->addShaderDefine(key, value);
+    shader.getFragmentShaderObject()->addShaderDefine(keyChannel, valueChannel);
+    shader.getFragmentShaderObject()->addShaderDefine(keyAll, valueAll);
+
+    if (property.get() != RaycastingProperty::GradientComputation::None) {
+        shader.getFragmentShaderObject()->addShaderDefine("GRADIENTS_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->removeShaderDefine("GRADIENTS_ENABLED");
+    }
+}
+
+void setShaderUniforms(Shader& shader, const RaycastingProperty& property) {
+    shader.setUniform("samplingRate_", property.samplingRate_.get());
+}
+
+void setShaderUniforms(Shader& shader, const RaycastingProperty& property, std::string name) {
+    shader.setUniform(name + ".samplingRate", property.samplingRate_.get());
 }
 
 void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object, const std::string& name) {
@@ -161,40 +329,38 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         allChannelsGradientValue = "mat4x3(0)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("forward")) {
         gradientValue =
-            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
+            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
-            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
-        allChannelsGradientValue =
-            "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos);";
+            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+        allChannelsGradientValue = "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("central")) {
         gradientValue =
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
-        allChannelsGradientValue =
-            "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos);";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+        allChannelsGradientValue = "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("central-higher")) {
         gradientValue =
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ");";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ")";
         allChannelsGradientValue =
-            "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos);";
+            "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("backward")) {
         gradientValue =
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ");";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
         singleChannelGradientValue =
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ");";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
         allChannelsGradientValue =
-            "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos);";
+            "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("precomputedXYZ")) {
-        gradientValue = "gradientPrecomputedXYZ(voxel, volumeParams);";
-        singleChannelGradientValue = "gradientPrecomputedXYZ(voxel, volumeParams);";
-        allChannelsGradientValue = "gradientPrecomputedXYZ(voxel, volumeParams);";
+        gradientValue = "gradientPrecomputedXYZ(voxel, volumeParams)";
+        singleChannelGradientValue = "gradientPrecomputedXYZ(voxel, volumeParams)";
+        allChannelsGradientValue = "gradientPrecomputedXYZ(voxel, volumeParams)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("precomputedYZW")) {
-        gradientValue = "gradientPrecomputedYZW(voxel, volumeParams);";
-        singleChannelGradientValue = "gradientPrecomputedYZW(voxel, volumeParams);";
-        allChannelsGradientValue = "gradientPrecomputedYZW(voxel, volumeParams);";
+        gradientValue = "gradientPrecomputedYZW(voxel, volumeParams)";
+        singleChannelGradientValue = "gradientPrecomputedYZW(voxel, volumeParams)";
+        allChannelsGradientValue = "gradientPrecomputedYZW(voxel, volumeParams)";
     }
 
     shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey, gradientValue);
@@ -203,53 +369,60 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     shader.getFragmentShaderObject()->addShaderDefine(allChannelsGradientKey,
                                                       allChannelsGradientValue);
 
+    if (property.gradientComputationMode_.isSelectedIdentifier("none")) {
+        shader.getFragmentShaderObject()->removeShaderDefine("GRADIENTS_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->addShaderDefine("GRADIENTS_ENABLED");
+    }
+
     // classification defines, red channel is used
     std::string classificationKey = "APPLY_CLASSIFICATION(transferFunc, voxel)";
     std::string classificationValue = "";
     if (property.classificationMode_.isSelectedIdentifier("none"))
-        classificationValue = "vec4(voxel.r);";
+        classificationValue = "vec4(voxel.r)";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
-        classificationValue = "applyTF(transferFunc, voxel.r);";
+        classificationValue = "applyTF(transferFunc, voxel.r)";
     else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
-        classificationValue = "voxel;";
+        classificationValue = "voxel";
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // classification of specific channel
     classificationKey = "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
     classificationValue = "";
     if (property.classificationMode_.isSelectedIdentifier("none"))
-        classificationValue = "vec4(voxel[channel]);";
+        classificationValue = "vec4(voxel[channel])";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
-        classificationValue = "applyTF(transferFunc, voxel, channel);";
+        classificationValue = "applyTF(transferFunc, voxel, channel)";
     else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
-        classificationValue = "voxel;";
+        classificationValue = "voxel";
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // compositing defines
     std::string compositingKey =
         "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, tDepth, "
         "tIncr)";
-    std::string compositingValue;
+    std::string compositingValue = "result";
 
     if (property.compositingMode_.isSelectedIdentifier("dvr"))
-        compositingValue = "compositeDVR(result, color, t, tDepth, tIncr);";
+        compositingValue = "compositeDVR(result, color, t, tDepth, tIncr)";
     else if (property.compositingMode_.isSelectedIdentifier("mip"))
-        compositingValue = "compositeMIP(result, color, t, tDepth);";
+        compositingValue = "compositeMIP(result, color, t, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("fhp"))
-        compositingValue = "compositeFHP(result, color, samplePos, t, tDepth);";
+        compositingValue = "compositeFHP(result, color, samplePos, t, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("fhn"))
-        compositingValue = "compositeFHN(result, color, gradient, t, tDepth);";
+        compositingValue = "compositeFHN(result, color, gradient, t, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("fhnvs"))
-        compositingValue = "compositeFHN_VS(result, color, gradient, t, camera, tDepth);";
+        compositingValue = "compositeFHN_VS(result, color, gradient, t, camera, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("fhd"))
-        compositingValue = "compositeFHD(result, color, t, tDepth);";
+        compositingValue = "compositeFHD(result, color, t, tDepth)";
     else if (property.compositingMode_.isSelectedIdentifier("iso"))
-        compositingValue = "compositeISO(result, color, voxel.r, t, tDepth, tIncr, isoValue);";
+        compositingValue = "compositeISO(result, color, voxel.r, t, tDepth, tIncr, isoValue)";
     else if (property.compositingMode_.isSelectedIdentifier("ison"))
-        compositingValue = "compositeISON(result, color, voxel.r, gradient, t, tDepth, isoValue);";
+        compositingValue = "compositeISON(result, color, voxel.r, gradient, t, tDepth, isoValue)";
 
     shader.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
 }
+
 void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property) {
     shader.setUniform("samplingRate_", property.samplingRate_.get());
     shader.setUniform("isoValue_", property.isoValue_.get());
@@ -260,14 +433,55 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
     shader.setUniform(name + ".isoValue", property.isoValue_.get());
 }
 
-void addShaderDefinesBGPort(Shader& shader, ImageInport port) {
+void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
+    auto isovalueCount = property.get().size();
+
+    // need to ensure there is always at least one isovalue due to the use of the macro
+    // as array size in IsovalueParameters
+    shader.getFragmentShaderObject()->addShaderDefine("MAX_ISOVALUE_COUNT",
+                                                      toString(std::max<size_t>(1, isovalueCount)));
+
+    if (!property.get().empty()) {
+        shader.getFragmentShaderObject()->addShaderDefine("ISOSURFACE_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->removeShaderDefine("ISOSURFACE_ENABLED");
+    }
+}
+
+void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
+    auto data = property.get().getVectorsf();
+
+    shader.setUniform("isovalues", data.first.size(), data.first.data());
+    shader.setUniform("isosurfaceColors", data.second.size(), data.second.data());
+}
+
+void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::string name) {
+    auto data = property.get().getVectorsf();
+
+    shader.setUniform(name + ".values", data.first.size(), data.first.data());
+    shader.setUniform(name + ".colors", data.second.size(), data.second.data());
+}
+
+void addShaderDefines(Shader& shader, const IsoTFProperty& property) {
+    addShaderDefines(shader, property.isovalues_);
+}
+
+void setShaderUniforms(Shader& shader, const IsoTFProperty& property) {
+    setShaderUniforms(shader, property.isovalues_);
+}
+
+void setShaderUniforms(Shader& shader, const IsoTFProperty& property, std::string name) {
+    setShaderUniforms(shader, property.isovalues_, property.isovalues_.getIdentifier());
+}
+
+void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {
     std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {
-        shader.getFragmentShaderObject()->addShaderDefine("HAS_BACKGROUND");
+        shader.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
         shader.getFragmentShaderObject()->addShaderDefine(
-            bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth);");
+            bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth)");
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("HAS_BACKGROUND");
+        shader.getFragmentShaderObject()->removeShaderDefine("BACKGROUND_AVAILABLE");
         shader.getFragmentShaderObject()->addShaderDefine(bgKey, "result");
     }
 }
@@ -286,6 +500,10 @@ void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& property) {
         planes += property.plane3_.enable_ ? ", params.plane3" : "";
         value =
             "drawPlanes(result, samplePosition, rayDirection, increment " + planes + ",t,tDepth)";
+
+        shader.getFragmentShaderObject()->addShaderDefine("PLANES_ENABLED");
+    } else {
+        shader.getFragmentShaderObject()->removeShaderDefine("PLANES_ENABLED");
     }
     shader.getFragmentShaderObject()->addShaderDefine(key, value);
 }

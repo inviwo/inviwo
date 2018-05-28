@@ -106,9 +106,8 @@ void main() {
     // prevent fragments with low alpha from being rendered
     if (alpha < 0.05) discard;
 
-    color.rgb *= alpha;
-    color.a = alpha;
-    FragData0 = color;
+    color.rgb *= color.a;
+    FragData0 = color * alpha;
 
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
     // correct depth for a round profile, i.e. tube like appearance

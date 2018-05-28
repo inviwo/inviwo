@@ -261,6 +261,10 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
             break;
 #endif
     }
+#else
+    IVW_UNUSED_PARAM(type);
+    IVW_UNUSED_PARAM(context);
+    IVW_UNUSED_PARAM(msg);
 #endif
 }
 

@@ -395,7 +395,7 @@ void ProcessorGraphicsItem::onLabelGraphicsItemChanged(LabelGraphicsItem* item) 
     }
 }
 
-void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem* item) {
+void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem*) {
     positionLablels();
 }
 

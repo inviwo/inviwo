@@ -55,6 +55,8 @@ IVW_QTEDITOR_API QImage generatePreview(const QString& classIdentifier);
 */
 IVW_QTEDITOR_API QImage generateProcessorPreview(const QString& classIdentifier, double opacity = 1.0);
 
+IVW_QTEDITOR_API QImage generateProcessorPreview(Processor* processor, double opacity = 1.0);
+
 IVW_QTEDITOR_API void saveProcessorPreviews(InviwoApplication* app, std::string& path);
 
 } // namespace

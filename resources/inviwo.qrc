@@ -37,6 +37,8 @@
         <file>icons/log-clearonrun.png</file>
         <file>icons/newfile.png</file>
         <file>icons/open.png</file>
+        <file>icons/precompiled.png</file>
+        <file>icons/precompiled-disabled.png</file>
         <file>icons/processor_broken.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
@@ -69,6 +71,7 @@
         <file>stylesheets/images/dense6pattern.png</file>
         <file>stylesheets/images/dock-docked.png</file>
         <file>stylesheets/images/dock-floating.png</file>
+        <file>stylesheets/images/dock-help.png</file>
         <file>stylesheets/images/dock-sticky.png</file>
         <file>stylesheets/images/dock-unsticky.png</file>
         <file>stylesheets/images/slider.png</file>

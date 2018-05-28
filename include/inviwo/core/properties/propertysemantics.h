@@ -61,6 +61,7 @@ public:
     static const PropertySemantics Multiline;
     static const PropertySemantics ImageEditor;
     static const PropertySemantics ShaderEditor;
+    static const PropertySemantics PythonEditor;
 
 private:
     std::string semantic_;

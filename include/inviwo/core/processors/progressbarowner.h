@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROGRESSBAROWNER_H
@@ -61,22 +61,25 @@ namespace inviwo {
  * @see ProgressBar
  * @see ProgressBarObservable
  */
-class ProgressBarOwner  {
+class IVW_CORE_API ProgressBarOwner {
 public:
     ProgressBarOwner() = default;
     virtual ~ProgressBarOwner() = default;
 
-    inline ProgressBar& getProgressBar() { return progressBar_; };
-    inline const ProgressBar& getProgressBar() const { return progressBar_; };
+    ProgressBar& getProgressBar();
+    const ProgressBar& getProgressBar() const;
 
     // Helper function
-    inline void updateProgress(float progress) { progressBar_.updateProgress(progress); }
+    inline void updateProgress(float progress);
 
 protected:
     ProgressBar progressBar_;
 };
 
+inline void ProgressBarOwner::updateProgress(float progress) {
+    progressBar_.updateProgress(progress);
+}
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROGRESSBAROWNER_H
+#endif  // IVW_PROGRESSBAROWNER_H

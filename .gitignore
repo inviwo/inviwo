@@ -4,3 +4,4 @@ tools/doxygen/doc
 tools/doxygen/doc-qt
 *.pyc
 pyconfig.ini
+.idea

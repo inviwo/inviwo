@@ -45,8 +45,8 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
                  IvwKey::P, KeyState::Press)
     , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()},
              [this]() { onTimerEvent(); }) {
-    play_.onChange(this, &SequenceTimerProperty::onPlaySequenceToggled);
 
+    play_.onChange([this]() { onPlaySequenceToggled(); });
     framesPerSecond_.onChange(
         [this]() { timer_.setInterval(std::chrono::milliseconds{1000 / framesPerSecond_.get()}); });
     index_.setSerializationMode(PropertySerializationMode::All);
@@ -64,6 +64,8 @@ SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs)
     , playPause_(rhs.playPause_)
     , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()},
              [this]() { onTimerEvent(); }) {
+
+    play_.onChange([this]() { onPlaySequenceToggled(); });
     framesPerSecond_.onChange(
         [this]() { timer_.setInterval(std::chrono::milliseconds{1000 / framesPerSecond_.get()}); });
     index_.setSerializationMode(PropertySerializationMode::All);
@@ -80,7 +82,6 @@ SequenceTimerProperty& SequenceTimerProperty::operator=(const SequenceTimerPrope
         play_ = that.play_;
         framesPerSecond_ = that.framesPerSecond_;
         playPause_ = that.playPause_;
-        
     }
     return *this;
 }
@@ -113,4 +114,4 @@ void inviwo::SequenceTimerProperty::onPlaySequenceToggled() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

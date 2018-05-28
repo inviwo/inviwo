@@ -97,7 +97,14 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     interactionEvents_.setCurrentStateAsDefault();
     addProperty(interactionEvents_);
 
-    interactionEvents_.onChange(this, &PointLightSourceProcessor::handleInteractionEventsChanged);
+    interactionEvents_.onChange([this]() {
+        if (interactionEvents_.get() > 0) {
+            addInteractionHandler(&lightInteractionHandler_);
+        } else {
+            removeInteractionHandler(&lightInteractionHandler_);
+        }
+        lightInteractionHandler_.setHandleEventsOptions(interactionEvents_.get());
+    });
 }
 
 PointLightSourceProcessor::~PointLightSourceProcessor() {
@@ -130,15 +137,6 @@ void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) 
     lightSource->setEnabled(lightEnabled_.get());
 }
 
-void PointLightSourceProcessor::handleInteractionEventsChanged() {
-    if (interactionEvents_.get() > 0) {
-        addInteractionHandler(&lightInteractionHandler_);
-    } else {
-        removeInteractionHandler(&lightInteractionHandler_);
-    }
-    lightInteractionHandler_.setHandleEventsOptions(interactionEvents_.get());
-}
-
 PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
                                                            CameraProperty* cam,
                                                            BoolProperty* screenPosEnabled,
@@ -153,7 +151,7 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
     , trackball_(this)
     , interactionEventOption_(0) {
     // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
-    camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged);
+    camera_->onChange([this]() { onCameraChanged(); });
 }
 
 PointLightInteractionHandler::~PointLightInteractionHandler() {}

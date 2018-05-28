@@ -717,7 +717,7 @@ void Trackball::rotateTrackBall(const vec3& fromTrackBallPos, const vec3& toTrac
             glm::rotate(quaternion, getLookUp()));
 }
 
-vec3 Trackball::getBoundedTranslation(const vec3& lookFrom, const vec3& lookTo, vec3 translation) {
+vec3 Trackball::getBoundedTranslation(const vec3& /*lookFrom*/, const vec3& lookTo, vec3 translation) {
     // Make sure that we do not translate outside of the specified boundaries
 
     // To avoid sliding motions along boundaries created by clamping we

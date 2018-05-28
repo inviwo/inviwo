@@ -108,6 +108,7 @@ private:
     FloatVec4Property color_;
     FontProperty font_;
     FloatVec2Property position_;
+    IntVec2Property offset_;
     
     ButtonProperty addArgButton_; //!< this button will add string properties to be used with place markers
 
@@ -116,7 +117,7 @@ private:
 
     const std::size_t maxNumArgs_ = 99;
 
-    std::shared_ptr<Texture2D> cacheTexture_; //!< cache rendered text
+    TextTextureObject textObject_;
 
     TextureQuadRenderer textureRenderer_;
 };

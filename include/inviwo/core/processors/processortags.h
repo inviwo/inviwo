@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORTAGS_H
@@ -37,17 +37,12 @@ namespace inviwo {
 
 class IVW_CORE_API Tag {
 public:
-    Tag();
+    Tag() = default;
     Tag(std::string tag);
-    Tag(const Tag& rhs);
-    Tag& operator=(const Tag& that);
     Tag& operator=(const std::string& that);
-
-    virtual ~Tag() = default;
-
     const std::string& getString() const;
 
-    friend std::ostream& operator << (std::ostream& os, const inviwo::Tag& obj);
+    friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
 
 private:
     std::string tag_;
@@ -56,40 +51,44 @@ private:
 inline bool operator==(const Tag& lhs, const Tag& rhs) {
     return lhs.getString() == rhs.getString();
 }
-inline bool operator< (const Tag& lhs, const Tag& rhs) {
-    return lhs.getString() < rhs.getString();
-}
+inline bool operator<(const Tag& lhs, const Tag& rhs) { return lhs.getString() < rhs.getString(); }
 inline bool operator!=(const Tag& lhs, const Tag& rhs) { return !operator==(lhs, rhs); }
-inline bool operator> (const Tag& lhs, const Tag& rhs) { return  operator< (rhs, lhs); }
-inline bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator> (lhs, rhs); }
-inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator< (lhs, rhs); }
+inline bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
+inline bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator>(lhs, rhs); }
+inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator<(lhs, rhs); }
 
-
-
-class IVW_CORE_API Tags { 
+class IVW_CORE_API Tags {
 public:
-    Tags();
-    Tags(const std::string tags);
+    Tags() = default;
+
+    /*
+     * Creates tags from a string. Multiple tags are delimited by ','.
+     */
+    Tags(const std::string& tags);
+
+    /*
+     * Creates tags from a string. Multiple tags are delimited by ','.
+     */
     Tags(const char* tags);
-    Tags(const Tags& rhs);
-    Tags& operator=(const Tags& that);
+
+    /*
+     * Assign tags from a string. Multiple tags are delimited by ','.
+     */
     Tags& operator=(const std::string& that);
 
-    virtual ~Tags() = default;
-
     void addTag(Tag);
-    void addTags(const Tags &t);
+    void addTags(const Tags& t);
 
     size_t size() const;
     bool empty() const;
 
     std::string getString() const;
 
-    int getMatches(const Tags&) const; 
+    int getMatches(const Tags&) const;
 
-    friend std::ostream& operator << (std::ostream& os, const inviwo::Tags& obj);
+    friend std::ostream& operator<<(std::ostream& os, const inviwo::Tags& obj);
     friend bool operator==(const Tags& lhs, const Tags& rhs);
-    friend bool operator< (const Tags& lhs, const Tags& rhs);
+    friend bool operator<(const Tags& lhs, const Tags& rhs);
 
     std::vector<Tag> tags_;
 
@@ -100,24 +99,19 @@ public:
     static const Tags CPU;
 };
 
-inline bool operator==(const Tags& lhs, const Tags& rhs) {
-    return lhs.tags_ == rhs.tags_;
-}
-inline bool operator< (const Tags& lhs, const Tags& rhs) {
-    return lhs.tags_ < rhs.tags_;
-}
+inline bool operator==(const Tags& lhs, const Tags& rhs) { return lhs.tags_ == rhs.tags_; }
+inline bool operator<(const Tags& lhs, const Tags& rhs) { return lhs.tags_ < rhs.tags_; }
 inline bool operator!=(const Tags& lhs, const Tags& rhs) { return !operator==(lhs, rhs); }
-inline bool operator> (const Tags& lhs, const Tags& rhs) { return  operator< (rhs, lhs); }
-inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator> (lhs, rhs); }
-inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator< (lhs, rhs); }
+inline bool operator>(const Tags& lhs, const Tags& rhs) { return operator<(rhs, lhs); }
+inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator>(lhs, rhs); }
+inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator<(lhs, rhs); }
 
 namespace util {
 
 Tags IVW_CORE_API getPlatformTags(const Tags& t);
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_PROCESSORTAGS_H
-
+#endif  // IVW_PROCESSORTAGS_H

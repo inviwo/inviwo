@@ -139,7 +139,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         tDepth = 1.0;
     }
 
-#ifdef HAS_BACKGROUND
+#ifdef BACKGROUND_AVAILABLE
     {
         float d = texture(bgDepth, texCoords).x;
         if (tDepth == 1 || d < tDepth) {
@@ -148,7 +148,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             tDepth = d;
         }
     }
-#endif
+#endif // BACKGROUND_AVAILABLE
 
     gl_FragDepth = tDepth;
     return result;
@@ -161,16 +161,16 @@ void main() {
 
     vec4 color = vec4(0);
 
-#ifdef HAS_BACKGROUND
+#ifdef BACKGROUND_AVAILABLE
     color = texture(bgColor, texCoords);
     gl_FragDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
-#else
+#else // BACKGROUND_AVAILABLE
     PickingData = vec4(0);
     if (entryPoint == exitPoint) {
         discard;
     }
-#endif
+#endif // BACKGROUND_AVAILABLE
     if (entryPoint != exitPoint) {
         color = rayTraversal(entryPoint, exitPoint, texCoords);
     }
