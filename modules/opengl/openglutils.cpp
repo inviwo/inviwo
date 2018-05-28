@@ -438,6 +438,46 @@ void Viewport::set() {
     glViewport(x(), y(), width(), height());
 }
 
+ScissorState& utilgl::ScissorState::operator=(ScissorState&& that) {
+    if (this != &that) {
+        box_ = { 0, 0, 0, 0 };
+        std::swap(box_, that.box_);
+        oldBox_ = { 0, 0, 0, 0 };
+        std::swap(oldBox_, that.oldBox_);
+    }
+    return *this;
+}
+
+utilgl::ScissorState::ScissorState(ScissorState&& rhs)
+    : box_(rhs.box_), oldBox_(rhs.oldBox_) {
+}
+
+utilgl::ScissorState::ScissorState(GLint x, GLint y, GLsizei width, GLsizei height)
+    : box_{ x, y, width, height }, oldBox_{} {
+    oldBox_.get();
+    box_.set();
+}
+
+utilgl::ScissorState::ScissorState(const ivec4 &coords)
+    : box_{ coords.x, coords.y, coords.z, coords.w }, oldBox_{} {
+    oldBox_.get();
+    box_.set();
+}
+
+utilgl::ScissorState::~ScissorState() {
+    if (box_ != oldBox_) {
+        oldBox_.set();
+    }
+}
+
+void ScissorBox::get() {
+    glGetIntegerv(GL_SCISSOR_BOX, box_.data());
+}
+
+void ScissorBox::set() {
+    glScissor(x(), y(), width(), height());
+}
+
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width) {
     float s_sizes[2];
     glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, s_sizes);

@@ -82,6 +82,8 @@ public:
     const LayerGL* getDepthLayerGL() const;
     const LayerGL* getPickingLayerGL() const;
 
+    size_t getNumberOfColorLayers() const;
+
     GLenum getPickingAttachmentID() const;
 
     void updateExistingLayers() const;
