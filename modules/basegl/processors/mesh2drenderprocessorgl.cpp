@@ -84,16 +84,16 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     addProperty(bottom_);
     addProperty(top_);
 
-    inport_.onChange([this]() { updateDrawers(); });
+    inport_.onChange(this, &Mesh2DRenderProcessorGL::updateDrawers);
 }
 
 Mesh2DRenderProcessorGL::~Mesh2DRenderProcessorGL() {}
 
 void Mesh2DRenderProcessorGL::process() {
     if (imageInport_.isConnected()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
+        utilgl::activateTargetAndCopySource(outport_, imageInport_);
     } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
+        utilgl::activateAndClearTarget(outport_);
     }
     shader_.activate();
 
@@ -105,6 +105,7 @@ void Mesh2DRenderProcessorGL::process() {
 
     for (auto& drawer : drawers_) {
         utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry_");
+        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer.second->getMesh()));
         drawer.second->draw();
     }
 

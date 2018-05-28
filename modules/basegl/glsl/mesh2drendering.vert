@@ -27,7 +27,10 @@
  * 
  *********************************************************************************/
 
+layout(location = 4) in uint in_PickId;
+
 #include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
 
 uniform GeometryParameters geometry_;
@@ -36,10 +39,14 @@ uniform mat4 projectionMatrix;
 
 out vec4 color_;
 out vec3 texCoord_;
+flat out vec4 pickColor_;
+
+uniform bool pickingEnabled = false;
  
 void main() {
     color_ = in_Color;
     texCoord_ = in_TexCoord;
+	pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 
     gl_Position = projectionMatrix * in_Vertex; 
 }
