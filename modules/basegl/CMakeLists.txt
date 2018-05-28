@@ -48,6 +48,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointrenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/sphererenderer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/splitimage.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.h
@@ -112,6 +113,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointrenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/sphererenderer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/splitimage.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.cpp
