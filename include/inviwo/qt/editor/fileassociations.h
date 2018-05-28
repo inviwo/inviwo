@@ -30,14 +30,14 @@
 // Windows implementation based on
 // https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows
 
-// ————————————————————————————————-
+// â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”-
 /**
  * @file
  * @brief
  * @author Gerolf Reinwardt
  * @date 30. march 2011
  *
- * Copyright © 2011, Gerolf Reinwardt. All rights reserved.
+ * Copyright Â© 2011, Gerolf Reinwardt. All rights reserved.
  *
  * Simplified BSD License
  *
@@ -65,7 +65,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Gerolf Reinwardt.
  */
-// ————————————————————————————————-
+// â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”-
 
 #ifndef IVW_FILEASSOCIATIONS_H
 #define IVW_FILEASSOCIATIONS_H
