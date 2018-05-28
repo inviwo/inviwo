@@ -98,8 +98,7 @@ void SplitImage::process() {
             viewport1 = ivec4(0, 0, dims.x, dims.y - height);
         }
 
-        auto renderPort = [&](const auto &inport, const auto &viewport) {
-            glScissor(viewport.x, viewport.y, viewport.z, viewport.w);
+        auto renderPort = [&](const ImageInport &inport, const auto &viewport) {
             utilgl::ScissorState scissor(viewport);
 
             TextureUnit colorUnit, depthUnit, pickingUnit;
