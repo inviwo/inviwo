@@ -32,7 +32,10 @@
 
 in vec3 texCoord_;
 in vec4 color_;
+flat in vec4 pickColor_;
+
 
 void main() {
     FragData0 = color_;
+    PickingData = pickColor_;
 }
