@@ -85,11 +85,10 @@ def checkline(line):
 			# malformed year
 			return CopyrightState.MalformedYear 
 	else:
-		# no copyright info / misformed
+		# no copyright info / entirely malformed
 		return CopyrightState.Missing
 
 def checkfile(filehandle, filename):
-	copyrightfound = False
 	for (i,line) in enumerate(filehandle):
 		result = checkline(line)
 		if result == CopyrightState.Outdated:
