@@ -27,14 +27,14 @@
  *
  *********************************************************************************/
 
-// ————————————————————————————————-
+// â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”-
 /**
  * @file
  * @brief
  * @author Gerolf Reinwardt
  * @date 30.01.2011
  *
- * Copyright © 2011, Gerolf Reinwardt. All rights reserved.
+ * Copyright Â© 2011, Gerolf Reinwardt. All rights reserved.
  *
  * Simplified BSD License
  *
@@ -62,7 +62,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Gerolf Reinwardt.
  */
-// ————————————————————————————————-
+// â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”-
 
 #include <inviwo/qt/editor/fileassociations.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
