@@ -34,6 +34,3 @@ ivw_configure_application_module_dependencies(inviwo-integrationtests ${enabled_
 ivw_define_standard_definitions(inviwo-integrationtests inviwo-integrationtests)
 ivw_define_standard_properties(inviwo-integrationtests)
 ivw_memleak_setup(inviwo-integrationtests)
-
-# Optimize compilation with pre-compilied headers based on inviwo-core
-ivw_compile_optimize_on_target(inviwo-integrationtests)
