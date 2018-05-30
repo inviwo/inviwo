@@ -60,6 +60,7 @@ void exposeImage(py::module &m) {
 
     py::class_<Image, std::shared_ptr<Image>>(m, "Image")
         .def(py::init<size2_t, const DataFormatBase *>())
+        .def("clone", [](Image &self) { return self.clone(); })
         .def_property_readonly("dimensions", &Image::getDimensions)
         .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); },
                                py::return_value_policy::reference_internal)
@@ -69,6 +70,8 @@ void exposeImage(py::module &m) {
 
     py::class_<Layer, std::shared_ptr<Layer>>(m, "Layer")
         .def(py::init<size2_t, const DataFormatBase *>())
+        .def("clone", [](Layer &self) { return self.clone(); })
+        .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
         .def_property_readonly("dimensions", &Layer::getDimensions)
         .def_property(
             "data",
