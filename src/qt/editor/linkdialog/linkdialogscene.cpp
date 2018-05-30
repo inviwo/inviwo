@@ -46,6 +46,7 @@
 #include <warn/ignore/all>
 #include <QMenu>
 #include <QAction>
+#include <QKeyEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <warn/pop>
@@ -302,9 +303,6 @@ void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
 
     auto view = views().front();
     auto vr = view->mapToScene(view->rect()).boundingRect();
-
-    auto top = vr.top() + linkdialog::processorHeight;
-    auto bottom = vr.bottom() - linkdialog::processorHeight;
 
     if (tree.top() + yIncrement > vr.center().y()) yIncrement = vr.center().y() - tree.top();
     if (tree.bottom() + yIncrement < vr.center().y()) yIncrement = vr.center().y() - tree.bottom();
