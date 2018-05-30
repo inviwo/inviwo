@@ -35,8 +35,6 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/links/linkconditions.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,182 +43,143 @@
 #include <QVBoxLayout>
 #include <QStandardItemModel>
 #include <QLineEdit>
+#include <QToolButton>
+#include <QMenu>
+#include <QAction>
+#include <QComboBox>
+#include <QEventLoop>
+#include <QCheckBox>
 #include <warn/pop>
 
 namespace inviwo {
 
-LinkDialog::LinkDialog(Processor* src, Processor* dst, QWidget* parent)
-    : InviwoDockWidget("Edit Property Links", parent, "LinkDialogWidget"), src_(src), dest_(dst) {
+LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget* parent)
+    : InviwoDockWidget("Edit Property Links", parent, "LinkDialogWidget") {
 
     setFloating(true);
-
+    setAttribute(Qt::WA_DeleteOnClose);
     setAllowedAreas(Qt::NoDockWidgetArea);
     setFixedWidth(linkdialog::dialogWidth);
     setMinimumHeight(linkdialog::dialogHeight);
 
-    QFrame* frame = new QFrame();
+    auto scene =
+        new LinkDialogGraphicsScene(this, srcProcessor->getNetwork(), srcProcessor, dstProcessor);
+    scene->setSceneRect(0.0, 0.0, linkdialog::dialogWidth, size().height());
+    connect(scene, &LinkDialogGraphicsScene::closeDialog, this, &LinkDialog::close);
+
+    auto view = new LinkDialogGraphicsView(this);
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setScene(scene);
+
+    auto frame = new QFrame{};
     setWidget(frame);
+    auto mainLayout = new QVBoxLayout(frame);
+    mainLayout->addWidget(view);
 
-    QVBoxLayout* mainLayout = new QVBoxLayout(frame);
-    linkDialogView_ = new LinkDialogGraphicsView(this);
-    linkDialogView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    linkDialogView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    mainLayout->addWidget(linkDialogView_);
-
-    // smart link button
-    QHBoxLayout* smartLinkPushButtonLayout = new QHBoxLayout;
+    auto smartLinkPushButtonLayout = new QHBoxLayout{};
     smartLinkPushButtonLayout->setAlignment(Qt::AlignLeft);
 
-    // checkable combo box
-    smartLinkOptions_ = new CheckableQComboBox(
-        this, "SmartLink Filter",
-        {SimpleCondition::conditionName(), PartiallyMatchingIdCondition::conditionName()});
-    smartLinkPushButtonLayout->addWidget(smartLinkOptions_, 20);
+    // hidden check box
+    auto showHidden = new QCheckBox("Show Hidden", this);
+    connect(showHidden, &QCheckBox::stateChanged,
+            [scene](int state) { scene->showHidden(state == Qt::Checked); });
+    smartLinkPushButtonLayout->addWidget(showHidden, 10);
 
     // smart link button
-    smartLinkPushButton_ = new QPushButton("SmartLink", this);
-    connect(smartLinkPushButton_, &QPushButton::clicked, this,
-            &LinkDialog::clickedSmartLinkPushButton);
-    smartLinkPushButtonLayout->addWidget(smartLinkPushButton_, 10);
+    auto smartLink = new QToolButton(this);
+    smartLink->setText("SmartLink");
+    smartLink->setPopupMode(QToolButton::MenuButtonPopup);
+    smartLink->setToolButtonStyle(Qt::ToolButtonTextOnly);
 
-    showHidden_ = new QCheckBox("Show Hidden", this);
-    connect(showHidden_, &QCheckBox::stateChanged,
-            [&](int state) { linkDialogScene_->showHidden(state == Qt::Checked); });
-    smartLinkPushButtonLayout->addWidget(showHidden_, 10);
+    auto menu = new QMenu(this);
+    auto matchType = menu->addAction("Match Type");
+    matchType->setCheckable(true);
+    matchType->setChecked(true);
+    auto matchId = menu->addAction("Match Identifier");
+    matchId->setCheckable(true);
+    matchId->setChecked(true);
 
-    // delete button
-    deleteAllLinkPushButton_ = new QPushButton("Delete All", this);
-    connect(deleteAllLinkPushButton_, &QPushButton::clicked, this,
-            &LinkDialog::clickedDeleteAllLinksPushButton);
-    smartLinkPushButtonLayout->addWidget(deleteAllLinkPushButton_, 10);
+    auto leftLink = menu->addAction("Link Left to Right");
+    leftLink->setCheckable(true);
+    leftLink->setChecked(true);
 
-    // expand composite
-    expandCompositeButton_ = new QPushButton("Expand/Collapse", this);
-    expandCompositeButton_->setChecked(false);
-    smartLinkPushButtonLayout->addWidget(expandCompositeButton_, 10);
-    connect(expandCompositeButton_, &QPushButton::clicked,
-            [&]() { linkDialogScene_->toggleExpand(); });
-    mainLayout->addLayout(smartLinkPushButtonLayout);
+    auto rightLink = menu->addAction("Link Right to Left");
+    rightLink->setCheckable(true);
+    rightLink->setChecked(true);
 
-    linkDialogScene_ = new LinkDialogGraphicsScene(
-        this, InviwoApplication::getPtr()->getProcessorNetwork(), src, dst);
-    linkDialogScene_->setSceneRect(0.0, 0.0, linkdialog::dialogWidth, size().height());
-    linkDialogView_->setDialogScene(linkDialogScene_);
+    smartLink->setMenu(menu);
 
-    connect(linkDialogScene_, &LinkDialogGraphicsScene::closeDialog, this, &LinkDialog::closeLinkDialog);
+    auto shouldLink = [net = srcProcessor->getNetwork(), matchType, matchId](Property* src,
+                                                                             Property* dst) {
+        if (!net->canLink(src, dst)) {
+            return false;
+        }
+        if (matchType->isChecked() && dst->getClassIdentifier() != src->getClassIdentifier()) {
+            return false;
+        }
+        if (matchId->isChecked() && dst->getIdentifier() != src->getIdentifier()) {
+            return false;
+        }
 
-    loadState();
-}
+        return true;
+    };
 
-CheckableQComboBox::~CheckableQComboBox() = default;
+    connect(smartLink, &QToolButton::clicked, this,
+            [scene, srcProcessor, dstProcessor, shouldLink, leftLink, rightLink]() {
+                std::function<void(Property * src, Property * dst)> link = [&](Property* src,
+                                                                               Property* dst) {
+                    if (scene->isPropertyExpanded(src) || scene->isPropertyExpanded(dst)) {
 
-void LinkDialog::closeLinkDialog() {
-    hide();
-    eventLoop_.quit();
-}
-
-void LinkDialog::closeEvent(QCloseEvent*) { closeLinkDialog(); }
-
-void LinkDialog::clickedSmartLinkPushButton() {
-    auto& srcProperties = src_->getProperties();
-    auto& dstProperties = dest_->getProperties();
-    int selectedTypes = (int)NoLinkCondition;
-    auto selectedConditons = smartLinkOptions_->getCheckedItems();
-
-    for (auto& selectedConditon : selectedConditons) {
-        if (selectedConditon == SimpleCondition::conditionName())
-            selectedTypes |= SimpleCondition::conditionType();
-
-        if (selectedConditon == PartiallyMatchingIdCondition::conditionName())
-            selectedTypes |= PartiallyMatchingIdCondition::conditionType();
-    }
-
-    for (auto& srcPropertie : srcProperties) {
-        for (auto& dstPropertie : dstProperties) {
-            bool linkSubProperties = linkDialogScene_->isPropertyExpanded(srcPropertie) ||
-                                     linkDialogScene_->isPropertyExpanded(dstPropertie);
-
-            if (linkSubProperties) {
-                if (AutoLinker::canLink(srcPropertie, dstPropertie,
-                                        (LinkingConditions)selectedTypes)) {
-                    auto compSrc = dynamic_cast<CompositeProperty*>(srcPropertie);
-                    auto compDst = dynamic_cast<CompositeProperty*>(dstPropertie);
-                    if (compSrc && compDst) {
-                        // If composite property then try to link sub-properties only
-                        auto& s = compSrc->getProperties();
-                        auto& d = compDst->getProperties();
-                        for (auto& elem : s) {
-                            for (auto& d_jj : d) {
-                                if (AutoLinker::canLink(elem, d_jj,
-                                                        (LinkingConditions)selectedTypes)) {
-                                    linkDialogScene_->addPropertyLink(elem, d_jj, true);
+                        if (shouldLink(src, dst)) {
+                            auto compSrc = dynamic_cast<CompositeProperty*>(src);
+                            auto compDst = dynamic_cast<CompositeProperty*>(dst);
+                            if (compSrc && compDst) {
+                                // If composite property then try to link sub-properties only
+                                for (auto& i : compSrc->getProperties()) {
+                                    for (auto& j : compDst->getProperties()) {
+                                        link(i, j);
+                                    }
                                 }
                             }
                         }
+                    } else if (leftLink->isChecked() && shouldLink(src, dst)) {
+                        scene->addPropertyLink(src, dst, false);
+                        if (rightLink->isChecked()) {
+                            scene->addPropertyLink(dst, src, false);
+                        }
+                    }
+                };
+
+                for (auto& src : srcProcessor->getProperties()) {
+                    for (auto& dst : dstProcessor->getProperties()) {
+                        link(src, dst);
                     }
                 }
-            } else {
-                if (AutoLinker::canLink(srcPropertie, dstPropertie,
-                                        (LinkingConditions)selectedTypes))
-                    linkDialogScene_->addPropertyLink(srcPropertie, dstPropertie, true);
-            }
-        }
-    }
-}
+            });
+    smartLinkPushButtonLayout->addWidget(smartLink, 30);
 
-void LinkDialog::clickedDeleteAllLinksPushButton() { linkDialogScene_->removeAllPropertyLinks(); }
+    // delete button
+    auto deleteAllLinkPushButton = new QPushButton("Delete All", this);
+    connect(deleteAllLinkPushButton, &QPushButton::clicked, this,
+            [scene]() { scene->removeAllPropertyLinks(); });
+    smartLinkPushButtonLayout->addWidget(deleteAllLinkPushButton, 10);
 
-int LinkDialog::exec() {
-    eventLoop_.exit();
-    show();
-    return eventLoop_.exec();
+    // expand composite
+    auto expandCompositeButton = new QPushButton("Expand/Collapse", this);
+    expandCompositeButton->setChecked(false);
+    smartLinkPushButtonLayout->addWidget(expandCompositeButton, 10);
+    connect(expandCompositeButton, &QPushButton::clicked, [scene]() { scene->toggleExpand(); });
+
+    mainLayout->addLayout(smartLinkPushButtonLayout);
+
+    loadState();
 }
 
 QSize LinkDialog::sizeHint() const {
     QSize size = layout()->sizeHint();
     size.setHeight(linkdialog::dialogHeight);
     return size;
-}
-
-CheckableQComboBox::CheckableQComboBox(QWidget* parent, std::string widgetName,
-                                       std::vector<std::string> options)
-    : QComboBox(parent), widgetName_(widgetName) {
-    setEditable(true);
-    lineEdit()->setReadOnly(true);
-    stdandardModel_ = util::make_unique<QStandardItemModel>(static_cast<int>(options.size()), 1);
-
-    for (size_t i = 0; i < options.size(); i++) {
-        QStandardItem* item = new QStandardItem(QString(options[i].c_str()));
-        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-        item->setData(Qt::Checked, Qt::CheckStateRole);
-        stdandardModel_->setItem(static_cast<int>(i), 0, item);
-        standardItems_.push_back(item);
-    }
-
-    setModel(stdandardModel_.get());
-    lineEdit()->setText(QString(widgetName_.c_str()));
-    connect(stdandardModel_.get(), &QStandardItemModel::dataChanged, this,
-            [this]() { lineEdit()->setText(QString(widgetName_.c_str())); });
-}
-
-bool CheckableQComboBox::isItemChecked(int i) {
-    if (i > (int)standardItems_.size()) return false;
-    QStandardItem* item = standardItems_[i];
-    if (item->checkState() == Qt::Checked) return true;
-
-    return false;
-}
-
-std::vector<std::string> CheckableQComboBox::getCheckedItems() {
-    std::vector<std::string> checkedItemString;
-
-    for (size_t i = 0; i < standardItems_.size(); i++) {
-        if (isItemChecked(static_cast<int>(i))) {
-            checkedItemString.push_back(standardItems_[i]->text().toLocal8Bit().constData());
-        }
-    }
-
-    return checkedItemString;
 }
 
 }  // namespace inviwo

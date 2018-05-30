@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYCONVERTER_H
@@ -53,68 +53,60 @@ protected:
     std::string dstClassIdentifier_;
 };
 
-template <typename srcProperty, typename dstProperty>
+template <typename SrcProperty, typename DstProperty>
 class TemplatePropertyConverter : public PropertyConverter {
 public:
     TemplatePropertyConverter()
-        : PropertyConverter(srcProperty::CLASS_IDENTIFIER, dstProperty::CLASS_IDENTIFIER) {}
-    virtual ~TemplatePropertyConverter() {}
+        : PropertyConverter(SrcProperty::CLASS_IDENTIFIER, DstProperty::CLASS_IDENTIFIER) {}
+    virtual ~TemplatePropertyConverter() = default;
 
     virtual void convert(const Property *src, Property *dst) const override {
-        const srcProperty *s = dynamic_cast<const srcProperty *>(src);
-        dstProperty *d = dynamic_cast<dstProperty *>(dst);
-        if (s && d) {
-            convertimpl(s, d);
-        } else {
-            LogWarn("Cant convert from " << src->getClassIdentifier() << " to "
-                                         << dst->getClassIdentifier() << " using this convert");
-        }
+        convertimpl(static_cast<const SrcProperty *>(src), static_cast<DstProperty *>(dst));
     }
 
 protected:
-    virtual void convertimpl(const srcProperty *src, dstProperty *dst) const = 0;
+    virtual void convertimpl(const SrcProperty *src, DstProperty *dst) const = 0;
 };
 
-template <typename srcProperty, typename dstProperty>
-class OrdinalPropertyConverter : public TemplatePropertyConverter<srcProperty, dstProperty> {
-public:
-    OrdinalPropertyConverter() : TemplatePropertyConverter<srcProperty, dstProperty>() {}
-    virtual ~OrdinalPropertyConverter() {}
-
-
+template <typename SrcProperty, typename DstProperty>
+class OrdinalPropertyConverter : public TemplatePropertyConverter<SrcProperty, DstProperty> {
 protected:
-    virtual void convertimpl(const srcProperty *src, dstProperty *dst) const override {
-        dst->setMinValue(static_cast<typename dstProperty::value_type>(src->getMinValue()));
-        dst->setMaxValue(static_cast<typename dstProperty::value_type>(src->getMaxValue()));
-        dst->setIncrement(static_cast<typename dstProperty::value_type>(src->getIncrement()));
-        dst->set(static_cast<typename dstProperty::value_type>(src->get()));
+    virtual void convertimpl(const SrcProperty *src, DstProperty *dst) const override {
+        dst->setMinValue(static_cast<typename DstProperty::value_type>(src->getMinValue()));
+        dst->setMaxValue(static_cast<typename DstProperty::value_type>(src->getMaxValue()));
+        dst->setIncrement(static_cast<typename DstProperty::value_type>(src->getIncrement()));
+        dst->set(static_cast<typename DstProperty::value_type>(src->get()));
     }
 };
 
-template <typename srcProperty>
-class ScalarToStringConverter : public TemplatePropertyConverter<srcProperty, StringProperty> {
-public:
-    ScalarToStringConverter() : TemplatePropertyConverter<srcProperty, StringProperty>() {}
-    virtual ~ScalarToStringConverter() {}
-
+template <typename SrcProperty>
+class ScalarToStringConverter : public TemplatePropertyConverter<SrcProperty, StringProperty> {
 protected:
-    virtual void convertimpl(const srcProperty *src, StringProperty *dst) const override {
+    virtual void convertimpl(const SrcProperty *src, StringProperty *dst) const override {
         dst->set(toString(src->get()));
     }
 };
 
-template <typename srcProperty>
-class VectorToStringConverter : public TemplatePropertyConverter<srcProperty, StringProperty> {
-public:
-    VectorToStringConverter() : TemplatePropertyConverter<srcProperty, StringProperty>() {}
-    virtual ~VectorToStringConverter() {}
-
+template <typename SrcProperty>
+class VectorToStringConverter : public TemplatePropertyConverter<SrcProperty, StringProperty> {
 protected:
-    virtual void convertimpl(const srcProperty *src, StringProperty *dst) const override {
+    virtual void convertimpl(const SrcProperty *src, StringProperty *dst) const override {
         dst->set(glm::to_string(src->get()));
     }
 };
 
-}  // namespace
+template <typename OptionProperty>
+class OptionToStringConverter : public TemplatePropertyConverter<OptionProperty, StringProperty> {
+protected:
+    virtual void convertimpl(const OptionProperty *src, StringProperty *dst) const override {
+        if (src->size() > 0) {
+            dst->set(src->getSelectedDisplayName());
+        } else {
+            dst->set("");
+        }
+    }
+};
+
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYCONVERTER_H

@@ -33,63 +33,17 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QComboBox>
-#include <QEventLoop>
-#include <QCheckBox>
-#include <memory>
-#include <warn/pop>
-
-class QStandardItem;
-class QPushButton;
-class QStandardItemModel;
-
 namespace inviwo {
 
 class Processor;
-class Property;
-class PropertyOwner;
-class LinkDialogGraphicsView;
-class LinkDialogGraphicsScene;
-
-class IVW_QTEDITOR_API CheckableQComboBox : public QComboBox {
-public:
-    CheckableQComboBox(QWidget* parent, std::string widgetName, std::vector<std::string> options);
-    virtual ~CheckableQComboBox();
-    bool isItemChecked(int i);
-    std::vector<std::string> getCheckedItems();
-
-private:
-    std::unique_ptr<QStandardItemModel> stdandardModel_;
-    std::vector<QStandardItem*> standardItems_;
-    std::string widgetName_;
-};
 
 class IVW_QTEDITOR_API LinkDialog : public InviwoDockWidget {
 public:
     LinkDialog(Processor* src, Processor* dest, QWidget* parent);
     virtual ~LinkDialog() = default;
 
-    virtual void closeEvent(QCloseEvent* event);
-    int exec();
     virtual QSize sizeHint() const;
 
-    void closeLinkDialog();
-private:
-    void clickedSmartLinkPushButton();
-    void clickedDeleteAllLinksPushButton();
-
-    LinkDialogGraphicsView* linkDialogView_;
-    LinkDialogGraphicsScene* linkDialogScene_;
-    QPushButton* smartLinkPushButton_;
-    CheckableQComboBox* smartLinkOptions_;
-    QCheckBox* showHidden_;
-    QPushButton* expandCompositeButton_;
-    QPushButton* deleteAllLinkPushButton_;
-    Processor* src_;
-    Processor* dest_;
-    QEventLoop eventLoop_;
 };
 
 }  // namespace inviwo

@@ -30,7 +30,6 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsDropShadowEffect>
 #include <QVector2D>
 #include <warn/pop>
 
@@ -40,6 +39,7 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <numeric>
 
@@ -48,7 +48,7 @@ namespace inviwo {
 LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeItem* parent,
                                                                Property* prop)
     : GraphicsItemData<Property>(parent, parent->getSide(), prop) {
-    
+
     setZValue(linkdialog::propertyDepth);
     setFlags(ItemSendsScenePositionChanges);
 
@@ -92,7 +92,7 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeIte
 void LinkDialogPropertyGraphicsItem::updatePositions() {
     auto visible = propertyVisible();
     setVisible(visible);
-    auto pos =  prev()->treeItemScenePos();
+    auto pos = prev()->treeItemScenePos();
     if (visible) pos += QPointF(0.0f, prev()->treeItemRect().height());
     setPos(mapToParent(mapFromScene(pos)));
 }
@@ -134,7 +134,7 @@ void LinkDialogPropertyGraphicsItem::addConnectionGraphicsItem(
     DialogConnectionGraphicsItem* cItem) {
     connections_.push_back(cItem);
 
-    if(connections_.size() == 1){
+    if (connections_.size() == 1) {
         LinkDialogTreeItem* item = this;
         while (item) {
             item->updatePositions();
@@ -194,15 +194,6 @@ QVariant LinkDialogPropertyGraphicsItem::itemChange(GraphicsItemChange change,
         }
     }
     return QGraphicsItem::itemChange(change, value);
-}
-
-void LinkDialogPropertyGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) {
-    setExpanded(!isExpanded());
-    auto item = next();
-    while (item) {
-        item->updatePositions();
-        item = item->next();
-    }
 }
 
 QPointF LinkDialogPropertyGraphicsItem::getConnectionPoint() {
@@ -281,8 +272,15 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
     p->save();
     QPoint arrowDim(linkdialog::arrowWidth, linkdialog::arrowHeight);
 
+    auto isBidirectional = [this](DialogConnectionGraphicsItem* item) {
+        auto net = item->getPropertyLink().getSource()->getOwner()->getProcessor()->getNetwork();
+
+        return net->isLinkedBidirectional(item->getPropertyLink().getSource(),
+                                          item->getPropertyLink().getDestination());
+    };
+
     for (auto& elem : connections_) {
-        if (elem->getStartProperty() == this && !elem->isBidirectional()) continue;
+        if (elem->getStartProperty() == this && !isBidirectional(elem)) continue;
 
         // If arrow points right, then get the rectangle aligned to the left-
         // boundary of property item (rectangle) and vice versa
@@ -311,6 +309,4 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
     p->restore();
 }
 
-
-
-}  // namespace
+}  // namespace inviwo

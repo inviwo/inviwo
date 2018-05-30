@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/workspacemanager.h>
 
@@ -220,7 +219,9 @@ void util::autoLinkProcessor(ProcessorNetwork* network, Processor* processor) {
         std::vector<Property*> candidates = properties;
 
         auto isNotAutoLinkAble = [&](const Property* p) {
-            return !AutoLinker::canLink(p, destprop, LinkMatchingTypeAndId);
+            return !network->canLink(p, destprop) ||
+                   p->getClassIdentifier() != destprop->getClassIdentifier() ||
+                   p->getIdentifier() != destprop->getIdentifier();
         };
         util::erase_remove_if(candidates, isNotAutoLinkAble);
 

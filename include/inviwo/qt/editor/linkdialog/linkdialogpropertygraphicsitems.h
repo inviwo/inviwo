@@ -32,29 +32,11 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/links/linkconditions.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <modules/qtwidgets/labelgraphicsitem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsView>
-#include <QDialog>
-#include <QGraphicsRectItem>
-#include <QPushButton>
-#include <QGraphicsLineItem>
-#include <QGraphicsPolygonItem>
-#include <QPainterPath>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QComboBox>
-#include <QStandardItemModel>
-#include <QEventLoop>
-#include <QCheckBox>
-#include <warn/pop>
+class QPainter;
+class QStyleOptionGraphicsItem;
 
 namespace inviwo {
 
@@ -102,8 +84,6 @@ protected:
 
     virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
 private:
     std::vector<DialogConnectionGraphicsItem*> connections_;

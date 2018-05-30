@@ -87,4 +87,4 @@ const PropertyConverter *PropertyConverterManager::getConverter(const Property *
     return getConverter(srcProperty->getClassIdentifier(), dstProperty->getClassIdentifier());
 }
 
-}  // namespace
+}  // namespace inviwo
