@@ -15,6 +15,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshcameraalgorithms.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshconverter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/randomutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.h
@@ -61,6 +62,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/inputselector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshconverterprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshmapping.h
@@ -118,6 +120,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshcameraalgorithms.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/meshutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingcubesopt.cpp
@@ -160,6 +163,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/inputselector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshconverterprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshmapping.cpp
