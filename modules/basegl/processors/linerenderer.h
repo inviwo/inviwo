@@ -62,8 +62,8 @@ namespace inviwo {
  *   * __Line Width__  width of the rendered lines (in pixel)
  *   * __Antialising__ width of the antialiased line edge (in pixel), this determines the 
  *                     softness along the edge
- *   * __Miter Limit_  limit for cutting of sharp corners
- *   * __Round Caps_   if enabled, round caps are drawn at the end of each line
+ *   * __Miter Limit__ limit for cutting of sharp corners
+ *   * __Round Caps__  if enabled, round caps are drawn at the end of each line
  *   * __Pseudo Lighting__      enables radial shading as depth cue, i.e. tube like appearance
  *   * __Round Depth Profile__  modify line depth matching a round depth profile
  *   * __Write Depth Layer__    if enabled, line depths are rendered onto the background image
