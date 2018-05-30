@@ -9,13 +9,13 @@ find_package(Qt5Widgets QUIET REQUIRED)
 #--------------------------------------------------------------------
 # Add MOC files
 set(MOC_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythoneditorwidget.h
 )
 
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonmenu.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pythoneditorwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python3qtmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python3qtmoduledefine.h
     ${MOC_FILES}
