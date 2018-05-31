@@ -104,9 +104,9 @@ void DiscardShortLines::process() {
         bool keep = line.getLength() >= minLength_.get();
 
         if (keep) {
-            outLines.push_back(line, line.getIndex());
+            outLines.push_back(line, IntegralLineSet::SetIndex::No);
         } else {
-            filteredLines.push_back(line);
+            filteredLines.push_back(line, IntegralLineSet::SetIndex::No);
         }
     }
 
