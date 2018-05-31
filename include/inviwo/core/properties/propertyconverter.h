@@ -46,6 +46,10 @@ public:
     std::string getSourcePropertyClassIdenetifier() const;
     std::string getDestinationPropertyClassIdenetifier() const;
 
+    /**
+     * convert requires that srcProperty and dstProperty has the same class identifiers as
+     * srcClassIdentifier and dstClassIdentifier, given in the constructor, i.e. the same types.
+     */
     virtual void convert(const Property *srcProperty, Property *dstProperty) const;
 
 protected:
@@ -61,6 +65,8 @@ public:
     virtual ~TemplatePropertyConverter() = default;
 
     virtual void convert(const Property *src, Property *dst) const override {
+        // Static cast will work here since we will only use the converter for its registered
+        // property types
         convertimpl(static_cast<const SrcProperty *>(src), static_cast<DstProperty *>(dst));
     }
 

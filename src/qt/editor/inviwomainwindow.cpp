@@ -124,7 +124,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                              "path"}
     , openData_{"d", "data", "Try and open a data file", false, "", "file name"}
     , updateWorkspaces_{"", "update-workspaces",
-                        "Go through and update all workspaces the the latest versions"}
+                        "Go through and update all workspaces to the latest version"}
     , undoManager_(this) {
 
     setObjectName("InviwoMainWindow");
