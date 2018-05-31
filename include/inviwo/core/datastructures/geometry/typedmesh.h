@@ -350,6 +350,17 @@ public:
         addVerticesImpl<0, BufferTraits...>(vertices);
     }
 
+    uint32_t addVertex(const Vertex &vertex) {
+        using BT = typename std::tuple_element<0, std::tuple<BufferTraits...>>::type;
+        addVertexImpl<0>(vertex, std::ratio_less<I, std::tuple_size<Vertex>>::type());
+
+        return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
+    }
+
+    void setVertex(size_t index, const Vertex &vertex) {
+        setVertexImpl<0>(index, vertex, std::ratio_less<I, std::tuple_size<Vertex>>::type());
+    }
+
 #if defined(_MSC_VER) && _MSC_VER <= 1900
     // On visual studio 2015 Alias templates is not supported
     // (https://blogs.msdn.microsoft.com/vcblog/2016/06/07/expression-sfinae-improvements-in-vs-2015-update-3/)
@@ -359,7 +370,7 @@ public:
         return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
     }
 
-    void setVertex(size_t index, BufferTraits... args) { setVertiesImpl<0>(index, args...); }
+    void setVertex(size_t index, BufferTraits... args) { setVertexImpl<0>(index, args...); }
 #else
     /**
      * \brief Adds a vertex
@@ -392,7 +403,7 @@ public:
      * @param args the arguments, needs to match the buffers of the mesh
      */
     void setVertex(size_t index, TypeAlias<BufferTraits>... args) {
-        setVertiesImpl<0>(index, args...);
+        setVertexImpl<0>(index, args...);
     }
 #endif
 
@@ -487,18 +498,44 @@ private:
         BT::getTypedEditableRAMRepresentation()->add(t);
         addVertexImpl<I + 1>(args...);
     }
+    
+    template <unsigned I>
+    void addVertexImpl(Vertex &v, std::false_type) {
+        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
+        BT::getTypedEditableRAMRepresentation()->add(std::get<I>(v));
+    }
+
+    template <unsigned I>
+    void addVertexImpl(Vertex &v, std::true_type) {
+        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
+        BT::getTypedEditableRAMRepresentation()->add(std::get<I>(v));
+        addVertexImpl<I + 1>(v, std::ratio_less<I + 1, std::tuple_size<Vertex>>::type());
+    }
 
     template <unsigned I, typename T>
-    void setVertiesImpl(size_t index, T &t) {
+    void setVertexImpl(size_t index, T &t) {
         using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
         BT::getTypedDataContainer().at(index) = t;
     }
 
     template <unsigned I, typename T, typename... ARGS>
-    void setVertiesImpl(size_t index, T &t, ARGS... args) {
+    void setVertexImpl(size_t index, T &t, ARGS... args) {
         using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
         BT::getTypedDataContainer().at(index) = t;
-        setVertiesImpl<I + 1>(index, args...);
+        setVertexImpl<I + 1>(index, args...);
+    }
+
+    template <unsigned I>
+    void setVertexImpl(size_t index, Vertex &v, std::false_type) {
+        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
+        BT::getTypedDataContainer().at(index) = std::get<I>(v);
+    }
+
+    template <unsigned I>
+    void setVertexImpl(size_t index, Vertex &v, std::true_type) {
+        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
+        BT::getTypedDataContainer().at(index) = std::get<I>(v);
+        setVertexImpl<I + 1>(index, v, std::ratio_less<I + 1, std::tuple_size<Vertex>>::type());
     }
 
     template <unsigned I>
