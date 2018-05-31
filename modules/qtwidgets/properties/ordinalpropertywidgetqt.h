@@ -340,6 +340,9 @@ using DoubleMat2PropertyWidgetQt = OrdinalPropertyWidgetQt<dmat2>;
 using DoubleMat3PropertyWidgetQt = OrdinalPropertyWidgetQt<dmat3>;
 using DoubleMat4PropertyWidgetQt = OrdinalPropertyWidgetQt<dmat4>;
 
+using DoubleQuaternionPropertyWidgetQt = OrdinalPropertyWidgetQt<glm::dquat>;
+using FloatQuaternionPropertyWidgetQt = OrdinalPropertyWidgetQt<glm::fquat>;
+
 using Int64PropertyWidgetQt = OrdinalPropertyWidgetQt<glm::i64>;
 
 }  // namespace inviwo

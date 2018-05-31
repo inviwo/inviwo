@@ -124,6 +124,9 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<FloatVec4PropertyWidgetQt, FloatVec4Property>("Default");
     registerPropertyWidget<FloatVec4PropertyWidgetQt, FloatVec4Property>("Text");
 
+    registerPropertyWidget<FloatQuaternionPropertyWidgetQt, FloatQuaternionProperty>("Default");
+    registerPropertyWidget<FloatQuaternionPropertyWidgetQt, FloatQuaternionProperty>("Text");
+
     registerPropertyWidget<DoubleMat2PropertyWidgetQt, DoubleMat2Property>("Default");
     registerPropertyWidget<DoubleMat3PropertyWidgetQt, DoubleMat3Property>("Default");
     registerPropertyWidget<DoubleMat4PropertyWidgetQt, DoubleMat4Property>("Default");
@@ -139,6 +142,9 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Spherical");
     registerPropertyWidget<DoubleVec4PropertyWidgetQt, DoubleVec4Property>("Default");
     registerPropertyWidget<DoubleVec4PropertyWidgetQt, DoubleVec4Property>("Text");
+
+    registerPropertyWidget<DoubleQuaternionPropertyWidgetQt, DoubleQuaternionProperty>("Default");
+    registerPropertyWidget<DoubleQuaternionPropertyWidgetQt, DoubleQuaternionProperty>("Text");
 
     registerPropertyWidget<IntSizeTMinMaxPropertyWidgetQt, IntSizeTMinMaxProperty>("Default");
     registerPropertyWidget<Int64MinMaxPropertyWidgetQt, Int64MinMaxProperty>("Default");
