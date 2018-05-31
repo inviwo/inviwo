@@ -36,12 +36,12 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QMouseEvent>
-#include <QGraphicsSceneWheelEvent>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
-#include <QGraphicsSceneMouseEvent>
 #include <warn/pop>
+
+class QGraphicsSceneWheelEvent;
+class QGraphicsSceneMouseEvent;
 
 namespace inviwo {
 
@@ -67,9 +67,8 @@ public:
     virtual ~LinkDialogGraphicsScene();
 
     template <typename T>
-    T* getSceneGraphicsItemAt(const QPointF pos,
-                              const Qt::ItemSelectionMode mode = Qt::IntersectsItemShape,
-                              Qt::SortOrder order = Qt::DescendingOrder) const;
+    T* getItemAt(const QPointF pos, const Qt::ItemSelectionMode mode = Qt::IntersectsItemShape,
+                 Qt::SortOrder order = Qt::DescendingOrder) const;
 
     ProcessorNetwork* getNetwork() const;
 
@@ -79,8 +78,6 @@ public:
     void toggleExpand();
     void showHidden(bool val);
     bool isPropertyExpanded(Property* property) const;
-
-    void wheelAction(float offset);
 
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
@@ -99,6 +96,8 @@ protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void wheelEvent(QGraphicsSceneWheelEvent* e) override;
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
@@ -111,23 +110,31 @@ protected:
 
     bool isPropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink) const;
 
-    DialogConnectionGraphicsItem* initializePropertyLinkRepresentation(const PropertyLink& propLink);
+    DialogConnectionGraphicsItem* initializePropertyLinkRepresentation(
+        const PropertyLink& propLink);
     void removePropertyLinkRepresentation(const PropertyLink& propLink);
 
     DialogConnectionGraphicsItem* getConnectionGraphicsItem(LinkDialogPropertyGraphicsItem*,
                                                             LinkDialogPropertyGraphicsItem*) const;
 
-    // smooth scroll effect support
     void offsetItems(float yIncrement, bool scrollLeft);
-    float currentScrollSteps_;
-private slots:
-    void executeTimeLine(qreal);
-    void terminateTimeLine();
 
 private:
     LinkDialogPropertyGraphicsItem* getPropertyGraphicsItemOf(Property* property) const;
 
-    DialogCurveGraphicsItem* linkCurve_;
+    struct Curve {
+        Curve(LinkDialogGraphicsScene* scene);
+        void clear();
+        void start(QPointF start, QPointF end);
+        void update(QPointF start, QPointF end);
+        std::unique_ptr<DialogCurveGraphicsItem> linkCurve_;
+        LinkDialogGraphicsScene* scene_;
+
+        operator bool() { return linkCurve_ != nullptr; }
+    };
+
+    Curve curve_;
+
     LinkDialogPropertyGraphicsItem* startProperty_;
     LinkDialogPropertyGraphicsItem* endProperty_;
 
@@ -137,16 +144,14 @@ private:
     ProcessorNetwork* network_;
 
     bool expandProperties_;
-    bool mouseOnLeftSide_;
     bool showHidden_ = false;
 
     std::map<Property*, LinkDialogPropertyGraphicsItem*> propertyMap_;
 };
 
 template <typename T>
-T* LinkDialogGraphicsScene::getSceneGraphicsItemAt(const QPointF pos,
-                                                   const Qt::ItemSelectionMode mode,
-                                                   Qt::SortOrder order) const {
+T* LinkDialogGraphicsScene::getItemAt(const QPointF pos, const Qt::ItemSelectionMode mode,
+                                      Qt::SortOrder order) const {
     QList<QGraphicsItem*> graphicsItems = items(pos, mode, order);
 
     if (graphicsItems.size() > 0) {
@@ -158,6 +163,6 @@ T* LinkDialogGraphicsScene::getSceneGraphicsItemAt(const QPointF pos,
     return nullptr;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LINKDIALOG_SCENE_H

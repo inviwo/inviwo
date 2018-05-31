@@ -64,6 +64,9 @@ public:
     std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
     void addLink(const PropertyLink& propertyLink);
+    bool canLink(const Property* src, const Property* dst) const;
+    bool canLink(const PropertyLink& propertyLink) const;
+
     void removeLink(const PropertyLink& propertyLink);
     bool isLinking() const;
 

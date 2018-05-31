@@ -31,27 +31,13 @@
 #define IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <modules/qtwidgets/labelgraphicsitem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
 #include <inviwo/core/links/propertylink.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsView>
-#include <QDialog>
-#include <QGraphicsRectItem>
-#include <QPushButton>
-#include <QGraphicsLineItem>
-#include <QGraphicsPolygonItem>
 #include <QPainterPath>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QComboBox>
-#include <QStandardItemModel>
-#include <QEventLoop>
-#include <QCheckBox>
 #include <warn/pop>
 
 namespace inviwo {
@@ -86,13 +72,8 @@ public:
     LinkDialogPropertyGraphicsItem* getStartProperty() const { return startPropertyGraphicsItem_; }
     LinkDialogPropertyGraphicsItem* getEndProperty() const { return endPropertyGraphicsItem_; }
 
-    bool isBidirectional();
-
     void updateStartEndPoint();
     void updateConnectionDrawing();
-
-protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
 
 private:
     LinkDialogPropertyGraphicsItem* startPropertyGraphicsItem_;

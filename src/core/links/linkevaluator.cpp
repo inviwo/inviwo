@@ -29,7 +29,6 @@
 
 #include <inviwo/core/links/linkevaluator.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -61,6 +60,15 @@ void LinkEvaluator::addLink(const PropertyLink& propertyLink) {
     }
 
     propertyLinkSecondaryCache_.clear();
+}
+
+bool LinkEvaluator::canLink(const Property* src, const Property* dst) const {
+    auto manager = network_->getApplication()->getPropertyConverterManager();
+    return manager->canConvert(src, dst);   
+}
+
+bool LinkEvaluator::canLink(const PropertyLink& propertyLink) const {
+    return canLink(propertyLink.getSource(), propertyLink.getDestination());
 }
 
 void LinkEvaluator::removeLink(const PropertyLink& propertyLink) {
@@ -166,4 +174,4 @@ void LinkEvaluator::evaluateLinksFromProperty(Property* modifiedProperty) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

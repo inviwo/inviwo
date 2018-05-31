@@ -29,17 +29,13 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QVector2D>
-#include <QGraphicsSceneMouseEvent>
+#include <QPainterPath>
+#include <QColor>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
-
-#include <inviwo/core/links/linkconditions.h>
-#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 
@@ -48,7 +44,7 @@ DialogCurveGraphicsItem::DialogCurveGraphicsItem(QPointF startPoint, QPointF end
     setZValue(linkdialog::connectionDepth);
 }
 
-DialogCurveGraphicsItem::~DialogCurveGraphicsItem() {}
+DialogCurveGraphicsItem::~DialogCurveGraphicsItem() = default;
 
 QPainterPath DialogCurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endPoint) const {
     double delta = endPoint.x() - startPoint.x();
@@ -106,30 +102,10 @@ void DialogConnectionGraphicsItem::updateStartEndPoint() {
     }
 }
 
-bool DialogConnectionGraphicsItem::isBidirectional() {
-    auto linkscene = qobject_cast<LinkDialogGraphicsScene*>(scene());
-    return linkscene->getNetwork()->isLinkedBidirectional(
-        propertyLink_.getSource(), propertyLink_.getDestination());
-}
-
 void DialogConnectionGraphicsItem::updateConnectionDrawing() {
     startPropertyGraphicsItem_->prepareGeometryChange();
     endPropertyGraphicsItem_->prepareGeometryChange();
     updateStartEndPoint();
-}
-
-void DialogConnectionGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
-    // Toggle directionality
-
-    auto linkscene = qobject_cast<LinkDialogGraphicsScene*>(scene());
-    if(e->modifiers() == Qt::ShiftModifier || e->modifiers() == Qt::ControlModifier) {
-        linkscene->makePropertyLinkBidirectional(this, !isBidirectional());
-    }else if (isBidirectional()) {
-        linkscene->makePropertyLinkBidirectional(this, false);
-    } else {
-        linkscene->switchPropertyLinkDirection(this);
-    }
-    e->accept();
 }
 
 }  // namespace

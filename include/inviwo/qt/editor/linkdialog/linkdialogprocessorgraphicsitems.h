@@ -31,29 +31,10 @@
 #define IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsView>
-#include <QDialog>
-#include <QGraphicsRectItem>
-#include <QPushButton>
-#include <QGraphicsLineItem>
-#include <QGraphicsPolygonItem>
-#include <QPainterPath>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QComboBox>
-#include <QStandardItemModel>
-#include <QEventLoop>
-#include <QCheckBox>
-#include <warn/pop>
-
-#include <modules/qtwidgets/labelgraphicsitem.h>
-#include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
+
+class QPainter;
+class QStyleOptionGraphicsItem;
 
 namespace inviwo {
 
@@ -62,10 +43,6 @@ class Processor;
 
 class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject,
                                                          public GraphicsItemData<Processor> {
-    #include <warn/push>
-    #include <warn/ignore/all>
-    Q_OBJECT
-    #include <warn/pop>
 public:
     LinkDialogProcessorGraphicsItem(Side side, Processor* processor);
     virtual ~LinkDialogProcessorGraphicsItem() = default;
@@ -83,12 +60,13 @@ public:
     virtual void updatePositions() override;
 
 protected:
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
 
 private:
     std::vector<LinkDialogPropertyGraphicsItem*> properties_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H

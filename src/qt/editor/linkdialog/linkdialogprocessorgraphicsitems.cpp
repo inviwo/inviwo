@@ -29,18 +29,10 @@
 
 #include <inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
-#include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
-#include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
+#include <inviwo/qt/editor/connectiongraphicsitem.h>
+#include <modules/qtwidgets/labelgraphicsitem.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/links/linkconditions.h>
-#include <inviwo/core/network/processornetwork.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QTimeLine>
-#include <warn/pop>
-
-
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
@@ -52,26 +44,25 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Proc
     setRect(-linkdialog::processorWidth / 2, -linkdialog::processorHeight / 2,
             linkdialog::processorWidth, linkdialog::processorHeight);
 
-    auto identifier = new LabelGraphicsItem(this);
-    identifier->setPos(rect().topLeft() + QPointF(linkdialog::offset, linkdialog::offset));
-    identifier->setDefaultTextColor(Qt::white);
+    auto name = new LabelGraphicsItem(this);
+    name->setPos(rect().topLeft() + QPointF(linkdialog::offset, linkdialog::offset));
+    name->setDefaultTextColor(Qt::white);
     auto idFont = QFont("Segoe", linkdialog::processorLabelHeight, QFont::Bold, false);
     idFont.setPixelSize(linkdialog::processorLabelHeight);
-    identifier->setFont(idFont);
-    identifier->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
+    name->setFont(idFont);
+    name->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
 
-    auto classIdentifier = new LabelGraphicsItem(this);
-    classIdentifier->setDefaultTextColor(Qt::lightGray);
+    auto id = new LabelGraphicsItem(this);
+    id->setDefaultTextColor(Qt::lightGray);
     auto classFont = QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true);
     classFont.setPixelSize(linkdialog::processorLabelHeight);
-    classIdentifier->setFont(classFont);
-    classIdentifier->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
-    auto offset = classIdentifier->boundingRect().height();
-    classIdentifier->setPos(rect().bottomLeft() +
-                            QPointF(linkdialog::offset, -linkdialog::offset - offset));
+    id->setFont(classFont);
+    id->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
+    auto offset = id->boundingRect().height();
+    id->setPos(rect().bottomLeft() + QPointF(linkdialog::offset, -linkdialog::offset - offset));
 
-    identifier->setText(QString::fromStdString(processor->getIdentifier()));
-    classIdentifier->setText(QString::fromStdString(processor->getClassIdentifier()));
+    name->setText(utilqt::toQString(processor->getDisplayName()));
+    id->setText(utilqt::toQString(processor->getIdentifier()));
 
     for (auto& property : processor->getProperties()) {
         auto item = new LinkDialogPropertyGraphicsItem(this, property);
@@ -79,18 +70,17 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Proc
         item->hide();
         item->setParentItem(this);
     }
-    
-    
+
     LinkDialogTreeItem* prev = this;
-    std::function<void(LinkDialogPropertyGraphicsItem*)> connect = [this, &connect, &prev](
-        LinkDialogPropertyGraphicsItem* item) {
-        prev->setNext(item);
-        item->setPrev(prev);
-        prev = item;
-        for (auto i : item->getSubPropertyItemList()) {
-            connect(i);
-        }
-    };
+    std::function<void(LinkDialogPropertyGraphicsItem*)> connect =
+        [this, &connect, &prev](LinkDialogPropertyGraphicsItem* item) {
+            prev->setNext(item);
+            item->setPrev(prev);
+            prev = item;
+            for (auto i : item->getSubPropertyItemList()) {
+                connect(i);
+            }
+        };
     for (auto item : properties_) connect(item);
 
     LinkDialogTreeItem* item = this;
@@ -121,32 +111,19 @@ int LinkDialogProcessorGraphicsItem::getLevel() const { return -1; }
 
 void LinkDialogProcessorGraphicsItem::updatePositions() {}
 
-void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                            QWidget* widget) {
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
+void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*,
+                                            QWidget*) {
     p->save();
 
     QPen blackPen(QColor(0, 0, 0), 1);
-
     p->setPen(blackPen);
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setViewTransformEnabled(false);
-    QColor topColor(140, 140, 140);
-    QColor middleColor(59, 61, 61);
-    QColor bottomColor(40, 40, 40);
-    // paint processor
-    QLinearGradient grad(rect().topLeft(), rect().bottomLeft());
 
-    grad.setColorAt(0.0f, topColor);
-    grad.setColorAt(0.2f, middleColor);
-    grad.setColorAt(1.0f, bottomColor);
-
-    p->setBrush(grad);
+    p->setBrush(QColor(59, 61, 61));
     p->drawRoundedRect(rect(), linkdialog::processorRoundedCorners,
                        linkdialog::processorRoundedCorners);
     p->restore();
 }
 
-
-}  // namespace
+}  // namespace inviwo

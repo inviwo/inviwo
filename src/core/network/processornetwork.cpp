@@ -145,7 +145,7 @@ void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
     if (!isPortInNetwork(src)) throw Exception("Outport not found in network");
     if (!isPortInNetwork(dst)) throw Exception("Inport not found in network");
 
-    if (src && dst && !isConnected(src, dst) && dst->canConnectTo(src)) {
+    if (canConnect(src, dst) && !isConnected(src, dst)) {
         NetworkLock lock(this);
 
         PortConnection connection(src, dst);
@@ -157,6 +157,10 @@ void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
 
         notifyObserversProcessorNetworkDidAddConnection(connection);
     }
+}
+
+bool ProcessorNetwork::canConnect(const Outport* src, const Inport* dst) const {
+    return src != nullptr && dst != nullptr && dst->canConnectTo(src);
 }
 
 void ProcessorNetwork::removeConnection(const PortConnection& connection) {
@@ -205,7 +209,7 @@ void ProcessorNetwork::addLink(Property* src, Property* dst) {
     if (!isPropertyInNetwork(src)) throw Exception("Source property not found in network");
     if (!isPropertyInNetwork(dst)) throw Exception("Destination property not found in network");
 
-    if (!isLinked(src, dst)) {
+    if (!isLinked(src, dst) && canLink(src, dst)) {
         NetworkLock lock(this);
         PropertyLink link(src, dst);
         notifyObserversProcessorNetworkWillAddLink(link);
@@ -213,6 +217,10 @@ void ProcessorNetwork::addLink(Property* src, Property* dst) {
         linkEvaluator_.addLink(link);  // add to cache
         notifyObserversProcessorNetworkDidAddLink(link);
     }
+}
+
+bool ProcessorNetwork::canLink(const Property* src, const Property* dst) const {
+    return linkEvaluator_.canLink(src, dst);
 }
 
 void ProcessorNetwork::removeLink(const PropertyLink& link) {
