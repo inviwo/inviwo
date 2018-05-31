@@ -37,8 +37,6 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <numeric>
 
-#define TETRA 1
-
 namespace inviwo {
 
 const ProcessorInfo SurfaceExtraction::processorInfo_{
@@ -60,7 +58,8 @@ SurfaceExtraction::SurfaceExtraction()
     , method_("method", "Method",
               {{"marchingtetrahedron", "Marching Tetrahedron", Method::MarchingTetrahedron},
                {"marchingcubes", "Marching Cubes", Method::MarchingCubes},
-               {"marchingCubesOpt", "Marching Cubes Optimized", Method::MarchingCubesOpt}}, 2)
+               {"marchingCubesOpt", "Marching Cubes Optimized", Method::MarchingCubesOpt}},
+              2)
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
     , invertIso_("invert", "Invert ISO", false)
     , encloseSurface_("enclose", "Enclose Surface", true)
@@ -83,12 +82,12 @@ SurfaceExtraction::SurfaceExtraction()
         if (volume_.hasData()) {
             auto minmax = std::make_pair(std::numeric_limits<double>::max(),
                                          std::numeric_limits<double>::lowest());
-            minmax =
-                std::accumulate(volume_.begin(), volume_.end(), minmax,
-                                [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
-                return std::make_pair(std::min(mm.first, v->dataMap_.dataRange.x),
-                                      std::max(mm.second, v->dataMap_.dataRange.y));
-            });
+            minmax = std::accumulate(volume_.begin(), volume_.end(), minmax,
+                                     [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
+                                         return std::make_pair(
+                                             std::min(mm.first, v->dataMap_.dataRange.x),
+                                             std::max(mm.second, v->dataMap_.dataRange.y));
+                                     });
 
             isoValue_.setMinValue(static_cast<const float>(minmax.first));
             isoValue_.setMaxValue(static_cast<const float>(minmax.second));
@@ -101,7 +100,6 @@ SurfaceExtraction::~SurfaceExtraction() {}
 void SurfaceExtraction::process() {
     if (!meshes_) {
         meshes_ = std::make_shared<std::vector<std::shared_ptr<Mesh>>>();
-        outport_.setData(meshes_);
     }
 
     auto data = volume_.getSourceVectorData();
@@ -116,6 +114,14 @@ void SurfaceExtraction::process() {
             (*meshes_)[i] = result_[i].result.get();
             result_[i].status = 1.0f;
             dirty_ = false;
+            auto meshes = std::make_shared<std::vector<std::shared_ptr<Mesh>>>();
+            std::copy_if(meshes_->begin(), meshes_->end(), std::back_inserter(*meshes),
+                         [](const auto& m) { return m != nullptr; });
+            if (!meshes->empty()) {
+                outport_.setData(meshes);
+            } else {
+                outport_.setData(nullptr);
+            }
         }
 
         Method method = method_.get();

@@ -48,7 +48,6 @@ std::string MeshVisualizer::getName() const { return "Mesh Renderer"; }
 
 Document MeshVisualizer::getDescription() const { 
     Document doc;
-    using P = Document::PathComponent;
     auto b = doc.append("html").append("body");
     b.append("", "Construct a standard mesh renderer");
     return doc;

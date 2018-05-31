@@ -54,7 +54,7 @@ namespace inviwo {
  */
 template <typename T, typename = void>
 struct PortTraits {
-	 /**
+     /**
      * The Class Identifier has to be globally unique. Use a reverse DNS naming scheme.
      * Example: "org.someorg.myporttype"
      * The default implementation will look for a static std::string member T::classIdentifier.
