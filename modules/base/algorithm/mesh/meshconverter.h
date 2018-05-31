@@ -39,7 +39,18 @@ namespace inviwo {
 
 namespace meshutil {
 
+/**
+ * Will construct a new mesh out of the given mesh with its position and color buffer, if existing,
+ * and all index buffers but with the DrawMode set to Points
+ */
 std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh);
+
+/**
+ * Will construct a new mesh out of the given mesh with its position and color buffer, if existing.
+ * It will discard all IndexBuffes with DrawType equal to Points, copy all IndexBuffers with
+ * DrawType equal to Lines, and construct IndexBuffers with lines out of all IndexBuffers with
+ * DrawType equal to Triangles.
+ */
 std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh);
 
 }  // namespace meshutil
