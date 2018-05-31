@@ -123,7 +123,7 @@ void IntegralLineTracerProcessor<Tracer>::process() {
             auto size = line.getPositions().size();
             if (size > 1) {
                 std::lock_guard<std::mutex> lock(mutex);
-                lines->push_back(line, startID + i);
+                lines->push_back(std::move(line), startID + i);
             }
         });
         startID += seeds->size();

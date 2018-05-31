@@ -47,6 +47,8 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet {
 public:
+    enum class SetIndex { Yes, No };
+
     using value_type = IntegralLine;
     IntegralLineSet(mat4 modelMatrix, mat4 worldMatrix = mat4(1));
     virtual ~IntegralLineSet();
@@ -73,10 +75,12 @@ public:
 
     IntegralLine& at(size_t idx);
     const IntegralLine& at(size_t idx) const;
-    void push_back(IntegralLine& line);
-    void push_back(IntegralLine& line, size_t idx);
-    void push_back(const IntegralLine& line);
+
+    void push_back(const IntegralLine& line, SetIndex updateIndex);
     void push_back(const IntegralLine& line, size_t idx);
+
+    void push_back(IntegralLine&& line, SetIndex updateIndex);
+    void push_back(IntegralLine&& line, size_t idx);
 
     std::vector<IntegralLine>& getVector() { return lines_; }
     const std::vector<IntegralLine>& getVector() const { return lines_; }
