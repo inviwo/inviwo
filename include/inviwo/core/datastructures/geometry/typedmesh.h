@@ -352,13 +352,15 @@ public:
 
     uint32_t addVertex(const Vertex &vertex) {
         using BT = typename std::tuple_element<0, std::tuple<BufferTraits...>>::type;
-        addVertexImpl<0>(vertex, std::ratio_less<I, std::tuple_size<Vertex>>::type());
+        addVertexImplVertex<0>(vertex,
+                               std::integral_constant<bool, 0 < std::tuple_size<Vertex>::value>());
 
         return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
     }
 
     void setVertex(size_t index, const Vertex &vertex) {
-        setVertexImpl<0>(index, vertex, std::ratio_less<I, std::tuple_size<Vertex>>::type());
+        setVertexImplVertex<0>(index, vertex,
+                               std::integral_constant<bool, 0 < std::tuple_size<Vertex>::value>());
     }
 
 #if defined(_MSC_VER) && _MSC_VER <= 1900
@@ -410,7 +412,7 @@ public:
     /**
      * \brief Updates the a specific value in specific buffer
      *
-     * The following example will set the color of vertex with index 5 to read: 
+     * The following example will set the color of vertex with index 5 to read:
      * \code{.cpp}
      * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
      * MyMesh mesh;
@@ -427,14 +429,14 @@ public:
     }
 
     /**
-     * \brief Returns a specific buffer. 
-     * The following example shows how to get the color buffer:  
+     * \brief Returns a specific buffer.
+     * The following example shows how to get the color buffer:
      * \code{.cpp}
      * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
      * MyMesh mesh;
-     * auto colorBuffer = mesh.getTypedBuffer<buffertraits::ColorsBuffer>(); 
+     * auto colorBuffer = mesh.getTypedBuffer<buffertraits::ColorsBuffer>();
      * \endcode
-    */
+     */
     template <typename BT>
     auto getTypedBuffer() {
         return BT::buffer_;
@@ -450,36 +452,36 @@ public:
     }
 
     /**
-    * Returns the RAM Representation of a specific buffer. 
-    * @see getTypedBuffer()
-    */
+     * Returns the RAM Representation of a specific buffer.
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto getTypedRAMRepresentation() const {
         return BT::getTypedRAMRepresentation();
     }
 
     /**
-    * Returns the Editable RAM Representation of a specific buffer. 
-    * @see getTypedBuffer()
-    */
+     * Returns the Editable RAM Representation of a specific buffer.
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto getTypedEditableRAMRepresentation() {
         return BT::getTypedEditableRAMRepresentation();
     }
 
     /**
-    * Returns the Data Container of a specific buffer. 
-    * @see getTypedBuffer()
-    */
+     * Returns the Data Container of a specific buffer.
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto &getTypedDataContainer() const {
         return BT::getTypedDataContainer();
     }
 
     /**
-    * Returns the Data Container of a specific buffer. 
-    * @see getTypedBuffer()
-    */
+     * Returns the Data Container of a specific buffer.
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto &getTypedDataContainer() {
         return BT::getTypedDataContainer();
@@ -498,18 +500,16 @@ private:
         BT::getTypedEditableRAMRepresentation()->add(t);
         addVertexImpl<I + 1>(args...);
     }
-    
-    template <unsigned I>
-    void addVertexImpl(Vertex &v, std::false_type) {
-        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
-        BT::getTypedEditableRAMRepresentation()->add(std::get<I>(v));
-    }
 
     template <unsigned I>
-    void addVertexImpl(Vertex &v, std::true_type) {
+    void addVertexImplVertex(const Vertex &, std::false_type) {}
+
+    template <unsigned I>
+    void addVertexImplVertex(const Vertex &v, std::true_type) {
         using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
         BT::getTypedEditableRAMRepresentation()->add(std::get<I>(v));
-        addVertexImpl<I + 1>(v, std::ratio_less<I + 1, std::tuple_size<Vertex>>::type());
+        addVertexImplVertex<I + 1>(
+            v, std::integral_constant<bool, I + 1 < std::tuple_size<Vertex>::value>());
     }
 
     template <unsigned I, typename T>
@@ -526,16 +526,14 @@ private:
     }
 
     template <unsigned I>
-    void setVertexImpl(size_t index, Vertex &v, std::false_type) {
-        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
-        BT::getTypedDataContainer().at(index) = std::get<I>(v);
-    }
+    void setVertexImplVertex(size_t, const Vertex &, std::false_type) {}
 
     template <unsigned I>
-    void setVertexImpl(size_t index, Vertex &v, std::true_type) {
+    void setVertexImplVertex(size_t index, const Vertex &v, std::true_type) {
         using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
         BT::getTypedDataContainer().at(index) = std::get<I>(v);
-        setVertexImpl<I + 1>(index, v, std::ratio_less<I + 1, std::tuple_size<Vertex>>::type());
+        setVertexImplVertex<I + 1>(
+            index, v, std::integral_constant<bool, I + 1 < std::tuple_size<Vertex>::value>());
     }
 
     template <unsigned I>
