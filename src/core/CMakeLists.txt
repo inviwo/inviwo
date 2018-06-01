@@ -575,18 +575,19 @@ set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
+    tests/unittests/conversion-test.cpp
     tests/unittests/dataformats-test.cpp
     tests/unittests/dispatch-test.cpp
-    tests/unittests/picking-test.cpp
+    tests/unittests/document-test.cpp
+    tests/unittests/filesystem-test.cpp
+    tests/unittests/glm-test.cpp
     tests/unittests/metadata-test.cpp
+    tests/unittests/picking-test.cpp
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
-    tests/unittests/filesystem-test.cpp
-    tests/unittests/volumesequenceutils-tests.cpp
-    tests/unittests/conversion-test.cpp
-    tests/unittests/document-test.cpp
+    tests/unittests/typedmesh-test.cpp
     tests/unittests/utilities-test.cpp
-    tests/unittests/glm-test.cpp
+    tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/zip-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
