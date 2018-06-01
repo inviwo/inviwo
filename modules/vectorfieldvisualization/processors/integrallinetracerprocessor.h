@@ -107,7 +107,6 @@ void IntegralLineTracerProcessor<Tracer>::process() {
     auto lines = std::make_shared<IntegralLineSet>(mat4(1));
 
     Tracer tracer(sampler, properties_);
-    tracer.setTransformOutputToWorldSpace(true);
 
     for (auto meta : annotationSamplers_.getSourceVectorData()) {
         auto key = meta.first->getProcessor()->getIdentifier();

@@ -68,7 +68,7 @@ P move2(std::false_type, const P &pos, const V &offset, F stepsize) {
 
 template <bool TimeDependent, typename SpatialVector, typename DataVector, typename Sampler,
           typename F, typename DataMatrix>
-SpatialVector step(const SpatialVector &oldPos,
+std::pair<SpatialVector,DataVector> step(const SpatialVector &oldPos,
                    IntegralLineProperties::IntegrationScheme integrationScheme, F stepSize,
                    const DataMatrix &invBasis, bool normalizeSamples, const Sampler &sampler) {
     SpatialVector newPos = oldPos;
@@ -102,9 +102,9 @@ SpatialVector step(const SpatialVector &oldPos,
             K = K / 6.0;
         }
 
-        return move(oldPos, K, stepSize);
+        return {move(oldPos, K, stepSize),k1};
     } else {
-        return move(oldPos, k1, stepSize);
+        return {move(oldPos, k1, stepSize),k1};
     }
 }
 }  // namespace detail
@@ -140,6 +140,7 @@ public:
     using DataMatrix = Matrix<SpatialSampler::DataDimensions, double>;
     using DataHomogenouSpatialMatrixrix = Matrix<SpatialSampler::DataDimensions + 1, double>;
 
+#pragma optimize( "", off )  
     IntegralLineTracer(std::shared_ptr<const Sampler> sampler,
                        const IntegralLineProperties &properties)
         : integrationScheme_(properties.getIntegrationScheme())
@@ -224,10 +225,12 @@ public:
     bool isTransformingOutputToWorldSpace() const { return transformOutputToWorldSpace_; }
 
 private:
-    bool addPoint(IntegralLine &line, SpatialVector pos) {
-        auto worldVelocty = sampler_->sample(pos);
+    bool addPoint(IntegralLine &line, const SpatialVector &pos) {
+        return addPoint(line,pos,sampler_->sample(pos));
+    }
+    bool addPoint(IntegralLine &line, const SpatialVector &pos, const DataVector &worldVelocity ) {
 
-        if (glm::length(worldVelocty) < std::numeric_limits<double>::epsilon()) {
+        if (glm::length(worldVelocity) < std::numeric_limits<double>::epsilon()) {
             return false;
         }
 
@@ -241,7 +244,7 @@ private:
             line.getPositions().emplace_back(util::glm_convert<dvec3>(pos));
         }
 
-        line.getMetaData<dvec3>("velocity").emplace_back(util::glm_convert<dvec3>(worldVelocty));
+        line.getMetaData<dvec3>("velocity").emplace_back(util::glm_convert<dvec3>(worldVelocity));
 
         if (TimeDependent) {
             line.getMetaData<double>("timestamp").emplace_back(pos[Sampler::SpatialDimensions - 1]);
@@ -262,11 +265,12 @@ private:
                 return IntegralLine::TerminationReason::OutOfBounds;
             }
 
-            pos = detail::step<TimeDependent, SpatialVector, DataVector>(
+            auto res = detail::step<TimeDependent, SpatialVector, DataVector>(
                 pos, integrationScheme_, stepSize_ * (fwd ? 1.0 : -1.0), invBasis_,
                 normalizeSamples_, *sampler_);
+            pos = res.first;
 
-            if (!addPoint(line, pos)) {
+            if (!addPoint(line, pos,res.second)) {
                 return IntegralLine::TerminationReason::ZeroVelocity;
             }
         }
