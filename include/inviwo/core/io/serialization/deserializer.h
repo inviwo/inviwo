@@ -858,7 +858,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
                 if (vector.size() <= i) {
                     T item;
                     deserialize(itemKey, item);
-                    vector.push_back(item);
+                    vector.push_back(std::move(item));
                 } else {
                     deserialize(itemKey, vector[i]);
                 }

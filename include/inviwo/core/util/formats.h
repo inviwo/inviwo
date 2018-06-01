@@ -933,6 +933,9 @@ DEFAULTVALUES(dmat4, uvec2(4, 4), "DoubleMat4", dmat4(0.), dmat4(0.), dmat4(0.) 
 DEFAULTVALUES(std::string, uvec2(1, 1), "String", "", "", "", "")
 DEFAULTVALUES(bool, uvec2(1, 1), "Bool", false, false, true, true)
 
+DEFAULTVALUES(glm::dquat, uvec2(4, 1), "DoubleQuaternion", glm::dquat(0.,0.,0.,0.), glm::dquat(-1.,-1.,-1.,-1.), glm::dquat(1.,1.,1.,1.), glm::dquat(0.01,0.01,0.01,0.01))
+DEFAULTVALUES(glm::fquat, uvec2(4, 1), "FloatQuaternion", glm::fquat(0.f,0.f,0.f,0.f), glm::fquat(-1.f,-1.f,-1.f,-1.f), glm::fquat(1.f,1.f,1.f,1.f), glm::fquat(0.01f,0.01f,0.01f,0.01f))
+
 #undef DEFAULTVALUES
 
 } // namespace inviwo
