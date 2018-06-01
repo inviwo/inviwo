@@ -29,6 +29,8 @@
 
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/data.h>
 
 #include <algorithm>
 
@@ -65,7 +67,7 @@ bool operator==(const BufferBase &bufA, const BufferBase &bufB) {
     if (&bufA == &bufB) {
         return true;
     }
-    if (bufA.getDataFormat() != bufB.getDataFormat()) {
+    if (bufA.getDataFormat()->getId() != bufB.getDataFormat()->getId()) {
         return false;
     }
     if (bufA.getSize() != bufB.getSize()) {
