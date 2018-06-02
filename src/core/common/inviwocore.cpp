@@ -296,6 +296,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<IntSize2Property>();
     registerProperty<IntSize3Property>();
     registerProperty<IntSize4Property>();
+    registerProperty<FloatQuaternionProperty>();
+    registerProperty<DoubleQuaternionProperty>();
     registerProperty<IsoValueProperty>();
     registerProperty<IsoTFProperty>();
     registerProperty<OptionPropertyDouble>();
