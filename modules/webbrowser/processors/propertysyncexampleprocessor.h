@@ -35,6 +35,7 @@
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
 #include <modules/webbrowser/cefimageconverter.h>
 
+#include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/buttonproperty.h>

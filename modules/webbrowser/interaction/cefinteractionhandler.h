@@ -43,6 +43,7 @@
 namespace inviwo {
 class RenderHandlerGL;
 class TouchPoint;
+class TouchEvent;
 class PickingEvent;
 /*\class CEFInteractionHandler
  * Translates Inviwo events to CEF events and injects them into provided CefBrowserHost.

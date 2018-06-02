@@ -103,7 +103,7 @@ public:
      * Callback method must be executed either in this method or asynchronously
      * to complete the query.
      */
-    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+    virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
                          CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback);
 

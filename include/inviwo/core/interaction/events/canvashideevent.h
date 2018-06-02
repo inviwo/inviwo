@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,48 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASPROCESSORWIDGET_H
-#define IVW_CANVASPROCESSORWIDGET_H
+#ifndef IVW_CANVASHIDEEVENT_H
+#define IVW_CANVASHIDEEVENT_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
-class Canvas;
+class Inport;
+class Processor;
+class Outport;
 
-/**
- * \class CanvasProcessorWidget
- * \brief A processor widget that has a canvas.
- * CanvasProcessorWidget is the base class for all processor widgets with canvases.
+/** \class CanvasHideEvent
+ * Sent before hiding a CanvasProcessorWidget.
+ * The event will only be propagated through ports of type ImagePortBase (ImageInport,ImageOutport).
+ * @see CanvasProcessorWidget::setVisible
+ * @see CanvasShowEvent
  */
-class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget { 
+class IVW_CORE_API CanvasHideEvent : public Event {
 public:
-    CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) {}
-    virtual Canvas* getCanvas() const = 0;
+    CanvasHideEvent() = default;
+
+    virtual CanvasHideEvent* clone() const override;
+    virtual ~CanvasHideEvent() = default;
     /**
-     * Show or hide window.
-     * Will send a CanvasHideEvent or CanvasShowEvent before
-     * hiding or showing the window.
-     * Notifications to ProcessorWidgetObserver are called after event.
+     * Only propagates event through ImagePortBase ports.
      */
-    virtual void setVisible(bool visible) override;
+    virtual bool shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) override;
+    
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash();
+
+private:
+
 };
 
-} // namespace
+constexpr uint64_t CanvasHideEvent::chash() {
+    return util::constexpr_hash("org.inviwo.CanvasCloseEvent");
+}
 
-#endif // IVW_CANVASPROCESSORWIDGET_H
+}  // namespace
 
+#endif  // IVW_CANVASHIDEEVENT_H

@@ -30,6 +30,8 @@
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
 #include <modules/webbrowser/interaction/cefkeyboardmapping.h>
 #include <modules/webbrowser/renderhandlergl.h>
+#include <inviwo/core/interaction/events/canvashideevent.h>
+#include <inviwo/core/interaction/events/canvasshowevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
@@ -49,6 +51,18 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
         }
         case KeyboardEvent::chash(): {
             host_->SendKeyEvent(mapKeyEvent(static_cast<KeyboardEvent*>(event)));
+            event->markAsUsed();
+            break;
+        }
+        case CanvasHideEvent::chash(): {
+            // Will stop rendering (CefRenderHandler) but not sound when.
+            // Can't call CloseBrowser since it will kill it
+            host_->WasHidden(true);
+            event->markAsUsed();
+            break;
+        }
+        case CanvasShowEvent::chash(): {
+            host_->WasHidden(false);
             event->markAsUsed();
             break;
         }

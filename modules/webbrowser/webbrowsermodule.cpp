@@ -32,6 +32,7 @@
 #include <modules/webbrowser/webbrowserapp.h>
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <modules/opengl/shader/shadermanager.h>
 
@@ -52,6 +53,9 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // Call 60 times per second
     , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
 
+    if (!app->getSystemSettings().enablePickingProperty_) {
+        throw ModuleInitException("Picking must be enabled in SystemSettings (View->Settings->System settings->Enable picking");
+    }
     // CEF initialization
 
     CefMainArgs args;

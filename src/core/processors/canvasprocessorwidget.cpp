@@ -27,36 +27,22 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASPROCESSORWIDGET_H
-#define IVW_CANVASPROCESSORWIDGET_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/interaction/events/canvashideevent.h>
+#include <inviwo/core/interaction/events/canvasshowevent.h>
 
 namespace inviwo {
 
-class Canvas;
+void CanvasProcessorWidget::setVisible(bool visible) {
+    if (visible) {
+        CanvasShowEvent e;
+        getProcessor()->propagateEvent(&e, nullptr);
+    }else {
+        CanvasHideEvent e;
+        getProcessor()->propagateEvent(&e, nullptr);
+    }
+    ProcessorWidget::setVisible(visible);
+}
 
-/**
- * \class CanvasProcessorWidget
- * \brief A processor widget that has a canvas.
- * CanvasProcessorWidget is the base class for all processor widgets with canvases.
- */
-class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget { 
-public:
-    CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) {}
-    virtual Canvas* getCanvas() const = 0;
-    /**
-     * Show or hide window.
-     * Will send a CanvasHideEvent or CanvasShowEvent before
-     * hiding or showing the window.
-     * Notifications to ProcessorWidgetObserver are called after event.
-     */
-    virtual void setVisible(bool visible) override;
-};
-
-} // namespace
-
-#endif // IVW_CANVASPROCESSORWIDGET_H
-
+}  // namespace inviwo

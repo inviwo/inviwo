@@ -51,7 +51,7 @@ public:
 	virtual void updateFromProperty() override;
 
     // Override callback from javascript, use pressButton instead of deserialize
-    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+    virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
 		CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override;
 };

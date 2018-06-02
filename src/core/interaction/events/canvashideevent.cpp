@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,28 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASPROCESSORWIDGET_H
-#define IVW_CANVASPROCESSORWIDGET_H
+#include <inviwo/core/interaction/events/canvashideevent.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-class Canvas;
+CanvasHideEvent* CanvasHideEvent::clone() const { return new CanvasHideEvent(*this); }
 
-/**
- * \class CanvasProcessorWidget
- * \brief A processor widget that has a canvas.
- * CanvasProcessorWidget is the base class for all processor widgets with canvases.
- */
-class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget { 
-public:
-    CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) {}
-    virtual Canvas* getCanvas() const = 0;
-    /**
-     * Show or hide window.
-     * Will send a CanvasHideEvent or CanvasShowEvent before
-     * hiding or showing the window.
-     * Notifications to ProcessorWidgetObserver are called after event.
-     */
-    virtual void setVisible(bool visible) override;
-};
+bool CanvasHideEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) {
+    // Only propagate to image ports in the same port group.
+    // source is null if it comes from a SinkProcessor, i.e. CanvasProcessor
+    if (source == nullptr || processor->getPortGroup(inport) == processor->getPortGroup(source)) {
+        if (dynamic_cast<ImagePortBase*>(inport)) return true;
+    }
+    return false;
+}
 
-} // namespace
+uint64_t CanvasHideEvent::hash() const {
+    return chash();
+}
 
-#endif // IVW_CANVASPROCESSORWIDGET_H
-
+}  // namespace

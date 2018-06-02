@@ -63,7 +63,6 @@ public:
      * Assumes that widget is HTML input attribute.
      */
     virtual void updateFromProperty();
-    ;
 };
 
 template <typename T>
