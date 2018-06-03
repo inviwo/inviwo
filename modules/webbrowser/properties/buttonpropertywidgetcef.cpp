@@ -39,7 +39,8 @@ inline void ButtonPropertyWidgetCEF::updateFromProperty() {
 
     std::stringstream script;
     // Send click button event
-    script << "var property = document.getElementById(\"" << htmlId_ << "\").click();";
+    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+    script << "if(property!=null){property.click();}";
     // Block OnQuery, called due to property.click()
     onQueryBlocker_++;
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);

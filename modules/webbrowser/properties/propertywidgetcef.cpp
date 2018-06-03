@@ -71,7 +71,7 @@ bool PropertyWidgetCEF::onQuery(
 void PropertyWidgetCEF::onSetReadOnly(Property* property, bool readonly) {
     std::stringstream script;
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-    script << "property.readonly=" << (readonly ? "true" : "false") << ";";
+    script << "if(property!=null){property.readonly=" << (readonly ? "true" : "false") << ";}";
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 

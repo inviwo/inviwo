@@ -42,7 +42,7 @@ void BoolPropertyWidgetCEF::updateFromProperty() {
     std::stringstream script;
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";
     // Use click instead of setting value to make sure that appropriate events are fired.
-    script << "if (property.checked !=" << (property->get() ? "true" : "false")
+    script << "if (property!=null && property.checked !=" << (property->get() ? "true" : "false")
            << "){property.click();}";
     // Need to figure out how to make sure the frame is drawn after changing values.
     // script << "window.focus();";

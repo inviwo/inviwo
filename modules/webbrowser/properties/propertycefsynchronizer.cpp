@@ -62,10 +62,10 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
                                       int64 query_id, const CefString& request, bool persistent,
                                       CefRefPtr<Callback> callback) {
 
-    const std::string& message_name = request;
+    const std::string& message = request;
     auto widget =
-        std::find_if(std::begin(widgets_), std::end(widgets_), [message_name](const auto& widget) {
-            return message_name.find(widget->getHtmlId()) != std::string::npos;
+        std::find_if(std::begin(widgets_), std::end(widgets_), [message](const auto& widget) {
+            return message.find(widget->getHtmlId()) != std::string::npos;
         });
     if (widget != widgets_.end()) {
         return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
