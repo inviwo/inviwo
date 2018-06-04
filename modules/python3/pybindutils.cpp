@@ -82,7 +82,11 @@ const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr) {
             return NumericType::UnsignedInteger;
         return NumericType::NotSpecialized;
     }();
-    return DataFormatBase::get(numType, components, arr.itemsize() * 8);
+    auto format = DataFormatBase::get(numType, components, arr.itemsize() * 8);
+    if (!format) {
+        throw pybind11::value_error("Could not map the type of the given array to a inviwo format");
+    }
+    return format;
 }
 
 struct BufferFromArrayDispatcher {

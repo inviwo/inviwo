@@ -127,6 +127,9 @@ glm::tvec3<bool, P> isfinite (const glm::tvec3< T, P > &x) { return glm::isfinit
 
 template<typename T , glm::precision P>
 glm::tvec4<bool, P> isfinite (const glm::tvec4< T, P > &x) { return glm::isfinite(x); }
+
+template<typename T , glm::precision P>
+glm::tvec4<bool, P> isfinite (const glm::tquat< T, P > &x) { return glm::isfinite(x); }
  
 template <>
 IVW_CORE_API bool isfinite(const half_float::half& v);
@@ -139,9 +142,12 @@ glm::tvec2<bool, P> isnan (const glm::tvec2< T, P > &x) { return glm::isnan(x); 
     
 template<typename T , glm::precision P>
 glm::tvec3<bool, P> isnan (const glm::tvec3< T, P > &x) { return glm::isnan(x); }
-    
+
 template<typename T , glm::precision P>
 glm::tvec4<bool, P> isnan (const glm::tvec4< T, P > &x) { return glm::isnan(x); }
+
+template<typename T , glm::precision P>
+glm::tvec4<bool, P> isnan (const glm::tquat< T, P > &x) { return glm::isnan(x); }
 
 template <>
 IVW_CORE_API bool isnan(const half_float::half& v);
@@ -161,6 +167,9 @@ template <typename T, glm::precision P>
 struct rank<glm::tvec3<T, P>> : public std::integral_constant<std::size_t, 1> {};
 template <typename T, glm::precision P>
 struct rank<glm::tvec4<T, P>> : public std::integral_constant<std::size_t, 1> {};
+
+template <typename T, glm::precision P>
+struct rank<glm::tquat<T, P>> : public std::integral_constant<std::size_t, 1> {};
 
 template <typename T, glm::precision P>
 struct rank<glm::tmat2x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
@@ -197,6 +206,9 @@ template <typename T, glm::precision P>
 struct extent<glm::tvec3<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
 template <typename T, glm::precision P>
 struct extent<glm::tvec4<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
+
+template <typename T, glm::precision P>
+struct extent<glm::tquat<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
 
 template <typename T, glm::precision P>
 struct extent<glm::tmat2x2<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
@@ -914,6 +926,49 @@ namespace glm {
             func(x[0][3], y[0][3]), func(x[1][3], y[1][3]), func(x[2][3], y[2][3]), func(x[3][3], y[3][3])  \
             );                                                                                              \
     }
+
+
+template <typename T, precision P>
+GLM_FUNC_QUALIFIER tquat<T, P> clamp(tquat<T, P> const& q, T a, T b){
+    return {
+        glm::clamp(q[0],a,b),
+        glm::clamp(q[1],a,b),
+        glm::clamp(q[2],a,b),
+        glm::clamp(q[3],a,b)
+    };
+}
+
+template <typename T, precision P>
+GLM_FUNC_QUALIFIER tquat<T, P> clamp(tquat<T, P> const& q, const tquat<T, P> &a, const tquat<T, P> &b){
+    return {
+        glm::clamp(q[0],a[0],b[0]),
+        glm::clamp(q[1],a[1],b[1]),
+        glm::clamp(q[2],a[2],b[2]),
+        glm::clamp(q[3],a[3],b[3])
+    };
+}
+
+
+template <typename T, precision P>
+GLM_FUNC_QUALIFIER tquat<T, P> min(const tquat<T, P> &a, const tquat<T, P> &b){
+    return {
+        glm::min(a[0],b[0]),
+        glm::min(a[1],b[1]),
+        glm::min(a[2],b[2]),
+        glm::min(a[3],b[3])
+    };
+}
+
+
+template <typename T, precision P>
+GLM_FUNC_QUALIFIER tquat<T, P> max(const tquat<T, P> &a, const tquat<T, P> &b){
+    return {
+        glm::max(a[0],b[0]),
+        glm::max(a[1],b[1]),
+        glm::max(a[2],b[2]),
+        glm::max(a[3],b[3])
+    };
+}
 
 #define VECTORIZE_MAT_MAT(func) \
     VECTORIZE2_MAT_MAT(func)    \

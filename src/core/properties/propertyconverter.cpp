@@ -35,7 +35,7 @@ PropertyConverter::PropertyConverter(const std::string &srcClassIdentifier,
                                      const std::string &dstClassIdentifier)
     : srcClassIdentifier_(srcClassIdentifier), dstClassIdentifier_(dstClassIdentifier) {}
 
-PropertyConverter::~PropertyConverter() {}
+PropertyConverter::~PropertyConverter() = default;
 
 std::string PropertyConverter::getSourcePropertyClassIdenetifier() const {
     return srcClassIdentifier_;

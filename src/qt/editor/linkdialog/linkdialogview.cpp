@@ -33,31 +33,10 @@
 namespace inviwo {
 
 LinkDialogGraphicsView::LinkDialogGraphicsView(QWidget* parent)
-    : QGraphicsView(parent), scene_(nullptr) {
+    : QGraphicsView(parent) {
     setRenderHint(QPainter::Antialiasing, true);
     setMouseTracking(true);
     setDragMode(QGraphicsView::RubberBandDrag);
-}
-
-void LinkDialogGraphicsView::setDialogScene(LinkDialogGraphicsScene* scene) {
-    QColor bgColor;
-    bgColor.setNamedColor("#4d4d4d");
-    scene->setBackgroundBrush(bgColor);
-    setScene(scene);
-    scene_ = scene;
-}
-
-void LinkDialogGraphicsView::wheelEvent(QWheelEvent* e) {
-    QPoint numPixels = e->pixelDelta();
-    QPoint numDegrees = e->angleDelta() / 8 / 15;
-
-    if (!numPixels.isNull()) {
-        scene_->wheelAction(static_cast<float>(numPixels.y()) / 50.f);
-    } else if (!numDegrees.isNull()) {
-        scene_->wheelAction(static_cast<float>(numDegrees.y()) / 10.f);
-    }
-
-    e->accept();
 }
 
 } //namespace

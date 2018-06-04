@@ -275,8 +275,8 @@ void NetworkEditor::removeLinkGraphicsItem(LinkConnectionGraphicsItem* linkGraph
 }
 
 void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2) {
-    LinkDialog dialog(processor1, processor2, mainwindow_);
-    dialog.exec();
+    auto dialog = new LinkDialog(processor1, processor2, mainwindow_);
+    dialog->show();
 }
 
 //////////////////////////////////////

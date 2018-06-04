@@ -100,6 +100,7 @@
 #include <modules/base/io/ivfsequencevolumereader.h>
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
+#include <modules/base/processors/meshconverterprocessor.h>
 
 
 namespace inviwo {
@@ -168,6 +169,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<CameraFrustum>();
     registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
     registerProcessor<VolumeCreator>();
+    registerProcessor<MeshConverterProcessor>();
 
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();

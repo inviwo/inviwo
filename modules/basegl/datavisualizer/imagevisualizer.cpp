@@ -45,8 +45,7 @@ ImageVisualizer::ImageVisualizer(InviwoApplication* app) : DataVisualizer{}, app
 std::string ImageVisualizer::getName() const { return "Image Canvas"; }
 
 Document ImageVisualizer::getDescription() const { 
-    Document doc;
-    using P = Document::PathComponent;
+    Document doc;   
     auto b = doc.append("html").append("body");
     b.append("", "Construct an image source and canvas");
     return doc;

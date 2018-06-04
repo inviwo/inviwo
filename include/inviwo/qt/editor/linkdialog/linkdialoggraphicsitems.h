@@ -39,19 +39,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsView>
-#include <QDialog>
 #include <QGraphicsRectItem>
-#include <QPushButton>
-#include <QGraphicsLineItem>
-#include <QGraphicsPolygonItem>
-#include <QPainterPath>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QComboBox>
-#include <QStandardItemModel>
-#include <QEventLoop>
-#include <QCheckBox>
-#include <QTimeLine>
 #include <QToolTip>
 #include <warn/pop>
 

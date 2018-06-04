@@ -143,6 +143,11 @@ public:
     void addConnection(const PortConnection& connection);
 
     /**
+     * Check if sourcePort can be connected to destPort
+     */
+    bool canConnect(const Outport* sourcePort, const Inport* destPort) const; 
+
+    /**
      * Removes and deletes a PortConnection from the ProcessorNetwork. This involves resolving the
      * connection between the two specified Ports, as well as removing this connection from the
      * ProcessorNetwork.
@@ -178,6 +183,11 @@ public:
      */
     void addLink(Property* source, Property* destination);
     void addLink(const PropertyLink& link);
+
+    /**
+     * Check if source can be linked to destination
+     */
+    bool canLink(const Property* source, const Property* destination) const;
 
     /**
      * Remove and delete Property Link from the network

@@ -38,6 +38,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/image/imagegl.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <cctype>
 #include <locale>
@@ -66,6 +67,11 @@ TextOverlayGL::TextOverlayGL()
     , position_("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , offset_("offset", "Offset (Pixel)", ivec2(0), ivec2(-100), ivec2(100))
     , addArgButton_("addArgBtn", "Add String Argument")
+    , textRenderer_{[]() {
+        // ensure the default context is active when creating the TextRenderer
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        return TextRenderer{};
+    }()}
     , numArgs_(0u) {
     inport_.setOptional(true);
 
@@ -108,9 +114,14 @@ void TextOverlayGL::process() {
         textRenderer_.setFont(font_.fontFace_.get());
     }
 
+    auto argModified = [this]() {
+        auto args = this->getPropertiesByType<StringProperty>(false);
+        return util::any_of(args, [this](const auto& p) { return p != &text_ && p->isModified(); });
+    };
+
     // check whether a property was modified
-    if (!textObject_.texture || text_.isModified() || color_.isModified() || font_.isModified()) {
-        // util::any_of(font_.getProperties(), [](const auto& p) { return p->isModified(); })) {
+    if (!textObject_.texture || text_.isModified() || color_.isModified() || font_.isModified() ||
+        argModified()) {
         updateCache();
     }
 

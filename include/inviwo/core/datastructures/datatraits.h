@@ -134,6 +134,26 @@ struct DataTraits<T, std::enable_if_t<util::HasDataFormat<T>::value>> {
 
 // Specialization for vectors.
 
+namespace detail {
+template <typename T>
+static Document vectorInfo(size_t size, const T* first, const T* last) {
+    Document doc;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    auto p = doc.append("p");
+    utildoc::TableBuilder tb(p, P::end());
+    tb(H("Size"), size);
+    if (first) {
+        tb(H("First"), DataTraits<T>::info(*first));
+    }
+    if (last && last != first) {
+        tb(H("Last"), DataTraits<T>::info(*last));
+    }
+    return doc;
+}
+
+}  // namespace detail
+
 template <typename T, typename A>
 struct DataTraits<std::vector<T, A>> {
     static std::string classIdentifier() {
@@ -144,13 +164,8 @@ struct DataTraits<std::vector<T, A>> {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
     static Document info(const std::vector<T, A>& data) {
-        Document doc;
-        doc.append("p", dataName());
-        doc.append("p", toString(data.size()));
-        if (!data.empty()) {
-            doc.append("p", DataTraits<T>::info(data.front()));
-        }
-        return doc;
+        return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : &data.front(),
+                                     data.empty() ? nullptr : &data.back());
     }
 };
 template <typename T, typename A>
@@ -163,13 +178,8 @@ struct DataTraits<std::vector<T*, A>> {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
     static Document info(const std::vector<T*, A>& data) {
-        Document doc;
-        doc.append("p", dataName());
-        doc.append("p", toString(data.size()));
-        if (!data.empty()) {
-            doc.append("p", DataTraits<T>::info(*data.front()));
-        }
-        return doc;
+        return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : data.front(),
+                                     data.empty() ? nullptr : data.back());
     }
 };
 template <typename T, typename D, typename A>
@@ -184,13 +194,8 @@ struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
     static Document info(const std::vector<std::unique_ptr<T, D>, A>& data) {
-        Document doc;
-        doc.append("p", dataName());
-        doc.append("p", toString(data.size()));
-        if (!data.empty()) {
-            doc.append("p", DataTraits<T>::info(*data.front()));
-        }
-        return doc;
+        return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : data.front().get(),
+                                     data.empty() ? nullptr : data.back().get());
     }
 };
 template <typename T, typename A>
@@ -205,13 +210,8 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
         return glm::min(uvec3(30, 30, 30) + DataTraits<T>::colorCode(), uvec3(255));
     }
     static Document info(const std::vector<std::shared_ptr<T>, A>& data) {
-        Document doc;
-        doc.append("p", htmlEncode(dataName()));
-        doc.append("p", toString(data.size()));
-        if (!data.empty()) {
-            doc.append("p", DataTraits<T>::info(*data.front()));
-        }
-        return doc;
+        return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : data.front().get(),
+                                     data.empty() ? nullptr : data.back().get());
     }
 };
 

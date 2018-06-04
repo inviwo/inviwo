@@ -44,6 +44,7 @@
 #include <modules/python3/interface/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/interface/pyport.h>
+#include <modules/python3/pybindutils.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -105,6 +106,8 @@ void exposeBuffer(pybind11::module &m) {
         .value("StripAdjacency", ConnectivityType::StripAdjacency);
 
     py::class_<BufferBase, std::shared_ptr<BufferBase>>(m, "Buffer")
+        .def(py::init([](py::array data) { return pyutil::createBuffer(data).release(); }))
+        .def("clone", [](BufferBase &self) { return self.clone(); })
         .def_property("size", &BufferBase::getSize, &BufferBase::setSize)
         .def_property(
             "data",

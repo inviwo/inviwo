@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,23 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
-#define IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#ifndef IVW_DATAOPENER_H
+#define IVW_DATAOPENER_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
-
-class QPainter;
-class QStyleOptionGraphicsItem;
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-class LinkDialogPropertyGraphicsItem;
-class Processor;
+class ProcessorNetwork;
 
-class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject,
-                                                         public GraphicsItemData<Processor> {
-public:
-    LinkDialogProcessorGraphicsItem(Side side, Processor* processor);
-    virtual ~LinkDialogProcessorGraphicsItem() = default;
+namespace util {
 
-    const std::vector<LinkDialogPropertyGraphicsItem*>& getPropertyItemList() const {
-        return properties_;
-    }
+void IVW_QTEDITOR_API insertNetworkForData(const std::string& dataFile, ProcessorNetwork* net,
+                                           bool alwaysFirst = false, bool onlySource = false);
 
-    QSizeF sizeHint(Qt::SizeHint which, const QSizeF& constraint = QSizeF()) const;
-    virtual int getLevel() const override;
-
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + LinkDialogProcessorGraphicsItemType };
-    virtual int type() const override { return Type; }
-    virtual void updatePositions() override;
-
-protected:
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                       QWidget* widget) override;
-
-private:
-    std::vector<LinkDialogPropertyGraphicsItem*> properties_;
-};
+}
 
 }  // namespace inviwo
 
-#endif  // IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#endif  // IVW_DATAOPENER_H
