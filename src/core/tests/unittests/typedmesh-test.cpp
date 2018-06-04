@@ -183,8 +183,15 @@ TEST(typedmesh, compilationChecks) {
 
     MyMesh copy(mesh);
     auto copy2 = mesh;
+
+    using FloatBuffer =
+        buffertraits::TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::PositionAttrib)>;
+
+    TypedMesh<FloatBuffer, buffertraits::ColorsBuffer> t;
+    t.addVertex(1.0, vec4(1.0f));
+    t.setVertex(0, 1.5, vec4(1.0f));
 }
- 
+
 TEST(typedmesh, copyconstructor) {
     using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 

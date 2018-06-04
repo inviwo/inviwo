@@ -313,6 +313,7 @@ public:
     };
 #endif
 #endif
+    using Traits = std::tuple<BufferTraits...>;
 
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {}
@@ -346,20 +347,11 @@ public:
      * This method is often faster than adding the vertices one at a time with
      * TypedMesh::addVertex()
      */
-    void addVertices(const std::vector<Vertex> &vertices) {
-        addVerticesImpl<0, BufferTraits...>(vertices);
-    }
+    void addVertices(const std::vector<Vertex> &vertices);
 
-    uint32_t addVertex(const Vertex &vertex) {
-        using BT = typename std::tuple_element<0, std::tuple<BufferTraits...>>::type;
-        addVertexImplVertex<0>(vertex);
+    uint32_t addVertex(const Vertex &vertex);
 
-        return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
-    }
-
-    void setVertex(size_t index, const Vertex &vertex) {
-        setVertexImplVertex<0>(index, vertex);
-    }
+    void setVertex(size_t index, const Vertex &vertex);
 
 #if defined(_MSC_VER) && _MSC_VER <= 1900
     // On visual studio 2015 Alias templates is not supported
@@ -499,16 +491,6 @@ private:
         addVertexImpl<I + 1>(args...);
     }
 
-    template <unsigned I>
-    void addVertexImplVertex(const Vertex &v) {
-        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
-        BT::getTypedEditableRAMRepresentation()->add(std::get<I>(v));
-        addVertexImplVertex<I + 1>(v);
-    }
-
-    template <>
-    void addVertexImplVertex<std::tuple_size<Vertex>::value>(const Vertex &) {}
-
     template <unsigned I, typename T>
     void setVertexImpl(size_t index, T &t) {
         using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
@@ -523,35 +505,6 @@ private:
     }
 
     template <unsigned I>
-    void setVertexImplVertex(size_t index, const Vertex &v) {
-        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
-        BT::getTypedDataContainer().at(index) = std::get<I>(v);
-        setVertexImplVertex<I + 1>(index, v);
-    }
-
-    template <>
-    void setVertexImplVertex<std::tuple_size<Vertex>::value>(size_t, const Vertex &) {}
-
-    template <unsigned I>
-    void addVerticesImpl(const std::vector<Vertex> &) {}  // sink
-
-    template <unsigned I, typename T, typename... ARGS>
-    void addVerticesImpl(const std::vector<Vertex> &vertices) {
-
-        auto &vec = getTypedDataContainer<T>();
-
-        auto neededSize = vertices.size() + vec.size();
-        if (vec.capacity() < neededSize) {
-            vec.reserve(neededSize);
-        }
-        for (auto &v : vertices) {
-            vec.push_back(std::get<I>(v));
-        }
-
-        addVerticesImpl<I + 1, ARGS...>(vertices);
-    }
-
-    template <unsigned I>
     void copyConstrHelper() {}  // sink
 
     template <unsigned I, typename T, typename... ARGS>
@@ -560,6 +513,66 @@ private:
         copyConstrHelper<I + 1, ARGS...>();
     }
 };
+
+namespace detail {
+
+template <typename F, unsigned I>
+struct helper {
+
+    static void addVerticesImpl(F &f, const std::vector<typename F::Vertex> &vertices) {
+        using BT = std::tuple_element_t<I - 1, typename F::Traits>;
+        auto &vec = f.getTypedDataContainer<BT>();
+
+        vec.reserve(vec.size() + vertices.size());
+        std::transform(vertices.begin(), vertices.end(), std::back_inserter(vec),
+                       [](auto &v) { return std::get<I - 1>(v); });
+
+        helper<F, I - 1>::addVerticesImpl(f, vertices);
+    }
+
+    static void addVertexImplVertex(F &f, const typename F::Vertex &v) {
+        using BT = std::tuple_element_t<I - 1, typename F::Traits>;
+        f.getTypedEditableRAMRepresentation<BT>()->add(std::get<I - 1>(v));
+
+        helper<F, I - 1>::addVertexImplVertex(f, v);
+    }
+    static void setVertexImplVertex(F &f, size_t index, const typename F::Vertex &v) {
+        using BT = std::tuple_element_t<I - 1, typename F::Traits>;
+        f.getTypedDataContainer<BT>().at(index) = std::get<I - 1>(v);
+
+        helper<F, I - 1>::setVertexImplVertex(f, index, v);
+    }
+};
+
+template <typename F>
+struct helper<F, 0> {
+    static void addVerticesImpl(F &, const std::vector<typename F::Vertex> &) {}
+    static void addVertexImplVertex(F &, const typename F::Vertex &) {}
+    static void setVertexImplVertex(F &, size_t, const typename F::Vertex &) {}
+};
+
+};  // namespace detail
+
+template <typename... BufferTraits>
+void TypedMesh<BufferTraits...>::addVertices(const std::vector<Vertex> &vertices) {
+    detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVerticesImpl(*this,
+                                                                                         vertices);
+}
+
+template <typename... BufferTraits>
+uint32_t TypedMesh<BufferTraits...>::addVertex(const Vertex &vertex) {
+    detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
+        *this, vertex);
+
+    using BT = typename std::tuple_element<0, Traits>::type;
+    return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
+}
+
+template <typename... BufferTraits>
+void TypedMesh<BufferTraits...>::setVertex(size_t index, const Vertex &vertex) {
+    detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::setVertexImplVertex(
+        *this, index, vertex);
+}
 
 /**
  * \ingroup typedmesh
