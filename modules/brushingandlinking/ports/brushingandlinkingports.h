@@ -71,7 +71,7 @@ public:
     virtual std::string getClassIdentifier() const override;
 
     std::unordered_set<size_t> filterCache_;
-    std::unordered_set<size_t> selctionCache_;
+    std::unordered_set<size_t> selectionCache_;
     std::unordered_set<size_t> clusterSelectionCache_;
     std::unordered_set<size_t> someOtherSelectionCache_;
 };
