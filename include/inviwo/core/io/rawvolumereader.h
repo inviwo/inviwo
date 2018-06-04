@@ -32,11 +32,12 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/io/datareader.h>
-#include <inviwo/core/io/datareaderdialog.h>
+#include <inviwo/core/io/volumedatareaderdialog.h>
 
 namespace inviwo {
 
@@ -51,7 +52,7 @@ public:
     virtual RawVolumeReader* clone() const override;
     virtual ~RawVolumeReader() = default;
 
-    virtual void setParameters(const DataFormatBase* format, ivec3 dimensions, bool littleEndian);
+    virtual void setParameters(const DataFormatBase* format, ivec3 dimensions, bool littleEndian, DataMapper dataMapper);
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
 
@@ -64,6 +65,7 @@ private:
     size3_t dimensions_;
     vec3 spacing_;
     const DataFormatBase* format_;
+	DataMapper dataMapper_;
     bool parametersSet_;
 };
 

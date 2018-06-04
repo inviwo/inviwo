@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/io/datareaderdialog.h>
+#include <inviwo/core/io/volumedatareaderdialog.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : public DataReaderDialog, public QDialog {
+class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : public VolumeDataReaderDialog, public QDialog {
 public:
     RawDataReaderDialogQt();
     virtual ~RawDataReaderDialogQt();
@@ -53,11 +53,17 @@ public:
     virtual uvec3 getDimensions() const override;
     virtual dvec3 getSpacing() const override;
     virtual bool getEndianess() const override;
+	virtual DataMapper getDataMapper() const override; 
     
 
 private:
     QLabel* fileName_;
     QComboBox* bitDepth_;
+	QDoubleSpinBox* dataRangeMin_;
+	QDoubleSpinBox* dataRangeMax_;
+	QDoubleSpinBox* valueRangeMin_;
+	QDoubleSpinBox* valueRangeMax_;
+	QLineEdit* valueUnit_;				///< Unit, i.e. Hounsfield/absorption/W.
     QSpinBox* channels_;
     QSpinBox* dimX_;
     QSpinBox* dimY_;

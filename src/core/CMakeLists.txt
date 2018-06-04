@@ -106,7 +106,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackballobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/bytereaderutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriter.h
@@ -114,6 +113,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
+	${IVW_INCLUDE_DIR}/inviwo/core/io/volumedatareaderdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h
@@ -395,7 +395,6 @@ set(SOURCE_FILES
     interaction/trackball.cpp
     io/bytereaderutil.cpp
     io/datareader.cpp
-    io/datareaderdialog.cpp
     io/datareaderexception.cpp
     io/datareaderfactory.cpp
     io/datawriter.cpp
@@ -412,6 +411,7 @@ set(SOURCE_FILES
     io/serialization/versionconverter.cpp
     io/tempfilehandle.cpp
     io/textfilereader.cpp
+	io/volumedatareaderdialog.cpp
     links/linkconditions.cpp
     links/linkevaluator.cpp
     links/propertylink.cpp

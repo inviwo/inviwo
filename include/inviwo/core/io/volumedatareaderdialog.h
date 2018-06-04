@@ -27,18 +27,19 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_DATAREADERDIALOG_H
-#define IVW_DATAREADERDIALOG_H
+#ifndef IVW_VOLUMEDATAREADERDIALOG_H
+#define IVW_VOLUMEDATAREADERDIALOG_H
 
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/dialog.h>
+#include <inviwo/core/datastructures/datamapper.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DataReaderDialog : public Dialog {
+class IVW_CORE_API VolumeDataReaderDialog : public Dialog {
 public:
-    DataReaderDialog();
-    virtual ~DataReaderDialog();
+    VolumeDataReaderDialog() = default;
+    virtual ~VolumeDataReaderDialog() = default;
 
     virtual bool show() = 0;
     virtual void setFile(std::string fileName) = 0;
@@ -47,9 +48,10 @@ public:
     virtual uvec3 getDimensions() const = 0;
     virtual dvec3 getSpacing() const = 0;
     virtual bool getEndianess() const = 0;
+	virtual DataMapper getDataMapper() const = 0; 
 };
 
 } // namespace
 
-#endif // IVW_DATAREADERDIALOG_H
+#endif // IVW_VOLUMEDATAREADERDIALOG_H
 
