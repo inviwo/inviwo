@@ -97,7 +97,7 @@ namespace inviwo {
 InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
-    , editMenu_{new InviwoEditMenu(this)} // needed in ConsoleWidget
+    , editMenu_{new InviwoEditMenu(this)}  // needed in ConsoleWidget
     , consoleWidget_{[this]() {
         // initialize console widget first to receive log messages
         auto cw = std::make_shared<ConsoleWidget>(this);
@@ -107,17 +107,24 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , networkEditor_(nullptr)
     , fileAssociations_{std::make_unique<FileAssociations>(this)}
     , maximized_(false)
-    , untitledWorkspaceName_("untitled")
-    , snapshotArg_("s", "snapshot",
+    , untitledWorkspaceName_{"untitled"}
+    , snapshotArg_{"s",
+                   "snapshot",
                    "Specify base name of each snapshot, or \"UPN\" string for processor name.",
-                   false, "", "file name")
-    , screenGrabArg_("g", "screengrab", "Specify default name of each screen grab.", false, "",
-                     "file name")
-    , saveProcessorPreviews_("", "save-previews", "Save processor previews to the supplied path",
-                             false, "", "path")
-    , updateWorkspaces_("", "update-workspaces",
-                        "Go through and update all workspaces the the latest versions")
+                   false,
+                   "",
+                   "file name"}
+    , screenGrabArg_{"g",   "screengrab", "Specify default name of each screen grab.",
+                     false, "",           "file name"}
+    , saveProcessorPreviews_{"",
+                             "save-previews",
+                             "Save processor previews to the supplied path",
+                             false,
+                             "",
+                             "path"}
     , openData_{"d", "data", "Try and open a data file", false, "", "file name"}
+    , updateWorkspaces_{"", "update-workspaces",
+                        "Go through and update all workspaces to the latest version"}
     , undoManager_(this) {
 
     setObjectName("InviwoMainWindow");

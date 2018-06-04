@@ -113,7 +113,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
-	${IVW_INCLUDE_DIR}/inviwo/core/io/volumedatareaderdialog.h
+	  ${IVW_INCLUDE_DIR}/inviwo/core/io/volumedatareaderdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h
@@ -126,7 +126,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/tempfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/links/linkconditions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/propertylink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/containermetadata.h
@@ -411,7 +410,7 @@ set(SOURCE_FILES
     io/serialization/versionconverter.cpp
     io/tempfilehandle.cpp
     io/textfilereader.cpp
-	io/volumedatareaderdialog.cpp
+	  io/volumedatareaderdialog.cpp
     links/linkconditions.cpp
     links/linkevaluator.cpp
     links/propertylink.cpp

@@ -38,15 +38,10 @@
 
 namespace inviwo {
 
-ImageGL::ImageGL()
-    : ImageRepresentation()
-    , frameBufferObject_()
-    , colorLayerCopyCount_(0) {}
+ImageGL::ImageGL() : ImageRepresentation(), frameBufferObject_(), colorLayerCopyCount_(0) {}
 
 ImageGL::ImageGL(const ImageGL& rhs)
-    : ImageRepresentation(rhs)
-    , frameBufferObject_()
-    , colorLayerCopyCount_(0) {}
+    : ImageRepresentation(rhs), frameBufferObject_(), colorLayerCopyCount_(0) {}
 
 ImageGL::~ImageGL() {
     LGL_ERROR;
@@ -102,7 +97,6 @@ void ImageGL::activateBuffer(ImageType type) {
         LGL_ERROR;
     }
 
-
     glGetBooleanv(GL_DEPTH_TEST, &prevDepthMask_);
     glGetBooleanv(GL_DEPTH_WRITEMASK, &prevDepthTest_);
 
@@ -122,7 +116,7 @@ void ImageGL::activateBuffer(ImageType type) {
 
 void ImageGL::deactivateBuffer() {
     // restore previous state
-    frameBufferObject_.deactivate(); // this will activate the previous frame buffer.
+    frameBufferObject_.deactivate();  // this will activate the previous frame buffer.
 
     glDepthMask(prevDepthMask_);
 
@@ -134,21 +128,17 @@ void ImageGL::deactivateBuffer() {
     prevViewport_.set();
 }
 
-size2_t ImageGL::getDimensions() const {
-    return colorLayersGL_.front()->getDimensions();
-}
+size2_t ImageGL::getDimensions() const { return colorLayersGL_.front()->getDimensions(); }
 
 bool ImageGL::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     return copyRepresentationsTo(dynamic_cast<ImageGL*>(targetRep));
 }
 
-size_t ImageGL::priority() const {
-    return 300;
-}
+size_t ImageGL::priority() const { return 300; }
 
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
-    if(!target) return false;
-    
+    if (!target) return false;
+
     const ImageGL* source = this;
 
     // Set shader to copy all color layers
@@ -343,6 +333,8 @@ const LayerGL* ImageGL::getDepthLayerGL() const { return depthLayerGL_; }
 
 const LayerGL* ImageGL::getPickingLayerGL() const { return pickingLayerGL_; }
 
+size_t ImageGL::getNumberOfColorLayers() const { return colorLayersGL_.size(); }
+
 void ImageGL::updateExistingLayers() const {
     auto owner = static_cast<const Image*>(this->getOwner());
 
@@ -404,15 +396,13 @@ void ImageGL::update(bool editable) {
     reAttachAllLayers(ImageType::AllLayers);
 }
 
-void ImageGL::renderImagePlaneRect() const {
-    utilgl::singleDrawImagePlaneRect();
-}
+void ImageGL::renderImagePlaneRect() const { utilgl::singleDrawImagePlaneRect(); }
 
 std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }
 
 bool ImageGL::isValid() const {
     return depthLayerGL_->isValid() && pickingLayerGL_->isValid() &&
-        util::all_of(colorLayersGL_, [](const auto& l) { return l->isValid(); });
+           util::all_of(colorLayersGL_, [](const auto& l) { return l->isValid(); });
 }
 
 dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
@@ -450,4 +440,4 @@ dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
 
 GLenum ImageGL::getPickingAttachmentID() const { return pickingAttachmentID_; }
 
-}  // namespace
+}  // namespace inviwo

@@ -52,7 +52,6 @@ std::string VolumeRaycastVisualizer::getName() const { return "Volume Raycaster"
 
 Document VolumeRaycastVisualizer::getDescription() const {
     Document doc;
-    using P = Document::PathComponent;
     auto b = doc.append("html").append("body");
     b.append("", "Construct a standard volume raycaster");
     return doc;

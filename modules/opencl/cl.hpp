@@ -30,7 +30,7 @@
  *   Additions and fixes from:
  *       Brian Cole, March 3rd 2010 and April 2012 
  *       Matt Gruenke, April 2012.
- *       Daniel Jönsson, Januari 2013 (Removed doxygen mainpage, extensions to simplify handling, 
+ *       Daniel JÃ¶nsson, Januari 2013 (Removed doxygen mainpage, extensions to simplify handling, 
  *                                     as much as possible is kept in cl.cpp)
  *       Bruce Merry, February 2013.
  *       Tom Deakin and Simon McIntosh-Smith, July 2013

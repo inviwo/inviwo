@@ -47,7 +47,6 @@ std::string VolumeSliceVisualizer::getName() const { return "Volume Slicer"; }
 
 Document VolumeSliceVisualizer::getDescription() const {
     Document doc;
-    using P = Document::PathComponent;
     auto b = doc.append("html").append("body");
     b.append("", "Construct a standard volume slicer");
     return doc;

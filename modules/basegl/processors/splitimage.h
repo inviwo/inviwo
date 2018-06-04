@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,60 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
-#define IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#ifndef IVW_SPLITIMAGE_H
+#define IVW_SPLITIMAGE_H
 
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
-
-class QPainter;
-class QStyleOptionGraphicsItem;
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-class LinkDialogPropertyGraphicsItem;
-class Processor;
+/** \docpage{org.inviwo.SplitImage, Split Image}
+ * ![](org.inviwo.SplitImage.png?classIdentifier=org.inviwo.SplitImage)
+ * Split screen of two input images. The images are split in the middle either horizontally or
+ * vertically.
+ *
+ * ### Inports
+ *   * __inputA__  first image
+ *   * __inputB__  second image
+ *
+ * ### Outports
+ *   * __outport__  resulting image where the two input images are split in the middle
+ *
+ * ### Properties
+ *   * __Direction__       split direction
+ *   * __Split Position__  normalized split position
+ */
 
-class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject,
-                                                         public GraphicsItemData<Processor> {
+/**
+ * \class SplitImage
+ * \brief Processor providing split screen functionality for two images
+ */
+class IVW_MODULE_BASEGL_API SplitImage : public Processor {
 public:
-    LinkDialogProcessorGraphicsItem(Side side, Processor* processor);
-    virtual ~LinkDialogProcessorGraphicsItem() = default;
+    enum class SplitDirection { Vertical, Horizontal };
 
-    const std::vector<LinkDialogPropertyGraphicsItem*>& getPropertyItemList() const {
-        return properties_;
-    }
+    SplitImage();
+    virtual ~SplitImage() = default;
 
-    QSizeF sizeHint(Qt::SizeHint which, const QSizeF& constraint = QSizeF()) const;
-    virtual int getLevel() const override;
+    virtual void process() override;
 
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + LinkDialogProcessorGraphicsItemType };
-    virtual int type() const override { return Type; }
-    virtual void updatePositions() override;
-
-protected:
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                       QWidget* widget) override;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    std::vector<LinkDialogPropertyGraphicsItem*> properties_;
+    ImageInport inport0_;
+    ImageInport inport1_;
+    ImageOutport outport_;
+
+    TemplateOptionProperty<SplitDirection> splitDirection_;
+    FloatProperty splitPosition_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#endif  // IVW_SPLITIMAGE_H

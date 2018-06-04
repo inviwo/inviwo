@@ -136,7 +136,7 @@ void util::insertNetworkForData(const std::string& dataFile, ProcessorNetwork* n
             if (dialog->loader_->isChecked()) {
                 addVisualizer(visualizers.front(), true);
             }
-            for (int i = 0; i < visualizers.size(); ++i) {
+            for (size_t i = 0; i < visualizers.size(); ++i) {
                 if (dialog->useVisualuzers[i]->isChecked()) {
                     addVisualizer(visualizers[i], false);
                 }

@@ -129,13 +129,21 @@ struct VectorStringConverterRegFunctor {
     }
 };
 
+enum class OptionRegEnumInt : int {};
+enum class OptionRegEnumUInt : unsigned int {};
+
+struct OptionStringConverterRegFunctor {
+    template <typename T>
+    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
+        reg(util::make_unique<OptionToStringConverter<TemplateOptionProperty<T>>>());
+    }
+};
+
 }  // namespace
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}
-void InviwoCore::Observer::fileChanged(const std::string& dir) {
-    core_.scanDirForComposites(dir);
-}
+void InviwoCore::Observer::fileChanged(const std::string& dir) { core_.scanDirForComposites(dir); }
 
 InviwoCore::InviwoCore(InviwoApplication* app)
     : InviwoModule(app, "Core"), compositeDirObserver_{*this, app} {
@@ -288,6 +296,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<IntSize2Property>();
     registerProperty<IntSize3Property>();
     registerProperty<IntSize4Property>();
+    registerProperty<FloatQuaternionProperty>();
+    registerProperty<DoubleQuaternionProperty>();
     registerProperty<IsoValueProperty>();
     registerProperty<IsoTFProperty>();
     registerProperty<OptionPropertyDouble>();
@@ -329,7 +339,14 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<Vec3s>{}(VectorStringConverterRegFunctor{}, registerPC);
     util::for_each_type<Vec4s>{}(VectorStringConverterRegFunctor{}, registerPC);
 
-    // Register Processors
+    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
+    util::for_each_type<OptionTypes>{}(OptionStringConverterRegFunctor{}, registerPC);
+
+    using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
+    util::for_each_type<OptionEnumTypes>{}(OptionStringConverterRegFunctor{}, registerPC);
+
+    
+    // Observe composite processors
     auto userCompositeDir = app_->getPath(PathType::Settings, "/composites");
     scanDirForComposites(userCompositeDir);
     compositeDirObserver_.startFileObservation(userCompositeDir);
@@ -346,8 +363,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 std::string InviwoCore::getPath() const { return filesystem::findBasePath(); }
 
 void InviwoCore::scanDirForComposites(const std::string& dir) {
-    for (auto&& file : filesystem::getDirectoryContentsRecursively(
-        dir, filesystem::ListMode::Files)) {
+    for (auto&& file :
+         filesystem::getDirectoryContentsRecursively(dir, filesystem::ListMode::Files)) {
         if (filesystem::getFileExtension(file) == "inv") {
             if (addedCompositeFiles_.count(file) == 0) {
                 registerCompositeProcessor(file);

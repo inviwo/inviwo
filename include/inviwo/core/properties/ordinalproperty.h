@@ -141,6 +141,9 @@ using DoubleMat2Property = OrdinalProperty<dmat2>;
 using DoubleMat3Property = OrdinalProperty<dmat3>;
 using DoubleMat4Property = OrdinalProperty<dmat4>;
 
+using DoubleQuaternionProperty = OrdinalProperty<glm::dquat>;
+using FloatQuaternionProperty = OrdinalProperty<glm::fquat>;
+
 template <typename T>
 PropertyClassIdentifier(OrdinalProperty<T>,
                         "org.inviwo." + Defaultvalues<T>::getName() + "Property");

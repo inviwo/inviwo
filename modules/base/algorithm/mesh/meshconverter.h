@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,34 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
-#define IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#ifndef IVW_MESHCONVERTER_H
+#define IVW_MESHCONVERTER_H
 
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-class QPainter;
-class QStyleOptionGraphicsItem;
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 
-class LinkDialogPropertyGraphicsItem;
-class Processor;
+namespace meshutil {
 
-class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject,
-                                                         public GraphicsItemData<Processor> {
-public:
-    LinkDialogProcessorGraphicsItem(Side side, Processor* processor);
-    virtual ~LinkDialogProcessorGraphicsItem() = default;
+/**
+ * Will construct a new mesh out of the given mesh with its position and color buffer, if existing,
+ * and all index buffers but with the DrawMode set to Points
+ */
+std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh);
 
-    const std::vector<LinkDialogPropertyGraphicsItem*>& getPropertyItemList() const {
-        return properties_;
-    }
+/**
+ * Will construct a new mesh out of the given mesh with its position and color buffer, if existing.
+ * It will discard all IndexBuffes with DrawType equal to Points, copy all IndexBuffers with
+ * DrawType equal to Lines, and construct IndexBuffers with lines out of all IndexBuffers with
+ * DrawType equal to Triangles.
+ */
+std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh);
 
-    QSizeF sizeHint(Qt::SizeHint which, const QSizeF& constraint = QSizeF()) const;
-    virtual int getLevel() const override;
-
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + LinkDialogProcessorGraphicsItemType };
-    virtual int type() const override { return Type; }
-    virtual void updatePositions() override;
-
-protected:
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                       QWidget* widget) override;
-
-private:
-    std::vector<LinkDialogPropertyGraphicsItem*> properties_;
-};
+}  // namespace meshutil
 
 }  // namespace inviwo
 
-#endif  // IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#endif  // IVW_MESHCONVERTER_H
