@@ -104,7 +104,7 @@ IntegralLineTracerProcessor<Tracer>::~IntegralLineTracerProcessor() {}
 template <typename Tracer>
 void IntegralLineTracerProcessor<Tracer>::process() {
     auto sampler = sampler_.getData();
-    auto lines = std::make_shared<IntegralLineSet>(mat4(1));
+    auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix(),sampler->getWorldMatrix());
 
     Tracer tracer(sampler, properties_);
 
