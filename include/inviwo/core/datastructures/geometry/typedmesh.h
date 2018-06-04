@@ -352,15 +352,13 @@ public:
 
     uint32_t addVertex(const Vertex &vertex) {
         using BT = typename std::tuple_element<0, std::tuple<BufferTraits...>>::type;
-        addVertexImplVertex<0>(vertex,
-                               std::integral_constant<bool, 0 < std::tuple_size<Vertex>::value>());
+        addVertexImplVertex<0>(vertex);
 
         return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
     }
 
     void setVertex(size_t index, const Vertex &vertex) {
-        setVertexImplVertex<0>(index, vertex,
-                               std::integral_constant<bool, 0 < std::tuple_size<Vertex>::value>());
+        setVertexImplVertex<0>(index, vertex);
     }
 
 #if defined(_MSC_VER) && _MSC_VER <= 1900
@@ -502,15 +500,14 @@ private:
     }
 
     template <unsigned I>
-    void addVertexImplVertex(const Vertex &, std::false_type) {}
-
-    template <unsigned I>
-    void addVertexImplVertex(const Vertex &v, std::true_type) {
+    void addVertexImplVertex(const Vertex &v) {
         using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
         BT::getTypedEditableRAMRepresentation()->add(std::get<I>(v));
-        addVertexImplVertex<I + 1>(
-            v, std::integral_constant<bool, I + 1 < std::tuple_size<Vertex>::value>());
+        addVertexImplVertex<I + 1>(v);
     }
+
+    template <>
+    void addVertexImplVertex<std::tuple_size<Vertex>::value>(const Vertex &) {}
 
     template <unsigned I, typename T>
     void setVertexImpl(size_t index, T &t) {
@@ -526,15 +523,14 @@ private:
     }
 
     template <unsigned I>
-    void setVertexImplVertex(size_t, const Vertex &, std::false_type) {}
-
-    template <unsigned I>
-    void setVertexImplVertex(size_t index, const Vertex &v, std::true_type) {
+    void setVertexImplVertex(size_t index, const Vertex &v) {
         using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
         BT::getTypedDataContainer().at(index) = std::get<I>(v);
-        setVertexImplVertex<I + 1>(
-            index, v, std::integral_constant<bool, I + 1 < std::tuple_size<Vertex>::value>());
+        setVertexImplVertex<I + 1>(index, v);
     }
+
+    template <>
+    void setVertexImplVertex<std::tuple_size<Vertex>::value>(size_t, const Vertex &) {}
 
     template <unsigned I>
     void addVerticesImpl(const std::vector<Vertex> &) {}  // sink
