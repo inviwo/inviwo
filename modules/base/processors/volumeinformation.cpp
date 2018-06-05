@@ -55,6 +55,8 @@ struct RegisterOrdinalPropertyForMetaData {
                         p->set(m->get());
                         p->setVisible(true);
                         return;
+                    } else {
+                        delete container.removeProperty(existingProperty);
                     }
                 }
 
@@ -148,7 +150,6 @@ VolumeInformation::VolumeInformation()
 
     addProperty(metaDataProperty_);
 
-
     using ordinalMetaTypes =
         std::tuple<int, float, double, vec2, vec3, vec4, dvec2, dvec3, dvec4, ivec2, ivec3, ivec4,
                    uvec2, uvec3, uvec4, mat2, mat3, mat4, dmat2, dmat3, dmat4>;
@@ -163,6 +164,8 @@ VolumeInformation::VolumeInformation()
                     p->set(m->get());
                     p->setVisible(true);
                     return;
+                } else {
+                    delete container.removeProperty(existingProperty);
                 }
             }
 
@@ -182,6 +185,8 @@ VolumeInformation::VolumeInformation()
                     p->set(m->get());
                     p->setVisible(true);
                     return;
+                } else {
+                    delete container.removeProperty(existingProperty);
                 }
             }
             auto p = std::make_unique<StringProperty>(key, key, m->get(), InvalidationLevel::Valid);
