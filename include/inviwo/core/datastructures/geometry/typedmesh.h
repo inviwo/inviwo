@@ -292,18 +292,14 @@ public:
 template <typename... BufferTraits>
 class TypedMesh : public Mesh, public BufferTraits... {
 public:
-#if defined(_MSC_VER) && _MSC_VER <= 1900
-    // On visual studio 2015 Alias templates is not supported
-    // (https://blogs.msdn.microsoft.com/vcblog/2016/06/07/expression-sfinae-improvements-in-vs-2015-update-3/)
-    using Vertex = std::tuple<BufferTraits...>;
-#else
     template <typename T>
     using TypeAlias = typename T::type;
-    using VertexTuple = std::tuple<TypeAlias<BufferTraits>...>;
+    using VertexTuple = std::tuple<typename BufferTraits::type...>;
+    using Traits = std::tuple<BufferTraits...>;
 
-#if defined(_MSC_VER) && _MSC_VER > 1900
-    using Vertex = VertexTuple;
-#else
+#if defined(__GNUC__) && __GNUC__ < 6
+    // TODO: check minimal compiler version for GCC
+
     // On GCC 5.4 Vertex x = {...} does not compile. Used when for example creating a vector of
     // vertices from initializer lists.
     class Vertex : public VertexTuple {
@@ -311,7 +307,8 @@ public:
         Vertex() = default;
         Vertex(TypeAlias<BufferTraits>... vals) : VertexTuple(vals...) {}
     };
-#endif
+#else
+    using Vertex = VertexTuple;
 #endif
 
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
@@ -346,21 +343,12 @@ public:
      * This method is often faster than adding the vertices one at a time with
      * TypedMesh::addVertex()
      */
-    void addVertices(const std::vector<Vertex> &vertices) {
-        addVerticesImpl<0, BufferTraits...>(vertices);
-    }
+    void addVertices(const std::vector<Vertex> &vertices);
 
-#if defined(_MSC_VER) && _MSC_VER <= 1900
-    // On visual studio 2015 Alias templates is not supported
-    // (https://blogs.msdn.microsoft.com/vcblog/2016/06/07/expression-sfinae-improvements-in-vs-2015-update-3/)
-    uint32_t addVertex(BufferTraits... args) {
-        using BT = typename std::tuple_element<0, std::tuple<BufferTraits...>>::type;
-        addVertexImpl<0>(args...);
-        return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
-    }
+    uint32_t addVertex(const Vertex &vertex);
 
-    void setVertex(size_t index, BufferTraits... args) { setVertiesImpl<0>(index, args...); }
-#else
+    void setVertex(size_t index, const Vertex &vertex);
+
     /**
      * \brief Adds a vertex
      *
@@ -376,11 +364,8 @@ public:
      * @param args the arguments, needs to match the buffers of the mesh
      * @return uint32_t the position of the new vertex is the buffers.
      */
-    uint32_t addVertex(TypeAlias<BufferTraits>... args) {
-        using BT = typename std::tuple_element<0, std::tuple<BufferTraits...>>::type;
-        addVertexImpl<0>(args...);
-        return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
-    }
+    template <typename... Args>
+    uint32_t addVertex(Args&&... args);
 
     /**
      * \brief Sets a specific vertex.
@@ -391,15 +376,13 @@ public:
      * @param index vertex index to update
      * @param args the arguments, needs to match the buffers of the mesh
      */
-    void setVertex(size_t index, TypeAlias<BufferTraits>... args) {
-        setVertiesImpl<0>(index, args...);
-    }
-#endif
+    template <typename... Args>
+    void setVertex(size_t index, Args&&... args);
 
     /**
      * \brief Updates the a specific value in specific buffer
      *
-     * The following example will set the color of vertex with index 5 to read: 
+     * The following example will set the color of vertex with index 5 to read:
      * \code{.cpp}
      * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
      * MyMesh mesh;
@@ -416,14 +399,14 @@ public:
     }
 
     /**
-     * \brief Returns a specific buffer. 
-     * The following example shows how to get the color buffer:  
+     * \brief Returns a specific buffer.
+     * The following example shows how to get the color buffer:
      * \code{.cpp}
      * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
      * MyMesh mesh;
-     * auto colorBuffer = mesh.getTypedBuffer<buffertraits::ColorsBuffer>(); 
+     * auto colorBuffer = mesh.getTypedBuffer<buffertraits::ColorsBuffer>();
      * \endcode
-    */
+     */
     template <typename BT>
     auto getTypedBuffer() {
         return BT::buffer_;
@@ -439,86 +422,42 @@ public:
     }
 
     /**
-    * Returns the RAM Representation of a specific buffer. 
-    * @see getTypedBuffer()
-    */
+     * Returns the RAM Representation of a specific buffer.
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto getTypedRAMRepresentation() const {
         return BT::getTypedRAMRepresentation();
     }
 
     /**
-    * Returns the Editable RAM Representation of a specific buffer. 
-    * @see getTypedBuffer()
-    */
+     * Returns the Editable RAM Representation of a specific buffer.
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto getTypedEditableRAMRepresentation() {
         return BT::getTypedEditableRAMRepresentation();
     }
 
     /**
-    * Returns the Data Container of a specific buffer. 
-    * @see getTypedBuffer()
-    */
+     * Returns the Data Container of a specific buffer.
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto &getTypedDataContainer() const {
         return BT::getTypedDataContainer();
     }
 
     /**
-    * Returns the Data Container of a specific buffer. 
-    * @see getTypedBuffer()
-    */
+     * Returns the Data Container of a specific buffer.
+     * @see getTypedBuffer()
+     */
     template <typename BT>
     auto &getTypedDataContainer() {
         return BT::getTypedDataContainer();
     }
 
 private:
-    template <unsigned I, typename T>
-    void addVertexImpl(T &t) {
-        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
-        BT::getTypedEditableRAMRepresentation()->add(t);
-    }
-
-    template <unsigned I, typename T, typename... ARGS>
-    void addVertexImpl(T &t, ARGS... args) {
-        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
-        BT::getTypedEditableRAMRepresentation()->add(t);
-        addVertexImpl<I + 1>(args...);
-    }
-
-    template <unsigned I, typename T>
-    void setVertiesImpl(size_t index, T &t) {
-        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
-        BT::getTypedDataContainer().at(index) = t;
-    }
-
-    template <unsigned I, typename T, typename... ARGS>
-    void setVertiesImpl(size_t index, T &t, ARGS... args) {
-        using BT = typename std::tuple_element<I, std::tuple<BufferTraits...>>::type;
-        BT::getTypedDataContainer().at(index) = t;
-        setVertiesImpl<I + 1>(index, args...);
-    }
-
-    template <unsigned I>
-    void addVerticesImpl(const std::vector<Vertex> &) {}  // sink
-
-    template <unsigned I, typename T, typename... ARGS>
-    void addVerticesImpl(const std::vector<Vertex> &vertices) {
-
-        auto &vec = getTypedDataContainer<T>();
-
-        auto neededSize = vertices.size() + vec.size();
-        if (vec.capacity() < neededSize) {
-            vec.reserve(neededSize);
-        }
-        for (auto &v : vertices) {
-            vec.push_back(std::get<I>(v));
-        }
-
-        addVerticesImpl<I + 1, ARGS...>(vertices);
-    }
 
     template <unsigned I>
     void copyConstrHelper() {}  // sink
@@ -529,6 +468,85 @@ private:
         copyConstrHelper<I + 1, ARGS...>();
     }
 };
+
+namespace detail {
+
+template <typename F, unsigned I>
+struct helper {
+
+    static void addVerticesImpl(F &f, const std::vector<typename F::Vertex> &vertices) {
+        using BT = std::tuple_element_t<I - 1, typename F::Traits>;
+        auto &vec = f.template getTypedDataContainer<BT>();
+
+        vec.reserve(vec.size() + vertices.size());
+        std::transform(vertices.begin(), vertices.end(), std::back_inserter(vec),
+                       [](auto &v) { return std::get<I - 1>(v); });
+
+        helper<F, I - 1>::addVerticesImpl(f, vertices);
+    }
+
+    static void addVertexImplVertex(F &f, const typename F::Vertex &v) {
+        using BT = std::tuple_element_t<I - 1, typename F::Traits>;
+        f.template getTypedEditableRAMRepresentation<BT>()->add(std::get<I - 1>(v));
+
+        helper<F, I - 1>::addVertexImplVertex(f, v);
+    }
+    static void setVertexImplVertex(F &f, size_t index, const typename F::Vertex &v) {
+        using BT = std::tuple_element_t<I - 1, typename F::Traits>;
+        f.template getTypedDataContainer<BT>().at(index) = std::get<I - 1>(v);
+
+        helper<F, I - 1>::setVertexImplVertex(f, index, v);
+    }
+};
+
+template <typename F>
+struct helper<F, 0> {
+    static void addVerticesImpl(F &, const std::vector<typename F::Vertex> &) {}
+    static void addVertexImplVertex(F &, const typename F::Vertex &) {}
+    static void setVertexImplVertex(F &, size_t, const typename F::Vertex &) {}
+};
+
+};  // namespace detail
+
+template <typename... BufferTraits>
+void TypedMesh<BufferTraits...>::addVertices(const std::vector<Vertex> &vertices) {
+    detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVerticesImpl(*this,
+                                                                                         vertices);
+}
+
+template <typename... BufferTraits>
+uint32_t TypedMesh<BufferTraits...>::addVertex(const Vertex &vertex) {
+    detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
+        *this, vertex);
+
+    using BT = typename std::tuple_element<0, Traits>::type;
+    return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
+}
+
+template <typename... BufferTraits>
+void TypedMesh<BufferTraits...>::setVertex(size_t index, const Vertex &vertex) {
+    detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::setVertexImplVertex(
+        *this, index, vertex);
+}
+
+template <typename... BufferTraits>
+template <typename... Args>
+uint32_t TypedMesh<BufferTraits...>::addVertex(Args&&... args) {
+    detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
+        *this, TypedMesh<BufferTraits...>::Vertex{ args... });
+
+    using BT = typename std::tuple_element<0, Traits>::type;
+    return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
+}
+
+template <typename... BufferTraits>
+template <typename... Args>
+void TypedMesh<BufferTraits...>::setVertex(size_t index, Args &&... args) {
+    detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::setVertexImplVertex(
+        *this, index, TypedMesh<BufferTraits...>::Vertex{ args... });
+}
+
+
 
 /**
  * \ingroup typedmesh

@@ -210,6 +210,14 @@ std::shared_ptr<BufferRAMPrecision<T, Target>> createBufferRAM(std::vector<T> da
                                                            U);
 }
 
+/** 
+ * \brief compare two buffers using their RAM representation
+ * 
+ * @return true if buffers are identical, i.e. identical data format, size, and buffer contents
+ */
+bool IVW_CORE_API operator==(const BufferBase &bufA, const BufferBase &bufB);
+bool IVW_CORE_API operator!=(const BufferBase &bufA, const BufferBase &bufB);
+
 }  // namespace
 
 #endif  // IVW_BUFFER_RAM_H
