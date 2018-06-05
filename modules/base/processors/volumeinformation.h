@@ -88,6 +88,10 @@ private:
     CompositeProperty metaDataProperty_;
 
     DoubleVec3Property voxelSize_;
+
+    std::unordered_map<std::string, std::function<void(const std::string& key, const MetaData*,
+                                                       CompositeProperty&)>>
+        factory_;
 };
 
 }  // namespace inviwo

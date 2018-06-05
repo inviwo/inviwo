@@ -30,6 +30,8 @@
 #include <modules/base/processors/volumeinformation.h>
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/metadata/metadata.h>
@@ -38,47 +40,40 @@
 
 namespace inviwo {
 
-template <typename T, int N, int M>
-static void addMetaDataToCompositeProperty(CompositeProperty& prop,
-                                           const MetaDataPrimitiveType<T, N, M>* metadata,
-                                           const std::string& metaDataId) {
-    LogWarnCustom("VolumeInformation::addMetaDataToCompositeProperty",
-                  "Meta data type not supported: " << metadata->getClassIdentifier());
-    LogWarnCustom("VolumeInformation::addMetaDataToCompositeProperty",
-                  "\tMetaData id: " << metaDataId);
-}
+struct RegisterOrdinalPropertyForMetaData {
+    template <typename T>
+    auto operator()(
+        std::unordered_map<std::string, std::function<void(const std::string& key, const MetaData*,
+                                                           CompositeProperty&)>>& factory) {
 
-std::string toString(bool value) {
-    std::ostringstream stream;
-    stream << std::boolalpha << value;
-    return stream.str();
-}
+        factory[MetaDataPrimitiveType<T, 0, 0>{}.getClassIdentifier()] =
+            [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
+                auto m = static_cast<const MetaDataPrimitiveType<T, 0, 0>*>(meta);
 
-template <typename T>
-static void addMetaDataToCompositeProperty(CompositeProperty& prop,
-                                           const MetaDataPrimitiveType<T, 0, 0>* metadata,
-                                           const std::string& metaDataId) {
-    auto classID = metadata->getClassIdentifier();
-    auto propertyClassID = classID;
-    replaceInString(propertyClassID, "MetaData", "Property");
+                if (auto existingProperty = container.getPropertyByIdentifier(key)) {
+                    if (auto p = dynamic_cast<OrdinalProperty<T>*>(existingProperty)) {
+                        p->set(m->get());
+                        p->setVisible(true);
+                        return;
+                    }
+                }
 
-    auto theProperty = prop.getPropertyByIdentifier(metaDataId);
-    if (!theProperty) {
-        auto ptr =
-            util::make_unique<StringProperty>(metaDataId, metaDataId, "", InvalidationLevel::Valid);
-        ptr->setSerializationMode(PropertySerializationMode::All);
-        ptr->setCurrentStateAsDefault();
-        theProperty = ptr.release();
-        prop.addProperty(theProperty, true);
+                using value_type = typename util::glmtype<T>::type;
+
+                T min = T{0} + std::numeric_limits<value_type>::lowest();
+                T max = T{0} + std::numeric_limits<value_type>::max();
+                T inc = T{0} + std::numeric_limits<value_type>::lowest();
+
+                auto p = std::make_unique<OrdinalProperty<T>>(key, key, m->get(), min, max, inc,
+                                                              InvalidationLevel::Valid,
+                                                              PropertySemantics::Text);
+                p->setSerializationMode(PropertySerializationMode::All);
+                p->setCurrentStateAsDefault();
+                p->setReadOnly(true);
+                container.addProperty(p.release(), true);
+            };
     }
-
-    if (auto typed = dynamic_cast<StringProperty*>(theProperty)) {
-        typed->set(toString(metadata->get()));
-    }
-
-    theProperty->setVisible(true);
-    theProperty->setReadOnly(true);
-}
+};
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeInformation::processorInfo_{
@@ -101,16 +96,16 @@ VolumeInformation::VolumeInformation()
                               1.0f, 0.0001f, InvalidationLevel::Valid, PropertySemantics::Text)
     , minMaxChannel1_("minMaxChannel1_", "Min/Max (Channel 1)", 0.0, 255.0, -DataFloat64::max(),
                       DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
-                      PropertySemantics("Text"))
+                      PropertySemantics::Text)
     , minMaxChannel2_("minMaxChannel2_", "Min/Max (Channel 2)", 0.0, 255.0, -DataFloat64::max(),
                       DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
-                      PropertySemantics("Text"))
+                      PropertySemantics::Text)
     , minMaxChannel3_("minMaxChannel3_", "Min/Max (Channel 3)", 0.0, 255.0, -DataFloat64::max(),
                       DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
-                      PropertySemantics("Text"))
+                      PropertySemantics::Text)
     , minMaxChannel4_("minMaxChannel4_", "Min/Max (Channel 4)", 0.0, 255.0, -DataFloat64::max(),
                       DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
-                      PropertySemantics("Text"))
+                      PropertySemantics::Text)
     , worldTransform_("worldTransform_", "World Transform", mat4(1.0f),
                       mat4(std::numeric_limits<float>::lowest()),
                       mat4(std::numeric_limits<float>::max()), mat4(0.001f),
@@ -119,7 +114,7 @@ VolumeInformation::VolumeInformation()
              mat3(std::numeric_limits<float>::max()), mat3(0.001f), InvalidationLevel::Valid)
     , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
               vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
-              PropertySemantics("Text"))
+              PropertySemantics::Text)
     , perVoxelProperties_("minmaxValues", "Aggregated per Voxel", true)
     , transformations_("transformations", "Transformations")
     , metaDataProperty_("metaData", "Meta Data")
@@ -131,42 +126,70 @@ VolumeInformation::VolumeInformation()
     volumeInfo_.setReadOnly(true);
     volumeInfo_.setSerializationMode(PropertySerializationMode::None);
     addProperty(volumeInfo_);
+
     addProperty(perVoxelProperties_);
     perVoxelProperties_.setCollapsed(true);
-    perVoxelProperties_.addProperty(significantVoxels_);
-    perVoxelProperties_.addProperty(significantVoxelsRatio_);
-
-    perVoxelProperties_.addProperty(minMaxChannel1_);
-    perVoxelProperties_.addProperty(minMaxChannel2_);
-    perVoxelProperties_.addProperty(minMaxChannel3_);
-    perVoxelProperties_.addProperty(minMaxChannel4_);
-
-    perVoxelProperties_.onChange([this]() {
-        bool state = perVoxelProperties_.isChecked();
-        minMaxChannel1_.setReadOnly(!state);
-        minMaxChannel2_.setReadOnly(!state);
-        minMaxChannel3_.setReadOnly(!state);
-        minMaxChannel4_.setReadOnly(!state);
-    });
+    util::for_each_argument(
+        [&](auto& p) {
+            p.setReadOnly(true);
+            perVoxelProperties_.addProperty(p);
+        },
+        significantVoxels_, significantVoxelsRatio_, minMaxChannel1_, minMaxChannel2_,
+        minMaxChannel3_, minMaxChannel4_);
 
     addProperty(transformations_);
     transformations_.setCollapsed(true);
-    transformations_.addProperty(worldTransform_);
-    transformations_.addProperty(basis_);
-    transformations_.addProperty(offset_);
-    transformations_.addProperty(voxelSize_);
+    util::for_each_argument(
+        [&](auto& p) {
+            p.setReadOnly(true);
+            transformations_.addProperty(p);
+        },
+        worldTransform_, basis_, offset_, voxelSize_);
 
     addProperty(metaDataProperty_);
 
-    offset_.setSemantics(PropertySemantics("Text"));
 
-    minMaxChannel2_.setVisible(false);
-    minMaxChannel3_.setVisible(false);
-    minMaxChannel4_.setVisible(false);
+    using ordinalMetaTypes =
+        std::tuple<int, float, double, vec2, vec3, vec4, dvec2, dvec3, dvec4, ivec2, ivec3, ivec4,
+                   uvec2, uvec3, uvec4, mat2, mat3, mat4, dmat2, dmat3, dmat4>;
+    util::for_each_type<ordinalMetaTypes>{}(RegisterOrdinalPropertyForMetaData{}, factory_);
 
-    for (auto p : getProperties()) {
-        p->setInvalidationLevel(InvalidationLevel::Valid);
-    }
+    factory_[MetaDataPrimitiveType<bool, 0, 0>{}.getClassIdentifier()] =
+        [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
+            auto m = static_cast<const MetaDataPrimitiveType<bool, 0, 0>*>(meta);
+
+            if (auto existingProperty = container.getPropertyByIdentifier(key)) {
+                if (auto p = dynamic_cast<BoolProperty*>(existingProperty)) {
+                    p->set(m->get());
+                    p->setVisible(true);
+                    return;
+                }
+            }
+
+            auto p = std::make_unique<BoolProperty>(key, key, m->get(), InvalidationLevel::Valid);
+            p->setSerializationMode(PropertySerializationMode::All);
+            p->setCurrentStateAsDefault();
+            p->setReadOnly(true);
+            container.addProperty(p.release(), true);
+        };
+
+    factory_[MetaDataPrimitiveType<std::string, 0, 0>{}.getClassIdentifier()] =
+        [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
+            auto m = static_cast<const MetaDataPrimitiveType<std::string, 0, 0>*>(meta);
+
+            if (auto existingProperty = container.getPropertyByIdentifier(key)) {
+                if (auto p = dynamic_cast<StringProperty*>(existingProperty)) {
+                    p->set(m->get());
+                    p->setVisible(true);
+                    return;
+                }
+            }
+            auto p = std::make_unique<StringProperty>(key, key, m->get(), InvalidationLevel::Valid);
+            p->setSerializationMode(PropertySerializationMode::All);
+            p->setCurrentStateAsDefault();
+            p->setReadOnly(true);
+            container.addProperty(p.release(), true);
+        };
 
     setAllPropertiesCurrentStateAsDefault();
 }
@@ -219,69 +242,26 @@ void VolumeInformation::process() {
     }
 
     auto metaMap = volume->getMetaDataMap();
-    if (metaMap->empty()) {
-        while (metaDataProperty_.getProperties().size() != 0) {
-            metaDataProperty_.removeProperty(metaDataProperty_.getProperties()[0]);
-        }
-    } else {
-        for (auto p : metaDataProperty_.getProperties()) {
-            p->setVisible(false);  // Hide all, the addMetaDataToCompositeProperty will show it if
-                                   // it still exists
-        }
 
-        auto keys = metaMap->getKeys();
-        for (auto key : keys) {
-            auto meta = metaMap->get(key);
-            auto classIdentifier = meta->getClassIdentifier();
-            if (auto typed1 = dynamic_cast<const BoolMetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed1, key);
-            } else if (auto typed2 = dynamic_cast<const IntMetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed2, key);
-            } else if (auto typed3 = dynamic_cast<const FloatMetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed3, key);
-            } else if (auto typed4 = dynamic_cast<const DoubleMetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed4, key);
-            } else if (auto typed5 = dynamic_cast<const StringMetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed5, key);
-            } else if (auto typed6 = dynamic_cast<const FloatVec2MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed6, key);
-            } else if (auto typed7 = dynamic_cast<const FloatVec3MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed7, key);
-            } else if (auto typed8 = dynamic_cast<const FloatVec4MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed8, key);
-            } else if (auto typed9 = dynamic_cast<const DoubleVec2MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed9, key);
-            } else if (auto typed10 = dynamic_cast<const DoubleVec3MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed10, key);
-            } else if (auto typed11 = dynamic_cast<const DoubleVec4MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed11, key);
-            } else if (auto typed12 = dynamic_cast<const IntVec2MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed12, key);
-            } else if (auto typed13 = dynamic_cast<const IntVec3MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed13, key);
-            } else if (auto typed14 = dynamic_cast<const IntVec4MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed14, key);
-            } else if (auto typed15 = dynamic_cast<const UIntVec2MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed15, key);
-            } else if (auto typed16 = dynamic_cast<const UIntVec3MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed16, key);
-            } else if (auto typed17 = dynamic_cast<const UIntVec4MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed17, key);
-            } else if (auto typed18 = dynamic_cast<const FloatMat2MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed18, key);
-            } else if (auto typed19 = dynamic_cast<const FloatMat3MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed19, key);
-            } else if (auto typed20 = dynamic_cast<const FloatMat4MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed20, key);
-            } else if (auto typed21 = dynamic_cast<const DoubleMat2MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed21, key);
-            } else if (auto typed22 = dynamic_cast<const DoubleMat3MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed22, key);
-            } else if (auto typed23 = dynamic_cast<const DoubleMat4MetaData*>(meta)) {
-                addMetaDataToCompositeProperty(metaDataProperty_, typed23, key);
-            } else {
-                LogError("Unsupported MetaData type");
-            }
+    auto keys = metaMap->getKeys();
+    for (auto key : keys) {
+        auto meta = metaMap->get(key);
+        auto it = factory_.find(meta->getClassIdentifier());
+        if (it != factory_.end()) {
+            it->second(key, meta, metaDataProperty_);
+        } else {
+            LogError("Unsupported MetaData type");
+        }
+    }
+
+    // Remove unused meta data properties
+    std::vector<std::string> ids;
+    for (auto p : metaDataProperty_.getProperties()) {
+        ids.push_back(p->getIdentifier());
+    }
+    for (auto id : ids) {
+        if (!metaMap->get(id)) {
+            delete metaDataProperty_.removeProperty(id);
         }
     }
 }
