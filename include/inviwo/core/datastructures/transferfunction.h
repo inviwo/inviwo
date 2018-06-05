@@ -102,8 +102,8 @@ public:
      */
     virtual void invalidate() override;
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     /**
      * Sample the transfer function at position v and return the respective color and
