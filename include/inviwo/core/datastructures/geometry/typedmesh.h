@@ -476,7 +476,7 @@ struct helper {
 
     static void addVerticesImpl(F &f, const std::vector<typename F::Vertex> &vertices) {
         using BT = std::tuple_element_t<I - 1, typename F::Traits>;
-        auto &vec = f.getTypedDataContainer<BT>();
+        auto &vec = f.template getTypedDataContainer<BT>();
 
         vec.reserve(vec.size() + vertices.size());
         std::transform(vertices.begin(), vertices.end(), std::back_inserter(vec),
@@ -487,13 +487,13 @@ struct helper {
 
     static void addVertexImplVertex(F &f, const typename F::Vertex &v) {
         using BT = std::tuple_element_t<I - 1, typename F::Traits>;
-        f.getTypedEditableRAMRepresentation<BT>()->add(std::get<I - 1>(v));
+        f.template getTypedEditableRAMRepresentation<BT>()->add(std::get<I - 1>(v));
 
         helper<F, I - 1>::addVertexImplVertex(f, v);
     }
     static void setVertexImplVertex(F &f, size_t index, const typename F::Vertex &v) {
         using BT = std::tuple_element_t<I - 1, typename F::Traits>;
-        f.getTypedDataContainer<BT>().at(index) = std::get<I - 1>(v);
+        f.template getTypedDataContainer<BT>().at(index) = std::get<I - 1>(v);
 
         helper<F, I - 1>::setVertexImplVertex(f, index, v);
     }
