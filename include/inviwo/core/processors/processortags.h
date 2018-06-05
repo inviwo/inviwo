@@ -97,6 +97,9 @@ public:
     static const Tags GL;
     static const Tags CL;
     static const Tags CPU;
+	static const Tags NanoVG;
+	static const Tags Python;
+	static const Tags Plot;
 };
 
 inline bool operator==(const Tags& lhs, const Tags& rhs) { return lhs.tags_ == rhs.tags_; }

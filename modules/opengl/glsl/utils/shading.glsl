@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,11 @@
 // Helper functions to calculate the shading
 vec3 shadeDiffuseCalculation(LightParameters light_, vec3 materialDiffuseColor, vec3 normal,
                              vec3 toLightDir) {
+
+	if(dot(normal, toLightDir) < 0.0) {
+		normal = -1.0 * normal;
+	}
+
     return materialDiffuseColor * light_.diffuseColor * max(dot(normal, toLightDir), 0.0);
 }
 
@@ -47,6 +52,11 @@ vec3 shadeSpecularBlinnPhongCalculation(LightParameters light_, vec3 materialSpe
         return vec3(0.0);
     } else {
         halfway = normalize(halfway);
+
+		if(dot(normal, halfway) < 0.0) {
+			normal = -1.0 * normal;
+		}
+
         return materialSpecularColor * light_.specularColor *
                pow(max(dot(normal, halfway), 0.0), light_.specularExponent);
     }

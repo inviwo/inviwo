@@ -199,6 +199,8 @@ template <typename T, unsigned N>
 struct extent<const T, N> : public extent<T,N> {};
 
 template <typename T, glm::precision P>
+struct extent<glm::tvec1<T, P>, 0> : public std::integral_constant<std::size_t, 1> {};
+template <typename T, glm::precision P>
 struct extent<glm::tvec2<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
 template <typename T, glm::precision P>
 struct extent<glm::tvec3<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};

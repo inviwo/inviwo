@@ -51,29 +51,45 @@ public:
 
     size_t getNumberOfSelected() const;
     size_t getNumberOfFiltered() const;
+    size_t getNumberOfClusterSelected() const;
+    size_t getNumberOfSomeOtherSelected() const;
 
     void remove(const BrushingAndLinkingInport* src);
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
+    bool isClusterSelected(size_t idx) const;
+    bool isSomeOtherSelected(size_t idx) const;
 
     void setSelected(const BrushingAndLinkingInport* src,
                      const std::unordered_set<size_t>& indices);
 
     void setFiltered(const BrushingAndLinkingInport* src,
-        const std::unordered_set<size_t>& indices);
+                     const std::unordered_set<size_t>& indices);
 
-    const std::unordered_set<size_t> &getSelectedIndices() const;
-    const std::unordered_set<size_t> &getFilteredIndices() const;
+    void setClusterSelected(const BrushingAndLinkingInport* src,
+                            const std::unordered_set<size_t>& indices);
+
+    void setSomeOtherSelected(const BrushingAndLinkingInport* src,
+                              const std::unordered_set<size_t>& indices);
+
+    const std::unordered_set<size_t>& getSelectedIndices() const;
+    const std::unordered_set<size_t>& getFilteredIndices() const;
+    const std::unordered_set<size_t>& getClusterSelectedIndices() const;
+    const std::unordered_set<size_t>& getSomeOtherSelectedIndices() const;
 
 private:
     IndexList selected_;
     IndexList filtered_;
+    IndexList clusterSelected_;
+    IndexList someOtherSelected_;
 
     std::shared_ptr<std::function<void()>> callback1_;
     std::shared_ptr<std::function<void()>> callback2_;
+    std::shared_ptr<std::function<void()>> callback3_;
+    std::shared_ptr<std::function<void()>> callback4_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BRUSHINGANDLINKINGMANAGER_H

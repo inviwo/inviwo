@@ -113,6 +113,7 @@ private:
     FloatProperty customSize_;
     BoolProperty overrideCubeColor_;
     FloatVec4Property customColor_;
+	TemplateOptionProperty<GLint> culling_;
     CameraProperty camera_;
     SimpleLightingProperty lighting_;
 
