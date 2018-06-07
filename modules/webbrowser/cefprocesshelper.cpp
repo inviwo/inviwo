@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/webbrowserapp.h>
+#include <modules/webbrowser/webrendererapp.h>
+#include <modules/webbrowser/app_switches.h>
 
-#include <include/cef_app.h>
 
 // This process will run the CEF web browser. Used as a sub-process by WebBrowserModule 
 // See WebBrowserModule::WebBrowserModule
@@ -40,20 +40,29 @@ int main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCm
 
     // Provide CEF with command-line arguments.
     CefMainArgs mainArgs(hInstance);
-
-    CefRefPtr<inviwo::WebBrowserApp> app(new inviwo::WebBrowserApp);
-
-    // Execute the sub-process.
-    return CefExecuteProcess(mainArgs, app.get(), NULL);
-}
-#else 
+#else
 int main(int argc, char* argv[]) {
-    // Provide CEF with command-line arguments.
-    CefMainArgs mainArgs(argc, argv);
-
-    CefRefPtr<inviwo::WebBrowserApp> app(new inviwo::WebBrowserApp);
-
+        // Provide CEF with command-line arguments.
+        CefMainArgs mainArgs(argc, argv);
+#endif
+    
+    // Create a temporary CommandLine object.
+    CefRefPtr<CefCommandLine> command_line = CreateCommandLine(mainArgs);
+    
+    // Create a CefApp of the correct process type. The browser process is handled
+    // by webbrowsermodule.cpp.
+    CefRefPtr<CefApp> app = nullptr;
+    switch (GetProcessType(command_line)) {
+        case PROCESS_TYPE_RENDERER:
+            app = new inviwo::WebRendererApp();
+            break;
+        case PROCESS_TYPE_OTHER:
+            app = nullptr;
+            break;
+        default:
+            break;
+    }
+    
     // Execute the sub-process.
     return CefExecuteProcess(mainArgs, app.get(), NULL);
 }
-#endif

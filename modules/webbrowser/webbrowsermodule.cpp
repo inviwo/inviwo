@@ -68,6 +68,8 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // http://magpcss.org/ceforum/apidocs/projects/%28default%29/_cef_settings_t.html nearly all
     // the settings can be set via args too.
     settings.multi_threaded_message_loop = false;  // not supported, except windows
+    // We want to use off-screen rendering
+    settings.windowless_rendering_enabled = true;
     // CefString(&settings.cache_path).FromASCII("");
     // CefString(&settings.log_file).FromASCII("");
     // settings.log_severity = LOGSEVERITY_DEFAULT;
@@ -127,7 +129,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
     CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
-
+    
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);
 

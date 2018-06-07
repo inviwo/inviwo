@@ -27,34 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERAPP_H
-#define IVW_WEBBROWSERAPP_H
-
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <include/cef_app.h>
-#include <include/wrapper/cef_helpers.h>
-#include "include/wrapper/cef_message_router.h"
-#include <warn/pop>
+#include <modules/webbrowser/webrendererapp.h>
 
 namespace inviwo {
 
-/**
- * App to be used in the browser thread.
- */
-class WebBrowserApp : public CefApp, public CefBrowserProcessHandler {
-public:
-    WebBrowserApp();
-    // CefBrowserProcessHandler methods:
-    CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE {
-        return this;
-    }
+WebRendererApp::WebRendererApp() = default;
 
-private:
-    IMPLEMENT_REFCOUNTING(WebBrowserApp)
-};
+CefRefPtr<CefRenderProcessHandler> WebRendererApp::GetRenderProcessHandler() { return this; }
 
-};      // namespace inviwo
-#endif  // IVW_WEBBROWSERAPP_H
+}  // namespace inviwo

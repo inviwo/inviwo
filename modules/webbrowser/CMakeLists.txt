@@ -11,7 +11,7 @@
 # 3.3202.1680.g700054b Problems with event handling of html-range elements (sliders)
 # 3.3359.1774.gd49d25f Crashes when creating browsers
 # 3.3325.1758.g9aea513 Crashes on scroll event (Mac)
-set(CEF_VERSION "3.3325.1758.g9aea513")
+set(CEF_VERSION "3.3396.1775.g5340bb0")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -150,11 +150,10 @@ ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSI
 
 # Process running CEF browser
 set(WEBBROWSER_HELPER_SOURCES
-    # Should include webbrowserapp .h/.cpp but get precompiled header errors
-    # Tried to ignore cotire in all sorts of ways but did not work. 
-    # Hack: webbrowserapp-cotire-fix is a copy of webbrowserapp, resolves cotire issue.
-    webbrowserapp-cotire-fix.h
-    webbrowserapp-cotire-fix.cpp
+    app_switches.h
+    app_switches.cpp
+    webrendererapp.h
+    webrendererapp.cpp
     cefprocesshelper.cpp
 )
 set(WEBBROWSER_RESOURCES_WINDOWS

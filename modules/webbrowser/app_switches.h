@@ -27,12 +27,27 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/webbrowserapp.h>
+#ifndef IVW_APP_SWITCHES_H
+#define IVW_APP_SWITCHES_H
 
-namespace inviwo {
+#include <modules/webbrowser/webbrowsermoduledefine.h>
 
-WebBrowserApp::WebBrowserApp() = default;
+#include <warn/push>
+#include <warn/ignore/all>
+#include "include/cef_command_line.h"
+#include <warn/pop>
 
-CefRefPtr<CefRenderProcessHandler> WebBrowserApp::GetRenderProcessHandler() { return this; }
+// Process types that may have different CefApp instances.
+enum ProcessType {
+    PROCESS_TYPE_BROWSER,
+    PROCESS_TYPE_RENDERER,
+    PROCESS_TYPE_OTHER,
+};
 
-}  // namespace inviwo
+CefRefPtr<CefCommandLine> CreateCommandLine(const CefMainArgs& main_args);
+
+ProcessType GetProcessType(const CefRefPtr<CefCommandLine>& command_line);
+
+
+#endif  // IVW_APP_SWITCHES_H
+

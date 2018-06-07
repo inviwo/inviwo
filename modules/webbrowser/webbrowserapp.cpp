@@ -33,6 +33,4 @@ namespace inviwo {
 
 WebBrowserApp::WebBrowserApp() = default;
 
-CefRefPtr<CefRenderProcessHandler> WebBrowserApp::GetRenderProcessHandler() { return this; }
-
 }  // namespace inviwo
