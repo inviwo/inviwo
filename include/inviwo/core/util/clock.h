@@ -171,9 +171,9 @@ ScopedClock<Clock>::ScopedClock(const std::string& logSource, const std::string&
 
 template <typename Clock>
 void ScopedClock<Clock>::print() {
-    if (getElapsedTime() > logIfAtLeast_) {
+    if (Clock::getElapsedTime() > logIfAtLeast_) {
         std::stringstream message;
-        message << logMessage_ << ": " << msToString(getElapsedMiliseconds());
+        message << logMessage_ << ": " << msToString(Clock::getElapsedMiliseconds());
         LogCentral::getPtr()->log(logSource_, logLevel_, LogAudience::Developer, __FILE__,
                                   __FUNCTION__, __LINE__, message.str());
     }
@@ -182,8 +182,8 @@ void ScopedClock<Clock>::print() {
 template <typename Clock>
 void ScopedClock<Clock>::printAndReset() {
     print();
-    reset();
-    start();
+    Clock::reset();
+    Clock::start();
 }
 
 /**
