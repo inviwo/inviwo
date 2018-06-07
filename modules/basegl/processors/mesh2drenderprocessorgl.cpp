@@ -90,7 +90,7 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
 Mesh2DRenderProcessorGL::~Mesh2DRenderProcessorGL() {}
 
 void Mesh2DRenderProcessorGL::process() {
-    if (imageInport_.isConnected()) {
+    if (imageInport_.hasData()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_);
     } else {
         utilgl::activateAndClearTarget(outport_);

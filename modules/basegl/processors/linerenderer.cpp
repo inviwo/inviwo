@@ -126,7 +126,7 @@ void LineRenderer::initializeResources() {
 }
 
 void LineRenderer::process() {
-    if (imageInport_.isConnected()) {
+    if (imageInport_.hasData()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
