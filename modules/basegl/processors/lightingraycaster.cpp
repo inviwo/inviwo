@@ -133,7 +133,7 @@ void LightingRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, *entryPort_.getData(), "entry",
                                ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, *exitPort_.getData(), "exit", ImageType::ColorDepth);
-    if (backgroundPort_.isConnected()) {
+    if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_);

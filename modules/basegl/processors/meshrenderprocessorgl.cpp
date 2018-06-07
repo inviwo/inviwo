@@ -200,7 +200,7 @@ void MeshRenderProcessorGL::initializeResources() {
 }
 
 void MeshRenderProcessorGL::process() {
-    if (imageInport_.isConnected()) {
+    if (imageInport_.hasData()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_);
     } else {
         utilgl::activateAndClearTarget(outport_);

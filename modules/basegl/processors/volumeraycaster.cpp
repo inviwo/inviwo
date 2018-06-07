@@ -164,7 +164,7 @@ void VolumeRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-    if (backgroundPort_.isConnected()) {
+    if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
