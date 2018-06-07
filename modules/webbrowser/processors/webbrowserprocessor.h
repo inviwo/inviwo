@@ -35,11 +35,14 @@
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
 #include <modules/webbrowser/cefimageconverter.h>
 
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,15 +53,35 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.WebBrowser, Chromium Processor}
  * ![](org.inviwo.WebBrowser.png?classIdentifier=org.inviwo.WebBrowser)
- * Renders webpage including transparency on top of optional background.
+ * Display webpage, including transparency, on top of optional background and enable synchronization of properties.
+ *
+ * Synchronization from Invwo to web page requires its html element id, i.e. <input type="text" id="stringProperty">.
+ * Synchronization from web page to Inviwo requires that you add javascript code.
+ * Added properties can be linked. Their display name might change but it will not affect their identifier.
+ * Example of code to add to HTML-page:
+ * \code{.js}
+ * <script language="JavaScript">
+ * function onTextInput(val) {
+ * window.cefQuery({
+ * request: '<Properties><Property type="org.inviwo.stringProperty" identifier="PropertySyncExample.stringProperty"><value content="' + val + '" </Property></Properties>',
+ * onSuccess: function(response) { document.getElementById("stringProperty").focus();},
+ * onFailure: function(error_code, error_message) {}
+ * });
+ * }
+ * </script>
+ * \endcode
+ * ### Inports
+ *   * __background__ Background to render web page ontop of.
  *
  * ### Outports
- *   * __background__ Background to render web page ontop of.
- *   * __webpage__ Rendered web page.
+ *   * __webpage__ GUI elements rendered by web browser.
  *
  * ### Properties
  *   * __URL__ Link to webpage, online or file path.
  *   * __Reload__ Fetch page again.
+ *   * __Property__ Type of property to add.
+ *   * __Html id__ Identifier of html element to synchronize. Not allowed to contain dots, spaces etc.
+ *   * __Add property__ Create a property of selected type and identifier. Start to synchronize against loaded webpage.
  */
 /**
  * \class WebBrowser
@@ -74,17 +97,21 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-private:
+    void deserialize(Deserializer& d) override;
+    
     ImageInport background_;
     ImageOutport outport_;
-
+    
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
-
+    CompositeProperty addPropertyGroup_;
+    OptionPropertySize_t type_; ///< List of all supported properties
+    StringProperty propertyHtmlId_; ///< Html id of property to add
+    ButtonProperty add_;
+protected:
     CEFInteractionHandler cefInteractionHandler_;
     PickingMapper picking_;
     CefImageConverter cefToInviwoImageConverter_;
-
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<WebBrowserClient> browserClient_;

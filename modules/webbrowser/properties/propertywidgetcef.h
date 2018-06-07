@@ -31,6 +31,8 @@
 #define IVW_PROPERTYWIDGETCEF_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
 
@@ -45,22 +47,18 @@ namespace inviwo {
 /**
  * \class PropertyWidgetCEF
  * \brief Base class for HTML widgets.
- * Uses property deserialization on the Inviwo-side and javascript on the HTML-side.
+ * Parses JSON-formated message and sets property values on the Inviwo-side and
+ * executes javascript on the HTML-side.
  * Example code on HTML-side:
  * \code{.html}
  * <input type="range" class="slider" id="PropertyIdentifier">
- * \endcode
- *
- * Expects that html-element changes call CefQuery, example:
- * \code{.html}
  * <script>
  * var slider = document.getElementById("PropertyIdentifier");
  * slider.oninput = function() {
  *     window.cefQuery({
- *        request: '<Properties><Property type="org.inviwo.FloatProperty"
- * identifier="Processor.PropertyIdentifier"><value content="' +
- * document.getElementById("Webbrowser.demo").value + '" /></Properties>', onSuccess:
- * function(response) {}, onFailure: function(error_code, error_message) {}
+ *        request: '{"id":"PropertyIdentifier", "value":"' +  slider.value + '"}',
+ *        onSuccess: function(response) {},
+ *        onFailure: function(error_code, error_message) {}
  *     });
  * }
  * </script>
@@ -70,16 +68,20 @@ namespace inviwo {
  * HTML-element reference:
  * https://www.w3schools.com/html/html_form_elements.asp
  *
- * @see OrdinalPropertyWidgetCEF
+ * @note Property serialization cannot be used to implement synchronization since
+ * it for example changes the property identifier if not set.
+ * @see TemplatePropertyWidgetCEF
  */
-class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget, public PropertyObserver {
+class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget, public PropertyObserver, public Serializable {
 public:
     PropertyWidgetCEF() = default;
     PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
 
     virtual ~PropertyWidgetCEF() = default;
-
-    void setFrame(CefRefPtr<CefFrame> frame) { frame_ = frame; }
+    /*
+     * Set frame containing html item.
+     */
+    void setFrame(CefRefPtr<CefFrame> frame);
     /*
      * Set id of corresponding element in HTML-webpage.
      * @param id HTML element id in webpage.
@@ -88,11 +90,11 @@ public:
     const std::string& getHtmlId() const { return htmlId_; }
 
     /*
-     * Deserializes property from request message if onQueryBlocker_ > 0,
+     * Sets property value given by JSON-formated request if onQueryBlocker_ > 0,
      * otherwise decrements onQueryBlocker_ and returns true.
      *
      * Called from PropertyCefSynchronizer when cefQuery execution
-     * includes property path request.
+     * includes {"id":"htmlId"} property path request.
      * Calls callback->Success("") if property is deserialized
      *
      * Return true to handle the query
@@ -105,8 +107,10 @@ public:
      */
     virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
-                         CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback);
-
+                         CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) = 0;
+    
+    virtual void serialize(Serializer& s) const override {};
+    virtual void deserialize(Deserializer& d) override;
 protected:
     // PropertyObservable overrides
     virtual void onSetReadOnly(Property* property, bool readonly) override;
@@ -114,6 +118,7 @@ protected:
     std::string htmlId_;         /// Id in used in html, usually Processor.PropertyId
     CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding properties
     int onQueryBlocker_ = 0;     /// Block jacascript callback queries
+
 };
 
 }  // namespace inviwo

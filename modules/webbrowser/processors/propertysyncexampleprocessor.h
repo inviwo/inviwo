@@ -52,8 +52,9 @@ namespace inviwo {
  * ![](org.inviwo.PropertySyncExampleProcessor.png?classIdentifier=org.inviwo.PropertySyncExampleProcessor)
  * Demonstrates synchronization of properties between browser and Inviwo.
  *
- * ### Outports
+ * ### Inports
  *   * __background__ Background to render web page ontop of.
+ * ### Outports
  *   * __webpage__ GUI elements rendered by web browser.
  *
  * ### Properties

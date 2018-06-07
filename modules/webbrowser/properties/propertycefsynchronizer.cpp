@@ -51,7 +51,7 @@ PropertyCefSynchronizer::PropertyCefSynchronizer() {
 void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                         int httpStatusCode) {
     // synchronize all properties
-    // Ok to send javascript commands when fame loaded
+    // Ok to send javascript commands when frame loaded
     for (auto& widget : widgets_) {
         widget->setFrame(frame);
         widget->updateFromProperty();
@@ -62,15 +62,33 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
                                       int64 query_id, const CefString& request, bool persistent,
                                       CefRefPtr<Callback> callback) {
 
-    const std::string& message = request;
-    auto widget =
-        std::find_if(std::begin(widgets_), std::end(widgets_), [message](const auto& widget) {
-            return message.find(widget->getHtmlId()) != std::string::npos;
-        });
-    if (widget != widgets_.end()) {
-        return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
+    const std::string& requestStr = request;
+    // Assume format "id":"htmlId"
+    auto key = std::string(R"("id":")");
+    auto keyStart = requestStr.find(key);
+    if (keyStart == std::string::npos) {
+        LogWarn(R"(No id found. Expected {"id":"elementId", "value":"x")" + requestStr);
+        return false;
     }
-
+    size_t offset = keyStart + key.length();
+    auto idEnd = requestStr.find('"', offset);
+    if (idEnd == std::string::npos) {
+        return false;
+    }
+    auto id = requestStr.substr(offset, idEnd - offset);
+    auto widget =
+    std::find_if(std::begin(widgets_), std::end(widgets_), [id](const auto& widget) {
+        return id == widget->getHtmlId();
+    });
+    if (widget != widgets_.end()) {
+        auto nextValPos = requestStr.find("}", idEnd);
+        if (nextValPos == std::string::npos) {
+            LogWarn("Missing enclosing } in: " + requestStr);
+        } else {
+            auto message = requestStr.substr(0, nextValPos);
+            return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
+        }
+    }
     return false;
 }
 

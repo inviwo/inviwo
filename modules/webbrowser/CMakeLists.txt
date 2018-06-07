@@ -74,17 +74,17 @@ ivw_module(WebBrowser)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/propertysyncexampleprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolpropertywidgetcef.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/buttonpropertywidgetcef.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalpropertywidgetcef.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertycefsynchronizer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertywidgetcef.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringpropertywidgetcef.h
+    cefimageconverter.h
     interaction/cefinteractionhandler.h
     interaction/cefkeyboardmapping.h
     processors/webbrowserprocessor.h
-    cefimageconverter.h
+    properties/boolpropertywidgetcef.h
+    properties/buttonpropertywidgetcef.h
+    properties/ordinalpropertywidgetcef.h
+    properties/propertycefsynchronizer.h
+    properties/propertywidgetcef.h
+    properties/stringpropertywidgetcef.h
+    properties/templatepropertywidgetcef.h
     renderhandlergl.h
     webbrowserapp.h
     webbrowserclient.h
@@ -94,17 +94,16 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/propertysyncexampleprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolpropertywidgetcef.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/buttonpropertywidgetcef.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalpropertywidgetcef.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertycefsynchronizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertywidgetcef.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringpropertywidgetcef.cpp
+    cefimageconverter.cpp
     interaction/cefinteractionhandler.cpp
     interaction/cefkeyboardmapping.cpp
     processors/webbrowserprocessor.cpp
-    cefimageconverter.cpp
+    properties/boolpropertywidgetcef.cpp
+    properties/buttonpropertywidgetcef.cpp
+    properties/ordinalpropertywidgetcef.cpp
+    properties/propertycefsynchronizer.cpp
+    properties/propertywidgetcef.cpp
+    properties/stringpropertywidgetcef.cpp
     renderhandlergl.cpp
     webbrowserapp.cpp
     webbrowserclient.cpp

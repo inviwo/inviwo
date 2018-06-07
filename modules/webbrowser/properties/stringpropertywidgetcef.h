@@ -31,7 +31,7 @@
 #define IVW_STRINGPROPERTYWIDGETCEF_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/propertywidgetcef.h>
+#include <modules/webbrowser/properties/templatepropertywidgetcef.h>
 
 #include <inviwo/core/properties/stringproperty.h>
 
@@ -42,7 +42,7 @@ namespace inviwo {
  * Widget for synchronizing HTML elements:
  * <input type="text">
  */
-class IVW_MODULE_WEBBROWSER_API StringPropertyWidgetCEF : public PropertyWidgetCEF {
+class IVW_MODULE_WEBBROWSER_API StringPropertyWidgetCEF : public TemplatePropertyWidgetCEF<std::string> {
 public:
     StringPropertyWidgetCEF(StringProperty* property, CefRefPtr<CefFrame> frame = nullptr,
                             std::string htmlId = "");

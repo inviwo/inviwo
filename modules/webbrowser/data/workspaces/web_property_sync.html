@@ -7,7 +7,7 @@
 function checkboxInput(val) {
      
 	window.cefQuery({
-		request: '<Properties><Property type="org.inviwo.BoolProperty" identifier="PropertySyncExample.boolProperty"><value content="' + (+val) + '" /></Properties>',
+		request: '{"id":"boolProperty", "value":"' + (+val) + '"}',
 		onSuccess: function(response) {
 			$("#boolProperty").fadeOut("fast");  
 			$("#boolProperty").fadeIn("fast");
@@ -22,7 +22,7 @@ function buttonClicked(val) {
 	$("#buttonProperty").fadeOut("fast");  
 	$("#buttonProperty").fadeIn("fast");
 	window.cefQuery({
-		request: '<Properties><Property type="org.inviwo.buttonProperty" identifier="PropertySyncExample.buttonProperty"></Properties>',
+		request: '{"id":"buttonProperty"}',
 		onSuccess: function(response) {},
 		onFailure: function(error_code, error_message) {}
 		
@@ -30,7 +30,7 @@ function buttonClicked(val) {
 }
 function textInput(val) {  
 	window.cefQuery({
-		request: '<Properties><Property type="org.inviwo.stringProperty" identifier="PropertySyncExample.stringProperty"><value content="' + val + '" </Property></Properties>',
+		request: '{"id":"stringProperty", "value":"' + val + '"}',
 		onSuccess: function(response) {
 			document.getElementById("stringProperty").focus();
 		},
@@ -42,7 +42,7 @@ function textInput(val) {
 
 </head>
 <body>
-
+<h3>HTML<->Inviwo synchronization (javascript & JSON)</h3>
 <div class="slidecontainer">
   <p>Range<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
   <span id="demo"></span></p>
@@ -58,7 +58,7 @@ output.innerHTML = slider.value;
 slider.oninput = function() {
   	  
       window.cefQuery({
-		request: '<Properties><Property type="org.inviwo.FloatProperty" identifier="PropertySyncExample.ordinalProperty"><value content="' + document.getElementById("ordinalProperty").value + '" /></Properties>',
+		request: '{"id":"ordinalProperty", "value":"' + document.getElementById("ordinalProperty").value + '"}',
 		onSuccess: function(response) {
 		  
 		},

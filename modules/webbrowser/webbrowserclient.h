@@ -80,11 +80,10 @@ protected:
     InviwoApplication* app_;
     CefRefPtr<CefRenderHandler> renderHandler_;
     // Handles the browser side of query routing.
-    CefRefPtr<CefMessageRouterBrowserSide> message_router_;
+    CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;
 
-    // scoped_ptr<CefMessageRouterBrowserSide::Handler> message_handler_;
     // Track the number of browsers using this Client.
-    int browser_ct_ = 0;
+    int browserCount_ = 0;
 
 private:
     IMPLEMENT_REFCOUNTING(WebBrowserClient)

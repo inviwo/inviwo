@@ -44,7 +44,6 @@
 #include "include/cef_app.h"
 #include "include/cef_command_line.h"
 #include <warn/pop>
-#include <modules/webbrowser/processors/propertysyncexampleprocessor.h>
 
 namespace inviwo {
 
@@ -146,7 +145,6 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     // Processors
     registerProcessor<WebBrowserProcessor>();
-    registerProcessor<PropertySyncExampleProcessor>();
 
     doChromiumWork_.start();
 }

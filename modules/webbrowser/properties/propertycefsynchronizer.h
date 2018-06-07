@@ -77,6 +77,10 @@ public:
 
     /**
      * Called due to cefQuery execution in message_router.html.
+     * Expects the request for be a JSON-format with key "id" of the property to change.
+     * Example {"id":"PropertyIdentifier", "value":"0.5"}
+     * Currently only supports a single property in the request.
+     * @see PropertyWidgetCEF
      */
     virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
@@ -101,13 +105,16 @@ public:
      * @param property Property to remove
      */
     void stopSynchronize(Property* property);
-
-private:
+    
     // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
     template <typename T, typename P>
     void registerPropertyWidget(PropertySemantics semantics);
-    std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
+    
     PropertyWidgetFactory htmlWidgetFactory_;
+private:
+
+    std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
+
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer)

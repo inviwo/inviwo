@@ -33,7 +33,7 @@ namespace inviwo {
 
 StringPropertyWidgetCEF::StringPropertyWidgetCEF(StringProperty* property,
                                                  CefRefPtr<CefFrame> frame, std::string htmlId)
-    : PropertyWidgetCEF(property, frame, htmlId) {}
+    : TemplatePropertyWidgetCEF<std::string>(property, frame, htmlId) {}
 
 /**
  * Update HTML widget using calls javascript oninput() function on element.

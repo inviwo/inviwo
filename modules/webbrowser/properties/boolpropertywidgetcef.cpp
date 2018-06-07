@@ -33,7 +33,7 @@ namespace inviwo {
 
 BoolPropertyWidgetCEF::BoolPropertyWidgetCEF(BoolProperty* property, CefRefPtr<CefFrame> frame,
                                              std::string htmlId)
-    : PropertyWidgetCEF(property, frame, htmlId) {}
+    : TemplatePropertyWidgetCEF<bool>(property, frame, htmlId) {}
 
 void BoolPropertyWidgetCEF::updateFromProperty() {
     // LogInfo("updateFromProperty");

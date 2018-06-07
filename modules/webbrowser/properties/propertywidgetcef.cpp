@@ -39,35 +39,23 @@ PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, 
         prop->addObserver(this);
     }
 }
-
-bool PropertyWidgetCEF::onQuery(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
-    const CefString& request, bool persistent,
-    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
-    if (onQueryBlocker_ > 0) {
-        onQueryBlocker_--;
-        callback->Success("");
-        return true;
-    }
-    std::stringstream stream(request);
-    try {
-        Deserializer deserializer(stream, "");
-        // Prevent calling updateFromProperty() for this widget
-        property_->setInitiatingWidget(this);
-        deserializer.deserialize("Property", *property_);
-        callback->Success("");
-        property_->clearInitiatingWidget();
-
-    } catch (SerializationException& ex) {
-        callback->Failure(0, ex.getMessage());
-        LogWarn(ex.getMessage());
-    } catch (AbortException& ex) {
-        callback->Failure(0, ex.getMessage());
-        LogWarn(ex.getMessage());
-    }
-    return true;
+void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
+    frame_ = frame;
+    // Make sure that we do not block synchronizations from new page.
+    onQueryBlocker_ = 0;
+    
 }
 
+void PropertyWidgetCEF::deserialize(Deserializer& d) {
+    if (onQueryBlocker_ > 0) {
+        onQueryBlocker_--;
+        return;
+    }
+    property_->setInitiatingWidget(this);
+    d.deserialize("Property", *property_);
+    property_->clearInitiatingWidget();
+}
+    
 void PropertyWidgetCEF::onSetReadOnly(Property* property, bool readonly) {
     std::stringstream script;
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";

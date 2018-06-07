@@ -31,7 +31,7 @@
 #define IVW_BOOLPROPERTYWIDGETCEF_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/propertywidgetcef.h>
+#include <modules/webbrowser/properties/templatepropertywidgetcef.h>
 
 #include <inviwo/core/properties/boolproperty.h>
 
@@ -42,7 +42,7 @@ namespace inviwo {
  * Widget for synchronizing HTML elements:
  * <input type="checkbox">
  */
-class IVW_MODULE_WEBBROWSER_API BoolPropertyWidgetCEF : public PropertyWidgetCEF {
+class IVW_MODULE_WEBBROWSER_API BoolPropertyWidgetCEF : public TemplatePropertyWidgetCEF<bool> {
 public:
     BoolPropertyWidgetCEF(BoolProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr,
                           std::string htmlId = "");

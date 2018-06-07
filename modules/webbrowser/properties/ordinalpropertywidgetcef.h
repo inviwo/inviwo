@@ -31,7 +31,7 @@
 #define IVW_ORDINALPROPERTYWIDGETCEF_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/propertywidgetcef.h>
+#include <modules/webbrowser/properties/templatepropertywidgetcef.h>
 
 #include <inviwo/core/properties/ordinalproperty.h>
 
@@ -43,7 +43,7 @@ namespace inviwo {
  * <input type="number">
  */
 template <typename T>
-class OrdinalPropertyWidgetCEF : public PropertyWidgetCEF {
+class OrdinalPropertyWidgetCEF : public TemplatePropertyWidgetCEF<T> {
 public:
     OrdinalPropertyWidgetCEF() = default;
 
@@ -62,21 +62,21 @@ public:
      * Update HTML widget using calls javascript oninput() function on element.
      * Assumes that widget is HTML input attribute.
      */
-    virtual void updateFromProperty();
+    virtual void updateFromProperty() override;
 };
 
 template <typename T>
 OrdinalPropertyWidgetCEF<T>::OrdinalPropertyWidgetCEF(OrdinalProperty<T>* property,
                                                       CefRefPtr<CefFrame> frame, std::string htmlId)
-    : PropertyWidgetCEF(property, frame, htmlId) {}
+    : TemplatePropertyWidgetCEF<T>(property, frame, htmlId) {}
 
 template <typename T>
-inline void OrdinalPropertyWidgetCEF<T>::updateFromProperty() {
-    // LogInfo("updateFromProperty");
-    auto property = static_cast<OrdinalProperty<T>*>(property_);
+void OrdinalPropertyWidgetCEF<T>::updateFromProperty() {
+//    // LogInfo("updateFromProperty");
+    auto property = static_cast<OrdinalProperty<T>*>(this->getProperty());
 
     std::stringstream script;
-    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+    script << "var property = document.getElementById(\"" << this->getHtmlId() << "\");";
     script << "if(property!=null){";
     script << "property.min=" << property->getMinValue() << ";";
     script << "property.max=" << property->getMaxValue() << ";";
@@ -88,8 +88,8 @@ inline void OrdinalPropertyWidgetCEF<T>::updateFromProperty() {
     // Need to figure out how to make sure the frame is drawn after changing values.
     // script << "window.focus();";
     // Block OnQuery, called due to property.oninput()
-    onQueryBlocker_++;
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+    this->onQueryBlocker_++;
+    this->frame_->ExecuteJavaScript(script.str(), this->frame_->GetURL(), 0);
 }
 
 using FloatPropertyWidgetCEF = OrdinalPropertyWidgetCEF<float>;
