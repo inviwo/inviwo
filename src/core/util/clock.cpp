@@ -28,51 +28,47 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/clock.h>
-#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
-Clock::Clock() {
-}
+Clock::Clock() { start(); }
+
+bool Clock::isRunning() const { return isRunning_; }
 
 void Clock::start() {
-    startTime_ = std::chrono::high_resolution_clock::now();
-    tickTime_ = startTime_;
+    startTime_ = clock::now();
+    isRunning_ = true;
 }
 
-void Clock::tick() {
-    tickTime_ = std::chrono::high_resolution_clock::now();
-}
+void Clock::stop() {
+    auto currentTime = clock::now();
 
-float Clock::getElapsedMiliseconds() const { return 1000.f * getElapsedSeconds(); }
-
-float Clock::getElapsedSeconds() const {
-    using std::chrono::duration_cast;
-    using std::chrono::duration;
-    return (duration_cast<duration<float>>(tickTime_ - startTime_)).count();
-}
-
-void ScopedClockCPU::print() {
-    clock_.tick();
-    if (clock_.getElapsedMiliseconds() > logIfAtLeastMilliSec_) {
-        std::stringstream message;
-        message << logMessage_ << ": " << msToString(clock_.getElapsedMiliseconds());
-        LogCentral::getPtr()->log(logSource_, LogLevel::Info, LogAudience::Developer, __FILE__,
-                                  __FUNCTION__, __LINE__, message.str());
+    if (isRunning_) {
+        accumulatedTime_ += currentTime - startTime_;
+        isRunning_ = false;
     }
 }
 
-void ScopedClockCPU::reset() {
-    clock_.start();
+void Clock::reset() { accumulatedTime_ = static_cast<duration>(0); }
+
+auto Clock::getElapsedTime() const -> duration {
+    auto currentTime = clock::now();
+
+    if (isRunning_) {
+        return accumulatedTime_ + currentTime - startTime_;
+    } else {
+        return accumulatedTime_;
+    }
 }
 
-void ScopedClockCPU::printAndReset() {
-    print();
-    reset();
+double Clock::getElapsedMiliseconds() const {
+    using duration_double = std::chrono::duration<double, std::chrono::milliseconds::period>;
+    return std::chrono::duration_cast<duration_double>(getElapsedTime()).count();
 }
 
-ScopedClockCPU::~ScopedClockCPU() {
-    print();
+double Clock::getElapsedSeconds() const {
+    using duration_double = std::chrono::duration<double, std::chrono::seconds::period>;
+    return std::chrono::duration_cast<duration_double>(getElapsedTime()).count();
 }
 
-}  // namespace
+}  // namespace inviwo
