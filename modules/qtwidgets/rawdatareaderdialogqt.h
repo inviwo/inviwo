@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
@@ -40,43 +40,43 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : public VolumeDataReaderDialog, public QDialog {
+class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : public VolumeDataReaderDialog,
+                                                       public QDialog {
 public:
     RawDataReaderDialogQt();
     virtual ~RawDataReaderDialogQt();
 
     virtual bool show() override;
-    
+
     virtual void setFile(std::string fileName) override;
-    
+
     virtual const DataFormatBase* getFormat() const override;
     virtual uvec3 getDimensions() const override;
     virtual dvec3 getSpacing() const override;
     virtual bool getEndianess() const override;
-	virtual DataMapper getDataMapper() const override; 
-    
+    virtual DataMapper getDataMapper() const override;
 
 private:
     QLabel* fileName_;
     QComboBox* bitDepth_;
-	QDoubleSpinBox* dataRangeMin_;
-	QDoubleSpinBox* dataRangeMax_;
-	QDoubleSpinBox* valueRangeMin_;
-	QDoubleSpinBox* valueRangeMax_;
-	QLineEdit* valueUnit_;				///< Unit, i.e. Hounsfield/absorption/W.
+    QDoubleSpinBox* dataRangeMin_;
+    QDoubleSpinBox* dataRangeMax_;
+    QDoubleSpinBox* valueRangeMin_;
+    QDoubleSpinBox* valueRangeMax_;
+    QLineEdit* valueUnit_;  ///< Unit, i.e. Hounsfield/absorption/W.
     QSpinBox* channels_;
     QSpinBox* dimX_;
     QSpinBox* dimY_;
     QSpinBox* dimZ_;
-    
+
     QLineEdit* spaceX_;
     QLineEdit* spaceY_;
     QLineEdit* spaceZ_;
-    
+
     QSpinBox* timeSteps_;
     QSpinBox* headerOffset_;
     QSpinBox* timeStepOffset_;
     QComboBox* endianess_;
 };
 
-} // namespace
+}  // namespace inviwo

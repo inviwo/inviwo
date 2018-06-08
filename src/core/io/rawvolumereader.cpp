@@ -64,7 +64,7 @@ RawVolumeReader& RawVolumeReader::operator=(const RawVolumeReader& that) {
         dimensions_ = that.dimensions_;
         spacing_ = that.spacing_;
         format_ = that.format_;
-		dataMapper_ = that.dataMapper_;
+        dataMapper_ = that.dataMapper_;
         DataReaderType<Volume>::operator=(that);
     }
 
@@ -79,7 +79,7 @@ void RawVolumeReader::setParameters(const DataFormatBase* format, ivec3 dimensio
     format_ = format;
     dimensions_ = dimensions;
     littleEndian_ = littleEndian;
-	dataMapper_ = dataMapper;
+    dataMapper_ = dataMapper;
 }
 
 std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
@@ -101,7 +101,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
             dimensions_ = readerDialog->getDimensions();
             littleEndian_ = readerDialog->getEndianess();
             spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
-			dataMapper_ = readerDialog->getDataMapper();
+            dataMapper_ = readerDialog->getDataMapper();
         } else {
             throw DataReaderException("Raw data import terminated by user", IvwContext);
         }
@@ -126,14 +126,14 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
         volume->setDataFormat(format_);
         auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
 
-        auto loader =
-            util::make_unique<RawVolumeRAMLoader>(rawFile_, 0u, dimensions_, littleEndian_, format_);
+        auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, 0u, dimensions_,
+                                                            littleEndian_, format_);
         vd->setLoader(loader.release());
         volume->addRepresentation(vd);
 
-		volume->dataMap_ = dataMapper_;
+        volume->dataMap_ = dataMapper_;
         std::string size = util::formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
-                                               (format_->getSize()));
+                                                     (format_->getSize()));
         LogInfo("Loaded volume: " << filePath << " size: " << size);
         return volume;
     } else {
@@ -141,4 +141,4 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

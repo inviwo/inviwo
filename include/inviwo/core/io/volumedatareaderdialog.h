@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEDATAREADERDIALOG_H
@@ -43,15 +43,14 @@ public:
 
     virtual bool show() = 0;
     virtual void setFile(std::string fileName) = 0;
-    
+
     virtual const DataFormatBase* getFormat() const = 0;
     virtual uvec3 getDimensions() const = 0;
     virtual dvec3 getSpacing() const = 0;
     virtual bool getEndianess() const = 0;
-	virtual DataMapper getDataMapper() const = 0; 
+    virtual DataMapper getDataMapper() const = 0;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEDATAREADERDIALOG_H
-
+#endif  // IVW_VOLUMEDATAREADERDIALOG_H

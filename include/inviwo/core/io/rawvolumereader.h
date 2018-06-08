@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_RAWVOLUMEREADER_H
@@ -52,7 +52,8 @@ public:
     virtual RawVolumeReader* clone() const override;
     virtual ~RawVolumeReader() = default;
 
-    virtual void setParameters(const DataFormatBase* format, ivec3 dimensions, bool littleEndian, DataMapper dataMapper);
+    virtual void setParameters(const DataFormatBase* format, ivec3 dimensions, bool littleEndian,
+                               DataMapper dataMapper);
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
 
@@ -65,11 +66,10 @@ private:
     size3_t dimensions_;
     vec3 spacing_;
     const DataFormatBase* format_;
-	DataMapper dataMapper_;
+    DataMapper dataMapper_;
     bool parametersSet_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_RAWVOLUMEREADER_H
-
+#endif  // IVW_RAWVOLUMEREADER_H
