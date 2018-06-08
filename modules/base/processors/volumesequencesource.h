@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMESEQUENCESOURCE_H
@@ -46,17 +46,18 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeSequenceSource, Volume Vector Source}
  * ![](org.inviwo.VolumeSequenceSource.png?classIdentifier=org.inviwo.VolumeSequenceSource)
- * Loads a sequence of volume either from a 4D dataset or from a selection of 3D datasets 
+ * Loads a sequence of volume either from a 4D dataset or from a selection of 3D datasets. The
+ * filename of the source data is available via MetaData.
  *
  * ### Outport
  *   * __data__ A sequence of volumes
  *
  * ### Properties
- *   * __Input type__ Select the input type, either select a single file to a 4D dataset or 
+ *   * __Input type__ Select the input type, either select a single file to a 4D dataset or
  *                    use a folder
  *   * __Volume file__ If using single file mode, the file to load.
  *   * __Volume folder__ If using folder mode, the folder to look for data sets in.
- *   * __Filter__ If using folder mode, apply filter to the folder contents to find wanted 
+ *   * __Filter__ If using folder mode, apply filter to the folder contents to find wanted
  *                data sets
  */
 
@@ -64,17 +65,15 @@ namespace inviwo {
  * \class VolumeSequenceSource
  * \brief Loads a vector of volumes
  */
-class IVW_MODULE_BASE_API VolumeSequenceSource : public Processor { 
-    enum class InputType {
-        SingleFile,
-        Folder
-    };
+class IVW_MODULE_BASE_API VolumeSequenceSource : public Processor {
+    enum class InputType { SingleFile, Folder };
+
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     VolumeSequenceSource();
     virtual ~VolumeSequenceSource() = default;
-     
+
     virtual void deserialize(Deserializer& d) override;
     virtual void process() override;
 
@@ -101,7 +100,6 @@ private:
     bool deserialized_ = false;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMESEQUENCESOURCE_H
-
+#endif  // IVW_VOLUMESEQUENCESOURCE_H

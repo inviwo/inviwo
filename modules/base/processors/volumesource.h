@@ -47,7 +47,8 @@ class InviwoApplication;
 /** \docpage{org.inviwo.VolumeSource, Volume Source}
  * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
  *
- * Loads a Volume
+ * Loads a Volume from a given file. The filename of the source data is
+ * available via MetaData.
  *
  * ### Outports
  *   * __Outport__ The loaded volume
