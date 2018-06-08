@@ -45,7 +45,15 @@ namespace inviwo {
 class CameraProperty;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
+ *
+ * \class Volume
+ * Data structure for volumetric data in form of a structured three-dimensional grid. Basis and
+ * offset determine the position and extent of the volume in model space. Skewed volumes are
+ * represented by providing a non-orthogonal basis.
+ *
+ * In case a volume was loaded via VolumeSource or Volume, the filename of the source data is
+ * available via MetaData.
  */
 class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public StructuredGridEntity<3>,
@@ -61,10 +69,10 @@ public:
     Document getInfo() const;
 
     size3_t getDimensions() const override;
-    
+
     /**
      * Resize to dimension. This is destructive, the data will not be
-     * preserved. 
+     * preserved.
      * @note Resizes the last valid representation and erases all representations.
      * Last valid representation will remain valid after changing the dimension.
      */
@@ -91,7 +99,7 @@ public:
      * non-orthogonal basis.
      *
      * For orthogonal lattices this will be equal to the world space voxel spacing.
-     * For non-orthogonal lattices it will be the longest of the axes projected 
+     * For non-orthogonal lattices it will be the longest of the axes projected
      * onto the world space axes.
      *
      *        World space
@@ -122,16 +130,15 @@ public:
     static const std::string classIdentifier;
     static const std::string dataName;
 
-
-    template<typename Kind>
-    const typename representation_traits<Volume, Kind>::type *getRep() const;
+    template <typename Kind>
+    const typename representation_traits<Volume, Kind>::type* getRep() const;
 
 protected:
     virtual std::shared_ptr<VolumeRepresentation> createDefaultRepresentation() const override;
 };
 
 template <typename Kind>
-const typename representation_traits<Volume, Kind>::type *Volume::getRep() const {
+const typename representation_traits<Volume, Kind>::type* Volume::getRep() const {
     static_assert(
         !std::is_same<typename representation_traits<Volume, Kind>::type, std::nullptr_t>::value,
         "No representation of specified kind found");
@@ -140,6 +147,6 @@ const typename representation_traits<Volume, Kind>::type *Volume::getRep() const
 
 using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUME_H
