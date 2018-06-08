@@ -67,8 +67,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataFrameInport dataFrame_;
-    BrushingAndLinkingInport brushing_;
+    DataFrameInport dataFramePort_;
+    BrushingAndLinkingInport brushingPort_;
     ImageOutport outport_;
 
     ScatterPlotGL scatterPlot_;

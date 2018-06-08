@@ -36,6 +36,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
@@ -53,6 +55,11 @@ namespace plot {
  * ### Outports
  *   * __outport__  generated DataFrame
  *
+ * ### Properties
+ *   * __Mode__
+ *   * __Layer__
+ *   * __Color Index__
+ *
  */
 
 class IVW_MODULE_PLOTTING_API ImageToDataFrame : public Processor {
@@ -66,8 +73,17 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    ImageInport image_;
-    DataOutport<DataFrame> dataframe_;
+    enum class Mode {Analytics, Rows, Columns};
+
+    ImageInport inport_;
+    DataOutport<DataFrame> outport_;
+    TemplateOptionProperty<Mode> mode_;
+    TemplateOptionProperty<LayerType> layer_;
+    IntSizeTProperty layerIndex_;
+
+    IntSizeTMinMaxProperty range_;
+    
+
 };
 
 }  // namespace plot

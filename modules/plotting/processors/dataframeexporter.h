@@ -72,15 +72,15 @@ protected:
     void exportNow();
 
 private:
-    void exportAsCSV(bool forceDoublePrecision = true);
-    void exportAsXML(bool forceDoublePrecision = true);
+    void exportAsCSV(bool separateVectorTypesIntoColumns = true);
+    void exportAsXML(bool separateVectorTypesIntoColumns = true);
 
     DataInport<DataFrame> dataFrame_;
 
     FileProperty exportFile_;
     ButtonProperty exportButton_;
     BoolProperty overwrite_;
-    BoolProperty forceDoublePrecision_;
+    BoolProperty separateVectorTypesIntoColumns_;
 
     bool export_;
 };

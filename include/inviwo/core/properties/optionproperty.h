@@ -216,6 +216,24 @@ private:
     std::vector<OptionPropertyOption<T>> defaultOptions_;
 };
 
+template <typename T>
+bool operator==(const TemplateOptionProperty<T>& lhs, const T& rhs) {
+    return lhs.get() == rhs;
+}
+template <typename T>
+bool operator==(const T& lhs, const TemplateOptionProperty<T>& rhs) {
+    return lhs == rhs.get();
+}
+
+template <typename T>
+bool operator!=(const TemplateOptionProperty<T>& lhs, const T& rhs) {
+    return lhs.get() != rhs;
+}
+template <typename T>
+bool operator!=(const T& lhs, const TemplateOptionProperty<T>& rhs) {
+    return lhs != rhs.get();
+}
+
 namespace detail {
 template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
 std::string getOptionPropertyClassIdentifier() {

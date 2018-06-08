@@ -44,6 +44,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     , visible_("visible", "Visible", true)
     , color_("color", "Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , width_("width", "Width", 2.5f, 0.0f, 20.0f)
+    , useDataRange_("useDataRange", "Use Data Range", true)
     , range_("range", "Axis Range", 0.0, 100.0, 0.0, 1.0e4)
     , orientation_("orientation", "Orientation",
                    {{"horizontal", "Horizontal", Orientation::Horizontal},
@@ -66,10 +67,14 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     addProperty(visible_);
     addProperty(color_);
     addProperty(width_);
+    addProperty(useDataRange_);
     addProperty(range_);
     addProperty(orientation_);
     addProperty(placement_);
     // addProperty(logScale_);
+
+    range_.setReadOnly(useDataRange_.get());
+    useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
 
     // change default fonts, make axis labels slightly less pronounced
     caption_.font_.fontFace_.setSelectedIdentifier("Montserrat-Regular");
@@ -115,6 +120,7 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , visible_(rhs.visible_)
     , color_(rhs.color_)
     , width_(rhs.width_)
+    , useDataRange_(rhs.useDataRange_)
     , range_(rhs.range_)
     , orientation_(rhs.orientation_)
     , placement_(rhs.placement_)
@@ -131,6 +137,9 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     addProperty(orientation_);
     addProperty(placement_);
     // addProperty(logScale_);
+
+    range_.setReadOnly(useDataRange_.get());
+    useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
 
     addProperty(caption_);
     addProperty(labels_);
@@ -175,7 +184,9 @@ void AxisProperty::setRange(const dvec2& range) {
     if (range_.getRangeMax() < range.y) {
         range_.setRangeMax(range.y);
     }
-    range_.set(range);
+    if (useDataRange_) {
+        range_.set(range);
+    }
 }
 
 }  // namespace plot

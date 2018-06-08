@@ -40,7 +40,7 @@ const ProcessorInfo ScatterPlotProcessor::processorInfo_{
     "org.inviwo.ScatterPlotProcessor",  // Class identifier
     "Scatter Plot",                     // Display name
     "Plotting",                         // Category
-    CodeState::Experimental,            // Code state
+    CodeState::Stable,                  // Code state
     "GL, Plotting",                     // Tags
 };
 
@@ -48,22 +48,22 @@ const ProcessorInfo ScatterPlotProcessor::getProcessorInfo() const { return proc
 
 ScatterPlotProcessor::ScatterPlotProcessor()
     : Processor()
-    , dataFrame_("dataFrame_")
-    , brushing_("brushing")
+    , dataFramePort_("dataFrame_")
+    , brushingPort_("brushing")
     , outport_("outport")
     , scatterPlot_(this)
-    , xAxis_("xAxis", "X-axis", dataFrame_, false, 1)
-    , yAxis_("yAxis", "Y-axis", dataFrame_, false, 2)
-    , colorCol_("colorCol", "Color column", dataFrame_, true, 3)
-    , radiusCol_("radiusCol", "Radius column", dataFrame_, true, 4)
+    , xAxis_("xAxis", "X-axis", dataFramePort_, false, 0)
+    , yAxis_("yAxis", "Y-axis", dataFramePort_, false, 2)
+    , colorCol_("colorCol", "Color column", dataFramePort_, true, 3)
+    , radiusCol_("radiusCol", "Radius column", dataFramePort_, true, 4)
 
 {
 
-    addPort(dataFrame_);
-    addPort(brushing_);
+    addPort(dataFramePort_);
+    addPort(brushingPort_);
     addPort(outport_);
 
-    brushing_.setOptional(true);
+    brushingPort_.setOptional(true);
 
     addProperty(scatterPlot_.properties_);
     addProperty(xAxis_);
@@ -76,14 +76,14 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     colorCol_.onChange([this]() { onColorChange(); });
     radiusCol_.onChange([this]() { onRadiusChange(); });
 
-    dataFrame_.onChange([this]() {
+    dataFramePort_.onChange([this]() {
         onXAxisChange();
         onYAxisChange();
         onColorChange();
         onRadiusChange();
 
-        if (dataFrame_.hasData()) {
-            scatterPlot_.setIndexColumn(dataFrame_.getData()->getIndexColumn());
+        if (dataFramePort_.hasData()) {
+            scatterPlot_.setIndexColumn(dataFramePort_.getData()->getIndexColumn());
         }
     });
 }
@@ -91,21 +91,21 @@ ScatterPlotProcessor::ScatterPlotProcessor()
 void ScatterPlotProcessor::process() {
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    if (brushing_.isConnected()) {
-        auto dataframe = dataFrame_.getData();
+    if (brushingPort_.isConnected()) {
+        auto dataframe = dataFramePort_.getData();
         auto dfSize = dataframe->getNumberOfRows();
 
         auto iCol = dataframe->getIndexColumn();
         auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-        auto brushedIndicies = brushing_.getFilteredIndices();
+        auto brushedIndicies = brushingPort_.getFilteredIndices();
         IndexBuffer indicies;
         auto &vec = indicies.getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - brushedIndicies.size());
 
         auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });
+                     [&](const auto &id) { return !brushingPort_.isFiltered(indexCol[id]); });
 
         scatterPlot_.plot(outport_, &indicies, true);
 
@@ -115,22 +115,22 @@ void ScatterPlotProcessor::process() {
 }
 
 void ScatterPlotProcessor::onXAxisChange() {
-    if (!dataFrame_.hasData()) return;
-    auto data = dataFrame_.getData();
+    if (!dataFramePort_.hasData()) return;
+    auto data = dataFramePort_.getData();
     auto idx = xAxis_.get();
     scatterPlot_.setXAxis(data->getColumn(idx));
 }
 
 void ScatterPlotProcessor::onYAxisChange() {
-    if (!dataFrame_.hasData()) return;
-    auto data = dataFrame_.getData();
+    if (!dataFramePort_.hasData()) return;
+    auto data = dataFramePort_.getData();
     auto idx = yAxis_.get();
     scatterPlot_.setYAxis(data->getColumn(idx));
 }
 
 void ScatterPlotProcessor::onColorChange() {
-    if (!dataFrame_.hasData()) return;
-    auto data = dataFrame_.getData();
+    if (!dataFramePort_.hasData()) return;
+    auto data = dataFramePort_.getData();
     auto idx = colorCol_.get();
     if (idx == -1) {
         scatterPlot_.setColorData(nullptr);
@@ -141,8 +141,8 @@ void ScatterPlotProcessor::onColorChange() {
 }
 
 void ScatterPlotProcessor::onRadiusChange() {
-    if (!dataFrame_.hasData()) return;
-    auto data = dataFrame_.getData();
+    if (!dataFramePort_.hasData()) return;
+    auto data = dataFramePort_.getData();
     auto idx = radiusCol_.get();
     if (idx == -1) {
         scatterPlot_.setRadiusData(nullptr);
