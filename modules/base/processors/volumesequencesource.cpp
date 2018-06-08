@@ -47,8 +47,9 @@ const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const { return proc
 VolumeSequenceSource::VolumeSequenceSource()
     : Processor()
     , outport_("data")
-    , inputType_("inputType", "Input type", {{"singlefile", "Single File", InputType::SingleFile},
-                                             {"folder", "Folder", InputType::Folder}},
+    , inputType_("inputType", "Input type",
+                 {{"singlefile", "Single File", InputType::SingleFile},
+                  {"folder", "Folder", InputType::Folder}},
                  0)
     , file_("filename", "Volume file")
     , folder_("folder", "Volume folder")
@@ -73,26 +74,26 @@ VolumeSequenceSource::VolumeSequenceSource()
     addProperty(reload_);
     addProperty(information_);
     addProperty(basis_);
-   
+
     auto updateVisible = [&]() {
         file_.setVisible(inputType_.get() == InputType::SingleFile);
         folder_.setVisible(inputType_.get() == InputType::Folder);
         filter_.setVisible(inputType_.get() == InputType::Folder);
     };
-    
+
     inputType_.onChange(updateVisible);
     updateVisible();
 }
 
 void VolumeSequenceSource::load(bool deserialize) {
     switch (inputType_.get()) {
-    case InputType::Folder:
-        loadFolder(deserialize);
-        break;
-    case InputType::SingleFile:
-    default:
-        loadFile(deserialize);
-        break;
+        case InputType::Folder:
+            loadFolder(deserialize);
+            break;
+        case InputType::SingleFile:
+        default:
+            loadFile(deserialize);
+            break;
     }
 }
 
@@ -131,11 +132,13 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
             try {
                 if (auto reader1 = rf->getReaderForTypeAndExtension<Volume>(ext)) {
                     auto volume = reader1->readData(file);
+                    volume->setMetaData<StringMetaData>("filename", file);
                     volumes_->push_back(volume);
 
                 } else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
                     auto volumes = reader2->readData(file);
                     for (auto volume : *volumes) {
+                        volume->setMetaData<StringMetaData>("filename", file);
                         volumes_->push_back(volume);
                     }
                 } else {
@@ -147,9 +150,18 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
         }
     }
 
-    if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
-        basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
-        information_.updateForNewVolume(*(*volumes_)[0], deserialize);
+    if (volumes_ && !volumes_->empty()) {
+        // store filename in metadata
+        for (auto volume : *volumes_) {
+            if (!volume->hasMetaData<StringMetaData>("filename"))
+                volume->setMetaData<StringMetaData>("filename", file_.get());
+        }
+
+        // set basis of first volume
+        if ((*volumes_)[0]) {
+            basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
+            information_.updateForNewVolume(*(*volumes_)[0], deserialize);
+        }
     }
 }
 
@@ -161,7 +173,8 @@ void VolumeSequenceSource::addFileNameFilters() {
 }
 
 void VolumeSequenceSource::process() {
-    if (file_.isModified() || reload_.isModified() || folder_.isModified() || filter_.isModified()) {
+    if (file_.isModified() || reload_.isModified() || folder_.isModified() ||
+        filter_.isModified()) {
         load(deserialized_);
         deserialized_ = false;
     }
@@ -180,5 +193,4 @@ void VolumeSequenceSource::deserialize(Deserializer& d) {
     addFileNameFilters();
     deserialized_ = true;
 }
-}  // namespace
-
+}  // namespace inviwo
