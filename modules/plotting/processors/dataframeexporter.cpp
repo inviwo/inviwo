@@ -174,12 +174,12 @@ void DataFrameExporter::exportAsXML(bool) {
     std::ofstream file(exportFile_);
     Serializer serializer("");
 
-    for (size_t j = 0; j < dataFrame->getNumberOfColumns(); j++) {
-        auto c = dataFrame->getColumn(j);
-        auto bufferFormat = c->getBuffer()->getDataFormat();
-        dataframeutil::BufferSerializerDispatcher bdisp;
-        bufferFormat->dispatch(bdisp, c->getBuffer(), serializer, c->getHeader(),
-                               std::string("Item"));
+    for (const auto& col : *dataFrame) {
+        col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>([&](auto br) {
+            using ValueType = util::PrecsionValueType<decltype(br)>;
+            const auto& coldata = br->getDataContainer();
+            serializer.serialize(col->getHeader(), coldata, "Item");
+        });
     }
 
     serializer.writeFile(file);
