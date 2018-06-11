@@ -411,7 +411,6 @@ set(SOURCE_FILES
     io/tempfilehandle.cpp
     io/textfilereader.cpp
     io/volumedatareaderdialog.cpp
-    links/linkconditions.cpp
     links/linkevaluator.cpp
     links/propertylink.cpp
     metadata/metadata.cpp
