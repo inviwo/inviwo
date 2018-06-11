@@ -47,7 +47,7 @@ const ProcessorInfo ImageToDataFrame::processorInfo_{
     "org.inviwo.ImageToDataFrame",  // Class identifier
     "Image To Data Frame",          // Display name
     "Data Creation",                // Category
-    CodeState::Experimental,        // Code state
+    CodeState::Stable,        // Code state
     "CPU, DataFrame, Image",        // Tags
 };
 const ProcessorInfo ImageToDataFrame::getProcessorInfo() const { return processorInfo_; }
@@ -164,15 +164,15 @@ void ImageToDataFrame::process() {
             static const vec3 relativeLum(0.2126f, 0.7152f, 0.0722f);
             static const vec3 avgLum(1.0f / 3.0f);
 
-            layer->dispatch<void>([&](const auto vr) {
-                using ValueType = util::PrecsionValueType<decltype(vr)>;
-                const auto index = util::IndexMapper2D(dims);
-                const auto data = vr->getDataTyped();
+            layer->dispatch<void>([&](const auto lr) {
+                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                const auto im = util::IndexMapper2D(dims);
+                const auto data = lr->getDataTyped();
 
                 size2_t pos;
                 for (pos.y = 0; pos.y < dims.y; pos.y++) {
                     for (pos.x = 0; pos.x < dims.x; pos.x++) {
-                        const auto idx = index(pos);
+                        const auto idx = im(pos);
                         const auto v = util::glm_convert<dvec4>(data[idx]);
 
                         double m = 0.0;
@@ -205,10 +205,10 @@ void ImageToDataFrame::process() {
         }
         case Mode::Rows: {
             auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(dims.x));
-            layer->dispatch<void>([&](const auto vr) {
-                using ValueType = util::PrecsionValueType<decltype(vr)>;
-                const auto index = util::IndexMapper2D(dims);
-                const auto data = vr->getDataTyped();
+            layer->dispatch<void>([&](const auto lr) {
+                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                const auto im = util::IndexMapper2D(dims);
+                const auto data = lr->getDataTyped();
                 for (size_t j = range_.getStart(); j < range_.getEnd(); ++j) {
                     auto& row = dataFrame->addColumn<ValueType>(toString(j), dims.x)
                                     ->getTypedBuffer()
@@ -216,7 +216,7 @@ void ImageToDataFrame::process() {
                                     ->getDataContainer();
 
                     for (size_t i = 0; i < dims.x; ++i) {
-                        row[i] = data[index(i, j)];
+                        row[i] = data[im(i, j)];
                     }
                 }
             });
@@ -226,10 +226,10 @@ void ImageToDataFrame::process() {
         }
         case Mode::Columns: {
             auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(dims.y));
-            layer->dispatch<void>([&](const auto vr) {
-                using ValueType = util::PrecsionValueType<decltype(vr)>;
-                const auto index = util::IndexMapper2D(dims);
-                const auto data = vr->getDataTyped();
+            layer->dispatch<void>([&](const auto lr) {
+                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                const auto im = util::IndexMapper2D(dims);
+                const auto data = lr->getDataTyped();
                 for (size_t i = range_.getStart(); i < range_.getEnd(); ++i) {
                     auto& col = dataFrame->addColumn<ValueType>(toString(i), dims.y)
                                     ->getTypedBuffer()
@@ -237,7 +237,7 @@ void ImageToDataFrame::process() {
                                     ->getDataContainer();
 
                     for (size_t j = 0; j < dims.y; ++i) {
-                        col[j] = data[index(i, j)];
+                        col[j] = data[im(i, j)];
                     }
                 }
             });

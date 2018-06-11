@@ -32,15 +32,16 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/buffer/bufferobject.h>
 
 #include <vector>
 
 namespace inviwo {
 
-class BufferObject;
-
 class IVW_MODULE_OPENGL_API BufferObjectArray {
 public:
+    using BindingType = BufferObject::BindingType;
+
     BufferObjectArray();
     BufferObjectArray(const BufferObjectArray& rhs);
     BufferObjectArray& operator=(const BufferObjectArray& that);
@@ -51,21 +52,25 @@ public:
     void bind() const;
     void unbind() const;
 
-    void clear(); // Make sure the buffer is bound before calling clear.
+    void clear();  // Make sure the buffer is bound before calling clear.
 
     // Attach buffer object to specific location
-    void attachBufferObject(const BufferObject*, GLuint);
+    void attachBufferObject(const BufferObject*, GLuint,
+                            BindingType bindingType = BindingType::Native);
+
+    BindingType getBindingType(size_t location) const;
+    void setBindingType(size_t location, BindingType bindingType);
 
     const BufferObject* getBufferObject(size_t location = 0) const;
-    
+
     size_t maxSize() const;
 
 private:
     mutable bool reattach_ = true;
     mutable GLuint id_ = 0;
-    std::vector<const BufferObject*> attachedBuffers_;
+    std::vector<std::pair<BindingType, const BufferObject*>> attachedBuffers_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFER_OBJECT_ARRAY_H

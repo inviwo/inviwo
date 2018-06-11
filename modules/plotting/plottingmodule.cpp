@@ -34,6 +34,7 @@
 #include <modules/plotting/processors/imagetodataframe.h>
 #include <modules/plotting/processors/syntheticdataframe.h>
 #include <modules/plotting/processors/volumetodataframe.h>
+#include <modules/plotting/processors/volumesequencetodataframe.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
@@ -50,7 +51,7 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProcessor<plot::ImageToDataFrame>();
     registerProcessor<plot::SyntheticDataFrame>();
     registerProcessor<plot::VolumeToDataFrame>();
-
+    registerProcessor<plot::VolumeSequenceToDataFrame>();
     registerProperty<plot::AxisProperty>();
     registerProperty<plot::DataFrameColumnProperty>();
     registerProperty<plot::MajorTickProperty>();
@@ -58,6 +59,30 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::MinorTickProperty>();
     registerProperty<plot::PlotTextProperty>();
     registerProperty<plot::TickProperty>();
+}
+
+int PlottingModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> PlottingModule::getConverter(int version) const {
+    return util::make_unique<Converter>(version);
+}
+
+PlottingModule::Converter::Converter(int version) : version_(version) {}
+
+bool PlottingModule::Converter::convert(TxElement* root) {
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.VolumToDataFrame")}}, "type",
+                "org.inviwo.VolumeToDataFrame", "org.inviwo.VolumeSequenceToDataFrame");
+
+            return res;
+        }
+        default:
+            return false;  // No changes
+    }
+    return true;
 }
 
 }  // namespace inviwo

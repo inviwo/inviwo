@@ -71,6 +71,10 @@ DataFrameExporter::DataFrameExporter()
     addProperty(separateVectorTypesIntoColumns_);
 
     exportFile_.setAcceptMode(AcceptMode::Save);
+    exportFile_.onChange([&]() {
+        separateVectorTypesIntoColumns_.setReadOnly(exportFile_.getSelectedExtension() !=
+                                                    exportFile_.getNameFilters()[0]);
+    });
     exportButton_.onChange([&]() { export_ = true; });
 
     setAllPropertiesCurrentStateAsDefault();
@@ -86,7 +90,13 @@ void DataFrameExporter::exportNow() {
         LogWarn("File already exists: " << exportFile_);
         return;
     }
-    exportAsCSV(separateVectorTypesIntoColumns_);
+    if (exportFile_.getSelectedExtension() == exportFile_.getNameFilters()[0]) {
+        exportAsCSV(separateVectorTypesIntoColumns_);
+    } else if (exportFile_.getSelectedExtension() == exportFile_.getNameFilters()[1]) {
+        exportAsXML();
+    } else {
+        LogWarn("Unsupported file type: " << exportFile_);
+    }
 }
 
 void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
@@ -122,7 +132,6 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
             col->getBuffer()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void, dispatching::filter::Scalars>([&printers](auto br) {
-                    using ValueType = util::PrecsionValueType<decltype(br)>;
                     printers.push_back([br](std::ostream& os, size_t index) {
                         os << br->getDataContainer()[index];
                     });
@@ -143,7 +152,6 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
             col->getBuffer()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void, dispatching::filter::Vecs>([&printers](auto br) {
-                    using ValueType = util::PrecsionValueType<decltype(br)>;
                     printers.push_back([br](std::ostream& os, size_t index) {
                         os << "\"" << br->getDataContainer()[index] << "\"";
                     });
@@ -168,7 +176,7 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
     LogInfo("CSV file exported to " << exportFile_);
 }
 
-void DataFrameExporter::exportAsXML(bool) {
+void DataFrameExporter::exportAsXML() {
     auto dataFrame = dataFrame_.getData();
 
     std::ofstream file(exportFile_);
@@ -176,9 +184,7 @@ void DataFrameExporter::exportAsXML(bool) {
 
     for (const auto& col : *dataFrame) {
         col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>([&](auto br) {
-            using ValueType = util::PrecsionValueType<decltype(br)>;
-            const auto& coldata = br->getDataContainer();
-            serializer.serialize(col->getHeader(), coldata, "Item");
+            serializer.serialize(col->getHeader(), br->getDataContainer(), "Item");
         });
     }
 

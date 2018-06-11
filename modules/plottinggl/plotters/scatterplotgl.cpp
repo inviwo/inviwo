@@ -30,6 +30,7 @@
 #include <modules/plottinggl/plotters/scatterplotgl.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
@@ -232,34 +233,32 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     auto xbufObj = xbuf->getBufferObject();
     auto ybufObj = ybuf->getBufferObject();
 
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    if (!boa_) {
+        boa_ = std::make_unique<BufferObjectArray>();
+    }
+    boa_->bind();
+    boa_->clear();
 
-    glEnableVertexAttribArray((GLuint)0);
-    xbufObj->bindAndSetAttribPointer((GLuint)0, BufferObject::BindingType::ForceFloat);
-
-    glEnableVertexAttribArray((GLuint)1);
-    ybufObj->bindAndSetAttribPointer((GLuint)1, BufferObject::BindingType::ForceFloat);
+    boa_->attachBufferObject(xbufObj.get(), 0, BufferObject::BindingType::ForceFloat);
+    boa_->attachBufferObject(ybufObj.get(), 1, BufferObject::BindingType::ForceFloat);
 
     if (picking_.isEnabled() && pickIds_) {
         // bind picking buffer
-        auto pickIdsBufferGL = pickIds_->getRepresentation<BufferGL>();
-        auto pickIdsGL = pickIdsBufferGL->getBufferObject();
-        glEnableVertexAttribArray((GLuint)4);
-        pickIdsGL->bindAndSetAttribPointer((GLuint)4);
+        auto pickBuf = pickIds_->getRepresentation<BufferGL>();
+        auto pickBufObj = pickBuf->getBufferObject();
+        boa_->attachBufferObject(pickBufObj.get(), 4, BufferObject::BindingType::ForceFloat);
     }
     shader_.setUniform("pickingEnabled", picking_.isEnabled());
 
     if (color_) {
         utilgl::bindAndSetUniforms(shader_, cont, properties_.tf_);
         shader_.setUniform("minmaxC", minmaxC_);
+        shader_.setUniform("has_color", 1);
 
         auto cbuf = color_->getRepresentation<BufferGL>();
         auto cbufObj = cbuf->getBufferObject();
-        glEnableVertexAttribArray((GLuint)2);
-        cbufObj->bindAndSetAttribPointer((GLuint)2, BufferObject::BindingType::ForceFloat);
-        shader_.setUniform("has_color", 1);
+        boa_->attachBufferObject(cbufObj.get(), 2, BufferObject::BindingType::ForceFloat);
+
     } else {
         shader_.setUniform("has_color", 0);
         shader_.setUniform("default_color", properties_.color_.get());
@@ -283,38 +282,59 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
 
     if (radius_) {
         shader_.setUniform("minmaxR", minmaxR_);
+        shader_.setUniform("has_radius", 1);
 
         auto rbuf = radius_->getRepresentation<BufferGL>();
         auto rbufObj = rbuf->getBufferObject();
-        glEnableVertexAttribArray((GLuint)3);
-        rbufObj->bindAndSetAttribPointer((GLuint)3, BufferObject::BindingType::ForceFloat);
-        shader_.setUniform("has_radius", 1);
+        boa_->attachBufferObject(rbufObj.get(), 3, BufferObject::BindingType::ForceFloat);
+
     } else {
         shader_.setUniform("has_radius", 0);
     }
 
-    std::vector<uint32_t> indices;
-    if (indexBuffer) {
-        // copy selected indices
-        indices = indexBuffer->getRAMRepresentation()->getDataContainer();
-    } else {
-        // no indices given, draw all data points
-        auto seq = util::make_sequence<uint32_t>(0, static_cast<uint32_t>(xbuf->getSize()), 1);
-        indices = std::vector<uint32_t>(seq.begin(), seq.end());
-    }
+    IndexBuffer *indices;
     if (radius_) {
+        if (indexBuffer) {
+            // copy selected indices
+            indices_ = std::unique_ptr<IndexBuffer>(indexBuffer->clone());
+        } else {
+            // no indices given, draw all data points
+            if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
+            auto &cont = indices_->getEditableRAMRepresentation()->getDataContainer();
+            cont.resize(xbuf->getSize());
+            std::iota(cont.begin(), cont.end(), 0);
+        }
+        indices = indices_.get();
+
         // sort according to radii, larger first
+        auto &cont = indices->getEditableRAMRepresentation()->getDataContainer();
+
         radius_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
-            [this, &indices](auto bufferpr) {
+            [this, &cont](auto bufferpr) {
                 auto &radii = bufferpr->getDataContainer();
-                std::sort(
-                    indices.begin(), indices.end(),
-                    [&radii](const uint32_t &a, const uint32_t &b) { return radii[a] > radii[b]; });
+                std::sort(cont.begin(), cont.end(), [&radii](const uint32_t &a, const uint32_t &b) {
+                    return radii[a] > radii[b];
+                });
             });
     }
 
-    glDrawElements(GL_POINTS, static_cast<uint32_t>(indices.size()), GL_UNSIGNED_INT,
-                   indices.data());
+    if (indexBuffer) {
+        // copy selected indices
+        indices = indexBuffer;
+    } else {
+        // no indices given, draw all data points
+        if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
+        auto &cont = indices_->getEditableRAMRepresentation()->getDataContainer();
+        cont.resize(xbuf->getSize());
+        std::iota(cont.begin(), cont.end(), 0);
+        indices = indices_.get();
+    }
+
+    boa_->bind();
+    auto indicesGL = indices->getRepresentation<BufferGL>();
+    indicesGL->bind();
+    glDrawElements(GL_POINTS, static_cast<uint32_t>(indices->getSize()), indicesGL->getFormatType(),
+                   nullptr);
 
     if (!hoveredIndices_.empty()) {
         // draw hovered points on top
@@ -326,19 +346,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     }
 
     shader_.deactivate();
-
-    if (radius_) {
-        glDisableVertexAttribArray(3);
-    }
-    if (color_) {
-        glDisableVertexAttribArray(2);
-    }
-    if (picking_.isEnabled()) {
-        glDisableVertexAttribArray(4);
-    }
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(0);
-    glDeleteVertexArrays(1, &vao);
+    boa_->unbind();
 
     renderAxis(dims);
 }

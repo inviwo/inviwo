@@ -27,66 +27,65 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMETOCSVEXPORTER_H
-#define IVW_DATAFRAMETOCSVEXPORTER_H
+#ifndef IVW_VOLUMESEQUENCETODATAFRAME_H
+#define IVW_VOLUMESEQUENCETODATAFRAME_H
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <modules/plotting/datastructures/dataframe.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
+#include <set>
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.DataFrameExporter, DataFrame Exporter}
- * ![](org.inviwo.DataFrameExporter.png?classIdentifier=org.inviwo.DataFrameExporter)
- * This processor exports a DataFrame into a CSV or XML file.
+/** \docpage{org.inviwo.VolumeSequenceToDataFrame, Volume To DataFrame}
+ * ![](org.inviwo.VolumeSequenceToDataFrame.png?classIdentifier=org.inviwo.VolumeSequenceToDataFrame)
+ * This processor converts a volume sequence into a DataFrame.
  *
  * ### Inports
- *   * __<Inport>__ source DataFrame which is saved as CSV or XML file
+ *   * __volume__  source volume
  *
+ * ### Outports
+ *   * __outport__  generated DataFrame
  */
 
-class IVW_MODULE_PLOTTING_API DataFrameExporter : public Processor {
+class IVW_MODULE_PLOTTING_API VolumeSequenceToDataFrame : public Processor {
 public:
-    DataFrameExporter();
-    virtual ~DataFrameExporter() = default;
+    VolumeSequenceToDataFrame();
+    virtual ~VolumeSequenceToDataFrame() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    void exportNow();
-
 private:
-    void exportAsCSV(bool separateVectorTypesIntoColumns = true);
-    void exportAsXML();
+    DataInport<Volume, 0, true> inport_;
+    DataOutport<DataFrame> outport_;
 
-    DataInport<DataFrame> dataFrame_;
+    std::set<size_t> filteredIDs_;
+    BoolProperty reduce_;
+    FloatProperty probability_;
 
-    FileProperty exportFile_;
-    ButtonProperty exportButton_;
-    BoolProperty overwrite_;
-    BoolProperty separateVectorTypesIntoColumns_;
+    BoolProperty omitOutliers_;
+    FloatProperty threshold_;
 
-    bool export_;
+    void recomputeReduceBuffer();
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAFRAMETOCSVEXPORTER_H
+#endif  // IVW_VOLUMESEQUENCETODATAFRAME_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,16 +28,8 @@
  *********************************************************************************/
 
 #include <modules/plotting/processors/volumetodataframe.h>
-
-#include <inviwo/core/util/volumeramutils.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/util/imageramutils.h>
-#include <inviwo/core/util/indexmapper.h>
-
-#include <algorithm>
-#include <random>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
@@ -48,167 +40,211 @@ const ProcessorInfo VolumeToDataFrame::processorInfo_{
     "org.inviwo.VolumeToDataFrame",  // Class identifier
     "Volume To Data Frame",          // Display name
     "Data Creation",                 // Category
-    CodeState::Experimental,         // Code state
+    CodeState::Stable,               // Code state
     "CPU, DataFrame, Volume",        // Tags
 };
-
 const ProcessorInfo VolumeToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 VolumeToDataFrame::VolumeToDataFrame()
     : Processor()
-    , volume_("volume")
-    , dataframe_("dataframe")
-    , reduce_("reduce", "Reduce", true)
-    , probability_("probability", "Probability", 0.01f, 0.0f, 1.0f, 0.01f)
-    , omitOutliers_("omitOutliers", "Omit outliers", true)
-    , threshold_("threshold", "Threshold", 1000000.0f, 0.0f, std::numeric_limits<float>::max(),
-                 0.01f) {
-    addPort(volume_);
-    addPort(dataframe_);
+    , inport_{"volume"}
+    , outport_{"dataframe"}
 
-    addProperty(reduce_);
-    addProperty(probability_);
+    , mode_{"mode",
+            "Mode",
+            {{"analytics", "Analytics", Mode::Analytics},
+             {"xdir", "XDir", Mode::XDir},
+             {"ydir", "YDir", Mode::YDir},
+             {"zdir", "ZDir", Mode::ZDir}},
+            0}
+    , rangeX_{"xrange", "X Range", 0, 1, 0, 1, 1, 1}
+    , rangeY_{"yrange", "Y Range", 0, 1, 0, 1, 1, 1}
+    , rangeZ_{"zrange", "Z Range", 0, 1, 0, 1, 1, 1} {
 
-    addProperty(omitOutliers_);
-    addProperty(threshold_);
+    addPort(inport_);
+    addPort(outport_);
+    addProperty(mode_);
+    addProperty(rangeX_);
+    addProperty(rangeY_);
+    addProperty(rangeZ_);
 
-    reduce_.onChange([this]() { probability_.setVisible(reduce_.get()); });
-
-    probability_.onChange([this]() {
-        if (reduce_.get()) {
-            invalidate(InvalidationLevel::InvalidResources);
+    auto updateRange = [this]() {
+        if (inport_.hasData()) {
+            const auto dim = inport_.getData()->getDimensions();
+            rangeX_.setRangeMax(dim.x);
+            rangeY_.setRangeMax(dim.y);
+            rangeZ_.setRangeMax(dim.z);
         }
-    });
-
-    omitOutliers_.onChange([this]() { threshold_.setVisible(omitOutliers_.get()); });
-
-    threshold_.onChange([this]() {
-        if (omitOutliers_.get()) {
-            invalidate(InvalidationLevel::InvalidResources);
-        }
-    });
+    };
+    inport_.onChange(updateRange);
 }
-
-void VolumeToDataFrame::recomputeReduceBuffer() {
-    if (!volume_.hasData()) return;
-
-    filteredIDs_.clear();
-
-    auto volumeSequence = volume_.getVectorData();
-    auto first = (volumeSequence[0])->getRepresentation<VolumeRAM>();
-
-    auto dims = first->getDimensions();
-    size_t size = dims.x * dims.y * dims.z;
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
-
-    std::vector<const glm::f32 *> volumeData;
-
-    const auto probability = probability_.get();
-    const auto omitOutliers = omitOutliers_.get();
-    const auto threshold = threshold_.get();
-
-    if (omitOutliers) {
-        for (auto vol : volumeSequence) {
-            if (vol->getDataFormat()->getNumericType() != NumericType::Float) continue;
-            if (vol->getDataFormat()->getComponents() != 1)
-                LogWarn("This volume is omitted because it has more than one channel.");
-            volumeData.push_back(
-                static_cast<const glm::f32 *>(vol->getRepresentation<VolumeRAM>()->getData()));
-        }
-    }
-
-    std::vector<vec2> minMaxes;
-    minMaxes.resize(volumeData.size(),
-                    vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()));
-
-    for (size_t i = 0; i < size; i++) {
-        for (size_t j = 0; j < volumeData.size(); j++) {
-            if (volumeData[j][i] < threshold)
-                minMaxes[j] = vec2(std::min(volumeData[j][i], minMaxes[j].x),
-                                   std::max(volumeData[j][i], minMaxes[j].y));
-        }
-        if (dis(gen) <= probability) {
-            if (omitOutliers) {
-                bool add = true;
-                for (size_t j = 0; j < volumeData.size(); j++) {
-                    if (volumeData[j][i] > threshold) {
-                        add = false;
-                        break;
-                    }
-                }
-                if (add) {
-                    filteredIDs_.insert(i);
-                }
-            } else {
-                filteredIDs_.insert(i);
-            }
-        }
-    }
-
-    for (size_t j = 0; j < volumeData.size(); j++) {
-        const auto &minMax = minMaxes[j];
-        bool foundMin = false;
-        bool foundMax = false;
-
-        for (size_t i = 0; i < size; i++) {
-            if (foundMin && foundMax) break;
-            if (minMax.y == volumeData[j][i] && !foundMax) {
-                filteredIDs_.insert(i);
-                foundMax = true;
-            }
-            if (minMax.x == volumeData[j][i] && !foundMin) {
-                filteredIDs_.insert(i);
-                foundMin = true;
-            }
-        }
-    }
-}
-
-void VolumeToDataFrame::initializeResources() { recomputeReduceBuffer(); }
 
 void VolumeToDataFrame::process() {
-    if (!volume_.hasData()) return;
-    auto volumeSequence = volume_.getVectorData();
-    auto outports = volume_.getConnectedOutports();
-    auto first = (volumeSequence[0])->getRepresentation<VolumeRAM>();
+    const auto volume = inport_.getData();
+    const auto dim = volume->getDimensions();
+    switch (mode_.get()) {
+        case Mode::Analytics: {
+            const auto size = (rangeX_.getEnd() - rangeX_.getStart()) *
+                              (rangeY_.getEnd() - rangeY_.getStart()) *
+                              (rangeZ_.getEnd() - rangeZ_.getStart());
 
-    auto dims = first->getDimensions();
-    size_t size = dims.x * dims.y * dims.z;
-
-    auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<std::uint32_t>(
-        reduce_.get() || omitOutliers_.get() ? filteredIDs_.size() : size));
-
-    auto indexMapper = util::IndexMapper3D(dims);
-
-    size_t volumeNumber = 1;
-    for (const auto volume : volumeSequence) {
-        const auto numericType = volume->getDataFormat()->getNumericType();
-        if (numericType != NumericType::Float) continue;
-        std::vector<std::vector<float> *> channelBuffer_;
-        auto volumeRAM = volume->getRepresentation<VolumeRAM>();
-        const auto numCh = volume->getDataFormat()->getComponents();
-        for (size_t c = 0; c < numCh; c++) {
-            auto identifier = outports[volumeNumber - 1]->getProcessor()->getIdentifier();
-            auto col = dataFrame->addColumn<float>(
-                identifier, reduce_.get() || omitOutliers_.get() ? filteredIDs_.size() : size);
-            channelBuffer_.push_back(
-                &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
-        }
-        volumeNumber++;
-
-        util::forEachVoxelParallel(*volumeRAM, [&, this](const size3_t &pos) {
-            const auto idx = indexMapper(pos);
-            if (filteredIDs_.find(idx) == filteredIDs_.end()) return;
-            const auto v = volumeRAM->getAsDVec4(pos);
+            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+            std::vector<std::vector<float>*> channelBuffer_;
+            const auto numCh = volume->getDataFormat()->getComponents();
             for (size_t c = 0; c < numCh; c++) {
-                channelBuffer_[c]->at(idx) = float(v[c]);
+                auto col = dataFrame->addColumn<float>("Channel " + toString(c + 1), size);
+                channelBuffer_.push_back(
+                    &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
             }
-        });
+            auto& magnitudes = dataFrame->addColumn<float>("Magnitude", size)
+                                   ->getTypedBuffer()
+                                   ->getEditableRAMRepresentation()
+                                   ->getDataContainer();
+            auto& indx = dataFrame->addColumn<int>("Index X", size)
+                             ->getTypedBuffer()
+                             ->getEditableRAMRepresentation()
+                             ->getDataContainer();
+            auto& indy = dataFrame->addColumn<int>("Index Y", size)
+                             ->getTypedBuffer()
+                             ->getEditableRAMRepresentation()
+                             ->getDataContainer();
+            auto& indz = dataFrame->addColumn<int>("Index Z", size)
+                             ->getTypedBuffer()
+                             ->getEditableRAMRepresentation()
+                             ->getDataContainer();
+            auto& posx = dataFrame->addColumn<float>("Position X", size)
+                             ->getTypedBuffer()
+                             ->getEditableRAMRepresentation()
+                             ->getDataContainer();
+            auto& posy = dataFrame->addColumn<float>("Position Y", size)
+                             ->getTypedBuffer()
+                             ->getEditableRAMRepresentation()
+                             ->getDataContainer();
+            auto& posz = dataFrame->addColumn<float>("Position Z", size)
+                             ->getTypedBuffer()
+                             ->getEditableRAMRepresentation()
+                             ->getDataContainer();
+
+            const auto indexToModel = volume->getCoordinateTransformer().getIndexToModelMatrix();
+
+            volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vr) {
+                const auto im = util::IndexMapper3D(dim);
+                const auto data = vr->getDataTyped();
+                size3_t ind;
+                for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
+                    for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
+                        for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
+                            const auto i = im(ind);
+                            const auto v = util::glm_convert<dvec4>(data[i]);
+
+                            double m = 0.0;
+                            for (size_t c = 0; c < numCh; c++) {
+                                (*channelBuffer_[c])[i] = static_cast<float>(v[c]);
+                                m += v[c] * v[c];
+                            }
+                            magnitudes[i] = static_cast<float>(std::sqrt(m));
+
+                            indx[i] = static_cast<int>(ind.x);
+                            indy[i] = static_cast<int>(ind.y);
+                            indz[i] = static_cast<int>(ind.z);
+
+                            const dvec3 pos{indexToModel * dvec4{ind, 1}};
+
+                            posx[i] = static_cast<float>(pos.x);
+                            posy[i] = static_cast<float>(pos.y);
+                            posz[i] = static_cast<float>(pos.z);
+                        }
+                    }
+                }
+            });
+            outport_.setData(dataFrame);
+            break;
+        }
+        case Mode::XDir: {
+            const auto size = rangeX_.getEnd() - rangeX_.getStart();
+            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+
+            volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](const auto vr) {
+                using ValueType = util::PrecsionValueType<decltype(vr)>;
+                const auto im = util::IndexMapper3D(dim);
+                const auto data = vr->getDataTyped();
+                size3_t ind;
+                for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
+                    for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
+                        auto& line = dataFrame
+                                         ->addColumn<ValueType>(
+                                             "y:" + toString(ind.y) + " z:" + toString(ind.z), size)
+                                         ->getTypedBuffer()
+                                         ->getEditableRAMRepresentation()
+                                         ->getDataContainer();
+                        size_t i = 0;
+                        for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
+                            line[i++] = data[im(ind)];
+                        }
+                    }
+                }
+            });
+
+            outport_.setData(dataFrame);
+            break;
+        }
+        case Mode::YDir: {
+            const auto size = rangeY_.getEnd() - rangeY_.getStart();
+            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+
+            volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](const auto vr) {
+                using ValueType = util::PrecsionValueType<decltype(vr)>;
+                const auto im = util::IndexMapper3D(dim);
+                const auto data = vr->getDataTyped();
+                size3_t ind;
+                for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
+                    for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
+                        auto& line = dataFrame
+                                         ->addColumn<ValueType>(
+                                             "x:" + toString(ind.x) + " z:" + toString(ind.z), size)
+                                         ->getTypedBuffer()
+                                         ->getEditableRAMRepresentation()
+                                         ->getDataContainer();
+                        size_t i = 0;
+                        for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
+                            line[i++] = data[im(ind)];
+                        }
+                    }
+                }
+            });
+
+            outport_.setData(dataFrame);
+            break;
+        }
+        case Mode::ZDir: {
+            const auto size = rangeZ_.getEnd() - rangeZ_.getStart();
+            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+
+            volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](const auto vr) {
+                using ValueType = util::PrecsionValueType<decltype(vr)>;
+                const auto im = util::IndexMapper3D(dim);
+                const auto data = vr->getDataTyped();
+                size3_t ind;
+                for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
+                    for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
+                        auto& line = dataFrame
+                                         ->addColumn<ValueType>(
+                                             "x:" + toString(ind.x) + " y:" + toString(ind.y), size)
+                                         ->getTypedBuffer()
+                                         ->getEditableRAMRepresentation()
+                                         ->getDataContainer();
+                        size_t i = 0;
+                        for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
+                            line[i++] = data[im(ind)];
+                        }
+                    }
+                }
+            });
+
+            outport_.setData(dataFrame);
+            break;
+        }
     }
-    dataframe_.setData(dataFrame);
 }
 
 }  // namespace plot

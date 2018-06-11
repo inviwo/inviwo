@@ -43,7 +43,8 @@ size_t BufferObjectArray::maxSize() const {
     return size;
 }
 
-BufferObjectArray::BufferObjectArray() : attachedBuffers_(maxSize(), nullptr) {}
+BufferObjectArray::BufferObjectArray()
+    : attachedBuffers_(maxSize(), {BindingType::Native, nullptr}) {}
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
     : attachedBuffers_(rhs.attachedBuffers_) {}
@@ -67,9 +68,9 @@ GLuint BufferObjectArray::getId() const { return id_; }
 
 void BufferObjectArray::clear() {
     for (GLuint i = 0; i < static_cast<GLuint>(attachedBuffers_.size()); ++i) {
-        if (attachedBuffers_[i]) {
+        if (attachedBuffers_[i].second) {
             glDisableVertexAttribArray(i);
-            attachedBuffers_[i] = nullptr;
+            attachedBuffers_[i].second = nullptr;
         }
     }
     reattach_ = true;
@@ -82,9 +83,9 @@ void BufferObjectArray::bind() const {
     glBindVertexArray(id_);
     if (reattach_) {
         for (GLuint location = 0; location < attachedBuffers_.size(); ++location) {
-            if (auto bufferObject = attachedBuffers_[location]) {
+            if (auto bufferObject = attachedBuffers_[location].second) {
                 glEnableVertexAttribArray(location);
-                bufferObject->bindAndSetAttribPointer(location);
+                bufferObject->bindAndSetAttribPointer(location, attachedBuffers_[location].first);
             } else {
                 glDisableVertexAttribArray(location);
             }
@@ -95,19 +96,21 @@ void BufferObjectArray::bind() const {
 
 void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
-void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint location) {
+void BufferObjectArray::attachBufferObject(const BufferObject* bufferObject, GLuint location,
+                                           BindingType bindingType) {
     if (location < attachedBuffers_.size()) {
 #ifdef IVW_DEBUG
         // print warning if a different buffer is already attached to this location
-        if (attachedBuffers_[location] && bo && (attachedBuffers_[location] != bo)) {
+        if (attachedBuffers_[location] && bufferObject &&
+            (attachedBuffers_[location] != bufferObject)) {
             LogWarn("BufferObjectArray (" << id_ << "): location " << location
                                           << " is already bound to different buffer object (id "
                                           << attachedBuffers_[location]->getId()
                                           << "). Replacing with new buffer object (id "
-                                          << bo->getId() << ").");
+                                          << bufferObject->getId() << ").");
         }
 #endif
-        attachedBuffers_[location] = bo;
+        attachedBuffers_[location] = {bindingType, bufferObject};
     } else {
         LogError("Error: VertexAttribArray location exceeds maximum allowed range");
     }
@@ -115,9 +118,16 @@ void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint locati
 
 const BufferObject* BufferObjectArray::getBufferObject(size_t location) const {
     if (location < attachedBuffers_.size())
-        return attachedBuffers_[location];
+        return attachedBuffers_[location].second;
     else
         return nullptr;
+}
+
+BufferObjectArray::BindingType BufferObjectArray::getBindingType(size_t location) const {
+    return attachedBuffers_[location].first;
+}
+void BufferObjectArray::setBindingType(size_t location, BindingType bindingType){
+     attachedBuffers_[location].first = bindingType;
 }
 
 }  // namespace inviwo

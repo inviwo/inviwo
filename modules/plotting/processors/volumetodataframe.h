@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,10 +31,10 @@
 #define IVW_VOLUMETODATAFRAME_H
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <modules/plotting/datastructures/dataframe.h>
-
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -42,13 +42,12 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
-#include <set>
+#include <modules/plotting/datastructures/dataframe.h>
 
 namespace inviwo {
-
 namespace plot {
 
-/** \docpage{org.inviwo.VolumeToDataFrame, Volume To DataFrame}
+/** \docpage{org.inviwo.VolumeToDataFrame, Volume To Data Frame}
  * ![](org.inviwo.VolumeToDataFrame.png?classIdentifier=org.inviwo.VolumeToDataFrame)
  * This processor converts a volume into a DataFrame.
  *
@@ -57,31 +56,31 @@ namespace plot {
  *
  * ### Outports
  *   * __outport__  generated DataFrame
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-
 class IVW_MODULE_PLOTTING_API VolumeToDataFrame : public Processor {
 public:
     VolumeToDataFrame();
     virtual ~VolumeToDataFrame() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<Volume, 0, true> volume_;
-    DataOutport<DataFrame> dataframe_;
+    enum class Mode { Analytics, XDir, YDir, ZDir };
 
-    std::set<size_t> filteredIDs_;
-    BoolProperty reduce_;
-    FloatProperty probability_;
+    DataInport<Volume> inport_;
+    DataOutport<DataFrame> outport_;
 
-    BoolProperty omitOutliers_;
-    FloatProperty threshold_;
-
-    void recomputeReduceBuffer();
+    TemplateOptionProperty<Mode> mode_;
+    IntSizeTMinMaxProperty rangeX_;
+    IntSizeTMinMaxProperty rangeY_;
+    IntSizeTMinMaxProperty rangeZ_;
 };
 
 }  // namespace plot

@@ -55,9 +55,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     , xAxis_("xAxis", "X-axis", dataFramePort_, false, 0)
     , yAxis_("yAxis", "Y-axis", dataFramePort_, false, 2)
     , colorCol_("colorCol", "Color column", dataFramePort_, true, 3)
-    , radiusCol_("radiusCol", "Radius column", dataFramePort_, true, 4)
-
-{
+    , radiusCol_("radiusCol", "Radius column", dataFramePort_, true, 4) {
 
     addPort(dataFramePort_);
     addPort(brushingPort_);

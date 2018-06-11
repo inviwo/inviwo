@@ -33,6 +33,7 @@
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
@@ -43,12 +44,13 @@
 #include <modules/plotting/properties/axisproperty.h>
 
 #include <modules/plottinggl/utils/axisrenderer.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 
 namespace inviwo {
 
 class Processor;
 class PickingEvent;
-using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
+class BufferObjectArray;
 
 namespace plot {
 
@@ -138,6 +140,10 @@ protected:
 
     PickingMapper picking_;
     std::set<uint32_t> hoveredIndices_;
+
+    std::unique_ptr<IndexBuffer> indices_;
+    std::unique_ptr<BufferObjectArray> boa_;
+
 
     Processor* processor_;
 };
