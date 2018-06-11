@@ -164,7 +164,7 @@ template <typename Clock>
 ScopedClock<Clock>::ScopedClock(const std::string& logSource, const std::string& message,
                                 double logIfAtLeastMilliSec, LogLevel logLevel)
     : ScopedClock(logSource, message,
-                  std::chrono::duration_cast<Clock::duration>(
+                  std::chrono::duration_cast<typename Clock::duration>(
                       std::chrono::duration<double, std::chrono::milliseconds::period>(
                           logIfAtLeastMilliSec)),
                   logLevel) {}
