@@ -45,7 +45,7 @@ namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.DataFrameColumnToColorVector, Data Frame Column To Color Vector}
+/** \docpage{org.inviwo.DataFrameColumnToColorVector, DataFrame Column To Color Vector}
  * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
  * This processor maps column values of a DataFrame to colors using a 1D transfer function.
  *

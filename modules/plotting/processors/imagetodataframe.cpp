@@ -33,8 +33,10 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/imageramutils.h>
 #include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -43,89 +45,206 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageToDataFrame::processorInfo_{
     "org.inviwo.ImageToDataFrame",  // Class identifier
-    "Image To Data Frame",          // Display name
+    "Image To DataFrame",          // Display name
     "Data Creation",                // Category
-    CodeState::Experimental,        // Code state
+    CodeState::Stable,        // Code state
     "CPU, DataFrame, Image",        // Tags
 };
 const ProcessorInfo ImageToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
-ImageToDataFrame::ImageToDataFrame() : Processor(), image_("image"), dataframe_("dataframe") {
-    addPort(image_);
-    addPort(dataframe_);
+ImageToDataFrame::ImageToDataFrame()
+    : Processor()
+    , inport_("image")
+    , outport_("dataframe")
+    , mode_{"mode",
+            "Mode",
+            {{"analytics", "Analytics", Mode::Analytics},
+             {"rows", "Rows", Mode::Rows},
+             {"columns", "Columns", Mode::Columns}},
+            0}
+    , layer_{"layer",
+             "Layer",
+             {{"color", "Color", LayerType::Color},
+              {"depth", "Depth", LayerType::Depth},
+              {"picking", "Picking", LayerType::Picking}},
+             0}
+    , layerIndex_{"colorIndex", "Color Index", 0, 0, 0, 1}
+    , range_{"range", "Range", 0, 1, 0, 1, 1, 1} {
+
+    addPort(inport_);
+    addPort(outport_);
+
+    addProperty(mode_);
+    addProperty(layer_);
+    addProperty(layerIndex_);
+    addProperty(range_);
+
+    auto updateRange = [this]() {
+        if (inport_.hasData()) {
+            if (mode_ == Mode::Rows) {
+                range_.setRangeMax(inport_.getData()->getDimensions().y);
+                range_.setReadOnly(false);
+            } else if (mode_ == Mode::Columns) {
+                range_.setRangeMax(inport_.getData()->getDimensions().x);
+                range_.setReadOnly(false);
+            } else {
+                range_.setReadOnly(true);
+            }
+        }
+    };
+
+    mode_.onChange(updateRange);
+
+    inport_.onChange([this, updateRange]() {
+        if (inport_.hasData()) {
+            layerIndex_.setMaxValue(inport_.getData()->getNumberOfColorLayers());
+            updateRange();
+        }
+    });
 }
 
 void ImageToDataFrame::process() {
-    auto volume = image_.getData()->getColorLayer()->getRepresentation<LayerRAM>();
-    auto dims = volume->getDimensions();
-    auto size = dims.x * dims.y;
+    auto layer = inport_.getData()->getLayer(layer_, layerIndex_)->getRepresentation<LayerRAM>();
+    auto dims = layer->getDimensions();
 
-    auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+    switch (mode_.get()) {
+        case Mode::Analytics: {
 
-    auto index = util::IndexMapper2D(dims);
+            auto size = dims.x * dims.y;
+            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
 
-    std::vector<std::vector<float>*> channelBuffer_;
-    auto numCh = volume->getDataFormat()->getComponents();
-    for (size_t c = 0; c < numCh; c++) {
-        auto col = dataFrame->addColumn<float>("Channel " + toString(c + 1), size);
-        channelBuffer_.push_back(
-            &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
+            std::vector<std::vector<float>*> channelBuffer_;
+            auto numCh = layer->getDataFormat()->getComponents();
+            for (size_t c = 0; c < numCh; c++) {
+                auto col = dataFrame->addColumn<float>("Channel " + toString(c + 1), size);
+                channelBuffer_.push_back(
+                    &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
+            }
+
+            auto& magnitudes = dataFrame->addColumn<float>("Magnitude", size)
+                                   ->getTypedBuffer()
+                                   ->getEditableRAMRepresentation()
+                                   ->getDataContainer();
+
+            std::vector<float>* grayscalePerceived = nullptr;
+            std::vector<float>* grayscaleRelative = nullptr;
+            std::vector<float>* averageRGB = nullptr;
+            if (numCh >= 3) {
+                grayscalePerceived =
+                    &dataFrame->addColumn<float>("Luminance (perceived) (from RGB)", size)
+                         ->getTypedBuffer()
+                         ->getEditableRAMRepresentation()
+                         ->getDataContainer();
+                grayscaleRelative =
+                    &dataFrame->addColumn<float>("Luminance (relative) (from RGB)", size)
+                         ->getTypedBuffer()
+                         ->getEditableRAMRepresentation()
+                         ->getDataContainer();
+                averageRGB = &dataFrame->addColumn<float>("Luminance (average) (from RGB)", size)
+                                  ->getTypedBuffer()
+                                  ->getEditableRAMRepresentation()
+                                  ->getDataContainer();
+            }
+
+            auto& averageAll = dataFrame->addColumn<float>("Average (all channels)", size)
+                                   ->getTypedBuffer()
+                                   ->getEditableRAMRepresentation()
+                                   ->getDataContainer();
+            auto& row = dataFrame->addColumn<int>("Row", size)
+                            ->getTypedBuffer()
+                            ->getEditableRAMRepresentation()
+                            ->getDataContainer();
+            auto& col = dataFrame->addColumn<int>("Column", size)
+                            ->getTypedBuffer()
+                            ->getEditableRAMRepresentation()
+                            ->getDataContainer();
+
+            // Values copied from imagegrayscale.cpp
+            static const vec3 perceivedLum(0.299f, 0.587f, 0.114f);
+            static const vec3 relativeLum(0.2126f, 0.7152f, 0.0722f);
+            static const vec3 avgLum(1.0f / 3.0f);
+
+            layer->dispatch<void>([&](const auto lr) {
+                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                const auto im = util::IndexMapper2D(dims);
+                const auto data = lr->getDataTyped();
+
+                size2_t pos;
+                for (pos.y = 0; pos.y < dims.y; pos.y++) {
+                    for (pos.x = 0; pos.x < dims.x; pos.x++) {
+                        const auto idx = im(pos);
+                        const auto v = util::glm_convert<dvec4>(data[idx]);
+
+                        double m = 0.0;
+                        double sum = 0.0;
+                        for (size_t c = 0; c < DataFormat<ValueType>::comp; c++) {
+                            (*channelBuffer_[c])[idx] = static_cast<float>(v[c]);
+                            m += v[c] * v[c];
+                            sum += v[c];
+                        }
+                        if (grayscalePerceived) {
+                            (*grayscalePerceived)[idx] = glm::dot(perceivedLum, vec3(v));
+                        }
+                        if (grayscaleRelative) {
+                            (*grayscaleRelative)[idx] = glm::dot(relativeLum, vec3(v));
+                        }
+                        if (averageRGB) {
+                            (*averageRGB)[idx] = glm::dot(avgLum, vec3(v));
+                        }
+
+                        magnitudes[idx] = static_cast<float>(std::sqrt(m));
+                        averageAll[idx] = static_cast<float>(sum / DataFormat<ValueType>::comp);
+                        row[idx] = static_cast<int>(pos.y);
+                        col[idx] = static_cast<int>(pos.x);
+                    }
+                }
+            });
+
+            outport_.setData(dataFrame);
+            break;
+        }
+        case Mode::Rows: {
+            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(dims.x));
+            layer->dispatch<void>([&](const auto lr) {
+                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                const auto im = util::IndexMapper2D(dims);
+                const auto data = lr->getDataTyped();
+                for (size_t j = range_.getStart(); j < range_.getEnd(); ++j) {
+                    auto& row = dataFrame->addColumn<ValueType>(toString(j), dims.x)
+                                    ->getTypedBuffer()
+                                    ->getEditableRAMRepresentation()
+                                    ->getDataContainer();
+
+                    for (size_t i = 0; i < dims.x; ++i) {
+                        row[i] = data[im(i, j)];
+                    }
+                }
+            });
+
+            outport_.setData(dataFrame);
+            break;
+        }
+        case Mode::Columns: {
+            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(dims.y));
+            layer->dispatch<void>([&](const auto lr) {
+                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                const auto im = util::IndexMapper2D(dims);
+                const auto data = lr->getDataTyped();
+                for (size_t i = range_.getStart(); i < range_.getEnd(); ++i) {
+                    auto& col = dataFrame->addColumn<ValueType>(toString(i), dims.y)
+                                    ->getTypedBuffer()
+                                    ->getEditableRAMRepresentation()
+                                    ->getDataContainer();
+
+                    for (size_t j = 0; j < dims.y; ++i) {
+                        col[j] = data[im(i, j)];
+                    }
+                }
+            });
+            outport_.setData(dataFrame);
+            break;
+        }
     }
-    std::vector<float>* magnitudes = &dataFrame->addColumn<float>("Magnitude", size)
-                                          ->getTypedBuffer()
-                                          ->getEditableRAMRepresentation()
-                                          ->getDataContainer();
-    std::vector<float>* greycalePerceived = nullptr;
-    std::vector<float>* greycaleRelative = nullptr;
-    std::vector<float>* averageRGB = nullptr;
-    if (numCh >= 3) {
-        greycalePerceived = &dataFrame->addColumn<float>("Luminance (perceived) (from RGB)", size)
-                                 ->getTypedBuffer()
-                                 ->getEditableRAMRepresentation()
-                                 ->getDataContainer();
-        greycaleRelative = &dataFrame->addColumn<float>("Luminance (relative) (from RGB)", size)
-                                ->getTypedBuffer()
-                                ->getEditableRAMRepresentation()
-                                ->getDataContainer();
-        averageRGB = &dataFrame->addColumn<float>("Luminance (average) (from RGB)", size)
-                          ->getTypedBuffer()
-                          ->getEditableRAMRepresentation()
-                          ->getDataContainer();
-    }
-    std::vector<float>* averageAll = &dataFrame->addColumn<float>("Average (all channels)", size)
-                                          ->getTypedBuffer()
-                                          ->getEditableRAMRepresentation()
-                                          ->getDataContainer();
-
-    // Values copied from imagegrayscale.cpp
-    static const vec3 perceivedLum(0.299f, 0.587f, 0.114f);
-    static const vec3 relativeLum(0.2126f, 0.7152f, 0.0722f);
-    static const vec3 avgLum(1.0f / 3.0f);
-
-    util::forEachPixel(*volume, [&](const size2_t& pos) {
-        auto idx = index(pos);
-        auto v = vec4(volume->getAsDVec4(pos));
-        float m = 0;
-        float sum = 0;
-        for (size_t c = 0; c < numCh; c++) {
-            channelBuffer_[c]->at(idx) = v[c];
-            m += v[c] * v[c];
-            sum += v[c];
-        }
-        if (greycalePerceived) {
-            greycalePerceived->at(idx) = glm::dot(perceivedLum, vec3(v));
-        }
-        if (greycaleRelative) {
-            greycaleRelative->at(idx) = glm::dot(relativeLum, vec3(v));
-        }
-        if (averageRGB) {
-            averageRGB->at(idx) = glm::dot(avgLum, vec3(v));
-        }
-
-        magnitudes->at(idx) = std::sqrt(m);
-        averageAll->at(idx) = sum / numCh;
-    });
-    dataframe_.setData(dataFrame);
 }
 
 }  // namespace plot

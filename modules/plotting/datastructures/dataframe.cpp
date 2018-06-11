@@ -42,13 +42,11 @@ namespace plot {
  */
 DataFrame::DataFrame(std::uint32_t size) : columns_() {
     // at the moment, GPUs only support uints up to 32bit
-    auto indexColumn = addColumn<std::uint32_t>("index");
-
-    auto ib = indexColumn->getTypedBuffer();
-    auto buffer = ib->getEditableRAMRepresentation();
-    for (std::uint32_t i = 0; i < size; i++) {
-        buffer->add(i);
-    }
+    auto &cont = addColumn<std::uint32_t>("index", size)
+                     ->getTypedBuffer()
+                     ->getEditableRAMRepresentation()
+                     ->getDataContainer();
+    std::iota(cont.begin(), cont.end(), 0);
 }
 
 /*
@@ -58,8 +56,7 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identi
                                                        std::shared_ptr<const BufferBase> buffer) {
     return buffer->getRepresentation<BufferRAM>()
         ->dispatch<std::shared_ptr<Column>, dispatching::filter::Scalars>([&](auto buf) {
-            using BufferType = std::remove_cv_t<decltype(buf)>;
-            using ValueType = util::PrecsionValueType<BufferType>;
+            using ValueType = util::PrecsionValueType<decltype(buf)>;
             auto col = this->addColumn<ValueType>(identifier);
             auto newBuf = col->getTypedBuffer();
             auto &newVec = newBuf->getEditableRAMRepresentation()->getDataContainer();

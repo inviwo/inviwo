@@ -27,66 +27,65 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SCATTERPLOTPROCESSOR_H
-#define IVW_SCATTERPLOTPROCESSOR_H
+#ifndef IVW_VOLUMESEQUENCETODATAFRAME_H
+#define IVW_VOLUMESEQUENCETODATAFRAME_H
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
+#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/dataframe.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/plotting/datastructures/dataframe.h>
-#include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <modules/plotting/properties/dataframeproperty.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
+#include <set>
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.ScatterPlotProcessor, Scatter Plot}
- * ![](org.inviwo.ScatterPlotProcessor.png?classIdentifier=org.inviwo.ScatterPlotProcessor)
- * This processor plots a scatter plot for a given DataFrame.
+/** \docpage{org.inviwo.VolumeSequenceToDataFrame, Volume To DataFrame}
+ * ![](org.inviwo.VolumeSequenceToDataFrame.png?classIdentifier=org.inviwo.VolumeSequenceToDataFrame)
+ * This processor converts a volume sequence into a DataFrame.
  *
  * ### Inports
- *   * __DataFrame__  data input for plotting
- *   * __BrushingAndLinking__   inport for brushing & linking interactions
+ *   * __volume__  source volume
  *
  * ### Outports
- *   * __outport__   rendered image of the scatter plot
- *
+ *   * __outport__  generated DataFrame
  */
 
-class IVW_MODULE_PLOTTINGGL_API ScatterPlotProcessor : public Processor {
+class IVW_MODULE_PLOTTING_API VolumeSequenceToDataFrame : public Processor {
 public:
-    ScatterPlotProcessor();
-    virtual ~ScatterPlotProcessor() = default;
+    VolumeSequenceToDataFrame();
+    virtual ~VolumeSequenceToDataFrame() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataFrameInport dataFramePort_;
-    BrushingAndLinkingInport brushingPort_;
-    ImageInport backgroundPort_;
-    ImageOutport outport_;
+    DataInport<Volume, 0, true> inport_;
+    DataOutport<DataFrame> outport_;
 
-    ScatterPlotGL scatterPlot_;
+    std::set<size_t> filteredIDs_;
+    BoolProperty reduce_;
+    FloatProperty probability_;
 
-    DataFrameColumnProperty xAxis_;
-    DataFrameColumnProperty yAxis_;
-    DataFrameColumnProperty colorCol_;
-    DataFrameColumnProperty radiusCol_;
+    BoolProperty omitOutliers_;
+    FloatProperty threshold_;
 
-    void onXAxisChange();
-    void onYAxisChange();
-    void onColorChange();
-    void onRadiusChange();
+    void recomputeReduceBuffer();
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
 
-#endif  // IVW_SCATTERPLOTPROCESSOR_H
+#endif  // IVW_VOLUMESEQUENCETODATAFRAME_H

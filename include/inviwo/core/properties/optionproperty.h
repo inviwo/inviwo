@@ -63,6 +63,8 @@ public:
     virtual size_t getSelectedIndex() const = 0;
     virtual const std::string& getSelectedIdentifier() const = 0;
     virtual const std::string& getSelectedDisplayName() const = 0;
+    virtual const std::string& getOptionIdentifier(size_t index) const = 0;
+    virtual const std::string& getOptionDisplayName(size_t index) const = 0;
     virtual std::vector<std::string> getIdentifiers() const = 0;
     virtual std::vector<std::string> getDisplayNames() const = 0;
 
@@ -174,6 +176,12 @@ public:
     virtual std::vector<std::string> getIdentifiers() const override;
     virtual std::vector<std::string> getDisplayNames() const override;
     std::vector<T> getValues() const;
+    const std::vector<OptionPropertyOption<T>>& getOptions() const;
+
+    virtual const std::string& getOptionIdentifier(size_t index) const override;
+    virtual const std::string& getOptionDisplayName(size_t index) const override;
+    const T& getOptionValue(size_t index) const;
+    const OptionPropertyOption<T>& getOptions(size_t index) const;
 
     virtual bool setSelectedIndex(size_t index) override;
     virtual bool setSelectedIdentifier(const std::string& identifier) override;
@@ -215,6 +223,24 @@ private:
     size_t defaultSelectedIndex_;
     std::vector<OptionPropertyOption<T>> defaultOptions_;
 };
+
+template <typename T>
+bool operator==(const TemplateOptionProperty<T>& lhs, const T& rhs) {
+    return lhs.get() == rhs;
+}
+template <typename T>
+bool operator==(const T& lhs, const TemplateOptionProperty<T>& rhs) {
+    return lhs == rhs.get();
+}
+
+template <typename T>
+bool operator!=(const TemplateOptionProperty<T>& lhs, const T& rhs) {
+    return lhs.get() != rhs;
+}
+template <typename T>
+bool operator!=(const T& lhs, const TemplateOptionProperty<T>& rhs) {
+    return lhs != rhs.get();
+}
 
 namespace detail {
 template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
@@ -408,6 +434,29 @@ std::vector<T> TemplateOptionProperty<T>::getValues() const {
     }
     return result;
 }
+
+template <typename T>
+const std::vector<OptionPropertyOption<T>>& TemplateOptionProperty<T>::getOptions() const {
+    return options_; 
+}
+
+template <typename T>
+const std::string& TemplateOptionProperty<T>::getOptionIdentifier(size_t index) const {
+    return options_[index].id_;
+}
+template <typename T>
+const std::string& TemplateOptionProperty<T>::getOptionDisplayName(size_t index) const {
+    return options_[index].name_;
+}
+template <typename T>
+const T& TemplateOptionProperty<T>::getOptionValue(size_t index) const {
+    return options_[index].value_;
+}
+template <typename T>
+const OptionPropertyOption<T>& TemplateOptionProperty<T>::getOptions(size_t index) const {
+    return options_[index];
+}
+
 
 // Setters
 template <typename T>

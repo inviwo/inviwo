@@ -36,14 +36,28 @@
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 
 class IVW_MODULE_PLOTTING_API PlottingModule : public InviwoModule {
 public:
-  PlottingModule(InviwoApplication *app);
+    PlottingModule(InviwoApplication* app);
+
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
+
+private:
+    class Converter : public VersionConverter {
+    public:
+        Converter(int version);
+        virtual bool convert(TxElement* root) override;
+
+    private:
+        int version_;
+    };
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PLOTTINGMODULE_H
+#endif  // IVW_PLOTTINGMODULE_H

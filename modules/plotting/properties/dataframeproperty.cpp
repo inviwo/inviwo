@@ -51,10 +51,10 @@ DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::st
     , dataframe_(port.getData())
     , allowNone_(allowNone)
     , firstIndex_(firstIndex) {
-    setSerializationMode(PropertySerializationMode::All);
-    auto portPtr = &port;
 
-    port.onChange([=]() {
+    setSerializationMode(PropertySerializationMode::All);
+
+    port.onChange([this, portPtr = &port]() {
         if (portPtr->hasData()) {
             setOptions(portPtr->getData());
         }
@@ -64,36 +64,24 @@ DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::st
 void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> dataframe) {
     if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
     dataframe_ = dataframe;
-    std::string prevID = "";
-    if (options_.size() != 0) {
-        prevID = getSelectedIdentifier();
-    }
 
-    clearOptions();
-
+    std::vector<OptionPropertyIntOption> options;
     if (allowNone_) {
-        addOption("none", "None", -1);
+        options.emplace_back("none", "None", -1);
     }
 
     int idx = 0;
     for (const auto &col : *dataframe) {
-        if (idx == 0) {
-            idx++;
-            continue;
-        }
         auto header = col->getHeader();
         auto identifier = header;
         util::erase_remove_if(identifier, [](char cc) {
             return !(cc >= -1) || !(std::isalnum(cc) || cc == '_' || cc == '-');
         });
-        addOption(identifier, header, idx);
-        if ((prevID == "" && static_cast<int>(firstIndex_) == idx) || identifier == prevID) {
-            setSelectedIdentifier(identifier);
-        }
+        options.emplace_back(identifier, header, idx);
         idx++;
     }
 
-    propertyModified();
+    replaceOptions(std::move(options));
     setCurrentStateAsDefault();
 }
 
@@ -102,9 +90,9 @@ std::shared_ptr<const Column> DataFrameColumnProperty::getColumn() {
         return nullptr;
     }
     auto id = get();
-    if (id == -1) {
+    if (id == -1) {  // None is selected
         return nullptr;
-    };  // None is selected
+    };
     return dataframe_->getColumn(id);
 }
 
@@ -115,25 +103,23 @@ std::shared_ptr<const BufferBase> DataFrameColumnProperty::getBuffer() {
     return nullptr;
 }
 
-void DataFrameColumnProperty::set(const Property *p) {
-    if (auto dfcp = dynamic_cast<const DataFrameColumnProperty *>(p)) {
-        if (dfcp->dataframe_ != dataframe_) {
-            return;
-        }
-        if (dfcp->options_.size() == 0) return;
+void DataFrameColumnProperty::set(const Property *srcProperty) {
+    if (auto src = dynamic_cast<const DataFrameColumnProperty *>(srcProperty)) {
+        if (src->options_.size() == 0) return;
+
         if (options_.size() == 0) return;
 
-        auto i = dfcp->getSelectedValue();
+        auto i = src->getSelectedValue();
         if (i == -1 && !allowNone_) {
             // Do Nothing
         } else {
-            auto id = dfcp->getSelectedIdentifier();
+            const auto id = src->getSelectedIdentifier();
             if (id != getSelectedIdentifier()) {
                 setSelectedIdentifier(id);
             }
         }
     } else {
-        OptionPropertyInt::set(p);
+        OptionPropertyInt::set(srcProperty);
     }
 }
 

@@ -77,7 +77,9 @@ public:
     BoolProperty visible_;
     FloatVec4Property color_;
     FloatProperty width_;
+    BoolProperty useDataRange_;
     DoubleMinMaxProperty range_;
+
     TemplateOptionProperty<Orientation> orientation_;
     TemplateOptionProperty<Placement> placement_;
     // BoolProperty logScale_;
