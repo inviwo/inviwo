@@ -61,13 +61,13 @@ auto Clock::getElapsedTime() const -> duration {
     }
 }
 
-double Clock::getElapsedMiliseconds() const {
-    using duration_double = std::chrono::duration<double, std::chrono::milliseconds::period>;
+double Clock::getElapsedMilliseconds() const {
+    using duration_double = std::chrono::duration<double, std::milli>;
     return std::chrono::duration_cast<duration_double>(getElapsedTime()).count();
 }
 
 double Clock::getElapsedSeconds() const {
-    using duration_double = std::chrono::duration<double, std::chrono::seconds::period>;
+    using duration_double = std::chrono::duration<double, std::ratio<1>>;
     return std::chrono::duration_cast<duration_double>(getElapsedTime()).count();
 }
 
