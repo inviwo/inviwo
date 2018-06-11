@@ -124,21 +124,39 @@ void exposeMesh(pybind11::module &m) {
 
     py::class_<BasicMesh, Mesh, std::shared_ptr<BasicMesh>>(m, "BasicMesh")
         .def(py::init<>())
-        .def("addVertex", &BasicMesh::addVertex)
         .def("addVertices", &BasicMesh::addVertices)
+
+        .def("addVertex", [](BasicMesh &self, vec3 pos, vec3 norm, vec3 texCoord,
+                             vec4 color) { return self.addVertex(pos, norm, texCoord, color); })
+        .def("addVertex",
+             [](BasicMesh &self, const BasicMesh::Vertex &vertex) {
+                 return self.addVertex(std::get<0>(vertex), std::get<1>(vertex),
+                                       std::get<2>(vertex), std::get<3>(vertex));
+             })
 
         .def("setVertex", [](BasicMesh &self, size_t i, vec3 pos, vec3 norm, vec3 texCoord,
                              vec4 color) { self.setVertex(i, pos, norm, texCoord, color); })
+        .def("setVertex",
+             [](BasicMesh &self, size_t i, const BasicMesh::Vertex &vertex) {
+                 self.setVertex(i, std::get<0>(vertex), std::get<1>(vertex), std::get<2>(vertex),
+                                std::get<3>(vertex));
+             })
         .def("setVertexPosition", &BasicMesh::setVertexPosition)
         .def("setVertexNormal", &BasicMesh::setVertexNormal)
         .def("setVertexTexCoord", &BasicMesh::setVertexTexCoord)
         .def("setVertexColor", &BasicMesh::setVertexColor)
 
+        .def("addIndexBuffer",
+             [](BasicMesh *mesh, DrawType dt, ConnectivityType ct) {
+                 mesh->addIndexBuffer(dt, ct);
+                 return mesh->getIndexBuffers().back().second.get();
+             },
+             py::return_value_policy::reference)
+
         .def("getVertices", &BasicMesh::getEditableVertices, py::return_value_policy::reference)
         .def("getTexCoords", &BasicMesh::getEditableTexCoords, py::return_value_policy::reference)
         .def("getColors", &BasicMesh::getEditableColors, py::return_value_policy::reference)
         .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference)
-
         ;
 
     exposeStandardDataPorts<Mesh>(m, "Mesh");

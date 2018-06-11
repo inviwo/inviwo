@@ -89,6 +89,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeinformation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesingletimestepsampler.h
@@ -188,6 +189,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumedivergencecpuprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumegradientcpuprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeinformation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumelaplacianprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequenceelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencesingletimestepsampler.cpp

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,65 +27,73 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESOURCE_H
-#define IVW_VOLUMESOURCE_H
+#ifndef IVW_VOLUMEINFORMATION_H
+#define IVW_VOLUMEINFORMATION_H
 
 #include <modules/base/basemoduledefine.h>
-#include <modules/base/properties/basisproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <modules/base/properties/sequencetimerproperty.h>
 #include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 
 namespace inviwo {
 
-class InviwoApplication;
-
-/** \docpage{org.inviwo.VolumeSource, Volume Source}
- * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
+/** \docpage{org.inviwo.VolumeInformation, Volume Information}
+ * ![](org.inviwo.VolumeInformation.png?classIdentifier=org.inviwo.VolumeInformation)
+ * Shows available information provided by input volume including metadata.
  *
- * Loads a Volume from a given file. The filename of the source data is
- * available via MetaData.
- *
- * ### Outports
- *   * __Outport__ The loaded volume
- *
- * ### Properties
- *   * __File name__ File to load.
+ * ### Inports
+ *   * __volume__   input volume
  */
-class IVW_MODULE_BASE_API VolumeSource : public Processor {
+
+/**
+ * \class VolumeInformation
+ * \brief provides information on input volume
+ */
+class IVW_MODULE_BASE_API VolumeInformation : public Processor {
 public:
-    using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
+    VolumeInformation();
+    virtual ~VolumeInformation() = default;
+
+    virtual void process() override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    VolumeSource(InviwoApplication* app, const std::string& file = "");
-    virtual ~VolumeSource() = default;
-
-    virtual void deserialize(Deserializer& d) override;
-    virtual void process() override;
-
 private:
-    void load(bool deserialize = false);
-    void addFileNameFilters();
+    VolumeInport volume_;
 
-    InviwoApplication* app_;
-    std::shared_ptr<VolumeSequence> volumes_;
+    VolumeInformationProperty volumeInfo_;
 
-    VolumeOutport outport_;
-    FileProperty file_;
-    ButtonProperty reload_;
+    IntSizeTProperty significantVoxels_;
+    DoubleProperty significantVoxelsRatio_;
 
-    BasisProperty basis_;
-    VolumeInformationProperty information_;
-    SequenceTimerProperty volumeSequence_;
+    DoubleMinMaxProperty minMaxChannel1_;
+    DoubleMinMaxProperty minMaxChannel2_;
+    DoubleMinMaxProperty minMaxChannel3_;
+    DoubleMinMaxProperty minMaxChannel4_;
 
-    bool deserialized_ = false;
+    FloatMat4Property worldTransform_;
+    FloatMat3Property basis_;
+    FloatVec3Property offset_;
+
+    BoolCompositeProperty perVoxelProperties_;
+    CompositeProperty transformations_;
+    CompositeProperty metaDataProperty_;
+
+    DoubleVec3Property voxelSize_;
+
+    std::unordered_map<std::string, std::function<void(const std::string& key, const MetaData*,
+                                                       CompositeProperty&)>>
+        factory_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif  // IVW_VOLUMESOURCE_H
+#endif  // IVW_VOLUMEINFORMATION_H

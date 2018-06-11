@@ -29,10 +29,14 @@
 
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/data.h>
+
+#include <algorithm>
 
 namespace inviwo {
 
-BufferRAM::BufferRAM(const DataFormatBase* format, BufferUsage usage, BufferTarget target)
+BufferRAM::BufferRAM(const DataFormatBase *format, BufferUsage usage, BufferTarget target)
     : BufferRepresentation(format, usage, target) {}
 
 std::type_index BufferRAM::getTypeIndex() const { return std::type_index(typeid(BufferRAM)); }
@@ -52,10 +56,37 @@ struct BufferRamCreationDispatcher {
     }
 };
 
-std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
+std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase *format,
                                            BufferUsage usage, BufferTarget target) {
 
     BufferRamCreationDispatcher disp;
     return format->dispatch(disp, size, usage, target);
 }
+
+bool operator==(const BufferBase &bufA, const BufferBase &bufB) {
+    if (&bufA == &bufB) {
+        return true;
+    }
+    if (bufA.getDataFormat()->getId() != bufB.getDataFormat()->getId()) {
+        return false;
+    }
+    if (bufA.getSize() != bufB.getSize()) {
+        return false;
+    }
+
+    return bufA.getRepresentation<BufferRAM>()->dispatch<bool>([&](const auto buffer) {
+        using ValueType = util::PrecsionValueType<decltype(buffer)>;
+
+        auto containerA = buffer->getDataContainer();
+        auto bufBRAM = bufB.getRepresentation<BufferRAM>();
+        auto containerB =
+            static_cast<const BufferRAMPrecision<ValueType> *>(bufBRAM)->getDataContainer();
+
+        return std::equal(containerA.begin(), containerA.end(), containerB.begin(),
+                          containerB.end());
+    });
 }
+
+bool operator!=(const BufferBase &bufA, const BufferBase &bufB) { return !(bufA == bufB); }
+
+}  // namespace inviwo

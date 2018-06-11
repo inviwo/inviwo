@@ -33,7 +33,7 @@
 
 namespace inviwo {
 namespace util {
-bool hasTimestamps(const VoumeSequence &seq, bool checkfirstonly) {
+bool hasTimestamps(const VolumeSequence &seq, bool checkfirstonly) {
     if (seq.empty()) {
         return false;
     }
@@ -46,7 +46,7 @@ bool hasTimestamps(const VoumeSequence &seq, bool checkfirstonly) {
     return true;
 }
 
-std::pair<double, double> getTimestampRange(const VoumeSequence &seq, bool sorted) {
+std::pair<double, double> getTimestampRange(const VolumeSequence &seq, bool sorted) {
     if (!hasTimestamps(seq)) {
         return std::make_pair(0.0, 1.0);
     }
@@ -65,7 +65,7 @@ std::pair<double, double> getTimestampRange(const VoumeSequence &seq, bool sorte
     return std::make_pair(start, end);
 }
 
-bool isSorted(const VoumeSequence &seq) {
+bool isSorted(const VolumeSequence &seq) {
     if (seq.size() <= 1) {
         return true;
     }
@@ -79,8 +79,8 @@ bool isSorted(const VoumeSequence &seq) {
     return true;
 }
 
-VoumeSequence sortSequence(const VoumeSequence &seq) {
-    VoumeSequence sorted = seq;
+VolumeSequence sortSequence(const VolumeSequence &seq) {
+    VolumeSequence sorted = seq;
     std::sort(sorted.begin(), sorted.end(), [](const SharedVolume &a, const SharedVolume &b) {
         auto t1 = getTimestamp(a);
         auto t2 = getTimestamp(b);
@@ -90,7 +90,7 @@ VoumeSequence sortSequence(const VoumeSequence &seq) {
 }
 
 std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(
-    const VoumeSequence &seq, double t, bool sorted) {
+    const VolumeSequence &seq, double t, bool sorted) {
     if (seq.size() == 1) {
         return std::make_pair(seq.front(), seq.front());
     }

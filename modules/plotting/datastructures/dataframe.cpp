@@ -84,7 +84,7 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
         std::ostringstream oss;
         oss << "Data does not match column count, DataFrame has " << (columns_.size() - 1)
             << " columns while input data has " << data.size();
-        oss << ". Input data is : " << joinString(data," | ");
+        oss << ". Input data is : " << joinString(data, " | ");
         throw InvalidColCount(oss.str(), IvwContext);
     }
     // Try to match up input data with columns.
@@ -199,9 +199,12 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
             throw InvalidColCount(oss.str(), IvwContextCustom("DataFrame::createDataFrame"));
         }
         for (auto column = 0u; column < rowData.size(); ++column) {
-            std::istringstream iss(rowData[column]);
+            std::istringstream iss(trim(rowData[column]));
             float d;
-            if (iss >> d) {  // ordinal buffer
+            // try extracting floating point number. If the stream is not at its end, then there was
+            // trailing data. Hence this value does not represent a floating point number.
+            if ((iss >> d) && iss.eof()) {
+                // ordinal buffer
                 columnTypeStatistics[column].first++;
             } else {  // nominal buffer
                 columnTypeStatistics[column].second++;

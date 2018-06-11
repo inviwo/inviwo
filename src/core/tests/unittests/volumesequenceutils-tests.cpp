@@ -58,12 +58,12 @@ namespace inviwo{
 
 
     TEST(VolumeSequenceUtilsTests, hasTimestampsTest) {
-        VoumeSequence s1;
+        VolumeSequence s1;
         s1.push_back(createVolume(0.0));
         s1.push_back(createVolume(0.1));
         s1.push_back(createVolume(0.2));
 
-        VoumeSequence s2;
+        VolumeSequence s2;
         s2.push_back(createVolume());
         s2.push_back(createVolume());
         s2.push_back(createVolume());
@@ -75,12 +75,12 @@ namespace inviwo{
 
 
     TEST(VolumeSequenceUtilsTests, isSorted) {
-        VoumeSequence s1;
+        VolumeSequence s1;
         s1.push_back(createVolume(0.0));
         s1.push_back(createVolume(0.1));
         s1.push_back(createVolume(0.2));
 
-        VoumeSequence s2;
+        VolumeSequence s2;
         s2.push_back(createVolume(0.2));
         s2.push_back(createVolume(0.1));
         s2.push_back(createVolume(0.4));
@@ -95,7 +95,7 @@ namespace inviwo{
 
 
 TEST(VolumeSequenceUtilsTests, getTimestampRangeTest) {
-    VoumeSequence s1;
+    VolumeSequence s1;
     s1.push_back(createVolume(0.0));
     s1.push_back(createVolume(0.1));
     s1.push_back(createVolume(0.2));
@@ -107,7 +107,7 @@ TEST(VolumeSequenceUtilsTests, getTimestampRangeTest) {
 
 
 TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
-    VoumeSequence s1;
+    VolumeSequence s1;
     s1.push_back(createVolume(0.0));
     s1.push_back(createVolume(0.1));
     s1.push_back(createVolume(0.2));
@@ -153,7 +153,7 @@ TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
 
 
 
-    VoumeSequence s2;
+    VolumeSequence s2;
     
     s2.push_back(createVolume());
     s2.push_back(createVolume());

@@ -32,6 +32,10 @@
 #endif
 
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/common/coremodulesharedlibrary.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -41,6 +45,21 @@
 using namespace inviwo;
 
 int main(int argc, char** argv) {
+
+    LogCentral::init();
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->setLogLevel(LogLevel::Error);
+    LogCentral::getPtr()->registerLogger(logger);
+    InviwoApplication app(argc, argv, "inviwo");
+
+    {
+        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+        modules.emplace_back(createCoreModule());
+        app.registerModules(std::move(modules));
+    }
+
+    app.processFront();
+
     int ret = -1;
     {
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST

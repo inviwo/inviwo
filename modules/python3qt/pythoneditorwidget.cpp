@@ -405,7 +405,7 @@ void PythonEditorWidget::run() {
     Clock c;
     c.start();
     bool ok = script_.run();
-    c.tick();
+    c.stop();
 
     std::stringstream ss;
     ss << (ok ? "Executed Successfully" : "Failed");

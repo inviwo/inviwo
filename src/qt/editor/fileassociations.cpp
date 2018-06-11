@@ -236,7 +236,8 @@ private:
     bool ddeExecute(MSG* message, long* result) {
         // unpack the DDE message
         UINT_PTR unused;
-        HGLOBAL hData;
+        HGLOBAL hData = nullptr;
+        IVW_UNUSED_PARAM(unused);
         // IA64: Assume DDE LPARAMs are still 32-bit
         Q_ASSERT(::UnpackDDElParam(WM_DDE_EXECUTE, message->lParam, &unused, (UINT_PTR*)&hData));
 
