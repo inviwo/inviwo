@@ -38,7 +38,7 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeToDataFrame::processorInfo_{
     "org.inviwo.VolumeToDataFrame",  // Class identifier
-    "Volume To DataFrame",          // Display name
+    "Volume To DataFrame",           // Display name
     "Data Creation",                 // Category
     CodeState::Stable,               // Code state
     "CPU, DataFrame, Volume",        // Tags
@@ -130,15 +130,14 @@ void VolumeToDataFrame::process() {
                 const auto im = util::IndexMapper3D(dim);
                 using ValueType = util::PrecsionValueType<decltype(vr)>;
                 const auto data = vr->getDataTyped();
+                auto i = 0;
                 size3_t ind;
                 for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
                     for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
-                        for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
-                            const auto i = im(ind);
-                            const auto v = util::glm_convert<dvec4>(data[i]);
-
+                        for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {                          
+                            const auto v = util::glm_convert<dvec4>(data[im(ind)]);
                             double m = 0.0;
-                            for (size_t c = 0; c < util::extent<ValueType>::value; c++) {
+                            for (size_t c = 0; c < DataFormat<ValueType>::comp; c++) {
                                 (*channelBuffer_[c])[i] = static_cast<float>(v[c]);
                                 m += v[c] * v[c];
                             }
@@ -153,6 +152,7 @@ void VolumeToDataFrame::process() {
                             posx[i] = static_cast<float>(pos.x);
                             posy[i] = static_cast<float>(pos.y);
                             posz[i] = static_cast<float>(pos.z);
+                            ++i;
                         }
                     }
                 }
@@ -171,10 +171,9 @@ void VolumeToDataFrame::process() {
                 size3_t ind;
                 for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
                     for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
-                        auto& line = dataFrame
-                                         ->addColumn<ValueType>(
-                                             "y:" + toString(ind.y) + " z:" + toString(ind.z), size)
-                                         ->getTypedBuffer()
+                        auto col = dataFrame->addColumn<ValueType>(
+                            "y:" + toString(ind.y) + " z:" + toString(ind.z), size);
+                        auto& line = col->getTypedBuffer()
                                          ->getEditableRAMRepresentation()
                                          ->getDataContainer();
                         size_t i = 0;
@@ -199,10 +198,9 @@ void VolumeToDataFrame::process() {
                 size3_t ind;
                 for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
                     for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
-                        auto& line = dataFrame
-                                         ->addColumn<ValueType>(
-                                             "x:" + toString(ind.x) + " z:" + toString(ind.z), size)
-                                         ->getTypedBuffer()
+                        auto col = dataFrame->addColumn<ValueType>(
+                            "x:" + toString(ind.x) + " z:" + toString(ind.z), size);
+                        auto& line = col->getTypedBuffer()
                                          ->getEditableRAMRepresentation()
                                          ->getDataContainer();
                         size_t i = 0;
@@ -227,10 +225,9 @@ void VolumeToDataFrame::process() {
                 size3_t ind;
                 for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
                     for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
-                        auto& line = dataFrame
-                                         ->addColumn<ValueType>(
-                                             "x:" + toString(ind.x) + " y:" + toString(ind.y), size)
-                                         ->getTypedBuffer()
+                        auto col = dataFrame->addColumn<ValueType>(
+                            "x:" + toString(ind.x) + " y:" + toString(ind.y), size);
+                        auto& line = col->getTypedBuffer()
                                          ->getEditableRAMRepresentation()
                                          ->getDataContainer();
                         size_t i = 0;

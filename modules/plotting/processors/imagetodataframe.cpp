@@ -177,7 +177,7 @@ void ImageToDataFrame::process() {
 
                         double m = 0.0;
                         double sum = 0.0;
-                        for (size_t c = 0; c < util::extent<ValueType>::value; c++) {
+                        for (size_t c = 0; c < DataFormat<ValueType>::comp; c++) {
                             (*channelBuffer_[c])[idx] = static_cast<float>(v[c]);
                             m += v[c] * v[c];
                             sum += v[c];
@@ -193,7 +193,7 @@ void ImageToDataFrame::process() {
                         }
 
                         magnitudes[idx] = static_cast<float>(std::sqrt(m));
-                        averageAll[idx] = static_cast<float>(sum / util::extent<ValueType>::value);
+                        averageAll[idx] = static_cast<float>(sum / DataFormat<ValueType>::comp);
                         row[idx] = static_cast<int>(pos.y);
                         col[idx] = static_cast<int>(pos.x);
                     }
