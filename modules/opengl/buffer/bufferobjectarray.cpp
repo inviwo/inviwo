@@ -101,11 +101,11 @@ void BufferObjectArray::attachBufferObject(const BufferObject* bufferObject, GLu
     if (location < attachedBuffers_.size()) {
 #ifdef IVW_DEBUG
         // print warning if a different buffer is already attached to this location
-        if (attachedBuffers_[location] && bufferObject &&
-            (attachedBuffers_[location] != bufferObject)) {
+        if (attachedBuffers_[location].second && bufferObject &&
+            (attachedBuffers_[location].second != bufferObject)) {
             LogWarn("BufferObjectArray (" << id_ << "): location " << location
                                           << " is already bound to different buffer object (id "
-                                          << attachedBuffers_[location]->getId()
+                                          << attachedBuffers_[location].second->getId()
                                           << "). Replacing with new buffer object (id "
                                           << bufferObject->getId() << ").");
         }
@@ -126,8 +126,8 @@ const BufferObject* BufferObjectArray::getBufferObject(size_t location) const {
 BufferObjectArray::BindingType BufferObjectArray::getBindingType(size_t location) const {
     return attachedBuffers_[location].first;
 }
-void BufferObjectArray::setBindingType(size_t location, BindingType bindingType){
-     attachedBuffers_[location].first = bindingType;
+void BufferObjectArray::setBindingType(size_t location, BindingType bindingType) {
+    attachedBuffers_[location].first = bindingType;
 }
 
 }  // namespace inviwo
