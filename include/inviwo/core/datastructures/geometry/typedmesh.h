@@ -506,7 +506,7 @@ struct helper<F, 0> {
     static void setVertexImplVertex(F &, size_t, const typename F::Vertex &) {}
 };
 
-};  // namespace detail
+}  // namespace detail
 
 template <typename... BufferTraits>
 void TypedMesh<BufferTraits...>::addVertices(const std::vector<Vertex> &vertices) {
