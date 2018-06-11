@@ -44,7 +44,6 @@
 #include <modules/plotting/properties/axisproperty.h>
 
 #include <modules/plottinggl/utils/axisrenderer.h>
-#include <modules/opengl/buffer/bufferobjectarray.h>
 
 namespace inviwo {
 

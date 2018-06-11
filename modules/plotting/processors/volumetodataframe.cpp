@@ -38,7 +38,7 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeToDataFrame::processorInfo_{
     "org.inviwo.VolumeToDataFrame",  // Class identifier
-    "Volume To Data Frame",          // Display name
+    "Volume To DataFrame",          // Display name
     "Data Creation",                 // Category
     CodeState::Stable,               // Code state
     "CPU, DataFrame, Volume",        // Tags
@@ -68,15 +68,14 @@ VolumeToDataFrame::VolumeToDataFrame()
     addProperty(rangeY_);
     addProperty(rangeZ_);
 
-    auto updateRange = [this]() {
+    inport_.onChange([this]() {
         if (inport_.hasData()) {
             const auto dim = inport_.getData()->getDimensions();
             rangeX_.setRangeMax(dim.x);
             rangeY_.setRangeMax(dim.y);
             rangeZ_.setRangeMax(dim.z);
         }
-    };
-    inport_.onChange(updateRange);
+    });
 }
 
 void VolumeToDataFrame::process() {
@@ -129,6 +128,7 @@ void VolumeToDataFrame::process() {
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vr) {
                 const auto im = util::IndexMapper3D(dim);
+                using ValueType = util::PrecsionValueType<decltype(vr)>;
                 const auto data = vr->getDataTyped();
                 size3_t ind;
                 for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
@@ -138,7 +138,7 @@ void VolumeToDataFrame::process() {
                             const auto v = util::glm_convert<dvec4>(data[i]);
 
                             double m = 0.0;
-                            for (size_t c = 0; c < numCh; c++) {
+                            for (size_t c = 0; c < util::extent<ValueType>::value; c++) {
                                 (*channelBuffer_[c])[i] = static_cast<float>(v[c]);
                                 m += v[c] * v[c];
                             }

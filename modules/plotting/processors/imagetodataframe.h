@@ -56,10 +56,12 @@ namespace plot {
  *   * __outport__  generated DataFrame
  *
  * ### Properties
- *   * __Mode__
- *   * __Layer__
- *   * __Color Index__
- *
+ *   * __Mode__  The processor can operate in 3 modes: Analytics, where data for each pixel is
+ *               outputted, or Rows/Columns where one column for each line of pixel in the 
+ *               specified direction is outputted.
+ *   * __Layer__ The image layer to use
+ *   * __Color Index__ The color layer index
+ *   * __Range__ range of rows/columns to use.
  */
 
 class IVW_MODULE_PLOTTING_API ImageToDataFrame : public Processor {
@@ -73,7 +75,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class Mode {Analytics, Rows, Columns};
+    enum class Mode { Analytics, Rows, Columns };
 
     ImageInport inport_;
     DataOutport<DataFrame> outport_;
@@ -82,8 +84,6 @@ private:
     IntSizeTProperty layerIndex_;
 
     IntSizeTMinMaxProperty range_;
-    
-
 };
 
 }  // namespace plot

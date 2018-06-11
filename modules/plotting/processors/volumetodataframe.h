@@ -47,7 +47,7 @@
 namespace inviwo {
 namespace plot {
 
-/** \docpage{org.inviwo.VolumeToDataFrame, Volume To Data Frame}
+/** \docpage{org.inviwo.VolumeToDataFrame, Volume To DataFrame}
  * ![](org.inviwo.VolumeToDataFrame.png?classIdentifier=org.inviwo.VolumeToDataFrame)
  * This processor converts a volume into a DataFrame.
  *
@@ -58,8 +58,12 @@ namespace plot {
  *   * __outport__  generated DataFrame
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Mode__ The processor can operate in 4 modes: Analytics, where data for each voxel in the
+ *              specified ranges is outputted, or XDir, YDir, and ZDir where one column for each
+ *              line of voxels in the specified direction is outputted.
+ *   * __X Range__ x range of voxels to use.
+ *   * __Y Range__ y range of voxels to use.
+ *   * __Z Range__ z range of voxels to use.
  */
 class IVW_MODULE_PLOTTING_API VolumeToDataFrame : public Processor {
 public:

@@ -45,7 +45,7 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageToDataFrame::processorInfo_{
     "org.inviwo.ImageToDataFrame",  // Class identifier
-    "Image To Data Frame",          // Display name
+    "Image To DataFrame",          // Display name
     "Data Creation",                // Category
     CodeState::Stable,        // Code state
     "CPU, DataFrame, Image",        // Tags
@@ -126,16 +126,16 @@ void ImageToDataFrame::process() {
                                    ->getEditableRAMRepresentation()
                                    ->getDataContainer();
 
-            std::vector<float>* greycalePerceived = nullptr;
-            std::vector<float>* greycaleRelative = nullptr;
+            std::vector<float>* grayscalePerceived = nullptr;
+            std::vector<float>* grayscaleRelative = nullptr;
             std::vector<float>* averageRGB = nullptr;
             if (numCh >= 3) {
-                greycalePerceived =
+                grayscalePerceived =
                     &dataFrame->addColumn<float>("Luminance (perceived) (from RGB)", size)
                          ->getTypedBuffer()
                          ->getEditableRAMRepresentation()
                          ->getDataContainer();
-                greycaleRelative =
+                grayscaleRelative =
                     &dataFrame->addColumn<float>("Luminance (relative) (from RGB)", size)
                          ->getTypedBuffer()
                          ->getEditableRAMRepresentation()
@@ -177,23 +177,23 @@ void ImageToDataFrame::process() {
 
                         double m = 0.0;
                         double sum = 0.0;
-                        for (size_t c = 0; c < numCh; c++) {
+                        for (size_t c = 0; c < util::extent<ValueType>::value; c++) {
                             (*channelBuffer_[c])[idx] = static_cast<float>(v[c]);
                             m += v[c] * v[c];
                             sum += v[c];
                         }
-                        if (greycalePerceived) {
-                            (*greycalePerceived)[idx] = glm::dot(perceivedLum, vec3(v));
+                        if (grayscalePerceived) {
+                            (*grayscalePerceived)[idx] = glm::dot(perceivedLum, vec3(v));
                         }
-                        if (greycaleRelative) {
-                            (*greycaleRelative)[idx] = glm::dot(relativeLum, vec3(v));
+                        if (grayscaleRelative) {
+                            (*grayscaleRelative)[idx] = glm::dot(relativeLum, vec3(v));
                         }
                         if (averageRGB) {
                             (*averageRGB)[idx] = glm::dot(avgLum, vec3(v));
                         }
 
                         magnitudes[idx] = static_cast<float>(std::sqrt(m));
-                        averageAll[idx] = static_cast<float>(sum / numCh);
+                        averageAll[idx] = static_cast<float>(sum / util::extent<ValueType>::value);
                         row[idx] = static_cast<int>(pos.y);
                         col[idx] = static_cast<int>(pos.x);
                     }

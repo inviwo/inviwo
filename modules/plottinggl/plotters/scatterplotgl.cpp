@@ -40,7 +40,7 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/util/zip.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 
 namespace inviwo {
 
