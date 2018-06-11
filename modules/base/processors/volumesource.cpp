@@ -98,7 +98,7 @@ void VolumeSource::load(bool deserialize) {
     } else {
         try {
             if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
-                auto volumes = volVecReader->readData(file_.get());                
+                auto volumes = volVecReader->readData(file_.get());
                 std::swap(volumes, volumes_);
                 rm->addResource(file_.get(), volumes_, reload_.isModified());
             } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
@@ -113,15 +113,15 @@ void VolumeSource::load(bool deserialize) {
         } catch (DataReaderException const& e) {
             LogProcessorError(e.getMessage());
         }
+    }
 
+    if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
         // store filename in metadata
         for (auto volume : *volumes_) {
             if (!volume->hasMetaData<StringMetaData>("filename"))
                 volume->setMetaData<StringMetaData>("filename", file_.get());
         }
-    }
 
-    if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
         basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
         information_.updateForNewVolume(*(*volumes_)[0], deserialize);
 
