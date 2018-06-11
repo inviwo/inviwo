@@ -80,7 +80,6 @@ VolumeToDataFrame::VolumeToDataFrame()
 
 void VolumeToDataFrame::process() {
     const auto volume = inport_.getData();
-    const auto dim = volume->getDimensions();
     switch (mode_.get()) {
         case Mode::Analytics: {
             const auto size = (rangeX_.getEnd() - rangeX_.getStart()) *
@@ -127,14 +126,14 @@ void VolumeToDataFrame::process() {
             const auto indexToModel = volume->getCoordinateTransformer().getIndexToModelMatrix();
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vr) {
-                const auto im = util::IndexMapper3D(dim);
+                const auto im = util::IndexMapper3D(vr->getDimensions());
                 using ValueType = util::PrecsionValueType<decltype(vr)>;
                 const auto data = vr->getDataTyped();
                 auto i = 0;
                 size3_t ind;
                 for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
                     for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
-                        for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {                          
+                        for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
                             const auto v = util::glm_convert<dvec4>(data[im(ind)]);
                             double m = 0.0;
                             for (size_t c = 0; c < DataFormat<ValueType>::comp; c++) {
@@ -161,28 +160,32 @@ void VolumeToDataFrame::process() {
             break;
         }
         case Mode::XDir: {
-            const auto size = rangeX_.getEnd() - rangeX_.getStart();
-            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
-
-            volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](const auto vr) {
-                using ValueType = util::PrecsionValueType<decltype(vr)>;
-                const auto im = util::IndexMapper3D(dim);
-                const auto data = vr->getDataTyped();
-                size3_t ind;
-                for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
-                    for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
-                        auto col = dataFrame->addColumn<ValueType>(
-                            "y:" + toString(ind.y) + " z:" + toString(ind.z), size);
-                        auto& line = col->getTypedBuffer()
-                                         ->getEditableRAMRepresentation()
-                                         ->getDataContainer();
-                        size_t i = 0;
-                        for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
-                            line[i++] = data[im(ind)];
+            auto dataFrame =
+                volume->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<plot::DataFrame>>(
+                    [this](const auto vr) {
+                        using ValueType = util::PrecsionValueType<decltype(vr)>;
+                        const auto size = rangeX_.getEnd() - rangeY_.getStart();
+                        auto df = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+                        const auto im = util::IndexMapper3D(vr->getDimensions());
+                        const auto data = vr->getDataTyped();
+                        size3_t ind;
+                        for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
+                            for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
+                                const std::string name =
+                                    "y:" + toString(ind.y) + " z:" + toString(ind.z);
+                                auto col = df->addColumn<ValueType>(name, size);
+                                auto& line = col->getTypedBuffer()
+                                                 ->getEditableRAMRepresentation()
+                                                 ->getDataContainer();
+                                size_t i = 0;
+                                for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd();
+                                     ind.x++) {
+                                    line[i++] = data[im(ind)];
+                                }
+                            }
                         }
-                    }
-                }
-            });
+                        return df;
+                    });
 
             outport_.setData(dataFrame);
             break;
@@ -191,9 +194,9 @@ void VolumeToDataFrame::process() {
             const auto size = rangeY_.getEnd() - rangeY_.getStart();
             auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
 
-            volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](const auto vr) {
+            volume->getRepresentation<VolumeRAM>()->dispatch<void>([this, dataFrame, size](const auto vr) {
                 using ValueType = util::PrecsionValueType<decltype(vr)>;
-                const auto im = util::IndexMapper3D(dim);
+                const auto im = util::IndexMapper3D(vr->getDimensions());
                 const auto data = vr->getDataTyped();
                 size3_t ind;
                 for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
@@ -220,7 +223,7 @@ void VolumeToDataFrame::process() {
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](const auto vr) {
                 using ValueType = util::PrecsionValueType<decltype(vr)>;
-                const auto im = util::IndexMapper3D(dim);
+                const auto im = util::IndexMapper3D(vr->getDimensions());
                 const auto data = vr->getDataTyped();
                 size3_t ind;
                 for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
