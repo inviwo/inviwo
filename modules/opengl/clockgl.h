@@ -130,7 +130,7 @@ protected:
         GLuint startId() const { return ids[0]; }
         GLuint stopId() const { return ids[1]; }
     };
-    duration accumulatedTime_;
+    duration accumulatedTime_ = static_cast<duration>(0);
     std::vector<Query> queries_;
 };
 

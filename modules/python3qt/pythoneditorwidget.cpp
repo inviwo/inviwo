@@ -409,7 +409,7 @@ void PythonEditorWidget::run() {
 
     std::stringstream ss;
     ss << (ok ? "Executed Successfully" : "Failed");
-    ss << " (" << c.getElapsedMiliseconds() << " ms)";
+    ss << " (" << c.getElapsedMilliseconds() << " ms)";
     mainWindow_->statusBar()->showMessage(utilqt::toQString(ss.str()));
 
     app_->getModuleByType<Python3Module>()->getPythonInterpreter()->removeObserver(this);
