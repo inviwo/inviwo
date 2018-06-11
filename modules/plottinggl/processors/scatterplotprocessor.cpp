@@ -50,6 +50,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     : Processor()
     , dataFramePort_("dataFrame_")
     , brushingPort_("brushing")
+    , backgroundPort_("background")
     , outport_("outport")
     , scatterPlot_(this)
     , xAxis_("xAxis", "X-axis", dataFramePort_, false, 0)
@@ -59,9 +60,11 @@ ScatterPlotProcessor::ScatterPlotProcessor()
 
     addPort(dataFramePort_);
     addPort(brushingPort_);
+    addPort(backgroundPort_);
     addPort(outport_);
 
     brushingPort_.setOptional(true);
+    backgroundPort_.setOptional(true);
 
     addProperty(scatterPlot_.properties_);
     addProperty(xAxis_);
@@ -88,9 +91,10 @@ ScatterPlotProcessor::ScatterPlotProcessor()
 
 void ScatterPlotProcessor::process() {
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    auto dataframe = dataFramePort_.getData();
 
     if (brushingPort_.isConnected()) {
-        auto dataframe = dataFramePort_.getData();
+
         auto dfSize = dataframe->getNumberOfRows();
 
         auto iCol = dataframe->getIndexColumn();
@@ -105,10 +109,20 @@ void ScatterPlotProcessor::process() {
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
                      [&](const auto &id) { return !brushingPort_.isFiltered(indexCol[id]); });
 
-        scatterPlot_.plot(outport_, &indicies, true);
+        if (backgroundPort_.hasData()) {
+            scatterPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(), &indicies,
+                              true);
+        } else {
+            scatterPlot_.plot(*outport_.getEditableData(), &indicies, true);
+        }
 
     } else {
-        scatterPlot_.plot(outport_, nullptr, true);
+        if (backgroundPort_.hasData()) {
+            scatterPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(), nullptr,
+                              true);
+        } else {
+            scatterPlot_.plot(*outport_.getEditableData(), nullptr, true);
+        }
     }
 }
 

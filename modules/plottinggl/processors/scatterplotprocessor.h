@@ -69,6 +69,7 @@ public:
 private:
     DataFrameInport dataFramePort_;
     BrushingAndLinkingInport brushingPort_;
+    ImageInport backgroundPort_;
     ImageOutport outport_;
 
     ScatterPlotGL scatterPlot_;

@@ -300,34 +300,34 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         } else {
             // no indices given, draw all data points
             if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
-            auto &cont = indices_->getEditableRAMRepresentation()->getDataContainer();
-            cont.resize(xbuf->getSize());
-            std::iota(cont.begin(), cont.end(), 0);
+            auto &inds = indices_->getEditableRAMRepresentation()->getDataContainer();
+            inds.resize(xbuf->getSize());
+            std::iota(inds.begin(), inds.end(), 0);
         }
         indices = indices_.get();
 
         // sort according to radii, larger first
-        auto &cont = indices->getEditableRAMRepresentation()->getDataContainer();
+        auto &inds = indices->getEditableRAMRepresentation()->getDataContainer();
 
         radius_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
-            [this, &cont](auto bufferpr) {
+            [this, &inds](auto bufferpr) {
                 auto &radii = bufferpr->getDataContainer();
-                std::sort(cont.begin(), cont.end(), [&radii](const uint32_t &a, const uint32_t &b) {
+                std::sort(inds.begin(), inds.end(), [&radii](const uint32_t &a, const uint32_t &b) {
                     return radii[a] > radii[b];
                 });
             });
-    }
-
-    if (indexBuffer) {
-        // copy selected indices
-        indices = indexBuffer;
     } else {
-        // no indices given, draw all data points
-        if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
-        auto &cont = indices_->getEditableRAMRepresentation()->getDataContainer();
-        cont.resize(xbuf->getSize());
-        std::iota(cont.begin(), cont.end(), 0);
-        indices = indices_.get();
+        if (indexBuffer) {
+            // copy selected indices
+            indices = indexBuffer;
+        } else {
+            // no indices given, draw all data points
+            if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
+            auto &inds = indices_->getEditableRAMRepresentation()->getDataContainer();
+            inds.resize(xbuf->getSize());
+            std::iota(inds.begin(), inds.end(), 0);
+            indices = indices_.get();
+        }
     }
 
     boa_->bind();
