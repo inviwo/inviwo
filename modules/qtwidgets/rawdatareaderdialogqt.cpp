@@ -281,6 +281,7 @@ void RawDataReaderDialogQt::selectedDataTypeChanged(int index) {
             dataRangeMax_->setValue(std::numeric_limits<int>::max());
             valueRangeMin_->setValue(std::numeric_limits<int>::lowest());
             valueRangeMax_->setValue(std::numeric_limits<int>::max());
+            break;
         case 6:  // FLOAT
         case 7:  // DOUBLE
             dataRangeMin_->setValue(0);

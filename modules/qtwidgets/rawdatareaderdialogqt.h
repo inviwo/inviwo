@@ -44,6 +44,7 @@ class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : public VolumeDataReaderDi
                                                        public QDialog {
 public:
     RawDataReaderDialogQt();
+    void selectedDataTypeChanged(int index);
     virtual ~RawDataReaderDialogQt();
 
     virtual bool show() override;
