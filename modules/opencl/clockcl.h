@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CLOCK_CL_H
@@ -38,37 +38,46 @@
 
 namespace inviwo {
 
-// Note: This file is named clockcl.h (event though it only contains ScopedClockCL) to be consistent with clock.h and clockgl.h 
+// Note: This file is named clockcl.h (event though it only contains ScopedClockCL) to be consistent
+// with clock.h and clockgl.h
 
 /** \class ScopedClockCL
  *
- * Scoped timer for OpenCL that prints elapsed time in destructor. 
+ * Scoped timer for OpenCL that prints elapsed time in destructor.
  * Usage is simplified by the macros (does nothing unless IVW_PROFILING is defined)
  * IVW_OPENCL_PROFILING(profilingEvent, "My message")
- * OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel, cl::NullRange, globalWorkSize, workGroupSize, nullptr, profilingEvent);
+ * OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel, cl::NullRange, globalWorkSize,
+ * workGroupSize, nullptr, profilingEvent);
  *
  */
 class IVW_MODULE_OPENCL_API ScopedClockCL {
 public:
-    ScopedClockCL(cl::Event* profilingEvent, const std::string& logSource, const std::string& message): profilingEvent_(profilingEvent), logSource_(logSource), logMessage_(message) { ivwAssert(profilingEvent != nullptr, "Cannot initialize ScopedClockCL with nullptr OpenCL event"); }
-    virtual ~ScopedClockCL(); 
+    ScopedClockCL(cl::Event* profilingEvent, const std::string& logSource,
+                  const std::string& message)
+        : profilingEvent_(profilingEvent), logSource_(logSource), logMessage_(message) {
+        ivwAssert(profilingEvent != nullptr,
+                  "Cannot initialize ScopedClockCL with nullptr OpenCL event");
+    }
+    virtual ~ScopedClockCL();
 
 private:
     // Default constructor not allowed
-    ScopedClockCL() {};
+    ScopedClockCL(){};
     cl::Event* profilingEvent_;
-    std::string logSource_; 
+    std::string logSource_;
     std::string logMessage_;
 };
 
-#if IVW_PROFILING 
-#define IVW_OPENCL_PROFILING(var,message) \
-    std::ostringstream ADDLINE(__stream); ADDLINE(__stream) << message; \
-    cl::Event* var = new cl::Event(); \
-    ScopedClockCL ADDLINE(__clock)(var, parseTypeIdName(std::string(typeid(this).name())), ADDLINE(__stream).str());
+#if IVW_PROFILING
+#define IVW_OPENCL_PROFILING(var, message)                                                     \
+    std::ostringstream IVW_ADDLINE(__stream);                                                  \
+    IVW_ADDLINE(__stream) << message;                                                          \
+    cl::Event* var = new cl::Event();                                                          \
+    ScopedClockCL IVW_ADDLINE(__clock)(var, parseTypeIdName(std::string(typeid(this).name())), \
+                                       IVW_ADDLINE(__stream).str());
 #else
-#define IVW_OPENCL_PROFILING(var,message) cl::Event* var = nullptr;
+#define IVW_OPENCL_PROFILING(var, message) cl::Event* var = nullptr;
 #endif
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CLOCK_CL_H
+#endif  // IVW_CLOCK_CL_H
