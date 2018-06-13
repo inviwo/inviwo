@@ -47,13 +47,6 @@ class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget {
 public:
     CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) {}
     virtual Canvas* getCanvas() const = 0;
-    /**
-     * Show or hide window.
-     * Will send a CanvasHideEvent or CanvasShowEvent before
-     * hiding or showing the window.
-     * Notifications to ProcessorWidgetObserver are called after event.
-     */
-    virtual void setVisible(bool visible) override;
 };
 
 } // namespace

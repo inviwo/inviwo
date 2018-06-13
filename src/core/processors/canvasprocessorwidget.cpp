@@ -29,20 +29,9 @@
 
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/events/canvashideevent.h>
-#include <inviwo/core/interaction/events/canvasshowevent.h>
 
 namespace inviwo {
 
-void CanvasProcessorWidget::setVisible(bool visible) {
-    if (visible) {
-        CanvasShowEvent e;
-        getProcessor()->propagateEvent(&e, nullptr);
-    }else {
-        CanvasHideEvent e;
-        getProcessor()->propagateEvent(&e, nullptr);
-    }
-    ProcessorWidget::setVisible(visible);
-}
+
 
 }  // namespace inviwo
