@@ -27,11 +27,10 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/core/io/datareaderdialog.h>
+#include <inviwo/core/io/volumedatareaderdialog.h>
 
 namespace inviwo {
 
-DataReaderDialog::DataReaderDialog() {}
-DataReaderDialog::~DataReaderDialog() {}
+
 
 } // namespace

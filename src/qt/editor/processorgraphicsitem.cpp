@@ -444,7 +444,7 @@ void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
 
 void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
     clock_.stop();
-    evalTime_ = clock_.getElapsedMiliseconds();
+    evalTime_ = clock_.getElapsedMilliseconds();
     maxEvalTime_ = maxEvalTime_ < evalTime_ ? evalTime_ : maxEvalTime_;
     totEvalTime_ += evalTime_;
 }

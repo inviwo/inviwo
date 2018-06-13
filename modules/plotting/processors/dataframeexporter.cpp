@@ -31,6 +31,7 @@
 #include <modules/plotting/datastructures/dataframeutil.h>
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/io/serialization/serializer.h>
 
 #include <fstream>
@@ -44,7 +45,7 @@ const ProcessorInfo DataFrameExporter::processorInfo_{
     "org.inviwo.DataFrameExporter",      // Class identifier
     "DataFrame Exporter",                // Display name
     "Data Output",                       // Category
-    CodeState::Experimental,             // Code state
+    CodeState::Stable,                   // Code state
     "CPU, DataFrame, Export, CSV, XML",  // Tags
 };
 
@@ -56,7 +57,8 @@ DataFrameExporter::DataFrameExporter()
     , exportFile_("exportFile", "Export file name", "", "dataframe")
     , exportButton_("snapshot", "Export DataFrame")
     , overwrite_("overwrite", "Overwrite", false)
-    , forceDoublePrecision_("forceDoublePrecision", "Force Double Precision", true)
+    , separateVectorTypesIntoColumns_("separateVectorTypesIntoColumns",
+                                      "Separate Vector Types Into Columns", true)
     , export_(false) {
     exportFile_.clearNameFilters();
     exportFile_.addNameFilter("CSV (*.csv)");
@@ -66,9 +68,13 @@ DataFrameExporter::DataFrameExporter()
     addProperty(exportFile_);
     addProperty(exportButton_);
     addProperty(overwrite_);
-    addProperty(forceDoublePrecision_);
+    addProperty(separateVectorTypesIntoColumns_);
 
     exportFile_.setAcceptMode(AcceptMode::Save);
+    exportFile_.onChange([&]() {
+        separateVectorTypesIntoColumns_.setReadOnly(exportFile_.getSelectedExtension() !=
+                                                    exportFile_.getNameFilters()[0]);
+    });
     exportButton_.onChange([&]() { export_ = true; });
 
     setAllPropertiesCurrentStateAsDefault();
@@ -84,84 +90,102 @@ void DataFrameExporter::exportNow() {
         LogWarn("File already exists: " << exportFile_);
         return;
     }
-
-    bool forceDoublePrecision = forceDoublePrecision_.get();
-    exportAsCSV(forceDoublePrecision);
+    if (exportFile_.getSelectedExtension() == exportFile_.getNameFilters()[0]) {
+        exportAsCSV(separateVectorTypesIntoColumns_);
+    } else if (exportFile_.getSelectedExtension() == exportFile_.getNameFilters()[1]) {
+        exportAsXML();
+    } else {
+        LogWarn("Unsupported file type: " << exportFile_);
+    }
 }
 
-void DataFrameExporter::exportAsCSV(bool forceDoublePrecision) {
+void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
     std::ofstream file(exportFile_);
     auto dataFrame = dataFrame_.getData();
 
-    static std::string delimiter = ",";
-    static std::string lineterminator = "\n";
-    std::vector<std::string> componentNames = {"X", "Y", "Z", "W"};
+    const std::string delimiter = ", ";
+    const char lineterminator = '\n';
+    const std::array<char, 4> componentNames = {'X', 'Y', 'Z', 'W'};
 
     // headers
-    for (size_t j = 0; j < dataFrame->getNumberOfColumns(); j++) {
-        auto c = dataFrame->getColumn(j);
-        auto components = c->getBuffer()->getDataFormat()->getComponents();
-
-        if (components > 1 && forceDoublePrecision) {
+    auto oj = util::make_ostream_joiner(file, delimiter);
+    for (const auto& col : *dataFrame) {
+        const auto components = col->getBuffer()->getDataFormat()->getComponents();
+        if (components > 1 && separateVectorTypesIntoColumns) {
             for (size_t k = 0; k < components; k++) {
-                file << c->getHeader();
-                if (k < (components - 1)) file << delimiter;
+                oj = col->getHeader() + ' ' + componentNames[k];
             }
-
-            if (j < (dataFrame->getNumberOfColumns() - 1)) file << delimiter;
-            continue;
+        } else {
+            oj = col->getHeader();
         }
-
-        file << c->getHeader();
-        if (j < (dataFrame->getNumberOfColumns() - 1)) file << delimiter;
     }
     file << lineterminator;
 
-    // content
-    std::map<std::string, std::vector<std::string>> dataColumStringMap;
-    for (size_t j = 0; j < dataFrame->getNumberOfColumns(); j++) {
-        auto c = dataFrame->getColumn(j);
-        auto bufferFormat = c->getBuffer()->getDataFormat();
-
-        dataframeutil::BufferToStringDispatcher bio;
-        std::vector<std::string> buffStr1;
-        std::vector<std::string> buffStr2;
-        bufferFormat->dispatch(bio, c->getBuffer(), buffStr1, buffStr2, delimiter);
-
-        if (forceDoublePrecision)
-            dataColumStringMap[c->getHeader()] = buffStr2;  // double precision, no tuple
-        else
-            dataColumStringMap[c->getHeader()] = buffStr1;  // glm types
+    std::vector<std::function<void(std::ostream&, size_t)>> printers;
+    for (const auto& col : *dataFrame) {
+        auto df = col->getBuffer()->getDataFormat();
+        if (auto cc = dynamic_cast<const CategoricalColumn*>(col.get())) {
+            printers.push_back([cc](std::ostream& os, size_t index) {
+                os << "\"" << cc->getAsString(index) << "\"";
+            });
+        } else if (df->getComponents() == 1) {
+            col->getBuffer()
+                ->getRepresentation<BufferRAM>()
+                ->dispatch<void, dispatching::filter::Scalars>([&printers](auto br) {
+                    printers.push_back([br](std::ostream& os, size_t index) {
+                        os << br->getDataContainer()[index];
+                    });
+                });
+        } else if (df->getComponents() > 1 && separateVectorTypesIntoColumns) {
+            col->getBuffer()
+                ->getRepresentation<BufferRAM>()
+                ->dispatch<void, dispatching::filter::Vecs>([&printers, delimiter](auto br) {
+                    using ValueType = util::PrecsionValueType<decltype(br)>;
+                    printers.push_back([br, delimiter](std::ostream& os, size_t index) {
+                        auto oj = util::make_ostream_joiner(os, delimiter);
+                        for (size_t i = 0; i < util::flat_extent<ValueType>::value; ++i) {
+                            oj = br->getDataContainer()[index][i];
+                        }
+                    });
+                });
+        } else {
+            col->getBuffer()
+                ->getRepresentation<BufferRAM>()
+                ->dispatch<void, dispatching::filter::Vecs>([&printers](auto br) {
+                    printers.push_back([br](std::ostream& os, size_t index) {
+                        os << "\"" << br->getDataContainer()[index] << "\"";
+                    });
+                });
+        }
     }
 
-    for (size_t i = 0; i < dataFrame->getNumberOfRows(); i++) {
-        for (size_t j = 0; j < dataFrame->getNumberOfColumns(); j++) {
-            auto c = dataFrame->getColumn(j);
-            auto& strBuffer = dataColumStringMap[c->getHeader()];
-            if (strBuffer.size() && i < strBuffer.size())
-                file << strBuffer[i];
-            else
-                file << "0.0000";  // throw exception
-            if (j < (dataFrame->getNumberOfColumns() - 1)) file << delimiter;
+    for (size_t j = 0; j < dataFrame->getNumberOfRows(); j++) {
+        if (j != 0) {
+            file << lineterminator;
         }
-        file << lineterminator;
+        bool firstCol = true;
+        for (auto& printer : printers) {
+            if (!firstCol) {
+                file << delimiter;
+            }
+            firstCol = false;
+            printer(file, j);
+        }
     }
 
     LogInfo("CSV file exported to " << exportFile_);
 }
 
-void DataFrameExporter::exportAsXML(bool) {
+void DataFrameExporter::exportAsXML() {
     auto dataFrame = dataFrame_.getData();
 
     std::ofstream file(exportFile_);
     Serializer serializer("");
 
-    for (size_t j = 0; j < dataFrame->getNumberOfColumns(); j++) {
-        auto c = dataFrame->getColumn(j);
-        auto bufferFormat = c->getBuffer()->getDataFormat();
-        dataframeutil::BufferSerializerDispatcher bdisp;
-        bufferFormat->dispatch(bdisp, c->getBuffer(), serializer, c->getHeader(),
-                               std::string("Item"));
+    for (const auto& col : *dataFrame) {
+        col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>([&](auto br) {
+            serializer.serialize(col->getHeader(), br->getDataContainer(), "Item");
+        });
     }
 
     serializer.writeFile(file);

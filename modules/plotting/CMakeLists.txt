@@ -14,6 +14,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframeexporter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagetodataframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/syntheticdataframe.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetodataframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetodataframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/axisproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/dataframeproperty.h
@@ -37,6 +38,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframeexporter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagetodataframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/syntheticdataframe.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetodataframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetodataframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/axisproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/dataframeproperty.cpp

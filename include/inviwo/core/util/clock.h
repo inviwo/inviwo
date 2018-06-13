@@ -93,7 +93,7 @@ public:
      * @return accumulated time in milliseconds
      * \see getElapsedTime
      */
-    double getElapsedMiliseconds() const;
+    double getElapsedMilliseconds() const;
 
     /**
      * returns the accumulated time. If the clock is running the result is accumulated
@@ -108,7 +108,7 @@ protected:
     bool isRunning_ = false;
 
     time_point startTime_;
-    duration accumulatedTime_;
+    duration accumulatedTime_ = static_cast<duration>(0);
 };
 
 /** \class ScopedClock
@@ -173,7 +173,7 @@ template <typename Clock>
 void ScopedClock<Clock>::print() {
     if (Clock::getElapsedTime() > logIfAtLeast_) {
         std::stringstream message;
-        message << logMessage_ << ": " << msToString(Clock::getElapsedMiliseconds());
+        message << logMessage_ << ": " << msToString(Clock::getElapsedMilliseconds());
         LogCentral::getPtr()->log(logSource_, logLevel_, LogAudience::Developer, __FILE__,
                                   __FUNCTION__, __LINE__, message.str());
     }

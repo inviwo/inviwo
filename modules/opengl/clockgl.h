@@ -130,7 +130,7 @@ protected:
         GLuint startId() const { return ids[0]; }
         GLuint stopId() const { return ids[1]; }
     };
-    duration accumulatedTime_;
+    duration accumulatedTime_ = static_cast<duration>(0);
     std::vector<Query> queries_;
 };
 
@@ -180,10 +180,10 @@ using ScopedClockGL = ScopedClock<ClockGL>;
 
 #if IVW_PROFILING
 #define IVW_OPENGL_PROFILING(message)                                                 \
-    std::ostringstream ADDLINE(__stream);                                             \
-    ADDLINE(__stream) << message;                                                     \
-    ScopedClockGL ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
-                                   ADDLINE(__stream).str());
+    std::ostringstream IVW_ADDLINE(__stream);                                             \
+    IVW_ADDLINE(__stream) << message;                                                     \
+    ScopedClockGL IVW_ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
+                                   IVW_ADDLINE(__stream).str());
 #else
 #define IVW_OPENGL_PROFILING(message)
 #endif
@@ -199,10 +199,10 @@ using ScopedClockGL = ScopedClock<ClockGL>;
 
 #if IVW_PROFILING
 #define IVW_OPENGL_PROFILING_IF(time, message)                                        \
-    std::ostringstream ADDLINE(__stream);                                             \
-    ADDLINE(__stream) << message;                                                     \
-    ScopedClockGL ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
-                                   ADDLINE(__stream).str(), time);
+    std::ostringstream IVW_ADDLINE(__stream);                                             \
+    IVW_ADDLINE(__stream) << message;                                                     \
+    ScopedClockGL IVW_ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
+                                   IVW_ADDLINE(__stream).str(), time);
 #else
 #define IVW_OPENGL_PROFILING_IF(time, message)
 #endif

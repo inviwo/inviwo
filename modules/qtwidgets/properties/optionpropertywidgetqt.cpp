@@ -24,12 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <typeinfo>
 
@@ -88,9 +89,8 @@ OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property)
 }
 
 void OptionPropertyWidgetQt::optionChanged(int) {
-    if (comboBox_->count()
-        && comboBox_->currentIndex() >= 0
-        && static_cast<size_t>(comboBox_->currentIndex()) != property_->getSelectedIndex()) {
+    if (comboBox_->count() && comboBox_->currentIndex() >= 0 &&
+        static_cast<size_t>(comboBox_->currentIndex()) != property_->getSelectedIndex()) {
         property_->setInitiatingWidget(this);
         property_->setSelectedIndex(comboBox_->currentIndex());
         property_->clearInitiatingWidget();
@@ -100,14 +100,21 @@ void OptionPropertyWidgetQt::optionChanged(int) {
 void OptionPropertyWidgetQt::updateFromProperty() {
     QSignalBlocker block{comboBox_};
 
-    comboBox_->clear();
-    std::vector<std::string> names = property_->getDisplayNames();
-
-    for (auto& name : names) {
-        QString option = QString::fromStdString(name);
-        comboBox_->addItem(option);
+    size_t i = 0;
+    for (; i < std::min(property_->size(), static_cast<size_t>(comboBox_->count())); ++i) {
+        const auto text = utilqt::toQString(property_->getOptionDisplayName(i));
+        if (comboBox_->itemText(static_cast<int>(i)) != text) {
+            comboBox_->setItemText(static_cast<int>(i), text);
+        }
     }
+    for (; i < property_->size(); ++i) {
+        comboBox_->addItem(utilqt::toQString(property_->getOptionDisplayName(i)));
+    }
+    while (static_cast<size_t>(comboBox_->count()) > property_->size()) {
+        comboBox_->removeItem(comboBox_->count() - 1);
+    }
+
     comboBox_->setCurrentIndex(static_cast<int>(property_->getSelectedIndex()));
 }
 
-} // namespace
+}  // namespace inviwo

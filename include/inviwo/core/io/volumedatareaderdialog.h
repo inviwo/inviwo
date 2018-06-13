@@ -24,32 +24,33 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_DATAREADERDIALOG_H
-#define IVW_DATAREADERDIALOG_H
+#ifndef IVW_VOLUMEDATAREADERDIALOG_H
+#define IVW_VOLUMEDATAREADERDIALOG_H
 
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/dialog.h>
+#include <inviwo/core/datastructures/datamapper.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DataReaderDialog : public Dialog {
+class IVW_CORE_API VolumeDataReaderDialog : public Dialog {
 public:
-    DataReaderDialog();
-    virtual ~DataReaderDialog();
+    VolumeDataReaderDialog() = default;
+    virtual ~VolumeDataReaderDialog() = default;
 
     virtual bool show() = 0;
     virtual void setFile(std::string fileName) = 0;
-    
+
     virtual const DataFormatBase* getFormat() const = 0;
     virtual uvec3 getDimensions() const = 0;
     virtual dvec3 getSpacing() const = 0;
     virtual bool getEndianess() const = 0;
+    virtual DataMapper getDataMapper() const = 0;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DATAREADERDIALOG_H
-
+#endif  // IVW_VOLUMEDATAREADERDIALOG_H

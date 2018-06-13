@@ -176,8 +176,8 @@ template <class Rep, class Period = std::ratio<1>>
 std::string durationToString(std::chrono::duration<Rep, Period> duration, bool includeZeros = true,
                              bool spacing = false) {
     using milliseconds = std::chrono::duration<double, std::milli>;
-    auto ms = std::chrono::duration_cast<milliseconds>(duration, includeZeros, spacing);
-    return msToString(ms.count());
+    auto ms = std::chrono::duration_cast<milliseconds>(duration);
+    return msToString(ms.count(), includeZeros, spacing);
 }
 
 }  // namespace inviwo
