@@ -40,19 +40,18 @@
 namespace inviwo {
 
 namespace util {
-    namespace detail{
-        template <typename Callback, typename IT>
-        void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t = 0) {
-            std::for_each(a, b, callback);
-        }
+namespace detail {
+template <typename Callback, typename IT>
+void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t = 0) {
+    std::for_each(a, b, callback);
+}
 
-        template <typename Callback, typename IT>
-        void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
-            std::for_each(a, b, [&](auto v) { callback(v, start++); });
-        }
+template <typename Callback, typename IT>
+void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
+    std::for_each(a, b, [&](auto v) { callback(v, start++); });
+}
 
-    }
-
+}  // namespace detail
 
 /**
  * Use multiple threads to iterate over all elements in an iterable data structure (such as
@@ -68,7 +67,7 @@ namespace util {
  * create pool size * 4 jobs
  * @return a vector of futures, one for each job created.
  */
-template <typename Iterable, typename Callback, typename T = typename Iterable::value_type>
+template <typename Iterable, typename T = typename Iterable::value_type, typename Callback>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
                                                     size_t jobs = 0) {
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
@@ -110,9 +109,9 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
  * create pool size * 4 jobs
  */
-template <typename Iterable, typename Callback, typename T = typename Iterable::value_type>
+template <typename Iterable, typename T = typename Iterable::value_type, typename Callback>
 void forEachParallel(const Iterable& iterable, Callback callback, size_t jobs = 0) {
-    auto futures = forEachParallelAsync<Iterable,Callback,T>(iterable, callback, jobs);
+    auto futures = forEachParallelAsync<Iterable, T, Callback>(iterable, callback, jobs);
 
     for (const auto& e : futures) {
         e.wait();
