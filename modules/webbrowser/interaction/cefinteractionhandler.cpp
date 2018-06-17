@@ -35,6 +35,11 @@
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 
+#include <iostream>
+#include <string>
+#include <locale>
+#include <codecvt>
+
 namespace inviwo {
 
 CEFInteractionHandler::CEFInteractionHandler(CefRefPtr<CefBrowserHost> host) : host_(host){};
@@ -48,7 +53,16 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
             break;
         }
         case KeyboardEvent::chash(): {
-            host_->SendKeyEvent(mapKeyEvent(static_cast<KeyboardEvent*>(event)));
+            auto keyEvent = event->getAs<KeyboardEvent>();
+            auto cefEvent = mapKeyEvent(keyEvent);
+            host_->SendKeyEvent(cefEvent);
+            // Send CHAR event for characters, but not non-char keys like arrows,
+            // function keys or clear.
+            auto isCharacter = std::iscntrl(cefEvent.character) == 0;
+            if (isCharacter && (keyEvent->state() & KeyState::Press)) {
+                cefEvent.type = KEYEVENT_CHAR;
+                host_->SendKeyEvent(cefEvent);
+            }
             event->markAsUsed();
             break;
         }
@@ -143,13 +157,19 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
     CefKeyEvent cefEvent;
 
     // TODO: Fix key code translation to match the ones used in CEF
-    cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_RAWKEYDOWN : KEYEVENT_CHAR;
-    // cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_KEYDOWN : KEYEVENT_KEYUP;
+    //cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_RAWKEYDOWN : KEYEVENT_CHAR;
+    cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_KEYDOWN : KEYEVENT_KEYUP;
+    // Convert character to UTF16
+    std::u16string textUTF16 = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
+                               .from_bytes(e->text().data());
+    if (textUTF16.length() > 0) {
+        cefEvent.character = textUTF16[0];
+    } else {
+        cefEvent.character = 0;
+    }
+    
+    cefEvent.native_key_code = e->getNativeVirtualKey();
 
-    cefEvent.windows_key_code = cef::mapKey(e->key());
-
-    // cefEvent.native_key_code = e->nativeVirtualKey_;
-    // cefEvent.native_key_code = static_cast<int>(e->key());
 #ifdef _WINDOWS
     // F10 or ALT
     // https://msdn.microsoft.com/en-us/library/ms646286(VS.85).aspx

@@ -74,6 +74,10 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // CefString(&settings.log_file).FromASCII("");
     // settings.log_severity = LOGSEVERITY_DEFAULT;
     auto locale = app->getUILocale().name();
+    if (locale == "C") {
+        // Crash when default locale "C" is used. Reproduce with GLFWMinimum application
+        locale = std::locale("en_US").name();
+    }
     // Specify the path for the sub-process executable.
     auto exeExtension = filesystem::getFileExtension(filesystem::getExecutablePath());
     // Assume that inviwo_web_helper is next to the main executable

@@ -56,10 +56,8 @@ int mapKey(IvwKey key) {
             return 40;
         case IvwKey::Delete:
             return 46;
-        case IvwKey::A:
-            return 97;
         default:
-            return static_cast<int>(key);
+            return static_cast<int>(key) + 32;
     }
 }
 
