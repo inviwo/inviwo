@@ -80,9 +80,9 @@ ParallelCoordinates::ParallelCoordinates()
     , axisProperties_("axisProps_", "Axis")
     , colors_("colors", "Colors")
     , axisColor_("axisColor", "Axis Color", vec4(.6f, .6f, .6f, 1))
-    , handleBaseColor_("handleColor", "Handle Color (Not filtering)", vec4(.6f, .6f, .6f, 1))
+    , handleBaseColor_("handleColor", "Handle Color (Not filtering)", vec4(.92f, .92f, .92f, 1))
     , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
-                           vec4(.4f, .4f, .4f, 1))
+                           vec4(.5f, .5f, .5f, 1))
     , tf_("tf", "Line Color")
     , tfSelection_("tfSelection", "Selection Color")
 
