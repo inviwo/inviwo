@@ -44,16 +44,16 @@ class IVW_CORE_API KeyboardEvent : public InteractionEvent {
 public:
     /**
      * @param key Enumerate representation of pressed key
-     * @param nativeVirtualKey Platform dependent scancode of pressed key
-     * @param utfText Unicode representation of pressed keys
      * @param state Pressed of released key
      * @param modifiers Modifier keys, e.g. shift, held while pressing key
+     * @param nativeVirtualKey Platform dependent scancode of pressed key
+     * @param utfText Unicode representation of pressed keys
      */
     KeyboardEvent(IvwKey key = IvwKey::Unknown,
-                  uint32_t nativeVirtualKey = 0,
-                  const std::string& utfText = u8"",
                   KeyState state = KeyState::Press,
-                  KeyModifiers modifiers = KeyModifiers(flags::empty));
+                  KeyModifiers modifiers = KeyModifiers(flags::empty),
+                  uint32_t nativeVirtualKey = 0,
+                  const std::string& utfText = u8"");
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;

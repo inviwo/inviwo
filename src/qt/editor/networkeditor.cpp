@@ -460,9 +460,9 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
     if (!keyEvent->isAccepted()) {
-        KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), keyEvent->nativeVirtualKey(),
-                                      utilqt::fromQString(keyEvent->text()), KeyState::Press,
-                                      utilqt::getModifiers(keyEvent));
+        KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
+                                    utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
+                                    utilqt::fromQString(keyEvent->text()));
         progagateEventToSelecedProcessors(pressKeyEvent);
     }
 }
@@ -471,9 +471,9 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
     if (!keyEvent->isAccepted()) {
-        KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), keyEvent->nativeVirtualKey(),
-                                    utilqt::fromQString(keyEvent->text()), KeyState::Release,
-                                    utilqt::getModifiers(keyEvent));
+        KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
+                                      utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
+                                      utilqt::fromQString(keyEvent->text()));
         progagateEventToSelecedProcessors(releaseKeyEvent);
     }
 }

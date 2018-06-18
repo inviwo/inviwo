@@ -177,7 +177,7 @@ void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action,
     auto thisCanvas = getCanvasGLFW(window);
     auto keyState = (action == GLFW_PRESS) ? KeyState::Press : KeyState::Release;
     thisCanvas->modifiers_ = mapModifiers(mods);
-    KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)), scancode, "", keyState, thisCanvas->modifiers_);
+    KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)), keyState, thisCanvas->modifiers_, scancode, "");
 
     thisCanvas->propagateEvent(&keyEvent);
 }
@@ -187,7 +187,7 @@ void CanvasGLFW::character(GLFWwindow* window, unsigned int character) {
     auto thisCanvas = getCanvasGLFW(window);
     // Convert UTF32 character
     auto text = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(character);
-    KeyboardEvent keyEvent(IvwKey::Unknown, character, text, KeyState::Press, thisCanvas->modifiers_);
+    KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, thisCanvas->modifiers_, character, text);
     
     thisCanvas->propagateEvent(&keyEvent);
 }

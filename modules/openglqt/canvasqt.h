@@ -335,9 +335,9 @@ bool CanvasQtBase<T>::mapWheelEvent(QWheelEvent* e) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapKeyPressEvent(QKeyEvent* keyEvent) {
-    KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), keyEvent->nativeVirtualKey(),
-                                utilqt::fromQString(keyEvent->text()), KeyState::Press,
-                                utilqt::getModifiers(keyEvent));
+    KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
+                                utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
+                                utilqt::fromQString(keyEvent->text()));
     // set respective modifier if the pressed key is one of those
     auto modifiers = pressKeyEvent.modifiers();
     if (keyEvent->key() == Qt::Key_Alt) {
@@ -360,9 +360,9 @@ bool CanvasQtBase<T>::mapKeyPressEvent(QKeyEvent* keyEvent) {
 
 template <typename T>
 bool CanvasQtBase<T>::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
-    KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), keyEvent->nativeVirtualKey(),
-                                  utilqt::fromQString(keyEvent->text()), KeyState::Release,
-                                  utilqt::getModifiers(keyEvent));
+    KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
+                                  utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
+                                  utilqt::fromQString(keyEvent->text()));
     
     Canvas::propagateEvent(&releaseKeyEvent);
     if (releaseKeyEvent.hasBeenUsed()) {
