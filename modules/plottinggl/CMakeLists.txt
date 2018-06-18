@@ -8,8 +8,9 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotters/persistencediagramplotgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotters/scatterplotgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisrenderprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/persistencediagramplotprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinates.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/scatterplotmatrixprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/scatterplotprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeaxis.h
@@ -23,8 +24,9 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotters/persistencediagramplotgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotters/scatterplotgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisrenderprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/persistencediagramplotprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinates.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/scatterplotmatrixprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/scatterplotprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeaxis.cpp

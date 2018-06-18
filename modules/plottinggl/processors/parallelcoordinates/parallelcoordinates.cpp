@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/plottinggl/processors/parallelcoordinates.h>
+#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
 #include <modules/plottinggl/plottingglmodule.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -61,156 +61,6 @@ namespace plot {
 static const float handleW = 40;
 static const float handleH = 20;
 
-namespace {
-
-/**
- * Helper for brushing data
- * @param value to filter
- * @param range to use for filtering
- * @return true if if value is outside range and not missing data.
- */
-template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
-bool filterValue(const T &value, const vec2 &range) {
-    // Do not filter missing data (NaN)
-    return !util::isnan(value) && (value < range.x || value > range.y);
-}
-// Filter specialization for integer types
-template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
-bool filterValue(const T &value, const vec2 &range) {
-    return value < range.x || value > range.y;
-}
-
-template <typename T>
-struct Axis : public ParallelCoordinates::AxisBase {
-    using FloatType = std::conditional_t<std::is_same<float, T>::value, float, double>;
-    using MinMaxPropType = MinMaxProperty<FloatType>;
-    MinMaxPropType *range_;
-    const std::vector<T> *dataVector_;
-
-    Axis(size_t columnId, std::string name, BoolCompositeProperty *boolCompositeProperty,
-         MinMaxPropType *range, BoolProperty *usePercentiles,
-         std::shared_ptr<const BufferBase> buffer, const std::vector<T> *dataVector)
-        : AxisBase(columnId, name, boolCompositeProperty, usePercentiles, buffer)
-        , range_(range)
-        , dataVector_(dataVector) {
-        auto pecentiles = statsutil::percentiles(*dataVector_, {0., 0.25, 0.75, 1.});
-        p0_ = pecentiles[0];
-        p25_ = pecentiles[1];
-        p75_ = pecentiles[2];
-        p100_ = pecentiles[3];
-    }
-    virtual ~Axis() = default;
-
-    virtual float getNormalized(float v) const override {
-        if (range_->getRangeMax() == range_->getRangeMin()) {
-            return 0.5f;
-        }
-
-        if (usePercentiles_ && usePercentiles_->get()) {
-            if (v <= p0_) {
-                return 0;
-            }
-            if (v >= p100_) {
-                return 1;
-            }
-            T minV, maxV;
-            float o, r;
-            if (v < p25_) {
-                minV = p0_;
-                maxV = p25_;
-                o = 0;
-                r = 0.25f;
-            } else if (v < p75_) {
-                minV = p25_;
-                maxV = p75_;
-                o = 0.25;
-                r = 0.5f;
-            } else {
-                minV = p75_;
-                maxV = p100_;
-                o = 0.75f;
-                r = 0.25f;
-            }
-
-            float t = (v - static_cast<float>(minV)) / static_cast<float>(maxV - minV);
-            return o + t * r;
-        } else {
-            return static_cast<float>(static_cast<T>(v) - range_->getRangeMin()) /
-                   static_cast<float>(range_->getRangeMax() - range_->getRangeMin());
-        }
-    }
-    virtual float getValue(float v) const override {
-        if (usePercentiles_ && usePercentiles_->get()) {
-            T retval;
-            if (v <= 0)
-                retval = p0_;
-            else if (v >= 1)
-                retval = p100_;
-            else if (v < 0.25f) {
-                v /= 0.25f;
-                retval = p0_ + static_cast<T>(v) * (p25_ - p0_);
-            } else if (v < 0.75f) {
-                v -= 0.25f;
-                v /= 0.5f;
-                retval = p25_ + static_cast<T>(v) * (p75_ - p25_);
-            } else {
-                v -= 0.75f;
-                v /= 0.25f;
-                retval = p75_ + static_cast<T>(v) * (p100_ - p75_);
-            }
-            return static_cast<float>(retval);
-        } else {
-            return v * static_cast<float>(range_->getRangeMax() - range_->getRangeMin()) +
-                   static_cast<float>(range_->getRangeMin());
-        }
-    }
-    virtual float at(size_t idx) const override { return static_cast<float>((*dataVector_)[idx]); }
-
-    virtual vec2 getRange() const override { return vec2(range_->get()); }
-
-    virtual float getRangeMin() const override { return static_cast<float>(range_->getRangeMin()); }
-    virtual float getRangeMax() const override { return static_cast<float>(range_->getRangeMax()); }
-
-    virtual void updateBrushing(std::unordered_set<size_t> &brushed) override {
-        auto range = range_->get();
-        // Increase range to avoid conversion issues
-        range +=
-            glm::tvec2<T>(-std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon());
-        auto &vec = *dataVector_;
-        for (size_t i = 0; i < vec.size(); i++) {
-            if (filterValue(vec[i], range)) {
-                brushed.insert(i);
-            }
-        }
-    }
-
-    virtual void updateRange(bool upper, float y) override {
-        auto range = glm::tvec2<T>(range_->get());
-
-        T v = static_cast<T>(getValue(y));
-
-        if (upper) {
-            if (v < range.x) {
-                v = range.x;
-            }
-            range.y = v;
-        } else {
-            if (v > range.y) {
-                v = range.y;
-            }
-            range.x = v;
-        }
-
-        range_->set(range);
-    }
-
-    T p0_;
-    T p25_;
-    T p75_;
-    T p100_;
-};
-}  // namespace
-
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ParallelCoordinates::processorInfo_{
     "org.inviwo.ParallelCoordinates",  // Class identifier
@@ -226,10 +76,12 @@ ParallelCoordinates::ParallelCoordinates()
     , dataFrame_("dataFrame")
     , brushingAndLinking_("brushingAndLinking")
     , outport_("outport")
-    , axisProperties_("axis_", "Axis")
+    , axisProperties_("axisProps_", "Axis")
     , colors_("colors", "Colors")
     , axisColor_("axisColor", "Axis Color", vec4(.6f, .6f, .6f, 1))
-    , handleColor_("handleColor", "Handle Color", vec4(.6f, .6f, .6f, 1))
+    , handleBaseColor_("handleColor", "Handle Color (Not filtering)", vec4(.6f, .6f, .6f, 1))
+    , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
+                           vec4(.4f, .4f, .4f, 1))
     , tf_("tf", "Line Color")
     , tfSelection_("tfSelection", "Selection Color")
 
@@ -247,9 +99,8 @@ ParallelCoordinates::ParallelCoordinates()
     , handleSize_("handleSize", "Handle Size", vec2(handleW, handleH), vec2(1), vec2(100), vec2(1))
 
     , margins_("margins", "Margins", 0, 0, 0, 0)
+    , autoMargins_("autoMargins", "Auto")
 
-    , selectedAxisName_("selectedAxis", "Selected Axis", "", InvalidationLevel::Valid)
-    , selectedAxisId_("selectedAxisId", "Selected AxisID", 0, 0, 100, 1, InvalidationLevel::Valid)
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_, false, 1)
 
     , text_("labels", "Labels")
@@ -273,15 +124,14 @@ ParallelCoordinates::ParallelCoordinates()
     , recreateLines_(true)
     , textCacheDirty_(true)
     , brushingDirty_(true)  // needs to be true after deserialization
-    , extraMarginsLabel_(0, 0, 0, 0)
-    , extraMarginsValues_(0, 0, 0, 0)
-    , extraMarginsHandles_(handleH, handleW / 2, handleH, handleW / 2) {
+{
     addPort(dataFrame_);
     addPort(brushingAndLinking_);
     addPort(outport_);
 
     axisColor_.setSemantics(PropertySemantics::Color);
-    handleColor_.setSemantics(PropertySemantics::Color);
+    handleBaseColor_.setSemantics(PropertySemantics::Color);
+    handleFilteredColor_.setSemantics(PropertySemantics::Color);
     filterColor_.setSemantics(PropertySemantics::Color);
 
     blendMode_.addOption("additive", "Additive", BlendMode::Additive);
@@ -292,13 +142,15 @@ ParallelCoordinates::ParallelCoordinates()
     blendMode_.setCurrentStateAsDefault();
 
     addProperty(margins_);
+    margins_.addProperty(autoMargins_);
     addProperty(colors_);
     colors_.addProperty(selectedColorAxis_);
     colors_.addProperty(tfSelection_);
     colors_.addProperty(alpha_);
     colors_.addProperty(falllofPower_);
     colors_.addProperty(axisColor_);
-    colors_.addProperty(handleColor_);
+    colors_.addProperty(handleBaseColor_);
+    colors_.addProperty(handleFilteredColor_);
     colors_.addProperty(tf_);
     colors_.addProperty(blendMode_);
     addProperty(lineWidth_);
@@ -315,9 +167,6 @@ ParallelCoordinates::ParallelCoordinates()
     axisProperties_.setCollapsed(true);
     axisProperties_.onChange([&]() { recreateLines_ = true; });
 
-    addProperty(selectedAxisName_);
-    addProperty(selectedAxisId_);
-
     addProperty(handleSize_);
 
     filteringOptions_.addProperty(showFiltered_);
@@ -330,16 +179,55 @@ ParallelCoordinates::ParallelCoordinates()
     labelPosition_.addOption("below", "Below", LabelPosition::Below);
     labelPosition_.setSelectedIndex(2);
 
+    autoMargins_.onChange([&]() {
+        float left = 0;
+        float right = 0;
+        float top = 0;
+        float bottom = 0;
+
+        float leftLabelWidth = 0;
+        float rightLabelWidth = 0;
+        size_t maxLabelHeight = 0;
+
+        for (auto &p : axisVector_) {
+            if (p->isChecked()) {
+                if (labelPosition_.get() != LabelPosition::None) {
+                    if (leftLabelWidth == 0) {
+                        leftLabelWidth = p->labelTexture_->getWidth() / 2.f;
+                    }
+                    rightLabelWidth = p->labelTexture_->getWidth() / 2.f;
+                    maxLabelHeight = std::max(maxLabelHeight, p->labelTexture_->getHeight());
+                }
+                if (showValue_.get()) {
+                    right = static_cast<float>(p->minValTexture_->getWidth());
+                    right = static_cast<float>(p->maxValTexture_->getWidth());
+                }
+            }
+        }
+        if (labelPosition_.get() == LabelPosition::Above) {
+            top = static_cast<float>(maxLabelHeight);
+        } else if (labelPosition_.get() == LabelPosition::Below) {
+            bottom = static_cast<float>(maxLabelHeight);
+        }
+
+        left = std::max(leftLabelWidth, handleSize_.get().x / 2.f);
+        right = std::max(rightLabelWidth, right + handleSize_.get().x / 2.f);
+        top += handleSize_.get().y;
+        bottom += handleSize_.get().y;
+        margins_.setMargins(top + 1, right + 1, bottom + 1, left + 1);
+        // plus 1 to avoid text at the directly at the borders
+    });
+
     TransferFunction tf;
     tf.clear();
-    tf.add(0.0, vec4(1, 0, 0, 1));
-    tf.add(0.5, vec4(1, 1, 0, 1));
-    tf.add(1.0, vec4(0, 1, 0, 1));
+    tf.add(0.0f, vec4(1, 0, 0, 1));
+    tf.add(0.5f, vec4(1, 1, 0, 1));
+    tf.add(1.0f, vec4(0, 1, 0, 1));
     tf_.set(tf);
     tf_.setCurrentStateAsDefault();
 
     tf.clear();
-    tf.add(0.5, vec4(1, 0, 0, 1));
+    tf.add(0.5f, vec4(1, 0, 0, 1));
     tfSelection_.set(tf);
     tfSelection_.setCurrentStateAsDefault();
 
@@ -391,11 +279,6 @@ ParallelCoordinates::ParallelCoordinates()
     axisShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
     handleShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
 
-    handleSize_.onChange([&]() {
-        extraMarginsHandles_ = vec4(handleSize_.get().y, handleSize_.get().x / 2,
-                                    handleSize_.get().y, handleSize_.get().x / 2);
-    });
-
     dataFrame_.onChange([&]() {
         createOrUpdateProperties();
         recreateLines_ = true;
@@ -411,12 +294,19 @@ ParallelCoordinates::~ParallelCoordinates() {}
 void ParallelCoordinates::process() {
     auto dims = outport_.getDimensions();
 
+    std::vector<ParallelCoordinatesAxisSettingsProperty *> enabledAxis;
+    for (auto &p : axisVector_) {
+        if (p->isChecked()) {
+            enabledAxis.push_back(p);
+        }
+    }
+
     if (brushingDirty_) {
         updateBrushing();
     }
 
     if (!lines_ || recreateLines_) {
-        buildLineMesh();
+        buildLineMesh(enabledAxis);
     }
     if (!handleDrawer_) {
         handleDrawer_ =
@@ -424,13 +314,6 @@ void ParallelCoordinates::process() {
     }
     if (!axisDrawer_) {
         axisDrawer_ = getNetwork()->getApplication()->getMeshDrawerFactory()->create(axis_.get());
-    }
-
-    std::vector<AxisBase *> enabledAxis;
-    for (auto &p : axisVector_) {
-        if (p->property_->isChecked()) {
-            enabledAxis.push_back(p.get());
-        }
     }
 
     vec4 backgroundColor(0.0);
@@ -443,133 +326,68 @@ void ParallelCoordinates::process() {
     utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
-    buildTextCache(dims, enabledAxis);
+    buildTextCache(enabledAxis);
 
-    extraMargins_ = extraMarginsHandles_;
-    if (labelPosition_.get() != LabelPosition::None) {
-        extraMargins_.x += extraMarginsLabel_.x;
-        extraMargins_.z += extraMarginsLabel_.z;
-        extraMargins_.y = std::max(extraMargins_.y, extraMarginsLabel_.y);
-        extraMargins_.w = std::max(extraMargins_.w, extraMarginsLabel_.w);
-    }
-    if (showValue_.get()) {
-        extraMargins_.y = std::max(extraMargins_.y, extraMarginsValues_.y);
-        extraMargins_.w = std::max(extraMargins_.w, extraMarginsValues_.w);
-    }
-
-    drawAxis(dims, enabledAxis, extraMargins_);
-    drawLines(dims, enabledAxis, extraMargins_);
-    drawHandles(dims, enabledAxis, extraMargins_);
-    renderText(dims, enabledAxis, extraMargins_);
+    drawAxis(dims, enabledAxis);
+    drawLines(dims);
+    drawHandles(dims, enabledAxis);
+    renderText(dims, enabledAxis);
 
     utilgl::deactivateCurrentTarget();
 }
 
 void ParallelCoordinates::createOrUpdateProperties() {
+    axisVector_.clear();
+    for (auto &p : axisProperties_.getProperties()) {
+        p->setVisible(false);
+    }
     if (dataFrame_.hasData()) {
         auto data = dataFrame_.getData();
         if (!data->getNumberOfRows()) return;
-        axisVector_.clear();
+        if (!data->getNumberOfColumns()) return;
 
-        for (auto &p : axisProperties_.getProperties()) {
-            p->setVisible(false);
-        }
-
-        size_t col = 0;
-
-        // start at 1 to skip index buffer
-        for (size_t i = 1; i < data->getNumberOfColumns(); i++) {
+        for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
             auto c = data->getColumn(i);
+            std::string displayName = c->getHeader();
+            std::string identifier = displayName;  // TODO: remove non alpha num
 
-            c->getBuffer()
-                ->getRepresentation<BufferRAM>()
-                ->dispatch<void, dispatching::filter::Scalars>([&](auto ram) -> void {
-                    // auto ram = buf->getRAMRepresentation();
-                    using T = typename util::PrecsionValueType<decltype(ram)>;
-                    using AxisT = Axis<T>;
-                    auto &dataVector = ram->getDataContainer();
+            util::erase_remove_if(identifier, [](char cc) {
+                return !(cc >= -1) || !(std::isalnum(cc) || cc == '_' || cc == '-');
+            });
 
-                    auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
-                    double minV = minMax.first.x;
-                    double maxV = minMax.second.x;
+            auto prop = [&]() -> ParallelCoordinatesAxisSettingsProperty * {
+                if (auto p = axisProperties_.getPropertyByIdentifier(identifier)) {
+                    if (auto pcasp = dynamic_cast<ParallelCoordinatesAxisSettingsProperty *>(p)) {
+                        return pcasp;
+                    }
+                    throw inviwo::Exception(
+                        "Failed to convert property to ParallelCoordinatesAxisSettingsProperty");
+                } else {
+                    auto newProp = std::make_unique<ParallelCoordinatesAxisSettingsProperty>(
+                        identifier, displayName);
+                    auto ptr = newProp.get();
+                    axisProperties_.addProperty(newProp.release());
+                    return ptr;
+                }
+            }();
+            // Name will be empty string first time this is called
+            if (prop->name_ == "") {
+                prop->name_ = c->getHeader();
+                prop->range_.onChange([&]() { this->updateBrushing(); });
+            }
+            prop->columnId_ = axisVector_.size();
 
-                    std::string displayName = c->getHeader();
-                    std::string identifier = displayName;  // remove non alpha num
-
-                    util::erase_remove_if(identifier, [](char cc) {
-                        return !(cc >= -1) || !(std::isalnum(cc) || cc == '_' || cc == '-');
-                    });
-
-                    auto prop = dynamic_cast<BoolCompositeProperty *>(
-                        axisProperties_.getPropertyByIdentifier(identifier));
-
-                    auto props = [&]() {
-                        if (prop) {
-                            prop->setVisible(true);
-
-                            auto rangeProp = dynamic_cast<typename AxisT::MinMaxPropType *>(
-                                prop->getPropertyByIdentifier("range"));
-
-                            rangeProp->setRange(glm::tvec2<T>(minV, maxV));
-
-                            auto usePercentiles = dynamic_cast<BoolProperty *>(
-                                prop->getPropertyByIdentifier("usePercentiles"));
-
-                            rangeProp->onChange([&]() { this->updateBrushing(); });
-
-                            return std::make_pair(rangeProp, usePercentiles);
-                        } else {
-
-                            auto prop1 = util::make_unique<BoolCompositeProperty>(
-                                identifier, displayName, true);
-
-                            prop1->setCollapsed(true);
-                            prop1->getBoolProperty()->setSerializationMode(
-                                PropertySerializationMode::All);
-                            prop1->setSerializationMode(PropertySerializationMode::All);
-
-                            prop1->setChecked(true);
-
-                            auto rangeProp = std::make_unique<typename AxisT::MinMaxPropType>(
-                                "range", "Range", static_cast<typename AxisT::FloatType>(minV),
-                                static_cast<typename AxisT::FloatType>(maxV),
-                                static_cast<typename AxisT::FloatType>(minV),
-                                static_cast<typename AxisT::FloatType>(maxV));
-
-                            rangeProp->setSerializationMode(PropertySerializationMode::All);
-                            rangeProp->onChange([&]() { this->updateBrushing(); });
-
-                            auto usePercentiles = std::make_unique<BoolProperty>(
-                                "usePercentiles", "Use Percentiles", false);
-                            usePercentiles->setSerializationMode(PropertySerializationMode::All);
-
-                            prop1->addProperty(rangeProp.get());
-                            prop1->addProperty(usePercentiles.get());
-                            axisProperties_.addProperty(prop1.get());
-
-                            prop = prop1.release();
-                            return std::make_pair(rangeProp.release(), usePercentiles.release());
-                        }
-                    }();
-
-                    axisVector_.emplace_back(new AxisT(col++, c->getHeader(), prop, props.first,
-                                                       props.second, c->getBuffer(), &dataVector));
-
-                });
+            axisVector_.push_back(prop);
+            prop->setVisible(true);
+            prop->updateFromColumn(c);
         }
         handlePicking_.resize(axisVector_.size() * 2);
     }
 }
 
-void ParallelCoordinates::buildLineMesh() {
+void ParallelCoordinates::buildLineMesh(
+    const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis) {
     lines_ = util::make_unique<BasicMesh>();
-
-    std::vector<AxisBase *> enabledAxis;
-    for (auto &p : axisVector_) {
-        if (p->property_->isChecked()) {
-            enabledAxis.push_back(p.get());
-        }
-    }
 
     if (!enabledAxis.size()) {
         auto mesh = static_cast<BasicMesh *>(lines_.get());
@@ -596,9 +414,7 @@ void ParallelCoordinates::buildLineMesh() {
 
     if (colorAxisId > 0) colorAxisId--;
 
-    auto colorAxes = axisVector_[glm::clamp(colorAxisId, 0, (int)axisVector_.size() - 1)].get();
-    auto selectionAxes =
-        axisVector_[std::min(selectedAxisId_.get(), (int)axisVector_.size() - 1)].get();
+    auto colorAxes = axisVector_[glm::clamp(colorAxisId, 0, (int)axisVector_.size() - 1)];
 
     float dx = 1.0f / (numberOfAxis - 1);
     for (size_t i = 0; i < numberOfLines; i++) {
@@ -608,10 +424,8 @@ void ParallelCoordinates::buildLineMesh() {
         ivVector.reserve(enabledAxis.size());
         size_t col = 0;
 
-        float valueForColor = colorAxes->getNormalizedAt(i);
-        float valueForSelectionColor = selectionAxes->getNormalizedAt(i);
-
-        vec3 texCoord(valueForColor, valueForSelectionColor, 0.0f);
+        float valueForColor = static_cast<float>(colorAxes->getNormalizedAt(i));
+        vec3 texCoord(valueForColor);
         auto color = sampler.sample(valueForColor);
         if (blendMode_.get() == BlendMode::Sutractive) {
             color.r = 1 - color.r;
@@ -622,7 +436,6 @@ void ParallelCoordinates::buildLineMesh() {
 
         for (auto &axes : enabledAxis) {
             vec3 pos(col++ * dx, axes->getNormalizedAt(i), 0);
-            // vec3 pos(col++ * dx, std::log(axes->getNormalizedAt(i) + 1) / std::log(2), 0);
             ivVector.push_back(static_cast<glm::uint32_t>(vertices.size()));
             vertices.push_back({pos, pickColor, texCoord, color});
         }
@@ -633,12 +446,12 @@ void ParallelCoordinates::buildLineMesh() {
     recreateLines_ = false;
 }
 
-void ParallelCoordinates::drawAxis(size2_t size, std::vector<AxisBase *> enabledAxis,
-                                   vec4 extraMargins) {
+void ParallelCoordinates::drawAxis(
+    size2_t size, const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis) {
     axisShader_.activate();
 
     axisShader_.setUniform("dims", ivec2(size));
-    axisShader_.setUniform("spacing", margins_.getAsVec4() + extraMargins);
+    axisShader_.setUniform("spacing", margins_.getAsVec4());
 
     float dx = 1.0f / (enabledAxis.size() - 1);
 
@@ -654,8 +467,8 @@ void ParallelCoordinates::drawAxis(size2_t size, std::vector<AxisBase *> enabled
     axisShader_.deactivate();
 }
 
-void ParallelCoordinates::drawHandles(size2_t size, std::vector<AxisBase *> enabledAxis,
-                                      vec4 extraMargins) {
+void ParallelCoordinates::drawHandles(
+    size2_t size, const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis) {
     utilgl::GlBoolState blendOn(GL_BLEND, true);
     utilgl::BlendModeEquationState blendEq(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD);
 
@@ -663,11 +476,14 @@ void ParallelCoordinates::drawHandles(size2_t size, std::vector<AxisBase *> enab
 
     // Draw axis
     handleShader_.setUniform("dims", ivec2(size));
-    handleShader_.setUniform("spacing", margins_.getAsVec4() + extraMargins);
+    handleShader_.setUniform("spacing", margins_.getAsVec4());
 
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(handleShader_, cont, *(handleImg_.get()), "tex",
                                ImageType::AllLayers);
+
+    const auto filteredColor = handleFilteredColor_.get();
+    const auto notFilteredColor = handleBaseColor_.get();
 
     float dx = 1.0f / (enabledAxis.size() - 1);
     size_t i = 0;
@@ -675,17 +491,21 @@ void ParallelCoordinates::drawHandles(size2_t size, std::vector<AxisBase *> enab
         float x = i++ * dx;
         auto pickingID = axes->columnId_ * 2;
 
-        handleShader_.setUniform("color", handleColor_.get());
+        // lower
+        handleShader_.setUniform("color", axes->lowerBrushed_ ? filteredColor : notFilteredColor);
         handleShader_.setUniform("x", x);
         handleShader_.setUniform("w", handleSize_.get().x);
         handleShader_.setUniform("h", handleSize_.get().y);
-        handleShader_.setUniform("y", axes->getNormalized(axes->getRange().x));
+        handleShader_.setUniform("y",
+                                 static_cast<float>(axes->getNormalized(axes->range_.get().x)));
         handleShader_.setUniform("flipped", 0);
         handleShader_.setUniform("pickColor", handlePicking_.getColor(pickingID + 0));
 
         handleDrawer_->draw();
 
-        handleShader_.setUniform("y", axes->getNormalized(axes->getRange().y));
+        handleShader_.setUniform("color", axes->upperBrushed_ ? filteredColor : notFilteredColor);
+        handleShader_.setUniform("y",
+                                 static_cast<float>(axes->getNormalized(axes->range_.get().y)));
         handleShader_.setUniform("flipped", 1);
         handleShader_.setUniform("pickColor", handlePicking_.getColor(pickingID + 1));
 
@@ -695,13 +515,11 @@ void ParallelCoordinates::drawHandles(size2_t size, std::vector<AxisBase *> enab
     handleShader_.deactivate();
 }
 
-void ParallelCoordinates::drawLines(size2_t size, std::vector<AxisBase *> enabledAxis,
-                                    vec4 extraMargins) {
+void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.activate();
-    lineShader_.setUniform("spacing", margins_.getAsVec4() + extraMargins);
+    lineShader_.setUniform("spacing", margins_.getAsVec4());
 
     auto state = [&]() {
-
         switch (blendMode_.get()) {
             case BlendMode::Additive:
                 return std::make_tuple(
@@ -722,7 +540,6 @@ void ParallelCoordinates::drawLines(size2_t size, std::vector<AxisBase *> enable
                     utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, false),
                     utilgl::BlendModeEquationState(GL_NONE, GL_NONE, GL_FUNC_ADD));
         };
-
     }();
 
     // Draw lines
@@ -791,17 +608,14 @@ void ParallelCoordinates::drawLines(size2_t size, std::vector<AxisBase *> enable
     lineShader_.deactivate();
 }
 
-static const size_t valLabelXoffest = 16;
-void ParallelCoordinates::buildTextCache(size2_t, std::vector<AxisBase *> enabledAxis) {
-    auto pos = labelPosition_.get();
+void ParallelCoordinates::buildTextCache(
+    const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis) {
     if (textCacheDirty_) {
         textCacheDirty_ = false;
-        extraMarginsLabel_ = vec4(0);
 
-        size_t i = 0;
-        for (auto &axes : axisVector_) {
-            std::string minV = toString(axes->getRangeMin());
-            std::string maxV = toString(axes->getRangeMax());
+        for (auto &axes : enabledAxis) {
+            std::string minV = toString(axes->range_.getRange().x);
+            std::string maxV = toString(axes->range_.getRange().y);
 
             axes->labelTexture_ = util::createTextTexture(
                 textRenderer_, axes->name_, fontSize_.get(), color_.get(), axes->labelTexture_);
@@ -809,42 +623,30 @@ void ParallelCoordinates::buildTextCache(size2_t, std::vector<AxisBase *> enable
                 textRenderer_, minV, valuesFontSize_.get(), color_.get(), axes->minValTexture_);
             axes->maxValTexture_ = util::createTextTexture(
                 textRenderer_, maxV, valuesFontSize_.get(), color_.get(), axes->maxValTexture_);
-
-            size2_t labelSize = axes->labelTexture_->getDimensions();
-            size2_t minVLabelSize = axes->minValTexture_->getDimensions();
-            size2_t maxVLabelSize = axes->maxValTexture_->getDimensions();
-
-            if (i == 0) {
-                if (pos == LabelPosition::Above) {
-                    extraMarginsLabel_.x = static_cast<float>(labelSize.y);
-                } else {
-                    extraMarginsLabel_.z = static_cast<float>(labelSize.y);
-                }
-                extraMarginsLabel_.w = static_cast<float>(labelSize.x) / 2.0f;
-            }
-            if (i == enabledAxis.size() - 1) {
-                extraMarginsLabel_.y = labelSize.x / 2.0f;
-                extraMarginsValues_.y = static_cast<float>(
-                    std::max(minVLabelSize.x + valLabelXoffest, maxVLabelSize.x + valLabelXoffest));
-            }
-            i++;
         }
     }
 }
 
-void ParallelCoordinates::renderText(size2_t outputsize, std::vector<AxisBase *> enabledAxis,
-                                     vec4 extraMargins) {
+void ParallelCoordinates::renderText(
+    size2_t outputsize, const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis) {
     auto pos = labelPosition_.get();
 
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     const vec2 outputSizeWOMargins(
-        static_cast<float>(outputsize.x) -
-            (margins_.getRight() + margins_.getLeft() + extraMargins.y + extraMargins.w),
+        static_cast<float>(outputsize.x) - (margins_.getRight() + margins_.getLeft()),
         static_cast<float>(outputsize.y) - (margins_.getTop() + margins_.getBottom()));
 
     float dx = 1.0f / (enabledAxis.size() - 1);
+
+    size_t maxValHeight = 0;
+    size_t maxLabelHeight = 0;
+    for (auto axes : enabledAxis) {
+        maxValHeight = std::max(maxValHeight, axes->minValTexture_->getHeight());
+        maxValHeight = std::max(maxValHeight, axes->maxValTexture_->getHeight());
+        maxLabelHeight = std::max(maxLabelHeight, axes->labelTexture_->getHeight());
+    }
 
     if (showValue_) {
         textRenderer_.setFontSize(valuesFontSize_.get());
@@ -854,26 +656,19 @@ void ParallelCoordinates::renderText(size2_t outputsize, std::vector<AxisBase *>
         for (auto axes : enabledAxis) {
             float x = i++ * dx;
             vec2 textPos(0);
-            textPos.x =
-                x * outputSizeWOMargins.x + margins_.getLeft() + extraMargins.w + valLabelXoffest;
-            if (pos == LabelPosition::Below) {
-                textPos.y = extraMarginsLabel_.z;
-            }
+            textPos.x = x * outputSizeWOMargins.x + margins_.getLeft() + handleSize_.get().x / 2;
+
+            textPos.y = margins_.getBottom() - handleSize_.get().y;
 
             textureRenderer_.render(axes->minValTexture_, textPos, outputsize);
 
-            textPos.y = outputsize.y - static_cast<float>(axes->maxValTexture_->getDimensions().y);
-            if (pos == LabelPosition::Above) {
-                textPos.y -= extraMarginsLabel_.x;
-            }
+            textPos.y = outputsize.y - margins_.getTop() + handleSize_.get().y - maxValHeight;
+
             textureRenderer_.render(axes->maxValTexture_, ivec2(textPos), outputsize);
         }
     }
 
     if (pos != LabelPosition::None) {
-        textRenderer_.setFontSize(fontSize_.get());
-        // Draw header labels
-
         size_t i = 0;
 
         for (auto axes : enabledAxis) {
@@ -882,11 +677,13 @@ void ParallelCoordinates::renderText(size2_t outputsize, std::vector<AxisBase *>
             vec2 size(axes->labelTexture_->getDimensions());
 
             vec2 textPos(0);
-            textPos.x =
-                x * outputSizeWOMargins.x + margins_.getLeft() + extraMargins.w - size.x / 2.0f;
+            textPos.x = x * outputSizeWOMargins.x + margins_.getLeft() - size.x / 2.0f;
 
             if (pos == LabelPosition::Above) {
-                textPos.y = outputsize.y - size.y;
+                textPos.y = outputsize.y - margins_.getTop() + handleSize_.get().y;
+            } else {
+                textPos.y = margins_.getBottom() - handleSize_.get().y - maxLabelHeight -
+                            1;  // Minus 1 for always being one pixel away from handle
             }
 
             textureRenderer_.render(axes->labelTexture_, ivec2(textPos), outputsize);
@@ -919,16 +716,13 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
         auto axisID = pickedID / 2;
         bool upper = pickedID % 2 == 1;
 
-        auto marigins = margins_.getAsVec4() + extraMargins_;
+        auto marigins = margins_.getAsVec4();
 
         auto newY =
             (mouseEvent->pos().y - marigins[2]) / (canvasSize.y - marigins[2] - marigins[0]);
         newY = glm::clamp(newY, 0.0, 1.0);
 
-        // auto axis = axisVector_[axisID].get();
-        selectedAxisId_.set(static_cast<int>(axisID));
-
-        axisVector_[axisID]->updateRange(upper, static_cast<float>(newY));
+        axisVector_[axisID]->updateRange(upper, newY);
         mouseEvent->markAsUsed();
     }
 }

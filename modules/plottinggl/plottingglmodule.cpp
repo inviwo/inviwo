@@ -34,11 +34,14 @@
 #include <modules/opengl/shader/shadermanager.h>
 
 #include <modules/plottinggl/processors/axisrenderprocessor.h>
-#include <modules/plottinggl/processors/parallelcoordinates.h>
+#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
 #include <modules/plottinggl/processors/scatterplotmatrixprocessor.h>
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <modules/plottinggl/processors/volumeaxis.h>
 #include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
+
+#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
+
 
 namespace inviwo {
 
@@ -52,6 +55,9 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<plot::ScatterPlotMatrixProcessor>();
     registerProcessor<plot::ScatterPlotProcessor>();
     registerProcessor<plot::VolumeAxis>();
+
+
+    registerProperty<plot::ParallelCoordinatesAxisSettingsProperty>();
 }
 
 }  // namespace inviwo

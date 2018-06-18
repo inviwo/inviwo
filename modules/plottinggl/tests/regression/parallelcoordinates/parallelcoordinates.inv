@@ -2,12 +2,63 @@
 <InviwoWorkspace version="2">
     <InviwoSetup>
         <Modules>
-            <Module name="Core" version="0" />
-            <Module name="OpenGL" version="0">
+            <Module name="Core" version="0">
                 <Processors>
-                    <Processor content="org.inviwo.CanvasGL" />
+                    <Processor content="org.inviwo.Image.outport.metasource" />
+                    <Processor content="org.inviwo.Image.outport.metasink" />
+                    <Processor content="org.inviwo.CompositeProcessor" />
+                    <Processor content="org.inviwo.Mesh.outport.metasink" />
+                    <Processor content="org.inviwo.Mesh.outport.metasource" />
+                    <Processor content="org.inviwo.Volume.outport.metasink" />
+                    <Processor content="org.inviwo.Volume.outport.metasource" />
+                    <Processor content="org.inviwo.Buffer.outport.metasink" />
+                    <Processor content="org.inviwo.Buffer.outport.metasource" />
+                    <Processor content="org.inviwo.LightSource.outport.metasink" />
+                    <Processor content="org.inviwo.LightSource.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.CompositeProcessorCUsersgefleAppDataRoamingInviwocompositesDVRinv" />
+                    <Processor content="org.inviwo.CompositeProcessorCUsersgefleAppDataRoamingInviwocompositesRaycasterinv" />
                 </Processors>
             </Module>
+            <Module name="Animation" version="0" />
+            <Module name="QtWidgets" version="0" />
+            <Module name="AnimationQt" version="0" />
+            <Module name="assimp" version="0" />
             <Module name="Base" version="2">
                 <Processors>
                     <Processor content="org.inviwo.ConvexHull2DProcessor" />
@@ -24,6 +75,7 @@
                     <Processor content="org.inviwo.LayerDistanceTransformRAM" />
                     <Processor content="org.inviwo.MeshClipping" />
                     <Processor content="org.inviwo.MeshCreator" />
+                    <Processor content="org.inviwo.MeshMapping" />
                     <Processor content="org.inviwo.NoiseProcessor" />
                     <Processor content="org.inviwo.PixelToBufferProcessor" />
                     <Processor content="org.inviwo.Pointlightsource" />
@@ -59,15 +111,37 @@
                     <Processor content="org.inviwo.RandomMeshGenerator" />
                     <Processor content="org.inviwo.RandomSphereGenerator" />
                     <Processor content="org.inviwo.NoiseVolumeProcessor" />
+                    <Processor content="org.inviwo.BufferToMeshProcessor" />
+                    <Processor content="org.inviwo.ImageToSpatialSampler" />
+                    <Processor content="org.inviwo.CameraFrustum" />
+                    <Processor content="org.inviwo.VolumeSequenceSingleTimestepSampler" />
+                    <Processor content="org.inviwo.VolumeCreator" />
                     <Processor content="org.inviwo.Volume.InputSelector" />
                     <Processor content="org.inviwo.Mesh.InputSelector" />
                     <Processor content="org.inviwo.Image.InputSelector" />
+                </Processors>
+            </Module>
+            <Module name="OpenGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CanvasGL" />
+                </Processors>
+            </Module>
+            <Module name="OpenGLQt" version="0" />
+            <Module name="OpenCL" version="0" />
+            <Module name="BaseCL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.EntryExitPointsCL" />
+                    <Processor content="org.inviwo.GrayscaleCL" />
+                    <Processor content="org.inviwo.VolumeFirstHitCL" />
+                    <Processor content="org.inviwo.VolumeMaxCL" />
+                    <Processor content="org.inviwo.VolumeRaycasterCL" />
                 </Processors>
             </Module>
             <Module name="BaseGL" version="3">
                 <Processors>
                     <Processor content="org.inviwo.AxisAlignedCutPlane" />
                     <Processor content="org.inviwo.Background" />
+                    <Processor content="org.inviwo.CubeRenderer" />
                     <Processor content="org.inviwo.DrawLines" />
                     <Processor content="org.inviwo.DrawPoints" />
                     <Processor content="org.inviwo.EntryExitPoints" />
@@ -116,11 +190,6 @@
                     <Processor content="org.inviwo.VolumeShader" />
                 </Processors>
             </Module>
-            <Module name="Animation" version="0" />
-            <Module name="QtWidget" version="0" />
-            <Module name="AnimationQt" version="0" />
-            <Module name="assimp" version="0" />
-            <Module name="OpenGLQt" version="0" />
             <Module name="BrushingAndLinking" version="0">
                 <Processors>
                     <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
@@ -132,112 +201,12 @@
                     <Processor content="org.inviwo.EigenMatrixToImage" />
                     <Processor content="org.inviwo.EigenMix" />
                     <Processor content="org.inviwo.EigenNormalize" />
-                </Processors>
-            </Module>
-            <Module name="FontRendering" version="2">
-                <Processors>
-                    <Processor content="org.inviwo.TextOverlayGL" />
-                </Processors>
-            </Module>
-            <Module name="Plotting" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CSVSource" />
-                    <Processor content="org.inviwo.DataFrameColumnToColorVector" />
-                    <Processor content="org.inviwo.SyntheticDataFrame" />
-                </Processors>
-            </Module>
-            <Module name="PlottingGL" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.AxisRenderProcessor" />
-                    <Processor content="org.inviwo.ParallelCoordinates" />
-                    <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
-                    <Processor content="org.inviwo.ScatterPlotProcessor" />
-                    <Processor content="org.inviwo.VolumeAxis" />
-                </Processors>
-            </Module>
-            <Module name="PVM" version="0" />
-            <Module name="Python3" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.NumPyVolume" />
-                    <Processor content="org.inviwo.NumpyMandelbrot" />
-                    <Processor content="org.inviwo.NumPyMeshCreateTest" />
-                </Processors>
-            </Module>
-            <Module name="Python3Qt" version="0" />
-            <Module name="VectorFieldVisualization" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.RBFVectorFieldGenerator2D" />
-                    <Processor content="org.inviwo.RBFBased3DVectorFieldGenerator" />
-                    <Processor content="org.inviwo.SeedPointGenerator" />
-                    <Processor content="org.inviwo.SeedPointsFromMask" />
-                    <Processor content="org.inviwo.StreamLines" />
-                    <Processor content="org.inviwo.PathLines" />
-                    <Processor content="org.inviwo.StreamRibbons" />
-                    <Processor content="org.inviwo.IntegralLineVectorToMesh" />
-                    <Processor content="org.inviwo.Seed3Dto4D" />
-                    <Processor content="org.inviwo.SeedsFromMaskSequence" />
-                    <Processor content="org.inviwo.DiscardShortLines" />
-                </Processors>
-            </Module>
-            <Module name="VectorFieldVisualizationGL" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.LorenzSystem" />
-                    <Processor content="org.inviwo.VectorFieldGenerator2D" />
-                    <Processor content="org.inviwo.VectorFieldGenerator3D" />
-                    <Processor content="org.inviwo.LIC2D" />
-                    <Processor content="org.inviwo.HedgeHog2D" />
-                    <Processor content="org.inviwo.Vector2DMagnitude" />
-                    <Processor content="org.inviwo.Vector2DCurl" />
-                    <Processor content="org.inviwo.Vector2DDivergence" />
-                    <Processor content="org.inviwo.LIC3D" />
-                    <Processor content="org.inviwo.Vector3DCurl" />
-                    <Processor content="org.inviwo.Vector3DDivergence" />
-                    <Processor content="org.inviwo.TMIP" />
-                    <Processor content="org.inviwo.VectorFieldGenerator4D" />
-                </Processors>
-            </Module>
-            <Module name="CameraInteraction" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CameraInteractionWidget" />
-                    <Processor content="org.inviwo.ClippingWidget" />
-                </Processors>
-            </Module>
-            <Module name="NanoVGUtils" version="0" />
-            <Module name="DataPlotting" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.MeshToBuffer" />
-                    <Processor content="org.inviwo.Scatterplot" />
-                    <Processor content="org.inviwo.Lineplot" />
-                    <Processor content="org.inviwo.BarChart" />
-                    <Processor content="org.inviwo.StackedRadialBarChartProcessor" />
-                    <Processor content="org.inviwo.DataFrame" />
-                    <Processor content="org.inviwo.DataFrameExporter" />
-                    <Processor content="org.inviwo.PieChartGL" />
-                    <Processor content="org.inviwo.VolumeToDataFrame" />
-                    <Processor content="org.inviwo.ImageToDataFrame" />
-                    <Processor content="org.inviwo.StackedBarChart" />
-                    <Processor content="org.inviwo.StackDataFrame" />
-                    <Processor content="org.inviwo.Crosshair2dIndicator" />
-                    <Processor content="org.inviwo.AnnotationplotProcessor" />
+                    <Processor content="EigenMatrixXf.outport.metasink" />
+                    <Processor content="EigenMatrixXf.outport.metasource" />
                 </Processors>
             </Module>
             <Module name="Experimental" version="3">
                 <Processors>
-                    <Processor content="org.inviwo.FloatPropertyToString" />
-                    <Processor content="org.inviwo.FloatVec2PropertyToString" />
-                    <Processor content="org.inviwo.FloatVec3PropertyToString" />
-                    <Processor content="org.inviwo.FloatVec4PropertyToString" />
-                    <Processor content="org.inviwo.DoublePropertyToString" />
-                    <Processor content="org.inviwo.DoubleVec2PropertyToString" />
-                    <Processor content="org.inviwo.DoubleVec3PropertyToString" />
-                    <Processor content="org.inviwo.DoubleVec4PropertyToString" />
-                    <Processor content="org.inviwo.IntPropertyToString" />
-                    <Processor content="org.inviwo.Int64PropertyToString" />
-                    <Processor content="org.inviwo.Size_tPropertyToString" />
-                    <Processor content="org.inviwo.IntVec2PropertyToString" />
-                    <Processor content="org.inviwo.IntVec3PropertyToString" />
-                    <Processor content="org.inviwo.IntVec4PropertyToString" />
-                    <Processor content="org.inviwo.BoolPropertyToString" />
                     <Processor content="org.inviwo.ImageStackVolumeSource" />
                     <Processor content="org.inviwo.AmbientOcclusion" />
                     <Processor content="org.inviwo.VolumeIllustration" />
@@ -275,40 +244,75 @@
                     <Processor content="org.inviwo.TransferFunctions" />
                     <Processor content="org.inviwo.VolumeRayExtractor" />
                     <Processor content="org.inviwo.LayerExtremaExtraction" />
+                    <Processor content="org.inviwo.HydrogenGenerator" />
+                    <Processor content="org.inviwo.CameraAutoAdjuster" />
+                    <Processor content="org.inviwo.TFSelector" />
+                    <Processor content="org.inviwo.GeometrySilhouette" />
                 </Processors>
             </Module>
-            <Module name="SpringMassSystem" version="0">
+            <Module name="FontRendering" version="3">
                 <Processors>
-                    <Processor content="org.inviwo.SpringMassSystemProcessor" />
+                    <Processor content="org.inviwo.TextOverlayGL" />
                 </Processors>
             </Module>
-            <Module name="OpenSlide" version="1">
+            <Module name="ImplicitFuncions" version="0">
                 <Processors>
-                    <Processor content="org.inviwo.OpenSlideSource" />
-                    <Processor content="org.inviwo.OpenSlideRendererGL" />
-                    <Processor content="org.inviwo.OpenSlideVolumeRendererGL" />
-                    <Processor content="org.inviwo.OpenSlideToVolume" />
-                    <Processor content="org.inviwo.OpenSlideToVolume2" />
-                    <Processor content="org.inviwo.AnnotationSource" />
-                    <Processor content="org.inviwo.AnnotationRenderer" />
-                    <Processor content="org.inviwo.CbCrHistProcessor" />
-                    <Processor content="org.inviwo.RGBVolumeRaycaster" />
-                    <Processor content="org.inviwo.TFSlideProcessor" />
-                    <Processor content="org.inviwo.MapReduceVolumeProcessor" />
-                    <Processor content="org.inviwo.RGBBrickedVolumeRaycaster" />
-                    <Processor content="org.inviwo.BrickedVolumeSliceGL" />
-                    <Processor content="org.inviwo.BrickedOrthogonalVolumeSliceGL" />
-                    <Processor content="org.inviwo.ClipPlaneInteractionGL" />
-                    <Processor content="org.inviwo.OpenSlideUI" />
-                    <Processor content="org.inviwo.OpenSlidePositionWidget" />
-                    <Processor content="org.inviwo.ExportSlideHistograms" />
-                    <Processor content="org.inviwo.ImportHistogram" />
-                    <Processor content="org.inviwo.MergeSlideHistograms" />
-                    <Processor content="org.inviwo.ImportSlideHistograms" />
-                    <Processor content="org.inviwo.ConvexHullMeshing" />
-                    <Processor content="org.inviwo.TFColorSpaceMapping" />
+                    <Processor content="org.inviwo.LorenzAttractor" />
                 </Processors>
             </Module>
+            <Module name="NanoVGUtils" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.NanoVGPickingTestProcessor" />
+                </Processors>
+            </Module>
+            <Module name="Python3" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.NumPyVolume" />
+                    <Processor content="org.inviwo.NumpyMandelbrot" />
+                    <Processor content="org.inviwo.NumPyMeshCreateTest" />
+                    <Processor content="org.inviwo.PythonScriptProcessor" />
+                </Processors>
+            </Module>
+            <Module name="NanoVGPy" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.NanoVGPyProcessor" />
+                </Processors>
+            </Module>
+            <Module name="Plotting" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CSVSource" />
+                    <Processor content="org.inviwo.DataFrameColumnToColorVector" />
+                    <Processor content="org.inviwo.DataFrameExporter" />
+                    <Processor content="org.inviwo.ImageToDataFrame" />
+                    <Processor content="org.inviwo.SyntheticDataFrame" />
+                    <Processor content="org.inviwo.VolumeToDataFrame" />
+                </Processors>
+            </Module>
+            <Module name="PlottingGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.AxisRenderProcessor" />
+                    <Processor content="org.inviwo.ParallelCoordinates" />
+                    <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
+                    <Processor content="org.inviwo.ScatterPlotProcessor" />
+                    <Processor content="org.inviwo.VolumeAxis" />
+                </Processors>
+            </Module>
+            <Module name="PostProcessing" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.SSAO" />
+                    <Processor content="org.inviwo.FXAA" />
+                    <Processor content="org.inviwo.Fog" />
+                    <Processor content="org.inviwo.Tonemapping" />
+                    <Processor content="org.inviwo.HdrBloom" />
+                    <Processor content="org.inviwo.ImageBrightnessContrast" />
+                    <Processor content="org.inviwo.ImageEdgeDarken" />
+                    <Processor content="org.inviwo.DepthDarkening" />
+                    <Processor content="org.inviwo.ImageHueSaturationLuminance" />
+                    <Processor content="org.inviwo.ImageSharpen" />
+                    <Processor content="org.inviwo.ImageOpacity" />
+                </Processors>
+            </Module>
+            <Module name="Python3Qt" version="0" />
             <Module name="testing" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CameraTest" />
@@ -344,31 +348,87 @@
                 </Processors>
             </Module>
             <Module name="TestingQT" version="0" />
+            <Module name="UserInterfaceGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CameraWidget" />
+                    <Processor content="org.inviwo.CropWidget" />
+                    <Processor content="org.inviwo.PresentationProcessor" />
+                    <Processor content="org.inviwo.GLUITestProcessor" />
+                </Processors>
+            </Module>
+            <Module name="VectorFieldVisualization" version="2">
+                <Processors>
+                    <Processor content="org.inviwo.RBFVectorFieldGenerator2D" />
+                    <Processor content="org.inviwo.RBFBased3DVectorFieldGenerator" />
+                    <Processor content="org.inviwo.SeedPointGenerator3D" />
+                    <Processor content="org.inviwo.SeedPointsFromMask" />
+                    <Processor content="org.inviwo.StreamLinesDepricated" />
+                    <Processor content="org.inviwo.PathLinesDepricated" />
+                    <Processor content="org.inviwo.StreamRibbonsDeprecated" />
+                    <Processor content="org.inviwo.IntegralLineVectorToMesh" />
+                    <Processor content="org.inviwo.Seed3Dto4D" />
+                    <Processor content="org.inviwo.StreamLines2D" />
+                    <Processor content="org.inviwo.StreamLines3D" />
+                    <Processor content="org.inviwo.PathLines3D" />
+                    <Processor content="org.inviwo.SeedsFromMaskSequence" />
+                    <Processor content="org.inviwo.DiscardShortLines" />
+                    <Processor content="org.inviwo.SeedPointGenerator2D" />
+                    <Processor content="org.inviwo.IntegralLineSetSelector" />
+                    <Processor content="org.inviwo.IntegralLineSet.outport.metasink" />
+                    <Processor content="org.inviwo.IntegralLineSet.outport.metasource" />
+                </Processors>
+            </Module>
+            <Module name="VectorFieldVisualizationGL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.LorenzSystem" />
+                    <Processor content="org.inviwo.VectorFieldGenerator2D" />
+                    <Processor content="org.inviwo.VectorFieldGenerator3D" />
+                    <Processor content="org.inviwo.LIC2D" />
+                    <Processor content="org.inviwo.HedgeHog2D" />
+                    <Processor content="org.inviwo.Vector2DMagnitude" />
+                    <Processor content="org.inviwo.Vector2DCurl" />
+                    <Processor content="org.inviwo.Vector2DDivergence" />
+                    <Processor content="org.inviwo.LIC3D" />
+                    <Processor content="org.inviwo.Vector3DCurl" />
+                    <Processor content="org.inviwo.Vector3DDivergence" />
+                    <Processor content="org.inviwo.TMIP" />
+                    <Processor content="org.inviwo.VectorFieldGenerator4D" />
+                </Processors>
+            </Module>
         </Modules>
     </InviwoSetup>
     <ProcessorNetwork>
-        <ProcessorNetworkVersion content="15" />
+        <ProcessorNetworkVersion content="16" />
         <Processors>
-            <Processor type="org.inviwo.ParallelCoordinates" identifier="Parallel Coordinates">
+            <Processor type="org.inviwo.ParallelCoordinates" identifier="Parallel Coordinates" displayName="Parallel Coordinates">
                 <PortGroups>
                     <PortGroup content="default" key="brushingAndLinking" />
                     <PortGroup content="default" key="dataFrame" />
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="DataFrameInport" identifier="dataFrame" id="ref1" />
-                    <InPort type="BrushingAndLinkingManagerInport" identifier="brushingAndLinking" />
+                    <InPort type="org.inviwo.DataFrame.inport" identifier="dataFrame" id="ref2" />
+                    <InPort type="BrushingAndLinkingInport" identifier="brushingAndLinking" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref2" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref3" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.MarginProperty" identifier="margins">
                         <Properties>
-                            <Property type="org.inviwo.FloatProperty" identifier="top" />
-                            <Property type="org.inviwo.FloatProperty" identifier="right_" />
-                            <Property type="org.inviwo.FloatProperty" identifier="bottom" />
-                            <Property type="org.inviwo.FloatProperty" identifier="left" />
+                            <Property type="org.inviwo.FloatProperty" identifier="top">
+                                <value content="20" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="right_">
+                                <value content="20" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="bottom">
+                                <value content="20" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="left">
+                                <value content="20" />
+                            </Property>
+                            <Property type="org.inviwo.ButtonProperty" identifier="autoMargins" />
                         </Properties>
                         <collapsed content="0" />
                     </Property>
@@ -383,22 +443,22 @@
                                 <options>
                                     <option>
                                         <id content="sepallength" />
-                                        <name content="sepallength" />
+                                        <name content="sepal length" />
                                         <value content="1" />
                                     </option>
                                     <option>
                                         <id content="sepalwidth" />
-                                        <name content="sepalwidth" />
+                                        <name content="sepal width" />
                                         <value content="2" />
                                     </option>
                                     <option>
                                         <id content="petallength" />
-                                        <name content="petallength" />
+                                        <name content="petal length" />
                                         <value content="3" />
                                     </option>
                                     <option>
                                         <id content="petalwidth" />
-                                        <name content="petalwidth" />
+                                        <name content="petal width" />
                                         <value content="4" />
                                     </option>
                                     <option>
@@ -413,6 +473,7 @@
                                 <TransferFunction>
                                     <maskMin content="0" />
                                     <maskMax content="1" />
+                                    <type content="0" />
                                     <Points>
                                         <Point>
                                             <pos content="0.5" />
@@ -431,43 +492,50 @@
                                 <value x="0" y="0" z="0" w="1" />
                             </Property>
                             <Property type="org.inviwo.FloatVec4Property" identifier="handleColor" />
+                            <Property type="org.inviwo.FloatVec4Property" identifier="handleFilteredColor" />
                             <Property type="org.inviwo.TransferFunctionProperty" identifier="tf">
                                 <MetaDataMap>
-                                    <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState" />
-                                    <MetaDataItem type="org.inviwo.PropertyEditorWidgetMetaData" key="org.inviwo.PropertyEditorWidgetMetaData">
-                                        <position x="124" y="127" />
-                                        <dimensions x="500" y="324" />
-                                        <visibility content="0" />
-                                        <dockstatus content="Floating" />
-                                        <stickyflag content="0" />
+                                    <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
+                                        <MetaData x="124" y="127" />
                                     </MetaDataItem>
+                                    <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
+                                        <MetaData x="500" y="324" />
+                                    </MetaDataItem>
+                                    <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
+                                        <MetaData content="0" />
+                                    </MetaDataItem>
+                                    <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetVisible">
+                                        <MetaData content="0" />
+                                    </MetaDataItem>
+                                    <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState" />
                                 </MetaDataMap>
                                 <TransferFunction>
                                     <maskMin content="0" />
                                     <maskMax content="1" />
+                                    <type content="0" />
                                     <Points>
                                         <Point>
                                             <pos content="0" />
                                             <rgba x="0.89411765" y="0.10196079" z="0.10980392" w="1" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.33333322" />
+                                            <pos content="0.3333332199999999856387944419111590832472" />
                                             <rgba x="0.89411765" y="0.10196079" z="0.10980392" w="1" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.33333334" />
+                                            <pos content="0.3333333399999999779872439376049442216754" />
                                             <rgba x="0.21568628" y="0.49411765" z="0.72156864" w="1" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.66666657" />
+                                            <pos content="0.6666665699999999583624799015524331480265" />
                                             <rgba x="0.21568628" y="0.49411765" z="0.72156864" w="1" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.66666669" />
+                                            <pos content="0.6666666900000000062220806285040453076363" />
                                             <rgba x="0.3019608" y="0.68627453" z="0.29019609" w="1" />
                                         </Point>
                                         <Point>
-                                            <pos content="0.99999988" />
+                                            <pos content="0.9999998799999999521403992730483878403902" />
                                             <rgba x="0.3019608" y="0.68627453" z="0.29019609" w="1" />
                                         </Point>
                                     </Points>
@@ -481,8 +549,9 @@
                         <value content="8.3467007" />
                     </Property>
                     <Property type="org.inviwo.FloatProperty" identifier="selectedLineWidth" />
-                    <Property type="org.inviwo.CompositeProperty" identifier="axis_">
+                    <Property type="org.inviwo.CompositeProperty" identifier="axisProps_">
                         <OwnedPropertyIdentifiers>
+                            <PropertyIdentifier content="index" />
                             <PropertyIdentifier content="sepallength" />
                             <PropertyIdentifier content="sepalwidth" />
                             <PropertyIdentifier content="petallength" />
@@ -490,112 +559,194 @@
                             <PropertyIdentifier content="class" />
                         </OwnedPropertyIdentifiers>
                         <Properties>
-                            <Property type="org.inviwo.BoolCompositeProperty" identifier="sepallength">
-                                <displayName content="sepallength" />
-                                <OwnedPropertyIdentifiers>
-                                    <PropertyIdentifier content="range" />
-                                    <PropertyIdentifier content="usePercentiles" />
-                                </OwnedPropertyIdentifiers>
+                            <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="index">
+                                <displayName content="index" />
+                                <semantics semantics="Default" />
+                                <usageMode content="1" />
+                                <visible content="1" />
+                                <readonly content="0" />
                                 <Properties>
                                     <Property type="org.inviwo.BoolProperty" identifier="checked">
                                         <visible content="0" />
-                                        <value content="1" />
-                                    </Property>
-                                    <Property type="org.inviwo.FloatMinMaxProperty" identifier="range">
-                                        <displayName content="Range" />
-                                        <range x="4.3000002" y="7.9000001" />
-                                        <value x="4.3000002" y="7.9000001" />
-                                    </Property>
-                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
-                                        <displayName content="Use Percentiles" />
-                                    </Property>
-                                </Properties>
-                                <collapsed content="1" />
-                            </Property>
-                            <Property type="org.inviwo.BoolCompositeProperty" identifier="sepalwidth">
-                                <displayName content="sepalwidth" />
-                                <OwnedPropertyIdentifiers>
-                                    <PropertyIdentifier content="range" />
-                                    <PropertyIdentifier content="usePercentiles" />
-                                </OwnedPropertyIdentifiers>
-                                <Properties>
-                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
-                                        <visible content="0" />
-                                        <value content="1" />
-                                    </Property>
-                                    <Property type="org.inviwo.FloatMinMaxProperty" identifier="range">
-                                        <displayName content="Range" />
-                                        <range x="2" y="4.4000001" />
-                                        <value x="2" y="4.4000001" />
-                                    </Property>
-                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
-                                        <displayName content="Use Percentiles" />
-                                    </Property>
-                                </Properties>
-                                <collapsed content="1" />
-                            </Property>
-                            <Property type="org.inviwo.BoolCompositeProperty" identifier="petallength">
-                                <displayName content="petallength" />
-                                <OwnedPropertyIdentifiers>
-                                    <PropertyIdentifier content="range" />
-                                    <PropertyIdentifier content="usePercentiles" />
-                                </OwnedPropertyIdentifiers>
-                                <Properties>
-                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
-                                        <visible content="0" />
-                                        <value content="1" />
-                                    </Property>
-                                    <Property type="org.inviwo.FloatMinMaxProperty" identifier="range">
-                                        <displayName content="Range" />
-                                        <range x="1" y="6.9000001" />
-                                        <value x="1" y="6.9000001" />
-                                    </Property>
-                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
-                                        <displayName content="Use Percentiles" />
-                                    </Property>
-                                </Properties>
-                                <collapsed content="1" />
-                            </Property>
-                            <Property type="org.inviwo.BoolCompositeProperty" identifier="petalwidth">
-                                <displayName content="petalwidth" />
-                                <OwnedPropertyIdentifiers>
-                                    <PropertyIdentifier content="range" />
-                                    <PropertyIdentifier content="usePercentiles" />
-                                </OwnedPropertyIdentifiers>
-                                <Properties>
-                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
-                                        <visible content="0" />
-                                        <value content="1" />
-                                    </Property>
-                                    <Property type="org.inviwo.FloatMinMaxProperty" identifier="range">
-                                        <displayName content="Range" />
-                                        <range x="0.1" y="2.5" />
-                                        <value x="0.1" y="2.5" />
-                                    </Property>
-                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
-                                        <displayName content="Use Percentiles" />
-                                    </Property>
-                                </Properties>
-                                <collapsed content="1" />
-                            </Property>
-                            <Property type="org.inviwo.BoolCompositeProperty" identifier="class">
-                                <displayName content="class" />
-                                <OwnedPropertyIdentifiers>
-                                    <PropertyIdentifier content="range" />
-                                    <PropertyIdentifier content="usePercentiles" />
-                                </OwnedPropertyIdentifiers>
-                                <Properties>
-                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
-                                        <visible content="0" />
-                                        <value content="1" />
                                     </Property>
                                     <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
-                                        <displayName content="Range" />
+                                        <displayName content="Axis Range" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <range x="0" y="149" />
+                                        <increment content="0.01000000000000000020816681711721685132943" />
+                                        <minSeparation content="0" />
+                                        <value x="0" y="149" />
+                                    </Property>
+                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
+                                        <displayName content="Use Percentiles" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <value content="0" />
+                                    </Property>
+                                </Properties>
+                                <collapsed content="1" />
+                            </Property>
+                            <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="sepallength">
+                                <displayName content="sepal length" />
+                                <semantics semantics="Default" />
+                                <usageMode content="1" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <visible content="0" />
+                                    </Property>
+                                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                        <displayName content="Axis Range" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <range x="4.30000019073486328125" y="7.900000095367431640625" />
+                                        <increment content="0.01000000000000000020816681711721685132943" />
+                                        <minSeparation content="0" />
+                                        <value x="4.30000019073486328125" y="7.900000095367431640625" />
+                                    </Property>
+                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
+                                        <displayName content="Use Percentiles" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <value content="0" />
+                                    </Property>
+                                </Properties>
+                                <collapsed content="1" />
+                            </Property>
+                            <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="sepalwidth">
+                                <displayName content="sepal width" />
+                                <semantics semantics="Default" />
+                                <usageMode content="1" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <visible content="0" />
+                                    </Property>
+                                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                        <displayName content="Axis Range" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <range x="2" y="4.400000095367431640625" />
+                                        <increment content="0.01000000000000000020816681711721685132943" />
+                                        <minSeparation content="0" />
+                                        <value x="2" y="4.400000095367431640625" />
+                                    </Property>
+                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
+                                        <displayName content="Use Percentiles" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <value content="0" />
+                                    </Property>
+                                </Properties>
+                                <collapsed content="1" />
+                            </Property>
+                            <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="petallength">
+                                <displayName content="petal length" />
+                                <semantics semantics="Default" />
+                                <usageMode content="1" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <visible content="0" />
+                                    </Property>
+                                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                        <displayName content="Axis Range" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <range x="1" y="6.900000095367431640625" />
+                                        <increment content="0.01000000000000000020816681711721685132943" />
+                                        <minSeparation content="0" />
+                                        <value x="1" y="6.900000095367431640625" />
+                                    </Property>
+                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
+                                        <displayName content="Use Percentiles" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <value content="0" />
+                                    </Property>
+                                </Properties>
+                                <collapsed content="1" />
+                            </Property>
+                            <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="petalwidth">
+                                <displayName content="petal width" />
+                                <semantics semantics="Default" />
+                                <usageMode content="1" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <visible content="0" />
+                                    </Property>
+                                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                        <displayName content="Axis Range" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <range x="0.100000001490116119384765625" y="2.5" />
+                                        <increment content="0.01000000000000000020816681711721685132943" />
+                                        <minSeparation content="0" />
+                                        <value x="0.100000001490116119384765625" y="2.5" />
+                                    </Property>
+                                    <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
+                                        <displayName content="Use Percentiles" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <value content="0" />
+                                    </Property>
+                                </Properties>
+                                <collapsed content="1" />
+                            </Property>
+                            <Property type="org.inviwo.parallelcoordinates.axissettingsproperty" identifier="class">
+                                <displayName content="class" />
+                                <semantics semantics="Default" />
+                                <usageMode content="1" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <visible content="0" />
+                                    </Property>
+                                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="range">
+                                        <displayName content="Axis Range" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
                                         <range x="0" y="2" />
+                                        <increment content="0.01000000000000000020816681711721685132943" />
+                                        <minSeparation content="0" />
                                         <value x="0" y="2" />
                                     </Property>
                                     <Property type="org.inviwo.BoolProperty" identifier="usePercentiles">
                                         <displayName content="Use Percentiles" />
+                                        <semantics semantics="Default" />
+                                        <usageMode content="1" />
+                                        <visible content="1" />
+                                        <readonly content="0" />
+                                        <value content="0" />
                                     </Property>
                                 </Properties>
                                 <collapsed content="1" />
@@ -621,12 +772,6 @@
                         </Properties>
                         <collapsed content="0" />
                     </Property>
-                    <Property type="org.inviwo.StringProperty" identifier="selectedAxis">
-                        <value content='&quot;Model&quot;' />
-                    </Property>
-                    <Property type="org.inviwo.IntProperty" identifier="selectedAxisId">
-                        <value content="4" />
-                    </Property>
                     <Property type="org.inviwo.FloatVec2Property" identifier="handleSize" />
                     <Property type="org.inviwo.CompositeProperty" identifier="filteringOptions">
                         <Properties>
@@ -645,16 +790,16 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.Background" identifier="Background">
+            <Processor type="org.inviwo.Background" identifier="Background" displayName="Background">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref4" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref0" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref5" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref1" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
@@ -684,12 +829,12 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.CanvasGL" identifier="Canvas">
+            <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref3" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref4" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -746,6 +891,9 @@
                     <Property type="org.inviwo.EventProperty" identifier="fullscreen">
                         <Event />
                     </Property>
+                    <Property type="org.inviwo.EventProperty" identifier="saveLayerEvent">
+                        <Event />
+                    </Property>
                     <Property type="org.inviwo.BoolProperty" identifier="allowContextMenu" />
                 </Properties>
                 <MetaDataMap>
@@ -761,16 +909,16 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.CSVSource" identifier="CSVSource">
+            <Processor type="org.inviwo.CSVSource" identifier="CSVSource" displayName="CSVSource">
                 <PortGroups>
                     <PortGroup content="default" key="data" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="DataFrameOutport" identifier="data" id="ref0" />
+                    <OutPort type="org.inviwo.DataFrame.outport" identifier="data" id="ref5" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FileProperty" identifier="inputFile_">
-                        <absolutePath content="D:/projects/inviwo/inviwo-dev/modules/plottinggl/data/iris.csv" />
+                        <absolutePath content="E:/inviwo/inviwo-src/modules/plottinggl/data/iris.csv" />
                         <workspaceRelativePath content="../../../data/iris.csv" />
                         <ivwdataRelativePath content="../modules/plottinggl/data/iris.csv" />
                         <nameFilter>
@@ -790,23 +938,23 @@
                     <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
                         <position x="-300" y="-275" />
                         <visibility content="1" />
-                        <selection content="1" />
+                        <selection content="0" />
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
         </Processors>
         <Connections>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref5" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref3" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref1" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref4" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref2" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref4" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref3" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref0" />
             </Connection>
             <Connection>
-                <OutPort type="DataFrameOutport" identifier="data" reference="ref0" />
-                <InPort type="DataFrameInport" identifier="dataFrame" reference="ref1" />
+                <OutPort type="org.inviwo.DataFrame.outport" identifier="data" reference="ref5" />
+                <InPort type="org.inviwo.DataFrame.inport" identifier="dataFrame" reference="ref2" />
             </Connection>
         </Connections>
     </ProcessorNetwork>
