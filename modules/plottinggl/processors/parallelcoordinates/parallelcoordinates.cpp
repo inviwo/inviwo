@@ -53,6 +53,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 
 #include <modules/plotting/utils/statsutils.h>
+#include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
 
@@ -220,14 +221,14 @@ ParallelCoordinates::ParallelCoordinates()
 
     TransferFunction tf;
     tf.clear();
-    tf.add(0.0f, vec4(1, 0, 0, 1));
-    tf.add(0.5f, vec4(1, 1, 0, 1));
-    tf.add(1.0f, vec4(0, 1, 0, 1));
+    tf.add(0.0, vec4(1, 0, 0, 1));
+    tf.add(0.5, vec4(1, 1, 0, 1));
+    tf.add(1.0, vec4(0, 1, 0, 1));
     tf_.set(tf);
     tf_.setCurrentStateAsDefault();
 
     tf.clear();
-    tf.add(0.5f, vec4(1, 0, 0, 1));
+    tf.add(0.5, vec4(1, 0, 0, 1));
     tfSelection_.set(tf);
     tfSelection_.setCurrentStateAsDefault();
 
@@ -349,11 +350,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
             auto c = data->getColumn(i);
             std::string displayName = c->getHeader();
-            std::string identifier = displayName;  // TODO: remove non alpha num
-
-            util::erase_remove_if(identifier, [](char cc) {
-                return !(cc >= -1) || !(std::isalnum(cc) || cc == '_' || cc == '-');
-            });
+            std::string identifier = util::stripIdentifier(displayName);
 
             auto prop = [&]() -> ParallelCoordinatesAxisSettingsProperty * {
                 if (auto p = axisProperties_.getPropertyByIdentifier(identifier)) {
@@ -371,7 +368,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
                 }
             }();
             // Name will be empty string first time this is called
-            if (prop->name_ == "") {
+            if (prop->name_.empty()) {
                 prop->name_ = c->getHeader();
                 prop->range_.onChange([&]() { this->updateBrushing(); });
             }

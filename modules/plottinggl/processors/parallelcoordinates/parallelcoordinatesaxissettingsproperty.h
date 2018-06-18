@@ -52,13 +52,40 @@ public:
     ParallelCoordinatesAxisSettingsProperty(std::string identifier, std::string displayName);
     virtual ~ParallelCoordinatesAxisSettingsProperty() = default;
 
+    /**
+     * Update the range of the axis based on the given column.
+     */
     void updateFromColumn(std::shared_ptr<const Column> col);
 
-    double getNormalizedAt(size_t idx) const;
+    /**
+     * Normalizes the value v from the range of the parameter to zero and one. Clamps out-of-bounds
+     * values to zero and one. Using inverse linear interpolation between min and max unless
+     * usePercentiles_ is checked. If usePercentiles_ is checked linear interpolation is used within
+     * three percentile ranges (0-25, 25-75, 75-100).
+     */
     double getNormalized(double v) const;
-    double getValue(double v) const;
 
+    /**
+     * Samples the column at the given index and returned the normalized value.
+     * @see getNormalized(double)
+     */
+    double getNormalizedAt(size_t idx) const;
+
+    /**
+     * Get data-range value from a normalized value. This the inverse function of getNormalized, ie
+     * (\f$ x = getValue(getNormalized(x)) \f$).
+     * @see getNormalized(double)
+     */
+    double getValue(double normalizedV) const;
+
+    /**
+     * Helper function for ParallelCoordinates::handlePicked
+     */
     void moveHandle(bool upper, double mouseY);
+
+    /**
+     * Helper function for ParallelCoordinates::updateBrushing
+     */
     void updateBrushing(std::unordered_set<size_t> &brushed);
 
     std::function<double(size_t)> at = [](size_t) { return 0.0; };
@@ -69,8 +96,8 @@ private:
 
     std::shared_ptr<const Column> col_;
 
-    bool upperBrushed_ = false;
-    bool lowerBrushed_ = false;
+    bool upperBrushed_ = false;  //! Flag to indicated if the upper handle is brushing away data
+    bool lowerBrushed_ = false;  //! Flag to indicated if the lower handle is brushing away data
 
     double p0_;
     double p25_;
@@ -81,9 +108,9 @@ private:
     bool updating_ = false;
 
     std::string name_;
-    std::shared_ptr<Texture2D> labelTexture_;
-    std::shared_ptr<Texture2D> minValTexture_;
-    std::shared_ptr<Texture2D> maxValTexture_;
+    std::shared_ptr<Texture2D> labelTexture_;   //! Texture cache used by ParallelCoordiantes
+    std::shared_ptr<Texture2D> minValTexture_;  //! Texture cache used by ParallelCoordiantes
+    std::shared_ptr<Texture2D> maxValTexture_;  //! Texture cache used by ParallelCoordiantes
 };
 
 }  // namespace plot

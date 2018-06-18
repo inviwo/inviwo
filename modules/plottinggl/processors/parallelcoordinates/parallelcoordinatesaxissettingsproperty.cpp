@@ -107,9 +107,6 @@ void ParallelCoordinatesAxisSettingsProperty::updateFromColumn(std::shared_ptr<c
         });
 }
 
-double ParallelCoordinatesAxisSettingsProperty::getNormalizedAt(size_t idx) const {
-    return getNormalized(at(idx));
-}
 
 double ParallelCoordinatesAxisSettingsProperty::getNormalized(double v) const {
     if (range_.getRangeMax() == range_.getRangeMin()) {
@@ -147,6 +144,11 @@ double ParallelCoordinatesAxisSettingsProperty::getNormalized(double v) const {
         double t = (v - minV) / (maxV - minV);
         return o + t * r;
     }
+}
+
+
+double ParallelCoordinatesAxisSettingsProperty::getNormalizedAt(size_t idx) const {
+    return getNormalized(at(idx));
 }
 
 double ParallelCoordinatesAxisSettingsProperty::getValue(double v) const {
