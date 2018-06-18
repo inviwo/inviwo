@@ -29,6 +29,8 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
 #include <modules/plotting/datastructures/column.h>
+#include <modules/base/algorithm/dataminmax.h>
+#include <modules/plotting/utils/statsutils.h>
 
 namespace inviwo {
 namespace plot {
