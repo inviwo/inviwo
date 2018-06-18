@@ -722,7 +722,7 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
             (mouseEvent->pos().y - marigins[2]) / (canvasSize.y - marigins[2] - marigins[0]);
         newY = glm::clamp(newY, 0.0, 1.0);
 
-        axisVector_[axisID]->updateRange(upper, newY);
+        axisVector_[axisID]->moveHandle(upper, newY);
         mouseEvent->markAsUsed();
     }
 }

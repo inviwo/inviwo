@@ -33,14 +33,16 @@
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <modules/opengl/texture/texture2d.h>
 
 namespace inviwo {
 namespace plot {
-
+class Column;
 /**
  * \class ParallelCoordinatesAxisSettingsProperty
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * Helper class for handling axis specific tasks for the parallel coordinates plot
  */
 class IVW_MODULE_PLOTTINGGL_API ParallelCoordinatesAxisSettingsProperty
     : public BoolCompositeProperty {
@@ -56,7 +58,7 @@ public:
     double getNormalized(double v) const;
     double getValue(double v) const;
 
-    void updateRange(bool upper, double mouseY);
+    void moveHandle(bool upper, double mouseY);
     void updateBrushing(std::unordered_set<size_t> &brushed);
 
     std::function<double(size_t)> at = [](size_t) { return 0.0; };

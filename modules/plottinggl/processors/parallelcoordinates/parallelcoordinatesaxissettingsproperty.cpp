@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
-
-#pragma optimize("", off)
+#include <modules/plotting/datastructures/column.h>
 
 namespace inviwo {
 namespace plot {
@@ -174,7 +173,7 @@ double ParallelCoordinatesAxisSettingsProperty::getValue(double v) const {
     }
 }
 
-void ParallelCoordinatesAxisSettingsProperty::updateRange(bool upper, double mouseY) {
+void ParallelCoordinatesAxisSettingsProperty::moveHandle(bool upper, double mouseY) {
     auto range = range_.get();
     double value = getValue(mouseY);
 

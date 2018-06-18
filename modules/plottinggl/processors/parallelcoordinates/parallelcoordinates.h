@@ -55,7 +55,6 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
 
-
 namespace inviwo {
 class Mesh;
 class PickingEvent;
