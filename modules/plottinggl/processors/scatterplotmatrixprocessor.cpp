@@ -34,6 +34,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/fontrendering/util/fontutils.h>
 
@@ -68,9 +69,9 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , fontFaceStats_("fontFaceStats", "Font Face (stats)")
     , statsFontSize_("statsFontSize", "Font size (stats)", 14, 0, 144, 1)
     , showCorrelationValues_("showStatistics", "Show correlation values", true)
-    , correlectionTF_("correlectionTF", "Correlation TF")
     , parameters_("parameters", "Parameters")
-
+    , correlectionTF_("correlectionTF", "Correlation TF")
+    
     , textRenderer_()
     , textureQuadRenderer_()
 
