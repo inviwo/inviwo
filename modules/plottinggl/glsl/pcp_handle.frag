@@ -7,7 +7,9 @@ in vec2 p;
 
 void main(){
     vec4 outColor = texture(texColor,p).rgba;
+    if(outColor.a==0) discard;
     outColor.rgb *= color.rgb;
+    
     
     FragData0 = outColor;
     PickingData = vec4(pickColor,1);

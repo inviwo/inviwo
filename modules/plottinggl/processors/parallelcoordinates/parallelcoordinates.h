@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
@@ -51,6 +52,8 @@
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
+
+#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
 
 namespace inviwo {
 class Mesh;
@@ -73,42 +76,6 @@ namespace plot {
 
 class IVW_MODULE_PLOTTINGGL_API ParallelCoordinates : public Processor {
 public:
-    struct AxisBase {
-        AxisBase(size_t columnId, std::string name, BoolCompositeProperty *boolCompositeProperty,
-                 BoolProperty *usePercentiles, std::shared_ptr<const BufferBase> buffer)
-            : columnId_(columnId)
-            , property_(boolCompositeProperty)
-            , usePercentiles_(usePercentiles)
-            , buffer_(buffer)
-            , name_(name) {
-        }
-        
-        virtual ~AxisBase() = default;
-        
-        size_t columnId_;
-        BoolCompositeProperty *property_;
-        BoolProperty *usePercentiles_;
-        std::shared_ptr<const BufferBase> buffer_;
-        std::string name_;
-
-        std::shared_ptr<Texture2D> labelTexture_;
-        std::shared_ptr<Texture2D> minValTexture_;
-        std::shared_ptr<Texture2D> maxValTexture_;
-
-        virtual float at(size_t idx) const = 0;
-        virtual float getNormalized(float v) const = 0;
-        virtual float getValue(float v) const = 0;
-        virtual vec2 getRange() const = 0;
-
-        virtual float getRangeMin() const = 0;
-        virtual float getRangeMax() const = 0;
-
-        float getNormalizedAt(size_t idx) const { return getNormalized(at(idx)); }
-
-        virtual void updateBrushing(std::unordered_set<size_t> &brushed) = 0;
-        virtual void updateRange(bool upper, float y) = 0;
-    };
-
     enum class BlendMode { None = 0, Additive = 1, Sutractive = 2, Regular = 3 };
 
     enum class LabelPosition { None, Above, Below };
@@ -129,14 +96,17 @@ protected:
 private:
     void createOrUpdateProperties();
 
-    void buildLineMesh();
-    void drawAxis(size2_t size, std::vector<AxisBase *> enabledAxis, vec4 extraMargins);
-    void drawHandles(size2_t size, std::vector<AxisBase *> enabledAxis, vec4 extraMargins);
-    void drawLines(size2_t size, std::vector<AxisBase *> enabledAxis, vec4 extraMargins);
+    void buildLineMesh(const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
+    void drawAxis(size2_t size,
+                  const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
+    void drawHandles(size2_t size,
+                     const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
+    void drawLines(size2_t size);
 
-    void buildTextCache(size2_t size, std::vector<AxisBase *> enabledAxis);
+    void buildTextCache(const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
 
-    void renderText(size2_t size, std::vector<AxisBase *> enabledAxis, vec4 extraMargins);
+    void renderText(size2_t size,
+                    const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
 
     void updateBrushing();
 
@@ -148,7 +118,8 @@ private:
 
     CompositeProperty colors_;
     FloatVec4Property axisColor_;
-    FloatVec4Property handleColor_;
+    FloatVec4Property handleBaseColor_;
+    FloatVec4Property handleFilteredColor_;
     TransferFunctionProperty tf_;
     TransferFunctionProperty tfSelection_;
 
@@ -166,9 +137,8 @@ private:
     FloatVec2Property handleSize_;
 
     MarginProperty margins_;
+    ButtonProperty autoMargins_;
 
-    StringProperty selectedAxisName_;
-    IntProperty selectedAxisId_;
     DataFrameColumnProperty selectedColorAxis_;
 
     CompositeProperty text_;
@@ -191,7 +161,7 @@ private:
     std::unique_ptr<Mesh> lines_;
     std::unique_ptr<MeshDrawerGL> linesDrawer_;
 
-    std::vector<std::unique_ptr<AxisBase>> axisVector_;
+    std::vector<ParallelCoordinatesAxisSettingsProperty *> axisVector_; // owned by axisProperty_
 
     PickingMapper linePicking_;
     PickingMapper handlePicking_;
@@ -204,11 +174,6 @@ private:
     bool recreateLines_;
     bool textCacheDirty_;
     bool brushingDirty_;
-
-    vec4 extraMarginsLabel_;
-    vec4 extraMarginsValues_;
-    vec4 extraMarginsHandles_;
-    vec4 extraMargins_;
 };
 
 }  // namespace plot
