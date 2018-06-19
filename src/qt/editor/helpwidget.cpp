@@ -264,9 +264,25 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& name) {
             QImage resized{
                 image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
 
+            if (name.toString().contains("form_")) {
+                
+                for (int y = 0; y < resized.height(); y++) {
+                    for (int x = 0; x < resized.width(); x++) {
+                        auto p = resized.pixelColor(x, y);
+                        if (p.alpha() > 0) {
+                            p.setRed(0x9d);
+                            p.setGreen(0x99);
+                            p.setBlue(0x95);
+                            resized.setPixelColor(x, y, p);
+                        }
+                    }
+                }
+            }
+
             QByteArray smalldata;
             QBuffer buffer(&smalldata);
             resized.save(&buffer, QFileInfo(url.path()).suffix().toLatin1().data());
+
             return smalldata;
         }
     }
