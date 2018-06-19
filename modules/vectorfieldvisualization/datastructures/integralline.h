@@ -48,7 +48,7 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
 public:
-    enum class TerminationReason { OutOfBounds, ZeroVelocity, Steps, StartPoint, Unknown };
+    enum class TerminationReason { StartPoint, Steps, OutOfBounds, ZeroVelocity, Unknown };
 
     IntegralLine() = default;
     IntegralLine(const IntegralLine &rhs) = default;
@@ -200,6 +200,31 @@ T IntegralLine::getMetaDataAtDistance(std::string md, double d) const {
 
     return static_cast<T>(
         Interpolation<TV, double>::linear(static_cast<TV>(*prevMD), static_cast<TV>(*nextMD), x));
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             IntegralLine::TerminationReason reason) {
+    switch (reason) {
+        case inviwo::IntegralLine::TerminationReason::StartPoint:
+            os << "Seed Point";
+            break;
+        case inviwo::IntegralLine::TerminationReason::OutOfBounds:
+            os << "Out of Bounds";
+            break;
+        case inviwo::IntegralLine::TerminationReason::ZeroVelocity:
+            os << "Zero Velocity";
+            break;
+        case inviwo::IntegralLine::TerminationReason::Steps:
+            os << "Steps";
+            break;
+        default:
+        case inviwo::IntegralLine::TerminationReason::Unknown:
+            os << "Unknown";
+            break;
+    }
+
+    return os;
 }
 
 }  // namespace inviwo
