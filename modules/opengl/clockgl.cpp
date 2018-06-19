@@ -50,9 +50,10 @@ void ClockGL::start() {
 
     if (!queries_.empty() && queries_.back().state == State::Started) {
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
-    } else if (queries_.empty() && queries_.front().state == State::Unused) {
+    } else if (!queries_.empty() && queries_.front().state == State::Unused) {
         std::rotate(queries_.begin(), queries_.begin() + 1, queries_.end());
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
+        queries_.back().state = State::Started;
     } else {
         queries_.push_back({{0, 0}, State::Started});
         glGenQueries(2, queries_.back().ids.data());
