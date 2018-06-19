@@ -80,10 +80,10 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
                           auto p =
                               ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_)));
                           if (p.x == p.y) {
-                              color_.setSelectedValue(id2id_[p.x]);
+                              color_.setSelectedValue(visibleIDToColumnID_[p.x]);
                           } else {
-                              selectedX_.setSelectedValue(id2id_[p.x]);
-                              selectedY_.setSelectedValue(id2id_[p.y]);
+                              selectedX_.setSelectedValue(visibleIDToColumnID_[p.x]);
+                              selectedY_.setSelectedValue(visibleIDToColumnID_[p.y]);
                           }
                       }
 
@@ -289,7 +289,7 @@ void ScatterPlotMatrixProcessor::createScatterPlots() {
         for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
             a++;
             if (!isIncluded(*x)) continue;
-            id2id_[numParams_++] = a;
+            visibleIDToColumnID_[numParams_++] = a;
 
             for (auto y = x + 1; y != dataFrame.end(); ++y) {
                 if (!isIncluded(*y)) continue;
