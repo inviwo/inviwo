@@ -53,17 +53,17 @@ namespace inviwo {
 namespace plot {
 
 /** \docpage{org.inviwo.ScatterPlotMatrixProcessor, Scatter Plot Matrix}
-* ![](org.inviwo.ScatterPlotMatrixProcessor.png?classIdentifier=org.inviwo.ScatterPlotMatrixProcessor)
-* This processor creates a scatter plot matrix for a given DataFrame.
-*
-* ### Inports
-*   * __DataFrame__  data input for plotting
-*   * __BrushingAndLinking__   inport for brushing & linking interactions
-*
-* ### Outports
-*   * __outport__   rendered image of the scatter plot matrix
-*
-*/
+ * ![](org.inviwo.ScatterPlotMatrixProcessor.png?classIdentifier=org.inviwo.ScatterPlotMatrixProcessor)
+ * This processor creates a scatter plot matrix for a given DataFrame.
+ *
+ * ### Inports
+ *   * __DataFrame__  data input for plotting
+ *   * __BrushingAndLinking__   inport for brushing & linking interactions
+ *
+ * ### Outports
+ *   * __outport__   rendered image of the scatter plot matrix
+ *
+ */
 
 class IVW_MODULE_PLOTTINGGL_API ScatterPlotMatrixProcessor : public Processor {
 public:
@@ -95,11 +95,14 @@ private:
 
     CompositeProperty labels_;
     FloatVec4Property fontColor_;
+
     OptionPropertyString fontFace_;
     IntProperty fontSize_;
     OptionPropertyString fontFaceStats_;
     IntProperty statsFontSize_;
     BoolProperty showCorrelationValues_; // Show numerical correlation values
+
+    CompositeProperty parameters_;
 
     TransferFunctionProperty correlectionTF_;
 
@@ -111,6 +114,16 @@ private:
     TextureQuadRenderer textureQuadRenderer_;
 
     EventProperty mouseEvent_;
+
+    std::unordered_map<size_t, int> visibleIDToColumnID_;  //! Helper map to convert from ids in
+                                                           //! "matrix order" (as shown on screen)
+                                                           //! to index of column in the dataframe.
+
+    /**
+     * Test wether a given column should be included in the rendering or not. Does this by looking
+     * up or creating a bool property in parameters_.
+     */
+    bool isIncluded(std::shared_ptr<plot::Column> col);
 };
 
 }  // namespace plot
