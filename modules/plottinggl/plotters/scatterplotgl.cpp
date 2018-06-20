@@ -246,7 +246,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         // bind picking buffer
         auto pickBuf = pickIds_->getRepresentation<BufferGL>();
         auto pickBufObj = pickBuf->getBufferObject();
-        boa_->attachBufferObject(pickBufObj.get(), 4, BufferObject::BindingType::ForceFloat);
+        boa_->attachBufferObject(pickBufObj.get(), 4);
     }
     shader_.setUniform("pickingEnabled", picking_.isEnabled());
 
@@ -335,6 +335,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     indicesGL->bind();
     glDrawElements(GL_POINTS, static_cast<uint32_t>(indices->getSize()), indicesGL->getFormatType(),
                    nullptr);
+    indicesGL->getBufferObject()->unbind();
 
     if (!hoveredIndices_.empty()) {
         // draw hovered points on top
