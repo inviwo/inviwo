@@ -34,6 +34,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/fontrendering/util/fontutils.h>
 
@@ -68,26 +69,27 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , fontFaceStats_("fontFaceStats", "Font Face (stats)")
     , statsFontSize_("statsFontSize", "Font size (stats)", 14, 0, 144, 1)
     , showCorrelationValues_("showStatistics", "Show correlation values", true)
+    , parameters_("parameters", "Parameters")
     , correlectionTF_("correlectionTF", "Correlation TF")
-
+    
     , textRenderer_()
     , textureQuadRenderer_()
 
-    , mouseEvent_(
-          "mouseEvent", "Mouse Event",
-          [&](Event *e) {
-              if (auto me = dynamic_cast<MouseEvent *>(e)) {
-                  auto p = ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_))) + 1;
-                  if (p.x == p.y) {
-                      color_.setSelectedValue(p.x);
-                  } else {
-                      selectedX_.setSelectedValue(p.x);
-                      selectedY_.setSelectedValue(p.y);
-                  }
-              }
+    , mouseEvent_("mouseEvent", "Mouse Event",
+                  [&](Event *e) {
+                      if (auto me = dynamic_cast<MouseEvent *>(e)) {
+                          auto p =
+                              ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_)));
+                          if (p.x == p.y) {
+                              color_.setSelectedValue(visibleIDToColumnID_[p.x]);
+                          } else {
+                              selectedX_.setSelectedValue(visibleIDToColumnID_[p.x]);
+                              selectedY_.setSelectedValue(visibleIDToColumnID_[p.y]);
+                          }
+                      }
 
-          },
-          MouseButton::Left, MouseState::Press)
+                  },
+                  MouseButton::Left, MouseState::Press)
 
 {
     addPort(dataFrame_);
@@ -108,6 +110,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     addProperty(labels_);
     addProperty(correlectionTF_);
     addProperty(showCorrelationValues_);
+    addProperty(parameters_);
 
     addProperty(mouseEvent_);
 
@@ -164,6 +167,12 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     });
 
     dataFrame_.onChange([&]() {
+        plots_.clear();
+        labelsTextures_.clear();
+        statsTextures_.clear();
+    });
+
+    parameters_.onChange([&]() {
         plots_.clear();
         labelsTextures_.clear();
         statsTextures_.clear();
@@ -277,10 +286,14 @@ void ScatterPlotMatrixProcessor::createScatterPlots() {
 
         plots_.clear();
 
-        for (auto x = dataFrame.begin() + 1; x != dataFrame.end(); ++x) {
-            numParams_++;
+        int a = -1;
+        for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
+            a++;
+            if (!isIncluded(*x)) continue;
+            visibleIDToColumnID_[numParams_++] = a;
 
             for (auto y = x + 1; y != dataFrame.end(); ++y) {
+                if (!isIncluded(*y)) continue;
                 auto plot = std::make_unique<ScatterPlotGL>();
                 plot->properties_.set(&scatterPlotproperties_);
                 plot->setXAxis((*x));
@@ -303,8 +316,10 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
         textRenderer_.setFontSize(statsFontSize_.get());
 
         auto &dataFrame = *dataFrame_.getData();
-        for (auto x = dataFrame.begin() + 1; x != dataFrame.end(); ++x) {
+        for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
+            if (!isIncluded(*x)) continue;
             for (auto y = x + 1; y != dataFrame.end(); ++y) {
+                if (!isIncluded(*y)) continue;
                 auto res = statsutil::linearRegresion(*(*x)->getBuffer(), *(*y)->getBuffer());
 
                 std::ostringstream oss;
@@ -341,11 +356,31 @@ void ScatterPlotMatrixProcessor::createLabels() {
         textRenderer_.setFontSize(fontSize_.get());
 
         auto &dataFrame = *dataFrame_.getData();
-        for (auto x = dataFrame.begin() + 1; x != dataFrame.end(); ++x) {
+        for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
+            if (!isIncluded(*x)) continue;
             auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontSize_.get(),
                                                fontColor_.get());
             labelsTextures_.push_back(tex);
         }
+    }
+}
+
+bool ScatterPlotMatrixProcessor::isIncluded(std::shared_ptr<Column> col) {
+    std::string displayName = col->getHeader();
+    std::string identifier = util::stripIdentifier(displayName);
+
+    auto prop = parameters_.getPropertyByIdentifier(identifier);
+    if (prop) {
+        if (auto bp = dynamic_cast<BoolProperty *>(prop)) {
+            bp->setSerializationMode(PropertySerializationMode::All);
+            return bp->get();
+        }
+        throw inviwo::Exception("Not a bool property", IvwContext);
+    } else {
+        auto newProp = new BoolProperty(identifier, displayName, true);
+        newProp->setSerializationMode(PropertySerializationMode::All);
+        parameters_.addProperty(newProp);
+        return true;
     }
 }
 
