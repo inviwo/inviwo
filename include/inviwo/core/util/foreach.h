@@ -72,10 +72,10 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
                                                     size_t jobs = 0) {
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     auto poolSize = settings->poolSize_.get();
-    auto includeIndex = typename std::conditional<util::is_callable_with<T, size_t>(callback),
-                                                  std::true_type, std::false_type>::type();
+    using IncludeIndexType = typename std::conditional<util::is_callable_with<T, size_t>(callback),
+                                                       std::true_type, std::false_type>::type;
     if (poolSize == 0) {
-        detail::foreach_helper(includeIndex, iterable.begin(), iterable.end(), callback);
+        detail::foreach_helper(IncludeIndexType(), iterable.begin(), iterable.end(), callback);
         return {};
     }
 
@@ -88,8 +88,8 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
     for (size_t job = 0; job < jobs; ++job) {
         auto start = (s * job) / jobs;
         auto end = (s * (job + 1)) / jobs;
-        futures.push_back(dispatchPool([&callback, &iterable, start, end, &includeIndex]() {
-            detail::foreach_helper(includeIndex, iterable.begin() + start,
+        futures.push_back(dispatchPool([callback, &iterable, start, end]() {
+            detail::foreach_helper(IncludeIndexType(), iterable.begin() + start,
                                    iterable.begin() + static_cast<size_t>(end), callback, start);
         }));
     }
