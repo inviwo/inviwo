@@ -34,6 +34,10 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
+#include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
+
 #include <modules/python3/interface/inviwopy.h>
 #include <modules/python3/interface/pynetwork.h>
 #include <modules/python3/interface/pyglmtypes.h>
@@ -73,6 +77,17 @@ void exposeImage(py::module &m) {
         .def("clone", [](Layer &self) { return self.clone(); })
         .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
         .def_property_readonly("dimensions", &Layer::getDimensions)
+        .def("save", [](Layer& self, std::string filepath) {
+            auto ext = filesystem::getFileExtension(filepath);
+
+            auto writer = InviwoApplication::getPtr()
+                              ->getDataWriterFactory()
+                              ->getWriterForTypeAndExtension<Layer>(ext);
+            if (!writer) {
+                throw Exception("No write for extension " + ext);
+            }
+            writer->writeData(&self, filepath);
+        })
         .def_property(
             "data",
             [&](Layer *layer) -> py::array {
@@ -98,6 +113,7 @@ void exposeImage(py::module &m) {
             });
 
     exposeInport<ImageInport>(m, "Image");
+    exposeInport<ImageMultiInport>(m, "ImageMulti");
     exposeOutport<ImageOutport>(m, "Image")
         .def_property_readonly("dimensions", &ImageOutport::getDimensions);
 }
