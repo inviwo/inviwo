@@ -74,6 +74,7 @@ public:
      * The graphical representation should thus be centered around (0,0) in local
      * coordinates.
      *
+     * @param primitive pointer to the primitive
      * @param scene    item will be added to this QGraphicsScene
      * @param pos      normalized position of primitive (scalar value and opacity)
      * @param size     base size of primitive

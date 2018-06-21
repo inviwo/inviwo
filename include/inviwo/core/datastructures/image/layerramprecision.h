@@ -106,6 +106,7 @@ private:
  * @param dimensions of layer to create.
  * @param type of layer to create.
  * @param format of layer to create.
+ * @param swizzleMask used in for the layer, defaults to RGB-alpha
  * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(

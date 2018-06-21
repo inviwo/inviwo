@@ -54,7 +54,8 @@ namespace filesystem {
  * On Windows, the file name is first converted from a utf-8 string to std::wstring and then the
  * stream is created using the std::wstring as std::fstream(std::string) does not support utf-8.
  *
- * @param filename   utf-8 encoded string
+ * @param filename  utf-8 encoded string
+ * @param mode      mode to open the file (input or output)
  * @return stream for the given file, i.e. `std::fstream(filename, mode);`
  *
  * \see std::fstream
@@ -77,6 +78,7 @@ IVW_CORE_API std::fstream fstream(const std::string& filename,
  * stream is created using the std::wstring as std::ifstream(std::string) does not support utf-8.
  *
  * @param filename   utf-8 encoded string
+ * @param mode       mode to open the file (input or output)
  * @return stream for the given file, i.e. `std::ifstream(filename, mode);`
  *
  * \see std::ifstream
@@ -98,6 +100,7 @@ IVW_CORE_API std::ifstream ifstream(const std::string& filename,
  * stream is created using the std::wstring as std::ofstream(std::string) does not support utf-8.
  *
  * @param filename   utf-8 encoded string
+ * @param mode       mode to open the file (input or output)
  * @return stream for the given file, i.e. `std::ofstream(filename, mode);`
  *
  * \see std::ofstream
@@ -135,8 +138,8 @@ IVW_CORE_API std::string getInviwoUserSettingsPath();
 /**
  * \brief Check if a file exists.
  * @see directoryExists for directories
- * @param fileName The path to the file
- * @return True if file exists, false otherwise
+ * @param filePath The path to the file
+ * @return true if file exists, false otherwise
  */
 IVW_CORE_API bool fileExists(const std::string& filePath);
 
@@ -174,6 +177,7 @@ enum class ListMode {
  * Returns the file listing of a directory
  *
  * @param path Files are listed for this directory
+ * @param mode What types of contents to return see ListMode
  * @return List of files residing in the given path
  */
 IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path,
@@ -183,6 +187,7 @@ IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& pa
  * Recursively searches and returns full path to files/directories in specified directory and its
  * subdirectories.
  * @param path Files are listed for this directory and its subdirectories
+ * @param mode What types of contents to return see ListMode
  * @return List of files residing in the given path and its subdirectories
  */
 IVW_CORE_API std::vector<std::string> getDirectoryContentsRecursively(
@@ -195,7 +200,7 @@ IVW_CORE_API std::vector<std::string> getDirectoryContentsRecursively(
  *
  * @param pattern  The pattern used for matching, might contain '*' and '?'
  * @param str      String which needs to be checked
- * @return True if the given string matches the pattern, false otherwise.
+ * @return true if the given string matches the pattern, false otherwise.
  */
 IVW_CORE_API bool wildcardStringMatch(const std::string& pattern, const std::string& str);
 
@@ -254,6 +259,7 @@ IVW_CORE_API std::string findBasePath();
  * @see PathType
  * @param pathType Enum for type of path
  * @param suffix Path extension
+ * @param createFolder if true, will create the folder on disk if it does not exists.
  * @return basePath +  pathType + suffix
  */
 IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix = "",

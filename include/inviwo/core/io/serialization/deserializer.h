@@ -68,7 +68,7 @@ public:
      * @param stream Stream with content that is to be deserialized.
      * @param refPath A path that will be used to decode the location of data during
      * deserialization.
-     * @param bool allowReference flag to manage references to avoid multiple object creation.
+     * @param allowReference flag to manage references to avoid multiple object creation.
      */
     Deserializer(std::istream& stream, const std::string& refPath, bool allowReference = true);
 
@@ -132,7 +132,7 @@ public:
      * eg., std::map<std::string, Property*>
      *
      * eg. xml tree
-     *
+     *\code{.xml}
      *     <Properties>
      *          <Property identifier="enableMIP" displayName="MIP">
      *              <value content="0" />
@@ -141,14 +141,14 @@ public:
      *              <value content="0" />
      *          </Property>
      *     <Properties>
-     *
+     *\endcode
      * In the above xml tree,
      *
      * key                   = "Properties"
      * itemKey               = "Property"
      * param comparisionAttribute  = "identifier"
      * param sMap["enableMIP"]     = address of a property
-     *         sMap["enableShading"] = address of a property
+     *       sMap["enableShading"] = address of a property
      *         where, "enableMIP" & "enableShading" are keys.
      *         address of a property is a value
      *

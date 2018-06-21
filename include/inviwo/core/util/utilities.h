@@ -77,8 +77,8 @@ IVW_CORE_API std::string cleanIdentifier(const std::string& identifier,
  * Turns "/path/to/inviwo-module-yourmodule.dll" into "yourmodule".
  * Returns filename without extension if inviwo-module was not found.
  *
- * @param std::string filePath Path to module file
- * @return IVW_CORE_API std::string Module name
+ * @param  filePath Path to module file
+ * @return name of the module 
  */
 IVW_CORE_API std::string stripModuleFileNameDecoration(std::string filePath);
 

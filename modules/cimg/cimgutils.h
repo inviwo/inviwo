@@ -79,18 +79,18 @@ namespace cimgutil {
     /**
      * \brief Rescales Layer of given image data
      *
-     * @param Layer * inputImage image data that needs to be rescaled
-     * @param uvec2 dst_dim is destination dimensions
-     * @param void* rescaled raw data
+     * @param inputLayer image data that needs to be rescaled
+     * @param dst_dim is destination dimensions
+     * @return rescaled raw data
      */
     IVW_MODULE_CIMG_API void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim);
 
     /**
      * \brief Rescales LayerRAM representation uses FILTER_BILINEAR by default.
      *
-     * @param LayerRAM * imageRam representation that needs rescaling
-     * @param uvec2 dst_dim is destination dimensions
-     * @param void* rescaled raw data
+     * @param layerRam representation that needs rescaling
+     * @param dst_dim is destination dimensions
+     * @return rescaled raw data
      */
     IVW_MODULE_CIMG_API void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
 

@@ -80,7 +80,9 @@ public:
 
     /**
      * \brief encode the requested layer contents to a buffer considering the given image extension
+     * @param layerType Indicate which type of layer to return. see LayerType
      * @param fileExtension file extension of the requested image format
+     * @param idx In case of layerType beging LayerType::ColorLayer, than return color layer at index idx
      * @return encoded layer contents as std::vector
      */
     DataBuffer getLayerAsCodedBuffer(LayerType layerType, const std::string& fileExtension,

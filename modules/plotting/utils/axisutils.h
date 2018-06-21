@@ -71,7 +71,6 @@ getLabelPositions3D(const AxisProperty& property, const vec3& startPos, const ve
  * end position
  *
  * @param property    axis property used for tick settings
- * @param outputDim   dimensions of the canvas
  * @param startPos  start position of axis
  * @param endPos    end position of axis
  * @return mesh containing of ticks, each tick is represented by two positions and matching colors
@@ -110,6 +109,7 @@ std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateAxisMesh3D(const AxisPrope
  * @param startPos  start position of axis (spatial coordinates)
  * @param endPos    end position of axis  (spatial coordinates)
  * @param tickDirection   direction of ticks pointing outwards (spatial coordinates)
+ * @param tickLength length of the ticks
  * @param style     tick style (none, inside, outside, both)
  * @param color     tick color
  * @param flip      if true, the orientation of ticks is flipped (only affects inside/outside

@@ -121,13 +121,15 @@ public:
     /**
     * \brief replace a previously defined viewport at index ind with a new viewport using the
     * following coordinate system:
-    * y ^
-    *   |
-    *   |
-    *   ------> x
-    *
+    \verbatim 
+     y ^
+       |
+       |
+       ------> x
+    \endverbatim 
     * @see ViewManager
     * @param ind Viewport index [0 size()-1]
+    * @param view the view to replace with
     */
     void replace(ViewId ind, View view);
 

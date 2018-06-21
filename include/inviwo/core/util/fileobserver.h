@@ -78,7 +78,7 @@ public:
      * \brief Stops observing the file if being observed.
      * @param filePath Full path to file
      */
-    bool stopFileObservation(const std::string& fileName);
+    bool stopFileObservation(const std::string& filePath);
     
     /**
      * Stop observation of all observed files

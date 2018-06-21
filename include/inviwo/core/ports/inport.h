@@ -70,7 +70,7 @@ public:
     /**
      * An inport can be set optional, in which case the processor will by default be ready even if
      * no outport is connected. This means that an optional inport may not have any connected
-     * outports when evaluating the @ProcessorNetwork, i.e. when Processor::process() is called.
+     * outports when evaluating the ProcessorNetwork, i.e. when Processor::process() is called.
      * Hence one needs to check manually that the port isReady before using it.
      * @see isReady
      */

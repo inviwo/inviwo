@@ -55,7 +55,7 @@ IVW_MODULE_BASE_API void centerViewOnMeshes(const std::vector<std::shared_ptr<co
  * plane (increased by 1% to make sure that mesh is not clipped). The view directions considered are
  * lookFrom min/max -> lookTo. Near plane is computed as max(1e^-6, farPlaneDistance * farNearRatio)
  *
- * @param meshes worldSpaceBoundingBox Min and max points of geometry
+ * @param worldSpaceBoundingBox Min and max points of geometry
  * @param camera Camera used as basis for computation
  * @param farNearRatio Ratio between near and far plane. 1:10000 is commonly used by game engines.
  * @return Near and far plane distances.

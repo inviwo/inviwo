@@ -62,6 +62,7 @@ public:
      * "#f9a033".
      *
      * @param color   rgb components are converted into a hexadecimal color code
+     * @param ambiguous     whether the color has a name or not
      */
     void setColor(const QColor& color, bool ambiguous);
 

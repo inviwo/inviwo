@@ -84,12 +84,12 @@ protected:
     virtual void process() override;
 
     /**
-     * Clip mesh againts plane. Replaces removed parts with triangles aligned with the plane.
-     * @thows Exception if mesh is not a SimpleMesh or BasicMesh
-     * @param Mesh to clip
-     * @param Plane in world space coordinate system.
+     * Clip mesh against plane. Replaces removed parts with triangles aligned with the plane.
+     * @throws Exception if mesh is not a SimpleMesh or BasicMesh
+     * @param mesh to clip
+     * @param plane in world space coordinate system.
      */
-    std::shared_ptr<Mesh> clipGeometryAgainstPlane(const Mesh*, const Plane&);
+    std::shared_ptr<Mesh> clipGeometryAgainstPlane(const Mesh *mesh, const Plane &plane);
 
 private:
     void onAlignPlaneNormalToCameraNormalPressed();

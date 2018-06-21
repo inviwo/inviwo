@@ -73,7 +73,7 @@ static const int arrowWidth = propertyWidth / 15;
 static const int arrowHeight = arrowWidth / 2;
 }
 
-enum IVW_QTEDITOR_API InviwoLinkUserGraphicsItemType {
+enum InviwoLinkUserGraphicsItemType {
     LinkDialogCurveGraphicsItemType = 3,
     LinkDialogProcessorGraphicsItemType = 4,
     LinkDialogPropertyGraphicsItemType = 5,

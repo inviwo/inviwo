@@ -178,6 +178,7 @@ void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
 /**
  * A utility for iterating over types in a list.
  * Example:
+ * \code{.cpp}
  *     struct Functor {
  *         template <typename T>
  *         auto operator()(std::vector<Property*>& properties) {
@@ -187,6 +188,7 @@ void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
  *     std::vector<Property*>& properties;
  *     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
  *     util::for_each_type<Vec4s>{}(Functor{}, properties);
+ * \endcode
  */
 template <class... Types>
 struct for_each_type;
