@@ -133,7 +133,7 @@ public:
     /**
      * Add a TFPrimitive
      *
-     * @param value   TFPrimitive to be added
+     * @param primitive   TFPrimitive to be added
      * @throws RangeException if TF type is relative and the primitive position is outside [0,1]
      */
     void add(const TFPrimitive& primitive);
@@ -160,7 +160,7 @@ public:
     /**
      * Add a TFPrimitive
      *
-     * @param value   TFPrimitive to be added
+     * @param data   Primitive to be added
      * @throws RangeException if TF type is relative and position of point is outside [0,1]
      */
     void add(const TFPrimitiveData& data);
@@ -168,7 +168,7 @@ public:
     /**
      * Add multiple TFPrimitives
      *
-     * @param values  TFPrimitives to be added
+     * @param primitives  vector of primitives to be added
      * @throws RangeException if TF type is relative and any of the given points is outside [0,1]
      */
     void add(const std::vector<TFPrimitiveData>& primitives);

@@ -60,7 +60,7 @@ void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start 
  * The function will return once all jobs as has been created and queued.
  *
  * @param iterable the data structure to iterate over
- * @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
+ * @param callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
  * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
  * the data structure
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
@@ -103,7 +103,7 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
  * The function will return once all jobs as has finished processing.
  *
  * @param iterable the data structure to iterate over
- * @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
+ * @param callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
  * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
  * the data structure
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will

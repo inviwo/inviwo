@@ -100,11 +100,11 @@ public:
      * \brief Get function address from library.
      *
      * Example usage:
-     * @code
+     * \code{.cpp}
      *      using f_getModule = InviwoModuleFactoryObject* (__stdcall *)();
      *      auto moduleFunc = reinterpret_cast<f_getModule>(sharedLib->findSymbol("createModule"));
-     * @endcode
-     * @param std::string name Function name
+     * \endcode
+     * @param name Function name
      * @return Address to function if found, otherwise nullptr
      */
     void* findSymbol(const std::string& name);
@@ -113,11 +113,11 @@ public:
      * \brief Get typed function address from library.
      *
      * Example usage:
-     * @code
+     * \code{.cpp}
      *      using f_getModule = InviwoModuleFactoryObject* (__stdcall *)();
      *      auto moduleFunc = sharedLib->findSymbolTyped<f_getModule>("createModule"));
-     * @endcode
-     * @param std::string name Function name
+     * \endcode
+     * @param name Function name
      * @return Address to function if found, otherwise nullptr
      */
     template <typename T>

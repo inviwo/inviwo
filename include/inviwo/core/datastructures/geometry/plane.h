@@ -83,17 +83,19 @@ public:
     vec3 projectPoint(const vec3& x) const;
 
     /**
-     * Check if point is on positive side of plane. 
-     *         Plane
-     *           |
-     *           |-> normal
-     * (outside) |  (inside)
-     *
+     * Check if point is on positive side of plane.
+     * \verbatim
+              Plane
+                |
+                |-> normal
+      (outside) |  (inside)
+     \endverbatim
+     * 
      * @see Plane::distance
-     * @param Point to check
-     * @return True if on positive side of normal or on the plane, otherwise false
+     * @param point to check
+     * @return true if on positive side of normal or on the plane, otherwise false
      */
-    bool isInside(const vec3&) const;
+    bool isInside(const vec3 &point) const;
 
     bool perpendicularToPlane(const vec3&) const;
 

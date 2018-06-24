@@ -51,24 +51,19 @@ namespace utilqt {
      * to an inviwo button.
      *
      * Converts QMouseEvent::getButtons().
-     *
-     * @param QMouseEvent * e 
-     * @return MouseEvent::MouseButton 
      */
     IVW_MODULE_QTWIDGETS_API MouseButtons getMouseButtons(const QMouseEvent* e);
-    /** 
-     * \brief Convert the button originally 
+
+    /**
+     * \brief Convert the button originally
      * causing the event to an inviwo button.
      *
      * Converts QMouseEvent::getButton().
-     * 
-     * @note Qt does not include the button 
-     * that caused a release event in the regular 
-     * QMouseEvent::getButtons function, which is 
-     * why a separate conversion function
-     * is necessary 
-     * @param QMouseEvent * e 
-     * @return MouseEvent::MouseButton 
+     *
+     * @note Qt does not include the button that caused a release event in the regular
+     * QMouseEvent::getButtons function, which is why a separate conversion function is necessary
+     * @param e the QT Mouse Event
+     * @return MouseEvent::MouseButton
      */
     IVW_MODULE_QTWIDGETS_API MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
     IVW_MODULE_QTWIDGETS_API MouseButtons getMouseWheelButtons(const QWheelEvent* e);

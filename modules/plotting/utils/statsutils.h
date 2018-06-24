@@ -62,8 +62,9 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
  *
  * NaNs (Not a Numbers) are excluded from the computation.
  * The following example will return {1,2}
- * @code auto percentiles = utilstats::percentiles({1, 0, 3, 2}, {0.25, 0.75});
- *
+ * \code{.cpp} 
+ *    auto percentiles = utilstats::percentiles({1, 0, 3, 2}, {0.25, 0.75});
+ * \endcode
  * See also https://en.wikipedia.org/wiki/Percentile
  *
  * @param data to compute percentiles on

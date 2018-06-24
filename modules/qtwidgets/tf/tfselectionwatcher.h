@@ -82,7 +82,7 @@ public slots:
     /**
      * set the color of all currently selected TF primitives
      *
-     * @param color  new color
+     * @param c  the new color
      */
     void setColor(const QColor &c);
 
@@ -90,8 +90,6 @@ public slots:
      * updates the selection state and sends out signals for position, alpha, and color.
      * In case, multiple primitives are selected, the values are considered ambiguous unless
      * they all have the same value. The position, alpha, and color are considered separately.
-     *
-     * @param pos  new position
      */
     void updateSelection(const std::vector<TFPrimitive *> selection);
 

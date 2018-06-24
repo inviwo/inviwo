@@ -180,6 +180,7 @@ public:
      *
      * @param serializer reference to serializer or deserializer
      * @param node //Parent (Ticpp Node) element.
+     * @param retrieveChild whether to retrieve child node or not.
      */
     NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild = true);
 
@@ -188,6 +189,7 @@ public:
      *
      * @param serializer reference to serializer or deserializer
      * @param key the child to switch to.
+     * @param retrieveChild whether to retrieve child node or not.
      */
     NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild = true);
 

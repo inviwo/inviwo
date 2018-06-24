@@ -55,6 +55,8 @@ public:
      * @param lookFrom Camera position (eye)
      * @param lookTo Camera focus point (center)
      * @param lookUp Camera up direction
+     * @param nearPlane Camera near clip-plane
+     * @param farPlane Camera far clip-plane
      */
     Camera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
            vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,

@@ -147,7 +147,7 @@ IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
  * @see CanvasProcessorWidgetQt
  * @param point The previous screen position of the widget
  * @param size The size of the widget
- * @param bool decorationOffset Offset widget below top horizontal window bar
+ * @param decorationOffset Offset widget below top horizontal window bar
  * @return The adapted point on the screen, same as input point if no adjustment was necessary
  */
 IVW_MODULE_QTWIDGETS_API QPoint movePointOntoDesktop(const QPoint& point, const QSize& size,

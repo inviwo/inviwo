@@ -68,6 +68,7 @@ static inline glm::u64 nextPow2(glm::u64 x) {
  * Generate a sequence of length numberOfPoints of pseduo-random numbers on the open range (0 1).
  * @see https://en.wikipedia.org/wiki/Halton_sequence
  * @param base what base to use to generate fractions
+ * @param numberOfPoints amount of points to generate
  */
 template <typename T>
 std::vector<T> haltonSequence(size_t base, size_t numberOfPoints) {
@@ -226,9 +227,10 @@ std::shared_ptr<Volume> randomVolume(size3_t dims, Rand &randomNumberGenerator =
  * Generate an Image with perlin noise, a cloud like noise using the sum of several white noise
  * images with different frequencies
  * @param dims Size of the output image
- * @param persistence controlls the amplitude used in the different frequencies
- * @param levels controlls the min and max level used. The level is determining the frequency to use
+ * @param persistence controls the amplitude used in the different frequencies
+ * @param startLevel controls the min level used. The level is determining the frequency to use
  * in each white noise image as 2^level
+ * @param endLevel controlsthe max level used. 
  * @param randomNumberGenerator the Random number generator to use, defaults to the Mersenne Twister
  * engine (std::mt19937)
  */

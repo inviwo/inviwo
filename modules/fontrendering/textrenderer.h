@@ -179,11 +179,11 @@ public:
     /**
      * \brief renders the given string with the specified color into a subregion of the texture.
      *
-     * @param texture   the text will be rendered into this texture
-     * @param origin    origin of sub region within the texture (lower left corner, in pixel)
-     * @param extent    extent of sub region (in pixel)
-     * @param str    input string
-     * @param color  color of rendered text
+     * @param texObject      the text will be rendered into this texture
+     * @param origin         origin of sub region within the texture (lower left corner, in pixel)
+     * @param size           extent of sub region (in pixel)
+     * @param str            input string
+     * @param color          color of rendered text
      * @param clearTexture   if true, the texture is cleared before rendering the text
      */
     void renderToTexture(const TextTextureObject &texObject, const size2_t &origin,
