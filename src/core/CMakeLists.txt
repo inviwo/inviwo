@@ -646,6 +646,7 @@ if (IVW_EXTERNAL_MODULES)
 endif()
 
 # Add core dependencies to this list
+target_link_libraries(inviwo-core PUBLIC ticpp inviwo::glm)
 target_link_libraries(inviwo-core PUBLIC ticpp inviwo::tinydir)
 
 if(IVW_SIGAR)
@@ -690,7 +691,7 @@ ivw_register_license_file(NAME "Flags" MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
 )
 
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm MODULE Core
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm_dummy MODULE Core
     URL "https://glm.g-truc.net"
     TYPE "The MIT License"
     FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
