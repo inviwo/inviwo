@@ -113,7 +113,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/volumedatareaderdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h
@@ -126,6 +125,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/tempfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/volumedatareaderdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/propertylink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/containermetadata.h
@@ -270,6 +270,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreach.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/foreacharg.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatdispatching.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
@@ -524,6 +525,7 @@ set(SOURCE_FILES
     util/filelogger.cpp
     util/fileobserver.cpp
     util/filesystem.cpp
+    util/foreacharg.cpp
     util/formatconversion.cpp
     util/formatdispatching.cpp
     util/formats.cpp

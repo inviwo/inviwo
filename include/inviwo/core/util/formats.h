@@ -172,20 +172,20 @@ public:
     DataFormatId getId() const;
 
     // Converter functions
-    virtual double valueToDouble(void*) const = 0;
-    virtual dvec2 valueToVec2Double(void*) const = 0;
-    virtual dvec3 valueToVec3Double(void*) const = 0;
-    virtual dvec4 valueToVec4Double(void*) const = 0;
+    virtual double valueToDouble(void*) const;
+    virtual dvec2 valueToVec2Double(void*) const;
+    virtual dvec3 valueToVec3Double(void*) const;
+    virtual dvec4 valueToVec4Double(void*) const;
 
-    virtual double valueToNormalizedDouble(void*) const = 0;
-    virtual dvec2 valueToNormalizedVec2Double(void*) const = 0;
-    virtual dvec3 valueToNormalizedVec3Double(void*) const = 0;
-    virtual dvec4 valueToNormalizedVec4Double(void*) const = 0;
+    virtual double valueToNormalizedDouble(void*) const;
+    virtual dvec2 valueToNormalizedVec2Double(void*) const;
+    virtual dvec3 valueToNormalizedVec3Double(void*) const;
+    virtual dvec4 valueToNormalizedVec4Double(void*) const;
 
-    virtual void doubleToValue(double, void*) const = 0;
-    virtual void vec2DoubleToValue(dvec2, void*) const = 0;
-    virtual void vec3DoubleToValue(dvec3, void*) const = 0;
-    virtual void vec4DoubleToValue(dvec4, void*) const = 0;
+    virtual void doubleToValue(double, void*) const;
+    virtual void vec2DoubleToValue(dvec2, void*) const;
+    virtual void vec3DoubleToValue(dvec3, void*) const;
+    virtual void vec4DoubleToValue(dvec4, void*) const;
 
     // clang-format off
     // T Models a type with a type
@@ -199,10 +199,6 @@ public:
     //clang-format on
 
 protected:
-    static std::array<std::unique_ptr<DataFormatBase>,
-                      static_cast<size_t>(DataFormatId::NumberOfFormats)>
-        instance_;
-
     DataFormatId formatId_;
     size_t components_;
     size_t size_;
@@ -281,9 +277,8 @@ constexpr DataFormatId DataFormat<T>::id() {
 
 template <typename T>
 const DataFormat<T>* DataFormat<T>::get() {
-    auto& d = instance_[static_cast<size_t>(id())];
-    if (!d) d = std::make_unique<DataFormat<T>>();
-    return static_cast<DataFormat<T>*>(d.get());
+    static DataFormat<T> instance;
+    return &instance;
 }
 
 template <typename T>

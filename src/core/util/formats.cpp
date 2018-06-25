@@ -24,15 +24,18 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <unordered_map>
 
 namespace inviwo {
 
-std::array<std::unique_ptr<DataFormatBase>, static_cast<size_t>(DataFormatId::NumberOfFormats)>
-    DataFormatBase::instance_ = {nullptr};
+DataFormatException::DataFormatException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
 
 DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max, double min,
                                double lowest, NumericType nt, const std::string& s)
@@ -47,83 +50,174 @@ DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max
 
 DataFormatBase::~DataFormatBase() = default;
 
-size_t DataFormatBase::getSize() const {
-    return size_;
-}
+size_t DataFormatBase::getSize() const { return size_; }
 
-NumericType DataFormatBase::getNumericType() const {
-    return numericType_;
-}
+NumericType DataFormatBase::getNumericType() const { return numericType_; }
 
-size_t DataFormatBase::getComponents() const {
-    return components_;
-}
+size_t DataFormatBase::getComponents() const { return components_; }
 
-size_t DataFormatBase::getPrecision() const {
-    return size_ / components_ * 8;
-}
+size_t DataFormatBase::getPrecision() const { return size_ / components_ * 8; }
 
-double DataFormatBase::getMax() const {
-    return max_;
-}
+double DataFormatBase::getMax() const { return max_; }
 
-double DataFormatBase::getMin() const {
-    return min_;
-}
+double DataFormatBase::getMin() const { return min_; }
 
-double DataFormatBase::getLowest() const {
-    return lowest_;
-}
+double DataFormatBase::getLowest() const { return lowest_; }
 
-const char* DataFormatBase::getString() const {
-    return formatStr_.c_str();
-}
+const char* DataFormatBase::getString() const { return formatStr_.c_str(); }
 
-DataFormatId DataFormatBase::getId() const {
-    return formatId_;
+DataFormatId DataFormatBase::getId() const { return formatId_; }
+
+double DataFormatBase::valueToDouble(void*) const { return 0.0; }
+dvec2 DataFormatBase::valueToVec2Double(void*) const { return dvec2(0.0); }
+dvec3 DataFormatBase::valueToVec3Double(void*) const { return dvec3(0.0); }
+dvec4 DataFormatBase::valueToVec4Double(void*) const { return dvec4(0.0); }
+double DataFormatBase::valueToNormalizedDouble(void*) const { return 0.0; }
+dvec2 DataFormatBase::valueToNormalizedVec2Double(void*) const { return dvec2(0.0); }
+dvec3 DataFormatBase::valueToNormalizedVec3Double(void*) const { return dvec3(0.0); }
+dvec4 DataFormatBase::valueToNormalizedVec4Double(void*) const { return dvec4(0.0); }
+void DataFormatBase::doubleToValue(double val, void* loc) const {
+    *static_cast<double*>(loc) = val;
+}
+void DataFormatBase::vec2DoubleToValue(dvec2 val, void* loc) const {
+    *static_cast<dvec2*>(loc) = val;
+}
+void DataFormatBase::vec3DoubleToValue(dvec3 val, void* loc) const {
+    *static_cast<dvec3*>(loc) = val;
+}
+void DataFormatBase::vec4DoubleToValue(dvec4 val, void* loc) const {
+    *static_cast<dvec4*>(loc) = val;
 }
 
 const DataFormatBase* DataFormatBase::get() {
-    if (!instance_[static_cast<size_t>(DataFormatId::NotSpecialized)])
-        instance_[static_cast<size_t>(DataFormatId::NotSpecialized)] =
-            std::make_unique<DataFormatBase>(DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0,
-                                             NumericType::NotSpecialized, "");
-
-    return instance_[static_cast<size_t>(DataFormatId::NotSpecialized)].get();
+    static DataFormatBase instance{DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0,
+                                   NumericType::NotSpecialized, "NotSpecialized"};
+    return &instance;
 }
 
+// clang-format off
 const DataFormatBase* DataFormatBase::get(DataFormatId id) {
-    if (!instance_[static_cast<size_t>(id)]) {
-        switch(id) {
-#define DataFormatIdMacro(i) case DataFormatId::i: return Data##i::get();
-#include <inviwo/core/util/formatsdefinefunc.h>
-            case DataFormatId::NotSpecialized:
-            case DataFormatId::NumberOfFormats:
-            default:
-                throw DataFormatException("Invalid format id", IvwContextCustom("DataFormat"));
-        }
+    switch(id) {
+        case DataFormatId::Float16: return DataFloat16::get();
+        case DataFormatId::Float32: return DataFloat32::get();
+        case DataFormatId::Float64: return DataFloat64::get();
+        case DataFormatId::Int8: return DataInt8::get();
+        case DataFormatId::Int16: return DataInt16::get();
+        case DataFormatId::Int32: return DataInt32::get();
+        case DataFormatId::Int64: return DataInt64::get();
+        case DataFormatId::UInt8: return DataUInt8::get();
+        case DataFormatId::UInt16: return DataUInt16::get();
+        case DataFormatId::UInt32: return DataUInt32::get();
+        case DataFormatId::UInt64: return DataUInt64::get();
+        case DataFormatId::Vec2Float16: return DataVec2Float16::get();
+        case DataFormatId::Vec2Float32: return DataVec2Float32::get();
+        case DataFormatId::Vec2Float64: return DataVec2Float64::get();
+        case DataFormatId::Vec2Int8: return DataVec2Int8::get();
+        case DataFormatId::Vec2Int16: return DataVec2Int16::get();
+        case DataFormatId::Vec2Int32: return DataVec2Int32::get();
+        case DataFormatId::Vec2Int64: return DataVec2Int64::get();
+        case DataFormatId::Vec2UInt8: return DataVec2UInt8::get();
+        case DataFormatId::Vec2UInt16: return DataVec2UInt16::get();
+        case DataFormatId::Vec2UInt32: return DataVec2UInt32::get();
+        case DataFormatId::Vec2UInt64: return DataVec2UInt64::get();
+        case DataFormatId::Vec3Float16: return DataVec3Float16::get();
+        case DataFormatId::Vec3Float32: return DataVec3Float32::get();
+        case DataFormatId::Vec3Float64: return DataVec3Float64::get();
+        case DataFormatId::Vec3Int8: return DataVec3Int8::get();
+        case DataFormatId::Vec3Int16: return DataVec3Int16::get();
+        case DataFormatId::Vec3Int32: return DataVec3Int32::get();
+        case DataFormatId::Vec3Int64: return DataVec3Int64::get();
+        case DataFormatId::Vec3UInt8: return DataVec3UInt8::get();
+        case DataFormatId::Vec3UInt16: return DataVec3UInt16::get();
+        case DataFormatId::Vec3UInt32: return DataVec3UInt32::get();
+        case DataFormatId::Vec3UInt64: return DataVec3UInt64::get();
+        case DataFormatId::Vec4Float16: return DataVec4Float16::get();
+        case DataFormatId::Vec4Float32: return DataVec4Float32::get();
+        case DataFormatId::Vec4Float64: return DataVec4Float64::get();
+        case DataFormatId::Vec4Int8: return DataVec4Int8::get();
+        case DataFormatId::Vec4Int16: return DataVec4Int16::get();
+        case DataFormatId::Vec4Int32: return DataVec4Int32::get();
+        case DataFormatId::Vec4Int64: return DataVec4Int64::get();
+        case DataFormatId::Vec4UInt8: return DataVec4UInt8::get();
+        case DataFormatId::Vec4UInt16: return DataVec4UInt16::get();
+        case DataFormatId::Vec4UInt32: return DataVec4UInt32::get();
+        case DataFormatId::Vec4UInt64: return DataVec4UInt64::get();
+        case DataFormatId::NotSpecialized: return DataFormatBase::get();
+        case DataFormatId::NumberOfFormats:
+        default:
+            throw DataFormatException("Invalid format id", IvwContextCustom("DataFormat"));
     }
-    return instance_[static_cast<size_t>(id)].get();
 }
+// clang-format on
 
 const DataFormatBase* DataFormatBase::get(const std::string& name) {
-    auto lname = toLower(name);
-    if (lname == "uchar") return DataUInt8::get();
-    else if (lname == "char") return DataInt8::get();
-    else if (lname == "ushort") return DataUInt16::get();
-    else if (lname == "short") return DataInt16::get();
-    else if (lname == "uint") return DataUInt32::get();
-    else if (lname == "int") return DataInt32::get();
-    else if (lname == "float") return DataFloat32::get();
-    else if (lname == "double") return DataFloat64::get();
-#define DataFormatIdMacro(i) else if(lname == toLower(#i)) return Data##i::get();
-#include <inviwo/core/util/formatsdefinefunc.h>
+    static std::unordered_map<std::string, const DataFormatBase*> nameMap = []() {
+        std::unordered_map<std::string, const DataFormatBase*> res;
+        res[toLower(DataFloat16::str())] = DataFloat16::get();
+        res[toLower(DataFloat32::str())] = DataFloat32::get();
+        res[toLower(DataFloat64::str())] = DataFloat64::get();
+        res[toLower(DataInt8::str())] = DataInt8::get();
+        res[toLower(DataInt16::str())] = DataInt16::get();
+        res[toLower(DataInt32::str())] = DataInt32::get();
+        res[toLower(DataInt64::str())] = DataInt64::get();
+        res[toLower(DataUInt8::str())] = DataUInt8::get();
+        res[toLower(DataUInt16::str())] = DataUInt16::get();
+        res[toLower(DataUInt32::str())] = DataUInt32::get();
+        res[toLower(DataUInt64::str())] = DataUInt64::get();
+        res[toLower(DataVec2Float16::str())] = DataVec2Float16::get();
+        res[toLower(DataVec2Float32::str())] = DataVec2Float32::get();
+        res[toLower(DataVec2Float64::str())] = DataVec2Float64::get();
+        res[toLower(DataVec2Int8::str())] = DataVec2Int8::get();
+        res[toLower(DataVec2Int16::str())] = DataVec2Int16::get();
+        res[toLower(DataVec2Int32::str())] = DataVec2Int32::get();
+        res[toLower(DataVec2Int64::str())] = DataVec2Int64::get();
+        res[toLower(DataVec2UInt8::str())] = DataVec2UInt8::get();
+        res[toLower(DataVec2UInt16::str())] = DataVec2UInt16::get();
+        res[toLower(DataVec2UInt32::str())] = DataVec2UInt32::get();
+        res[toLower(DataVec2UInt64::str())] = DataVec2UInt64::get();
+        res[toLower(DataVec3Float16::str())] = DataVec3Float16::get();
+        res[toLower(DataVec3Float32::str())] = DataVec3Float32::get();
+        res[toLower(DataVec3Float64::str())] = DataVec3Float64::get();
+        res[toLower(DataVec3Int8::str())] = DataVec3Int8::get();
+        res[toLower(DataVec3Int16::str())] = DataVec3Int16::get();
+        res[toLower(DataVec3Int32::str())] = DataVec3Int32::get();
+        res[toLower(DataVec3Int64::str())] = DataVec3Int64::get();
+        res[toLower(DataVec3UInt8::str())] = DataVec3UInt8::get();
+        res[toLower(DataVec3UInt16::str())] = DataVec3UInt16::get();
+        res[toLower(DataVec3UInt32::str())] = DataVec3UInt32::get();
+        res[toLower(DataVec3UInt64::str())] = DataVec3UInt64::get();
+        res[toLower(DataVec4Float16::str())] = DataVec4Float16::get();
+        res[toLower(DataVec4Float32::str())] = DataVec4Float32::get();
+        res[toLower(DataVec4Float64::str())] = DataVec4Float64::get();
+        res[toLower(DataVec4Int8::str())] = DataVec4Int8::get();
+        res[toLower(DataVec4Int16::str())] = DataVec4Int16::get();
+        res[toLower(DataVec4Int32::str())] = DataVec4Int32::get();
+        res[toLower(DataVec4Int64::str())] = DataVec4Int64::get();
+        res[toLower(DataVec4UInt8::str())] = DataVec4UInt8::get();
+        res[toLower(DataVec4UInt16::str())] = DataVec4UInt16::get();
+        res[toLower(DataVec4UInt32::str())] = DataVec4UInt32::get();
+        res[toLower(DataVec4UInt64::str())] = DataVec4UInt64::get();
+        res["uchar"] = DataUInt8::get();
+        res["char"] = DataInt8::get();
+        res["ushort"] = DataUInt16::get();
+        res["short"] = DataInt16::get();
+        res["uint"] = DataUInt32::get();
+        res["int"] = DataInt32::get();
+        res["float"] = DataFloat32::get();
+        res["double"] = DataFloat64::get();
+        return res;
+    }();
 
-    throw DataFormatException("Invalid format id", IvwContextCustom("DataFormat"));
+    auto it = nameMap.find(toLower(name));
+    if (it != nameMap.end()) {
+        return it->second;
+    } else {
+        throw DataFormatException("Invalid format string: '" + name + "'",
+                                  IvwContextCustom("DataFormat"));
+    }
 }
 
-const DataFormatBase* DataFormatBase::get(NumericType type, size_t components,
-                                          size_t precision) {
+const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, size_t precision) {
     switch (type) {
         case NumericType::Float:
             switch (components) {
@@ -280,7 +374,4 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components,
     return nullptr;
 }
 
-DataFormatException::DataFormatException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
-
-} // namespace
+}  // namespace inviwo
