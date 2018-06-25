@@ -47,6 +47,42 @@ DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max
 
 DataFormatBase::~DataFormatBase() = default;
 
+size_t DataFormatBase::getSize() const {
+    return size_;
+}
+
+NumericType DataFormatBase::getNumericType() const {
+    return numericType_;
+}
+
+size_t DataFormatBase::getComponents() const {
+    return components_;
+}
+
+size_t DataFormatBase::getPrecision() const {
+    return size_ / components_ * 8;
+}
+
+double DataFormatBase::getMax() const {
+    return max_;
+}
+
+double DataFormatBase::getMin() const {
+    return min_;
+}
+
+double DataFormatBase::getLowest() const {
+    return lowest_;
+}
+
+const char* DataFormatBase::getString() const {
+    return formatStr_.c_str();
+}
+
+DataFormatId DataFormatBase::getId() const {
+    return formatId_;
+}
+
 const DataFormatBase* DataFormatBase::get() {
     if (!instance_[static_cast<size_t>(DataFormatId::NotSpecialized)])
         instance_[static_cast<size_t>(DataFormatId::NotSpecialized)] =
@@ -242,90 +278,6 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components,
             break;
     }
     return nullptr;
-}
-
-double DataFormatBase::valueToDouble(void*) const {
-    return 0.0;
-}
-
-dvec2 DataFormatBase::valueToVec2Double(void*) const {
-    return dvec2(0.0);
-}
-
-dvec3 DataFormatBase::valueToVec3Double(void*) const {
-    return dvec3(0.0);
-}
-
-dvec4 DataFormatBase::valueToVec4Double(void*) const {
-    return dvec4(0.0);
-}
-
-double DataFormatBase::valueToNormalizedDouble(void*) const {
-    return 0.0;
-}
-
-dvec2 DataFormatBase::valueToNormalizedVec2Double(void*) const {
-    return dvec2(0.0);
-}
-
-dvec3 DataFormatBase::valueToNormalizedVec3Double(void*) const {
-    return dvec3(0.0);
-}
-
-dvec4 DataFormatBase::valueToNormalizedVec4Double(void*) const {
-    return dvec4(0.0);
-}
-
-void DataFormatBase::doubleToValue(double val, void* loc) const {
-    *static_cast<double*>(loc) = val;
-}
-
-void DataFormatBase::vec2DoubleToValue(dvec2 val, void* loc) const {
-    *static_cast<dvec2*>(loc) = val;
-}
-
-void DataFormatBase::vec3DoubleToValue(dvec3 val, void* loc) const {
-    *static_cast<dvec3*>(loc) = val;
-}
-
-void DataFormatBase::vec4DoubleToValue(dvec4 val, void* loc) const {
-    *static_cast<dvec4*>(loc) = val;
-}
-
-size_t DataFormatBase::getSize() const {
-    return size_;
-}
-
-NumericType DataFormatBase::getNumericType() const {
-    return numericType_;
-}
-
-size_t DataFormatBase::getComponents() const {
-    return components_;
-}
-
-size_t DataFormatBase::getPrecision() const {
-    return size_ / components_ * 8;
-}
-
-double DataFormatBase::getMax() const {
-    return max_;
-}
-
-double DataFormatBase::getMin() const {
-    return min_;
-}
-
-double DataFormatBase::getLowest() const {
-    return lowest_;
-}
-
-const char* DataFormatBase::getString() const {
-    return formatStr_.c_str();
-}
-
-DataFormatId DataFormatBase::getId() const {
-    return formatId_;
 }
 
 DataFormatException::DataFormatException(const std::string& message, ExceptionContext context)

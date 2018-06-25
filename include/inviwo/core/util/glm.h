@@ -147,8 +147,9 @@ struct rank<glm::tquat<T, Q>> : public std::integral_constant<std::size_t, 1> {}
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct rank<glm::mat<C, R, T, Q>> : public std::integral_constant<std::size_t, 2> {};
 
-template <typename T, unsigned N = 0>
-struct extent : public std::extent<T, N> {};
+
+template <class T, unsigned N = 0>
+struct extent : std::integral_constant<std::size_t, 1> {};
 
 template <typename T, unsigned N>
 struct extent<const T, N> : public extent<T, N> {};
@@ -238,7 +239,6 @@ template <typename T, glm::qualifier Q>
 struct value_type<glm::tquat<T, Q>> {
     using type = typename glm::tquat<T, Q>::value_type;
 };
-
 
 /**
  * Construct a type with the same extents as the given type but with a different value type
