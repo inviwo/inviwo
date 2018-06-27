@@ -199,6 +199,9 @@ public:
     //clang-format on
 
 protected:
+    static const DataFormatBase* getPointer(DataFormatId id);
+
+
     DataFormatId formatId_;
     size_t components_;
     size_t size_;
@@ -277,8 +280,7 @@ constexpr DataFormatId DataFormat<T>::id() {
 
 template <typename T>
 const DataFormat<T>* DataFormat<T>::get() {
-    static DataFormat<T> instance;
-    return &instance;
+    return static_cast<const DataFormat<T>*>(getPointer(id()));
 }
 
 template <typename T>
