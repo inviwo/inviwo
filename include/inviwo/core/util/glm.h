@@ -40,20 +40,20 @@
 #include <warn/ignore/mismatched-tags>
 
 #include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
+
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_precision.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include <glm/gtx/std_based_type.hpp>
-#include <glm/gtx/matrix_operation.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/common.hpp>
-#include <glm/detail/type_vec.hpp>
+
 #include <glm/gtx/compatibility.hpp>
-#include <glm/gtx/io.hpp>
 #include <glm/gtx/component_wise.hpp>
 #include <glm/gtx/hash.hpp>
+#include <glm/gtx/io.hpp>
+#include <glm/gtx/matrix_operation.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/std_based_type.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include <half/half.hpp>
 
@@ -64,36 +64,36 @@
 
 namespace inviwo {
 
-typedef glm::ivec2 ivec2;
-typedef glm::ivec3 ivec3;
-typedef glm::ivec4 ivec4;
-typedef glm::vec2 vec2;
-typedef glm::vec3 vec3;
-typedef glm::vec4 vec4;
-typedef glm::dvec2 dvec2;
-typedef glm::dvec3 dvec3;
-typedef glm::dvec4 dvec4;
-typedef glm::bvec2 bvec2;
-typedef glm::bvec3 bvec3;
-typedef glm::bvec4 bvec4;
-typedef glm::uvec2 uvec2;
-typedef glm::uvec3 uvec3;
-typedef glm::uvec4 uvec4;
-typedef glm::mat2 mat2;
-typedef glm::mat3 mat3;
-typedef glm::mat4 mat4;
-typedef glm::dmat2 dmat2;
-typedef glm::dmat3 dmat3;
-typedef glm::dmat4 dmat4;
-typedef glm::quat quat;
+using ivec2 = glm::ivec2;
+using ivec3 = glm::ivec3;
+using ivec4 = glm::ivec4;
+using vec2 = glm::vec2;
+using vec3 = glm::vec3;
+using vec4 = glm::vec4;
+using dvec2 = glm::dvec2;
+using dvec3 = glm::dvec3;
+using dvec4 = glm::dvec4;
+using bvec2 = glm::bvec2;
+using bvec3 = glm::bvec3;
+using bvec4 = glm::bvec4;
+using uvec2 = glm::uvec2;
+using uvec3 = glm::uvec3;
+using uvec4 = glm::uvec4;
+using mat2 = glm::mat2;
+using mat3 = glm::mat3;
+using mat4 = glm::mat4;
+using dmat2 = glm::dmat2;
+using dmat3 = glm::dmat3;
+using dmat4 = glm::dmat4;
+using quat = glm::quat;
 
-typedef glm::size2_t size2_t;
-typedef glm::size3_t size3_t;
-typedef glm::size4_t size4_t;
+using size2_t = glm::size2_t;
+using size3_t = glm::size3_t;
+using size4_t = glm::size4_t;
 
-typedef glm::tvec2<glm::uint64> u64vec2;
-typedef glm::tvec3<glm::uint64> u64vec3;
-typedef glm::tvec4<glm::uint64> u64vec4;
+using u64vec2 = glm::tvec2<glm::uint64>;
+using u64vec3 = glm::tvec3<glm::uint64>;
+using u64vec4 = glm::tvec4<glm::uint64>;
 
 namespace util {
 
@@ -146,7 +146,6 @@ struct rank<glm::tquat<T, Q>> : public std::integral_constant<std::size_t, 1> {}
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct rank<glm::mat<C, R, T, Q>> : public std::integral_constant<std::size_t, 2> {};
-
 
 template <class T, unsigned N = 0>
 struct extent : std::integral_constant<std::size_t, 1> {};
@@ -724,136 +723,198 @@ inline bool any(const bool& t) {
 
 namespace glm {
 
-#define VECTORIZE2_MAT(func)                                                              \
-    template <typename T, precision P>                                                    \
-    GLM_FUNC_QUALIFIER tmat2x2<T, P> func(tmat2x2<T, P> const& x) {                       \
-        return tmat2x2<T, P>(func(x[0][0]), func(x[1][0]), func(x[0][1]), func(x[1][1])); \
-    }
+namespace detail {
 
-#define VECTORIZE3_MAT(func)                                                             \
-    template <typename T, precision P>                                                   \
-    GLM_FUNC_QUALIFIER tmat3x3<T, P> func(tmat3x3<T, P> const& x) {                      \
-        return tmat3x3<T, P>(func(x[0][0]), func(x[1][0]), func(x[2][0]), func(x[0][1]), \
-                             func(x[1][1]), func(x[2][1]), func(x[0][2]), func(x[1][2]), \
-                             func(x[2][2]));                                             \
-    }
+// Vectorize mat
+template <typename F, length_t C, length_t R, typename T, qualifier Q, size_t... Is>
+constexpr auto vectorize_mat_helper(F&& f, const mat<C, R, T, Q>& a, std::index_sequence<Is...>) {
+    using U = decltype(std::forward<F>(f)(value_ptr(a)[0]));
+    return mat<C, R, U, Q>{std::forward<F>(f)(value_ptr(a)[Is])...};
+}
+template <typename F, length_t C, length_t R, typename T, qualifier Q>
+constexpr auto vectorize_mat(F&& f, const mat<C, R, T, Q>& a) {
+    return vectorize_mat_helper(std::forward<F>(f), a, std::make_index_sequence<C * R>{});
+}
 
-#define VECTORIZE4_MAT(func)                                                              \
-    template <typename T, precision P>                                                    \
-    GLM_FUNC_QUALIFIER tmat4x4<T, P> func(tmat4x4<T, P> const& x) {                       \
-        return tmat4x4<T, P>(func(x[0][0]), func(x[1][0]), func(x[2][0]), func(x[3][0]),  \
-                             func(x[0][1]), func(x[1][1]), func(x[2][1]), func(x[3][1]),  \
-                             func(x[0][2]), func(x[1][2]), func(x[2][2]), func(x[3][2]),  \
-                             func(x[0][3]), func(x[1][3]), func(x[2][3]), func(x[3][3])); \
-    }
+// Vectorize mat scalar
+template <typename F, length_t C, length_t R, typename T, qualifier Q, typename Scalar,
+          size_t... Is>
+constexpr auto vectorize_mat_scalar_helper(F&& f, const mat<C, R, T, Q>& a, Scalar s,
+                                           std::index_sequence<Is...>) {
+    using U = decltype(std::forward<F>(f)(value_ptr(a)[0], s));
+    return mat<C, R, U, Q>{std::forward<F>(f)(value_ptr(a)[Is], s)...};
+}
+template <typename F, length_t C, length_t R, typename T, qualifier Q, typename Scalar>
+constexpr auto vectorize_mat_scalar(F&& f, const mat<C, R, T, Q>& a, Scalar s) {
+    return vectorize_mat_scalar_helper(std::forward<F>(f), a, s, std::make_index_sequence<C * R>{});
+}
 
-#define VECTORIZE_MAT(func) \
-    VECTORIZE2_MAT(func)    \
-    VECTORIZE3_MAT(func)    \
-    VECTORIZE4_MAT(func)
+// Vectorize mat scalar scalar
+template <typename F, length_t C, length_t R, typename T, qualifier Q, typename Scalar,
+          size_t... Is>
+constexpr auto vectorize_mat_scalar_scalar_helper(F&& f, const mat<C, R, T, Q>& a, Scalar s1,
+                                                  Scalar s2, std::index_sequence<Is...>) {
+    using U = decltype(std::forward<F>(f)(value_ptr(a)[0], s1, s2));
+    return mat<C, R, U, Q>{std::forward<F>(f)(value_ptr(a)[Is], s1, s2)...};
+}
+template <typename F, length_t C, length_t R, typename T, qualifier Q, typename Scalar>
+constexpr auto vectorize_mat_scalar_scalar(F&& f, const mat<C, R, T, Q>& a, Scalar s1, Scalar s2) {
+    return vectorize_mat_scalar_scalar_helper(std::forward<F>(f), a, s1, s2,
+                                              std::make_index_sequence<C * R>{});
+}
 
-#define VECTORIZE2_MAT_SCA(func)                                                   \
-    template <typename T, precision P>                                             \
-    GLM_FUNC_QUALIFIER tmat2x2<T, P> func(tmat2x2<T, P> const& x, T const& y) {    \
-        return tmat2x2<T, P>(func(x[0][0], y), func(x[1][0], y), func(x[0][1], y), \
-                             func(x[1][1], y));                                    \
-    }
+// Vectorize mat mat
+template <typename F, length_t C, length_t R, typename T, typename V, qualifier Q, size_t... Is>
+constexpr auto vectorize_mat_mat_helper(F&& f, const mat<C, R, T, Q>& a, const mat<C, R, V, Q>& b,
+                                        std::index_sequence<Is...>) {
+    using U = decltype(std::forward<F>(f)(value_ptr(a)[0], value_ptr(b)[0]));
+    return mat<C, R, U, Q>{std::forward<F>(f)(value_ptr(a)[Is], value_ptr(b)[Is])...};
+}
+template <typename F, length_t C, length_t R, typename T, typename V, qualifier Q>
+constexpr auto vectorize_mat_mat(F&& f, const mat<C, R, T, Q>& a, const mat<C, R, V, Q>& b) {
+    return vectorize_mat_mat_helper(std::forward<F>(f), a, b, std::make_index_sequence<C * R>{});
+}
 
-#define VECTORIZE3_MAT_SCA(func)                                                    \
-    template <typename T, precision P>                                              \
-    GLM_FUNC_QUALIFIER tmat3x3<T, P> func(tmat3x3<T, P> const& x, T const& y) {     \
-        return tmat3x3<T, P>(func(x[0][0], y), func(x[1][0], y), func(x[2][0], y),  \
-                             func(x[0][1], y), func(x[1][1], y), func(x[2][1], y),  \
-                             func(x[0][2], y), func(x[1][2], y), func(x[2][2], y)); \
-    }
+// Vectorize mat mat scalar
+template <typename F, length_t C, length_t R, typename T, typename V, qualifier Q, typename Scalar,
+          size_t... Is>
+constexpr auto vectorize_mat_mat_scalar_helper(F&& f, const mat<C, R, T, Q>& a,
+                                               const mat<C, R, V, Q>& b, Scalar s,
+                                               std::index_sequence<Is...>) {
+    using U = decltype(std::forward<F>(f)(value_ptr(a)[0], value_ptr(b)[0], s));
+    return mat<C, R, U, Q>{std::forward<F>(f)(value_ptr(a)[Is], value_ptr(b)[Is], s)...};
+}
+template <typename F, length_t C, length_t R, typename T, typename V, qualifier Q, typename Scalar>
+constexpr auto vectorize_mat_mat_scalar(F&& f, const mat<C, R, T, Q>& a, const mat<C, R, V, Q>& b,
+                                        Scalar s) {
+    return vectorize_mat_mat_scalar_helper(std::forward<F>(f), a, b, s,
+                                           std::make_index_sequence<C * R>{});
+}
 
-#define VECTORIZE4_MAT_SCA(func)                                                     \
-    template <typename T, precision P>                                               \
-    GLM_FUNC_QUALIFIER tmat4x4<T, P> func(tmat4x4<T, P> const& x, T const& y) {      \
-        return tmat4x4<T, P>(                                                        \
-            func(x[0][0], y), func(x[1][0], y), func(x[2][0], y), func(x[3][0], y),  \
-            func(x[0][1], y), func(x[1][1], y), func(x[2][1], y), func(x[3][1], y),  \
-            func(x[0][2], y), func(x[1][2], y), func(x[2][2], y), func(x[3][2], y),  \
-            func(x[0][3], y), func(x[1][3], y), func(x[2][3], y), func(x[3][3], y)); \
-    }
+// Vectorize mat mat mat
+template <typename F, length_t C, length_t R, typename T, typename V, typename W, qualifier Q,
+          size_t... Is>
+constexpr auto vectorize_mat_mat_mat_helper(F&& f, const mat<C, R, T, Q>& a,
+                                            const mat<C, R, V, Q>& b, const mat<C, R, W, Q>& c,
+                                            std::index_sequence<Is...>) {
+    using U = decltype(std::forward<F>(f)(value_ptr(a)[0], value_ptr(b)[0], value_ptr(c)[0]));
+    return mat<C, R, U, Q>{
+        std::forward<F>(f)(value_ptr(a)[Is], value_ptr(b)[Is], value_ptr(c)[Is])...};
+}
+template <typename F, length_t C, length_t R, typename T, typename V, typename W, qualifier Q>
+constexpr auto vectorize_mat_mat_mat(F&& f, const mat<C, R, T, Q>& a, const mat<C, R, V, Q>& b,
+                                     const mat<C, R, W, Q>& c) {
+    return vectorize_mat_mat_mat_helper(std::forward<F>(f), a, b, c,
+                                        std::make_index_sequence<C * R>{});
+}
 
-#define VECTORIZE_MAT_SCA(func) \
-    VECTORIZE2_MAT_SCA(func)    \
-    VECTORIZE3_MAT_SCA(func)    \
-    VECTORIZE4_MAT_SCA(func)
+}  // namespace detail
 
-#define VECTORIZE2_MAT_MAT(func)                                                            \
-    template <typename T, precision P>                                                      \
-    GLM_FUNC_QUALIFIER tmat2x2<T, P> func(tmat2x2<T, P> const& x, tmat2x2<T, P> const& y) { \
-        return tmat2x2<T, P>(func(x[0][0], y[0][0]), func(x[1][0], y[1][0]),                \
-                             func(x[0][1], y[0][1]), func(x[1][1], y[1][1]));               \
-    }
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> abs(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(abs), a);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> sign(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(sign), a);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> floor(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(floor), a);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> trunc(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(trunc), a);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> round(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(round), a);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> roundEven(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(roundEven), a);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> ceil(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(ceil), a);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> fract(const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat(static_cast<T (*)(T)>(fract), a);
+}
 
-#define VECTORIZE3_MAT_MAT(func)                                                            \
-    template <typename T, precision P>                                                      \
-    GLM_FUNC_QUALIFIER tmat3x3<T, P> func(tmat3x3<T, P> const& x, tmat3x3<T, P> const& y) { \
-        return tmat3x3<T, P>(                                                               \
-            func(x[0][0], y[0][0]), func(x[1][0], y[1][0]), func(x[2][0], y[2][0]),         \
-            func(x[0][1], y[0][1]), func(x[1][1], y[1][1]), func(x[2][1], y[2][1]),         \
-            func(x[0][2], y[0][2]), func(x[1][2], y[1][2]), func(x[2][2], y[2][2]));        \
-    }
+template <length_t C, length_t R, typename T, qualifier Q, typename Scalar>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> mod(const mat<C, R, T, Q>& a, Scalar s) {
+    return detail::vectorize_mat_scalar(static_cast<T (*)(T, T)>(mod), a, s);
+}
 
-#define VECTORIZE4_MAT_MAT(func)                                                            \
-    template <typename T, precision P>                                                      \
-    GLM_FUNC_QUALIFIER tmat4x4<T, P> func(tmat4x4<T, P> const& x, tmat4x4<T, P> const& y) { \
-        return tmat4x4<T, P>(                                                               \
-            func(x[0][0], y[0][0]), func(x[1][0], y[1][0]), func(x[2][0], y[2][0]),         \
-            func(x[3][0], y[3][0]), func(x[0][1], y[0][1]), func(x[1][1], y[1][1]),         \
-            func(x[2][1], y[2][1]), func(x[3][1], y[3][1]), func(x[0][2], y[0][2]),         \
-            func(x[1][2], y[1][2]), func(x[2][2], y[2][2]), func(x[3][2], y[3][2]),         \
-            func(x[0][3], y[0][3]), func(x[1][3], y[1][3]), func(x[2][3], y[2][3]),         \
-            func(x[3][3], y[3][3]));                                                        \
-    }
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> min(const mat<C, R, T, Q>& a, T s) {
+    return detail::vectorize_mat_scalar(static_cast<T (*)(T, T)>(min), a, s);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> min(T s, const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat_scalar(static_cast<T (*)(T, T)>(min), a, s);
+}
 
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> max(const mat<C, R, T, Q>& a, T s) {
+    return detail::vectorize_mat_scalar(static_cast<T (*)(T, T)>(max), a, s);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> max(T s, const mat<C, R, T, Q>& a) {
+    return detail::vectorize_mat_scalar(static_cast<T (*)(T, T)>(max), a, s);
+}
+
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> min(const mat<C, R, T, Q>& a, const mat<C, R, T, Q>& b) {
+    return detail::vectorize_mat_mat(static_cast<T (*)(T, T)>(min), a, b);
+}
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> max(const mat<C, R, T, Q>& a, const mat<C, R, T, Q>& b) {
+    return detail::vectorize_mat_mat(static_cast<T (*)(T, T)>(max), a, b);
+}
+
+template <length_t C, length_t R, typename T, qualifier Q, typename Scalar>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> mix(const mat<C, R, T, Q>& a, const mat<C, R, T, Q>& b,
+                                       Scalar s) {
+    return detail::vectorize_mat_mat_scalar(static_cast<T (*)(T, T, Scalar)>(mix), a, b, s);
+}
+
+template <length_t C, length_t R, typename T, qualifier Q, typename Scalar>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> clamp(const mat<C, R, T, Q>& a, Scalar s1, Scalar s2) {
+    return detail::vectorize_mat_scalar_scalar(static_cast<T (*)(T, Scalar, Scalar)>(clamp), a, s1,
+                                               s2);
+}
+
+template <length_t C, length_t R, typename T, qualifier Q>
+GLM_FUNC_QUALIFIER mat<C, R, T, Q> clamp(const mat<C, R, T, Q>& a, const mat<C, R, T, Q>& b,
+                                         const mat<C, R, T, Q>& c) {
+    return detail::vectorize_mat_mat_mat(static_cast<T (*)(T, T, T)>(clamp), a, b, c);
+}
+
+// Quats
 template <typename T, precision P>
 GLM_FUNC_QUALIFIER tquat<T, P> clamp(tquat<T, P> const& q, T a, T b) {
-    return {glm::clamp(q[0], a, b), glm::clamp(q[1], a, b), glm::clamp(q[2], a, b),
-            glm::clamp(q[3], a, b)};
+    return {clamp(q[0], a, b), clamp(q[1], a, b), clamp(q[2], a, b), clamp(q[3], a, b)};
 }
 
 template <typename T, precision P>
 GLM_FUNC_QUALIFIER tquat<T, P> clamp(tquat<T, P> const& q, const tquat<T, P>& a,
                                      const tquat<T, P>& b) {
-    return {glm::clamp(q[0], a[0], b[0]), glm::clamp(q[1], a[1], b[1]),
-            glm::clamp(q[2], a[2], b[2]), glm::clamp(q[3], a[3], b[3])};
+    return {clamp(q[0], a[0], b[0]), clamp(q[1], a[1], b[1]), clamp(q[2], a[2], b[2]),
+            clamp(q[3], a[3], b[3])};
 }
 
 template <typename T, precision P>
 GLM_FUNC_QUALIFIER tquat<T, P> min(const tquat<T, P>& a, const tquat<T, P>& b) {
-    return {glm::min(a[0], b[0]), glm::min(a[1], b[1]), glm::min(a[2], b[2]), glm::min(a[3], b[3])};
+    return {min(a[0], b[0]), min(a[1], b[1]), min(a[2], b[2]), min(a[3], b[3])};
 }
 
 template <typename T, precision P>
 GLM_FUNC_QUALIFIER tquat<T, P> max(const tquat<T, P>& a, const tquat<T, P>& b) {
-    return {glm::max(a[0], b[0]), glm::max(a[1], b[1]), glm::max(a[2], b[2]), glm::max(a[3], b[3])};
+    return {max(a[0], b[0]), max(a[1], b[1]), max(a[2], b[2]), max(a[3], b[3])};
 }
-
-#define VECTORIZE_MAT_MAT(func) \
-    VECTORIZE2_MAT_MAT(func)    \
-    VECTORIZE3_MAT_MAT(func)    \
-    VECTORIZE4_MAT_MAT(func)
-
-VECTORIZE_MAT(abs)
-VECTORIZE_MAT(sign)
-VECTORIZE_MAT(floor)
-VECTORIZE_MAT(trunc)
-VECTORIZE_MAT(round)
-VECTORIZE_MAT(roundEven)
-VECTORIZE_MAT(ceil)
-VECTORIZE_MAT(fract)
-
-VECTORIZE_MAT_SCA(mod)
-VECTORIZE_MAT_SCA(min)
-VECTORIZE_MAT_SCA(max)
-
-VECTORIZE_MAT_MAT(min)
-VECTORIZE_MAT_MAT(max)
-VECTORIZE_MAT_MAT(mod)
 
 namespace detail {
 #ifdef DARWIN
