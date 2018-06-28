@@ -102,7 +102,7 @@ void TextRenderer::render(const std::string &str, const vec2 &posf, const vec2 &
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
     utilgl::Enable<MeshGL> enable(rect);
 
-    ivec2 glyphPos;
+    ivec2 glyphPos{0};
     int verticalOffset = 0;
 
     // check input string for invalid utf8 encoding
