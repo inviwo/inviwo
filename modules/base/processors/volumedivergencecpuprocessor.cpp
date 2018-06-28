@@ -34,29 +34,24 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeDivergenceCPUProcessor::processorInfo_{
-    "org.inviwo.VolumeDivergenceCPUProcessor",      // Class identifier
-    "Volume Divergence",                // Display name
-    "Volume Operation",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::CPU,               // Tags
+    "org.inviwo.VolumeDivergenceCPUProcessor",  // Class identifier
+    "Volume Divergence",                        // Display name
+    "Volume Operation",                         // Category
+    CodeState::Stable,                          // Code state
+    Tags::CPU,                                  // Tags
 };
 const ProcessorInfo VolumeDivergenceCPUProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 
 VolumeDivergenceCPUProcessor::VolumeDivergenceCPUProcessor()
-    : Processor()
-    , inport_("inport")
-    , outport_("outport")
-{
-    
+    : Processor(), inport_("inport"), outport_("outport") {
     addPort(inport_);
     addPort(outport_);
 }
-    
+
 void VolumeDivergenceCPUProcessor::process() {
     outport_.setData(util::divergenceVolume(inport_.getData()));
 }
 
-} // namespace
-
+}  // namespace inviwo

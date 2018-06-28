@@ -24,3 +24,6 @@
 [submodule "modules/glfw/ext/glfw/glfw"]
 	path = modules/glfw/ext/glfw/glfw
 	url = https://github.com/inviwo/glfw.git
+[submodule "ext/glm/glm"]
+	path = ext/glm/glm
+	url = https://github.com/inviwo/glm.git

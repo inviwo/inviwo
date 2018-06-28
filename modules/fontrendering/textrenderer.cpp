@@ -102,7 +102,7 @@ void TextRenderer::render(const std::string &str, const vec2 &posf, const vec2 &
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
     utilgl::Enable<MeshGL> enable(rect);
 
-    ivec2 glyphPos;
+    ivec2 glyphPos{0};
     int verticalOffset = 0;
 
     // check input string for invalid utf8 encoding
@@ -317,7 +317,7 @@ TextBoundingBox TextRenderer::computeBoundingBox(const std::string &str) {
     ivec2 glyphsBottomRight(std::numeric_limits<int>::min());
 
     auto &fc = getFontCache();
-    
+
     // the vertical offset is increased for each additional line
     int verticalOffset = 0;
 
@@ -665,23 +665,15 @@ TextTextureObject createTextTextureObject(TextRenderer &textRenderer, std::strin
                                           GL_LINEAR);
         tex->initialize(nullptr);
     }
-    textRenderer.renderToTexture(tex, text, fontColor);
+    textRenderer.renderToTexture({tex, bbox}, size2_t(0u), bbox.glyphsExtent, text, fontColor);
     return {tex, bbox};
 }
 
 std::shared_ptr<Texture2D> createTextTexture(TextRenderer &textRenderer, std::string text,
                                              int fontSize, vec4 fontColor,
                                              std::shared_ptr<Texture2D> tex) {
-    textRenderer.setFontSize(fontSize);
-
-    size2_t labelSize(textRenderer.computeBoundingBox(text).glyphsExtent);
-
-    if (!tex || tex->getDimensions() != labelSize) {
-        tex = std::make_shared<Texture2D>(labelSize, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR);
-        tex->initialize(nullptr);
-    }
-    textRenderer.renderToTexture(tex, text, fontColor);
-    return tex;
+    auto texObj = createTextTextureObject(textRenderer, text, fontSize, fontColor);
+    return texObj.texture;
 }
 
 }  // namespace util

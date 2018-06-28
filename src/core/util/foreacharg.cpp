@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,5 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEDIVERGENCE_H
-#define IVW_VOLUMEDIVERGENCE_H
+#include <inviwo/core/util/foreacharg.h>
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-
-namespace inviwo {
-namespace util {
-
-IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(const Volume &volume);
-IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume);
-
-}  // namespace util
-}  // namespace inviwo
-
-#endif  // IVW_VOLUMEDIVERGENCE_H
