@@ -88,6 +88,7 @@
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
+
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyconverter.h>
 
@@ -213,7 +214,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerCamera<OrthographicCamera>("OrthographicCamera");
     registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
 
-    
     // Register Data readers
     registerDataReader(util::make_unique<RawVolumeReader>());
     // Register Data writers
@@ -308,7 +308,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<PositionProperty>();
     registerProperty<RaycastingProperty>();
     registerProperty<SimpleLightingProperty>();
-    registerProperty<LightProperty>();
     registerProperty<SimpleRaycastingProperty>();
     registerProperty<StipplingProperty>();
     registerProperty<StringProperty>();

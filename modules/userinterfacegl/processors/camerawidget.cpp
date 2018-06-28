@@ -159,10 +159,10 @@ CameraWidget::CameraWidget()
     cubeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     overlayShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    lightingProperty_.lights_[0].ambientColor_ = vec3(0.75f);
-    lightingProperty_.lights_[0].diffuseColor_ = vec3(0.6f);
-    lightingProperty_.lights_[0].specularColor_ = vec3(0.12f);
-    lightingProperty_.lights_[0].lightPosition_ = vec3(2.5f, 5.6f, 20.0f);
+    lightingProperty_.ambientColor_ = vec3(0.75f);
+    lightingProperty_.diffuseColor_ = vec3(0.6f);
+    lightingProperty_.specularColor_ = vec3(0.12f);
+    lightingProperty_.lightPosition_ = vec3(2.5f, 5.6f, 20.0f);
     lightingProperty_.setCurrentStateAsDefault();
 
     // update internal picking IDs. The mesh consists of 5 elements, each of them has a clockwise

@@ -43,7 +43,6 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
                         , float3 cameraPosition
                         , float samplingRate
                         , __constant LightParameters* light
-                        , int nLights
                         , write_only image2d_t output
                         , int2 outputRegionOffset
                         , int2 outputRegionSize) 
@@ -78,37 +77,27 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
                 float3 gradient = gradientCentralDiff(volume, volumeParams, as_float4(pos));
                 gradient = normalize(gradient);
 
-                // Incoming light
-                float3 Li = (float3)(0.f);
+                // Shading
                 // World space position
                 float3 worldSpacePosition = transformPoint(volumeParams->textureToWorld, pos);
                 // Note that the gradient is reversed since we define the normal of a surface as
                 // the direction towards a lower intensity medium (gradient points in the inreasing direction)
-                for (int lightId = 0; lightId < nLights; ++lightId) {
                 #ifdef SHADING_MODE
                 #if SHADING_MODE == 1
-                        Li += shadeAmbient(light[lightId], color.xyz);
+                        color.xyz = shadeAmbient(*light, color.xyz);
                 #elif SHADING_MODE == 2
-                        Li += shadeDiffuse(light[lightId], color.xyz, worldSpacePosition, -gradient);
+                        color.xyz = shadeDiffuse(*light, color.xyz, worldSpacePosition, -gradient);
                 #elif SHADING_MODE == 3
-                        Li += shadeSpecular(light[lightId], (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+                        color.xyz = shadeSpecular(*light, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
                 #elif SHADING_MODE == 4
-                       Li += shadeBlinnPhong(light[lightId],  color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+                       color.xyz = shadeBlinnPhong(*light,  color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
                 #elif SHADING_MODE == 5
-                       Li += shadePhong(light[lightId], color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
-                #elif SHADING_MODE == 6
-                        Li += shadeOrenNayar(light[lightId], color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
-                #elif SHADING_MODE == 7 
-                        Li += shadeOrenNayarDiffuseCalculation(light[lightId], color.xyz, worldSpacePosition, -gradient, toCameraDir);
+                       color.xyz = shadePhong(*light, color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
                 #endif
-
-                #else
-                    Li = color.xyz;
                 #endif
-                }
                 // Taylor expansion approximation
                 float opacity = 1.f - native_powr(1.f - color.w, tIncr * REF_SAMPLING_INTERVAL);
-                result.xyz = result.xyz + (1.f - result.w) * opacity * Li;
+                result.xyz = result.xyz + (1.f - result.w) * opacity * color.xyz;
                 result.w = result.w + (1.f - result.w) * opacity;    
             }
 
