@@ -113,6 +113,8 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     net->addLink(eep->getPropertyByIdentifier("camera"), mrp->getPropertyByIdentifier("camera"));
     net->addLink(mrp->getPropertyByIdentifier("camera"), eep->getPropertyByIdentifier("camera"));
 
+    net->evaluateLinksFromProperty(vrc->getPropertyByIdentifier("camera"));
+
     return {cpg, eep, vrc, cvs, vbb, bak, mrp};
 }
 

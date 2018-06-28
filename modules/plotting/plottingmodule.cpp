@@ -82,7 +82,6 @@ bool PlottingModule::Converter::convert(TxElement* root) {
         default:
             return false;  // No changes
     }
-    return true;
 }
 
 }  // namespace inviwo
