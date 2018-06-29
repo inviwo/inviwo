@@ -81,6 +81,8 @@ public:
     bool isCheckable() const;
     void setCheckable(bool checkable);
 
+    virtual bool isChildRemovable() const;
+
     // Overridden from PropertyWidgetQt/QWidget
     virtual QSize sizeHint() const override;
     virtual QSize minimumSizeHint() const override;
@@ -111,6 +113,8 @@ protected:
     virtual void setVisible(bool visible) override;
     virtual void setCollapsed(bool value);
     virtual void setChecked(bool checked);
+
+    void addButtonLayout(int row, Property* prop);
 
     std::string displayName_;
     bool collapsed_;

@@ -6,24 +6,24 @@
         <file>icons/console-clear.png</file>
         <file>icons/console-clear16.png</file>
         <file>icons/developermode.png</file>
-        <file>icons/edit.png</file>
         <file>icons/edit-copy.png</file>
         <file>icons/edit-cut.png</file>
         <file>icons/edit-delete.png</file>
         <file>icons/edit-paste.png</file>
         <file>icons/edit-selectall.png</file>
-        <file>icons/error.png</file>
+        <file>icons/edit.png</file>
         <file>icons/error-grey.png</file>
+        <file>icons/error.png</file>
         <file>icons/exit.png</file>
         <file>icons/filewarning.png</file>
-        <file>icons/find.png</file>
-        <file>icons/find16.png</file>
         <file>icons/find-clear.png</file>
         <file>icons/find-clear16.png</file>
+        <file>icons/find.png</file>
+        <file>icons/find16.png</file>
         <file>icons/findprocessor.png</file>
         <file>icons/help.png</file>
-        <file>icons/info.png</file>
         <file>icons/info-grey.png</file>
+        <file>icons/info.png</file>
         <file>icons/inviwo_dark.ico</file>
         <file>icons/inviwo_dark.png</file>
         <file>icons/inviwo_light.ico</file>
@@ -37,17 +37,17 @@
         <file>icons/log-clearonrun.png</file>
         <file>icons/newfile.png</file>
         <file>icons/open.png</file>
-        <file>icons/precompiled.png</file>
         <file>icons/precompiled-disabled.png</file>
+        <file>icons/precompiled.png</file>
+        <file>icons/processor-add.png</file>
         <file>icons/processor_broken.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
-        <file>icons/processor-add.png</file>
-        <file>icons/python.png</file>
         <file>icons/python-run.png</file>
+        <file>icons/python.png</file>
         <file>icons/redo.png</file>
-        <file>icons/reset.png</file>
         <file>icons/reset-dark.png</file>
+        <file>icons/reset.png</file>
         <file>icons/revert.png</file>
         <file>icons/save.png</file>
         <file>icons/saveas.png</file>
@@ -57,15 +57,17 @@
         <file>icons/undo.png</file>
         <file>icons/unlocked.png</file>
         <file>icons/usermode.png</file>
-        <file>icons/warning.png</file>
         <file>icons/warning-grey.png</file>
+        <file>icons/warning.png</file>
         <file>images/splashscreen.png</file>
         <file>stylesheets/images/arrow_darker_down.png</file>
         <file>stylesheets/images/arrow_darker_right.png</file>
+        <file>stylesheets/images/arrow_down-small.png</file>
         <file>stylesheets/images/arrow_down.png</file>
         <file>stylesheets/images/arrow_lighter_down.png</file>
         <file>stylesheets/images/arrow_lighter_right.png</file>
         <file>stylesheets/images/arrow_lighter_up.png</file>
+        <file>stylesheets/images/arrow_up-small.png</file>
         <file>stylesheets/images/arrow_up.png</file>
         <file>stylesheets/images/close.png</file>
         <file>stylesheets/images/dense6pattern.png</file>
@@ -74,6 +76,7 @@
         <file>stylesheets/images/dock-help.png</file>
         <file>stylesheets/images/dock-sticky.png</file>
         <file>stylesheets/images/dock-unsticky.png</file>
+        <file>stylesheets/images/remove-small.png</file>
         <file>stylesheets/images/slider.png</file>
         <file>stylesheets/images/slider_disabled.png</file>
         <file>stylesheets/images/slider_hover.png</file>
