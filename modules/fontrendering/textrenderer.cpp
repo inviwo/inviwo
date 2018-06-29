@@ -118,8 +118,8 @@ TextBoundingBox TextRenderer::computeBoundingBox(const std::string &str) {
     // check input string for invalid utf8 encoding
     auto end = validateString(str);
 
-    for (utf8::iterator it{str.begin(), str.begin(), end};
-         it != utf8::iterator{end, str.begin(), end}; ++it) {
+    for (utf8::iterator<std::string::const_iterator> it{str.begin(), str.begin(), end};
+         it != utf8::iterator<std::string::const_iterator>{end, str.begin(), end}; ++it) {
         const uint32_t charCode = *it;
 
         // query font cache for glyph matching the character code
@@ -195,8 +195,8 @@ void TextRenderer::render(const std::string &str, const vec2 &posf, const vec2 &
     // check input string for invalid utf8 encoding
     auto end = validateString(str);
 
-    for (utf8::iterator it{str.begin(), str.begin(), end};
-         it != utf8::iterator{end, str.begin(), end}; ++it) {
+    for (utf8::iterator<std::string::const_iterator> it{str.begin(), str.begin(), end};
+         it != utf8::iterator<std::string::const_iterator>{end, str.begin(), end}; ++it) {
         const uint32_t charCode = *it;
 
         auto p = requestGlyph(fc, charCode);
