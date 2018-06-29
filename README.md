@@ -40,6 +40,6 @@ Below follow some general information about the framework:
 #### Sponsors
 This work was supported by Linköping University, Ulm University, and through grants from the Swedish e-Science Research Centre (SeRC).
 
-<img src="/resources/images/liu-black.png" width="200">
-<img src="/resources/images/serc.png" width="200">
-<img src="/resources/images/uulm.png" width="200">
+<a href='http://www.liu.se'><img src="/resources/images/liu-black.png" width="200"></a>
+<a href='http://e-science.se'><img src="/resources/images/serc.png" width="200"></a>
+<a href='http://www.uni-ulm.de/en/'><img src="/resources/images/uulm.png" width="200"></a>
