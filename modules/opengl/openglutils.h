@@ -365,13 +365,49 @@ template <typename T>
 struct Enable {
     Enable(const T* item) : item_(item) { item->enable(); }
     Enable(const Enable&) = delete;
-    Enable(Enable&&) = default;
+    Enable(Enable&& rhs) : item_{rhs.item_} { rhs.item_ = nullptr; };
     Enable& operator=(const Enable&) = delete;
-    Enable& operator=(Enable&&) = default;
-    ~Enable() { item_->disable(); }
+    Enable& operator=(Enable&& that) {
+        if (this != &that) {
+            std::swap(item_, that.item_);
+            if (that.item_) {
+                that.item_->disable();
+                that.item_ = nullptr;
+            }
+        }
+        return *this;
+    };
+    ~Enable() {
+        if (item_) item_->disable();
+    }
 
 private:
     const T* item_;
+};
+
+template <typename T>
+// requires can activate/deactivate
+struct Activate {
+    Activate(T* item) : item_(item) { item->activate(); }
+    Activate(const Activate&) = delete;
+    Activate(Activate&& rhs) : item_{rhs.item_} { rhs.item_ = nullptr; };
+    Activate& operator=(const Activate&) = delete;
+    Activate& operator=(Activate&& that) {
+        if (this != &that) {
+            std::swap(item_, that.item_);
+            if (that.item_) {
+                that.item_->deactivate();
+                that.item_ = nullptr;
+            }
+        }
+        return *this;
+    };
+    ~Activate() {
+        if (item_) item_->deactivate();
+    }
+
+private:
+    T* item_;
 };
 
 }  // namespace utilgl

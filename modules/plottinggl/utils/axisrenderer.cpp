@@ -231,8 +231,7 @@ void AxisRendererBase::updateCaptionTexture() {
     textRenderer_.setFontSize(property_.caption_.font_.fontSize_.get());
 
     axisCaptionTex_ = util::createTextTexture(textRenderer_, property_.caption_.title_.get(),
-                                              property_.caption_.font_.fontSize_.get(),
-                                              property_.caption_.color_.get());
+                                              property_.caption_.color_);
 }
 
 void AxisRendererBase::updateLabelAtlas() {

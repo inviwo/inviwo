@@ -614,12 +614,15 @@ void ParallelCoordinates::buildTextCache(
             std::string minV = toString(axes->range_.getRange().x);
             std::string maxV = toString(axes->range_.getRange().y);
 
-            axes->labelTexture_ = util::createTextTexture(
-                textRenderer_, axes->name_, fontSize_.get(), color_.get(), axes->labelTexture_);
-            axes->minValTexture_ = util::createTextTexture(
-                textRenderer_, minV, valuesFontSize_.get(), color_.get(), axes->minValTexture_);
-            axes->maxValTexture_ = util::createTextTexture(
-                textRenderer_, maxV, valuesFontSize_.get(), color_.get(), axes->maxValTexture_);
+            textRenderer_.setFontSize(fontSize_);
+            axes->labelTexture_ =
+                util::createTextTexture(textRenderer_, axes->name_, color_, axes->labelTexture_);
+
+            textRenderer_.setFontSize(valuesFontSize_);
+            axes->minValTexture_ =
+                util::createTextTexture(textRenderer_, minV, color_, axes->minValTexture_);
+            axes->maxValTexture_ =
+                util::createTextTexture(textRenderer_, maxV, color_, axes->maxValTexture_);
         }
     }
 }

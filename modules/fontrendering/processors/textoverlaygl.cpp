@@ -207,8 +207,8 @@ void TextOverlayGL::updateCache() {
     textRenderer_.setFontSize(font_.fontSize_.get());
     textRenderer_.setLineSpacing(font_.lineSpacing_.get());
     std::string str(getString());
-    textObject_ = util::createTextTextureObject(textRenderer_, str, font_.fontSize_.get(),
-                                                color_.get(), textObject_.texture);
+    textObject_ =
+        util::createTextTextureObject(textRenderer_, str, color_.get(), textObject_.texture);
 }
 
 }  // namespace inviwo
