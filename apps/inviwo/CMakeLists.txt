@@ -50,8 +50,8 @@ elseif(APPLE)
     set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${IVW_VERSION}.")
     set(MACOSX_BUNDLE_BUNDLE_VERSION       "${IVW_VERSION}")
     set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2012-${YEAR} Inviwo Foundation")
-    set_source_files_properties(${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-    set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns)
+    set_source_files_properties(${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns)
 endif()
 
 #--------------------------------------------------------------------
