@@ -71,7 +71,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , showCorrelationValues_("showStatistics", "Show correlation values", true)
     , parameters_("parameters", "Parameters")
     , correlectionTF_("correlectionTF", "Correlation TF")
-    
+
     , textRenderer_()
     , textureQuadRenderer_()
 
@@ -87,7 +87,6 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
                               selectedY_.setSelectedValue(visibleIDToColumnID_[p.y]);
                           }
                       }
-
                   },
                   MouseButton::Left, MouseState::Press)
 
@@ -128,7 +127,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     correlectionTF_.get().add(0.5, vec4(1, 1, 1, 1));
     correlectionTF_.get().add(1.0, vec4(0, 0, 1, 1));
     correlectionTF_.setCurrentStateAsDefault();
-    
+
     for (auto font : util::getAvailableFonts()) {
         auto name = filesystem::getFileNameWithoutExtension(font.second);
         // use the file name w/o extension as identifier
@@ -311,7 +310,7 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
     if (outport_.hasData()) {
         statsTextures_.clear();
         bgTextures_.clear();
-        
+
         textRenderer_.setFont(fontFaceStats_.get());
         textRenderer_.setFontSize(statsFontSize_.get());
 
@@ -323,12 +322,10 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
                 auto res = statsutil::linearRegresion(*(*x)->getBuffer(), *(*y)->getBuffer());
 
                 std::ostringstream oss;
-                oss << std::setprecision(2)
-                    << "corr ρ = " << res.corr << std::endl
+                oss << std::setprecision(2) << "corr ρ = " << res.corr << std::endl
                     << "r² = " << res.r2;
 
-                auto tex = util::createTextTexture(textRenderer_, oss.str(), statsFontSize_.get(),
-                                                   fontColor_.get());
+                auto tex = util::createTextTexture(textRenderer_, oss.str(), fontColor_);
                 statsTextures_.push_back(tex);
 
                 auto tex2 = std::make_shared<Texture2D>(size2_t(1, 1), GL_RGBA, GL_RGBA, GL_FLOAT,
@@ -358,8 +355,7 @@ void ScatterPlotMatrixProcessor::createLabels() {
         auto &dataFrame = *dataFrame_.getData();
         for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
             if (!isIncluded(*x)) continue;
-            auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontSize_.get(),
-                                               fontColor_.get());
+            auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontColor_);
             labelsTextures_.push_back(tex);
         }
     }
