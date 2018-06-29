@@ -1,9 +1,9 @@
 ## Inviwo - Interactive Visualization Workshop
 
-[[/docs/images/inviwo-screenshot.png]]
-
 [![Build Status](http://jenkins.inviwo.org:8080/buildStatus/icon?job=inviwo-pub/master)](http://jenkins.inviwo.org:8080/job/inviwo-pub/job/master/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
 [![Release version](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=86400)](https://github.com/inviwo/inviwo/releases/latest)
+
+<img src="/docs/images/inviwo-screenshot.png" width="600">
 
 Inviwo is a software framework for rapid visualization prototyping.
 
@@ -33,12 +33,13 @@ Below follow some general information about the framework:
  - C++14 Required
 
 #### Documentation
-  - ![Manual](https://github.com/inviwo/inviwo/wiki/Manual)
-  - ![API](https://inviwo.github.io/inviwo/doc/)
-  - ![Changelog](/CHANGELOG.md)
+  - [Manual](https://github.com/inviwo/inviwo/wiki/Manual)
+  - [API](https://inviwo.github.io/inviwo/doc/)
+  - [Changelog](/CHANGELOG.md)
 
 #### Sponsors
 This work was supported by Linköping University, Ulm University, and through grants from the Swedish e-Science Research Centre (SeRC).
+
 <img src="/resources/images/liu-black.png" width="200">
 <img src="/resources/images/serc.png" width="200">
 <img src="/resources/images/uulm.png" width="200">
