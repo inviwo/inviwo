@@ -53,6 +53,22 @@
 
 namespace inviwo {
 
+namespace {
+class AboutBrowser : public QTextBrowser {
+public:
+    AboutBrowser(QWidget* parent) : QTextBrowser(parent) {}
+    virtual ~AboutBrowser() = default;
+
+protected:
+    // Override this to circumvent a warning message from QTextBrowser::loadResource
+    // QTextBrowser has an internal QTextDocument that has a loadResource function that does the
+    // right thing, but first it calls the overload from it's parent QTextBrowers which fails with a
+    // message. We overload that and just return an empty QVariant and let QTextDocument handle it.
+    virtual QVariant loadResource(int, const QUrl&) override { return QVariant{}; }
+};
+
+}  // namespace
+
 InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     : InviwoDockWidget("About", mainwindow, "AboutWidget") {
 
@@ -66,7 +82,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
     auto app = mainwindow->getInviwoApplication();
 
-    auto textdoc = new QTextBrowser(this);
+    auto textdoc = new AboutBrowser(this);
     vLayout->addWidget(textdoc);
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
@@ -90,9 +106,12 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         const auto img = QImage(path);
         QByteArray imgData;
         QBuffer buffer(&imgData);
+
+        QFile test(":/tmp/" + QFileInfo(path).completeBaseName() + ".png");
         buffer.open(QIODevice::WriteOnly);
-        const auto scaledImg = img.scaledToWidth(size, Qt::SmoothTransformation);
+        const auto scaledImg = img.scaledToHeight(size, Qt::SmoothTransformation);
         scaledImg.save(&buffer, "PNG");
+
         return std::unordered_map<std::string, std::string>{
             {"width", std::to_string(scaledImg.size().width())},
             {"height", std::to_string(scaledImg.size().height())},
@@ -140,7 +159,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("h3", "Contributors:");
         h.append("br");
         h.append("span",
-                 "Jochen Jankowai, Jochen Jankowai, Tino Weinkauf, "
+                 "Robin Skånberg, Jochen Jankowai, Tino Weinkauf, "
                  "Wiebke Koepp, Anke Friederici, Dominik Engel, "
                  "Alexander Johansson, Andreas Valter, Johan Norén, Emanuel Winblad, "
                  "Hans-Christian Helltegen, Viktor Axelsson");
@@ -153,14 +172,15 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
                  "This work was supported by Linköping University, Ulm University, and through "
                  "grants from the Swedish e-Science Research Centre (SeRC).");
         h.append("br");
-        auto liu = h.append("a", "", {{"href", "http://www.liu.se"}});
-        liu.append("img", "", makeImg(":/images/liu-white.png", 200));
+        auto p = h.append("p");
+        auto liu = p.append("a", "", {{"href", "http://www.liu.se"}});
+        liu.append("img", "", makeImg(":/images/liu-white-crop.png", 50));
 
-        auto serc = h.append("a", "", {{"href", "http://www.e-science.se"}});
-        serc.append("img", "", makeImg(":/images/serc.png", 150));
+        auto serc = p.append("a", "", {{"href", "http://www.e-science.se"}});
+        serc.append("img", "", makeImg(":/images/serc.png", 50));
 
-        auto uulm = h.append("a", "", {{"href", "http://www.uni-ulm.de/en/"}});
-        uulm.append("img", "", makeImg(":/images/uulm.png", 150));
+        auto uulm = p.append("a", "", {{"href", "http://www.uni-ulm.de/en/"}});
+        uulm.append("img", "", makeImg(":/images/uulm.png", 50));
     }
     {
         auto h = body.append("p");
