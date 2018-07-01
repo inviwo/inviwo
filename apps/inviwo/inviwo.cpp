@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     logger.registerLogger(logCounter);
     inviwo::InviwoApplicationQt inviwoApp("Inviwo", argc, argv);
-    inviwoApp.setWindowIcon(QIcon(":/icons/inviwo_light.png"));
+    inviwoApp.setWindowIcon(QIcon(":/inviwo/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
     QFile styleSheetFile(":/stylesheets/inviwo.qss");
     styleSheetFile.open(QFile::ReadOnly);
