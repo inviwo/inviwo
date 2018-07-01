@@ -74,7 +74,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         property_.reset(baseProperty->clone());
         propTrack->setOtherProperty(property_.get(), &keyframe);
         property_->onChange(
-            [ b = baseProperty, p = property_.get(), t = propTrack, k = &keyframe_ ]() {
+            [b = baseProperty, p = property_.get(), t = propTrack, k = &keyframe_]() {
                 b->set(p);
                 t->updateKeyframeFromProperty(p, k);
             });
@@ -136,12 +136,12 @@ KeyframeEditorWidget::~KeyframeEditorWidget() {
     }
 }
 
-void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe *key, Seconds oldTime) {
+void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe *key, Seconds) {
     timeSpinner_->setValue(key->getTime().count());
     sequenceEditorWidget_->setReorderNeeded();
 }
 
-void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe *key) {
+void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe *) {
     sequenceEditorWidget_->updateVisibility();
 }
 

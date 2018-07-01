@@ -62,7 +62,7 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
     keyframesLayout_ = new QVBoxLayout();
     layout->addLayout(keyframesLayout_);
 
-	if (dynamic_cast<BasePropertyTrack*>(&track)) {
+    if (dynamic_cast<BasePropertyTrack*>(&track)) {
         auto easingLayout = new QHBoxLayout();
         layout->addLayout(easingLayout);
 
@@ -82,8 +82,9 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
         }
 
         void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
-        connect(easingComboBox_, signal,
-                [this](int index) { sequence_.setEasingType(static_cast<easing::EasingType>(index)); });
+        connect(easingComboBox_, signal, [this](int index) {
+            sequence_.setEasingType(static_cast<easing::EasingType>(index));
+        });
     }
 
     for (size_t i = 0; i < sequence_.size(); i++) {
@@ -97,18 +98,18 @@ void SequenceEditorWidget::updateVisibility() {
     setVisible(sequence_.isSelected() || sequence_.isAnyKeyframeSelected());
 }
 
-void SequenceEditorWidget::onKeyframeSequenceSelectionChanged(KeyframeSequence* seq) {
+void SequenceEditorWidget::onKeyframeSequenceSelectionChanged(KeyframeSequence*) {
     updateVisibility();
 }
 
-void SequenceEditorWidget::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
+void SequenceEditorWidget::onKeyframeAdded(Keyframe* key, KeyframeSequence*) {
     auto w = new KeyframeEditorWidget(*key, this);
     keyframesLayout_->addWidget(w);
     keyframeEditorWidgets_[key] = w;
     setReorderNeeded();
 }
 
-void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
+void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {
     auto it = keyframeEditorWidgets_.find(key);
     if (it != keyframeEditorWidgets_.end()) {
         keyframesLayout_->removeWidget(it->second);

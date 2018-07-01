@@ -29,7 +29,4 @@
 
 #include <modules/animation/datastructures/track.h>
 
-namespace inviwo {
-    
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

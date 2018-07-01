@@ -38,6 +38,6 @@ TrackFactoryObject::TrackFactoryObject(const std::string& classIdentifier)
 
 const std::string& TrackFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

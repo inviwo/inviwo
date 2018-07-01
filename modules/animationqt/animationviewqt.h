@@ -80,8 +80,8 @@ protected:
     bool pressingOnTimeline_ = false;
 };
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ANIMATIONVIEWQT_H

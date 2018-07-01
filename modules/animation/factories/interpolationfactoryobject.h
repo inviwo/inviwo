@@ -63,9 +63,8 @@ public:
     virtual std::unique_ptr<Interpolation> create() const override { return std::make_unique<T>(); }
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INTERPOLATIONFACTORYOBJECT_H
-
+#endif  // IVW_INTERPOLATIONFACTORYOBJECT_H

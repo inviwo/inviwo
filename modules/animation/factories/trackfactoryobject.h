@@ -63,9 +63,8 @@ public:
     virtual std::unique_ptr<Track> create() const override { return std::make_unique<T>(); }
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TRACKFACTORYOBJECT_H
-
+#endif  // IVW_TRACKFACTORYOBJECT_H

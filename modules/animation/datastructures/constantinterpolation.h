@@ -52,7 +52,9 @@ public:
     ConstantInterpolation() = default;
     virtual ~ConstantInterpolation() = default;
 
-    virtual ConstantInterpolation* clone() const override { return new ConstantInterpolation(*this); };
+    virtual ConstantInterpolation* clone() const override {
+        return new ConstantInterpolation(*this);
+    };
 
     static std::string classIdentifier() {
         auto keyid = Key::classIdentifier();
@@ -67,13 +69,13 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     // keys should be sorted by time
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t, easing::EasingType) const ->
-        typename Key::value_type override {
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t,
+                            easing::EasingType) const -> typename Key::value_type override {
         // Returns an iterator to the first element greater than t
         auto it = std::upper_bound(
             keys.begin(), keys.end(), t,
             [](const auto& time, const auto& key) { return time < key->getTime(); });
-        
+
         return (*std::prev(it))->getValue();
     }
 };
@@ -95,9 +97,8 @@ void ConstantInterpolation<Key>::deserialize(Deserializer& d) {
     }
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAME_CONSTANT_INTERPOLATION_H
-
+#endif  // IVW_KEYFRAME_CONSTANT_INTERPOLATION_H

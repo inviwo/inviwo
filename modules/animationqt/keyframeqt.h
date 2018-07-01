@@ -96,8 +96,8 @@ private:
     KeyframeQt* keyframe_;
 };
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_KEYFRAMEQT_H

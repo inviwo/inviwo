@@ -50,7 +50,7 @@ TrackQt::TrackQt(Track& track) : QGraphicsItem(), track_(track) {
 
 TrackQt::~TrackQt() = default;
 
-void TrackQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options, QWidget* widget) {}
+void TrackQt::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) {}
 
 Track& TrackQt::getTrack() { return track_; }
 
@@ -58,11 +58,11 @@ const Track& TrackQt::getTrack() const { return track_; }
 
 QRectF TrackQt::boundingRect() const { return childrenBoundingRect(); }
 
-void TrackQt::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
+void TrackQt::onKeyframeSequenceAdded(Track*, KeyframeSequence* s) {
     sequences_.push_back(std::make_unique<KeyframeSequenceQt>(*s, this));
 }
 
-void TrackQt::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* sequence) {
+void TrackQt::onKeyframeSequenceRemoved(Track*, KeyframeSequence* sequence) {
     util::erase_remove_if(sequences_, [&](auto& sequenceqt) {
         if (&(sequenceqt->getKeyframeSequence()) == sequence) {
             this->scene()->removeItem(sequenceqt.get());
@@ -73,6 +73,6 @@ void TrackQt::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* sequence) {
     });
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

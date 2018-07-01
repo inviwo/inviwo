@@ -70,9 +70,8 @@ protected:
     QMainWindow* leftPanel_;
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-
+#endif  // IVW_ANIMATIONEDITORDOCKWIDGETQT_H

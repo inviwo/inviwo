@@ -36,7 +36,6 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-//#include <QGraphicsDropShadowEffect>
 #include <QPainter>
 #include <QLinearGradient>
 #include <warn/pop>
@@ -101,12 +100,12 @@ const KeyframeSequence& KeyframeSequenceQt::getKeyframeSequence() const {
     return keyframeSequence_;
 }
 
-void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
+void KeyframeSequenceQt::onKeyframeAdded(Keyframe* key, KeyframeSequence*) {
     QGraphicsItem::prepareGeometryChange();
     keyframes_.push_back(std::make_unique<KeyframeQt>(*key, this));
 }
 
-void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) {
+void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {
     if (util::erase_remove_if(keyframes_, [&](auto& keyframeqt) {
             if (&(keyframeqt->getKeyframe()) == key) {
                 this->prepareGeometryChange();
@@ -119,7 +118,7 @@ void KeyframeSequenceQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq)
     }
 }
 
-void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence* key) {
+void KeyframeSequenceQt::onKeyframeSequenceMoved(KeyframeSequence*) {
     QGraphicsItem::prepareGeometryChange();
 }
 

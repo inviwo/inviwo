@@ -65,7 +65,6 @@ void TrackObservable::notifyPriorityChanged(Track* t) {
     forEachObserver([&](TrackObserver* o) { o->onPriorityChanged(t); });
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
-
+}  // namespace inviwo

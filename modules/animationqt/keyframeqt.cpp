@@ -68,15 +68,19 @@ void KeyframeQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
     pen.setCapStyle(Qt::RoundCap);
     pen.setStyle(Qt::SolidLine);
     isSelected() ? pen.setColor(QColor(66, 66, 132)) : pen.setColor(QColor(66, 66, 66));
-    QRadialGradient Gradient(QPointF(0, 0), TrackHeight / 2 - TrackHeightNudge, QPointF(0, -TrackHeight / 4));
-    Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(220, 220, 220) );
-    Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132)  : QColor(128, 128, 128) );
+    QRadialGradient Gradient(QPointF(0, 0), TrackHeight / 2 - TrackHeightNudge,
+                             QPointF(0, -TrackHeight / 4));
+    Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(220, 220, 220));
+    Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132) : QColor(128, 128, 128));
     QBrush brush = QBrush(Gradient);
     painter->setPen(pen);
     painter->setBrush(brush);
     auto penWidth = pen.widthF();
     int hs = static_cast<int>((KeyframeWidth - penWidth) / 2.0f);
-    QPoint p[4] = {{-hs, 0}, {0, -TrackHeight/2 + TrackHeightNudge}, {hs, 0}, {0, TrackHeight/2 - TrackHeightNudge}};
+    QPoint p[4] = {{-hs, 0},
+                   {0, -TrackHeight / 2 + TrackHeightNudge},
+                   {hs, 0},
+                   {0, TrackHeight / 2 - TrackHeightNudge}};
     painter->drawPolygon(p, 4);
 }
 
@@ -86,7 +90,7 @@ void KeyframeQt::unlock() { isEditing_ = false; }
 
 bool KeyframeQt::islocked() const { return isEditing_; }
 
-void KeyframeQt::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
+void KeyframeQt::onKeyframeTimeChanged(Keyframe*, Seconds) {
     if (!isEditing_) {
         KeyframeQtLock lock(this);
         QPointF newPos(this->parentItem()
@@ -106,13 +110,16 @@ QRectF KeyframeQt::boundingRect() const {
 
 QVariant KeyframeQt::itemChange(GraphicsItemChange change, const QVariant& value) {
     if (change == ItemPositionChange) {
-        //Dragging a keyframe to a new time
+        // Dragging a keyframe to a new time
         qreal xResult = value.toPointF().x();
-        if (scene() && !scene()->views().empty() && QApplication::mouseButtons() == Qt::LeftButton) {
-            //Snap to a grid depending on the current scale
-            // - We get parent coordinates here, and need scene coordinates to snap to something globally
+        if (scene() && !scene()->views().empty() &&
+            QApplication::mouseButtons() == Qt::LeftButton) {
+            // Snap to a grid depending on the current scale
+            // - We get parent coordinates here, and need scene coordinates to snap to something
+            // globally
             const qreal xInScene = mapToScene(mapFromParent(xResult, 0.0)).x();
-            const qreal xSnappedInScene = getSnapTime(xInScene, scene()->views().first()->transform().m11());
+            const qreal xSnappedInScene =
+                getSnapTime(xInScene, scene()->views().first()->transform().m11());
             xResult = mapToParent(mapFromScene(std::max(xSnappedInScene, 0.0), 0.0)).x();
         }
 

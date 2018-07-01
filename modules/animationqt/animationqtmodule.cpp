@@ -70,8 +70,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
             win->menuBar()->addMenu(menu_.get());
             menu = menu_.get();
             // Release pointer if destroyed by Qt before module is destroyed
-            QObject::connect(menu_.get(), &QObject::destroyed,
-                             [&](QObject* obj) { menu_.release(); });
+            QObject::connect(menu_.get(), &QObject::destroyed, [&](QObject*) { menu_.release(); });
         }
         auto& controller =
             app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
@@ -83,7 +82,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
         editor_->loadState();
         // Release pointer if destroyed by Qt before module is destroyed
         QObject::connect(editor_.get(), &QObject::destroyed,
-                         [this](QObject* obj) { editor_.release(); });
+                         [this](QObject*) { editor_.release(); });
     }
 }
 

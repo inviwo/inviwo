@@ -52,6 +52,6 @@ private:
     animation::AnimationManager manager_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONMODULE_H
+#endif  // IVW_ANIMATIONMODULE_H

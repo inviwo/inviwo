@@ -43,11 +43,11 @@ class KeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API KeyframeSequenceObserver : public Observer {
 public:
-    virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq){};
-    virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq){};
-    virtual void onKeyframeSequenceMoved(KeyframeSequence* seq){};
-    virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence* seq){};
-    virtual void onKeyframeSequenceEasingChanged(KeyframeSequence* seq){};
+    virtual void onKeyframeAdded(Keyframe*, KeyframeSequence*){};
+    virtual void onKeyframeRemoved(Keyframe*, KeyframeSequence*){};
+    virtual void onKeyframeSequenceMoved(KeyframeSequence*){};
+    virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence*){};
+    virtual void onKeyframeSequenceEasingChanged(KeyframeSequence*){};
 };
 
 class IVW_MODULE_ANIMATION_API KeyframeSequenceObserverble

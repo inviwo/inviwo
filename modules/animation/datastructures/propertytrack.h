@@ -198,9 +198,9 @@ public:
     virtual Seconds lastTime() const override;
 
     virtual std::vector<Seconds> getAllTimes() const override;
-    
 
-    virtual AnimationTimeState operator()(Seconds from, Seconds to,AnimationState state) const override;
+    virtual AnimationTimeState operator()(Seconds from, Seconds to,
+                                          AnimationState state) const override;
 
     virtual const Prop* getProperty() const override;
     virtual Prop* getProperty() override;
@@ -210,8 +210,8 @@ public:
     virtual void add(const KeyframeSequence& sequence) override;
 
     /**
-    * Return the number of KeyframeSequences in the track.
-    */
+     * Return the number of KeyframeSequences in the track.
+     */
     virtual size_t size() const override;
 
     virtual KeyframeSequenceTyped<Key>& operator[](size_t i) override;
@@ -246,9 +246,9 @@ public:
      */
     void setOtherProperty(Property* dstProperty, Keyframe* keyframe) {
         IVW_ASSERT(dstProperty->getClassIdentifier() == Prop::CLASS_IDENTIFIER,
-                  "Incorrect Property type");
+                   "Incorrect Property type");
         IVW_ASSERT(keyframe->getClassIdentifier() == Key::classIdentifier(),
-                  "Incorrect Keyframe type");
+                   "Incorrect Keyframe type");
         detail::setOtherPropertyHelper(static_cast<Prop*>(dstProperty),
                                        static_cast<Key*>(keyframe));
     }

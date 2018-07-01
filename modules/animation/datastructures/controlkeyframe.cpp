@@ -49,21 +49,21 @@ bool operator==(const ControlKeyframe& a, const ControlKeyframe& b) {
 bool operator!=(const ControlKeyframe& a, const ControlKeyframe& b) { return !(a == b); }
 
 AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to, AnimationState state) {
-	if (state == AnimationState::Playing) {
-		if (from < getTime() && getTime() < to || to < getTime() && getTime() < from) {
-			// We passed over this keyframe
-			switch (getAction()) {
-			case ControlAction::Pause:
-				return { time_, AnimationState::Paused };
-			case ControlAction::JumpTo:
-				return { getPayload().jumpToTime, state };
-			case ControlAction::Script:
-				// TODO: IMPLEMENT RUN SCRIPT
-				return { to, state };
-			}
-		}
-	}
-	return { to, state };
+    if (state == AnimationState::Playing) {
+        if (from < getTime() && getTime() < to || to < getTime() && getTime() < from) {
+            // We passed over this keyframe
+            switch (getAction()) {
+                case ControlAction::Pause:
+                    return {time_, AnimationState::Paused};
+                case ControlAction::JumpTo:
+                    return {getPayload().jumpToTime, state};
+                case ControlAction::Script:
+                    // TODO: IMPLEMENT RUN SCRIPT
+                    return {to, state};
+            }
+        }
+    }
+    return {to, state};
 }
 
 void ControlKeyframe::deserialize(Deserializer& d) {

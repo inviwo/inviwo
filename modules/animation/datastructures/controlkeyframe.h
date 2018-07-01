@@ -56,7 +56,9 @@ public:
     using value_type = void;
     ControlKeyframe() = default;
 
-	ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause, ControlPayload payload = {}) : time_(time), action_(action), payload_(payload) {}
+    ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
+                    ControlPayload payload = {})
+        : time_(time), action_(action), payload_(payload) {}
     virtual ~ControlKeyframe() = default;
 
     ControlKeyframe(const ControlKeyframe& rhs) = default;
@@ -79,26 +81,18 @@ public:
     const void getValue() const {}
     void getValue() {}
 
-	void setAction(ControlAction action) {
-		action_ = action;
-	}
+    void setAction(ControlAction action) { action_ = action; }
 
-	void setPayload(ControlPayload payload) {
-		payload_ = payload;
-	}
+    void setPayload(ControlPayload payload) { payload_ = payload; }
 
     ControlAction getAction() const { return action_; }
     ControlPayload getPayload() const { return payload_; }
 
     AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
 
-	std::string classIdentifier() const {
-		return "org.inviwo.animation.ControlKeyframe";
-	}
+    std::string classIdentifier() const { return "org.inviwo.animation.ControlKeyframe"; }
 
-	std::string getClassIdentifier() const {
-		return classIdentifier();
-	}
+    std::string getClassIdentifier() const { return classIdentifier(); }
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

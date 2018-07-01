@@ -49,8 +49,7 @@ namespace animation {
  */
 class ControlTrack : public Track {
 public:
-
-	ControlTrack();
+    ControlTrack();
 
     /**
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
@@ -79,7 +78,7 @@ public:
 
     virtual Seconds lastTime() const override;
 
-	virtual std::vector<Seconds> getAllTimes() const override;
+    virtual std::vector<Seconds> getAllTimes() const override;
 
     virtual AnimationTimeState operator()(Seconds from, Seconds to,
                                           AnimationState state) const override;
@@ -111,9 +110,8 @@ private:
     std::vector<std::unique_ptr<ControlKeyframeSequence>> sequences_;
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CONTROLTRACK_H
-
+#endif  // IVW_CONTROLTRACK_H

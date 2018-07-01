@@ -41,8 +41,11 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add some qt specific things
-source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc)
 qt5_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
+source_group("Resource Files" FILES 
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc 
+    ${QRC_FILE}
+)
 
 #--------------------------------------------------------------------
 # Create module

@@ -46,13 +46,13 @@ namespace inviwo {
 namespace animation {
 
 /** \class Track
- * Interface for tracks in an animation. 
- * A track usually represent a value to be animated over time and 
+ * Interface for tracks in an animation.
+ * A track usually represent a value to be animated over time and
  * contains a list of KeyFrameSequence.
- * The value will only be animated when the time in the animation 
+ * The value will only be animated when the time in the animation
  * is within a KeyFrameSequence in the Track.
  *
- * A Track has additional metadata information, 
+ * A Track has additional metadata information,
  * such as (display) Name, Enabled, Priority.
  * Tracks are listed in order based on their priority.
  * @see KeyFrameSequence
@@ -83,7 +83,7 @@ public:
     virtual const std::string& getName() const = 0;
     /**
      * Set priority (0 is highest).
-     * The Track with highest priority is evaluated first 
+     * The Track with highest priority is evaluated first
      * at a given time by Animation.
      */
     virtual void setPriority(size_t priority) = 0;
@@ -91,7 +91,7 @@ public:
      * Return Track priority (0 is highest)
      */
     virtual size_t getPriority() const = 0;
-    
+
     virtual Seconds firstTime() const = 0;
     virtual Seconds lastTime() const = 0;
     virtual std::vector<Seconds> getAllTimes() const = 0;
@@ -134,11 +134,8 @@ public:
     virtual void addTyped(const KeyframeSequenceTyped<Key>& sequence) = 0;
 };
 
+}  // namespace animation
 
+}  // namespace inviwo
 
-} // namespace animation
-
-} // namespace inviwo
-
-#endif // IVW_TRACK_H
-
+#endif  // IVW_TRACK_H
