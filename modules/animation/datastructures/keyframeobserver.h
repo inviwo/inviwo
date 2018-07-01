@@ -45,8 +45,8 @@ class Keyframe;
 
 class IVW_MODULE_ANIMATION_API KeyframeObserver : public Observer {
 public:
-    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime){};
-    virtual void onKeyframeSelectionChanged(Keyframe* seq){};
+    virtual void onKeyframeTimeChanged(Keyframe*, Seconds /*oldTime*/){};
+    virtual void onKeyframeSelectionChanged(Keyframe*){};
 };
 
 class IVW_MODULE_ANIMATION_API KeyframeObservable : public Observable<KeyframeObserver> {
@@ -55,9 +55,8 @@ protected:
     void notifyKeyframeSelectionChanged(Keyframe* key);
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAMEOBSERVER_H
-
+#endif  // IVW_KEYFRAMEOBSERVER_H

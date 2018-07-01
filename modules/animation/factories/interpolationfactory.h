@@ -50,8 +50,7 @@ public:
     using StandardFactory<Interpolation, InterpolationFactoryObject>::create;
 };
 
-} // namespace
-} // namespace
+}  // namespace animation
+}  // namespace inviwo
 
-#endif // IVW_INTERPOLATIONFACTORY_H
-
+#endif  // IVW_INTERPOLATIONFACTORY_H

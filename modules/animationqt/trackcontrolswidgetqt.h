@@ -44,16 +44,15 @@ class QToolButton;
 
 namespace inviwo {
 
-namespace animation
-{
+namespace animation {
 
 /**
  * \class TrackControlsWidgetQt
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_ANIMATIONQT_API TrackControlsWidgetQt : public QWidget//,
-                                                         //public KeyframeObserver
+class IVW_MODULE_ANIMATIONQT_API TrackControlsWidgetQt : public QWidget  //,
+                                                                         // public KeyframeObserver
 {
 
 public:
@@ -63,19 +62,16 @@ public:
 private:
     AnimationController& controller_;
 
-    QStandardItem *item_;
-    QHBoxLayout *layout_{ nullptr };
+    QStandardItem* item_;
+    QHBoxLayout* layout_{nullptr};
 
     QToolButton* btnDisable_;
     QToolButton* btnLock_;
     QToolButton* btnAddAndDelete_;
-
 };
-    
 
-} // namespace animation
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TRACKCONTROLSWIDGETQT_H
-
+#endif  // IVW_TRACKCONTROLSWIDGETQT_H

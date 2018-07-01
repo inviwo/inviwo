@@ -33,9 +33,7 @@ namespace inviwo {
 
 namespace animation {
 
-Animation::Animation() {
-	priorityTracks_.push_back(&controlTrack_);
-};
+Animation::Animation() { priorityTracks_.push_back(&controlTrack_); };
 
 AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
     AnimationTimeState ts{to, state};
@@ -77,23 +75,22 @@ void Animation::removeTrack(const std::string& id) {
 }
 
 void Animation::removeKeyframe(Keyframe* key) {
-	// Check control track
-	for (size_t s = 0; s < controlTrack_.size(); s++) {
-		auto& seq = controlTrack_[s];
-		for (size_t k = 0; k < seq.size(); ++k) {
-			if (&seq[k] == key) {
-				if (seq.size() == 1) {
-					controlTrack_.remove(s);
-				}
-				else {
-					seq.remove(k);
-				}
-				return;
-			}
-		}
-	}
+    // Check control track
+    for (size_t s = 0; s < controlTrack_.size(); s++) {
+        auto& seq = controlTrack_[s];
+        for (size_t k = 0; k < seq.size(); ++k) {
+            if (&seq[k] == key) {
+                if (seq.size() == 1) {
+                    controlTrack_.remove(s);
+                } else {
+                    seq.remove(k);
+                }
+                return;
+            }
+        }
+    }
 
-	// Check other tracks
+    // Check other tracks
     for (size_t t = 0; t < tracks_.size(); ++t) {
         auto& track = *tracks_[t];
         for (size_t s = 0; s < track.size(); ++s) {
@@ -113,24 +110,24 @@ void Animation::removeKeyframe(Keyframe* key) {
 }
 
 void Animation::removeKeyframeSequence(KeyframeSequence* seq) {
-	// Check control track
-	for (size_t s = 0; s < controlTrack_.size(); s++) {
-		if (&controlTrack_[s] == seq) {
-			controlTrack_.remove(s);
-			return;
-		}
-	}
+    // Check control track
+    for (size_t s = 0; s < controlTrack_.size(); s++) {
+        if (&controlTrack_[s] == seq) {
+            controlTrack_.remove(s);
+            return;
+        }
+    }
 
-	// Check other tracks
-	for (size_t t = 0; t < tracks_.size(); ++t) {
-		auto& track = *tracks_[t];
-		for (size_t s = 0; s < track.size(); ++s) {
-			if (&track[s] == seq) {
-				track.remove(s);
-				return;
-			}
-		}
-	}
+    // Check other tracks
+    for (size_t t = 0; t < tracks_.size(); ++t) {
+        auto& track = *tracks_[t];
+        for (size_t s = 0; s < track.size(); ++s) {
+            if (&track[s] == seq) {
+                track.remove(s);
+                return;
+            }
+        }
+    }
 }
 
 void Animation::clear() {
@@ -157,25 +154,25 @@ std::vector<Seconds> Animation::getAllTimes() const {
 }
 
 Seconds Animation::firstTime() const {
-	Seconds time = controlTrack_.firstTime();
+    Seconds time = controlTrack_.firstTime();
     auto it = std::min_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
         return a->firstTime() < b->firstTime();
     });
     if (it != tracks_.end()) {
         time = std::min(time, (*it)->firstTime());
     }
-	return time;
+    return time;
 }
 
 Seconds Animation::lastTime() const {
-	Seconds time = controlTrack_.lastTime();
+    Seconds time = controlTrack_.lastTime();
     auto it = std::max_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
         return a->lastTime() < b->lastTime();
     });
     if (it != tracks_.end()) {
-		time = std::max(time, (*it)->lastTime());
+        time = std::max(time, (*it)->lastTime());
     }
-	return time;
+    return time;
 }
 
 void Animation::serialize(Serializer& s) const {
@@ -192,7 +189,7 @@ void Animation::deserialize(Deserializer& d) {
     d.deserialize("control-track", controlTrack_);
 }
 
-void Animation::onPriorityChanged(Track* t) { doPrioritySort(); }
+void Animation::onPriorityChanged(Track*) { doPrioritySort(); }
 
 void Animation::doPrioritySort() {
     std::stable_sort(
@@ -200,9 +197,9 @@ void Animation::doPrioritySort() {
         [](const auto& a, const auto& b) { return a->getPriority() > b->getPriority(); });
 }
 
-void Animation::onFirstMoved(Track* t) { notifyFirstMoved(); }
+void Animation::onFirstMoved(Track*) { notifyFirstMoved(); }
 
-void Animation::onLastMoved(Track* t) { notifyLastMoved(); }
+void Animation::onLastMoved(Track*) { notifyLastMoved(); }
 
 }  // namespace animation
 

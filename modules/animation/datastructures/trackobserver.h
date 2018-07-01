@@ -44,16 +44,16 @@ class Track;
 
 class IVW_MODULE_ANIMATION_API TrackObserver : public Observer {
 public:
-    virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s){};
-    virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s){};
+    virtual void onKeyframeSequenceAdded(Track*, KeyframeSequence*){};
+    virtual void onKeyframeSequenceRemoved(Track*, KeyframeSequence*){};
 
-    virtual void onFirstMoved(Track* t){};
-    virtual void onLastMoved(Track* t){};
+    virtual void onFirstMoved(Track*){};
+    virtual void onLastMoved(Track*){};
 
-    virtual void onEnabledChanged(Track* t){};
-    virtual void onIdentifierChanged(Track* t){};
-    virtual void onNameChanged(Track* t){};
-    virtual void onPriorityChanged(Track* t){};
+    virtual void onEnabledChanged(Track*){};
+    virtual void onIdentifierChanged(Track*){};
+    virtual void onNameChanged(Track*){};
+    virtual void onPriorityChanged(Track*){};
 };
 
 class IVW_MODULE_ANIMATION_API TrackObservable : public Observable<TrackObserver> {
@@ -70,9 +70,8 @@ protected:
     void notifyPriorityChanged(Track* t);
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TRACKOBSERVER_H
-
+#endif  // IVW_TRACKOBSERVER_H

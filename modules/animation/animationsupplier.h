@@ -70,7 +70,6 @@ public:
     template <typename T>
     void registerInterpolation();
 
-
     /**
      * Register connection between a property and a track.
      * Used to create typed tracks for a property.
@@ -90,8 +89,9 @@ public:
      */
     void registerPropertyInterpolationConnection(const std::string& propertyClassID,
                                                  const std::string& interpolationClassID);
-    
+
     void unRegisterAll();
+
 private:
     AnimationManager& manager_;
     std::vector<std::unique_ptr<TrackFactoryObject>> tracks_;
@@ -114,9 +114,8 @@ void AnimationSupplier::registerTrack() {
     }
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONSUPPLIER_H
-
+#endif  // IVW_ANIMATIONSUPPLIER_H

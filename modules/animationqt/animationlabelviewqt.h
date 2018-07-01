@@ -66,8 +66,8 @@ protected:
     QStandardItemModel* model_;
 };
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ANIMATIONLABELVIEWQT_H

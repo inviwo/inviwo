@@ -73,7 +73,7 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
     scrollArea->setWidget(widget);
 
     if (auto ani = controller.getAnimation()) {
-		onTrackAdded(&ani->getControlTrack());
+        onTrackAdded(&ani->getControlTrack());
         for (size_t i = 0; i < ani->size(); i++) {
             onTrackAdded(&(*ani)[i]);
         }
@@ -81,7 +81,7 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
     }
 }
 
-void SequenceEditorPanel::onAnimationChanged(AnimationController* controller, Animation* oldAnim,
+void SequenceEditorPanel::onAnimationChanged(AnimationController*, Animation* oldAnim,
                                              Animation* newAnim) {
     oldAnim->removeObserver(this);
 
@@ -98,9 +98,7 @@ void SequenceEditorPanel::onTrackAdded(Track* track) {
     track->addObserver(this);
 }
 
-void SequenceEditorPanel::onTrackRemoved(Track* track) { 
-    track->removeObserver(this); 
-}
+void SequenceEditorPanel::onTrackRemoved(Track* track) { track->removeObserver(this); }
 
 void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
     auto widget = new SequenceEditorWidget(*s, *t, this);
@@ -108,7 +106,7 @@ void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s)
     sequenceEditors_->addWidget(widget);
 }
 
-void SequenceEditorPanel::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) {
+void SequenceEditorPanel::onKeyframeSequenceRemoved(Track*, KeyframeSequence* s) {
     auto it = widgets_.find(s);
     if (it != widgets_.end()) {
         sequenceEditors_->removeWidget(it->second);

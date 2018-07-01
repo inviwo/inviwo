@@ -63,41 +63,38 @@ class IVW_MODULE_ANIMATION_API AnimationPlaySettings {
 
 public:
     AnimationPlaySettings()
-        :firstTime(0)
-        ,lastTime(0)
-        ,framesPerSecond(25)
-        ,numFrames(2)
-        ,mode(PlaybackMode::Once)
-    {}
+        : mode(PlaybackMode::Once), firstTime(0), lastTime(0), numFrames(2), framesPerSecond(25) {}
 
     virtual ~AnimationPlaySettings() = default;
 
-    ///Returns the start time of the playback window.
-    Seconds getFirstTime() const {return firstTime;}
+    /// Returns the start time of the playback window.
+    Seconds getFirstTime() const { return firstTime; }
 
-    ///Sets the start time of the playback window.
+    /// Sets the start time of the playback window.
     void setFirstTime(const Seconds timeValue) {
         firstTime = timeValue;
         if (firstTime > lastTime) std::swap(firstTime, lastTime);
-        //Update!
+        // Update!
         setNumFrames(numFrames);
     }
 
-    ///Returns the end time of the playback window.
-    Seconds getLastTime() const {return lastTime;}
+    /// Returns the end time of the playback window.
+    Seconds getLastTime() const { return lastTime; }
 
-    ///Sets the end time of the playback window.
+    /// Sets the end time of the playback window.
     void setLastTime(const Seconds timeValue) {
         lastTime = timeValue;
         if (firstTime > lastTime) std::swap(firstTime, lastTime);
-        //Update!
+        // Update!
         setNumFrames(numFrames);
     }
 
-    ///Returns the number of frames to be rendered between @firstTime and @lastTime given the current @framesPerSecond.
-    int getNumFrames() const {return numFrames;}
+    /// Returns the number of frames to be rendered between @firstTime and @lastTime given the
+    /// current @framesPerSecond.
+    int getNumFrames() const { return numFrames; }
 
-    /** Sets the number of frames to be rendered between @firstTime and @lastTime, and adjusts @framesPerSecond accordingly.
+    /** Sets the number of frames to be rendered between @firstTime and @lastTime, and adjusts
+       @framesPerSecond accordingly.
 
         The smallest @numFrames is 2, since we will visit at least
         @firstTime and @lastTime during an animation or rendering.
@@ -108,15 +105,15 @@ public:
         if (desiredFrames < 2) return false;
         numFrames = desiredFrames;
 
-        //Adjust fps
+        // Adjust fps
         const Seconds timeWindow(lastTime - firstTime);
-        framesPerSecond = timeWindow.count() / double (numFrames);
+        framesPerSecond = timeWindow.count() / double(numFrames);
 
         return true;
     }
 
-    ///Returns the frames per second.
-    double getFramesPerSecond() const {return framesPerSecond;}
+    /// Returns the frames per second.
+    double getFramesPerSecond() const { return framesPerSecond; }
 
     /** Sets the frames per second for the animation playback, and adjusts @numFrames accordingly.
 
@@ -128,45 +125,39 @@ public:
         if (desiredFPS < 1e-3) return false;
         framesPerSecond = desiredFPS;
 
-        //Adjust numFrames
+        // Adjust numFrames
         const Seconds timeWindow(lastTime - firstTime);
         numFrames = (int)ceil(timeWindow.count() * framesPerSecond);
-        if (numFrames < 2) numFrames = 2; //Only happens for small time windows.
-        
+        if (numFrames < 2) numFrames = 2;  // Only happens for small time windows.
+
         return true;
     }
 
     bool operator!=(const AnimationPlaySettings& other) const {
-        return (mode != other.mode
-             || firstTime != other.firstTime
-             || lastTime != other.lastTime
-             || numFrames != other.numFrames
-             || framesPerSecond != other.framesPerSecond
-             );
+        return (mode != other.mode || firstTime != other.firstTime || lastTime != other.lastTime ||
+                numFrames != other.numFrames || framesPerSecond != other.framesPerSecond);
     }
 
 public:
-    ///Mode of the playback
+    /// Mode of the playback
     PlaybackMode mode;
 
 protected:
-    ///Start time of the animation
+    /// Start time of the animation
     Seconds firstTime;
 
-    ///End time of the animation
+    /// End time of the animation
     Seconds lastTime;
 
-    ///Number of frames to generate between @firstTime and @lastTime
+    /// Number of frames to generate between @firstTime and @lastTime
     int numFrames;
 
-    ///Frames per second.
+    /// Frames per second.
     double framesPerSecond;
 };
 
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_ANIMATIONSTATE_H
-
+#endif  // IVW_ANIMATIONSTATE_H

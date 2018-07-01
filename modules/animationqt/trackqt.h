@@ -53,8 +53,9 @@ public:
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
 
-    Track& getTrack(); 
-    const Track& getTrack() const; 
+    Track& getTrack();
+    const Track& getTrack() const;
+
 protected:
     virtual QRectF boundingRect() const override;
 
@@ -65,9 +66,8 @@ protected:
     std::vector<std::unique_ptr<KeyframeSequenceQt>> sequences_;
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TRACKQT_H
-
+#endif  // IVW_TRACKQT_H

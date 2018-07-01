@@ -65,19 +65,19 @@ ControlKeyframeSequence& ControlKeyframeSequence::operator=(const ControlKeyfram
     if (this != &that) {
         KeyframeSequence::operator=(that);
 
-		for (size_t i = 0; i < std::min(keyframes_.size(), that.keyframes_.size()); i++) {
-			*keyframes_[i] = *that.keyframes_[i];
-		}
-		for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
-			i < that.keyframes_.size(); i++) {
-			keyframes_.push_back(std::make_unique<ControlKeyframe>(*that.keyframes_[i]));
-			notifyKeyframeAdded(keyframes_.back().get(), this);
-		}
-		while (keyframes_.size() > that.keyframes_.size()) {
-			auto key = std::move(keyframes_.back());
-			keyframes_.pop_back();
-			notifyKeyframeRemoved(key.get(), this);
-		}
+        for (size_t i = 0; i < std::min(keyframes_.size(), that.keyframes_.size()); i++) {
+            *keyframes_[i] = *that.keyframes_[i];
+        }
+        for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
+             i < that.keyframes_.size(); i++) {
+            keyframes_.push_back(std::make_unique<ControlKeyframe>(*that.keyframes_[i]));
+            notifyKeyframeAdded(keyframes_.back().get(), this);
+        }
+        while (keyframes_.size() > that.keyframes_.size()) {
+            auto key = std::move(keyframes_.back());
+            keyframes_.pop_back();
+            notifyKeyframeRemoved(key.get(), this);
+        }
     }
     return *this;
 }
@@ -89,7 +89,7 @@ ControlKeyframeSequence::~ControlKeyframeSequence() {
     }
 }
 
-void ControlKeyframeSequence::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
+void ControlKeyframeSequence::onKeyframeTimeChanged(Keyframe*, Seconds) {
     const auto startTime = keyframes_.front()->getTime();
     const auto endTime = keyframes_.back()->getTime();
 
@@ -102,18 +102,18 @@ void ControlKeyframeSequence::onKeyframeTimeChanged(Keyframe* key, Seconds oldTi
 
 AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
                                                        AnimationState state) const {
-	AnimationTimeState timeState{ to, state };
-	
-	if (state == AnimationState::Playing) {
-		for (const auto& key : keyframes_) {
-			auto t = key->getTime();
-			if (from < t && t < to || to < t && t < from) {
-				timeState = (*key)(from, to, state);
-			}
-		}
-	}
+    AnimationTimeState timeState{to, state};
 
-	return timeState;
+    if (state == AnimationState::Playing) {
+        for (const auto& key : keyframes_) {
+            auto t = key->getTime();
+            if (from < t && t < to || to < t && t < from) {
+                timeState = (*key)(from, to, state);
+            }
+        }
+    }
+
+    return timeState;
 }
 
 void ControlKeyframeSequence::add(const Keyframe& key) {
@@ -161,13 +161,13 @@ void ControlKeyframeSequence::serialize(Serializer& s) const {
 }
 
 void ControlKeyframeSequence::deserialize(Deserializer& d) {
-using Elem = std::unique_ptr<ControlKeyframe>;
-util::IndexedDeserializer<Elem>("keyframes", "keyframe")
-    .onNew([&](Elem& key) {
-        notifyKeyframeAdded(key.get(), this);
-        key->addObserver(this);
-    })
-    .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get(), this); })(d, keyframes_);
+    using Elem = std::unique_ptr<ControlKeyframe>;
+    util::IndexedDeserializer<Elem>("keyframes", "keyframe")
+        .onNew([&](Elem& key) {
+            notifyKeyframeAdded(key.get(), this);
+            key->addObserver(this);
+        })
+        .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get(), this); })(d, keyframes_);
 }
 
 }  // namespace animation

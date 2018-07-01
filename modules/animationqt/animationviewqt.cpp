@@ -106,12 +106,12 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     int gridSpacing = WidthPerSecond;
     QRectF sRect = frameRect();
     sRect.setWidth(std::max(sceneRect().width(), rect.width()));
-    
+
     qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
 
     // ---- Timeline -----
     // Background rect
-    
+
     QPen pen;
     pen.setColor(QColor(102, 102, 102));
     pen.setWidthF(LineWidth);
@@ -120,16 +120,16 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     auto timelineRect = sRect;
     timelineRect.setHeight(TimelineHeight);
     painter->fillRect(timelineRect, QColor(180, 180, 180));
-    
-    
-    QVarLengthArray<QLineF, 100> lines; // overlay grid
-    QVarLengthArray<QRectF, 100> textBoxes; // Seconds
+
+    QVarLengthArray<QLineF, 100> lines;      // overlay grid
+    QVarLengthArray<QRectF, 100> textBoxes;  // Seconds
     QFontMetrics fm(painter->font());
     int textHeightInPixels = fm.height();
-    //auto textSize = painter->boundingRect(const QRectF &rectangle, int flags, const QString &text)
+    // auto textSize = painter->boundingRect(const QRectF &rectangle, int flags, const QString
+    // &text)
     for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
         lines.append(QLineF(x, sRect.top() + textHeightInPixels, x, sRect.bottom()));
-        textBoxes.append(QRectF(x-0.5*gridSpacing, sRect.top(), gridSpacing, 30));
+        textBoxes.append(QRectF(x - 0.5 * gridSpacing, sRect.top(), gridSpacing, 30));
     }
     // Draw grid
     QPen gridPen;
@@ -138,7 +138,7 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     gridPen.setCosmetic(true);
     painter->setPen(gridPen);
     painter->drawLines(lines.data(), lines.size());
-    
+
     // Render time at each grid line
     // Little hack to render text with correct scale
     painter->save();
@@ -147,7 +147,8 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     char buf[32];
     for (const auto& p : textBoxes) {
         snprintf(buf, 32, "%.1f", p.center().x() / static_cast<double>(WidthPerSecond));
-        painter->drawText(mapFromScene(p).boundingRect(), Qt::AlignHCenter | Qt::AlignTop, QString(buf));
+        painter->drawText(mapFromScene(p).boundingRect(), Qt::AlignHCenter | Qt::AlignTop,
+                          QString(buf));
     }
     painter->restore();
 }
@@ -164,15 +165,16 @@ void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
     painter->drawLine(QLineF(x, rect.top(), x, rect.bottom()));
 }
 
-void AnimationViewQt::onStateChanged(AnimationController* controller, AnimationState oldState,
-                                     AnimationState newState) {
+void AnimationViewQt::onStateChanged(AnimationController*, AnimationState,
+                                     AnimationState) {
     this->viewport()->update();
 }
 
-void AnimationViewQt::onTimeChanged(AnimationController* controller, Seconds oldTime, Seconds newTime) {
+void AnimationViewQt::onTimeChanged(AnimationController*, Seconds,
+                                    Seconds) {
     this->viewport()->update();
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

@@ -46,7 +46,7 @@ namespace inviwo {
 namespace animation {
 
 /** \class Animation
- * Animation data structure, owns a list of tracks. 
+ * Animation data structure, owns a list of tracks.
  * Each Track usually represents a value to be animated.
  */
 class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,
@@ -64,12 +64,12 @@ public:
     Track& operator[](size_t i);
     const Track& operator[](size_t i) const;
 
-	ControlTrack& getControlTrack() { return controlTrack_; }
-	const ControlTrack& getControlTrack() const { return controlTrack_; }
+    ControlTrack& getControlTrack() { return controlTrack_; }
+    const ControlTrack& getControlTrack() const { return controlTrack_; }
 
     void add(std::unique_ptr<Track> track);
     /**
-     * Remove tracks at index i, indicating the order in which the track was added, 
+     * Remove tracks at index i, indicating the order in which the track was added,
      * not the order in which they are sorted by Track priority.
      * No range check is done.
      * Calls TrackObserver::notifyTrackRemoved after removing track.
@@ -85,22 +85,22 @@ public:
     /**
      * Remove Keyframe if matching any of the Keyframes in the tracks.
      * Calls TrackObserver::notifyKeyframeRemoved after removing Keyframe.
-     * Removes the KeyFrameSequence owning the Keyframe if it does not contain any Keyframe after removal,
-     * thereby calling KeyFrameSequenceObserver::notifyKeyframeSequenceRemoved
-     * Does nothing if no match was found.
+     * Removes the KeyFrameSequence owning the Keyframe if it does not contain any Keyframe after
+     * removal, thereby calling KeyFrameSequenceObserver::notifyKeyframeSequenceRemoved Does nothing
+     * if no match was found.
      * @note Keyframe will be deleted if removed so do not use pointer after calling this function.
      */
     void removeKeyframe(Keyframe* key);
 
-	/**
-	* Remove KeyframeSequence if matching any of the Sequences in the tracks.
-	* Calls KeyFrameSequenceObserver::notifyKeyframeSequenceRemoved for the sequence removed
-	* and TrackObserver::notifyKeyframeRemoved for every removed keyframe.
-	* Does nothing if no match was found.
-	* @note KeyframeSequences and its Keyframes will be deleted if removed so
-	* do not use pointer after calling this function.
-	*/
-	void removeKeyframeSequence(KeyframeSequence* seq);
+    /**
+     * Remove KeyframeSequence if matching any of the Sequences in the tracks.
+     * Calls KeyFrameSequenceObserver::notifyKeyframeSequenceRemoved for the sequence removed
+     * and TrackObserver::notifyKeyframeRemoved for every removed keyframe.
+     * Does nothing if no match was found.
+     * @note KeyframeSequences and its Keyframes will be deleted if removed so
+     * do not use pointer after calling this function.
+     */
+    void removeKeyframeSequence(KeyframeSequence* seq);
     /**
      * Remove all tracks. Calls TrackObserver::notifyTrackRemoved for each removed track.
      */
@@ -128,14 +128,13 @@ private:
     virtual void onFirstMoved(Track* t) override;
     virtual void onLastMoved(Track* t) override;
 
-	ControlTrack controlTrack_;
+    ControlTrack controlTrack_;
     std::vector<std::unique_ptr<Track>> tracks_;
     std::vector<Track*> priorityTracks_;
 };
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATION_H
-
+#endif  // IVW_ANIMATION_H

@@ -76,41 +76,36 @@ bool ControlTrack::isEnabled() const { return enabled_; }
 
 void ControlTrack::setEnabled(bool enabled) { enabled_ = enabled; }
 
-const ControlKeyframeSequence& ControlTrack::operator[](size_t i) const {
-    return *sequences_[i];
-}
+const ControlKeyframeSequence& ControlTrack::operator[](size_t i) const { return *sequences_[i]; }
 
-ControlKeyframeSequence& ControlTrack::operator[](size_t i) {
-    return *sequences_[i];
-}
+ControlKeyframeSequence& ControlTrack::operator[](size_t i) { return *sequences_[i]; }
 
 size_t ControlTrack::size() const { return sequences_.size(); }
-
 
 AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!enabled_ || sequences_.empty()) return {to, state};
 
-	// We only consider keyframes if they are passed over whilst playing.
-	if (state == AnimationState::Playing) {
-		auto t_beg = std::min(from.count(), to.count());
-		auto t_end = std::max(from.count(), to.count());
-		// center and radius
-		auto t_c = (t_beg + t_end) * 0.5f;
-		auto t_r = t_end - t_c;
+    // We only consider keyframes if they are passed over whilst playing.
+    if (state == AnimationState::Playing) {
+        auto t_beg = std::min(from.count(), to.count());
+        auto t_end = std::max(from.count(), to.count());
+        // center and radius
+        auto t_c = (t_beg + t_end) * 0.5f;
+        auto t_r = t_end - t_c;
 
-		for (auto& seq : sequences_) {
-			auto s_beg = seq->getFirst().getTime().count();
-			auto s_end = seq->getLast().getTime().count();
-			// center and radius
-			auto s_c = (s_beg + s_end) * 0.5f;
-			auto s_r = s_end - s_c;
+        for (auto& seq : sequences_) {
+            auto s_beg = seq->getFirst().getTime().count();
+            auto s_end = seq->getLast().getTime().count();
+            // center and radius
+            auto s_c = (s_beg + s_end) * 0.5f;
+            auto s_r = s_end - s_c;
 
-			// Check if ranges are overlapping
-			if (std::abs(t_c - s_c) < (t_r + s_r)) {
-				return (*seq)(from, to, state);
-			}
-		}
-	}
+            // Check if ranges are overlapping
+            if (std::abs(t_c - s_c) < (t_r + s_r)) {
+                return (*seq)(from, to, state);
+            }
+        }
+    }
 
     return {to, state};
 }
@@ -133,8 +128,7 @@ void ControlTrack::addTyped(const ControlKeyframeSequence& sequence) {
         throw Exception("Overlapping Sequence", IvwContext);
     }
 
-    auto inserted =
-        sequences_.insert(it, std::make_unique<ControlKeyframeSequence>(sequence));
+    auto inserted = sequences_.insert(it, std::make_unique<ControlKeyframeSequence>(sequence));
     this->notifyKeyframeSequenceAdded(this, inserted->get());
     (*inserted)->addObserver(this);
 }
@@ -161,19 +155,16 @@ Seconds ControlTrack::firstTime() const {
     }
 }
 
-
-std::vector<Seconds> ControlTrack::getAllTimes() const
-{
-	std::vector<Seconds> result;
-	for (const auto& seq : sequences_) {
-		for (size_t i = 0; i < seq->size(); i++) {
-			result.push_back((*seq)[i].getTime());
-		}
-	}
-	std::sort(result.begin(), result.end());
-	return result;
+std::vector<Seconds> ControlTrack::getAllTimes() const {
+    std::vector<Seconds> result;
+    for (const auto& seq : sequences_) {
+        for (size_t i = 0; i < seq->size(); i++) {
+            result.push_back((*seq)[i].getTime());
+        }
+    }
+    std::sort(result.begin(), result.end());
+    return result;
 }
-
 
 void ControlTrack::onKeyframeSequenceMoved(KeyframeSequence* key) {
     std::stable_sort(sequences_.begin(), sequences_.end(), [](const auto& a, const auto& b) {

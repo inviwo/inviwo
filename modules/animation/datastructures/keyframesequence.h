@@ -152,8 +152,6 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-
-
 private:
     void addKeyFrame(std::unique_ptr<Key> key);
 
@@ -230,7 +228,7 @@ KeyframeSequenceTyped<Key>::~KeyframeSequenceTyped() {
 }
 
 template <typename Key>
-void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
+void KeyframeSequenceTyped<Key>::onKeyframeTimeChanged(Keyframe* /*key*/, Seconds /*oldTime*/) {
     const auto startTime = keyframes_.front()->getTime();
     const auto endTime = keyframes_.back()->getTime();
 
@@ -258,10 +256,10 @@ void KeyframeSequenceTyped<Key>::setInterpolation(std::unique_ptr<Interpolation>
 }
 
 template <typename Key>
-auto KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to) const ->
+auto KeyframeSequenceTyped<Key>::operator()(Seconds /*from*/, Seconds to) const ->
     typename Key::value_type {
     if (interpolation_) {
-        return (*interpolation_)(keyframes_, to , easing_);
+        return (*interpolation_)(keyframes_, to, easing_);
     } else {
         return keyframes_.front()->getValue();
     }

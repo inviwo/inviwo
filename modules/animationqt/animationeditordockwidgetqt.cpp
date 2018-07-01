@@ -66,7 +66,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     : InviwoDockWidget(QString(widgetName.c_str()), parent, "AnimationEditorWidget")
     , controller_(controller) {
 
-
     resize(QSize(1200, 400));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
@@ -88,7 +87,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
 
     // Settings for the controller
     auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
-    for(auto pThisProperty : controller_.getProperties()) {
+    for (auto pThisProperty : controller_.getProperties()) {
         auto propWidget = factory->create(pThisProperty);
         auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());
         propWidgetQt->initState();
@@ -102,7 +101,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     leftScroll->setWidget(leftPanelContent);
     leftScroll->setWidgetResizable(true);
 
-    //Toolbar with play controls
+    // Toolbar with play controls
     QToolBar* toolBar = new QToolBar();
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
@@ -112,8 +111,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     leftPanel_->setContextMenuPolicy(Qt::NoContextMenu);
     leftPanel_->addToolBar(toolBar);
     leftPanel_->setCentralWidget(leftScroll);
-
-
 
     // Entire mid part
     animationEditor_ = std::make_unique<AnimationEditorQt>(controller_);
@@ -220,17 +217,17 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         });
     }
 
-	{
-		auto end = toolBar->addAction(
-			QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
-		end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-		end->setToolTip("To End");
-		leftPanel_->addAction(end);
-		connect(end, &QAction::triggered, [&]() {
-			auto endTime = controller_.getAnimation()->lastTime();
-			controller_.eval(controller_.getCurrentTime(), endTime);
-		});
-	}
+    {
+        auto end = toolBar->addAction(
+            QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
+        end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        end->setToolTip("To End");
+        leftPanel_->addAction(end);
+        connect(end, &QAction::triggered, [&]() {
+            auto endTime = controller_.getAnimation()->lastTime();
+            controller_.eval(controller_.getCurrentTime(), endTime);
+        });
+    }
 
     toolBar->addSeparator();
     controller_.AnimationControllerObservable::addObserver(this);
@@ -238,8 +235,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
 
 AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;
 
-void AnimationEditorDockWidgetQt::onStateChanged(AnimationController* controller,
-                                                 AnimationState prevState,
+void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*,
+                                                 AnimationState,
                                                  AnimationState newState) {
     if (newState == AnimationState::Playing) {
         QSignalBlocker block(btnPlayPause_);

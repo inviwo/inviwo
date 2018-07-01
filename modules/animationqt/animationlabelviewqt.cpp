@@ -52,14 +52,12 @@ namespace animation {
 
 class AnimationLabelModelQt : public QStandardItemModel {
 public:
-    AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) {
-        setColumnCount(1);
-    }
+    AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) { setColumnCount(1); }
 
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const override {
+    virtual Qt::ItemFlags flags(const QModelIndex&) const override {
         return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled;
     }
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override {
         if (role == Qt::SizeHintRole) {
             return QSize(200, 31);
         }
@@ -82,19 +80,21 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     animation.addObserver(this);
     model_ = new AnimationLabelModelQt(this);
 
-	// Add Control Track
-	{
-		QList<QStandardItem*> row;
-		auto item = new QStandardItem(QString::fromStdString(animation.getControlTrack().getName()));
-		item->setData(QVariant::fromValue(static_cast<void*>(&animation.getControlTrack())), Qt::UserRole + 1);
-                row.append(item);
-                QWidget* widget = new TrackControlsWidgetQt(item, controller_);
-                model_->appendRow(row);
-                auto index = model_->indexFromItem(item);
-                setIndexWidget(index, widget);
-	}
+    // Add Control Track
+    {
+        QList<QStandardItem*> row;
+        auto item =
+            new QStandardItem(QString::fromStdString(animation.getControlTrack().getName()));
+        item->setData(QVariant::fromValue(static_cast<void*>(&animation.getControlTrack())),
+                      Qt::UserRole + 1);
+        row.append(item);
+        QWidget* widget = new TrackControlsWidgetQt(item, controller_);
+        model_->appendRow(row);
+        auto index = model_->indexFromItem(item);
+        setIndexWidget(index, widget);
+    }
 
-	// Add Other Tracks
+    // Add Other Tracks
     for (size_t i = 0; i < animation.size(); ++i) {
         auto& track = animation[i];
         QList<QStandardItem*> row;
@@ -114,32 +114,24 @@ void AnimationLabelViewQt::mousePressEvent(QMouseEvent* e) {
     // Process the Event first, so the correct index is selected
     QListView::mousePressEvent(e);
     // Deselect all processors first
-    util::setSelected(
-        util::getInviwoApplication()->getProcessorNetwork()->getProcessors(), false);
-    for (auto index: selectedIndexes())
-    {
+    util::setSelected(util::getInviwoApplication()->getProcessorNetwork()->getProcessors(), false);
+    for (auto index : selectedIndexes()) {
         auto item = model_->itemFromIndex(index)->data().value<void*>();
         Track* track = reinterpret_cast<Track*>(item);
         BasePropertyTrack* propertytrack = dynamic_cast<BasePropertyTrack*>(track);
         // Might not have been a BasePropertyTrack
-        if (propertytrack)
-        {
+        if (propertytrack) {
             auto property = propertytrack->getProperty();
             // Select the processor the selected property belongs to
             Processor* processor = property->getOwner()->getProcessor();
-            util::setSelected({ processor }, true);
+            util::setSelected({processor}, true);
         }
-
     }
 }
 
-void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) {
-    QListView::mouseMoveEvent(e);
-}
+void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) { QListView::mouseMoveEvent(e); }
 
-void AnimationLabelViewQt::mouseReleaseEvent(QMouseEvent* e) {
-    QListView::mouseReleaseEvent(e);
-}
+void AnimationLabelViewQt::mouseReleaseEvent(QMouseEvent* e) { QListView::mouseReleaseEvent(e); }
 
 void AnimationLabelViewQt::onTrackAdded(Track* track) {
     QList<QStandardItem*> row;
@@ -163,6 +155,6 @@ void AnimationLabelViewQt::onTrackRemoved(Track* track) {
     }
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

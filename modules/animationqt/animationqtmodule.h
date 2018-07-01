@@ -44,12 +44,13 @@ class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule {
 public:
     AnimationQtModule(InviwoApplication* app);
     virtual ~AnimationQtModule();
+
 private:
     // Keep references to added widgets so that they can be removed in destructor
     std::unique_ptr<animation::AnimationEditorDockWidgetQt> editor_;
-    std::unique_ptr<QMenu> menu_; // Show/hide animation editor 
+    std::unique_ptr<QMenu> menu_;  // Show/hide animation editor
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONQTMODULE_H
+#endif  // IVW_ANIMATIONQTMODULE_H

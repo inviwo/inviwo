@@ -43,7 +43,6 @@ namespace inviwo {
 
 namespace animation {
 
-
 /** \class Interpolation
  *	Interface for keyframe interpolations.
  */
@@ -79,13 +78,13 @@ public:
     virtual void deserialize(Deserializer& d) override = 0;
 
     // Override this function to interpolate between key frames
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t, easing::EasingType easing /*= easing::Linear*/) const ->
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t,
+                            easing::EasingType easing /*= easing::Linear*/) const ->
         typename Key::value_type = 0;
 };
 
-} // namespace animation
+}  // namespace animation
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAME_INTERPOLATION_H
-
+#endif  // IVW_KEYFRAME_INTERPOLATION_H

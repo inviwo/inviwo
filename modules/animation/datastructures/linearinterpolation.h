@@ -35,7 +35,6 @@
 
 #include <modules/animation/datastructures/interpolation.h>
 
-
 #include <algorithm>
 
 namespace inviwo {
@@ -69,8 +68,8 @@ public:
     /*
      * Returns linear interpolation of keyframe values at time t.
      */
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t, easing::EasingType easing) const ->
-        typename Key::value_type override {
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t,
+                            easing::EasingType easing) const -> typename Key::value_type override {
         auto it = std::upper_bound(
             keys.begin(), keys.end(), t,
             [](const auto& time, const auto& key) { return time < key->getTime(); });
@@ -81,8 +80,7 @@ public:
         const auto& v2 = (*it)->getValue();
         const auto& t2 = (*it)->getTime();
 
-        return glm::mix(v1, v2,
-                        Easing::Ease((t - t1) / (t2 - t1), easing));
+        return glm::mix(v1, v2, Easing::Ease((t - t1) / (t2 - t1), easing));
     }
 };
 
@@ -103,9 +101,8 @@ void LinearInterpolation<Key>::deserialize(Deserializer& d) {
     }
 }
 
-} // namespace animation
+}  // namespace animation
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_LINEAR_INTERPOLATION_H
-
+#endif  // IVW_LINEAR_INTERPOLATION_H

@@ -58,15 +58,15 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
     auto& animation = *controller_.getAnimation();
     animation.addObserver(this);
 
-	// Add Control track
-	{
-		auto trackQt = std::make_unique<TrackQt>(animation.getControlTrack());
-		trackQt->setPos(0, TimelineHeight + TrackHeight * 0.5);
-		this->addItem(trackQt.get());
-		tracks_.push_back(std::move(trackQt));
-	}
+    // Add Control track
+    {
+        auto trackQt = std::make_unique<TrackQt>(animation.getControlTrack());
+        trackQt->setPos(0, TimelineHeight + TrackHeight * 0.5);
+        this->addItem(trackQt.get());
+        tracks_.push_back(std::move(trackQt));
+    }
 
-	// Add Property tracks
+    // Add Property tracks
     for (size_t i = 0; i < animation.size(); ++i) {
         auto trackQt = std::make_unique<TrackQt>(animation[i]);
         trackQt->setPos(0, TimelineHeight + TrackHeight * (i + 1) + TrackHeight * 0.5);
@@ -86,7 +86,8 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
         pDropIndicatorLine->setVisible(false);
     }
 
-    //Add drag&drop hint - this one still has a number of issue. It should probably not be in the scene, not be affected by zoom.
+    // Add drag&drop hint - this one still has a number of issue. It should probably not be in the
+    // scene, not be affected by zoom.
     pDropIndicatorText = new QGraphicsSimpleTextItem(pDropIndicatorLine);
     if (pDropIndicatorText) {
         pDropIndicatorText->setPos(0, TimelineHeight);
@@ -132,74 +133,74 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
             if (auto keyqt = qgraphicsitem_cast<KeyframeQt*>(elem)) {
                 auto& animation = *controller_.getAnimation();
                 animation.removeKeyframe(&(keyqt->getKeyframe()));
+            } else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceQt*>(elem)) {
+                auto& animation = *controller_.getAnimation();
+                animation.removeKeyframeSequence(&(seqqt->getKeyframeSequence()));
             }
-			else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceQt*>(elem)) {
-				auto& animation = *controller_.getAnimation();
-				animation.removeKeyframeSequence(&(seqqt->getKeyframeSequence()));
-			}
         }
     } else if (k == Qt::Key_Space) {
-        switch(controller_.getState()) {
+        switch (controller_.getState()) {
             case AnimationState::Paused:
                 controller_.play();
                 break;
             case AnimationState::Playing:
                 controller_.pause();
                 break;
-        } 
+        }
     }
 }
 
-void AnimationEditorQt::dragEnterEvent(QGraphicsSceneDragDropEvent *event) {
+void AnimationEditorQt::dragEnterEvent(QGraphicsSceneDragDropEvent* event) {
     // Only accept PropertyWidgets from a processor
     auto source = dynamic_cast<PropertyWidget*>(event->source());
-    event->setAccepted(source != nullptr && source->getProperty() != nullptr
-                       && source->getProperty()->getOwner()->getProcessor() != nullptr);
+    event->setAccepted(source != nullptr && source->getProperty() != nullptr &&
+                       source->getProperty()->getOwner()->getProcessor() != nullptr);
 }
 
-void AnimationEditorQt::dragLeaveEvent(QGraphicsSceneDragDropEvent * event) {
+void AnimationEditorQt::dragLeaveEvent(QGraphicsSceneDragDropEvent*) {
     if (pDropIndicatorLine) pDropIndicatorLine->setVisible(false);
 }
 
-void AnimationEditorQt::dragMoveEvent(QGraphicsSceneDragDropEvent *event) {
+void AnimationEditorQt::dragMoveEvent(QGraphicsSceneDragDropEvent* event) {
     // Must override for drop events to occur. Do not call QGraphicsScene::dragMoveEvent
 
-    //Indicate position
+    // Indicate position
     if (pDropIndicatorLine) {
         QGraphicsView* pView = views().empty() ? nullptr : views().first();
-        const qreal snapX = getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
+        const qreal snapX =
+            getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
         pDropIndicatorLine->setLine(snapX, 0, snapX, pView ? pView->height() : height());
         pDropIndicatorLine->setVisible(true);
     }
 
-    //Indicate insertion mode: keyframe or keyframe sequence.
+    // Indicate insertion mode: keyframe or keyframe sequence.
     if (pDropIndicatorText) {
         QString Text = (event->modifiers() & Qt::ControlModifier)
-                        ? "Insert new keyframe sequence (Alt for non-snapping time)"
-                        : "Insert new keyframe (Ctrl for sequence, Alt for non-snapping time)";
+                           ? "Insert new keyframe sequence (Alt for non-snapping time)"
+                           : "Insert new keyframe (Ctrl for sequence, Alt for non-snapping time)";
 
         pDropIndicatorText->setText(Text);
         pDropIndicatorText->setVisible(true);
     }
 
-
     event->accept();
 }
-    
-void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent *event) {
 
-    //Switch off drag&drop indicator
+void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
+
+    // Switch off drag&drop indicator
     if (pDropIndicatorLine) pDropIndicatorLine->setVisible(false);
 
-    //Drop it into the scene
+    // Drop it into the scene
     auto source = dynamic_cast<PropertyWidget*>(event->source());
     if (source) {
         auto property = source->getProperty();
         auto app = controller_.getInviwoApplication();
 
-        //Get time
+        // Get time
         QGraphicsView* pView = views().empty() ? nullptr : views().first();
-        const qreal snapX = getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
+        const qreal snapX =
+            getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
         const qreal time = snapX / static_cast<double>(WidthPerSecond);
 
         // Use AnimationManager for adding keyframe or keyframe sequence.
@@ -210,20 +211,22 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent *event) {
             am.addKeyframeCallback(property, Seconds(time));
         }
 
-        //Thanks
+        // Thanks
         event->acceptProposedAction();
     }
 }
 
 void AnimationEditorQt::updateSceneRect() {
-    setSceneRect(0.0, 0.0, controller_.getAnimation()->lastTime().count() * WidthPerSecond,
-                 controller_.getAnimation()->size() * TrackHeight + TimelineHeight);
+    setSceneRect(
+        0.0, 0.0,
+        static_cast<double>(controller_.getAnimation()->lastTime().count() * WidthPerSecond),
+        static_cast<double>(controller_.getAnimation()->size() * TrackHeight + TimelineHeight));
 }
 
 void AnimationEditorQt::onFirstMoved() { updateSceneRect(); }
 
 void AnimationEditorQt::onLastMoved() { updateSceneRect(); }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

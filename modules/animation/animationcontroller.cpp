@@ -39,14 +39,7 @@ namespace inviwo {
 namespace animation {
 
 AnimationController::AnimationController(Animation* animation, InviwoApplication* app)
-    : animation_(animation)
-    , app_(app)
-    , state_(AnimationState::Paused)
-    , currentTime_(0)
-    , deltaTime_(Seconds(1.0 / 60.0))
-    , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_),
-             [this] { if (state_ == AnimationState::Rendering) tickRender(); else tick(); }}
-    , propPlayOptions("PlayOptions", "Play Settings")
+    : propPlayOptions("PlayOptions", "Play Settings")
     , propPlayFirstLastTimeOption("PlayFirstLastTimeOption", "Time")
     , propPlayFirstLastTime("PlayFirstLastTime", "Window", 0, 10, 0, 1e5, 1)
     , propPlayFramesPerSecond("PlayFramesPerSecond", "Frames per Second")
@@ -57,23 +50,31 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     , propRenderSizeOptions("RenderSizeOptions", "Size")
     , propRenderSize("RenderSize", "Pixels", ivec2(1024), ivec2(1), ivec2(20000), ivec2(256))
     , propRenderSizeAspectRatio("RenderSizeAspectRatio", "Aspect Ratio")
-    , propRenderNumFrames("RenderNumFrames", "# Frames", 100, 2, 1e6)
     , propRenderLocationDir("RenderLocationDir", "Directory")
     , propRenderLocationBaseName("RenderLocationBaseName", "Base Name")
     , propRenderImageExtension("RenderImageExtension", "Type")
+    , propRenderNumFrames("RenderNumFrames", "# Frames", 100, 2, 1000000)
     , propRenderAction("RenderAction", "Render")
     , propRenderActionStop("RenderActionStop", "Stop")
-	, propControlOptions("ControlOptions", "Control Track")
-	, propControlInsertPauseFrame("ControlInsertPauseFrame", "Insert Pause-Frame") {
+    , propControlOptions("ControlOptions", "Control Track")
+    , propControlInsertPauseFrame("ControlInsertPauseFrame", "Insert Pause-Frame")
+    , animation_(animation)
+    , app_(app)
+    , state_(AnimationState::Paused)
+    , currentTime_(0)
+    , deltaTime_(Seconds(1.0 / 60.0))
+    , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_), [this] {
+                 if (state_ == AnimationState::Rendering)
+                     tickRender();
+                 else
+                     tick();
+             }} {
 
-    ///////////////////////////
     // Play Settings
-
     propPlayFirstLastTimeOption.addOption("FullTimeWindow", "Play full animation", 0);
     propPlayFirstLastTimeOption.addOption("UserTimeWindow", "Selected time window", 1);
-    propPlayFirstLastTimeOption.onChange([&](){
-        propPlayFirstLastTime.setVisible(propPlayFirstLastTimeOption.get() == 1);
-    });
+    propPlayFirstLastTimeOption.onChange(
+        [&]() { propPlayFirstLastTime.setVisible(propPlayFirstLastTimeOption.get() == 1); });
     propPlayFirstLastTimeOption.setCurrentStateAsDefault();
 
     propPlayFirstLastTime.setSemantics(PropertySemantics::Text);
@@ -84,8 +85,7 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     propPlayMode.addOption("Once", "Play once", PlaybackMode::Once);
     propPlayMode.addOption("Loop", "Loop animation", PlaybackMode::Loop);
     propPlayMode.addOption("Swing", "Swing animation", PlaybackMode::Swing);
-    //propPlayMode.onChange([&](){
-    //});
+
     propPlayMode.setCurrentStateAsDefault();
 
     propPlayOptions.addProperty(propPlayFirstLastTimeOption);
@@ -94,15 +94,11 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     propPlayOptions.addProperty(propPlayMode);
     addProperty(propPlayOptions);
 
-
-    ///////////////////////////
     // Rendering Settings
-
     propRenderFirstLastTimeOption.addOption("FullTimeWindow", "Render full animation", 0);
     propRenderFirstLastTimeOption.addOption("UserTimeWindow", "Selected time window", 1);
-    propRenderFirstLastTimeOption.onChange([&](){
-        propRenderFirstLastTime.setVisible(propRenderFirstLastTimeOption.get() == 1);
-    });
+    propRenderFirstLastTimeOption.onChange(
+        [&]() { propRenderFirstLastTime.setVisible(propRenderFirstLastTimeOption.get() == 1); });
     propRenderFirstLastTimeOption.setCurrentStateAsDefault();
 
     propRenderFirstLastTime.setSemantics(PropertySemantics::Text);
@@ -112,7 +108,7 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     propRenderSizeOptions.addOption("720p", "720p for all canvases", 1);
     propRenderSizeOptions.addOption("1080p", "1080p for all canvases", 2);
     propRenderSizeOptions.addOption("CustomSize", "User-defined resolution for all canvases", 3);
-    propRenderSizeOptions.onChange([&](){
+    propRenderSizeOptions.onChange([&]() {
         propRenderSize.setVisible(propRenderSizeOptions.get() == 3);
         propRenderSizeAspectRatio.setVisible(propRenderSizeOptions.get() > 0);
     });
@@ -122,18 +118,20 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     propRenderSize.setVisible(propRenderSizeOptions.get() == 3);
 
     propRenderSizeAspectRatio.addOption("Ignore", "Ignore aspect ratio", 0);
-    propRenderSizeAspectRatio.addOption("KeepInside", "Keep aspect ratio within given resolution", 1);
-    propRenderSizeAspectRatio.addOption("KeepEnlarge", "Keep aspect ratio exceeding given resolution", 2);
+    propRenderSizeAspectRatio.addOption("KeepInside", "Keep aspect ratio within given resolution",
+                                        1);
+    propRenderSizeAspectRatio.addOption("KeepEnlarge",
+                                        "Keep aspect ratio exceeding given resolution", 2);
     propRenderSizeAspectRatio.set(1);
     propRenderSizeAspectRatio.setCurrentStateAsDefault();
     propRenderSizeAspectRatio.setVisible(propRenderSizeOptions.get() > 0);
 
     propRenderNumFrames.setSemantics(PropertySemantics::Text);
 
-    //Add all supported image extensions to option property
+    // Add all supported image extensions to option property
     auto factory = app_->getDataWriterFactory();
     if (factory) {
-        std::string defaultExt; // save first writer extension matching "png" to be used as default
+        std::string defaultExt;  // save first writer extension matching "png" to be used as default
         for (auto ext : factory->getExtensionsForType<Layer>()) {
             propRenderImageExtension.addOption(ext.toString(), ext.toString());
             if (defaultExt.empty() && ext.extension_ == "png") {
@@ -146,14 +144,10 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     }
     propRenderImageExtension.setCurrentStateAsDefault();
 
-    propRenderAction.onChange([&](){
-        render();
-    });
+    propRenderAction.onChange([&]() { render(); });
     propRenderAction.setVisible(state_ != AnimationState::Rendering);
 
-    propRenderActionStop.onChange([&](){
-        pause();
-    });
+    propRenderActionStop.onChange([&]() { pause(); });
     propRenderActionStop.setVisible(state_ == AnimationState::Rendering);
 
     propRenderOptions.addProperty(propRenderFirstLastTimeOption);
@@ -170,18 +164,16 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     propRenderOptions.setCollapsed(true);
     addProperty(propRenderOptions);
 
-	///////////////////////////
-	// Control Track
+    // Control Track
+    propControlInsertPauseFrame.onChange([&]() {
+        auto time = getCurrentTime();
+        ControlKeyframeSequence seq;
+        seq.add(ControlKeyframe(time, ControlAction::Pause));
+        getAnimation()->getControlTrack().addTyped(seq);
+    });
 
-	propControlInsertPauseFrame.onChange([&]() {
-		auto time = getCurrentTime();
-		ControlKeyframeSequence seq;
-		seq.add(ControlKeyframe(time, ControlAction::Pause));
-		getAnimation()->getControlTrack().addTyped(seq);
-	});
-
-	propControlOptions.addProperty(propControlInsertPauseFrame);
-	addProperty(propControlOptions);
+    propControlOptions.addProperty(propControlInsertPauseFrame);
+    addProperty(propControlOptions);
 }
 
 AnimationController::~AnimationController() = default;
@@ -189,14 +181,14 @@ AnimationController::~AnimationController() = default;
 void AnimationController::setState(AnimationState newState) {
     if (state_ == newState) return;
 
-    //We will be switching state: clean after rendering
+    // We will be switching state: clean after rendering
     if (state_ == AnimationState::Rendering) afterRender();
 
-    //Switch state
+    // Switch state
     auto oldState = state_;
     state_ = newState;
 
-    //Act on new state
+    // Act on new state
     switch (newState) {
         case AnimationState::Playing: {
             timer_.start();
@@ -217,7 +209,6 @@ void AnimationController::setState(AnimationState newState) {
     notifyStateChanged(this, oldState, state_);
 }
 
-
 void AnimationController::setPlaybackSettings(const AnimationPlaySettings& newSettings) {
     if (settingsPlay_ != newSettings) {
         auto oldSettings = settingsPlay_;
@@ -236,18 +227,21 @@ void AnimationController::setTime(Seconds time) {
     }
 }
 
-void AnimationController::play() {
-    setState(AnimationState::Playing);
-}
+void AnimationController::play() { setState(AnimationState::Playing); }
 
 void AnimationController::render() {
-    //Gather rendering info
-    renderState_.firstTime = (propRenderFirstLastTimeOption.get() == 0) ? animation_->firstTime() : Seconds(propRenderFirstLastTime.get()[0]);
-    renderState_.lastTime = (propRenderFirstLastTimeOption.get() == 0) ? animation_->lastTime() : Seconds(propRenderFirstLastTime.get()[1]);
+    // Gather rendering info
+    renderState_.firstTime = (propRenderFirstLastTimeOption.get() == 0)
+                                 ? animation_->firstTime()
+                                 : Seconds(propRenderFirstLastTime.get()[0]);
+    renderState_.lastTime = (propRenderFirstLastTimeOption.get() == 0)
+                                ? animation_->lastTime()
+                                : Seconds(propRenderFirstLastTime.get()[1]);
     renderState_.numFrames = propRenderNumFrames.get();
     if (renderState_.numFrames < 2) renderState_.numFrames = 2;
-    renderState_.currentFrame = -1; //first run, see below in tickRender()
-    renderState_.baseFileName = propRenderLocationDir.get() + "/" + propRenderLocationBaseName.get();
+    renderState_.currentFrame = -1;  // first run, see below in tickRender()
+    renderState_.baseFileName =
+        propRenderLocationDir.get() + "/" + propRenderLocationBaseName.get();
     // - digits of the frame counter
     renderState_.digits = 0;
     int number(renderState_.numFrames - 1);
@@ -255,95 +249,97 @@ void AnimationController::render() {
         number /= 10;
         renderState_.digits++;
     }
-    // - use at least 4 digits, so we nicely overwrite the files from a previous test rendering with less frames
+    // - use at least 4 digits, so we nicely overwrite the files from a previous test rendering with
+    // less frames
     renderState_.digits = std::max(renderState_.digits, 4);
 
-    //Get all active canvases
+    // Get all active canvases
     ProcessorNetwork* pNetwork = app_->getProcessorNetwork();
     std::vector<CanvasProcessor*> AllCanvases = pNetwork->getProcessorsByType<CanvasProcessor>();
-    std::vector<CanvasProcessor*> ActiveCanvases;
-    ActiveCanvases.reserve(AllCanvases.size());
-    for (auto ThisCanvas : AllCanvases) {
-        if (ThisCanvas->isSink()) ActiveCanvases.push_back(ThisCanvas);
+    std::vector<CanvasProcessor*> activeCanvases;
+    activeCanvases.reserve(AllCanvases.size());
+    for (auto thisCanvas : AllCanvases) {
+        if (thisCanvas->isSink()) activeCanvases.push_back(thisCanvas);
     }
 
-    //Canvas indication replacement in filename
-    renderState_.canvasIndicator = ActiveCanvases.size() > 1 ? "_UPN_" : "";
+    // Canvas indication replacement in filename
+    renderState_.canvasIndicator = activeCanvases.size() > 1 ? "_UPN_" : "";
 
-    //Alter the settings of the canvases, so we can shoot in the right resolution
+    // Alter the settings of the canvases, so we can shoot in the right resolution
     // - This will be restored later
     renderState_.origCanvasSettings.clear();
     if (propRenderSizeOptions.get() != 0) {
-        renderState_.origCanvasSettings.resize(ActiveCanvases.size());
-        //For each active canvas
-        for (auto ThisCanvas : ActiveCanvases) {
+        renderState_.origCanvasSettings.resize(activeCanvases.size());
+        // For each active canvas
+        for (auto thisCanvas : activeCanvases) {
 
-            //Save original state
+            // Save original state
             renderState_.origCanvasSettings.emplace_back();
-            TRenderCanvasSize& ThisSettings = renderState_.origCanvasSettings.back();
-            ThisSettings.enableCustomInputDimensions_ = ThisCanvas->enableCustomInputDimensions_.get();
-            ThisSettings.customInputDimensions_ = ThisCanvas->customInputDimensions_.get();
-            ThisSettings.keepAspectRatio_ = ThisCanvas->keepAspectRatio_.get();
-            ThisSettings.canvasIdentifier = ThisCanvas->getIdentifier();
+            TRenderCanvasSize& thisSettings = renderState_.origCanvasSettings.back();
+            thisSettings.enableCustomInputDimensions_ =
+                thisCanvas->enableCustomInputDimensions_.get();
+            thisSettings.customInputDimensions_ = thisCanvas->customInputDimensions_.get();
+            thisSettings.keepAspectRatio_ = thisCanvas->keepAspectRatio_.get();
+            thisSettings.canvasIdentifier = thisCanvas->getIdentifier();
 
-            //Calculate new dimensions
+            // Calculate new dimensions
             // - dimensions of the canvas widget
-            const ivec2& ActualDims = ThisCanvas->dimensions_.get();
+            const dvec2& actualDims = thisCanvas->dimensions_.get();
             // - basic dimensions desired
-            ivec2 DesiredDims;
+            ivec2 desiredDims{0};
             switch (propRenderSizeOptions.get()) {
                 case 1: {
-                    DesiredDims = ivec2(1280, 720);
+                    desiredDims = ivec2(1280, 720);
                     break;
                 }
                 case 2: {
-                    DesiredDims = ivec2(1920, 1080);
+                    desiredDims = ivec2(1920, 1080);
                     break;
                 }
                 case 3: {
-                    DesiredDims = propRenderSize.get();
+                    desiredDims = propRenderSize.get();
                     break;
                 }
-                default: {
-                    ivwAssert(false, "Should not happen.");
-                }
+                default: { ivwAssert(false, "Should not happen."); }
             }
             // - adjust basic dimensions to the aspect ratio
             if (propRenderSizeAspectRatio.get() > 0) {
-                const double WidthFactor = double(DesiredDims.x) / double(ActualDims.x);
-                const double HeightFactor = double(DesiredDims.y) / double(ActualDims.y);
-                //1 - image is at most the given resolution, or smaller
-                //2 - image is at least the given resolution, or larger
-                const double Factor = (propRenderSizeAspectRatio.get() == 1) ? std::min(WidthFactor, HeightFactor) : std::max(WidthFactor, HeightFactor);
-                DesiredDims.x = Factor * ActualDims.x;
-                DesiredDims.y = Factor * ActualDims.y;
+                const double widthFactor = double(desiredDims.x) / actualDims.x;
+                const double heightFactor = double(desiredDims.y) / actualDims.y;
+                // 1 - image is at most the given resolution, or smaller
+                // 2 - image is at least the given resolution, or larger
+                const double factor = (propRenderSizeAspectRatio.get() == 1)
+                                          ? std::min(widthFactor, heightFactor)
+                                          : std::max(widthFactor, heightFactor);
+                desiredDims = static_cast<ivec2>(factor * actualDims);
             }
 
-            //Set new state
-            ThisCanvas->enableCustomInputDimensions_.set(true);
-            ThisCanvas->keepAspectRatio_.set(false);
-            ThisCanvas->customInputDimensions_.set(DesiredDims);
+            // Set new state
+            thisCanvas->enableCustomInputDimensions_.set(true);
+            thisCanvas->keepAspectRatio_.set(false);
+            thisCanvas->customInputDimensions_.set(desiredDims);
         }
     }
 
-    //Switch Buttons
+    // Switch Buttons
     propRenderAction.setVisible(false);
     propRenderActionStop.setVisible(true);
 
-    //Go for it!
+    // Go for it!
     setState(AnimationState::Rendering);
 }
 
 void AnimationController::afterRender() {
-    //Switch Buttons
+    // Switch Buttons
     propRenderActionStop.setVisible(false);
     propRenderAction.setVisible(true);
 
-    //Restore original state of Canvases
+    // Restore original state of Canvases
     ProcessorNetwork* pNetwork = app_->getProcessorNetwork();
     if (!pNetwork) return;
     for (auto& origSettings : renderState_.origCanvasSettings) {
-        CanvasProcessor* pCanvas = dynamic_cast<CanvasProcessor*>(pNetwork->getProcessorByIdentifier(origSettings.canvasIdentifier));
+        CanvasProcessor* pCanvas = dynamic_cast<CanvasProcessor*>(
+            pNetwork->getProcessorByIdentifier(origSettings.canvasIdentifier));
         if (pCanvas) {
             pCanvas->enableCustomInputDimensions_.set(origSettings.enableCustomInputDimensions_);
             pCanvas->keepAspectRatio_.set(origSettings.keepAspectRatio_);
@@ -352,13 +348,11 @@ void AnimationController::afterRender() {
     }
 }
 
-void AnimationController::pause() {
-    setState(AnimationState::Paused);
-}
+void AnimationController::pause() { setState(AnimationState::Paused); }
 
 void AnimationController::stop() {
     setState(AnimationState::Paused);
-	deltaTime_ = Seconds(fabs(deltaTime_.count())); //Make sure we play forward.
+    deltaTime_ = Seconds(fabs(deltaTime_.count()));  // Make sure we play forward.
     eval(currentTime_, Seconds(0));
 }
 
@@ -374,17 +368,17 @@ void AnimationController::tick() {
     // muster.
     auto newTime = currentTime_ + deltaTime_;
 
-    //Get active time window for playing
+    // Get active time window for playing
     // - init with sub-window, overwrite with full window if necessary
     Seconds firstTime = Seconds(propPlayFirstLastTime.get()[0]);
     Seconds lastTime = Seconds(propPlayFirstLastTime.get()[1]);
     if (propPlayFirstLastTimeOption.get() == 0) {
-        //Full animation window
+        // Full animation window
         firstTime = animation_->firstTime();
         lastTime = animation_->lastTime();
     }
 
-    //Ping at the end of time
+    // Ping at the end of time
     if (newTime > lastTime) {
         switch (propPlayMode.get()) {
             case PlaybackMode::Once: {
@@ -406,7 +400,7 @@ void AnimationController::tick() {
         }
     }
 
-    //Pong at the beginning of time
+    // Pong at the beginning of time
     if (newTime < firstTime) {
         switch (propPlayMode.get()) {
             case PlaybackMode::Once: {
@@ -438,34 +432,36 @@ void AnimationController::tickRender() {
         return;
     }
 
-    //Save all active canvases from last rendering tick:
+    // Save all active canvases from last rendering tick:
     // Apparently, we need to be outside of tickRender() to let the system refresh its state
-    // The first call to tickRender() is done with renderState_.currentFrame == -1 to bring the system to a proper state
+    // The first call to tickRender() is done with renderState_.currentFrame == -1 to bring the
+    // system to a proper state
     // - generate filename pattern
     if (renderState_.currentFrame >= 0) {
         std::stringstream fileNamePattern;
-        fileNamePattern << propRenderLocationBaseName.get()
-            << renderState_.canvasIndicator
-            << std::setfill('0') << std::setw(renderState_.digits) << renderState_.currentFrame;
+        fileNamePattern << propRenderLocationBaseName.get() << renderState_.canvasIndicator
+                        << std::setfill('0') << std::setw(renderState_.digits)
+                        << renderState_.currentFrame;
         auto ext = FileExtension::createFileExtensionFromString(propRenderImageExtension.get());
         // - save active canvases
         util::saveAllCanvases(app_->getProcessorNetwork(), propRenderLocationDir.get(),
                               fileNamePattern.str(), ext.extension_, true);
     }
 
-    //Next!
+    // Next!
     renderState_.currentFrame++;
 
-    //Are we finished?
+    // Are we finished?
     if (renderState_.currentFrame >= renderState_.numFrames) {
-    setState(AnimationState::Paused);
+        setState(AnimationState::Paused);
         return;
     }
 
-    //We render with equidistant steps
+    // We render with equidistant steps
     Seconds newTime = renderState_.firstTime;
     if (renderState_.currentFrame >= 0) {
-        const double progress = double(renderState_.currentFrame) / double(renderState_.numFrames - 1);
+        const double progress =
+            double(renderState_.currentFrame) / double(renderState_.numFrames - 1);
         newTime += progress * (renderState_.lastTime - renderState_.firstTime);
     }
 
@@ -502,8 +498,6 @@ const AnimationState& AnimationController::getState() const { return state_; }
 
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }
 
-} // namespace
+}  // namespace animation
 
-
-} // namespace
-
+}  // namespace inviwo

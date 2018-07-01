@@ -266,10 +266,10 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     std::stringstream ss;
     serializer.writeFile(ss);
     auto str = ss.str();
-    QByteArray data(str.c_str(), static_cast<int>(str.length()));
+    QByteArray dataArray(str.c_str(), static_cast<int>(str.length()));
     
-    mimeData->setData(QString("application/x.vnd.inviwo.property+xml"), data);
-    mimeData->setData(QString("text/plain"), data);
+    mimeData->setData(QString("application/x.vnd.inviwo.property+xml"), dataArray);
+    mimeData->setData(QString("text/plain"), dataArray);
     return mimeData;
 }
 
