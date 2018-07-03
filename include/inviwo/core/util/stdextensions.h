@@ -375,6 +375,19 @@ inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
     return iter_range<Iter>(x);
 }
 
+template <class Cont>
+inline iter_range<typename Cont::iterator> as_range(Cont& c) {
+    using std::begin;
+    using std::end;
+    return iter_range<typename Cont::iterator>(std::make_pair(begin(c), end(c)));
+}
+template <class Cont>
+inline iter_range<typename Cont::const_iterator> as_range(const Cont& c) {
+    using std::begin;
+    using std::end;
+    return iter_range<typename Cont::const_iterator>(std::make_pair(begin(c), end(c)));
+}
+
 template <typename T, typename OutIt, typename P>
 OutIt copy_if(const T& cont, OutIt out, P pred) {
     using std::begin;

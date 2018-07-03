@@ -280,6 +280,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imageramutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/indexmapper.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/indirectiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/interpolation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/rayplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
@@ -533,6 +534,7 @@ set(SOURCE_FILES
     util/imagecache.cpp
     util/imageramutils.cpp
     util/imagesampler.cpp
+    util/indirectiterator.cpp
     util/inviwosetupinfo.cpp
     util/licenseinfo.cpp
     util/logcentral.cpp
