@@ -52,8 +52,6 @@ ConnectionIterator operator-(ind offset, ConnectionIterator& iter) {
 }
 
 ElementIterator ConnectionIterator::operator*() const {
-    ivwAssert(Parent, "No channel to iterate is set.");
-
     return ElementIterator(parent_, toDimension_, connection_->at(toIndex_));
 }
 
