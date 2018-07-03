@@ -172,32 +172,32 @@ auto getEnd(std::tuple<T...>& t) {
 }
 
 template <typename T, std::size_t... I>
-auto refImpl(T& t, std::index_sequence<I...>) -> proxy<decltype(*(std::get<I>(t)))...> {
+auto refImpl(const T& t, std::index_sequence<I...>) -> proxy<decltype(*(std::get<I>(t)))...> {
     return proxy<decltype(*(std::get<I>(t)))...>{*(std::get<I>(t))...};
 }
 template <typename... T>
-auto ref(std::tuple<T...>& t) -> proxy<decltype(*(std::declval<T>()))...> {
+auto ref(const std::tuple<T...>& t) -> proxy<decltype(*(std::declval<T>()))...> {
     return refImpl(t, std::index_sequence_for<T...>{});
 }
 
 template <typename T, typename ptrdiff_t, std::size_t... I>
-auto indexImpl(T& t, ptrdiff_t i, std::index_sequence<I...>)
+auto indexImpl(const T& t, ptrdiff_t i, std::index_sequence<I...>)
     -> proxy<decltype(std::get<I>(t)[std::declval<ptrdiff_t>()])...> {
     return proxy<decltype(std::get<I>(t)[std::declval<ptrdiff_t>()])...>{std::get<I>(t)[i]...};
 }
 template <typename... T, typename ptrdiff_t>
-auto index(std::tuple<T...>& t, ptrdiff_t i)
+auto index(const std::tuple<T...>& t, ptrdiff_t i)
     -> proxy<decltype(std::declval<T>()[std::declval<ptrdiff_t>()])...> {
     return indexImpl(t, i, std::index_sequence_for<T...>{});
 }
 
 template <typename T, std::size_t... I>
-auto pointerImpl(T& t, std::index_sequence<I...>)
+auto pointerImpl(const T& t, std::index_sequence<I...>)
     -> std::tuple<decltype((std::get<I>(t)).operator->())...> {
     return std::tuple<decltype((std::get<I>(t)).operator->())...>{(std::get<I>(t)).operator->()...};
 }
 template <typename... T>
-auto pointer(std::tuple<T...>& t) -> std::tuple<decltype((std::declval<T>()).operator->())...> {
+auto pointer(const std::tuple<T...>& t) -> std::tuple<decltype((std::declval<T>()).operator->())...> {
     return pointerImpl(t, std::index_sequence_for<T...>{});
 }
 
@@ -296,13 +296,13 @@ struct zipIterator {
     }
 
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
-    reference operator[](difference_type rhs) {
+    reference operator[](difference_type rhs) const {
         return detailzip::index(iterators_, rhs);
     }
 
-    reference operator*() { return detailzip::ref(iterators_); }
+    reference operator*() const { return detailzip::ref(iterators_); }
 
-    pointer operator->() { return detailzip::pointer(iterators_); }
+    pointer operator->() const { return detailzip::pointer(iterators_); }
 
     template <size_t N>
     typename std::tuple_element<N, Iterators>::type& get() {
@@ -449,7 +449,7 @@ struct sequence {
 
         reference operator*() const { return val_; }
 
-        pointer operator->() { return &val_; }
+        pointer operator->() const { return &val_; }
 
         bool operator==(const iterator& rhs) const { return val_ == rhs.val_; }
         bool operator!=(const iterator& rhs) const { return val_ != rhs.val_; }

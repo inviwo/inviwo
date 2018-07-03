@@ -82,8 +82,8 @@ public:
             return i;
         }
 
-        std::shared_ptr<const T> operator*() { return *dIter_; }
-        std::shared_ptr<const T> operator->() { return *dIter_; }
+        std::shared_ptr<const T> operator*() const { return *dIter_; }
+        std::shared_ptr<const T> operator->() const { return *dIter_; }
 
         bool operator==(const self& rhs) const {
             return pIter_ == rhs.pIter_ && dIter_ == rhs.dIter_;
@@ -150,10 +150,10 @@ public:
             pIter_++;
             return i;
         }
-        std::shared_ptr<const T> operator*() {
+        std::shared_ptr<const T> operator*() const {
             return static_cast<DataOutport<T>*>(*pIter_)->getData();
         }
-        std::shared_ptr<const T> operator->() {
+        std::shared_ptr<const T> operator->() const {
             return static_cast<DataOutport<T>*>(*pIter_)->getData();
         }
         bool operator==(const self& rhs) const { return pIter_ == rhs.pIter_; }

@@ -172,15 +172,15 @@ struct IndirectIterator {
     }
 
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
-    reference operator[](difference_type i) {
+    reference operator[](difference_type i) const {
         return *iterator_[i];
     }
 
-    reference operator*() { 
+    reference operator*() const { 
         return **iterator_; 
     }
 
-    pointer operator->() { return detail_indirect::asPointer<is_const>::get(*(iterator_.operator->())); }
+    pointer operator->() const { return detail_indirect::asPointer<is_const>::get(*(iterator_.operator->())); }
 
     const Iter& base() const {return iterator_;}
     Iter& base() {return iterator_;}
