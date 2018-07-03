@@ -72,8 +72,8 @@ protected:
 template <typename T>
 double StructuredGrid::computeHexVolume(ind index) const {
     // Work with respective type
-    std::shared_ptr<const DataChannel<T>> doubleVertices =
-        std::dynamic_pointer_cast<const DataChannel<T>, const Channel>(vertices_);
+    std::shared_ptr<const DataChannel<T, 3>> doubleVertices =
+        std::dynamic_pointer_cast<const DataChannel<T, 3>, const Channel>(vertices_);
     if (!doubleVertices) return -1;
 
     // Get all corner points.
@@ -87,7 +87,7 @@ double StructuredGrid::computeHexVolume(ind index) const {
     // Setup variables for measure calculation
     double measure = 0;
     double cornerMatrix[4][3];
-    T vertex[3];
+    std::array<T, 3> vertex;
 
     // Calculate measure of 5 tetrahedra
     for (ind tet = 0; tet < 5; tet++) {
@@ -95,7 +95,7 @@ double StructuredGrid::computeHexVolume(ind index) const {
             ind cornerIndex = corners[tetrahedra[tet][corner]];
             doubleVertices->fill(vertex, cornerIndex);
             for (ind dim = 0; dim < 3; ++dim) {
-                cornerMatrix[corner][dim] = double(vertex[dim]);
+                cornerMatrix[corner][dim] = double(vertex[(unsigned)dim]);
             }
         }
 

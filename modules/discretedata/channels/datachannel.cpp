@@ -39,8 +39,7 @@ namespace inviwo {
 namespace dd {
 
 Channel::Channel(ind numComponents, const std::string& name, DataFormatId format,
-                 GridPrimitive prim)
-    : numComponents_(numComponents) {
+                 GridPrimitive prim) {
     // Create and set name.
     StringMetaData* nameData = createMetaData<StringMetaData>("Name");
     *nameData = name;
@@ -52,6 +51,10 @@ Channel::Channel(ind numComponents, const std::string& name, DataFormatId format
     // Create and set GridPrimitive type.
     IntMetaData* dimData = createMetaData<IntMetaData>("GridPrimitiveType");
     *dimData = (int)prim;
+
+    // Create and set NumComponents type.
+    IntMetaData* compData = createMetaData<IntMetaData>("NumComponents");
+    *compData = (int)numComponents;
 }
 
 const std::string Channel::getName() const { return getMetaData<StringMetaData>("Name")->get(); }
@@ -66,12 +69,21 @@ DataFormatId Channel::getDataFormatId() const {
     return (DataFormatId)getMetaData<IntMetaData>("DataFormatId")->get();
 }
 
+ind Channel::getNumComponents() const {
+    return (ind)getMetaData<IntMetaData>("NumComponents")->get();
+}
+
+
 void Channel::setGridPrimitiveType(GridPrimitive prim) {
     setMetaData<IntMetaData>("GridPrimitiveType", prim);
 }
 
 void Channel::setDataFormatId(DataFormatId format) {
     setMetaData<IntMetaData>("DataFormatId", (int)format);
+}
+
+void Channel::setNumComponents(ind numComp) {
+    setMetaData<IntMetaData>("NumComponents", (int)numComp);
 }
 
 }  // namespace

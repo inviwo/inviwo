@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include "datachannel.h"
+#include "channelgetter.h"
 
 namespace inviwo {
 namespace dd {
@@ -46,8 +47,8 @@ namespace dd {
 
     @author Anke Friederici and Tino Weinkauf
 */
-template <typename T>
-class BufferChannel : public DataChannel<T> {
+template <typename T, ind N>
+class BufferChannel : public DataChannel<T, N> {
 
     friend class DataSet;
 
@@ -59,82 +60,64 @@ public:
     *   @param name Name associated with the channel
     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
     */
-    BufferChannel(ind numElements, ind numComponents, const std::string& name,
+    BufferChannel(ind numElements, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : DataChannel<T>(numComponents, name, definedOn), buffer_(numElements * numComponents) {}
+        : DataChannel<T, N>(name, definedOn), buffer_(numElements * N) {}
 
     /** \brief Direct construction
     *   @param data Raw data, copy values
-    *   @param numComponents Size of vector at each position
     *   @param name Name associated with the channel
     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
     */
-    BufferChannel(const std::vector<T>& data, ind numComponents, const std::string& name,
+    BufferChannel(const std::vector<T>& rawData, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : DataChannel<T>(numComponents, name, definedOn), buffer_(data) {
-        ivwAssert(data.size() % numComponents == 0, "Data size not multiple of numComponents.");
-    }
+        : DataChannel<T, N>(name, definedOn)
+        , _buffer(rawData) {}
 
     /** \brief Direct construction
     *   @param data Raw data, move values
-    *   @param numComponents Size of vector at each position
     *   @param name Name associated with the channel
     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
     */
-    BufferChannel(std::vector<T>&& data, ind numComponents, const std::string& name,
+    BufferChannel(std::vector<T>&& data, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : DataChannel<T>(numComponents, name, definedOn), buffer_(std::move(data)) {
-        ivwAssert(data.size() % numComponents == 0, "Data size not multiple of numComponents.");
-    }
+        : DataChannel<VecNT, N>(name, definedOn)
+        , _buffer(std::move(data)) {}
 
     /** \brief Direct construction
     *   @param data Pointer to data, copy numElements * numComponents
     *   @param numElements Total number of indexed positions
-    *   @param numComponents Size of vector at each position
     *   @param name Name associated with the channel
     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
     */
-    BufferChannel(T* data, ind numElements, ind numComponents, const std::string& name,
+    BufferChannel(T* const data, ind numElements, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : DataChannel<T>(numComponents, name, definedOn)
-        , buffer_(data, data + numElements * numComponents) {}
+        : DataChannel<T, N>(name, definedOn)
+        , buffer_(data, data + numElements * N) {}
 
 protected:
-
-    // Methods
-public:
-    virtual ind getNumElements() const override;
-
-    /** \brief Indexed point access, constant
-    *   @param index Linear point index
-    *   @return Pointer to data, size T[NumComponents]
-    */
-    const T* operator[](ind index) const { return get(index); }
-
-    /** \brief Indexed point access, mutable
-    *   @param index Linear point index
-    *   @return Pointer to data, size T[NumComponents]
-    */
-    T* operator[](ind index) { return get(index); }
-
-    /** \brief Indexed point access, mutable, same as []
-    *   NOT THREAD SAFE, use fill instead.
-    *   @param index Linear point index
-    *   @return Pointer to data, NumComponents many T
-    */
-    T* get(ind index);
-
-    /** \brief Indexed point access, constant, same as []
-    *   @param index Linear point index
-    *   @return Pointer to data, NumComponents many T
-    */
-    const T* get(ind index) const;
+    virtual ChannelGetter<T, N>* newIterator() { return reinterpret_cast<ChannelGetter<T, N>*>(new BufferGetter<T, N>(this)); }
 
     /** \brief Indexed point access, constant
     *   @param dest Position to write to, expect write of NumComponents many T
     *   @param index Linear point index
     */
-    void fill(T* dest, ind index) const override;
+    virtual void fillRaw(T* dest, ind index) const override { memcpy(dest, &buffer_[index * N], sizeof(T) * N); }
+
+    // Methods
+public:
+    virtual ind size() const override { return buffer_.size() / N; }
+
+    /** \brief Indexed point access, mutable, same as []
+    *   NOT THREAD SAFE, use fill instead.
+    *   @param index Linear point index
+    *   @return Reference to data
+    */
+    template<typename VecNT>
+    VecNT& get(ind index) {
+        static_assert(sizeof(VecNT) == sizeof(T) * N, "Size and type do not agree with the vector type."); 
+        return *reinterpret_cast<VecNT*>(&buffer_[index*N]);
+    }
 
     // Attributes
 protected:
@@ -144,56 +127,6 @@ protected:
     */
     std::vector<T> buffer_;
 };
-
-/*--------------------------------------------------------------*
-*  Implementations - Index Access                               *
-*--------------------------------------------------------------*/
-
-template <typename T>
-ind BufferChannel<T>::getNumElements() const {
-    ivwAssert(buffer_.size() % numComponents_ == 0, "Buffer size not multiple of component size");
-
-    return buffer_.size() / numComponents_;
-}
-
-template <typename T>
-T* BufferChannel<T>::get(const ind index) {
-    ivwAssert(index >= 0 && index < getNumElements(), "Index out of bounds: " << index);
-
-    return buffer_.data() + index * numComponents_;
-}
-
-template <typename T>
-const T* BufferChannel<T>::get(const ind index) const {
-    ivwAssert(index >= 0 && index < getNumElements(), "Index out of bounds: " << index);
-
-    return buffer_.data() + index * numComponents_;
-}
-
-template <typename T>
-void BufferChannel<T>::fill(T* const dest, const ind index) const {
-    ivwAssert(index >= 0 && index < getNumElements(), "Index out of bounds: " << index);
-
-    memcpy(dest, buffer_.data() + (index * numComponents_), sizeof(T) * numComponents_);
-}
-
-/*--------------------------------------------------------------*
-*  Exported Types                                               *
-*--------------------------------------------------------------*/
-
-using BufferChannelFloat    = BufferChannel<float>;
-using BufferChannelDouble   = BufferChannel<double>;
-using BufferChannelChar     = BufferChannel<char>;
-using BufferChannelShort    = BufferChannel<short>;
-using BufferChannelInt      = BufferChannel<int>;
-using BufferChannelLong     = BufferChannel<long>;
-using BufferChannelLongLong = BufferChannel<long long>;
-
-using BufferChannelUChar     = BufferChannel<unsigned char>;
-using BufferChannelUShort    = BufferChannel<unsigned short>;
-using BufferChannelUInt      = BufferChannel<unsigned int>;
-using BufferChannelULong     = BufferChannel<unsigned long>;
-using BufferChannelULongLong = BufferChannel<unsigned long long>;
 
 }  // namespace
 }

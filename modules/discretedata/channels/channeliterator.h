@@ -13,88 +13,101 @@
 #include <discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include "channelgetter.h"
+
 namespace inviwo {
 namespace dd {
+
+template <typename T, ind N>
+struct ChannelGetter;
 
 /** \struct ChannelIterator
 *   Generalized iterator over any DataChannel.
 *   Handles data deletion if necessary - runtime check whether needed.
 */
-template <typename T>
+template <typename VecNT, typename T, ind N>
 class ChannelIterator {
+
+    static_assert(sizeof(VecNT) == sizeof(T) * N, "Size and type do not agree with the vector type.");
+
 public:
-    ChannelIterator(DataChannel<T>* parent, ind index)
-        : Parent(parent), Index(index), Data(nullptr), DataIndex(-1) {}
 
-    ChannelIterator() : Parent(nullptr), Index(-1), Data(nullptr), DataIndex(-2) {}
+    ChannelIterator(ChannelGetter<T, N>* parent, ind index)
+        : Getter(parent), Index(index) {}
 
-    ~ChannelIterator() { delete[] Data; }
+    ChannelIterator() : Getter(nullptr), Index(-1), Data(nullptr), DataIndex(-2) {}
+
+    ~ChannelIterator() { delete Getter; }
 
     /** Dereference to get data */
-    T* operator*();
+    VecNT& operator*();
 
     //*** Bidirectional Iteration ***\\
 
     /** Walk forward */
     ChannelIterator& operator++() {
         Index++;
-        return this;
+        return *this;
     }
 
     /** Walk backward */
     ChannelIterator& operator--() {
         Index--;
-        return this;
+        return *this;
     }
 
     /** Compare */
-    bool operator==(ChannelIterator<T>& other) {
-        return other.Parent == Parent  // Compare pointers.
+    bool operator==(ChannelIterator<VecNT, T, N>& other) {
+        return other.Getter->Parent == Getter->Parent
                && other.Index == Index;
     }
 
     /** Compare */
-    bool operator!=(ChannelIterator<T>& other) { return !(other == *this); }
+    bool operator!=(ChannelIterator<VecNT, T, N>& other) { return !(other == *this); }
 
     //*** Random Access Iteration ***\\
 
     /** Increment randomly */
-    ChannelIterator operator+(ind offset) { return ChannelIterator<T>(Parent, Index + offset); }
+    ChannelIterator operator+(ind offset) { return ChannelIterator<VecNT, T, N>(Getter, Index + offset); }
 
     /** Increment randomly */
     ChannelIterator operator+=(ind offset) { Index += offset; }
 
     /** Decrement randomly */
-    ChannelIterator operator-(ind offset) { return ChannelIterator<T>(Parent, Index - offset); }
+    ChannelIterator operator-(ind offset) { return ChannelIterator<VecNT, T, N>(Getter, Index - offset); }
 
     /** Decrement randomly */
     ChannelIterator operator-=(ind offset) { Index -= offset; }
 
     // Members
 protected:
+
+    /** Abstract struct handling the dereferencing **/
+    ChannelGetter<T, N>* Getter;
+
     /** Index to the current element */
     ind Index;
 
     /** Pointer to DataChannel iterated through - Do not delete */
-    DataChannel<T>* Parent;
+//    DataChannel<T, N>* Parent;
 
     /** Pointer to heap data */
-    T* Data;
+//    VecNT* Data;
 
     /** Index that is currently pointed to */
-    ind DataIndex;
+//    ind DataIndex;
 };
 
 /** Increment randomly */
-template <typename T>
-ChannelIterator<T> operator+(ind offset, ChannelIterator<T>& iter) {
-    return ChannelIterator(iter.Parent, iter.Index + offset);
+template <typename VecNT, typename T, ind N>
+ChannelIterator<VecNT, T, N> operator+(ind offset, ChannelIterator<VecNT, T, N>& iter) {
+    return ChannelIterator(iter.Getter, iter.Index + offset);
 }
 
 /** Decrement randomly */
-template <typename T>
-ChannelIterator<T> operator-(ind offset, ChannelIterator<T>& iter) {
-    return ChannelIterator(iter.Parent, iter.Index - offset);
+template <typename VecNT, typename T, ind N>
+ChannelIterator<VecNT, T, N> operator-(ind offset, ChannelIterator<VecNT, T, N>& iter) {
+    return ChannelIterator(iter.Getter, iter.Index - offset);
 }
 
 }  // namespace

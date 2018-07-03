@@ -34,6 +34,7 @@
 #include <inviwo/core/util/assertion.h>
 
 #include "datachannel.h"
+#include "channelgetter.h"
 
 namespace inviwo {
 namespace dd {
@@ -43,17 +44,18 @@ namespace dd {
 
     Realization of DataChannel.
 
-    Data is stored implicitly by a function f:index -> vec<T>,
+    Data is stored implicitly by a function f:index -> vec<T, N>,
     where the destination memory is pre-allocated.
     Indices are linear.
 
     @author Anke Friederici and Tino Weinkauf
 */
-template <typename T>
-class AnalyticChannel : public DataChannel<T> {
+template <typename Vec, typename T, ind N>
+class AnalyticChannel : public DataChannel<T, N> {
     // Types
 public:
-    typedef typename std::function<void(T*, ind)> Function;
+    static_assert(sizeof(Vec) == sizeof(T) * N, "Size and type do not agree with the vector type.");
+    typedef typename std::function<void(Vec&, ind)> Function;
 
     // Construction / Deconstruction
 public:
@@ -61,62 +63,40 @@ public:
     *
     *   @param dataFunction Data generator, mapping of linear index to T*
     *   @param numElements Total number of indexed positions
-    *   @param numComponents Size of vector at each position
     *   @param name Name associated with the channel
     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
     */
-    AnalyticChannel(Function dataFunction, ind numElements, ind numComponents,
+    AnalyticChannel(Function dataFunction, ind numElements,
                     const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex)
-        : DataChannel<T>(numComponents, name, definedOn)
+        : DataChannel<T, N>(name, definedOn)
         , numElements_(numElements)
         , dataFunction_(dataFunction) {}
 
     virtual ~AnalyticChannel() = default;
 
     // Methods
+protected:
+    virtual ChannelGetter<T, N>* newIterator() { return new CachedGetter<T, N>(this); }
+
 public:
-    ind getNumElements() const override { return numElements_; }
+    ind size() const override { return numElements_; }
 
     /** \brief Indexed point access, constant
+    *   Will write to the memory of dest via reinterpret_cast.
     *   @param dest Position to write to, expect write of NumComponents many T
     *   @param index Linear point index
     */
-    void fill(T* dest, ind index) const override;
+    void fillRaw(T* dest, ind index) const override
+    {
+        Vec& destVec = *reinterpret_cast<Vec*>(dest);
+        dataFunction_(destVec, index);
+    }
 
     // Attributes
 public:
     ind numElements_;
     Function dataFunction_;
 };
-
-/*--------------------------------------------------------------*
-*  Implementations                                              *
-*--------------------------------------------------------------*/
-
-template <typename T>
-void AnalyticChannel<T>::fill(T* const dest, const ind index) const {
-    ivwAssert(index >= 0 && index < numElements_, "Index out of bounds: " << index);
-
-    dataFunction_(dest, index);
-}
-
-/*--------------------------------------------------------------*
-*  Exported Types                                               *
-*--------------------------------------------------------------*/
-
-using AnalyticChannelFloat    = AnalyticChannel<float>;
-using AnalyticChannelDouble   = AnalyticChannel<double>;
-using AnalyticChannelChar     = AnalyticChannel<char>;
-using AnalyticChannelShort    = AnalyticChannel<short>;
-using AnalyticChannelInt      = AnalyticChannel<int>;
-using AnalyticChannelLong     = AnalyticChannel<long>;
-using AnalyticChannelLongLong = AnalyticChannel<long long>;
-
-using AnalyticChannelUChar     = AnalyticChannel<unsigned char>;
-using AnalyticChannelUShort    = AnalyticChannel<unsigned short>;
-using AnalyticChannelUInt      = AnalyticChannel<unsigned int>;
-using AnalyticChannelULong     = AnalyticChannel<unsigned long>;
-using AnalyticChannelULongLong = AnalyticChannel<unsigned long long>;
 
 }  // namespace
 }

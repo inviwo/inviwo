@@ -29,10 +29,64 @@
 
 #pragma once
 
-#include <discretedata/channels/datachannel.h>
+namespace inviwo {
+namespace dd {
 
-template <typename VecNT, typename T, inviwo::dd::ind N>
-VecNT& inviwo::dd::ChannelIterator<VecNT, T, N>::operator*() {
-    T* data = Getter->get(Index);
-    return *reinterpret_cast<VecNT*>(data);
+template<typename T, ind N>
+class BufferChannel;
+
+template<typename T, ind N>
+class DataChannel;
+
+template <typename T, ind N>
+struct ChannelGetter {
+
+    ChannelGetter(DataChannel<T, N>* parent) : Parent(parent) {}
+
+    /** Dereference to get data */
+    virtual T* get(ind index) = 0;
+
+    /** Dereference to get data */
+    virtual const T* get(ind index) const = 0;
+
+    /** Pointer to DataChannel iterated through - Do not delete */
+    DataChannel<T, N>* Parent;
+
+    /** Compare by the parent pointer */
+    bool operator ==(ChannelGetter<T, N>& other) { return Parent == other.Parent; }
+    bool operator !=(ChannelGetter<T, N>& other) { return !(*this == other); }
+};
+
+template <typename T, ind N>
+struct BufferGetter : public ChannelGetter<T, N> {
+
+    BufferGetter(BufferChannel<T, N>* parent) : ChannelCache(parent) {}
+
+    /** Dereference to get data */
+    virtual T* get(ind index);
+
+    virtual const T* get(ind index) const;
+};
+
+template <typename T, ind N>
+struct CachedGetter : public ChannelGetter<T, N> {
+
+    CachedGetter(DataChannel<T, N>* parent) : ChannelCache(parent), Data(nullptr), DataIndex(-1) {}
+
+    /** Dereference to get data */
+    virtual T* get(ind index) override;
+
+    virtual const T* get(ind index) const override;
+
+    /** Pointer to heap data
+    * - Memory is invalidated on iteration */
+    mutable std::array<T,N>* Data;
+
+    /** Index that is currently pointed to */
+    mutable ind DataIndex;
+};
+
+}  // namespace
 }
+
+#include "channelgetter.inl"

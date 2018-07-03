@@ -40,6 +40,7 @@
 namespace inviwo {
 namespace dd {
 
+typedef glm::vec3 Vec3f;
 TEST(DataSet, ChannelInsertRemoveEdit) {
 
     // ************************************************* \\
@@ -50,27 +51,27 @@ TEST(DataSet, ChannelInsertRemoveEdit) {
     // - Rename them
     DataSet set;
 
-    auto monomeVert = std::make_shared<AnalyticChannel<float>>(
-        [](float* a, ind idx) {
+    auto monomeVert = std::make_shared<AnalyticChannel<Vec3f, float, 3>>(
+        [](Vec3f& a, ind idx) {
             a[0] = 0.0f;
             a[1] = (float)idx;
             a[2] = (float)(idx * idx);
         },
-        100, 3, "Monome", GridPrimitive::Vertex);
-    auto monomeFace = std::make_shared<AnalyticChannel<float>>(
-        [](float* a, ind idx) {
+        100, "Monome", GridPrimitive::Vertex);
+    auto monomeFace = std::make_shared<AnalyticChannel<Vec3f, float, 3>>(
+        [](Vec3f& a, ind idx) {
             a[0] = 0.0f;
             a[1] = (float)idx;
             a[2] = (float)(idx * idx);
         },
-        100, 3, "Monome", GridPrimitive::Face);
-    auto identityVert = std::make_shared<AnalyticChannel<float>>(
-        [](float* a, ind idx) {
+        100, "Monome", GridPrimitive::Face);
+    auto identityVert = std::make_shared<AnalyticChannel<Vec3f, float, 3>>(
+        [](Vec3f& a, ind idx) {
             a[0] = (float)idx;
             a[1] = (float)idx;
             a[2] = (float)idx;
         },
-        100, 3, "Identity", GridPrimitive::Vertex);
+        100, "Identity", GridPrimitive::Vertex);
 
     set.Channels.addChannel(monomeVert);
     set.Channels.addChannel(monomeFace);

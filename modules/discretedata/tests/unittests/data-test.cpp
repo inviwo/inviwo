@@ -37,13 +37,20 @@
 #include "discretedata/channels/bufferchannel.h"
 #include "discretedata/channels/analyticchannel.h"
 
+#include <ext/glm/vec3.hpp>
+
 namespace inviwo {
 namespace dd {
 
-typedef BufferChannel<float> BufferFloat;
+typedef BufferChannel<float, 3> BufferFloat;
+
+// Most basic vector that should be correctly handled for indexing.
+struct TestVec3f
+{
+    float x, y, z;
+};
+
 TEST(CreatingCopyingIndexing, DataChannels) {
-    // Testing tests.
-    EXPECT_EQ(42, -~41);
 
     // ************************************************* \\
     // Testing Indexing in Analytic/Buffer               \\
@@ -53,11 +60,12 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     // - Copy, assign BufferChannel and test again
 
     DataSet dataset;
-    size_t numElements = 10;
-    void (*base)(float*, size_t) = [](float* dest, size_t idx) {
+    size_t numElements = 3;
+
+    void(*base)(glm::vec3&, ind) = [](glm::vec3& dest, ind idx) {
         dest[0] = 1.0f;
         dest[1] = 0.1f * idx;
-        dest[2] = dest[1] * dest[1];
+        dest[2] = 0.01f * idx * idx;
     };
 
     // Setting up a buffer to test against an analytic channel.
@@ -67,14 +75,14 @@ TEST(CreatingCopyingIndexing, DataChannels) {
         data.push_back(0.1f * dIdx);
         data.push_back(0.01f * dIdx * dIdx);
     }
-    BufferChannel<float>* testBuffer =
-        new BufferFloat(data, 3, "MonomialBuffer", GridPrimitive::Vertex);
+    BufferChannel<float, 3>* testBuffer =
+        new BufferFloat(data.data(), numElements, "MonomialBuffer", GridPrimitive::Vertex);
     IntMetaData* yearTest = testBuffer->createMetaData<IntMetaData>("YearCreated");
     yearTest->set(2017);
 
     // Set up the same channel as analytic channel.
-    AnalyticChannelFloat* testAnalytic =
-        new AnalyticChannelFloat(base, numElements, 3, "MonomialAnalytical", GridPrimitive::Vertex);
+    AnalyticChannel<glm::vec3, float, 3>* testAnalytic =
+        new AnalyticChannel<glm::vec3, float, 3>(base, numElements, "MonomialAnalytical", GridPrimitive::Vertex);
 
     // Copy buffer.
     BufferFloat* copyBuffer = new BufferFloat(*testBuffer);
@@ -88,33 +96,44 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     //  Test access
     auto setBuffer = dataset.Channels.getChannel("MonomialBufferCopy");
 
-    EXPECT_EQ(setBuffer->getMetaData<IntMetaData>("YearCreated")->get(), 2017);
+    assert(setBuffer->getMetaData<IntMetaData>("YearCreated")->get() == 2017);
 
     // Check equality of indexing and filling.
 
-    // Setup for fill function.
-    float* bufferData = new float[3 * numElements];
-    float* analyticData = new float[3 * numElements];
+    ind c = 0;
 
-    // For one element: compare channels and fill data.
+    // Test indexing.
+    for (TestVec3f& b_it : testBuffer->all<TestVec3f>())
     {
-        int dIdx = 3;
+        glm::vec3 b_fill, b_get;
+        testBuffer->fill(b_fill, c);
+        b_get = testBuffer->get<glm::vec3>(c);
 
-        testBuffer->fill(bufferData + 3 * dIdx, dIdx);
-
-        testAnalytic->fill(analyticData + 3 * dIdx, dIdx);
-
-        // Check equality in a dimension.
-        {
-            int dim = 1;
-
-            EXPECT_EQ(testBuffer->get(dIdx)[dim], copyBuffer->get(dIdx)[dim]);
-            EXPECT_EQ(testBuffer->get(dIdx)[dim], bufferData[dIdx * 3 + dim]);
-            EXPECT_EQ(testBuffer->get(dIdx)[dim], analyticData[dIdx * 3 + dim]);
-        }
+        // All methods of indexing should return the same value.
+        assert(b_fill.y == 0.1f * c);
+        assert(b_fill.z == 0.01f * c * c);
+        assert(b_fill.y == b_get.y);
+        assert(b_fill.z == b_get.z);
+        assert(b_fill.y == b_it.y);
+        assert(b_fill.z == b_it.z);
+        c++;
     }
 
-    // The other data should be deleted when the dataset deconstructs.
+    c = 0;
+    // Test indexing and explicit iterator use.
+    for (auto a_it = testAnalytic->begin<glm::vec3>(); a_it != testAnalytic->end<glm::vec3>(); ++a_it)
+    {
+        glm::vec3 a_fill, b_get;
+        testAnalytic->fill(a_fill, c);
+        b_get = testBuffer->get<glm::vec3>(c);
+
+        // All methods of indexing should return the same value.
+        assert(a_fill.y == (*a_it).y);
+        assert(a_fill.z == (*a_it).z);
+        assert(a_fill.y == b_get.y);
+        assert(a_fill.z == b_get.z);
+        c++;
+    }
 }
 
 }  // namespace

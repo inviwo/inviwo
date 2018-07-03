@@ -7,6 +7,8 @@ ivw_module(DiscreteData)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/channels/analyticchannel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/channels/bufferchannel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/channelgetter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/channels/channelgetter.inl
     ${CMAKE_CURRENT_SOURCE_DIR}/channels/channeliterator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/channels/channeliterator.inl
     ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.h

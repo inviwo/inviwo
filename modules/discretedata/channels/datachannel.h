@@ -28,7 +28,6 @@
 *********************************************************************************/
 
 #pragma once
-
 #include <discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/metadata/metadataowner.h>
@@ -51,8 +50,11 @@ enum GridPrimitive : char {
     HyperVolume = 4
 };
 
-template<typename T>
+template<typename VecNT, typename T, ind N>
 class ChannelIterator;
+
+template<typename T, ind N>
+struct ChannelGetter;
 
 /** \class Channel
     \brief An untyped scalar or vector component of a data set.
@@ -89,33 +91,35 @@ public:
     /** Returns the "DataFormatId" meta data */
     DataFormatId getDataFormatId() const;
 
-    /** Sets the "DataFromatId" meta data
-    */
-    void setDataFormatId(DataFormatId);
+    /** Returns the "NumComponents" meta data */
+    ind getNumComponents() const;
 
-private:
+protected:
     /** Sets the "GridPrimitiveType" meta data
     *   Should be constant, only DataSet is allowed to write.
     */
     void setGridPrimitiveType(GridPrimitive);
 
+    /** Sets the "DataFromatId" meta data
+    */
+    void setDataFormatId(DataFormatId);
+
+    /** Sets the "NumComponents" meta data
+    *   Should be constant, only DataSet is allowed to write.
+    */
+    void setNumComponents(ind);
+
     // Attributes
 public:
-    virtual ind getNumElements() const = 0;
-    ind getNumComponents() const { return numComponents_; }
-
-protected:
-    ind numComponents_;
+    virtual ind size() const = 0;
 };
 
 /** \class DataChannel
-    \brief A single scalar or vector component of a data set.
+    \brief A single vector component of a data set.
 
     The type is arbitrary but is expected to support
     the basic arithmetic operations.
-    The number of elements per data point is defined at runtime
-    to allow dll export.
-    Handling of data vectors is via data pointers.
+    It is specified via type, base type and number of components.
 
     Several realizations extend this pure virtual class
     that differ in data storage/generation.
@@ -123,7 +127,7 @@ protected:
 
     @author Anke Friederici and Tino Weinkauf
 */
-template <typename T>
+template <typename T, ind N>
 class DataChannel : public Channel {
 
     friend class DataSet;
@@ -131,35 +135,165 @@ class DataChannel : public Channel {
     // Construction / Deconstruction
 public:
     /** \brief Direct construction
-    *   @param numComponents Size of vector at each position
     *   @param name Name associated with the channel
     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
     */
-    DataChannel(ind numComponents, const std::string& name,
+    DataChannel(const std::string& name,
                 GridPrimitive definedOn = GridPrimitive::Vertex);
-    //    : Channel(numComponents, name, definedOn) {}
 
     virtual ~DataChannel() = default;
 
     // Methods
+protected:
+    virtual void fillRaw(T* dest, ind index) const = 0;
+
+    virtual ChannelGetter<T, N>* newIterator() = 0;
+
 public:
-    /** \brief Indexed point access, copy data
-    *   Thread safe.
-    *   @param dest Position to write to, expect T[NumComponents]
-    *   @param index Linear point index
-    */
-    virtual void fill(T* dest, ind index) const = 0;
 
     /** \brief Indexed point access, copy data
     *   Thread safe.
     *   @param dest Position to write to, expect T[NumComponents]
     *   @param index Linear point index
     */
-    void operator()(T* dest, ind index) const { fill(dest, index); }
+    template <typename VecNT>
+    void fill(VecNT& dest, ind index) const { fillRaw(reinterpret_cast<T*>(&dest), index); }
 
-    ChannelIterator<T> begin();
 
-    ChannelIterator<T> end();
+
+    /** \brief Indexed point access, copy data
+    *   Thread safe.
+    *   @param dest Position to write to, expect T[NumComponents]
+    *   @param index Linear point index
+    */
+    template <typename VecNT>
+    void operator()(VecNT& dest, ind index) const { fill(dest, index); }
+
+    virtual ChannelIterator<std::array<T, N>, T, N> begin() { return ChannelIterator<std::array<T, N>, T, N>(newIterator(), 0); }
+    virtual ChannelIterator<std::array<T, N>, T, N> end()   { return ChannelIterator<std::array<T, N>, T, N>(newIterator(), size()); }
+
+    //virtual ConstChannelIterator<std::array<T, N>, T, N> cbegin() = 0;
+    //virtual ConstChannelIterator<std::array<T, N>, T, N> cend() = 0;
+
+    template<typename VecNT>
+    ChannelIterator<VecNT, T, N> begin() { return ChannelIterator<VecNT, T, N>(newIterator(), 0); }
+    template<typename VecNT>
+    ChannelIterator<VecNT, T, N> end()   { return ChannelIterator<VecNT, T, N>(newIterator(), size()); }
+
+    //template<typename VecNT>
+    //virtual ConstChannelIterator<VecNT, T, N> cbegin() = 0;
+    //template<typename VecNT>
+    //virtual ConstChannelIterator<VecNT, T, N> cend() = 0;
+
+    template <typename VecNT, typename T, ind N>
+    struct ChannelRange {
+        ChannelRange(DataChannel<T, N>* channel) : parent_(channel) {}
+
+        ChannelIterator<VecNT, T, N> begin() { return parent_->begin<VecNT>(); }
+        ChannelIterator<VecNT, T, N> end()   { return parent_->end<VecNT>(); }
+
+        //ConstChannelIterator<VecNT, T, N> cbegin() { return parent_->cbegin<VecNT>(); }
+        //ConstChannelIterator<VecNT, T, N> cend()   { return parent_->cend<VecNT>(); }
+
+    private:
+        DataChannel<T, N>* parent_;
+    };
+
+    /** \brief Get iterator range
+    *   Templated iterator return type, only specified once.
+    *   @tparam VecNT Return type of resulting iterators
+    */
+    template <typename VecNT>
+    ChannelRange<VecNT, T, N> all() { return ChannelRange<VecNT, T, N>(this); }
+};
+
+/** \class DataChannel
+\brief A single scalar component of a data set. Specialization of vector version.
+
+The type is arbitrary but is expected to support
+the basic arithmetic operations.
+Use the <T, N> variant for vectors.
+
+Several realizations extend this pure virtual class
+that differ in data storage/generation.
+Direct indexing is virtual, avoid where possible.
+
+@author Anke Friederici and Tino Weinkauf
+*/
+template <typename T>
+class DataChannel<T, 1> : public Channel {
+
+    friend class DataSet;
+
+    // Construction / Deconstruction
+public:
+    /** \brief Direct construction
+    *   @param name Name associated with the channel
+    *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+    */
+    DataChannel(const std::string& name,
+        GridPrimitive definedOn = GridPrimitive::Vertex);
+
+    virtual ~DataChannel() = default;
+
+    // Methods
+protected:
+    virtual void fillRaw(T* dest, ind index) const = 0;
+
+    virtual ChannelGetter<T, 1>* newIterator() = 0;
+
+public:
+
+    /** \brief Indexed point access, copy data
+    *   Thread safe.
+    *   @param dest Position to write to, expect T[NumComponents]
+    *   @param index Linear point index
+    */
+    void fill(T& dest, ind index) const { fillRaw(&dest, index); }
+
+    /** \brief Indexed point access, copy data
+    *   Thread safe.
+    *   @param dest Position to write to, expect T[NumComponents]
+    *   @param index Linear point index
+    */
+    void operator()(T& dest, ind index) const { fill(dest, index); }
+
+public:
+    virtual ChannelIterator<T, T, 1> begin() { return ChannelIterator<T, T, 1>(newIterator(), 0); }
+    virtual ChannelIterator<T, T, 1> end()   { return ChannelIterator<T, T, 1>(newIterator(), size()); }
+
+    //virtual ConstChannelIterator<std::array<T, N>, T, N> cbegin() = 0;
+    //virtual ConstChannelIterator<std::array<T, N>, T, N> cend() = 0;
+
+    //template<typename VecNT>
+    //ChannelIterator<VecNT, T, N> begin() { return ChannelIterator<VecNT, T, N>(getIterator(0)); }
+    //template<typename VecNT>
+    //ChannelIterator<VecNT, T, N> end() { return ChannelIterator<VecNT, T, N>(getIterator(size())); }
+
+    //template<typename VecNT>
+    //virtual ConstChannelIterator<VecNT, T, N> cbegin() = 0;
+    //template<typename VecNT>
+    //virtual ConstChannelIterator<VecNT, T, N> cend() = 0;
+
+    template <typename T>
+    struct ChannelRange {
+        ChannelRange(DataChannel<T, 1>* channel) : parent_(channel) {}
+
+        ChannelIterator<T, T, 1> begin() { return parent_->begin<VecNT>(); }
+        ChannelIterator<T, T, 1> end() { return parent_->end<VecNT>(); }
+
+        //ConstChannelIterator<VecNT, T, N> cbegin() { return parent_->cbegin<VecNT>(); }
+        //ConstChannelIterator<VecNT, T, N> cend()   { return parent_->cend<VecNT>(); }
+
+    private:
+        DataChannel<T, 1>* parent_;
+    };
+
+    /** \brief Get iterator range
+    *   Templated iterator return type, only specified once.
+    *   @tparam VecNT Return type of resulting iterators
+    */
+    ChannelRange<T> all() { return ChannelRange<T>(this); }
 };
 
 }  // namespace
