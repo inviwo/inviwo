@@ -70,7 +70,9 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
         easingLayout->addWidget(new QLabel("Easing: "));
         easingLayout->addWidget(easingComboBox_);
 
-        auto currentEasing = sequence_.getEasingType();
+        //auto currentEasing = sequence_.getEasingType();
+        auto currentEasing = easing::EasingType::Linear;
+
 
         for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
             std::ostringstream oss;
@@ -83,7 +85,7 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
 
         void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
         connect(easingComboBox_, signal, [this](int index) {
-            sequence_.setEasingType(static_cast<easing::EasingType>(index));
+            //sequence_.setEasingType(static_cast<easing::EasingType>(index));
         });
     }
 
@@ -121,7 +123,7 @@ void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {
 
 void SequenceEditorWidget::setReorderNeeded() { reorderNeeded_ = true; }
 
-void SequenceEditorWidget::onKeyframeSequenceEasingChanged(KeyframeSequence* seq) {
+void SequenceEditorWidget::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) {
     easingComboBox_->blockSignals(true);
     auto index = easingComboBox_->findData(QVariant(static_cast<int>(seq->getEasingType())));
     easingComboBox_->setCurrentIndex(index);

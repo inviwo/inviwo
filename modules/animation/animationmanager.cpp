@@ -195,7 +195,7 @@ std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Propert
 void AnimationManager::onWillRemoveProperty(Property* property, size_t) {
     auto it = trackMap_.find(property);
     if (it != trackMap_.end()) {
-        animation_.removeTrack(it->second->getIdentifier());
+        animation_.remove(it->second->getIdentifier());
     }
 }
 
@@ -216,7 +216,7 @@ void AnimationManager::onProcessorNetworkWillRemoveProcessor(Processor* processo
     });
 
     for (const auto& item : toRemove) {
-        animation_.removeTrack(item);
+        animation_.remove(item);
     }
 }
 

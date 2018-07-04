@@ -33,7 +33,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/basetrack.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/animationstate.h>
 #include <modules/animation/datastructures/controlkeyframesequence.h>
@@ -47,67 +47,16 @@ namespace animation {
  * Exposes functions for adding a ControlKeyFrame and ControlKeyFrameSequence
  * @see Track
  */
-class ControlTrack : public Track {
+class ControlTrack : public BaseTrack<ControlKeyframeSequence> {
 public:
     ControlTrack();
-
-    /**
-     * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
-     */
     virtual ~ControlTrack();
 
     static std::string classIdentifier();
-
     virtual std::string getClassIdentifier() const override;
-
-    virtual void setEnabled(bool enabled) override;
-    virtual bool isEnabled() const override;
-
-    virtual void setIdentifier(const std::string& identifier) override;
-
-    virtual const std::string& getIdentifier() const override;
-
-    virtual void setName(const std::string& name) override;
-    virtual const std::string& getName() const override;
-
-    virtual void setPriority(size_t priority) override;
-
-    virtual size_t getPriority() const override;
-
-    virtual Seconds firstTime() const override;
-
-    virtual Seconds lastTime() const override;
-
-    virtual std::vector<Seconds> getAllTimes() const override;
 
     virtual AnimationTimeState operator()(Seconds from, Seconds to,
                                           AnimationState state) const override;
-
-    virtual void addTyped(const ControlKeyframeSequence& sequence);
-
-    virtual void add(const KeyframeSequence& sequence) override;
-
-    virtual size_t size() const override;
-
-    virtual ControlKeyframeSequence& operator[](size_t i) override;
-
-    virtual const ControlKeyframeSequence& operator[](size_t i) const override;
-
-    virtual void remove(size_t i) override;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
-
-    bool enabled_{true};
-    std::string identifier_;
-    std::string name_;
-    size_t priority_{0};
-
-    // Sorted list of non-overlapping sequences of key frames
-    std::vector<std::unique_ptr<ControlKeyframeSequence>> sequences_;
 };
 
 }  // namespace animation

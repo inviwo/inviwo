@@ -32,7 +32,7 @@
 
 #include <modules/animation/animationmoduledefine.h>
 
-#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/basekeyframesequence.h>
 #include <modules/animation/datastructures/controlkeyframe.h>
 
 namespace inviwo {
@@ -43,55 +43,21 @@ namespace animation {
  * KeyframeSequence for Control Keyframes.
  * @see KeyframeSequence
  */
-class IVW_MODULE_ANIMATION_API ControlKeyframeSequence : public KeyframeSequence {
+class IVW_MODULE_ANIMATION_API ControlKeyframeSequence
+    : public BaseKeyframeSequence<ControlKeyframe> {
 public:
     ControlKeyframeSequence();
-
-    ControlKeyframeSequence(const std::vector<ControlKeyframe>& keyframes);
+    ControlKeyframeSequence(std::vector<std::unique_ptr<ControlKeyframe>> keyframes);
     ControlKeyframeSequence(const ControlKeyframeSequence& rhs);
     ControlKeyframeSequence& operator=(const ControlKeyframeSequence& that);
-    /**
-     * Remove all keyframes and call KeyframeObserver::notifyKeyframeRemoved
-     */
     virtual ~ControlKeyframeSequence();
-    /**
-     * Return number of keyframes in the sequence.
-     */
-    virtual size_t size() const override { return keyframes_.size(); }
 
-    virtual const ControlKeyframe& operator[](size_t i) const override;
-    virtual ControlKeyframe& operator[](size_t i) override;
+    virtual ControlKeyframeSequence* clone() const override;
 
-    virtual const ControlKeyframe& getFirst() const override;
-    virtual ControlKeyframe& getFirst() override;
-    virtual const ControlKeyframe& getLast() const override;
-    virtual ControlKeyframe& getLast() override;
-    /**
-     * Remove Keyframe and call KeyframeObserver::notifyKeyframeRemoved
-     */
-    virtual void remove(size_t i) override;
-    /**
-     * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
-     */
-    virtual void add(const Keyframe& key) override;
-    /**
-     * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
-     */
-    void add(const ControlKeyframe& key);
-
-    virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) override{};
+    static std::string classIdentifier();
+    virtual std::string getClassIdentifier() const override;
 
     virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    void addKeyFrame(std::unique_ptr<ControlKeyframe> key);
-
-    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
-
-    std::vector<std::unique_ptr<ControlKeyframe>> keyframes_;
 };
 
 }  // namespace animation

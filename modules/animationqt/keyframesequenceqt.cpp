@@ -46,7 +46,7 @@ namespace animation {
 
 KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, TrackQt* parent)
     : QGraphicsItem(parent), keyframeSequence_(keyframeSequence), trackQt_(*parent) {
-    // setFlags(ItemIsMovable | ItemSendsGeometryChanges);
+
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges |
              ItemSendsScenePositionChanges);
 
@@ -59,11 +59,6 @@ KeyframeSequenceQt::KeyframeSequenceQt(KeyframeSequence& keyframeSequence, Track
 
     QGraphicsItem::prepareGeometryChange();
     setSelected(keyframeSequence_.isSelected());
-
-    // QGraphicsDropShadowEffect* pDropShadow = new QGraphicsDropShadowEffect();
-    // pDropShadow->setOffset(5);
-    // pDropShadow->setBlurRadius(8);
-    // setGraphicsEffect(pDropShadow);
 }
 
 KeyframeSequenceQt::~KeyframeSequenceQt() = default;

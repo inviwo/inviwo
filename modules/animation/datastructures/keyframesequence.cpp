@@ -31,44 +31,47 @@
 
 namespace inviwo {
 
-void animation::KeyframeSequence::serialize(Serializer& s) const {
+namespace animation {
 
-    s.serialize("selected", isSelected_);
-    s.serialize("easing", easing_);
-}
-
-void animation::KeyframeSequence::deserialize(Deserializer& d) {
-
-    d.deserialize("selected", isSelected_);
-    d.deserialize("easing", easing_);
-}
-
-bool animation::KeyframeSequence::isSelected() const { return isSelected_; }
-
-void animation::KeyframeSequence::setSelected(bool selected /*= true*/) {
-    if (selected != isSelected_) {
-        isSelected_ = selected;
-        notifyKeyframeSequenceSelectionChanged(this);
-    }
-}
-
-bool animation::KeyframeSequence::isAnyKeyframeSelected() const {
+bool KeyframeSequence::isAnyKeyframeSelected() const {
     for (size_t i = 0; i < size(); i++) {
         if (operator[](i).isSelected()) return true;
     }
     return false;
 }
 
-inviwo::animation::easing::EasingType animation::KeyframeSequence::getEasingType() const {
-    return easing_;
+Seconds KeyframeSequence::getFirstTime() const { return getFirst().getTime(); }
+Seconds KeyframeSequence::getLastTime() const { return getLast().getTime(); }
+std::pair<Seconds, Seconds> KeyframeSequence::getTimeSpan() const {
+    return {getFirstTime(), getLastTime()};
 }
 
-void animation::KeyframeSequence::setEasingType(easing::EasingType easing) {
+bool operator==(const KeyframeSequence& a, const KeyframeSequence& b) { return a.equal(b); }
+bool operator!=(const KeyframeSequence& a, const KeyframeSequence& b) { return !a.equal(b); }
 
-    if (easing_ != easing) {
-        easing_ = easing;
-        notifyKeyframeSequenceEasingChanged(this);
-    }
+bool operator<(const KeyframeSequence& a, const KeyframeSequence& b) {
+    return a.getFirstTime() < b.getFirstTime();
 }
+bool operator<=(const KeyframeSequence& a, const KeyframeSequence& b) {
+    return a.getFirstTime() <= b.getFirstTime();
+}
+bool operator>(const KeyframeSequence& a, const KeyframeSequence& b) {
+    return a.getFirstTime() > b.getFirstTime();
+}
+bool operator>=(const KeyframeSequence& a, const KeyframeSequence& b) {
+    return a.getFirstTime() >= b.getFirstTime();
+}
+
+bool operator<(const KeyframeSequence& a, const Seconds& b) { return a.getFirstTime() < b; }
+bool operator<=(const KeyframeSequence& a, const Seconds& b) { return a.getFirstTime() <= b; }
+bool operator>(const KeyframeSequence& a, const Seconds& b) { return a.getFirstTime() > b; }
+bool operator>=(const KeyframeSequence& a, const Seconds& b) { return a.getFirstTime() >= b; }
+
+bool operator<(const Seconds& a, const KeyframeSequence& b) { return a < b.getFirstTime(); }
+bool operator<=(const Seconds& a, const KeyframeSequence& b) { return a <= b.getFirstTime(); }
+bool operator>(const Seconds& a, const KeyframeSequence& b) { return a > b.getFirstTime(); }
+bool operator>=(const Seconds& a, const KeyframeSequence& b) { return a >= b.getFirstTime(); }
+
+}  // namespace animation
 
 }  // namespace inviwo

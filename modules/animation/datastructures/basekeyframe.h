@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,58 +27,44 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_KEYFRAMEEDITORWIDGET_H
-#define IVW_KEYFRAMEEDITORWIDGET_H
+#ifndef IVW_BASEKEYFRAME_H
+#define IVW_BASEKEYFRAME_H
 
-#include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/properties/property.h>
 #include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/keyframeobserver.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <warn/pop>
-
-class QHBoxLayout;
-class QComboBox;
-class QDoubleSpinBox;
 
 namespace inviwo {
 
-class Property;
-class PropertyWidgetQt;
-
 namespace animation {
 
-class SequenceEditorWidget;
-
-class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget, public KeyframeObserver {
+class IVW_MODULE_ANIMATION_API BaseKeyframe : public Keyframe {
 public:
-    KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
-    virtual ~KeyframeEditorWidget();
+    using value_type = void;
+    BaseKeyframe() = default;
+    BaseKeyframe(Seconds time);
+    BaseKeyframe(const BaseKeyframe& rhs);
+    BaseKeyframe& operator=(const BaseKeyframe& that);
+    virtual ~BaseKeyframe();
 
-    virtual void onKeyframeTimeChanged(Keyframe *key, Seconds oldTime) override;
+    virtual bool equal(const Keyframe& other) const override;
 
-    Keyframe &getKeyframe() { return keyframe_; }
+    virtual Seconds getTime() const override;
+    virtual void setTime(Seconds time) override;
 
-    virtual void onKeyframeSelectionChanged(Keyframe *seq) override;
+    virtual bool isSelected() const override;
+    virtual void setSelected(bool selected) override;
 
-private:
-    Keyframe &keyframe_;
-    SequenceEditorWidget *sequenceEditorWidget_{nullptr};
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
-    std::unique_ptr<Property> property_{nullptr};
-    PropertyWidgetQt *propertyWidget_{nullptr};
-    QComboBox *actionWidget_{nullptr};
-    QDoubleSpinBox *jumpToWidget_{nullptr};
-    QHBoxLayout *layout_{nullptr};
-    QDoubleSpinBox *timeSpinner_{nullptr};
+protected:
+    bool isSelected_{false};
+    Seconds time_{0.0};
 };
 
-}  // namespace animation
+}
+
 }  // namespace inviwo
 
-#endif  // IVW_KEYFRAMEEDITORWIDGET_H
+#endif  // IVW_BASEKEYFRAME_H

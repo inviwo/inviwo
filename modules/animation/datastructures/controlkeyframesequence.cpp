@@ -33,141 +33,47 @@ namespace inviwo {
 
 namespace animation {
 
-bool operator==(const ControlKeyframeSequence& a, const ControlKeyframeSequence& b) {
-    if (a.size() != b.size()) return false;
-    for (size_t i = 0; i < a.size(); ++i) {
-        if (a[i] != b[i]) return false;
-    }
-    return true;
+ControlKeyframeSequence::ControlKeyframeSequence() = default;
+
+ControlKeyframeSequence::ControlKeyframeSequence(
+    std::vector<std::unique_ptr<ControlKeyframe>> keyframes)
+    : BaseKeyframeSequence<ControlKeyframe>(std::move(keyframes)) {}
+
+ControlKeyframeSequence::ControlKeyframeSequence(const ControlKeyframeSequence& rhs) = default;
+
+ControlKeyframeSequence& ControlKeyframeSequence::operator=(const ControlKeyframeSequence& that) =
+    default;
+
+ControlKeyframeSequence::~ControlKeyframeSequence() = default;
+
+ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
+    return new ControlKeyframeSequence(*this);
 }
 
-bool operator!=(const ControlKeyframeSequence& a, const ControlKeyframeSequence& b) {
-    return !(a == b);
+std::string ControlKeyframeSequence::classIdentifier() {
+    return "org.inviwo.animation.ControlKeyframeSequence";
 }
 
-ControlKeyframeSequence::ControlKeyframeSequence() : KeyframeSequence(), keyframes_() {}
-
-ControlKeyframeSequence::ControlKeyframeSequence(const std::vector<ControlKeyframe>& keyframes)
-    : KeyframeSequence(), keyframes_() {
-    for (const auto& key : keyframes) {
-        keyframes_.push_back(std::make_unique<ControlKeyframe>(key));
-    }
-}
-
-ControlKeyframeSequence::ControlKeyframeSequence(const ControlKeyframeSequence& rhs)
-    : KeyframeSequence(rhs) {
-    for (const auto& key : rhs.keyframes_) {
-        addKeyFrame(std::make_unique<ControlKeyframe>(*key));
-    }
-}
-
-ControlKeyframeSequence& ControlKeyframeSequence::operator=(const ControlKeyframeSequence& that) {
-    if (this != &that) {
-        KeyframeSequence::operator=(that);
-
-        for (size_t i = 0; i < std::min(keyframes_.size(), that.keyframes_.size()); i++) {
-            *keyframes_[i] = *that.keyframes_[i];
-        }
-        for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
-             i < that.keyframes_.size(); i++) {
-            keyframes_.push_back(std::make_unique<ControlKeyframe>(*that.keyframes_[i]));
-            notifyKeyframeAdded(keyframes_.back().get(), this);
-        }
-        while (keyframes_.size() > that.keyframes_.size()) {
-            auto key = std::move(keyframes_.back());
-            keyframes_.pop_back();
-            notifyKeyframeRemoved(key.get(), this);
-        }
-    }
-    return *this;
-}
-
-ControlKeyframeSequence::~ControlKeyframeSequence() {
-    while (size() > 0) {
-        // Remove and notify that keyframe is removed.
-        remove(size() - 1);
-    }
-}
-
-void ControlKeyframeSequence::onKeyframeTimeChanged(Keyframe*, Seconds) {
-    const auto startTime = keyframes_.front()->getTime();
-    const auto endTime = keyframes_.back()->getTime();
-
-    std::stable_sort(keyframes_.begin(), keyframes_.end(),
-                     [](const auto& a, const auto& b) { return a->getTime() < b->getTime(); });
-    if (startTime != keyframes_.front()->getTime() || endTime != keyframes_.back()->getTime()) {
-        notifyKeyframeSequenceMoved(this);
-    }
-}
+std::string ControlKeyframeSequence::getClassIdentifier() const { return classIdentifier(); }
 
 AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
                                                        AnimationState state) const {
     AnimationTimeState timeState{to, state};
 
-    if (state == AnimationState::Playing) {
-        for (const auto& key : keyframes_) {
-            auto t = key->getTime();
-            if (from < t && t < to || to < t && t < from) {
-                timeState = (*key)(from, to, state);
-            }
+    // 'it' will be the first key. with a time larger then 'to'.
+    auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
+                                   [](const auto& a, const auto& b) { return a < *b; });
+    auto toIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), to,
+                                 [](const auto& a, const auto& b) { return a < *b; });
+    if (toIt != fromIt) {
+        if (from < to) {
+            return (**fromIt)(from, to, state);
+        } else {
+            return (**toIt)(from, to, state);
         }
     }
 
-    return timeState;
-}
-
-void ControlKeyframeSequence::add(const Keyframe& key) {
-    add(dynamic_cast<const ControlKeyframe&>(key));
-}
-
-void ControlKeyframeSequence::add(const ControlKeyframe& key) {
-    addKeyFrame(std::make_unique<ControlKeyframe>(key));
-}
-
-void ControlKeyframeSequence::addKeyFrame(std::unique_ptr<ControlKeyframe> key) {
-    auto it = keyframes_.insert(std::upper_bound(keyframes_.begin(), keyframes_.end(), key,
-                                                 [&key](const auto& a, const auto& b) {
-                                                     return a->getTime() < b->getTime();
-                                                 }),
-                                std::move(key));
-
-    (*it)->addObserver(this);
-    notifyKeyframeAdded(it->get(), this);
-}
-
-void ControlKeyframeSequence::remove(size_t i) {
-
-    auto key = std::move(keyframes_[i]);
-    keyframes_.erase(keyframes_.begin() + i);
-    notifyKeyframeRemoved(key.get(), this);
-}
-
-ControlKeyframe& ControlKeyframeSequence::getLast() { return *keyframes_.back(); }
-
-const ControlKeyframe& ControlKeyframeSequence::getLast() const { return *keyframes_.back(); }
-
-ControlKeyframe& ControlKeyframeSequence::getFirst() { return *keyframes_.front(); }
-
-const ControlKeyframe& ControlKeyframeSequence::getFirst() const { return *keyframes_.front(); }
-
-ControlKeyframe& ControlKeyframeSequence::operator[](size_t i) { return *keyframes_[i]; }
-
-const ControlKeyframe& ControlKeyframeSequence::operator[](size_t i) const {
-    return *keyframes_[i];
-}
-
-void ControlKeyframeSequence::serialize(Serializer& s) const {
-    s.serialize("keyframes", keyframes_, "keyframe");
-}
-
-void ControlKeyframeSequence::deserialize(Deserializer& d) {
-    using Elem = std::unique_ptr<ControlKeyframe>;
-    util::IndexedDeserializer<Elem>("keyframes", "keyframe")
-        .onNew([&](Elem& key) {
-            notifyKeyframeAdded(key.get(), this);
-            key->addObserver(this);
-        })
-        .onRemove([&](Elem& key) { notifyKeyframeRemoved(key.get(), this); })(d, keyframes_);
+    return {to, state};
 }
 
 }  // namespace animation

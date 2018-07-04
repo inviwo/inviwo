@@ -36,7 +36,6 @@
 
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/animationobserver.h>
 #include <modules/animation/datastructures/animationstate.h>
@@ -64,9 +63,6 @@ public:
     Track& operator[](size_t i);
     const Track& operator[](size_t i) const;
 
-    ControlTrack& getControlTrack() { return controlTrack_; }
-    const ControlTrack& getControlTrack() const { return controlTrack_; }
-
     void add(std::unique_ptr<Track> track);
     /**
      * Remove tracks at index i, indicating the order in which the track was added,
@@ -74,13 +70,14 @@ public:
      * No range check is done.
      * Calls TrackObserver::notifyTrackRemoved after removing track.
      */
-    void removeTrack(size_t i);
+    std::unique_ptr<Track> remove(size_t i);
+
     /**
      * Remove tracks based on Track::getIdentifier
      * Does nothing if no match was found.
      * Calls TrackObserver::notifyTrackRemoved after removing track.
      */
-    void removeTrack(const std::string& id);
+    std::unique_ptr<Track> remove(const std::string& id);
 
     /**
      * Remove Keyframe if matching any of the Keyframes in the tracks.
@@ -90,7 +87,7 @@ public:
      * if no match was found.
      * @note Keyframe will be deleted if removed so do not use pointer after calling this function.
      */
-    void removeKeyframe(Keyframe* key);
+    std::unique_ptr<Keyframe> remove(Keyframe* key);
 
     /**
      * Remove KeyframeSequence if matching any of the Sequences in the tracks.
@@ -100,23 +97,27 @@ public:
      * @note KeyframeSequences and its Keyframes will be deleted if removed so
      * do not use pointer after calling this function.
      */
-    void removeKeyframeSequence(KeyframeSequence* seq);
+    std::unique_ptr<KeyframeSequence> remove(KeyframeSequence* seq);
+
     /**
      * Remove all tracks. Calls TrackObserver::notifyTrackRemoved for each removed track.
      */
     void clear();
+
     /**
      * Return a sorted list, in ascending order, of all Keyframe times existing in the animation.
      */
     std::vector<Seconds> getAllTimes() const;
+
     /**
      * Return time of first Keyframe in all tracks, or 0 if no track exist.
      */
-    Seconds firstTime() const;
+    Seconds getFirstTime() const;
+
     /**
      * Return time of last Keyframe in all tracks, or 0 if no track exist.
      */
-    Seconds lastTime() const;
+    Seconds getLastTime() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -128,7 +129,6 @@ private:
     virtual void onFirstMoved(Track* t) override;
     virtual void onLastMoved(Track* t) override;
 
-    ControlTrack controlTrack_;
     std::vector<std::unique_ptr<Track>> tracks_;
     std::vector<Track*> priorityTracks_;
 };

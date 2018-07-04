@@ -32,13 +32,34 @@
 namespace inviwo {
 namespace animation {
 
-bool operator==(const ControlKeyframe& a, const ControlKeyframe& b) {
-    if (a.getTime() == b.getTime() && a.getAction() == b.getAction()) {
-        switch (a.getAction()) {
+ControlKeyframe::ControlKeyframe(Seconds time, ControlAction action, ControlPayload payload)
+    : BaseKeyframe(time), action_(action), payload_(payload) {}
+ControlKeyframe::~ControlKeyframe() = default;
+
+ControlKeyframe::ControlKeyframe(const ControlKeyframe& rhs) = default;
+ControlKeyframe& ControlKeyframe::operator=(const ControlKeyframe& that) {
+    if (this != &that) {
+        BaseKeyframe::operator=(that);
+        action_ = that.action_;
+        payload_ = that.payload_;
+    }
+    return *this;
+}
+
+ControlKeyframe* ControlKeyframe::clone() const { return new ControlKeyframe(*this); }
+
+std::string ControlKeyframe::classIdentifier() { return "org.inviwo.animation.ControlKeyframe"; }
+std::string ControlKeyframe::getClassIdentifier() const { return classIdentifier(); }
+
+bool ControlKeyframe::equal(const Keyframe& other) const {
+    if (!BaseKeyframe::equal(other)) return false;
+    const auto& o = static_cast<const ControlKeyframe&>(other);
+    if (getTime() == o.getTime() && getAction() == o.getAction()) {
+        switch (getAction()) {
             case ControlAction::JumpTo:
-                return a.getPayload().jumpToTime == b.getPayload().jumpToTime;
+                return getPayload().jumpToTime == o.getPayload().jumpToTime;
             case ControlAction::Script:
-                return a.getPayload().script == b.getPayload().script;
+                return getPayload().script == o.getPayload().script;
             default:
                 break;
         }
@@ -46,18 +67,25 @@ bool operator==(const ControlKeyframe& a, const ControlKeyframe& b) {
     return false;
 }
 
-bool operator!=(const ControlKeyframe& a, const ControlKeyframe& b) { return !(a == b); }
+void ControlKeyframe::setAction(ControlAction action) { action_ = action; }
+
+void ControlKeyframe::setPayload(ControlPayload payload) { payload_ = payload; }
+
+ControlAction ControlKeyframe::getAction() const { return action_; }
+ControlPayload ControlKeyframe::getPayload() const { return payload_; }
 
 AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to, AnimationState state) {
+
     if (state == AnimationState::Playing) {
-        if (from < getTime() && getTime() < to || to < getTime() && getTime() < from) {
+        if (from < getTime() && to >= getTime() || to <= getTime() && from > getTime()) {
             // We passed over this keyframe
-            switch (getAction()) {
+            switch (action_) {
                 case ControlAction::Pause:
                     return {time_, AnimationState::Paused};
                 case ControlAction::JumpTo:
                     return {getPayload().jumpToTime, state};
                 case ControlAction::Script:
+                    LogWarn("Scripts not implemented");
                     // TODO: IMPLEMENT RUN SCRIPT
                     return {to, state};
             }
@@ -67,17 +95,17 @@ AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to, Animati
 }
 
 void ControlKeyframe::deserialize(Deserializer& d) {
-    double tmp = time_.count();
-    d.deserialize("time", tmp);
-    time_ = Seconds{tmp};
+    BaseKeyframe::deserialize(d);
     d.deserialize("action", action_);
     switch (action_) {
         case ControlAction::Pause:
             break;
-        case ControlAction::JumpTo:
+        case ControlAction::JumpTo: {
+            double tmp = payload_.jumpToTime.count();
             d.deserialize("payload", tmp);
             payload_.jumpToTime = Seconds{tmp};
             break;
+        }
         case ControlAction::Script:
             d.deserialize("payload", payload_.script);
             break;
@@ -87,9 +115,8 @@ void ControlKeyframe::deserialize(Deserializer& d) {
 }
 
 void ControlKeyframe::serialize(Serializer& s) const {
-    s.serialize("time", time_.count());
+    BaseKeyframe::serialize(s);
     s.serialize("action", action_);
-
     switch (action_) {
         case ControlAction::Pause:
             break;
