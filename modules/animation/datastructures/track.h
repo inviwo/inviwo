@@ -38,6 +38,7 @@
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/animationstate.h>
 
@@ -58,10 +59,10 @@ namespace animation {
  * @see KeyFrameSequence
  */
 class IVW_MODULE_ANIMATION_API Track : public Serializable,
-                                       public TrackObservable,
-                                       public KeyframeSequenceObserver {
+                                       public TrackObservable {
 public:
     Track() = default;
+    
     /**
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
      */
@@ -71,51 +72,82 @@ public:
 
     virtual std::string getClassIdentifier() const = 0;
 
-    virtual void setEnabled(bool enabled) = 0;
     virtual bool isEnabled() const = 0;
+    virtual void setEnabled(bool enabled) = 0;
 
-    virtual void setIdentifier(const std::string& identifier) = 0;
     virtual const std::string& getIdentifier() const = 0;
+    virtual void setIdentifier(const std::string& identifier) = 0;
+    
     /**
      * Set Track name. Used when displaying the track.
      */
     virtual void setName(const std::string& name) = 0;
     virtual const std::string& getName() const = 0;
+    
+    /**
+     * Return Track priority (0 is highest)
+     */
+    virtual size_t getPriority() const = 0;
+
     /**
      * Set priority (0 is highest).
      * The Track with highest priority is evaluated first
      * at a given time by Animation.
      */
     virtual void setPriority(size_t priority) = 0;
-    /**
-     * Return Track priority (0 is highest)
-     */
-    virtual size_t getPriority() const = 0;
 
-    virtual Seconds firstTime() const = 0;
-    virtual Seconds lastTime() const = 0;
+    virtual Seconds getFirstTime() const = 0;
+    virtual Seconds getLastTime() const = 0;
     virtual std::vector<Seconds> getAllTimes() const = 0;
+
     /**
      * Return the number of KeyframeSequences in the track.
      */
     virtual size_t size() const = 0;
+    virtual bool empty() const = 0;
 
     virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const = 0;
 
     virtual KeyframeSequence& operator[](size_t i) = 0;
     virtual const KeyframeSequence& operator[](size_t i) const = 0;
+
+    virtual const KeyframeSequence& getFirst() const = 0;
+    virtual KeyframeSequence& getFirst() = 0;
+    virtual const KeyframeSequence& getLast() const = 0;
+    virtual KeyframeSequence& getLast() = 0;
+
     /**
      * Add KeyframeSequence and call TrackObserver::notifyKeyframeSequenceAdded
      */
-    virtual void add(const KeyframeSequence& sequence) = 0;
+    virtual void add(std::unique_ptr<KeyframeSequence> sequence) = 0;
+
     /**
      * Remove KeyframeSequence at index i and call TrackObserver::notifyKeyframeSequenceRemoved
      */
-    virtual void remove(size_t i) = 0;
+    virtual std::unique_ptr<KeyframeSequence> remove(size_t i) = 0;
+    virtual std::unique_ptr<KeyframeSequence> remove(KeyframeSequence* seq) = 0;
+    virtual std::unique_ptr<Keyframe> remove(Keyframe* key) = 0;
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
+
+IVW_MODULE_ANIMATION_API bool operator<(const Track& a, const Track& b);
+IVW_MODULE_ANIMATION_API bool operator<=(const Track& a, const Track& b);
+IVW_MODULE_ANIMATION_API bool operator>(const Track& a, const Track& b);
+IVW_MODULE_ANIMATION_API bool operator>=(const Track& a, const Track& b);
+
+IVW_MODULE_ANIMATION_API bool operator<(const Track& a, const Seconds& b);
+IVW_MODULE_ANIMATION_API bool operator<=(const Track& a, const Seconds& b);
+IVW_MODULE_ANIMATION_API bool operator>(const Track& a, const Seconds& b);
+IVW_MODULE_ANIMATION_API bool operator>=(const Track& a, const Seconds& b);
+
+IVW_MODULE_ANIMATION_API bool operator<(const Seconds& a, const Track& b);
+IVW_MODULE_ANIMATION_API bool operator<=(const Seconds& a, const Track& b);
+IVW_MODULE_ANIMATION_API bool operator>(const Seconds& a, const Track& b);
+IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const Track& b);
+
+
 
 /** \class TrackTyped
  * Track containing KeyFrameSequence of a given KeyFrame type.

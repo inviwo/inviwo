@@ -53,11 +53,7 @@ namespace inviwo {
 namespace animation {
 class SequenceEditorWidget;
 
-/**
- * \class SequenceEditorPanel
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
+
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
                                                        public AnimationControllerObserver,
                                                        public AnimationObserver,

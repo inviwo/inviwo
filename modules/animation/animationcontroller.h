@@ -53,12 +53,12 @@ namespace inviwo {
 namespace animation {
 
 /** The AnimationController is responsible for steering the animation.
-
-    It keeps track of the animation time and state.
-    When playing, it should adjust the step sizes to maintain a certain playback speed (frames per
-   second).
-
-    Furthermore, it allows to render the animation into an image sequence.
+ *
+ *   It keeps track of the animation time and state.
+ *   When playing, it should adjust the step sizes to maintain a certain playback speed (frames per
+ *  second).
+ *
+ *   Furthermore, it allows to render the animation into an image sequence.
  */
 class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable,
                                                      public PropertyOwner {
@@ -108,27 +108,27 @@ public:
 
     InviwoApplication* getInviwoApplication() { return app_; }
 
-    CompositeProperty propPlayOptions;
-    OptionPropertyInt propPlayFirstLastTimeOption;
-    DoubleMinMaxProperty propPlayFirstLastTime;
-    DoubleProperty propPlayFramesPerSecond;
-    TemplateOptionProperty<PlaybackMode> propPlayMode;
+    CompositeProperty playOptions;
+    OptionPropertyInt playWindowMode;
+    DoubleMinMaxProperty playWindow;
+    DoubleProperty framesPerSecond;
+    TemplateOptionProperty<PlaybackMode> playMode;
 
-    CompositeProperty propRenderOptions;
-    OptionPropertyInt propRenderFirstLastTimeOption;
-    DoubleMinMaxProperty propRenderFirstLastTime;
-    OptionPropertyInt propRenderSizeOptions;
-    IntVec2Property propRenderSize;
-    OptionPropertyInt propRenderSizeAspectRatio;
-    DirectoryProperty propRenderLocationDir;
-    StringProperty propRenderLocationBaseName;
-    OptionPropertyString propRenderImageExtension;
-    IntProperty propRenderNumFrames;
-    ButtonProperty propRenderAction;
-    ButtonProperty propRenderActionStop;
+    CompositeProperty renderOptions;
+    OptionPropertyInt renderWindowMode;
+    DoubleMinMaxProperty renderWindow;
+    OptionPropertyInt renderSizeMode;
+    IntVec2Property renderSize;
+    OptionPropertyInt renderAspectRatio;
+    DirectoryProperty renderLocation;
+    StringProperty renderBaseName;
+    OptionPropertyString renderImageExtension;
+    IntProperty renderNumFrames;
+    ButtonProperty renderAction;
+    ButtonProperty renderActionStop;
 
-    CompositeProperty propControlOptions;
-    ButtonProperty propControlInsertPauseFrame;
+    CompositeProperty controlOptions;
+    ButtonProperty controlInsertPauseFrame;
 
 protected:
     /// Low-level setting of @currentTime_. Use @eval() to set time in the public interface.
@@ -161,8 +161,8 @@ protected:
     /// Timer for calling the @tick function is regular intervals.
     Timer timer_;
 
-    struct TRenderCanvasSize {
-        TRenderCanvasSize() {}
+    struct RenderCanvasSize {
+        RenderCanvasSize() {}
         std::string canvasIdentifier;
         bool enableCustomInputDimensions_;
         ivec2 customInputDimensions_;
@@ -170,19 +170,19 @@ protected:
     };
 
     /// Simple data structure for the state needed during rendering
-    struct TRenderState {
+    struct RenderState {
         Seconds firstTime;
         Seconds lastTime;
         int numFrames;
         int currentFrame;
         int digits;
         std::string baseFileName;
-        std::vector<TRenderCanvasSize> origCanvasSettings;
+        std::vector<RenderCanvasSize> origCanvasSettings;
         std::string canvasIndicator;
     };
 
     /// State needed during rendering
-    TRenderState renderState_;
+    RenderState renderState_;
 };
 
 }  // namespace animation

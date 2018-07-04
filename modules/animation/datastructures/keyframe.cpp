@@ -31,34 +31,29 @@
 
 namespace inviwo {
 
-bool animation::operator<(const Keyframe& a, const Keyframe& b) {
-    return a.getTime() < b.getTime();
-}
+namespace animation {
 
-bool animation::operator>(const Keyframe& a, const Keyframe& b) {
-    return a.getTime() > b.getTime();
-}
+bool operator==(const Keyframe& a, const Keyframe& b) { return a.equal(b); }
 
-bool animation::operator>=(const Keyframe& a, const Keyframe& b) {
-    return a.getTime() >= b.getTime();
-}
+bool operator!=(const Keyframe& a, const Keyframe& b) { return !(a == b); }
 
-bool animation::operator<=(const Keyframe& a, const Keyframe& b) {
-    return a.getTime() <= b.getTime();
-}
+bool operator<(const Keyframe& a, const Keyframe& b) { return a.getTime() < b.getTime(); }
 
-void animation::Keyframe::serialize(Serializer& s) const { s.serialize("selected", isSelected_); }
+bool operator>(const Keyframe& a, const Keyframe& b) { return a.getTime() > b.getTime(); }
 
-void animation::Keyframe::deserialize(Deserializer& d) { d.deserialize("selected", isSelected_); }
+bool operator>=(const Keyframe& a, const Keyframe& b) { return a.getTime() >= b.getTime(); }
 
-bool animation::Keyframe::isSelected() const { return isSelected_; }
+bool operator<=(const Keyframe& a, const Keyframe& b) { return a.getTime() <= b.getTime(); }
 
-void animation::Keyframe::setSelected(bool selected /*= true*/) {
+bool operator<(const Keyframe& a, const Seconds& b) { return a.getTime() < b; }
+bool operator<=(const Keyframe& a, const Seconds& b) { return a.getTime() <= b; }
+bool operator>(const Keyframe& a, const Seconds& b) { return  a.getTime() > b; }
+bool operator>=(const Keyframe& a, const Seconds& b) { return a.getTime() >= b; }
 
-    if (selected != isSelected_) {
-        isSelected_ = selected;
-        notifyKeyframeSelectionChanged(this);
-    }
-}
+bool operator<(const Seconds& a, const Keyframe& b) { return a < b.getTime(); }
+bool operator<=(const Seconds& a, const Keyframe& b) { return a <= b.getTime(); }
+bool operator>(const Seconds& a, const Keyframe& b) { return a > b.getTime(); }
+bool operator>=(const Seconds& a, const Keyframe& b) { return a >= b.getTime(); }
 
+}  // namespace animation
 }  // namespace inviwo

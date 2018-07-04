@@ -51,16 +51,12 @@ public:
     LinearInterpolation() = default;
     virtual ~LinearInterpolation() = default;
 
-    virtual LinearInterpolation* clone() const override { return new LinearInterpolation(*this); };
+    virtual LinearInterpolation<Key>* clone() const override;
 
-    static std::string classIdentifier() {
-        auto keyid = Key::classIdentifier();
-        std::string id = "org.inviwo.animation.linearinterpolation.";
-        auto res = std::mismatch(id.begin(), id.end(), keyid.begin(), keyid.end());
-        id.append(res.second, keyid.end());
-        return id;
-    };
-    virtual std::string getClassIdentifier() const override { return classIdentifier(); }
+    static std::string classIdentifier();
+    virtual std::string getClassIdentifier() const override;
+
+    virtual bool equal(const Interpolation& other) const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -68,21 +64,50 @@ public:
     /*
      * Returns linear interpolation of keyframe values at time t.
      */
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t,
-                            easing::EasingType easing) const -> typename Key::value_type override {
-        auto it = std::upper_bound(
-            keys.begin(), keys.end(), t,
-            [](const auto& time, const auto& key) { return time < key->getTime(); });
-
-        const auto& v1 = (*std::prev(it))->getValue();
-        const auto& t1 = (*std::prev(it))->getTime();
-
-        const auto& v2 = (*it)->getValue();
-        const auto& t2 = (*it)->getTime();
-
-        return glm::mix(v1, v2, Easing::Ease((t - t1) / (t2 - t1), easing));
-    }
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
+                            easing::EasingType easing) const -> typename Key::value_type override;
 };
+
+template <typename Key>
+LinearInterpolation<Key>* LinearInterpolation<Key>::clone() const {
+    return new LinearInterpolation<Key>(*this);
+};
+
+template <typename Key>
+std::string LinearInterpolation<Key>::getClassIdentifier() const {
+    return classIdentifier();
+}
+
+template <typename Key>
+bool LinearInterpolation<Key>::equal(const Interpolation& other) const {
+    return classIdentifier() == other.getClassIdentifier();
+}
+
+template <typename Key>
+std::string LinearInterpolation<Key>::classIdentifier() {
+    auto keyid = Key::classIdentifier();
+    std::string id = "org.inviwo.animation.linearinterpolation.";
+    auto res = std::mismatch(id.begin(), id.end(), keyid.begin(), keyid.end());
+    id.append(res.second, keyid.end());
+    return id;
+};
+
+template <typename Key>
+auto LinearInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
+                                          Seconds /*from*/, Seconds to, easing::EasingType easing) const
+    -> typename Key::value_type {
+    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
+        return time < key->getTime();
+    });
+
+    const auto& v1 = (*std::prev(it))->getValue();
+    const auto& t1 = (*std::prev(it))->getTime();
+
+    const auto& v2 = (*it)->getValue();
+    const auto& t2 = (*it)->getTime();
+
+    return glm::mix(v1, v2, easing::ease((to - t1) / (t2 - t1), easing));
+}
 
 template <typename Key>
 void LinearInterpolation<Key>::serialize(Serializer& s) const {

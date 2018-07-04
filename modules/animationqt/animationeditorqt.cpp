@@ -58,18 +58,10 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
     auto& animation = *controller_.getAnimation();
     animation.addObserver(this);
 
-    // Add Control track
-    {
-        auto trackQt = std::make_unique<TrackQt>(animation.getControlTrack());
-        trackQt->setPos(0, TimelineHeight + TrackHeight * 0.5);
-        this->addItem(trackQt.get());
-        tracks_.push_back(std::move(trackQt));
-    }
-
     // Add Property tracks
     for (size_t i = 0; i < animation.size(); ++i) {
         auto trackQt = std::make_unique<TrackQt>(animation[i]);
-        trackQt->setPos(0, TimelineHeight + TrackHeight * (i + 1) + TrackHeight * 0.5);
+        trackQt->setPos(0, TimelineHeight + TrackHeight * i + TrackHeight * 0.5);
         this->addItem(trackQt.get());
         tracks_.push_back(std::move(trackQt));
     }
@@ -132,10 +124,10 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
         for (auto& elem : itemList) {
             if (auto keyqt = qgraphicsitem_cast<KeyframeQt*>(elem)) {
                 auto& animation = *controller_.getAnimation();
-                animation.removeKeyframe(&(keyqt->getKeyframe()));
+                animation.remove(&(keyqt->getKeyframe()));
             } else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceQt*>(elem)) {
                 auto& animation = *controller_.getAnimation();
-                animation.removeKeyframeSequence(&(seqqt->getKeyframeSequence()));
+                animation.remove(&(seqqt->getKeyframeSequence()));
             }
         }
     } else if (k == Qt::Key_Space) {
@@ -219,7 +211,7 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
 void AnimationEditorQt::updateSceneRect() {
     setSceneRect(
         0.0, 0.0,
-        static_cast<double>(controller_.getAnimation()->lastTime().count() * WidthPerSecond),
+        static_cast<double>(controller_.getAnimation()->getLastTime().count() * WidthPerSecond),
         static_cast<double>(controller_.getAnimation()->size() * TrackHeight + TimelineHeight));
 }
 

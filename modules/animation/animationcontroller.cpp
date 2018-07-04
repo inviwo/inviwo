@@ -33,31 +33,69 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
 namespace animation {
 
 AnimationController::AnimationController(Animation* animation, InviwoApplication* app)
-    : propPlayOptions("PlayOptions", "Play Settings")
-    , propPlayFirstLastTimeOption("PlayFirstLastTimeOption", "Time")
-    , propPlayFirstLastTime("PlayFirstLastTime", "Window", 0, 10, 0, 1e5, 1)
-    , propPlayFramesPerSecond("PlayFramesPerSecond", "Frames per Second")
-    , propPlayMode("PlayMode", "Mode")
-    , propRenderOptions("RenderOptions", "Render Animation")
-    , propRenderFirstLastTimeOption("RenderFirstLastTimeOption", "Time")
-    , propRenderFirstLastTime("RenderFirstLastTime", "Window", 0, 10, 0, 1e5, 1)
-    , propRenderSizeOptions("RenderSizeOptions", "Size")
-    , propRenderSize("RenderSize", "Pixels", ivec2(1024), ivec2(1), ivec2(20000), ivec2(256))
-    , propRenderSizeAspectRatio("RenderSizeAspectRatio", "Aspect Ratio")
-    , propRenderLocationDir("RenderLocationDir", "Directory")
-    , propRenderLocationBaseName("RenderLocationBaseName", "Base Name")
-    , propRenderImageExtension("RenderImageExtension", "Type")
-    , propRenderNumFrames("RenderNumFrames", "# Frames", 100, 2, 1000000)
-    , propRenderAction("RenderAction", "Render")
-    , propRenderActionStop("RenderActionStop", "Stop")
-    , propControlOptions("ControlOptions", "Control Track")
-    , propControlInsertPauseFrame("ControlInsertPauseFrame", "Insert Pause-Frame")
+    : playOptions("PlayOptions", "Play Settings")
+    , playWindowMode("PlayFirstLastTimeOption", "Time",
+                     {{"FullTimeWindow", "Play full animation", 0},
+                      {"UserTimeWindow", "Selected time window", 1}},
+                     0)
+    , playWindow("PlayFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
+                 InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , framesPerSecond("PlayFramesPerSecond", "Frames per Second", 25.0, 000.1, 1000.0, 1.0,
+                      InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , playMode("PlayMode", "Mode",
+               {{"Once", "Play once", PlaybackMode::Once},
+                {"Loop", "Loop animation", PlaybackMode::Loop},
+                {"Swing", "Swing animation", PlaybackMode::Swing}},
+               0)
+    , renderOptions("RenderOptions", "Render Animation")
+    , renderWindowMode("RenderFirstLastTimeOption", "Time",
+                       {{"FullTimeWindow", "Render full animation", 0},
+                        {"UserTimeWindow", "Selected time window", 1}},
+                       0)
+    , renderWindow("RenderFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
+                   InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , renderSizeMode("RenderSizeOptions", "Size",
+                     {{"CurrentCanvas", "Use current settings of canvases", 0},
+                      {"720p", "720p for all canvases", 1},
+                      {"1080p", "1080p for all canvases", 2},
+                      {"CustomSize", "User-defined resolution for all canvases", 3}},
+                     0)
+    , renderSize("RenderSize", "Pixels", ivec2(1024), ivec2(1), ivec2(20000), ivec2(256),
+                 InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , renderAspectRatio("RenderSizeAspectRatio", "Aspect Ratio",
+                        {{"Ignore", "Ignore aspect ratio", 0},
+                         {"KeepInside", "Keep aspect ratio within given resolution", 1},
+                         {"KeepEnlarge", "Keep aspect ratio exceeding given resolution", 2}},
+                        1)
+    , renderLocation("RenderLocationDir", "Directory")
+    , renderBaseName("RenderLocationBaseName", "Base Name")
+    , renderImageExtension(
+          "RenderImageExtension", "Type",
+          util::transform(app->getDataWriterFactory()->getExtensionsForType<Layer>(),
+                          [](const auto& i) -> std::string { return toString(i); }),
+          [app]() -> size_t {
+              auto ext = app->getDataWriterFactory()->getExtensionsForType<Layer>();
+              auto it = std::find_if(ext.begin(), ext.end(),
+                                     [](auto& e) { return e.extension_ == "png"; });
+              if (it != ext.end())
+                  return std::distance(ext.begin(), it);
+              else
+                  return 0;
+          }())
+    , renderNumFrames("RenderNumFrames", "# Frames", 100, 2, 1000000, 1,
+                      InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , renderAction("RenderAction", "Render")
+    , renderActionStop("RenderActionStop", "Stop")
+    , controlOptions("ControlOptions", "Control Track")
+    , controlInsertPauseFrame("ControlInsertPauseFrame", "Insert Pause-Frame")
     , animation_(animation)
     , app_(app)
     , state_(AnimationState::Paused)
@@ -71,109 +109,56 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
              }} {
 
     // Play Settings
-    propPlayFirstLastTimeOption.addOption("FullTimeWindow", "Play full animation", 0);
-    propPlayFirstLastTimeOption.addOption("UserTimeWindow", "Selected time window", 1);
-    propPlayFirstLastTimeOption.onChange(
-        [&]() { propPlayFirstLastTime.setVisible(propPlayFirstLastTimeOption.get() == 1); });
-    propPlayFirstLastTimeOption.setCurrentStateAsDefault();
+    playWindowMode.onChange([&]() { playWindow.setVisible(playWindowMode.get() == 1); });
+    playWindow.setVisible(playWindowMode.get() == 1);
 
-    propPlayFirstLastTime.setSemantics(PropertySemantics::Text);
-    propPlayFirstLastTime.setVisible(propPlayFirstLastTimeOption.get() == 1);
-
-    propPlayFramesPerSecond.setSemantics(PropertySemantics::Text);
-
-    propPlayMode.addOption("Once", "Play once", PlaybackMode::Once);
-    propPlayMode.addOption("Loop", "Loop animation", PlaybackMode::Loop);
-    propPlayMode.addOption("Swing", "Swing animation", PlaybackMode::Swing);
-
-    propPlayMode.setCurrentStateAsDefault();
-
-    propPlayOptions.addProperty(propPlayFirstLastTimeOption);
-    propPlayOptions.addProperty(propPlayFirstLastTime);
-    propPlayOptions.addProperty(propPlayFramesPerSecond);
-    propPlayOptions.addProperty(propPlayMode);
-    addProperty(propPlayOptions);
+    playOptions.addProperty(playWindowMode);
+    playOptions.addProperty(playWindow);
+    playOptions.addProperty(framesPerSecond);
+    playOptions.addProperty(playMode);
+    addProperty(playOptions);
 
     // Rendering Settings
-    propRenderFirstLastTimeOption.addOption("FullTimeWindow", "Render full animation", 0);
-    propRenderFirstLastTimeOption.addOption("UserTimeWindow", "Selected time window", 1);
-    propRenderFirstLastTimeOption.onChange(
-        [&]() { propRenderFirstLastTime.setVisible(propRenderFirstLastTimeOption.get() == 1); });
-    propRenderFirstLastTimeOption.setCurrentStateAsDefault();
+    renderWindowMode.onChange([&]() { renderWindow.setVisible(renderWindowMode.get() == 1); });
+    renderWindow.setVisible(renderWindowMode.get() == 1);
 
-    propRenderFirstLastTime.setSemantics(PropertySemantics::Text);
-    propRenderFirstLastTime.setVisible(propRenderFirstLastTimeOption.get() == 1);
-
-    propRenderSizeOptions.addOption("CurrentCanvas", "Use current settings of canvases", 0);
-    propRenderSizeOptions.addOption("720p", "720p for all canvases", 1);
-    propRenderSizeOptions.addOption("1080p", "1080p for all canvases", 2);
-    propRenderSizeOptions.addOption("CustomSize", "User-defined resolution for all canvases", 3);
-    propRenderSizeOptions.onChange([&]() {
-        propRenderSize.setVisible(propRenderSizeOptions.get() == 3);
-        propRenderSizeAspectRatio.setVisible(propRenderSizeOptions.get() > 0);
+    renderSizeMode.onChange([&]() {
+        renderSize.setVisible(renderSizeMode.get() == 3);
+        renderAspectRatio.setVisible(renderSizeMode.get() > 0);
     });
-    propRenderSizeOptions.setCurrentStateAsDefault();
+    renderSize.setVisible(renderSizeMode.get() == 3);
+    renderAspectRatio.setVisible(renderSizeMode.get() > 0);
 
-    propRenderSize.setSemantics(PropertySemantics::Text);
-    propRenderSize.setVisible(propRenderSizeOptions.get() == 3);
+    renderAction.onChange([&]() { render(); });
+    renderAction.setVisible(state_ != AnimationState::Rendering);
 
-    propRenderSizeAspectRatio.addOption("Ignore", "Ignore aspect ratio", 0);
-    propRenderSizeAspectRatio.addOption("KeepInside", "Keep aspect ratio within given resolution",
-                                        1);
-    propRenderSizeAspectRatio.addOption("KeepEnlarge",
-                                        "Keep aspect ratio exceeding given resolution", 2);
-    propRenderSizeAspectRatio.set(1);
-    propRenderSizeAspectRatio.setCurrentStateAsDefault();
-    propRenderSizeAspectRatio.setVisible(propRenderSizeOptions.get() > 0);
+    renderActionStop.onChange([&]() { pause(); });
+    renderActionStop.setVisible(state_ == AnimationState::Rendering);
 
-    propRenderNumFrames.setSemantics(PropertySemantics::Text);
-
-    // Add all supported image extensions to option property
-    auto factory = app_->getDataWriterFactory();
-    if (factory) {
-        std::string defaultExt;  // save first writer extension matching "png" to be used as default
-        for (auto ext : factory->getExtensionsForType<Layer>()) {
-            propRenderImageExtension.addOption(ext.toString(), ext.toString());
-            if (defaultExt.empty() && ext.extension_ == "png") {
-                defaultExt = ext.toString();
-            }
-        }
-        if (!defaultExt.empty()) {
-            propRenderImageExtension.setSelectedIdentifier(defaultExt);
-        }
-    }
-    propRenderImageExtension.setCurrentStateAsDefault();
-
-    propRenderAction.onChange([&]() { render(); });
-    propRenderAction.setVisible(state_ != AnimationState::Rendering);
-
-    propRenderActionStop.onChange([&]() { pause(); });
-    propRenderActionStop.setVisible(state_ == AnimationState::Rendering);
-
-    propRenderOptions.addProperty(propRenderFirstLastTimeOption);
-    propRenderOptions.addProperty(propRenderFirstLastTime);
-    propRenderOptions.addProperty(propRenderSizeOptions);
-    propRenderOptions.addProperty(propRenderSizeAspectRatio);
-    propRenderOptions.addProperty(propRenderSize);
-    propRenderOptions.addProperty(propRenderNumFrames);
-    propRenderOptions.addProperty(propRenderLocationDir);
-    propRenderOptions.addProperty(propRenderLocationBaseName);
-    propRenderOptions.addProperty(propRenderImageExtension);
-    propRenderOptions.addProperty(propRenderAction);
-    propRenderOptions.addProperty(propRenderActionStop);
-    propRenderOptions.setCollapsed(true);
-    addProperty(propRenderOptions);
+    renderOptions.addProperty(renderWindowMode);
+    renderOptions.addProperty(renderWindow);
+    renderOptions.addProperty(renderSizeMode);
+    renderOptions.addProperty(renderAspectRatio);
+    renderOptions.addProperty(renderSize);
+    renderOptions.addProperty(renderNumFrames);
+    renderOptions.addProperty(renderLocation);
+    renderOptions.addProperty(renderBaseName);
+    renderOptions.addProperty(renderImageExtension);
+    renderOptions.addProperty(renderAction);
+    renderOptions.addProperty(renderActionStop);
+    renderOptions.setCollapsed(true);
+    addProperty(renderOptions);
 
     // Control Track
-    propControlInsertPauseFrame.onChange([&]() {
-        auto time = getCurrentTime();
-        ControlKeyframeSequence seq;
-        seq.add(ControlKeyframe(time, ControlAction::Pause));
-        getAnimation()->getControlTrack().addTyped(seq);
+    controlInsertPauseFrame.onChange([&]() {
+        // auto time = getCurrentTime();
+        // ControlKeyframeSequence seq;
+        // seq.add(ControlKeyframe(time, ControlAction::Pause));
+        // getAnimation()->getControlTrack().addTyped(seq);
     });
 
-    propControlOptions.addProperty(propControlInsertPauseFrame);
-    addProperty(propControlOptions);
+    controlOptions.addProperty(controlInsertPauseFrame);
+    addProperty(controlOptions);
 }
 
 AnimationController::~AnimationController() = default;
@@ -231,17 +216,14 @@ void AnimationController::play() { setState(AnimationState::Playing); }
 
 void AnimationController::render() {
     // Gather rendering info
-    renderState_.firstTime = (propRenderFirstLastTimeOption.get() == 0)
-                                 ? animation_->firstTime()
-                                 : Seconds(propRenderFirstLastTime.get()[0]);
-    renderState_.lastTime = (propRenderFirstLastTimeOption.get() == 0)
-                                ? animation_->lastTime()
-                                : Seconds(propRenderFirstLastTime.get()[1]);
-    renderState_.numFrames = propRenderNumFrames.get();
+    renderState_.firstTime =
+        (renderWindowMode.get() == 0) ? animation_->getFirstTime() : Seconds(renderWindow.get()[0]);
+    renderState_.lastTime =
+        (renderWindowMode.get() == 0) ? animation_->getLastTime() : Seconds(renderWindow.get()[1]);
+    renderState_.numFrames = renderNumFrames.get();
     if (renderState_.numFrames < 2) renderState_.numFrames = 2;
     renderState_.currentFrame = -1;  // first run, see below in tickRender()
-    renderState_.baseFileName =
-        propRenderLocationDir.get() + "/" + propRenderLocationBaseName.get();
+    renderState_.baseFileName = renderLocation.get() + "/" + renderBaseName.get();
     // - digits of the frame counter
     renderState_.digits = 0;
     int number(renderState_.numFrames - 1);
@@ -268,14 +250,14 @@ void AnimationController::render() {
     // Alter the settings of the canvases, so we can shoot in the right resolution
     // - This will be restored later
     renderState_.origCanvasSettings.clear();
-    if (propRenderSizeOptions.get() != 0) {
+    if (renderSizeMode.get() != 0) {
         renderState_.origCanvasSettings.resize(activeCanvases.size());
         // For each active canvas
         for (auto thisCanvas : activeCanvases) {
 
             // Save original state
             renderState_.origCanvasSettings.emplace_back();
-            TRenderCanvasSize& thisSettings = renderState_.origCanvasSettings.back();
+            auto& thisSettings = renderState_.origCanvasSettings.back();
             thisSettings.enableCustomInputDimensions_ =
                 thisCanvas->enableCustomInputDimensions_.get();
             thisSettings.customInputDimensions_ = thisCanvas->customInputDimensions_.get();
@@ -287,7 +269,7 @@ void AnimationController::render() {
             const dvec2& actualDims = thisCanvas->dimensions_.get();
             // - basic dimensions desired
             ivec2 desiredDims{0};
-            switch (propRenderSizeOptions.get()) {
+            switch (renderSizeMode.get()) {
                 case 1: {
                     desiredDims = ivec2(1280, 720);
                     break;
@@ -297,18 +279,18 @@ void AnimationController::render() {
                     break;
                 }
                 case 3: {
-                    desiredDims = propRenderSize.get();
+                    desiredDims = renderSize.get();
                     break;
                 }
                 default: { ivwAssert(false, "Should not happen."); }
             }
             // - adjust basic dimensions to the aspect ratio
-            if (propRenderSizeAspectRatio.get() > 0) {
+            if (renderAspectRatio.get() > 0) {
                 const double widthFactor = double(desiredDims.x) / actualDims.x;
                 const double heightFactor = double(desiredDims.y) / actualDims.y;
                 // 1 - image is at most the given resolution, or smaller
                 // 2 - image is at least the given resolution, or larger
-                const double factor = (propRenderSizeAspectRatio.get() == 1)
+                const double factor = (renderAspectRatio.get() == 1)
                                           ? std::min(widthFactor, heightFactor)
                                           : std::max(widthFactor, heightFactor);
                 desiredDims = static_cast<ivec2>(factor * actualDims);
@@ -322,8 +304,8 @@ void AnimationController::render() {
     }
 
     // Switch Buttons
-    propRenderAction.setVisible(false);
-    propRenderActionStop.setVisible(true);
+    renderAction.setVisible(false);
+    renderActionStop.setVisible(true);
 
     // Go for it!
     setState(AnimationState::Rendering);
@@ -331,8 +313,8 @@ void AnimationController::render() {
 
 void AnimationController::afterRender() {
     // Switch Buttons
-    propRenderActionStop.setVisible(false);
-    propRenderAction.setVisible(true);
+    renderActionStop.setVisible(false);
+    renderAction.setVisible(true);
 
     // Restore original state of Canvases
     ProcessorNetwork* pNetwork = app_->getProcessorNetwork();
@@ -370,17 +352,17 @@ void AnimationController::tick() {
 
     // Get active time window for playing
     // - init with sub-window, overwrite with full window if necessary
-    Seconds firstTime = Seconds(propPlayFirstLastTime.get()[0]);
-    Seconds lastTime = Seconds(propPlayFirstLastTime.get()[1]);
-    if (propPlayFirstLastTimeOption.get() == 0) {
+    Seconds firstTime = Seconds(playWindow.get()[0]);
+    Seconds lastTime = Seconds(playWindow.get()[1]);
+    if (playWindowMode.get() == 0) {
         // Full animation window
-        firstTime = animation_->firstTime();
-        lastTime = animation_->lastTime();
+        firstTime = animation_->getFirstTime();
+        lastTime = animation_->getLastTime();
     }
 
     // Ping at the end of time
     if (newTime > lastTime) {
-        switch (propPlayMode.get()) {
+        switch (playMode.get()) {
             case PlaybackMode::Once: {
                 newTime = lastTime;
                 setState(AnimationState::Paused);
@@ -402,7 +384,7 @@ void AnimationController::tick() {
 
     // Pong at the beginning of time
     if (newTime < firstTime) {
-        switch (propPlayMode.get()) {
+        switch (playMode.get()) {
             case PlaybackMode::Once: {
                 newTime = firstTime;
                 setState(AnimationState::Paused);
@@ -439,12 +421,11 @@ void AnimationController::tickRender() {
     // - generate filename pattern
     if (renderState_.currentFrame >= 0) {
         std::stringstream fileNamePattern;
-        fileNamePattern << propRenderLocationBaseName.get() << renderState_.canvasIndicator
-                        << std::setfill('0') << std::setw(renderState_.digits)
-                        << renderState_.currentFrame;
-        auto ext = FileExtension::createFileExtensionFromString(propRenderImageExtension.get());
+        fileNamePattern << renderBaseName.get() << renderState_.canvasIndicator << std::setfill('0')
+                        << std::setw(renderState_.digits) << renderState_.currentFrame;
+        auto ext = FileExtension::createFileExtensionFromString(renderImageExtension.get());
         // - save active canvases
-        util::saveAllCanvases(app_->getProcessorNetwork(), propRenderLocationDir.get(),
+        util::saveAllCanvases(app_->getProcessorNetwork(), renderLocation.get(),
                               fileNamePattern.str(), ext.extension_, true);
     }
 
@@ -485,8 +466,8 @@ void AnimationController::setAnimation(Animation* animation) {
     setTime(Seconds(0.0));
 }
 
-void AnimationController::setPlaySpeed(double framesPerSecond) {
-    deltaTime_ = Seconds(1.0 / framesPerSecond);
+void AnimationController::setPlaySpeed(double fps) {
+    deltaTime_ = Seconds(1.0 / fps);
     timer_.setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
 }
 

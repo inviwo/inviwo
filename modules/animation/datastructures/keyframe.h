@@ -52,118 +52,39 @@ class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeOb
 public:
     Keyframe() = default;
     virtual ~Keyframe() = default;
+    virtual Keyframe* clone() const = 0;
+
+    virtual std::string getClassIdentifier() const = 0;
 
     virtual void setTime(Seconds time) = 0;
     virtual Seconds getTime() const = 0;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
+    virtual bool isSelected() const = 0;
+    virtual void setSelected(bool selected) = 0;
 
-    bool isSelected() const;
-    void setSelected(bool selected = true);
+    virtual bool equal(const Keyframe& other) const = 0;
 
-    virtual std::string getClassIdentifier() const = 0;
-
-private:
-    bool isSelected_{false};
+    virtual void serialize(Serializer& s) const override = 0;
+    virtual void deserialize(Deserializer& d) override = 0;
 };
+
+IVW_MODULE_ANIMATION_API bool operator==(const Keyframe& a, const Keyframe& b);
+IVW_MODULE_ANIMATION_API bool operator!=(const Keyframe& a, const Keyframe& b);
 
 IVW_MODULE_ANIMATION_API bool operator<(const Keyframe& a, const Keyframe& b);
 IVW_MODULE_ANIMATION_API bool operator<=(const Keyframe& a, const Keyframe& b);
 IVW_MODULE_ANIMATION_API bool operator>(const Keyframe& a, const Keyframe& b);
 IVW_MODULE_ANIMATION_API bool operator>=(const Keyframe& a, const Keyframe& b);
 
-/** \class ValueKeyframe
- * Keyframe of a given value type (float, integer, vec3 and so on).
- * Stores the KeyFrame value at a given time.
- * @see Keyframe
- */
-template <typename T>
-class ValueKeyframe : public Keyframe {
-public:
-    using value_type = T;
-    ValueKeyframe() = default;
+IVW_MODULE_ANIMATION_API bool operator<(const Keyframe& a, const Seconds& b);
+IVW_MODULE_ANIMATION_API bool operator<=(const Keyframe& a, const Seconds& b);
+IVW_MODULE_ANIMATION_API bool operator>(const Keyframe& a, const Seconds& b);
+IVW_MODULE_ANIMATION_API bool operator>=(const Keyframe& a, const Seconds& b);
 
-    ValueKeyframe(Seconds time, const T& value) : time_(time), value_(value) {}
-    virtual ~ValueKeyframe() = default;
-
-    ValueKeyframe(const ValueKeyframe& rhs) = default;
-    ValueKeyframe& operator=(const ValueKeyframe& that) {
-        if (this != &that) {
-            value_ = that.value_;
-            setTime(that.time_);
-        }
-        return *this;
-    }
-
-    virtual void setTime(Seconds time) override {
-        if (time != time_) {
-            auto oldTime = time_;
-            time_ = time;
-            notifyKeyframeTimeChanged(this, oldTime);
-        }
-    }
-    virtual Seconds getTime() const override { return time_; }
-
-    const T& getValue() const { return value_; }
-    T& getValue() { return value_; }
-
-    void setValue(const T& value) { value_ = value; }
-
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    Seconds time_{0.0};
-    T value_{0};
-};
-
-template <typename T>
-std::string inviwo::animation::ValueKeyframe<T>::classIdentifier() {
-    return "org.inviwo.animation.ValueKeyframe." + Defaultvalues<T>::getName();
-}
-
-template <typename T>
-std::string inviwo::animation::ValueKeyframe<T>::getClassIdentifier() const {
-    return classIdentifier();
-}
-
-template <typename T>
-bool operator==(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
-    return a.getTime() == b.getTime() && a.getValue() == b.getValue();
-}
-template <typename T>
-bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
-    return !(a == b);
-}
-
-template <typename T>
-void ValueKeyframe<T>::serialize(Serializer& s) const {
-    Keyframe::serialize(s);
-    // s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    s.serialize("time", time_.count());
-    s.serialize("value", value_);
-}
-
-template <typename T>
-void ValueKeyframe<T>::deserialize(Deserializer& d) {
-    Keyframe::deserialize(d);
-    /* std::string className;
-     d.deserialize("type", className, SerializationTarget::Attribute);
-     if (className != getClassIdentifier()) {
-         throw SerializationException(
-             "Deserialized keyframe: " + getClassIdentifier() +
-                 " from a serialized keyframe with a different class identifier: " + className,
-             IvwContext);
-     }*/
-    double tmp = time_.count();
-    d.deserialize("time", tmp);
-    time_ = Seconds{tmp};
-    d.deserialize("value", value_);
-}
+IVW_MODULE_ANIMATION_API bool operator<(const Seconds& a, const Keyframe& b);
+IVW_MODULE_ANIMATION_API bool operator<=(const Seconds& a, const Keyframe& b);
+IVW_MODULE_ANIMATION_API bool operator>(const Seconds& a, const Keyframe& b);
+IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const Keyframe& b);
 
 }  // namespace animation
 

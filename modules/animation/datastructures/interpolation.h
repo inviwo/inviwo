@@ -54,10 +54,17 @@ public:
     virtual Interpolation* clone() const = 0;
 
     virtual std::string getClassIdentifier() const = 0;
+    virtual bool equal(const Interpolation& other) const = 0;
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
+
+bool operator==(const Interpolation& a, const Interpolation& b);
+bool operator!=(const Interpolation& a, const Interpolation& b);
+
+
+
 /** \class InterpolationTyped
  *	Base class for interpolation between key frames.
  *  Interpolation will always be performed between at least two key frames.
@@ -78,9 +85,8 @@ public:
     virtual void deserialize(Deserializer& d) override = 0;
 
     // Override this function to interpolate between key frames
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t,
-                            easing::EasingType easing /*= easing::Linear*/) const ->
-        typename Key::value_type = 0;
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
+                            easing::EasingType easing) const -> typename Key::value_type = 0;
 };
 
 }  // namespace animation

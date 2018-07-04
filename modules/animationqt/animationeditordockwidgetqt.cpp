@@ -224,7 +224,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         end->setToolTip("To End");
         leftPanel_->addAction(end);
         connect(end, &QAction::triggered, [&]() {
-            auto endTime = controller_.getAnimation()->lastTime();
+            auto endTime = controller_.getAnimation()->getLastTime();
             controller_.eval(controller_.getCurrentTime(), endTime);
         });
     }

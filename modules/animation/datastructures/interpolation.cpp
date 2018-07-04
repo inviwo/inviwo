@@ -29,4 +29,13 @@
 
 #include <modules/animation/datastructures/interpolation.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+namespace animation {
+
+bool operator==(const Interpolation& a, const Interpolation& b) { return a.equal(b); }
+bool operator!=(const Interpolation& a, const Interpolation& b) { return !a.equal(b); }
+
+}  // namespace animation
+
+}  // namespace inviwo

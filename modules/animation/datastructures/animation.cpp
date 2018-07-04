@@ -33,7 +33,7 @@ namespace inviwo {
 
 namespace animation {
 
-Animation::Animation() { priorityTracks_.push_back(&controlTrack_); };
+Animation::Animation() = default;
 
 AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
     AnimationTimeState ts{to, state};
@@ -59,134 +59,90 @@ void Animation::add(std::unique_ptr<Track> track) {
     notifyTrackAdded(tracks_.back().get());
 }
 
-void Animation::removeTrack(size_t i) {
+std::unique_ptr<Track> Animation::remove(size_t i) {
     auto track = std::move(tracks_[i]);
     tracks_.erase(tracks_.begin() + i);
     util::erase_remove(priorityTracks_, track.get());
     notifyTrackRemoved(track.get());
+    return track;
 }
 
-void Animation::removeTrack(const std::string& id) {
+std::unique_ptr<Track> Animation::remove(const std::string& id) {
     auto it = std::find_if(tracks_.begin(), tracks_.end(),
                            [&](const auto& track) { return track->getIdentifier() == id; });
     if (it != tracks_.end()) {
-        removeTrack(std::distance(tracks_.begin(), it));
+        return remove(std::distance(tracks_.begin(), it));
+    } else {
+        return nullptr;
     }
 }
 
-void Animation::removeKeyframe(Keyframe* key) {
-    // Check control track
-    for (size_t s = 0; s < controlTrack_.size(); s++) {
-        auto& seq = controlTrack_[s];
-        for (size_t k = 0; k < seq.size(); ++k) {
-            if (&seq[k] == key) {
-                if (seq.size() == 1) {
-                    controlTrack_.remove(s);
-                } else {
-                    seq.remove(k);
-                }
-                return;
-            }
+std::unique_ptr<Keyframe> Animation::remove(Keyframe* key) {
+    for (auto& track : tracks_) {
+        if (auto res = track->remove(key)) {
+            return std::move(res);
         }
     }
-
-    // Check other tracks
-    for (size_t t = 0; t < tracks_.size(); ++t) {
-        auto& track = *tracks_[t];
-        for (size_t s = 0; s < track.size(); ++s) {
-            auto& seq = track[s];
-            for (size_t k = 0; k < seq.size(); ++k) {
-                if (&seq[k] == key) {
-                    if (seq.size() == 1) {
-                        track.remove(s);
-                    } else {
-                        seq.remove(k);
-                    }
-                    return;
-                }
-            }
-        }
-    }
+    return nullptr;
 }
 
-void Animation::removeKeyframeSequence(KeyframeSequence* seq) {
-    // Check control track
-    for (size_t s = 0; s < controlTrack_.size(); s++) {
-        if (&controlTrack_[s] == seq) {
-            controlTrack_.remove(s);
-            return;
+std::unique_ptr<KeyframeSequence> Animation::remove(KeyframeSequence* seq) {
+    for (auto& track : tracks_) {
+        if (auto res = track->remove(seq)) {
+            return std::move(res);
         }
     }
-
-    // Check other tracks
-    for (size_t t = 0; t < tracks_.size(); ++t) {
-        auto& track = *tracks_[t];
-        for (size_t s = 0; s < track.size(); ++s) {
-            if (&track[s] == seq) {
-                track.remove(s);
-                return;
-            }
-        }
-    }
+    return nullptr;
 }
 
 void Animation::clear() {
     while (!empty()) {
-        removeTrack(tracks_.size() - 1);
+        remove(tracks_.size() - 1);
     }
 }
 
 std::vector<Seconds> Animation::getAllTimes() const {
-
     std::vector<Seconds> result;
 
-    for (size_t t = 0; t < tracks_.size(); ++t) {
-        auto& track = *tracks_[t];
-        for (size_t s = 0; s < track.size(); ++s) {
-            auto& seq = track[s];
-            for (size_t k = 0; k < seq.size(); ++k) {
-                result.push_back(seq[k].getTime());
-            }
-        }
+    for (auto& track : tracks_) {
+        auto times = track->getAllTimes();
+        result.insert(result.end(), times.begin(), times.end());
     }
     std::sort(result.begin(), result.end());
     return result;
 }
 
-Seconds Animation::firstTime() const {
-    Seconds time = controlTrack_.firstTime();
+Seconds Animation::getFirstTime() const {
+    Seconds time{0};
+
     auto it = std::min_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
-        return a->firstTime() < b->firstTime();
+        return a->getFirstTime() < b->getFirstTime();
     });
     if (it != tracks_.end()) {
-        time = std::min(time, (*it)->firstTime());
+        time = (*it)->getFirstTime();
     }
     return time;
 }
 
-Seconds Animation::lastTime() const {
-    Seconds time = controlTrack_.lastTime();
+Seconds Animation::getLastTime() const {
+    Seconds time{0};
     auto it = std::max_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
-        return a->lastTime() < b->lastTime();
+        return a->getLastTime() < b->getLastTime();
     });
     if (it != tracks_.end()) {
-        time = std::max(time, (*it)->lastTime());
+        time = (*it)->getLastTime();
     }
     return time;
 }
 
-void Animation::serialize(Serializer& s) const {
-    s.serialize("tracks", tracks_, "track");
-    s.serialize("control-track", controlTrack_);
-}
+void Animation::serialize(Serializer& s) const { s.serialize("tracks", tracks_, "track"); }
 
 void Animation::deserialize(Deserializer& d) {
     util::IdentifiedDeserializer<std::string, std::unique_ptr<Track>>("tracks", "track")
         .setGetId([](const std::unique_ptr<Track>& t) { return t->getIdentifier(); })
         .setMakeNew([]() { return std::unique_ptr<Track>(); })
         .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
-        .onRemove([&](const std::string& id) { removeTrack(id); })(d, tracks_);
-    d.deserialize("control-track", controlTrack_);
+        .onRemove([&](const std::string& id) { remove(id); })(d, tracks_);
 }
 
 void Animation::onPriorityChanged(Track*) { doPrioritySort(); }

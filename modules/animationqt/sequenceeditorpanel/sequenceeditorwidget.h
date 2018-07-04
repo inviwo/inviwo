@@ -36,6 +36,7 @@
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/keyframesequenceobserver.h>
+#include <modules/animation/datastructures/valuekeyframesequence.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -51,13 +52,10 @@ namespace inviwo {
 namespace animation {
 class SequenceEditorPanel;
 class KeyframeEditorWidget;
-/**
- * \class SequenceEditorWidget
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
+
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorWidget : public QWidget,
-                                                        public KeyframeSequenceObserver {
+                                                        public KeyframeSequenceObserver,
+                                                        public ValueKeyframeSequenceObserver {
 public:
     SequenceEditorWidget(KeyframeSequence& sequence, Track& track,
                          SequenceEditorPanel* panel = nullptr);
@@ -65,6 +63,7 @@ public:
 
     void updateVisibility();
 
+    // KeyframeSequenceObserver overloads
     virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence* seq) override;
     virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) override;
     virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) override;
@@ -73,7 +72,8 @@ public:
 
     void setReorderNeeded();
 
-    virtual void onKeyframeSequenceEasingChanged(KeyframeSequence* seq) override;
+    // ValueKeyframeSequenceObserver overloads
+    virtual void onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) override;
 
 protected:
     void reorderKeyframes();

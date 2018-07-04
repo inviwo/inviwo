@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2017 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,62 +27,68 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CONTROLKEYFRAME_H
-#define IVW_CONTROLKEYFRAME_H
-
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/animation/datastructures/basekeyframe.h>
-#include <modules/animation/datastructures/animationstate.h>
 
 namespace inviwo {
 
 namespace animation {
 
-enum class ControlAction { Pause, JumpTo, Script };
-struct ControlPayload {
-    Seconds jumpToTime;
-    std::string script;
-};
+BaseKeyframe::BaseKeyframe(Seconds time) : time_(time) {}
+BaseKeyframe::~BaseKeyframe() = default;
 
-/** \class ControlKeyframe
- * Base class for Keyframes that performs some type of control action.
- * @see Keyframe
- */
-class IVW_MODULE_ANIMATION_API ControlKeyframe : public BaseKeyframe {
-public:
-    using value_type = void;
-    ControlKeyframe() = default;
-    ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
-                    ControlPayload payload = {});
-    ControlKeyframe(const ControlKeyframe& rhs);
-    ControlKeyframe& operator=(const ControlKeyframe& that);
-    virtual ~ControlKeyframe();
-    virtual ControlKeyframe* clone() const override;
+BaseKeyframe::BaseKeyframe(const BaseKeyframe& rhs) = default;
+BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
+    if (this != &that) {
+        Keyframe::operator=(that);
+        setTime(that.time_);
+        setSelected(that.isSelected_);
+    }
+    return *this;
+}
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+bool BaseKeyframe::equal(const Keyframe& other) const {
+    if (getClassIdentifier() != other.getClassIdentifier()) return false;
+    const auto& o = static_cast<const BaseKeyframe&>(other);
 
-    virtual bool equal(const Keyframe& other) const override;
+    return (getTime() == o.getTime());
+}
 
-    ControlAction getAction() const;
-    void setAction(ControlAction action);
+void BaseKeyframe::setTime(Seconds time) {
+    if (time != time_) {
+        auto oldTime = time_;
+        time_ = time;
+        notifyKeyframeTimeChanged(this, oldTime);
+    }
+}
+Seconds BaseKeyframe::getTime() const { return time_; }
 
-    ControlPayload getPayload() const;
-    void setPayload(ControlPayload payload);
-    
-    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
+bool BaseKeyframe::isSelected() const { return isSelected_; };
+void BaseKeyframe::setSelected(bool selected) {
+    if (selected != isSelected_) {
+        isSelected_ = selected;
+        notifyKeyframeSelectionChanged(this);
+    }
+}
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
+void BaseKeyframe::serialize(Serializer& s) const {
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    s.serialize("time", time_.count());
+    s.serialize("selected", isSelected_);
+}
 
-private:
-    ControlAction action_;
-    ControlPayload payload_;
-};
+void BaseKeyframe::deserialize(Deserializer& d) {
+    {
+        double tmp = time_.count();
+        d.deserialize("time", tmp);
+        setTime(Seconds{tmp});
+    }
+    {
+        bool isSelected = isSelected_;
+        d.deserialize("selected", isSelected);
+        setSelected(isSelected);
+    }
+}
 
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_CONTROLKEYFRAME_H
