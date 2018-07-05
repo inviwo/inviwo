@@ -103,27 +103,59 @@ struct asPointer<false> {
 
 }  // namespace detail_indirect
 
+/**
+ * IndirectIterator<typename Iter, bool PropagateConst = true>
+ * Iter is underlying iterator to a pointer like type
+ * PropagateConst decides if we should treat the value as const if the pointer is const.
+ *
+ * Example:
+ * \code{.cpp}
+ * std::vector<std::unique_ptr<int>> vec;
+ * for (int i = 0; i < 5; ++i) {
+ *     vec.push_back(std::make_unique<int>(i));
+ * }
+ *
+ * auto it = util::makeIndirectIterator(vec.begin());
+ * *it = 5; // *it is a int& not a std::make_unique<int>&
+ * 
+ * // note cbegin() return a const_iterator
+ * auto const_it = util::makeIndirectIterator<true>(vec.cbegin()); 
+ * *const_it = 5; // will fail since we propagate const from the pointer to the value 
+ *
+ * auto mutable_it = util::makeIndirectIterator<false>(vec.cbegin()); 
+ * *mutable_it = 5; // will work since __don't__ propagate const from the pointer to the value 
+ *
+ * \endcode
+ *
+ * The use case is to container types that stores items using a vector of pointers, but want to
+ * expose an iterator directly to the item not to the pointer.
+ * @see makeIndirectIterator
+ */
 template <typename Iter, bool PropagateConst = true>
 struct IndirectIterator {
     using difference_type = typename std::iterator_traits<Iter>::difference_type;
     using iterator_category = typename std::iterator_traits<Iter>::iterator_category;
-    
+
     using base_value = typename std::iterator_traits<Iter>::value_type;
     using value_type = decltype(*std::declval<base_value>());
-    
-    static constexpr bool is_const = std::conditional_t<PropagateConst, detail_indirect::is_const_iterator<Iter>, std::false_type>::value;
-    
+
+    static constexpr bool is_const =
+        std::conditional_t<PropagateConst, detail_indirect::is_const_iterator<Iter>,
+                           std::false_type>::value;
+
     using base_pointer = typename std::iterator_traits<Iter>::pointer;
-    using pointer = decltype(detail_indirect::asPointer<is_const>::get(*std::declval<base_pointer>()));
-    
+    using pointer =
+        decltype(detail_indirect::asPointer<is_const>::get(*std::declval<base_pointer>()));
+
     using base_reference = typename std::iterator_traits<Iter>::reference;
-    using reference = std::conditional_t<is_const, 
-        detail_indirect::add_const_to_reference_t<decltype(*std::declval<base_reference>())>, 
+    using reference = std::conditional_t<
+        is_const,
+        detail_indirect::add_const_to_reference_t<decltype(*std::declval<base_reference>())>,
         decltype(*std::declval<base_reference>())>;
 
     template <typename Tag, typename Iterables>
     using require_t = detail_indirect::require_t<Tag, Iter>;
-    
+
     IndirectIterator() = default;
     IndirectIterator(Iter iterator) : iterator_(iterator) {}
 
@@ -131,9 +163,7 @@ struct IndirectIterator {
         ++iterator_;
         return *this;
     }
-    IndirectIterator operator++(int) {
-        return {iterator_++};
-    }
+    IndirectIterator operator++(int) { return {iterator_++}; }
 
     template <typename I = Iter, typename = require_t<std::bidirectional_iterator_tag, I>>
     IndirectIterator& operator--() {
@@ -152,7 +182,7 @@ struct IndirectIterator {
     }
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
     IndirectIterator& operator-=(difference_type rhs) {
-        iterator_-=rhs;
+        iterator_ -= rhs;
         return *this;
     }
 
@@ -176,20 +206,18 @@ struct IndirectIterator {
         return *iterator_[i];
     }
 
-    reference operator*() const { 
-        return **iterator_; 
+    reference operator*() const { return **iterator_; }
+
+    pointer operator->() const {
+        return detail_indirect::asPointer<is_const>::get(*(iterator_.operator->()));
     }
 
-    pointer operator->() const { return detail_indirect::asPointer<is_const>::get(*(iterator_.operator->())); }
-
-    const Iter& base() const {return iterator_;}
-    Iter& base() {return iterator_;}
+    const Iter& base() const { return iterator_; }
+    Iter& base() { return iterator_; }
 
     bool operator==(const IndirectIterator& rhs) const { return iterator_ == rhs.iterator_; }
 
-    bool operator!=(const IndirectIterator& rhs) const {
-        return iterator_ != rhs.iterator_;
-    }
+    bool operator!=(const IndirectIterator& rhs) const { return iterator_ != rhs.iterator_; }
 
     template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
     bool operator>(const IndirectIterator& rhs) const {
@@ -212,11 +240,14 @@ private:
     Iter iterator_;
 };
 
+/**
+ * Create an IndirectIterator
+ * @see IndirectIterator
+ */
 template <bool PropagateConst = true, typename Iter>
 IndirectIterator<Iter, PropagateConst> makeIndirectIterator(Iter&& iter) {
     return IndirectIterator<Iter, PropagateConst>(std::forward<Iter>(iter));
 }
-
 
 }  // namespace util
 
