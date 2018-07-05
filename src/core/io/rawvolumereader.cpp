@@ -34,6 +34,7 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/rawvolumeramloader.h>
+#include <inviwo/core/metadata/metadataowner.h>
 
 namespace inviwo {
 
@@ -83,6 +84,11 @@ void RawVolumeReader::setParameters(const DataFormatBase* format, ivec3 dimensio
 }
 
 std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
+    return readData(filePath, nullptr);
+}
+
+std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
+                                                  MetaDataOwner* metadata) {
     if (!filesystem::fileExists(filePath)) {
         throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
     }
@@ -96,12 +102,48 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
             throw DataReaderException("No data reader dialog found.", IvwContext);
         }
         readerDialog->setFile(rawFile_);
+
+        if (metadata) {
+            readerDialog->setFormat(
+                DataFormatBase::get(static_cast<DataFormatId>(metadata->getMetaData<IntMetaData>(
+                    "rawReaderData.formatid",
+                    static_cast<int>(readerDialog->getFormat()->getId())))));
+            readerDialog->setDimensions(metadata->getMetaData<Size3MetaData>(
+                "rawReaderData.dimensions", readerDialog->getDimensions()));
+
+            readerDialog->setEndianess(metadata->getMetaData<BoolMetaData>(
+                "rawReaderData.endianess", readerDialog->getEndianess()));
+
+            auto datamap = readerDialog->getDataMapper();
+            datamap.dataRange = metadata->getMetaData<DoubleVec2MetaData>(
+                "rawReaderData.dataMapper.dataRange", datamap.dataRange);
+            datamap.valueRange = metadata->getMetaData<DoubleVec2MetaData>(
+                "rawReaderData.dataMapper.valueRange", datamap.valueRange);
+            datamap.valueUnit = metadata->getMetaData<StringMetaData>(
+                "rawReaderData.dataMapper.valueUnit", datamap.valueUnit);
+            readerDialog->setDataMapper(datamap);
+        }
+
         if (readerDialog->show()) {
             format_ = readerDialog->getFormat();
             dimensions_ = readerDialog->getDimensions();
             littleEndian_ = readerDialog->getEndianess();
             spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
             dataMapper_ = readerDialog->getDataMapper();
+
+            if (metadata) {
+                metadata->setMetaData<IntMetaData>("rawReaderData.formatid",
+                                                   static_cast<int>(format_->getId()));
+                metadata->setMetaData<Size3MetaData>("rawReaderData.dimensions", dimensions_);
+                metadata->setMetaData<BoolMetaData>("rawReaderData.endianess", littleEndian_);
+                metadata->setMetaData<DoubleVec2MetaData>("rawReaderData.dataMapper.dataRange",
+                                                          dataMapper_.dataRange);
+                metadata->setMetaData<DoubleVec2MetaData>("rawReaderData.dataMapper.valueRange",
+                                                          dataMapper_.valueRange);
+                metadata->setMetaData<StringMetaData>("rawReaderData.dataMapper.valueUnit",
+                                                      dataMapper_.valueUnit);
+            }
+
         } else {
             throw DataReaderException("Raw data import terminated by user", IvwContext);
         }

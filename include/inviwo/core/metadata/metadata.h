@@ -182,6 +182,10 @@ typedef MetaDataPrimitiveType<dmat2, 0, 0> DoubleMat2MetaData;
 typedef MetaDataPrimitiveType<dmat3, 0, 0> DoubleMat3MetaData;
 typedef MetaDataPrimitiveType<dmat4, 0, 0> DoubleMat4MetaData;
 
+typedef MetaDataPrimitiveType<size2_t, 0, 0> Size2MetaData;
+typedef MetaDataPrimitiveType<size3_t, 0, 0> Size3MetaData;
+typedef MetaDataPrimitiveType<size4_t, 0, 0> Size4MetaData;
+
 // Vector specialization
 template <typename T, int N>
 class MetaDataPrimitiveType<T, N, 0> : public MetaData {

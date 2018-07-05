@@ -57,6 +57,12 @@ public:
     virtual bool getEndianess() const override;
     virtual DataMapper getDataMapper() const override;
 
+    virtual void setFormat(const DataFormatBase* format) override;
+    virtual void setDimensions(uvec3 dim) override;
+    virtual void setSpacing(dvec3 spacing) override;
+    virtual void setEndianess(bool endian) override;
+    virtual void setDataMapper(const DataMapper& datamapper) override;
+
 private:
     QLabel* fileName_;
     QComboBox* bitDepth_;
