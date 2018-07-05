@@ -98,7 +98,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
 
     auto rowCount = 0;
     dataTypeLayout->addWidget(bitDepthLabel, rowCount, 0);
-    dataTypeLayout->addWidget(bitDepth_, rowCount++, 2);
+    dataTypeLayout->addWidget(bitDepth_, rowCount++, 1, 1, 2);
 
     dataTypeLayout->addWidget(new QLabel("Min"), rowCount, 1);
     dataTypeLayout->addWidget(new QLabel("Max"), rowCount++, 2);
@@ -155,18 +155,22 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     spaceLayout->addWidget(spaceZ_);
     space->setLayout(spaceLayout);
 
+    /*
     QLabel* timeStepLabel = new QLabel("Time steps");
     timeSteps_ = new QSpinBox();
+    */
+
     dataSizeLayout->addWidget(dimensionLabel, 0, 0);
     dataSizeLayout->addWidget(dimensions, 0, 1);
     dataSizeLayout->addWidget(spaceLabel, 1, 0);
     dataSizeLayout->addWidget(space, 1, 1);
-    dataSizeLayout->addWidget(timeStepLabel, 2, 0);
-    dataSizeLayout->addWidget(timeSteps_, 2, 1);
+    //dataSizeLayout->addWidget(timeStepLabel, 2, 0);
+    //dataSizeLayout->addWidget(timeSteps_, 2, 1);
     QGroupBox* dataSizeBox = new QGroupBox("Data size", this);
     dataSizeBox->setLayout(dataSizeLayout);
 
     QGridLayout* readOptionsLayout = new QGridLayout();
+    /*
     QLabel* headerOffsetLabel = new QLabel("Header offset");
     headerOffset_ = new QSpinBox();
     headerOffset_->setRange(0, 4096);
@@ -177,14 +181,17 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     timeStepOffset_->setRange(0, 4096);
     timeStepOffset_->setValue(0);
     timeStepOffset_->setSuffix(" Byte");
+    */
     QLabel* endianessLabel = new QLabel("Endianess");
     endianess_ = new QComboBox();
     endianess_->addItem("Little Endian");
     endianess_->addItem("Big Endian");
+    /*
     readOptionsLayout->addWidget(headerOffsetLabel, 0, 0);
     readOptionsLayout->addWidget(headerOffset_, 0, 1);
     readOptionsLayout->addWidget(timeStepOffsetLabel, 1, 0);
     readOptionsLayout->addWidget(timeStepOffset_, 1, 1);
+    */
     readOptionsLayout->addWidget(endianessLabel, 2, 0);
     readOptionsLayout->addWidget(endianess_, 2, 1);
     QGroupBox* readOptionsBox = new QGroupBox("Read options", this);

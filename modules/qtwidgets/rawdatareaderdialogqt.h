@@ -80,9 +80,11 @@ private:
     QLineEdit* spaceY_;
     QLineEdit* spaceZ_;
 
+    /*
     QSpinBox* timeSteps_;
     QSpinBox* headerOffset_;
     QSpinBox* timeStepOffset_;
+    */
     QComboBox* endianess_;
 };
 
