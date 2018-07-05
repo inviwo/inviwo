@@ -32,6 +32,7 @@
 
 #include <iterator>
 #include <type_traits>
+#include <memory>
 
 namespace inviwo {
 
@@ -67,6 +68,7 @@ struct add_const_to_reference<T&&> {
 template <typename T>
 using add_const_to_reference_t = typename add_const_to_reference<T>::type;
 
+// a utility to get a raw pointer as a const or mutable
 template <bool asConst>
 struct asPointer {};
 
