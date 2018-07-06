@@ -46,13 +46,6 @@ BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
     return *this;
 }
 
-bool BaseKeyframe::equal(const Keyframe& other) const {
-    if (getClassIdentifier() != other.getClassIdentifier()) return false;
-    const auto& o = static_cast<const BaseKeyframe&>(other);
-
-    return (getTime() == o.getTime());
-}
-
 void BaseKeyframe::setTime(Seconds time) {
     if (time != time_) {
         auto oldTime = time_;
@@ -71,7 +64,6 @@ void BaseKeyframe::setSelected(bool selected) {
 }
 
 void BaseKeyframe::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("time", time_.count());
     s.serialize("selected", isSelected_);
 }

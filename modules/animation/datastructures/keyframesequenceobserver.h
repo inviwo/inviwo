@@ -31,7 +31,6 @@
 #define IVW_KEYFRAMESEQUENCEOBSERVER_H
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {

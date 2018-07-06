@@ -162,20 +162,20 @@ protected:
     Timer timer_;
 
     struct RenderCanvasSize {
-        RenderCanvasSize() {}
+        RenderCanvasSize() = default;
         std::string canvasIdentifier;
-        bool enableCustomInputDimensions_;
-        ivec2 customInputDimensions_;
-        bool keepAspectRatio_;
+        bool enableCustomInputDimensions_{false};
+        ivec2 customInputDimensions_{0};
+        bool keepAspectRatio_{true};
     };
 
-    /// Simple data structure for the state needed during rendering
+    /// Data structure for the state needed during rendering
     struct RenderState {
-        Seconds firstTime;
-        Seconds lastTime;
-        int numFrames;
-        int currentFrame;
-        int digits;
+        Seconds firstTime{0};
+        Seconds lastTime{0};
+        int numFrames{0};
+        int currentFrame{0};
+        int digits{0};
         std::string baseFileName;
         std::vector<RenderCanvasSize> origCanvasSettings;
         std::string canvasIndicator;

@@ -28,22 +28,26 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationeditordockwidgetqt.h>
-#include <modules/animationqt/animationeditorqt.h>
-#include <modules/animationqt/animationviewqt.h>
-#include <modules/animationqt/animationlabelviewqt.h>
-#include <modules/animationqt/trackqt.h>
-#include <modules/animationqt/keyframesequenceqt.h>
-#include <modules/animationqt/keyframeqt.h>
-#include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
 
-#include <modules/animation/animationcontroller.h>
-#include <modules/animation/datastructures/controlkeyframesequence.h>
-#include <modules/animation/datastructures/controlkeyframe.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
+
+#include <modules/animation/animationcontroller.h>
+#include <modules/animation/datastructures/controlkeyframe.h>
+#include <modules/animation/datastructures/controlkeyframesequence.h>
+
+#include <modules/animationqt/widgets/keyframewidgetqt.h>
+#include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
+#include <modules/animationqt/widgets/trackwidgetqt.h>
+#include <modules/animationqt/animationeditorqt.h>
+#include <modules/animationqt/animationviewqt.h>
+#include <modules/animationqt/animationlabelviewqt.h>
+#include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -54,6 +58,7 @@
 #include <QSettings>
 #include <QToolBar>
 #include <QMainWindow>
+#include <QWidget>
 #include <warn/pop>
 
 namespace inviwo {
@@ -63,10 +68,10 @@ namespace animation {
 AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& controller,
                                                          const std::string& widgetName,
                                                          QWidget* parent)
-    : InviwoDockWidget(QString(widgetName.c_str()), parent, "AnimationEditorWidget")
+    : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , controller_(controller) {
 
-    resize(QSize(1200, 400));  // default size
+    resize(QSize(1000, 400));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
     setFloating(true);

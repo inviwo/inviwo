@@ -1,1 +1,0 @@
-Interfacee to switch between workspaces in a folder

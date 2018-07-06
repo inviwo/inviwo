@@ -46,9 +46,6 @@ std::pair<Seconds, Seconds> KeyframeSequence::getTimeSpan() const {
     return {getFirstTime(), getLastTime()};
 }
 
-bool operator==(const KeyframeSequence& a, const KeyframeSequence& b) { return a.equal(b); }
-bool operator!=(const KeyframeSequence& a, const KeyframeSequence& b) { return !a.equal(b); }
-
 bool operator<(const KeyframeSequence& a, const KeyframeSequence& b) {
     return a.getFirstTime() < b.getFirstTime();
 }

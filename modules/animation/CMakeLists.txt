@@ -18,22 +18,24 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/basekeyframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/basekeyframesequence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/basetrack.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/constantinterpolation.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interpolation/constantinterpolation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controlkeyframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controlkeyframesequence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controltrack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/easing.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interpolation/interpolation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequenceobserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/linearinterpolation.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interpolation/linearinterpolation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/propertytrack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/track.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/trackobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/valuekeyframe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/valuekeyframesequence.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/demo/democontroller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/demo/democontrollerobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactoryobject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackfactory.h
@@ -61,7 +63,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controlkeyframesequence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/controltrack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/easing.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/interpolation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interpolation/interpolation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframeobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/keyframesequence.cpp
@@ -71,6 +73,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/trackobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/valuekeyframe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/valuekeyframesequence.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/demo/democontroller.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/demo/democontrollerobserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/interpolationfactoryobject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackfactory.cpp

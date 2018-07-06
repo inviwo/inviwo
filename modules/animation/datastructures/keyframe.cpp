@@ -33,10 +33,6 @@ namespace inviwo {
 
 namespace animation {
 
-bool operator==(const Keyframe& a, const Keyframe& b) { return a.equal(b); }
-
-bool operator!=(const Keyframe& a, const Keyframe& b) { return !(a == b); }
-
 bool operator<(const Keyframe& a, const Keyframe& b) { return a.getTime() < b.getTime(); }
 
 bool operator>(const Keyframe& a, const Keyframe& b) { return a.getTime() > b.getTime(); }

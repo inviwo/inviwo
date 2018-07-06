@@ -39,7 +39,7 @@
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/animationobserver.h>
-#include <modules/animation/datastructures/interpolation.h>
+#include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/animationcontroller.h>
 
 #include <modules/animation/factories/interpolationfactory.h>

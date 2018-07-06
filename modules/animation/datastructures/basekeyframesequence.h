@@ -33,8 +33,11 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <inviwo/core/util/indirectiterator.h>
+
+#include <type_traits>
 
 namespace inviwo {
 
@@ -95,8 +98,6 @@ public:
     virtual bool isSelected() const override;
     virtual void setSelected(bool selected) override;
 
-    virtual bool equal(const KeyframeSequence& other) const override;
-
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -122,7 +123,7 @@ template <typename Key>
 BaseKeyframeSequence<Key>::BaseKeyframeSequence(const BaseKeyframeSequence<Key>& rhs)
     : KeyframeSequence(rhs) {
     for (const auto& key : rhs.keyframes_) {
-        add(std::unique_ptr<Key>(key->clone()));
+        add(std::make_unique<Key>(*key));
     }
 }
 
@@ -132,17 +133,11 @@ BaseKeyframeSequence<Key>& BaseKeyframeSequence<Key>::operator=(
     if (this != &that) {
         setSelected(that.isSelected_);
         for (size_t i = 0; i < std::min(keyframes_.size(), that.keyframes_.size()); i++) {
-            if (keyframes_[i]->getClassIdentifier() == that.keyframes_[i]->getClassIdentifier()) {
-                *keyframes_[i] = *that.keyframes_[i];
-            } else {
-                notifyKeyframeRemoved(keyframes_[i].get(), this);
-                keyframes_[i] = std::unique_ptr<Key>(that.keyframes_[i]->clone());
-                notifyKeyframeAdded(keyframes_[i].get(), this);
-            }
+            *keyframes_[i] = *that.keyframes_[i];
         }
         for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
              i < that.keyframes_.size(); i++) {
-            keyframes_.push_back(std::unique_ptr<Key>(that.keyframes_[i]->clone()));
+            keyframes_.push_back(std::make_unique<Key>(*(that.keyframes_[i])));
             notifyKeyframeAdded(keyframes_.back().get(), this);
         }
         while (keyframes_.size() > that.keyframes_.size()) {
@@ -160,18 +155,6 @@ BaseKeyframeSequence<Key>::~BaseKeyframeSequence() {
         // Remove and notify that keyframe is removed.
         remove(size() - 1);
     }
-}
-
-template <typename Key>
-bool BaseKeyframeSequence<Key>::equal(const KeyframeSequence& other) const {
-    if (getClassIdentifier() != other.getClassIdentifier()) return false;
-    const auto& o = static_cast<const BaseKeyframeSequence<Key>&>(other);
-
-    if (size() != o.size()) return false;
-    for (size_t i = 0; i < size(); ++i) {
-        if (operator[](i) != o[i]) return false;
-    }
-    return true;
 }
 
 template <typename Key>

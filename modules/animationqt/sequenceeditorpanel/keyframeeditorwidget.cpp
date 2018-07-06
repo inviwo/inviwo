@@ -98,25 +98,21 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         actionWidget_->setCurrentIndex(static_cast<int>(ctrlKey.getAction()));
 
         jumpToWidget_ = new QDoubleSpinBox();
-        jumpToWidget_->setValue(ctrlKey.getPayload().jumpToTime.count());
+        jumpToWidget_->setValue(ctrlKey.getJumpTime().count());
         jumpToWidget_->setSuffix("s");
         jumpToWidget_->setSingleStep(0.1);
         jumpToWidget_->setDecimals(5);
-        jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::JumpTo);
+        jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::Jump);
 
         connect(actionWidget_, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
                 [this, &ctrlKey](int idx) {
                     ctrlKey.setAction(static_cast<ControlAction>(idx));
-                    jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::JumpTo);
+                    jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::Jump);
                 });
 
         connect(timeSpinner_,
                 static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-                [this, &ctrlKey](double t) {
-                    ControlPayload payload;
-                    payload.jumpToTime = Seconds{t};
-                    ctrlKey.setPayload(payload);
-                });
+                [this, &ctrlKey](double t) { ctrlKey.setJumpTime(Seconds{t}); });
 
         layout_->addWidget(actionWidget_);
         layout_->addWidget(jumpToWidget_);

@@ -32,8 +32,8 @@
 namespace inviwo {
 namespace animation {
 
-ControlKeyframe::ControlKeyframe(Seconds time, ControlAction action, ControlPayload payload)
-    : BaseKeyframe(time), action_(action), payload_(payload) {}
+ControlKeyframe::ControlKeyframe(Seconds time, ControlAction action, Seconds jumpTime)
+    : BaseKeyframe(time), action_(action), jumpTime_(jumpTime) {}
 ControlKeyframe::~ControlKeyframe() = default;
 
 ControlKeyframe::ControlKeyframe(const ControlKeyframe& rhs) = default;
@@ -41,38 +41,18 @@ ControlKeyframe& ControlKeyframe::operator=(const ControlKeyframe& that) {
     if (this != &that) {
         BaseKeyframe::operator=(that);
         action_ = that.action_;
-        payload_ = that.payload_;
+        jumpTime_ = that.jumpTime_;
     }
     return *this;
 }
 
 ControlKeyframe* ControlKeyframe::clone() const { return new ControlKeyframe(*this); }
 
-std::string ControlKeyframe::classIdentifier() { return "org.inviwo.animation.ControlKeyframe"; }
-std::string ControlKeyframe::getClassIdentifier() const { return classIdentifier(); }
-
-bool ControlKeyframe::equal(const Keyframe& other) const {
-    if (!BaseKeyframe::equal(other)) return false;
-    const auto& o = static_cast<const ControlKeyframe&>(other);
-    if (getTime() == o.getTime() && getAction() == o.getAction()) {
-        switch (getAction()) {
-            case ControlAction::JumpTo:
-                return getPayload().jumpToTime == o.getPayload().jumpToTime;
-            case ControlAction::Script:
-                return getPayload().script == o.getPayload().script;
-            default:
-                break;
-        }
-    }
-    return false;
-}
-
+ControlAction ControlKeyframe::getAction() const { return action_; }
 void ControlKeyframe::setAction(ControlAction action) { action_ = action; }
 
-void ControlKeyframe::setPayload(ControlPayload payload) { payload_ = payload; }
-
-ControlAction ControlKeyframe::getAction() const { return action_; }
-ControlPayload ControlKeyframe::getPayload() const { return payload_; }
+Seconds ControlKeyframe::getJumpTime() const { return jumpTime_; }
+void ControlKeyframe::setJumpTime(Seconds jumpTime) { jumpTime_ = jumpTime; }
 
 AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to, AnimationState state) {
 
@@ -82,12 +62,8 @@ AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to, Animati
             switch (action_) {
                 case ControlAction::Pause:
                     return {time_, AnimationState::Paused};
-                case ControlAction::JumpTo:
-                    return {getPayload().jumpToTime, state};
-                case ControlAction::Script:
-                    LogWarn("Scripts not implemented");
-                    // TODO: IMPLEMENT RUN SCRIPT
-                    return {to, state};
+                case ControlAction::Jump:
+                    return {jumpTime_, state};
             }
         }
     }
@@ -100,15 +76,12 @@ void ControlKeyframe::deserialize(Deserializer& d) {
     switch (action_) {
         case ControlAction::Pause:
             break;
-        case ControlAction::JumpTo: {
-            double tmp = payload_.jumpToTime.count();
+        case ControlAction::Jump: {
+            double tmp = jumpTime_.count();
             d.deserialize("payload", tmp);
-            payload_.jumpToTime = Seconds{tmp};
+            jumpTime_ = Seconds{tmp};
             break;
         }
-        case ControlAction::Script:
-            d.deserialize("payload", payload_.script);
-            break;
         default:
             break;
     }
@@ -120,12 +93,10 @@ void ControlKeyframe::serialize(Serializer& s) const {
     switch (action_) {
         case ControlAction::Pause:
             break;
-        case ControlAction::JumpTo:
-            s.serialize("payload", payload_.jumpToTime.count());
+        case ControlAction::Jump:
+            s.serialize("payload", jumpTime_.count());
             break;
-        case ControlAction::Script:
-            s.serialize("payload", payload_.script);
-            break;
+
         default:
             break;
     }

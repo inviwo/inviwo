@@ -50,12 +50,6 @@ ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
     return new ControlKeyframeSequence(*this);
 }
 
-std::string ControlKeyframeSequence::classIdentifier() {
-    return "org.inviwo.animation.ControlKeyframeSequence";
-}
-
-std::string ControlKeyframeSequence::getClassIdentifier() const { return classIdentifier(); }
-
 AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
                                                        AnimationState state) const {
     AnimationTimeState timeState{to, state};

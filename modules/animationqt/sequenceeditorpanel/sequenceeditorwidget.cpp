@@ -84,9 +84,9 @@ SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& tr
         }
 
         void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
-        connect(easingComboBox_, signal, [this](int index) {
+        //connect(easingComboBox_, signal, [this](int index) {
             //sequence_.setEasingType(static_cast<easing::EasingType>(index));
-        });
+        //});
     }
 
     for (size_t i = 0; i < sequence_.size(); i++) {

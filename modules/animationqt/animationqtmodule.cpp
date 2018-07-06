@@ -28,17 +28,20 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationqtmodule.h>
-#include <modules/animationqt/animationeditordockwidgetqt.h>
-
-#include <modules/animation/animationmodule.h>
-#include <modules/animation/datastructures/animation.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/datastructures/keyframe.h>
-
-#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <modules/animation/animationmodule.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/animationcontroller.h>
+
+#include <modules/animationqt/animationeditordockwidgetqt.h>
+#include <modules/animationqt/demo/demonavigatordockwidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -72,17 +75,34 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
             // Release pointer if destroyed by Qt before module is destroyed
             QObject::connect(menu_.get(), &QObject::destroyed, [&](QObject*) { menu_.release(); });
         }
-        auto& controller =
-            app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
-        editor_ = std::make_unique<animation::AnimationEditorDockWidgetQt>(controller,
-                                                                           "Animation Editor", win);
-        menu->addAction(editor_->toggleViewAction());
-        win->addDockWidget(Qt::BottomDockWidgetArea, editor_.get());
-        editor_->hide();
-        editor_->loadState();
-        // Release pointer if destroyed by Qt before module is destroyed
-        QObject::connect(editor_.get(), &QObject::destroyed,
-                         [this](QObject*) { editor_.release(); });
+
+        auto animationModule = app->getModuleByType<AnimationModule>();
+        {
+
+            auto& animationController =
+                animationModule->getAnimationManager().getAnimationController();
+            editor_ = std::make_unique<animation::AnimationEditorDockWidgetQt>(
+                animationController, "Animation Editor", win);
+            menu->addAction(editor_->toggleViewAction());
+            win->addDockWidget(Qt::BottomDockWidgetArea, editor_.get());
+            editor_->hide();
+            editor_->loadState();
+            // Release pointer if destroyed by Qt before module is destroyed
+            QObject::connect(editor_.get(), &QObject::destroyed,
+                             [this](QObject*) { editor_.release(); });
+        }
+
+        {
+            auto& demoController = animationModule->getDemoController();
+            navigator_ = std::make_unique<animation::DemoNavigatorDockWidgetQt>(
+                demoController, "Demo Navigator", win);
+            menu->addAction(navigator_->toggleViewAction());
+            navigator_->hide();
+            navigator_->loadState();
+            // Release pointer if destroyed by Qt before module is destroyed
+            QObject::connect(navigator_.get(), &QObject::destroyed,
+                             [this](QObject*) { navigator_.release(); });
+        }
     }
 }
 

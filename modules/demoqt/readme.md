@@ -1,1 +1,0 @@
-Quickly navigate between workspaces in a folder for demonstrations

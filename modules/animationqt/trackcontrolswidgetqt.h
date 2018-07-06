@@ -46,14 +46,7 @@ namespace inviwo {
 
 namespace animation {
 
-/**
- * \class TrackControlsWidgetQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_ANIMATIONQT_API TrackControlsWidgetQt : public QWidget  //,
-                                                                         // public KeyframeObserver
-{
+class IVW_MODULE_ANIMATIONQT_API TrackControlsWidgetQt : public QWidget {
 
 public:
     TrackControlsWidgetQt(QStandardItem* item, AnimationController& controller);

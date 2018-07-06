@@ -55,15 +55,7 @@ class IVW_MODULE_ANIMATION_API KeyframeSequence : public Serializable,
                                                   public KeyframeObserver {
 
 public:
-    KeyframeSequence() = default;
-
-    /**
-     * Remove all keyframes and call KeyframeObserver::notifyKeyframeRemoved
-     */
-    virtual ~KeyframeSequence() = default;
     virtual KeyframeSequence* clone() const = 0;
-
-    virtual std::string getClassIdentifier() const = 0;
 
     /**
      * Return number of keyframes in the sequence.
@@ -96,16 +88,11 @@ public:
     virtual bool isSelected() const = 0;
     virtual void setSelected(bool selected) = 0;
 
-    virtual bool equal(const KeyframeSequence& other) const = 0;
-
     bool isAnyKeyframeSelected() const;
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
-
-IVW_MODULE_ANIMATION_API bool operator==(const KeyframeSequence& a, const KeyframeSequence& b);
-IVW_MODULE_ANIMATION_API bool operator!=(const KeyframeSequence& a, const KeyframeSequence& b);
 
 IVW_MODULE_ANIMATION_API bool operator<(const KeyframeSequence& a, const KeyframeSequence& b);
 IVW_MODULE_ANIMATION_API bool operator<=(const KeyframeSequence& a, const KeyframeSequence& b);

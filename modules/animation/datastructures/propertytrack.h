@@ -41,8 +41,8 @@
 #include <modules/animation/datastructures/basetrack.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/keyframesequence.h>
-#include <modules/animation/datastructures/linearinterpolation.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
+#include <modules/animation/interpolation/linearinterpolation.h>
 
 namespace inviwo {
 
@@ -213,8 +213,8 @@ public:
     void setOtherProperty(Property* dstProperty, Keyframe* keyframe) {
         IVW_ASSERT(dstProperty->getClassIdentifier() == Prop::CLASS_IDENTIFIER,
                    "Incorrect Property type");
-        IVW_ASSERT(keyframe->getClassIdentifier() == Key::classIdentifier(),
-                   "Incorrect Keyframe type");
+        //IVW_ASSERT(keyframe->getClassIdentifier() == Key::classIdentifier(),
+        //           "Incorrect Keyframe type");
         detail::setOtherPropertyHelper(static_cast<Prop*>(dstProperty),
                                        static_cast<Key*>(keyframe));
     }
@@ -232,8 +232,8 @@ public:
     void updateKeyframeFromProperty(Property* srcProperty, Keyframe* keyframe) {
         ivwAssert(srcProperty->getClassIdentifier() == Prop::CLASS_IDENTIFIER,
                   "Incorrect Property type");
-        ivwAssert(keyframe->getClassIdentifier() == Key::classIdentifier(),
-                  "Incorrect Keyframe type");
+        //ivwAssert(keyframe->getClassIdentifier() == Key::classIdentifier(),
+        //          "Incorrect Keyframe type");
         detail::updateKeyframeFromPropertyHelper(static_cast<Prop*>(srcProperty),
                                                  static_cast<Key*>(keyframe));
     }
@@ -242,8 +242,18 @@ private:
     Prop* property_;  ///< non-owning reference
 };
 
+
 template <typename Prop, typename Key>
-Track* inviwo::animation::PropertyTrack<Prop, Key>::toTrack() {
+bool operator==(const PropertyTrack<Prop, Key>& a, const PropertyTrack<Prop, Key>& b) {
+    return std::equal(a.begin(), a.end(), a.begin(), b.end());
+}
+template <typename Prop, typename Key>
+bool operator!=(const PropertyTrack<Prop, Key>& a, const PropertyTrack<Prop, Key>& b) {
+    return !(a==b);
+}
+
+template <typename Prop, typename Key>
+Track* PropertyTrack<Prop, Key>::toTrack() {
     return this;
 }
 
