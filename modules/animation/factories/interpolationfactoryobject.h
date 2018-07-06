@@ -33,7 +33,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/animation/datastructures/interpolation.h>
+#include <modules/animation/interpolation/interpolation.h>
 
 namespace inviwo {
 namespace animation {

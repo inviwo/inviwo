@@ -47,8 +47,6 @@ public:
     BaseKeyframe& operator=(const BaseKeyframe& that);
     virtual ~BaseKeyframe();
 
-    virtual bool equal(const Keyframe& other) const override;
-
     virtual Seconds getTime() const override;
     virtual void setTime(Seconds time) override;
 

@@ -54,9 +54,6 @@ public:
 
     virtual ControlKeyframeSequence* clone() const override;
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
-
     virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 };
 

@@ -32,15 +32,15 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/util/observer.h>
+
 
 namespace inviwo {
 
 namespace animation {
 
-class KeyframeSequence;
 class Track;
+class KeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API TrackObserver : public Observer {
 public:

@@ -39,11 +39,7 @@ namespace inviwo {
 
 namespace animation {
 
-enum class ControlAction { Pause, JumpTo, Script };
-struct ControlPayload {
-    Seconds jumpToTime;
-    std::string script;
-};
+enum class ControlAction { Pause, Jump };
 
 /** \class ControlKeyframe
  * Base class for Keyframes that performs some type of control action.
@@ -54,23 +50,18 @@ public:
     using value_type = void;
     ControlKeyframe() = default;
     ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
-                    ControlPayload payload = {});
+                    Seconds jumpTime = Seconds{0});
     ControlKeyframe(const ControlKeyframe& rhs);
     ControlKeyframe& operator=(const ControlKeyframe& that);
     virtual ~ControlKeyframe();
     virtual ControlKeyframe* clone() const override;
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
-
-    virtual bool equal(const Keyframe& other) const override;
-
     ControlAction getAction() const;
     void setAction(ControlAction action);
 
-    ControlPayload getPayload() const;
-    void setPayload(ControlPayload payload);
-    
+    Seconds getJumpTime() const;
+    void setJumpTime(Seconds jumpTime);
+
     AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
 
     virtual void serialize(Serializer& s) const override;
@@ -78,7 +69,7 @@ public:
 
 private:
     ControlAction action_;
-    ControlPayload payload_;
+    Seconds jumpTime_;
 };
 
 }  // namespace animation

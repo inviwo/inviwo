@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/animation/animationsupplier.h>
 #include <modules/animation/animationmanager.h>
+#include <modules/animation/demo/democontroller.h>
 
 namespace inviwo {
 
@@ -48,8 +49,12 @@ public:
     animation::AnimationManager& getAnimationManager();
     const animation::AnimationManager& getAnimationManager() const;
 
+    animation::DemoController& getDemoController();
+    const animation::DemoController& getDemoController() const;
+
 private:
     animation::AnimationManager manager_;
+    animation::DemoController demoController_;
 };
 
 }  // namespace inviwo

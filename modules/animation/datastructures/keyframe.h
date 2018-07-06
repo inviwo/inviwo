@@ -50,11 +50,7 @@ namespace animation {
  */
 class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObservable {
 public:
-    Keyframe() = default;
-    virtual ~Keyframe() = default;
     virtual Keyframe* clone() const = 0;
-
-    virtual std::string getClassIdentifier() const = 0;
 
     virtual void setTime(Seconds time) = 0;
     virtual Seconds getTime() const = 0;
@@ -62,14 +58,9 @@ public:
     virtual bool isSelected() const = 0;
     virtual void setSelected(bool selected) = 0;
 
-    virtual bool equal(const Keyframe& other) const = 0;
-
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 };
-
-IVW_MODULE_ANIMATION_API bool operator==(const Keyframe& a, const Keyframe& b);
-IVW_MODULE_ANIMATION_API bool operator!=(const Keyframe& a, const Keyframe& b);
 
 IVW_MODULE_ANIMATION_API bool operator<(const Keyframe& a, const Keyframe& b);
 IVW_MODULE_ANIMATION_API bool operator<=(const Keyframe& a, const Keyframe& b);

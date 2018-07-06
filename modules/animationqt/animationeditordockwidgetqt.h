@@ -31,10 +31,11 @@
 #define IVW_ANIMATIONEDITORDOCKWIDGETQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animation/animationcontroller.h>
 #include <inviwo/core/common/inviwo.h>
+
 #include <modules/qtwidgets/inviwodockwidget.h>
+
+#include <modules/animation/animationcontrollerobserver.h>
 
 class QToolButton;
 class QMainWindow;
@@ -43,6 +44,7 @@ namespace inviwo {
 
 namespace animation {
 
+class AnimationController;
 class AnimationEditorQt;
 class AnimationViewQt;
 class AnimationLabelViewQt;

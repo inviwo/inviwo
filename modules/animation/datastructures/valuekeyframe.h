@@ -60,11 +60,6 @@ public:
 
     void setValue(const T& value);
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
-
-    virtual bool equal(const Keyframe& other) const override;
-
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -73,8 +68,16 @@ private:
 };
 
 template <typename T>
-ValueKeyframe<T>::ValueKeyframe(Seconds time, const T& value)
-    : BaseKeyframe{time}, value_(value) {}
+bool operator==(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
+    return a.getTime() == b.getTime() && a.getValue() == b.getValue();
+}
+template <typename T>
+bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
+    return !(a==b);
+}
+
+template <typename T>
+ValueKeyframe<T>::ValueKeyframe(Seconds time, const T& value) : BaseKeyframe{time}, value_(value) {}
 
 template <typename T>
 ValueKeyframe<T>& ValueKeyframe<T>::operator=(const ValueKeyframe<T>& that) {
@@ -105,28 +108,9 @@ void ValueKeyframe<T>::setValue(const T& value) {
 }
 
 template <typename T>
-std::string ValueKeyframe<T>::classIdentifier() {
-    return "org.inviwo.animation.ValueKeyframe." + Defaultvalues<T>::getName();
-}
-
-template <typename T>
-std::string ValueKeyframe<T>::getClassIdentifier() const {
-    return classIdentifier();
-}
-
-template <typename T>
-bool ValueKeyframe<T>::equal(const Keyframe& other) const {
-    if (!BaseKeyframe::equal(other)) return false;
-
-    const auto& o = static_cast<const ValueKeyframe<T>&>(other);
-    return std::tie(time_, value_) == std::tie(o.time_, o.value_);
-}
-
-template <typename T>
 void ValueKeyframe<T>::serialize(Serializer& s) const {
     BaseKeyframe::serialize(s);
     s.serialize("value", value_);
-
 }
 
 template <typename T>

@@ -56,7 +56,7 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller)
 }
 
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
-    if (e->y() < TimelineHeight) {
+    if (e->y() < timelineHeight) {
         pressingOnTimeline_ = true;
         setTimelinePos(e->x());
     }
@@ -95,7 +95,7 @@ void AnimationViewQt::wheelEvent(QWheelEvent* e) {
 }
 
 void AnimationViewQt::setTimelinePos(int x) {
-    auto time = mapToScene(x, 0).x() / static_cast<double>(WidthPerSecond);
+    const auto time = mapToScene(x, 0).x() / static_cast<double>(widthPerSecond);
     controller_.eval(controller_.getCurrentTime(), Seconds(time));
 }
 
@@ -103,7 +103,7 @@ void AnimationViewQt::zoom(double dz) { scale(dz, 1.0); }
 
 void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->fillRect(rect, QColor(89, 89, 89));
-    int gridSpacing = WidthPerSecond;
+    int gridSpacing = widthPerSecond;
     QRectF sRect = frameRect();
     sRect.setWidth(std::max(sceneRect().width(), rect.width()));
 
@@ -118,19 +118,19 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     pen.setCosmetic(true);
     painter->setPen(pen);
     auto timelineRect = sRect;
-    timelineRect.setHeight(TimelineHeight);
+    timelineRect.setHeight(timelineHeight);
     painter->fillRect(timelineRect, QColor(180, 180, 180));
 
     QVarLengthArray<QLineF, 100> lines;      // overlay grid
     QVarLengthArray<QRectF, 100> textBoxes;  // Seconds
     QFontMetrics fm(painter->font());
     int textHeightInPixels = fm.height();
-    // auto textSize = painter->boundingRect(const QRectF &rectangle, int flags, const QString
-    // &text)
+
     for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
         lines.append(QLineF(x, sRect.top() + textHeightInPixels, x, sRect.bottom()));
         textBoxes.append(QRectF(x - 0.5 * gridSpacing, sRect.top(), gridSpacing, 30));
     }
+
     // Draw grid
     QPen gridPen;
     gridPen.setColor(QColor(102, 102, 102));
@@ -146,7 +146,7 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
     // Time stamps
     char buf[32];
     for (const auto& p : textBoxes) {
-        snprintf(buf, 32, "%.1f", p.center().x() / static_cast<double>(WidthPerSecond));
+        snprintf(buf, 32, "%.1f", p.center().x() / static_cast<double>(widthPerSecond));
         painter->drawText(mapFromScene(p).boundingRect(), Qt::AlignHCenter | Qt::AlignTop,
                           QString(buf));
     }
@@ -155,7 +155,7 @@ void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
 
 void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
     // Current time
-    auto x = controller_.getCurrentTime().count() * WidthPerSecond;
+    auto x = controller_.getCurrentTime().count() * widthPerSecond;
     QPen timePen;
     timePen.setColor(QColor(255, 255, 255));
     timePen.setWidthF(1.0);

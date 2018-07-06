@@ -236,13 +236,12 @@ void AnimationController::render() {
     renderState_.digits = std::max(renderState_.digits, 4);
 
     // Get all active canvases
-    ProcessorNetwork* pNetwork = app_->getProcessorNetwork();
-    std::vector<CanvasProcessor*> AllCanvases = pNetwork->getProcessorsByType<CanvasProcessor>();
+    auto network = app_->getProcessorNetwork();
+    NetworkLock lock(network);
+    auto allCanvases = network->getProcessorsByType<CanvasProcessor>();
     std::vector<CanvasProcessor*> activeCanvases;
-    activeCanvases.reserve(AllCanvases.size());
-    for (auto thisCanvas : AllCanvases) {
-        if (thisCanvas->isSink()) activeCanvases.push_back(thisCanvas);
-    }
+    std::copy_if(allCanvases.begin(), allCanvases.end(), std::back_inserter(activeCanvases),
+                 [](auto canvas) { return canvas->isSink(); });
 
     // Canvas indication replacement in filename
     renderState_.canvasIndicator = activeCanvases.size() > 1 ? "_UPN_" : "";
@@ -253,20 +252,19 @@ void AnimationController::render() {
     if (renderSizeMode.get() != 0) {
         renderState_.origCanvasSettings.resize(activeCanvases.size());
         // For each active canvas
-        for (auto thisCanvas : activeCanvases) {
+        for (auto canvas : activeCanvases) {
 
             // Save original state
             renderState_.origCanvasSettings.emplace_back();
-            auto& thisSettings = renderState_.origCanvasSettings.back();
-            thisSettings.enableCustomInputDimensions_ =
-                thisCanvas->enableCustomInputDimensions_.get();
-            thisSettings.customInputDimensions_ = thisCanvas->customInputDimensions_.get();
-            thisSettings.keepAspectRatio_ = thisCanvas->keepAspectRatio_.get();
-            thisSettings.canvasIdentifier = thisCanvas->getIdentifier();
+            auto& settings = renderState_.origCanvasSettings.back();
+            settings.enableCustomInputDimensions_ = canvas->enableCustomInputDimensions_.get();
+            settings.customInputDimensions_ = canvas->customInputDimensions_.get();
+            settings.keepAspectRatio_ = canvas->keepAspectRatio_.get();
+            settings.canvasIdentifier = canvas->getIdentifier();
 
             // Calculate new dimensions
             // - dimensions of the canvas widget
-            const dvec2& actualDims = thisCanvas->dimensions_.get();
+            const dvec2& actualDims = canvas->dimensions_.get();
             // - basic dimensions desired
             ivec2 desiredDims{0};
             switch (renderSizeMode.get()) {
@@ -297,9 +295,9 @@ void AnimationController::render() {
             }
 
             // Set new state
-            thisCanvas->enableCustomInputDimensions_.set(true);
-            thisCanvas->keepAspectRatio_.set(false);
-            thisCanvas->customInputDimensions_.set(desiredDims);
+            canvas->enableCustomInputDimensions_.set(true);
+            canvas->keepAspectRatio_.set(false);
+            canvas->customInputDimensions_.set(desiredDims);
         }
     }
 
@@ -317,15 +315,16 @@ void AnimationController::afterRender() {
     renderAction.setVisible(true);
 
     // Restore original state of Canvases
-    ProcessorNetwork* pNetwork = app_->getProcessorNetwork();
-    if (!pNetwork) return;
+    auto network = app_->getProcessorNetwork();
+    NetworkLock lock(network);
+    if (!network) return;
     for (auto& origSettings : renderState_.origCanvasSettings) {
-        CanvasProcessor* pCanvas = dynamic_cast<CanvasProcessor*>(
-            pNetwork->getProcessorByIdentifier(origSettings.canvasIdentifier));
-        if (pCanvas) {
-            pCanvas->enableCustomInputDimensions_.set(origSettings.enableCustomInputDimensions_);
-            pCanvas->keepAspectRatio_.set(origSettings.keepAspectRatio_);
-            pCanvas->customInputDimensions_.set(origSettings.customInputDimensions_);
+        if (auto canvas = dynamic_cast<CanvasProcessor*>(
+                network->getProcessorByIdentifier(origSettings.canvasIdentifier))) {
+
+            canvas->enableCustomInputDimensions_.set(origSettings.enableCustomInputDimensions_);
+            canvas->keepAspectRatio_.set(origSettings.keepAspectRatio_);
+            canvas->customInputDimensions_.set(origSettings.customInputDimensions_);
         }
     }
 }
@@ -351,7 +350,7 @@ void AnimationController::tick() {
     auto newTime = currentTime_ + deltaTime_;
 
     // Get active time window for playing
-    // - init with sub-window, overwrite with full window if necessary
+    // init with sub-window, overwrite with full window if necessary
     Seconds firstTime = Seconds(playWindow.get()[0]);
     Seconds lastTime = Seconds(playWindow.get()[1]);
     if (playWindowMode.get() == 0) {

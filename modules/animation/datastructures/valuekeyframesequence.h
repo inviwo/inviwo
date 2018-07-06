@@ -35,7 +35,8 @@
 #include <inviwo/core/util/observer.h>
 
 #include <modules/animation/datastructures/basekeyframesequence.h>
-#include <modules/animation/datastructures/constantinterpolation.h>
+#include <modules/animation/interpolation/interpolation.h>
+#include <modules/animation/interpolation/constantinterpolation.h>
 
 namespace inviwo {
 
@@ -86,9 +87,6 @@ public:
     KeyframeSequenceTyped(const KeyframeSequenceTyped& rhs);
     KeyframeSequenceTyped& operator=(const KeyframeSequenceTyped& that);
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
-
     /**
      * Remove all keyframes and call KeyframeObserver::notifyKeyframeRemoved
      */
@@ -102,8 +100,6 @@ public:
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) override;
     void setInterpolation(std::unique_ptr<InterpolationTyped<Key>> interpolation);
 
-    virtual bool equal(const KeyframeSequence& other) const override;
-
     virtual easing::EasingType getEasingType() const override;
     virtual void setEasingType(easing::EasingType easing) override;
 
@@ -114,6 +110,16 @@ private:
     easing::EasingType easing_{easing::EasingType::Linear};
     std::unique_ptr<InterpolationTyped<Key>> interpolation_;
 };
+
+template <typename Key>
+bool operator==(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
+    return a.getEasingType() == b.getEasingType() && a.getInterpolation() == b.getInterpolation()
+        && std::equal(a.begin(), a.end(), b.begin(), b.end());
+}
+template <typename Key>
+bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
+    return !(a==b);
+}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
@@ -155,28 +161,6 @@ KeyframeSequenceTyped<Key>* KeyframeSequenceTyped<Key>::clone() const {
 }
 
 template <typename Key>
-std::string KeyframeSequenceTyped<Key>::classIdentifier() {
-    return "org.inviwo.animation.ValueKeyframeSequence." + Defaultvalues<value_type>::getName();
-}
-
-template <typename Key>
-std::string KeyframeSequenceTyped<Key>::getClassIdentifier() const {
-    return classIdentifier();
-}
-
-template <typename Key>
-bool KeyframeSequenceTyped<Key>::equal(const KeyframeSequence& other) const {
-    if (!BaseKeyframeSequence<Key>::equal(other)) return false;
-    const auto& o = static_cast<const KeyframeSequenceTyped<Key>&>(other);
-
-    if (this->size() != o.size()) return false;
-    for (size_t i = 0; i < this->size(); ++i) {
-        if (this->operator[](i) != o[i]) return false;
-    }
-    return true;
-}
-
-template <typename Key>
 auto KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to) const ->
     typename Key::value_type {
     if (interpolation_) {
@@ -185,7 +169,6 @@ auto KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to) const ->
         return this->keyframes_.front()->getValue();
     }
 }
-
 
 template <typename Key>
 const InterpolationTyped<Key>& KeyframeSequenceTyped<Key>::getInterpolation() const {

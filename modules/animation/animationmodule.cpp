@@ -37,7 +37,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
-#include <modules/animation/datastructures/constantinterpolation.h>
+#include <modules/animation/interpolation/constantinterpolation.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/propertytrack.h>
@@ -112,7 +112,7 @@ struct ConstantInterpolationReghelper {
 };
 
 AnimationModule::AnimationModule(InviwoApplication* app)
-    : InviwoModule(app, "Animation"), animation::AnimationSupplier(manager_), manager_(app, this) {
+    : InviwoModule(app, "Animation"), animation::AnimationSupplier(manager_), manager_(app, this), demoController_(app) {
 
     using namespace animation;
 
@@ -146,5 +146,10 @@ AnimationModule::~AnimationModule() {
 animation::AnimationManager& AnimationModule::getAnimationManager() { return manager_; }
 
 const animation::AnimationManager& AnimationModule::getAnimationManager() const { return manager_; }
+
+animation::DemoController& AnimationModule::getDemoController() { return demoController_; }
+
+const animation::DemoController& AnimationModule::getDemoController() const { return demoController_; }
+
 
 }  // namespace inviwo

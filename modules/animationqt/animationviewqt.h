@@ -31,9 +31,10 @@
 #define IVW_ANIMATIONVIEWQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/animationcontrollerobserver.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,12 +46,6 @@ namespace inviwo {
 namespace animation {
 
 class AnimationController;
-
-/**
- * \class AnimationViewQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 
 class IVW_MODULE_ANIMATIONQT_API AnimationViewQt : public QGraphicsView,
                                                    public AnimationControllerObserver {
@@ -68,8 +63,6 @@ protected:
     void zoom(double dz);
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
-
-    // virtual void setupViewport(QWidget* widget) override;
 
     virtual void onStateChanged(AnimationController* controller, AnimationState oldState,
                                 AnimationState newState) override;

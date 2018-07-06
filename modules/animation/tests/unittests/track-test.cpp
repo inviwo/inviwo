@@ -41,10 +41,9 @@
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
-#include <modules/animation/datastructures/interpolation.h>
+#include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/animation.h>
-#include <modules/animation/datastructures/interpolation.h>
 
 #include <modules/animation/factories/interpolationfactory.h>
 #include <modules/animation/factories/interpolationfactoryobject.h>
