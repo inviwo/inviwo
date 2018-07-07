@@ -27,28 +27,43 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYTRACKWIDGETQT_H
-#define IVW_PROPERTYTRACKWIDGETQT_H
+#ifndef IVW_SEQUENCEEDITORFACTORY_H
+#define IVW_SEQUENCEEDITORFACTORY_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/factory.h>
 
-#include <modules/animationqt/widgets/trackwidgetqt.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
+#include <modules/animationqt/factories/sequenceeditorfactoryobject.h>
 
 namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATIONQT_API PropertyTrackWidgetQt : public TrackWidgetQt {
-public:
-    PropertyTrackWidgetQt(Track& track);
-    virtual ~PropertyTrackWidgetQt() = default;
+class Track;
+class KeyframeSequence;
 
-    static std::string classIdentifier();
+class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactory
+    : public StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, const std::string&,
+                             KeyframeSequence&, Track&> {
+public:
+    SequenceEditorFactory() = default;
+    virtual ~SequenceEditorFactory() = default;
+
+    using StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, const std::string&,
+                          KeyframeSequence&, Track&>::create;
+
+    void registerTrackToSequenceEditorMap(const std::string& trackId, const std::string& widgetId);
+
+    std::string getSequenceEditorId(const std::string& trackId) const;
+
+private:
+    std::unordered_map<std::string, std::string> trackToEditor_;
 };
 
 }  // namespace animation
 
 }  // namespace inviwo
 
-#endif  // IVW_PROPERTYTRACKWIDGETQT_H
+#endif  // IVW_SEQUENCEEDITORFACTORY_H

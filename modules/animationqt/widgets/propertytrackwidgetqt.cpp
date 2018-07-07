@@ -31,7 +31,14 @@
 
 namespace inviwo {
 
-PropertyTrackWidgetQt::PropertyTrackWidgetQt() {
+namespace animation {
+
+PropertyTrackWidgetQt::PropertyTrackWidgetQt(Track& track) : TrackWidgetQt(track) {}
+
+std::string PropertyTrackWidgetQt::classIdentifier() {
+    return "org.inviwo.animaiton.PropertyTrackWidgetQt";
 }
+
+}  // namespace animation
 
 }  // namespace inviwo

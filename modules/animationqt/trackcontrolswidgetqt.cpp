@@ -28,21 +28,29 @@
  *********************************************************************************/
 
 #include <modules/animationqt/trackcontrolswidgetqt.h>
-#include <modules/animation/animationmodule.h>
 #include <modules/animation/datastructures/propertytrack.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QHBoxLayout>
 #include <QToolButton>
 #include <QAction>
 #include <QLabel>
+#include <QApplication>
+#include <warn/pop>
 
 namespace inviwo {
 
 namespace animation {
 
-TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, AnimationController& controller)
-    : QWidget(), controller_(controller), item_(item) {
+TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
+                                             AnimationController& controller)
+    : QWidget(), controller_(controller), track_{track}, item_(item) {
 
     setObjectName("TrackControlsWidget");
+
+    track_.addObserver(this);
 
     layout_ = new QHBoxLayout();
 
@@ -54,21 +62,17 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, AnimationContr
     {
         QIcon enableTrackIcon;
         enableTrackIcon.addFile(":/animation/icons/crossedeye_32.png", iconSize, QIcon::Normal,
-                                QIcon::Off);
+                                QIcon::On);
         enableTrackIcon.addFile(":/animation/icons/eye_look_search_view_icon_32.png", iconSize,
-                                QIcon::Normal, QIcon::On);
+                                QIcon::Normal, QIcon::Off);
         QAction* disable = new QAction(enableTrackIcon, "Enable/Disable Track");
-        connect(disable, &QAction::triggered, [&]() {
-            Track* track = reinterpret_cast<Track*>(item_->data((Qt::UserRole + 1)).value<void*>());
-            if (track) {
-                track->setEnabled(!track->isEnabled());
-                btnDisable_->setChecked(!btnDisable_->isChecked());
-            }
-        });
+        connect(disable, &QAction::triggered, this,
+                [this]() { track_.setEnabled(!track_.isEnabled()); });
+
+        disable->setCheckable(true);
+        disable->setChecked(!track_.isEnabled());
         btnDisable_ = new QToolButton(this);
         btnDisable_->setDefaultAction(disable);
-        btnDisable_->setCheckable(true);
-        btnDisable_->setChecked(true);
         layout_->addWidget(btnDisable_, Qt::AlignLeft | Qt::AlignVCenter);
     }
 
@@ -76,29 +80,24 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, AnimationContr
         QIcon lockTrackIcon;
         lockTrackIcon.addFile(
             ":/animation/icons/account_lock_password_protect_save_saving_security_icon_32.png",
-            iconSize, QIcon::Normal, QIcon::On);
+            iconSize, QIcon::Normal, QIcon::Off);
         lockTrackIcon.addFile(
             ":/animation/icons/lock_open_opened_protection_safety_security_unlocked_icon_32.png",
-            iconSize, QIcon::Normal, QIcon::Off);
+            iconSize, QIcon::Normal, QIcon::On);
         QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track");
-        connect(lock, &QAction::triggered, [&]() {
-            Track* track = reinterpret_cast<Track*>(item_->data((Qt::UserRole + 1)).value<void*>());
-            if (track) {
-                // lock the track
-                LogWarn("Locking tracks is not implemented yet.");
-                btnLock_->setChecked(!btnLock_->isChecked());
-            }
+        connect(lock, &QAction::triggered, this, [this]() {
+            // lock the track
+            LogWarn("Locking tracks is not implemented yet.");
         });
+        lock->setCheckable(true);
+        lock->setChecked(false);
         btnLock_ = new QToolButton(this);
         btnLock_->setDefaultAction(lock);
-        btnLock_->setCheckable(true);
-        btnLock_->setChecked(false);
         layout_->addWidget(btnLock_, Qt::AlignLeft | Qt::AlignVCenter);
     }
 
-    Track* track = reinterpret_cast<Track*>(item_->data((Qt::UserRole + 1)).value<void*>());
-    if (track) {
-        auto label = new QLabel(track->getName().c_str());
+    {
+        auto label = new QLabel(utilqt::toQString(track_.getName()));
         layout_->addWidget(label, Qt::AlignRight | Qt::AlignVCenter);
     }
 
@@ -107,15 +106,11 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, AnimationContr
         prevIcon.addFile(":/animation/icons/arrow_direction_left_next_previous_return_icon_32.png",
                          iconSize, QIcon::Normal, QIcon::On);
         QAction* prev = new QAction(prevIcon, "Prev Keyframe");
-        connect(prev, &QAction::triggered, [&]() {
-            Track* track = reinterpret_cast<Track*>(item_->data((Qt::UserRole + 1)).value<void*>());
-            if (track) {
-                auto times = track->getAllTimes();
-                auto it =
-                    std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
-                if (it != times.begin()) {
-                    controller_.eval(controller_.getCurrentTime(), *std::prev(it));
-                }
+        connect(prev, &QAction::triggered, this, [this]() {
+            auto times = track_.getAllTimes();
+            auto it = std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
+            if (it != times.begin()) {
+                controller_.eval(controller_.getCurrentTime(), *std::prev(it));
             }
         });
         QToolButton* btnprev = new QToolButton(this);
@@ -131,17 +126,11 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, AnimationContr
             ":/animation/icons/basket_delete_garbage_trash_waste_icon_32.png", iconSize,
             QIcon::Normal, QIcon::Off);
         QAction* addAndDelete = new QAction(keyFrameHandlingIcon, "Add Keyframe");
-        connect(addAndDelete, &QAction::triggered, [&]() {
-            Track* track = reinterpret_cast<Track*>(item_->data((Qt::UserRole + 1)).value<void*>());
-            BasePropertyTrack* propertytrack = dynamic_cast<BasePropertyTrack*>(track);
-            // Might not have been a BasePropertyTrack
-            if (propertytrack && btnAddAndDelete_->isChecked()) {
-                auto property = propertytrack->getProperty();
-                auto app = controller_.getInviwoApplication();
-                auto& am = app->template getModuleByType<AnimationModule>()->getAnimationManager();
-                am.addKeyframeCallback(property);
-            }
+
+        connect(addAndDelete, &QAction::triggered, this, [this]() {
+            track_.add(controller_.getCurrentTime(), QApplication::keyboardModifiers() == Qt::CTRL);
         });
+
         btnAddAndDelete_ = new QToolButton(this);
         btnAddAndDelete_->setDefaultAction(addAndDelete);
         btnAddAndDelete_->setCheckable(true);
@@ -154,23 +143,35 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, AnimationContr
         nextIcon.addFile(":/animation/icons/arrow_direction_previous_right_icon_32.png", iconSize,
                          QIcon::Normal, QIcon::On);
         QAction* next = new QAction(nextIcon, "Next Keyframe");
-        connect(next, &QAction::triggered, [&]() {
-            Track* track = reinterpret_cast<Track*>(item_->data((Qt::UserRole + 1)).value<void*>());
-            if (track) {
-                auto times = track->getAllTimes();
-                auto it =
-                    std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
-                if (it != times.end()) {
-                    controller_.eval(controller_.getCurrentTime(), *it);
-                }
+        connect(next, &QAction::triggered, this, [this]() {
+            auto times = track_.getAllTimes();
+            auto it = std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
+            if (it != times.end()) {
+                controller_.eval(controller_.getCurrentTime(), *it);
             }
         });
-        QToolButton* btnNext = new QToolButton(this);
+        auto btnNext = new QToolButton(this);
         btnNext->setDefaultAction(next);
         layout_->addWidget(btnNext, Qt::AlignRight | Qt::AlignVCenter);
     }
 
     setLayout(layout_);
+}
+
+void TrackControlsWidgetQt::onEnabledChanged(Track*) {
+    btnDisable_->setChecked(!track_.isEnabled());
+}
+
+void TrackControlsWidgetQt::mousePressEvent(QMouseEvent*) {
+    if (auto propertytrack = dynamic_cast<BasePropertyTrack*>(&track_)) {
+        // Deselect all processors first
+        util::setSelected(util::getInviwoApplication()->getProcessorNetwork()->getProcessors(),
+                          false);
+        auto property = propertytrack->getProperty();
+        // Select the processor the selected property belongs to
+        Processor* processor = property->getOwner()->getProcessor();
+        util::setSelected({processor}, true);
+    }
 }
 
 }  // namespace animation

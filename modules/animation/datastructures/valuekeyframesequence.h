@@ -81,6 +81,7 @@ public:
     static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
 
     KeyframeSequenceTyped();
+    KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes);
     KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes,
                           std::unique_ptr<InterpolationTyped<Key>> interpolation);
 
@@ -113,12 +114,12 @@ private:
 
 template <typename Key>
 bool operator==(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
-    return a.getEasingType() == b.getEasingType() && a.getInterpolation() == b.getInterpolation()
-        && std::equal(a.begin(), a.end(), b.begin(), b.end());
+    return a.getEasingType() == b.getEasingType() && a.getInterpolation() == b.getInterpolation() &&
+           std::equal(a.begin(), a.end(), b.begin(), b.end());
 }
 template <typename Key>
 bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
-    return !(a==b);
+    return !(a == b);
 }
 
 template <typename Key>
@@ -128,17 +129,23 @@ KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
     , interpolation_{std::make_unique<ConstantInterpolation<Key>>()} {}
 
 template <typename Key>
+KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes)
+    : BaseKeyframeSequence<Key>{std::move(keyframes)}
+    , ValueKeyframeSequence()
+    , interpolation_{std::make_unique<ConstantInterpolation<Key>>()} {}
+
+template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
-    std::vector<std::unique_ptr<Key>> keyframes, std::unique_ptr<InterpolationTyped<Key>> interpolation)
-    : BaseKeyframeSequence<Key>{std::move(keyframes)}, ValueKeyframeSequence()
-    , interpolation_{std::move(interpolation)} {
-}
+    std::vector<std::unique_ptr<Key>> keyframes,
+    std::unique_ptr<InterpolationTyped<Key>> interpolation)
+    : BaseKeyframeSequence<Key>{std::move(keyframes)}
+    , ValueKeyframeSequence()
+    , interpolation_{std::move(interpolation)} {}
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Key>& rhs)
     : BaseKeyframeSequence<Key>(rhs)
     , ValueKeyframeSequence(rhs)
-    , interpolation_(std::unique_ptr<InterpolationTyped<Key>>(rhs.interpolation_->clone())) {
-}
+    , interpolation_(std::unique_ptr<InterpolationTyped<Key>>(rhs.interpolation_->clone())) {}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(

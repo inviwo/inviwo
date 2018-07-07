@@ -27,28 +27,19 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYTRACKWIDGETQT_H
-#define IVW_PROPERTYTRACKWIDGETQT_H
-
-#include <modules/animationqt/animationqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
-#include <modules/animationqt/widgets/trackwidgetqt.h>
+#include <modules/animationqt/factories/sequenceeditorfactoryobject.h>
 
 namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATIONQT_API PropertyTrackWidgetQt : public TrackWidgetQt {
-public:
-    PropertyTrackWidgetQt(Track& track);
-    virtual ~PropertyTrackWidgetQt() = default;
+SequenceEditorFactoryObject::SequenceEditorFactoryObject(const std::string& classIdentifier)
+    : classIdentifier_(classIdentifier) {}
 
-    static std::string classIdentifier();
-};
+const std::string& SequenceEditorFactoryObject::getClassIdentifier() const {
+    return classIdentifier_;
+}
 
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYTRACKWIDGETQT_H

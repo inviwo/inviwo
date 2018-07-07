@@ -27,28 +27,48 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYTRACKWIDGETQT_H
-#define IVW_PROPERTYTRACKWIDGETQT_H
+#ifndef IVW_SEQUENCEEDITORFACTORYOBJECT_H
+#define IVW_SEQUENCEEDITORFACTORYOBJECT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/animationqt/widgets/trackwidgetqt.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
 namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATIONQT_API PropertyTrackWidgetQt : public TrackWidgetQt {
+class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactoryObject {
 public:
-    PropertyTrackWidgetQt(Track& track);
-    virtual ~PropertyTrackWidgetQt() = default;
+    SequenceEditorFactoryObject(const std::string& classIdentifier);
+    virtual ~SequenceEditorFactoryObject() = default;
 
-    static std::string classIdentifier();
+    virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence&, Track&) const = 0;
+    const std::string& getClassIdentifier() const;
+
+protected:
+    const std::string classIdentifier_;
+};
+
+template <typename T>
+class SequenceEditorFactoryObjectTemplate : public SequenceEditorFactoryObject {
+public:
+    // Requires a static classIdentifier() method on T
+    SequenceEditorFactoryObjectTemplate() : SequenceEditorFactoryObject(T::classIdentifier()) {}
+
+    SequenceEditorFactoryObjectTemplate(const std::string& classIdentifier)
+        : SequenceEditorFactoryObject(classIdentifier){};
+    virtual ~SequenceEditorFactoryObjectTemplate() = default;
+
+    virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence& sequence,
+                                                         Track& track) const override {
+        return std::make_unique<T>(sequence, track);
+    }
 };
 
 }  // namespace animation
 
 }  // namespace inviwo
 
-#endif  // IVW_PROPERTYTRACKWIDGETQT_H
+#endif  // IVW_SEQUENCEEDITORFACTORYOBJECT_H

@@ -31,7 +31,15 @@
 
 namespace inviwo {
 
-TrackWidgetQtFactoryObject::TrackWidgetQtFactoryObject() {
+namespace animation {
+
+TrackWidgetQtFactoryObject::TrackWidgetQtFactoryObject(const std::string& classIdentifier)
+    : classIdentifier_(classIdentifier) {}
+
+const std::string& TrackWidgetQtFactoryObject::getClassIdentifier() const {
+    return classIdentifier_;
 }
+
+}  // namespace animation
 
 }  // namespace inviwo

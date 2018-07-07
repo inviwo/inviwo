@@ -117,6 +117,11 @@ public:
     virtual KeyframeSequence& getLast() = 0;
 
     /**
+     * Add a Keyframe/KeyframeSequence at time
+     */
+    virtual void add(Seconds time, bool asNewSequence) = 0;
+
+    /**
      * Add KeyframeSequence and call TrackObserver::notifyKeyframeSequenceAdded
      */
     virtual void add(std::unique_ptr<KeyframeSequence> sequence) = 0;

@@ -45,7 +45,7 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
     , trackFactory_{}
     , interpolationFactory_{}
     , animation_{}
-    , controller_{&animation_, app} {
+    , controller_{animation_, app} {
 
     {
         auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,

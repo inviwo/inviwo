@@ -34,6 +34,7 @@
 #include <modules/animation/animationcontroller.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframeobserver.h>
 #include <QWidget>
@@ -46,14 +47,21 @@ namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATIONQT_API TrackControlsWidgetQt : public QWidget {
+class IVW_MODULE_ANIMATIONQT_API TrackControlsWidgetQt : public QWidget, public TrackObserver {
 
 public:
-    TrackControlsWidgetQt(QStandardItem* item, AnimationController& controller);
+    TrackControlsWidgetQt(QStandardItem* item, Track& track, AnimationController& controller);
     virtual ~TrackControlsWidgetQt() = default;
 
 private:
+    // QWidget overloads
+    virtual void mousePressEvent(QMouseEvent* e) override;
+
+    // TrackObserver overloads;
+    virtual void onEnabledChanged(Track* track) override;
+
     AnimationController& controller_;
+    Track& track_;
 
     QStandardItem* item_;
     QHBoxLayout* layout_{nullptr};

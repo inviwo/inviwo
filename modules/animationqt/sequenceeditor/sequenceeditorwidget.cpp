@@ -27,11 +27,13 @@
  *
  *********************************************************************************/
 
-#include <modules/animationqt/sequenceeditorpanel/sequenceeditorwidget.h>
-#include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
-#include <modules/animationqt/sequenceeditorpanel/keyframeeditorwidget.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
-#include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/track.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -44,57 +46,8 @@
 namespace inviwo {
 
 namespace animation {
-SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& track,
-                                           SequenceEditorPanel* panel)
-    : QWidget(panel), sequence_(sequence), track_(track) {
-    setObjectName("SequenceEditorWidget");
-    sequence_.addObserver(this);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-
-    auto label = new QLabel(track_.getName().c_str());
-    auto font = label->font();
-    font.setBold(true);
-    label->setFont(font);
-    layout->addWidget(label);
-
-    keyframesLayout_ = new QVBoxLayout();
-    layout->addLayout(keyframesLayout_);
-
-    if (dynamic_cast<BasePropertyTrack*>(&track)) {
-        auto easingLayout = new QHBoxLayout();
-        layout->addLayout(easingLayout);
-
-        easingComboBox_ = new QComboBox();
-        easingLayout->addWidget(new QLabel("Easing: "));
-        easingLayout->addWidget(easingComboBox_);
-
-        //auto currentEasing = sequence_.getEasingType();
-        auto currentEasing = easing::EasingType::Linear;
-
-
-        for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
-            std::ostringstream oss;
-            oss << e;
-            easingComboBox_->addItem(oss.str().c_str(), QVariant(static_cast<int>(e)));
-            if (currentEasing == e) {
-                easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
-            }
-        }
-
-        void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
-        //connect(easingComboBox_, signal, [this](int index) {
-            //sequence_.setEasingType(static_cast<easing::EasingType>(index));
-        //});
-    }
-
-    for (size_t i = 0; i < sequence_.size(); i++) {
-        onKeyframeAdded(&sequence_[i], &sequence_);
-    }
-
-    updateVisibility();
-}
+SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& track)
+    : QWidget(), sequence_(sequence), track_{track} {}
 
 void SequenceEditorWidget::updateVisibility() {
     setVisible(sequence_.isSelected() || sequence_.isAnyKeyframeSelected());
@@ -105,7 +58,7 @@ void SequenceEditorWidget::onKeyframeSequenceSelectionChanged(KeyframeSequence*)
 }
 
 void SequenceEditorWidget::onKeyframeAdded(Keyframe* key, KeyframeSequence*) {
-    auto w = new KeyframeEditorWidget(*key, this);
+    auto w = create(key);
     keyframesLayout_->addWidget(w);
     keyframeEditorWidgets_[key] = w;
     setReorderNeeded();
@@ -123,36 +76,26 @@ void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {
 
 void SequenceEditorWidget::setReorderNeeded() { reorderNeeded_ = true; }
 
-void SequenceEditorWidget::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) {
-    easingComboBox_->blockSignals(true);
-    auto index = easingComboBox_->findData(QVariant(static_cast<int>(seq->getEasingType())));
-    easingComboBox_->setCurrentIndex(index);
-    easingComboBox_->blockSignals(false);
-}
-
 void SequenceEditorWidget::reorderKeyframes() {
+    std::vector<std::pair<const Keyframe*, QWidget*>> widgets(keyframeEditorWidgets_.begin(),
+                                                              keyframeEditorWidgets_.end());
 
-    std::vector<KeyframeEditorWidget*> widgets(keyframeEditorWidgets_.size());
-    std::transform(keyframeEditorWidgets_.begin(), keyframeEditorWidgets_.end(), widgets.begin(),
-                   [](auto pair) { return pair.second; });
-
-    std::stable_sort(widgets.begin(), widgets.end(), [](auto a, auto b) {
-        return a->getKeyframe().getTime().count() < b->getKeyframe().getTime().count();
+    std::stable_sort(widgets.begin(), widgets.end(), [](auto& a, auto& b) {
+        return a.first->getTime().count() < b.first->getTime().count();
     });
 
     bool orderChanged = false;
     size_t i = 0;
     for (auto w : widgets) {
-        orderChanged |= keyframesLayout_->indexOf(w) != i++;
+        orderChanged |= keyframesLayout_->indexOf(w.second) != i++;
     }
 
     if (orderChanged) {
         for (auto w : widgets) {
-            keyframesLayout_->removeWidget(w);
+            keyframesLayout_->removeWidget(w.second);
         }
-
         for (auto w : widgets) {
-            keyframesLayout_->addWidget(w);
+            keyframesLayout_->addWidget(w.second);
         }
     };
 }

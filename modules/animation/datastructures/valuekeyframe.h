@@ -48,6 +48,7 @@ class ValueKeyframe : public BaseKeyframe {
 public:
     using value_type = T;
     ValueKeyframe() = default;
+    ValueKeyframe(Seconds time);
     ValueKeyframe(Seconds time, const T& value);
     virtual ~ValueKeyframe() = default;
     virtual ValueKeyframe* clone() const override;
@@ -75,6 +76,9 @@ template <typename T>
 bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
     return !(a==b);
 }
+
+template <typename T>
+ValueKeyframe<T>::ValueKeyframe(Seconds time) : BaseKeyframe{time}, value_(0) {}
 
 template <typename T>
 ValueKeyframe<T>::ValueKeyframe(Seconds time, const T& value) : BaseKeyframe{time}, value_(value) {}

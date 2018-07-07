@@ -46,6 +46,7 @@ template <typename Seq>
 class BaseTrack : public Track, public KeyframeSequenceObserver {
 public:
     using seq_type = Seq;
+    using key_type = typename Seq::key_type;
     using value_type = typename Seq::value_type;
     using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Seq>>::iterator>;
     using const_iterator =
@@ -89,6 +90,7 @@ public:
     iterator end();
     const_iterator end() const;
 
+    virtual void add(Seconds time, bool asNewSequence) override;
     virtual void add(std::unique_ptr<KeyframeSequence> sequence) override;
     virtual void add(std::unique_ptr<Seq> sequence);
 
@@ -101,6 +103,7 @@ public:
 
 protected:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
+    void addToClosestSequence(std::unique_ptr<key_type> key);
 
     bool enabled_{true};
     std::string identifier_;
@@ -128,7 +131,10 @@ bool BaseTrack<Seq>::isEnabled() const {
 }
 template <typename Seq>
 void BaseTrack<Seq>::setEnabled(bool enabled) {
-    enabled_ = enabled;
+    if (enabled_ != enabled) {
+        enabled_ = enabled;
+        this->notifyEnabledChanged(this);
+    }
 }
 
 template <typename Seq>
@@ -251,6 +257,75 @@ auto BaseTrack<Seq>::end() const -> const_iterator {
     return util::makeIndirectIterator<true>(sequences_.end());
 }
 
+/**
+ * Track of sequences
+ * ----------X======X====X-----------------X=========X-------X=====X--------
+ * |- case 1-|-case 2----------------------|-case 2----------|-case 2------|
+ *           |-case 2a---|---------case 2b-|
+ */
+template <typename Seq>
+void BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
+    auto addNew = [this](std::unique_ptr<key_type> key) {
+        std::vector<std::unique_ptr<key_type>> keys;
+        keys.push_back(std::move(key));
+        add(std::make_unique<Seq>(std::move(keys)));
+    };
+
+    auto key = std::make_unique<key_type>(time);
+    if (sequences_.empty()) {
+        addNew(std::move(key));
+        return;
+    }
+
+    // 'it' will be the first seq. with a first time larger then 'to'.
+    auto it = std::upper_bound(this->begin(), this->end(), time);
+    if (it == this->begin()) {  // case 1
+        if (asNewSequence) {
+            addNew(std::move(key));
+        } else {
+            it->add(std::move(key));
+        }
+    } else {  // case 2
+        auto& seq1 = *std::prev(it);
+        if (time < seq1.getLastTime()) {  // case 2a
+            seq1.add(std::move(key));
+        } else {  // case 2b
+            if (asNewSequence) {
+                addNew(std::move(key));
+            } else {
+                addToClosestSequence(std::move(key));
+            }
+        }
+    }
+}
+
+/**
+ * Track of sequences
+ * ----------X======X====X-----------------X=========X-------X=====X--------
+ * |- case 1-|-case 2----------------------|-case 2----------|-case 3------|
+ *           |-case 2a-----------|-case 2b-|
+ */
+template <typename Seq>
+void BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) {
+    // 'it' will be the first seq. with a first time larger then 'to'.
+    auto it = std::upper_bound(this->begin(), this->end(), key->getTime());
+
+    if (it == this->begin()) {  // case 1
+        it->add(std::move(key));
+    } else if (it == this->end()) {  // case 3
+        auto& seq1 = *std::prev(it);
+        seq1.add(std::move(key));
+    } else {  // case 2
+        auto& seq1 = *std::prev(it);
+        auto& seq2 = *it;
+        if ((key->getTime() - seq1.getLastTime()) < (seq2.getFirstTime() - key->getTime())) {
+            seq1.add(std::move(key));  // case 2a
+        } else {
+            seq2.add(std::move(key));  // case 2b
+        }
+    }
+}
+
 template <typename Seq>
 void BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
     if (auto s = util::dynamic_unique_ptr_cast<Seq>(std::move(sequence))) {
@@ -320,18 +395,16 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) 
 template <typename Seq>
 void BaseTrack<Seq>::onKeyframeSequenceMoved(KeyframeSequence* seq) {
     std::stable_sort(sequences_.begin(), sequences_.end(),
-        [](const auto& a, const auto& b) { return *a < *b; });
+                     [](const auto& a, const auto& b) { return *a < *b; });
 
     // handle overlap?
 
-    auto it = std::find_if(sequences_.begin(), sequences_.end(),
-                           [&](const auto& item) { return item.get() == seq; });
-    if (it != sequences_.end()) {
-        if (it == sequences_.begin()) {
-            this->notifyFirstMoved(this);
-        } else if (it == std::prev(sequences_.end())) {
-            this->notifyLastMoved(this);
-        }
+    if (sequences_.front().get() == seq) {
+        this->notifyFirstMoved(this);
+    }
+
+    if (sequences_.back().get() == seq) {
+        this->notifyLastMoved(this);
     }
 }
 

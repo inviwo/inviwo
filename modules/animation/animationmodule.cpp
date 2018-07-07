@@ -44,6 +44,8 @@
 
 namespace inviwo {
 
+namespace {
+
 template <typename PropertyType, typename ValueType, typename Interpolation>
 auto trackAndInterpolationRegHelper(AnimationModule& am) {
     using namespace animation;
@@ -109,9 +111,13 @@ struct ConstantInterpolationReghelper {
                                        ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }
 };
+}  // namespace
 
 AnimationModule::AnimationModule(InviwoApplication* app)
-    : InviwoModule(app, "Animation"), animation::AnimationSupplier(manager_), manager_(app, this), demoController_(app) {
+    : InviwoModule(app, "Animation")
+    , animation::AnimationSupplier(manager_)
+    , manager_(app, this)
+    , demoController_(app) {
 
     using namespace animation;
 
@@ -148,7 +154,8 @@ const animation::AnimationManager& AnimationModule::getAnimationManager() const 
 
 animation::DemoController& AnimationModule::getDemoController() { return demoController_; }
 
-const animation::DemoController& AnimationModule::getDemoController() const { return demoController_; }
-
+const animation::DemoController& AnimationModule::getDemoController() const {
+    return demoController_;
+}
 
 }  // namespace inviwo

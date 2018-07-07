@@ -47,7 +47,7 @@ namespace animation {
  * Exposes functions for adding a ControlKeyFrame and ControlKeyFrameSequence
  * @see Track
  */
-class ControlTrack : public BaseTrack<ControlKeyframeSequence> {
+class IVW_MODULE_ANIMATION_API ControlTrack : public BaseTrack<ControlKeyframeSequence> {
 public:
     ControlTrack();
     virtual ~ControlTrack();

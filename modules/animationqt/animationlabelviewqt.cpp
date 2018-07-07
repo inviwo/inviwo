@@ -28,11 +28,16 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationlabelviewqt.h>
-#include <modules/animationqt/trackcontrolswidgetqt.h>
-#include <modules/animation/datastructures/animation.h>
 
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networkutils.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/propertytrack.h>
+
+#include <modules/animationqt/trackcontrolswidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,9 +47,9 @@
 #include <QStandardItem>
 #include <QStyledItemDelegate>
 #include <QPushButton>
-#include <warn/pop>
-#include "animation/datastructures/propertytrack.h"
 #include <QGridLayout>
+#include <warn/pop>
+
 
 namespace inviwo {
 
@@ -76,17 +81,16 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     std::string style = "border: 0px;\n background-color: #323235;";
     setStyleSheet(style.c_str());
 
-    Animation& animation = *controller_.getAnimation();
+    Animation& animation = controller_.getAnimation();
     animation.addObserver(this);
     model_ = new AnimationLabelModelQt(this);
 
-    for (size_t i = 0; i < animation.size(); ++i) {
-        auto& track = animation[i];
+    for (auto& track : animation) {
         QList<QStandardItem*> row;
-        auto item = new QStandardItem(QString::fromStdString(track.getName()));
-        item->setData(QVariant::fromValue(static_cast<void*>(&track)), Qt::UserRole + 1);
+        auto item = new QStandardItem(utilqt::toQString(track.getName()));
+        item->setData(utilqt::toQString(track.getIdentifier()), Qt::UserRole + 1);
         row.append(item);
-        QWidget* widget = new TrackControlsWidgetQt(item, controller_);
+        QWidget* widget = new TrackControlsWidgetQt(item, track, controller_);
         model_->appendRow(row);
         auto index = model_->indexFromItem(item);
         setIndexWidget(index, widget);
@@ -95,35 +99,12 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     setModel(model_);
 }
 
-void AnimationLabelViewQt::mousePressEvent(QMouseEvent* e) {
-    // Process the Event first, so the correct index is selected
-    QListView::mousePressEvent(e);
-    // Deselect all processors first
-    util::setSelected(util::getInviwoApplication()->getProcessorNetwork()->getProcessors(), false);
-    for (auto index : selectedIndexes()) {
-        auto item = model_->itemFromIndex(index)->data().value<void*>();
-        Track* track = reinterpret_cast<Track*>(item);
-        BasePropertyTrack* propertytrack = dynamic_cast<BasePropertyTrack*>(track);
-        // Might not have been a BasePropertyTrack
-        if (propertytrack) {
-            auto property = propertytrack->getProperty();
-            // Select the processor the selected property belongs to
-            Processor* processor = property->getOwner()->getProcessor();
-            util::setSelected({processor}, true);
-        }
-    }
-}
-
-void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) { QListView::mouseMoveEvent(e); }
-
-void AnimationLabelViewQt::mouseReleaseEvent(QMouseEvent* e) { QListView::mouseReleaseEvent(e); }
-
 void AnimationLabelViewQt::onTrackAdded(Track* track) {
     QList<QStandardItem*> row;
     auto item = new QStandardItem(QString::fromStdString(track->getName()));
     item->setData(QVariant::fromValue(static_cast<void*>(track)), Qt::UserRole + 1);
     row.append(item);
-    QWidget* widget = new TrackControlsWidgetQt(item, controller_);
+    QWidget* widget = new TrackControlsWidgetQt(item, *track, controller_);
     model_->appendRow(row);
     auto index = model_->indexFromItem(item);
     setIndexWidget(index, widget);
@@ -133,7 +114,8 @@ void AnimationLabelViewQt::onTrackRemoved(Track* track) {
     QModelIndex parent = QModelIndex();
     for (int r = 0; r < model_->rowCount(parent); ++r) {
         QModelIndex index = model_->index(r, 0, parent);
-        if (model_->data(index, Qt::UserRole + 1).value<void*>() == static_cast<void*>(track)) {
+        auto id = utilqt::toQString(track->getIdentifier());
+        if (model_->data(index, Qt::UserRole + 1).toString() == id) {
             model_->removeRow(r, parent);
             break;
         }
