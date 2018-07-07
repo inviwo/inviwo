@@ -33,18 +33,21 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/animationqt/widgets/trackwidgetqt.h>
+
 namespace inviwo {
 
-/**
- * \class ControlTrackWidgetQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_ANIMATIONQT_API ControlTrackWidgetQt {
+namespace animation {
+
+class IVW_MODULE_ANIMATIONQT_API ControlTrackWidgetQt  : public TrackWidgetQt {
 public:
-    ControlTrackWidgetQt();
+    ControlTrackWidgetQt(Track& track);
     virtual ~ControlTrackWidgetQt() = default;
+
+    static std::string classIdentifier();
 };
+
+}  // namespace animation
 
 }  // namespace inviwo
 

@@ -48,27 +48,25 @@ namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceWidgetQt : public QGraphicsItem
-                                                            , public KeyframeSequenceObserver {
+class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceWidgetQt : public QGraphicsItem,
+                                                            public KeyframeSequenceObserver {
 public:
     KeyframeSequenceWidgetQt(KeyframeSequence& keyframeSequence, QGraphicsItem* parent);
     virtual ~KeyframeSequenceWidgetQt();
 
-    
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
-                       
+
     KeyframeSequence& getKeyframeSequence();
     const KeyframeSequence& getKeyframeSequence() const;
 
 protected:
-    
     virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) override;
     virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) override;
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
 
     virtual QRectF boundingRect() const override;
-    
+
     /**
      * \brief Get the KeyframeQt corresponding to the given keyframe
      *

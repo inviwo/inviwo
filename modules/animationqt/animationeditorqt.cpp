@@ -40,6 +40,8 @@
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
 #include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
 
+#include <modules/animationqt/factories/trackwidgetqtfactory.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QPainter>
@@ -57,17 +59,18 @@ namespace inviwo {
 
 namespace animation {
 
-AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
-    : QGraphicsScene(), controller_(controller) {
-    auto& animation = *controller_.getAnimation();
+AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
+                                     TrackWidgetQtFactory& widgetFactory)
+    : QGraphicsScene(), controller_(controller), widgetFactory_{widgetFactory} {
+    auto& animation = controller_.getAnimation();
     animation.addObserver(this);
 
     // Add Property tracks
-    for (size_t i = 0; i < animation.size(); ++i) {
-        auto trackQt = std::make_unique<TrackWidgetQt>(animation[i]);
-        trackQt->setPos(0, timelineHeight + trackHeight * i + trackHeight * 0.5);
+    for (auto&& item : util::enumerate(animation)) {
+        auto trackQt = std::make_unique<TrackWidgetQt>(item.second());
+        trackQt->setPos(0, timelineHeight + trackHeight * item.first() + trackHeight * 0.5);
         this->addItem(trackQt.get());
-        tracks_[&animation[i]] = std::move(trackQt);
+        tracks_[&item.second()] = std::move(trackQt);
     }
 
     // Add drag&drop indicator
@@ -96,6 +99,11 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller)
 
 AnimationEditorQt::~AnimationEditorQt() = default;
 
+std::unique_ptr<TrackWidgetQt> AnimationEditorQt::createTrackWidget(Track& track) const {
+    auto widgetId = widgetFactory_.getWidgetId(track.getClassIdentifier());
+    return widgetFactory_.create(widgetId, track);
+}
+
 void AnimationEditorQt::onTrackAdded(Track* track) {
     auto trackQt = std::make_unique<TrackWidgetQt>(*track);
     trackQt->setPos(0, timelineHeight + trackHeight * tracks_.size() + trackHeight * 0.5);
@@ -119,10 +127,10 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
         QList<QGraphicsItem*> itemList = selectedItems();
         for (auto& elem : itemList) {
             if (auto keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
-                auto& animation = *controller_.getAnimation();
+                auto& animation = controller_.getAnimation();
                 animation.remove(&(keyqt->getKeyframe()));
             } else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
-                auto& animation = *controller_.getAnimation();
+                auto& animation = controller_.getAnimation();
                 animation.remove(&(seqqt->getKeyframeSequence()));
             }
         }
@@ -199,7 +207,6 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
             am.addKeyframeCallback(property, Seconds(time));
         }
 
-        // Thanks
         event->acceptProposedAction();
     }
 }
@@ -207,8 +214,8 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
 void AnimationEditorQt::updateSceneRect() {
     setSceneRect(
         0.0, 0.0,
-        static_cast<double>(controller_.getAnimation()->getLastTime().count() * widthPerSecond),
-        static_cast<double>(controller_.getAnimation()->size() * trackHeight + timelineHeight));
+        static_cast<double>(controller_.getAnimation().getLastTime().count() * widthPerSecond),
+        static_cast<double>(controller_.getAnimation().size() * trackHeight + timelineHeight));
 }
 
 void AnimationEditorQt::onFirstMoved() { updateSceneRect(); }

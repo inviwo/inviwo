@@ -33,18 +33,41 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/animationqt/widgets/trackwidgetqt.h>
+#include <modules/animation/datastructures/track.h>
+
 namespace inviwo {
 
-/**
- * \class TrackWidgetQtFactoryObject
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
+namespace animation {
+
 class IVW_MODULE_ANIMATIONQT_API TrackWidgetQtFactoryObject {
 public:
-    TrackWidgetQtFactoryObject();
+    TrackWidgetQtFactoryObject(const std::string& classIdentifier);
     virtual ~TrackWidgetQtFactoryObject() = default;
+
+    virtual std::unique_ptr<TrackWidgetQt> create(Track&) const = 0;
+    const std::string& getClassIdentifier() const;
+
+protected:
+    const std::string classIdentifier_;
 };
+
+template <typename T>
+class TrackWidgetQtFactoryObjectTemplate : public TrackWidgetQtFactoryObject {
+public:
+    // Requires a static classIdentifier() method on T
+    TrackWidgetQtFactoryObjectTemplate() : TrackWidgetQtFactoryObject(T::classIdentifier()) {}
+
+    TrackWidgetQtFactoryObjectTemplate(const std::string& classIdentifier)
+        : TrackWidgetQtFactoryObject(classIdentifier){};
+    virtual ~TrackWidgetQtFactoryObjectTemplate() = default;
+
+    virtual std::unique_ptr<TrackWidgetQt> create(Track& track) const override {
+        return std::make_unique<T>(track);
+    }
+};
+
+}  // namespace animation
 
 }  // namespace inviwo
 

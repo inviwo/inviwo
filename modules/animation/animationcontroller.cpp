@@ -29,6 +29,7 @@
 
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/controltrack.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/processors/canvasprocessor.h>
@@ -40,7 +41,7 @@ namespace inviwo {
 
 namespace animation {
 
-AnimationController::AnimationController(Animation* animation, InviwoApplication* app)
+AnimationController::AnimationController(Animation& animation, InviwoApplication* app)
     : playOptions("PlayOptions", "Play Settings")
     , playWindowMode("PlayFirstLastTimeOption", "Time",
                      {{"FullTimeWindow", "Play full animation", 0},
@@ -96,7 +97,7 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     , renderActionStop("RenderActionStop", "Stop")
     , controlOptions("ControlOptions", "Control Track")
     , controlInsertPauseFrame("ControlInsertPauseFrame", "Insert Pause-Frame")
-    , animation_(animation)
+    , animation_(&animation)
     , app_(app)
     , state_(AnimationState::Paused)
     , currentTime_(0)
@@ -150,11 +151,9 @@ AnimationController::AnimationController(Animation* animation, InviwoApplication
     addProperty(renderOptions);
 
     // Control Track
-    controlInsertPauseFrame.onChange([&]() {
-        // auto time = getCurrentTime();
-        // ControlKeyframeSequence seq;
-        // seq.add(ControlKeyframe(time, ControlAction::Pause));
-        // getAnimation()->getControlTrack().addTyped(seq);
+    controlInsertPauseFrame.onChange([this]() {
+        auto ct = std::make_unique<ControlTrack>();
+        animation_->add(std::move(ct));
     });
 
     controlOptions.addProperty(controlInsertPauseFrame);
@@ -456,9 +455,9 @@ void AnimationController::eval(Seconds oldTime, Seconds newTime) {
     setTime(ts.time);
 }
 
-void AnimationController::setAnimation(Animation* animation) {
+void AnimationController::setAnimation(Animation& animation) {
     auto oldAnim = animation_;
-    animation_ = animation;
+    animation_ = &animation;
 
     notifyAnimationChanged(this, oldAnim, animation_);
     setState(AnimationState::Paused);
@@ -470,9 +469,9 @@ void AnimationController::setPlaySpeed(double fps) {
     timer_.setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
 }
 
-const Animation* AnimationController::getAnimation() const { return animation_; }
+const Animation& AnimationController::getAnimation() const { return *animation_; }
 
-Animation* AnimationController::getAnimation() { return animation_; }
+Animation& AnimationController::getAnimation() { return *animation_; }
 
 const AnimationState& AnimationController::getState() const { return state_; }
 

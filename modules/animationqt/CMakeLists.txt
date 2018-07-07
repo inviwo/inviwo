@@ -12,13 +12,17 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditordockwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditorqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationlabelviewqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/animationqtsupplier.h
     ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/demo/demonavigatordockwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/sequenceeditorfactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/sequenceeditorfactoryobject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackwidgetqtfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackwidgetqtfactoryobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/keyframeeditorwidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorpanel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorwidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/controlsequenceeditor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/propertysequenceeditor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/sequenceeditorpanel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/sequenceeditorwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/trackcontrolswidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/controltrackwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/editorconstants.h
@@ -35,13 +39,17 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditordockwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationeditorqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationlabelviewqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/animationqtsupplier.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/demo/demonavigatordockwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/sequenceeditorfactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/sequenceeditorfactoryobject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackwidgetqtfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackwidgetqtfactoryobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/keyframeeditorwidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorpanel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditorpanel/sequenceeditorwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/controlsequenceeditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/propertysequenceeditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/sequenceeditorpanel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/sequenceeditorwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/trackcontrolswidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/controltrackwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/editorconstants.cpp

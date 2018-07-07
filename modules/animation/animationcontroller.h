@@ -63,7 +63,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API AnimationController : public AnimationControllerObservable,
                                                      public PropertyOwner {
 public:
-    AnimationController(Animation* animation, InviwoApplication* app = InviwoApplication::getPtr());
+    AnimationController(Animation& animation, InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~AnimationController();
 
     /// Play animation
@@ -86,14 +86,14 @@ public:
     /// Asks the animation to update the network to reflect the new time.
     void eval(Seconds oldTime, Seconds newTime);
 
-    void setAnimation(Animation* animation);
+    void setAnimation(Animation& animation);
     void setPlaySpeed(double framesPerSecond);
 
     /// Returns mutable controlled animation.
-    Animation* getAnimation();
+    Animation& getAnimation();
 
     /// Returns controlled animation.
-    const Animation* getAnimation() const;
+    const Animation& getAnimation() const;
 
     /// Returns the current state of the controller, whether it is playing, or pausing, and such.
     const AnimationState& getState() const;

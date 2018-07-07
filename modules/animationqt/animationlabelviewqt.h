@@ -31,15 +31,16 @@
 #define IVW_ANIMATIONLABELVIEWQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/datastructures/animationobserver.h>
 #include <inviwo/core/common/inviwo.h>
+
+#include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/animationcontroller.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QListView>
 #include <QStringList>
 #include <warn/pop>
-#include "animation/animationcontroller.h"
 
 class QStandardItemModel;
 
@@ -53,11 +54,6 @@ class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView, public
 public:
     AnimationLabelViewQt(AnimationController& controller);
     virtual ~AnimationLabelViewQt() = default;
-
-protected:
-    virtual void mousePressEvent(QMouseEvent* e) override;
-    virtual void mouseMoveEvent(QMouseEvent* e) override;
-    virtual void mouseReleaseEvent(QMouseEvent* e) override;
 
     virtual void onTrackAdded(Track* track) override;
     virtual void onTrackRemoved(Track* track) override;

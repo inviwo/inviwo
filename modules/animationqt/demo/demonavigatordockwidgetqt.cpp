@@ -61,11 +61,15 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     setFloating(true);
     setSticky(false);
     resize(QSize(300, 100));  // default size
-    setWindowIcon(QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
+    setWindowIcon(
+        QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 
     QWidget* mainWidget = new QWidget();
     QVBoxLayout* boxLayout = new QVBoxLayout();
     QMainWindow* toolWidget = new QMainWindow();
+
+    mainWidget->setLayout(boxLayout);
+    setWidget(mainWidget);
 
     {
         auto policy = toolWidget->sizePolicy();
@@ -80,8 +84,8 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     for (auto property : controller_.getProperties()) {
         auto propWidget = factory->create(property);
         auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());
-        propWidgetQt->initState();
         boxLayout->addWidget(propWidgetQt);
+        propWidgetQt->initState();
     }
 
     QToolBar* toolBar = new QToolBar();
@@ -97,9 +101,6 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
         toolWidget->setMinimumWidth(160);
         boxLayout->addWidget(toolBar);
     }
-
-    mainWidget->setLayout(boxLayout);
-    setWidget(mainWidget);
 
     {
         auto begin = toolBar->addAction(
@@ -144,8 +145,8 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     {
-        auto end = toolBar->addAction(QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"),
-                                      "To End");
+        auto end = toolBar->addAction(
+            QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
         end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         end->setToolTip("To End");
         toolWidget->addAction(end);

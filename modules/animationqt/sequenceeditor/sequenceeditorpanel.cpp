@@ -27,12 +27,14 @@
  *
  *********************************************************************************/
 
-#include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
-#include <modules/animationqt/sequenceeditorpanel/sequenceeditorwidget.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/keyframesequence.h>
+
+#include <modules/animationqt/factories/sequenceeditorfactory.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,8 +45,9 @@
 namespace inviwo {
 
 namespace animation {
-SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidget* parent)
-    : QScrollArea(parent), controller_(controller) {
+SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller,
+                                         SequenceEditorFactory& editorFactory, QWidget* parent)
+    : QScrollArea(parent), controller_(controller), factory_{editorFactory} {
     setObjectName("SequenceEditorPanel");
 
     // auto scrollArea = new QScrollArea(this);
@@ -64,6 +67,7 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
     auto* widget = new QWidget();
 
     auto layout = new QVBoxLayout();
+
     widget->setLayout(layout);
     layout->setAlignment(Qt::AlignTop);
 
@@ -72,21 +76,21 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, QWidge
 
     scrollArea->setWidget(widget);
 
-    if (auto ani = controller.getAnimation()) {
-        for (size_t i = 0; i < ani->size(); i++) {
-            onTrackAdded(&(*ani)[i]);
-        }
-        ani->addObserver(this);
+    auto& ani = controller.getAnimation();
+    for (auto& track : ani) {
+        onTrackAdded(&track);
     }
+    ani.addObserver(this);
 }
 
 void SequenceEditorPanel::onAnimationChanged(AnimationController*, Animation* oldAnim,
                                              Animation* newAnim) {
     oldAnim->removeObserver(this);
 
-    for (size_t i = 0; i < newAnim->size(); i++) {
-        onTrackAdded(&(*newAnim)[i]);
+    for (auto& track : *newAnim) {
+        onTrackAdded(&track);
     }
+
     newAnim->addObserver(this);
 }
 
@@ -100,9 +104,10 @@ void SequenceEditorPanel::onTrackAdded(Track* track) {
 void SequenceEditorPanel::onTrackRemoved(Track* track) { track->removeObserver(this); }
 
 void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
-    auto widget = new SequenceEditorWidget(*s, *t, this);
-    widgets_[s] = widget;
-    sequenceEditors_->addWidget(widget);
+    auto widgetId = factory_.getSequenceEditorId(t->getClassIdentifier());
+    auto widget = factory_.create(widgetId, *s, *t);
+    widgets_[s] = widget.get();
+    sequenceEditors_->addWidget(widget.release());
 }
 
 void SequenceEditorPanel::onKeyframeSequenceRemoved(Track*, KeyframeSequence* s) {

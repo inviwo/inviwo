@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/animationqt/sequenceeditorpanel/keyframeeditorwidget.h>
-#include <modules/animationqt/sequenceeditorpanel/sequenceeditorwidget.h>
+#include <modules/animationqt/sequenceeditor/keyframeeditorwidget.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/controltrack.h>
 
@@ -44,6 +44,7 @@
 #include <QLabel>
 #include <QDoubleSpinBox>
 #include <QComboBox>
+#include <QtGlobal>
 #include <warn/pop>
 
 namespace inviwo {
@@ -62,10 +63,11 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
     timeSpinner_->setValue(keyframe.getTime().count());
     timeSpinner_->setSuffix("s");
     timeSpinner_->setSingleStep(0.1);
-    timeSpinner_->setDecimals(5);
+    timeSpinner_->setDecimals(3);
 
-    void (QDoubleSpinBox::*signal)(double) = &QDoubleSpinBox::valueChanged;
-    connect(timeSpinner_, signal, this, [this](double t) { keyframe_.setTime(Seconds(t)); });
+    connect(timeSpinner_,
+            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
+            [this](double t) { keyframe_.setTime(Seconds(t)); });
 
     layout_->addWidget(timeSpinner_);
 
@@ -73,11 +75,8 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         auto baseProperty = propTrack->getProperty();
         property_.reset(baseProperty->clone());
         propTrack->setOtherProperty(property_.get(), &keyframe);
-        property_->onChange(
-            [b = baseProperty, p = property_.get(), t = propTrack, k = &keyframe_]() {
-                b->set(p);
-                t->updateKeyframeFromProperty(p, k);
-            });
+        property_->onChange([b = baseProperty, p = property_.get(), t = propTrack,
+                             k = &keyframe_]() { t->updateKeyframeFromProperty(p, k); });
         property_->setOwner(nullptr);
 
         auto propWidget =
@@ -87,32 +86,30 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         if (auto label = propertyWidget_->findChild<EditableLabelQt *>()) {
             label->setVisible(false);
         }
-
         layout_->addWidget(propertyWidget_);
-    } else if (auto ctrlTrack = dynamic_cast<ControlTrack *>(&parent->getTrack())) {
-        // Assume that we only have ControlKeyframes within ControlTracks
-        auto &ctrlKey = *static_cast<ControlKeyframe *>(&keyframe);
+
+    } else if (auto ctrlKey = dynamic_cast<ControlKeyframe *>(&keyframe)) {
 
         actionWidget_ = new QComboBox();
-        actionWidget_->addItems({"Pause", "Jump To", "Script"});
-        actionWidget_->setCurrentIndex(static_cast<int>(ctrlKey.getAction()));
+        actionWidget_->addItems({"Pause", "Jump To"});
+        actionWidget_->setCurrentIndex(static_cast<int>(ctrlKey->getAction()));
 
         jumpToWidget_ = new QDoubleSpinBox();
-        jumpToWidget_->setValue(ctrlKey.getJumpTime().count());
+        jumpToWidget_->setValue(ctrlKey->getJumpTime().count());
         jumpToWidget_->setSuffix("s");
         jumpToWidget_->setSingleStep(0.1);
-        jumpToWidget_->setDecimals(5);
-        jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::Jump);
+        jumpToWidget_->setDecimals(3);
+        jumpToWidget_->setVisible(ctrlKey->getAction() == ControlAction::Jump);
 
-        connect(actionWidget_, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
-                [this, &ctrlKey](int idx) {
-                    ctrlKey.setAction(static_cast<ControlAction>(idx));
-                    jumpToWidget_->setVisible(ctrlKey.getAction() == ControlAction::Jump);
+        connect(actionWidget_, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), this,
+                [this, ctrlKey](int idx) {
+                    ctrlKey->setAction(static_cast<ControlAction>(idx));
+                    jumpToWidget_->setVisible(ctrlKey->getAction() == ControlAction::Jump);
                 });
 
         connect(timeSpinner_,
                 static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-                [this, &ctrlKey](double t) { ctrlKey.setJumpTime(Seconds{t}); });
+                [this, ctrlKey](double t) { ctrlKey->setJumpTime(Seconds{t}); });
 
         layout_->addWidget(actionWidget_);
         layout_->addWidget(jumpToWidget_);

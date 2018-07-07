@@ -56,7 +56,7 @@ public:
     AnimationSupplier(InviwoApplication* app);
     AnimationSupplier(const AnimationSupplier&) = delete;
     AnimationSupplier& operator=(const AnimationSupplier&) = delete;
-    ~AnimationSupplier();
+    virtual ~AnimationSupplier();
 
     /**
      * Register a Track with the Track Factory

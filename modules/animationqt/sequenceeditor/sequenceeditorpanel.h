@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,60 +27,62 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-#define IVW_ANIMATIONEDITORDOCKWIDGETQT_H
+#ifndef IVW_SEQUENCEEDITORPANEL_H
+#define IVW_SEQUENCEEDITORPANEL_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/animation/animationcontroller.h>
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/datastructures/trackobserver.h>
+
 #include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <modules/animation/animationcontrollerobserver.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWidget>
+#include <QScrollArea>
+#include <warn/pop>
 
-class QToolButton;
-class QMainWindow;
+class QVBoxLayout;
 
 namespace inviwo {
 
 namespace animation {
-
-class AnimationController;
-class AnimationEditorQt;
-class AnimationViewQt;
-class AnimationLabelViewQt;
-class SequenceEditorPanel;
-class TrackWidgetQtFactory;
+class SequenceEditorWidget;
 class SequenceEditorFactory;
+class EditorWidgetFactory;
 
-class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
-                                                               public AnimationControllerObserver {
+class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
+                                                       public AnimationControllerObserver,
+                                                       public AnimationObserver,
+                                                       public TrackObserver {
 public:
-    AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName,
-                                TrackWidgetQtFactory& widgetFactory,
-                                SequenceEditorFactory& editorFactory, QWidget* parent);
-    AnimationEditorDockWidgetQt(const AnimationEditorDockWidgetQt&) = delete;
-    AnimationEditorDockWidgetQt(AnimationEditorDockWidgetQt&&)= delete;
-    AnimationEditorDockWidgetQt& operator=(const AnimationEditorDockWidgetQt&) = delete;
-    AnimationEditorDockWidgetQt& operator=(AnimationEditorDockWidgetQt&&) = delete;
-    virtual ~AnimationEditorDockWidgetQt();
+    SequenceEditorPanel(AnimationController& controller, SequenceEditorFactory& editorFactory,
+                        QWidget* parent = nullptr);
+    virtual ~SequenceEditorPanel() = default;
 
-protected:
-    virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
-                                AnimationState newState) override;
+    virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,
+                                    Animation* newAnim) override;
 
+    virtual void onTrackAdded(Track* track) override;
+    virtual void onTrackRemoved(Track* track) override;
+
+    virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) override;
+    virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) override;
+
+private:
     AnimationController& controller_;
+    SequenceEditorFactory& factory_;
 
-    // GUI-stuff
-    QAction* btnPlayPause_;
-    std::unique_ptr<AnimationEditorQt> animationEditor_;
-    AnimationViewQt* animationView_;
-    AnimationLabelViewQt* animationLabelView_;
-    SequenceEditorPanel* sequenceEditorView_;
-    QMainWindow* leftPanel_;
+    QVBoxLayout* sequenceEditors_{nullptr};
+
+    std::unordered_map<KeyframeSequence*, SequenceEditorWidget*> widgets_;
 };
-
 }  // namespace animation
 
 }  // namespace inviwo
 
-#endif  // IVW_ANIMATIONEDITORDOCKWIDGETQT_H
+#endif  // IVW_SEQUENCEEDITORPANEL_H

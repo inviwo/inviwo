@@ -48,11 +48,12 @@ namespace animation {
 
 class AnimationController;
 class TrackWidgetQt;
+class TrackWidgetQtFactory;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
                                                      public AnimationObserver {
 public:
-    AnimationEditorQt(AnimationController& controller);
+    AnimationEditorQt(AnimationController& controller, TrackWidgetQtFactory& widgetFactory);
     virtual ~AnimationEditorQt();
 
 protected:
@@ -72,6 +73,7 @@ protected:
     void dropEvent(QGraphicsSceneDragDropEvent* event) override;
 
     AnimationController& controller_;
+    TrackWidgetQtFactory& widgetFactory_;
     std::unordered_map<Track*, std::unique_ptr<TrackWidgetQt>> tracks_;
 
     /// Indicator line for the drag&drop of properties.
@@ -81,6 +83,8 @@ protected:
 
     /// Shows a text describing what will be added on drop.
     QGraphicsSimpleTextItem* dropIndicatorText;
+
+    std::unique_ptr<TrackWidgetQt> createTrackWidget(Track& track) const;
 };
 
 }  // namespace animation

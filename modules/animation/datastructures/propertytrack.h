@@ -346,12 +346,6 @@ AnimationTimeState PropertyTrack<Prop, Key>::operator()(Seconds from, Seconds to
     return {to, state};
 }
 
-/**
- * Track of sequences
- * ----------X======X====X-----------------X=========X-------X=====X--------
- * |- case 1-|-case 2----------------------|-case 2----------|-case 3------|
- *           |-case 2a-----------|-case 2b-|
- */
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
     const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
@@ -376,23 +370,7 @@ void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
         }
 
     } else {
-        // 'it' will be the first seq. with a first time larger then 'to'.
-        auto it = std::upper_bound(this->begin(), this->end(), time);
-
-        if (it == this->begin()) {  // case 1
-            it->add(std::make_unique<Key>(time, prop->get()));
-        } else if (it == this->end()) {  // case 3
-            auto& seq1 = *std::prev(it);
-            seq1.add(std::make_unique<Key>(time, prop->get()));
-        } else {  // case 2
-            auto& seq1 = *std::prev(it);
-            auto& seq2 = *it;
-            if ((time - seq1.getLastTime()) < (seq2.getFirstTime() - time)) {
-                seq1.add(std::make_unique<Key>(time, prop->get()));  // case 2a
-            } else {
-                seq2.add(std::make_unique<Key>(time, prop->get()));  // case 2b
-            }
-        }
+        this->addToClosestSequence(std::make_unique<Key>(time, prop->get()));
     }
 }
 

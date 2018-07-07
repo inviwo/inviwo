@@ -33,6 +33,10 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
+#include <modules/animationqt/factories/sequenceeditorfactory.h>
+#include <modules/animationqt/factories/trackwidgetqtfactory.h>
+#include <modules/animationqt/animationqtsupplier.h>
+
 class QMenu;
 
 namespace inviwo {
@@ -42,12 +46,22 @@ class AnimationEditorDockWidgetQt;
 class DemoNavigatorDockWidgetQt;
 }  // namespace animation
 
-class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule {
+class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule,
+                                                     public animation::AnimationQtSupplier {
 public:
     AnimationQtModule(InviwoApplication* app);
     virtual ~AnimationQtModule();
 
+    animation::TrackWidgetQtFactory& getTrackWidgetQtFactory();
+    const animation::TrackWidgetQtFactory& getTrackWidgetQtFactory() const;
+
+    animation::SequenceEditorFactory& getSequenceEditorFactory();
+    const animation::SequenceEditorFactory& getSequenceEditorFactory() const;
+
 private:
+    animation::TrackWidgetQtFactory trackWidgetQtFactory_;
+    animation::SequenceEditorFactory sequenceEditorFactory_;
+
     // Keep references to added widgets so that they can be removed in destructor
     std::unique_ptr<animation::AnimationEditorDockWidgetQt> editor_;
     std::unique_ptr<animation::DemoNavigatorDockWidgetQt> navigator_;

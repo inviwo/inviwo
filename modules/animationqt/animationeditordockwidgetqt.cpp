@@ -47,7 +47,7 @@
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animationqt/animationviewqt.h>
 #include <modules/animationqt/animationlabelviewqt.h>
-#include <modules/animationqt/sequenceeditorpanel/sequenceeditorpanel.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -67,6 +67,8 @@ namespace animation {
 
 AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& controller,
                                                          const std::string& widgetName,
+                                                         TrackWidgetQtFactory& widgetFactory,
+                                                         SequenceEditorFactory& editorFactory,
                                                          QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , controller_(controller) {
@@ -80,10 +82,13 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 
-    //////////////////////////////////////////////////////
     // Left part: Track labels and Controller properties
-
-    QVBoxLayout* leftPanelLayout = new QVBoxLayout();
+    auto leftPanelLayout = new QVBoxLayout();
+    auto leftPanelContent = new QWidget();
+    leftPanelContent->setLayout(leftPanelLayout);
+    auto leftScroll = new QScrollArea();
+    leftScroll->setWidget(leftPanelContent);
+    leftScroll->setWidgetResizable(true);
 
     // List widget of track labels
     animationLabelView_ = new AnimationLabelViewQt(controller_);
@@ -92,22 +97,15 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
 
     // Settings for the controller
     auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
-    for (auto pThisProperty : controller_.getProperties()) {
-        auto propWidget = factory->create(pThisProperty);
+    for (auto property : controller_.getProperties()) {
+        auto propWidget = factory->create(property);
         auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());
-        propWidgetQt->initState();
         leftPanelLayout->addWidget(propWidgetQt);
+        propWidgetQt->initState();
     }
 
-    QWidget* leftPanelContent = new QWidget();
-    leftPanelContent->setLayout(leftPanelLayout);
-
-    QScrollArea* leftScroll = new QScrollArea();
-    leftScroll->setWidget(leftPanelContent);
-    leftScroll->setWidgetResizable(true);
-
     // Toolbar with play controls
-    QToolBar* toolBar = new QToolBar();
+    auto toolBar = new QToolBar();
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
 
@@ -118,13 +116,13 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     leftPanel_->setCentralWidget(leftScroll);
 
     // Entire mid part
-    animationEditor_ = std::make_unique<AnimationEditorQt>(controller_);
+    animationEditor_ = std::make_unique<AnimationEditorQt>(controller_, widgetFactory);
     animationView_ = new AnimationViewQt(controller_);
     animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     animationView_->setScene(animationEditor_.get());
 
     // right part
-    sequenceEditorView_ = new SequenceEditorPanel(controller_, this);
+    sequenceEditorView_ = new SequenceEditorPanel(controller_, editorFactory, this);
 
     auto splitter1 = new QSplitter();
     splitter1->setMidLineWidth(1);
@@ -147,7 +145,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
         policy.setHorizontalStretch(5);
         animationView_->setSizePolicy(policy);
-        animationView_->setMinimumWidth(600);
+        animationView_->setMinimumWidth(400);
     }
     {
         auto policy = sequenceEditorView_->sizePolicy();
@@ -175,7 +173,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         prev->setToolTip("Prev Key");
         leftPanel_->addAction(prev);
         connect(prev, &QAction::triggered, [&]() {
-            auto times = controller_.getAnimation()->getAllTimes();
+            auto times = controller_.getAnimation().getAllTimes();
             auto it = std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
             if (it != times.begin()) {
                 controller_.eval(controller_.getCurrentTime(), *std::prev(it));
@@ -214,7 +212,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         next->setToolTip("Next Key");
         leftPanel_->addAction(next);
         connect(next, &QAction::triggered, [&]() {
-            auto times = controller_.getAnimation()->getAllTimes();
+            auto times = controller_.getAnimation().getAllTimes();
             auto it = std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
             if (it != times.end()) {
                 controller_.eval(controller_.getCurrentTime(), *it);
@@ -229,7 +227,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         end->setToolTip("To End");
         leftPanel_->addAction(end);
         connect(end, &QAction::triggered, [&]() {
-            auto endTime = controller_.getAnimation()->getLastTime();
+            auto endTime = controller_.getAnimation().getLastTime();
             controller_.eval(controller_.getCurrentTime(), endTime);
         });
     }
@@ -240,8 +238,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
 
 AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;
 
-void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*,
-                                                 AnimationState,
+void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, AnimationState,
                                                  AnimationState newState) {
     if (newState == AnimationState::Playing) {
         QSignalBlocker block(btnPlayPause_);

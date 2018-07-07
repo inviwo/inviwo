@@ -33,6 +33,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/util/indirectiterator.h>
 
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/track.h>
@@ -52,6 +53,10 @@ class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,
                                            public Serializable,
                                            public TrackObserver {
 public:
+    using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Track>>::iterator>;
+    using const_iterator =
+        util::IndirectIterator<typename std::vector<std::unique_ptr<Track>>::const_iterator>;
+
     Animation();
     Animation(const Animation&) = delete;
     Animation& operator=(const Animation& that) = delete;
@@ -62,6 +67,11 @@ public:
     size_t size() const;
     Track& operator[](size_t i);
     const Track& operator[](size_t i) const;
+
+    iterator begin();
+    const_iterator begin() const;
+    iterator end();
+    const_iterator end() const;
 
     void add(std::unique_ptr<Track> track);
     /**
