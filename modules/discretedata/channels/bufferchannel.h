@@ -72,7 +72,7 @@ public:
     BufferChannel(const std::vector<T>& rawData, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T, N>(name, definedOn)
-        , _buffer(rawData) {}
+        , buffer_(rawData) {}
 
     /** \brief Direct construction
     *   @param data Raw data, move values
@@ -81,8 +81,8 @@ public:
     */
     BufferChannel(std::vector<T>&& data, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : DataChannel<VecNT, N>(name, definedOn)
-        , _buffer(std::move(data)) {}
+        : DataChannel<T, N>(name, definedOn)
+        , buffer_(std::move(data)) {}
 
     /** \brief Direct construction
     *   @param data Pointer to data, copy numElements * numComponents

@@ -37,24 +37,24 @@ namespace dd {
 
 template<typename T, ind N>
 T* BufferGetter<T, N>::get(ind index) {
-    std::array<T, N>& data = dynamic_cast<BufferChannel<T, N>&>(*Parent).get<std::array<T, N>>(index);
+    std::array<T, N>& data = dynamic_cast<BufferChannel<T, N>&>(*this->parent_).get<std::array<T, N>>(index);
     return reinterpret_cast<T*>(&data);
 }
 
 template<typename T, ind N>
 const T* BufferGetter<T, N>::get(ind index) const {
-    std::array<T, N>& data = dynamic_cast<BufferChannel<T, N>&>(*Parent).get<std::array<T, N>>(index);
+    std::array<T, N>& data = dynamic_cast<BufferChannel<T, N>&>(*this->parent_).get<std::array<T, N>>(index);
     return reinterpret_cast<T*>(&data);
 }
 
 template<typename T, ind N>
 ChannelGetter<T, N>* BufferGetter<T, N>::New() const  {
-    return new BufferGetter<T, N>(dynamic_cast<BufferChannel<T, N>*>(Parent));
+    return new BufferGetter<T, N>(dynamic_cast<BufferChannel<T, N>*>(this->parent_));
 }
 
 template<typename T, ind N>
 T* CachedGetter<T, N>::get(ind index) {
-    ivwAssert(Parent, "No channel to iterate is set.");
+    ivwAssert(this->parent_, "No channel to iterate is set.");
 
     // No buffer, evaluate analytics.
     // Is the data up to date?
@@ -64,7 +64,7 @@ T* CachedGetter<T, N>::get(ind index) {
         // Note: we could use the old memory again, but numCOmponents might change (improbable).
         // Also, we want segfaults when old data is accessed.
 
-        Parent->fill(*Data, index);
+        this->parent_->fill(*Data, index);
         DataIndex = index;
     }
 
@@ -75,7 +75,7 @@ T* CachedGetter<T, N>::get(ind index) {
 
 template<typename T, ind N>
 const T* CachedGetter<T, N>::get(ind index) const {
-    ivwAssert(Parent, "No channel to iterate is set.");
+    ivwAssert(this->parent_, "No channel to iterate is set.");
 
     // No buffer, evaluate analytics.
     // Is the data up to date?
@@ -85,7 +85,7 @@ const T* CachedGetter<T, N>::get(ind index) const {
         // Note: we could use the old memory again, but numCOmponents might change (improbable).
         // Also, we want segfaults when old data is accessed.
 
-        Parent->fill(Data, index);
+        this->parent_->fill(Data, index);
         DataIndex = index;
     }
 

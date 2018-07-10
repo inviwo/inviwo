@@ -180,17 +180,7 @@ public:
     template<typename VecNT>
     ConstChannelIterator<VecNT, T, N> end()   const { return ConstChannelIterator<VecNT, T, N>(this, size()); }
 
-    //template<>
-    //virtual ChannelIterator<std::array<T, N>, T, N> begin<std::array<T, N>>() { return ChannelIterator<std::array<T, N>, T, N>(newIterator(), 0); }
-    //template<>
-    //virtual ChannelIterator<std::array<T, N>, T, N> end<std::array<T, N>>()   { return ChannelIterator<std::array<T, N>, T, N>(newIterator(), size()); }
-
-    //template<>
-    //ConstChannelIterator<std::array<T, N>, T, N> begin<std::array<T, N>>() { return ConstChannelIterator<std::array<T, N>, T, N>(this, 0); }
-    //template<>
-    //ConstChannelIterator<std::array<T, N>, T, N> end<std::array<T, N>>()   { return ConstChannelIterator<std::array<T, N>, T, N>(this, size()); }
-
-    template <typename VecNT, typename T, ind N>
+    template <typename VecNT>
     struct ChannelRange {
         typedef ChannelIterator<VecNT, T, N> iterator;
 
@@ -203,7 +193,7 @@ public:
         DataChannel<T, N>* parent_;
     };
 
-    template <typename VecNT, typename T, ind N>
+    template <typename VecNT>
     struct ConstChannelRange {
         typedef ConstChannelIterator<VecNT, T, N> const_iterator;
 
@@ -221,14 +211,14 @@ public:
     *   @tparam VecNT Return type of resulting iterators
     */
     template <typename VecNT>
-    ChannelRange<VecNT, T, N> all() { return ChannelRange<VecNT, T, N>(this); }
+    ChannelRange<VecNT> all() { return ChannelRange<VecNT>(this); }
 
     /** \brief Get const iterator range
     *   Templated iterator return type, only specified once.
     *   @tparam VecNT Return type of resulting iterators
     */
     template <typename VecNT>
-    ConstChannelRange<VecNT, T, N> all() const { return ConstChannelRange<VecNT, T, N>(this); }
+    ConstChannelRange<VecNT> all() const { return ConstChannelRange<VecNT>(this); }
 };
 
 /** \class DataChannel
@@ -283,41 +273,14 @@ public:
     void operator()(T& dest, ind index) const { fill(dest, index); }
 
 public:
-    virtual ChannelIterator<T, T, 1> begin() { return ChannelIterator<T, T, 1>(newIterator(), 0); }
-    virtual ChannelIterator<T, T, 1> end()   { return ChannelIterator<T, T, 1>(newIterator(), size()); }
+    ChannelIterator<T, T, 1> begin() { return ChannelIterator<T, T, 1>(newIterator(), 0); }
+    ChannelIterator<T, T, 1> end()   { return ChannelIterator<T, T, 1>(newIterator(), size()); }
 
-    //virtual ConstChannelIterator<std::array<T, N>, T, N> cbegin() = 0;
-    //virtual ConstChannelIterator<std::array<T, N>, T, N> cend() = 0;
+    ConstChannelIterator<T, T, 1> begin() const { return ConstChannelIterator<T, T, 1>(this, 0); }
+    ConstChannelIterator<T, T, 1> end()   const { return ConstChannelIterator<T, T, 1>(this, size()); }
 
-    //template<typename VecNT>
-    //ChannelIterator<VecNT, T, N> begin() { return ChannelIterator<VecNT, T, N>(getIterator(0)); }
-    //template<typename VecNT>
-    //ChannelIterator<VecNT, T, N> end() { return ChannelIterator<VecNT, T, N>(getIterator(size())); }
-
-    //template<typename VecNT>
-    //virtual ConstChannelIterator<VecNT, T, N> cbegin() = 0;
-    //template<typename VecNT>
-    //virtual ConstChannelIterator<VecNT, T, N> cend() = 0;
-
-    template <typename T>
-    struct ChannelRange {
-        ChannelRange(DataChannel<T, 1>* channel) : parent_(channel) {}
-
-        ChannelIterator<T, T, 1> begin() { return parent_->begin<VecNT>(); }
-        ChannelIterator<T, T, 1> end() { return parent_->end<VecNT>(); }
-
-        //ConstChannelIterator<VecNT, T, N> cbegin() { return parent_->cbegin<VecNT>(); }
-        //ConstChannelIterator<VecNT, T, N> cend()   { return parent_->cend<VecNT>(); }
-
-    private:
-        DataChannel<T, 1>* parent_;
-    };
-
-    /** \brief Get iterator range
-    *   Templated iterator return type, only specified once.
-    *   @tparam VecNT Return type of resulting iterators
-    */
-    ChannelRange<T> all() { return ChannelRange<T>(this); }
+private:
+    DataChannel<T, 1>* parent_;
 };
 
 }  // namespace

@@ -41,7 +41,7 @@ class DataChannel;
 template <typename T, ind N>
 struct ChannelGetter {
 
-    ChannelGetter(DataChannel<T, N>* parent) : Parent(parent) {}
+    ChannelGetter(DataChannel<T, N>* parent) : parent_(parent) {}
 
     /** Dereference to get data */
     virtual T* get(ind index) = 0;
@@ -49,13 +49,14 @@ struct ChannelGetter {
     /** Dereference to get data */
     virtual const T* get(ind index) const = 0;
 
-    /** Pointer to DataChannel iterated through - Do not delete */
-    DataChannel<T, N>* Parent;
-
     /** Compare by the parent pointer */
-    bool operator ==(ChannelGetter<T, N>& other) { return Parent == other.Parent; }
-    bool operator !=(ChannelGetter<T, N>& other) { return !(*this == other); }
+    bool operator ==(const ChannelGetter<T, N>& other) const { return this->parent_ == other.parent_; }
+    bool operator !=(const ChannelGetter<T, N>& other) const { return !(*this == other); }
     virtual ChannelGetter<T, N>* New() const = 0;
+
+protected:
+    /** Pointer to DataChannel iterated through - Do not delete */
+    DataChannel<T, N>* parent_;
 };
 
 template <typename T, ind N>
@@ -74,14 +75,14 @@ struct BufferGetter : public ChannelGetter<T, N> {
 template <typename T, ind N>
 struct CachedGetter : public ChannelGetter<T, N> {
 
-    CachedGetter(DataChannel<T, N>* parent) : ChannelGetter(parent), Data(nullptr), DataIndex(-1) {}
+    CachedGetter(DataChannel<T, N>* parent) : ChannelGetter<T, N>(parent), Data(nullptr), DataIndex(-1) {}
 
     /** Dereference to get data */
     virtual T* get(ind index) override;
 
     virtual const T* get(ind index) const override;
 
-    virtual ChannelGetter<T, N>* New() const override { return new CachedGetter<T, N>(Parent); }
+    virtual ChannelGetter<T, N>* New() const override { return new CachedGetter<T, N>(this->parent_); }
 
     /** Pointer to heap data
     * - Memory is invalidated on iteration */

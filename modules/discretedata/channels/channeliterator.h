@@ -35,7 +35,7 @@ public:
     ChannelIterator(ChannelGetter<T, N>* parent, ind index)
         : Getter(parent), Index(index) {}
 
-    ChannelIterator() : Getter(nullptr), Index(-1), Data(nullptr), DataIndex(-2) {}
+    ChannelIterator() : Getter(nullptr), Index(-1) {}
 
     ~ChannelIterator() { delete Getter; }
 
@@ -67,7 +67,7 @@ public:
 
     /** Compare */
     bool operator==(ChannelIterator<VecNT, T, N>& other) {
-        return other.Getter->Parent == Getter->Parent
+        return *other.Getter == *Getter
                && other.Index == Index;
     }
 
@@ -128,7 +128,7 @@ public:
     ConstChannelIterator(const DataChannel<T, N>* parent, ind index)
         : Parent(parent), Index(index) {}
 
-    ConstChannelIterator() : Parent(nullptr), Index(-1), Data(nullptr), DataIndex(-2) {}
+    ConstChannelIterator() : Parent(nullptr), Index(-1) {}
 
     /** Dereference to get data */
     VecNT operator*();
@@ -159,13 +159,13 @@ public:
     //*** Random Access Iteration ***\\
 
     /** Increment randomly */
-    ConstChannelIterator<VecNT, T, N> operator+(ind offset) { return ConstChannelIterator<VecNT, T, N>(Getter, Index + offset); }
+    ConstChannelIterator<VecNT, T, N> operator+(ind offset) { return ConstChannelIterator<VecNT, T, N>(Parent, Index + offset); }
 
     /** Increment randomly */
     ConstChannelIterator<VecNT, T, N> operator+=(ind offset) { Index += offset; }
 
     /** Decrement randomly */
-    ConstChannelIterator<VecNT, T, N> operator-(ind offset) { return ConstChannelIterator<VecNT, T, N>(Getter, Index - offset); }
+    ConstChannelIterator<VecNT, T, N> operator-(ind offset) { return ConstChannelIterator<VecNT, T, N>(Parent, Index - offset); }
 
     /** Decrement randomly */
     ConstChannelIterator<VecNT, T, N> operator-=(ind offset) { Index -= offset; }
@@ -183,13 +183,13 @@ protected:
 /** Increment randomly */
 template <typename VecNT, typename T, ind N>
 ConstChannelIterator<VecNT, T, N> operator+(ind offset, ConstChannelIterator<VecNT, T, N>& iter) {
-    return ChannelIterator(iter.Getter, iter.Index + offset);
+    return ConstChannelIterator<VecNT, T, N>(iter.Parent, iter.Index + offset);
 }
 
 /** Decrement randomly */
 template <typename VecNT, typename T, ind N>
 ConstChannelIterator<VecNT, T, N> operator-(ind offset, ConstChannelIterator<VecNT, T, N>& iter) {
-    return ConstChannelIterator<VecNT, T, N>(iter.Getter, iter.Index - offset);
+    return ConstChannelIterator<VecNT, T, N>(iter.Parent, iter.Index - offset);
 }
 
 }  // namespace
