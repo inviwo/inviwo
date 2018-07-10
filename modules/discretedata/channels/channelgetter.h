@@ -55,28 +55,33 @@ struct ChannelGetter {
     /** Compare by the parent pointer */
     bool operator ==(ChannelGetter<T, N>& other) { return Parent == other.Parent; }
     bool operator !=(ChannelGetter<T, N>& other) { return !(*this == other); }
+    virtual ChannelGetter<T, N>* New() const = 0;
 };
 
 template <typename T, ind N>
 struct BufferGetter : public ChannelGetter<T, N> {
 
-    BufferGetter(BufferChannel<T, N>* parent) : ChannelCache(parent) {}
+    BufferGetter(BufferChannel<T, N>* parent) : ChannelGetter(parent) {}
 
     /** Dereference to get data */
     virtual T* get(ind index);
 
     virtual const T* get(ind index) const;
+
+    virtual ChannelGetter<T, N>* New() const override;
 };
 
 template <typename T, ind N>
 struct CachedGetter : public ChannelGetter<T, N> {
 
-    CachedGetter(DataChannel<T, N>* parent) : ChannelCache(parent), Data(nullptr), DataIndex(-1) {}
+    CachedGetter(DataChannel<T, N>* parent) : ChannelGetter(parent), Data(nullptr), DataIndex(-1) {}
 
     /** Dereference to get data */
     virtual T* get(ind index) override;
 
     virtual const T* get(ind index) const override;
+
+    virtual ChannelGetter<T, N>* New() const override { return new CachedGetter<T, N>(Parent); }
 
     /** Pointer to heap data
     * - Memory is invalidated on iteration */

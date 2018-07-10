@@ -36,3 +36,14 @@ VecNT& inviwo::dd::ChannelIterator<VecNT, T, N>::operator*() {
     T* data = Getter->get(Index);
     return *reinterpret_cast<VecNT*>(data);
 }
+
+/*********************************************************************************
+* Constant Iterator
+*********************************************************************************/
+
+template <typename VecNT, typename T, inviwo::dd::ind N>
+VecNT inviwo::dd::ConstChannelIterator<VecNT, T, N>::operator*() {
+    VecNT data;
+    Parent->fill(data, Index);
+    return data;
+}

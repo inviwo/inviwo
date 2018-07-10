@@ -53,6 +53,9 @@ enum GridPrimitive : char {
 template<typename VecNT, typename T, ind N>
 class ChannelIterator;
 
+template<typename VecNT, typename T, ind N>
+class ConstChannelIterator;
+
 template<typename T, ind N>
 struct ChannelGetter;
 
@@ -159,8 +162,6 @@ public:
     template <typename VecNT>
     void fill(VecNT& dest, ind index) const { fillRaw(reinterpret_cast<T*>(&dest), index); }
 
-
-
     /** \brief Indexed point access, copy data
     *   Thread safe.
     *   @param dest Position to write to, expect T[NumComponents]
@@ -169,34 +170,50 @@ public:
     template <typename VecNT>
     void operator()(VecNT& dest, ind index) const { fill(dest, index); }
 
-    virtual ChannelIterator<std::array<T, N>, T, N> begin() { return ChannelIterator<std::array<T, N>, T, N>(newIterator(), 0); }
-    virtual ChannelIterator<std::array<T, N>, T, N> end()   { return ChannelIterator<std::array<T, N>, T, N>(newIterator(), size()); }
-
-    //virtual ConstChannelIterator<std::array<T, N>, T, N> cbegin() = 0;
-    //virtual ConstChannelIterator<std::array<T, N>, T, N> cend() = 0;
-
     template<typename VecNT>
     ChannelIterator<VecNT, T, N> begin() { return ChannelIterator<VecNT, T, N>(newIterator(), 0); }
     template<typename VecNT>
     ChannelIterator<VecNT, T, N> end()   { return ChannelIterator<VecNT, T, N>(newIterator(), size()); }
 
-    //template<typename VecNT>
-    //virtual ConstChannelIterator<VecNT, T, N> cbegin() = 0;
-    //template<typename VecNT>
-    //virtual ConstChannelIterator<VecNT, T, N> cend() = 0;
+    template<typename VecNT>
+    ConstChannelIterator<VecNT, T, N> begin() const { return ConstChannelIterator<VecNT, T, N>(this, 0); }
+    template<typename VecNT>
+    ConstChannelIterator<VecNT, T, N> end()   const { return ConstChannelIterator<VecNT, T, N>(this, size()); }
+
+    //template<>
+    //virtual ChannelIterator<std::array<T, N>, T, N> begin<std::array<T, N>>() { return ChannelIterator<std::array<T, N>, T, N>(newIterator(), 0); }
+    //template<>
+    //virtual ChannelIterator<std::array<T, N>, T, N> end<std::array<T, N>>()   { return ChannelIterator<std::array<T, N>, T, N>(newIterator(), size()); }
+
+    //template<>
+    //ConstChannelIterator<std::array<T, N>, T, N> begin<std::array<T, N>>() { return ConstChannelIterator<std::array<T, N>, T, N>(this, 0); }
+    //template<>
+    //ConstChannelIterator<std::array<T, N>, T, N> end<std::array<T, N>>()   { return ConstChannelIterator<std::array<T, N>, T, N>(this, size()); }
 
     template <typename VecNT, typename T, ind N>
     struct ChannelRange {
+        typedef ChannelIterator<VecNT, T, N> iterator;
+
         ChannelRange(DataChannel<T, N>* channel) : parent_(channel) {}
 
-        ChannelIterator<VecNT, T, N> begin() { return parent_->begin<VecNT>(); }
-        ChannelIterator<VecNT, T, N> end()   { return parent_->end<VecNT>(); }
-
-        //ConstChannelIterator<VecNT, T, N> cbegin() { return parent_->cbegin<VecNT>(); }
-        //ConstChannelIterator<VecNT, T, N> cend()   { return parent_->cend<VecNT>(); }
+        iterator begin() { return parent_->begin<VecNT>(); }
+        iterator end()   { return parent_->end<VecNT>(); }
 
     private:
         DataChannel<T, N>* parent_;
+    };
+
+    template <typename VecNT, typename T, ind N>
+    struct ConstChannelRange {
+        typedef ConstChannelIterator<VecNT, T, N> const_iterator;
+
+        ConstChannelRange(const DataChannel<T, N>* channel) : parent_(channel) {}
+
+        const_iterator begin() const { return parent_->begin<VecNT>(); }
+        const_iterator end()   const { return parent_->end<VecNT>(); }
+
+    private:
+        const DataChannel<T, N>* parent_;
     };
 
     /** \brief Get iterator range
@@ -205,6 +222,13 @@ public:
     */
     template <typename VecNT>
     ChannelRange<VecNT, T, N> all() { return ChannelRange<VecNT, T, N>(this); }
+
+    /** \brief Get const iterator range
+    *   Templated iterator return type, only specified once.
+    *   @tparam VecNT Return type of resulting iterators
+    */
+    template <typename VecNT>
+    ConstChannelRange<VecNT, T, N> all() const { return ConstChannelRange<VecNT, T, N>(this); }
 };
 
 /** \class DataChannel

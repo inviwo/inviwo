@@ -48,6 +48,11 @@ const T* BufferGetter<T, N>::get(ind index) const {
 }
 
 template<typename T, ind N>
+ChannelGetter<T, N>* BufferGetter<T, N>::New() const  {
+    return new BufferGetter<T, N>(dynamic_cast<BufferChannel<T, N>*>(Parent));
+}
+
+template<typename T, ind N>
 T* CachedGetter<T, N>::get(ind index) {
     ivwAssert(Parent, "No channel to iterate is set.");
 
