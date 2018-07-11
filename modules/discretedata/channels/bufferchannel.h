@@ -119,6 +119,17 @@ public:
         return *reinterpret_cast<VecNT*>(&buffer_[index*N]);
     }
 
+    /** \brief Indexed point access, mutable, same as []
+    *   NOT THREAD SAFE, use fill instead.
+    *   @param index Linear point index
+    *   @return Reference to data
+    */
+    template<typename VecNT>
+    const VecNT& get(ind index) const {
+        static_assert(sizeof(VecNT) == sizeof(T) * N, "Size and type do not agree with the vector type.");
+        return *reinterpret_cast<const VecNT*>(&buffer_[index*N]);
+    }
+
     // Attributes
 protected:
     /** \brief Vector containing the buffer data

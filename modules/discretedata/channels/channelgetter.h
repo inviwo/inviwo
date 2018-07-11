@@ -62,7 +62,7 @@ protected:
 template <typename T, ind N>
 struct BufferGetter : public ChannelGetter<T, N> {
 
-    BufferGetter(BufferChannel<T, N>* parent) : ChannelGetter(parent) {}
+    BufferGetter(BufferChannel<T, N>* parent) : ChannelGetter<T, N>(parent) {}
 
     /** Dereference to get data */
     virtual T* get(ind index);

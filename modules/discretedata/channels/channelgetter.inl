@@ -37,14 +37,16 @@ namespace dd {
 
 template<typename T, ind N>
 T* BufferGetter<T, N>::get(ind index) {
-    std::array<T, N>& data = dynamic_cast<BufferChannel<T, N>&>(*this->parent_).get<std::array<T, N>>(index);
+    auto& buffer = dynamic_cast<BufferChannel<T, N>&>(*this->parent_);
+    std::array<T, N>& data = buffer.template get<std::array<T, N>>(index);
     return reinterpret_cast<T*>(&data);
 }
 
 template<typename T, ind N>
 const T* BufferGetter<T, N>::get(ind index) const {
-    std::array<T, N>& data = dynamic_cast<BufferChannel<T, N>&>(*this->parent_).get<std::array<T, N>>(index);
-    return reinterpret_cast<T*>(&data);
+    const auto& buffer = dynamic_cast<const BufferChannel<T, N>&>(*this->parent_);
+    const std::array<T, N>& data = buffer.template get<std::array<T, N>>(index);
+    return reinterpret_cast<const T*>(&data);
 }
 
 template<typename T, ind N>

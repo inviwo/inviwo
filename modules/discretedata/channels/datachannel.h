@@ -186,8 +186,8 @@ public:
 
         ChannelRange(DataChannel<T, N>* channel) : parent_(channel) {}
 
-        iterator begin() { return parent_->begin<VecNT>(); }
-        iterator end()   { return parent_->end<VecNT>(); }
+        iterator begin() { return parent_->template begin<VecNT>(); }
+        iterator end()   { return parent_->template end<VecNT>(); }
 
     private:
         DataChannel<T, N>* parent_;
@@ -199,8 +199,8 @@ public:
 
         ConstChannelRange(const DataChannel<T, N>* channel) : parent_(channel) {}
 
-        const_iterator begin() const { return parent_->begin<VecNT>(); }
-        const_iterator end()   const { return parent_->end<VecNT>(); }
+        const_iterator begin() const { return parent_->template begin<VecNT>(); }
+        const_iterator end()   const { return parent_->template end<VecNT>(); }
 
     private:
         const DataChannel<T, N>* parent_;

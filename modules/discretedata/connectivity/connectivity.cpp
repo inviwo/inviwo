@@ -27,8 +27,6 @@
 *
 *********************************************************************************/
 
-#pragma once
-
 #include <discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
