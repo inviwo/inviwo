@@ -40,7 +40,7 @@ public:
     ~ChannelIterator() { delete Getter; }
 
     ChannelIterator(const ChannelIterator<VecNT, T, N>& other)
-        : Getter(new ChannelGetter<T, N>(*other.Getter)), Index(other.Index) {}
+        : Getter(other.Getter->New()), Index(other.Index) {}
 
     ChannelIterator<VecNT, T, N>& operator =(const ChannelIterator<VecNT, T, N>& other) {
         Getter = other->New();
