@@ -105,7 +105,7 @@ std::vector<ind> StructuredGrid::getConnections(ind idxLin, GridPrimitive from,
     if (from == gridDimension_ && to == GridPrimitive::Vertex) {
         // Prepare corners
         const ind NumDimensions = numCellsPerDimension_.size();
-        const ind NumCorners = 1i64 << NumDimensions;
+        const ind NumCorners = ind(1) << NumDimensions;
         std::vector<ind> VertexCorners(NumCorners);
 
         // Vertex Strides - how much to add to the linear index to go forward by 1 in each dimension
@@ -138,7 +138,7 @@ std::vector<ind> StructuredGrid::getConnections(ind idxLin, GridPrimitive from,
 
             // Add strides to the lower-left-front corner.
             for (ind d(0); d < NumDimensions; d++) {
-                if (i & (1i64 << d)) VertexCorners[i] += VStrides[d];
+                if (i & (ind(1) << d)) VertexCorners[i] += VStrides[d];
             }
         }
 
@@ -165,7 +165,7 @@ std::vector<ind> StructuredGrid::getConnections(ind idxLin, GridPrimitive from,
 
         // Prepare neighbors
         std::vector<ind> CellNeighbors;
-        const ind MaxNeighbors = 1i64 << NumDimensions;
+        const ind MaxNeighbors = ind(1) << NumDimensions;
         CellNeighbors.reserve(MaxNeighbors);
 
         // Compute neighbors
@@ -177,7 +177,7 @@ std::vector<ind> StructuredGrid::getConnections(ind idxLin, GridPrimitive from,
 
             // Generate new neighbor index
             for (ind d(0); d < NumDimensions; d++) {
-                if (i & (1i64 << d)) CurrentNeighbor[d]--;
+                if (i & (ind(1) << d)) CurrentNeighbor[d]--;
             }
 
             // Is it in the allowed range? And compute linear index while checking.
