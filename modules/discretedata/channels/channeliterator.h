@@ -66,13 +66,13 @@ public:
     }
 
     /** Compare */
-    bool operator==(ChannelIterator<VecNT, T, N>& other) {
+    bool operator==(const ChannelIterator<VecNT, T, N>& other) const {
         return *other.Getter == *Getter
                && other.Index == Index;
     }
 
     /** Compare */
-    bool operator!=(ChannelIterator<VecNT, T, N>& other) { return !(other == *this); }
+    bool operator!=(const ChannelIterator<VecNT, T, N>& other) const { return !(other == *this); }
 
     //*** Random Access Iteration ***\\
 
