@@ -29,6 +29,8 @@
 
 #include <modules/animation/datastructures/animationstate.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 namespace animation {
@@ -73,7 +75,7 @@ bool AnimationPlaySettings::setFramesPerSecond(const double desiredFPS) {
 
     // Adjust numFrames
     const Seconds timeWindow(lastTime - firstTime);
-    numFrames = (int)ceil(timeWindow.count() * framesPerSecond);
+    numFrames = static_cast<int>(std::ceil(timeWindow.count() * framesPerSecond));
     if (numFrames < 2) numFrames = 2;  // Only happens for small time windows.
 
     return true;
