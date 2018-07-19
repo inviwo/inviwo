@@ -4,12 +4,12 @@ Here we document changes that affect the public API or changes that needs to be 
 GLM was updated to the new 0.9.9.0 version. Major changes are listed at https://github.com/g-truc/glm/releases/tag/0.9.9.0
 Notable changes include the include of the vector / matrix dimension as a template argument, so the main types are now
 ```
-template <length_t L, typename T, qualifier Q>
+template <glm::length_t L, typename T, glm::qualifier Q>
 glm::vec<L, T, Q> 
 ```
 and
 ```
-template <length_t C, length_t R, typename T, qualifier Q>
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 glm::mat<C, R, T, Q>
 ```
 Most code should continue working as before. Except for __default constructed values that now are left uninitialized__. Where as before vec where initialized to 0 and mat to identify. This change can __break__ user code we have seen.  
