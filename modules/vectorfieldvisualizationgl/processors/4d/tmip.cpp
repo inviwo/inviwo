@@ -204,4 +204,4 @@ std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol,
     return vol;
 }
 
-}  // namespace
+}  // namespace inviwo

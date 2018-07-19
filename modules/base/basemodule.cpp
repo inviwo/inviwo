@@ -167,6 +167,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<RandomSphereGenerator>();
     registerProcessor<NoiseVolumeProcessor>();
     registerProcessor<BufferToMeshProcessor>();
+    registerProcessor<ImageToSpatialSampler>();
     registerProcessor<CameraFrustum>();
     registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
     registerProcessor<VolumeCreator>();

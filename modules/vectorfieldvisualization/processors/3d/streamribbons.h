@@ -36,23 +36,25 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
-#include <modules/vectorfieldvisualization/streamlinetracer.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
+#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamRibbons : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamRibbonsDeprecated : public Processor {
 public:
     enum class ColoringMethod { Velocity, Vorticity, ColorPort };
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    StreamRibbons();
-    virtual ~StreamRibbons() = default;
+    StreamRibbonsDeprecated();
+    virtual ~StreamRibbonsDeprecated() = default;
 
 protected:
     virtual void process() override;

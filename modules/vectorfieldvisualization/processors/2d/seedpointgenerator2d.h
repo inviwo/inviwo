@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,25 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TMIP_H
-#define IVW_TMIP_H
+#ifndef IVW_SEEDPOINTGENERATOR2D_H
+#define IVW_SEEDPOINTGENERATOR2D_H
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <random>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TMIP, TMIP}
- * ![](org.inviwo.TMIP.png?classIdentifier=org.inviwo.TMIP)
+/** \docpage{org.inviwo.SeedPointGenerator2D, Seed Point Generator2D}
+ * ![](org.inviwo.SeedPointGenerator2D.png?classIdentifier=org.inviwo.SeedPointGenerator2D)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -57,42 +58,42 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API TMIP : public Processor {
-public:
-    enum class OutputType { Scalar, HighestVelocity };
 
-    TMIP();
-    virtual ~TMIP() = default;
+/**
+ * \class SeedPointGenerator2D
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator2D : public Processor {
+public:
+    enum class Generator { Random, HaltonSequence };
+
+    SeedPointGenerator2D();
+    virtual ~SeedPointGenerator2D() = default;
+
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void process() override;
+private:
+    SeedPoints2DOutport seeds_;
 
-    virtual void initializeResources() override;
+    TemplateOptionProperty<Generator> generator_;
+
+    IntSizeTProperty numPoints_;
+    IntSizeTProperty haltonXBase_;
+    IntSizeTProperty haltonYBase_;
+
+    CompositeProperty randomness_;
+    BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
+    IntProperty seed_;          ///<  The seed used to initialize the random sequence
 
 private:
-    void initShader(Shader &s, int samplers);
-    std::shared_ptr<Volume> iteration(Shader &s, std::shared_ptr<Volume> vol,
-                                      std::shared_ptr<Volume> target,
-                                      std::vector<std::shared_ptr<Volume>>::const_iterator start,
-                                      std::vector<std::shared_ptr<Volume>>::const_iterator end);
-
-    int maxSamplers_;
-
-    DataInport<std::vector<std::shared_ptr<Volume>>> inport_;
-    VolumeOutport outport_;
-
-    TemplateOptionProperty<OutputType> outputType_;
-
-    std::shared_ptr<Volume> volume0_;
-    std::shared_ptr<Volume> volume1_;
-
-    Shader shader_;
-    Shader shaderLast_;
-    FrameBufferObject fbo_;
+    std::random_device rd_;
+    std::mt19937 mt_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_TMIP_H
+#endif  // IVW_SEEDPOINTGENERATOR2D_H

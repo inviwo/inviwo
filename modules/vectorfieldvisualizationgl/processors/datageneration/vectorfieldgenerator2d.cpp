@@ -94,4 +94,4 @@ void VectorFieldGenerator2D::process() {
     outport_.setData(image_);
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -85,6 +85,6 @@ protected:
     std::uniform_real_distribution<double> x_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_RBFVECTORFIELDGENERATOR3D_H

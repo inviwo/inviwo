@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
@@ -57,7 +58,9 @@ public:
     virtual IntegralLineProperties* clone() const override;
     virtual ~IntegralLineProperties();
 
-    mat4 getSeedPointTransformationMatrix(const SpatialCoordinateTransformer<3>& T) const;
+    template <unsigned int N>
+    Matrix<N + 1, float> getSeedPointTransformationMatrix(
+        const SpatialCoordinateTransformer<N>& T) const;
 
     int getNumberOfSteps() const;
     float getStepSize() const;
@@ -65,19 +68,27 @@ public:
     IntegralLineProperties::Direction getStepDirection() const;
     IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
     CoordinateSpace getSeedPointsSpace() const;
+    bool getNormalizeSamples() const;
 
 private:
     void setUpProperties();
 
-protected:
+public:
     IntProperty numberOfSteps_;
     FloatProperty stepSize_;
+    BoolProperty normalizeSamples_;
 
     TemplateOptionProperty<IntegralLineProperties::Direction> stepDirection_;
     TemplateOptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
     TemplateOptionProperty<CoordinateSpace> seedPointsSpace_;
 };
 
-}  // namespace
+template <unsigned int N>
+Matrix<N + 1, float> IntegralLineProperties::getSeedPointTransformationMatrix(
+    const SpatialCoordinateTransformer<N>& T) const {
+    return T.getMatrix(seedPointsSpace_.get(), CoordinateSpace::Data);
+}
+
+}  // namespace inviwo
 
 #endif  // IVW_INTEGRALLINEPROPERTIES_H

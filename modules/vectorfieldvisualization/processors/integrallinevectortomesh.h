@@ -24,13 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INTEGRALLINEVECTORTOMESH_H
 #define IVW_INTEGRALLINEVECTORTOMESH_H
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -48,7 +49,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-
+#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
@@ -61,49 +62,89 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineVectorToMesh : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineVectorToMesh : public Processor {
 public:
-    enum class ColoringMethod {
-        Velocity,
-        Timestamp,
-        ColorPort,
-        Curvature
+    class ColorByPropertiy : public CompositeProperty {
+    public:
+        friend class IntegralLineVectorToMesh;
+
+        InviwoPropertyInfo();
+
+        ColorByPropertiy(std::string identifier, std::string displayName,
+                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+
+        ColorByPropertiy(const ColorByPropertiy& rhs);
+
+        ColorByPropertiy& operator=(const ColorByPropertiy& that);
+        virtual ColorByPropertiy* clone() const override;
+        virtual ~ColorByPropertiy();
+
+        virtual void serialize(Serializer& s) const override;
+        virtual void deserialize(Deserializer& d) override;
+
+        std::string getKey() const;
+
+    private:
+        void addProperties();
+
+        DoubleMinMaxProperty scaleBy_;
+        BoolProperty loopTF_;
+        DoubleProperty minValue_;
+        DoubleProperty maxValue_;
+        TransferFunctionProperty tf_;
+
+        std::string key_;
     };
+
+    enum class Output { Lines, Ribbons };
+
+    enum class BrushBy { Never, LineIndex, VectorPosition };
+
     IntegralLineVectorToMesh();
     virtual ~IntegralLineVectorToMesh() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
+    void updatePropertyVisibility() {
+        ribbonWidth_.setVisible(output_.get() == Output::Ribbons);
+        brushBy_.setVisible(brushingList_.isConnected());
+    }
     IntegralLineSetInport lines_;
     BrushingAndLinkingInport brushingList_;
     DataInport<std::vector<vec4>> colors_;
     MeshOutport mesh_;
 
-    BoolProperty ignoreBrushingList_;
+    TemplateOptionProperty<BrushBy> brushBy_;
+
+    OptionPropertyString colorBy_;
 
     IntSizeTProperty stride_;
 
     BoolCompositeProperty timeBasedFiltering_;
-    FloatMinMaxProperty minMaxT_;
-    ButtonProperty setFromData_ ;
+    DoubleMinMaxProperty minMaxT_;
+    ButtonProperty setFromData_;
 
-    TransferFunctionProperty tf_;
-    TemplateOptionProperty<ColoringMethod> coloringMethod_;
-    FloatProperty velocityScale_;
-    StringProperty maxVelocity_;
-    FloatProperty curvatureScale_;
-    StringProperty maxCurvature_;
+    TemplateOptionProperty<Output> output_;
+
+    FloatProperty ribbonWidth_;
+
+    FloatVec4Property selectedColor_;
+
+    bool isFiltered(const IntegralLine& line, size_t idx) const;
+    bool isSelected(const IntegralLine& line, size_t idx) const;
+
+    void updateOptions();
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INTEGRALLINEVECTORTOMESH_H
-
+#endif  // IVW_INTEGRALLINEVECTORTOMESH_H

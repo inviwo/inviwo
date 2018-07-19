@@ -36,7 +36,6 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/ports/meshport.h>
-#include <modules/vectorfieldvisualization/pathlinetracer.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -44,6 +43,9 @@
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
+#include <inviwo/core/util/spatial4dsampler.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 
@@ -61,11 +63,11 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLinesDeprecated : public Processor {
 public:
     enum class ColoringMethod { Velocity, Timestamp, ColorPort };
-    PathLines();
-    virtual ~PathLines() = default;
+    PathLinesDeprecated();
+    virtual ~PathLinesDeprecated() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -76,7 +78,7 @@ public:
 
 private:
     DataInport<Spatial4DSampler<3, double>> sampler_;
-    SeedPointsInport seedPoints_;
+    SeedPointsInport<3> seedPoints_;
     DataInport<std::vector<vec4>> colors_;
     VolumeSequenceInport volume_;
     IntegralLineSetOutport lines_;

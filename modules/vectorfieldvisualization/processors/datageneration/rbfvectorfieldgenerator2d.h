@@ -59,7 +59,6 @@ public:
 
     virtual void process() override;
 
-
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -82,13 +81,11 @@ protected:
 
     void createSamples();
 
-
     std::uniform_real_distribution<double> theta_;
     std::uniform_real_distribution<double> x_;
 
     std::vector<std::pair<dvec2, dvec2>> samples_;
-   
 };
 
-}  // namespace
+}  // namespace inviwo
 #endif  // IVW_RBFVECTORFIELDGENERATOR2D_H

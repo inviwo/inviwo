@@ -55,12 +55,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    SeedPointsInport seed3d_;
+    SeedPoints3DInport seed3d_;
     SeedPoints4DOutport seed4d_;
 
     FloatProperty w_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SEED3DTO4D_H

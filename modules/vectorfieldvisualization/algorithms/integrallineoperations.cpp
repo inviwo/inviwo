@@ -45,7 +45,8 @@ IntegralLineSet curvature(const IntegralLineSet &lines) {
 void curvature(IntegralLine &line, dmat4 toWorld) {
     if (line.hasMetaData("curvature")) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
-    float dt = static_cast<float>(positions.size() - 1);
+    if (positions.size() <= 1) return;
+    auto dt = static_cast<float>(positions.size() - 1);
     dt = 1 / dt;
 
     std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
@@ -53,8 +54,9 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
         return dvec3(P) / P.w;
     });
 
-    auto &K = line.createMetaData("curvature");
-    auto &V = line.getMetaData("velocity");
+    auto md = line.createMetaData<double>("curvature");
+    auto &K = md->getEditableRAMRepresentation()->getDataContainer();
+    auto &V = line.getMetaData<dvec3>("velocity");
 
     auto cur = positions.begin();
     auto vel = V.begin();
@@ -79,8 +81,13 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
 
             double a = std::abs(0.5 * glm::length(pp - p));
             double b = std::abs(0.5 * glm::length(p - pm));
+            double c = a + b;
 
-            K.emplace_back(angle / (a + b));
+            if (c == 0) {
+                K.emplace_back(0);
+            } else {
+                K.emplace_back(angle / c);
+            }
         }
     }
 }
@@ -104,6 +111,7 @@ IntegralLineSet tortuosity(const IntegralLineSet &lines) {
 void tortuosity(IntegralLine &line, dmat4 toWorld) {
     if (line.hasMetaData("tortuosity")) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
+    if (positions.size() <= 1) return;
     float dt = static_cast<float>(positions.size() - 1);
     dt = 1 / dt;
 
@@ -112,7 +120,8 @@ void tortuosity(IntegralLine &line, dmat4 toWorld) {
         return dvec3(P) / P.w;
     });
 
-    auto &K = line.createMetaData("tortuosity");
+    auto md = line.createMetaData<double>("tortuosity");
+    auto &K = md->getEditableRAMRepresentation()->getDataContainer();
     double acuDist = 0;
 
     dvec3 start = positions.front();

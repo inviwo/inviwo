@@ -51,16 +51,8 @@ public:
     StreamLineProperties& operator=(const StreamLineProperties& that);
     virtual StreamLineProperties* clone() const override;
     virtual ~StreamLineProperties();
-
-    bool getNormalizeSamples() const;
-
-private:
-    void setUpProperties();
-
-protected:
-    BoolProperty normalizeSamples_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_STREAMLINEPROPERTIES_H
