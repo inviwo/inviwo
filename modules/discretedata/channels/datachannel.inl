@@ -41,21 +41,20 @@ template <typename T, ind N>
 DataChannel<T, N>::DataChannel(const std::string& name, GridPrimitive definedOn)
     : BaseClass(name, DataFormatId::NotSpecialized, definedOn) {
     // Switch all types.
-    if (std::is_same<T, f16>::value)      setDataFormatId(DataFormatId::Float16);
-    if (std::is_same<T, glm::f32>::value) setDataFormatId(DataFormatId::Float32);
-    if (std::is_same<T, glm::f64>::value) setDataFormatId(DataFormatId::Float64);
-
+    if (std::is_same<T, f16>::value)      this->setDataFormatId(DataFormatId::Float16);
+    if (std::is_same<T, glm::f32>::value) this->setDataFormatId(DataFormatId::Float32);
+    if (std::is_same<T, glm::f64>::value) this->setDataFormatId(DataFormatId::Float64);
     // Integers
-    if (std::is_same<T, glm::i8>::value)  setDataFormatId(DataFormatId::Int8);
-    if (std::is_same<T, glm::i16>::value) setDataFormatId(DataFormatId::Int16);
-    if (std::is_same<T, glm::i32>::value) setDataFormatId(DataFormatId::Int32);
-    if (std::is_same<T, glm::i64>::value) setDataFormatId(DataFormatId::Int64);
+    if (std::is_same<T, glm::i8>::value)  this->setDataFormatId(DataFormatId::Int8);
+    if (std::is_same<T, glm::i16>::value) this->setDataFormatId(DataFormatId::Int16);
+    if (std::is_same<T, glm::i32>::value) this->setDataFormatId(DataFormatId::Int32);
+    if (std::is_same<T, glm::i64>::value) this->setDataFormatId(DataFormatId::Int64);
 
     // Unsigned Integers
-    if (std::is_same<T, glm::u8>::value)  setDataFormatId(DataFormatId::UInt8);
-    if (std::is_same<T, glm::u16>::value) setDataFormatId(DataFormatId::UInt16);
-    if (std::is_same<T, glm::u32>::value) setDataFormatId(DataFormatId::UInt32);
-    if (std::is_same<T, glm::u64>::value) setDataFormatId(DataFormatId::UInt64);
+    if (std::is_same<T, glm::u8>::value)  this->setDataFormatId(DataFormatId::UInt8);
+    if (std::is_same<T, glm::u16>::value) this->setDataFormatId(DataFormatId::UInt16);
+    if (std::is_same<T, glm::u32>::value) this->setDataFormatId(DataFormatId::UInt32);
+    if (std::is_same<T, glm::u64>::value) this->setDataFormatId(DataFormatId::UInt64);
 }
 
 }  // namespace

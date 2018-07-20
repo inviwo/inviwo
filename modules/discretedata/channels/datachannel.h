@@ -144,16 +144,16 @@ public:
     // Methods
 
     ScalarChannel(const std::string& name, DataFormatId dataFormat,
-            GridPrimitive definedOn = GridPrimitive::Vertex)
-    : BaseChannel(name, dataFormat, definedOn) {}
+                  GridPrimitive definedOn = GridPrimitive::Vertex)
+        : BaseChannel<T, 1>(name, dataFormat, definedOn) {}
 
-    void operator()(T& dest, int index) const { fillRaw(&dest, index); }
+    void operator()(T& dest, int index) const { this->fillRaw(&dest, index); }
 
-    iterator begin() { return iterator(newIterator(), 0); }
-    iterator end() { return iterator(newIterator(), size()); }
+    iterator begin() { return iterator(this->newIterator(), 0); }
+    iterator end()   { return iterator(this->newIterator(), this->size()); }
 
-    const_iterator begin() const { return const_iterator(newIterator(), 0); }
-    const_iterator end() const { return const_iterator(newIterator(), size()); }
+    const_iterator begin() const { return const_iterator(this->newIterator(), 0); }
+    const_iterator end()   const { return const_iterator(this->newIterator(), this->size()); }
 };
 
 #define BaseChannel std::conditional<N == 1, ScalarChannel<T>, BaseChannel<T, N>>::type
@@ -196,12 +196,6 @@ public:
 
     virtual ~DataChannel() = default;
 
-    // Methods
-protected:
-    virtual void fillRaw(T* dest, ind index) const = 0;
-
-    virtual ChannelGetter<T, N>* newIterator() = 0;
-
 public:
 
     /** \brief Indexed point access, copy data
@@ -213,16 +207,16 @@ public:
     void fill(VecNT& dest, ind index) const {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
-        fillRaw(reinterpret_cast<T*>(&dest), index);
+        this->fillRaw(reinterpret_cast<T*>(&dest), index);
     }
 
     template <typename VecNT>
     ChannelIterator<VecNT, T, N> begin() {
-        return ChannelIterator<VecNT, T, N>(newIterator(), 0);
+        return ChannelIterator<VecNT, T, N>(this->newIterator(), 0);
     }
     template <typename VecNT>
     ChannelIterator<VecNT, T, N> end() {
-        return ChannelIterator<VecNT, T, N>(newIterator(), size());
+        return ChannelIterator<VecNT, T, N>(this->newIterator(), this->size());
     }
 
     template <typename VecNT>
@@ -231,7 +225,7 @@ public:
     }
     template <typename VecNT>
     ConstChannelIterator<VecNT, T, N> end() const {
-        return ConstChannelIterator<VecNT, T, N>(this, size());
+        return ConstChannelIterator<VecNT, T, N>(this, this->size());
     }
 
     template <typename VecNT>
