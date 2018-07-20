@@ -54,7 +54,7 @@ class BufferChannel : public DataChannel<T, N> {
     friend struct BufferGetter<T, N>;
 
 public:
-    using value_type = typename T;
+    using value_type = T;
 
     // Construction / Deconstruction
 public:
