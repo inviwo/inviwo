@@ -59,6 +59,9 @@ class ConstChannelIterator;
 template<typename T, ind N>
 struct ChannelGetter;
 
+template <typename T, ind N>
+class DataChannel;
+
 /** \class Channel
     \brief An untyped scalar or vector component of a data set.
 
@@ -134,6 +137,13 @@ template <typename T, ind N>
 class DataChannel : public Channel {
 
     friend class DataSet;
+    friend struct ChannelGetter<T, N>;
+
+    template <typename VecNT>
+    using iterator = ChannelIterator<VecNT, T, N>;
+
+    template <typename VecNT>
+    using const_iterator = ConstChannelIterator<VecNT, T, N>;
 
     // Construction / Deconstruction
 public:
@@ -141,8 +151,7 @@ public:
     *   @param name Name associated with the channel
     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
     */
-    DataChannel(const std::string& name,
-                GridPrimitive definedOn = GridPrimitive::Vertex);
+    DataChannel(const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex);
 
     virtual ~DataChannel() = default;
 
@@ -160,28 +169,34 @@ public:
     *   @param index Linear point index
     */
     template <typename VecNT>
-    void fill(VecNT& dest, ind index) const { fillRaw(reinterpret_cast<T*>(&dest), index); }
+    void fill(VecNT& dest, ind index) const {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
+        fillRaw(reinterpret_cast<T*>(&dest), index);
+    }
 
-    /** \brief Indexed point access, copy data
-    *   Thread safe.
-    *   @param dest Position to write to, expect T[NumComponents]
-    *   @param index Linear point index
-    */
     template <typename VecNT>
-    void operator()(VecNT& dest, ind index) const { fill(dest, index); }
+    ChannelIterator<VecNT, T, N> begin() {
+        return ChannelIterator<VecNT, T, N>(newIterator(), 0);
+    }
+    template <typename VecNT>
+    ChannelIterator<VecNT, T, N> end() {
+        return ChannelIterator<VecNT, T, N>(newIterator(), size());
+    }
 
-    template<typename VecNT>
-    ChannelIterator<VecNT, T, N> begin() { return ChannelIterator<VecNT, T, N>(newIterator(), 0); }
-    template<typename VecNT>
-    ChannelIterator<VecNT, T, N> end()   { return ChannelIterator<VecNT, T, N>(newIterator(), size()); }
-
-    template<typename VecNT>
-    ConstChannelIterator<VecNT, T, N> begin() const { return ConstChannelIterator<VecNT, T, N>(this, 0); }
-    template<typename VecNT>
-    ConstChannelIterator<VecNT, T, N> end()   const { return ConstChannelIterator<VecNT, T, N>(this, size()); }
+    template <typename VecNT>
+    ConstChannelIterator<VecNT, T, N> begin() const {
+        return ConstChannelIterator<VecNT, T, N>(this, 0);
+    }
+    template <typename VecNT>
+    ConstChannelIterator<VecNT, T, N> end() const {
+        return ConstChannelIterator<VecNT, T, N>(this, size());
+    }
 
     template <typename VecNT>
     struct ChannelRange {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
         typedef ChannelIterator<VecNT, T, N> iterator;
 
         ChannelRange(DataChannel<T, N>* channel) : parent_(channel) {}
@@ -195,6 +210,8 @@ public:
 
     template <typename VecNT>
     struct ConstChannelRange {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
         typedef ConstChannelIterator<VecNT, T, N> const_iterator;
 
         ConstChannelRange(const DataChannel<T, N>* channel) : parent_(channel) {}
@@ -221,66 +238,24 @@ public:
     ConstChannelRange<VecNT> all() const { return ConstChannelRange<VecNT>(this); }
 };
 
-/** \class DataChannel
-\brief A single scalar component of a data set. Specialization of vector version.
+// Scalar Specialization
+#define if_scalar template < typename sfinae  = typename std::enable_if<(N == 1)>::type, \
+                             typename noparam = typename std::enable_if<std::is_same<sfinae, void>::value>::type >
 
-The type is arbitrary but is expected to support
-the basic arithmetic operations.
-Use the <T, N> variant for vectors.
+    /** \brief Indexed scalar access, copy data
+     *   Thread safe.
+     *   @param dest Position to write to, expect T[NumComponents]
+     *   @param index Linear point index
+     */
+    if_scalar void operator()(T& dest, ind index) const { fill(dest, index); }
 
-Several realizations extend this pure virtual class
-that differ in data storage/generation.
-Direct indexing is virtual, avoid where possible.
+    if_scalar iterator<T> begin() { return iterator<T>(newIterator(), 0); }
+    if_scalar iterator<T> end()   { return iterator<T>(newIterator(), size()); }
 
-@author Anke Friederici and Tino Weinkauf
-*/
-template <typename T>
-class DataChannel<T, 1> : public Channel {
+    if_scalar const_iterator<T> begin() const { return const_iterator<T>(newIterator(), 0); }
+    if_scalar const_iterator<T> end()   const { return const_iterator<T>(newIterator(), size()); }
 
-    friend class DataSet;
-
-    // Construction / Deconstruction
-public:
-    /** \brief Direct construction
-    *   @param name Name associated with the channel
-    *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
-    */
-    DataChannel(const std::string& name,
-        GridPrimitive definedOn = GridPrimitive::Vertex);
-
-    virtual ~DataChannel() = default;
-
-    // Methods
-protected:
-    virtual void fillRaw(T* dest, ind index) const = 0;
-
-    virtual ChannelGetter<T, 1>* newIterator() = 0;
-
-public:
-
-    /** \brief Indexed point access, copy data
-    *   Thread safe.
-    *   @param dest Position to write to, expect T[NumComponents]
-    *   @param index Linear point index
-    */
-    void fill(T& dest, ind index) const { fillRaw(&dest, index); }
-
-    /** \brief Indexed point access, copy data
-    *   Thread safe.
-    *   @param dest Position to write to, expect T[NumComponents]
-    *   @param index Linear point index
-    */
-    void operator()(T& dest, ind index) const { fill(dest, index); }
-
-public:
-    ChannelIterator<T, T, 1> begin() { return ChannelIterator<T, T, 1>(newIterator(), 0); }
-    ChannelIterator<T, T, 1> end()   { return ChannelIterator<T, T, 1>(newIterator(), size()); }
-
-    ConstChannelIterator<T, T, 1> begin() const { return ConstChannelIterator<T, T, 1>(this, 0); }
-    ConstChannelIterator<T, T, 1> end()   const { return ConstChannelIterator<T, T, 1>(this, size()); }
-
-private:
-    DataChannel<T, 1>* parent_;
+#undef if_scalar
 };
 
 }  // namespace
