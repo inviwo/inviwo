@@ -33,7 +33,7 @@
 namespace inviwo {
 namespace dd {
 
-SharedChannel DataChannelMap::addChannel(Channel* const channel) {
+SharedChannel DataChannelMap::addChannel(Channel* channel) {
     SharedChannel sharedChannel(channel);
     addChannel(sharedChannel);
 

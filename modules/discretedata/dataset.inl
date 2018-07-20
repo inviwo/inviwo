@@ -73,7 +73,7 @@ std::shared_ptr<const BufferChannel<T, N>> DataChannelMap::getAsBuffer(const std
     BufferChannel<T, N>* buffer = new BufferChannel<T, N>(
         dataChannel->size(), name, definedOn);
     for (ind element = 0; element < dataChannel->size(); ++element)
-        dataChannel->fill(buffer->get(element), element);
+        dataChannel->fill(buffer->get<std::array<T, N>>(element), element);
 
     buffer->copyMetaDataFrom(*dataChannel.get());
 

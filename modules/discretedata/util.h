@@ -32,8 +32,7 @@
 #include "discretedata/connectivity/connectivity.h"
 
 namespace inviwo {
-namespace dd {
-namespace util {
+namespace dd_util {
 
 inline double tetrahedronVolume(double corners[4][3]) {
     const glm::dvec3 a(corners[0][0] - corners[1][0], corners[0][1] - corners[1][1], corners[0][2] - corners[1][2]);
@@ -44,5 +43,4 @@ inline double tetrahedronVolume(double corners[4][3]) {
 }
 
 } // namespace
-}
 }
