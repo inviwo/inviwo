@@ -52,7 +52,7 @@ public:
     StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim);
     virtual ~StructuredGrid() = default;
 
-    ind getNumCellsInDimension(ind dim) const;
+    virtual ind getNumCellsInDimension(ind dim) const;
 
     virtual double getPrimitiveMeasure(GridPrimitive dim, ind index) const override;
 
@@ -60,10 +60,17 @@ public:
 public:
     virtual std::vector<ind> getConnections(ind index, GridPrimitive from, GridPrimitive to) const;
 
+    static std::vector<ind> sameLevelConnection(ind idxLin, const std::vector<ind>& size);
+
+    static std::vector<ind> indexFromLinear(ind idxLin, const std::vector<ind>& size);
+
     // Attributes
 protected:
     template <typename T>
     double computeHexVolume(ind index) const;
+
+    template <typename T>
+    double computeHexVolume(const std::vector<ind>& connections) const;
 
 protected:
     std::vector<ind> numCellsPerDimension_;
@@ -71,14 +78,20 @@ protected:
 
 template <typename T>
 double StructuredGrid::computeHexVolume(ind index) const {
+
+    // Get all corner points.
+    auto corners = getConnections(index, GridPrimitive::Volume, GridPrimitive::Vertex);
+    return StructuredGrid::template computeHexVolume<T>(corners);
+}
+
+template <typename T>
+double StructuredGrid::computeHexVolume(const std::vector<ind>& corners) const {
+    assert(corners.size() == 8 && "Not a hexahedron.");
+
     // Work with respective type
     std::shared_ptr<const DataChannel<T, 3>> doubleVertices =
         std::dynamic_pointer_cast<const DataChannel<T, 3>, const Channel>(vertices_);
     if (!doubleVertices) return -1;
-
-    // Get all corner points.
-    auto corners = getConnections(index, GridPrimitive::Volume, GridPrimitive::Vertex);
-    IVW_ASSERT(corners.size() == 8, "Not a hexahedron.");
 
     // Tetrahedron corners
     static constexpr ind tetrahedra[5][4] = {
@@ -100,7 +113,7 @@ double StructuredGrid::computeHexVolume(ind index) const {
         }
 
         // Compute measure and sum
-        measure += util::tetrahedronVolume(cornerMatrix);
+        measure += dd_util::tetrahedronVolume(cornerMatrix);
     }
 
     return measure;
