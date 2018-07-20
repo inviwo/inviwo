@@ -47,10 +47,14 @@ namespace dd {
 
     @author Anke Friederici and Tino Weinkauf
 */
-template <typename T, ind N>
+template <typename T, ind N = 1>
 class BufferChannel : public DataChannel<T, N> {
 
     friend class DataSet;
+    friend struct BufferGetter<T, N>;
+
+public:
+    using value_type = typename T;
 
     // Construction / Deconstruction
 public:
@@ -108,27 +112,46 @@ protected:
 public:
     virtual ind size() const override { return buffer_.size() / N; }
 
-    /** \brief Indexed point access, mutable, same as []
-    *   NOT THREAD SAFE, use fill instead.
-    *   @param index Linear point index
-    *   @return Reference to data
-    */
-    template<typename VecNT>
+    /** \brief Indexed point access
+     *   @param index Linear point index
+     *   @return Reference to data
+     */
+    template <typename VecNT>
     VecNT& get(ind index) {
         static_assert(sizeof(VecNT) == sizeof(T) * N, "Size and type do not agree with the vector type."); 
         return *reinterpret_cast<VecNT*>(&buffer_[index*N]);
     }
 
-    /** \brief Indexed point access, mutable, same as []
-    *   NOT THREAD SAFE, use fill instead.
-    *   @param index Linear point index
-    *   @return Reference to data
-    */
-    template<typename VecNT>
+    /** \brief Indexed point access
+     *   @param index Linear point index
+     *   @return Reference to data
+     */
+    template <typename VecNT>
     const VecNT& get(ind index) const {
         static_assert(sizeof(VecNT) == sizeof(T) * N, "Size and type do not agree with the vector type.");
         return *reinterpret_cast<const VecNT*>(&buffer_[index*N]);
     }
+
+    /*--------------------------------------------------------------*
+     *  Scalar Type Specialization via SFINAE                       *
+     *--------------------------------------------------------------*/
+    /** SFINAE: if_scala is valid if N==1, substitution failure otherwise **/
+#define if_scalar template <typename sfinae  = typename std::enable_if<(N == 1)>::type, \
+                            typename noparam = typename std::enable_if<std::is_same<sfinae, void>::value>::type>
+
+    /** \brief Indexed point access
+     *   @param index Linear point index
+     *   @return Reference to data
+     */
+    if_scalar T& get(ind index) { return buffer_[index]; }
+
+    /** \brief Indexed point access
+     *   @param index Linear point index
+     *   @return Reference to data
+     */
+    if_scalar const T& get(ind index) const { return buffer_[index]; }
+
+#undef if_scalar
 
     // Attributes
 protected:
