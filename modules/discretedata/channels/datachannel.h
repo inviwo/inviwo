@@ -236,7 +236,6 @@ public:
     */
     template <typename VecNT>
     ConstChannelRange<VecNT> all() const { return ConstChannelRange<VecNT>(this); }
-};
 
 // Scalar Specialization
 #define if_scalar template < typename sfinae  = typename std::enable_if<(N == 1)>::type, \
