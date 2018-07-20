@@ -181,10 +181,10 @@ class DataChannel : public BaseChannel {
 
 public:
     template <typename VecNT>
-    using iterator = typename ChannelIterator<VecNT, T, N>;
+    using iterator = ChannelIterator<VecNT, T, N>;
 
     template <typename VecNT>
-    using const_iterator = typename ConstChannelIterator<VecNT, T, N>;
+    using const_iterator = ConstChannelIterator<VecNT, T, N>;
 
     // Construction / Deconstruction
 public:
