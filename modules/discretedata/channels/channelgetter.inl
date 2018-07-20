@@ -38,15 +38,15 @@ namespace dd {
 template<typename T, ind N>
 T* BufferGetter<T, N>::get(ind index) {
     auto& buffer = dynamic_cast<BufferChannel<T, N>&>(*this->parent_);
-    std::array<T, N>& data = buffer.template get<std::array<T, N>>(index);
-    return reinterpret_cast<T*>(&data);
+    T& data = buffer.buffer_[index * N];
+    return &data;
 }
 
 template<typename T, ind N>
 const T* BufferGetter<T, N>::get(ind index) const {
-    const auto& buffer = dynamic_cast<const BufferChannel<T, N>&>(*this->parent_);
-    const std::array<T, N>& data = buffer.template get<std::array<T, N>>(index);
-    return reinterpret_cast<const T*>(&data);
+    const BufferChannel<T, N>& buffer = dynamic_cast<const BufferChannel<T, N>&>(*this->parent_);
+    const T& data = buffer.buffer_[index * N];
+    return &data;
 }
 
 template<typename T, ind N>
@@ -87,7 +87,7 @@ const T* CachedGetter<T, N>::get(ind index) const {
         // Note: we could use the old memory again, but numCOmponents might change (improbable).
         // Also, we want segfaults when old data is accessed.
 
-        this->parent_->fill(Data, index);
+        this->parent_->fill(*Data, index);
         DataIndex = index;
     }
 
