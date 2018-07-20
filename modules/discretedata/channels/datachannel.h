@@ -50,13 +50,13 @@ enum GridPrimitive : char {
     HyperVolume = 4
 };
 
-template<typename VecNT, typename T, ind N>
+template <typename VecNT, typename T, ind N>
 class ChannelIterator;
 
-template<typename VecNT, typename T, ind N>
+template <typename VecNT, typename T, ind N>
 class ConstChannelIterator;
 
-template<typename T, ind N>
+template <typename T, ind N>
 struct ChannelGetter;
 
 template <typename T, ind N>
@@ -120,6 +120,44 @@ public:
     virtual ind size() const = 0;
 };
 
+template <typename T, ind N>
+class BaseChannel : public Channel {
+
+public:
+    BaseChannel(const std::string& name, DataFormatId dataFormat,
+                GridPrimitive definedOn = GridPrimitive::Vertex)
+        : Channel(N, name, dataFormat, definedOn) {}
+
+protected:
+    virtual void fillRaw(T * dest, ind index) const = 0;
+
+    virtual ChannelGetter<T, N>* newIterator() = 0;
+};
+
+template <typename T>
+class ScalarChannel : public BaseChannel<T, 1> {
+
+public:
+    using iterator = ChannelIterator<T, T, 1>;
+    using const_iterator = ConstChannelIterator<T, T, 1>;
+
+    // Methods
+
+    ScalarChannel(const std::string& name, DataFormatId dataFormat,
+            GridPrimitive definedOn = GridPrimitive::Vertex)
+    : BaseChannel(name, dataFormat, definedOn) {}
+
+    void operator()(T& dest, int index) const { fillRaw(&dest, index); }
+
+    iterator begin() { return iterator(newIterator(), 0); }
+    iterator end() { return iterator(newIterator(), size()); }
+
+    const_iterator begin() const { return const_iterator(newIterator(), 0); }
+    const_iterator end() const { return const_iterator(newIterator(), size()); }
+};
+
+#define BaseChannel std::conditional<N == 1, ScalarChannel<T>, BaseChannel<T, N>>::type
+
 /** \class DataChannel
     \brief A single vector component of a data set.
 
@@ -134,16 +172,19 @@ public:
     @author Anke Friederici and Tino Weinkauf
 */
 template <typename T, ind N>
-class DataChannel : public Channel {
+class DataChannel : public BaseChannel {
 
     friend class DataSet;
     friend struct ChannelGetter<T, N>;
+    using BaseClass = typename BaseChannel;
+#undef BaseChannel
+
+public:
+    template <typename VecNT>
+    using iterator = typename ChannelIterator<VecNT, T, N>;
 
     template <typename VecNT>
-    using iterator = ChannelIterator<VecNT, T, N>;
-
-    template <typename VecNT>
-    using const_iterator = ConstChannelIterator<VecNT, T, N>;
+    using const_iterator = typename ConstChannelIterator<VecNT, T, N>;
 
     // Construction / Deconstruction
 public:
@@ -237,24 +278,6 @@ public:
     template <typename VecNT>
     ConstChannelRange<VecNT> all() const { return ConstChannelRange<VecNT>(this); }
 
-// Scalar Specialization
-#define if_scalar template < typename sfinae  = typename std::enable_if<(N == 1)>::type, \
-                             typename noparam = typename std::enable_if<std::is_same<sfinae, void>::value>::type >
-
-    /** \brief Indexed scalar access, copy data
-     *   Thread safe.
-     *   @param dest Position to write to, expect T[NumComponents]
-     *   @param index Linear point index
-     */
-    if_scalar void operator()(T& dest, ind index) const { fill(dest, index); }
-
-    if_scalar iterator<T> begin() { return iterator<T>(newIterator(), 0); }
-    if_scalar iterator<T> end()   { return iterator<T>(newIterator(), size()); }
-
-    if_scalar const_iterator<T> begin() const { return const_iterator<T>(newIterator(), 0); }
-    if_scalar const_iterator<T> end()   const { return const_iterator<T>(newIterator(), size()); }
-
-#undef if_scalar
 };
 
 }  // namespace

@@ -50,7 +50,7 @@ std::shared_ptr<const BufferChannel<T, N>> DataChannelMap::getAsBuffer(const std
     SharedConstChannel channel = getChannel(name, definedOn);
 
     // Data is not present in this data set.
-    if (!channel.get()) return std::shared_ptr<const BufferChannel<T, N>>();
+    if (!channel) return std::shared_ptr<const BufferChannel<T, N>>();
 
     // Try to cast the channel to DataChannel<T, N>.
     // Return empty shared_ptr if unsuccessfull.
@@ -58,7 +58,7 @@ std::shared_ptr<const BufferChannel<T, N>> DataChannelMap::getAsBuffer(const std
         std::dynamic_pointer_cast<const DataChannel<T, N>, const Channel>(channel);
 
     // Check for nullptr inside
-    if (!dataChannel.get()) return std::shared_ptr<const BufferChannel<T, N>>();
+    if (!dataChannel) return std::shared_ptr<const BufferChannel<T, N>>();
 
     // Try to cast the channel to buffer directly.
     // If successfull, return a shared pointer to the buffer directly.
@@ -67,13 +67,13 @@ std::shared_ptr<const BufferChannel<T, N>> DataChannelMap::getAsBuffer(const std
         std::dynamic_pointer_cast<const BufferChannel<T, N>, const Channel>(channel);
 
     // Check for nullptr inside.
-    if (bufferChannel.get()) return bufferChannel;
+    if (bufferChannel) return bufferChannel;
 
     // Copy data over.
     BufferChannel<T, N>* buffer = new BufferChannel<T, N>(
         dataChannel->size(), name, definedOn);
     for (ind element = 0; element < dataChannel->size(); ++element)
-        dataChannel->fill(buffer->get<std::array<T, N>>(element), element);
+        dataChannel->fill(buffer->template get<std::array<T, N>>(element), element);
 
     buffer->copyMetaDataFrom(*dataChannel.get());
 
