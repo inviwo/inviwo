@@ -44,7 +44,7 @@ ElementIterator operator-(ind offset, ElementIterator& iter) {
 }
 
 ElementIterator ElementIterator::operator*() const {
-    ivwAssert(parent_, "No channel to iterate is set.");
+    assert(parent_ && "No channel to iterate is set.");
 
     return *this;
 }

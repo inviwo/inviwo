@@ -30,8 +30,6 @@
 #pragma once
 
 #include <discretedata/discretedatamoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/assertion.h>
 
 #include "datachannel.h"
 #include "channelgetter.h"

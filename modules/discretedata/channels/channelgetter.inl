@@ -56,7 +56,7 @@ ChannelGetter<T, N>* BufferGetter<T, N>::New() const  {
 
 template<typename T, ind N>
 T* CachedGetter<T, N>::get(ind index) {
-    ivwAssert(this->parent_, "No channel to iterate is set.");
+    assert(this->parent_ && "No channel to iterate is set.");
 
     // No buffer, evaluate analytics.
     // Is the data up to date?
@@ -77,7 +77,7 @@ T* CachedGetter<T, N>::get(ind index) {
 
 template<typename T, ind N>
 const T* CachedGetter<T, N>::get(ind index) const {
-    ivwAssert(this->parent_, "No channel to iterate is set.");
+    assert(this->parent_ && "No channel to iterate is set.");
 
     // No buffer, evaluate analytics.
     // Is the data up to date?

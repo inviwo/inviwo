@@ -37,11 +37,9 @@ namespace inviwo {
 namespace dd {
 
 ind Connectivity::getNumElements(GridPrimitive elementType) const {
-    ivwAssert((ind)numGridPrimitives_.size() == (ind)gridDimension_ + 1,
-              "GridPrimitive count vector has the wrong size: " +
-                  std::to_string(numGridPrimitives_.size()) +
-                  " != " + std::to_string((ind)gridDimension_ + 1));
-    ivwAssert(numGridPrimitives_[elementType] != -1, "No size stored.");
+    assert((ind)numGridPrimitives_.size() == (ind)gridDimension_ + 1 &&
+           "GridPrimitive count vector has the wrong size.");
+    assert(numGridPrimitives_[elementType] != -1 && "No size stored.");
     return numGridPrimitives_[elementType];
 }
 
