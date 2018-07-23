@@ -134,12 +134,90 @@ protected:
     virtual ChannelGetter<T, N>* newIterator() = 0;
 };
 
+template <typename T, ind N>
+class VectorChannel : public BaseChannel<T, N> {
+
+protected:
+    VectorChannel(const std::string& name, DataFormatId dataFormat,
+                  GridPrimitive definedOn = GridPrimitive::Vertex)
+        : BaseChannel<T, N>(name, dataFormat, definedOn) {}
+
+public:
+    template <typename VecNT>
+    ChannelIterator<VecNT, T, N> begin() {
+        return ChannelIterator<VecNT, T, N>(this->newIterator(), 0);
+    }
+    template <typename VecNT>
+    ChannelIterator<VecNT, T, N> end() {
+        return ChannelIterator<VecNT, T, N>(this->newIterator(), this->size());
+    }
+
+    template <typename VecNT>
+    ConstChannelIterator<VecNT, T, N> begin() const {
+        return ConstChannelIterator<VecNT, T, N>((DataChannel<T, N>*)this, 0);
+    }
+    template <typename VecNT>
+    ConstChannelIterator<VecNT, T, N> end() const {
+        return ConstChannelIterator<VecNT, T, N>((DataChannel<T, N>*)this, this->size());
+    }
+
+    template <typename VecNT>
+    struct ChannelRange {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
+        typedef ChannelIterator<VecNT, T, N> iterator;
+
+        ChannelRange(VectorChannel<T, N>* channel) : parent_(channel) {}
+
+        iterator begin() { return parent_->template begin<VecNT>(); }
+        iterator end() { return parent_->template end<VecNT>(); }
+
+    private:
+        VectorChannel<T, N>* parent_;
+    };
+
+    template <typename VecNT>
+    struct ConstChannelRange {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
+        typedef ConstChannelIterator<VecNT, T, N> const_iterator;
+
+        ConstChannelRange(const VectorChannel<T, N>* channel) : parent_(channel) {}
+
+        const_iterator begin() const { return parent_->template begin<VecNT>(); }
+        const_iterator end() const { return parent_->template end<VecNT>(); }
+
+    private:
+        const VectorChannel<T, N>* parent_;
+    };
+
+    /** \brief Get iterator range
+     *   Templated iterator return type, only specified once.
+     *   @tparam VecNT Return type of resulting iterators
+     */
+    template <typename VecNT>
+    ChannelRange<VecNT> all() {
+        return ChannelRange<VecNT>(this);
+    }
+
+    /** \brief Get const iterator range
+     *   Templated iterator return type, only specified once.
+     *   @tparam VecNT Return type of resulting iterators
+     */
+    template <typename VecNT>
+    ConstChannelRange<VecNT> all() const {
+        return ConstChannelRange<VecNT>(this);
+    }
+};
+
 template <typename T>
 class ScalarChannel : public BaseChannel<T, 1> {
 
 public:
-    using iterator = ChannelIterator<T, T, 1>;
-    using const_iterator = ConstChannelIterator<T, T, 1>;
+    template <typename Vec1T = T>
+    using iterator = ChannelIterator<Vec1T, T, 1>;
+    template <typename Vec1T = T>
+    using const_iterator = ConstChannelIterator<Vec1T, T, 1>;
 
     // Methods
 
@@ -149,14 +227,26 @@ public:
 
     void operator()(T& dest, int index) const { this->fillRaw(&dest, index); }
 
-    iterator begin() { return iterator(this->newIterator(), 0); }
-    iterator end()   { return iterator(this->newIterator(), this->size()); }
+    template <typename Vec1T = T>
+    iterator<Vec1T> begin() {
+        return iterator<Vec1T>(this->newIterator(), 0);
+    }
+    template <typename Vec1T = T>
+    iterator<Vec1T> end() {
+        return iterator<Vec1T>(this->newIterator(), this->size());
+    }
 
-    const_iterator begin() const { return const_iterator(this->newIterator(), 0); }
-    const_iterator end()   const { return const_iterator(this->newIterator(), this->size()); }
+    template <typename Vec1T = T>
+    const_iterator<Vec1T> begin() const {
+        return const_iterator<Vec1T>(this->newIterator(), 0);
+    }
+    template <typename Vec1T = T>
+    const_iterator<Vec1T> end() const {
+        return const_iterator<Vec1T>(this->newIterator(), this->size());
+    }
 };
 
-#define BaseChannel std::conditional<N == 1, ScalarChannel<T>, BaseChannel<T, N>>::type
+#define BaseChannelDef std::conditional<N == 1, ScalarChannel<T>, VectorChannel<T, N>>::type
 
 /** \class DataChannel
     \brief A single vector component of a data set.
@@ -172,12 +262,14 @@ public:
     @author Anke Friederici and Tino Weinkauf
 */
 template <typename T, ind N>
-class DataChannel : public BaseChannel {
+class DataChannel : public BaseChannelDef {
+
+    using BaseChannel = typename BaseChannelDef;
+
+#undef BaseChannelDef
 
     friend class DataSet;
     friend struct ChannelGetter<T, N>;
-    using BaseClass = typename BaseChannel;
-#undef BaseChannel
 
 public:
     template <typename VecNT>
@@ -189,93 +281,29 @@ public:
     // Construction / Deconstruction
 public:
     /** \brief Direct construction
-    *   @param name Name associated with the channel
-    *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
-    */
+     *   @param name Name associated with the channel
+     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+     */
     DataChannel(const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex);
 
     virtual ~DataChannel() = default;
 
 public:
-
     /** \brief Indexed point access, copy data
-    *   Thread safe.
-    *   @param dest Position to write to, expect T[NumComponents]
-    *   @param index Linear point index
-    */
+     *   Thread safe.
+     *   @param dest Position to write to, expect T[NumComponents]
+     *   @param index Linear point index
+     */
     template <typename VecNT>
     void fill(VecNT& dest, ind index) const {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
         this->fillRaw(reinterpret_cast<T*>(&dest), index);
     }
-
-    template <typename VecNT>
-    ChannelIterator<VecNT, T, N> begin() {
-        return ChannelIterator<VecNT, T, N>(this->newIterator(), 0);
-    }
-    template <typename VecNT>
-    ChannelIterator<VecNT, T, N> end() {
-        return ChannelIterator<VecNT, T, N>(this->newIterator(), this->size());
-    }
-
-    template <typename VecNT>
-    ConstChannelIterator<VecNT, T, N> begin() const {
-        return ConstChannelIterator<VecNT, T, N>(this, 0);
-    }
-    template <typename VecNT>
-    ConstChannelIterator<VecNT, T, N> end() const {
-        return ConstChannelIterator<VecNT, T, N>(this, this->size());
-    }
-
-    template <typename VecNT>
-    struct ChannelRange {
-        static_assert(sizeof(VecNT) == sizeof(T) * N,
-                      "Size and type do not agree with the vector type.");
-        typedef ChannelIterator<VecNT, T, N> iterator;
-
-        ChannelRange(DataChannel<T, N>* channel) : parent_(channel) {}
-
-        iterator begin() { return parent_->template begin<VecNT>(); }
-        iterator end()   { return parent_->template end<VecNT>(); }
-
-    private:
-        DataChannel<T, N>* parent_;
-    };
-
-    template <typename VecNT>
-    struct ConstChannelRange {
-        static_assert(sizeof(VecNT) == sizeof(T) * N,
-                      "Size and type do not agree with the vector type.");
-        typedef ConstChannelIterator<VecNT, T, N> const_iterator;
-
-        ConstChannelRange(const DataChannel<T, N>* channel) : parent_(channel) {}
-
-        const_iterator begin() const { return parent_->template begin<VecNT>(); }
-        const_iterator end()   const { return parent_->template end<VecNT>(); }
-
-    private:
-        const DataChannel<T, N>* parent_;
-    };
-
-    /** \brief Get iterator range
-    *   Templated iterator return type, only specified once.
-    *   @tparam VecNT Return type of resulting iterators
-    */
-    template <typename VecNT>
-    ChannelRange<VecNT> all() { return ChannelRange<VecNT>(this); }
-
-    /** \brief Get const iterator range
-    *   Templated iterator return type, only specified once.
-    *   @tparam VecNT Return type of resulting iterators
-    */
-    template <typename VecNT>
-    ConstChannelRange<VecNT> all() const { return ConstChannelRange<VecNT>(this); }
-
 };
 
-}  // namespace
-}
+}  // namespace dd
+}  // namespace inviwo
 
 // Circumvent circular reference.
 #include "channeliterator.h"

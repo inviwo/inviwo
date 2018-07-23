@@ -39,7 +39,7 @@ namespace dd {
 
 template <typename T, ind N>
 DataChannel<T, N>::DataChannel(const std::string& name, GridPrimitive definedOn)
-    : BaseClass(name, DataFormatId::NotSpecialized, definedOn) {
+    : BaseChannel(name, DataFormatId::NotSpecialized, definedOn) {
     // Switch all types.
     if (std::is_same<T, f16>::value)      this->setDataFormatId(DataFormatId::Float16);
     if (std::is_same<T, glm::f32>::value) this->setDataFormatId(DataFormatId::Float32);
