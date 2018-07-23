@@ -39,15 +39,14 @@ namespace inviwo {
 namespace detail {
 
 template <typename T>
-static double metadataToDouble(const T &t) {
+static double norm(const T &t) {
     return static_cast<double>(t);
 }
 
-    template <glm::length_t L, typename T, glm::qualifier Q>
-    static double metadataToDouble(const glm::vec<L, T, Q> &glm) {
-
-
-    using F = typename std::conditional<std::is_same<T, float>::value, float, double>::type;
+template <
+    glm::length_t L, typename T, glm::qualifier Q,
+    typename F = typename std::conditional<std::is_same<T, float>::value, float, double>::type>
+static double norm(const glm::vec<L, T, Q> &glm) {
     return glm::length(util::glm_convert<glm::vec<L, F, Q>>(glm));
 }
 }  // namespace detail
@@ -410,7 +409,7 @@ void IntegralLineVectorToMesh::process() {
                 return colors->at(index);
             } else {
                 auto &mdValue = get<2>(sample);
-                double md = detail::metadataToDouble(mdValue);
+                double md = detail::norm(mdValue);
                 minMetaData = std::min(minMetaData, md);
                 maxMetaData = std::max(maxMetaData, md);
 
@@ -478,7 +477,6 @@ void IntegralLineVectorToMesh::process() {
                     else {
                         ribbonLoop(line, mdBuf->getDataContainer());
                     }
-
                 });
         } else {
             if (output == Output::Lines)

@@ -110,7 +110,7 @@ private:
     TerminationReason forwardTerminationReason_ = TerminationReason::Unknown;
     TerminationReason backwardTerminationReason_ = TerminationReason::Unknown;
 
-    mutable double length_ = -1;
+    mutable double length_ = -1; // length is only calculated on demand hence it need to be mutable
 
     size_t idx_;
 };
