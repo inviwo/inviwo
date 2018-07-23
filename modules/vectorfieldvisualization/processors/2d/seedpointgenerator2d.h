@@ -44,26 +44,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SeedPointGenerator2D, Seed Point Generator2D}
- * ![](org.inviwo.SeedPointGenerator2D.png?classIdentifier=org.inviwo.SeedPointGenerator2D)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class SeedPointGenerator2D
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator2D : public Processor {
 public:
     enum class Generator { Random, HaltonSequence };

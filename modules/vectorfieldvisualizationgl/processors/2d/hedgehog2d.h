@@ -44,13 +44,6 @@
 
 namespace inviwo {
 
-/**
- * \class HedgeHog2D
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API HedgeHog2D : public Processor {
 
     enum class GlyphType { Arrow, Quiver };

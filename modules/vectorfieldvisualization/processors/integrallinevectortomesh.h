@@ -53,20 +53,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.IntegralLineVectorToMesh, Integral Line Vector To Mesh}
- * ![](org.inviwo.IntegralLineVectorToMesh.png?classIdentifier=org.inviwo.IntegralLineVectorToMesh)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineVectorToMesh : public Processor {
 public:
     class ColorByPropertiy : public CompositeProperty {

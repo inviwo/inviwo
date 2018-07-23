@@ -41,11 +41,6 @@
 
 namespace inviwo {
 
-/**
- * \class IntegralLineProperties
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineProperties : public CompositeProperty {
 public:
     enum class IntegrationScheme { Euler, RK4 };

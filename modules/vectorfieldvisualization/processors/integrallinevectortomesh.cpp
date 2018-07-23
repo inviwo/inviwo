@@ -43,10 +43,12 @@ static double metadataToDouble(const T &t) {
     return static_cast<double>(t);
 }
 
-template <typename T, glm::precision P, template <typename, glm::precision> class G>
-static double metadataToDouble(const G<T, P> &glm) {
+    template <glm::length_t L, typename T, glm::qualifier Q>
+    static double metadataToDouble(const glm::vec<L, T, Q> &glm) {
+
+
     using F = typename std::conditional<std::is_same<T, float>::value, float, double>::type;
-    return glm::length(util::glm_convert<G<F, P>>(glm));
+    return glm::length(util::glm_convert<glm::vec<L, F, Q>>(glm));
 }
 }  // namespace detail
 

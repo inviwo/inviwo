@@ -39,20 +39,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.Vector3DDivergence, Vector3DDivergence}
- * ![](org.inviwo.Vector3DDivergence.png?classIdentifier=org.inviwo.Vector3DDivergence)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
+
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector3DDivergence : public VolumeGLProcessor {
 public:
     Vector3DDivergence();

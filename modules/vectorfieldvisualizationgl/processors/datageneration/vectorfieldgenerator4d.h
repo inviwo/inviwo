@@ -43,26 +43,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VectorFieldGenerator4D, Vector Field Generator 4D}
- * ![](org.inviwo.VectorFieldGenerator4D.png?classIdentifier=org.inviwo.VectorFieldGenerator4D)
- *
- * Description of the processor
- *
- *
- * ### Outports
- *   * __outport__ Describe port.
- *
- * ### Properties
- *   * __Volume size__ Describe property.
- *   * __X__ Describe property.
- *   * __Y__ Describe property.
- *   * __Z__ Describe property.
- *   * __X Range__ Describe property.
- *   * __Y Range__ Describe property.
- *   * __Z Range__ Describe property.
- *   * __T Range__ Describe property.
- *
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator4D : public Processor {
 public:
     VectorFieldGenerator4D();

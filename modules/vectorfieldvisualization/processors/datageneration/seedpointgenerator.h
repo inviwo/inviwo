@@ -49,20 +49,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SeedPointGenerator, Seed Point Generator}
- * ![](org.inviwo.SeedPointGenerator.png?classIdentifier=org.inviwo.SeedPointGenerator)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;

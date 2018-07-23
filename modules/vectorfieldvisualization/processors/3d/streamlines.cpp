@@ -101,10 +101,10 @@ StreamLinesDeprecated::StreamLinesDeprecated()
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
 
-    tf_.get().clearPoints();
-    tf_.get().addPoint(vec2(0, 1), vec4(0, 0, 1, 1));
-    tf_.get().addPoint(vec2(0.5, 1), vec4(1, 1, 0, 1));
-    tf_.get().addPoint(vec2(1, 1), vec4(1, 0, 0, 1));
+    tf_.get().clear();
+    tf_.get().add(0.0, vec4(0, 0, 1, 1));
+    tf_.get().add(0.5, vec4(1, 1, 0, 1));
+    tf_.get().add(1.0, vec4(1, 0, 0, 1));
 
     setAllPropertiesCurrentStateAsDefault();
 

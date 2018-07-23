@@ -38,20 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.Vector2DDivergence, Vector2DDivergence}
- * ![](org.inviwo.Vector2DDivergence.png?classIdentifier=org.inviwo.Vector2DDivergence)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DDivergence : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;

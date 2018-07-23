@@ -49,20 +49,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.PathLines, Path Lines}
- * ![](org.inviwo.PathLines.png?classIdentifier=org.inviwo.PathLines)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
+
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLinesDeprecated : public Processor {
 public:
     enum class ColoringMethod { Velocity, Timestamp, ColorPort };

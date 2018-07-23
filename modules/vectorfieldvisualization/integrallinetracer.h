@@ -71,7 +71,6 @@ template <bool TimeDependent, typename SpatialVector, typename DataVector, typen
 std::pair<SpatialVector,DataVector> step(const SpatialVector &oldPos,
                    IntegralLineProperties::IntegrationScheme integrationScheme, F stepSize,
                    const DataMatrix &invBasis, bool normalizeSamples, const Sampler &sampler) {
-    SpatialVector newPos = oldPos;
 
     auto normalize = [](auto v) {
         auto l = glm::length(v);
@@ -140,7 +139,6 @@ public:
     using DataMatrix = Matrix<SpatialSampler::DataDimensions, double>;
     using DataHomogenouSpatialMatrixrix = Matrix<SpatialSampler::DataDimensions + 1, double>;
 
-#pragma optimize( "", off )  
     IntegralLineTracer(std::shared_ptr<const Sampler> sampler,
                        const IntegralLineProperties &properties)
         : integrationScheme_(properties.getIntegrationScheme())
@@ -260,7 +258,7 @@ private:
     IntegralLine::TerminationReason integrate(size_t steps, SpatialVector pos, IntegralLine &line,
                                               bool fwd) {
         if (steps == 0) return IntegralLine::TerminationReason::StartPoint;
-        for (int i = 0; i < steps; i++) {
+        for (size_t i = 0; i < steps; i++) {
             if (!sampler_->withinBounds(pos)) {
                 return IntegralLine::TerminationReason::OutOfBounds;
             }

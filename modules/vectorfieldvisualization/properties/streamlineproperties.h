@@ -37,11 +37,6 @@
 
 namespace inviwo {
 
-/**
- * \class StreamLineProperties
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineProperties : public IntegralLineProperties {
 public:
     InviwoPropertyInfo();
