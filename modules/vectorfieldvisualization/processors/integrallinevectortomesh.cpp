@@ -143,7 +143,7 @@ bool IntegralLineVectorToMesh::isFiltered(const IntegralLine &line, size_t idx) 
             return brushingList_.isFiltered(line.getIndex());
         case BrushBy::VectorPosition:
             return brushingList_.isFiltered(idx);
-        case BrushBy::Never:
+        case BrushBy::Nothing:
         default:
             return false;
     }
@@ -155,7 +155,7 @@ bool IntegralLineVectorToMesh::isSelected(const IntegralLine &line, size_t idx) 
             return brushingList_.isSelected(line.getIndex());
         case BrushBy::VectorPosition:
             return brushingList_.isSelected(idx);
-        case BrushBy::Never:
+        case BrushBy::Nothing:
         default:
             return false;
     }
@@ -222,7 +222,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     , colors_("colors")
     , mesh_("mesh")
     , brushBy_("brushBy_", "Brush Line by",
-               {{"never", "Ignore brushing list", BrushBy::Never},
+               {{"never", "Ignore brushing list", BrushBy::Nothing},
                 {"lineindex", "Use Line Index (seed point index)", BrushBy::LineIndex},
                 {"vectorposition", "Use position in input vector.", BrushBy::VectorPosition}})
 

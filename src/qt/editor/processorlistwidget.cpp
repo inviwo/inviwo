@@ -463,7 +463,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
             if (it != useTimes_.end()) {
                 tb(H("Last"), std::string(std::ctime(&(it->second))));
             } else {
-                tb(H("Last"), "Never");
+                tb(H("Last"), "Nothing");
             }
         }
 

@@ -89,7 +89,7 @@ public:
 
     enum class Output { Lines, Ribbons };
 
-    enum class BrushBy { Never, LineIndex, VectorPosition };
+    enum class BrushBy { Nothing, LineIndex, VectorPosition };
 
     IntegralLineVectorToMesh();
     virtual ~IntegralLineVectorToMesh() = default;
