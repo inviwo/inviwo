@@ -51,6 +51,14 @@ std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string &n
     return it->second;
 }
 
+void IntegralLine::addMetaDataBuffer(const std::string &name, std::shared_ptr<BufferBase> buffer) {
+    auto it = metaData_.find(name);
+    if (it != metaData_.end()) {
+        throw Exception("Meta data with name already exists: " + name, IvwContext);
+    }
+    metaData_[name] = buffer;
+}
+
 void IntegralLine::reverse() {
     std::reverse(positions_.begin(), positions_.end());
     for (auto &m : metaData_) {

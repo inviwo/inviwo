@@ -65,6 +65,8 @@ public:
     std::shared_ptr<const BufferBase> getMetaDataBuffer(const std::string &name) const;
     std::shared_ptr<BufferBase> getMetaDataBuffer(const std::string &name);
 
+    void addMetaDataBuffer(const std::string &name, std::shared_ptr<BufferBase> buffer);
+
     template <typename T>
     std::shared_ptr<Buffer<T>> createMetaData(const std::string &name);
 
@@ -110,7 +112,7 @@ private:
     TerminationReason forwardTerminationReason_ = TerminationReason::Unknown;
     TerminationReason backwardTerminationReason_ = TerminationReason::Unknown;
 
-    mutable double length_ = -1; // length is only calculated on demand hence it need to be mutable
+    mutable double length_ = -1;  // length is only calculated on demand hence it need to be mutable
 
     size_t idx_;
 };
