@@ -362,8 +362,8 @@
                     <Processor content="org.inviwo.RBFBased3DVectorFieldGenerator" />
                     <Processor content="org.inviwo.SeedPointGenerator3D" />
                     <Processor content="org.inviwo.SeedPointsFromMask" />
-                    <Processor content="org.inviwo.StreamLinesDepricated" />
-                    <Processor content="org.inviwo.PathLinesDepricated" />
+                    <Processor content="org.inviwo.StreamLinesDeprecated" />
+                    <Processor content="org.inviwo.PathLinesDeprecated" />
                     <Processor content="org.inviwo.StreamRibbonsDeprecated" />
                     <Processor content="org.inviwo.IntegralLineVectorToMesh" />
                     <Processor content="org.inviwo.Seed3Dto4D" />

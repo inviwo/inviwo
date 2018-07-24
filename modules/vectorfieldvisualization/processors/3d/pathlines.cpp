@@ -39,7 +39,7 @@
 namespace inviwo {
 
 const ProcessorInfo PathLinesDeprecated::processorInfo_{
-    "org.inviwo.PathLinesDepricated",  // Class identifier
+    "org.inviwo.PathLinesDeprecated",  // Class identifier
     "Path Lines",                      // Display name
     "Vector Field Visualization",      // Category
     CodeState::Experimental,           // Code state

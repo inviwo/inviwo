@@ -49,7 +49,7 @@
 namespace inviwo {
 
 const ProcessorInfo StreamLinesDeprecated::processorInfo_{
-    "org.inviwo.StreamLinesDepricated",  // Class identifier
+    "org.inviwo.StreamLinesDeprecated",  // Class identifier
     "Stream Lines (Deprecated)",         // Display name
     "Vector Field Visualization",        // Category
     CodeState::Experimental,             // Code state

@@ -97,7 +97,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerDefaultsForDataType<IntegralLineSet>();
 }
 
-int VectorFieldVisualizationModule::getVersion() const { return 2; }
+int VectorFieldVisualizationModule::getVersion() const { return 4; }
 
 std::unique_ptr<VersionConverter> VectorFieldVisualizationModule::getConverter(int version) const {
     return util::make_unique<Converter>(version);
@@ -217,9 +217,9 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
         }
         case 1: {
             for (const auto& fromTO : std::vector<std::pair<std::string, std::string>>{
-                     {"StreamLines", "StreamLinesDepricated"},
+                     {"StreamLines", "StreamLinesDeprecated"},
                      {"StreamRibbons", "StreamRibbonsDeprecated"},
-                     {"PathLines", "PathLinesDepricated"},
+                     {"PathLines", "PathLinesDeprecated"},
                      {"StreamLines2", "StreamLines3D"},
                      {"PathLines2", "PathLines3D"},
                      {"SeedPointGenerator", "SeedPointGenerator3D"}}) {
@@ -230,6 +230,17 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
         }
         case 2: {
             res |= integralLineTracerMetaDataProperty(root);
+        }
+        case 3: {
+            for (const auto& fromTO : std::vector<std::pair<std::string, std::string>>{
+                {"StreamLinesDepricated", "StreamLinesDeprecated"},
+                {"StreamRibbonsDepricated", "StreamRibbonsDeprecated"},
+                {"PathLinesDepricated", "PathLinesDeprecated"}}) {
+                res |= xml::changeAttribute(
+                    root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
+                    "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
+            }
+
         }
 
         default:
