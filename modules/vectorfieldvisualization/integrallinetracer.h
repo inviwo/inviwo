@@ -242,7 +242,7 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector
     line.setForwardTerminationReason(integrate(stepsFWD, p, line, true));
 
     return res;
-};
+}
 
 template <typename SpatialSampler, bool TimeDependent>
 void IntegralLineTracer<SpatialSampler, TimeDependent>::addMetaDataSampler(
@@ -251,7 +251,7 @@ void IntegralLineTracer<SpatialSampler, TimeDependent>::addMetaDataSampler(
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-const DataHomogenouSpatialMatrixrix &
+const typename IntegralLineTracer<SpatialSampler, TimeDependent>::DataHomogenouSpatialMatrixrix &
 IntegralLineTracer<SpatialSampler, TimeDependent>::getSeedTransformationMatrix() const {
     return seedTransformation_;
 }
