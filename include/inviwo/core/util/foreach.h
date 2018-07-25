@@ -42,25 +42,25 @@ namespace inviwo {
 namespace util {
 namespace detail {
 template <typename Callback, typename IT>
-void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t = 0) {
+void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0) {
     std::for_each(a, b, callback);
 }
 
 template <typename Callback, typename IT>
-void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
-    std::for_each(a, b, [&](auto v) { callback(v, start++); });
+void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
+    std::for_each(a, b, [&](auto v) { callback(v, startIndex++); });
 }
 
 template <typename Callback, typename IT>
-auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
-    return dispatchPool([=]() {
-        auto s = start;
-        std::for_each(a, b, [&](auto v) { callback(v, s++); });
+auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
+    return dispatchPool([startIndex,callback,a,b]() {
+        size_t id = startIndex;
+        std::for_each(a, b, [&](auto v) { callback(v, id++); });
     });
 }
 
 template <typename Callback, typename IT>
-auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback, size_t /*start*/ = 0) {
+auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0) {
     return dispatchPool([=]() { std::for_each(a, b, callback); });
 }
 
