@@ -208,20 +208,20 @@ template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
                                              IntegralLine::TerminationReason reason) {
     switch (reason) {
-        case inviwo::IntegralLine::TerminationReason::StartPoint:
+        case IntegralLine::TerminationReason::StartPoint:
             os << "Seed Point";
             break;
-        case inviwo::IntegralLine::TerminationReason::OutOfBounds:
+        case IntegralLine::TerminationReason::OutOfBounds:
             os << "Out of Bounds";
             break;
-        case inviwo::IntegralLine::TerminationReason::ZeroVelocity:
+        case IntegralLine::TerminationReason::ZeroVelocity:
             os << "Zero Velocity";
             break;
-        case inviwo::IntegralLine::TerminationReason::Steps:
+        case IntegralLine::TerminationReason::Steps:
             os << "Steps";
             break;
         default:
-        case inviwo::IntegralLine::TerminationReason::Unknown:
+        case IntegralLine::TerminationReason::Unknown:
             os << "Unknown";
             break;
     }

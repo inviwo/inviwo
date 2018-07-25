@@ -81,7 +81,7 @@ IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty
     addProperties();
 }
 
-inviwo::IntegralLineVectorToMesh::ColorByProperty &IntegralLineVectorToMesh::ColorByProperty::
+IntegralLineVectorToMesh::ColorByProperty &IntegralLineVectorToMesh::ColorByProperty::
 operator=(const ColorByProperty &that) {
     if (this != &that) {
         scaleBy_ = that.scaleBy_;
@@ -93,7 +93,7 @@ operator=(const ColorByProperty &that) {
     return *this;
 }
 
-inviwo::IntegralLineVectorToMesh::ColorByProperty *
+IntegralLineVectorToMesh::ColorByProperty *
 IntegralLineVectorToMesh::ColorByProperty::clone() const {
     return new ColorByProperty(*this);
 }

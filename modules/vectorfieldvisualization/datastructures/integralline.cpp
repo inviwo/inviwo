@@ -66,7 +66,7 @@ void IntegralLine::reverse() {
     }
 }
 
-const std::map<std::string, std::shared_ptr<inviwo::BufferBase>> &IntegralLine::getMetaDataBuffers()
+const std::map<std::string, std::shared_ptr<BufferBase>> &IntegralLine::getMetaDataBuffers()
     const {
     return metaData_;
 }
@@ -138,11 +138,11 @@ void IntegralLine::setForwardTerminationReason(TerminationReason terminationReas
     forwardTerminationReason_ = terminationReason;
 }
 
-inviwo::IntegralLine::TerminationReason IntegralLine::getBackwardTerminationReason() const {
+IntegralLine::TerminationReason IntegralLine::getBackwardTerminationReason() const {
     return forwardTerminationReason_;
 }
 
-inviwo::IntegralLine::TerminationReason IntegralLine::getForwardTerminationReason() const {
+IntegralLine::TerminationReason IntegralLine::getForwardTerminationReason() const {
     return backwardTerminationReason_;
 }
 

@@ -182,7 +182,7 @@ struct ProcessorTraits<PathLines3D> {
 };
 
 template <typename Tracer>
-const ProcessorInfo inviwo::IntegralLineTracerProcessor<Tracer>::getProcessorInfo() const {
+const ProcessorInfo IntegralLineTracerProcessor<Tracer>::getProcessorInfo() const {
     return ProcessorTraits<IntegralLineTracerProcessor<Tracer>>::getProcessorInfo();
 }
 

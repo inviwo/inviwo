@@ -36,8 +36,8 @@ IntegralLineSet::IntegralLineSet(mat4 modelMatrix, mat4 worldMatrix)
 
 IntegralLineSet::~IntegralLineSet() {}
 
-inviwo::mat4 IntegralLineSet::getModelMatrix() const { return modelMatrix_; }
-inviwo::mat4 IntegralLineSet::getWorldMatrix() const { return worldMatrix_; }
+mat4 IntegralLineSet::getModelMatrix() const { return modelMatrix_; }
+mat4 IntegralLineSet::getWorldMatrix() const { return worldMatrix_; }
 
 std::vector<IntegralLine>::const_iterator IntegralLineSet::begin() const { return lines_.begin(); }
 
@@ -49,13 +49,13 @@ std::vector<IntegralLine>::iterator IntegralLineSet::end() { return lines_.end()
 
 size_t IntegralLineSet::size() const { return lines_.size(); }
 
-inviwo::IntegralLine& IntegralLineSet::operator[](size_t idx) { return lines_[idx]; }
+IntegralLine& IntegralLineSet::operator[](size_t idx) { return lines_[idx]; }
 
-const inviwo::IntegralLine& IntegralLineSet::operator[](size_t idx) const { return lines_[idx]; }
+const IntegralLine& IntegralLineSet::operator[](size_t idx) const { return lines_[idx]; }
 
-inviwo::IntegralLine& IntegralLineSet::at(size_t idx) { return lines_.at(idx); }
+IntegralLine& IntegralLineSet::at(size_t idx) { return lines_.at(idx); }
 
-const inviwo::IntegralLine& IntegralLineSet::at(size_t idx) const { return lines_.at(idx); }
+const IntegralLine& IntegralLineSet::at(size_t idx) const { return lines_.at(idx); }
 
 void IntegralLineSet::push_back(const IntegralLine& line, SetIndex updateIndex) {
     if (updateIndex == SetIndex::No) {
