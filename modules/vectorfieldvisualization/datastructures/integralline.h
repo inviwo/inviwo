@@ -137,7 +137,7 @@ const std::vector<T> &IntegralLine::getMetaData(const std::string &name) const {
     auto isDF = it->second->getDataFormat();
     if (isDF != askedDF) {
         std::ostringstream oss;
-        oss << "Incorrect dataformat for metadata " << name << " asking for "
+        oss << "Incorrect dataformat for meta data " << name << " asking for "
             << askedDF->getString() << " but is" << isDF->getString();
         throw Exception(oss.str(), IvwContext);
     }
@@ -158,7 +158,7 @@ std::vector<T> &IntegralLine::getMetaData(const std::string &name, bool create) 
     auto isDF = it->second->getDataFormat();
     if (isDF != askedDF) {
         std::ostringstream oss;
-        oss << "Incorrect dataformat for metadata " << name << " asking for "
+        oss << "Incorrect dataformat for meta data " << name << " asking for "
             << askedDF->getString() << " but is " << isDF->getString();
         throw Exception(oss.str(), IvwContext);
     }
