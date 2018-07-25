@@ -36,7 +36,7 @@ const ProcessorInfo Vector3DDivergence::processorInfo_{
     "org.inviwo.Vector3DDivergence",  // Class identifier
     "Vector 3D Divergence",           // Display name
     "Vector Field Visualization",     // Category
-    CodeState::Experimental,          // Code state
+    CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
 };
 const ProcessorInfo Vector3DDivergence::getProcessorInfo() const { return processorInfo_; }

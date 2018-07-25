@@ -41,8 +41,8 @@ const ProcessorInfo VectorFieldGenerator3D::processorInfo_{
     "org.inviwo.VectorFieldGenerator3D",  // Class identifier
     "Vector Field Generator 3D",          // Display name
     "Data Creation",                      // Category
-    CodeState::Experimental,              // Code state
-    Tags::GL,                             // Tags
+    CodeState::Stable,                    // Code state
+    "GL, Generator",                      // Tags
 };
 const ProcessorInfo VectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
 

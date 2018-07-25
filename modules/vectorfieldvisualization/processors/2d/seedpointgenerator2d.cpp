@@ -38,8 +38,8 @@ const ProcessorInfo SeedPointGenerator2D::processorInfo_{
     "org.inviwo.SeedPointGenerator2D",  // Class identifier
     "Seed Point Generator 2D",          // Display name
     "Data Creation",                    // Category
-    CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
+    CodeState::Stable,            // Code state
+    "CPU, Seed Points, Generator",      // Tags
 };
 const ProcessorInfo SeedPointGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
@@ -78,7 +78,6 @@ SeedPointGenerator2D::SeedPointGenerator2D()
         haltonYBase_.setVisible(generator_.getSelectedValue() == Generator::HaltonSequence);
 
         randomness_.setVisible(generator_.getSelectedValue() == Generator::Random);
-
     };
 
     generator_.onChange(typeOnChange);

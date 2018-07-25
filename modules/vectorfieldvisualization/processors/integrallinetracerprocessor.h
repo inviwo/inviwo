@@ -104,7 +104,8 @@ IntegralLineTracerProcessor<Tracer>::~IntegralLineTracerProcessor() {}
 template <typename Tracer>
 void IntegralLineTracerProcessor<Tracer>::process() {
     auto sampler = sampler_.getData();
-    auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix(),sampler->getWorldMatrix());
+    auto lines =
+        std::make_shared<IntegralLineSet>(sampler->getModelMatrix(), sampler->getWorldMatrix());
 
     Tracer tracer(sampler, properties_);
 
@@ -149,7 +150,7 @@ struct ProcessorTraits<StreamLines2D> {
             "org.inviwo.StreamLines2D",  // Class identifier
             "Stream Lines 2D",           // Display name
             "Integral Line Tracer",      // Category
-            CodeState::Experimental,     // Code state
+            CodeState::Stable,           // Code state
             Tags::CPU                    // Tags
         };
     }
@@ -162,7 +163,7 @@ struct ProcessorTraits<StreamLines3D> {
             "org.inviwo.StreamLines3D",  // Class identifier
             "Stream Lines 3D",           // Display name
             "Integral Line Tracer",      // Category
-            CodeState::Experimental,     // Code state
+            CodeState::Stable,           // Code state
             Tags::CPU                    // Tags
         };
     }
@@ -175,7 +176,7 @@ struct ProcessorTraits<PathLines3D> {
             "org.inviwo.PathLines3D",  // Class identifier
             "Path Lines 3D",           // Display name
             "Integral Line Tracer",    // Category
-            CodeState::Experimental,   // Code state
+            CodeState::Stable,         // Code state
             Tags::CPU                  // Tags
         };
     }

@@ -36,8 +36,8 @@ const ProcessorInfo Seed3Dto4D::processorInfo_{
     "org.inviwo.Seed3Dto4D",  // Class identifier
     "Seed3Dto4D",             // Display name
     "Seeding",                // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    CodeState::Stable,        // Code state
+    Tags::CPU,                // Tags
 };
 const ProcessorInfo Seed3Dto4D::getProcessorInfo() const { return processorInfo_; }
 

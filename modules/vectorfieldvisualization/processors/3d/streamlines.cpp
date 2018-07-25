@@ -52,7 +52,7 @@ const ProcessorInfo StreamLinesDeprecated::processorInfo_{
     "org.inviwo.StreamLinesDeprecated",  // Class identifier
     "Stream Lines (Deprecated)",         // Display name
     "Vector Field Visualization",        // Category
-    CodeState::Experimental,             // Code state
+    CodeState::Deprecated,               // Code state
     Tags::CPU,                           // Tags
 };
 const ProcessorInfo StreamLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
@@ -153,7 +153,6 @@ void StreamLinesDeprecated::process() {
                     std::lock_guard<std::mutex> lock(mutex);
                     lines->push_back(line, startID + i);
                 };
-
             });
             startID += seeds->size();
         }

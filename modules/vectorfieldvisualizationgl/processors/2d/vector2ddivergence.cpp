@@ -40,7 +40,7 @@ const ProcessorInfo Vector2DDivergence::processorInfo_{
     "org.inviwo.Vector2DDivergence",  // Class identifier
     "Vector 2D Divergence",           // Display name
     "Vector Field Visualization",     // Category
-    CodeState::Experimental,          // Code state
+    CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
 };
 const ProcessorInfo Vector2DDivergence::getProcessorInfo() const { return processorInfo_; }

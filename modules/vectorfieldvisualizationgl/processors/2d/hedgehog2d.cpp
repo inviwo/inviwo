@@ -36,7 +36,7 @@ const ProcessorInfo HedgeHog2D::processorInfo_{
     "org.inviwo.HedgeHog2D",       // Class identifier
     "Hedge Hog 2D",                // Display name
     "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
+    CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
 const ProcessorInfo HedgeHog2D::getProcessorInfo() const { return processorInfo_; }

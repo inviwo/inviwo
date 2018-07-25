@@ -36,7 +36,7 @@ const ProcessorInfo Vector3DCurl::processorInfo_{
     "org.inviwo.Vector3DCurl",     // Class identifier
     "Vector 3D Curl",              // Display name
     "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
+    CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
 const ProcessorInfo Vector3DCurl::getProcessorInfo() const { return processorInfo_; }

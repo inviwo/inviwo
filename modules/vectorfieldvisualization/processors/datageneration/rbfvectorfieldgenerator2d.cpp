@@ -45,8 +45,8 @@ const ProcessorInfo RBFVectorFieldGenerator2D::processorInfo_{
     "org.inviwo.RBFVectorFieldGenerator2D",  // Class identifier
     "RBF Based 2D Vector Field Generator",   // Display name
     "Data Creation",                         // Category
-    CodeState::Experimental,                 // Code state
-    Tags::CPU,                               // Tags
+    CodeState::Stable,                       // Code state
+    "CPU, Generator",                        // Tags
 };
 const ProcessorInfo RBFVectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
 

@@ -42,7 +42,7 @@ const ProcessorInfo LIC3D::processorInfo_{
     "org.inviwo.LIC3D",            // Class identifier
     "LIC3D",                       // Display name
     "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
+    CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
 

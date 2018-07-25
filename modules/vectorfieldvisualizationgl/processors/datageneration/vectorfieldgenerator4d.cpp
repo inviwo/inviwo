@@ -42,8 +42,8 @@ const ProcessorInfo VectorFieldGenerator4D::processorInfo_{
     "org.inviwo.VectorFieldGenerator4D",  // Class identifier
     "Vector Field Generator 4D",          // Display name
     "Data Creation",                      // Category
-    CodeState::Experimental,              // Code state
-    Tags::GL,                             // Tags
+    CodeState::Stable,                    // Code state
+    "GL, Generator",                      // Tags
 };
 const ProcessorInfo VectorFieldGenerator4D::getProcessorInfo() const { return processorInfo_; }
 

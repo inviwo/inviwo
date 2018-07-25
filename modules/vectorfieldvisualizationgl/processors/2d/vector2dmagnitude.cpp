@@ -40,7 +40,7 @@ const ProcessorInfo Vector2DMagnitude::processorInfo_{
     "org.inviwo.Vector2DMagnitude",  // Class identifier
     "Vector 2D Magnitude",           // Display name
     "Vector Field Visualization",    // Category
-    CodeState::Experimental,         // Code state
+    CodeState::Stable,               // Code state
     Tags::GL,                        // Tags
 };
 const ProcessorInfo Vector2DMagnitude::getProcessorInfo() const { return processorInfo_; }

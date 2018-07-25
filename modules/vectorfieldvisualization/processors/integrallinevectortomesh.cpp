@@ -81,8 +81,8 @@ IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty
     addProperties();
 }
 
-IntegralLineVectorToMesh::ColorByProperty &IntegralLineVectorToMesh::ColorByProperty::
-operator=(const ColorByProperty &that) {
+IntegralLineVectorToMesh::ColorByProperty &IntegralLineVectorToMesh::ColorByProperty::operator=(
+    const ColorByProperty &that) {
     if (this != &that) {
         scaleBy_ = that.scaleBy_;
         loopTF_ = that.loopTF_;
@@ -93,8 +93,8 @@ operator=(const ColorByProperty &that) {
     return *this;
 }
 
-IntegralLineVectorToMesh::ColorByProperty *
-IntegralLineVectorToMesh::ColorByProperty::clone() const {
+IntegralLineVectorToMesh::ColorByProperty *IntegralLineVectorToMesh::ColorByProperty::clone()
+    const {
     return new ColorByProperty(*this);
 }
 
@@ -133,8 +133,8 @@ const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
     "org.inviwo.IntegralLineVectorToMesh",  // Class identifier
     "Integral Line Vector To Mesh",         // Display name
     "Vector Field Visualization",           // Category
-    CodeState::Experimental,                // Code state
-    Tags::None,                             // Tags
+    CodeState::Stable,                      // Code state
+    Tags::CPU,                              // Tags
 };
 
 bool IntegralLineVectorToMesh::isFiltered(const IntegralLine &line, size_t idx) const {

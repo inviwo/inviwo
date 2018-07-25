@@ -41,8 +41,8 @@ const ProcessorInfo LorenzSystem::processorInfo_{
     "org.inviwo.LorenzSystem",  // Class identifier
     "Lorenz System",            // Display name
     "Data Creation",            // Category
-    CodeState::Experimental,    // Code state
-    Tags::GL,                   // Tags
+    CodeState::Stable,          // Code state
+    "GL, Generator",            // Tags
 };
 const ProcessorInfo LorenzSystem::getProcessorInfo() const { return processorInfo_; }
 

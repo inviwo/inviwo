@@ -62,7 +62,7 @@ struct ProcessorTraits<LineSetSelector> {
             "org.inviwo.IntegralLineSetSelector",  // Class identifier
             "Integral Line Set Selector",          // Display name
             "Data Selector",                       // Category
-            CodeState::Experimental,               // Code state
+            CodeState::Stable,                     // Code state
             Tags::CPU                              // Tags
         };
     }
@@ -233,14 +233,13 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
         }
         case 3: {
             for (const auto& fromTO : std::vector<std::pair<std::string, std::string>>{
-                {"StreamLinesDepricated", "StreamLinesDeprecated"},
-                {"StreamRibbonsDepricated", "StreamRibbonsDeprecated"},
-                {"PathLinesDepricated", "PathLinesDeprecated"}}) {
+                     {"StreamLinesDepricated", "StreamLinesDeprecated"},
+                     {"StreamRibbonsDepricated", "StreamRibbonsDeprecated"},
+                     {"PathLinesDepricated", "PathLinesDeprecated"}}) {
                 res |= xml::changeAttribute(
                     root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
                     "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
             }
-
         }
 
         default:

@@ -40,7 +40,7 @@ const ProcessorInfo LIC2D::processorInfo_{
     "org.inviwo.LIC2D",            // Class identifier
     "LIC2D",                       // Display name
     "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
+    CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
 const ProcessorInfo LIC2D::getProcessorInfo() const { return processorInfo_; }

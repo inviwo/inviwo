@@ -44,7 +44,7 @@ const ProcessorInfo StreamRibbonsDeprecated::processorInfo_{
     "org.inviwo.StreamRibbonsDeprecated",  // Class identifier
     "Stream Ribbons (Deprecated)",         // Display name
     "Vector Field Visualization",          // Category
-    CodeState::Experimental,               // Code state
+    CodeState::Deprecated,                 // Code state
     Tags::CPU,                             // Tags
 };
 const ProcessorInfo StreamRibbonsDeprecated::getProcessorInfo() const { return processorInfo_; }

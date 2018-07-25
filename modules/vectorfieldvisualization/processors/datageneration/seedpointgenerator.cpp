@@ -44,8 +44,8 @@ const ProcessorInfo SeedPointGenerator::processorInfo_{
     "org.inviwo.SeedPointGenerator3D",  // Class identifier
     "Seed Point Generator 3D",          // Display name
     "Data Creation",                    // Category
-    CodeState::Experimental,            // Code state
-    Tags::CPU,                          // Tags
+    CodeState::Stable,                  // Code state
+    "CPU, Seed Points, Generator",      // Tags
 };
 const ProcessorInfo SeedPointGenerator::getProcessorInfo() const { return processorInfo_; }
 

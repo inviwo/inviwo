@@ -36,8 +36,8 @@ const ProcessorInfo DiscardShortLines::processorInfo_{
     "org.inviwo.DiscardShortLines",  // Class identifier
     "Discard Short Lines",           // Display name
     "Integral Lines",                // Category
-    CodeState::Experimental,         // Code state
-    Tags::None,                      // Tags
+    CodeState::Stable,               // Code state
+    Tags::CPU,                       // Tags
 };
 const ProcessorInfo DiscardShortLines::getProcessorInfo() const { return processorInfo_; }
 
