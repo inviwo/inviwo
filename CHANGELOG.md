@@ -3,11 +3,11 @@ Here we document changes that affect the public API or changes that needs to be 
 
 ## 2018-07-25 Integral Line Tracing updates
 Before this change we had two Tracers, one for streamlines and one for pathlines, both in three spatial dimensions only.
-These two classes were very similar and has now been merged/rewritten into a single templated class supporting both 
-streamlines and pathline tracing and is not limited to three dimensions. 
-A new processor has been added that uses this tracer class to integrate stream/pathliens. The old processors, i.e. 
-StreamLines, PathLines and StreamRibbons is now deprecated and renamed to [Name]Deprecated for backwards compatibility.
-The processors that are recommended to use are StreamLines3D, PathLines3D and StreamLines2D, see Example workspaces to 
+These two classes were very similar and have now been merged/rewritten into a single templated class supporting both 
+streamline and pathline tracing and is no longer limited to three dimensions. 
+A new processor has been added which uses this tracer class to integrate stream/pathlines. The old processors, i.e. 
+`StreamLines`, `PathLines` and `StreamRibbons` are now deprecated and were renamed to `[Name]Deprecated` for backwards compatibility.
+The processors that are recommended to use are `StreamLines3D`, `PathLines3D` and `StreamLines2D`, see example workspaces to 
 see how they are used.  
 
 
