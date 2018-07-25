@@ -92,7 +92,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
 
     registerProperty<StreamLineProperties>();
     registerProperty<PathLineProperties>();
-    registerProperty<IntegralLineVectorToMesh::ColorByPropertiy>();
+    registerProperty<IntegralLineVectorToMesh::ColorByProperty>();
 
     registerDefaultsForDataType<IntegralLineSet>();
 }

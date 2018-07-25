@@ -55,20 +55,20 @@ namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineVectorToMesh : public Processor {
 public:
-    class ColorByPropertiy : public CompositeProperty {
+    class ColorByProperty : public CompositeProperty {
     public:
         friend class IntegralLineVectorToMesh;
 
         InviwoPropertyInfo();
 
-        ColorByPropertiy(std::string identifier, std::string displayName,
+        ColorByProperty(std::string identifier, std::string displayName,
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
 
-        ColorByPropertiy(const ColorByPropertiy& rhs);
+        ColorByProperty(const ColorByProperty& rhs);
 
-        ColorByPropertiy& operator=(const ColorByPropertiy& that);
-        virtual ColorByPropertiy* clone() const override;
-        virtual ~ColorByPropertiy();
+        ColorByProperty& operator=(const ColorByProperty& that);
+        virtual ColorByProperty* clone() const override;
+        virtual ~ColorByProperty();
 
         virtual void serialize(Serializer& s) const override;
         virtual void deserialize(Deserializer& d) override;

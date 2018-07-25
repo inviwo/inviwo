@@ -51,10 +51,10 @@ static double norm(const glm::vec<L, T, Q> &glm) {
 }
 }  // namespace detail
 
-PropertyClassIdentifier(IntegralLineVectorToMesh::ColorByPropertiy,
+PropertyClassIdentifier(IntegralLineVectorToMesh::ColorByProperty,
                         "org.inviwo.IntegralLineVectorToMesh.ColorByProperty");
 
-IntegralLineVectorToMesh::ColorByPropertiy::ColorByPropertiy(
+IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(
     std::string identifier, std::string displayName,
     InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/)
     : CompositeProperty(identifier, displayName, invalidationLevel)
@@ -71,7 +71,7 @@ IntegralLineVectorToMesh::ColorByPropertiy::ColorByPropertiy(
     addProperties();
 }
 
-IntegralLineVectorToMesh::ColorByPropertiy::ColorByPropertiy(const ColorByPropertiy &rhs)
+IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty &rhs)
     : CompositeProperty(rhs)
     , scaleBy_(rhs.scaleBy_)
     , loopTF_(rhs.loopTF_)
@@ -81,8 +81,8 @@ IntegralLineVectorToMesh::ColorByPropertiy::ColorByPropertiy(const ColorByProper
     addProperties();
 }
 
-inviwo::IntegralLineVectorToMesh::ColorByPropertiy &IntegralLineVectorToMesh::ColorByPropertiy::
-operator=(const ColorByPropertiy &that) {
+inviwo::IntegralLineVectorToMesh::ColorByProperty &IntegralLineVectorToMesh::ColorByProperty::
+operator=(const ColorByProperty &that) {
     if (this != &that) {
         scaleBy_ = that.scaleBy_;
         loopTF_ = that.loopTF_;
@@ -93,26 +93,26 @@ operator=(const ColorByPropertiy &that) {
     return *this;
 }
 
-inviwo::IntegralLineVectorToMesh::ColorByPropertiy *
-IntegralLineVectorToMesh::ColorByPropertiy::clone() const {
-    return new ColorByPropertiy(*this);
+inviwo::IntegralLineVectorToMesh::ColorByProperty *
+IntegralLineVectorToMesh::ColorByProperty::clone() const {
+    return new ColorByProperty(*this);
 }
 
-IntegralLineVectorToMesh::ColorByPropertiy::~ColorByPropertiy() {}
+IntegralLineVectorToMesh::ColorByProperty::~ColorByProperty() {}
 
-void IntegralLineVectorToMesh::ColorByPropertiy::serialize(Serializer &s) const {
+void IntegralLineVectorToMesh::ColorByProperty::serialize(Serializer &s) const {
     CompositeProperty::serialize(s);
     s.serialize("key", key_);
 }
 
-void IntegralLineVectorToMesh::ColorByPropertiy::deserialize(Deserializer &d) {
+void IntegralLineVectorToMesh::ColorByProperty::deserialize(Deserializer &d) {
     CompositeProperty::deserialize(d);
     d.deserialize("key", key_);
 }
 
-std::string IntegralLineVectorToMesh::ColorByPropertiy::getKey() const { return key_; }
+std::string IntegralLineVectorToMesh::ColorByProperty::getKey() const { return key_; }
 
-void IntegralLineVectorToMesh::ColorByPropertiy::addProperties() {
+void IntegralLineVectorToMesh::ColorByProperty::addProperties() {
     addProperty(scaleBy_);
     addProperty(loopTF_);
     addProperty(minValue_);
@@ -191,7 +191,7 @@ void IntegralLineVectorToMesh::updateOptions() {
         colorBy_.addOption(key, key);
 
         if (!getPropertyByIdentifier(key)) {
-            auto prop = std::make_unique<ColorByPropertiy>(key, "Color by " + key);
+            auto prop = std::make_unique<ColorByProperty>(key, "Color by " + key);
             auto propPtr = prop.get();
             prop->setVisible(selectedIndex == i);
             prop->setSerializationMode(PropertySerializationMode::All);
@@ -264,7 +264,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     setAllPropertiesCurrentStateAsDefault();
 
     colorBy_.onChange([&]() {
-        for (auto &prop : getPropertiesByType<ColorByPropertiy>()) {
+        for (auto &prop : getPropertiesByType<ColorByProperty>()) {
             prop->setVisible(prop->getKey() == colorBy_.get());
         }
     });
@@ -342,18 +342,18 @@ void IntegralLineVectorToMesh::process() {
     }
     bool colorByPort = colorByPortIndex || colorByPortNumber;
 
-    ColorByPropertiy *mdProp = nullptr;
+    ColorByProperty *mdProp = nullptr;
     if (!colorByPort) {
-        mdProp = dynamic_cast<ColorByPropertiy *>(getPropertyByIdentifier(metaDataKey));
+        mdProp = dynamic_cast<ColorByProperty *>(getPropertyByIdentifier(metaDataKey));
 
         if (!mdProp) {  // Fallback
-            auto props = getPropertiesByType<ColorByPropertiy>();
+            auto props = getPropertiesByType<ColorByProperty>();
             if (props.size() == 0) {
-                throw Exception("Couldn't get ColorByPropertiy for meta data " + metaDataKey,
+                throw Exception("Couldn't get ColorByProperty for meta data " + metaDataKey,
                                 IvwContext);
             }
             mdProp = props.front();
-            LogWarn("Couldn't get ColorByPropertiy for meta data "
+            LogWarn("Couldn't get ColorByProperty for meta data "
                     << metaDataKey << ", using " << mdProp->getDisplayName() << " instead");
         }
     }
