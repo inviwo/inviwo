@@ -1,6 +1,17 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2018-06-28
+
+## 2018-07-25 Integral Line Tracing updates
+Before this change we had two Tracers, one for streamlines and one for pathlines, both in three spatial dimensions only.
+These two classes were very similar and have now been merged/rewritten into a single templated class supporting both 
+streamline and pathline tracing and is no longer limited to three dimensions. 
+A new processor has been added which uses this tracer class to integrate stream/pathlines. The old processors, i.e. 
+`StreamLines`, `PathLines` and `StreamRibbons` are now deprecated and were renamed to `[Name]Deprecated` for backwards compatibility.
+The processors that are recommended to use are `StreamLines3D`, `PathLines3D` and `StreamLines2D`, see example workspaces to 
+see how they are used.  
+
+
+## 2018-06-28 GLM Version Update
 GLM was updated to the new 0.9.9.0 version. Major changes are listed at https://github.com/g-truc/glm/releases/tag/0.9.9.0
 Notable changes include the include of the vector / matrix dimension as a template argument, so the main types are now
 ```

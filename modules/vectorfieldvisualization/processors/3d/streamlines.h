@@ -10,42 +10,24 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/vectorfieldvisualization/streamlinetracer.h>
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
+#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
 class SimpleMesh;
 class VolumeRAM;
 
-/** \docpage{org.inviwo.StreamLines, StreamLines}
- * ![](org.inviwo.StreamLines.png?classIdentifier=org.inviwo.StreamLines)
- *
- * ...
- *
- * ### Inports
- *   * __seedpoints__ ...
- *   * __vectorvolume__ ...
- *
- * ### Outports
- *   * __linesStripsMesh___ ...
- *
- * ### Properties
- *   * __Velocity Scale__ ...
- *   * __Velocity Range__ ...
- *   * __StepSize__ ...
- *   * __Number of Steps__ ...
- *   * __Step Direction__ ...
- *   * __Transfer Function__ ...
- *
- */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLines : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLinesDeprecated : public Processor {
 public:
-    StreamLines();
-    virtual ~StreamLines();
+    // friend void vectorvis::convertProcessor(StreamLinesDeprecated*);
+    StreamLinesDeprecated();
+    virtual ~StreamLinesDeprecated();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -65,7 +47,7 @@ protected:
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
 
-    BoolProperty useOpenMP_;
+    BoolProperty useMutliThreading_;
 };
 
 }  // namespace inviwo

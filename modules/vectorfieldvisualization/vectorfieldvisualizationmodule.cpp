@@ -43,10 +43,14 @@
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 #include <modules/vectorfieldvisualization/processors/seed3dto4d.h>
+#include <modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h>
 #include <modules/vectorfieldvisualization/processors/seedsfrommasksequence.h>
 #include <modules/vectorfieldvisualization/processors/discardshortlines.h>
 
 #include <modules/base/processors/inputselector.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
+#include <modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h>
+#include <modules/base/processors/volumetospatialsampler.h>
 
 namespace inviwo {
 
@@ -58,7 +62,7 @@ struct ProcessorTraits<LineSetSelector> {
             "org.inviwo.IntegralLineSetSelector",  // Class identifier
             "Integral Line Set Selector",          // Display name
             "Data Selector",                       // Category
-            CodeState::Experimental,               // Code state
+            CodeState::Stable,                     // Code state
             Tags::CPU                              // Tags
         };
     }
@@ -71,22 +75,29 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<SeedPointGenerator>();
     registerProcessor<SeedPointsFromMask>();
 
-    registerProcessor<StreamLines>();
-    registerProcessor<PathLines>();
-    registerProcessor<StreamRibbons>();
+    registerProcessor<StreamLinesDeprecated>();
+    registerProcessor<PathLinesDeprecated>();
+    registerProcessor<StreamRibbonsDeprecated>();
 
     registerProcessor<IntegralLineVectorToMesh>();
     registerProcessor<Seed3Dto4D>();
+    registerProcessor<StreamLines2D>();
+    registerProcessor<StreamLines3D>();
+    registerProcessor<PathLines3D>();
     registerProcessor<SeedsFromMaskSequence>();
     registerProcessor<DiscardShortLines>();
 
+    registerProcessor<SeedPointGenerator2D>();
     registerProcessor<LineSetSelector>();
 
     registerProperty<StreamLineProperties>();
     registerProperty<PathLineProperties>();
+    registerProperty<IntegralLineVectorToMesh::ColorByProperty>();
+
+    registerDefaultsForDataType<IntegralLineSet>();
 }
 
-int VectorFieldVisualizationModule::getVersion() const { return 1; }
+int VectorFieldVisualizationModule::getVersion() const { return 4; }
 
 std::unique_ptr<VersionConverter> VectorFieldVisualizationModule::getConverter(int version) const {
     return util::make_unique<Converter>(version);
@@ -204,11 +215,64 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
             res |= xml::changeIdentifiers(root, repl);
             return res;
         }
+        case 1: {
+            for (const auto& fromTO : std::vector<std::pair<std::string, std::string>>{
+                     {"StreamLines", "StreamLinesDeprecated"},
+                     {"StreamRibbons", "StreamRibbonsDeprecated"},
+                     {"PathLines", "PathLinesDeprecated"},
+                     {"StreamLines2", "StreamLines3D"},
+                     {"PathLines2", "PathLines3D"},
+                     {"SeedPointGenerator", "SeedPointGenerator3D"}}) {
+                res |= xml::changeAttribute(
+                    root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
+                    "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
+            }
+        }
+        case 2: {
+            res |= integralLineTracerMetaDataProperty(root);
+        }
+        case 3: {
+            for (const auto& fromTO : std::vector<std::pair<std::string, std::string>>{
+                     {"StreamLinesDepricated", "StreamLinesDeprecated"},
+                     {"StreamRibbonsDepricated", "StreamRibbonsDeprecated"},
+                     {"PathLinesDepricated", "PathLinesDeprecated"}}) {
+                res |= xml::changeAttribute(
+                    root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
+                    "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
+            }
+        }
 
         default:
             return false;  // No changes
     }
     return true;
+}
+
+bool VectorFieldVisualizationModule::Converter::integralLineTracerMetaDataProperty(
+    TxElement* root) {
+    std::vector<xml::ElementMatcher> selectors;
+    xml::ElementMatcher popertiesMatcher;
+    popertiesMatcher.name = "Properties";
+    for (std::string id : {"PathLines", "StreamLines", "StreamLines2D"}) {
+        auto kind = xml::Kind::processor("org.inviwo." + id);
+        selectors.insert(selectors.end(), kind.getMatchers().begin(), kind.getMatchers().end());
+        selectors.push_back(popertiesMatcher);
+    }
+    bool res = false;
+    xml::visitMatchingNodes(root, selectors, [&res, this](TxElement* node) {
+        for (std::string id : {"calculateCurvature", "calculateTortuosity"}) {
+            TxElement prop("Property");
+            prop.SetAttribute("type", "org.inviwo.BoolProperty");
+            prop.SetAttribute("identifier", id);
+            TxElement val("value");
+            val.SetAttribute("content", "1");
+            prop.InsertEndChild(val);
+            node->InsertEndChild(prop);
+        }
+        res |= true;
+    });
+
+    return res;
 }
 
 }  // namespace inviwo

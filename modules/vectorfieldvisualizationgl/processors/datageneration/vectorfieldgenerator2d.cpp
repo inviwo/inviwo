@@ -41,8 +41,8 @@ const ProcessorInfo VectorFieldGenerator2D::processorInfo_{
     "org.inviwo.VectorFieldGenerator2D",  // Class identifier
     "Vector Field Generator 2D",          // Display name
     "Data Creation",                      // Category
-    CodeState::Experimental,              // Code state
-    "GL",                                 // Tags
+    CodeState::Stable,                    // Code state
+    Tags::GL,                             // Tags
 };
 const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
@@ -94,4 +94,4 @@ void VectorFieldGenerator2D::process() {
     outport_.setData(image_);
 }
 
-}  // namespace
+}  // namespace inviwo

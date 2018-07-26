@@ -126,6 +126,7 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     iconStable_ = QIcon(":/icons/processor_stable.png");
     iconExperimental_ = QIcon(":/icons/processor_experimental.png");
     iconBroken_ = QIcon(":/icons/processor_broken.png");
+    iconDeprecated_ = QIcon(":/icons/processor_deprecated.png");
 
     processorTree_ = new ProcessorTree(this);
     processorTree_->setHeaderHidden(true);
@@ -248,6 +249,9 @@ const QIcon* ProcessorTreeWidget::getCodeStateIcon(CodeState state) const {
 
         case CodeState::Broken:
             return &iconBroken_;
+
+        case CodeState::Deprecated:
+            return &iconDeprecated_;
 
         case CodeState::Experimental:
         default:

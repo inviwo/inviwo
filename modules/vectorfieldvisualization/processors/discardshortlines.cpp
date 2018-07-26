@@ -36,8 +36,8 @@ const ProcessorInfo DiscardShortLines::processorInfo_{
     "org.inviwo.DiscardShortLines",  // Class identifier
     "Discard Short Lines",           // Display name
     "Integral Lines",                // Category
-    CodeState::Experimental,         // Code state
-    Tags::None,                      // Tags
+    CodeState::Stable,               // Code state
+    Tags::CPU,                       // Tags
 };
 const ProcessorInfo DiscardShortLines::getProcessorInfo() const { return processorInfo_; }
 
@@ -104,9 +104,9 @@ void DiscardShortLines::process() {
         bool keep = line.getLength() >= minLength_.get();
 
         if (keep) {
-            outLines.push_back(line, line.getIndex());
+            outLines.push_back(line, IntegralLineSet::SetIndex::No);
         } else {
-            filteredLines.push_back(line);
+            filteredLines.push_back(line, IntegralLineSet::SetIndex::No);
         }
     }
 
@@ -114,4 +114,4 @@ void DiscardShortLines::process() {
     removedLines_.setData(filteredLinesData);
 }
 
-}  // namespace
+}  // namespace inviwo

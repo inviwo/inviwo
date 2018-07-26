@@ -42,13 +42,25 @@ namespace inviwo {
 namespace util {
 namespace detail {
 template <typename Callback, typename IT>
-void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t = 0) {
+void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0) {
     std::for_each(a, b, callback);
 }
 
 template <typename Callback, typename IT>
-void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
-    std::for_each(a, b, [&](auto v) { callback(v, start++); });
+void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
+    std::for_each(a, b, [&](auto v) { callback(v, startIndex++); });
+}
+
+template <typename Callback, typename IT>
+auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
+    return dispatchPool([id=startIndex, c = std::move(callback), a, b]() mutable {
+      std::for_each(a, b, [&](auto v) { c(v, id++); });
+    });
+}
+
+template <typename Callback, typename IT>
+auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0) {
+    return dispatchPool([c = std::move(callback), a, b]() { std::for_each(a, b, c); });
 }
 
 }  // namespace detail
@@ -86,12 +98,11 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
     auto s = iterable.size();
     std::vector<std::future<void>> futures;
     for (size_t job = 0; job < jobs; ++job) {
-        auto start = (s * job) / jobs;
-        auto end = (s * (job + 1)) / jobs;
-        futures.push_back(dispatchPool([callback, &iterable, start, end]() {
-            detail::foreach_helper(IncludeIndexType(), iterable.begin() + start,
-                                   iterable.begin() + static_cast<size_t>(end), callback, start);
-        }));
+        size_t start = (s * job) / jobs;
+        size_t end = (s * (job + 1)) / jobs;
+        auto a = iterable.begin() + start;
+        auto b = iterable.begin() + end;
+        futures.push_back(detail::foreach_helper_pool(IncludeIndexType(), a, b, callback, start));
     }
     return futures;
 }

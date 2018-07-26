@@ -29,30 +29,4 @@
 
 #include "integrallinetracer.h"
 
-namespace inviwo {
-
-IntegralLineTracer::IntegralLineTracer(const IntegralLineProperties &properties) 
-    : integrationScheme_(properties.getIntegrationScheme())
-    , steps_(properties.getNumberOfSteps())
-    , stepSize_(properties.getStepSize())
-    , dir_(properties.getStepDirection())
-{
-    
-}
-
-IntegralLineTracer::~IntegralLineTracer()  {
-    
-}
-
-inviwo::IntegralLineProperties::IntegrationScheme IntegralLineTracer::getIntegrationScheme() const
-{
-    return integrationScheme_;
-}
-
-void IntegralLineTracer::setIntegrationScheme(IntegralLineProperties::IntegrationScheme scheme)
-{
-    integrationScheme_ = scheme;
-}
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

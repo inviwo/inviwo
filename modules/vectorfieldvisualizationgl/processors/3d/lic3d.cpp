@@ -42,13 +42,11 @@ const ProcessorInfo LIC3D::processorInfo_{
     "org.inviwo.LIC3D",            // Class identifier
     "LIC3D",                       // Display name
     "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
+    CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
 
-const ProcessorInfo LIC3D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo LIC3D::getProcessorInfo() const { return processorInfo_; }
 
 LIC3D::LIC3D()
     : VolumeGLProcessor("lic3d.frag")
@@ -57,12 +55,11 @@ LIC3D::LIC3D()
     , stepLength_("stepLength", "Step Length", 0.003f, 0.0001f, 0.01f, 0.0001f)
     , normalizeVectors_("normalizeVectors", "Normalize vectors", true)
     , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
-    , noiseRepeat_("noiseRepeat","Noise Repeat" , 2 , 0.01f , 20 )
-    , tf_("tf","Velocity Transfer function")
+    , noiseRepeat_("noiseRepeat", "Noise Repeat", 2, 0.01f, 20)
+    , tf_("tf", "Velocity Transfer function")
     , velocityScale_("velocityScale", "Velocity Scale (inverse)", 1, 0, 10)
-    , alphaScale_("alphaScale" , "Alpha Scale" , 500 , 0.01f , 100000 , 0.01f)
-    , noiseVolume_(nullptr)
-{
+    , alphaScale_("alphaScale", "Alpha Scale", 500, 0.01f, 100000, 0.01f)
+    , noiseVolume_(nullptr) {
     addPort(vectorField_);
 
     addProperty(samples_);
@@ -83,23 +80,20 @@ LIC3D::LIC3D()
 
     this->dataFormat_ = DataVec4UInt8::get();
 }
- 
 
 void LIC3D::preProcess(TextureUnitContainer &cont) {
-    
+
     utilgl::bindAndSetUniforms(shader_, cont, *vectorField_.getData().get(), "vectorField");
     utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, intensityMapping_,
                         noiseRepeat_, alphaScale_, velocityScale_);
 
-    utilgl::bindAndSetUniforms(shader_,cont,tf_);
+    utilgl::bindAndSetUniforms(shader_, cont, tf_);
 
     shader_.setUniform("invBasis", glm::inverse(vectorField_.getData()->getBasis()));
 }
-
 
 void LIC3D::postProcess() {
     volume_->dataMap_.valueRange = volume_->dataMap_.dataRange = dvec2(0, 255);
 }
 
-} // namespace
-
+}  // namespace inviwo

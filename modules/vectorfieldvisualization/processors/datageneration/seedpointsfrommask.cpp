@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/volumeramutils.h>
@@ -39,8 +40,8 @@ const ProcessorInfo SeedPointsFromMask::processorInfo_{
     "org.inviwo.SeedPointsFromMask",  // Class identifier
     "Seed Points From Mask",          // Display name
     "Vector Field Visualization",     // Category
-    CodeState::Experimental,          // Code state
-    Tags::None,                       // Tags
+    CodeState::Stable,                // Code state
+    Tags::CPU,                        // Tags
 };
 const ProcessorInfo SeedPointsFromMask::getProcessorInfo() const { return processorInfo_; }
 

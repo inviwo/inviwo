@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VECTORFIELDGENERATOR4D_H
@@ -43,36 +43,17 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VectorFieldGenerator4D, Vector Field Generator 4D}
-* ![](org.inviwo.VectorFieldGenerator4D.png?classIdentifier=org.inviwo.VectorFieldGenerator4D)
-*
-* Description of the processor
-*
-*
-* ### Outports
-*   * __outport__ Describe port.
-*
-* ### Properties
-*   * __Volume size__ Describe property.
-*   * __X__ Describe property.
-*   * __Y__ Describe property.
-*   * __Z__ Describe property.
-*   * __X Range__ Describe property.
-*   * __Y Range__ Describe property.
-*   * __Z Range__ Describe property.
-*   * __T Range__ Describe property.
-*
-*/
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator4D : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator4D : public Processor {
 public:
     VectorFieldGenerator4D();
     virtual ~VectorFieldGenerator4D() = default;
 
-    virtual void initializeResources()override;
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     VolumeSequenceOutport outport_;
 
@@ -87,12 +68,10 @@ private:
     FloatMinMaxProperty zRange_;
     FloatMinMaxProperty tRange_;
 
-
     Shader shader_;
     FrameBufferObject fbo_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VECTORFIELDGENERATOR4D_H
-
+#endif  // IVW_VECTORFIELDGENERATOR4D_H

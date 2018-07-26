@@ -159,6 +159,7 @@ private:
 
 using DataFrameOutport = DataOutport<DataFrame>;
 using DataFrameInport = DataInport<DataFrame>;
+using DataFrameMultiInport = DataInport<DataFrame,0>;
 
 /**
  * \brief Create a new DataFrame by guessing the column types from a number of rows.

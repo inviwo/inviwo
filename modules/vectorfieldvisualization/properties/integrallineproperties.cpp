@@ -37,7 +37,8 @@ IntegralLineProperties::IntegralLineProperties(std::string identifier, std::stri
     , stepSize_("stepSize", "Step size", 0.001f, 0.001f, 1.0f, 0.001f)
     , stepDirection_("stepDirection", "Step Direction")
     , integrationScheme_("integrationScheme", "Integration Scheme")
-    , seedPointsSpace_("seedPointsSpace", "Seed Points Space") {
+    , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
+    , normalizeSamples_("normalizeSamples", "Normalize Samples", true) {
     setUpProperties();
 }
 
@@ -47,7 +48,8 @@ IntegralLineProperties::IntegralLineProperties(const IntegralLineProperties& rhs
     , stepSize_(rhs.stepSize_)
     , stepDirection_(rhs.stepDirection_)
     , integrationScheme_(rhs.integrationScheme_)
-    , seedPointsSpace_(rhs.seedPointsSpace_) {
+    , seedPointsSpace_(rhs.seedPointsSpace_)
+    , normalizeSamples_(rhs.normalizeSamples_) {
     setUpProperties();
 }
 
@@ -59,6 +61,7 @@ IntegralLineProperties& IntegralLineProperties::operator=(const IntegralLineProp
         stepDirection_ = that.stepDirection_;
         integrationScheme_ = that.integrationScheme_;
         seedPointsSpace_ = that.seedPointsSpace_;
+        normalizeSamples_ = that.normalizeSamples_;
     }
     return *this;
 }
@@ -68,11 +71,6 @@ IntegralLineProperties* IntegralLineProperties::clone() const {
 }
 
 IntegralLineProperties::~IntegralLineProperties() = default;
-
-inviwo::mat4 IntegralLineProperties::getSeedPointTransformationMatrix(
-    const SpatialCoordinateTransformer<3>& T) const {
-    return T.getMatrix(seedPointsSpace_.get(), CoordinateSpace::Data);
-}
 
 int IntegralLineProperties::getNumberOfSteps() const { return numberOfSteps_.get(); }
 
@@ -89,6 +87,8 @@ IntegralLineProperties::IntegrationScheme IntegralLineProperties::getIntegration
 CoordinateSpace IntegralLineProperties::getSeedPointsSpace() const {
     return seedPointsSpace_.get();
 }
+
+bool IntegralLineProperties::getNormalizeSamples() const { return normalizeSamples_; }
 
 void IntegralLineProperties::setUpProperties() {
     stepDirection_.addOption("fwd", "Forward", IntegralLineProperties::Direction::FWD);
@@ -110,8 +110,9 @@ void IntegralLineProperties::setUpProperties() {
     addProperty(stepDirection_);
     addProperty(integrationScheme_);
     addProperty(seedPointsSpace_);
+    addProperty(normalizeSamples_);
 
     setAllPropertiesCurrentStateAsDefault();
 }
 
-}  // namespace
+}  // namespace inviwo

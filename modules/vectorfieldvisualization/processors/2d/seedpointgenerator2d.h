@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,53 +27,53 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STREAMTRACER_H
-#define IVW_STREAMTRACER_H
+#ifndef IVW_SEEDPOINTGENERATOR2D_H
+#define IVW_SEEDPOINTGENERATOR2D_H
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>
-#include <modules/vectorfieldvisualization/integrallinetracer.h>
-#include <inviwo/core/util/volumesampler.h>
-#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <random>
 
 namespace inviwo {
 
-/**
- * \class StreamLineTracer
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTracer : public IntegralLineTracer {
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator2D : public Processor {
 public:
+    enum class Generator { Random, HaltonSequence };
 
-    StreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> vol, const StreamLineProperties &properties);
+    SeedPointGenerator2D();
+    virtual ~SeedPointGenerator2D() = default;
 
-    virtual ~StreamLineTracer();
+    virtual void process() override;
 
-    void addMetaVolume(const std::string &name, std::shared_ptr<const Volume> vol);
-    void addMetaSampler(const std::string &name, std::shared_ptr<const SpatialSampler<3, 3, double>> sampler);
-
-    IntegralLine traceFrom(const dvec3 &p);
-    IntegralLine traceFrom(const vec3 &p);
-
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    void step(int steps, dvec3 curPos, IntegralLine &line,bool fwd);
-    dvec3 euler(const dvec3 &curPos);
-    dvec3 rk4(const dvec3 &curPos , const dmat3 &m , bool fwd);
+    SeedPoints2DOutport seeds_;
 
-    dmat3 invBasis_;
-    std::map<std::string, std::shared_ptr<const SpatialSampler<3,3,double>>> metaSamplers_;
-    std::shared_ptr<const SpatialSampler<3, 3, double>> volumeSampler_;
+    TemplateOptionProperty<Generator> generator_;
 
+    IntSizeTProperty numPoints_;
+    IntSizeTProperty haltonXBase_;
+    IntSizeTProperty haltonYBase_;
 
-    bool normalizeSample_;
-    
+    CompositeProperty randomness_;
+    BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
+    IntProperty seed_;          ///<  The seed used to initialize the random sequence
+
+private:
+    std::random_device rd_;
+    std::mt19937 mt_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif  // IVW_INTEGRALLINETRACER_H
+#endif  // IVW_SEEDPOINTGENERATOR2D_H

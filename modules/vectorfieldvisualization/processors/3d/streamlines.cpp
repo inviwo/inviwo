@@ -1,29 +1,63 @@
-#include "streamlines.h"
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2015-2018 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <modules/opengl/image/layergl.h>
-#include <inviwo/core/util/zip.h>
-#include <bitset>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/imagesampler.h>
+#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/util/foreach.h>
+
+#include <modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h>
 #include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
+
+#include <bitset>
 
 namespace inviwo {
 
-const ProcessorInfo StreamLines::processorInfo_{
-    "org.inviwo.StreamLines",      // Class identifier
-    "Stream Lines",                // Display name
-    "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
-    Tags::CPU,                     // Tags
+const ProcessorInfo StreamLinesDeprecated::processorInfo_{
+    "org.inviwo.StreamLinesDeprecated",  // Class identifier
+    "Stream Lines (Deprecated)",         // Display name
+    "Vector Field Visualization",        // Category
+    CodeState::Deprecated,               // Code state
+    Tags::CPU,                           // Tags
 };
-const ProcessorInfo StreamLines::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo StreamLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
 
-StreamLines::StreamLines()
+StreamLinesDeprecated::StreamLinesDeprecated()
     : Processor()
     , sampler_("sampler")
     , seedPoints_("seedpoints")
@@ -31,12 +65,17 @@ StreamLines::StreamLines()
     , linesStripsMesh_("linesStripsMesh_")
     , lines_("lines")
     , streamLineProperties_("streamLineProperties", "Stream Line Properties")
-    , tf_("transferFunction", "Transfer Function",
-          TransferFunction{
-              {{0.0f, vec4(0, 0, 1, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0, vec4(1, 0, 0, 1)}}})
+    , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
-    , useOpenMP_("useOpenMP", "Use OpenMP", true) {
+    , useMutliThreading_("usetultiThreading", "Use Multi Threading", true) {
+
+    addPort(sampler_);
+    addPort(seedPoints_);
+    addPort(volume_);
+
+    addPort(lines_);
+    addPort(linesStripsMesh_);
 
     isReady_.setUpdate([this]() {
         if (allInportsAreReady()) {
@@ -53,31 +92,36 @@ StreamLines::StreamLines()
         return false;
     });
 
-    addPort(sampler_);
-    addPort(seedPoints_);
-    addPort(volume_);
-    addPort(lines_);
-    addPort(linesStripsMesh_);
-
     maxVelocity_.setReadOnly(true);
 
     addProperty(streamLineProperties_);
-    addProperty(useOpenMP_);
+
+    addProperty(useMutliThreading_);
     addProperty(tf_);
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
+
+    tf_.get().clear();
+    tf_.get().add(0.0, vec4(0, 0, 1, 1));
+    tf_.get().add(0.5, vec4(1, 1, 0, 1));
+    tf_.get().add(1.0, vec4(1, 0, 0, 1));
+
+    setAllPropertiesCurrentStateAsDefault();
+
+    LogWarn(
+        "This Stream Lines Processor is Deprecated, use the new Stream Lines processor together "
+        "with the IntegralLineToMesh processor.");
 }
 
-StreamLines::~StreamLines() = default;
+StreamLinesDeprecated::~StreamLinesDeprecated() {}
 
-void StreamLines::process() {
+void StreamLinesDeprecated::process() {
 
     auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double>> {
-        if (sampler_.isConnected()) {
+        if (sampler_.isConnected())
             return sampler_.getData();
-        } else {
+        else
             return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
-        }
     }();
 
     auto mesh = std::make_shared<BasicMesh>();
@@ -88,23 +132,28 @@ void StreamLines::process() {
     auto m =
         streamLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
 
-    StreamLineTracer tracer(sampler, streamLineProperties_);
+    float maxVelocity = 0;
+
+    StreamLine3DTracer tracer(sampler, streamLineProperties_);
     auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
 
-    if (useOpenMP_) {
+    std::vector<BasicMesh::Vertex> vertices;
+
+    std::mutex mutex;
+
+    if (useMutliThreading_) {
         size_t startID = 0;
+
         for (const auto &seeds : seedPoints_) {
-#pragma omp parallel for
-            for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
-                auto p = seeds->at(j);
+            util::forEachParallel(*seeds, [&](const auto &p, size_t i) {
                 vec4 P = m * vec4(p, 1.0f);
-                auto line = tracer.traceFrom(vec3(P));
+                IntegralLine line = tracer.traceFrom(vec3(P));
                 auto size = line.getPositions().size();
                 if (size > 1) {
-#pragma omp critical
-                    lines->push_back(line, startID + j);
+                    std::lock_guard<std::mutex> lock(mutex);
+                    lines->push_back(line, startID + i);
                 };
-            }
+            });
             startID += seeds->size();
         }
     } else {
@@ -112,7 +161,7 @@ void StreamLines::process() {
         for (const auto &seeds : seedPoints_) {
             for (const auto &p : *seeds.get()) {
                 vec4 P = m * vec4(p, 1.0f);
-                auto line = tracer.traceFrom(vec3(P));
+                IntegralLine line = tracer.traceFrom(vec3(P));
                 auto size = line.getPositions().size();
                 if (size > 1) {
                     lines->push_back(line, startID);
@@ -122,28 +171,36 @@ void StreamLines::process() {
         }
     }
 
-    std::vector<BasicMesh::Vertex> vertices;
-    float maxVelocity = 0;
-
     for (auto &line : *lines) {
-        if (line.getPositions().size() <= 1) continue;
+        auto position = line.getPositions().begin();
+        auto velocity = line.getMetaData<dvec3>("velocity").begin();
+
+        auto size = line.getPositions().size();
+        if (size <= 1) continue;
 
         auto indexBuffer = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+
         indexBuffer->add(0);
-        for (auto &&item : util::zip(line.getPositions(), line.getMetaData("velocity"))) {
-            const vec3 pos(item.first());
-            const vec3 v(item.second());
 
-            const float l = glm::length(v);
-            const float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
-            const auto c = vec4(tf_.get().sample(d));
+        for (size_t i = 0; i < size; i++) {
+            vec3 pos(*position);
+            vec3 v(*velocity);
 
+            float l = glm::length(vec3(*velocity));
+            float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
             maxVelocity = std::max(maxVelocity, l);
+            auto c = vec4(tf_.get().sample(d));
+
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
+
             vertices.push_back({pos, glm::normalize(v), pos, c});
+
+            position++;
+            velocity++;
         }
         indexBuffer->add(static_cast<std::uint32_t>(vertices.size() - 1));
     }
+    //}
 
     mesh->addVertices(vertices);
 

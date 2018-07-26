@@ -45,12 +45,10 @@ const ProcessorInfo RBFVectorFieldGenerator3D::processorInfo_{
     "org.inviwo.RBFBased3DVectorFieldGenerator",  // Class identifier
     "RBF Based 3D Vector Field Generator",        // Display name
     "Data Creation",                              // Category
-    CodeState::Experimental,                      // Code state
-    Tags::CPU,                                    // Tags
+    CodeState::Stable,                            // Code state
+    "CPU, Generator",                             // Tags
 };
-const ProcessorInfo RBFVectorFieldGenerator3D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo RBFVectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
 RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     : Processor()
     , volume_("volume")
@@ -113,7 +111,7 @@ void RBFVectorFieldGenerator3D::process() {
         auto x = x_(mt_);
         auto y = x_(mt_);
         auto z = x_(mt_);
-        return std::make_pair(dvec3(x,y,z), randomVector());
+        return std::make_pair(dvec3(x, y, z), randomVector());
     });
 
     if (mesh_.isConnected()) {
@@ -123,7 +121,7 @@ void RBFVectorFieldGenerator3D::process() {
             vec3 p1 = p0 + glm::normalize(vec3(p.second)) * arrowLength_.get();
             auto sphere = meshutil::colorsphere(p0, sphereRadius_.get());
             auto arrow = meshutil::arrow(p0, p1, arrowColor_.get(), sphereRadius_.get() * 0.5f,
-                                          0.15f, sphereRadius_.get());
+                                         0.15f, sphereRadius_.get());
             mesh->append(sphere.get());
             mesh->append(arrow.get());
         }
@@ -199,5 +197,4 @@ dvec3 RBFVectorFieldGenerator3D::randomVector() {
     return v;
 }
 
-}  // namespace
-
+}  // namespace inviwo

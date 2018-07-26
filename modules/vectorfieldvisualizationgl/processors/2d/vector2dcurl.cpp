@@ -37,15 +37,13 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo Vector2DCurl::processorInfo_{
-    "org.inviwo.Vector2DCurl",  // Class identifier
-    "Vector 2D Curl",           // Display name
-    "Vector Field Visualization",    // Category
-    CodeState::Experimental,    // Code state
-    Tags::GL,                   // Tags
+    "org.inviwo.Vector2DCurl",     // Class identifier
+    "Vector 2D Curl",              // Display name
+    "Vector Field Visualization",  // Category
+    CodeState::Experimental,       // Code state
+    Tags::GL,                      // Tags
 };
-const ProcessorInfo Vector2DCurl::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Vector2DCurl::getProcessorInfo() const { return processorInfo_; }
 
 Vector2DCurl::Vector2DCurl()
     : Processor()
@@ -58,7 +56,7 @@ Vector2DCurl::Vector2DCurl()
     addPort(inport_);
     addPort(outport_);
 }
-    
+
 void Vector2DCurl::process() {
     utilgl::activateAndClearTarget(outport_);
 
@@ -66,12 +64,9 @@ void Vector2DCurl::process() {
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
 
-
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-} // namespace
-
-
+}  // namespace inviwo

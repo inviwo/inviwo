@@ -35,13 +35,11 @@ namespace inviwo {
 const ProcessorInfo Vector3DDivergence::processorInfo_{
     "org.inviwo.Vector3DDivergence",  // Class identifier
     "Vector 3D Divergence",           // Display name
-    "Vector Field Visualization",          // Category
-    CodeState::Experimental,          // Code state
+    "Vector Field Visualization",     // Category
+    CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
 };
-const ProcessorInfo Vector3DDivergence::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Vector3DDivergence::getProcessorInfo() const { return processorInfo_; }
 
 Vector3DDivergence::Vector3DDivergence() : VolumeGLProcessor("vector3ddivergence.frag") {
     this->dataFormat_ = DataFloat32::get();
@@ -49,8 +47,6 @@ Vector3DDivergence::Vector3DDivergence() : VolumeGLProcessor("vector3ddivergence
 
 Vector3DDivergence::~Vector3DDivergence() {}
 
-void Vector3DDivergence::postProcess() { }
+void Vector3DDivergence::postProcess() {}
 
-} // namespace
-
-
+}  // namespace inviwo

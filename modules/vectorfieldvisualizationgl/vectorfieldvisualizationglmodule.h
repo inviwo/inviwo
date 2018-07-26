@@ -55,6 +55,6 @@ private:
     };
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VECTORFIELDVISUALIZATIONGLMODULE_H

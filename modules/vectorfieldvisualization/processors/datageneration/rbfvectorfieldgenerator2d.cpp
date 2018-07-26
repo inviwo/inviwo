@@ -45,12 +45,10 @@ const ProcessorInfo RBFVectorFieldGenerator2D::processorInfo_{
     "org.inviwo.RBFVectorFieldGenerator2D",  // Class identifier
     "RBF Based 2D Vector Field Generator",   // Display name
     "Data Creation",                         // Category
-    CodeState::Experimental,                 // Code state
-    Tags::CPU,                               // Tags
+    CodeState::Stable,                       // Code state
+    "CPU, Generator",                        // Tags
 };
-const ProcessorInfo RBFVectorFieldGenerator2D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo RBFVectorFieldGenerator2D::getProcessorInfo() const { return processorInfo_; }
 
 RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     : Processor()
@@ -77,7 +75,10 @@ RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     addProperty(randomness_);
     randomness_.addProperty(useSameSeed_);
     randomness_.addProperty(seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); samples_.clear(); });
+    useSameSeed_.onChange([&]() {
+        seed_.setVisible(useSameSeed_.get());
+        samples_.clear();
+    });
     seed_.onChange([&]() { samples_.clear(); });
 }
 
@@ -162,34 +163,32 @@ void RBFVectorFieldGenerator2D::createSamples() {
     });
 }
 
-void RBFVectorFieldGenerator2D::serialize(Serializer& s) const {
+void RBFVectorFieldGenerator2D::serialize(Serializer &s) const {
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
-    
+
     for (auto sample : samples_) {
         sx.push_back(sample.first);
         sy.push_back(sample.second);
     }
-    
+
     s.serialize("samplesx", sx, "samplex");
     s.serialize("samplesy", sy, "sampley");
 
     Processor::serialize(s);
 }
 
-void RBFVectorFieldGenerator2D::deserialize(Deserializer& d) {
+void RBFVectorFieldGenerator2D::deserialize(Deserializer &d) {
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
     d.deserialize("samplesx", sx, "samplex");
     d.deserialize("samplesy", sy, "sampley");
 
     Processor::deserialize(d);
-    
+
     for (size_t i = 0; i < sx.size(); i++) {
         samples_.emplace_back(sx[i], sy[i]);
     }
-
 }
 
-}  // namespace
-
+}  // namespace inviwo

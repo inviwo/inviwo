@@ -40,11 +40,6 @@
 
 namespace inviwo {
 
-/**
- * \class SeedsFromMaskSequence
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedsFromMaskSequence : public Processor {
 public:
     SeedsFromMaskSequence();
@@ -62,6 +57,6 @@ private:
     FloatProperty randomSampling_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SEEDSFROMMASKSEQUENCE_H

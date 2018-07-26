@@ -10,8 +10,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integralline.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integrallineset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pathlinetracer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ports/seedpointsport.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/seedpointgenerator2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/pathlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamribbons.h
@@ -20,13 +20,13 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointsfrommask.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/discardshortlines.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinetracerprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/seed3dto4d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/seedsfrommasksequence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/integrallineproperties.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/pathlineproperties.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/streamlineproperties.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/streamlinetracer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -37,7 +37,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integralline.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integrallineset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pathlinetracer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/seedpointgenerator2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/pathlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamribbons.cpp
@@ -52,7 +52,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/integrallineproperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/pathlineproperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/streamlineproperties.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/streamlinetracer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

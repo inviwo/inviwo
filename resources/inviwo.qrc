@@ -36,6 +36,7 @@
         <file>icons/precompiled.png</file>
         <file>icons/precompiled-disabled.png</file>
         <file>icons/processor_broken.png</file>
+        <file>icons/processor_deprecated.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
         <file>icons/processor-add.png</file>
