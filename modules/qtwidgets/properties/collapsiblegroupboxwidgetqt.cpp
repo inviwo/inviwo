@@ -427,7 +427,7 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
     const std::string str = "Remove property '" + prop->getDisplayName() + "'";
 
     auto removePropertyBtn =
-        createButton("removeProperty", QIcon(":/stylesheets/images/remove-small.png"), str);
+        createButton("removeProperty", QIcon(":/stylesheets/images/removelistitem.png"), str);
     removePropertyBtn->setFixedSize(QSize(12, 11));
     removePropertyBtn->setIconSize(QSize(10, 9));
 

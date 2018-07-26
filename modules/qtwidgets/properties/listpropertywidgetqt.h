@@ -33,6 +33,11 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 
+#include <inviwo/core/properties/propertyownerobserver.h>
+
+class QMenu;
+class QToolButton;
+
 namespace inviwo {
 
 class ListProperty;
@@ -40,6 +45,13 @@ class IvwPushButton;
 
 /**
  * \class ListPropertyWidgetQt
+ * \brief PropertyWidget for a ListProperty.
+ *
+ * This widget considers the UI flags of the property. If the property supports adding list
+ * elements, a tool button is added next to the property name (indicated by a plus). In case
+ * multiple prefab objects are registered with the property, a menu is shown. Alternatively, new
+ * entries can be added using the context menu. 
+ * List entries can be removed via a small "x" tool button next to them, if enabled.
  */
 class IVW_MODULE_QTWIDGETS_API ListPropertyWidgetQt : public CompositePropertyWidgetQt {
 public:
@@ -50,8 +62,16 @@ public:
 
     virtual bool isChildRemovable() const override;
 
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
+
+    // virtual void onDidAddProperty(Property* property, size_t index) override;
+    // virtual void onDidRemoveProperty(Property* property, size_t index) override;
+
 protected:
+    bool canAddElements() const;
+
     ListProperty* listProperty_;
+    QToolButton* addItemButton_;
 };
 
 }  // namespace inviwo

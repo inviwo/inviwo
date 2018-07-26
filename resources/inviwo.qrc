@@ -60,6 +60,8 @@
         <file>icons/warning-grey.png</file>
         <file>icons/warning.png</file>
         <file>images/splashscreen.png</file>
+        <file>stylesheets/images/addlistitem.png</file>
+        <file>stylesheets/images/addlistitem_disabled.png</file>
         <file>stylesheets/images/arrow_darker_down.png</file>
         <file>stylesheets/images/arrow_darker_right.png</file>
         <file>stylesheets/images/arrow_down-small.png</file>
@@ -76,7 +78,7 @@
         <file>stylesheets/images/dock-help.png</file>
         <file>stylesheets/images/dock-sticky.png</file>
         <file>stylesheets/images/dock-unsticky.png</file>
-        <file>stylesheets/images/remove-small.png</file>
+        <file>stylesheets/images/removelistitem.png</file>
         <file>stylesheets/images/slider.png</file>
         <file>stylesheets/images/slider_disabled.png</file>
         <file>stylesheets/images/slider_hover.png</file>
