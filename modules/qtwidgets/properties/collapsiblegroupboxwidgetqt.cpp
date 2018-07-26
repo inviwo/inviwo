@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 
 #include <warn/push>
@@ -87,24 +88,10 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     // Add the widget as a property owner observer for dynamic property addition and removal
     owner->addObserver(this);
 
-    propertyWidgetGroupLayout_ = new QGridLayout();
-    propertyWidgetGroupLayout_->setAlignment(Qt::AlignTop);
-    propertyWidgetGroupLayout_->setContentsMargins(
-        PropertyWidgetQt::spacing, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
-    propertyWidgetGroupLayout_->setHorizontalSpacing(0);
-    propertyWidgetGroupLayout_->setVerticalSpacing(PropertyWidgetQt::spacing);
-
-    propertyWidgetGroup_ = new QWidget(this);
-    propertyWidgetGroup_->setObjectName("CompositeContents");
-    propertyWidgetGroup_->setLayout(propertyWidgetGroupLayout_);
-
     defaultLabel_ = new QLabel("No properties available");
 
-    propertyWidgetGroupLayout_->addWidget(defaultLabel_, 0, 0);
-    propertyWidgetGroupLayout_->addItem(
-        new QSpacerItem(PropertyWidgetQt::spacing, 1, QSizePolicy::Fixed), 0, 1);
-    propertyWidgetGroupLayout_->setColumnStretch(0, 1);
-    propertyWidgetGroupLayout_->setColumnStretch(1, 0);
+    propertyWidgetGroup_ = createPropertyLayoutWidget().release();
+    propertyWidgetGroupLayout_ = static_cast<QGridLayout*>(propertyWidgetGroup_->layout());
 
     btnCollapse_ = new QToolButton(this);
     btnCollapse_->setObjectName("collapseButton");
@@ -206,38 +193,7 @@ void CollapsibleGroupBoxWidgetQt::setReadOnly(bool readonly) {
 }
 
 void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
-    properties_.push_back(prop);
-    PropertyObserver::addObservation(prop);
-
-    auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
-    if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
-        const int row = propertyWidgetGroupLayout_->rowCount();
-        if (auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget)) {
-            collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
-            // make the collapsible widget go all the way to the right border
-            propertyWidgetGroupLayout_->addWidget(propertyWidget, row, 0, 1, 2);
-        } else {  // not a collapsible widget
-            propertyWidget->setNestedDepth(this->getNestedDepth());
-            // property widget should only be added to the left column of the layout
-            propertyWidgetGroupLayout_->addWidget(propertyWidget, row, 0);
-        }
-
-        if (isChildRemovable()) {
-            addButtonLayout(row, prop);
-        }
-
-        propertyWidgets_.push_back(propertyWidget);
-
-        propertyWidget->setParentPropertyWidget(this);
-        propertyWidget->initState();
-
-    } else {
-        LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
-    }
-
-    auto cols = propertyWidgetGroupLayout_->columnCount();
-    auto count = propertyWidgetGroupLayout_->count();
-    auto rows = propertyWidgetGroupLayout_->rowCount();
+    insertProperty(prop, properties_.size());
 }
 
 std::string CollapsibleGroupBoxWidgetQt::getDisplayName() const { return displayName_; }
@@ -310,82 +266,33 @@ void CollapsibleGroupBoxWidgetQt::setCollapsed(bool collapse) {
 void CollapsibleGroupBoxWidgetQt::updateFromProperty() { oldWidgets_.clear(); }
 
 void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index) {
-    setUpdatesEnabled(false);
-    auto insertPoint = properties_.begin() + index;
-    if (insertPoint != properties_.end()) ++insertPoint;
-
-    properties_.insert(insertPoint, prop);
-    PropertyObserver::addObservation(prop);
-
-    auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
-    if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
-        const int insertPos = static_cast<int>(index) + 1;
-
-        if (auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget)) {
-            collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
-            // make the collapsible widget go all the way to the right border
-            propertyWidgetGroupLayout_->addWidget(propertyWidget, insertPos, 0, 1, 2);
-
-        } else {  // not a collapsible widget
-            propertyWidget->setNestedDepth(this->getNestedDepth());
-            // property widget should only be added to the left column of the layout
-            propertyWidgetGroupLayout_->addWidget(propertyWidget, insertPos, 0);
-        }
-
-        if (isChildRemovable()) {
-            addButtonLayout(insertPos, prop);
-        }
-
-        auto widgetInsertPoint = propertyWidgets_.begin() + index;
-        if (widgetInsertPoint != propertyWidgets_.end()) ++widgetInsertPoint;
-
-        propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
-
-        propertyWidget->setParentPropertyWidget(this);
-        propertyWidget->initState();
-
-    } else {
-        LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
-    }
-    setUpdatesEnabled(true);
+    insertProperty(prop, index);
 }
 
 void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_t index) {
     PropertyWidgetQt* propertyWidget = propertyWidgets_[index];
 
-    if (isChildRemovable()) {
-        const int widgetIndex = propertyWidgetGroupLayout_->indexOf(propertyWidget);
-        int row = 0, col = 0, rowSpan = 0, colSpan = 0;
-        propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan, &colSpan);
+    if (propertyWidget) {
+        if (isChildRemovable()) {
+            const int widgetIndex = propertyWidgetGroupLayout_->indexOf(propertyWidget);
+            int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+            propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
+                                                        &colSpan);
 
-        // remove additional widget containing the removal button
-        if (auto layoutItem = propertyWidgetGroupLayout_->itemAtPosition(row, 2)) {
-            if (auto w = layoutItem->widget()) {
-                propertyWidgetGroupLayout_->removeWidget(w);
-                delete w;
+            // remove additional widget containing the removal button
+            if (auto layoutItem = propertyWidgetGroupLayout_->itemAtPosition(row, 2)) {
+                if (auto w = layoutItem->widget()) {
+                    propertyWidgetGroupLayout_->removeWidget(w);
+                    delete w;
+                }
             }
         }
-    }
 
-    propertyWidgetGroupLayout_->removeWidget(propertyWidget);
+        propertyWidgetGroupLayout_->removeWidget(propertyWidget);
+    }
     propertyWidgets_.erase(propertyWidgets_.begin() + index);
     properties_.erase(properties_.begin() + index);
     delete propertyWidget;
-
-    {
-        // debug
-        std::ostringstream oss;
-        for (int i = 0; i < static_cast<int>(propertyWidgets_.size()); ++i) {
-            int row, col, rowSpan, colSpan;
-            int widgetIndex = propertyWidgetGroupLayout_->indexOf(propertyWidgets_[i]);
-            propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
-                                                        &colSpan);
-            oss << "\n"
-                << std::setw(2) << i << ":   row " << row << ",  col " << col << ",  rowSpan "
-                << rowSpan << ",  colSpan " << colSpan;
-        }
-        LogWarn("Removing property at index " << index << oss.str());
-    }
 
     bool empty = util::all_of(properties_, [](Property* w) { return !w->getVisible(); });
     defaultLabel_->setVisible(empty);
@@ -478,7 +385,31 @@ const std::vector<PropertyWidgetQt*>& CollapsibleGroupBoxWidgetQt::getPropertyWi
 
 void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) { showIfEmpty_ = val; }
 
-void CollapsibleGroupBoxWidgetQt::addButtonLayout(int row, Property* prop) {
+std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget() {
+    auto widget = std::make_unique<QWidget>(this);
+    widget->setObjectName("CompositeContents");
+
+    auto propertyLayout = std::make_unique<QGridLayout>();
+    propertyLayout->setObjectName("PropertyWidgetLayout");
+    propertyLayout->setAlignment(Qt::AlignTop);
+    propertyLayout->setContentsMargins(PropertyWidgetQt::spacing, PropertyWidgetQt::spacing, 0,
+                                       PropertyWidgetQt::spacing);
+    propertyLayout->setHorizontalSpacing(0);
+    propertyLayout->setVerticalSpacing(PropertyWidgetQt::spacing);
+
+    auto layout = propertyLayout.release();
+    widget->setLayout(layout);
+
+    // add default label to widget layout, this will also set the correct stretching and spacing
+    layout->addWidget(defaultLabel_, 0, 0);
+    layout->addItem(new QSpacerItem(PropertyWidgetQt::spacing, 1, QSizePolicy::Fixed), 0, 1);
+    layout->setColumnStretch(0, 1);
+    layout->setColumnStretch(1, 0);
+
+    return widget;
+}
+
+void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, Property* prop) {
     auto createButton = [this](const std::string& objectName, const QIcon& icon,
                                const std::string& tooltip = "") {
         auto button = new QToolButton(this);
@@ -491,21 +422,20 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(int row, Property* prop) {
     };
 
     auto buttonWidget = new QWidget(this);
-    propertyWidgetGroupLayout_->addWidget(buttonWidget, row, 2);
+    layout->addWidget(buttonWidget, row, 2);
 
-    std::string str = "Remove property '" + prop->getDisplayName() + "'";
+    const std::string str = "Remove property '" + prop->getDisplayName() + "'";
 
     auto removePropertyBtn =
         createButton("removeProperty", QIcon(":/stylesheets/images/remove-small.png"), str);
     removePropertyBtn->setFixedSize(QSize(12, 11));
     removePropertyBtn->setIconSize(QSize(10, 9));
 
-    connect(removePropertyBtn, &QToolButton::clicked, this, [this, prop, buttonWidget]() {
-        LogInfo("remove Property: " << prop->getDisplayName());
+    connect(removePropertyBtn, &QToolButton::clicked, this, [this, layout, prop, buttonWidget]() {
         if (prop->getOwner()) {
             prop->getOwner()->removeProperty(prop);
         } else {
-            propertyWidgetGroupLayout_->removeWidget(buttonWidget);
+            layout->removeWidget(buttonWidget);
             delete buttonWidget;
         }
     });
@@ -525,16 +455,125 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(int row, Property* prop) {
             [this, prop]() { LogInfo("move down Property: " << prop->getDisplayName()); });
     */
 
-    auto layout = new QVBoxLayout();
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(removePropertyBtn);
-    // layout->addWidget(moveUpBtn);
-    // layout->addWidget(moveDownBtn);
-    layout->addStretch(1);
+    auto buttonLayout = new QVBoxLayout();
+    buttonLayout->setContentsMargins(0, 0, 0, 0);
+    buttonLayout->setSpacing(0);
+    buttonLayout->addWidget(removePropertyBtn);
+    // buttonLayout->addWidget(moveUpBtn);
+    // buttonLayout->addWidget(moveDownBtn);
+    buttonLayout->addStretch(1);
 
-    buttonWidget->setLayout(layout);
+    buttonWidget->setLayout(buttonLayout);
     buttonWidget->setVisible(prop->getVisible());
+}
+
+void CollapsibleGroupBoxWidgetQt::insertProperty(Property* prop, size_t index) {
+    setUpdatesEnabled(false);
+    util::OnScopeExit enableUpdates([&]() { setUpdatesEnabled(true); });
+
+    const size_t insertIndex = std::min(index + 1, properties_.size());
+    const bool insertAtEnd = (insertIndex == properties_.size());
+
+    auto insertPoint = properties_.begin() + insertIndex;
+    auto widgetInsertPoint = propertyWidgets_.begin() + insertIndex;
+
+    properties_.insert(insertPoint, prop);
+    PropertyObserver::addObservation(prop);
+
+    auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
+    if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
+        propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
+
+        insertPropertyWidget(propertyWidget, insertAtEnd);
+    } else {
+        LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
+
+        // insert empty element to keep property widget vector in sync with property vector
+        propertyWidgets_.insert(widgetInsertPoint, nullptr);
+    }
+}
+
+void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propertyWidget,
+                                                       bool insertAtEnd) {
+    auto addPropertyWidget = [&](QGridLayout* layout, int row, PropertyWidgetQt* widget) {
+        if (auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
+            collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
+            // make the collapsible widget go all the way to the right border
+            layout->addWidget(widget, row, 0, 1, 2);
+
+        } else {  // not a collapsible widget
+            widget->setNestedDepth(this->getNestedDepth());
+            // property widget should only be added to the left column of the layout
+            layout->addWidget(widget, row, 0);
+        }
+
+        if (isChildRemovable()) {
+            addButtonLayout(layout, row, widget->getProperty());
+        }
+
+        widget->setParentPropertyWidget(this);
+        widget->initState();
+    };
+
+    if (insertAtEnd) {
+        // append property widget
+        addPropertyWidget(propertyWidgetGroupLayout_, propertyWidgetGroupLayout_->rowCount(),
+                          propertyWidget);
+    } else {
+        // recreate property widget grid layout from scratch since QGridLayout does not support
+        // inserting rows.
+        //
+        // Assigning another widget to an already occupied grid cell is possible, but the
+        // widgets are put on top of each other.
+        auto layoutWidget = createPropertyLayoutWidget();
+        auto layout = static_cast<QGridLayout*>(layoutWidget->layout());
+
+        util::OnScopeExit freeOldLayout([&]() {
+            // get rid of previous property widget and layout
+            auto parentLayout = [&layoutWidget]() -> QLayout* {
+                if (layoutWidget->parentWidget()) {
+                    return layoutWidget->parentWidget()->layout();
+                } else {
+                    return nullptr;
+                }
+            }();
+
+            if (parentLayout) {
+                parentLayout->removeWidget(propertyWidgetGroup_);
+                parentLayout->addWidget(layoutWidget.get());
+            }
+
+            delete propertyWidgetGroup_;
+            propertyWidgetGroup_ = layoutWidget.release();
+            propertyWidgetGroupLayout_ = layout;
+        });
+
+        for (auto w : propertyWidgets_) {
+            if (!w) continue;
+
+            int insertRow = layout->rowCount();
+            if (w == propertyWidget) {
+                // widget not yet in layout
+                addPropertyWidget(layout, insertRow, w);
+            } else {
+                int widgetIndex = propertyWidgetGroupLayout_->indexOf(w);
+                if (widgetIndex > -1) {
+                    // move widget from previous layout to new layout
+                    int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+                    propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
+                                                                &colSpan);
+                    layout->addWidget(w, insertRow, 0, rowSpan, colSpan);
+
+                    // take care of additional widget containing the removal button
+                    if (auto item = propertyWidgetGroupLayout_->itemAtPosition(row, 2)) {
+                        if (auto buttons = item->widget()) {
+                            layout->addWidget(buttons, insertRow, 2, 1, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 }  // namespace inviwo
