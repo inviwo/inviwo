@@ -33,181 +33,174 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+
+#include <flags/flags.h>
+
+#include <set>
 
 namespace inviwo {
 
+enum class ListPropertyUIFlag {
+    Static = 0x0,   //!< no list modification via UI
+    Add = 0x01,     //!< items can be added to property widget
+    Remove = 0x02,  //!< items can be removed from the property widget
+};
+
+ALLOW_FLAGS_FOR_ENUM(ListPropertyUIFlag)
+
+using ListPropertyUIFlags = flags::flags<ListPropertyUIFlag>;
+
 /**
  * \class ListProperty
- * \brief A property that has specified sub-properties that can be added
- * Represents a List of properties that allows to add and delete items of this list
+ * \brief A property that has specified sub-properties which can be added using the graphical user
+ * interface.
+ *
+ * Represents a list of properties. Properties can be added by using the prefab objects registered
+ * with the list property. The prefab objects serve as templates for instatiating new list entries.
+ *
+ * The UI flags (ListPropertyUIFlags) determine whether the widget will allow to add and/or remove
+ * list entries. The number of list elements is limited by setting maxNumberOfElements. A value of 0
+ * refers to no limit.
+ *
+ * Example:
+ * \code{.cpp}
+ * // using a single prefab object and at most 10 elements
+ * ListProperty listProperty("myListProperty", "My ListProperty",
+ *     std::make_unique<BoolProperty>("boolProp", "BoolProperty", true), 10);
+ *
+ * // multiple prefab objects
+ * ListProperty listProperty("myListProperty", "My List Property",
+ *     []() {
+ *         std::vector<std::unique_ptr<Property>> v;
+ *         v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+ *         v.emplace_back(std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99));
+ *         return v;
+ *     }());
+ * \endcode
+ *
+ * This also works when using different types of properties as prefab objects:
+ * \code{.cpp}
+ * ListProperty listProperty("myListProperty", "My List Property",
+ *     []() {
+ *         std::vector<std::unique_ptr<Property>> v;
+ *         v.emplace_back(std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true));
+ *         v.emplace_back(std::make_unique<TransferFunctionProperty>("tf1", "Transfer Function"));
+ *         v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+ *         return v;
+ *     }());
+ * \endcode
  */
-template <typename T>
-class ListProperty : public CompositeProperty {
-    static_assert(std::is_base_of<Property, T>::value, "T must be a property.");
-public:  
-    ListProperty(std::string identifier, std::string displayName, std::string elementName,
-                 const T& prefab, size_t maxNumberOfElements = 0,
-                 InvalidationLevel = InvalidationLevel::InvalidResources,
+class IVW_CORE_API ListProperty : public CompositeProperty {
+public:
+    using iterator = std::vector<Property*>::iterator;
+    using const_iterator = std::vector<std::unique_ptr<Property>>::const_iterator;
+
+    InviwoPropertyInfo();
+
+    ListProperty(std::string identifier, const std::string& displayName,
+                 size_t maxNumberOfElements = 0,
+                 ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                 PropertySemantics semantics = PropertySemantics::Default);
+    ListProperty(std::string identifier, const std::string& displayName,
+                 std::vector<std::unique_ptr<Property>>&& prefabs, size_t maxNumberOfElements = 0,
+                 ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                 PropertySemantics semantics = PropertySemantics::Default);
+    ListProperty(std::string identifier, const std::string& displayName,
+                 std::unique_ptr<Property>&& prefab, size_t maxNumberOfElements = 0,
+                 ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
     ListProperty(const ListProperty& rhs);
     ListProperty& operator=(const ListProperty& that);
     virtual ListProperty* clone() const override;
     virtual ~ListProperty() = default;
 
-    void addElement();
-    void deleteElement();
-    size_t size() const {
-        return elements_.size();
-    }
+    virtual std::string getClassIdentifierForWidget() const override;
 
-    T& operator[](size_t);
-    const T& operator[](size_t) const;
+    virtual void set(const Property* src) override;
+    void set(const ListProperty* src);
 
-    size_t maxNumElements_;
-    OptionPropertyString elementSelection_;
-    CompositeProperty elements_;
+    /**
+     * \brief set the max number of list elements. This will remove additional properties if the
+     * list property contains more than \p n items.
+     *
+     * @param n    maximum number of elements in this list property
+     */
+    void setMaxNumberOfElements(size_t n);
+    size_t getMaxNumberOfElements() const;
+
+    /** 
+     * \brief remove all list entries
+     */
+    void clear();
+
+    /**
+     * \brief add a list entry which is created from the respective prefab object.
+     * This function has no effect if the list size will exceed the maximum number of elements.
+     *
+     * @param prefabIndex   index of prefab object used for creating the new entry
+     * @throw RangeException  in case prefabIndex is invalid
+     */
+    void addProperty(size_t prefabIndex);
+
+    /**
+     * \brief add \p property as new list entry. The type of the property must match one of the
+     * prefab objects. This function has no effect if the list size will exceed the maximum number
+     * of elements.
+     *
+     * @param property     property to be added
+     * @param owner        if true, the list property takes ownership of the property
+     * @throw Exception    if the type of \p property does not match any prefab object
+     */
+    virtual void addProperty(Property* property, bool owner = true) override;
+
+    /**
+     * \brief add \p property as new list entry. The type of the property must match one of the
+     * prefab objects. This function has no effect if the list size will exceed the maximum number
+     * of elements.
+     *
+     * @param property     property to be added
+     * @throw Exception    if the type of \p property does not match any prefab object
+     */
+    virtual void addProperty(Property& property) override;
+
+    virtual Property* removeProperty(const std::string& identifier) override;
+    virtual Property* removeProperty(Property* property) override;
+    virtual Property* removeProperty(Property& property) override;
+    virtual Property* removeProperty(size_t index) override;
+
+    /**
+     * \brief return number of prefab objects
+     *
+     * @return count of prefabs
+     */
+    size_t getPrefabCount() const;
+
+    /**
+     * \brief add a new prefab object \p p to be used as template when instantiating new list
+     * elements
+     *
+     * @param p  prefab object
+     */
+    void addPrefab(std::unique_ptr<Property>&& p);
+
+    const std::vector<std::unique_ptr<Property>>& getPrefabs() const;
+
+    ListPropertyUIFlags getUIFlags() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    std::string elementName_;
-    const T prefab_;
-    ButtonProperty addElementButton_;
-    ButtonProperty deleteElementButton_;
+    std::set<std::string> getPrefabIDs() const;
+
+    ListPropertyUIFlags uiFlags_;
+    ValueWrapper<size_t> maxNumElements_;
+    std::vector<std::unique_ptr<Property>> prefabs_;
 };
-
-template <typename T>
-const T& ListProperty<T>::operator[](size_t i) const {
-    return *static_cast<const T*>(elements_[i]);
-}
-
-template <typename T>
-T& ListProperty<T>::operator[](size_t i) {
-    return *static_cast<T*>(elements_[i]);
-}
-
-template <typename T>
-ListProperty<T>::ListProperty(std::string identifier, std::string displayName,
-                              std::string elementName, const T& prefab,
-                              size_t maxNumberOfElements, InvalidationLevel invalidationLevel,
-                              PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , maxNumElements_(maxNumberOfElements)
-    , elementSelection_("elementSelection", "Element Selection")
-    , elements_("lightsContainer", "Lights") 
-    , elementName_(elementName)
-    , prefab_(prefab)
-    , addElementButton_("addElement", "Add Element", InvalidationLevel::InvalidResources)
-    , deleteElementButton_("deleteElement", "Delete Element", InvalidationLevel::InvalidResources) {
-
-    addElementButton_.onChange(this, &ListProperty<T>::addElement);
-    deleteElementButton_.onChange(this, &ListProperty<T>::deleteElement);
-
-    addProperty(elementSelection_);
-    addProperty(deleteElementButton_);
-    addProperty(addElementButton_);
-    addProperty(elements_);
-}
-
-template <typename T>
-ListProperty<T>::ListProperty(const ListProperty<T>& rhs)
-    : CompositeProperty(rhs)
-    , maxNumElements_(rhs.maxNumElements_)
-    , elementSelection_(rhs.elementSelection_)
-    , elements_(rhs.elements_) 
-    , elementName_(rhs.elementName_)
-    , prefab_(rhs.prefab_)
-    , addElementButton_(rhs.addElementButton_)
-    , deleteElementButton_(rhs.deleteElementButton_) {
-
-    addElementButton_.onChange(this, &ListProperty<T>::addElement);
-    deleteElementButton_.onChange(this, &ListProperty<T>::deleteElement);
-
-    addProperty(elementSelection_);
-    addProperty(deleteElementButton_);
-    addProperty(addElementButton_);
-    addProperty(elements_);
-}
-
-template <typename T>
-ListProperty<T>& ListProperty<T>::operator=(const ListProperty<T>& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        maxNumElements_ = that.maxNumElements_;
-        elementSelection_ = that.elementSelection_;
-        elements_ = that.elements_;
-        elementName_ = that.elementName_;
-        addElementButton_ = that.addElementButton_;
-        deleteElementButton_ = that.deleteElementButton_;
-    }
-    return *this;
-}
-
-template <typename T>
-ListProperty<T>* ListProperty<T>::clone() const {
-    return new ListProperty<T>(*this);
-}
-
-template <typename T>
-void ListProperty<T>::addElement() {
-    if (size() < maxNumElements_ || maxNumElements_ == 0) {
-
-        std::string num = std::to_string(size() + 1);
-
-        elementSelection_.addOption("elementOption_" + num, elementName_ + " " + num);
-
-        T* property = prefab_.clone();
-        property->setSerializationMode(PropertySerializationMode::All);
-        property->setIdentifier("element_" + num);
-        property->setDisplayName(elementName_ + " " + num);
-        elements_.addProperty(property, true);
-    } else {
-        LogInfo("The maximum number of elements is reached.");
-    }
-}
-
-template <typename T>
-void ListProperty<T>::deleteElement() {
-    if (size() <= 0) return;
-
-    size_t selectedElement = elementSelection_.getSelectedIndex();
-
-    std::string identifier = elements_.getProperties().at(selectedElement)->getIdentifier();
-    elements_.removeProperty(identifier);
-    elementSelection_.removeOption(selectedElement);
-
-    auto afterDeletion = elements_.getProperties();
-
-    size_t loopCount = 1;
-    for (Property* prop : afterDeletion) {
-        T* casted = static_cast<T*>(prop);
-        casted->setDisplayName(elementName_ + " " + std::to_string(loopCount));
-        casted->setIdentifier("element_" + std::to_string(loopCount));
-        loopCount++;
-    }
-
-    elementSelection_.clearOptions();
-
-    for (size_t i = 1; i < afterDeletion.size() + 1; i++) {
-        std::string str_i = std::to_string(i);
-        elementSelection_.addOption("elementOption_" + str_i, elementName_ + " " + str_i);
-    }
-}
-
-template <typename T>
-void ListProperty<T>::serialize(Serializer& s) const {
-    CompositeProperty::serialize(s);
-    s.serialize("maxNumElements", maxNumElements_);
-}
-
-template <typename T>
-void ListProperty<T>::deserialize(Deserializer& d) {
-    CompositeProperty::deserialize(d);
-    d.deserialize("maxNumElements", maxNumElements_);
-}
 
 }  // namespace inviwo
 

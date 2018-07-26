@@ -74,6 +74,7 @@
 #include <inviwo/core/properties/imageeditorproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -300,6 +301,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<DoubleQuaternionProperty>();
     registerProperty<IsoValueProperty>();
     registerProperty<IsoTFProperty>();
+    registerProperty<ListProperty>();
     registerProperty<OptionPropertyDouble>();
     registerProperty<OptionPropertyFloat>();
     registerProperty<OptionPropertyInt>();

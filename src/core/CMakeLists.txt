@@ -475,6 +475,7 @@ set(SOURCE_FILES
     properties/imageeditorproperty.cpp
     properties/isotfproperty.cpp
     properties/isovalueproperty.cpp
+    properties/listproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp
