@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-enum class CodeState { Broken, Experimental, Stable };
+enum class CodeState { Broken, Experimental, Stable, Deprecated };
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, CodeState cs) {
@@ -48,6 +48,9 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
             break;
         case CodeState::Stable:
             ss << "Stable";
+            break;
+        case CodeState::Deprecated:
+            ss << "Deprecated";
             break;
         default:
             ss << "Not specified";

@@ -114,6 +114,7 @@ private:
     QIcon iconStable_;
     QIcon iconExperimental_;
     QIcon iconBroken_;
+    QIcon iconDeprecated_;
 
     HelpWidget* helpWidget_;
 

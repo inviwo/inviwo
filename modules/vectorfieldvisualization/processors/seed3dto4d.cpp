@@ -36,8 +36,8 @@ const ProcessorInfo Seed3Dto4D::processorInfo_{
     "org.inviwo.Seed3Dto4D",  // Class identifier
     "Seed3Dto4D",             // Display name
     "Seeding",                // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    CodeState::Stable,        // Code state
+    Tags::CPU,                // Tags
 };
 const ProcessorInfo Seed3Dto4D::getProcessorInfo() const { return processorInfo_; }
 
@@ -53,14 +53,16 @@ Seed3Dto4D::Seed3Dto4D()
 }
 
 void Seed3Dto4D::process() {
-    auto inData = seed3d_.getData();
-    auto inVec = *inData;
+
     auto outvec = std::make_shared<SeedPoint4DVector>();
-    outvec->reserve(inVec.size());
-    for (const auto &p : inVec) {
-        outvec->emplace_back(p, w_.get());
+    for (auto &inData : seed3d_.getVectorData()) {
+        const auto &inVec = *inData;
+        outvec->reserve(inVec.size());
+        for (const auto &p : inVec) {
+            outvec->emplace_back(p, w_.get());
+        }
     }
     seed4d_.setData(outvec);
 }
 
-}  // namespace
+}  // namespace inviwo

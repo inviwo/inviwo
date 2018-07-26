@@ -105,14 +105,14 @@ void AxisRendererBase::renderAxis(Camera* camera, const size2_t& outputDims, boo
     // draw major ticks
     if (majorTicksMesh_) {
         majorTicksMesh_->setWorldMatrix(m);
-        drawMesh(majorTicksMesh_->getRepresentation<MeshGL>(), 
+        drawMesh(majorTicksMesh_->getRepresentation<MeshGL>(),
                  property_.ticks_.majorTicks_.tickWidth_.get(), true);
     }
 
     // draw minor ticks
     if (minorTicksMesh_) {
         minorTicksMesh_->setWorldMatrix(m);
-        drawMesh(minorTicksMesh_->getRepresentation<MeshGL>(), 
+        drawMesh(minorTicksMesh_->getRepresentation<MeshGL>(),
                  property_.ticks_.minorTicks_.tickWidth_.get(), true);
     }
 
@@ -231,8 +231,7 @@ void AxisRendererBase::updateCaptionTexture() {
     textRenderer_.setFontSize(property_.caption_.font_.fontSize_.get());
 
     axisCaptionTex_ = util::createTextTexture(textRenderer_, property_.caption_.title_.get(),
-                                              property_.caption_.font_.fontSize_.get(),
-                                              property_.caption_.color_.get());
+                                              property_.caption_.color_);
 }
 
 void AxisRendererBase::updateLabelAtlas() {
@@ -305,20 +304,17 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
         const vec2 texDims(axisCaptionTex_->getDimensions());
         const auto anchor(property_.caption_.font_.anchorPos_.get());
 
-        mat4 m;
-        vec2 offset;
-        if (property_.orientation_.get() == AxisProperty::Orientation::Vertical) {
-            // rotate labels for vertical axis by 90 degree ccw.
-            m = glm::rotate(glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f));
+        const auto rotation = property_.orientation_ == AxisProperty::Orientation::Vertical
+                                  ? glm::rotate(glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f))
+                                  : glm::mat4{1};
 
-            // need to invert anchor.x due to rotation
-            offset = vec2(-texDims.y, texDims.x) * 0.5f * (vec2(-anchor.x, anchor.y) + vec2(1.0f));
-        } else {
-            offset = texDims * 0.5f * (anchor + vec2(1.0f));
-        }
+        const auto offset =
+            property_.orientation_ == AxisProperty::Orientation::Vertical
+                ? vec2(-texDims.y, texDims.x) * 0.5f * (vec2(-anchor.x, anchor.y) + vec2(1.0f))
+                : texDims * 0.5f * (anchor + vec2(1.0f));
 
         const ivec2 posi(plot::getAxisCaptionPosition(property_, startPos, endPos) - offset);
-        quadRenderer_.render(axisCaptionTex_, posi, outputDims, m);
+        quadRenderer_.render(axisCaptionTex_, posi, outputDims, rotation);
     }
 
     // axis labels
@@ -410,8 +406,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
         const vec2 texDims(axisCaptionTex_->getDimensions());
         const auto anchor(property_.caption_.font_.anchorPos_.get());
 
-        const vec3 pos(
-            plot::getAxisCaptionPosition3D(property_, startPos, endPos, tickDirection));
+        const vec3 pos(plot::getAxisCaptionPosition3D(property_, startPos, endPos, tickDirection));
 
         quadRenderer_.renderToRect3D(*camera, axisCaptionTex_, pos,
                                      ivec2(axisCaptionTex_->getDimensions()), outputDims, anchor);
@@ -431,8 +426,9 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
         // render axis labels
         const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
         const auto& renderInfo = labelTexAtlas_.getRenderInfo();
-        quadRenderer_.renderToRect3D(*camera, labelTexAtlas_.getTexture(), labelPos_, renderInfo.size,
-                                     renderInfo.texTransform, outputDims, anchorPos);
+        quadRenderer_.renderToRect3D(*camera, labelTexAtlas_.getTexture(), labelPos_,
+                                     renderInfo.size, renderInfo.texTransform, outputDims,
+                                     anchorPos);
     }
 }
 
@@ -455,8 +451,7 @@ void AxisRenderer3D::invalidateLabelPositions() { labelPos_.clear(); }
 
 void AxisRenderer3D::updateLabelPositions(const vec3& startPos, const vec3& endPos,
                                           const vec3& tickDirection) {
-    const auto& tickmarks =
-        plot::getLabelPositions3D(property_, startPos, endPos, tickDirection);
+    const auto& tickmarks = plot::getLabelPositions3D(property_, startPos, endPos, tickDirection);
     labelPos_.resize(tickmarks.size());
 
     std::transform(tickmarks.begin(), tickmarks.end(), labelPos_.begin(),

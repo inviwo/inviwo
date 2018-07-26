@@ -39,26 +39,22 @@ namespace inviwo {
 const ProcessorInfo Vector2DMagnitude::processorInfo_{
     "org.inviwo.Vector2DMagnitude",  // Class identifier
     "Vector 2D Magnitude",           // Display name
-    "Vector Field Visualization",         // Category
-    CodeState::Experimental,         // Code state
+    "Vector Field Visualization",    // Category
+    CodeState::Stable,               // Code state
     Tags::GL,                        // Tags
 };
-const ProcessorInfo Vector2DMagnitude::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Vector2DMagnitude::getProcessorInfo() const { return processorInfo_; }
 
 Vector2DMagnitude::Vector2DMagnitude()
     : Processor()
-    , inport_("inport",true)
-    , outport_("outport",DataFloat32::get())
-    , shader_("vector2dmagnitude.frag")
-{
-    
+    , inport_("inport", true)
+    , outport_("outport", DataFloat32::get())
+    , shader_("vector2dmagnitude.frag") {
+
     addPort(inport_);
     addPort(outport_);
-
 }
-    
+
 void Vector2DMagnitude::process() {
     utilgl::activateAndClearTarget(outport_);
     outport_.getEditableData()->getColorLayer()->setSwizzleMask(swizzlemasks::luminance);
@@ -67,12 +63,9 @@ void Vector2DMagnitude::process() {
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
 
-
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-} // namespace
-
-
+}  // namespace inviwo

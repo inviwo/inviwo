@@ -323,6 +323,15 @@ protected:
 
     FontFamilyStyle getFontTuple() const;
 
+    std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState,
+               utilgl::Activate<FrameBufferObject>>
+    setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTexture);
+
+    std::string::const_iterator validateString(const std::string &str) const;
+
+    static constexpr char lf = '\n';   // Line Feed Ascii for std::endl, \n
+    static constexpr char tab = '\t';  // Tab Ascii
+
     std::unordered_map<FontFamilyStyle, FontCache> glyphAtlas_;
 
     FT_Library fontlib_;
@@ -365,7 +374,7 @@ namespace util {
  * @return text texture object referring to both texture and corresponding bounding box
  */
 IVW_MODULE_FONTRENDERING_API TextTextureObject
-createTextTextureObject(TextRenderer &textRenderer, std::string text, int fontSize, vec4 fontColor,
+createTextTextureObject(TextRenderer &textRenderer, std::string text, vec4 fontColor,
                         std::shared_ptr<Texture2D> tex = nullptr);
 
 /**
@@ -377,7 +386,7 @@ createTextTextureObject(TextRenderer &textRenderer, std::string text, int fontSi
  *
  * The size of the texture will be the smallest possible for the given text and the pixels
  * containing no text will have zero alpha.
- * 
+ *
  * For correct alignment of the baseline, the position of where this texture will be rendered
  * must be adjusted by pos + computeBoundingBox(text).glyphsOrigin.
  * See also TextOverlayGL::process() as an example.
@@ -390,7 +399,7 @@ createTextTextureObject(TextRenderer &textRenderer, std::string text, int fontSi
  * @return texture containing the text
  */
 IVW_MODULE_FONTRENDERING_API std::shared_ptr<Texture2D> createTextTexture(
-    TextRenderer &textRenderer, std::string text, int fontSize, vec4 fontColor,
+    TextRenderer &textRenderer, std::string text, vec4 fontColor,
     std::shared_ptr<Texture2D> tex = nullptr);
 
 }  // namespace util

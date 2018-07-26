@@ -32,34 +32,10 @@
 
 namespace inviwo {
 
-IntegralLine::IntegralLine()
-    : positions_(), metaData_(), terminationReason_(TerminationReason::Steps) , length_(-1)
-{}
-
-IntegralLine::IntegralLine(const IntegralLine &rhs)
-    : positions_(rhs.positions_)
-    , metaData_(rhs.metaData_)
-    , terminationReason_(rhs.terminationReason_)
-    , length_(rhs.length_)
-    , idx_(rhs.idx_) {}
-
-inviwo::IntegralLine &IntegralLine::operator=(const IntegralLine &that) {
-    if (&that != this) {
-        positions_ = that.positions_;
-        metaData_ = that.metaData_;
-        terminationReason_ = that.terminationReason_;
-        length_ = that.length_;
-        idx_ = that.idx_;
-    }
-    return *this;
-}
-
-IntegralLine::~IntegralLine() {}
-
 const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
 std::vector<dvec3> &IntegralLine::getPositions() { return positions_; }
 
-const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
+std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::string &name) const {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception("No meta data with name: " + name, IvwContext);
@@ -67,26 +43,35 @@ const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) con
     return it->second;
 }
 
-std::vector<dvec3>& IntegralLine::getMetaData(const std::string & name) {
+std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string &name) {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
-        metaData_.emplace(name, std::vector<dvec3>());
-        return metaData_.find(name)->second;
+        throw Exception("No meta data with name: " + name, IvwContext);
     }
     return it->second;
 }
 
-std::vector<dvec3> & IntegralLine::createMetaData(const std::string &name)
-{
+void IntegralLine::addMetaDataBuffer(const std::string &name, std::shared_ptr<BufferBase> buffer) {
     auto it = metaData_.find(name);
     if (it != metaData_.end()) {
-        throw Exception("Meta data already exists: " + name, IvwContext);
+        throw Exception("Meta data with name already exists: " + name, IvwContext);
     }
-    return metaData_[name];
+    metaData_[name] = buffer;
 }
 
-bool IntegralLine::hasMetaData(const std::string &name) const
-{
+void IntegralLine::reverse() {
+    std::reverse(positions_.begin(), positions_.end());
+    for (auto &m : metaData_) {
+        util::reverse(*m.second);
+    }
+}
+
+const std::map<std::string, std::shared_ptr<BufferBase>> &IntegralLine::getMetaDataBuffers()
+    const {
+    return metaData_;
+}
+
+bool IntegralLine::hasMetaData(const std::string &name) const {
     auto it = metaData_.find(name);
     return it != metaData_.end();
 }
@@ -101,7 +86,6 @@ std::vector<std::string> IntegralLine::getMetaDataKeys() const {
 
 double IntegralLine::getLength() const {
     if (length_ == -1) {
-
         length_ = 0;
         if (positions_.size() > 1) {
             auto next = positions_.begin();
@@ -115,18 +99,21 @@ double IntegralLine::getLength() const {
     return length_;
 }
 
-double IntegralLine::distBetweenPoints(size_t a, size_t b)const {
-    if(a==b) return 0;
-    if(a>b) return distBetweenPoints(b,a);
-    return calcLength( positions_.begin()+a,positions_.begin()+b+1 );
+double IntegralLine::distBetweenPoints(size_t a, size_t b) const {
+    if (a == b) return 0;
+    if (a > b) return distBetweenPoints(b, a);
+    return calcLength(positions_.begin() + a, positions_.begin() + b + 1);
 }
 
 dvec3 IntegralLine::getPointAtDistance(double d) const {
-    if (d<0 || d > getLength()) {
+    if (d < 0 || d > getLength()) {
         return dvec3(0);
     }
+    if (d == 0) {
+        return positions_.front();
+    }
 
-    double distPrev = 0,distNext = 0;
+    double distPrev = 0, distNext = 0;
     auto next = positions_.begin();
     auto prev = next;
     while (distNext < d) {
@@ -134,13 +121,29 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
         distPrev = distNext;
         distNext += glm::distance(*prev, *next);
     }
-    
+
     double x = (d - distPrev) / (distNext - distPrev);
     return Interpolation<dvec3, double>::linear(*prev, *next, x);
+}
 
+size_t IntegralLine::getIndex() const { return idx_; }
 
+void IntegralLine::setIndex(size_t idx) { idx_ = idx; }
 
+void IntegralLine::setBackwardTerminationReason(TerminationReason terminationReason) {
+    backwardTerminationReason_ = terminationReason;
+}
 
+void IntegralLine::setForwardTerminationReason(TerminationReason terminationReason) {
+    forwardTerminationReason_ = terminationReason;
+}
+
+IntegralLine::TerminationReason IntegralLine::getBackwardTerminationReason() const {
+    return forwardTerminationReason_;
+}
+
+IntegralLine::TerminationReason IntegralLine::getForwardTerminationReason() const {
+    return backwardTerminationReason_;
 }
 
 double IntegralLine::calcLength(std::vector<dvec3>::const_iterator start,
@@ -157,4 +160,4 @@ double IntegralLine::calcLength(std::vector<dvec3>::const_iterator start,
     return length;
 }
 
-}  // namespace
+}  // namespace inviwo

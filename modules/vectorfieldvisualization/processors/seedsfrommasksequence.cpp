@@ -43,8 +43,8 @@ const ProcessorInfo SeedsFromMaskSequence::processorInfo_{
     "org.inviwo.SeedsFromMaskSequence",  // Class identifier
     "Seeds From Mask Sequence",          // Display name
     "Seed Points",                       // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+    CodeState::Stable,                   // Code state
+    Tags::CPU,                           // Tags
 };
 const ProcessorInfo SeedsFromMaskSequence::getProcessorInfo() const { return processorInfo_; }
 
@@ -95,4 +95,4 @@ void SeedsFromMaskSequence::process() {
     seeds_.setData(outvec);
 }
 
-}  // namespace
+}  // namespace inviwo

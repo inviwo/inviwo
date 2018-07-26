@@ -34,20 +34,22 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/imagesampler.h>
 #include <inviwo/core/util/zip.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
+#include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo StreamRibbons::processorInfo_{
-    "org.inviwo.StreamRibbons",    // Class identifier
-    "Stream Ribbons",              // Display name
-    "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
-    Tags::CPU,                     // Tags
+const ProcessorInfo StreamRibbonsDeprecated::processorInfo_{
+    "org.inviwo.StreamRibbonsDeprecated",  // Class identifier
+    "Stream Ribbons (Deprecated)",         // Display name
+    "Vector Field Visualization",          // Category
+    CodeState::Deprecated,                 // Code state
+    Tags::CPU,                             // Tags
 };
-const ProcessorInfo StreamRibbons::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo StreamRibbonsDeprecated::getProcessorInfo() const { return processorInfo_; }
 
-StreamRibbons::StreamRibbons()
+StreamRibbonsDeprecated::StreamRibbonsDeprecated()
     : Processor()
     , sampler_("sampler")
     , vorticitySampler_("vorticitySampler")
@@ -107,23 +109,25 @@ StreamRibbons::StreamRibbons()
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
     addProperty(maxVorticity_);
+
+    LogWarn(
+        "This Stream Ribbons Processor is Deprecated, use the new Stream Lines processor together "
+        "with the IntegralLineToMesh processor.");
 }
 
-void StreamRibbons::process() {
+void StreamRibbonsDeprecated::process() {
     auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double>> {
-        if (sampler_.isConnected()) {
+        if (sampler_.isConnected())
             return sampler_.getData();
-        } else {
+        else
             return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
-        }
     }();
 
-    auto vorticitySampler = [&]() -> std::shared_ptr<const SpatialSampler<3, 3, double>> {
-        if (vorticitySampler_.isConnected()) {
+    auto vorticitySampler = [&]() -> std::shared_ptr<const StreamLine3DTracer::Sampler> {
+        if (vorticitySampler_.isConnected())
             return vorticitySampler_.getData();
-        } else {
+        else
             return std::make_shared<VolumeDoubleSampler<3>>(vorticityVolume_.getData());
-        }
     }();
 
     auto mesh = std::make_shared<BasicMesh>();
@@ -132,91 +136,88 @@ void StreamRibbons::process() {
 
     auto m =
         streamLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
-
-    StreamLineTracer tracer(sampler, streamLineProperties_);
-    ImageSampler tf(tf_.get().getData());
-    tracer.addMetaSampler("vorticity", vorticitySampler);
-
-    const std::function<vec4(double, double, size_t)> coloring =
-        [&]() -> std::function<vec4(double, double, size_t)> {
-        switch (coloringMethod_.get()) {
-            case ColoringMethod::Vorticity: {
-                return [&](double vortictyMagnitude, double /*velocityMagnitude*/, size_t /*lineId*/) {
-                    auto d = glm::clamp(
-                        static_cast<float>(vortictyMagnitude) / velocityScale_.get(), 0.0f, 1.0f);
-                    return vec4(tf.sample(dvec2(d, 0.0)));
-                };
-            }
-            case ColoringMethod::ColorPort:
-                if (colors_.hasData()) {
-                    return [&](double /*vortictyMagnitude*/, double /*velocityMagnitude*/, size_t lineId) {
-                        if (lineId < colors_.getData()->size()) {
-                            return (*colors_.getData())[lineId];
-                        } else if (lineId == colors_.getData()->size()) {
-                            LogWarn(
-                                "The vector of colors is smaller then the vector of seed points");
-                            return colors_.getData()->back();
-                        } else {
-                            return colors_.getData()->back();
-                        }
-
-                    };
-                } else {
-                    LogWarn(
-                        "No colors in the color port, using velocity for coloring "
-                        "instead ");
-                }
-            default:
-            case ColoringMethod::Velocity: {
-                return [&](double /*vortictyMagnitude*/, double velocityMagnitude, size_t /*lineId*/) {
-                    auto d = glm::clamp(
-                        static_cast<float>(velocityMagnitude) / velocityScale_.get(), 0.0f, 1.0f);
-                    return vec4(tf.sample(dvec2(d, 0.0)));
-                };
-            }
-        }
-    }();
-
-    std::vector<BasicMesh::Vertex> vertices;
     double maxVelocity = 0;
     double maxVorticity = 0;
+    StreamLine3DTracer tracer(sampler, streamLineProperties_);
+    ImageSampler tf(tf_.get().getData());
+    tracer.addMetaDataSampler("vorticity", vorticitySampler);
+    //  mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
+    mat3 invBasis;
+    std::vector<BasicMesh::Vertex> vertices;
+
+    bool hasColors = colors_.hasData();
     size_t lineId = 0;
 
-    for (const auto& seeds : seedPoints_) {
-        for (auto& p : *seeds) {
+    for (const auto &seeds : seedPoints_) {
+        for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
-            auto line = tracer.traceFrom(vec3(P));
+            IntegralLine line = tracer.traceFrom(vec3(P));
+
+            auto position = line.getPositions().begin();
+            auto velocity = line.getMetaData<dvec3>("velocity").begin();
+            auto vorticity = line.getMetaData<dvec3>("vorticity").begin();
+
             auto size = line.getPositions().size();
             if (size <= 1) continue;
-
             auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
-            indexBuffer->getDataContainer().reserve(size * 2);
+            indexBuffer->getDataContainer().reserve(size);
 
-            for (auto&& item : util::zip(line.getPositions(), line.getMetaData("velocity"),
-                                         line.getMetaData("vorticity"))) {
-                const auto& position = item.first();
-                const auto& velocity = item.second();
-                const auto& vorticity = item.third();
+            vec4 c;
+            if (hasColors) {
+                if (lineId >= colors_.getData()->size()) {
+                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                } else {
+                    c = colors_.getData()->at(lineId);
+                }
+            }
+            lineId++;
 
-                auto vort = glm::normalize(vec3(vorticity));
-                const auto velo = glm::normalize(vec3(velocity));
-                const auto N = glm::normalize(glm::cross(vort, velo));
+            for (size_t i = 0; i < size; i++) {
+                auto vort = invBasis * glm::normalize(vec3(*vorticity));
+                auto velo = invBasis * glm::normalize(vec3(*velocity));
+                auto N = glm::normalize(glm::cross(vort, velo));
                 vort *= (0.5f * ribbonWidth_.get());
-                const auto velocityMagnitude = glm::length(velocity);
-                const auto vortictyMagnitude = glm::length(vorticity);
+                auto velocityMagnitude = glm::length(*velocity);
+                auto vortictyMagnitude = glm::length(*vorticity);
 
                 maxVelocity = std::max(maxVelocity, velocityMagnitude);
                 maxVorticity = std::max(maxVorticity, vortictyMagnitude);
 
-                const vec3 p0 = vec3(position) - vort;
-                const vec3 p1 = vec3(position) + vort;
-                const vec4 c = coloring(vortictyMagnitude, velocityMagnitude, lineId);
+                vec3 p0 = vec3(*position) - vort;
+                vec3 p1 = vec3(*position) + vort;
+
+                float d;
+                switch (coloringMethod_.get()) {
+                    case ColoringMethod::Vorticity:
+                        d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
+                                       0.0f, 1.0f);
+                        c = vec4(tf.sample(dvec2(d, 0.0)));
+                        break;
+                    case ColoringMethod::ColorPort:
+                        if (hasColors) {
+                            break;
+                        } else {
+                            LogWarn(
+                                "No colors in the color port, using velocity for coloring "
+                                "instead ");
+                        }
+                    case ColoringMethod::Velocity:
+                        d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
+                                       0.0f, 1.0f);
+                        c = vec4(tf.sample(dvec2(d, 0.0)));
+                    default:
+                        break;
+                }
+
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size() + 1));
                 vertices.push_back({p0, N, p0, c});
                 vertices.push_back({p1, N, p1, c});
+
+                position++;
+                velocity++;
+                vorticity++;
             }
-            lineId++;
         }
 
         maxVelocity_.set(toString(maxVelocity));

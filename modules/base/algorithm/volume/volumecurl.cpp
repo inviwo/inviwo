@@ -44,10 +44,10 @@ std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
 }
 
 std::unique_ptr<Volume> curlVolume(const Volume& volume) {
-    auto newVolume = std::make_unique<Volume>(volume.getDimensions(), DataVec3Float32::get());
+    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume.getDimensions());
+    auto newVolume = std::make_unique<Volume>(newVolumeRep);
     newVolume->setModelMatrix(volume.getModelMatrix());
     newVolume->setWorldMatrix(volume.getWorldMatrix());
-
     newVolume->dataMap_ = volume.dataMap_;
 
     const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
@@ -62,53 +62,44 @@ std::unique_ptr<Volume> curlVolume(const Volume& volume) {
 
     volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>(
         [&](auto vol) {
-            IVW_UNUSED_PARAM(vol);
             using ValueType = util::PrecsionValueType<decltype(vol)>;
             using ComponentType = typename ValueType::value_type;
 
             util::IndexMapper3D index(volume.getDimensions());
-            auto data =
-                static_cast<vec3*>(newVolume->getEditableRepresentation<VolumeRAM>()->getData());
+            auto data = newVolumeRep->getDataTyped();
             float minV = std::numeric_limits<float>::max();
             float maxV = std::numeric_limits<float>::lowest();
 
             const auto worldSpace = TemplateVolumeSampler<ValueType, ComponentType>::Space::World;
-            TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
+            const TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
 
-            auto func = [&](const size3_t& pos) {
+            util::forEachVoxel(*vol, [&](const size3_t& pos) {
                 const vec3 world{m *
                                  vec4(vec3(pos) / vec3(volume.getDimensions() - size3_t(1)), 1)};
 
-                auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
-                auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
-                auto Fyp = static_cast<vec3>(sampler.sample(world + oy));
-                auto Fym = static_cast<vec3>(sampler.sample(world - oy));
-                auto Fzp = static_cast<vec3>(sampler.sample(world + oz));
-                auto Fzm = static_cast<vec3>(sampler.sample(world - oz));
+                const auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
+                const auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
+                const auto Fyp = static_cast<vec3>(sampler.sample(world + oy));
+                const auto Fym = static_cast<vec3>(sampler.sample(world - oy));
+                const auto Fzp = static_cast<vec3>(sampler.sample(world + oz));
+                const auto Fzm = static_cast<vec3>(sampler.sample(world - oz));
 
                 const vec3 Fx = (Fxp - Fxm) / (2.0f * spacing.x);
                 const vec3 Fy = (Fyp - Fym) / (2.0f * spacing.y);
                 const vec3 Fz = (Fzp - Fzm) / (2.0f * spacing.z);
 
-                vec3 c;
-                c.x = static_cast<float>(Fy.z - Fz.y);
-                c.y = static_cast<float>(Fz.x - Fx.z);
-                c.z = static_cast<float>(Fx.y - Fy.x);
+                const vec3 c{Fy.z - Fz.y, Fz.x - Fx.z, Fx.y - Fy.x};
 
                 minV = std::min({minV, c.x, c.y, c.z});
                 maxV = std::max({maxV, c.x, c.y, c.z});
 
                 data[index(pos)] = c;
-            };
-
-            util::forEachVoxel(*volume.getRepresentation<VolumeRAM>(), func);
+            });
 
             auto range = std::max(std::abs(minV), std::abs(maxV));
             newVolume->dataMap_.dataRange = dvec2(-range, range);
             newVolume->dataMap_.valueRange = dvec2(minV, maxV);
-
         });
-    //      */
 
     return newVolume;
 }

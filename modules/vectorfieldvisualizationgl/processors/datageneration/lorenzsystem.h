@@ -44,13 +44,6 @@
 
 namespace inviwo {
 
-/**
- * \class LorenzSystem
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LorenzSystem : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -70,14 +63,14 @@ protected:
     FloatMinMaxProperty yRange_;
     FloatMinMaxProperty zRange_;
 
-    FloatProperty rhoValue_;    
-    FloatProperty sigmaValue_;  
-    FloatProperty betaValue_;   
+    FloatProperty rhoValue_;
+    FloatProperty sigmaValue_;
+    FloatProperty betaValue_;
 
     Shader shader_;
     FrameBufferObject fbo_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LORENZSYSTEM_H

@@ -44,24 +44,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VectorFieldGenerator2D, Vector Field Generator 2D}
-* ![](org.inviwo.VectorFieldGenerator2D.png?classIdentifier=org.inviwo.VectorFieldGenerator2D)
-*
-* Description of the processor
-*
-*
-* ### Outports
-*   * __outport__ Describe port.
-*
-* ### Properties
-*   * __Volume size__ Describe property.
-*   * __X__ Describe property.
-*   * __Y__ Describe property.
-*   * __X Range__ Describe property.
-*   * __Y Range__ Describe property.
-*
-*/
-
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator2D : public Processor {
 public:
     VectorFieldGenerator2D();
@@ -90,6 +72,6 @@ protected:
     FrameBufferObject fbo_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VECTORFIELDGENERATOR2D_H

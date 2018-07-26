@@ -76,8 +76,8 @@ struct OutportIterable {
             return i;
         }
 
-        std::shared_ptr<const T> operator*() { return self_->getref(); }
-        std::shared_ptr<const T> operator->() { return self_->getptr(); }
+        std::shared_ptr<const T> operator*() const { return self_->getref(); }
+        std::shared_ptr<const T> operator->() const { return self_->getptr(); }
 
         bool operator==(const const_iterator& rhs) const {
             if (!self_ && !(rhs.self_))

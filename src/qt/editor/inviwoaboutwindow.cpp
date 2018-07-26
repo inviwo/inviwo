@@ -53,6 +53,22 @@
 
 namespace inviwo {
 
+namespace {
+class AboutBrowser : public QTextBrowser {
+public:
+    AboutBrowser(QWidget* parent) : QTextBrowser(parent) {}
+    virtual ~AboutBrowser() = default;
+
+protected:
+    // Override this to circumvent a warning message from QTextBrowser::loadResource
+    // QTextBrowser has an internal QTextDocument that has a loadResource function that does the
+    // right thing, but first it calls the overload from it's parent QTextBrowers which fails with a
+    // message. We overload that and just return an empty QVariant and let QTextDocument handle it.
+    virtual QVariant loadResource(int, const QUrl&) override { return QVariant{}; }
+};
+
+}  // namespace
+
 InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     : InviwoDockWidget("About", mainwindow, "AboutWidget") {
 
@@ -66,7 +82,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
     auto app = mainwindow->getInviwoApplication();
 
-    auto textdoc = new QTextBrowser(this);
+    auto textdoc = new AboutBrowser(this);
     vLayout->addWidget(textdoc);
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
@@ -86,24 +102,28 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         return utilqt::fromQString(utilqt::toQString(str).toHtmlEscaped());
     };
 
-    const int iconsize = 128;
-    QByteArray imgData;
-    {
-        auto icon = mainwindow->windowIcon();
-        auto pixmap = icon.pixmap(iconsize);
+    auto makeImg = [](QString path, int size) {
+        const auto img = QImage(path);
+        QByteArray imgData;
         QBuffer buffer(&imgData);
         buffer.open(QIODevice::WriteOnly);
-        pixmap.toImage().save(&buffer, "PNG");
-    }
+        const auto scaledImg = img.scaledToHeight(size, Qt::SmoothTransformation);
+        scaledImg.save(&buffer, "PNG");
+        return std::unordered_map<std::string, std::string>{
+            {"width", std::to_string(scaledImg.size().width())},
+            {"height", std::to_string(scaledImg.size().height())},
+            {"src", "data:image/png;base64," + std::string(imgData.toBase64().data())}};
+    };
 
     auto makeBody = [](Document& doc) {
         auto html = doc.append("html");
-        html.append("head").append("style",
-                                   "a { color: #c8ccd0; font-weight: normal;}\n"
-                                   "body, table, div, p, dl "
-                                   "{color: #9d9995; background-color: #323235; font: 400 14px/18px"
-                                   "Calibra, sans-serif;}\n "
-                                   "h1, h2, h3, h4 {color: #c8ccd0; margin-bottom:3px;}");
+        html.append("head").append(
+            "style",
+            "a { color: #c8ccd0; font-weight: normal; text-decoration:none;}\n"
+            "body, table, div, p, dl "
+            "{color: #9d9995; background-color: #323235; font: 400 14px/18px"
+            "Calibra, sans-serif;}\n "
+            "h1, h2, h3, h4 {color: #c8ccd0; margin-bottom:3px;}");
         return html.append("body", "", {{"style", "margin: 7px;"}});
     };
 
@@ -112,11 +132,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     {
         auto table = body.append("table").append("tr");
 
-        table.append("td").append(
-            "img", "",
-            {{"width", std::to_string(iconsize)},
-             {"height", std::to_string(iconsize)},
-             {"src", "data:image/png;base64," + std::string(imgData.toBase64().data())}});
+        table.append("td").append("img", "", makeImg(":/inviwo/inviwo-logo-light-600px.png", 128));
 
         auto cell = table.append("td");
         cell.append("h1", "Inviwo", {{"style", "color:white;"}});
@@ -132,16 +148,36 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("h3", "Core Team:");
         h.append("br");
         h.append("span",
-                 "Peter Steneteg, Erik Sund&eacute;n, Daniel J&ouml;nsson, Martin Falk, "
+                 "Peter Steneteg, Erik Sundén, Daniel Jönsson, Martin Falk, "
                  "Rickard Englund, Sathish Kottravel, Timo Ropinski");
     }
     {
         auto h = body.append("p");
-        h.append("h3", "Former Developers:");
+        h.append("h3", "Contributors:");
         h.append("br");
         h.append("span",
-                 "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
+                 "Robin Skånberg, Jochen Jankowai, Tino Weinkauf, "
+                 "Wiebke Koepp, Anke Friederici, Dominik Engel, "
+                 "Alexander Johansson, Andreas Valter, Johan Norén, Emanuel Winblad, "
                  "Hans-Christian Helltegen, Viktor Axelsson");
+    }
+    {
+        auto h = body.append("p");
+        h.append("h3", "Sponsors:");
+        h.append("br");
+        h.append("span",
+                 "This work was supported by Linköping University, Ulm University, and through "
+                 "grants from the Swedish e-Science Research Centre (SeRC).");
+        h.append("br");
+        auto p = h.append("p");
+        auto liu = p.append("a", "", {{"href", "http://www.liu.se"}});
+        liu.append("img", "", makeImg(":/images/liu-white-crop.png", 50));
+
+        auto serc = p.append("a", "", {{"href", "http://www.e-science.se"}});
+        serc.append("img", "", makeImg(":/images/serc.png", 50));
+
+        auto uulm = p.append("a", "", {{"href", "http://www.uni-ulm.de/en/"}});
+        uulm.append("img", "", makeImg(":/images/uulm.png", 50));
     }
     {
         auto h = body.append("p");

@@ -32,65 +32,188 @@
 #include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
-namespace {
-struct MetaDataSampler {
-    MetaDataSampler(const IntegralLine &line, std::string name)
-        : hasMetaData_(line.hasMetaData(name)), v(0), dv(0) {
-        if (hasMetaData_) {
-            it = line.getMetaData(name).begin();
-            v = *it;
-        }
+
+namespace detail {
+
+template <typename T>
+static double norm(const T &t) {
+    return static_cast<double>(t);
+}
+
+template <
+    glm::length_t L, typename T, glm::qualifier Q,
+    typename F = typename std::conditional<std::is_same<T, float>::value, float, double>::type>
+static double norm(const glm::vec<L, T, Q> &glm) {
+    return glm::length(util::glm_convert<glm::vec<L, F, Q>>(glm));
+}
+}  // namespace detail
+
+PropertyClassIdentifier(IntegralLineVectorToMesh::ColorByProperty,
+                        "org.inviwo.IntegralLineVectorToMesh.ColorByProperty");
+
+IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(
+    std::string identifier, std::string displayName,
+    InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/)
+    : CompositeProperty(identifier, displayName, invalidationLevel)
+    , scaleBy_("scaleBy", "Data Range (for normalization)", 0, 1, 0, 1, 0.01)
+    , loopTF_("loopTF", "Loop Transfer Function", false)
+    , minValue_("minValue", "Min " + displayName, 0, std::numeric_limits<double>::lowest(),
+                std::numeric_limits<double>::max(), 0.01, InvalidationLevel::InvalidOutput,
+                PropertySemantics::Text)
+    , maxValue_("maxValue", "Max " + displayName, 0, std::numeric_limits<double>::lowest(),
+                std::numeric_limits<double>::max(), 0.01, InvalidationLevel::InvalidOutput,
+                PropertySemantics::Text)
+    , tf_("transferFunction", "Transfer function")
+    , key_(displayName) {
+    addProperties();
+}
+
+IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty &rhs)
+    : CompositeProperty(rhs)
+    , scaleBy_(rhs.scaleBy_)
+    , loopTF_(rhs.loopTF_)
+    , minValue_(rhs.minValue_)
+    , maxValue_(rhs.maxValue_)
+    , tf_(rhs.tf_) {
+    addProperties();
+}
+
+IntegralLineVectorToMesh::ColorByProperty &IntegralLineVectorToMesh::ColorByProperty::operator=(
+    const ColorByProperty &that) {
+    if (this != &that) {
+        scaleBy_ = that.scaleBy_;
+        loopTF_ = that.loopTF_;
+        minValue_ = that.minValue_;
+        maxValue_ = that.maxValue_;
+        tf_ = that.tf_;
     }
+    return *this;
+}
 
-    operator dvec3 &() { return v; }
-    operator const dvec3 &() const { return v; }
+IntegralLineVectorToMesh::ColorByProperty *IntegralLineVectorToMesh::ColorByProperty::clone()
+    const {
+    return new ColorByProperty(*this);
+}
 
-    dvec3 operator++() {
-        if (hasMetaData_) {
-            it++;
-            v = *it;
-        } else {
-            v += dv;
-        }
-        return v;
-    }
-    dvec3 operator++(int) {
-        auto prev = v;
-        operator++();
-        return prev;
-    }
+IntegralLineVectorToMesh::ColorByProperty::~ColorByProperty() {}
 
-protected:
-    std::vector<dvec3>::const_iterator it;
-    bool hasMetaData_;
-    dvec3 v;
-    dvec3 dv;
-};
+void IntegralLineVectorToMesh::ColorByProperty::serialize(Serializer &s) const {
+    CompositeProperty::serialize(s);
+    s.serialize("key", key_);
+}
 
-struct Timestep : public MetaDataSampler {
-    Timestep(const IntegralLine &line) : MetaDataSampler(line, "timestamp") {
-        hasMetaData_ = line.hasMetaData("timestamp");
-        if (!hasMetaData_) {
-            dv = dvec3(1.0 / (line.getPositions().size() - 1));
-        }
-    }
+void IntegralLineVectorToMesh::ColorByProperty::deserialize(Deserializer &d) {
+    CompositeProperty::deserialize(d);
+    d.deserialize("key", key_);
+}
 
-    operator double &() { return v.x; }
-    operator const double &() const { return v.x; }
-};
-}  // namespace
+std::string IntegralLineVectorToMesh::ColorByProperty::getKey() const { return key_; }
+
+void IntegralLineVectorToMesh::ColorByProperty::addProperties() {
+    addProperty(scaleBy_);
+    addProperty(loopTF_);
+    addProperty(minValue_);
+    addProperty(maxValue_);
+    addProperty(tf_);
+
+    tf_.get().clear();
+    tf_.get().add(0.0, vec4(0, 0, 1, 1));
+    tf_.get().add(0.5, vec4(1, 1, 0, 1));
+    tf_.get().add(1.0, vec4(1, 0, 0, 1));
+    tf_.setCurrentStateAsDefault();
+}
+
+const ProcessorInfo IntegralLineVectorToMesh::getProcessorInfo() const { return processorInfo_; }
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
     "org.inviwo.IntegralLineVectorToMesh",  // Class identifier
     "Integral Line Vector To Mesh",         // Display name
     "Vector Field Visualization",           // Category
-    CodeState::Experimental,                // Code state
-    Tags::None,                             // Tags
+    CodeState::Stable,                      // Code state
+    Tags::CPU,                              // Tags
 };
-const ProcessorInfo IntegralLineVectorToMesh::getProcessorInfo() const { return processorInfo_; }
+
+bool IntegralLineVectorToMesh::isFiltered(const IntegralLine &line, size_t idx) const {
+    switch (brushBy_.get()) {
+        case BrushBy::LineIndex:
+            return brushingList_.isFiltered(line.getIndex());
+        case BrushBy::VectorPosition:
+            return brushingList_.isFiltered(idx);
+        case BrushBy::Nothing:
+        default:
+            return false;
+    }
+}
+
+bool IntegralLineVectorToMesh::isSelected(const IntegralLine &line, size_t idx) const {
+    switch (brushBy_.get()) {
+        case BrushBy::LineIndex:
+            return brushingList_.isSelected(line.getIndex());
+        case BrushBy::VectorPosition:
+            return brushingList_.isSelected(idx);
+        case BrushBy::Nothing:
+        default:
+            return false;
+    }
+}
+
+void IntegralLineVectorToMesh::updateOptions() {
+    auto lines = lines_.getData();
+    if (lines->size() == 0) return;
+    std::string selected = "";
+    int selectedIndex = -1;
+    int velocityIndex = -1;
+    if (colorBy_.size() > 0) {
+        selected = colorBy_.getSelectedIdentifier();
+        if (selected == "portIndex") {
+            selectedIndex = static_cast<int>(colorBy_.size() - 2);
+        }
+
+        if (selected == "portNumber") {
+            selectedIndex = static_cast<int>(colorBy_.size() - 1);
+        }
+    }
+
+    colorBy_.clearOptions();
+
+    int i = 0;
+    for (const auto &key : lines->front().getMetaDataKeys()) {
+        if (key == selected) {
+            selectedIndex = i;
+        }
+        if (key == "velocity") {
+            velocityIndex = i;
+        }
+        colorBy_.addOption(key, key);
+
+        if (!getPropertyByIdentifier(key)) {
+            auto prop = std::make_unique<ColorByProperty>(key, "Color by " + key);
+            auto propPtr = prop.get();
+            prop->setVisible(selectedIndex == i);
+            prop->setSerializationMode(PropertySerializationMode::All);
+            addProperty(prop.release());
+            colorBy_.onChange([=]() { propPtr->setVisible(i == colorBy_.getSelectedIndex()); });
+        }
+
+        i++;
+    }
+
+    if (colors_.isConnected()) {
+        colorBy_.addOption("portIndex", "Colors in port (line index)");
+        colorBy_.addOption("portNumber", "Colors in port (line vector position)");
+    }
+
+    colorBy_.setCurrentStateAsDefault();
+    if (selectedIndex != -1) {
+        colorBy_.setSelectedIndex(selectedIndex);
+    } else if (velocityIndex != -1) {
+        colorBy_.setSelectedIndex(velocityIndex);
+    }
+}
 
 IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     : Processor()
@@ -98,7 +221,12 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     , brushingList_("brushingList")
     , colors_("colors")
     , mesh_("mesh")
-    , ignoreBrushingList_("ignoreBrushingList", "Ignore Brushing List", false)
+    , brushBy_("brushBy_", "Brush Line by",
+               {{"never", "Ignore brushing list", BrushBy::Nothing},
+                {"lineindex", "Use Line Index (seed point index)", BrushBy::LineIndex},
+                {"vectorposition", "Use position in input vector.", BrushBy::VectorPosition}})
+
+    , colorBy_("colorBy", "Color by")
 
     , stride_("stride", "Vertex stride", 1, 1, 10)
 
@@ -106,14 +234,13 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     , minMaxT_("minMaxT", "Min/Max Timestep", -1, 1, -10, 10)
     , setFromData_("setFromData", "Set from data")
 
-    , tf_("transferFunction", "Transfer Function")
-    , coloringMethod_("coloringMethod", "Color by")
-    , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
-    , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
-    , curvatureScale_("curvatureScale", "Curvature Scale (inverse)", 1, 0, 10)
-    , maxCurvature_("maxCurvature", "Curvature Range", "0", InvalidationLevel::Valid)
+    , output_("output", "Output",
+              {{"lines", "Lines", Output::Lines}, {"ribbons", "Ribbons", Output::Ribbons}})
 
-{
+    , ribbonWidth_("ribbonWidth", "Ribbon Width", 0.1f, 0.00001f)
+    , selectedColor_("selectedColor", "Selected Color", vec4{1.f, 0.f, 0.f, 1.f}, vec4{0.f},
+                     vec4{1.f}, vec4{0.01f}, InvalidationLevel::InvalidOutput,
+                     PropertySemantics::Color) {
     colors_.setOptional(true);
 
     addPort(lines_);
@@ -121,55 +248,54 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     addPort(brushingList_);
     addPort(mesh_);
 
-    addProperty(ignoreBrushingList_);
-
-    addProperty(tf_);
-    addProperty(coloringMethod_);
-    addProperty(velocityScale_);
-    addProperty(maxVelocity_);
-
-    addProperty(curvatureScale_);
-    addProperty(maxCurvature_);
-
+    addProperty(brushBy_);
+    addProperty(output_);
+    addProperty(colorBy_);
+    addProperty(ribbonWidth_);
+    addProperty(selectedColor_);
     addProperty(stride_);
 
     addProperty(timeBasedFiltering_);
     timeBasedFiltering_.addProperty(minMaxT_);
     timeBasedFiltering_.addProperty(setFromData_);
 
-    coloringMethod_.addOption("vel", "Velocity", ColoringMethod::Velocity);
-    coloringMethod_.addOption("time", "Timestamp", ColoringMethod::Timestamp);
-    coloringMethod_.addOption("port", "Colors in port", ColoringMethod::ColorPort);
-    coloringMethod_.addOption("curvature", "Curvature", ColoringMethod::Curvature);
-
-    tf_.autoLinkToProperty<PathLines>("transferFunction");
-    tf_.autoLinkToProperty<StreamLines>("transferFunction");
-
-    tf_.get().clear();
-    tf_.get().add(0.0, vec4(0, 0, 1, 1));
-    tf_.get().add(0.5, vec4(1, 1, 0, 1));
-    tf_.get().add(1.0, vec4(1, 0, 0, 1));
+    colorBy_.setSerializationMode(PropertySerializationMode::All);
 
     setAllPropertiesCurrentStateAsDefault();
 
+    colorBy_.onChange([&]() {
+        for (auto &prop : getPropertiesByType<ColorByProperty>()) {
+            prop->setVisible(prop->getKey() == colorBy_.get());
+        }
+    });
+
+    lines_.onChange([&]() { updateOptions(); });
+
+    colors_.onChange([&]() { updateOptions(); });
+
     setFromData_.onChange([&]() {
         if (lines_.hasData()) {
-            float minT = std::numeric_limits<float>::max();
-            float maxT = std::numeric_limits<float>::lowest();
+            double minT = std::numeric_limits<double>::max();
+            double maxT = std::numeric_limits<double>::lowest();
 
+            size_t idx = 0;
             for (auto &line : (*lines_.getData())) {
+                util::OnScopeExit incIdx([&idx]() { idx++; });
                 auto size = line.getPositions().size();
                 if (size == 0) continue;
 
-                if (!ignoreBrushingList_.get() && brushingList_.isFiltered(line.getIndex())) {
+                if (this->isFiltered(line, idx)) {
                     continue;
                 }
 
-                Timestep t(line);
-                for (size_t ii = 0; ii < size; ii++) {
-                    float tt = static_cast<float>((t++).x);
-                    minT = std::min(minT, tt);
-                    maxT = std::max(tt, maxT);
+                if (!line.hasMetaData("timestamp")) {
+                    minT = std::min(minT, 0.);
+                    maxT = std::max(maxT, 1.);
+                } else {
+                    for (const auto &t : line.getMetaData<double>("timestamp")) {
+                        minT = std::min(minT, t);
+                        maxT = std::max(t, maxT);
+                    }
                 }
             }
             NetworkLock lock(getNetwork());
@@ -178,116 +304,196 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
             minMaxT_.set(vec2(minT, maxT));
         }
     });
+
+    brushingList_.onConnect([this]() { updatePropertyVisibility(); });
+    brushingList_.onDisconnect([this]() { updatePropertyVisibility(); });
+
+    output_.onChange([this]() { updatePropertyVisibility(); });
+
+    updatePropertyVisibility();
 }
 
 void IntegralLineVectorToMesh::process() {
+    if (colorBy_.size() == 0) {
+        updateOptions();
+    }
     auto mesh = std::make_shared<BasicMesh>();
+    if (lines_.getData()->size() == 0) {
+        mesh_.setData(mesh);
+        return;
+    }
 
     mesh->setModelMatrix(lines_.getData()->getModelMatrix());
+    mesh->setWorldMatrix(lines_.getData()->getWorldMatrix());
 
     std::vector<BasicMesh::Vertex> vertices;
-    float maxVelocity = 0;
-    float maxCurvature = 0;
 
     vertices.reserve(lines_.getData()->size() * 2000);
 
-    bool hasColors = colors_.hasData();
+    bool colorByPortIndex = false;
+    bool colorByPortNumber = false;
 
-    auto coloringMethod = coloringMethod_.get();
-    if (coloringMethod == ColoringMethod::ColorPort) {
-        if (!hasColors) {
-            LogWarn("No colors in the color port, using velocity for coloring instead ");
-            coloringMethod = ColoringMethod::Velocity;
+    auto metaDataKey = colorBy_.get();
+    if (metaDataKey == "portIndex") {
+        colorByPortIndex = true;
+    }
+    if (metaDataKey == "portNumber") {
+        colorByPortNumber = true;
+    }
+    bool colorByPort = colorByPortIndex || colorByPortNumber;
+
+    ColorByProperty *mdProp = nullptr;
+    if (!colorByPort) {
+        mdProp = dynamic_cast<ColorByProperty *>(getPropertyByIdentifier(metaDataKey));
+
+        if (!mdProp) {  // Fallback
+            auto props = getPropertiesByType<ColorByProperty>();
+            if (props.size() == 0) {
+                throw Exception("Couldn't get ColorByProperty for meta data " + metaDataKey,
+                                IvwContext);
+            }
+            mdProp = props.front();
+            LogWarn("Couldn't get ColorByProperty for meta data "
+                    << metaDataKey << ", using " << mdProp->getDisplayName() << " instead");
         }
-    } else if (coloringMethod == ColoringMethod::Velocity) {
     }
 
-    bool warnOnce = true;
+    double minMetaData = std::numeric_limits<double>::max();
+    double maxMetaData = std::numeric_limits<double>::lowest();
 
-    size_t idx = 0;
+    bool colorWarningOnce = true;
+
+    Output output = output_.get();
+
+    size_t lineIdx = 0;
     for (auto &line : (*lines_.getData())) {
+        util::OnScopeExit incIdx([&lineIdx]() { lineIdx++; });
         auto size = line.getPositions().size();
-        if (size == 0) continue;
 
-        if (!ignoreBrushingList_.get() && brushingList_.isFiltered(line.getIndex())) {
-            idx++;
-            continue;
-        }
+        if (size == 0 || isFiltered(line, lineIdx)) continue;
 
-        auto position = line.getPositions().begin();
-        auto velocity = line.getMetaData("velocity").begin();
-        Timestep t(line);
-        MetaDataSampler k(line, "curvature");
+        auto indexBuffer = [&, this]() -> std::shared_ptr<IndexBufferRAM> {
+            if (output == Output::Lines) {
+                auto ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+                ib->getDataContainer().reserve(size + 2);
+                return ib;
+            } else if (output == Output::Ribbons) {
+                auto ib = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
+                ib->getDataContainer().reserve(size * 2);
+                return ib;
+            }
+            throw Exception("Unsupported output type", IvwContext);
+        }();
 
-        auto indexBuffer = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+        auto coloring = [&, this](auto sample, size_t lineIndex, size_t lineNumber) -> vec4 {
+            if (this->isSelected(line, lineIdx)) {
+                return selectedColor_.get();
+            }
 
-        indexBuffer->getDataContainer().reserve(size + 2);
-
-        vec4 c(1, 1, 1, 1);
-        if (hasColors) {
-            if (idx >= colors_.getData()->size()) {
-                if (warnOnce) {
-                    warnOnce = false;
-                    LogWarn("The vector of colors is smaller then the vector of seed points");
+            if (colorByPort) {
+                auto colors = colors_.getData();
+                size_t index = 0;
+                if (colorByPortNumber) {
+                    index = lineNumber;
+                } else if (colorByPortIndex) {
+                    index = lineIndex;
                 }
+
+                if (index >= colors->size()) {
+                    if (colorWarningOnce) {
+                        colorWarningOnce = false;
+                        LogWarn("Line index for color is out of range");
+                    }
+                    index %= colors->size();
+                }
+                return colors->at(index);
             } else {
-                c = colors_.getData()->at(idx);
-                // c = colors_.getData()->at(line.getIndex());
+                auto &mdValue = get<2>(sample);
+                double md = detail::norm(mdValue);
+                minMetaData = std::min(minMetaData, md);
+                maxMetaData = std::max(maxMetaData, md);
+
+                md -= mdProp->scaleBy_.get().x;
+                md /= mdProp->scaleBy_.get().y - mdProp->scaleBy_.get().x;
+                if (mdProp->loopTF_) {
+                    md -= std::floor(md);
+                }
+
+                return mdProp->tf_.get().sample(md);
+            }
+        };
+
+        auto lineLoop = [&coloring, &vertices, &indexBuffer, &lineIdx, this](
+                            const IntegralLine &line, auto mdContainter) {
+            size_t pointIdx = 0;
+            for (auto &&sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
+                                           mdContainter)) {
+                util::OnScopeExit incPointIdx([&pointIdx]() { pointIdx++; });
+                bool first = pointIdx <= 1;
+                bool last = pointIdx >= line.getPositions().size() - 2;
+                // need to keep the two first and two last when using adjendency information
+                if (!first && !last && pointIdx % stride_.get() != 0) {
+                    continue;
+                }
+
+                vec3 pos = get<0>(sample);
+                vec3 vel = get<1>(sample);
+
+                vec4 color = coloring(sample, line.getIndex(), lineIdx);
+
+                indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
+                vertices.push_back({pos, glm::normalize(vel), pos, color});
+            }
+        };
+
+        auto ribbonLoop = [&coloring, &vertices, &indexBuffer, &lineIdx, this](
+                              const IntegralLine &line, auto mdContainter) {
+            for (auto &&sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
+                                           mdContainter, line.getMetaData<dvec3>("vorticity"))) {
+                vec3 pos = get<0>(sample);
+                vec3 vel = get<1>(sample);
+                vec3 vor = get<3>(sample);
+
+                vec4 color = coloring(sample, line.getIndex(), lineIdx);
+
+                auto N = glm::normalize(glm::cross(vor, vel));
+
+                auto off = glm::normalize(vor) * (ribbonWidth_.get() / 2.0f);
+                auto pos1 = pos - off;
+                auto pos2 = pos + off;
+                indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
+                vertices.push_back({pos1, N, pos1, color});
+                indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
+                vertices.push_back({pos2, N, pos2, color});
+            }
+        };
+
+        if (mdProp) {
+            line.getMetaDataBuffer(metaDataKey)
+                ->getRepresentation<BufferRAM>()
+                ->dispatch<void>([&](auto mdBuf) {
+                    if (output == Output::Lines)
+                        lineLoop(line, mdBuf->getDataContainer());
+                    else {
+                        ribbonLoop(line, mdBuf->getDataContainer());
+                    }
+                });
+        } else {
+            if (output == Output::Lines)
+                lineLoop(line, std::vector<int>(line.getPositions().size()));
+            else {
+                ribbonLoop(line, std::vector<int>(line.getPositions().size()));
             }
         }
-        idx++;
-        indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-
-        bool first = true;
-        for (size_t ii = 0; ii < size - 1; ii++) {
-            vec3 pos(*position);
-            vec3 v(*velocity);
-
-            position++;
-            velocity++;
-            float tt = static_cast<float>((t++).x);
-            float kk = static_cast<float>((k++).x);
-
-            if (timeBasedFiltering_.isChecked() &&
-                (tt < minMaxT_.get().x || tt > minMaxT_.get().y)) {
-                continue;
-            }
-
-            if (!first && (!(ii == size - 1 || ii % stride_.get() == 0))) {
-                continue;
-            }
-            first = false;
-
-            float l = glm::length(v);
-            maxVelocity = std::max(maxVelocity, l);
-            maxCurvature = std::max(maxCurvature, kk);
-
-            switch (coloringMethod) {
-                case ColoringMethod::Timestamp:
-                    c = tf_.get().sample(t);
-                    break;
-                case ColoringMethod::Curvature:
-                    c = tf_.get().sample(kk / curvatureScale_.get());
-                    break;
-                case ColoringMethod::ColorPort:
-                    break;  // color is set once outside the loop
-                case ColoringMethod::Velocity:
-                    c = tf_.get().sample(l / velocityScale_.get());
-                default:
-                    break;
-            }
-
-            indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-
-            vertices.push_back({pos, glm::normalize(v), pos, c});
-        }
-        indexBuffer->add(static_cast<std::uint32_t>(vertices.size() - 1));
     }
+
     mesh->addVertices(vertices);
 
     mesh_.setData(mesh);
-    maxVelocity_.set(toString(maxVelocity));
-    maxCurvature_.set(toString(maxCurvature));
+    if (mdProp) {
+        mdProp->minValue_.set(minMetaData);
+        mdProp->maxValue_.set(maxMetaData);
+    }
 }
 
 }  // namespace inviwo

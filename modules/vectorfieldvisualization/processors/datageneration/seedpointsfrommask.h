@@ -62,7 +62,6 @@ protected:
     BoolProperty enableSuperSample_;
     IntProperty superSample_;
 
-
     CompositeProperty randomness_;
     BoolProperty useSameSeed_;
     IntProperty seed_;

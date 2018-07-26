@@ -34,20 +34,21 @@
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/vectorfieldvisualization/algorithms/integrallineoperations.h>
 #include <inviwo/core/util/zip.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
 
 namespace inviwo {
 
-const ProcessorInfo PathLines::processorInfo_{
-    "org.inviwo.PathLines",        // Class identifier
-    "Path Lines",                  // Display name
-    "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
-    Tags::CPU,                     // Tags
+const ProcessorInfo PathLinesDeprecated::processorInfo_{
+    "org.inviwo.PathLinesDeprecated",  // Class identifier
+    "Path Lines (Deprecated)",         // Display name
+    "Vector Field Visualization",      // Category
+    CodeState::Deprecated,             // Code state
+    Tags::CPU,                         // Tags
 };
 
-const ProcessorInfo PathLines::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo PathLinesDeprecated::getProcessorInfo() const { return processorInfo_; }
 
-PathLines::PathLines()
+PathLinesDeprecated::PathLinesDeprecated()
     : Processor()
     , sampler_("sampler")
     , seedPoints_("seedpoints")
@@ -95,16 +96,20 @@ PathLines::PathLines()
 
     maxVelocity_.setReadOnly(true);
     allowLooping_.setVisible(false);
-        
+
     addProperty(pathLineProperties_);
     addProperty(tf_);
     addProperty(coloringMethod_);
     addProperty(velocityScale_);
     addProperty(maxVelocity_);
     addProperty(allowLooping_);
+
+    LogWarn(
+        "This Path Lines Processor is Deprecated, use the new Path Lines processor together "
+        "with the IntegralLineToMesh processor.");
 }
 
-void PathLines::process() {
+void PathLinesDeprecated::process() {
     auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<3, double> > {
         if (sampler_.isConnected()) {
             if (allowLooping_.getVisible()) {
@@ -130,75 +135,93 @@ void PathLines::process() {
     auto m =
         pathLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
 
-    PathLineTracer tracer(sampler, pathLineProperties_);
-    auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
+    float maxVelocity = 0;
+    PathLine3DTracer tracer(sampler, pathLineProperties_);
 
+    bool hasColors = colors_.hasData();
+
+    bool warnOnce = true;
+    bool warnOnce2 = true;
+
+    auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
+    std::vector<BasicMesh::Vertex> vertices;
     size_t startID = 0;
     for (const auto &seeds : seedPoints_) {
 #pragma omp parallel for
         for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
             const auto &p = (*seeds)[j];
             vec4 P = m * vec4(p, 1.0f);
-            auto line = tracer.traceFrom(vec4(vec3(P), pathLineProperties_.getStartT()));
+            IntegralLine line = tracer.traceFrom(vec4(vec3(P), pathLineProperties_.getStartT()));
             auto size = line.getPositions().size();
             if (size > 1) {
 #pragma omp critical
+                // lines->push_back(line, startID + j);
                 lines->push_back(line, lines->size());
             };
         }
         startID += seeds->size();
     }
 
-    const std::function<vec4(float, float, size_t)> coloring =
-        [&]() -> std::function<vec4(float, float, size_t)> {
-        switch (coloringMethod_.get()) {
-            case ColoringMethod::Timestamp:
-                return [&](float t, float /*d*/, size_t /*lineId*/) { return tf_.get().sample(t); };
-            case ColoringMethod::ColorPort:
-                if (colors_.hasData()) {
-                    return [&](float /*t*/, float /*d*/, size_t lineId) {
-                        if (lineId < colors_.getData()->size()) {
-                            return (*colors_.getData())[lineId];
-                        } else if (lineId == colors_.getData()->size()) {
-                            LogWarn(
-                                "The vector of colors is smaller then the vector of seed points");
-                            return colors_.getData()->back();
-                        } else {
-                            return colors_.getData()->back();
-                        }
-                    };
-                } else {
-                    LogWarn(
-                        "No colors in the color port, using velocity for coloring "
-                        "instead ");
-                }
-            default:
-            case ColoringMethod::Velocity:
-                return [&](float /*t*/, float d, size_t /*lineId*/) { return tf_.get().sample(d); };
-        }
-    }();
+    for (auto &line : *lines) {
+        auto size = line.getPositions().size();
+        if (size <= 1) continue;
 
-    float maxVelocity = 0;
-    std::vector<BasicMesh::Vertex> vertices;
-    for (const auto &line : *lines) {
-        if (line.getPositions().size() <= 1) continue;
+        auto position = line.getPositions().begin();
+        auto velocity = line.getMetaData<dvec3>("velocity").begin();
+        auto timestamp = line.getMetaData<double>("timestamp").begin();
 
         auto indexBuffer = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
         indexBuffer->add(0);
 
-        for (auto &&item : util::zip(line.getPositions(), line.getMetaData("velocity"),
-                                     line.getMetaData("timestamp"))) {
-            const vec3 pos(item.first());
-            const vec3 v(item.second());
-            const float t = static_cast<float>(item.third().x);
+        vec4 c;
+        if (hasColors) {
+            if (line.getIndex() >= colors_.getData()->size()) {
+                if (warnOnce2) {
+                    warnOnce2 = false;
+                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                }
+            } else {
+                c = colors_.getData()->at(line.getIndex());
+            }
+        }
 
-            const float l = glm::length(v);
-            const float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
-            const vec4 c = coloring(t, d, line.getIndex());
+        for (size_t ii = 0; ii < size; ii++) {
+            vec3 pos(*position);
+            vec3 v(*velocity);
+            float t = *timestamp;
 
+            float l = glm::length(v);
+            float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
             maxVelocity = std::max(maxVelocity, l);
+
+            switch (coloringMethod_.get()) {
+                case ColoringMethod::Timestamp:
+                    c = tf_.get().sample(t);
+                    break;
+                case ColoringMethod::ColorPort:
+                    if (hasColors) {
+                        break;
+                    } else {
+                        if (warnOnce) {
+                            warnOnce = false;
+                            LogWarn(
+                                "No colors in the color port, using velocity for coloring "
+                                "instead ");
+                        }
+                    }
+                case ColoringMethod::Velocity:
+                    c = tf_.get().sample(d);
+                default:
+                    break;
+            }
+
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
+
             vertices.push_back({pos, glm::normalize(v), pos, c});
+
+            position++;
+            velocity++;
+            timestamp++;
         }
         indexBuffer->add(static_cast<std::uint32_t>(vertices.size() - 1));
     }
@@ -214,7 +237,7 @@ void PathLines::process() {
     maxVelocity_.set(toString(maxVelocity));
 }
 
-void PathLines::deserialize(Deserializer &d) {
+void PathLinesDeprecated::deserialize(Deserializer &d) {
     DoubleProperty dProperty("stepSize", "Step size", 0.001f, 0.001f, 1.0f, 0.001f);
     util::renameProperty(d, {{&dProperty, "dt"}});
     util::changePropertyType(d, {{&dProperty, FloatProperty::CLASS_IDENTIFIER}});

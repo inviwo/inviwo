@@ -36,12 +36,10 @@ const ProcessorInfo HedgeHog2D::processorInfo_{
     "org.inviwo.HedgeHog2D",       // Class identifier
     "Hedge Hog 2D",                // Display name
     "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
+    CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo HedgeHog2D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo HedgeHog2D::getProcessorInfo() const { return processorInfo_; }
 
 HedgeHog2D::HedgeHog2D()
     : Processor()
@@ -142,7 +140,7 @@ void HedgeHog2D::adjustVisibilites() {
     quiverSettings_.setVisible(glyph == GlyphType::Quiver);
 }
 
-vec4 HedgeHog2D::getColor(const dvec2 &/*velocity*/) { return color_; }
+vec4 HedgeHog2D::getColor(const dvec2 & /*velocity*/) { return color_; }
 
 void HedgeHog2D::createArrow(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx,
                              float dy, const dvec2 &velocity) {
@@ -247,10 +245,14 @@ void HedgeHog2D::createQuiver(BasicMesh &mesh, IndexBufferRAM &index, float x, f
     vec2 p2(1 - quiverHeadRatio_.get(), 0.5 + quiverHookWidth_.get() / 2);
     vec2 p3(1 - quiverHeadRatio_.get(), 0.5 - quiverHookWidth_.get() / 2);
 
-    auto i0 = mesh.addVertex(vec3((m * p0) + offset, 0.0f), vec3(p0, 0.0f), vec3(velocity, 0.0f), c);
-    auto i1 = mesh.addVertex(vec3((m * p1) + offset, 0.0f), vec3(p1, 0.0f), vec3(velocity, 0.0f), c);
-    auto i2 = mesh.addVertex(vec3((m * p2) + offset, 0.0f), vec3(p2, 0.0f), vec3(velocity, 0.0f), c);
-    auto i3 = mesh.addVertex(vec3((m * p3) + offset, 0.0f), vec3(p3, 0.0f), vec3(velocity, 0.0f), c);
+    auto i0 =
+        mesh.addVertex(vec3((m * p0) + offset, 0.0f), vec3(p0, 0.0f), vec3(velocity, 0.0f), c);
+    auto i1 =
+        mesh.addVertex(vec3((m * p1) + offset, 0.0f), vec3(p1, 0.0f), vec3(velocity, 0.0f), c);
+    auto i2 =
+        mesh.addVertex(vec3((m * p2) + offset, 0.0f), vec3(p2, 0.0f), vec3(velocity, 0.0f), c);
+    auto i3 =
+        mesh.addVertex(vec3((m * p3) + offset, 0.0f), vec3(p3, 0.0f), vec3(velocity, 0.0f), c);
 
     index.add(i0);
     index.add(i1);
@@ -260,5 +262,4 @@ void HedgeHog2D::createQuiver(BasicMesh &mesh, IndexBufferRAM &index, float x, f
     index.add(i3);
 }
 
-}  // namespace
-
+}  // namespace inviwo

@@ -51,8 +51,8 @@ IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet tortuosity(const Integra
 
 IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLine &line, dmat4 toWorld);
 IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLineSet &lines);
-}
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INTEGRALLINECURVATURE_H

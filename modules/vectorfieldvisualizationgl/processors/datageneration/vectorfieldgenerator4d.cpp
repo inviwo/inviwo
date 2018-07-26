@@ -35,7 +35,6 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/texture/textureutils.h>
 
-
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -43,12 +42,10 @@ const ProcessorInfo VectorFieldGenerator4D::processorInfo_{
     "org.inviwo.VectorFieldGenerator4D",  // Class identifier
     "Vector Field Generator 4D",          // Display name
     "Data Creation",                      // Category
-    CodeState::Experimental,              // Code state
-    Tags::GL,                           // Tags
+    CodeState::Stable,                    // Code state
+    "GL, Generator",                      // Tags
 };
-const ProcessorInfo VectorFieldGenerator4D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VectorFieldGenerator4D::getProcessorInfo() const { return processorInfo_; }
 
 VectorFieldGenerator4D::VectorFieldGenerator4D()
     : Processor()
@@ -63,8 +60,7 @@ VectorFieldGenerator4D::VectorFieldGenerator4D()
     , zRange_("zRange", "Z Range", -1, 1, -10, 10)
     , tRange_("tRange", "T Range", 0, 1, -10, 10)
     , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator4d.frag", false)
-    , fbo_()
-{
+    , fbo_() {
     addPort(outport_);
 
     addProperty(size_);
@@ -104,16 +100,16 @@ void VectorFieldGenerator4D::process() {
     basis[0] = corners[1] - corners[0];
     basis[1] = corners[2] - corners[0];
     basis[2] = corners[3] - corners[0];
-    
+
     shader_.activate();
     fbo_.activate();
-    const size3_t dim{ size_.get() };
+    const size3_t dim{size_.get()};
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     for (size_t i = 0; i < size_.get().w; ++i) {
         float t = static_cast<float>(i);
         t /= size_.get().w - 1;
         t = tRange_.get().x + t * (tRange_.get().y - tRange_.get().x);
-        
+
         auto volume = std::make_shared<Volume>(size3_t(size_.get()), DataVec3Float32::get());
         volume->dataMap_.dataRange = vec2(0, 1);
         volume->dataMap_.valueRange = vec2(-1, 1);
@@ -123,7 +119,7 @@ void VectorFieldGenerator4D::process() {
         TextureUnitContainer cont;
         utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
 
-        shader_.setUniform("t" ,t );
+        shader_.setUniform("t", t);
         utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);
 
         VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
@@ -141,7 +137,4 @@ void VectorFieldGenerator4D::process() {
     outport_.setData(seq);
 }
 
-
-
-} // namespace
-
+}  // namespace inviwo
