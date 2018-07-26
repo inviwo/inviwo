@@ -35,6 +35,8 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/exception.h>
+
 #include <iterator>
 
 namespace inviwo {
@@ -107,6 +109,15 @@ Property* PropertyOwner::removeProperty(Property* property) {
 
 Property* PropertyOwner::removeProperty(Property& property) {
     return removeProperty(&property);
+}
+
+Property* PropertyOwner::removeProperty(size_t index) {
+    if (index >= size()) {
+        throw RangeException("Invalid index when removing property " + std::to_string(index) +
+                             " (" + std::to_string(size()) + " elements)",
+                             IvwContext);
+    }
+    return removeProperty(begin() + index);
 }
 
 Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {

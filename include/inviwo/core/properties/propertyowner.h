@@ -62,6 +62,13 @@ public:
     virtual Property* removeProperty(const std::string& identifier);
     virtual Property* removeProperty(Property* property);
     virtual Property* removeProperty(Property& property);
+    /**
+    * \brief remove property referred to by \p index
+    *
+    * @param index   index of property to be removed
+    * @throw RangeException if \p index is not valid
+    */
+    virtual Property* removeProperty(size_t index);
 
     virtual std::vector<std::string> getPath() const;
 
