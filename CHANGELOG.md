@@ -1,5 +1,37 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-07-26 ListProperty
+
+Added `ListProperty`, a new property for dynamically adding and removing properties.
+A ListProperty holds a number of "prefab" objects, i.e. unique_ptr to properties, which are used to instantiate new list entries. The property widget features small "x" buttons for removing individual elements (if removal is enabled). Pressing the "+" button next to the property label adds new elements (if adding is enabeld). In case multiple prefabs exist, a dropdown menu is shown when pressing the "+" button.
+
+```c++
+// using a single prefab object and at most 10 elements
+ListProperty listProperty("myListProperty", "My ListProperty",
+    std::make_unique<BoolProperty>("boolProp", "BoolProperty", true), 10);
+
+// multiple prefab objects
+ListProperty listProperty("myListProperty", "My List Property", 
+    []() {
+        std::vector<std::unique_ptr<Property>> v;
+        v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+        v.emplace_back(std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99));
+        return v;
+    }());
+```
+
+This also works when using different types of properties as prefab objects:
+```c++
+ListProperty listProperty("myListProperty", "My List Property", 
+    []() {
+        std::vector<std::unique_ptr<Property>> v;
+        v.emplace_back(std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true));
+        v.emplace_back(std::make_unique<TransferFunctionProperty>("customTF1", "Transfer Function"));
+        v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+        return v;
+    }());
+```
+Prefabs can be added later on as well using `ListProperty::addPrefab(std::unique_ptr<Property>&& p)`.
 
 ## 2018-07-25 Integral Line Tracing updates
 Before this change we had two Tracers, one for streamlines and one for pathlines, both in three spatial dimensions only.
