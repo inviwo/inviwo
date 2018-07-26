@@ -73,7 +73,7 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
                         auto&& elem = get<1>(item);
 
                         auto addAction = m.addAction(utilqt::toQString(elem->getDisplayName()));
-                        addAction->setData(ind);
+                        addAction->setData(static_cast<uint>(ind));
                     }
 
                     if (auto selectedAction = m.exec(QCursor::pos())) {
