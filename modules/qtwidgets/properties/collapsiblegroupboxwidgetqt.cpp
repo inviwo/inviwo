@@ -175,7 +175,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 
     if (propertyOwner_ && !property_) {
-        menu->addAction(QString::fromStdString(displayName_));
+        menu->addAction(utilqt::toQString(displayName_));
         menu->addSeparator();
 
         auto resetAction = menu->addAction(tr("&Reset to default"));
@@ -353,6 +353,20 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
 void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_t index) {
     PropertyWidgetQt* propertyWidget = propertyWidgets_[index];
 
+    if (isChildRemovable()) {
+        const int widgetIndex = propertyWidgetGroupLayout_->indexOf(propertyWidget);
+        int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+        propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan, &colSpan);
+
+        // remove additional widget containing the removal button
+        if (auto layoutItem = propertyWidgetGroupLayout_->itemAtPosition(row, 2)) {
+            if (auto w = layoutItem->widget()) {
+                propertyWidgetGroupLayout_->removeWidget(w);
+                delete w;
+            }
+        }
+    }
+
     propertyWidgetGroupLayout_->removeWidget(propertyWidget);
     propertyWidgets_.erase(propertyWidgets_.begin() + index);
     properties_.erase(properties_.begin() + index);
@@ -490,11 +504,10 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(int row, Property* prop) {
         LogInfo("remove Property: " << prop->getDisplayName());
         if (prop->getOwner()) {
             prop->getOwner()->removeProperty(prop);
+        } else {
+            propertyWidgetGroupLayout_->removeWidget(buttonWidget);
+            delete buttonWidget;
         }
-        LogInfo("  removing buttons for "
-                << utilqt::fromQString(buttonWidget->layout()->itemAt(0)->widget()->toolTip()));
-        propertyWidgetGroupLayout_->removeWidget(buttonWidget);
-        delete buttonWidget;
     });
 
     /*
