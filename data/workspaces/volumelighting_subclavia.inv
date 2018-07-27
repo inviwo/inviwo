@@ -51,9 +51,8 @@
                     <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasource" />
                     <Processor content="org.inviwo.Vec4INT32.vector.outport.metasink" />
                     <Processor content="org.inviwo.Vec4INT32.vector.outport.metasource" />
-                    <Processor content="org.inviwo.CompositeProcessorCUserspetst55AppDataRoamingInviwocompositesComptestinv" />
-                    <Processor content="org.inviwo.CompositeProcessorCUserspetst55AppDataRoamingInviwocompositesRaycasterinv" />
-                    <Processor content="org.inviwo.CompositeProcessorCUserspetst55WorkInviwoInviwodevdataworkspacescompositesVolumeRaycasterCompositeinv" />
+                    <Processor content="org.inviwo.CompositeProcessorCUsersmarfa45AppDataRoamingInviwocompositesCompositeinv" />
+                    <Processor content="org.inviwo.CompositeProcessorDprojectsinviwoinviwodevdataworkspacescompositesVolumeRaycasterCompositeinv" />
                 </Processors>
             </Module>
             <Module name="OpenGL" version="0">
@@ -117,6 +116,8 @@
                     <Processor content="org.inviwo.CameraFrustum" />
                     <Processor content="org.inviwo.VolumeSequenceSingleTimestepSampler" />
                     <Processor content="org.inviwo.VolumeCreator" />
+                    <Processor content="org.inviwo.MeshConverter" />
+                    <Processor content="org.inviwo.VolumeInformation" />
                     <Processor content="org.inviwo.Volume.InputSelector" />
                     <Processor content="org.inviwo.Mesh.InputSelector" />
                     <Processor content="org.inviwo.Image.InputSelector" />
@@ -173,149 +174,18 @@
                     <Processor content="org.inviwo.VolumeMapping" />
                     <Processor content="org.inviwo.VolumeMerger" />
                     <Processor content="org.inviwo.VolumeShader" />
+                    <Processor content="org.inviwo.SplitImage" />
                 </Processors>
             </Module>
-            <Module name="ABufferGL" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
-                </Processors>
-            </Module>
-            <Module name="Animation" version="0" />
             <Module name="QtWidgets" version="0" />
-            <Module name="AnimationQt" version="0" />
-            <Module name="assimp" version="0" />
             <Module name="OpenGLQt" version="0" />
-            <Module name="OpenCL" version="0" />
-            <Module name="BaseCL" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.EntryExitPointsCL" />
-                    <Processor content="org.inviwo.GrayscaleCL" />
-                    <Processor content="org.inviwo.VolumeFirstHitCL" />
-                    <Processor content="org.inviwo.VolumeMaxCL" />
-                    <Processor content="org.inviwo.VolumeRaycasterCL" />
-                </Processors>
-            </Module>
-            <Module name="BrushingAndLinking" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
-                </Processors>
-            </Module>
             <Module name="CImg" version="0" />
-            <Module name="EigenUtils" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.EigenMatrixToImage" />
-                    <Processor content="org.inviwo.EigenMix" />
-                    <Processor content="org.inviwo.EigenNormalize" />
-                    <Processor content="EigenMatrixXf.outport.metasink" />
-                    <Processor content="EigenMatrixXf.outport.metasource" />
-                </Processors>
-            </Module>
-            <Module name="Example" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.ExampleProcessor" />
-                    <Processor content="org.inviwo.ExampleProgressBar" />
-                    <Processor content="org.inviwo.SimpleRaycaster" />
-                </Processors>
-            </Module>
             <Module name="FontRendering" version="3">
                 <Processors>
                     <Processor content="org.inviwo.TextOverlayGL" />
                 </Processors>
             </Module>
-            <Module name="HDF5" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.hdf5.Source" />
-                    <Processor content="org.inviwo.hdf5.ToVolume" />
-                    <Processor content="org.inviwo.hdf5.PathSelection" />
-                </Processors>
-            </Module>
-            <Module name="Nifti" version="0" />
-            <Module name="Plotting" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CSVSource" />
-                    <Processor content="org.inviwo.DataFrameColumnToColorVector" />
-                    <Processor content="org.inviwo.DataFrameExporter" />
-                    <Processor content="org.inviwo.ImageToDataFrame" />
-                    <Processor content="org.inviwo.SyntheticDataFrame" />
-                    <Processor content="org.inviwo.VolumeToDataFrame" />
-                </Processors>
-            </Module>
-            <Module name="PlottingGL" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.AxisRenderProcessor" />
-                    <Processor content="org.inviwo.ParallelCoordinates" />
-                    <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
-                    <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
-                    <Processor content="org.inviwo.ScatterPlotProcessor" />
-                    <Processor content="org.inviwo.VolumeAxis" />
-                </Processors>
-            </Module>
-            <Module name="PostProcessing" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.SSAO" />
-                    <Processor content="org.inviwo.FXAA" />
-                    <Processor content="org.inviwo.Fog" />
-                    <Processor content="org.inviwo.Tonemapping" />
-                    <Processor content="org.inviwo.HdrBloom" />
-                    <Processor content="org.inviwo.ImageBrightnessContrast" />
-                    <Processor content="org.inviwo.ImageEdgeDarken" />
-                    <Processor content="org.inviwo.DepthDarkening" />
-                    <Processor content="org.inviwo.ImageHueSaturationLuminance" />
-                    <Processor content="org.inviwo.ImageSharpen" />
-                    <Processor content="org.inviwo.ImageOpacity" />
-                </Processors>
-            </Module>
             <Module name="PVM" version="0" />
-            <Module name="Python3" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.NumPyVolume" />
-                    <Processor content="org.inviwo.NumpyMandelbrot" />
-                    <Processor content="org.inviwo.NumPyMeshCreateTest" />
-                    <Processor content="org.inviwo.PythonScriptProcessor" />
-                </Processors>
-            </Module>
-            <Module name="Python3Qt" version="0" />
-            <Module name="UserInterfaceGL" version="0">
-                <Processors>
-                    <Processor content="org.inviwo.CameraWidget" />
-                    <Processor content="org.inviwo.CropWidget" />
-                    <Processor content="org.inviwo.PresentationProcessor" />
-                    <Processor content="org.inviwo.GLUITestProcessor" />
-                </Processors>
-            </Module>
-            <Module name="VectorFieldVisualization" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.RBFVectorFieldGenerator2D" />
-                    <Processor content="org.inviwo.RBFBased3DVectorFieldGenerator" />
-                    <Processor content="org.inviwo.SeedPointGenerator" />
-                    <Processor content="org.inviwo.SeedPointsFromMask" />
-                    <Processor content="org.inviwo.StreamLines" />
-                    <Processor content="org.inviwo.PathLines" />
-                    <Processor content="org.inviwo.StreamRibbons" />
-                    <Processor content="org.inviwo.IntegralLineVectorToMesh" />
-                    <Processor content="org.inviwo.Seed3Dto4D" />
-                    <Processor content="org.inviwo.SeedsFromMaskSequence" />
-                    <Processor content="org.inviwo.DiscardShortLines" />
-                    <Processor content="org.inviwo.IntegralLineSetSelector" />
-                </Processors>
-            </Module>
-            <Module name="VectorFieldVisualizationGL" version="1">
-                <Processors>
-                    <Processor content="org.inviwo.LorenzSystem" />
-                    <Processor content="org.inviwo.VectorFieldGenerator2D" />
-                    <Processor content="org.inviwo.VectorFieldGenerator3D" />
-                    <Processor content="org.inviwo.LIC2D" />
-                    <Processor content="org.inviwo.HedgeHog2D" />
-                    <Processor content="org.inviwo.Vector2DMagnitude" />
-                    <Processor content="org.inviwo.Vector2DCurl" />
-                    <Processor content="org.inviwo.Vector2DDivergence" />
-                    <Processor content="org.inviwo.LIC3D" />
-                    <Processor content="org.inviwo.Vector3DCurl" />
-                    <Processor content="org.inviwo.Vector3DDivergence" />
-                    <Processor content="org.inviwo.TMIP" />
-                    <Processor content="org.inviwo.VectorFieldGenerator4D" />
-                </Processors>
-            </Module>
         </Modules>
     </InviwoSetup>
     <ProcessorNetwork>
@@ -326,22 +196,22 @@
                     <PortGroup content="default" key="PointLightSource" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.LightSource.outport" identifier="PointLightSource" id="ref26" />
+                    <OutPort type="org.inviwo.LightSource.outport" identifier="PointLightSource" id="ref0" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.PositionProperty" identifier="lightPosition">
                         <Properties>
-                            <Property type="org.inviwo.OptionPropertyInt" identifier="referenceFrame">
+                            <Property type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" id="ref2">
                                 <selectedIdentifier content="view" />
                             </Property>
-                            <Property type="org.inviwo.FloatVec3Property" identifier="position">
+                            <Property type="org.inviwo.FloatVec3Property" identifier="position" id="ref3">
                                 <minvalue x="-300" y="-300" z="-300" />
                                 <maxvalue x="300" y="300" z="300" />
-                                <value x="211.51587" y="195.84821" z="-265.19901" />
+                                <value x="192.88956" y="136.74532" z="-82.409714" />
                             </Property>
                         </Properties>
                         <collapsed content="0" />
-                        <positionWorldSpace x="-210.42918" y="-208.03961" z="58.023178" />
+                        <positionWorldSpace x="-233.96951" y="-171.59767" z="223.42564" />
                     </Property>
                     <Property type="org.inviwo.CompositeProperty" identifier="lighting">
                         <Properties>
@@ -358,7 +228,7 @@
                         </Properties>
                         <collapsed content="0" />
                     </Property>
-                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref27">
+                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref1">
                         <visible content="0" />
                         <OwnedPropertyIdentifiers>
                             <PropertyIdentifier content="fov" />
@@ -368,14 +238,14 @@
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                                 <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
                                 <maxvalue x="552.94727" y="552.94727" z="552.94727" />
-                                <value x="-41.737793" y="-10.328521" z="351.07526" />
+                                <value x="-71.345375" y="-32.525288" z="353.46136" />
                             </Property>
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookTo">
                                 <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
                                 <maxvalue x="552.94727" y="552.94727" z="552.94727" />
                             </Property>
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookUp">
-                                <value x="0.049967546" y="-0.99847591" z="-0.023434959" />
+                                <value x="0.071254313" y="-0.99447167" z="-0.077128634" />
                             </Property>
                             <Property type="org.inviwo.FloatProperty" identifier="aspectRatio" />
                             <Property type="org.inviwo.FloatProperty" identifier="near" />
@@ -418,14 +288,14 @@
                     <PortGroup content="default" key="volume" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Volume.inport" identifier="volume" id="ref13" />
-                    <InPort type="org.inviwo.Image.inport" identifier="entry-points" id="ref14" />
-                    <InPort type="org.inviwo.Image.inport" identifier="exit-points" id="ref15" />
-                    <InPort type="org.inviwo.Volume.inport" identifier="lightVolume" id="ref16" />
-                    <InPort type="org.inviwo.Image.inport" identifier="bg" id="ref17" />
+                    <InPort type="org.inviwo.Volume.inport" identifier="volume" id="ref4" />
+                    <InPort type="org.inviwo.Image.inport" identifier="entry-points" id="ref5" />
+                    <InPort type="org.inviwo.Image.inport" identifier="exit-points" id="ref6" />
+                    <InPort type="org.inviwo.Volume.inport" identifier="lightVolume" id="ref7" />
+                    <InPort type="org.inviwo.Image.inport" identifier="bg" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref18" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref8" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.SimpleRaycastingProperty" identifier="raycaster">
@@ -438,7 +308,7 @@
                         </Properties>
                         <collapsed content="0" />
                     </Property>
-                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref21">
+                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref11">
                         <OwnedPropertyIdentifiers>
                             <PropertyIdentifier content="fov" />
                         </OwnedPropertyIdentifiers>
@@ -447,14 +317,14 @@
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                                 <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
                                 <maxvalue x="552.94727" y="552.94727" z="552.94727" />
-                                <value x="-41.737793" y="-10.328521" z="351.07526" />
+                                <value x="-71.345375" y="-32.525288" z="353.46136" />
                             </Property>
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookTo">
                                 <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
                                 <maxvalue x="552.94727" y="552.94727" z="552.94727" />
                             </Property>
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookUp">
-                                <value x="0.049967546" y="-0.99847591" z="-0.023434959" />
+                                <value x="0.071254313" y="-0.99447167" z="-0.077128634" />
                             </Property>
                             <Property type="org.inviwo.FloatProperty" identifier="aspectRatio" />
                             <Property type="org.inviwo.FloatProperty" identifier="near" />
@@ -480,12 +350,12 @@
                     <Property type="org.inviwo.SimpleLightingProperty" identifier="lighting">
                         <Properties>
                             <Property type="org.inviwo.OptionPropertyInt" identifier="shadingMode" />
-                            <Property type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" />
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lightPosition">
+                            <Property type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" id="ref12" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lightPosition" id="ref13">
                                 <semantics semantics="Spherical" />
                                 <minvalue x="-300" y="-300" z="-300" />
                                 <maxvalue x="300" y="300" z="300" />
-                                <value x="-568.7691" y="-642.69568" z="457.52008" />
+                                <value x="192.88943" y="136.74527" z="-82.409584" />
                             </Property>
                             <Property type="org.inviwo.FloatVec3Property" identifier="lightColorAmbient">
                                 <semantics semantics="Color" />
@@ -504,12 +374,12 @@
                             </Property>
                             <Property type="org.inviwo.BoolProperty" identifier="applyLightAttenuation" />
                             <Property type="org.inviwo.FloatVec3Property" identifier="lightAttenuation" />
-                            <Property type="org.inviwo.BoolProperty" identifier="supportColoredLight" id="ref19" />
+                            <Property type="org.inviwo.BoolProperty" identifier="supportColoredLight" id="ref9" />
                         </Properties>
                         <collapsed content="0" />
                     </Property>
                     <Property type="org.inviwo.OptionPropertyInt" identifier="channel" />
-                    <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" id="ref20">
+                    <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" id="ref10">
                         <MetaDataMap>
                             <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
                                 <MetaData x="2004" y="797" />
@@ -565,6 +435,79 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
+                <PortGroups>
+                    <PortGroup content="default" key="inport" />
+                </PortGroups>
+                <InPorts>
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref19" />
+                </InPorts>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                        <Properties>
+                            <Property type="org.inviwo.IntVec2Property" identifier="dimensions" />
+                            <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions" />
+                            <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions">
+                                <visible content="0" />
+                                <readonly content="1" />
+                                <value x="512" y="512" />
+                            </Property>
+                            <Property type="org.inviwo.BoolProperty" identifier="keepAspectRatio">
+                                <visible content="0" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="aspectRatioScaling">
+                                <visible content="0" />
+                            </Property>
+                        </Properties>
+                        <collapsed content="0" />
+                    </Property>
+                    <Property type="org.inviwo.IntVec2Property" identifier="position">
+                        <value x="2029" y="412" />
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="visibleLayer" />
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID" />
+                        <semantics semantics="Default" />
+                        <usageMode content="0" />
+                        <visible content="0" />
+                        <readonly content="0" />
+                        <minvalue content="0" />
+                        <maxvalue content="0" />
+                        <increment content="1" />
+                        <value content="0" />
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content="" />
+                        <workspaceRelativePath content="" />
+                        <ivwdataRelativePath content="" />
+                        <acceptMode content="0" />
+                        <fileMode content="4" />
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyString" identifier="fileExt" />
+                    <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" />
+                    <Property type="org.inviwo.ButtonProperty" identifier="saveLayerToFile" />
+                    <Property type="org.inviwo.ButtonProperty" identifier="toggleFullscreen" />
+                    <Property type="org.inviwo.EventProperty" identifier="fullscreen">
+                        <Event />
+                    </Property>
+                    <Property type="org.inviwo.EventProperty" identifier="saveLayerEvent">
+                        <Event />
+                    </Property>
+                    <Property type="org.inviwo.BoolProperty" identifier="allowContextMenu" />
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-625" y="-375" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="2029" y="412" />
+                        <dimensions x="512" y="512" />
+                        <visibility content="1" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
             <Processor type="org.inviwo.LightVolumeGL" identifier="Light Volume" displayName="Light Volume">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
@@ -572,24 +515,30 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Volume.inport" identifier="inport" id="ref4" />
-                    <InPort type="org.inviwo.LightSource.inport" identifier="lightSource" id="ref6" />
+                    <InPort type="org.inviwo.Volume.inport" identifier="inport" id="ref14" />
+                    <InPort type="org.inviwo.LightSource.inport" identifier="lightSource" id="ref16" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Volume.outport" identifier="outport" id="ref5" />
+                    <OutPort type="org.inviwo.Volume.outport" identifier="outport" id="ref15" />
                 </OutPorts>
                 <Properties>
-                    <Property type="org.inviwo.BoolProperty" identifier="supportColoredLight" id="ref7" />
+                    <Property type="org.inviwo.BoolProperty" identifier="supportColoredLight" id="ref17" />
                     <Property type="org.inviwo.OptionPropertyInt" identifier="volumeSizeOption">
                         <selectedIdentifier content="1" />
                     </Property>
-                    <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" id="ref8">
+                    <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" id="ref18">
                         <MetaDataMap>
+                            <MetaDataItem type="org.inviwo.IntMetaData" key="PropertyEditorWidgetDockStatus">
+                                <MetaData content="0" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetFloating">
+                                <MetaData content="1" />
+                            </MetaDataItem>
                             <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
-                                <MetaData x="920" y="673" />
+                                <MetaData x="2868" y="701" />
                             </MetaDataItem>
                             <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
-                                <MetaData x="496" y="318" />
+                                <MetaData x="496" y="323" />
                             </MetaDataItem>
                             <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
                                 <MetaData content="0" />
@@ -598,7 +547,6 @@
                                 <MetaData content="0" />
                             </MetaDataItem>
                         </MetaDataMap>
-                        <zoomH_ x="0" y="0.3360000000000000208721928629529429599643" />
                         <showHistogram_ content="5" />
                         <TransferFunction>
                             <maskMin content="0" />
@@ -642,76 +590,60 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
+            <Processor type="org.inviwo.CubeProxyGeometry" identifier="Cube Proxy Geometry" displayName="Cube Proxy Geometry">
                 <PortGroups>
-                    <PortGroup content="default" key="inport" />
+                    <PortGroup content="default" key="proxyGeometry" />
+                    <PortGroup content="default" key="volume" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref24" />
+                    <InPort type="org.inviwo.Volume.inport" identifier="volume" id="ref24" />
                 </InPorts>
+                <OutPorts>
+                    <OutPort type="org.inviwo.Mesh.outport" identifier="proxyGeometry" id="ref25" />
+                </OutPorts>
                 <Properties>
-                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
-                        <Properties>
-                            <Property type="org.inviwo.IntVec2Property" identifier="dimensions" />
-                            <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions" />
-                            <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions">
-                                <visible content="0" />
-                                <readonly content="1" />
-                                <value x="512" y="512" />
-                            </Property>
-                            <Property type="org.inviwo.BoolProperty" identifier="keepAspectRatio">
-                                <visible content="0" />
-                            </Property>
-                            <Property type="org.inviwo.FloatProperty" identifier="aspectRatioScaling">
-                                <visible content="0" />
-                            </Property>
-                        </Properties>
-                        <collapsed content="0" />
-                    </Property>
-                    <Property type="org.inviwo.IntVec2Property" identifier="position">
-                        <value x="62" y="212" />
-                    </Property>
-                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="visibleLayer" />
-                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
-                        <displayName content="Color Layer ID" />
-                        <semantics semantics="Default" />
-                        <usageMode content="0" />
-                        <visible content="0" />
-                        <readonly content="0" />
-                        <minvalue content="0" />
-                        <maxvalue content="0" />
-                        <increment content="1" />
+                    <Property type="org.inviwo.BoolProperty" identifier="clippingEnabled">
                         <value content="0" />
                     </Property>
-                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
-                        <absolutePath content="" />
-                        <workspaceRelativePath content="" />
-                        <ivwdataRelativePath content="" />
-                        <acceptMode content="0" />
-                        <fileMode content="4" />
+                    <Property type="org.inviwo.IntMinMaxProperty" identifier="clipX">
+                        <displayName content="Clip X Slices" />
+                        <semantics semantics="Default" />
+                        <usageMode content="0" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <range x="0" y="511" />
+                        <increment content="1" />
+                        <minSeparation content="1" />
+                        <value x="0" y="511" />
                     </Property>
-                    <Property type="org.inviwo.OptionPropertyString" identifier="fileExt" />
-                    <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" />
-                    <Property type="org.inviwo.ButtonProperty" identifier="saveLayerToFile" />
-                    <Property type="org.inviwo.ButtonProperty" identifier="toggleFullscreen" />
-                    <Property type="org.inviwo.EventProperty" identifier="fullscreen">
-                        <Event />
+                    <Property type="org.inviwo.IntMinMaxProperty" identifier="clipY">
+                        <displayName content="Clip Y Slices" />
+                        <semantics semantics="Default" />
+                        <usageMode content="0" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <range x="0" y="511" />
+                        <increment content="1" />
+                        <minSeparation content="1" />
+                        <value x="0" y="511" />
                     </Property>
-                    <Property type="org.inviwo.EventProperty" identifier="saveLayerEvent">
-                        <Event />
+                    <Property type="org.inviwo.IntMinMaxProperty" identifier="clipZ">
+                        <displayName content="Clip Z Slices" />
+                        <semantics semantics="Default" />
+                        <usageMode content="0" />
+                        <visible content="1" />
+                        <readonly content="0" />
+                        <range x="0" y="95" />
+                        <increment content="1" />
+                        <minSeparation content="1" />
+                        <value x="0" y="95" />
                     </Property>
-                    <Property type="org.inviwo.BoolProperty" identifier="allowContextMenu" />
                 </Properties>
                 <MetaDataMap>
                     <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="-625" y="-375" />
+                        <position x="-600" y="-700" />
                         <visibility content="1" />
                         <selection content="0" />
-                    </MetaDataItem>
-                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                        <position x="62" y="212" />
-                        <dimensions x="512" y="512" />
-                        <visibility content="1" />
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
@@ -722,15 +654,15 @@
                     <PortGroup content="default" key="geometry" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Mesh.inport" identifier="geometry" id="ref9" />
+                    <InPort type="org.inviwo.Mesh.inport" identifier="geometry" id="ref20" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="entry" id="ref10" />
-                    <OutPort type="org.inviwo.Image.outport" identifier="exit" id="ref11" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="entry" id="ref21" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="exit" id="ref22" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.BoolProperty" identifier="capNearClipping" />
-                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref12">
+                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref23">
                         <OwnedPropertyIdentifiers>
                             <PropertyIdentifier content="fov" />
                         </OwnedPropertyIdentifiers>
@@ -739,14 +671,14 @@
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                                 <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
                                 <maxvalue x="552.94727" y="552.94727" z="552.94727" />
-                                <value x="-41.737793" y="-10.328521" z="351.07526" />
+                                <value x="-71.345375" y="-32.525288" z="353.46136" />
                             </Property>
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookTo">
                                 <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
                                 <maxvalue x="552.94727" y="552.94727" z="552.94727" />
                             </Property>
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookUp">
-                                <value x="0.049967546" y="-0.99847591" z="-0.023434959" />
+                                <value x="0.071254313" y="-0.99447167" z="-0.077128634" />
                             </Property>
                             <Property type="org.inviwo.FloatProperty" identifier="aspectRatio" />
                             <Property type="org.inviwo.FloatProperty" identifier="near" />
@@ -842,74 +774,17 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.CubeProxyGeometry" identifier="Cube Proxy Geometry" displayName="Cube Proxy Geometry">
-                <PortGroups>
-                    <PortGroup content="default" key="proxyGeometry" />
-                    <PortGroup content="default" key="volume" />
-                </PortGroups>
-                <InPorts>
-                    <InPort type="org.inviwo.Volume.inport" identifier="volume" id="ref22" />
-                </InPorts>
-                <OutPorts>
-                    <OutPort type="org.inviwo.Mesh.outport" identifier="proxyGeometry" id="ref23" />
-                </OutPorts>
-                <Properties>
-                    <Property type="org.inviwo.BoolProperty" identifier="clippingEnabled">
-                        <value content="0" />
-                    </Property>
-                    <Property type="org.inviwo.IntMinMaxProperty" identifier="clipX">
-                        <displayName content="Clip X Slices" />
-                        <semantics semantics="Default" />
-                        <usageMode content="0" />
-                        <visible content="1" />
-                        <readonly content="0" />
-                        <range x="0" y="511" />
-                        <increment content="1" />
-                        <minSeparation content="1" />
-                        <value x="0" y="511" />
-                    </Property>
-                    <Property type="org.inviwo.IntMinMaxProperty" identifier="clipY">
-                        <displayName content="Clip Y Slices" />
-                        <semantics semantics="Default" />
-                        <usageMode content="0" />
-                        <visible content="1" />
-                        <readonly content="0" />
-                        <range x="0" y="511" />
-                        <increment content="1" />
-                        <minSeparation content="1" />
-                        <value x="0" y="511" />
-                    </Property>
-                    <Property type="org.inviwo.IntMinMaxProperty" identifier="clipZ">
-                        <displayName content="Clip Z Slices" />
-                        <semantics semantics="Default" />
-                        <usageMode content="0" />
-                        <visible content="1" />
-                        <readonly content="0" />
-                        <range x="0" y="95" />
-                        <increment content="1" />
-                        <minSeparation content="1" />
-                        <value x="0" y="95" />
-                    </Property>
-                </Properties>
-                <MetaDataMap>
-                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="-600" y="-700" />
-                        <visibility content="1" />
-                        <selection content="0" />
-                    </MetaDataItem>
-                </MetaDataMap>
-            </Processor>
             <Processor type="org.inviwo.VolumeSource" identifier="Volume Source" displayName="Volume Source">
                 <PortGroups>
                     <PortGroup content="default" key="data" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Volume.outport" identifier="data" id="ref25" />
+                    <OutPort type="org.inviwo.Volume.outport" identifier="data" id="ref26" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FileProperty" identifier="filename">
                         <displayName content="Volume file" />
-                        <absolutePath content="C:/Users/petst55/Work/Inviwo/Inviwo-dev/data/volumes/Subclavia.pvm" />
+                        <absolutePath content="D:/projects/inviwo/inviwo-dev/data/volumes/Subclavia.pvm" />
                         <workspaceRelativePath content="../volumes/Subclavia.pvm" />
                         <ivwdataRelativePath content="volumes/Subclavia.pvm" />
                         <nameFilter>
@@ -922,6 +797,10 @@
                                 <description content="Raw binary file" />
                             </filter>
                             <filter>
+                                <extension content="mpvm" />
+                                <description content="MPVM (Multiple PVMs) file format" />
+                            </filter>
+                            <filter>
                                 <extension content="ivf" />
                                 <description content="Inviwo ivf file format" />
                             </filter>
@@ -930,40 +809,12 @@
                                 <description content="PVM file format" />
                             </filter>
                             <filter>
-                                <extension content="mpvm" />
-                                <description content="MPVM (Multiple PVMs) file format" />
-                            </filter>
-                            <filter>
                                 <extension content="dat" />
                                 <description content="Inviwo dat file format" />
                             </filter>
                             <filter>
                                 <extension content="ivfs" />
                                 <description content="Sequence of Inviwo ivf volumes" />
-                            </filter>
-                            <filter>
-                                <extension content="nii" />
-                                <description content="NIfTI-1 file format" />
-                            </filter>
-                            <filter>
-                                <extension content="hdr" />
-                                <description content="ANALYZE file format" />
-                            </filter>
-                            <filter>
-                                <extension content="img" />
-                                <description content="ANALYZE file format" />
-                            </filter>
-                            <filter>
-                                <extension content="nii.gz" />
-                                <description content="NIfTI-1 file format" />
-                            </filter>
-                            <filter>
-                                <extension content="hdr.gz" />
-                                <description content="ANALYZE file format" />
-                            </filter>
-                            <filter>
-                                <extension content="img.gz" />
-                                <description content="ANALYZE file format" />
                             </filter>
                         </nameFilter>
                         <acceptMode content="0" />
@@ -1098,41 +949,16 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.VolumeBoundingBox" identifier="Volume Bounding Box" displayName="Volume Bounding Box">
-                <PortGroups>
-                    <PortGroup content="default" key="mesh" />
-                    <PortGroup content="default" key="volume" />
-                </PortGroups>
-                <InPorts>
-                    <InPort type="org.inviwo.Volume.inport" identifier="volume" id="ref0" />
-                </InPorts>
-                <OutPorts>
-                    <OutPort type="org.inviwo.Mesh.outport" identifier="mesh" id="ref1" />
-                </OutPorts>
-                <Properties>
-                    <Property type="org.inviwo.FloatVec4Property" identifier="color">
-                        <semantics semantics="Color" />
-                        <value x="0" y="0" z="0" w="1" />
-                    </Property>
-                </Properties>
-                <MetaDataMap>
-                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="-775" y="-700" />
-                        <visibility content="1" />
-                        <selection content="0" />
-                    </MetaDataItem>
-                </MetaDataMap>
-            </Processor>
             <Processor type="org.inviwo.Background" identifier="Background" displayName="Background">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref2" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref27" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref3" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref28" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
@@ -1160,273 +986,103 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.GeometryRenderGL" identifier="Mesh Renderer" displayName="Mesh Renderer">
-                <PortGroups>
-                    <PortGroup content="default" key="geometry" />
-                    <PortGroup content="default" key="image" />
-                    <PortGroup content="default" key="imageInport" />
-                </PortGroups>
-                <InPorts>
-                    <InPort type="org.inviwo.Mesh.flat.multi.inport" identifier="geometry" id="ref28" />
-                    <InPort type="org.inviwo.Image.inport" identifier="imageInport" />
-                </InPorts>
-                <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="image" id="ref29" />
-                </OutPorts>
-                <Properties>
-                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref30">
-                        <OwnedPropertyIdentifiers>
-                            <PropertyIdentifier content="fov" />
-                        </OwnedPropertyIdentifiers>
-                        <Properties>
-                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
-                                <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
-                                <maxvalue x="552.94727" y="552.94727" z="552.94727" />
-                                <value x="-41.737793" y="-10.328521" z="351.07526" />
-                            </Property>
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lookTo">
-                                <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
-                                <maxvalue x="552.94727" y="552.94727" z="552.94727" />
-                            </Property>
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lookUp">
-                                <value x="0.049967546" y="-0.99847591" z="-0.023434959" />
-                            </Property>
-                            <Property type="org.inviwo.FloatProperty" identifier="aspectRatio" />
-                            <Property type="org.inviwo.FloatProperty" identifier="near" />
-                            <Property type="org.inviwo.FloatProperty" identifier="far">
-                                <maxvalue content="55294.727" />
-                                <value content="5529.4727" />
-                            </Property>
-                            <Property type="org.inviwo.BoolProperty" identifier="fitToBasis_" />
-                            <Property type="org.inviwo.FloatProperty" identifier="fov">
-                                <displayName content="FOV" />
-                                <semantics semantics="Default" />
-                                <usageMode content="1" />
-                                <visible content="1" />
-                                <readonly content="0" />
-                                <minvalue content="30" />
-                                <maxvalue content="360" />
-                                <increment content="0.1" />
-                                <value content="60" />
-                            </Property>
-                        </Properties>
-                        <collapsed content="0" />
-                    </Property>
-                    <Property type="org.inviwo.ButtonProperty" identifier="centerView" />
-                    <Property type="org.inviwo.ButtonProperty" identifier="setNearFarPlane" />
-                    <Property type="org.inviwo.ButtonProperty" identifier="resetView" />
-                    <Property type="org.inviwo.CompositeProperty" identifier="geometry">
-                        <Properties>
-                            <Property type="org.inviwo.OptionPropertyInt" identifier="cullFace" />
-                            <Property type="org.inviwo.BoolProperty" identifier="enableDepthTest_" />
-                            <Property type="org.inviwo.BoolProperty" identifier="overrideColorBuffer" />
-                            <Property type="org.inviwo.FloatVec4Property" identifier="overrideColor">
-                                <visible content="0" />
-                            </Property>
-                        </Properties>
-                        <collapsed content="0" />
-                    </Property>
-                    <Property type="org.inviwo.SimpleLightingProperty" identifier="lighting">
-                        <Properties>
-                            <Property type="org.inviwo.OptionPropertyInt" identifier="shadingMode">
-                                <selectedIdentifier content="none" />
-                            </Property>
-                            <Property type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" />
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lightPosition" />
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lightColorAmbient" />
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lightColorDiffuse" />
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lightColorSpecular" />
-                            <Property type="org.inviwo.FloatProperty" identifier="materialShininess" />
-                            <Property type="org.inviwo.BoolProperty" identifier="applyLightAttenuation" />
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lightAttenuation" />
-                        </Properties>
-                        <collapsed content="0" />
-                    </Property>
-                    <Property type="org.inviwo.Trackball" identifier="trackball">
-                        <Properties>
-                            <Property type="org.inviwo.BoolProperty" identifier="handleEvents" />
-                            <Property type="org.inviwo.BoolProperty" identifier="allowHorizontalPanning" />
-                            <Property type="org.inviwo.BoolProperty" identifier="allowVerticalPanning" />
-                            <Property type="org.inviwo.BoolProperty" identifier="allowZoom" />
-                            <Property type="org.inviwo.BoolProperty" identifier="allowHorziontalRotation" />
-                            <Property type="org.inviwo.BoolProperty" identifier="allowVerticalRotation" />
-                            <Property type="org.inviwo.BoolProperty" identifier="allowViewAxisRotation" />
-                            <Property type="org.inviwo.BoolProperty" identifier="allowRecenterView" />
-                            <Property type="org.inviwo.BoolProperty" identifier="animate" />
-                            <Property type="org.inviwo.EventProperty" identifier="trackballRotate">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="trackballZoom">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="trackballPan">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="mouseRecenterFocusPoint">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="mouseReset">
-                                <visible content="0" />
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepRotateUp">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepRotateLeft">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepRotateDown">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepRotateRight">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepZoomIn">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepZoomOut">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepPanUp">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepPanLeft">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepPanDown">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="stepPanRight">
-                                <Event />
-                            </Property>
-                            <Property type="org.inviwo.EventProperty" identifier="touchGesture">
-                                <visible content="0" />
-                                <Event />
-                            </Property>
-                        </Properties>
-                        <collapsed content="1" />
-                    </Property>
-                    <Property type="org.inviwo.CompositeProperty" identifier="layers">
-                        <Properties>
-                            <Property type="org.inviwo.BoolProperty" identifier="colorLayer" />
-                            <Property type="org.inviwo.BoolProperty" identifier="texCoordLayer" />
-                            <Property type="org.inviwo.BoolProperty" identifier="normalsLayer" />
-                            <Property type="org.inviwo.BoolProperty" identifier="viewNormalsLayer" />
-                        </Properties>
-                        <collapsed content="1" />
-                    </Property>
-                </Properties>
-                <MetaDataMap>
-                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="-775" y="-625" />
-                        <visibility content="1" />
-                        <selection content="0" />
-                    </MetaDataItem>
-                </MetaDataMap>
-            </Processor>
         </Processors>
         <Connections>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="entry" reference="ref10" />
-                <InPort type="org.inviwo.Image.inport" identifier="entry-points" reference="ref14" />
+                <OutPort type="org.inviwo.Image.outport" identifier="entry" reference="ref21" />
+                <InPort type="org.inviwo.Image.inport" identifier="entry-points" reference="ref5" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="exit" reference="ref11" />
-                <InPort type="org.inviwo.Image.inport" identifier="exit-points" reference="ref15" />
+                <OutPort type="org.inviwo.Image.outport" identifier="exit" reference="ref22" />
+                <InPort type="org.inviwo.Image.inport" identifier="exit-points" reference="ref6" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.LightSource.outport" identifier="PointLightSource" reference="ref26" />
-                <InPort type="org.inviwo.LightSource.inport" identifier="lightSource" reference="ref6" />
+                <OutPort type="org.inviwo.LightSource.outport" identifier="PointLightSource" reference="ref0" />
+                <InPort type="org.inviwo.LightSource.inport" identifier="lightSource" reference="ref16" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Volume.outport" identifier="data" reference="ref25" />
-                <InPort type="org.inviwo.Volume.inport" identifier="volume" reference="ref13" />
+                <OutPort type="org.inviwo.Volume.outport" identifier="data" reference="ref26" />
+                <InPort type="org.inviwo.Volume.inport" identifier="volume" reference="ref4" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Volume.outport" identifier="data" reference="ref25" />
-                <InPort type="org.inviwo.Volume.inport" identifier="volume" reference="ref22" />
+                <OutPort type="org.inviwo.Volume.outport" identifier="data" reference="ref26" />
+                <InPort type="org.inviwo.Volume.inport" identifier="volume" reference="ref24" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Volume.outport" identifier="data" reference="ref25" />
-                <InPort type="org.inviwo.Volume.inport" identifier="inport" reference="ref4" />
+                <OutPort type="org.inviwo.Volume.outport" identifier="data" reference="ref26" />
+                <InPort type="org.inviwo.Volume.inport" identifier="inport" reference="ref14" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref18" />
-                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref2" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref8" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref27" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Mesh.outport" identifier="proxyGeometry" reference="ref23" />
-                <InPort type="org.inviwo.Mesh.inport" identifier="geometry" reference="ref9" />
+                <OutPort type="org.inviwo.Mesh.outport" identifier="proxyGeometry" reference="ref25" />
+                <InPort type="org.inviwo.Mesh.inport" identifier="geometry" reference="ref20" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Volume.outport" identifier="outport" reference="ref5" />
-                <InPort type="org.inviwo.Volume.inport" identifier="lightVolume" reference="ref16" />
+                <OutPort type="org.inviwo.Volume.outport" identifier="outport" reference="ref15" />
+                <InPort type="org.inviwo.Volume.inport" identifier="lightVolume" reference="ref7" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref3" />
-                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref24" />
-            </Connection>
-            <Connection>
-                <OutPort type="org.inviwo.Mesh.outport" identifier="mesh" reference="ref1" />
-                <InPort type="org.inviwo.Mesh.flat.multi.inport" identifier="geometry" reference="ref28" />
-            </Connection>
-            <Connection>
-                <OutPort type="org.inviwo.Volume.outport" identifier="data" reference="ref25" />
-                <InPort type="org.inviwo.Volume.inport" identifier="volume" reference="ref0" />
-            </Connection>
-            <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref29" />
-                <InPort type="org.inviwo.Image.inport" identifier="bg" reference="ref17" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref28" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref19" />
             </Connection>
         </Connections>
         <PropertyLinks>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref8" />
-                <DestinationProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref20" />
+                <SourceProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref10" />
+                <DestinationProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref18" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref21" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref12" />
+                <SourceProperty type="org.inviwo.FloatVec3Property" identifier="position" reference="ref3" />
+                <DestinationProperty type="org.inviwo.FloatVec3Property" identifier="lightPosition" reference="ref13" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref21" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref27" />
+                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref1" />
+                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref11" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref12" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref21" />
+                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref11" />
+                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref1" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref7" />
-                <DestinationProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref19" />
+                <SourceProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref17" />
+                <DestinationProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref9" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref20" />
-                <DestinationProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref8" />
+                <SourceProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref18" />
+                <DestinationProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref10" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref27" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref21" />
+                <SourceProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref9" />
+                <DestinationProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref17" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref30" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref27" />
+                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref11" />
+                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref23" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref19" />
-                <DestinationProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref7" />
+                <SourceProperty type="org.inviwo.FloatVec3Property" identifier="lightPosition" reference="ref13" />
+                <DestinationProperty type="org.inviwo.FloatVec3Property" identifier="position" reference="ref3" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref27" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref27" />
+                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref23" />
+                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref11" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref27" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref30" />
+                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref1" />
+                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref1" />
+            </PropertyLink>
+            <PropertyLink>
+                <SourceProperty type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" reference="ref2" />
+                <DestinationProperty type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" reference="ref12" />
+            </PropertyLink>
+            <PropertyLink>
+                <SourceProperty type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" reference="ref12" />
+                <DestinationProperty type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" reference="ref2" />
             </PropertyLink>
         </PropertyLinks>
     </ProcessorNetwork>
     <PortInspectors />
-    <Animation />
 </InviwoWorkspace>
