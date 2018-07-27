@@ -61,6 +61,15 @@ node {
         }
 
         stage('Build') {
+            //if (env.CHANGE_ID) { // Pull Request
+                if(env.THIS_DOES_NOT_EXISTS){
+                    echo "FIRST RUN"
+                    env.THIS_DOES_NOT_EXISTS = 1;
+                }   
+           // }
+            
+            
+            
             if (params['Clean Build']) {
                 echo "Clean build, removing build folder"
                 sh "rm -r build"
