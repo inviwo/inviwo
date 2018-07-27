@@ -62,10 +62,12 @@ node {
 
         stage('Build') {
             //if (env.CHANGE_ID) { // Pull Request
-                if(env.THIS_DOES_NOT_EXISTS){
+                if(!env.THIS_DOES_NOT_EXISTS){
                     echo "FIRST RUN"
                     env.THIS_DOES_NOT_EXISTS = 1;
-                }   
+                }else{
+                    echo "NOT FIRST RUN"
+                }
            // }
             
             
