@@ -61,6 +61,17 @@ node {
         }
 
         stage('Build') {
+            if (env.CHANGE_ID) { // Pull Request
+                if(pullRequest.comments.size()==0){
+                    pullRequest.comment('Jenkins comment');
+                }
+                for (comment in pullRequest.comments) {
+                  echo "Author: ${comment.user}, Comment: ${comment.body}"
+                }
+            }
+            
+            
+            
             if (params['Clean Build']) {
                 echo "Clean build, removing build folder"
                 sh "rm -r build"
