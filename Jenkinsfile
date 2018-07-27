@@ -62,9 +62,6 @@ node {
 
         stage('Build') {
             //if (env.CHANGE_ID) { // Pull Request
-                if(!env.THIS_DOES_NOT_EXISTS){
-                    env.THIS_DOES_NOT_EXISTS = 0
-                }
                 env.THIS_DOES_NOT_EXISTS = env.THIS_DOES_NOT_EXISTS + 1
                 echo env.THIS_DOES_NOT_EXISTS
            // }
