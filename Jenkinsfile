@@ -61,10 +61,14 @@ node {
         }
 
         stage('Build') {
-            //if (env.CHANGE_ID) { // Pull Request
-                env.THIS_DOES_NOT_EXISTS = env.THIS_DOES_NOT_EXISTS + 1
-                echo env.THIS_DOES_NOT_EXISTS
-           // }
+            if (env.CHANGE_ID) { // Pull Request
+                if(pullRequest.comments.size()==0){
+                    pullRequest.comment('Jenkins comment');
+                }
+                for (comment in pullRequest.comments) {
+                  echo "Author: ${comment.user}, Comment: ${comment.body}"
+                }
+            }
             
             
             
