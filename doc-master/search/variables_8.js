@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['nearplanedist_5f',['nearPlaneDist_',['../classinviwo_1_1Camera.html#a08c6dcd7d5cf3941c9c1c3dde828c683',1,'inviwo::Camera']]],
-  ['noiseshader_5f',['noiseShader_',['../classinviwo_1_1CanvasGL.html#a43b258bd6442a6d35fa83b4475bcd1e2',1,'inviwo::CanvasGL']]]
+  ['major',['major',['../classinviwo_1_1Version.html#a2b4be0b616c11498bc2ca11e8bba39e1',1,'inviwo::Version']]],
+  ['maxzoomindistance_5f',['maxZoomInDistance_',['../classinviwo_1_1Trackball.html#af3e3be741834f4de76f01667c53674a6',1,'inviwo::Trackball']]],
+  ['minor',['minor',['../classinviwo_1_1Version.html#a4bf98c07aa8b010aab4eb2c3f68d078b',1,'inviwo::Version']]]
 ];

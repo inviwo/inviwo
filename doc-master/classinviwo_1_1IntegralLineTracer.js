@@ -1,11 +1,17 @@
 var classinviwo_1_1IntegralLineTracer =
 [
-    [ "IntegralLineTracer", "classinviwo_1_1IntegralLineTracer.html#a14d0923fbe3853bb8e2d2e226d26be65", null ],
-    [ "~IntegralLineTracer", "classinviwo_1_1IntegralLineTracer.html#a34ed297ed7bcaee6164e0695a9a72a61", null ],
-    [ "getIntegrationScheme", "classinviwo_1_1IntegralLineTracer.html#a17807a86aefec15fa6fddbf3286c5d83", null ],
-    [ "setIntegrationScheme", "classinviwo_1_1IntegralLineTracer.html#a24cae30d67167a405327dc3abb8e8a47", null ],
-    [ "dir_", "classinviwo_1_1IntegralLineTracer.html#a0d927520bf20767f39b905361c643979", null ],
-    [ "integrationScheme_", "classinviwo_1_1IntegralLineTracer.html#ac3459d4435b1a47950066c6cfee1e9f7", null ],
-    [ "steps_", "classinviwo_1_1IntegralLineTracer.html#a55688888ff647ae873ffc2a16dd29380", null ],
-    [ "stepSize_", "classinviwo_1_1IntegralLineTracer.html#a6b61958bbc3ae00b71b6eb8a818a2c8a", null ]
+    [ "Result", "structinviwo_1_1IntegralLineTracer_1_1Result.html", "structinviwo_1_1IntegralLineTracer_1_1Result" ],
+    [ "DataHomogenouSpatialMatrixrix", "classinviwo_1_1IntegralLineTracer.html#a5b338495ecec7425f13e4e6ddfdbc4d3", null ],
+    [ "DataHomogenousVector", "classinviwo_1_1IntegralLineTracer.html#a17eab5f4fbd1b4624b8d6fd7a0ababff", null ],
+    [ "DataMatrix", "classinviwo_1_1IntegralLineTracer.html#a514c2cbf324c441b1a9e2b18b6905fa8", null ],
+    [ "DataVector", "classinviwo_1_1IntegralLineTracer.html#abda4819101f7d8240212ce8ec667a17b", null ],
+    [ "Sampler", "classinviwo_1_1IntegralLineTracer.html#a4f4d4bca9adbb2abf69948dd69189458", null ],
+    [ "SpatialMatrix", "classinviwo_1_1IntegralLineTracer.html#abf526897431ce77cd30dd9afb1067c97", null ],
+    [ "SpatialVector", "classinviwo_1_1IntegralLineTracer.html#a9afdf3489e15036082b1ec3bc6d593ae", null ],
+    [ "IntegralLineTracer", "classinviwo_1_1IntegralLineTracer.html#ab4a6e5cb9e46e43c58b2f696003a2678", null ],
+    [ "addMetaDataSampler", "classinviwo_1_1IntegralLineTracer.html#ace6c1d5a70cb64ffcb43e5747af5de07", null ],
+    [ "getSeedTransformationMatrix", "classinviwo_1_1IntegralLineTracer.html#a8525babe81f5b7b995e73fde56faeea8", null ],
+    [ "isTransformingOutputToWorldSpace", "classinviwo_1_1IntegralLineTracer.html#ab341eaf000df63536121a8f247858d68", null ],
+    [ "setTransformOutputToWorldSpace", "classinviwo_1_1IntegralLineTracer.html#a6dd6ef7ec3abb68695ec4b8c413f69c9", null ],
+    [ "traceFrom", "classinviwo_1_1IntegralLineTracer.html#af20582bdb05a9c4cdc957cef07823343", null ]
 ];

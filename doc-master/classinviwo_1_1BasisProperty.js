@@ -4,7 +4,7 @@ var classinviwo_1_1BasisProperty =
     [ "BasisProperty", "classinviwo_1_1BasisProperty.html#a5aac03a6dce625756c729fefac40c487", null ],
     [ "~BasisProperty", "classinviwo_1_1BasisProperty.html#a054a907e8bc7700003d8880f3da93e09", null ],
     [ "clone", "classinviwo_1_1BasisProperty.html#abfa2acfeaaece703416e550748fefb23", null ],
-    [ "getBasisAndOffset", "classinviwo_1_1BasisProperty.html#a418f742f5d1d605d40df0f80ff31d4dc", null ],
+    [ "getBasisAndOffset", "classinviwo_1_1BasisProperty.html#a00f32c2fce768a80ec15ee10581a952d", null ],
     [ "InviwoPropertyInfo", "classinviwo_1_1BasisProperty.html#ac80a17a7f5a5f956adee551dc628df21", null ],
     [ "operator=", "classinviwo_1_1BasisProperty.html#a740bce6b4d1a18256c179691ca64c9b6", null ],
     [ "updateEntity", "classinviwo_1_1BasisProperty.html#ab06bd6b1293564c5297512429b80fd11", null ],

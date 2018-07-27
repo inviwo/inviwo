@@ -7,6 +7,8 @@ var classinviwo_1_1BaseOptionProperty =
     [ "getClassIdentifier", "classinviwo_1_1BaseOptionProperty.html#a9a485a7709fd18ebbf11d8bf3979766c", null ],
     [ "getDisplayNames", "classinviwo_1_1BaseOptionProperty.html#aa4da6bb1cdc8e3edf35f0a357a3271f1", null ],
     [ "getIdentifiers", "classinviwo_1_1BaseOptionProperty.html#a8d3185e0a1cecb00c7c9da837e2e884a", null ],
+    [ "getOptionDisplayName", "classinviwo_1_1BaseOptionProperty.html#ab1867693a13efbf45f16d54873f12eab", null ],
+    [ "getOptionIdentifier", "classinviwo_1_1BaseOptionProperty.html#a28c13c286416dca762bf8a0d6e82264f", null ],
     [ "getSelectedDisplayName", "classinviwo_1_1BaseOptionProperty.html#a1212d9daadf6f7ac0274670659558973", null ],
     [ "getSelectedIdentifier", "classinviwo_1_1BaseOptionProperty.html#a7699730748a7974bc067222717b2158f", null ],
     [ "getSelectedIndex", "classinviwo_1_1BaseOptionProperty.html#a26f2330d262a4d0157c1f7ac75cb7fc6", null ],

@@ -8,7 +8,7 @@ var classinviwo_1_1SimpleLightingProperty =
     [ "SimpleLightingProperty", "classinviwo_1_1SimpleLightingProperty.html#a14d6f2468de8b7b8d2079a5f8953512d", null ],
     [ "~SimpleLightingProperty", "classinviwo_1_1SimpleLightingProperty.html#afbe37567d6ed78b8afb6c8f674e52549", null ],
     [ "clone", "classinviwo_1_1SimpleLightingProperty.html#a3780e71c3da31affb953d8e055bc084c", null ],
-    [ "getTransformedPosition", "classinviwo_1_1SimpleLightingProperty.html#ad2e8fb80d44c162568c8da8f1b5f4d48", null ],
+    [ "getTransformedPosition", "classinviwo_1_1SimpleLightingProperty.html#a5ee3f42e69ef16e090b8a4167a844bb3", null ],
     [ "InviwoPropertyInfo", "classinviwo_1_1SimpleLightingProperty.html#af554965c89fd481d9da77cbf70ab7dba", null ],
     [ "operator=", "classinviwo_1_1SimpleLightingProperty.html#a07ade0af4d7f2a785a329044dca44259", null ],
     [ "ambientColor_", "classinviwo_1_1SimpleLightingProperty.html#a2cf6bc00f9cba773cf9231a624444be9", null ],

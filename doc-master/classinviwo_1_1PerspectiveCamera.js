@@ -8,7 +8,7 @@ var classinviwo_1_1PerspectiveCamera =
     [ "configureProperties", "classinviwo_1_1PerspectiveCamera.html#a9ebe91aafc6cf7f3e09156b167feb731", null ],
     [ "deserialize", "classinviwo_1_1PerspectiveCamera.html#a85ea087df6db1a7b219afd3d83fc5eda", null ],
     [ "getAspectRatio", "classinviwo_1_1PerspectiveCamera.html#a781a9bd7740fb6bfb161f0ffad1d6ace", null ],
-    [ "getFovy", "classinviwo_1_1PerspectiveCamera.html#afd27793cbe7149529e6135fd4c5675fa", null ],
+    [ "getFovy", "classinviwo_1_1PerspectiveCamera.html#a79b396f0c3e044db30c204721ae69490", null ],
     [ "operator=", "classinviwo_1_1PerspectiveCamera.html#a1113ba350451e6fe4796715df9f43654", null ],
     [ "serialize", "classinviwo_1_1PerspectiveCamera.html#a1ce7d64f61f2151bbda19c72e1054a21", null ],
     [ "setAspectRatio", "classinviwo_1_1PerspectiveCamera.html#a13497cf325a26737dc5d8c20932c6b72", null ],

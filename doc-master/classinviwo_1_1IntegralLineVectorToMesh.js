@@ -1,10 +1,14 @@
 var classinviwo_1_1IntegralLineVectorToMesh =
 [
-    [ "ColoringMethod", "classinviwo_1_1IntegralLineVectorToMesh.html#af5a4e3a17343b166a05cc09f15882328", [
-      [ "Velocity", "classinviwo_1_1IntegralLineVectorToMesh.html#af5a4e3a17343b166a05cc09f15882328a88156d46910a2d733443c339a9231d12", null ],
-      [ "Timestamp", "classinviwo_1_1IntegralLineVectorToMesh.html#af5a4e3a17343b166a05cc09f15882328aa3d5de3eac8bb00ae86fd1a1005f1500", null ],
-      [ "ColorPort", "classinviwo_1_1IntegralLineVectorToMesh.html#af5a4e3a17343b166a05cc09f15882328a753acf9d5363ac047b4d8afce2dd3d6e", null ],
-      [ "Curvature", "classinviwo_1_1IntegralLineVectorToMesh.html#af5a4e3a17343b166a05cc09f15882328a8bdf3c167e619ac571b1208d0e8343cb", null ]
+    [ "ColorByProperty", "classinviwo_1_1IntegralLineVectorToMesh_1_1ColorByProperty.html", "classinviwo_1_1IntegralLineVectorToMesh_1_1ColorByProperty" ],
+    [ "BrushBy", "classinviwo_1_1IntegralLineVectorToMesh.html#a82bc95899d517081c4c1fae31de70202", [
+      [ "Nothing", "classinviwo_1_1IntegralLineVectorToMesh.html#a82bc95899d517081c4c1fae31de70202af80a4ad87fee7c9fdc19b7769495fdb5", null ],
+      [ "LineIndex", "classinviwo_1_1IntegralLineVectorToMesh.html#a82bc95899d517081c4c1fae31de70202a8d63105a023d775e643a38f9d36a0dec", null ],
+      [ "VectorPosition", "classinviwo_1_1IntegralLineVectorToMesh.html#a82bc95899d517081c4c1fae31de70202a02f6cf75d2469a28b91c2bddf48080af", null ]
+    ] ],
+    [ "Output", "classinviwo_1_1IntegralLineVectorToMesh.html#aa8f3dad40b8109633fc5905181013239", [
+      [ "Lines", "classinviwo_1_1IntegralLineVectorToMesh.html#aa8f3dad40b8109633fc5905181013239aa0b0293a2db49f5f93c15a62e095c819", null ],
+      [ "Ribbons", "classinviwo_1_1IntegralLineVectorToMesh.html#aa8f3dad40b8109633fc5905181013239a9f08de92e0dbab2769644a6f9c18d2db", null ]
     ] ],
     [ "IntegralLineVectorToMesh", "classinviwo_1_1IntegralLineVectorToMesh.html#a935f44f698c22e37a64f9a1898c9b950", null ],
     [ "~IntegralLineVectorToMesh", "classinviwo_1_1IntegralLineVectorToMesh.html#a82d4919c8a1e1b68d30f4b16996bf661", null ],

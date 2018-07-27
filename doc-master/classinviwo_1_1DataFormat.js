@@ -1,6 +1,6 @@
 var classinviwo_1_1DataFormat =
 [
-    [ "primitive", "classinviwo_1_1DataFormat.html#a2baf5b56460719cbae8c7bcb3ca32b95", null ],
+    [ "primitive", "classinviwo_1_1DataFormat.html#a9933e74b8aa17a2fe0ac059bf6d12cb6", null ],
     [ "type", "classinviwo_1_1DataFormat.html#ac170b09bebc515f87b3adfafa4b05a03", null ],
     [ "DataFormat", "classinviwo_1_1DataFormat.html#a09aaeda43fe8f874f943ea614020c769", null ],
     [ "~DataFormat", "classinviwo_1_1DataFormat.html#a1d9cacf7d1b77285b8db908a2f7be860", null ],

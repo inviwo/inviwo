@@ -5,7 +5,7 @@ var classinviwo_1_1TextureQuadRenderer =
     [ "TextureQuadRenderer", "classinviwo_1_1TextureQuadRenderer.html#a56c3cba09edf8ec4d4555562f4941c85", null ],
     [ "~TextureQuadRenderer", "classinviwo_1_1TextureQuadRenderer.html#ae3156922d4cce0e39bd8432a359549ee", null ],
     [ "getShader", "classinviwo_1_1TextureQuadRenderer.html#ad475ab044cceeea4e5931b4f6f18394e", null ],
-    [ "getShader", "classinviwo_1_1TextureQuadRenderer.html#ace40e61d21034056673405c8eb23d59b", null ],
+    [ "getShader", "classinviwo_1_1TextureQuadRenderer.html#a1b67405d7701cd7031f6a4c884877fe2", null ],
     [ "render", "classinviwo_1_1TextureQuadRenderer.html#a448c69c56a53e755fec00c498496edad", null ],
     [ "render", "classinviwo_1_1TextureQuadRenderer.html#a6fea6f86da741bb5d80e482e86b6aeb6", null ],
     [ "render", "classinviwo_1_1TextureQuadRenderer.html#ab4b7351df055fa7d231e330cb794afba", null ],

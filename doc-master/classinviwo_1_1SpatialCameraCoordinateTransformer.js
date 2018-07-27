@@ -10,7 +10,7 @@ var classinviwo_1_1SpatialCameraCoordinateTransformer =
     [ "getDataToModelMatrix", "classinviwo_1_1SpatialCameraCoordinateTransformer.html#a70d98783a92e318ee0c2c318c3bc90ce", null ],
     [ "getDataToViewMatrix", "classinviwo_1_1SpatialCameraCoordinateTransformer.html#a4721a9d0494acc4daf27002f69c9a970", null ],
     [ "getDataToWorldMatrix", "classinviwo_1_1SpatialCameraCoordinateTransformer.html#adf935aa5bdb53b45da7e8384693ba584", null ],
-    [ "getMatrix", "classinviwo_1_1SpatialCameraCoordinateTransformer.html#af007189784a15b603ac3569b9ceb5e03", null ],
+    [ "getMatrix", "classinviwo_1_1SpatialCameraCoordinateTransformer.html#ab3a9c1a9d51a6389b0ea59392ae91f12", null ],
     [ "getModelToClipMatrix", "classinviwo_1_1SpatialCameraCoordinateTransformer.html#af5ea803482c732107255f4339732c8ad", null ],
     [ "getModelToDataMatrix", "classinviwo_1_1SpatialCameraCoordinateTransformer.html#ac84f40df2d9876cc3c23c0af20f77f46", null ],
     [ "getModelToViewMatrix", "classinviwo_1_1SpatialCameraCoordinateTransformer.html#ab770b3090619964a3eb47e7844045415", null ],

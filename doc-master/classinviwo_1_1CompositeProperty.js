@@ -12,7 +12,7 @@ var classinviwo_1_1CompositeProperty =
     [ "getProcessor", "classinviwo_1_1CompositeProperty.html#af769959c101280683d2623209bf4b5f2", null ],
     [ "invalidate", "classinviwo_1_1CompositeProperty.html#acf6083530c63ac7f3830e311e728d2e4", null ],
     [ "InviwoPropertyInfo", "classinviwo_1_1CompositeProperty.html#af06133779add825fab9a3ab2bbd8f65a", null ],
-    [ "isCollapsed", "classinviwo_1_1CompositeProperty.html#a94de96f37727cc432020ca802c6bb06b", null ],
+    [ "isCollapsed", "classinviwo_1_1CompositeProperty.html#a1ef87a6f150f68f2c6c12f62886e0ae1", null ],
     [ "operator=", "classinviwo_1_1CompositeProperty.html#a0b454599aa3c8bef2598bc7861eeaf9d", null ],
     [ "resetToDefaultState", "classinviwo_1_1CompositeProperty.html#a6c935268c63f5f0c2dc3a33b9689606d", null ],
     [ "serialize", "classinviwo_1_1CompositeProperty.html#a4b0a6958adde4b4fd890f9ea85eebf64", null ],

@@ -2,9 +2,8 @@ var classinviwo_1_1NetworkEditorView =
 [
     [ "NetworkEditorView", "classinviwo_1_1NetworkEditorView.html#ab53e17a411c81eeefb049dcb5d5da413", null ],
     [ "~NetworkEditorView", "classinviwo_1_1NetworkEditorView.html#a443637ff8a8bf678a34ee1a89f9168bd", null ],
-    [ "dragEnterEvent", "classinviwo_1_1NetworkEditorView.html#af86120c2910842b1974cdf1db055b54e", null ],
-    [ "dropEvent", "classinviwo_1_1NetworkEditorView.html#a7d82058ac092a9876635cbe7c9deb7cf", null ],
     [ "exportViewToFile", "classinviwo_1_1NetworkEditorView.html#ac6707c929fc0879ece142ad3ad9e5e1b", null ],
+    [ "fitNetwork", "classinviwo_1_1NetworkEditorView.html#a34564d5cf0cf1df5ccc5b60b6d0f64e6", null ],
     [ "focusOutEvent", "classinviwo_1_1NetworkEditorView.html#a742d1742434777e9b8c3732e71f58815", null ],
     [ "hideNetwork", "classinviwo_1_1NetworkEditorView.html#aa20c36e213cc01f4d81da90a6fb34800", null ],
     [ "keyPressEvent", "classinviwo_1_1NetworkEditorView.html#af5d0ed896c3f29822f9d7728ac3bee68", null ],

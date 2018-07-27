@@ -10,7 +10,7 @@ var classinviwo_1_1BaseImageInport =
     [ "getSourceVectorData", "classinviwo_1_1BaseImageInport.html#a1e13b5bda2dbf3432142e3d8c8366cfd", null ],
     [ "getVectorData", "classinviwo_1_1BaseImageInport.html#aa2a23251519fb036218192bae3b6e8e3", null ],
     [ "isOutportDeterminingSize", "classinviwo_1_1BaseImageInport.html#a18b658ab47e55492602ca75ec9a6b1e4", null ],
-    [ "passOnDataToOutport", "classinviwo_1_1BaseImageInport.html#a39bc0e9e6cdb684793133a8f7b379b2e", null ],
+    [ "passOnDataToOutport", "classinviwo_1_1BaseImageInport.html#a3c2849abebc16d828eece0a7587d0475", null ],
     [ "propagateEvent", "classinviwo_1_1BaseImageInport.html#a0f03a8c6f44abba89f299d976f45b977", null ],
     [ "setOutportDeterminesSize", "classinviwo_1_1BaseImageInport.html#a73226204352d518803b61b3ad5964180", null ]
 ];

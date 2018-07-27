@@ -13,7 +13,6 @@ var classinviwo_1_1SurfaceExtraction =
     [ "invalidate", "classinviwo_1_1SurfaceExtraction.html#a173559c80db6b3adfa499c99dedec5e8", null ],
     [ "operator=", "classinviwo_1_1SurfaceExtraction.html#a69424f73b85a4e0191ad49383ded7ca8", null ],
     [ "process", "classinviwo_1_1SurfaceExtraction.html#a321c539714bf5845a6e8f22462e7978f", null ],
-    [ "setMinMax", "classinviwo_1_1SurfaceExtraction.html#a9b5a7f6710f3cb3370ee92c55c43939f", null ],
     [ "updateColors", "classinviwo_1_1SurfaceExtraction.html#ad15466095b48b5229060a6e321e030e2", null ],
     [ "colors_", "classinviwo_1_1SurfaceExtraction.html#a315d0adc4b392d920df504b4748b4ed2", null ],
     [ "dirty_", "classinviwo_1_1SurfaceExtraction.html#a07e46e7101b70762baa968db649e8d7a", null ],

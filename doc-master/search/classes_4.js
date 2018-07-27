@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['easing',['Easing',['../classinviwo_1_1animation_1_1Easing.html',1,'inviwo::animation']]],
   ['edge',['Edge',['../classinviwo_1_1Edge.html',1,'inviwo']]],
+  ['edgedarken',['edgedarken',['../classglsl_1_1edgedarken.html',1,'glsl']]],
   ['edgedataformat',['EdgeDataFormat',['../classinviwo_1_1EdgeDataFormat.html',1,'inviwo']]],
   ['editablelabelqt',['EditableLabelQt',['../classinviwo_1_1EditableLabelQt.html',1,'inviwo']]],
   ['editorgraphicsitem',['EditorGraphicsItem',['../classinviwo_1_1EditorGraphicsItem.html',1,'inviwo']]],
@@ -10,8 +10,6 @@ var searchData=
   ['eigennormalize',['EigenNormalize',['../classinviwo_1_1EigenNormalize.html',1,'inviwo']]],
   ['eigenutilsmodule',['EigenUtilsModule',['../classinviwo_1_1EigenUtilsModule.html',1,'inviwo']]],
   ['element',['Element',['../classinviwo_1_1Document_1_1Element.html',1,'inviwo::Document']]],
-  ['element',['Element',['../classinviwo_1_1glui_1_1Element.html',1,'inviwo::glui']]],
-  ['element',['Element',['../classglui_1_1Element.html',1,'glui']]],
   ['elementidentifier',['ElementIdentifier',['../structinviwo_1_1ElementIdentifier.html',1,'inviwo']]],
   ['elementmatcher',['ElementMatcher',['../structinviwo_1_1xml_1_1ElementMatcher.html',1,'inviwo::xml']]],
   ['empty_5fconstructor',['empty_constructor',['../structinviwo_1_1detail_1_1empty__constructor.html',1,'inviwo::detail']]],
@@ -28,7 +26,6 @@ var searchData=
   ['eventpropagator',['EventPropagator',['../classinviwo_1_1EventPropagator.html',1,'inviwo']]],
   ['eventproperty',['EventProperty',['../classinviwo_1_1EventProperty.html',1,'inviwo']]],
   ['eventpropertywidgetqt',['EventPropertyWidgetQt',['../classinviwo_1_1EventPropertyWidgetQt.html',1,'inviwo']]],
-  ['exception',['Exception',['../classinviwo_1_1hdf5_1_1Exception.html',1,'inviwo::hdf5']]],
   ['exception',['Exception',['../classinviwo_1_1Exception.html',1,'inviwo']]],
   ['exceptioncontext',['ExceptionContext',['../structinviwo_1_1ExceptionContext.html',1,'inviwo']]],
   ['extent',['extent',['../structinviwo_1_1util_1_1extent.html',1,'inviwo::util']]],

@@ -7,6 +7,6 @@ var classinviwo_1_1DataWriterType =
     [ "clone", "classinviwo_1_1DataWriterType.html#a66d66a245779607ba82f2536121b532b", null ],
     [ "operator=", "classinviwo_1_1DataWriterType.html#aa1fd6c7f55316918b33ff418c882946c", null ],
     [ "writeData", "classinviwo_1_1DataWriterType.html#af4965a14744d67446ad483c12efe0b03", null ],
-    [ "writeDataToBuffer", "classinviwo_1_1DataWriterType.html#aaf51db752795455ecca8bce7a6871a17", null ],
-    [ "writeDataToRepresentation", "classinviwo_1_1DataWriterType.html#a71e6ed29946e80f780334d5276841534", null ]
+    [ "writeDataToBuffer", "classinviwo_1_1DataWriterType.html#a180b3bbcc800f36e4ad522068dd05478", null ],
+    [ "writeDataToRepresentation", "classinviwo_1_1DataWriterType.html#aeeb30e6236935d02004fa663f452b947", null ]
 ];

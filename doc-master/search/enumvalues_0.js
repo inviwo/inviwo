@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['touchpad',['TouchPad',['../classinviwo_1_1TouchDevice.html#aa2ec655a2ad8a089a1c18f731d4280f7a2817f8d374c20bb60866595401f83f15',1,'inviwo::TouchDevice']]],
-  ['touchscreen',['TouchScreen',['../classinviwo_1_1TouchDevice.html#aa2ec655a2ad8a089a1c18f731d4280f7a64a952e5a8456c1030ce54bfa07ebb52',1,'inviwo::TouchDevice']]]
+  ['forcefloat',['ForceFloat',['../classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6abe375adbb9bf3fc24d6ce9855ef01425',1,'inviwo::BufferObject']]],
+  ['forcenormalizedfloat',['ForceNormalizedFloat',['../classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6a88282b390587e618dddcea69abf6f715',1,'inviwo::BufferObject']]]
 ];

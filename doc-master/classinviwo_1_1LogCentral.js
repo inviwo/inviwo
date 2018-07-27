@@ -3,7 +3,7 @@ var classinviwo_1_1LogCentral =
     [ "LogCentral", "classinviwo_1_1LogCentral.html#a16f4fbe9810e2b4abf0b15b3e7fe4b8e", null ],
     [ "~LogCentral", "classinviwo_1_1LogCentral.html#ae703845c8641cb089f3e43122b0fc786", null ],
     [ "getLogLevel", "classinviwo_1_1LogCentral.html#abc520bd940dd7c31818bc105a7a079bb", null ],
-    [ "getLogStacktrace", "classinviwo_1_1LogCentral.html#abe9128861d08166a83ba5ba2c44e4b3f", null ],
+    [ "getLogStacktrace", "classinviwo_1_1LogCentral.html#a2cb27818418ea1e7f64086c3ef37f750", null ],
     [ "log", "classinviwo_1_1LogCentral.html#abd78e83c96b2e1c0f6623d52d5bc3f6c", null ],
     [ "logAssertion", "classinviwo_1_1LogCentral.html#a3c3cc0b8ad46c38929fbd4fe8ae17ed9", null ],
     [ "logNetwork", "classinviwo_1_1LogCentral.html#a4a4db780ee6b3e06270156256bb69334", null ],

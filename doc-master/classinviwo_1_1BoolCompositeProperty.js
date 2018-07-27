@@ -6,8 +6,8 @@ var classinviwo_1_1BoolCompositeProperty =
     [ "getBoolProperty", "classinviwo_1_1BoolCompositeProperty.html#a57bdfaa80781de53cd5f954c89526ab5", null ],
     [ "getClassIdentifierForWidget", "classinviwo_1_1BoolCompositeProperty.html#a97d2568c3666975676da9daafa6821d5", null ],
     [ "InviwoPropertyInfo", "classinviwo_1_1BoolCompositeProperty.html#aa5b997daebb5b2438174bc89123d8e19", null ],
-    [ "isChecked", "classinviwo_1_1BoolCompositeProperty.html#ac722571998cb07d7b89046c7fec4dbb4", null ],
+    [ "isChecked", "classinviwo_1_1BoolCompositeProperty.html#a2963bf149d7710238878190be3cd9740", null ],
     [ "operator bool &", "classinviwo_1_1BoolCompositeProperty.html#ac164992b7c35157d0e0fb0e15bb9eb34", null ],
-    [ "operator const bool &", "classinviwo_1_1BoolCompositeProperty.html#acb09a6f2d13fb49ce06e6d1c95bc1c0e", null ],
+    [ "operator const bool &", "classinviwo_1_1BoolCompositeProperty.html#a6b961792b85a9da5bacba384e7e10a56", null ],
     [ "setChecked", "classinviwo_1_1BoolCompositeProperty.html#ae6828698f1bac36fedb775934266b211", null ]
 ];

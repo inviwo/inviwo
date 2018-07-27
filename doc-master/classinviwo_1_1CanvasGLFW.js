@@ -9,7 +9,7 @@ var classinviwo_1_1CanvasGLFW =
     [ "glSwapBuffers", "classinviwo_1_1CanvasGLFW.html#a1bd1fbb051a316b785d469b757265b2b", null ],
     [ "hide", "classinviwo_1_1CanvasGLFW.html#af4652918d4663bfdbfc9e465bc0b83b8", null ],
     [ "isFullScreen", "classinviwo_1_1CanvasGLFW.html#a0f4a692277491222e076789b6be9012b", null ],
-    [ "normalPos", "classinviwo_1_1CanvasGLFW.html#a03e579840d51ee61b56fed9a2a726ac9", null ],
+    [ "normalPos", "classinviwo_1_1CanvasGLFW.html#a9e1d9711a2ae456637f9e5e9c08e577e", null ],
     [ "releaseContext", "classinviwo_1_1CanvasGLFW.html#a2611fe77ffad65d88eaac4fd8cb606ef", null ],
     [ "setFullScreen", "classinviwo_1_1CanvasGLFW.html#a998eb87af428745efa9d9363574fd237", null ],
     [ "setWindowPosition", "classinviwo_1_1CanvasGLFW.html#a3229e041947ce2d6bcf8dda2b7a50626", null ],

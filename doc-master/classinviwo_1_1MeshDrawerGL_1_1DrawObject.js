@@ -10,5 +10,5 @@ var classinviwo_1_1MeshDrawerGL_1_1DrawObject =
     [ "draw", "classinviwo_1_1MeshDrawerGL_1_1DrawObject.html#a8853e06d7746f6edbd422e1110fcfbc1", null ],
     [ "operator=", "classinviwo_1_1MeshDrawerGL_1_1DrawObject.html#a64d4cd8ad689d0e82781f931b01af98f", null ],
     [ "operator=", "classinviwo_1_1MeshDrawerGL_1_1DrawObject.html#a02c3fb10b5a64536d6677deae340da0e", null ],
-    [ "size", "classinviwo_1_1MeshDrawerGL_1_1DrawObject.html#af2ef01c49f739401fdec4984fa975465", null ]
+    [ "size", "classinviwo_1_1MeshDrawerGL_1_1DrawObject.html#a046702fde8f2ace4d8f46542b0e1204a", null ]
 ];

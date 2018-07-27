@@ -6,7 +6,7 @@ var classinviwo_1_1VolumeCLBase =
     [ "~VolumeCLBase", "classinviwo_1_1VolumeCLBase.html#af0d906ffd4f85082aba4b114d5ab044d", null ],
     [ "get", "classinviwo_1_1VolumeCLBase.html#aad378f8ef7473758df393a3eb5878b1d", null ],
     [ "getEditable", "classinviwo_1_1VolumeCLBase.html#a08936de95c0f240b3e654a05c25e0517", null ],
-    [ "getVolumeDataOffsetAndScaling", "classinviwo_1_1VolumeCLBase.html#a7bd582087e7e881b91ecad79c31aa13e", null ],
-    [ "getVolumeStruct", "classinviwo_1_1VolumeCLBase.html#a37b6d4d8e9ea68c1efcc7c9aad3cae11", null ],
+    [ "getVolumeDataOffsetAndScaling", "classinviwo_1_1VolumeCLBase.html#a2d2ebff978367068f7bca2ab11257dd4", null ],
+    [ "getVolumeStruct", "classinviwo_1_1VolumeCLBase.html#a9bd265012a6c7aec17e377826b4cba82", null ],
     [ "volumeStruct_", "classinviwo_1_1VolumeCLBase.html#a2ddc7e4ad0571735c09cde50f90bd34f", null ]
 ];

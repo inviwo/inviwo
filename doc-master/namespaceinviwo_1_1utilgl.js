@@ -1,5 +1,6 @@
 var namespaceinviwo_1_1utilgl =
 [
+    [ "Activate", "structinviwo_1_1utilgl_1_1Activate.html", "structinviwo_1_1utilgl_1_1Activate" ],
     [ "BlendModeEquationState", "structinviwo_1_1utilgl_1_1BlendModeEquationState.html", "structinviwo_1_1utilgl_1_1BlendModeEquationState" ],
     [ "BlendModeState", "structinviwo_1_1utilgl_1_1BlendModeState.html", "structinviwo_1_1utilgl_1_1BlendModeState" ],
     [ "ClearColor", "structinviwo_1_1utilgl_1_1ClearColor.html", "structinviwo_1_1utilgl_1_1ClearColor" ],
@@ -8,6 +9,8 @@ var namespaceinviwo_1_1utilgl =
     [ "Enable", "structinviwo_1_1utilgl_1_1Enable.html", "structinviwo_1_1utilgl_1_1Enable" ],
     [ "GlBoolState", "structinviwo_1_1utilgl_1_1GlBoolState.html", "structinviwo_1_1utilgl_1_1GlBoolState" ],
     [ "PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", "structinviwo_1_1utilgl_1_1PolygonModeState" ],
+    [ "ScissorBox", "structinviwo_1_1utilgl_1_1ScissorBox.html", "structinviwo_1_1utilgl_1_1ScissorBox" ],
+    [ "ScissorState", "structinviwo_1_1utilgl_1_1ScissorState.html", "structinviwo_1_1utilgl_1_1ScissorState" ],
     [ "SimpleState", "structinviwo_1_1utilgl_1_1SimpleState.html", "structinviwo_1_1utilgl_1_1SimpleState" ],
     [ "TexEnv", "structinviwo_1_1utilgl_1_1TexEnv.html", "structinviwo_1_1utilgl_1_1TexEnv" ],
     [ "TexParameter", "structinviwo_1_1utilgl_1_1TexParameter.html", "structinviwo_1_1utilgl_1_1TexParameter" ],

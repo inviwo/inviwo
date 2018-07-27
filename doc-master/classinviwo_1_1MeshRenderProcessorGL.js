@@ -1,16 +1,13 @@
 var classinviwo_1_1MeshRenderProcessorGL =
 [
-    [ "DrawerMap", "classinviwo_1_1MeshRenderProcessorGL.html#a30c75c78805b441a0a1f986659304d17", null ],
+    [ "DrawerMap", "classinviwo_1_1MeshRenderProcessorGL.html#ac688e3eb3ca5eae34a3001ef710f908d", null ],
     [ "MeshRenderProcessorGL", "classinviwo_1_1MeshRenderProcessorGL.html#af2e0d82c0846037fa18cb83750e3d9d2", null ],
     [ "MeshRenderProcessorGL", "classinviwo_1_1MeshRenderProcessorGL.html#af6169bbd07a1419e288550ca9e64862f", null ],
     [ "~MeshRenderProcessorGL", "classinviwo_1_1MeshRenderProcessorGL.html#a7089ff45d290c8cd2a6223955ac50c1d", null ],
-    [ "calcWorldBoundingBox", "classinviwo_1_1MeshRenderProcessorGL.html#ac09fcd69f7875dff5b6d84c93a670834", null ],
-    [ "centerViewOnGeometry", "classinviwo_1_1MeshRenderProcessorGL.html#a0f34c0e2d564d6261ef123447268b09c", null ],
     [ "getProcessorInfo", "classinviwo_1_1MeshRenderProcessorGL.html#aa482ba721bd28217524f4787b4d30b9a", null ],
     [ "initializeResources", "classinviwo_1_1MeshRenderProcessorGL.html#a4a1e342764215001902fa5f27669164a", null ],
     [ "operator=", "classinviwo_1_1MeshRenderProcessorGL.html#a6d29cb5d14c7f63bfd89fb563a2736fe", null ],
     [ "process", "classinviwo_1_1MeshRenderProcessorGL.html#a90e793825149d3e5c19da1f049bf714d", null ],
-    [ "setNearFarPlane", "classinviwo_1_1MeshRenderProcessorGL.html#a379bbd74d1a7043a763cd963f9889ad0", null ],
     [ "updateDrawers", "classinviwo_1_1MeshRenderProcessorGL.html#a48b12f3f045ebd6f9f11caf85253dd49", null ],
     [ "camera_", "classinviwo_1_1MeshRenderProcessorGL.html#a6a35dbf06391c8bac667600699b14273", null ],
     [ "centerViewOnGeometry_", "classinviwo_1_1MeshRenderProcessorGL.html#a217d633e39433d9c65501b3a96462da4", null ],

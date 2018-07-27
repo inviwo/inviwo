@@ -8,5 +8,5 @@ var classinviwo_1_1TextureUnitContainer =
     [ "operator=", "classinviwo_1_1TextureUnitContainer.html#a5a42753b7970acc75730c29dd5c6c233", null ],
     [ "operator[]", "classinviwo_1_1TextureUnitContainer.html#a4d6047c7c2a417d773019a36cb628150", null ],
     [ "push_back", "classinviwo_1_1TextureUnitContainer.html#a196b4730f5ad9228776e446afd735e3a", null ],
-    [ "size", "classinviwo_1_1TextureUnitContainer.html#a5173ea9a3cc55bc26f63f5f860d1af51", null ]
+    [ "size", "classinviwo_1_1TextureUnitContainer.html#a40e0446daac3faf7ee43151e4fd770b9", null ]
 ];

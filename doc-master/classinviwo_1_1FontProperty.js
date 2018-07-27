@@ -8,5 +8,6 @@ var classinviwo_1_1FontProperty =
     [ "operator=", "classinviwo_1_1FontProperty.html#ab137e4ddde35c206dcf7cb915f9860ca", null ],
     [ "anchorPos_", "classinviwo_1_1FontProperty.html#accccf95bfa35861236b6433ceb954225", null ],
     [ "fontFace_", "classinviwo_1_1FontProperty.html#aa2664fc550ca2fb16453d64468f1ce25", null ],
-    [ "fontSize_", "classinviwo_1_1FontProperty.html#abf8bdc4de009a52697cefc8b2abf5991", null ]
+    [ "fontSize_", "classinviwo_1_1FontProperty.html#abf8bdc4de009a52697cefc8b2abf5991", null ],
+    [ "lineSpacing_", "classinviwo_1_1FontProperty.html#ada73099ad3c3c4bb62e18dfff40f0b92", null ]
 ];

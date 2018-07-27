@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['offset_5f',['offset_',['../classinviwo_1_1plot_1_1PlotTextProperty.html#a5d8e127b354da94a3bad4b1d36da0ed5',1,'inviwo::plot::PlotTextProperty']]],
-  ['onmodulesdidregister_5f',['onModulesDidRegister_',['../classinviwo_1_1SettingsWidget.html#a750760255f3cd91ae1e05ee098f2d20d',1,'inviwo::SettingsWidget']]]
+  ['nearplanedist_5f',['nearPlaneDist_',['../classinviwo_1_1Camera.html#a08c6dcd7d5cf3941c9c1c3dde828c683',1,'inviwo::Camera']]],
+  ['noiseshader_5f',['noiseShader_',['../classinviwo_1_1CanvasGL.html#a43b258bd6442a6d35fa83b4475bcd1e2',1,'inviwo::CanvasGL']]]
 ];

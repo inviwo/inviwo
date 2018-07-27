@@ -20,6 +20,6 @@ var classinviwo_1_1TrackballAction =
     [ "TrackballAction", "classinviwo_1_1TrackballAction.html#a7c6ee0eb947ba9ea71f8e628e91ceab0", null ],
     [ "~TrackballAction", "classinviwo_1_1TrackballAction.html#a6bd25ee870f3aafaeb8f6614e18a8f43", null ],
     [ "deserialize", "classinviwo_1_1TrackballAction.html#a4cae3e63b752ad2836547b2eab752192", null ],
-    [ "getClassIdentifier", "classinviwo_1_1TrackballAction.html#a28c2e4072157bf8ec158f63c9e74044a", null ],
-    [ "serialize", "classinviwo_1_1TrackballAction.html#abd867848a8262f7032116a66f26f9975", null ]
+    [ "getClassIdentifier", "classinviwo_1_1TrackballAction.html#a93486a552ff4b35dd5cec88d568ec7f4", null ],
+    [ "serialize", "classinviwo_1_1TrackballAction.html#a167606079e9827b6ffa290372ffc6801", null ]
 ];

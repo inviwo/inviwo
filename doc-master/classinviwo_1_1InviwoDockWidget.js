@@ -4,7 +4,7 @@ var classinviwo_1_1InviwoDockWidget =
     [ "InviwoDockWidget", "classinviwo_1_1InviwoDockWidget.html#ad01118dd155a835643feba11de80fafa", null ],
     [ "~InviwoDockWidget", "classinviwo_1_1InviwoDockWidget.html#a0b3e3cff9adc5abb274c959a7b3575f9", null ],
     [ "closeEvent", "classinviwo_1_1InviwoDockWidget.html#aec6c786a476e6bac91a83a83356b2255", null ],
-    [ "isSticky", "classinviwo_1_1InviwoDockWidget.html#ae54df6308057af686bbf80fa69e85746", null ],
+    [ "isSticky", "classinviwo_1_1InviwoDockWidget.html#adc319eed03ddfd73ffb880f44ddf2e00", null ],
     [ "keyPressEvent", "classinviwo_1_1InviwoDockWidget.html#a6e939db1f306ede3f17070ec403f09d3", null ],
     [ "loadState", "classinviwo_1_1InviwoDockWidget.html#a4440fee9e86b90f272eed4f3ece8f1ab", null ],
     [ "saveState", "classinviwo_1_1InviwoDockWidget.html#aab8aab6070f04eadcff287c0b09891fe", null ],

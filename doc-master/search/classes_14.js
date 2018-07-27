@@ -27,6 +27,5 @@ var searchData=
   ['uniformsetter_3c_20vec2_20_3e',['UniformSetter&lt; vec2 &gt;',['../structinviwo_1_1utilgl_1_1UniformSetter_3_01vec2_01_4.html',1,'inviwo::utilgl']]],
   ['uniformsetter_3c_20vec3_20_3e',['UniformSetter&lt; vec3 &gt;',['../structinviwo_1_1utilgl_1_1UniformSetter_3_01vec3_01_4.html',1,'inviwo::utilgl']]],
   ['uniformsetter_3c_20vec4_20_3e',['UniformSetter&lt; vec4 &gt;',['../structinviwo_1_1utilgl_1_1UniformSetter_3_01vec4_01_4.html',1,'inviwo::utilgl']]],
-  ['upscale',['upscale',['../structinviwo_1_1util_1_1detail_1_1upscale.html',1,'inviwo::util::detail']]],
-  ['userinterfaceglmodule',['UserInterfaceGLModule',['../classinviwo_1_1UserInterfaceGLModule.html',1,'inviwo']]]
+  ['upscale',['upscale',['../structinviwo_1_1util_1_1detail_1_1upscale.html',1,'inviwo::util::detail']]]
 ];

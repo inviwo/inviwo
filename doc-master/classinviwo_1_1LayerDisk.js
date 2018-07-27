@@ -7,7 +7,7 @@ var classinviwo_1_1LayerDisk =
     [ "clone", "classinviwo_1_1LayerDisk.html#a71883a9294d90a0840bb5570345f2348", null ],
     [ "copyRepresentationsTo", "classinviwo_1_1LayerDisk.html#a5a4086d728e58a091a6442bac7e995ed", null ],
     [ "getSwizzleMask", "classinviwo_1_1LayerDisk.html#a54d1982d1fbedd1f0327c5f7f4818090", null ],
-    [ "getTypeIndex", "classinviwo_1_1LayerDisk.html#aaba76ab6127d6eb2fcf8264456841599", null ],
+    [ "getTypeIndex", "classinviwo_1_1LayerDisk.html#ad31893a5cda0a0c0d56fbc9483663a03", null ],
     [ "operator=", "classinviwo_1_1LayerDisk.html#a14de8f6d4b610265f7233b0c4faea22a", null ],
     [ "setDimensions", "classinviwo_1_1LayerDisk.html#a0fe1a13335d2062452af209886564f33", null ],
     [ "setSwizzleMask", "classinviwo_1_1LayerDisk.html#a3b4460238d9163d84493a1ec6f3eb93d", null ],

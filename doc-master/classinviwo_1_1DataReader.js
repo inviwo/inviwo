@@ -5,6 +5,6 @@ var classinviwo_1_1DataReader =
     [ "~DataReader", "classinviwo_1_1DataReader.html#a7a4ce83827323adde6529b049d595175", null ],
     [ "addExtension", "classinviwo_1_1DataReader.html#af82104a266d676511510804167102068", null ],
     [ "clone", "classinviwo_1_1DataReader.html#a00c189b448acc865b1ec6870fa67dc8f", null ],
-    [ "getExtensions", "classinviwo_1_1DataReader.html#abe57dc4560202c2321ac2baf55824d6e", null ],
+    [ "getExtensions", "classinviwo_1_1DataReader.html#a9cfd32bc872da4a7934673b8dc69d2e1", null ],
     [ "operator=", "classinviwo_1_1DataReader.html#a68407587413d89eecdb5a6d84979eb7b", null ]
 ];

@@ -10,7 +10,7 @@ var classinviwo_1_1OverlayProperty =
     ] ],
     [ "OverlayProperty", "classinviwo_1_1OverlayProperty.html#a5a317e136607a8bf9b16694063f81939", null ],
     [ "~OverlayProperty", "classinviwo_1_1OverlayProperty.html#a753b93d86bcd54c521dcf02c39a139bf", null ],
-    [ "getBlendMode", "classinviwo_1_1OverlayProperty.html#a374daceb8c016538ae3b9a0b7112f98d", null ],
-    [ "getViewport", "classinviwo_1_1OverlayProperty.html#a7734eb9b6db9f496d7d77d553d16c866", null ],
+    [ "getBlendMode", "classinviwo_1_1OverlayProperty.html#a1111725e9f334b63fc262b0070700c6a", null ],
+    [ "getViewport", "classinviwo_1_1OverlayProperty.html#a073b0de5cfb0c7fc43e3d26fbc7a6ed1", null ],
     [ "setViewDimensions", "classinviwo_1_1OverlayProperty.html#a9d219f7841cad86477dbe8f0e1b81380", null ]
 ];

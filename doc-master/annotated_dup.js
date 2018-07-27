@@ -1,14 +1,10 @@
 var annotated_dup =
 [
-    [ "glui", null, [
-      [ "BoxLayout", "classglui_1_1BoxLayout.html", null ],
-      [ "Element", "classglui_1_1Element.html", null ],
-      [ "HBoxLayout", "classglui_1_1HBoxLayout.html", null ],
-      [ "VBoxLayout", "classglui_1_1VBoxLayout.html", null ]
-    ] ],
+    [ "glsl", "namespaceglsl.html", "namespaceglsl" ],
     [ "inviwo", "namespaceinviwo.html", "namespaceinviwo" ],
     [ "pybind11", null, [
       [ "detail", null, [
+        [ "type_caster< Property >", "structpybind11_1_1detail_1_1type__caster_3_01Property_01_4.html", null ],
         [ "type_caster< std::vector< CanvasProcessor * > >", "structpybind11_1_1detail_1_1type__caster_3_01std_1_1vector_3_01CanvasProcessor_01_5_01_4_01_4.html", null ],
         [ "type_caster< std::vector< Layer * > >", "structpybind11_1_1detail_1_1type__caster_3_01std_1_1vector_3_01Layer_01_5_01_4_01_4.html", null ],
         [ "type_caster< std::vector< Processor * > >", "structpybind11_1_1detail_1_1type__caster_3_01std_1_1vector_3_01Processor_01_5_01_4_01_4.html", null ],
@@ -124,11 +120,9 @@ var annotated_dup =
       [ "hash< inviwo::ShaderType >", "structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html", "structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4" ],
       [ "hash< std::pair< T, U > >", "structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html", "structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4" ],
       [ "hash< std::tuple< TT... > >", "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html", "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4" ],
-      [ "tuple_element< N,::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__element_3_01N_00_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", "structstd_1_1tuple__element_3_01N_00_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4" ],
+      [ "tuple_element< N, ::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", "structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4" ],
       [ "tuple_size<::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", null ]
     ] ],
-    [ "AbstactButton", "classAbstactButton.html", null ],
-    [ "ButtonProperty", "classButtonProperty.html", null ],
-    [ "Checkbox", "classCheckbox.html", null ],
-    [ "ToolButtonProperty", "classToolButtonProperty.html", null ]
+    [ "ScopedClockCPU", "classScopedClockCPU.html", null ],
+    [ "ScopedClockGL", "classScopedClockGL.html", null ]
 ];
