@@ -64,7 +64,10 @@ node {
             //if (env.CHANGE_ID) { // Pull Request
                 if(!env.THIS_DOES_NOT_EXISTS){
                     echo "FIRST RUN"
-                    env.THIS_DOES_NOT_EXISTS = 1;
+                    environment{
+                        THIS_DOES_NOT_EXISTS = 1;
+                    }
+                    
                 }else{
                     echo "NOT FIRST RUN"
                 }
