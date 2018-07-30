@@ -37,6 +37,10 @@ TFPrimitive::TFPrimitive(double pos, const vec4& color) : data_({pos, color}) {}
 
 TFPrimitive::TFPrimitive(const TFPrimitiveData& data) : data_(data) {}
 
+TFPrimitive::TFPrimitive(const TFPrimitive& rhs) : data_(rhs.data_) {}
+
+TFPrimitive::TFPrimitive(TFPrimitive&& rhs) : data_(std::move(rhs.data_)) {}
+
 TFPrimitive& TFPrimitive::operator=(const TFPrimitive& rhs) {
     if ((this != &rhs) && (*this != rhs)) {
         data_ = rhs.data_;
