@@ -40,26 +40,34 @@
  * This file contains convenience functions for iterating.
  * Examples:
  *
+ * \code{.cpp}
  * Iterate over containers in sync (@see inviwo::util::zip).
  * std::vector<int> a(10);
  * std::vector<int> b(10);
  * for (auto&& i : util::zip(a, b)) {
- *      std::cout << get<0>(i) << " " << get<1>(i) << std::endl;
+ *      std::cout << i.first() << " " << i.second() << std::endl;
+ *      // alternatively, get<0>(i) and get<1>(i) can be used
  * }
+ * \endcode
  *
- * Enumerate element in a container (@see inviwo::util::enumerate) .
+ *
+ * Enumerate element in a container (@see inviwo::util::enumerate).
+ * \code{.cpp}
  * std::vector<int> vec(10);
  * for (auto&& item : util::enumerate(vec)) {
- *      auto&& ind = get<0>(item);
- *      auto&& elem = get<1>(item);
+ *      auto&& ind = item.first();
+ *      auto&& elem = item.second();
  * }
+ * \endcode
  *
  * Iterate over sequence (@see inviwo::util::make_sequence).
+ * \code{.cpp}
  * size_t end = 3;
  * size_t inc = 2;
  * for (auto&& i : util::make_sequence(0, end, inc)) {
  *      // iterates over 0 and 2
  * }
+ * \endcode
  *
  */
 
@@ -197,7 +205,8 @@ auto pointerImpl(const T& t, std::index_sequence<I...>)
     return std::tuple<decltype((std::get<I>(t)).operator->())...>{(std::get<I>(t)).operator->()...};
 }
 template <typename... T>
-auto pointer(const std::tuple<T...>& t) -> std::tuple<decltype((std::declval<T>()).operator->())...> {
+auto pointer(const std::tuple<T...>& t)
+    -> std::tuple<decltype((std::declval<T>()).operator->())...> {
     return pointerImpl(t, std::index_sequence_for<T...>{});
 }
 
@@ -372,16 +381,21 @@ struct zipper {
 /**
  * Iterate over containers in sync.
  * Example use case 1:
+ * \code{.cpp}
  * std::vector<int> a(10);
  * std::vector<int> b(10);
  * for (auto&& i : util::zip(a, b)) {
- *      std::cout << get<0>(i) << " " << get<1>(i) << std::endl;
+ *      std::cout << i.first() << " " << i.second() << std::endl;
+ *      // alternatively, get<0>(i) and get<1>(i) can be used
  * }
+ * \endcode
  *
  * with C++17 structured bindings:
+ * \code{.cpp}
  * for (auto&& [i, j] : util::enumerate(vec)) {
  *      std::cout << i << " " << j << std::endl;
  * }
+ * \endcode
  */
 template <typename... T>
 auto zip(T&&... args) -> detailzip::zipper<T...> {
@@ -480,10 +494,12 @@ private:
 /**
  * Convenvience function for creating a sequence.
  * Use case example:
+ * \code{.cpp}
  * auto inc = 2; auto end = 3;
  * for (auto&& i : util::make_sequence(0, end, inc)) {
  *   // Iterates over 0 and 2
  * }
+ * \endcode
  */
 template <typename T>
 auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
@@ -495,8 +511,9 @@ auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
  * Example use case:
  * std::vector<int> vec(10);
  * for (auto&& item : util::enumerate(vec)) {
- *      auto&& ind = get<0>(item);
- *      auto&& elem = get<1>(item);
+ *      auto&& ind = item.first();
+ *      auto&& elem = item.second();
+ *      // alternatively, get<0>(item) and get<1>(item) can be used
  * }
  *
  * with C++17 structured bindings
