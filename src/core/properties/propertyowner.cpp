@@ -64,6 +64,18 @@ PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
 }
 
 void PropertyOwner::addProperty(Property* property, bool owner) {
+    insertProperty(properties_.size(), property, owner);
+}
+
+void PropertyOwner::addProperty(Property& property) {
+    insertProperty(properties_.size(), &property, false);
+}
+
+void PropertyOwner::insertProperty(size_t index, Property* property, bool owner) {
+    if (index > properties_.size()) {
+        index = properties_.size();
+    }
+
     if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
         throw Exception(
             "Can't add property, identifier \"" + property->getIdentifier() + "\" already exist.",
@@ -76,8 +88,8 @@ void PropertyOwner::addProperty(Property* property, bool owner) {
         }
     }
 
-    notifyObserversWillAddProperty(property, properties_.size());
-    properties_.push_back(property);
+    notifyObserversWillAddProperty(property, index);
+    properties_.insert(properties_.begin() + index, property);
     property->setOwner(this);
 
     if (dynamic_cast<EventProperty*>(property)) {
@@ -88,13 +100,13 @@ void PropertyOwner::addProperty(Property* property, bool owner) {
     }
 
     if (owner) {  // Assume ownership of property;
-        ownedProperties_.emplace_back(property);	
+        ownedProperties_.emplace_back(property);
     }
-    notifyObserversDidAddProperty(property, properties_.size() - 1);
+    notifyObserversDidAddProperty(property, index);
 }
 
-void PropertyOwner::addProperty(Property& property) {
-    addProperty(&property, false);
+void PropertyOwner::insertProperty(size_t index, Property& property) {
+    insertProperty(index, &property, false);
 }
 
 Property* PropertyOwner::removeProperty(const std::string& identifier) {
