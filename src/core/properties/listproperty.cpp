@@ -116,7 +116,7 @@ void ListProperty::set(const ListProperty* src) {
 
         std::vector<Property*> srcItems = src->getProperties();
         std::vector<Property*> dstItems = getProperties();
-        s
+        
         // find list items matching class identifiers of source items
         //
         // TODO: ensure correct order of properties
