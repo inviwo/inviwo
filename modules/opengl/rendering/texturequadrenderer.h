@@ -105,7 +105,7 @@ public:
      * dimensions determine the covered area in pixel. The anchor point of the
      * image is in the lower left corner.
      *
-     * @param layer   layer which is to be rendered onto the current render target
+     * @param image   layer which is to be rendered onto the current render target
      * @param pos     position of lower left corner in screen space coordinates
      * @param canvasSize   dimensions of the current render target
      * @param transformation  additional transformation matrix to be applied before rendering. (For
@@ -193,7 +193,7 @@ public:
      * extent. The covered area is defined by the extent (in pixel). The anchor point
      * of the layer is in the lower left corner.
      *
-     * @param layer   layer which is to be rendered onto the current render target
+     * @param image   layer which is to be rendered onto the current render target
      * @param pos     position of lower left corner in screen space coordinates
      * @param extent      extent covered by the rendered texture in screen space coordinates
      * @param canvasSize   dimensions of the current render target

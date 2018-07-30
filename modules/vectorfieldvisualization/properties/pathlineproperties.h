@@ -38,11 +38,6 @@
 
 namespace inviwo {
 
-/**
- * \class PathLineProperties
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLineProperties : public IntegralLineProperties {
 public:
     InviwoPropertyInfo();
@@ -53,7 +48,7 @@ public:
     virtual PathLineProperties* clone() const override;
     virtual ~PathLineProperties();
 
-    double getStartT()const { return startT_.get(); }
+    double getStartT() const { return startT_.get(); }
 
 private:
     void setUpProperties();
@@ -62,6 +57,6 @@ protected:
     DoubleProperty startT_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PATHLINEPROPERTIES_H

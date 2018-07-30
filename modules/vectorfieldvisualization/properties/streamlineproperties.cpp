@@ -34,19 +34,10 @@ namespace inviwo {
 PropertyClassIdentifier(StreamLineProperties, "org.inviwo.StreamLineProperties");
 
 StreamLineProperties::StreamLineProperties(std::string identifier, std::string displayName)
-    : IntegralLineProperties(identifier, displayName)
-    , normalizeSamples_("normalizeSamples", "Normalize Samples", true) {
-    setUpProperties();
-}
+    : IntegralLineProperties(identifier, displayName) {}
 
 StreamLineProperties::StreamLineProperties(const StreamLineProperties& rhs)
-    : IntegralLineProperties(rhs), normalizeSamples_(rhs.normalizeSamples_) {
-    setUpProperties();
-}
-
-void StreamLineProperties::setUpProperties() { addProperty(normalizeSamples_); }
-
-bool StreamLineProperties::getNormalizeSamples() const { return normalizeSamples_; }
+    : IntegralLineProperties(rhs) {}
 
 StreamLineProperties* StreamLineProperties::clone() const {
     return new StreamLineProperties(*this);
@@ -57,9 +48,8 @@ StreamLineProperties::~StreamLineProperties() {}
 StreamLineProperties& StreamLineProperties::operator=(const StreamLineProperties& that) {
     if (this != &that) {
         IntegralLineProperties::operator=(that);
-        normalizeSamples_ = that.normalizeSamples_;
     }
     return *this;
 }
 
-}  // namespace
+}  // namespace inviwo

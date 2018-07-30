@@ -45,7 +45,7 @@ namespace util {
 /**
 * \brief check whether the given polygon is convex
 *
-* @param hull   polygon consisting of points
+* @param polygon   polygon consisting of points
 * @return true if the polygon is convex, false otherwise
 */
 template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::extent<T>::value == 2,
@@ -114,10 +114,10 @@ template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::ex
 /**
 * \brief compute the complex hull from a given set of 2D points using
 * the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm
-*
+* \see https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms
+* 
 * @param points   set of 2D points
 * @return complex hull of input points
-* \see <a href="https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms"/>
 */
 template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::extent<T>::value == 2,
                                            int>::type = 0>

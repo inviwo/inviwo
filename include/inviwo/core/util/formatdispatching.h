@@ -256,7 +256,7 @@ namespace util {
  * ```{.cpp}
  * VolumeRam* volumeram = ...; // of some glm vector type.
  * auto count = volumeram->dispatch<size_t, dispatching::filter::Vecs>([](auto vrprecision) {
- *     using VolumeType = util::PrecsionType<decltype(vr)>;
+ *     using VolumeType = util::PrecsionType<decltype(vrprecision)>;
  *     ....
  * ```
  * VolumeType will then be for example VolumeRamPrecision<vec3>
@@ -270,7 +270,7 @@ using PrecsionType = typename std::remove_pointer<typename std::remove_const<T>:
  * ```{.cpp}
  * VolumeRam* volumeram = ...; // of some glm vector type.
  * auto count = volumeram->dispatch<size_t, dispatching::filter::Vecs>([](auto vrprecision) {
- *     using ValueType = util::PrecsionValueType<decltype(vr)>;
+ *     using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
  *     ....
  * ```
  * ValueType will then be for example vec3

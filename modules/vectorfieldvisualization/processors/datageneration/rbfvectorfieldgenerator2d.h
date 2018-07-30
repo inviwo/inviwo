@@ -42,14 +42,6 @@
 
 namespace inviwo {
 
-/**
- * \class RBFVectorFieldGenerator2D
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
-
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API RBFVectorFieldGenerator2D : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -58,7 +50,6 @@ public:
     virtual ~RBFVectorFieldGenerator2D();
 
     virtual void process() override;
-
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -82,13 +73,11 @@ protected:
 
     void createSamples();
 
-
     std::uniform_real_distribution<double> theta_;
     std::uniform_real_distribution<double> x_;
 
     std::vector<std::pair<dvec2, dvec2>> samples_;
-   
 };
 
-}  // namespace
+}  // namespace inviwo
 #endif  // IVW_RBFVECTORFIELDGENERATOR2D_H

@@ -87,7 +87,7 @@ public:
      * @param name the name of the dataset, will be used for to name the output files [name].ivfs
      * and [name]xx.ivf
      * @param path path to the folder to put the main file
-     * @param reltivePathToElements relative path (from the path to the main file) to where the
+     * @param reltivePathToTimesteps relative path (from the path to the main file) to where the
      * sequence elements will be written.
      */
     void writeData(const VolumeSequence* volumes, std::string name, std::string path,

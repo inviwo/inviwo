@@ -50,10 +50,10 @@ if(IVW_PACKAGE_PROJECT)
     
     if(WIN32)
         # Need backslash for correct subdirectory paths with NSIS
-        set(CPACK_PACKAGE_ICON              "${IVW_ROOT_DIR}\\\\resources\\\\icons\\\\inviwo_light.png")
+        set(CPACK_PACKAGE_ICON              "${IVW_ROOT_DIR}\\\\resources\\\\inviwo\\\\inviwo_light.png")
         set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inviwo\\\\${IVW_VERSION}")
     else()
-        set(CPACK_PACKAGE_ICON              "${IVW_ROOT_DIR}/resources/icons/inviwo_light.png")
+        set(CPACK_PACKAGE_ICON              "${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.png")
         set(CPACK_PACKAGE_INSTALL_DIRECTORY "Inviwo/${IVW_VERSION}")
     endif()
 
@@ -65,7 +65,7 @@ if(IVW_PACKAGE_PROJECT)
         if(IVW_PACKAGE_INSTALLER)
             set(CPACK_GENERATOR "ZIP;NSIS")
             # The icon to start the application.
-            set(CPACK_NSIS_MUI_ICON "${IVW_ROOT_DIR}\\\\resources\\\\icons\\\\inviwo_light.ico")
+            set(CPACK_NSIS_MUI_ICON "${IVW_ROOT_DIR}\\\\resources\\\\inviwo\\\\inviwo_light.ico")
             # Add a link to the application website in the startup menu.
             set(CPACK_NSIS_MENU_LINKS "http://www.inviwo.org" "Inviwo Homepage")
             # Set the icon for the application in the Add/Remove programs section.
@@ -92,7 +92,7 @@ if(IVW_PACKAGE_PROJECT)
             #http://www.cmake.org/cmake/help/v3.2/module/CPackBundle.html
             set(CPACK_GENERATOR           "TGZ;DragNDrop")
             set(CPACK_BUNDLE_NAME         "Inviwo")
-            set(CPACK_BUNDLE_ICON         "${IVW_ROOT_DIR}/Resources/icons/inviwo_light.icns")
+            set(CPACK_BUNDLE_ICON         "${IVW_ROOT_DIR}/Resources/inviwo/inviwo_light.icns")
             set(CPACK_BUNDLE_PLIST        "${CMAKE_BINARY_DIR}/Info.plist")
             set(CPACK_DMG_DS_STORE        "${IVW_ROOT_DIR}/Resources/DS_mapp")
             set(CPACK_DMG_VOLUME_NAME     "Inviwo ${IVW_VERSION}")

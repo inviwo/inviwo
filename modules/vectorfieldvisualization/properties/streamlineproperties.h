@@ -37,11 +37,6 @@
 
 namespace inviwo {
 
-/**
- * \class StreamLineProperties
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineProperties : public IntegralLineProperties {
 public:
     InviwoPropertyInfo();
@@ -51,16 +46,8 @@ public:
     StreamLineProperties& operator=(const StreamLineProperties& that);
     virtual StreamLineProperties* clone() const override;
     virtual ~StreamLineProperties();
-
-    bool getNormalizeSamples() const;
-
-private:
-    void setUpProperties();
-
-protected:
-    BoolProperty normalizeSamples_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_STREAMLINEPROPERTIES_H

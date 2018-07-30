@@ -31,11 +31,13 @@
 
 namespace inviwo {
 
-IntegralLineSet::IntegralLineSet(mat4 modelMatrix) : lines_(), modelMatrix_(modelMatrix) {}
+IntegralLineSet::IntegralLineSet(mat4 modelMatrix, mat4 worldMatrix)
+    : lines_(), modelMatrix_(modelMatrix), worldMatrix_(worldMatrix) {}
 
 IntegralLineSet::~IntegralLineSet() {}
 
-inviwo::mat4 IntegralLineSet::getModelMatrix() const { return modelMatrix_; }
+mat4 IntegralLineSet::getModelMatrix() const { return modelMatrix_; }
+mat4 IntegralLineSet::getWorldMatrix() const { return worldMatrix_; }
 
 std::vector<IntegralLine>::const_iterator IntegralLineSet::begin() const { return lines_.begin(); }
 
@@ -47,33 +49,38 @@ std::vector<IntegralLine>::iterator IntegralLineSet::end() { return lines_.end()
 
 size_t IntegralLineSet::size() const { return lines_.size(); }
 
-inviwo::IntegralLine& IntegralLineSet::operator[](size_t idx) { return lines_[idx]; }
+IntegralLine& IntegralLineSet::operator[](size_t idx) { return lines_[idx]; }
 
-const inviwo::IntegralLine& IntegralLineSet::operator[](size_t idx) const { return lines_[idx]; }
+const IntegralLine& IntegralLineSet::operator[](size_t idx) const { return lines_[idx]; }
 
-inviwo::IntegralLine& IntegralLineSet::at(size_t idx) { return lines_.at(idx); }
+IntegralLine& IntegralLineSet::at(size_t idx) { return lines_.at(idx); }
 
-const inviwo::IntegralLine& IntegralLineSet::at(size_t idx) const { return lines_.at(idx); }
+const IntegralLine& IntegralLineSet::at(size_t idx) const { return lines_.at(idx); }
 
-void IntegralLineSet::push_back(IntegralLine &line) {
-    line.setIndex(lines_.size());
+void IntegralLineSet::push_back(const IntegralLine& line, SetIndex updateIndex) {
+    if (updateIndex == SetIndex::No) {
+        lines_.push_back(line);
+    } else {
+        push_back(line, lines_.size());
+    }
+}
+
+void IntegralLineSet::push_back(const IntegralLine& line, size_t idx) {
+    IntegralLine copy(line);
+    copy.setIndex(idx);
+    lines_.push_back(std::move(copy));
+}
+
+void IntegralLineSet::push_back(IntegralLine&& line, SetIndex updateIndex) {
+    if (updateIndex == SetIndex::Yes) {
+        line.setIndex(lines_.size());
+    }
     lines_.push_back(line);
 }
 
-void IntegralLineSet::push_back(IntegralLine &line, size_t idx)
-{
+void IntegralLineSet::push_back(IntegralLine&& line, size_t idx) {
     line.setIndex(idx);
     lines_.push_back(line);
 }
 
-void IntegralLineSet::push_back(const IntegralLine &line) {
-    lines_.emplace_back(line);
-}
-
-void IntegralLineSet::push_back(const IntegralLine &line, size_t idx)
-{
-    IntegralLine copy(line);
-    push_back(copy,idx);
-}
-
-}  // namespace
+}  // namespace inviwo

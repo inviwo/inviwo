@@ -40,19 +40,30 @@
 namespace inviwo {
 
 namespace util {
-    namespace detail{
-        template <typename Callback, typename IT>
-        void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t = 0) {
-            std::for_each(a, b, callback);
-        }
+namespace detail {
+template <typename Callback, typename IT>
+void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0) {
+    std::for_each(a, b, callback);
+}
 
-        template <typename Callback, typename IT>
-        void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t start = 0) {
-            std::for_each(a, b, [&](auto v) { callback(v, start++); });
-        }
+template <typename Callback, typename IT>
+void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
+    std::for_each(a, b, [&](auto v) { callback(v, startIndex++); });
+}
 
-    }
+template <typename Callback, typename IT>
+auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
+    return dispatchPool([id=startIndex, c = std::move(callback), a, b]() mutable {
+      std::for_each(a, b, [&](auto v) { c(v, id++); });
+    });
+}
 
+template <typename Callback, typename IT>
+auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0) {
+    return dispatchPool([c = std::move(callback), a, b]() { std::for_each(a, b, c); });
+}
+
+}  // namespace detail
 
 /**
  * Use multiple threads to iterate over all elements in an iterable data structure (such as
@@ -61,22 +72,22 @@ namespace util {
  * The function will return once all jobs as has been created and queued.
  *
  * @param iterable the data structure to iterate over
- * @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
+ * @param callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
  * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
  * the data structure
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
  * create pool size * 4 jobs
  * @return a vector of futures, one for each job created.
  */
-template <typename Iterable, typename Callback, typename T = typename Iterable::value_type>
+template <typename Iterable, typename T = typename Iterable::value_type, typename Callback>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
                                                     size_t jobs = 0) {
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     auto poolSize = settings->poolSize_.get();
-    auto includeIndex = typename std::conditional<util::is_callable_with<T, size_t>(callback),
-                                                  std::true_type, std::false_type>::type();
+    using IncludeIndexType = typename std::conditional<util::is_callable_with<T, size_t>(callback),
+                                                       std::true_type, std::false_type>::type;
     if (poolSize == 0) {
-        detail::foreach_helper(includeIndex, iterable.begin(), iterable.end(), callback);
+        detail::foreach_helper(IncludeIndexType(), iterable.begin(), iterable.end(), callback);
         return {};
     }
 
@@ -87,12 +98,11 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
     auto s = iterable.size();
     std::vector<std::future<void>> futures;
     for (size_t job = 0; job < jobs; ++job) {
-        auto start = (s * job) / jobs;
-        auto end = (s * (job + 1)) / jobs;
-        futures.push_back(dispatchPool([&callback, &iterable, start, end, &includeIndex]() {
-            detail::foreach_helper(includeIndex, iterable.begin() + start,
-                                   iterable.begin() + static_cast<size_t>(end), callback, start);
-        }));
+        size_t start = (s * job) / jobs;
+        size_t end = (s * (job + 1)) / jobs;
+        auto a = iterable.begin() + start;
+        auto b = iterable.begin() + end;
+        futures.push_back(detail::foreach_helper_pool(IncludeIndexType(), a, b, callback, start));
     }
     return futures;
 }
@@ -104,15 +114,15 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
  * The function will return once all jobs as has finished processing.
  *
  * @param iterable the data structure to iterate over
- * @param the callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
+ * @param callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
  * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
  * the data structure
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
  * create pool size * 4 jobs
  */
-template <typename Iterable, typename Callback, typename T = typename Iterable::value_type>
+template <typename Iterable, typename T = typename Iterable::value_type, typename Callback>
 void forEachParallel(const Iterable& iterable, Callback callback, size_t jobs = 0) {
-    auto futures = forEachParallelAsync<Iterable,Callback,T>(iterable, callback, jobs);
+    auto futures = forEachParallelAsync<Iterable, T, Callback>(iterable, callback, jobs);
 
     for (const auto& e : futures) {
         e.wait();

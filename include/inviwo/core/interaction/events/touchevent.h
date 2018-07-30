@@ -49,11 +49,12 @@ public:
     TouchPoint() = default;
     /**
      * @param id Touch point id that distinguishes a particular touch point
-     * @param pos Position in screen coordinates [0 dim-1]^2.
-     * @param posNormalized Position normalized to the size of the screen [0 1]^2.
-     * @param prevPos Previous position in screen coordinates [0 dim-1]^2.
-     * @param  prevPosNormalized Previous position normalized to the size of the screen [0 1]^2.
      * @param touchState State of the touch point.
+     * @param posNormalized Position normalized to the size of the screen [0 1]^2.
+     * @param prevPosNormalized Previous position normalized to the size of the screen [0 1]^2.
+     * @param pressedPosNormalized Position that was pressed normalized to the size of the screen [0 1]^2.
+     * @param canvasSize size of the canvas from where the event originates
+     * @param pressure the pressure of the touch 
      * @param depth Depth value in normalized device coordinates ([-1 1]) at touch point, 1
      * if no depth is available.
      */

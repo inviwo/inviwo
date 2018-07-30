@@ -78,9 +78,9 @@ std::wstring toWstring(const std::string& str);
  * Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.
  * 
  * @note Empty substrings are not skipped, ";;" will generate an element.
- * @param toSplit Delimiter separated string
- * @param delimiter The character use for splitting
- * @return Substrings
+ * @param str The string to split
+ * @param delimeter The character use for splitting (default to space)
+ * @return a vector containing the substrings 
  */
 IVW_CORE_API std::vector<std::string> splitString(const std::string& str, char delimeter = ' ');
 
@@ -130,7 +130,7 @@ IVW_CORE_API std::string camelCaseToHeader(const std::string& s);
 /**
  * \brief Case insensitive equal comparison of two strings.
  * @return true if all the elements in the two containers are the same. 
- * @seealso CaseInsensitiveCompare
+ * @see CaseInsensitiveCompare
  */
 IVW_CORE_API bool iCaseCmp(const std::string& l, const std::string& r);
 /**

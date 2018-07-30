@@ -43,7 +43,7 @@ PathLineProperties::PathLineProperties(std::string identifier, std::string displ
 }
 
 PathLineProperties::PathLineProperties(const PathLineProperties& rhs)
-    : IntegralLineProperties(rhs), startT_(rhs.startT_){
+    : IntegralLineProperties(rhs), startT_(rhs.startT_) {
     setUpProperties();
 }
 
@@ -59,9 +59,6 @@ PathLineProperties* PathLineProperties::clone() const { return new PathLinePrope
 
 PathLineProperties::~PathLineProperties() {}
 
+void PathLineProperties::setUpProperties() { addProperty(startT_); }
 
-void PathLineProperties::setUpProperties() {
-    addProperty(startT_);
-}
-
-}  // namespace
+}  // namespace inviwo

@@ -69,27 +69,6 @@
 
 namespace inviwo {
 
-namespace util {
-/*
- * Make sure that all data formats are initialized.
- * Should only be called in the core library, i.e. in InviwoApplication constructor.
- *
- * Need to be done when libraries are loaded at runtime since the
- * data format may be used first in one of the loaded libraries
- * but will not be cleaned up when the module is unloaded.
- *
- */
-void dataFormatDummyInitialization() {
-#include <warn/push>
-#include <warn/ignore/unused-variable>
-#define DataFormatIdMacro(i) \
-    { const DataFormatBase* dummyInitialization = Data##i::get(); }
-#include <inviwo/core/util/formatsdefinefunc.h>
-#include <warn/pop>
-}
-
-}  // namespace util
-
 InviwoApplication* InviwoApplication::instance_ = nullptr;
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
@@ -216,11 +195,10 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     // Make sure that all data formats are initialized.
     // Should only be called in the core library, i.e. in InviwoApplication constructor.
-    //
     // Need to be done when libraries are loaded at runtime since the
     // data format may be used first in one of the loaded libraries
     // but will not be cleaned up when the module is unloaded.
-    util::dataFormatDummyInitialization();
+    DataFormatBase::get();
 }
 
 InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}

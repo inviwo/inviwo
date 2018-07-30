@@ -96,10 +96,10 @@ public:
 };
 
 template <typename T>
-class SphericalPropertyTransformer<glm::tvec3<T, glm::defaultp>>
-    : public PropertyTransformer<glm::tvec3<T, glm::defaultp>> {
+class SphericalPropertyTransformer<glm::vec<3, T, glm::defaultp>>
+    : public PropertyTransformer<glm::vec<3, T, glm::defaultp>> {
 public:
-    using V = glm::tvec3<T, glm::defaultp>;
+    using V = glm::vec<3, T, glm::defaultp>;
 
     SphericalPropertyTransformer(OrdinalProperty<V>* prop) : PropertyTransformer<V>(prop) {}
     virtual ~SphericalPropertyTransformer(){};

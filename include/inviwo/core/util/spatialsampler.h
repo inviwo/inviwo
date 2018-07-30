@@ -43,7 +43,10 @@ namespace inviwo {
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 class SpatialSampler {
 public:
+    static constexpr unsigned SpatialDimensions = SpatialDims;
+    static constexpr unsigned DataDimensions = DataDims;
     using Space = CoordinateSpace;
+    using ReturnType = Vector<DataDims, T>;
 
     SpatialSampler(const SpatialEntity<SpatialDims> &spatialEntity, Space space = Space::Data);
     virtual ~SpatialSampler() = default;

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VECTOR2DCURL_H
@@ -38,27 +38,14 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.Vector2DCurl, Vector2DCurl}
- * ![](org.inviwo.Vector2DCurl.png?classIdentifier=org.inviwo.Vector2DCurl)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DCurl : public Processor { 
+
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DCurl : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     Vector2DCurl();
     virtual ~Vector2DCurl() = default;
-     
+
     virtual void process() override;
 
 private:
@@ -68,7 +55,6 @@ private:
     Shader shader_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VECTOR2DCURL_H
-
+#endif  // IVW_VECTOR2DCURL_H

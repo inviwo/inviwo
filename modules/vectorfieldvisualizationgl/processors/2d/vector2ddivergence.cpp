@@ -39,25 +39,22 @@ namespace inviwo {
 const ProcessorInfo Vector2DDivergence::processorInfo_{
     "org.inviwo.Vector2DDivergence",  // Class identifier
     "Vector 2D Divergence",           // Display name
-    "Vector Field Visualization",          // Category
-    CodeState::Experimental,          // Code state
+    "Vector Field Visualization",     // Category
+    CodeState::Stable,                // Code state
     Tags::GL,                         // Tags
 };
-const ProcessorInfo Vector2DDivergence::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Vector2DDivergence::getProcessorInfo() const { return processorInfo_; }
 
 Vector2DDivergence::Vector2DDivergence()
     : Processor()
     , inport_("inport", true)
     , outport_("outport", DataVec4Float32::get())
-    , shader_("vector2ddivergence.frag")
-{
+    , shader_("vector2ddivergence.frag") {
 
     addPort(inport_);
     addPort(outport_);
 }
-    
+
 void Vector2DDivergence::process() {
     utilgl::activateAndClearTarget(outport_);
 
@@ -65,12 +62,9 @@ void Vector2DDivergence::process() {
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
 
-
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-} // namespace
-
-
+}  // namespace inviwo

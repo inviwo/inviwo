@@ -179,12 +179,12 @@ struct LayerToCImg {
 };
 
 // Multiple channel images
-template <typename T, template <typename, glm::precision> class G>
-struct LayerToCImg<G<T, glm::defaultp>> {
+template <glm::length_t L, typename T, glm::qualifier Q>
+struct LayerToCImg<glm::vec<L, T, Q>> {
     static std::unique_ptr<cimg_library::CImg<T>> convert(const LayerRAM* inputLayerRAM,
                                                           bool permute = true) {
         auto dataFormat = inputLayerRAM->getDataFormat();
-        auto typedDataPtr = static_cast<const G<T, glm::defaultp>*>(inputLayerRAM->getData());
+        auto typedDataPtr = static_cast<const glm::vec<L, T, Q>*>(inputLayerRAM->getData());
 
         // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planer format
         // (RRRRGGGGBBBB).

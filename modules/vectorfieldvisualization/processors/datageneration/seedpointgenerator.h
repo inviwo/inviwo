@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SEEDPOINTGENERATOR_H
@@ -49,35 +49,20 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SeedPointGenerator, Seed Point Generator}
- * ![](org.inviwo.SeedPointGenerator.png?classIdentifier=org.inviwo.SeedPointGenerator)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator : public Processor { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointGenerator : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     SeedPointGenerator();
     virtual ~SeedPointGenerator() = default;
-     
-    virtual void process() override;
 
+    virtual void process() override;
 
     void onGeneratorChange();
 
 private:
     SeedPoints3DOutport seedPoints_;
-    
+
     CompositeProperty lineGroup_;
     CompositeProperty planeGroup_;
     CompositeProperty sphereGroup_;
@@ -101,7 +86,6 @@ private:
     BoolProperty useSameSeed_;
     IntProperty seed_;
 
-
     void randomPoints();
     void planePoints();
     void linePoints();
@@ -109,10 +93,8 @@ private:
 
     std::random_device rd_;
     std::mt19937 mt_;
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SEEDPOINTGENERATOR_H
-
+#endif  // IVW_SEEDPOINTGENERATOR_H

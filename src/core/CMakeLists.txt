@@ -113,7 +113,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/volumedatareaderdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h
@@ -126,6 +125,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/tempfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/volumedatareaderdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/propertylink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/containermetadata.h
@@ -270,6 +270,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreach.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/foreacharg.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatdispatching.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
@@ -279,6 +280,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imageramutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/indexmapper.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/indirectiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/interpolation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/rayplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
@@ -524,6 +526,7 @@ set(SOURCE_FILES
     util/filelogger.cpp
     util/fileobserver.cpp
     util/filesystem.cpp
+    util/foreacharg.cpp
     util/formatconversion.cpp
     util/formatdispatching.cpp
     util/formats.cpp
@@ -531,6 +534,7 @@ set(SOURCE_FILES
     util/imagecache.cpp
     util/imageramutils.cpp
     util/imagesampler.cpp
+    util/indirectiterator.cpp
     util/inviwosetupinfo.cpp
     util/licenseinfo.cpp
     util/logcentral.cpp
@@ -581,6 +585,7 @@ set(TEST_FILES
     tests/unittests/document-test.cpp
     tests/unittests/filesystem-test.cpp
     tests/unittests/glm-test.cpp
+    tests/unittests/indirectiterator-tests.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/serialize-container-test.cpp
@@ -646,6 +651,7 @@ if (IVW_EXTERNAL_MODULES)
 endif()
 
 # Add core dependencies to this list
+target_link_libraries(inviwo-core PUBLIC ticpp inviwo::glm)
 target_link_libraries(inviwo-core PUBLIC ticpp inviwo::tinydir)
 
 if(IVW_SIGAR)
@@ -690,7 +696,7 @@ ivw_register_license_file(NAME "Flags" MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
 )
 
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm MODULE Core
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm_dummy MODULE Core
     URL "https://glm.g-truc.net"
     TYPE "The MIT License"
     FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE

@@ -37,8 +37,8 @@
 namespace inviwo {
 namespace util {
 
-    IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(const Volume &volume);
-    IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume);
+IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(const Volume &volume);
+IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume);
 
 }  // namespace util
 }  // namespace inviwo

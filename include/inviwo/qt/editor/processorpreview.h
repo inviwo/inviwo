@@ -51,6 +51,7 @@ IVW_QTEDITOR_API QImage generatePreview(const QString& classIdentifier);
 /**
 * Generate an image of a processor
 *
+* @param classIdentifier class Identifier of the processor to generate the preview for. 
 * @param opacity   if opacity is less than one, the output image will be semitransparent, range [0,1]
 */
 IVW_QTEDITOR_API QImage generateProcessorPreview(const QString& classIdentifier, double opacity = 1.0);

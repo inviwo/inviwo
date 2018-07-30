@@ -123,6 +123,8 @@ SEARCH_INCLUDES        = NO
 
 IMAGE_PATH             = ${image_paths}
 
+INCLUDE_PATH           = ${IVW_ROOT_DIR}/ext
+
 EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++
 
 FILE_PATTERNS          = *.c \\
@@ -140,7 +142,7 @@ RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_PATTERNS       = */moc_* \\
                          */qrc_* \\
-                         */ext/* \\
+                         */modules/*/ext/* \\
                          */clogs/* \\
                          *-test.cpp \\
                          *sqlite3* \\

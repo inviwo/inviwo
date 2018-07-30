@@ -39,11 +39,6 @@
 
 namespace inviwo {
 
-/**
- * \class Seed3Dto4D
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API Seed3Dto4D : public Processor {
 public:
     Seed3Dto4D();
@@ -55,12 +50,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    SeedPointsInport seed3d_;
+    SeedPoints3DInport seed3d_;
     SeedPoints4DOutport seed4d_;
 
     FloatProperty w_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SEED3DTO4D_H

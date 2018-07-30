@@ -49,9 +49,8 @@ public:
      *
      * @param size Size in bytes.
      * @param format Data format
-     * @param type What kind of data is stored (positions, normals...) ? Will determine
-     *location in shader.
-     * @param usage STATIC if not changing all the time, else DYNAMIC.
+     * @param usage BufferUsage::Static if not changing all the time, else BufferUsage::Dynamic.
+     * @param target BufferTarget::Data for vertex buffers and BufferTarget::Index for index buffers
      * @param data Will be created if nullptr.
      * @return
      */

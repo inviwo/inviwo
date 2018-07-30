@@ -47,10 +47,14 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet {
 public:
-    IntegralLineSet(mat4 modelMatrix);
+    enum class SetIndex { Yes, No };
+
+    using value_type = IntegralLine;
+    IntegralLineSet(mat4 modelMatrix, mat4 worldMatrix = mat4(1));
     virtual ~IntegralLineSet();
 
     mat4 getModelMatrix() const;
+    mat4 getWorldMatrix() const;
 
     std::vector<IntegralLine>::const_iterator begin() const;
     std::vector<IntegralLine>::const_iterator end() const;
@@ -71,14 +75,20 @@ public:
 
     IntegralLine& at(size_t idx);
     const IntegralLine& at(size_t idx) const;
-    void push_back(IntegralLine &line);
-    void push_back(IntegralLine &line, size_t idx);
-    void push_back(const IntegralLine &line);
-    void push_back(const IntegralLine &line, size_t idx);
+
+    void push_back(const IntegralLine& line, SetIndex updateIndex);
+    void push_back(const IntegralLine& line, size_t idx);
+
+    void push_back(IntegralLine&& line, SetIndex updateIndex);
+    void push_back(IntegralLine&& line, size_t idx);
+
+    std::vector<IntegralLine>& getVector() { return lines_; }
+    const std::vector<IntegralLine>& getVector() const { return lines_; }
 
 private:
     std::vector<IntegralLine> lines_;
     mat4 modelMatrix_;
+    mat4 worldMatrix_;
 };
 
 using IntegralLineSetInport = DataInport<IntegralLineSet>;
@@ -98,6 +108,6 @@ struct DataTraits<IntegralLineSet> {
     }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INTEGRALLINESET_H

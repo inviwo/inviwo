@@ -24,10 +24,6 @@
         <file>icons/help.png</file>
         <file>icons/info.png</file>
         <file>icons/info-grey.png</file>
-        <file>icons/inviwo_dark.ico</file>
-        <file>icons/inviwo_dark.png</file>
-        <file>icons/inviwo_light.ico</file>
-        <file>icons/inviwo_light.png</file>
         <file>icons/linkarrow_bidirectional.png</file>
         <file>icons/linkarrow_left.png</file>
         <file>icons/linkarrow_right.png</file>
@@ -40,6 +36,7 @@
         <file>icons/precompiled.png</file>
         <file>icons/precompiled-disabled.png</file>
         <file>icons/processor_broken.png</file>
+        <file>icons/processor_deprecated.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
         <file>icons/processor-add.png</file>
@@ -59,7 +56,21 @@
         <file>icons/usermode.png</file>
         <file>icons/warning.png</file>
         <file>icons/warning-grey.png</file>
+
+        <file>inviwo/inviwo_dark.ico</file>
+        <file>inviwo/inviwo_dark.png</file>
+        <file>inviwo/inviwo_light.ico</file>
+        <file>inviwo/inviwo_light.png</file>
+        <file>inviwo/inviwo-logo-300px.png</file>
+        <file>inviwo/inviwo-logo-light-600px.png</file>
+        
         <file>images/splashscreen.png</file>
+        <file>images/liu-white.png</file>
+        <file>images/liu-white-crop.png</file>
+        <file>images/liu-black.png</file>
+        <file>images/serc.png</file>
+        <file>images/uulm.png</file>
+        
         <file>stylesheets/images/arrow_darker_down.png</file>
         <file>stylesheets/images/arrow_darker_right.png</file>
         <file>stylesheets/images/arrow_down.png</file>

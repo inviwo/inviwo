@@ -46,7 +46,7 @@ class IVW_MODULE_BASE_API MarchingTetrahedron {
 public:
     /**
      * Extracts a isosurface mesh from a volume:
-     * DEPRICATED, use util::marchingtetrahedron
+     * DEPRECATED, use util::marchingtetrahedron
      * @see util::marchingtetrahedron
      */
     static std::shared_ptr<Mesh> apply(

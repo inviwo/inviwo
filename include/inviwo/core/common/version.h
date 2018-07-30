@@ -63,7 +63,7 @@ public:
     /**
      * \brief Parses the version. Defaults to version 1.0.0.0
      *
-     * @param std::string versionString Dot separated version string "Major.Minor.Patch.Build"
+     * @param versionString Dot separated version string "Major.Minor.Patch.Build"
      */
     Version(std::string versionString);
     Version(const char* versionString);
