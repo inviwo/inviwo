@@ -104,12 +104,12 @@ public:
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
     ListProperty(std::string identifier, const std::string& displayName,
-                 std::vector<std::unique_ptr<Property>>&& prefabs, size_t maxNumberOfElements = 0,
+                 std::vector<std::unique_ptr<Property>> prefabs, size_t maxNumberOfElements = 0,
                  ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
     ListProperty(std::string identifier, const std::string& displayName,
-                 std::unique_ptr<Property>&& prefab, size_t maxNumberOfElements = 0,
+                 std::unique_ptr<Property> prefab, size_t maxNumberOfElements = 0,
                  ListPropertyUIFlags uiFlags = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
@@ -132,7 +132,7 @@ public:
     void setMaxNumberOfElements(size_t n);
     size_t getMaxNumberOfElements() const;
 
-    /** 
+    /**
      * \brief remove all list entries
      */
     void clear();
@@ -167,6 +167,29 @@ public:
      */
     virtual void addProperty(Property& property) override;
 
+    /**
+     * \brief insert \p property in the list at position \p index
+     * If \p index is not valid, the property is appended. The type of the property must match one
+     * of the prefab objects. This function has no effect if the list size will exceed the maximum
+     * number of elements.
+     *
+     * @param index        insertion point for property
+     * @param property     property to be inserted
+     * @param owner        if true, the list property takes ownership of the property
+     */
+    virtual void insertProperty(size_t index, Property* property, bool owner = true) override;
+
+    /**
+     * \brief insert \p property in the list at position \p index
+     * If \p index is not valid, the property is appended. The type of the property must match one
+     * of the prefab objects. This function has no effect if the list size will exceed the maximum
+     * number of elements.
+     *
+     * @param index        insertion point for property
+     * @param property     property to be inserted
+     */
+    virtual void insertProperty(size_t index, Property& property) override;
+
     virtual Property* removeProperty(const std::string& identifier) override;
     virtual Property* removeProperty(Property* property) override;
     virtual Property* removeProperty(Property& property) override;
@@ -185,7 +208,7 @@ public:
      *
      * @param p  prefab object
      */
-    void addPrefab(std::unique_ptr<Property>&& p);
+    void addPrefab(std::unique_ptr<Property> p);
 
     const std::vector<std::unique_ptr<Property>>& getPrefabs() const;
 

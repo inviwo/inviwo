@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/exception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,50 +51,50 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
 
     setShowIfEmpty(true);
 
+    auto headerlayout = dynamic_cast<QHBoxLayout*>(layout()->itemAt(0)->layout());
+
+    if (!headerlayout) {
+        throw Exception("CompositePropertyWidget has no header layout.", IvwContext);
+    }
+
     // inject "add" button in the header of the composite property for adding list elements
-    if (auto headerlayout = dynamic_cast<QHBoxLayout*>(layout()->itemAt(0)->layout())) {
-        addItemButton_ = new QToolButton(this);
-        QIcon icon;
-        icon.addFile(":/stylesheets/images/addlistitem.png", QSize(), QIcon::Normal, QIcon::Off);
-        icon.addFile(":/stylesheets/images/addlistitem_disabled.png", QSize(), QIcon::Disabled,
-                     QIcon::Off);
-        addItemButton_->setIcon(icon);
-        addItemButton_->setObjectName("addListItemButton");
-        addItemButton_->setToolTip("Add list element");
+    addItemButton_ = new QToolButton(this);
+    QIcon icon;
+    icon.addFile(":/stylesheets/images/addlistitem.png", QSize(), QIcon::Normal, QIcon::Off);
+    icon.addFile(":/stylesheets/images/addlistitem_disabled.png", QSize(), QIcon::Disabled,
+                 QIcon::Off);
+    addItemButton_->setIcon(icon);
+    addItemButton_->setObjectName("addListItemButton");
+    addItemButton_->setToolTip("Add list element");
 
-        connect(addItemButton_, &QToolButton::clicked, this, [&]() {
-            if (listProperty_ && listProperty_->getPrefabCount() > 0) {
-                if (listProperty_->getPrefabCount() == 1) {
-                    listProperty_->addProperty(static_cast<size_t>(0));
-                } else {
-                    // show context menu since there exist more than one prefab in the list property
-                    QMenu m;
-                    for (auto&& item : util::enumerate(listProperty_->getPrefabs())) {
-                        auto&& ind = get<0>(item);
-                        auto&& elem = get<1>(item);
+    connect(addItemButton_, &QToolButton::clicked, this, [&]() {
+        if (listProperty_ && listProperty_->getPrefabCount() > 0) {
+            if (listProperty_->getPrefabCount() == 1) {
+                listProperty_->addProperty(static_cast<size_t>(0));
+            } else {
+                // show context menu since there exist more than one prefab in the list property
+                QMenu m;
+                for (auto&& item : util::enumerate(listProperty_->getPrefabs())) {
+                    auto addAction =
+                        m.addAction(utilqt::toQString(item.second()->getDisplayName()));
+                    addAction->setData(static_cast<uint>(item.first()));
+                }
 
-                        auto addAction = m.addAction(utilqt::toQString(elem->getDisplayName()));
-                        addAction->setData(static_cast<uint>(ind));
-                    }
-
-                    if (auto selectedAction = m.exec(QCursor::pos())) {
-                        listProperty_->setInitiatingWidget(this);
-                        listProperty_->addProperty(selectedAction->data().toUInt());
-                        listProperty_->clearInitiatingWidget();
-                    }
+                if (auto selectedAction = m.exec(QCursor::pos())) {
+                    listProperty_->setInitiatingWidget(this);
+                    listProperty_->addProperty(selectedAction->data().toUInt());
+                    listProperty_->clearInitiatingWidget();
                 }
             }
-        });
-
-        if (listProperty_) {
-            addItemButton_->setVisible((listProperty_->getUIFlags() & ListPropertyUIFlag::Add) ==
-                                       ListPropertyUIFlag::Add);
-
-            // listProperty_->PropertyOwnerObservable::addObserver(this);
         }
+    });
 
-        headerlayout->insertWidget(headerlayout->count() - 2, addItemButton_);
+    if (listProperty_) {
+        addItemButton_->setVisible((listProperty_->getUIFlags() & ListPropertyUIFlag::Add) ==
+                                   ListPropertyUIFlag::Add);
     }
+
+    headerlayout->insertWidget(headerlayout->count() - 2, addItemButton_);
 }
 
 void ListPropertyWidgetQt::updateFromProperty() {
@@ -110,7 +111,7 @@ bool ListPropertyWidgetQt::isChildRemovable() const {
 }
 
 std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
-    auto menu = PropertyWidgetQt::getContextMenu();
+    auto menu = CompositePropertyWidgetQt::getContextMenu();
 
     if (listProperty_) {
         menu->addSeparator();
@@ -128,12 +129,9 @@ std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
                 auto addItemMenu = menu->addMenu("&Add Item");
                 if (listProperty_->getPrefabCount() > 0) {
                     for (auto&& item : util::enumerate(listProperty_->getPrefabs())) {
-                        auto&& ind = get<0>(item);
-                        auto&& elem = get<1>(item);
-
-                        auto addAction =
-                            addItemMenu->addAction(utilqt::toQString(elem->getDisplayName()));
-                        connect(addAction, &QAction::triggered, this, [&, index = ind ]() {
+                        auto addAction = addItemMenu->addAction(
+                            utilqt::toQString(item.second()->getDisplayName()));
+                        connect(addAction, &QAction::triggered, this, [&, index = item.first() ]() {
                             listProperty_->setInitiatingWidget(this);
                             listProperty_->addProperty(index);
                             listProperty_->clearInitiatingWidget();
@@ -167,19 +165,7 @@ std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
 
     return menu;
 }
-/*
-void ListPropertyWidgetQt::onDidAddProperty(Property* property, size_t index) {
-    addItemButton_->setEnabled(canAddElements());
 
-    CompositePropertyWidgetQt::onDidAddProperty(property, index);
-}
-
-void ListPropertyWidgetQt::onDidRemoveProperty(Property* property, size_t index) {
-    addItemButton_->setEnabled(canAddElements());
-
-    CompositePropertyWidgetQt::onDidRemoveProperty(property, index);
-}
-*/
 bool ListPropertyWidgetQt::canAddElements() const {
     return (listProperty_->getMaxNumberOfElements() == 0) ||
            (listProperty_->size() < listProperty_->getMaxNumberOfElements());

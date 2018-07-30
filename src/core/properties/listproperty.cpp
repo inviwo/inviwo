@@ -63,7 +63,7 @@ ListProperty::ListProperty(std::string identifier, const std::string& displayNam
     , maxNumElements_("maxNumberOfElements", maxNumberOfElements) {}
 
 ListProperty::ListProperty(std::string identifier, const std::string& displayName,
-                           std::vector<std::unique_ptr<Property>>&& prefabs,
+                           std::vector<std::unique_ptr<Property>> prefabs,
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : ListProperty(identifier, displayName, maxNumberOfElements, uiFlags, invalidationLevel,
@@ -72,7 +72,7 @@ ListProperty::ListProperty(std::string identifier, const std::string& displayNam
 }
 
 ListProperty::ListProperty(std::string identifier, const std::string& displayName,
-                           std::unique_ptr<Property>&& prefab, size_t maxNumberOfElements,
+                           std::unique_ptr<Property> prefab, size_t maxNumberOfElements,
                            ListPropertyUIFlags uiFlags, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
     : ListProperty(identifier, displayName, maxNumberOfElements, uiFlags, invalidationLevel,
@@ -112,21 +112,39 @@ void ListProperty::set(const ListProperty* src) {
     // check for matching prefab types first
     if (getPrefabIDs() == src->getPrefabIDs()) {
         // TODO: should we sync/consider the UI flags here as well?
-
         maxNumElements_ = src->maxNumElements_;
 
-        while (size()) {
-            removeProperty(static_cast<size_t>(0));
+        std::vector<Property*> srcItems = src->getProperties();
+        std::vector<Property*> dstItems = getProperties();
+        s
+        // find list items matching class identifiers of source items
+        //
+        // TODO: ensure correct order of properties
+        for (size_t i = 0; i < srcItems.size(); ++i) {
+            auto it =
+                util::find_if(dstItems, [srcID = srcItems[i]->getClassIdentifier()](auto& elem) {
+                    return elem->getClassIdentifier() == srcID;
+                });
+
+            if (it != dstItems.end()) {  // found match
+                (*it)->set(srcItems[i]);
+                (*it)->setDisplayName(srcItems[i]->getDisplayName());
+                dstItems.erase(it);
+            } else {  // item does not yet exist in this list property
+                // FIXME: cloning is not necessarily correct
+                // e.g. it does not consider observers, callbacks, and links
+                insertProperty(i, srcItems[i]->clone(), true);
+            }
         }
-        // FIXME: cloning is not entirely appropriate
-        // e.g. does not consider observers, callbacks, and links
-        for (auto p : src->getProperties()) {
-            addProperty(p->clone(), true);
+
+        // delete unmatched destination list elements
+        for (auto elem : dstItems) {
+            removeProperty(elem);
         }
 
         propertyModified();
     } else {
-        LogWarn("ListProperty mismatch. Unable to link");
+        LogWarn("ListProperty prefab type mismatch. Unable to link");
     }
 }
 
@@ -177,6 +195,14 @@ void ListProperty::addProperty(size_t prefabIndex) {
 }
 
 void ListProperty::addProperty(Property* property, bool owner) {
+    insertProperty(getProperties().size(), property, owner);
+}
+
+void ListProperty::addProperty(Property& property) {
+    insertProperty(getProperties().size(), &property, false);
+}
+
+void ListProperty::insertProperty(size_t index, Property* property, bool owner) {
     if (!util::contains_if(prefabs_, [&, id = property->getClassIdentifier() ](auto& elem) {
             return elem->getClassIdentifier() == id;
         })) {
@@ -185,34 +211,46 @@ void ListProperty::addProperty(Property* property, bool owner) {
                         IvwContext);
     }
 
-    CompositeProperty::addProperty(property, owner);
+    if ((maxNumElements_ == 0) || (size() + 1 < maxNumElements_)) {
+        property->setSerializationMode(PropertySerializationMode::All);
+        CompositeProperty::insertProperty(index, property, owner);
+        propertyModified();
+    } else {
+        LogError("Maximum number of list items reached (" << this->getDisplayName() << ")");
+    }
 }
 
-void ListProperty::addProperty(Property& property) { addProperty(&property, false); }
+void ListProperty::insertProperty(size_t index, Property& property) {
+    insertProperty(index, &property, false);
+}
 
 Property* ListProperty::removeProperty(const std::string& identifier) {
+    auto result = CompositeProperty::removeProperty(identifier);
     propertyModified();
-    return CompositeProperty::removeProperty(identifier);
+    return result;
 }
 
 Property* ListProperty::removeProperty(Property* property) {
+    auto result = CompositeProperty::removeProperty(property);
     propertyModified();
-    return CompositeProperty::removeProperty(property);
+    return result;
 }
 
 Property* ListProperty::removeProperty(Property& property) {
+    auto result = CompositeProperty::removeProperty(property);
     propertyModified();
-    return CompositeProperty::removeProperty(property);
+    return result;
 }
 
 Property* ListProperty::removeProperty(size_t index) {
+    auto result = CompositeProperty::removeProperty(index);
     propertyModified();
-    return CompositeProperty::removeProperty(index);
+    return result;
 }
 
 size_t ListProperty::getPrefabCount() const { return prefabs_.size(); }
 
-void ListProperty::addPrefab(std::unique_ptr<Property>&& p) { prefabs_.emplace_back(std::move(p)); }
+void ListProperty::addPrefab(std::unique_ptr<Property> p) { prefabs_.emplace_back(std::move(p)); }
 
 const std::vector<std::unique_ptr<Property>>& ListProperty::getPrefabs() const { return prefabs_; }
 

@@ -349,8 +349,8 @@ void CollapsibleGroupBoxWidgetQt::onSetVisible(Property* property, bool visible)
 
     if (isChildRemovable()) {
         for (auto&& elem : util::zip(properties_, propertyWidgets_)) {
-            if (get<0>(elem) == property) {
-                const int widgetIndex = propertyWidgetGroupLayout_->indexOf(get<1>(elem));
+            if (elem.first() == property) {
+                const int widgetIndex = propertyWidgetGroupLayout_->indexOf(elem.second());
                 int row = 0, col = 0, rowSpan = 0, colSpan = 0;
                 propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
                                                             &colSpan);
@@ -471,7 +471,7 @@ void CollapsibleGroupBoxWidgetQt::insertProperty(Property* prop, size_t index) {
     setUpdatesEnabled(false);
     util::OnScopeExit enableUpdates([&]() { setUpdatesEnabled(true); });
 
-    const size_t insertIndex = std::min(index + 1, properties_.size());
+    const size_t insertIndex = std::min(index, properties_.size());
     const bool insertAtEnd = (insertIndex == properties_.size());
 
     auto insertPoint = properties_.begin() + insertIndex;
