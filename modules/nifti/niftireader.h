@@ -90,9 +90,9 @@ public:
 
     using type = std::shared_ptr<VolumeRAM>;
 
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch() const {
-        typedef typename T::type F;
+  template <typename Result, typename T>
+    std::shared_ptr<VolumeRAM> operator()() const {
+        using F = typename T::type;
 
         const std::size_t size = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
                                  region_size[4] * region_size[5] * region_size[6];

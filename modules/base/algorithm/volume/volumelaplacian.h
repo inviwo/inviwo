@@ -51,13 +51,13 @@ namespace detail {
 
 struct VolumeLaplacianDispatcher {
     using type = std::shared_ptr<Volume>;
-    template <class DF>
-    std::shared_ptr<Volume> dispatch(std::shared_ptr<const Volume> volume,
-                                     VolumeLaplacianPostProcessing postProcessing, double scale);
+    template <typename Result, typename T>
+    std::shared_ptr<Volume> operator()(std::shared_ptr<const Volume> volume,
+                                       VolumeLaplacianPostProcessing postProcessing, double scale);
 };
 
-template <class DF>
-std::shared_ptr<Volume> inviwo::util::detail::VolumeLaplacianDispatcher::dispatch(
+template <typename Result, typename DF>
+std::shared_ptr<Volume> VolumeLaplacianDispatcher::operator()(
     std::shared_ptr<const Volume> volume, VolumeLaplacianPostProcessing postProcessing,
     double scale) {
     using T = typename DF::type;
@@ -149,11 +149,10 @@ std::shared_ptr<Volume> inviwo::util::detail::VolumeLaplacianDispatcher::dispatc
 
     return newVolume;
 }
-}
+}  // namespace detail
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMELAPLACIANALGO_H
-
+#endif  // IVW_VOLUMELAPLACIANALGO_H

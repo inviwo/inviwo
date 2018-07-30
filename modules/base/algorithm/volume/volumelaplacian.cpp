@@ -35,8 +35,8 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                                               VolumeLaplacianPostProcessing postProcessing,
                                               double scale) {
     util::detail::VolumeLaplacianDispatcher disp;
-    return volume->getDataFormat()->dispatch(disp, volume, postProcessing, scale);
+    return dispatching::dispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
+        volume->getDataFormat()->getId(), disp, volume, postProcessing, scale);
 }
 
-} // namespace
-
+}  // namespace inviwo

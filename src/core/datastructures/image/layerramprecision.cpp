@@ -33,18 +33,20 @@ namespace inviwo {
 
 struct LayerRAMCreationDispatcher {
     using type = std::shared_ptr<LayerRAM>;
-    template <class T>
-    std::shared_ptr<LayerRAM> dispatch(const size2_t& dimensions, LayerType type,
-                                       const SwizzleMask& swizzleMask) {
+    template <typename Result, typename T>
+    std::shared_ptr<LayerRAM> operator()(const size2_t& dimensions, LayerType type,
+                                         const SwizzleMask& swizzleMask) {
         using F = typename T::type;
         return std::make_shared<LayerRAMPrecision<F>>(dimensions, type, swizzleMask);
     }
 };
 
 std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
-                                         const DataFormatBase* format, const SwizzleMask &swizzleMask) {
+                                         const DataFormatBase* format,
+                                         const SwizzleMask& swizzleMask) {
     LayerRAMCreationDispatcher disp;
-    return format->dispatch(disp, dimensions, type, swizzleMask);
+    return dispatching::dispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
+        format->getId(), disp, dimensions, type, swizzleMask);
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -267,7 +267,7 @@ void KeyframeSequenceTyped<Key>::add(const Key& key) {
 template <typename Key>
 void KeyframeSequenceTyped<Key>::addKeyFrame(std::unique_ptr<Key> key) {
     auto it = keyframes_.insert(std::upper_bound(keyframes_.begin(), keyframes_.end(), key,
-                                                 [&key](const auto& a, const auto& b) {
+                                                 [](const auto& a, const auto& b) {
                                                      return a->getTime() < b->getTime();
                                                  }),
                                 std::move(key));

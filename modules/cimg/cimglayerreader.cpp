@@ -102,7 +102,8 @@ std::shared_ptr<LayerRepresentation> CImgLayerRAMLoader::createRepresentation() 
     layerDisk_->updateDataFormat(DataFormatBase::get(formatId));
     updateSwizzleMask(layerDisk_);
 
-    return layerDisk_->getDataFormat()->dispatch(*this, data);
+    return dispatching::dispatch<std::shared_ptr<LayerRepresentation>, dispatching::filter::All>(
+        formatId, *this, data);
 }
 
 void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<LayerRepresentation> dest) const {

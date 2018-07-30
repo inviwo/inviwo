@@ -66,9 +66,9 @@ public:
 
     using type = std::shared_ptr<LayerRAM>;
 
-    template <class T>
-    std::shared_ptr<LayerRAM> dispatch(void* data) const {
-        typedef typename T::type F;
+    template <typename Result, typename T>
+    std::shared_ptr<LayerRAM> operator()(void* data) const {
+        using F = typename T::type;
         auto layerRAM = std::make_shared<LayerRAMPrecision<F>>(
             static_cast<F*>(data), layerDisk_->getDimensions(), layerDisk_->getLayerType(),
             layerDisk_->getSwizzleMask());
