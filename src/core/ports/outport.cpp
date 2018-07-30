@@ -40,7 +40,7 @@ Outport::Outport(std::string identifier)
                        inport->readyUpdate();
                    }
                },
-               [this]() { return false; }}
+               []() { return false; }}
     , invalidationLevel_(InvalidationLevel::Valid) {}
 
 Outport::~Outport() = default;

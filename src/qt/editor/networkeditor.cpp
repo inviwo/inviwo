@@ -493,7 +493,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 menu.addAction(tr(hasInspector ? "Hide Port Inspector" : "Show Port &Inspector"));
             showPortInsector->setCheckable(true);
             showPortInsector->setChecked(hasInspector);
-            connect(showPortInsector, &QAction::triggered, [this, pim, outport, pos]() {
+            connect(showPortInsector, &QAction::triggered, [pim, outport, pos]() {
                 if (!pim->hasPortInspector(outport)) {
                     pim->addPortInspector(outport, ivec2(pos.x(), pos.y()));
                 } else {
@@ -628,12 +628,12 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
             menu.addSeparator();
             QAction* invalidateOutputAction = menu.addAction(tr("Invalidate &Output"));
-            connect(invalidateOutputAction, &QAction::triggered, [this, processor]() {
+            connect(invalidateOutputAction, &QAction::triggered, [ processor]() {
                 processor->getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
             });
 
             QAction* invalidateResourcesAction = menu.addAction(tr("Invalidate &Resources"));
-            connect(invalidateResourcesAction, &QAction::triggered, [this, processor]() {
+            connect(invalidateResourcesAction, &QAction::triggered, [ processor]() {
                 processor->getProcessor()->invalidate(InvalidationLevel::InvalidResources);
             });
             menu.addSeparator();

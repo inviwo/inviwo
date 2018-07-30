@@ -36,12 +36,12 @@ namespace inviwo {
 
 Inport::Inport(std::string identifier)
     : Port(identifier)
-    , isReady_{false, [this](const bool& /*isReady*/) {},
+    , isReady_{false, [](const bool& /*isReady*/) {},
                [this]() {
                    return (isConnected() && util::all_of(connectedOutports_,
                                                          [](Outport* p) { return p->isReady(); }));
                }}
-    , isOptional_(false, [this](const bool& /*isOptional*/) {}, []() { return false; })
+    , isOptional_(false, [](const bool& /*isOptional*/) {}, []() { return false; })
     , changed_(false)
     , lastInvalidationLevel_(InvalidationLevel::Valid) {}
 

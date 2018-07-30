@@ -92,12 +92,12 @@ protected:
     virtual void focusInEvent(QFocusEvent *event) override;
 
 private:
-    void setFileName(const std::string filename);
+    void setFileName(const std::string &filename);
     void updateTitleBar();
     void queryReloadFile();
 
 
-    void saveState();
+    virtual void saveState() override;
 
     QMainWindow* mainWindow_;
     CodeEdit* pythonCode_;
@@ -116,7 +116,6 @@ private:
     bool reloadQueryInProgress_ = false;
     void readFile();
 
-    SyntaxHighligther* syntaxHighligther_;
     std::shared_ptr<std::function<void()>> syntaxCallback_;
 
     static PythonEditorWidget* instance_;

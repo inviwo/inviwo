@@ -39,8 +39,7 @@ DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::st
                                                  bool allowNone, size_t firstIndex)
     : OptionPropertyInt(identifier, displayName)
     , dataframe_(nullptr)
-    , allowNone_(allowNone)
-    , firstIndex_(firstIndex) {
+    , allowNone_(allowNone) {
     setSerializationMode(PropertySerializationMode::All);
 }
 
@@ -65,6 +64,8 @@ void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> datafr
     if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
     dataframe_ = dataframe;
 
+    bool wasEmpty = options_.empty();
+
     std::vector<OptionPropertyIntOption> options;
     if (allowNone_) {
         options.emplace_back("none", "None", -1);
@@ -82,6 +83,9 @@ void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> datafr
     }
 
     replaceOptions(std::move(options));
+    if(wasEmpty){
+        setSelectedIndex(firstIndex_);
+    }
     setCurrentStateAsDefault();
 }
 

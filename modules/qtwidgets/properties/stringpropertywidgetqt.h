@@ -48,7 +48,7 @@ class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt 
 public:
     StringPropertyWidgetQt(StringProperty* property);
 
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
     void setPropertyValue();
 
     virtual PropertyEditorWidget* getEditorWidget() const override;
@@ -57,10 +57,9 @@ public:
 private:
     StringProperty* property_;
     LineEditQt* lineEdit_;
-    EditableLabelQt* label_;
     std::unique_ptr<TextEditorDockWidget> editor_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_STRINGPROPERTYWIDGETQT_H

@@ -126,7 +126,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
             }
         }
         return std::function<void(std::ostream&, size_t, size_t, size_t)>(
-            [&f](std::ostream& fs, size_t, size_t, size_t) -> void {
+            [](std::ostream& fs, size_t, size_t, size_t) -> void {
                 fs << "0.0 0.0 0.0\n";
             });
     }();
