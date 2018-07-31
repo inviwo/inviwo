@@ -1,4 +1,7 @@
 
+# Set CMake to prefere Vendor gl libraries rather than legacy, fixes warning on some unix systems
+set(OpenGL_GL_PREFERENCE GLVND) 
+
 add_subdirectory(ext/glew)
 
 #--------------------------------------------------------------------

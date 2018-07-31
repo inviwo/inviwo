@@ -146,8 +146,6 @@ std::shared_ptr<BasicMesh> disk(const vec3& center, const vec3& normal, const ve
 std::shared_ptr<BasicMesh> cone(const vec3& start, const vec3& stop, const vec4& color,
                                 const float& radius, const size_t& segments) {
     const vec3 tc(0.5f, 0.5f, 0.0f);
-    const vec3 tn(0.0f, 0.0f, 1.0f);
-    const vec3 to(0.5f, 0.0f, 0.0f);
 
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));

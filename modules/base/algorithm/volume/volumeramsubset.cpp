@@ -36,7 +36,8 @@ std::shared_ptr<VolumeRAM> VolumeRAMSubSet::apply(const VolumeRepresentation* in
                                                   const VolumeBorders& border /*= VolumeBorders()*/,
                                                   bool clampBorderOutsideVolume /*= true*/) {
     detail::VolumeRAMSubSetDispatcher disp;
-    return in->getDataFormat()->dispatch(disp, in, dim, offset, border, clampBorderOutsideVolume);
+    return dispatching::dispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
+        in->getDataFormat()->getId(), disp, in, dim, offset, border, clampBorderOutsideVolume);
 }
 
-}  // namespace
+}  // namespace inviwo

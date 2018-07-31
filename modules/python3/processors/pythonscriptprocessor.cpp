@@ -73,7 +73,7 @@ PythonScriptProcessor::PythonScriptProcessor(InviwoApplication* app)
         runscript();
     });
 
-    script_.onChange([this, runscript]() { runscript(); });
+    script_.onChange([runscript]() { runscript(); });
 
     runscript();
 }

@@ -472,7 +472,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         connect(editColor, &QAction::triggered, this, &TFEditor::showColorDialog);
 
         duplicatePrimitive->setEnabled(!selectionEmpty);
-        connect(duplicatePrimitive, &QAction::triggered, this, [this, pos]() {
+        connect(duplicatePrimitive, &QAction::triggered, this, [this]() {
             NetworkLock lock(tfPropertyPtr_->getProperty());
             util::KeepTrueWhileInScope k(&selectNewPrimitives_);
             auto selection = getSelectedPrimitiveItems();
@@ -485,7 +485,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         });
 
         deletePrimitive->setEnabled(!selectionEmpty);
-        connect(deletePrimitive, &QAction::triggered, this, [this, pos]() {
+        connect(deletePrimitive, &QAction::triggered, this, [this]() {
             NetworkLock lock(tfPropertyPtr_->getProperty());
             auto selection = getSelectedPrimitiveItems();
             clearSelection();

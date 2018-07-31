@@ -140,10 +140,14 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
  *  * __Predicate__ A type that is used to filter the list of types to consider in the
  *    dispatching. The `dispatching::filter` namespace have a few standard ones predefined.
  *
+ * # Example
+ * \snippet src/core/datastructures/buffer/bufferram.cpp Format Dispatching Example
+ *
  * @param callable This should be a struct with a generic call operator taking two template 
  * arguments the result type and DataFormat type. The callable will be called with the supplied 
  * arguments (`args`).
  * @param args Any arguments that should be passed on to the lambda.
+ *
  *
  * @throws dispatching::DispatchException in the case that the format of the buffer is not in
  * the list of formats after the filtering.

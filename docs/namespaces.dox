@@ -8,6 +8,15 @@
  */
 
 /**
+ * \namespace inviwo::dispatching dispatching
+ */
+
+/**
+ * \namespace inviwo::dispatching::filter dispatching::filter
+ */
+
+
+/**
  * \namespace inviwo::util util
  */
 

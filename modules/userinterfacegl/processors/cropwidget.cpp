@@ -484,8 +484,6 @@ void CropWidget::objectPicked(PickingEvent *p) {
             } else if (touchPoint.state() == TouchState::Finished) {
                 lastState_ = ivec2(-1);
             } else if (touchPoint.state() == TouchState::Updated) {
-                const auto delta = touchPoint.pos() - touchPoint.pressedPos();
-
                 InteractionElement element =
                     static_cast<InteractionElement>(p->getPickedId() % numInteractionWidgets);
                 rangePositionHandlePicked(cropAxes_[axisID], p, element);

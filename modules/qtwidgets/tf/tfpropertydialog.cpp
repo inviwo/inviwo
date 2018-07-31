@@ -129,7 +129,7 @@ void TFPropertyDialog::initializeDialog() {
 
             auto module = util::getInviwoApplication(property_)->getModuleByType<QtWidgetsModule>();
             QObject::connect(helpBtn, &QToolButton::clicked, this,
-                             [this, module]() { module->showTFHelpWindow(); });
+                             [module]() { module->showTFHelpWindow(); });
         }
     }
 

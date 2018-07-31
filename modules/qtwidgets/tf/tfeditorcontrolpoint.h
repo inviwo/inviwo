@@ -47,7 +47,7 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + TFEditorPrimitive::TFEditorControlPointType };
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
     virtual void onTFPrimitiveChange(const TFPrimitive* p) override;
 

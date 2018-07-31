@@ -318,16 +318,13 @@ private:
 // Dummy implementation for mac / linux
 class FileAssociationData {
 public:
-    FileAssociationData(FileAssociations& fa, QMainWindow* win) : fa_{fa}, win_{win} {}
+    FileAssociationData(FileAssociations& fa, QMainWindow* win) {}
 
     bool nativeEvent(void* message, long* result) { return false; }
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex,
                           const std::vector<FileAssociationCommand>& commands) {}
 
-private:
-    FileAssociations& fa_;
-    QMainWindow* win_;
 };
 
 #endif

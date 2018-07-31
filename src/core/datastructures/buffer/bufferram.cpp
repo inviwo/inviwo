@@ -41,11 +41,12 @@ BufferRAM::BufferRAM(const DataFormatBase *format, BufferUsage usage, BufferTarg
 
 std::type_index BufferRAM::getTypeIndex() const { return std::type_index(typeid(BufferRAM)); }
 
+//! [Format Dispatching Example]
 struct BufferRamCreationDispatcher {
-    using type = std::shared_ptr<BufferRAM>;
-    template <class T>
-    std::shared_ptr<BufferRAM> dispatch(size_t size, BufferUsage usage, BufferTarget target) {
-        typedef typename T::type F;
+
+    template <typename Result, typename T>
+    Result operator()(size_t size, BufferUsage usage, BufferTarget target) {
+        using F = typename T::type;
         switch (target) {
             case BufferTarget::Index:
                 return std::make_shared<BufferRAMPrecision<F, BufferTarget::Index>>(size, usage);
@@ -60,8 +61,10 @@ std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase *fo
                                            BufferUsage usage, BufferTarget target) {
 
     BufferRamCreationDispatcher disp;
-    return format->dispatch(disp, size, usage, target);
+    return dispatching::dispatch<std::shared_ptr<BufferRAM>, dispatching::filter::All>(
+        format->getId(), disp, size, usage, target);
 }
+//! [Format Dispatching Example]
 
 bool operator==(const BufferBase &bufA, const BufferBase &bufB) {
     if (&bufA == &bufB) {

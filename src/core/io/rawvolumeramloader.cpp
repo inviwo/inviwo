@@ -43,7 +43,8 @@ RawVolumeRAMLoader::RawVolumeRAMLoader(const std::string& rawFile, size_t offset
 RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }
 
 std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation() const {
-    return format_->dispatch(*this);
+    return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
+        format_->getId(), *this);
 }
 
 void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {
@@ -57,4 +58,4 @@ void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentati
     util::readBytesIntoBuffer(rawFile_, offset_, size * format_->getSize(), littleEndian_,
                               format_->getSize(), volumeDst->getData());
 }
-}  // namespace
+}  // namespace inviwo

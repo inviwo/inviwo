@@ -31,6 +31,7 @@
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
+#include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
 
@@ -88,7 +89,8 @@ std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
     data = cimgutil::loadVolumeData(nullptr, fileName, dimensions, formatId);
     volumeDisk_->setDimensions(dimensions);
 
-    return volumeDisk_->getDataFormat()->dispatch(*this, data);
+    return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
+        volumeDisk_->getDataFormat()->getId(), *this, data);
 }
 
 void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {

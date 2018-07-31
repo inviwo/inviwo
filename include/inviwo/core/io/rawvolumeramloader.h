@@ -55,9 +55,9 @@ public:
 
     using type = std::shared_ptr<VolumeRAM>;
 
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch() const {
-        typedef typename T::type F;
+    template <typename Result, typename T>
+    std::shared_ptr<VolumeRAM> operator()() const {
+        using F = typename T::type;
 
         std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z;
         auto data = util::make_unique<F[]>(size);
@@ -83,6 +83,6 @@ private:
     const DataFormatBase* format_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_RAWVOLUMERAMLOADER_H

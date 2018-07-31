@@ -36,7 +36,6 @@
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/stringconversion.h>
 
-#include <modules/qtwidgets/properties/syntaxhighlighter.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/qtwidgetssettings.h>
@@ -450,7 +449,7 @@ void PythonEditorWidget::onTextChange() {
     updateTitleBar();
 }
 
-void PythonEditorWidget::setFileName(const std::string filename) {
+void PythonEditorWidget::setFileName(const std::string &filename) {
     scriptFileName_ = filename;
     script_.setFilename(filename);
     updateTitleBar();

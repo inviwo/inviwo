@@ -34,6 +34,8 @@ namespace inviwo {
 
 ProcessorNetworkConverter::ProcessorNetworkConverter(int from) : VersionConverter(), from_(from) {}
 
+#include <warn/push>
+#include <warn/ignore/implicit-fallthrough>
 bool ProcessorNetworkConverter::convert(TxElement* root) {
     switch (from_) {
         case 0:
@@ -75,6 +77,8 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             return false;  // No changes
     }
 }
+
+#include <warn/pop>
 
 void ProcessorNetworkConverter::traverseNodes(TxElement* node, updateType update) {
     (this->*update)(node);
@@ -253,10 +257,7 @@ void ProcessorNetworkConverter::updateCameraToComposite(TxElement* node) {
 
     if (key == "Property") {
         std::string type = node->GetAttributeOrDefault("type", "");
-        std::string identifier = node->GetAttributeOrDefault("identifier", "");
         if (type == "org.inviwo.CameraProperty") {
-            std::vector<TxElement> subNodeVector;
-
             // create
             TxElement newNode;
             newNode.SetValue("Properties");
@@ -333,10 +334,6 @@ void ProcessorNetworkConverter::updatePropertyLinks(TxElement* node) {
             node->InsertEndChild(*dest);
 
             node->RemoveChild(properties);
-
-            std::stringstream ss;
-            ss << *node;
-            std::string txt = ss.str();
         }
     }
 }

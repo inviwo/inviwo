@@ -48,16 +48,17 @@ namespace detail {
 
 struct IVW_MODULE_BASE_API VolumeRAMSubSetDispatcher {
     using type = std::shared_ptr<VolumeRAM>;
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch(const VolumeRepresentation* in, size3_t dim, size3_t offset,
-                                        const VolumeBorders& border, bool clampBorderOutsideVolume);
+    template <typename Result, typename T>
+    std::shared_ptr<VolumeRAM> operator()(const VolumeRepresentation* in, size3_t dim,
+                                          size3_t offset, const VolumeBorders& border,
+                                          bool clampBorderOutsideVolume);
 };
 
-template <class DataType>
-std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::dispatch(const VolumeRepresentation* in,
-                                                               size3_t dim, size3_t offset,
-                                                               const VolumeBorders& border,
-                                                               bool clampBorderOutsideVolume) {
+template <typename Result, typename DataType>
+std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::operator()(const VolumeRepresentation* in,
+                                                                 size3_t dim, size3_t offset,
+                                                                 const VolumeBorders& border,
+                                                                 bool clampBorderOutsideVolume) {
     using T = typename DataType::type;
 
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
@@ -122,8 +123,8 @@ std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::dispatch(const VolumeRepre
     return newVolume;
 }
 
-}  // namespace
+}  // namespace detail
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMERAMSUBSET_H
