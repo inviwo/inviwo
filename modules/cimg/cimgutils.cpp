@@ -229,7 +229,7 @@ struct CImgLoadLayerDispatcher {
                      DataFormatId& formatId, bool rescaleToDim) {
         using P = typename DF::primitive;
 
-      const DataFormatBase* dataFormat = DF::get();
+        const DataFormatBase* dataFormat = DF::get();
 
         try {
             cimg_library::CImg<P> img(filePath.c_str());
@@ -389,19 +389,18 @@ struct CImgLoadVolumeDispatcher {
                      DataFormatId& formatId) {
         const DataFormatBase* dataFormat = DF::get();
 
-
         cimg_library::CImg<typename DF::primitive> img(filePath.c_str());
-
 
         size_t components = static_cast<size_t>(img.spectrum());
         dimensions = size3_t(img.width(), img.height(), img.depth());
 
         const DataFormatBase* loadedDataFormat = DataFormatBase::get(
             dataFormat->getNumericType(), components, sizeof(typename DF::primitive) * 8);
-        if (loadedDataFormat)
+        if (loadedDataFormat) {
             formatId = loadedDataFormat->getId();
-        else
+        } else {
             throw Exception("CImgLoadVolumeDispatcher, could not find proper data type");
+        }
 
         // Image is up-side-down
         img.mirror('y');

@@ -10,7 +10,9 @@ target_compile_definitions(glm INTERFACE
 )
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    target_compile_definitions(glm INTERFACE  GLM_LANG_STL11_FORCED)
+    # Needed when using clang since GLM fails to detect c++11/14 support
+    # https://github.com/g-truc/glm/issues/620
+    target_compile_definitions(glm INTERFACE GLM_FORCE_CXX14)
 endif()
 
 set_target_properties(glm_dummy PROPERTIES VERSION 0.9.9)
