@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,58 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRACKQT_H
-#define IVW_TRACKQT_H
+#ifndef IVW_KEYFRAMEEDITORWIDGET_H
+#define IVW_KEYFRAMEEDITORWIDGET_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/animation/datastructures/trackobserver.h>
+
+#include <inviwo/core/properties/property.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsItem>
+#include <QWidget>
 #include <warn/pop>
+
+class QHBoxLayout;
+class QComboBox;
+class QDoubleSpinBox;
 
 namespace inviwo {
 
+class Property;
+class PropertyWidgetQt;
+
 namespace animation {
 
-class Track;
-class KeyframeSequenceQt;
+class SequenceEditorWidget;
 
-class IVW_MODULE_ANIMATIONQT_API TrackQt : public QGraphicsItem, public TrackObserver {
+class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget, public KeyframeObserver {
 public:
-    TrackQt(Track& track);
-    virtual ~TrackQt();
-    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
-                       QWidget* widget) override;
+    KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
+    virtual ~KeyframeEditorWidget();
 
-    Track& getTrack(); 
-    const Track& getTrack() const; 
-protected:
-    virtual QRectF boundingRect() const override;
+    virtual void onKeyframeTimeChanged(Keyframe *key, Seconds oldTime) override;
 
-    virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) override;
-    virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) override;
+    Keyframe &getKeyframe() { return keyframe_; }
 
-    Track& track_;
-    std::vector<std::unique_ptr<KeyframeSequenceQt>> sequences_;
+    virtual void onKeyframeSelectionChanged(Keyframe *seq) override;
+
+private:
+    Keyframe &keyframe_;
+    SequenceEditorWidget *sequenceEditorWidget_{nullptr};
+
+    std::unique_ptr<Property> property_{nullptr};
+    PropertyWidgetQt *propertyWidget_{nullptr};
+    QComboBox *actionWidget_{nullptr};
+    QDoubleSpinBox *jumpToWidget_{nullptr};
+    QHBoxLayout *layout_{nullptr};
+    QDoubleSpinBox *timeSpinner_{nullptr};
 };
 
-} // namespace
+}  // namespace animation
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_TRACKQT_H
-
+#endif  // IVW_KEYFRAMEEDITORWIDGET_H

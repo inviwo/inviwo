@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_KEYFRAMEQT_H
-#define IVW_KEYFRAMEQT_H
+#ifndef IVW_KEYFRAMESEQUENCEWIDGETQT_H
+#define IVW_KEYFRAMESEQUENCEWIDGETQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/datastructures/keyframeobserver.h>
 #include <inviwo/core/common/inviwo.h>
+
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
+
+#include <modules/animationqt/widgets/keyframewidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,61 +48,44 @@ namespace inviwo {
 
 namespace animation {
 
-class Keyframe;
-
-/**
- * \class KeyframeQt
- * \brief Graphical representation of a keyframe
- */
-class IVW_MODULE_ANIMATIONQT_API KeyframeQt : public QGraphicsItem, public KeyframeObserver {
+class IVW_MODULE_ANIMATIONQT_API KeyframeSequenceWidgetQt : public QGraphicsItem,
+                                                            public KeyframeSequenceObserver {
 public:
-    KeyframeQt(Keyframe& keyframe, QGraphicsItem* parent);
-    virtual ~KeyframeQt() = default;
+    KeyframeSequenceWidgetQt(KeyframeSequence& keyframeSequence, QGraphicsItem* parent);
+    virtual ~KeyframeSequenceWidgetQt();
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
 
-    const Keyframe& getKeyframe() const { return keyframe_; }
-    Keyframe& getKeyframe() { return keyframe_; }
-
-    /**
-     * Lock when editing keyframe from GUI
-     */
-    void lock();
-    void unlock();
-    bool islocked() const;
-
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + 1 };
-    int type() const override { return Type; }
+    KeyframeSequence& getKeyframeSequence();
+    const KeyframeSequence& getKeyframeSequence() const;
 
 protected:
-    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
+    virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) override;
+    virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) override;
+    virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
 
     virtual QRectF boundingRect() const override;
-    // Restrict vertical movement and snap keyframe to grid
-    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-    Keyframe& keyframe_;
 
-    bool isEditing_ = false;  // User interaction
+    /**
+     * \brief Get the KeyframeQt corresponding to the given keyframe
+     *
+     * @param keyframe The keyframe to search for
+     * @return KeyframeWidgetQt containing the keyframe or null if not found.
+     */
+    KeyframeWidgetQt* getKeyframeQt(const Keyframe* keyframe) const;
+
+    // Move all keyframes, restrict vertical movement and snap to grid
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+
+    KeyframeSequence& keyframeSequence_;
+
+    QRectF rect_;
+    std::unordered_map<const Keyframe*, std::unique_ptr<KeyframeWidgetQt>> keyframes_;
 };
 
-// A RAII utility for locking and unlocking the network
-struct IVW_MODULE_ANIMATIONQT_API KeyframeQtLock {
-    KeyframeQtLock(KeyframeQt* keyframe);
-    ~KeyframeQtLock();
+}  // namespace animation
 
-    KeyframeQtLock(KeyframeQtLock const&) = delete;
-    KeyframeQtLock& operator=(KeyframeQtLock const& that) = delete;
-    KeyframeQtLock(KeyframeQtLock&& rhs) = delete;
-    KeyframeQtLock& operator=(KeyframeQtLock&& that) = delete;
+}  // namespace inviwo
 
-private:
-    KeyframeQt* keyframe_;
-};
-
-}  // namespace
-
-}  // namespace
-
-#endif  // IVW_KEYFRAMEQT_H
+#endif  // IVW_KEYFRAMESEQUENCEWIDGETQT_H

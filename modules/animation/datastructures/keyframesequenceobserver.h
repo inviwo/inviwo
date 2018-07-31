@@ -31,7 +31,6 @@
 #define IVW_KEYFRAMESEQUENCEOBSERVER_H
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
@@ -43,9 +42,10 @@ class KeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API KeyframeSequenceObserver : public Observer {
 public:
-    virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq){};
-    virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq){};
-    virtual void onKeyframeSequenceMoved(KeyframeSequence* seq){};
+    virtual void onKeyframeAdded(Keyframe*, KeyframeSequence*){};
+    virtual void onKeyframeRemoved(Keyframe*, KeyframeSequence*){};
+    virtual void onKeyframeSequenceMoved(KeyframeSequence*){};
+    virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence*){};
 };
 
 class IVW_MODULE_ANIMATION_API KeyframeSequenceObserverble
@@ -54,11 +54,11 @@ protected:
     void notifyKeyframeAdded(Keyframe* key, KeyframeSequence* seq);
     void notifyKeyframeRemoved(Keyframe* key, KeyframeSequence* seq);
     void notifyKeyframeSequenceMoved(KeyframeSequence* seq);
+    void notifyKeyframeSequenceSelectionChanged(KeyframeSequence* seq);
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAMESEQUENCEOBSERVER_H
-
+#endif  // IVW_KEYFRAMESEQUENCEOBSERVER_H

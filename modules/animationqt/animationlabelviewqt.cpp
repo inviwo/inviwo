@@ -28,7 +28,16 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationlabelviewqt.h>
+
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networkutils.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
+
 #include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/propertytrack.h>
+
+#include <modules/animationqt/trackcontrolswidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -36,7 +45,11 @@
 #include <QPainter>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QStyledItemDelegate>
+#include <QPushButton>
+#include <QGridLayout>
 #include <warn/pop>
+
 
 namespace inviwo {
 
@@ -44,23 +57,21 @@ namespace animation {
 
 class AnimationLabelModelQt : public QStandardItemModel {
 public:
-    AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) {
-        setColumnCount(1);
-    }
+    AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) { setColumnCount(1); }
 
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const override {
+    virtual Qt::ItemFlags flags(const QModelIndex&) const override {
         return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled;
     }
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override {
         if (role == Qt::SizeHintRole) {
-            return QSize(200, 25);
+            return QSize(200, 31);
         }
         return QStandardItemModel::data(index, role);
     }
 };
 
-AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
-    : QListView(), animation_(animation) {
+AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
+    : QListView(), controller_(controller) {
     setMouseTracking(true);
     setSelectionBehavior(SelectItems);
     setMovement(Snap);
@@ -70,31 +81,22 @@ AnimationLabelViewQt::AnimationLabelViewQt(Animation& animation)
     std::string style = "border: 0px;\n background-color: #323235;";
     setStyleSheet(style.c_str());
 
-    animation_.addObserver(this);
+    Animation& animation = controller_.getAnimation();
+    animation.addObserver(this);
     model_ = new AnimationLabelModelQt(this);
 
-    for (size_t i = 0; i < animation_.size(); ++i) {
-        auto& track = animation_[i];
+    for (auto& track : animation) {
         QList<QStandardItem*> row;
-        auto item = new QStandardItem(QString::fromStdString(track.getName()));
-        item->setData(QVariant::fromValue(static_cast<void*>(&track)), Qt::UserRole + 1);
+        auto item = new QStandardItem(utilqt::toQString(track.getName()));
+        item->setData(utilqt::toQString(track.getIdentifier()), Qt::UserRole + 1);
         row.append(item);
+        QWidget* widget = new TrackControlsWidgetQt(item, track, controller_);
         model_->appendRow(row);
+        auto index = model_->indexFromItem(item);
+        setIndexWidget(index, widget);
     }
 
     setModel(model_);
-}
-
-void AnimationLabelViewQt::mousePressEvent(QMouseEvent* e) {
-    QListView::mousePressEvent(e);
-}
-
-void AnimationLabelViewQt::mouseMoveEvent(QMouseEvent* e) {
-    QListView::mouseMoveEvent(e);
-}
-
-void AnimationLabelViewQt::mouseReleaseEvent(QMouseEvent* e) {
-    QListView::mouseReleaseEvent(e);
 }
 
 void AnimationLabelViewQt::onTrackAdded(Track* track) {
@@ -102,20 +104,24 @@ void AnimationLabelViewQt::onTrackAdded(Track* track) {
     auto item = new QStandardItem(QString::fromStdString(track->getName()));
     item->setData(QVariant::fromValue(static_cast<void*>(track)), Qt::UserRole + 1);
     row.append(item);
+    QWidget* widget = new TrackControlsWidgetQt(item, *track, controller_);
     model_->appendRow(row);
+    auto index = model_->indexFromItem(item);
+    setIndexWidget(index, widget);
 }
 
 void AnimationLabelViewQt::onTrackRemoved(Track* track) {
     QModelIndex parent = QModelIndex();
     for (int r = 0; r < model_->rowCount(parent); ++r) {
         QModelIndex index = model_->index(r, 0, parent);
-        if (model_->data(index, Qt::UserRole + 1).value<void*>() == static_cast<void*>(track)) {
+        auto id = utilqt::toQString(track->getIdentifier());
+        if (model_->data(index, Qt::UserRole + 1).toString() == id) {
             model_->removeRow(r, parent);
             break;
         }
     }
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

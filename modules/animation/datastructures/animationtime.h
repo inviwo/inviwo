@@ -38,9 +38,8 @@ namespace animation {
 
 using Seconds = std::chrono::duration<double, std::ratio<1>>;
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONTIME_H
-
+#endif  // IVW_ANIMATIONTIME_H

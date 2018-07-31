@@ -42,11 +42,11 @@ void AnimationControllerObservable::notifyStateChanged(AnimationController* cont
         [&](AnimationControllerObserver* o) { o->onStateChanged(controller, oldState, newState); });
 }
 
-void AnimationControllerObservable::notifyPlaybackModeChanged(AnimationController* controller,
-                                                              PlaybackMode prevMode,
-                                                              PlaybackMode newMode) {
+void AnimationControllerObservable::notifyPlaybackSettingsChanged(
+    AnimationController* controller, AnimationPlaySettings prevSettings,
+    AnimationPlaySettings newSettings) {
     forEachObserver([&](AnimationControllerObserver* o) {
-        o->onPlaybackModeChanged(controller, prevMode, newMode);
+        o->onPlaybackSettingsChanged(controller, prevSettings, newSettings);
     });
 }
 
@@ -63,6 +63,6 @@ void AnimationControllerObservable::notifyAnimationChanged(AnimationController* 
     });
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo

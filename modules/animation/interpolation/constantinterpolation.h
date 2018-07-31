@@ -33,7 +33,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/animation/datastructures/interpolation.h>
+#include <modules/animation/interpolation/interpolation.h>
 
 #include <algorithm>
 
@@ -52,31 +52,69 @@ public:
     ConstantInterpolation() = default;
     virtual ~ConstantInterpolation() = default;
 
-    virtual ConstantInterpolation* clone() const override { return new ConstantInterpolation(*this); };
+    virtual ConstantInterpolation* clone() const override;
 
-    static std::string classIdentifier() {
-        auto keyid = Key::classIdentifier();
-        std::string id = "org.inviwo.animation.constantinterpolation.";
-        auto res = std::mismatch(id.begin(), id.end(), keyid.begin(), keyid.end());
-        id.append(res.second, keyid.end());
-        return id;
-    };
-    virtual std::string getClassIdentifier() const override { return classIdentifier(); }
+    static std::string classIdentifier();
+    virtual std::string getClassIdentifier() const override;
+
+    virtual bool equal(const Interpolation& other) const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
     // keys should be sorted by time
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t) const ->
-        typename Key::value_type override {
-        // Returns an iterator to the first element greater than t
-        auto it = std::upper_bound(
-            keys.begin(), keys.end(), t,
-            [](const auto& time, const auto& key) { return time < key->getTime(); });
-        
-        return (*std::prev(it))->getValue();
-    }
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
+                            easing::EasingType) const -> typename Key::value_type override;
 };
+
+template <typename Key>
+ConstantInterpolation<Key>* ConstantInterpolation<Key>::clone() const {
+    return new ConstantInterpolation<Key>(*this);
+}
+
+template <typename Key>
+std::string ConstantInterpolation<Key>::classIdentifier() {
+    return "org.inviwo.animation.constantinterpolation." +
+           Defaultvalues<typename Key::value_type>::getName();
+}
+
+template <typename Key>
+std::string ConstantInterpolation<Key>::getClassIdentifier() const {
+    return classIdentifier();
+}
+
+template <typename Key>
+bool ConstantInterpolation<Key>::equal(const Interpolation& other) const {
+    return classIdentifier() == other.getClassIdentifier();
+}
+template <typename Key>
+auto ConstantInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
+                                            Seconds from, Seconds to, easing::EasingType) const ->
+    typename Key::value_type {
+
+    if (to > from) {
+        auto it = std::upper_bound(
+            keys.begin(), keys.end(), to,
+            [](const auto& time, const auto& key) { return time < key->getTime(); });
+
+        if (it == keys.begin()) {
+            return (*it)->getValue();
+        } else {
+            return (*std::prev(it))->getValue();
+        }
+
+    } else {
+        auto it = std::upper_bound(
+            keys.begin(), keys.end(), to,
+            [](const auto& time, const auto& key) { return time < key->getTime(); });
+
+        if (it == keys.end()) {
+            return (*std::prev(it))->getValue();
+        } else {
+            return (*it)->getValue();
+        }
+    }
+}
 
 template <typename Key>
 void ConstantInterpolation<Key>::serialize(Serializer& s) const {
@@ -95,9 +133,8 @@ void ConstantInterpolation<Key>::deserialize(Deserializer& d) {
     }
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAME_CONSTANT_INTERPOLATION_H
-
+#endif  // IVW_KEYFRAME_CONSTANT_INTERPOLATION_H

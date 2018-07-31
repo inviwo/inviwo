@@ -51,6 +51,7 @@
 #include <QHelpEvent>
 #include <QInputDialog>
 #include <QClipboard>
+#include <QDrag>
 #include <QMenu>
 #include <QLayout>
 #include <QMimeData>
@@ -136,26 +137,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
             auto copyAction = menu->addAction(QIcon(":/icons/edit-copy.png"), "&Copy");
             connect(copyAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
-
-                Serializer serializer("");
-                {   
-                    // Need to set the serialization mode to all temporarily to be able to copy the
-                    // property.
-                    auto toReset =
-                        PropertyPresetManager::scopedSerializationModeAll(
-                            property_);
-                    std::vector<Property*> properties = {property_};
-                    serializer.serialize("Properties", properties, "Property");
-                }
-                std::stringstream ss;
-                serializer.writeFile(ss);
-                auto str = ss.str();
-                QByteArray data(str.c_str(), static_cast<int>(str.length()));
-
-                auto mimedata = util::make_unique<QMimeData>();
-                mimedata->setData(QString("application/x.vnd.inviwo.property+xml"), data);
-                mimedata->setData(QString("text/plain"), data);
-                QApplication::clipboard()->setMimeData(mimedata.release());
+                QApplication::clipboard()->setMimeData(getPropertyMimeData().release());
             });
 
             auto pasteAction = menu->addAction(QIcon(":/icons/edit-paste.png"), "&Paste");
@@ -266,6 +248,30 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
     return menu;
 }
+    
+std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
+    auto mimeData = util::make_unique<QMimeData>();
+    if (!property_) return mimeData;
+    
+    Serializer serializer("");
+    {
+        // Need to set the serialization mode to all temporarily to be able to copy the
+        // property.
+        auto toReset =
+        PropertyPresetManager::scopedSerializationModeAll(
+                                                          property_);
+        std::vector<Property*> properties = {property_};
+        serializer.serialize("Properties", properties, "Property");
+    }
+    std::stringstream ss;
+    serializer.writeFile(ss);
+    auto str = ss.str();
+    QByteArray dataArray(str.c_str(), static_cast<int>(str.length()));
+    
+    mimeData->setData(QString("application/x.vnd.inviwo.property+xml"), dataArray);
+    mimeData->setData(QString("text/plain"), dataArray);
+    return mimeData;
+}
 
 void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app) {
     std::map<std::string, std::vector<const ModuleCallbackAction*>> callbackMapPerModule;
@@ -294,6 +300,32 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
                     });
         }
     }
+}
+    
+void PropertyWidgetQt::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        mousePressedPosition_ = event->pos();
+    }
+    QWidget::mousePressEvent(event);
+}
+
+void PropertyWidgetQt::mouseMoveEvent(QMouseEvent *event) {
+
+    if (!(event->buttons() & Qt::LeftButton)) return;
+    
+    if ((event->pos() - mousePressedPosition_).manhattanLength()
+        < QApplication::startDragDistance())
+        return;
+    
+    if (!property_) return;
+    
+    QDrag *drag = new QDrag(this);
+    auto mimeData = getPropertyMimeData();
+    // Displayed while dragging property
+    mimeData->setText(utilqt::toLocalQString(property_->getDisplayName()));
+    drag->setMimeData(mimeData.release());
+    
+    drag->exec();
 }
 
 void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app) {

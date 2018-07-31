@@ -56,7 +56,7 @@ public:
     AnimationSupplier(InviwoApplication* app);
     AnimationSupplier(const AnimationSupplier&) = delete;
     AnimationSupplier& operator=(const AnimationSupplier&) = delete;
-    ~AnimationSupplier();
+    virtual ~AnimationSupplier();
 
     /**
      * Register a Track with the Track Factory
@@ -69,7 +69,6 @@ public:
      */
     template <typename T>
     void registerInterpolation();
-
 
     /**
      * Register connection between a property and a track.
@@ -90,8 +89,9 @@ public:
      */
     void registerPropertyInterpolationConnection(const std::string& propertyClassID,
                                                  const std::string& interpolationClassID);
-    
+
     void unRegisterAll();
+
 private:
     AnimationManager& manager_;
     std::vector<std::unique_ptr<TrackFactoryObject>> tracks_;
@@ -114,9 +114,8 @@ void AnimationSupplier::registerTrack() {
     }
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONSUPPLIER_H
-
+#endif  // IVW_ANIMATIONSUPPLIER_H

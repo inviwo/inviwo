@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,65 +27,53 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_KEYFRAME_INTERPOLATION_H
-#define IVW_KEYFRAME_INTERPOLATION_H
+#ifndef IVW_CONTROLKEYFRAME_H
+#define IVW_CONTROLKEYFRAME_H
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/easing.h>
-#include <inviwo/core/io/serialization/serializable.h>
-
-#include <algorithm>
+#include <modules/animation/datastructures/basekeyframe.h>
+#include <modules/animation/datastructures/animationstate.h>
 
 namespace inviwo {
 
 namespace animation {
 
+enum class ControlAction { Pause, Jump };
 
-/** \class Interpolation
- *	Interface for keyframe interpolations.
+/** \class ControlKeyframe
+ * Base class for Keyframes that performs some type of control action.
+ * @see Keyframe
  */
-class IVW_MODULE_ANIMATION_API Interpolation : public Serializable {
+class IVW_MODULE_ANIMATION_API ControlKeyframe : public BaseKeyframe {
 public:
-    Interpolation() = default;
-    virtual ~Interpolation() = default;
+    using value_type = void;
+    ControlKeyframe() = default;
+    ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
+                    Seconds jumpTime = Seconds{0});
+    ControlKeyframe(const ControlKeyframe& rhs);
+    ControlKeyframe& operator=(const ControlKeyframe& that);
+    virtual ~ControlKeyframe();
+    virtual ControlKeyframe* clone() const override;
 
-    virtual Interpolation* clone() const = 0;
+    ControlAction getAction() const;
+    void setAction(ControlAction action);
 
-    virtual std::string getClassIdentifier() const = 0;
+    Seconds getJumpTime() const;
+    void setJumpTime(Seconds jumpTime);
 
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
-};
-/** \class InterpolationTyped
- *	Base class for interpolation between key frames.
- *  Interpolation will always be performed between at least two key frames.
- *
- *  @see KeyFrame
- *  @see KeyFrameSequence
- */
-template <typename Key>
-class InterpolationTyped : public Interpolation {
-public:
-    InterpolationTyped() = default;
-    virtual ~InterpolationTyped() = default;
+    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
 
-    virtual InterpolationTyped* clone() const override = 0;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
-    virtual std::string getClassIdentifier() const override = 0;
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
-
-    // Override this function to interpolate between key frames
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds t) const ->
-        typename Key::value_type = 0;
+private:
+    ControlAction action_;
+    Seconds jumpTime_;
 };
 
-} // namespace animation
+}  // namespace animation
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAME_INTERPOLATION_H
-
+#endif  // IVW_CONTROLKEYFRAME_H

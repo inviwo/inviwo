@@ -33,7 +33,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/animation/datastructures/interpolation.h>
+#include <modules/animation/interpolation/interpolation.h>
 
 namespace inviwo {
 namespace animation {
@@ -63,9 +63,8 @@ public:
     virtual std::unique_ptr<Interpolation> create() const override { return std::make_unique<T>(); }
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INTERPOLATIONFACTORYOBJECT_H
-
+#endif  // IVW_INTERPOLATIONFACTORYOBJECT_H

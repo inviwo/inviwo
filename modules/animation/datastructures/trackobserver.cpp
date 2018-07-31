@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/trackobserver.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/keyframesequence.h>
 
 namespace inviwo {
 
@@ -65,7 +67,6 @@ void TrackObservable::notifyPriorityChanged(Track* t) {
     forEachObserver([&](TrackObserver* o) { o->onPriorityChanged(t); });
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
-
+}  // namespace inviwo

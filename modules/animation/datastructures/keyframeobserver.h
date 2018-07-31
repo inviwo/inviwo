@@ -31,10 +31,7 @@
 #define IVW_KEYFRAMEOBSERVER_H
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/util/observer.h>
-
 #include <modules/animation/datastructures/animationtime.h>
 
 namespace inviwo {
@@ -45,17 +42,18 @@ class Keyframe;
 
 class IVW_MODULE_ANIMATION_API KeyframeObserver : public Observer {
 public:
-    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime){};
+    virtual void onKeyframeTimeChanged(Keyframe*, Seconds /*oldTime*/){};
+    virtual void onKeyframeSelectionChanged(Keyframe*){};
 };
 
 class IVW_MODULE_ANIMATION_API KeyframeObservable : public Observable<KeyframeObserver> {
 protected:
-    void notifKeyframeTimeChanged(Keyframe* key, Seconds oldTime);
+    void notifyKeyframeTimeChanged(Keyframe* key, Seconds oldTime);
+    void notifyKeyframeSelectionChanged(Keyframe* key);
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_KEYFRAMEOBSERVER_H
-
+#endif  // IVW_KEYFRAMEOBSERVER_H
