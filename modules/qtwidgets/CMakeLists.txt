@@ -55,6 +55,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isotfpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/lightpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/listpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/multifilepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/optionpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalminmaxpropertywidgetqt.h
@@ -119,6 +120,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isotfpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/lightpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/listpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/multifilepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/optionpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalminmaxpropertywidgetqt.cpp

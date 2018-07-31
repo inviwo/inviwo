@@ -204,6 +204,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/isotfproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/isovalueproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/listproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
@@ -476,6 +477,7 @@ set(SOURCE_FILES
     properties/imageeditorproperty.cpp
     properties/isotfproperty.cpp
     properties/isovalueproperty.cpp
+    properties/listproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp

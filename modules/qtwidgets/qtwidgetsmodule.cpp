@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/imageeditorproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -57,6 +58,7 @@
 #include <modules/qtwidgets/properties/fontsizepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/isotfpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/isovaluepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/listpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
@@ -168,6 +170,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<IntSize4PropertyWidgetQt, IntSize4Property>("Text");
     registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Default");
     registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Text");
+
+    registerPropertyWidget<ListPropertyWidgetQt, ListProperty>("Default");
 
     registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
 
