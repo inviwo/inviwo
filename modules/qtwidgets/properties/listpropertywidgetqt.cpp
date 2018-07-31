@@ -50,6 +50,7 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
     : CompositePropertyWidgetQt(property), listProperty_(property) {
 
     setShowIfEmpty(true);
+    setEmptyLabelString("No list entries");
 
     auto headerlayout = dynamic_cast<QHBoxLayout*>(layout()->itemAt(0)->layout());
 

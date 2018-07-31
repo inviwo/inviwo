@@ -385,6 +385,10 @@ const std::vector<PropertyWidgetQt*>& CollapsibleGroupBoxWidgetQt::getPropertyWi
 
 void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) { showIfEmpty_ = val; }
 
+void CollapsibleGroupBoxWidgetQt::setEmptyLabelString(const std::string& str) {
+    defaultLabel_->setText(utilqt::toQString(str));
+}
+
 std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget() {
     auto widget = std::make_unique<QWidget>(this);
     widget->setObjectName("CompositeContents");
