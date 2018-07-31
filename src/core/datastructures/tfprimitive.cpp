@@ -35,6 +35,11 @@ void TFPrimitiveObserver::onTFPrimitiveChange(const TFPrimitive*) {}
 
 TFPrimitive::TFPrimitive(double pos, const vec4& color) : data_({pos, color}) {}
 
+// Cannot use default constructors and assignment operator for TFPrimitive!
+//
+// Default constructors would call the base class constructor of Observable and thereby
+// copy all observers. This must be avoided since TFPrimitives are a part of a property
+// and when setting/assigning a property, no observers must be copied!
 TFPrimitive::TFPrimitive(const TFPrimitiveData& data) : data_(data) {}
 
 TFPrimitive::TFPrimitive(const TFPrimitive& rhs) : data_(rhs.data_) {}
