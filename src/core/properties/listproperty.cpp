@@ -116,7 +116,7 @@ void ListProperty::set(const ListProperty* src) {
 
         std::vector<Property*> srcItems = src->getProperties();
         std::vector<Property*> dstItems = getProperties();
-        
+
         // find list items matching class identifiers of source items
         //
         // TODO: ensure correct order of properties
@@ -186,11 +186,29 @@ void ListProperty::addProperty(size_t prefabIndex) {
             property->getIdentifier(),
             [&](const std::string& id) { return getPropertyByIdentifier(id) == nullptr; }, ""));
 
-        CompositeProperty::addProperty(property, true);
+        // if prefab has a trailing number in its display name, use number of identifier
+        std::string displayName = property->getDisplayName();
+        auto it = std::find_if(displayName.rbegin(), displayName.rend(),
+                               [](char c) { return !std::isdigit(c); });
+        std::string baseName = trim(std::string{displayName.begin(), it.base()});
+        if (it.base() != displayName.end()) {
+            // extract number from identifier
+            std::string identifier = property->getIdentifier();
+            auto itIdentifier = std::find_if(identifier.rbegin(), identifier.rend(),
+                                             [](char c) { return !std::isdigit(c); });
+            std::string number(itIdentifier.base(), identifier.end());
+            if (!number.empty()) {
+                displayName = baseName + " " + number;
+            } else {
+                displayName = baseName + " 1";
+            }
+            property->setDisplayName(displayName);
+        }
 
+        CompositeProperty::addProperty(property, true);
         propertyModified();
     } else {
-        LogError("Maximum number of list items reached (" << this->getDisplayName() << ")");
+        LogError("Maximum number of list entries reached (" << this->getDisplayName() << ")");
     }
 }
 
@@ -216,7 +234,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
         CompositeProperty::insertProperty(index, property, owner);
         propertyModified();
     } else {
-        LogError("Maximum number of list items reached (" << this->getDisplayName() << ")");
+        LogError("Maximum number of list entries reached (" << this->getDisplayName() << ")");
     }
 }
 
