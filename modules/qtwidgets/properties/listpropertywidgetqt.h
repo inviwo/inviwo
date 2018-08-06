@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,53 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/volume/volumelaplacian.h>
+#ifndef IVW_LISTPROPERTYWIDGETQT_H
+#define IVW_LISTPROPERTYWIDGETQT_H
+
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+
+#include <inviwo/core/properties/propertyownerobserver.h>
+
+class QMenu;
+class QToolButton;
 
 namespace inviwo {
 
-std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volume,
-                                              VolumeLaplacianPostProcessing postProcessing,
-                                              double scale) {
-    util::detail::VolumeLaplacianDispatcher disp;
-    return dispatching::dispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
-        volume->getDataFormat()->getId(), disp, volume, postProcessing, scale);
-}
+class ListProperty;
+class IvwPushButton;
+
+/**
+ * \class ListPropertyWidgetQt
+ * \brief PropertyWidget for a ListProperty.
+ *
+ * This widget considers the UI flags of the property. If the property supports adding list
+ * elements, a tool button is added next to the property name (indicated by a plus). In case
+ * multiple prefab objects are registered with the property, a menu is shown. Alternatively, new
+ * entries can be added using the context menu. 
+ * List entries can be removed via a small "x" tool button next to them, if enabled.
+ */
+class IVW_MODULE_QTWIDGETS_API ListPropertyWidgetQt : public CompositePropertyWidgetQt {
+public:
+    ListPropertyWidgetQt(ListProperty* property);
+    virtual ~ListPropertyWidgetQt() = default;
+
+    virtual void updateFromProperty() override;
+
+    virtual bool isChildRemovable() const override;
+
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
+
+    // virtual void onDidAddProperty(Property* property, size_t index) override;
+    // virtual void onDidRemoveProperty(Property* property, size_t index) override;
+
+protected:
+    bool canAddElements() const;
+
+    ListProperty* listProperty_;
+    QToolButton* addItemButton_;
+};
 
 }  // namespace inviwo
+
+#endif  // IVW_LISTPROPERTYWIDGETQT_H

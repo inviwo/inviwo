@@ -35,6 +35,8 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/exception.h>
+
 #include <iterator>
 
 namespace inviwo {
@@ -62,6 +64,18 @@ PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
 }
 
 void PropertyOwner::addProperty(Property* property, bool owner) {
+    insertProperty(properties_.size(), property, owner);
+}
+
+void PropertyOwner::addProperty(Property& property) {
+    insertProperty(properties_.size(), &property, false);
+}
+
+void PropertyOwner::insertProperty(size_t index, Property* property, bool owner) {
+    if (index > properties_.size()) {
+        index = properties_.size();
+    }
+
     if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
         throw Exception(
             "Can't add property, identifier \"" + property->getIdentifier() + "\" already exist.",
@@ -74,8 +88,8 @@ void PropertyOwner::addProperty(Property* property, bool owner) {
         }
     }
 
-    notifyObserversWillAddProperty(property, properties_.size());
-    properties_.push_back(property);
+    notifyObserversWillAddProperty(property, index);
+    properties_.insert(properties_.begin() + index, property);
     property->setOwner(this);
 
     if (dynamic_cast<EventProperty*>(property)) {
@@ -86,13 +100,13 @@ void PropertyOwner::addProperty(Property* property, bool owner) {
     }
 
     if (owner) {  // Assume ownership of property;
-        ownedProperties_.emplace_back(property);	
+        ownedProperties_.emplace_back(property);
     }
-    notifyObserversDidAddProperty(property, properties_.size() - 1);
+    notifyObserversDidAddProperty(property, index);
 }
 
-void PropertyOwner::addProperty(Property& property) {
-    addProperty(&property, false);
+void PropertyOwner::insertProperty(size_t index, Property& property) {
+    insertProperty(index, &property, false);
 }
 
 Property* PropertyOwner::removeProperty(const std::string& identifier) {
@@ -107,6 +121,15 @@ Property* PropertyOwner::removeProperty(Property* property) {
 
 Property* PropertyOwner::removeProperty(Property& property) {
     return removeProperty(&property);
+}
+
+Property* PropertyOwner::removeProperty(size_t index) {
+    if (index >= size()) {
+        throw RangeException("Invalid index when removing property " + std::to_string(index) +
+                             " (" + std::to_string(size()) + " elements)",
+                             IvwContext);
+    }
+    return removeProperty(begin() + index);
 }
 
 Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {

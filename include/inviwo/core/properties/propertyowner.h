@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYOWNER_H
@@ -58,17 +58,44 @@ public:
 
     virtual void addProperty(Property* property, bool owner = true);
     virtual void addProperty(Property& property);
-       
+
+    /**
+     * \brief insert property \p property at position \p index
+     * If \p index is not valid, the property is appended.
+     *
+     * @param index      insertion point for property
+     * @param property   property to be inserted
+     * @param owner      PropertyOwner will take ownership of the property if true
+     */
+    virtual void insertProperty(size_t index, Property* property, bool owner = true);
+
+    /**
+     * \brief insert property \p property at position \p index
+     * If \p index is not valid, the property is appended.
+     *
+     * @param index      insertion point for property
+     * @param property   property to be inserted
+     */
+    virtual void insertProperty(size_t index, Property& property);
+
     virtual Property* removeProperty(const std::string& identifier);
     virtual Property* removeProperty(Property* property);
     virtual Property* removeProperty(Property& property);
+    /**
+     * \brief remove property referred to by \p index
+     *
+     * @param index   index of property to be removed
+     * @throw RangeException if \p index is not valid
+     */
+    virtual Property* removeProperty(size_t index);
 
     virtual std::vector<std::string> getPath() const;
 
     const std::vector<Property*>& getProperties() const;
     const std::vector<CompositeProperty*>& getCompositeProperties() const;
     std::vector<Property*> getPropertiesRecursive() const;
-    Property* getPropertyByIdentifier(const std::string& identifier, bool recursiveSearch = false) const;
+    Property* getPropertyByIdentifier(const std::string& identifier,
+                                      bool recursiveSearch = false) const;
     Property* getPropertyByPath(const std::vector<std::string>& path) const;
     template <class T>
     std::vector<T*> getPropertiesByType(bool recursiveSearch = false) const;
@@ -102,25 +129,26 @@ public:
     virtual void invokeEvent(Event* event) override;
 
     virtual InviwoApplication* getInviwoApplication();
+
 protected:
     // Add the properties belonging the the property owner
     // PropertyOwner do not assume owner ship here since in the most common case these are
     // pointers to members of derived classes.
     std::vector<Property*> properties_;
-    
+
     // An additional list of properties for which PropertyOwner assumes ownership.
     // I.e. PropertyOwner will take care of deleting them. Usually used for dynamic properties
     // allocated on the heap.
     std::vector<std::unique_ptr<Property>> ownedProperties_;
 
     // Cached lists of certain property types
-    std::vector<EventProperty*> eventProperties_; //< non-owning references.
-    std::vector<CompositeProperty*> compositeProperties_; //< non-owning references.
+    std::vector<EventProperty*> eventProperties_;          //< non-owning references.
+    std::vector<CompositeProperty*> compositeProperties_;  //< non-owning references.
 
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
     bool findPropsForComposites(TxElement*);
-    InvalidationLevel invalidationLevel_; 
+    InvalidationLevel invalidationLevel_;
 };
 
 template <class T>
@@ -129,8 +157,7 @@ std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = fal
     for (size_t i = 0; i < properties_.size(); i++) {
         if (dynamic_cast<T*>(properties_[i])) {
             foundProperties.push_back(static_cast<T*>(properties_[i]));
-        }
-        else if (recursiveSearch && dynamic_cast<PropertyOwner*>(properties_[i])) {
+        } else if (recursiveSearch && dynamic_cast<PropertyOwner*>(properties_[i])) {
             std::vector<T*> subProperties =
                 dynamic_cast<PropertyOwner*>(properties_[i])->getPropertiesByType<T>(true);
             foundProperties.insert(foundProperties.end(), subProperties.begin(),
@@ -140,6 +167,6 @@ std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = fal
     return foundProperties;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROPERTYOWNER_H
+#endif  // IVW_PROPERTYOWNER_H

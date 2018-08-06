@@ -33,9 +33,9 @@ namespace inviwo {
 
 struct VolumeRamCreationDispatcher {
     using type = std::shared_ptr<VolumeRAM>;
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch(void* dataPtr, const size3_t& dimensions) {
-        typedef typename T::type F;
+    template <typename Result, typename T>
+    std::shared_ptr<VolumeRAM> operator()(void* dataPtr, const size3_t& dimensions) {
+        using F = typename T::type;
         return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions);
     }
 };
@@ -43,7 +43,8 @@ struct VolumeRamCreationDispatcher {
 std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
                                            void* dataPtr) {
     VolumeRamCreationDispatcher disp;
-    return format->dispatch(disp, dataPtr, dimensions);
+    return dispatching::dispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
+        format->getId(), disp, dataPtr, dimensions);
 }
 
-}  // namespace
+}  // namespace inviwo

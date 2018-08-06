@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
+#include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareaderexception.h>
 
@@ -52,28 +53,30 @@ NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
 NiftiReader* NiftiReader::clone() const { return new NiftiReader(*this); }
 
 const DataFormatBase* NiftiReader::niftiDataTypeToInviwoDataFormat(int niftiDataType) {
+    // clang-format off
     switch (niftiDataType){
-    case DT_UNKNOWN:    return nullptr;
-    case DT_BINARY:     return nullptr;
-    case DT_INT8:       return DataInt8::get();
-    case DT_UINT8:      return DataUInt8::get();
-    case DT_INT16:      return DataInt16::get();
-    case DT_UINT16:     return DataUInt16::get();
-    case DT_INT32:      return DataInt32::get();
-    case DT_UINT32:     return DataUInt32::get();
-    case DT_INT64:      return DataInt64::get(); 
-    case DT_UINT64:     return DataUInt64::get(); 
-    case DT_FLOAT32:    return DataFloat32::get();
-    case DT_FLOAT64:    return DataFloat64::get();
-    case DT_FLOAT128:   return nullptr;
-    case DT_COMPLEX64:  return nullptr;
-    case DT_COMPLEX128: return nullptr;
-    case DT_COMPLEX256: return nullptr;
-    case DT_RGB24:      return DataVec3UInt8::get();
-    case DT_RGBA32:     return DataVec4UInt8::get();
-    default:
-        return nullptr;
+        case DT_UNKNOWN:    return nullptr;
+        case DT_BINARY:     return nullptr;
+        case DT_INT8:       return DataInt8::get();
+        case DT_UINT8:      return DataUInt8::get();
+        case DT_INT16:      return DataInt16::get();
+        case DT_UINT16:     return DataUInt16::get();
+        case DT_INT32:      return DataInt32::get();
+        case DT_UINT32:     return DataUInt32::get();
+        case DT_INT64:      return DataInt64::get();
+        case DT_UINT64:     return DataUInt64::get();
+        case DT_FLOAT32:    return DataFloat32::get();
+        case DT_FLOAT64:    return DataFloat64::get();
+        case DT_FLOAT128:   return nullptr;
+        case DT_COMPLEX64:  return nullptr;
+        case DT_COMPLEX128: return nullptr;
+        case DT_COMPLEX256: return nullptr;
+        case DT_RGB24:      return DataVec3UInt8::get();
+        case DT_RGBA32:     return DataVec4UInt8::get();
+        default:
+            return nullptr;
     }
+    // clang-format on
 }
 
 std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::string& filePath) {
@@ -267,8 +270,10 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
                 if (dataRange.y < 4096.) {
                     // All values within 12-bit range so we guess that this is a 12-bit data set
                     dataRange = dvec2(0., 4095.);
-                    LogInfo("Guessing 12-bit data range in 16-bit data since all values are below 4096. "
-                            "Change data range in VolumeSource to [0 65535] if this is incorrect.");
+                    LogInfo(
+                        "Guessing 12-bit data range in 16-bit data since all values are below "
+                        "4096. Change data range in VolumeSource to [0 65535] if this is "
+                        "incorrect.");
                 } else {
                     // This was probably a 16-bit data set after all
                     dataRange = dvec2(0., format->getMax());
@@ -325,7 +330,8 @@ NiftiVolumeRAMLoader* NiftiVolumeRAMLoader::clone() const {
 }
 
 std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation() const {
-    return NiftiReader::niftiDataTypeToInviwoDataFormat(nim->datatype)->dispatch(*this);
+    return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
+        NiftiReader::niftiDataTypeToInviwoDataFormat(nim->datatype)->getId(), *this);
 }
 
 void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {

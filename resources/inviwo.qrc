@@ -70,13 +70,16 @@
         <file>images/liu-black.png</file>
         <file>images/serc.png</file>
         <file>images/uulm.png</file>
-        
+        <file>stylesheets/images/addlistitem.png</file>
+        <file>stylesheets/images/addlistitem_disabled.png</file>
         <file>stylesheets/images/arrow_darker_down.png</file>
         <file>stylesheets/images/arrow_darker_right.png</file>
+        <file>stylesheets/images/arrow_down-small.png</file>
         <file>stylesheets/images/arrow_down.png</file>
         <file>stylesheets/images/arrow_lighter_down.png</file>
         <file>stylesheets/images/arrow_lighter_right.png</file>
         <file>stylesheets/images/arrow_lighter_up.png</file>
+        <file>stylesheets/images/arrow_up-small.png</file>
         <file>stylesheets/images/arrow_up.png</file>
         <file>stylesheets/images/close.png</file>
         <file>stylesheets/images/dense6pattern.png</file>
@@ -85,6 +88,7 @@
         <file>stylesheets/images/dock-help.png</file>
         <file>stylesheets/images/dock-sticky.png</file>
         <file>stylesheets/images/dock-unsticky.png</file>
+        <file>stylesheets/images/removelistitem.png</file>
         <file>stylesheets/images/slider.png</file>
         <file>stylesheets/images/slider_disabled.png</file>
         <file>stylesheets/images/slider_hover.png</file>

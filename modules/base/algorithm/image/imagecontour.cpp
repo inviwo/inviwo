@@ -38,7 +38,8 @@ std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation *in, size_t 
     if (df->getNumericType() != NumericType::Float) {
         isoValue = df->getMin() + isoValue * (df->getMax() - df->getMin());
     }
-    return df->dispatch(disp, in, channel, isoValue, color);
+    return dispatching::dispatch<std::shared_ptr<Mesh>, dispatching::filter::All>(
+        df->getId(), disp, in, channel, isoValue, color);
 }
 
-}  // namespace
+}  // namespace inviwo

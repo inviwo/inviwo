@@ -60,8 +60,8 @@ public:
     CollapsibleGroupBoxWidgetQt(CompositeProperty* property, bool isCheckable = false);
     CollapsibleGroupBoxWidgetQt(Processor* property, bool isCheckable = false);
     CollapsibleGroupBoxWidgetQt(Settings* property, bool isCheckable = false);
-    CollapsibleGroupBoxWidgetQt(Property* property, PropertyOwner* owner, const std::string& displayName = "",
-                                bool isCheckable = false);
+    CollapsibleGroupBoxWidgetQt(Property* property, PropertyOwner* owner,
+                                const std::string& displayName = "", bool isCheckable = false);
 
     virtual std::string getDisplayName() const;
     virtual void setDisplayName(const std::string& displayName);
@@ -80,6 +80,8 @@ public:
 
     bool isCheckable() const;
     void setCheckable(bool checkable);
+
+    virtual bool isChildRemovable() const;
 
     // Overridden from PropertyWidgetQt/QWidget
     virtual QSize sizeHint() const override;
@@ -111,6 +113,11 @@ protected:
     virtual void setVisible(bool visible) override;
     virtual void setCollapsed(bool value);
     virtual void setChecked(bool checked);
+
+    std::unique_ptr<QWidget> createPropertyLayoutWidget();
+    void addButtonLayout(QGridLayout* layout, int row, Property* prop);
+    void insertProperty(Property* prop, size_t index);
+    void insertPropertyWidget(PropertyWidgetQt* propertyWidget, bool insertAtEnd);
 
     std::string displayName_;
     bool collapsed_;

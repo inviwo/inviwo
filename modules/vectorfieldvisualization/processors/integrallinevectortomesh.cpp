@@ -196,7 +196,8 @@ void IntegralLineVectorToMesh::updateOptions() {
             prop->setVisible(selectedIndex == i);
             prop->setSerializationMode(PropertySerializationMode::All);
             addProperty(prop.release());
-            colorBy_.onChange([=]() { propPtr->setVisible(i == colorBy_.getSelectedIndex()); });
+            colorBy_.onChange(
+                [=]() { propPtr->setVisible(i == static_cast<int>(colorBy_.getSelectedIndex())); });
         }
 
         i++;

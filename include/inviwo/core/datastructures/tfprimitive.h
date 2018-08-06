@@ -56,8 +56,8 @@ class IVW_CORE_API TFPrimitive : public Observable<TFPrimitiveObserver>, public 
 public:
     TFPrimitive(double pos = 0.0, const vec4& color = vec4(0.0f));
     TFPrimitive(const TFPrimitiveData& data);
-    TFPrimitive(const TFPrimitive& rhs) = default;
-    TFPrimitive(TFPrimitive&& rhs) = default;
+    TFPrimitive(const TFPrimitive& rhs);
+    TFPrimitive(TFPrimitive&& rhs);
     TFPrimitive& operator=(const TFPrimitive& that);
     virtual ~TFPrimitive() = default;
 

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CIMGVOLUMEREADER_H
@@ -52,12 +52,12 @@ public:
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
 
- protected:
-     void printMetaInfo(const MetaDataOwner&, std::string) const;
-
+protected:
+    void printMetaInfo(const MetaDataOwner&, std::string) const;
 };
 
-class IVW_MODULE_CIMG_API CImgVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
+class IVW_MODULE_CIMG_API CImgVolumeRAMLoader
+    : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
     CImgVolumeRAMLoader(VolumeDisk* volumeDisk);
     virtual CImgVolumeRAMLoader* clone() const override;
@@ -66,9 +66,9 @@ public:
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
 
     using type = std::shared_ptr<VolumeRAM>;
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch(void* data) const {
-        typedef typename T::type F;
+    template <typename ReturnType, typename T>
+    std::shared_ptr<VolumeRAM> operator()(void* data) const {
+        using F = typename T::type;
         return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(data),
                                                        volumeDisk_->getDimensions());
     }
@@ -77,6 +77,6 @@ private:
     VolumeDisk* volumeDisk_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CIMGVOLUMEREADER_H

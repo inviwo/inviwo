@@ -49,7 +49,7 @@ public:
         : SpatialSampler(*v0,space), t_(t), v0_(v0, space), v1_(v1, space) {}
 
 protected:
-    virtual dvec3 sampleDataSpace(const dvec3 &pos) const {
+    virtual dvec3 sampleDataSpace(const dvec3 &pos) const override {
         auto a = v0_.sampleDataSpace(pos);
         auto b = v1_.sampleDataSpace(pos);
         return a + t_ * (b - a);

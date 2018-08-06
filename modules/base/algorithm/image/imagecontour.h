@@ -51,13 +51,13 @@ public:
 namespace detail {
 struct IVW_MODULE_BASE_API ImageContourDispatcher {
     using type = std::shared_ptr<Mesh>;
-    template <class T>
-    std::shared_ptr<Mesh> dispatch(const LayerRepresentation* in, size_t channel, double isoValue,
+  template <typename Result, typename T>
+    std::shared_ptr<Mesh> operator()(const LayerRepresentation* in, size_t channel, double isoValue,
                                    vec4 color);
 };
 
-template <class DataType>
-std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation* in,
+template <typename Result, class DataType>
+std::shared_ptr<Mesh> ImageContourDispatcher::operator()(const LayerRepresentation* in,
                                                        size_t channel, double isoValue,
                                                        vec4 color) {
     static const std::vector<std::vector<int>> caseTable = {

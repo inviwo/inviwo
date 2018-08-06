@@ -270,9 +270,8 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
 
     p->restore();
     p->save();
-    QPoint arrowDim(linkdialog::arrowWidth, linkdialog::arrowHeight);
 
-    auto isBidirectional = [this](DialogConnectionGraphicsItem* item) {
+    auto isBidirectional = [](DialogConnectionGraphicsItem* item) {
         auto net = item->getPropertyLink().getSource()->getOwner()->getProcessor()->getNetwork();
 
         return net->isLinkedBidirectional(item->getPropertyLink().getSource(),

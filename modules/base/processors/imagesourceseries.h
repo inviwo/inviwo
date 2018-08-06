@@ -85,8 +85,6 @@ private:
 
     std::vector<FileExtension> validExtensions_;
     std::vector<std::string> fileList_;
-    
-    bool ready_; //!< flag for isReady state depending on existing file matching the pattern
 };
 
 } // namespace

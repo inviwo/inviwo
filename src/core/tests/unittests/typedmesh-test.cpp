@@ -190,11 +190,11 @@ TEST(typedmesh, compilationChecks) {
 
     using TestMesh = TypedMesh<FloatBuffer, buffertraits::ColorsBuffer>;
     TestMesh t;
-    t.addVertex(1.0, vec4(1.0f));
-    t.setVertex(0, 1.5, vec4(1.0f));
+    t.addVertex(1.0f, vec4(1.0f));
+    t.setVertex(0, 1.5f, vec4(1.0f));
 
     t.addVertex(TestMesh::Vertex{2.0, vec4(0.5f)});
-    t.setVertex(1, {2.5, vec4(0.5f)});
+    t.setVertex(1, {2.5f, vec4(0.5f)});
 }
 
 TEST(typedmesh, copyconstructor) {
