@@ -274,13 +274,17 @@ void TFPrimitiveSet::setPosition(const std::vector<TFPrimitive*> primitives, dou
 
 void TFPrimitiveSet::setAlpha(const std::vector<TFPrimitive*> primitives, double alpha) {
     for (auto p : primitives) {
-        p->setAlpha(static_cast<float>(alpha));
+        if (util::contains(sorted_, p)) {
+            p->setAlpha(static_cast<float>(alpha));
+        }
     }
 }
 
 void TFPrimitiveSet::setColor(const std::vector<TFPrimitive*> primitives, const vec3& color) {
     for (auto p : primitives) {
-        p->setColor(color);
+        if (util::contains(sorted_, p)) {
+            p->setColor(color);
+        }
     }
 }
 
