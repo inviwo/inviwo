@@ -39,11 +39,18 @@ namespace util {
 
 class IVW_CORE_API KeepTrueWhileInScope {
 public:
-    KeepTrueWhileInScope(bool* b) : variable_(b) { if(variable_) (*variable_) = true; }
-    ~KeepTrueWhileInScope() { if(variable_) (*variable_) = false; }
+    KeepTrueWhileInScope(bool* b) : variable_(b), prevValue_(b ? *b : false) {
+        if (variable_) {
+            (*variable_) = true;
+        }
+    }
+    ~KeepTrueWhileInScope() {
+        if (variable_) (*variable_) = prevValue_;
+    }
 
 private:
     bool* variable_;
+    bool prevValue_;
 };
 
 struct IVW_CORE_API OnScopeExit {
@@ -74,10 +81,10 @@ struct IVW_CORE_API OnScopeExit {
     void release() { setAction(); }
 
 private:
-    #include <warn/push>
-    #include <warn/ignore/dll-interface>
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     ExitAction action_;
-    #include <warn/pop>
+#include <warn/pop>
 };
 
 template <typename T>
@@ -90,8 +97,8 @@ OnScopeExit::ExitAction RevertValue(T& t) {
     return std::bind(SetValue<T>, std::ref(t), t);
 }
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_RAIIUTILS_H
