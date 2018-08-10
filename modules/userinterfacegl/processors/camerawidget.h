@@ -190,10 +190,10 @@ private:
 
     // initial state of camera when an interaction is triggered to keep the rotation axis consistent
     struct InitialState {
-        vec3 camDir;
-        vec3 camUp;
-        vec3 camRight;
-        double zoom_;
+        vec3 camDir = vec3(0.0f, 0.0f, -1.0f);
+        vec3 camUp = vec3(0.0f, 1.0f, 0.0f);
+        vec3 camRight = vec3(1.0f, 0.0f, 0.0f);
+        double zoom_ = 1.0f;
     } initialState_;
 
     std::shared_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then

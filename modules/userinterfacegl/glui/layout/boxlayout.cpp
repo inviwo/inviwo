@@ -43,7 +43,7 @@ void BoxLayout::setDirection(LayoutDirection direction) { direction_ = direction
 BoxLayout::LayoutDirection BoxLayout::getDirection() const { return direction_; }
 
 ivec2 BoxLayout::getExtent() const {
-    ivec2 extent;
+    ivec2 extent(0, 0);
     if (direction_ == LayoutDirection::Vertical) {
         for (Element &elem : uiElements_) {
             if (elem.isVisible()) {

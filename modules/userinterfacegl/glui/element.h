@@ -233,11 +233,11 @@ protected:
 
     UIOrientation orientation_;
 
-    ivec2 extent_;
-    ivec2 widgetPos_;
-    ivec2 widgetExtent_;
-    ivec2 labelPos_;
-    ivec2 labelExtent_;
+    ivec2 extent_ = ivec2(0);
+    ivec2 widgetPos_ = ivec2(0);
+    ivec2 widgetExtent_ = ivec2(0);
+    ivec2 labelPos_ = ivec2(0);
+    ivec2 labelExtent_ = ivec2(0);
 
     double scalingFactor_;
 
