@@ -66,11 +66,8 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
     animation.addObserver(this);
 
     // Add Property tracks
-    for (auto&& item : util::enumerate(animation)) {
-        auto trackQt = std::make_unique<TrackWidgetQt>(item.second());
-        trackQt->setPos(0, timelineHeight + trackHeight * item.first() + trackHeight * 0.5);
-        this->addItem(trackQt.get());
-        tracks_[&item.second()] = std::move(trackQt);
+    for (auto& track : animation) {
+        onTrackAdded(&track);
     }
 
     // Add drag&drop indicator
@@ -89,7 +86,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
     // scene, not be affected by zoom.
     dropIndicatorText = new QGraphicsSimpleTextItem(dropIndicatorLine);
     if (dropIndicatorText) {
-        dropIndicatorText->setPos(0, timelineHeight);
+        dropIndicatorText->setPos(0, 0);
         dropIndicatorText->setZValue(1);
         dropIndicatorText->setVisible(false);
     }
@@ -105,18 +102,23 @@ std::unique_ptr<TrackWidgetQt> AnimationEditorQt::createTrackWidget(Track& track
 }
 
 void AnimationEditorQt::onTrackAdded(Track* track) {
-    auto trackQt = std::make_unique<TrackWidgetQt>(*track);
-    trackQt->setPos(0, timelineHeight + trackHeight * tracks_.size() + trackHeight * 0.5);
-    this->addItem(trackQt.get());
-    tracks_[track] = std::move(trackQt);
-    updateSceneRect();
+    if (!track) return;
+    if (auto trackWidget = createTrackWidget(*track)) {
+        trackWidget->setPos(0, trackHeight * tracks_.size() + trackHeight * 0.5);
+        this->addItem(trackWidget.get());
+        tracks_[track] = std::move(trackWidget);
+        updateSceneRect();
+    } else {
+        throw Exception("Not able to create widget for track: " + track->getIdentifier(),
+                        IvwContext);
+    }
 }
 
 void AnimationEditorQt::onTrackRemoved(Track* track) {
     tracks_.erase(track);
 
     for (auto&& item : util::enumerate(tracks_)) {
-        item.second().second->setY(timelineHeight + trackHeight * item.first() + trackHeight * 0.5);
+        item.second().second->setY(trackHeight * item.first() + trackHeight * 0.5);
     }
     updateSceneRect();
 }
@@ -214,8 +216,9 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
 void AnimationEditorQt::updateSceneRect() {
     setSceneRect(
         0.0, 0.0,
-        static_cast<double>(controller_.getAnimation().getLastTime().count() * widthPerSecond),
-        static_cast<double>(controller_.getAnimation().size() * trackHeight + timelineHeight));
+        static_cast<double>(controller_.getAnimation().getLastTime().count() * widthPerSecond) +
+            5 * widthPerSecond,
+        static_cast<double>(controller_.getAnimation().size() * trackHeight));
 }
 
 void AnimationEditorQt::onFirstMoved() { updateSceneRect(); }

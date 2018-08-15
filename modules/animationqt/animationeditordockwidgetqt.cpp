@@ -37,6 +37,7 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
 
+#include <modules/animation/animationmanager.h>
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/datastructures/controlkeyframe.h>
 #include <modules/animation/datastructures/controlkeyframesequence.h>
@@ -46,8 +47,9 @@
 #include <modules/animationqt/widgets/trackwidgetqt.h>
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animationqt/animationviewqt.h>
-#include <modules/animationqt/animationlabelviewqt.h>
+
 #include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
+#include <modules/animationqt/animationlabelviewqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -59,19 +61,22 @@
 #include <QToolBar>
 #include <QMainWindow>
 #include <QWidget>
+#include <QScrollBar>
 #include <warn/pop>
 
 namespace inviwo {
 
 namespace animation {
 
-AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& controller,
+AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manager,
                                                          const std::string& widgetName,
                                                          TrackWidgetQtFactory& widgetFactory,
                                                          SequenceEditorFactory& editorFactory,
                                                          QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
-    , controller_(controller) {
+    , controller_{manager.getAnimationController()} {
+
+    loadStyle();
 
     resize(QSize(1000, 400));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -82,63 +87,79 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 
-    // Left part: Track labels and Controller properties
-    auto leftPanelLayout = new QVBoxLayout();
-    auto leftPanelContent = new QWidget();
-    leftPanelContent->setLayout(leftPanelLayout);
-    auto leftScroll = new QScrollArea();
-    leftScroll->setWidget(leftPanelContent);
-    leftScroll->setWidgetResizable(true);
+    // right part
+    sequenceEditorView_ = new SequenceEditorPanel(manager, editorFactory, this);
 
-    // List widget of track labels
-    animationLabelView_ = new AnimationLabelViewQt(controller_);
-    animationLabelView_->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
-    leftPanelLayout->addWidget(animationLabelView_);
-
+    auto optionLayout = sequenceEditorView_->getOptionLayout();
     // Settings for the controller
     auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
     for (auto property : controller_.getProperties()) {
         auto propWidget = factory->create(property);
         auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());
-        leftPanelLayout->addWidget(propWidgetQt);
+        optionLayout->addWidget(propWidgetQt);
         propWidgetQt->initState();
     }
 
-    // Toolbar with play controls
-    auto toolBar = new QToolBar();
-    toolBar->setFloatable(false);
-    toolBar->setMovable(false);
-
-    // Container for left part
-    leftPanel_ = new QMainWindow();
-    leftPanel_->setContextMenuPolicy(Qt::NoContextMenu);
-    leftPanel_->addToolBar(toolBar);
-    leftPanel_->setCentralWidget(leftScroll);
-
     // Entire mid part
     animationEditor_ = std::make_unique<AnimationEditorQt>(controller_, widgetFactory);
-    animationView_ = new AnimationViewQt(controller_);
+    animationView_ = new AnimationViewQt(controller_, animationEditor_.get());
     animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    animationView_->setScene(animationEditor_.get());
 
-    // right part
-    sequenceEditorView_ = new SequenceEditorPanel(controller_, editorFactory, this);
+    mainWindow_ = new QMainWindow();
+    mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
+    mainWindow_->setCentralWidget(sequenceEditorView_);
 
-    auto splitter1 = new QSplitter();
-    splitter1->setMidLineWidth(1);
-    splitter1->setHandleWidth(1);
-    splitter1->setLineWidth(1);
-    splitter1->addWidget(leftPanel_);
-    splitter1->addWidget(animationView_);
-    splitter1->addWidget(sequenceEditorView_);
-    setWidget(splitter1);
+    // left part List widget of track labels
+    auto animationLabelView = new AnimationLabelViewQt(controller_);
+    animationLabelView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    animationLabelView->verticalScrollBar()->setTracking(true);
+
+    auto splitter = new QSplitter();
+    splitter->setMidLineWidth(0);
+    splitter->setHandleWidth(1);
+    splitter->setLineWidth(0);
+    splitter->setFrameStyle(QFrame::NoFrame);
+    splitter->addWidget(animationLabelView);
+    splitter->addWidget(animationView_);
+    splitter->addWidget(mainWindow_);
+
+    setWidget(splitter);
+
+    connect(animationView_->verticalScrollBar(), &QScrollBar::valueChanged, this,
+            [this, animationLabelView](auto val) {
+                if (vScrolling_) return;
+                vScrolling_ = true;
+                auto vs = animationView_->verticalScrollBar();
+                auto ls = animationLabelView->verticalScrollBar();
+
+                const double vSize = vs->maximum() - vs->minimum() + vs->pageStep();
+                const double lSize = ls->maximum() - ls->minimum() + ls->pageStep();
+                const auto lval = static_cast<int>(std::round(val * lSize / vSize));
+
+                ls->setValue(lval);
+                vScrolling_ = false;
+            });
+    connect(animationLabelView->verticalScrollBar(), &QScrollBar::valueChanged, this,
+            [this, animationLabelView](auto val) {
+                if (vScrolling_) return;
+                vScrolling_ = true;
+                auto vs = animationView_->verticalScrollBar();
+                auto ls = animationLabelView->verticalScrollBar();
+
+                const double vSize = vs->maximum() - vs->minimum() + vs->pageStep();
+                const double lSize = ls->maximum() - ls->minimum() + ls->pageStep();
+                const auto vval = static_cast<int>(std::round(val * vSize / lSize));
+
+                vs->setValue(vval);
+                vScrolling_ = false;
+            });
 
     {
-        auto policy = leftPanel_->sizePolicy();
+        auto policy = animationLabelView->sizePolicy();
         policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
         policy.setHorizontalStretch(0);
-        leftPanel_->setSizePolicy(policy);
-        leftPanel_->setMinimumWidth(270);  // width of the tool bar on my (Rickard's) machine
+        animationLabelView->setSizePolicy(policy);
+        animationLabelView->setMinimumWidth(150);
     }
     {
         auto policy = animationView_->sizePolicy();
@@ -155,13 +176,17 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         sequenceEditorView_->setMinimumWidth(320);  // same as PropertyListWidget
     }
 
+    auto toolBar = new QToolBar();
+    toolBar->setFloatable(false);
+    toolBar->setMovable(false);
+    mainWindow_->addToolBar(toolBar);
     {
         auto begin = toolBar->addAction(
             QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_32.png"),
             "To Beginning");
         begin->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         begin->setToolTip("To Beginning");
-        leftPanel_->addAction(begin);
+        mainWindow_->addAction(begin);
         connect(begin, &QAction::triggered,
                 [&]() { controller_.eval(controller_.getCurrentTime(), Seconds(0.0)); });
     }
@@ -171,7 +196,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
             QIcon(":/animation/icons/arrow_arrows_direction_previous_icon_32.png"), "Prev Key");
         prev->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prev->setToolTip("Prev Key");
-        leftPanel_->addAction(prev);
+        mainWindow_->addAction(prev);
         connect(prev, &QAction::triggered, [&]() {
             auto times = controller_.getAnimation().getAllTimes();
             auto it = std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
@@ -193,7 +218,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         btnPlayPause_->setChecked(controller_.getState() == AnimationState::Playing);
         btnPlayPause_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         btnPlayPause_->setToolTip("Play/Pause");
-        leftPanel_->addAction(btnPlayPause_);
+        mainWindow_->addAction(btnPlayPause_);
 
         connect(btnPlayPause_, &QAction::triggered, [&]() {
             if (controller_.getState() == AnimationState::Playing) {
@@ -210,7 +235,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
             "Next Key");
         next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         next->setToolTip("Next Key");
-        leftPanel_->addAction(next);
+        mainWindow_->addAction(next);
         connect(next, &QAction::triggered, [&]() {
             auto times = controller_.getAnimation().getAllTimes();
             auto it = std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
@@ -225,7 +250,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
             QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
         end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         end->setToolTip("To End");
-        leftPanel_->addAction(end);
+        mainWindow_->addAction(end);
         connect(end, &QAction::triggered, [&]() {
             auto endTime = controller_.getAnimation().getLastTime();
             controller_.eval(controller_.getCurrentTime(), endTime);
@@ -247,6 +272,13 @@ void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, Animation
         QSignalBlocker block(btnPlayPause_);
         btnPlayPause_->setChecked(false);
     }
+}
+
+void AnimationEditorDockWidgetQt::loadStyle() {
+    QFile styleSheetFile(":/animation/animation.qss");
+    styleSheetFile.open(QFile::ReadOnly);
+    QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
+    setStyleSheet(styleSheet);
 }
 
 }  // namespace animation

@@ -38,6 +38,7 @@
 #include <modules/animation/datastructures/propertytrack.h>
 
 #include <modules/animationqt/trackcontrolswidgetqt.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -77,23 +78,19 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     setMovement(Snap);
     setDragDropMode(InternalMove);
     setDragDropOverwriteMode(false);
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     std::string style = "border: 0px;\n background-color: #323235;";
     setStyleSheet(style.c_str());
+
+    setViewportMargins(0, timelineHeight, 0, 0);
 
     Animation& animation = controller_.getAnimation();
     animation.addObserver(this);
     model_ = new AnimationLabelModelQt(this);
 
     for (auto& track : animation) {
-        QList<QStandardItem*> row;
-        auto item = new QStandardItem(utilqt::toQString(track.getName()));
-        item->setData(utilqt::toQString(track.getIdentifier()), Qt::UserRole + 1);
-        row.append(item);
-        QWidget* widget = new TrackControlsWidgetQt(item, track, controller_);
-        model_->appendRow(row);
-        auto index = model_->indexFromItem(item);
-        setIndexWidget(index, widget);
+        onTrackAdded(&track);
     }
 
     setModel(model_);

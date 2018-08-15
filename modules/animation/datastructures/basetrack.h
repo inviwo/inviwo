@@ -394,16 +394,19 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) 
 
 template <typename Seq>
 void BaseTrack<Seq>::onKeyframeSequenceMoved(KeyframeSequence* seq) {
+    const bool atFront = sequences_.front().get() == seq;
+    const bool atBack = sequences_.back().get() == seq;
+
     std::stable_sort(sequences_.begin(), sequences_.end(),
                      [](const auto& a, const auto& b) { return *a < *b; });
 
     // handle overlap?
 
-    if (sequences_.front().get() == seq) {
+    if (atFront || sequences_.front().get() == seq) {
         this->notifyFirstMoved(this);
     }
 
-    if (sequences_.back().get() == seq) {
+    if (atBack || sequences_.back().get() == seq) {
         this->notifyLastMoved(this);
     }
 }

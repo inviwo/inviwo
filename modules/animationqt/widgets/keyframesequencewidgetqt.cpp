@@ -50,15 +50,15 @@ KeyframeSequenceWidgetQt::KeyframeSequenceWidgetQt(KeyframeSequence& keyframeSeq
                                                    QGraphicsItem* parent)
     : QGraphicsItem(parent), keyframeSequence_(keyframeSequence) {
 
-    
     setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges |
              ItemSendsScenePositionChanges);
 
     keyframeSequence.addObserver(this);
-    auto firstKeyframePos = keyframeSequence_.getFirst().getTime().count() * widthPerSecond;
-    setX(firstKeyframePos);
+
+    setX(mapFromScene(timeToScenePos(keyframeSequence_.getFirstTime()), 0).x());
     for (size_t i = 0; i < keyframeSequence_.size(); ++i) {
-        keyframes_[&keyframeSequence_[i]] = std::make_unique<KeyframeWidgetQt>(keyframeSequence_[i], this);
+        keyframes_[&keyframeSequence_[i]] =
+            std::make_unique<KeyframeWidgetQt>(keyframeSequence_[i], this);
     }
 
     QGraphicsItem::prepareGeometryChange();
@@ -90,7 +90,14 @@ void KeyframeSequenceWidgetQt::paint(QPainter* painter, const QStyleOptionGraphi
     auto penWidth = pen.widthF();
     rect.adjust(0.5 * (keyframeWidth + penWidth), 0.5 * penWidth + trackHeightNudge,
                 -0.5 * (keyframeWidth - penWidth), -0.5 * penWidth - trackHeightNudge);
-    painter->drawRect(rect);
+
+    const auto start = mapFromScene(timeToScenePos(keyframeSequence_.getFirstTime()), 0).x();
+    const auto stop = mapFromScene(timeToScenePos(keyframeSequence_.getLastTime()), 0).x();
+
+    QRectF draw{start, -0.5 * trackHeight + trackHeightNudge, stop - start,
+                trackHeight - 2 * trackHeightNudge};
+
+    painter->drawRect(draw);
 }
 
 KeyframeSequence& KeyframeSequenceWidgetQt::getKeyframeSequence() { return keyframeSequence_; }
@@ -100,21 +107,27 @@ const KeyframeSequence& KeyframeSequenceWidgetQt::getKeyframeSequence() const {
 }
 
 void KeyframeSequenceWidgetQt::onKeyframeAdded(Keyframe* key, KeyframeSequence*) {
-    QGraphicsItem::prepareGeometryChange();
+    prepareGeometryChange();
     keyframes_[key] = std::make_unique<KeyframeWidgetQt>(*key, this);
 }
 
 void KeyframeSequenceWidgetQt::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {
-    this->prepareGeometryChange();
+    prepareGeometryChange();
     keyframes_.erase(key);
 }
 
 void KeyframeSequenceWidgetQt::onKeyframeSequenceMoved(KeyframeSequence*) {
-    QGraphicsItem::prepareGeometryChange();
+    prepareGeometryChange();
 }
 
-QRectF KeyframeSequenceWidgetQt::boundingRect() const { return childrenBoundingRect(); }
+QRectF KeyframeSequenceWidgetQt::boundingRect() const {
+    const int pen = 2;
+    const auto start = mapFromScene(timeToScenePos(keyframeSequence_.getFirstTime()), 0).x();
+    const auto stop = mapFromScene(timeToScenePos(keyframeSequence_.getLastTime()), 0).x();
 
+    return QRectF{start - 0.5 * pen, -0.5 * trackHeight - 0.5 * pen, stop - start + pen,
+                  trackHeight + pen};
+}
 
 KeyframeWidgetQt* KeyframeSequenceWidgetQt::getKeyframeQt(const Keyframe* keyframe) const {
     auto it = keyframes_.find(keyframe);
@@ -129,11 +142,12 @@ KeyframeWidgetQt* KeyframeSequenceWidgetQt::getKeyframeQt(const Keyframe* keyfra
 QVariant KeyframeSequenceWidgetQt::itemChange(GraphicsItemChange change, const QVariant& value) {
     if (change == ItemPositionChange) {
         // Dragging the keyframesequence to a new time is like snapping its left-most keyframe
-        // - parent coordinates (== scene coordinates in our case)
-        qreal xResult = value.toPointF().x();
+        // - parent coordinates (== track coordinates in our case)
+        auto xResult = value.toPointF().x();
 
         if (scene() && !scene()->views().empty() &&
             QApplication::mouseButtons() == Qt::LeftButton) {
+
             const qreal xFirstChild = childItems().empty() ? 0 : childItems().first()->x();
             const qreal xLeftBorderOfSequence = xResult + xFirstChild;
             const qreal xSnappedInScene =

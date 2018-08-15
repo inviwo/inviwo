@@ -100,7 +100,7 @@ void AnimationManager::registerPropertyTrackConnection(const std::string& proper
 
 void AnimationManager::registerPropertyInterpolationConnection(
     const std::string& propertyClassID, const std::string& interpolationClassID) {
-    propertyToInterpolationMap_[propertyClassID] = interpolationClassID;
+    propertyToInterpolationMap_.emplace(propertyClassID, interpolationClassID);
 }
 
 Animation& AnimationManager::getAnimation() { return animation_; }
@@ -192,6 +192,12 @@ std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Propert
     }
     return interpolation;
 }
+
+const std::unordered_multimap<std::string, std::string>& AnimationManager::getInterpolationMapping()
+    const {
+    return propertyToInterpolationMap_;
+}
+
 void AnimationManager::onWillRemoveProperty(Property* property, size_t) {
     auto it = trackMap_.find(property);
     if (it != trackMap_.end()) {

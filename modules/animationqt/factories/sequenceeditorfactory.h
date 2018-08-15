@@ -43,16 +43,17 @@ namespace animation {
 
 class Track;
 class KeyframeSequence;
+class AnimationManager;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactory
     : public StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, const std::string&,
-                             KeyframeSequence&, Track&> {
+                             KeyframeSequence&, Track&, AnimationManager&> {
 public:
     SequenceEditorFactory() = default;
     virtual ~SequenceEditorFactory() = default;
 
     using StandardFactory<SequenceEditorWidget, SequenceEditorFactoryObject, const std::string&,
-                          KeyframeSequence&, Track&>::create;
+                          KeyframeSequence&, Track&, AnimationManager&>::create;
 
     void registerTrackToSequenceEditorMap(const std::string& trackId, const std::string& widgetId);
 

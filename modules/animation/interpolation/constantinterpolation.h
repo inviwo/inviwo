@@ -54,6 +54,8 @@ public:
 
     virtual ConstantInterpolation* clone() const override;
 
+    virtual std::string getName() const override;
+
     static std::string classIdentifier();
     virtual std::string getClassIdentifier() const override;
 
@@ -72,15 +74,31 @@ ConstantInterpolation<Key>* ConstantInterpolation<Key>::clone() const {
     return new ConstantInterpolation<Key>(*this);
 }
 
+namespace detail {
+template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
+std::string getConstantInterpolationClassIdentifier() {
+    return "org.inviwo.animation.constantinterpolation." + Defaultvalues<T>::getName();
+}
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+std::string getConstantInterpolationClassIdentifier() {
+    using ET = typename std::underlying_type<T>::type;
+    return "org.inviwo.animation.constantinterpolation.enum." + Defaultvalues<ET>::getName();
+}
+}  // namespace detail
+
 template <typename Key>
 std::string ConstantInterpolation<Key>::classIdentifier() {
-    return "org.inviwo.animation.constantinterpolation." +
-           Defaultvalues<typename Key::value_type>::getName();
+    return detail::getConstantInterpolationClassIdentifier<typename Key::value_type>();
 }
 
 template <typename Key>
 std::string ConstantInterpolation<Key>::getClassIdentifier() const {
     return classIdentifier();
+}
+
+template <typename Key>
+std::string ConstantInterpolation<Key>::getName() const {
+    return "Constant";
 }
 
 template <typename Key>

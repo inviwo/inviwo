@@ -78,7 +78,7 @@ bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
 }
 
 template <typename T>
-ValueKeyframe<T>::ValueKeyframe(Seconds time) : BaseKeyframe{time}, value_(0) {}
+ValueKeyframe<T>::ValueKeyframe(Seconds time) : BaseKeyframe{time}, value_(static_cast<T>(0)) {}
 
 template <typename T>
 ValueKeyframe<T>::ValueKeyframe(Seconds time, const T& value) : BaseKeyframe{time}, value_(value) {}

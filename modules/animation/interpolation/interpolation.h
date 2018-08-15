@@ -53,6 +53,8 @@ public:
 
     virtual Interpolation* clone() const = 0;
 
+    virtual std::string getName() const = 0;
+
     virtual std::string getClassIdentifier() const = 0;
     virtual bool equal(const Interpolation& other) const = 0;
 

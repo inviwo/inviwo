@@ -51,6 +51,8 @@ class QVBoxLayout;
 namespace inviwo {
 
 namespace animation {
+
+class AnimationManager;
 class SequenceEditorWidget;
 class SequenceEditorFactory;
 class EditorWidgetFactory;
@@ -60,7 +62,7 @@ class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
                                                        public AnimationObserver,
                                                        public TrackObserver {
 public:
-    SequenceEditorPanel(AnimationController& controller, SequenceEditorFactory& editorFactory,
+    SequenceEditorPanel(AnimationManager& manager, SequenceEditorFactory& editorFactory,
                         QWidget* parent = nullptr);
     virtual ~SequenceEditorPanel() = default;
 
@@ -73,13 +75,17 @@ public:
     virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) override;
     virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) override;
 
+    QLayout* getOptionLayout();
+
 private:
-    AnimationController& controller_;
+    AnimationManager& manager_;
     SequenceEditorFactory& factory_;
 
     QVBoxLayout* sequenceEditors_{nullptr};
+    QVBoxLayout* optionLayout_{nullptr};
 
-    std::unordered_map<KeyframeSequence*, SequenceEditorWidget*> widgets_;
+    std::unordered_map<KeyframeSequence*, SequenceEditorWidget*>
+        widgets_;
 };
 }  // namespace animation
 

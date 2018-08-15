@@ -44,10 +44,10 @@ namespace inviwo {
 
 namespace animation {
 
+class AnimationManager;
 class AnimationController;
 class AnimationEditorQt;
 class AnimationViewQt;
-class AnimationLabelViewQt;
 class SequenceEditorPanel;
 class TrackWidgetQtFactory;
 class SequenceEditorFactory;
@@ -55,7 +55,7 @@ class SequenceEditorFactory;
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
                                                                public AnimationControllerObserver {
 public:
-    AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName,
+    AnimationEditorDockWidgetQt(AnimationManager& controller, const std::string& widgetName,
                                 TrackWidgetQtFactory& widgetFactory,
                                 SequenceEditorFactory& editorFactory, QWidget* parent);
     AnimationEditorDockWidgetQt(const AnimationEditorDockWidgetQt&) = delete;
@@ -68,15 +68,17 @@ protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
 
+    void loadStyle();
+
     AnimationController& controller_;
 
     // GUI-stuff
     QAction* btnPlayPause_;
     std::unique_ptr<AnimationEditorQt> animationEditor_;
     AnimationViewQt* animationView_;
-    AnimationLabelViewQt* animationLabelView_;
     SequenceEditorPanel* sequenceEditorView_;
-    QMainWindow* leftPanel_;
+    QMainWindow* mainWindow_;
+    bool vScrolling_ = false;
 };
 
 }  // namespace animation

@@ -39,9 +39,11 @@ namespace inviwo {
 
 namespace animation {
 
+class AnimationManager;
+
 class IVW_MODULE_ANIMATIONQT_API ControlSequenceEditor : public SequenceEditorWidget {
 public:
-    ControlSequenceEditor(KeyframeSequence& sequence, Track& track);
+    ControlSequenceEditor(KeyframeSequence& sequence, Track& track, AnimationManager& manager);
     virtual ~ControlSequenceEditor() = default;
 
     static std::string classIdentifier();

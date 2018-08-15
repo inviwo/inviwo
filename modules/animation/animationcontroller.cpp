@@ -96,7 +96,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     , renderAction("RenderAction", "Render")
     , renderActionStop("RenderActionStop", "Stop")
     , controlOptions("ControlOptions", "Control Track")
-    , controlInsertPauseFrame("ControlInsertPauseFrame", "Insert Pause-Frame")
+    , controlInsertPauseFrame("ControlInsertPauseFrame", "Add Control Track")
     , animation_(&animation)
     , app_(app)
     , state_(AnimationState::Paused)
@@ -117,6 +117,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     playOptions.addProperty(playWindow);
     playOptions.addProperty(framesPerSecond);
     playOptions.addProperty(playMode);
+    playOptions.setCollapsed(true);
     addProperty(playOptions);
 
     // Rendering Settings
@@ -157,6 +158,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     });
 
     controlOptions.addProperty(controlInsertPauseFrame);
+    controlOptions.setCollapsed(true);
     addProperty(controlOptions);
 }
 

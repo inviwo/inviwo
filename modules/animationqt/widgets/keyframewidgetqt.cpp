@@ -52,12 +52,12 @@ KeyframeWidgetQt::KeyframeWidgetQt(Keyframe& keyframe, QGraphicsItem* parent)
              ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
     keyframe_.addObserver(this);
 
-    setPos(mapFromScene(QPointF(keyframe_.getTime().count() * widthPerSecond, 0)).x(), 0);
+    setX(mapFromScene(timeToScenePos(keyframe_.getTime()), 0.0).x());
     setSelected(keyframe_.isSelected());
 }
 
 void KeyframeWidgetQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
-                       QWidget* widget) {
+                             QWidget* widget) {
     IVW_UNUSED_PARAM(options);
     IVW_UNUSED_PARAM(widget);
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -92,11 +92,7 @@ bool KeyframeWidgetQt::islocked() const { return isEditing_; }
 void KeyframeWidgetQt::onKeyframeTimeChanged(Keyframe*, Seconds) {
     if (!isEditing_) {
         KeyframeWidgetQtLock lock(this);
-        QPointF newPos(this->parentItem()
-                           ->mapFromScene(QPointF(keyframe_.getTime().count() * widthPerSecond, 0))
-                           .x(),
-                       0);
-
+        const auto newPos = mapToParent(mapFromScene(timeToScenePos(keyframe_.getTime()), 0.0));
         if (newPos != pos()) {
             setPos(newPos);
         }
@@ -128,7 +124,7 @@ QVariant KeyframeWidgetQt::itemChange(GraphicsItemChange change, const QVariant&
     } else if (change == ItemScenePositionHasChanged) {
         if (!isEditing_) {
             KeyframeWidgetQtLock lock(this);
-            keyframe_.setTime(Seconds(value.toPointF().x() / static_cast<double>(widthPerSecond)));
+            keyframe_.setTime(scenePosToTime(value.toPointF().x()));
         }
     } else if (change == ItemSelectedChange) {
         keyframe_.setSelected(value.toBool());

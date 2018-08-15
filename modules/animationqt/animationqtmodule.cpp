@@ -51,6 +51,13 @@
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 #include <modules/animationqt/sequenceeditor/controlsequenceeditor.h>
 
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMenu>
@@ -63,19 +70,48 @@ namespace inviwo {
 
 namespace {
 
+template <typename PropertyType, typename ValueType>
+void registerTrackHelper(animation::AnimationQtSupplier& as) {
+    using namespace animation;
+    using TrackType = PropertyTrack<PropertyType, ValueKeyframe<ValueType>>;
+
+    as.registerTrackToWidgetMap(TrackType::classIdentifier(),
+                                PropertyTrackWidgetQt::classIdentifier());
+
+    as.registerTrackToSequenceEditorMap(TrackType::classIdentifier(),
+                                        PropertySequenceEditor::classIdentifier());
+}
+
 struct OrdinalReghelper {
     template <typename T>
     auto operator()(animation::AnimationQtSupplier& as) {
         using namespace animation;
-        using PropertyType = OrdinalProperty<T>;
-        using ValueType = typename OrdinalProperty<T>::value_type;
-        using TrackType = PropertyTrack<PropertyType, ValueKeyframe<ValueType>>;
+        registerTrackHelper<OrdinalProperty<T>, typename OrdinalProperty<T>::value_type>(as);
+    }
+};
 
-        as.registerTrackToWidgetMap(TrackType::classIdentifier(),
-                                    PropertyTrackWidgetQt::classIdentifier());
+struct MinMaxReghelper {
+    template <typename T>
+    auto operator()(animation::AnimationQtSupplier& as) {
+        using namespace animation;
+        registerTrackHelper<MinMaxProperty<T>, typename MinMaxProperty<T>::value_type>(as);
+    }
+};
 
-        as.registerTrackToSequenceEditorMap(TrackType::classIdentifier(),
-                                            PropertySequenceEditor::classIdentifier());
+struct OptionReghelper {
+    template <typename T>
+    auto operator()(animation::AnimationQtSupplier& as) {
+        using namespace animation;
+        registerTrackHelper<TemplateOptionProperty<T>,
+                            typename TemplateOptionProperty<T>::valueType>(as);
+    }
+};
+
+struct PropertyReghelper {
+    template <typename Prop>
+    auto operator()(animation::AnimationQtSupplier& as) {
+        using namespace animation;
+        registerTrackHelper<Prop, typename Prop::value_type>(as);
     }
 };
 
@@ -117,10 +153,9 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             win->connect(action, &QAction::triggered, [this, win, app]() {
                 if (!editor_) {
                     auto animationModule = app->getModuleByType<AnimationModule>();
-                    auto& animationController =
-                        animationModule->getAnimationManager().getAnimationController();
+                    auto& manager = animationModule->getAnimationManager();
                     editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
-                        animationController, "Animation Editor", getTrackWidgetQtFactory(),
+                        manager, "Animation Editor", getTrackWidgetQtFactory(),
                         getSequenceEditorFactory(), win);
                     win->addDockWidget(Qt::BottomDockWidgetArea, editor_.get());
                     editor_->hide();
@@ -159,7 +194,6 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     }
 
     // register widgets
-
     registerTrackWidgetQt<PropertyTrackWidgetQt>();
     registerTrackWidgetQt<ControlTrackWidgetQt>();
 
@@ -171,6 +205,15 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
                              dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
                              uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
     util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
+
+    util::for_each_type<std::tuple<float, double, int, unsigned int, size_t>>{}(MinMaxReghelper{},
+                                                                                *this);
+
+    util::for_each_type<std::tuple<float, double, int, unsigned int, size_t, std::string>>{}(
+        OptionReghelper{}, *this);
+
+    util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
+        PropertyReghelper{}, *this);
 
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),
                              ControlTrackWidgetQt::classIdentifier());

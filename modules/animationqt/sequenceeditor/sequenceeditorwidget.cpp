@@ -47,7 +47,9 @@ namespace inviwo {
 
 namespace animation {
 SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& track)
-    : QWidget(), sequence_(sequence), track_{track} {}
+    : QWidget(), sequence_(sequence), track_{track} {
+    setObjectName("SequenceEditorWidget");
+}
 
 void SequenceEditorWidget::updateVisibility() {
     setVisible(sequence_.isSelected() || sequence_.isAnyKeyframeSelected());

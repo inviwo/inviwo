@@ -33,6 +33,7 @@
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/animationmanager.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -62,14 +63,15 @@ public:
     PropertyEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
         : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-        auto propTrack = dynamic_cast<BasePropertyTrack *>(&parent->getTrack());
-        if (!propTrack) throw Exception("error");
+        auto& propTrack = dynamic_cast<BasePropertyTrack&>(parent->getTrack());
 
         setObjectName("KeyframeEditorWidget");
 
         keyframe.addObserver(this);
 
         auto layout = new QHBoxLayout();
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(7);
 
         timeSpinner_ = new QDoubleSpinBox();
         timeSpinner_->setValue(keyframe.getTime().count());
@@ -83,11 +85,10 @@ public:
 
         layout->addWidget(timeSpinner_);
 
-        auto baseProperty = propTrack->getProperty();
-        property_.reset(baseProperty->clone());
-        propTrack->setOtherProperty(property_.get(), &keyframe);
-        property_->onChange([b = baseProperty, p = property_.get(), t = propTrack,
-                             k = &keyframe_]() { t->updateKeyframeFromProperty(p, k); });
+        property_.reset(propTrack.getProperty()->clone());
+        propTrack.setOtherProperty(property_.get(), &keyframe);
+        property_->onChange([p = property_.get(), &propTrack,
+                             k = &keyframe_]() { propTrack.updateKeyframeFromProperty(p, k); });
         property_->setOwner(nullptr);
 
         auto propWidget =
@@ -134,12 +135,21 @@ private:
 
 }  // namespace
 
-PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track &track)
+PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track &track,
+                                               AnimationManager &manager)
     : SequenceEditorWidget(sequence, track) {
 
-    sequence_.addObserver(this);
+    auto &bpt = dynamic_cast<BasePropertyTrack &>(track);
+    auto &valseq = dynamic_cast<ValueKeyframeSequence &>(sequence);
+
+    sequence.addObserver(this);
+
+    setContentsMargins(7, 7, 0, 7);
 
     auto layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(7);
+
     setLayout(layout);
 
     auto label = new QLabel(utilqt::toQString(track_.getName()));
@@ -149,28 +159,49 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
     layout->addWidget(label);
 
     keyframesLayout_ = new QVBoxLayout();
+    keyframesLayout_->setContentsMargins(0, 0, 0, 0);
+    keyframesLayout_->setSpacing(7);
+
     layout->addLayout(keyframesLayout_);
 
-    if (auto valseq = dynamic_cast<ValueKeyframeSequence *>(&sequence_)) {
-        auto easingLayout = new QHBoxLayout();
-        layout->addLayout(easingLayout);
+    auto sublayout = new QGridLayout();
+    layout->addLayout(sublayout);
+    sublayout->setContentsMargins(0, 0, 0, 0);
+    sublayout->setSpacing(7);
+    interpolation_ = new QComboBox();
+    sublayout->addWidget(new QLabel("Interpolation"), 0, 0);
+    sublayout->addWidget(interpolation_, 0, 1);
 
-        easingComboBox_ = new QComboBox();
-        easingLayout->addWidget(new QLabel("Easing: "));
-        easingLayout->addWidget(easingComboBox_);
-
-        for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
-            easingComboBox_->addItem(utilqt::toQString(toString(e)), QVariant(static_cast<int>(e)));
-            if (valseq->getEasingType() == e) {
-                easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
-            }
+    auto map = manager.getInterpolationMapping();
+    auto startIt = map.lower_bound(bpt.getProperty()->getClassIdentifier());
+    auto stopIt = map.upper_bound(bpt.getProperty()->getClassIdentifier());
+    for (; startIt != stopIt; ++startIt) {
+        auto ip = manager.getInterpolationFactory().create(startIt->second);
+        interpolation_->addItem(utilqt::toQString(ip->getName()),
+                                QVariant(utilqt::toQString(ip->getClassIdentifier())));
+        if (valseq.getInterpolation().getClassIdentifier() == ip->getClassIdentifier()) {
+            interpolation_->setCurrentIndex(interpolation_->count() - 1);
         }
-
-        void (QComboBox::*signal)(int) = &QComboBox::currentIndexChanged;
-        connect(easingComboBox_, signal, [valseq](int index) {
-            valseq->setEasingType(static_cast<easing::EasingType>(index));
-        });
     }
+    connect(interpolation_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            [this, &valseq, &manager](int index) {
+                const auto id = utilqt::fromQString(interpolation_->currentData().toString());
+                valseq.setInterpolation(manager.getInterpolationFactory().create(id));
+            });
+
+    easingComboBox_ = new QComboBox();
+    sublayout->addWidget(new QLabel("Easing"), 1, 0);
+    sublayout->addWidget(easingComboBox_, 1, 1);
+
+    for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
+        easingComboBox_->addItem(utilqt::toQString(toString(e)), QVariant(static_cast<int>(e)));
+        if (valseq.getEasingType() == e) {
+            easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
+        }
+    }
+
+    connect(easingComboBox_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            [&valseq](int index) { valseq.setEasingType(static_cast<easing::EasingType>(index)); });
 
     for (size_t i = 0; i < sequence_.size(); i++) {
         onKeyframeAdded(&sequence_[i], &sequence_);
@@ -179,14 +210,22 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
     updateVisibility();
 }
 
-QWidget* PropertySequenceEditor::create(Keyframe* key) {
+QWidget *PropertySequenceEditor::create(Keyframe *key) {
     return new PropertyEditorWidget(*key, this);
 }
 
-void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) {
+void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence *seq) {
     QSignalBlocker block(easingComboBox_);
     auto index = easingComboBox_->findData(QVariant(static_cast<int>(seq->getEasingType())));
     easingComboBox_->setCurrentIndex(index);
+}
+
+void PropertySequenceEditor::onValueKeyframeSequenceInterpolationChanged(
+    ValueKeyframeSequence *seq) {
+
+    auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
+    auto ind = interpolation_->findData(id);
+    interpolation_->setCurrentIndex(ind);
 }
 
 std::string PropertySequenceEditor::classIdentifier() {
