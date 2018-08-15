@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/inviwomainwindow.h>
-
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -502,6 +502,23 @@ void InviwoMainWindow::addActions() {
         fileMenuItem->addAction(reloadAction);
     }
 
+#ifdef IVW_DEBUG
+    {
+        fileMenuItem->addSeparator();
+        auto reloadStyle = fileMenuItem->addAction("Reload Style sheet");
+        connect(reloadStyle, &QAction::triggered, [this](bool /*state*/) {
+            // The following code snippet allows to reload the Qt style sheets during
+            // runtime, which is handy while we change them.
+            QFile styleSheetFile(QString::fromStdString(app_->getPath(PathType::Resources) +
+                                                        "/stylesheets/inviwo.qss"));
+            styleSheetFile.open(QFile::ReadOnly);
+            QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
+            app_->setStyleSheet(styleSheet);
+            styleSheetFile.close();
+        });
+    }
+#endif
+
     {
         fileMenuItem->addSeparator();
         auto exitAction = new QAction(QIcon(":/icons/exit.png"), tr("&Exit"), this);
@@ -666,9 +683,30 @@ void InviwoMainWindow::addActions() {
         connect(networkEditor_.get(), &QGraphicsScene::selectionChanged, this, updateButtonState);
         connect(networkMenuItem, &QMenu::aboutToShow, this, updateButtonState);
     }
+    {
+        networkMenuItem->addSeparator();
+        auto invalidateNetwork = networkMenuItem->addAction("Invalidate All Output");
+        connect(invalidateNetwork, &QAction::triggered, [this](bool /*state*/) {
+            NetworkLock lock(app_->getProcessorNetwork());
+            auto processors = app_->getProcessorNetwork()->getProcessors();
+            for (const auto& p : processors) {
+                p->invalidate(InvalidationLevel::InvalidOutput);
+            }
+        });
+
+        auto invalidateResourcesNetwork = networkMenuItem->addAction("Invalidate All Resources");
+        connect(invalidateResourcesNetwork, &QAction::triggered, [this](bool /*state*/) {
+            NetworkLock lock(app_->getProcessorNetwork());
+            auto processors = app_->getProcessorNetwork()->getProcessors();
+            for (const auto& p : processors) {
+                p->invalidate(InvalidationLevel::InvalidResources);
+            }
+        });
+    }
 
 #if IVW_PROFILING
     {
+        networkMenuItem->addSeparator();
         auto resetTimeMeasurementsAction =
             new QAction(QIcon(":/icons/timer.png"), tr("Reset All Time Measurements"), this);
         resetTimeMeasurementsAction->setCheckable(false);
