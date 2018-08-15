@@ -158,12 +158,11 @@ BaseKeyframeSequence<Key>::~BaseKeyframeSequence() {
 }
 
 template <typename Key>
-void BaseKeyframeSequence<Key>::onKeyframeTimeChanged(Keyframe* /*key*/, Seconds /*oldTime*/) {
-    const auto orgSpan = getTimeSpan();
-
+void BaseKeyframeSequence<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds /*oldTime*/) {
     std::stable_sort(keyframes_.begin(), keyframes_.end(),
                      [](const auto& a, const auto& b) { return *a < *b; });
-    if (orgSpan != getTimeSpan()) {
+
+    if (keyframes_.front().get() == key || keyframes_.back().get() == key) {
         notifyKeyframeSequenceMoved(this);
     }
 }

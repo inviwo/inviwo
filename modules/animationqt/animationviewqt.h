@@ -46,20 +46,26 @@ namespace inviwo {
 namespace animation {
 
 class AnimationController;
+class AnimationEditorQt;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationViewQt : public QGraphicsView,
                                                    public AnimationControllerObserver {
 public:
-    AnimationViewQt(AnimationController& controller);
+    AnimationViewQt(AnimationController& controller, AnimationEditorQt* scene);
     virtual ~AnimationViewQt() = default;
+
+
+    void setTimelinePos(int x);
+    AnimationController& getController();
 
 protected:
     virtual void mousePressEvent(QMouseEvent* e) override;
     virtual void mouseMoveEvent(QMouseEvent* e) override;
     virtual void mouseReleaseEvent(QMouseEvent* e) override;
     virtual void wheelEvent(QWheelEvent* e) override;
+    virtual void keyPressEvent(QKeyEvent * keyEvent) override;
+    virtual void keyReleaseEvent(QKeyEvent * keyEvent) override;
 
-    void setTimelinePos(int x);
     void zoom(double dz);
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
@@ -69,8 +75,10 @@ protected:
     virtual void onTimeChanged(AnimationController* controller, Seconds oldTime,
                                Seconds newTime) override;
 
+    AnimationEditorQt* scene_;
     AnimationController& controller_;
     bool pressingOnTimeline_ = false;
+    QWidget* timeline_;
 };
 
 }  // namespace animation

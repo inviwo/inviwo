@@ -1,5 +1,6 @@
 <RCC>
 	<qresource prefix="/animation/">
+		<file>animation.qss</file>
 		<file>icons/arrow_direction_previous_right_icon_32.png</file>
 		<file>icons/arrow_direction_previous_right_icon_64.png</file>
 		<file>icons/arrow_direction_previous_right_icon_128.png</file>

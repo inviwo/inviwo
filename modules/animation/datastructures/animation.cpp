@@ -169,9 +169,13 @@ void Animation::doPrioritySort() {
         [](const auto& a, const auto& b) { return a->getPriority() > b->getPriority(); });
 }
 
-void Animation::onFirstMoved(Track*) { notifyFirstMoved(); }
+void Animation::onFirstMoved(Track*) { 
+    notifyFirstMoved(); 
+}
 
-void Animation::onLastMoved(Track*) { notifyLastMoved(); }
+void Animation::onLastMoved(Track* track) { 
+    notifyLastMoved(); 
+}
 
 }  // namespace animation
 

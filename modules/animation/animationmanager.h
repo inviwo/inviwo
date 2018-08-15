@@ -132,6 +132,8 @@ public:
      */
     std::unique_ptr<Interpolation> getDefaultInterpolation(Property* property);
 
+    const std::unordered_multimap<std::string, std::string>& getInterpolationMapping() const;
+
 private:
     BasePropertyTrack* addNewTrack(Property* property);
 
@@ -152,7 +154,7 @@ private:
     InterpolationFactory interpolationFactory_;
 
     std::unordered_map<std::string, std::string> propertyToTrackMap_;
-    std::unordered_map<std::string, std::string> propertyToInterpolationMap_;
+    std::unordered_multimap<std::string, std::string> propertyToInterpolationMap_;
     std::unordered_map<const Property*, BasePropertyTrack*> trackMap_;
 
     Animation animation_;

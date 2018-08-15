@@ -46,8 +46,8 @@ namespace inviwo {
 
 namespace {
 
-template <typename PropertyType, typename ValueType, typename Interpolation>
-auto trackAndInterpolationRegHelper(AnimationModule& am) {
+template <typename PropertyType, typename ValueType>
+auto trackRegHelper(AnimationModule& am) {
     using namespace animation;
     // Fixme: TemplateOptionProperty uses valueType so we cannot use this line
     // using ValueType = typename PropertyType::value_type;
@@ -56,15 +56,19 @@ auto trackAndInterpolationRegHelper(AnimationModule& am) {
     am.registerPropertyTrackConnection(
         PropertyType::CLASS_IDENTIFIER,
         PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
+}
 
+template <typename PropertyType, typename Interpolation>
+auto interpolationRegHelper(AnimationModule& am) {
+    using namespace animation;
     // Interpolation for Keyframe
-    // No need to add existing interpolation method. Will produce a warning if adding a dupplicate
+    // No need to add existing interpolation method. Will produce a warning if adding a duplicate
     if (!am.getAnimationManager().getInterpolationFactory().hasKey(
             Interpolation::classIdentifier())) {
         am.registerInterpolation<Interpolation>();
     }
 
-    // Default interplation for this property
+    // Default interpolation for this property
     am.registerPropertyInterpolationConnection(PropertyType::CLASS_IDENTIFIER,
                                                Interpolation::classIdentifier());
 }
@@ -75,8 +79,9 @@ struct OrdinalReghelper {
         using namespace animation;
         using PropertyType = OrdinalProperty<T>;
         using ValueType = typename OrdinalProperty<T>::value_type;  // will be T in this case
-        trackAndInterpolationRegHelper<PropertyType, ValueType,
-                                       LinearInterpolation<ValueKeyframe<ValueType>>>(am);
+        trackRegHelper<PropertyType, ValueType>(am);
+        interpolationRegHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }
 };
 
@@ -86,8 +91,9 @@ struct MinMaxReghelper {
         using namespace animation;
         using PropertyType = MinMaxProperty<T>;
         using ValueType = typename MinMaxProperty<T>::value_type;  // tvec2<T>
-        trackAndInterpolationRegHelper<PropertyType, ValueType,
-                                       LinearInterpolation<ValueKeyframe<ValueType>>>(am);
+        trackRegHelper<PropertyType, ValueType>(am);
+        interpolationRegHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }
 };
 
@@ -98,8 +104,8 @@ struct OptionReghelper {
         using PropertyType = TemplateOptionProperty<T>;
         // Note inconsistency with OrdinalProperty<T>::value_type
         using ValueType = typename TemplateOptionProperty<T>::valueType;
-        trackAndInterpolationRegHelper<PropertyType, ValueType,
-                                       ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
+        trackRegHelper<PropertyType, ValueType>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }
 };
 
@@ -108,10 +114,11 @@ struct ConstantInterpolationReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using ValueType = typename PropertyType::value_type;
-        trackAndInterpolationRegHelper<PropertyType, ValueType,
-                                       ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
+        trackRegHelper<PropertyType, ValueType>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }
 };
+
 }  // namespace
 
 AnimationModule::AnimationModule(InviwoApplication* app)
@@ -134,8 +141,8 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     // Register properties that should not interpolate
     // Todo: Add MultiFileProperty when we can deal with vector<T> data in animation
-    using ConstantInterpolationProperties = std::tuple<BoolProperty, FileProperty, StringProperty>;
-    util::for_each_type<ConstantInterpolationProperties>{}(ConstantInterpolationReghelper{}, *this);
+    util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
+        ConstantInterpolationReghelper{}, *this);
     util::for_each_type<ScalarTypes>{}(OptionReghelper{}, *this);
     util::for_each_type<std::tuple<std::string>>{}(OptionReghelper{}, *this);
     // Todo: Add ButtonProperty. Have not tested but might work out of the box with constant

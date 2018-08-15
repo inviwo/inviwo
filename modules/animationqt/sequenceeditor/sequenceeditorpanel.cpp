@@ -30,6 +30,7 @@
 #include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
+#include <modules/animation/animationmanager.h>
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/keyframesequence.h>
@@ -45,42 +46,55 @@
 namespace inviwo {
 
 namespace animation {
-SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller,
+SequenceEditorPanel::SequenceEditorPanel(AnimationManager& manager,
                                          SequenceEditorFactory& editorFactory, QWidget* parent)
-    : QScrollArea(parent), controller_(controller), factory_{editorFactory} {
+    : QScrollArea(parent), manager_(manager), factory_{editorFactory} {
     setObjectName("SequenceEditorPanel");
 
-    // auto scrollArea = new QScrollArea(this);
-    auto scrollArea = this;
-    scrollArea->setWidgetResizable(true);
-    // scrollArea->setMinimumWidth(320);
-    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    setWidgetResizable(true);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 #ifdef __APPLE__
     // Scrollbars are overlayed in different way on mac...
-    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 #else
-    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 #endif
-    scrollArea->setFrameShape(QFrame::NoFrame);
-    scrollArea->setContentsMargins(0, 7, 0, /*PropertyWidgetQt::spacing*/ 7);
-
-    auto* widget = new QWidget();
-
-    auto layout = new QVBoxLayout();
-
-    widget->setLayout(layout);
-    layout->setAlignment(Qt::AlignTop);
-
+    setFrameShape(QFrame::NoFrame);
+    
+    setContentsMargins(0, 0, 0, 0);
+    
+    auto upper = new QWidget();
     sequenceEditors_ = new QVBoxLayout();
-    layout->addLayout(sequenceEditors_);
+    upper->setLayout(sequenceEditors_);
+    sequenceEditors_->setAlignment(Qt::AlignTop);
+    sequenceEditors_->setContentsMargins(7,7,0,7);
+    sequenceEditors_->setSpacing(7);
 
-    scrollArea->setWidget(widget);
+    auto lower = new QWidget();
+    optionLayout_ = new QVBoxLayout();
+    lower->setLayout(optionLayout_);
+    optionLayout_->setAlignment(Qt::AlignBottom);
+    optionLayout_->setContentsMargins(7,7,0,7);
+    optionLayout_->setSpacing(7);
+    
+    auto widget = new QWidget();
+    auto baseLayout = new QVBoxLayout();
+    widget->setLayout(baseLayout);
+    baseLayout->setContentsMargins(0,0,0,0);
+    baseLayout->setSpacing(0);
+    baseLayout->addWidget(upper);
+    baseLayout->addWidget(lower);
+    setWidget(widget);
 
-    auto& ani = controller.getAnimation();
+    auto& ani = manager_.getAnimationController().getAnimation();
     for (auto& track : ani) {
         onTrackAdded(&track);
     }
     ani.addObserver(this);
+}
+
+QLayout* SequenceEditorPanel::getOptionLayout() {
+    return optionLayout_;
 }
 
 void SequenceEditorPanel::onAnimationChanged(AnimationController*, Animation* oldAnim,
@@ -105,7 +119,7 @@ void SequenceEditorPanel::onTrackRemoved(Track* track) { track->removeObserver(t
 
 void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
     auto widgetId = factory_.getSequenceEditorId(t->getClassIdentifier());
-    auto widget = factory_.create(widgetId, *s, *t);
+    auto widget = factory_.create(widgetId, *s, *t, manager_);
     widgets_[s] = widget.get();
     sequenceEditors_->addWidget(widget.release());
 }

@@ -53,6 +53,8 @@ public:
 
     virtual LinearInterpolation<Key>* clone() const override;
 
+    virtual std::string getName() const override;
+
     static std::string classIdentifier();
     virtual std::string getClassIdentifier() const override;
 
@@ -72,6 +74,11 @@ template <typename Key>
 LinearInterpolation<Key>* LinearInterpolation<Key>::clone() const {
     return new LinearInterpolation<Key>(*this);
 };
+
+template <typename Key>
+std::string LinearInterpolation<Key>::getName() const {
+    return "Linear";
+}
 
 template <typename Key>
 std::string LinearInterpolation<Key>::getClassIdentifier() const {

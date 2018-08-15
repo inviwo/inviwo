@@ -33,6 +33,7 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/animation/animationmanager.h>
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
 namespace inviwo {
@@ -44,7 +45,7 @@ public:
     SequenceEditorFactoryObject(const std::string& classIdentifier);
     virtual ~SequenceEditorFactoryObject() = default;
 
-    virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence&, Track&) const = 0;
+    virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence&, Track&, AnimationManager&) const = 0;
     const std::string& getClassIdentifier() const;
 
 protected:
@@ -62,8 +63,8 @@ public:
     virtual ~SequenceEditorFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence& sequence,
-                                                         Track& track) const override {
-        return std::make_unique<T>(sequence, track);
+                                                         Track& track, AnimationManager& manager) const override {
+        return std::make_unique<T>(sequence, track, manager);
     }
 };
 

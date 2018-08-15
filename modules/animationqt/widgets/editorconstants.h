@@ -32,6 +32,8 @@
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 
+#include <modules/animation/datastructures/animationtime.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QtGlobal>
@@ -51,6 +53,20 @@ constexpr int widthPerSecond = 96;
 /// We snap to certain times depending on the scale (zoom) level and keyboard modifiers.
 /// It is important to supply scene coordinates to this function!
 IVW_MODULE_ANIMATIONQT_API qreal getSnapTime(const qreal& actualTime, const qreal& scale);
+
+constexpr double timeToScenePos(Seconds time) { return time.count() * widthPerSecond; }
+constexpr Seconds scenePosToTime(double pos) { return Seconds{pos / widthPerSecond}; }
+
+struct FindDivisionsResult {
+    double start;
+    double step;
+    size_t count;
+    int integerDigits;
+    int fractionalDigits;
+};
+
+IVW_MODULE_ANIMATIONQT_API FindDivisionsResult findDivisions(double start, double stop,
+                                                             int divisions);
 
 }  // namespace animation
 
