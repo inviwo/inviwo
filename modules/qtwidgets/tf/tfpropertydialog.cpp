@@ -374,6 +374,9 @@ void TFPropertyDialog::updateFromProperty() {
     auto processorName = property_->getOwner()->getProcessor()->getDisplayName();
     auto windowTitle =
         "Transfer Function Editor - " + property_->getDisplayName() + " (" + processorName + ")";
+    if (property_->getReadOnly()) {
+        windowTitle += " - Read Only";
+    }
     setWindowTitle(utilqt::toQString(windowTitle));
 
     updateTFPreview();
