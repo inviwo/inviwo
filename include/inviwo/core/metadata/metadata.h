@@ -157,6 +157,7 @@ typedef MetaDataPrimitiveType<int, 0, 0> IntMetaData;
 typedef MetaDataPrimitiveType<float, 0, 0> FloatMetaData;
 typedef MetaDataPrimitiveType<double, 0, 0> DoubleMetaData;
 typedef MetaDataPrimitiveType<std::string, 0, 0> StringMetaData;
+typedef MetaDataPrimitiveType<size_t, 0, 0> SizeMetaData;
 
 typedef MetaDataPrimitiveType<vec2, 0, 0> FloatVec2MetaData;
 typedef MetaDataPrimitiveType<vec3, 0, 0> FloatVec3MetaData;

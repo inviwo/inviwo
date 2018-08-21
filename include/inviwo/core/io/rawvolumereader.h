@@ -54,7 +54,7 @@ public:
     virtual ~RawVolumeReader() = default;
 
     virtual void setParameters(const DataFormatBase* format, ivec3 dimensions, bool littleEndian,
-                               DataMapper dataMapper);
+                               DataMapper dataMapper, size_t dataOffset = 0u);
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
     virtual std::shared_ptr<Volume> readData(const std::string& filePath, MetaDataOwner* metadata) override;
@@ -69,6 +69,7 @@ private:
     vec3 spacing_;
     const DataFormatBase* format_;
     DataMapper dataMapper_;
+    size_t dataOffset_;
     bool parametersSet_;
 };
 
