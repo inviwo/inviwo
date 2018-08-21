@@ -82,6 +82,21 @@ std::shared_ptr<LayerRAMPrecision<T>> layerSubSet(const Layer* in, ivec2 offset,
 
 namespace detail {
 
+template <typename T>
+void plainCopy(const T* src, T* dst, size_t len) {
+    std::copy(src, src + len, dst);
+}
+
+template <typename T, typename U>
+void plainCopy(const T*, U*, size_t) {}
+
+template <typename To, typename From>
+void conversionCopy(const From* src, To* dst, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        dst[i] = util::glm_convert_normalized<To, From>(src[i]);
+    }
+}
+
 template <typename T, typename U = T>
 std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision<T>* inLayer,
                                                          ivec2 offset, size2_t extent,
@@ -114,11 +129,9 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
         size_t dstPos = (j + dstOffset.y) * dstDim.x + dstOffset.x;
 
         if (std::is_same<T, U>::value) {
-            std::copy(src + srcPos, src + srcPos + copyExtent.x, dst + dstPos);
+            plainCopy(src + srcPos, dst + dstPos, static_cast<size_t>(copyExtent.x));
         } else {
-            for (int i = 0; i < copyExtent.x; i++) {
-                dst[dstPos + i] = util::glm_convert_normalized<T, U>(src[srcPos + i]);
-            }
+            conversionCopy(src + srcPos, dst + dstPos, static_cast<size_t>(copyExtent.x));
         }
     }
 
@@ -134,12 +147,12 @@ std::shared_ptr<LayerRAMPrecision<T>> util::layerSubSet(const Layer* in, ivec2 o
                                                         size2_t extent,
                                                         bool clampBorderOutsideImage) {
 
-    return in->getRepresentation<LayerRAM>()->dispatch<std::shared_ptr<LayerRAM>>(
+    return in->getRepresentation<LayerRAM>()->dispatch<std::shared_ptr<LayerRAMPrecision<T>>>(
         [offset, extent, clampBorderOutsideImage](auto layerpr) {
             using ValueType = util::PrecsionValueType<decltype(layerpr)>;
 
-            return detail::extractLayerSubSet<ValueType, T>(layerpr, offset, extent,
-                                                            clampBorderOutsideImage);
+            return util::detail::extractLayerSubSet<ValueType, T>(layerpr, offset, extent,
+                                                                  clampBorderOutsideImage);
         });
 }
 
