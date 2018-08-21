@@ -33,147 +33,92 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/util/formats.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/util/glm.h>
+
+#include <algorithm>
 
 namespace inviwo {
 
+namespace util {
+
 /**
- * \class LayerRAMSubSet
- * \brief extracts a subregion from a layer and returns a new layer.
+ * \brief extracts a subregion from a layer and returns it as a new layer
+ *
+ * This function extracts a subregion given by offset and extent from the input layer.
+ * If border clamping is enabled, the output region will be clamped to lie completely within the
+ * source layer. Otherwise (default), the areas outside the source layer will be filled with
+ * zeros.
+ *
+ * @param in       input layer
+ * @param offset   subregion offset in input layer
+ * @param extent   extent (width and height) of subregion
+ * @param clampBorderOutsideImage    if true, the output region is clamped to the layer boundaries
+ * @return std::shared_ptr<LayerRAM>
  */
-class IVW_MODULE_BASE_API LayerRAMSubSet {
-public:
-    /**
-     * \brief extracts the subregion of a layer
-     *
-     * This function extracts a subregion given by offset and extent from the input layer.
-     * If border clamping is enabled, the output region will be clamped to lie completely within the
-     * source layer. Otherwise (default), the areas outside the source layer will be filled with
-     * zeros.
-     *
-     * @param in       input layer
-     * @param offset   subregion offset in input layer
-     * @param extent   extent (width and height) of subregion
-     * @param clampBorderOutsideImage    if true, the output region will be clamped to the layer
-     * boundaries
-     * @param dstFormat    data format of the destination layer, if not set output will match input
-     * format Currently, only conversion to DataVec4UInt8 is supported.
-     * @return std::shared_ptr<LayerRAM>
-     *
-     * \see VolumeRAMSubSet
-     */
-    static std::shared_ptr<LayerRAM> apply(const LayerRepresentation* in, ivec2 offset,
-                                           size2_t extent, bool clampBorderOutsideImage = false,
-                                           const DataFormatBase* dstFormat = nullptr);
-};
+IVW_MODULE_BASE_API std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2 offset,
+                                                          size2_t extent,
+                                                          bool clampBorderOutsideImage = false);
+
+/**
+ * \brief extracts a subregion from a layer and converts it into a new layer
+ *
+ * This function extracts a subregion given by offset and extent from the input layer. The values
+ * will be converted to type T using util::glm_convert_normalized.
+ * If border clamping is enabled, the output region will be clamped to lie completely within the
+ * source layer. Otherwise (default), the areas outside the source layer will be filled with
+ * zeros.
+ *
+ * @param in       input layer
+ * @param offset   subregion offset in input layer
+ * @param extent   extent (width and height) of subregion
+ * @param clampBorderOutsideImage    if true, the output region is clamped to the layer boundaries
+ * @return std::shared_ptr<LayerRAMPrecision<T>>
+ */
+template <typename T>
+std::shared_ptr<LayerRAMPrecision<T>> layerSubSet(const Layer* in, ivec2 offset, size2_t extent,
+                                                  bool clampBorderOutsideImage = false);
 
 namespace detail {
 
-struct IVW_MODULE_BASE_API LayerRAMSubSetDispatcher {
-    using type = std::shared_ptr<LayerRAM>;
-    template <typename Result, typename T>
-    std::shared_ptr<LayerRAM> operator()(const LayerRepresentation* in, ivec2 offset,
-                                         size2_t extent, bool clampBorderOutsideImage);
-};
-
-template <class Tdst>
-struct IVW_MODULE_BASE_API LayerRAMSubSetConvertDispatcher {
-    using type = std::shared_ptr<LayerRAM>;
-    template <typename Result, typename T>
-    std::shared_ptr<LayerRAM> operator()(const LayerRepresentation* in, ivec2 offset,
-                                         size2_t extent, bool clampBorderOutsideImage);
-};
-
-template <typename Result, typename DataType>
-std::shared_ptr<LayerRAM> LayerRAMSubSetDispatcher::operator()(const LayerRepresentation* in,
-                                                               ivec2 offset, size2_t extent,
-                                                               bool clampBorderOutsideImage) {
-    using T = typename DataType::type;
-
-    const LayerRAMPrecision<T>* layer = dynamic_cast<const LayerRAMPrecision<T>*>(in);
-    if (!layer) return nullptr;
+template <typename T, typename U = T>
+std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision<T>* inLayer,
+                                                         ivec2 offset, size2_t extent,
+                                                         bool clampBorderOutsideImage) {
 
     // determine parameters
-    const ivec2 srcDim(layer->getDimensions());
+    const ivec2 srcDim(inLayer->getDimensions());
 
-    ivec2 srcOffset(glm::max(ivec2(0), offset));
-    ivec2 dstOffset(glm::max(ivec2(0), -offset));
-    ivec2 dstDim(extent);
-    ivec2 copyExtent(ivec2(extent) - dstOffset);
-
-    // clamp to source layer
-    copyExtent = glm::min(copyExtent, srcDim - srcOffset);
-
-    if (clampBorderOutsideImage) {
-        // adjust the output dimensions to match the intersection of output and input regions
-        dstDim = copyExtent;
-        dstOffset = ivec2(0);
-    }
+    // adjust the output dimensions to match the intersection of output and input regions
+    const ivec2 srcOffset(glm::max(ivec2(0), offset));
+    const ivec2 dstOffset = clampBorderOutsideImage ? ivec2(0) : (glm::max(ivec2(0), -offset));
+    // clamp copy extent to source layer
+    const ivec2 copyExtent = glm::min(ivec2(extent) - dstOffset, srcDim - srcOffset);
+    const ivec2 dstDim = clampBorderOutsideImage ? copyExtent : extent;
 
     // allocate space
-    auto newLayer = std::make_shared<LayerRAMPrecision<T> >(dstDim);
+    auto newLayer = std::make_shared<LayerRAMPrecision<U>>(dstDim);
 
-    const T* src = static_cast<const T*>(layer->getData());
-    T* dst = static_cast<T*>(newLayer->getData());
+    const auto src = inLayer->getDataTyped();
+    auto dst = newLayer->getDataTyped();
+
     if (!clampBorderOutsideImage) {
         // clear entire layer as only parts will be copied
-        std::fill(dst, dst + dstDim.x * dstDim.y, T(0));
+        std::fill(dst, dst + dstDim.x * dstDim.y, U(0));
     }
     // memcpy each row to form sub layer
 #pragma omp parallel for
     for (int j = 0; j < copyExtent.y; j++) {
         size_t srcPos = (j + srcOffset.y) * srcDim.x + srcOffset.x;
         size_t dstPos = (j + dstOffset.y) * dstDim.x + dstOffset.x;
-        std::copy(src + srcPos, src + srcPos + copyExtent.x, dst + dstPos);
-    }
 
-    return newLayer;
-}
-
-template <class Tdst>
-template <typename Result, typename DataType>
-std::shared_ptr<LayerRAM> LayerRAMSubSetConvertDispatcher<Tdst>::operator()(
-    const LayerRepresentation* in, ivec2 offset, size2_t extent, bool clampBorderOutsideImage) {
-    using T = typename DataType::type;
-
-    const LayerRAMPrecision<T>* layer = dynamic_cast<const LayerRAMPrecision<T>*>(in);
-    if (!layer) return nullptr;
-
-    // determine parameters
-    const ivec2 srcDim(layer->getDimensions());
-
-    ivec2 srcOffset(glm::max(ivec2(0), offset));
-    ivec2 dstOffset(glm::max(ivec2(0), -offset));
-    ivec2 dstDim(extent);
-    ivec2 copyExtent(ivec2(extent) - dstOffset);
-
-    // clamp to source layer
-    copyExtent = glm::min(copyExtent, srcDim - srcOffset);
-
-    if (clampBorderOutsideImage) {
-        // adjust the output dimensions to match the intersection of output and input regions
-        dstDim = copyExtent;
-        dstOffset = ivec2(0);
-    }
-
-    // allocate space
-    auto newLayer = std::make_shared<LayerRAMPrecision<Tdst> >(dstDim);
-
-    const T* src = static_cast<const T*>(layer->getData());
-    Tdst* dst = static_cast<Tdst*>(newLayer->getData());
-    if (!clampBorderOutsideImage) {
-        // clear entire layer as only parts will be copied
-        std::fill(dst, dst + dstDim.x * dstDim.y, Tdst(0));
-    }
-    // memcpy each row to form sub layer
-#pragma omp parallel for
-    for (int j = 0; j < copyExtent.y; j++) {
-        size_t srcPos = (j + srcOffset.y) * srcDim.x + srcOffset.x;
-        size_t dstPos = (j + dstOffset.y) * dstDim.x + dstOffset.x;
-        for (int i = 0; i < copyExtent.x; i++) {
-            dst[dstPos + i] = util::glm_convert_normalized<Tdst, T>(src[srcPos + i]);
+        if (std::is_same<T, U>::value) {
+            std::copy(src + srcPos, src + srcPos + copyExtent.x, dst + dstPos);
+        } else {
+            for (int i = 0; i < copyExtent.x; i++) {
+                dst[dstPos + i] = util::glm_convert_normalized<T, U>(src[srcPos + i]);
+            }
         }
     }
 
@@ -181,6 +126,22 @@ std::shared_ptr<LayerRAM> LayerRAMSubSetConvertDispatcher<Tdst>::operator()(
 }
 
 }  // namespace detail
+
+}  // namespace util
+
+template <typename T>
+std::shared_ptr<LayerRAMPrecision<T>> util::layerSubSet(const Layer* in, ivec2 offset,
+                                                        size2_t extent,
+                                                        bool clampBorderOutsideImage) {
+
+    return in->getRepresentation<LayerRAM>()->dispatch<std::shared_ptr<LayerRAM>>(
+        [offset, extent, clampBorderOutsideImage](auto layerpr) {
+            using ValueType = util::PrecsionValueType<decltype(layerpr)>;
+
+            return detail::extractLayerSubSet<ValueType, T>(layerpr, offset, extent,
+                                                            clampBorderOutsideImage);
+        });
+}
 
 }  // namespace inviwo
 

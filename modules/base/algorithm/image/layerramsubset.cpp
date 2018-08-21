@@ -29,34 +29,22 @@
 
 #include <modules/base/algorithm/image/layerramsubset.h>
 
-#include <inviwo/core/util/formatdispatching.h>
-
 namespace inviwo {
 
-std::shared_ptr<LayerRAM> LayerRAMSubSet::apply(const LayerRepresentation *in, ivec2 offset,
-                                                size2_t extent, bool clampBorderOutsideImage,
-                                                const DataFormatBase *dstFormat) {
-    if (dstFormat) {
-#include <warn/push>
-#include <warn/ignore/switch-enum>
-        switch (dstFormat->getId()) {
-            case DataFormatId::Vec4UInt8: {
-                detail::LayerRAMSubSetConvertDispatcher<DataVec4UInt8::type> disp;
-                return dispatching::dispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
-                    dstFormat->getId(), disp, in, offset, extent, clampBorderOutsideImage);
-            }
-            default: {
-                detail::LayerRAMSubSetDispatcher disp;
-                return dispatching::dispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
-                    dstFormat->getId(), disp, in, offset, extent, clampBorderOutsideImage);
-            }
-        }
-#include <warn/pop>
-    } else {
-        detail::LayerRAMSubSetDispatcher disp;
-        return dispatching::dispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
-            dstFormat->getId(), disp, in, offset, extent, clampBorderOutsideImage);
-    }
+namespace util {
+
+std::shared_ptr<LayerRAM> layerSubSet(const Layer *in, ivec2 offset, size2_t extent,
+                                      bool clampBorderOutsideImage) {
+
+    return in->getRepresentation<LayerRAM>()->dispatch<std::shared_ptr<LayerRAM>>(
+        [offset, extent, clampBorderOutsideImage](auto layerpr) {
+            using ValueType = util::PrecsionValueType<decltype(layerpr)>;
+
+            return detail::extractLayerSubSet<ValueType>(layerpr, offset, extent,
+                                                         clampBorderOutsideImage);
+        });
 }
+
+}  // namespace util
 
 }  // namespace inviwo
