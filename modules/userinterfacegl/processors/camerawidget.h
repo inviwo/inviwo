@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <modules/opengl/shader/shader.h>
@@ -148,6 +149,12 @@ private:
     BoolProperty axisColoring_;
     FloatVec4Property userColor_;
     FloatVec4Property cubeColor_;
+
+    CompositeProperty interactions_;
+    ButtonProperty rotateUpBtn_;
+    ButtonProperty rotateDownBtn_;
+    ButtonProperty rotateLeftBtn_;
+    ButtonProperty rotateRightBtn_;
 
     CompositeProperty outputProps_;
     CameraProperty camera_;
