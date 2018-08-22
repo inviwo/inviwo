@@ -91,6 +91,13 @@ CameraWidget::CameraWidget()
     , userColor_("userColor", "User Color", vec4(vec3(0.7f), 1.0f), vec4(0.0f), vec4(1.0f))
     , cubeColor_("cubeColor", "Cube Color", vec4(0.6f, 0.42f, 0.42f, 1.0f), vec4(0.0f), vec4(1.0f))
 
+    , interactions_("interactions", "Interactions")
+
+    , rotateUpBtn_("rotateUpButton", "Rotate Up")
+    , rotateDownBtn_("rotateDownButton", "Rotate Down")
+    , rotateLeftBtn_("rotateLeftButton", "Rotate Left")
+    , rotateRightBtn_("rotateRightButton", "Rotate Right")
+
     , outputProps_("outputProperties", "Output")
     , camera_("camera", "Camera")
     , rotMatrix_("rotMatrix", "Rotation Matrix", mat4(1.0f))
@@ -142,6 +149,21 @@ CameraWidget::CameraWidget()
     appearance_.addProperty(cubeColor_);
     appearance_.addProperty(customColorComposite_);
 
+    // button interactions
+    interactions_.setCollapsed(true);
+
+    rotateUpBtn_.onChange([&]() { singleStepInteraction(Interaction::VerticalRotation, true); });
+    rotateDownBtn_.onChange([&]() { singleStepInteraction(Interaction::VerticalRotation, false); });
+    rotateLeftBtn_.onChange(
+        [&]() { singleStepInteraction(Interaction::HorizontalRotation, true); });
+    rotateRightBtn_.onChange(
+        [&]() { singleStepInteraction(Interaction::HorizontalRotation, false); });
+
+    interactions_.addProperty(rotateUpBtn_);
+    interactions_.addProperty(rotateDownBtn_);
+    interactions_.addProperty(rotateLeftBtn_);
+    interactions_.addProperty(rotateRightBtn_);
+
     // output properties
     camera_.setCollapsed(true);
     outputProps_.addProperty(camera_);
@@ -152,6 +174,7 @@ CameraWidget::CameraWidget()
 
     addProperty(settings_);
     addProperty(appearance_);
+    addProperty(interactions_);
     addProperty(outputProps_);
     addProperty(internalProps_);
 
@@ -197,7 +220,7 @@ void CameraWidget::process() {
     const vec2 referenceSize(
         300.0f);  // reference size (width/height) in pixel for scale equal to 1.0
     ivec2 widgetSize(scaling_.get() * referenceSize);
-    
+
     updateWidgetTexture(widgetSize);
     drawWidgetTexture();
     utilgl::deactivateCurrentTarget();
@@ -499,9 +522,11 @@ void CameraWidget::singleStepInteraction(Interaction dir, bool clockwise) {
         case Interaction::VerticalRotation:
         case Interaction::FreeRotation:
         case Interaction::Roll:
+            saveInitialCameraState();
             singleStepRotation(dir, clockwise);
             break;
         case Interaction::Zoom:
+            saveInitialCameraState();
             singleStepZoom(clockwise);
             break;
         case Interaction::None:
