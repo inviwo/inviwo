@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,27 +27,44 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/util/filedialogstate.h>
+#ifndef IVW_ENUMTRAITS_H
+#define IVW_ENUMTRAITS_H
+
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/defaultvalues.h>
+
+#include <type_traits>
 
 namespace inviwo {
 
-const std::string DirectoryProperty::classIdentifier = "org.inviwo.BoolProperty";
-std::string DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
+template <typename T>
+struct EnumTraits {};
 
-DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
-                                     std::string value, std::string contentType,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
-    this->setAcceptMode(AcceptMode::Open);
-    this->setFileMode(FileMode::DirectoryOnly);
+namespace util {
+// type trait to check if T is derived from has enum traits
+namespace detail {
+
+template <typename T, class Enable = void>
+struct HasEnumName : std::false_type {};
+
+template <typename T>
+struct HasEnumName<T, void_t<decltype(EnumTraits<T>::name())>> : std::true_type {};
+
+}  // namespace detail
+
+template <typename T>
+struct HasEnumName : detail::HasEnumName<T> {};
+
+template <typename T, typename std::enable_if<HasEnumName<T>::value, std::size_t>::type = 0>
+std::string enumName() {
+    return EnumTraits<T>::name();
+}
+template <typename T, typename std::enable_if<!HasEnumName<T>::value, std::size_t>::type = 0>
+std::string enumName() {
+    return "Enum" + Defaultvalues<std::underlying_type_t<T>>::getName();
 }
 
-DirectoryProperty::~DirectoryProperty() {}
+}  // namespace util
+}  // namespace inviwo
 
-std::string DirectoryProperty::getClassIdentifierForWidget() const {
-    return FileProperty::getClassIdentifier();
-}
-
-}  // namespace
+#endif  // IVW_ENUMTRAITS_H

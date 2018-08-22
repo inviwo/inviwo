@@ -33,7 +33,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(MultiFileProperty, "org.inviwo.MultiFileProperty");
+const std::string MultiFileProperty::classIdentifier = "org.inviwo.MultiFileProperty";
+std::string MultiFileProperty::getClassIdentifier() const { return classIdentifier; }
 
 MultiFileProperty::MultiFileProperty(std::string identifier, std::string displayName, const std::vector<std::string>& value,
                            std::string contentType,

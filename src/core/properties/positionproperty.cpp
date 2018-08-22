@@ -30,7 +30,9 @@
 #include <inviwo/core/properties/positionproperty.h>
 
 namespace inviwo {
-PropertyClassIdentifier(PositionProperty, "org.inviwo.PositionProperty");
+
+const std::string PositionProperty::classIdentifier = "org.inviwo.PositionProperty";
+std::string PositionProperty::getClassIdentifier() const { return classIdentifier; }
 
 PositionProperty::PositionProperty(std::string identifier, std::string displayName,
                                    FloatVec3Property position, CameraProperty* camera,

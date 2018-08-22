@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/boolcompositeproperty.h>
@@ -33,35 +33,30 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(BoolCompositeProperty, "org.inviwo.BoolCompositeProperty");
+const std::string BoolCompositeProperty::classIdentifier = "org.inviwo.BoolCompositeProperty";
+std::string BoolCompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 BoolCompositeProperty::BoolCompositeProperty(std::string identifier, std::string displayName,
-                                     bool checked,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
+                                             bool checked, InvalidationLevel invalidationLevel,
+                                             PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , checked_("checked", "checked", checked, invalidationLevel, semantics) 
-{
+    , checked_("checked", "checked", checked, invalidationLevel, semantics) {
     checked_.setVisible(false);
     this->addProperty(checked_);
-    checked_.onChange([this]() {
-        Property::propertyModified();
-    });
+    checked_.onChange([this]() { Property::propertyModified(); });
 }
 
 BoolCompositeProperty* BoolCompositeProperty::clone() const {
     return new BoolCompositeProperty(*this);
 }
 
-BoolCompositeProperty::~BoolCompositeProperty() {}
+BoolCompositeProperty::~BoolCompositeProperty() = default;
 
-std::string BoolCompositeProperty::getClassIdentifierForWidget() const{
-    return BoolCompositeProperty::CLASS_IDENTIFIER;
+std::string BoolCompositeProperty::getClassIdentifierForWidget() const {
+    return BoolCompositeProperty::classIdentifier;
 }
 
-bool BoolCompositeProperty::isChecked() const {
-    return checked_.get();
-}
+bool BoolCompositeProperty::isChecked() const { return checked_.get(); }
 
 void BoolCompositeProperty::setChecked(bool checked) {
     if (checked_.get() != checked) {
@@ -69,14 +64,10 @@ void BoolCompositeProperty::setChecked(bool checked) {
     }
 }
 
-BoolCompositeProperty::operator bool&() {
-    return checked_.get();
-}
+BoolCompositeProperty::operator bool&() { return checked_.get(); }
 
-BoolCompositeProperty::operator const bool&() const {
-    return checked_.get();
-}
+BoolCompositeProperty::operator const bool&() const { return checked_.get(); }
 
 BoolProperty* BoolCompositeProperty::getBoolProperty() { return &checked_; }
 
-} // namespace
+}  // namespace inviwo

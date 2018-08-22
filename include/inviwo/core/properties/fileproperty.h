@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FILEPROPERTY_H
@@ -46,7 +46,7 @@ public:
     virtual bool requestFile() = 0;
 };
 
-/** 
+/**
  * \ingroup properties
  *  A class for file representations.
  *  Holds the value of the path to a file as a string.
@@ -55,7 +55,8 @@ public:
  */
 class IVW_CORE_API FileProperty : public TemplateProperty<std::string> {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     /**
      * \brief Constructor for the FileProperty
@@ -82,7 +83,7 @@ public:
     virtual ~FileProperty() = default;
 
     virtual void set(const std::string& value) override;
-    virtual void set(const Property *property) override;
+    virtual void set(const Property* property) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -101,7 +102,7 @@ public:
 
     void setContentType(const std::string& contentType);
     std::string getContentType() const;
-    
+
     const FileExtension& getSelectedExtension() const;
     void setSelectedExtension(const FileExtension& ext);
 
@@ -120,6 +121,6 @@ private:
     std::string contentType_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_FILEPROPERTY_H

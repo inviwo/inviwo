@@ -46,7 +46,9 @@ namespace inviwo {
 
 namespace plot {
 
-PropertyClassIdentifier(ScatterPlotGL::Properties, "org.inviwo.ScatterPlotGL.Properties");
+const std::string ScatterPlotGL::Properties::classIdentifier =
+    "org.inviwo.ScatterPlotGL.Properties";
+std::string ScatterPlotGL::Properties::getClassIdentifier() const { return classIdentifier; }
 
 ScatterPlotGL::Properties::Properties(std::string identifier, std::string displayName,
                                       InvalidationLevel invalidationLevel,

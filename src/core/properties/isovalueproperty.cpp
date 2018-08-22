@@ -32,7 +32,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(IsoValueProperty, "org.inviwo.IsoValueProperty");
+const std::string IsoValueProperty::classIdentifier = "org.inviwo.IsoValueProperty";
+std::string IsoValueProperty::getClassIdentifier() const { return classIdentifier; }
 
 IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
                                    const IsoValueCollection& value, VolumeInport* volumeInport,

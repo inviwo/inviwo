@@ -35,8 +35,12 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(Gaussian1DProperty, "org.inviwo.Gaussian1DProperty");
-PropertyClassIdentifier(Gaussian2DProperty, "org.inviwo.Gaussian2DProperty");
+const std::string Gaussian1DProperty::classIdentifier = "org.inviwo.Gaussian1DProperty";
+std::string Gaussian1DProperty::getClassIdentifier() const { return classIdentifier; }
+
+const std::string Gaussian2DProperty::classIdentifier = "org.inviwo.Gaussian2DProperty";
+std::string Gaussian2DProperty::getClassIdentifier() const { return classIdentifier; }
+
 
 Gaussian1DProperty::Gaussian1DProperty(const std::string &identifier,
                                        const std::string &displayName,

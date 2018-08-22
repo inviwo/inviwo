@@ -24,27 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/advancedmaterialproperty.h>
 
 namespace inviwo {
 
-PropertyClassIdentifier(AdvancedMaterialProperty, "org.inviwo.AdvancedMaterialProperty");
+const std::string AdvancedMaterialProperty::classIdentifier = "org.inviwo.AdvancedMaterialProperty";
+std::string AdvancedMaterialProperty::getClassIdentifier() const { return classIdentifier; }
 
-AdvancedMaterialProperty::AdvancedMaterialProperty(
-    std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel,
-                        semantics)
+AdvancedMaterialProperty::AdvancedMaterialProperty(std::string identifier, std::string displayName,
+                                                   InvalidationLevel invalidationLevel,
+                                                   PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , phaseFunctionProp("phaseFunction", "Phase function", InvalidationLevel::Valid)
     , indexOfRefractionProp("IOR", "Index of refraction", 1.f, 1.f, 20.f)
     , roughnessProp("roughness", "Roughness", 0.1f, 0.01f, 1.f)
     , specularColorProp("specularColor", "Specular color", vec4(1.f))
     , anisotropyProp("anisotropy", "Anisotropy (g)", 0.f, -1.f, 1.f) {
 
-    
     phaseFunctionProp.addOption("isotropic", "Isotropic");
     phaseFunctionProp.addOption("HenyeyGreenstein", "Henyey-Greenstein");
     phaseFunctionProp.addOption("Schlick", "Schlick");
@@ -69,7 +68,7 @@ AdvancedMaterialProperty::AdvancedMaterialProperty(
 
 AdvancedMaterialProperty::AdvancedMaterialProperty(const AdvancedMaterialProperty& rhs)
     : CompositeProperty(rhs)
-    , phaseFunctionProp(rhs.phaseFunctionProp) 
+    , phaseFunctionProp(rhs.phaseFunctionProp)
     , indexOfRefractionProp(rhs.indexOfRefractionProp)
     , roughnessProp(rhs.roughnessProp)
     , specularColorProp(rhs.specularColorProp)
@@ -82,7 +81,8 @@ AdvancedMaterialProperty::AdvancedMaterialProperty(const AdvancedMaterialPropert
     addProperty(anisotropyProp);
 }
 
-AdvancedMaterialProperty& AdvancedMaterialProperty::operator=(const AdvancedMaterialProperty& that) {
+AdvancedMaterialProperty& AdvancedMaterialProperty::operator=(
+    const AdvancedMaterialProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
         phaseFunctionProp = that.phaseFunctionProp;
@@ -212,9 +212,7 @@ float AdvancedMaterialProperty::roughnessToShininess(float m) const {
     return 2.f / (std::max(1e-4f, m * m)) - 2.f;
 }
 
-float AdvancedMaterialProperty::WardParameterMapping(float x) const { 
-    return std::max(x, 1e-4f); 
-}
+float AdvancedMaterialProperty::WardParameterMapping(float x) const { return std::max(x, 1e-4f); }
 
 vec2 AdvancedMaterialProperty::BCParameterMapping(const vec2& bc) const {
     return bc * vec2(13000.f, 1.f);
@@ -225,4 +223,4 @@ float AdvancedMaterialProperty::getIndexOfRefractionTerm(float n1, float n2) con
     return std::pow((n1 - n2) / (n1 + n2), 2.f);
 }
 
-}  // namespace
+}  // namespace inviwo

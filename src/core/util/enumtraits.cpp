@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,27 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/enumtraits.h>
 
 namespace inviwo {
 
-const std::string DirectoryProperty::classIdentifier = "org.inviwo.BoolProperty";
-std::string DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
-
-DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
-                                     std::string value, std::string contentType,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
-    this->setAcceptMode(AcceptMode::Open);
-    this->setFileMode(FileMode::DirectoryOnly);
-}
-
-DirectoryProperty::~DirectoryProperty() {}
-
-std::string DirectoryProperty::getClassIdentifierForWidget() const {
-    return FileProperty::getClassIdentifier();
-}
-
-}  // namespace
+}  // namespace inviwo

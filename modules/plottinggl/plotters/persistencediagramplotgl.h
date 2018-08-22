@@ -64,7 +64,8 @@ class IVW_MODULE_PLOTTINGGL_API PersistenceDiagramPlotGL {
 public:
     class Properties : public CompositeProperty {
     public:
-        InviwoPropertyInfo();
+        virtual std::string getClassIdentifier() const override;
+        static const std::string classIdentifier;
 
         Properties(std::string identifier, std::string displayName,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -151,7 +152,7 @@ protected:
     PickingMapper picking_;
     std::set<uint32_t> hoveredIndices_;
 
-    Processor* processor_;
+    Processor *processor_;
 };
 
 }  // namespace plot

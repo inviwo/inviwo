@@ -47,7 +47,8 @@ public:
         WorldSpace
     };
 
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     StipplingProperty(const std::string& identifier, const std::string& displayName,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

@@ -49,7 +49,8 @@ namespace plot {
 
 class IVW_MODULE_PLOTTING_API AxisProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     enum class Orientation { Horizontal, Vertical };
     enum class Placement { Outside, Inside };

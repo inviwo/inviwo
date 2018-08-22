@@ -30,7 +30,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(VolumeIndicatorProperty, "org.inviwo.VolumeIndicatorProperty");
+const std::string VolumeIndicatorProperty::classIdentifier = "org.inviwo.VolumeIndicatorProperty";
+std::string VolumeIndicatorProperty::getClassIdentifier() const { return classIdentifier; }
 
 VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::string displayName,
                                                  InvalidationLevel invalidationLevel,
@@ -51,7 +52,7 @@ VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::st
     mode_.addOption("plane", "Plane", 0);
     mode_.addOption("cross", "Cross", 1);
     mode_.onChange([this]() { onModeChange(); });
-    
+
     setCollapsed(true);
     setAllPropertiesCurrentStateAsDefault();
 }
@@ -87,4 +88,4 @@ VolumeIndicatorProperty::~VolumeIndicatorProperty() {}
 
 void VolumeIndicatorProperty::onModeChange() {}
 
-}  // namespace
+}  // namespace inviwo

@@ -48,7 +48,8 @@ class IVW_CORE_API CompositeProperty : public Property,
                                        public PropertyOwner,
                                        public CompositePropertyObservable {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     CompositeProperty(std::string identifier, std::string displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

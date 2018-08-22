@@ -45,10 +45,12 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API BasisProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     BasisProperty(std::string identifier, std::string displayName,
-                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                        PropertySemantics semantics = PropertySemantics::Default);
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                  PropertySemantics semantics = PropertySemantics::Default);
     BasisProperty(const BasisProperty& rhs);
     BasisProperty& operator=(const BasisProperty& that);
     virtual BasisProperty* clone() const override;
@@ -75,7 +77,6 @@ private:
     void onOverrideChange();
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEBASISPROPERTY_H
-
+#endif  // IVW_VOLUMEBASISPROPERTY_H

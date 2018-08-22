@@ -46,8 +46,6 @@ namespace inviwo {
 template <typename T>
 class OrdinalProperty : public TemplateProperty<T> {
 public:
-    InviwoPropertyInfo();
-
     OrdinalProperty(const std::string& identifier, const std::string& displayName,
                     const T& value = Defaultvalues<T>::getVal(),
                     const T& minValue = Defaultvalues<T>::getMin(),
@@ -61,6 +59,8 @@ public:
     OrdinalProperty<T>& operator=(const T& value);
     virtual OrdinalProperty<T>* clone() const override;
     virtual ~OrdinalProperty() = default;
+
+    virtual std::string getClassIdentifier() const override;
 
     T getMinValue() const;
     T getMaxValue() const;
@@ -94,8 +94,8 @@ protected:
      * \brief validate the given value against the set min/max range
      *
      * @param v   value to be validated
-     * @return returns the pair { modified, valid value } where modified indicates 
-     *            whether the given value was adjusted. The new value is stored as 
+     * @return returns the pair { modified, valid value } where modified indicates
+     *            whether the given value was adjusted. The new value is stored as
      *            second parameter. In case there was not modification, valid value
      *            is equal to TemplateProperty<T>::value_.
      */
@@ -145,8 +145,11 @@ using DoubleQuaternionProperty = OrdinalProperty<glm::dquat>;
 using FloatQuaternionProperty = OrdinalProperty<glm::fquat>;
 
 template <typename T>
-PropertyClassIdentifier(OrdinalProperty<T>,
-                        "org.inviwo." + Defaultvalues<T>::getName() + "Property");
+struct PropertyTraits<OrdinalProperty<T>> {
+    static std::string classIdentifier() {
+        return "org.inviwo." + Defaultvalues<T>::getName() + "Property";
+    }
+};
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
@@ -173,6 +176,11 @@ OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {
 template <typename T>
 OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
     return new OrdinalProperty<T>(*this);
+}
+
+template <typename T>
+std::string OrdinalProperty<T>::getClassIdentifier() const {
+    return PropertyTraits<OrdinalProperty<T>>::classIdentifier();
 }
 
 template <typename T>

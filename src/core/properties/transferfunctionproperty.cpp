@@ -33,7 +33,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(TransferFunctionProperty, "org.inviwo.TransferFunctionProperty");
+const std::string TransferFunctionProperty::classIdentifier = "org.inviwo.TransferFunctionProperty";
+std::string TransferFunctionProperty::getClassIdentifier() const { return classIdentifier; }
 
 void TFPropertyObserver::onMaskChange(const dvec2&) {}
 
@@ -58,7 +59,6 @@ void TFPropertyObservable::notifyZoomVChange(const dvec2& zoomV) {
 void TFPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
     forEachObserver([&](TFPropertyObserver* o) { o->onHistogramModeChange(mode); });
 }
-
 
 TransferFunctionProperty::TransferFunctionProperty(
     const std::string& identifier, const std::string& displayName, const TransferFunction& value,
@@ -235,8 +235,6 @@ void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive*) { propertyModi
 
 void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive*) { propertyModified(); }
 
-void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet*) {
-    propertyModified();
-}
+void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet*) { propertyModified(); }
 
 }  // namespace inviwo

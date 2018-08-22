@@ -52,7 +52,8 @@ class PointLightInteractionHandler;
 
 class IVW_MODULE_BASE_API PointLightTrackball : public Trackball {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     PointLightTrackball(PointLightInteractionHandler* p);
     virtual ~PointLightTrackball() = default;

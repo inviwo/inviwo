@@ -51,7 +51,8 @@ namespace inviwo {
  */
 class IVW_CORE_API PlaneProperty : public CompositeProperty { 
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     PlaneProperty(std::string identifier, std::string displayName,
                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

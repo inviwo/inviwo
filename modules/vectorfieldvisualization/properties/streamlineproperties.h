@@ -39,7 +39,8 @@ namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineProperties : public IntegralLineProperties {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     StreamLineProperties(std::string identifier, std::string displayName);
     StreamLineProperties(const StreamLineProperties& rhs);

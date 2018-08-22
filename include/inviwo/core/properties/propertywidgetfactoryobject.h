@@ -31,6 +31,7 @@
 #define IVW_PROPERTYWIDGETFACTORYOBJECT_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <string>
 
@@ -58,7 +59,7 @@ template<typename T, typename P>
 class PropertyWidgetFactoryObjectTemplate : public PropertyWidgetFactoryObject {
 public:
     PropertyWidgetFactoryObjectTemplate(const PropertySemantics& semantics)
-        : PropertyWidgetFactoryObject(P::CLASS_IDENTIFIER, semantics) {}
+        : PropertyWidgetFactoryObject(PropertyTraits<P>::classIdentifier(), semantics) {}
 
     virtual ~PropertyWidgetFactoryObjectTemplate() {}
 

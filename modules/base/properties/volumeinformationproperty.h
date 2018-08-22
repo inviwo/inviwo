@@ -46,10 +46,12 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
-    VolumeInformationProperty(std::string identifier, std::string displayName,
-                              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                              PropertySemantics semantics = PropertySemantics::Default);
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+    VolumeInformationProperty(
+        std::string identifier, std::string displayName,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+        PropertySemantics semantics = PropertySemantics::Default);
     VolumeInformationProperty(const VolumeInformationProperty& rhs);
     VolumeInformationProperty& operator=(const VolumeInformationProperty& that);
     virtual VolumeInformationProperty* clone() const override;
@@ -73,6 +75,6 @@ private:
     auto props();
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMEINFORMATIONPROPERTY_H

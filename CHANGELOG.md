@@ -1,5 +1,33 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-08-21
+The property class identifier system no longer uses the ```InviwoPropertyInfo``` / ```PropertyClassIdentifier``` macros but rather implements
+```
+virtual std::string getClassIdentifier() const override
+```
+manually. The static class identifier 
+```
+static const std::string CLASS_IDENTIFIER
+```
+can still be used added manually the the perfered way is to either use
+```
+static const std::string classIdentifier
+```
+or specialize the ```PropertyTraits``` like:
+```
+template <>
+struct PropertyTraits<MyProperty> {
+    static std::string classIdentifier() {
+        return "org.somename.myproperty";
+    }
+};
+```
+To access a class indtifier of a property type statically the PropertyTraits class should not be used instead of accessing 
+```CLASS_IDENTIFIER``` directly, as
+```
+PropertyTraits<MyProperty>::classIdentifier()
+```
+
 ## 2018-07-26 ListProperty
 
 Added `ListProperty`, a new property for dynamically adding and removing properties.

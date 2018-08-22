@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DIRECTORY_PROPERTY_H
@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-/** 
+/**
  * \ingroup properties
  * A class for file representations.
  * Holds the value of the path to a file as a string.
@@ -43,19 +43,18 @@ namespace inviwo {
  */
 class IVW_CORE_API DirectoryProperty : public FileProperty {
 public:
-    InviwoPropertyInfo();
-    DirectoryProperty(
-        std::string identifier,
-        std::string displayName,
-        std::string value = "",
-        std::string contentType = "default",
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    DirectoryProperty(std::string identifier, std::string displayName, std::string value = "",
+                      std::string contentType = "default",
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                      PropertySemantics semantics = PropertySemantics::Default);
     virtual ~DirectoryProperty();
 
     virtual std::string getClassIdentifierForWidget() const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DIRECTORY_PROPERTY_H
