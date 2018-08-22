@@ -33,6 +33,7 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/glm.h>
@@ -83,12 +84,9 @@ std::shared_ptr<LayerRAMPrecision<T>> layerSubSet(const Layer* in, ivec2 offset,
 namespace detail {
 
 template <typename T>
-void plainCopy(const T* src, T* dst, size_t len) {
+void conversionCopy(const T* src, T* dst, size_t len) {
     std::copy(src, src + len, dst);
 }
-
-template <typename T, typename U>
-void plainCopy(const T*, U*, size_t) {}
 
 template <typename To, typename From>
 void conversionCopy(const From* src, To* dst, size_t len) {
@@ -110,7 +108,7 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
     const ivec2 dstOffset = clampBorderOutsideImage ? ivec2(0) : (glm::max(ivec2(0), -offset));
     // clamp copy extent to source layer
     const ivec2 copyExtent = glm::min(ivec2(extent) - dstOffset, srcDim - srcOffset);
-    const ivec2 dstDim = clampBorderOutsideImage ? copyExtent : extent;
+    const ivec2 dstDim = clampBorderOutsideImage ? copyExtent : ivec2(extent);
 
     // allocate space
     auto newLayer = std::make_shared<LayerRAMPrecision<U>>(dstDim);
@@ -127,12 +125,7 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
     for (int j = 0; j < copyExtent.y; j++) {
         size_t srcPos = (j + srcOffset.y) * srcDim.x + srcOffset.x;
         size_t dstPos = (j + dstOffset.y) * dstDim.x + dstOffset.x;
-
-        if (std::is_same<T, U>::value) {
-            plainCopy(src + srcPos, dst + dstPos, static_cast<size_t>(copyExtent.x));
-        } else {
-            conversionCopy(src + srcPos, dst + dstPos, static_cast<size_t>(copyExtent.x));
-        }
+        conversionCopy(src + srcPos, dst + dstPos, static_cast<size_t>(copyExtent.x));
     }
 
     return newLayer;
