@@ -9,7 +9,7 @@ manually. The static class identifier
 ```
 static const std::string CLASS_IDENTIFIER
 ```
-can still be used added manually the the perfered way is to either use
+can still be added manually, but the perfered way is to either use
 ```
 static const std::string classIdentifier
 ```
@@ -22,11 +22,31 @@ struct PropertyTraits<MyProperty> {
     }
 };
 ```
-To access a class indtifier of a property type statically the PropertyTraits class should not be used instead of accessing 
-```CLASS_IDENTIFIER``` directly, as
+To access a class indtifier of a property type statically the PropertyTraits class should be used  
 ```
 PropertyTraits<MyProperty>::classIdentifier()
 ```
+instead of accessing the ```CLASS_IDENTIFIER``` directly.
+
+An enum tratis class has been added to help working with enums and serializeation, especially in the case of OptionProperties. 
+For example given an enum:
+```
+enum class MyEnum { a, b };
+```
+EnumTraits can be specialized to provived a name
+```
+template <>
+struct EnumTraits<MyEnum> {
+    static std::string name() {return "MyEnum"; }
+};
+```
+This name will then be used by the TemplateOptionProperty in it's class identifier. 
+```
+
+TemplateOptionProperty<MyEnum> prop("test","test");    
+prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
+```
+Making it possible to differentiate it from other enum TemplateOptionPropertys.
 
 ## 2018-07-26 ListProperty
 

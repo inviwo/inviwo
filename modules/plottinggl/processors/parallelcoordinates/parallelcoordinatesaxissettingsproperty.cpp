@@ -58,7 +58,7 @@ FilterResult filterValue(const double &value, const dvec2 &range) {
 }  // namespace detail
 
 const std::string ParallelCoordinatesAxisSettingsProperty::classIdentifier =
-    "org.inviwo.ParallelCoordinatesAxisSettingsProperty";
+    "org.inviwo.parallelcoordinates.axissettingsproperty";
 std::string ParallelCoordinatesAxisSettingsProperty::getClassIdentifier() const {
     return classIdentifier;
 }

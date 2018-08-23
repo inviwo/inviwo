@@ -48,8 +48,10 @@ class IVW_MODULE_PLOTTINGGL_API ParallelCoordinatesAxisSettingsProperty
     : public BoolCompositeProperty {
 public:
     friend class ParallelCoordinates;
+
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
+    
     ParallelCoordinatesAxisSettingsProperty(std::string identifier, std::string displayName);
     virtual ~ParallelCoordinatesAxisSettingsProperty() = default;
 

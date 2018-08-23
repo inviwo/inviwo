@@ -74,15 +74,14 @@ struct PropertyTraits {
     static std::string classIdentifier() { return util::classIdentifier<T>(); }
 };
 
-// Deprecated 
+// Deprecated
 #define InviwoPropertyInfo()                                                             \
     virtual std::string getClassIdentifier() const override { return CLASS_IDENTIFIER; } \
     static const std::string CLASS_IDENTIFIER
 
-// Deprecated 
+// Deprecated
 #define PropertyClassIdentifier(T, classIdentifier) \
     const std::string T::CLASS_IDENTIFIER = classIdentifier
-
 
 /**
  *	\defgroup properties Properties
@@ -264,15 +263,14 @@ public:
      */
     void removeOnChange(const BaseCallBack* callback);
 
+    // clang-format off
     template <typename T>
-    [
-        [deprecated("was declared deprecated. Use `onChange(std::function<void()>)` "
-                    "instead")]] const BaseCallBack*
-    onChange(T* object, void (T::*method)());
+    [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
+    const BaseCallBack* onChange(T* object, void (T::*method)());
     template <typename T>
-    [[deprecated(
-        "was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] void
-    removeOnChange(T* object);
+    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] 
+    void removeOnChange(T* object);
+    // clang-format on
 
     virtual void setUsageMode(UsageMode usageMode);
     virtual UsageMode getUsageMode() const;
@@ -335,20 +333,21 @@ private:
     std::vector<std::pair<std::string, std::string>> autoLinkTo_;
 };
 
+// clang-format off
 template <typename T>
-[[deprecated(
-    "was declared deprecated. Use `onChange(std::function<void()>)` instead")]] const BaseCallBack*
-Property::onChange(T* o, void (T::*m)()) {
+[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]] 
+const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
     return onChangeCallback_.addLambdaCallback([o, m]() {
         if (m) (*o.*m)();
     });
 }
 
 template <typename T>
-[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] void
-Property::removeOnChange(T* o) {
+[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] 
+void Property::removeOnChange(T* o) {
     onChangeCallback_.removeMemberFunction(o);
 }
+// clang-format on
 
 template <typename T, typename U>
 void Property::setStateAsDefault(T& property, const U& state) {

@@ -41,7 +41,7 @@ template <typename T>
 struct EnumTraits {};
 
 namespace util {
-// type trait to check if T is derived from has enum traits
+// type trait to check if T has an enum name
 namespace detail {
 
 template <typename T, class Enable = void>
