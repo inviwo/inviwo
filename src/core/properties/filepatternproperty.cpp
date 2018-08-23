@@ -38,7 +38,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(FilePatternProperty, "org.inviwo.FilePatternProperty");
+const std::string FilePatternProperty::classIdentifier = "org.inviwo.FilePatternProperty";
+std::string FilePatternProperty::getClassIdentifier() const { return classIdentifier; }
 
 FilePatternProperty::FilePatternProperty(std::string identifier, std::string displayName,
     std::string pattern,

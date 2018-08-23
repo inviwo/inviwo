@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SIMPLERAYCASTINGPROPERTY_H
@@ -39,20 +39,22 @@
 namespace inviwo {
 /**
  * \ingroup properties
- * A CompositeProperty holding simple raycasting properties. 
+ * A CompositeProperty holding simple raycasting properties.
  */
-class IVW_CORE_API SimpleRaycastingProperty : public CompositeProperty { 
+class IVW_CORE_API SimpleRaycastingProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     SimpleRaycastingProperty(std::string identifier, std::string displayName,
                              InvalidationLevel = InvalidationLevel::InvalidResources,
                              PropertySemantics semantics = PropertySemantics::Default);
-    
+
     SimpleRaycastingProperty(const SimpleRaycastingProperty& rhs);
     SimpleRaycastingProperty& operator=(const SimpleRaycastingProperty& that);
     virtual SimpleRaycastingProperty* clone() const override;
     virtual ~SimpleRaycastingProperty() = default;
-        
+
     OptionPropertyString classificationMode_;
     OptionPropertyString compositingMode_;
     OptionPropertyString gradientComputationMode_;
@@ -61,7 +63,6 @@ public:
     FloatProperty isoValue_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SIMPLERAYCASTINGPROPERTY_H
-
+#endif  // IVW_SIMPLERAYCASTINGPROPERTY_H

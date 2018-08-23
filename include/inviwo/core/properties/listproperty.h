@@ -98,7 +98,8 @@ public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<std::unique_ptr<Property>>::const_iterator;
 
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     ListProperty(std::string identifier, const std::string& displayName,
                  size_t maxNumberOfElements = 0,

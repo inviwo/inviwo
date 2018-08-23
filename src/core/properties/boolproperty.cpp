@@ -24,22 +24,21 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-PropertyClassIdentifier(BoolProperty, "org.inviwo.BoolProperty");
+const std::string BoolProperty::classIdentifier = "org.inviwo.BoolProperty";
+std::string BoolProperty::getClassIdentifier() const { return classIdentifier; }
 
 BoolProperty::BoolProperty(std::string identifier, std::string displayName, bool value,
-                           InvalidationLevel invalidationLevel,
-                           PropertySemantics semantics)
+                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : TemplateProperty<bool>(identifier, displayName, value, invalidationLevel, semantics) {}
 
-BoolProperty::BoolProperty(const BoolProperty& rhs)
-    : TemplateProperty<bool>(rhs) {}
+BoolProperty::BoolProperty(const BoolProperty& rhs) : TemplateProperty<bool>(rhs) {}
 
 BoolProperty& BoolProperty::operator=(const BoolProperty& that) {
     if (this != &that) {
@@ -53,10 +52,8 @@ BoolProperty& BoolProperty::operator=(const bool& value) {
     return *this;
 }
 
-BoolProperty* BoolProperty::clone() const {
-    return new BoolProperty(*this);
-}
+BoolProperty* BoolProperty::clone() const { return new BoolProperty(*this); }
 
 BoolProperty::~BoolProperty() {}
 
-}  // namespace
+}  // namespace inviwo

@@ -24,27 +24,20 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/imageeditorproperty.h>
 
 namespace inviwo {
 
-ImageLabel::ImageLabel() : name_(""), startPoint_(0), rectSize_(0) {
-}
+ImageLabel::ImageLabel() : name_(""), startPoint_(0), rectSize_(0) {}
 
 ImageLabel::ImageLabel(vec2 startPoint, vec2 rectSize, std::string name)
-    : name_(name)
-    , startPoint_(startPoint)
-    , rectSize_(rectSize) {
-}
+    : name_(name), startPoint_(startPoint), rectSize_(rectSize) {}
 
 ImageEditorProperty::ImageEditorProperty(const ImageEditorProperty& rhs)
-    : FileProperty(rhs)
-    , labels_(rhs.labels_)
-    , dimensions_(rhs.dimensions_) {
-}
+    : FileProperty(rhs), labels_(rhs.labels_), dimensions_(rhs.dimensions_) {}
 
 ImageEditorProperty& ImageEditorProperty::operator=(const ImageEditorProperty& that) {
     if (this != &that) {
@@ -55,11 +48,9 @@ ImageEditorProperty& ImageEditorProperty::operator=(const ImageEditorProperty& t
     return *this;
 }
 
-ImageEditorProperty* ImageEditorProperty::clone() const {
-    return new ImageEditorProperty(*this);
-}
+ImageEditorProperty* ImageEditorProperty::clone() const { return new ImageEditorProperty(*this); }
 
-ImageEditorProperty::~ImageEditorProperty() {}
+ImageEditorProperty::~ImageEditorProperty() = default;
 
 void ImageLabel::serialize(Serializer& s) const {
     s.serialize("labelName", name_, SerializationTarget::Attribute);
@@ -73,30 +64,24 @@ void ImageLabel::deserialize(Deserializer& d) {
     d.deserialize("size", rectSize_);
 }
 
-PropertyClassIdentifier(ImageEditorProperty, "org.inviwo.ImageEditorProperty");
+const std::string ImageEditorProperty::classIdentifier = "org.inviwo.ImageEditorProperty";
+std::string ImageEditorProperty::getClassIdentifier() const { return classIdentifier; }
 
-ImageEditorProperty::ImageEditorProperty(std::string identifier, std::string displayName,std::string value,
-        InvalidationLevel invalidationLevel,
-        PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value , "image" , invalidationLevel, semantics)
-    , labels_()
-{}
+ImageEditorProperty::ImageEditorProperty(std::string identifier, std::string displayName,
+                                         std::string value, InvalidationLevel invalidationLevel,
+                                         PropertySemantics semantics)
+    : FileProperty(identifier, displayName, value, "image", invalidationLevel, semantics)
+    , labels_() {}
 
-void ImageEditorProperty::setDimensions(ivec2 imgSize) {
-    dimensions_ = imgSize;
-}
+void ImageEditorProperty::setDimensions(ivec2 imgSize) { dimensions_ = imgSize; }
 
 void ImageEditorProperty::addLabel(vec2 startPoint, vec2 rectSize, std::string name) {
     labels_.push_back(ImageLabel(startPoint, rectSize, name));
 }
 
-const std::vector<ImageLabel>& ImageEditorProperty::getLabels() const {
-    return labels_;
-}
+const std::vector<ImageLabel>& ImageEditorProperty::getLabels() const { return labels_; }
 
-void ImageEditorProperty::clearLabels() {
-    labels_.clear();
-}
+void ImageEditorProperty::clearLabels() { labels_.clear(); }
 
 void ImageEditorProperty::serialize(Serializer& s) const {
     FileProperty::serialize(s);
@@ -110,5 +95,4 @@ void ImageEditorProperty::deserialize(Deserializer& d) {
     d.deserialize("Labels", labels_, "Label");
 }
 
-
-} // namespace
+}  // namespace inviwo

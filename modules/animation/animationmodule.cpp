@@ -53,7 +53,7 @@ auto trackAndInterpolationRegHelper(AnimationModule& am) {
     // Register PropertyTrack and the KeyFrame it should use
     am.registerTrack<PropertyTrack<PropertyType, ValueKeyframe<ValueType>>>();
     am.registerPropertyTrackConnection(
-        PropertyType::CLASS_IDENTIFIER,
+        PropertyTraits<PropertyType>::classIdentifier(),
         PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
     
     // Interpolation for Keyframe
@@ -63,7 +63,7 @@ auto trackAndInterpolationRegHelper(AnimationModule& am) {
     }
     
     // Default interplation for this property
-    am.registerPropertyInterpolationConnection(PropertyType::CLASS_IDENTIFIER,
+    am.registerPropertyInterpolationConnection(PropertyTraits<PropertyType>::classIdentifier(),
                                                Interpolation::classIdentifier());
 }
 
@@ -94,8 +94,7 @@ struct OptionReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using PropertyType = TemplateOptionProperty<T>;
-        // Note inconsistency with OrdinalProperty<T>::value_type
-        using ValueType = typename TemplateOptionProperty<T>::valueType;
+        using ValueType = typename TemplateOptionProperty<T>::value_type;
         trackAndInterpolationRegHelper<PropertyType, ValueType,
             ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }

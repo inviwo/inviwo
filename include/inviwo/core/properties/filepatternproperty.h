@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FILE_PATTERN_PROPERTY_H
@@ -47,7 +47,6 @@
 
 namespace inviwo {
 
-
 /** class FilePatternProperty
  *  A property class for handling file lists matching a pattern.
  *  The pattern might include '#' as placeholder for digits, where multiple '###' indicate
@@ -62,15 +61,14 @@ class IVW_CORE_API FilePatternProperty : public CompositeProperty {
 public:
     typedef std::tuple<int, std::string> IndexFileTuple;
 
-    InviwoPropertyInfo();
-    FilePatternProperty(
-        std::string identifier, 
-        std::string displayName, 
-        std::string pattern = "",
-        std::string directory = "",
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
-    
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    FilePatternProperty(std::string identifier, std::string displayName, std::string pattern = "",
+                        std::string directory = "",
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                        PropertySemantics semantics = PropertySemantics::Default);
+
     virtual FilePatternProperty* clone() const override;
     virtual ~FilePatternProperty();
 
@@ -110,10 +108,10 @@ private:
     IntProperty minIndex_;
     IntProperty maxIndex_;
 
-    std::vector<IndexFileTuple> files_; //!< contains file names and the extracted numbers/indices
-    bool outOfRangeMatches_; //!< flag is true if all matching files are outside the selected range
+    std::vector<IndexFileTuple> files_;  //!< contains file names and the extracted numbers/indices
+    bool outOfRangeMatches_;  //!< flag is true if all matching files are outside the selected range
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_FILE_PATTERN_PROPERTY_H

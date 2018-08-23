@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(StipplingProperty, "org.inviwo.StipplingProperty");
+const std::string StipplingProperty::classIdentifier = "org.inviwo.StipplingProperty";
+std::string StipplingProperty::getClassIdentifier() const { return classIdentifier; }
 
 StipplingProperty::StipplingProperty(const std::string& identifier, const std::string& displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)

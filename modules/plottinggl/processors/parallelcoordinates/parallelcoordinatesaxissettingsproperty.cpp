@@ -57,8 +57,11 @@ FilterResult filterValue(const double &value, const dvec2 &range) {
 
 }  // namespace detail
 
-PropertyClassIdentifier(ParallelCoordinatesAxisSettingsProperty,
-                        "org.inviwo.parallelcoordinates.axissettingsproperty");
+const std::string ParallelCoordinatesAxisSettingsProperty::classIdentifier =
+    "org.inviwo.parallelcoordinates.axissettingsproperty";
+std::string ParallelCoordinatesAxisSettingsProperty::getClassIdentifier() const {
+    return classIdentifier;
+}
 
 ParallelCoordinatesAxisSettingsProperty::ParallelCoordinatesAxisSettingsProperty(
     std::string identifier, std::string displayName)
@@ -107,7 +110,6 @@ void ParallelCoordinatesAxisSettingsProperty::updateFromColumn(std::shared_ptr<c
         });
 }
 
-
 double ParallelCoordinatesAxisSettingsProperty::getNormalized(double v) const {
     if (range_.getRangeMax() == range_.getRangeMin()) {
         return 0.5;
@@ -145,7 +147,6 @@ double ParallelCoordinatesAxisSettingsProperty::getNormalized(double v) const {
         return o + t * r;
     }
 }
-
 
 double ParallelCoordinatesAxisSettingsProperty::getNormalizedAt(size_t idx) const {
     return getNormalized(at(idx));

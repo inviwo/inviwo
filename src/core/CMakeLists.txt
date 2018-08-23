@@ -257,11 +257,13 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/consolelogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/constexprhash.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/defaultvalues.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dispatcher.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/enumtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/factory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filedialog.h
@@ -519,9 +521,11 @@ set(SOURCE_FILES
     util/colorconversion.cpp
     util/commandlineparser.cpp
     util/consolelogger.cpp
+    util/defaultvalues.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
     util/document.cpp
+    util/enumtraits.cpp
     util/exception.cpp
     util/filedialog.cpp
     util/fileextension.cpp
@@ -585,6 +589,7 @@ set(TEST_FILES
     tests/unittests/dataformats-test.cpp
     tests/unittests/dispatch-test.cpp
     tests/unittests/document-test.cpp
+    tests/unittests/enumoptionproperty-test.cpp
     tests/unittests/filesystem-test.cpp
     tests/unittests/glm-test.cpp
     tests/unittests/indirectiterator-tests.cpp

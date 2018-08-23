@@ -39,7 +39,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(ListProperty, "org.inviwo.ListProperty");
+const std::string ListProperty::classIdentifier = "org.inviwo.ListProperty";
+std::string ListProperty::getClassIdentifier() const { return classIdentifier; }
 
 namespace detail {
 
@@ -98,7 +99,7 @@ ListProperty& ListProperty::operator=(const ListProperty& that) {
 ListProperty* ListProperty::clone() const { return new ListProperty(*this); }
 
 std::string ListProperty::getClassIdentifierForWidget() const {
-    return ListProperty::CLASS_IDENTIFIER;
+    return ListProperty::classIdentifier;
 }
 
 void ListProperty::set(const Property* src) {

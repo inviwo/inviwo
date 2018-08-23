@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(StreamLineProperties, "org.inviwo.StreamLineProperties");
+const std::string StreamLineProperties::classIdentifier = "org.inviwo.StreamLineProperties";
+std::string StreamLineProperties::getClassIdentifier() const { return classIdentifier; }
 
 StreamLineProperties::StreamLineProperties(std::string identifier, std::string displayName)
     : IntegralLineProperties(identifier, displayName) {}

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEEDITORPROPERTY_H
@@ -51,7 +51,7 @@ private:
     vec2 rectSize_;
 };
 
-/** 
+/**
  * \ingroup properties
  * A class for file representations.
  * Holds the value of the path to a file as a string.
@@ -61,11 +61,12 @@ private:
 
 class IVW_CORE_API ImageEditorProperty : public FileProperty {
 public:
-    InviwoPropertyInfo();
-    ImageEditorProperty(
-        std::string identifier, std::string displayName, std::string value = "",
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    ImageEditorProperty(std::string identifier, std::string displayName, std::string value = "",
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                        PropertySemantics semantics = PropertySemantics::Default);
 
     ImageEditorProperty(const ImageEditorProperty& rhs);
     ImageEditorProperty& operator=(const ImageEditorProperty& that);
@@ -84,6 +85,6 @@ private:
     ivec2 dimensions_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGEEDITORPROPERTY_H

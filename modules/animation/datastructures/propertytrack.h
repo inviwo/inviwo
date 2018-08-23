@@ -207,7 +207,7 @@ template <typename Prop, typename Key>
 std::string PropertyTrack<Prop, Key>::classIdentifier() {
     // Use property class identifier since multiple properties
     // may have the same key (data type)
-    auto propid = Prop::CLASS_IDENTIFIER;
+    auto propid = PropertyTraits<Prop>::classIdentifier();
     std::string id = "org.inviwo.animation.propertytrack.";
     auto res = std::mismatch(id.begin(), id.end(), propid.begin(), propid.end());
     id.append(res.second, propid.end());

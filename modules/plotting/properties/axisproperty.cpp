@@ -35,7 +35,8 @@ namespace inviwo {
 
 namespace plot {
 
-PropertyClassIdentifier(AxisProperty, "org.inviwo.AxisProperty");
+const std::string AxisProperty::classIdentifier = "org.inviwo.AxisProperty";
+std::string AxisProperty::getClassIdentifier() const { return classIdentifier; }
 
 AxisProperty::AxisProperty(const std::string& identifier, const std::string& displayName,
                            Orientation orientation, InvalidationLevel invalidationLevel,

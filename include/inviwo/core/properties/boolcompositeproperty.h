@@ -37,13 +37,14 @@
 
 namespace inviwo {
 
-/** 
+/**
  * \ingroup properties
  * \brief A CompositeProperty with an additional check box.
  */
 class IVW_CORE_API BoolCompositeProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     BoolCompositeProperty(std::string identifier, std::string displayName, bool checked = false,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -65,6 +66,6 @@ private:
     BoolProperty checked_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BOOLCOMPOSITEPROPERTY_H

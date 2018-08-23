@@ -69,7 +69,9 @@ typedef glm::float32 Abuffer_ExtDataType;
 
 class IVW_MODULE_ABUFFERGL_API ABufferGLCompositeProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();    
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     ABufferGLCompositeProperty(std::string identifier, std::string displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);

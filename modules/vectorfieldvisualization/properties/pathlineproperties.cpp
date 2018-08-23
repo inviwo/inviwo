@@ -31,14 +31,12 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(PathLineProperties, "org.inviwo.PathLineProperties");
+const std::string PathLineProperties::classIdentifier = "org.inviwo.PathLineProperties";
+std::string PathLineProperties::getClassIdentifier() const { return classIdentifier; }
 
 PathLineProperties::PathLineProperties(std::string identifier, std::string displayName)
     : IntegralLineProperties(identifier, displayName)
-
-    , startT_("startT", "Start at timestep", 0, 0, 1)
-
-{
+    , startT_("startT", "Start at timestep", 0, 0, 1) {
     setUpProperties();
 }
 

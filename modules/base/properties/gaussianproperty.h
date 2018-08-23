@@ -82,7 +82,8 @@ public:
         PropertySemantics semantics = PropertySemantics::Default);
     virtual ~Gaussian1DProperty();
 
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
     virtual double evaluate(const double &v)const override;
 };
 
@@ -93,7 +94,8 @@ public:
         PropertySemantics semantics = PropertySemantics::Default);
     virtual ~Gaussian2DProperty();
 
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
     virtual double evaluate(const dvec2 &v)const override;
 };
 

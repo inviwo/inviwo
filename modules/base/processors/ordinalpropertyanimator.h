@@ -61,7 +61,7 @@ enum class BoundaryType {Stop, Periodic, Mirror};
 template <typename T>
 class OrdinalAnimationProperty : public BaseOrdinalAnimationProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
     using valueType = T;
 
     OrdinalAnimationProperty(const std::string& identifier, const std::string& displayName);
@@ -76,6 +76,7 @@ public:
     TemplateOptionProperty<BoundaryType> boundary_;
     BoolProperty active_;
 };
+
 
 
 template <class Elem, class Traits>
@@ -98,10 +99,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 template <typename T>
-PropertyClassIdentifier(OrdinalAnimationProperty<T>,
-                        "org.inviwo.OrdinalAnimationProperty." + Defaultvalues<T>::getName());
-
-template <typename T>
 OrdinalAnimationProperty<T>::OrdinalAnimationProperty(const std::string& identifier,
                                                       const std::string& displayName)
     : BaseOrdinalAnimationProperty(identifier, displayName)
@@ -115,6 +112,18 @@ OrdinalAnimationProperty<T>::OrdinalAnimationProperty(const std::string& identif
     addProperty(delta_);
     addProperty(boundary_);
     addProperty(active_);
+}
+
+template <typename T>
+struct PropertyTraits<OrdinalAnimationProperty<T>> {
+    static std::string classIdentifier() {
+        return "org.inviwo.OrdinalAnimationProperty." + Defaultvalues<T>::getName();
+    }
+};
+
+template <typename T>
+std::string OrdinalAnimationProperty<T>::getClassIdentifier() const {
+    return PropertyTraits<OrdinalAnimationProperty<T>>::classIdentifier();
 }
 
 namespace detail {
@@ -240,7 +249,7 @@ private:
     struct TypeFunctor {
         template <typename T>
         void operator()(OrdinalPropertyAnimator& animator) {
-            animator.type_.addOption(OrdinalProperty<T>::CLASS_IDENTIFIER,
+            animator.type_.addOption(PropertyTraits<OrdinalProperty<T>>::classIdentifier(),
                                      Defaultvalues<T>::getName(), animator.type_.size());
             animator.factory_.push_back([]() -> std::unique_ptr<Property> {
                 return util::make_unique<OrdinalAnimationProperty<T>>(Defaultvalues<T>::getName(),

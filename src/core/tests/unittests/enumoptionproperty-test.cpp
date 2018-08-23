@@ -27,27 +27,58 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/propertyfactoryobject.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-const std::string DirectoryProperty::classIdentifier = "org.inviwo.BoolProperty";
-std::string DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
+namespace {
 
-DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
-                                     std::string value, std::string contentType,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
-    this->setAcceptMode(AcceptMode::Open);
-    this->setFileMode(FileMode::DirectoryOnly);
+enum class MyEnumA { a, b };
+
+enum class MyEnumB { a, b };
+
 }
 
-DirectoryProperty::~DirectoryProperty() {}
+template <>
+struct EnumTraits<MyEnumB> {
+    static std::string name() {return "MyEnumB"; }
+};
 
-std::string DirectoryProperty::getClassIdentifierForWidget() const {
-    return FileProperty::getClassIdentifier();
+TEST(EnumOptionProperty, Test1) {
+    TemplateOptionProperty<MyEnumA> pA("test","test");
+    TemplateOptionProperty<MyEnumB> pB("test","test");
+
+    auto idA = pA.getClassIdentifier();
+    auto idB = pB.getClassIdentifier();
+
+    EXPECT_NE(idA, idB);
+
+    PropertyFactory factory;
+    PropertyFactoryObjectTemplate<TemplateOptionProperty<MyEnumB>> factoryObj;
+    factory.registerObject(&factoryObj);
+
+    std::unique_ptr<Property> propA = std::make_unique<TemplateOptionProperty<MyEnumB>>("test", "test");
+    propA->setSerializationMode(PropertySerializationMode::All);
+    std::stringstream ss;
+    Serializer s("");
+    s.serialize("property", propA);
+    s.writeFile(ss);
+    Deserializer d(ss, "");
+    d.registerFactory(&factory);
+
+    std::unique_ptr<Property> propB;
+    d.deserialize("property", propB);
+
+    EXPECT_NE(propB, nullptr);
+
 }
 
-}  // namespace
+}  // namespace inviwo

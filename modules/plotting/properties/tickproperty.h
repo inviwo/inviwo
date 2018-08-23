@@ -46,7 +46,8 @@ enum class TickStyle { None, Inside, Outside, Both };
 
 class IVW_MODULE_PLOTTING_API MajorTickProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     MajorTickProperty(const std::string& identifier, const std::string& displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -66,7 +67,8 @@ public:
 
 class IVW_MODULE_PLOTTING_API MinorTickProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     MinorTickProperty(const std::string& identifier, const std::string& displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -86,7 +88,8 @@ public:
 
 class IVW_MODULE_PLOTTING_API TickProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     TickProperty(const std::string& identifier, const std::string& displayName,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

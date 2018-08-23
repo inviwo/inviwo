@@ -42,7 +42,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(CameraProperty, "org.inviwo.CameraProperty");
+const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
+std::string CameraProperty::getClassIdentifier() const { return classIdentifier; }
 
 CameraProperty::CameraProperty(std::string identifier, std::string displayName, vec3 eye,
                                vec3 center, vec3 lookUp, Inport* inport,

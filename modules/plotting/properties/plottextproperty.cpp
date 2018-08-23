@@ -33,7 +33,8 @@ namespace inviwo {
 
 namespace plot {
 
-PropertyClassIdentifier(PlotTextProperty, "org.inviwo.PlotTextProperty");
+const std::string PlotTextProperty::classIdentifier = "org.inviwo.PlotTextProperty";
+std::string PlotTextProperty::getClassIdentifier() const { return classIdentifier; }
 
 PlotTextProperty::PlotTextProperty(const std::string& identifier, const std::string& displayName,
                                    bool checked, InvalidationLevel invalidationLevel,

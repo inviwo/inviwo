@@ -54,7 +54,8 @@ class Inport;
  */
 class IVW_CORE_API CameraProperty : public CompositeProperty, public TrackballObject {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     CameraProperty(std::string identifier, std::string displayName,
                    vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
@@ -91,7 +92,7 @@ public:
     void setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
     /**
-     * Sets given camera properties while respecting their min/max ranges. 
+     * Sets given camera properties while respecting their min/max ranges.
      * Locks and unlocks processor network before and after changing property values.
      * @note Parameters will be capped by their min/max.
      */
@@ -182,7 +183,7 @@ private:
                       /// MeshInport)
     const SpatialEntity<3>* data_;  //< non-owning reference;
 
-    mat4 prevDataToWorldMatrix_; //< Data-to-world matrix of object currently being viewed
+    mat4 prevDataToWorldMatrix_;  //< Data-to-world matrix of object currently being viewed
 
     const BaseCallBack* callbackInportOnChange_ = nullptr;
 };

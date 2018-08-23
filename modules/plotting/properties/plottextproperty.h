@@ -45,7 +45,8 @@ namespace plot {
 
 class IVW_MODULE_PLOTTING_API PlotTextProperty : public BoolCompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     PlotTextProperty(const std::string& identifier, const std::string& displayName,
                      bool checked = false,

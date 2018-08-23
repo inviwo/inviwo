@@ -54,13 +54,13 @@ template<typename T>
 class PropertyFactoryObjectTemplate : public PropertyFactoryObject {
 public:
     PropertyFactoryObjectTemplate()
-        : PropertyFactoryObject(T::CLASS_IDENTIFIER) {}
+        : PropertyFactoryObject(PropertyTraits<T>::classIdentifier()) {}
 
-    virtual ~PropertyFactoryObjectTemplate() {}
+    virtual ~PropertyFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Property> create(std::string identifier,
                              std::string displayName) {
-        return util::make_unique<T>(identifier, displayName);
+        return std::make_unique<T>(identifier, displayName);
     }
 };
 

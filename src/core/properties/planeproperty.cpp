@@ -51,7 +51,8 @@ PlaneProperty::PlaneProperty(std::string identifier, std::string displayName,
     setAllPropertiesCurrentStateAsDefault();
 }
 
-PropertyClassIdentifier(PlaneProperty, "org.inviwo.PlaneProperty");
+const std::string PlaneProperty::classIdentifier = "org.inviwo.PlaneProperty";
+std::string PlaneProperty::getClassIdentifier() const { return classIdentifier; }
 
 PlaneProperty::PlaneProperty(const PlaneProperty& rhs)
     : CompositeProperty(rhs)
