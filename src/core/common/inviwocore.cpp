@@ -167,6 +167,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerMetaData(util::make_unique<FloatMetaData>());
     registerMetaData(util::make_unique<DoubleMetaData>());
     registerMetaData(util::make_unique<StringMetaData>());
+    registerMetaData(util::make_unique<SizeMetaData>());
     registerMetaData(util::make_unique<FloatVec2MetaData>());
     registerMetaData(util::make_unique<FloatVec3MetaData>());
     registerMetaData(util::make_unique<FloatVec4MetaData>());
