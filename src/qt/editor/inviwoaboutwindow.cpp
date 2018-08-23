@@ -157,7 +157,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("br");
         h.append("span",
                  "Robin Skånberg, Jochen Jankowai, Tino Weinkauf, "
-                 "Wiebke Koepp, Anke Friederici, Dominik Engel, "
+                 "Wiebke Köpp, Anke Friederici, Dominik Engel, "
                  "Alexander Johansson, Andreas Valter, Johan Norén, Emanuel Winblad, "
                  "Hans-Christian Helltegen, Viktor Axelsson");
     }
@@ -166,12 +166,17 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("h3", "Sponsors:");
         h.append("br");
         h.append("span",
-                 "This work was supported by Linköping University, Ulm University, and through "
-                 "grants from the Swedish e-Science Research Centre (SeRC).");
+                 "This work was supported by Linköping University, KTH Royal Institute of "
+                 "Technology, Ulm University, and through grants from the Swedish e-Science "
+                 "Research Centre (SeRC).");
         h.append("br");
         auto p = h.append("p");
+
         auto liu = p.append("a", "", {{"href", "http://www.liu.se"}});
         liu.append("img", "", makeImg(":/images/liu-white-crop.png", 50));
+
+        auto kth = p.append("a", "", {{"href", "http://www.kth.se"}});
+        kth.append("img", "", makeImg(":/images/kth.png", 50));
 
         auto serc = p.append("a", "", {{"href", "http://www.e-science.se"}});
         serc.append("img", "", makeImg(":/images/serc.png", 50));
