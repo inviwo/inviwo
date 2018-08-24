@@ -70,9 +70,11 @@ namespace inviwo {
 
 namespace {
 
-template <typename PropertyType, typename ValueType>
+template <typename PropertyType>
 void registerTrackHelper(animation::AnimationQtSupplier& as) {
     using namespace animation;
+
+    using ValueType = typename PropertyType::value_type;
     using TrackType = PropertyTrack<PropertyType, ValueKeyframe<ValueType>>;
 
     as.registerTrackToWidgetMap(TrackType::classIdentifier(),
@@ -82,28 +84,12 @@ void registerTrackHelper(animation::AnimationQtSupplier& as) {
                                         PropertySequenceEditor::classIdentifier());
 }
 
-struct OrdinalReghelper {
+template <template <typename> typename Prop>
+struct Reghelper {
     template <typename T>
     auto operator()(animation::AnimationQtSupplier& as) {
         using namespace animation;
-        registerTrackHelper<OrdinalProperty<T>, typename OrdinalProperty<T>::value_type>(as);
-    }
-};
-
-struct MinMaxReghelper {
-    template <typename T>
-    auto operator()(animation::AnimationQtSupplier& as) {
-        using namespace animation;
-        registerTrackHelper<MinMaxProperty<T>, typename MinMaxProperty<T>::value_type>(as);
-    }
-};
-
-struct OptionReghelper {
-    template <typename T>
-    auto operator()(animation::AnimationQtSupplier& as) {
-        using namespace animation;
-        registerTrackHelper<TemplateOptionProperty<T>,
-                            typename TemplateOptionProperty<T>::valueType>(as);
+        registerTrackHelper<Prop<T>>(as);
     }
 };
 
@@ -111,7 +97,7 @@ struct PropertyReghelper {
     template <typename Prop>
     auto operator()(animation::AnimationQtSupplier& as) {
         using namespace animation;
-        registerTrackHelper<Prop, typename Prop::value_type>(as);
+        registerTrackHelper<Prop>(as);
     }
 };
 
@@ -204,13 +190,13 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     using Types = std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4,
                              dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
                              uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
-    util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
+    util::for_each_type<Types>{}(Reghelper<OrdinalProperty>{}, *this);
 
-    util::for_each_type<std::tuple<float, double, int, unsigned int, size_t>>{}(MinMaxReghelper{},
-                                                                                *this);
+    util::for_each_type<std::tuple<float, double, int, unsigned int, size_t>>{}(
+        Reghelper<MinMaxProperty>{}, *this);
 
     util::for_each_type<std::tuple<float, double, int, unsigned int, size_t, std::string>>{}(
-        OptionReghelper{}, *this);
+        Reghelper<TemplateOptionProperty>{}, *this);
 
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         PropertyReghelper{}, *this);

@@ -46,31 +46,32 @@ namespace inviwo {
 
 namespace {
 
-template <typename PropertyType, typename ValueType>
+template <typename PropertyType>
 auto trackRegHelper(AnimationModule& am) {
     using namespace animation;
-    // Fixme: TemplateOptionProperty uses valueType so we cannot use this line
-    // using ValueType = typename PropertyType::value_type;
+    using ValueType = typename PropertyType::value_type;
     // Register PropertyTrack and the KeyFrame it should use
     am.registerTrack<PropertyTrack<PropertyType, ValueKeyframe<ValueType>>>();
     am.registerPropertyTrackConnection(
-        PropertyType::CLASS_IDENTIFIER,
+        PropertyTraits<PropertyType>::classIdentifier(),
         PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
 }
 
-template <typename PropertyType, typename Interpolation>
+template <typename PropertyType, template <class> class Interpolation>
 auto interpolationRegHelper(AnimationModule& am) {
     using namespace animation;
-    // Interpolation for Keyframe
+    using ValueType = typename PropertyType::value_type;
+
     // No need to add existing interpolation method. Will produce a warning if adding a duplicate
     if (!am.getAnimationManager().getInterpolationFactory().hasKey(
-            Interpolation::classIdentifier())) {
-        am.registerInterpolation<Interpolation>();
+            Interpolation<ValueKeyframe<ValueType>>::classIdentifier())) {
+        am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>();
     }
 
     // Default interpolation for this property
-    am.registerPropertyInterpolationConnection(PropertyType::CLASS_IDENTIFIER,
-                                               Interpolation::classIdentifier());
+    am.registerPropertyInterpolationConnection(
+        PropertyTraits<PropertyType>::classIdentifier(),
+        Interpolation<ValueKeyframe<ValueType>>::classIdentifier());
 }
 
 struct OrdinalReghelper {
@@ -78,10 +79,9 @@ struct OrdinalReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using PropertyType = OrdinalProperty<T>;
-        using ValueType = typename OrdinalProperty<T>::value_type;  // will be T in this case
-        trackRegHelper<PropertyType, ValueType>(am);
-        interpolationRegHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
+        trackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, LinearInterpolation>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
     }
 };
 
@@ -90,10 +90,10 @@ struct MinMaxReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using PropertyType = MinMaxProperty<T>;
-        using ValueType = typename MinMaxProperty<T>::value_type;  // tvec2<T>
-        trackRegHelper<PropertyType, ValueType>(am);
-        interpolationRegHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
+
+        trackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, LinearInterpolation>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
     }
 };
 
@@ -102,10 +102,8 @@ struct OptionReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using PropertyType = TemplateOptionProperty<T>;
-        // Note inconsistency with OrdinalProperty<T>::value_type
-        using ValueType = typename TemplateOptionProperty<T>::valueType;
-        trackRegHelper<PropertyType, ValueType>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
+        trackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
     }
 };
 
@@ -113,9 +111,8 @@ struct ConstantInterpolationReghelper {
     template <typename PropertyType>
     auto operator()(AnimationModule& am) {
         using namespace animation;
-        using ValueType = typename PropertyType::value_type;
-        trackRegHelper<PropertyType, ValueType>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
+        trackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
     }
 };
 

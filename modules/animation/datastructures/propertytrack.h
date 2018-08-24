@@ -211,10 +211,8 @@ public:
      * @param keyframe The keyframe to set from
      */
     void setOtherProperty(Property* dstProperty, Keyframe* keyframe) {
-        IVW_ASSERT(dstProperty->getClassIdentifier() == Prop::CLASS_IDENTIFIER,
+        IVW_ASSERT(dstProperty->getClassIdentifier() == PropertyTraits<Prop>::classIdentifier(),
                    "Incorrect Property type");
-        //IVW_ASSERT(keyframe->getClassIdentifier() == Key::classIdentifier(),
-        //           "Incorrect Keyframe type");
         detail::setOtherPropertyHelper(static_cast<Prop*>(dstProperty),
                                        static_cast<Key*>(keyframe));
     }
@@ -230,10 +228,8 @@ public:
      * @param keyframe The keyframe to set
      */
     void updateKeyframeFromProperty(Property* srcProperty, Keyframe* keyframe) {
-        ivwAssert(srcProperty->getClassIdentifier() == Prop::CLASS_IDENTIFIER,
+        ivwAssert(srcProperty->getClassIdentifier() == PropertyTraits<Prop>::classIdentifier(),
                   "Incorrect Property type");
-        //ivwAssert(keyframe->getClassIdentifier() == Key::classIdentifier(),
-        //          "Incorrect Keyframe type");
         detail::updateKeyframeFromPropertyHelper(static_cast<Prop*>(srcProperty),
                                                  static_cast<Key*>(keyframe));
     }
@@ -242,14 +238,13 @@ private:
     Prop* property_;  ///< non-owning reference
 };
 
-
 template <typename Prop, typename Key>
 bool operator==(const PropertyTrack<Prop, Key>& a, const PropertyTrack<Prop, Key>& b) {
     return std::equal(a.begin(), a.end(), a.begin(), b.end());
 }
 template <typename Prop, typename Key>
 bool operator!=(const PropertyTrack<Prop, Key>& a, const PropertyTrack<Prop, Key>& b) {
-    return !(a==b);
+    return !(a == b);
 }
 
 template <typename Prop, typename Key>
@@ -274,7 +269,8 @@ template <typename Prop, typename Key>
 std::string PropertyTrack<Prop, Key>::classIdentifier() {
     // Use property class identifier since multiple properties
     // may have the same key (data type)
-    std::string id = "org.inviwo.animation.PropertyTrack.for. " + Prop::CLASS_IDENTIFIER;
+    std::string id =
+        "org.inviwo.animation.PropertyTrack.for. " + PropertyTraits<Prop>::classIdentifier();
     return id;
 }
 
