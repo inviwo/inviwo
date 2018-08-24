@@ -40,7 +40,7 @@
 #include <QScrollBar>
 #include <qmath.h>
 #include <QGridLayout>
-#include <QScrollbar>
+#include <QScrollBar>
 #include <QGraphicsScene>
 #include <warn/pop>
 
