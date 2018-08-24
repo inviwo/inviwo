@@ -65,7 +65,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
                                 QIcon::On);
         enableTrackIcon.addFile(":/animation/icons/eye_look_search_view_icon_32.png", iconSize,
                                 QIcon::Normal, QIcon::Off);
-        QAction* disable = new QAction(enableTrackIcon, "Enable/Disable Track");
+        QAction* disable = new QAction(enableTrackIcon, "Enable/Disable Track", this);
         connect(disable, &QAction::triggered, this,
                 [this]() { track_.setEnabled(!track_.isEnabled()); });
 
@@ -84,7 +84,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
         lockTrackIcon.addFile(
             ":/animation/icons/lock_open_opened_protection_safety_security_unlocked_icon_32.png",
             iconSize, QIcon::Normal, QIcon::On);
-        QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track");
+        QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
         connect(lock, &QAction::triggered, this, [this]() {
             // lock the track
             LogWarn("Locking tracks is not implemented yet.");
@@ -105,7 +105,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
         QIcon prevIcon;
         prevIcon.addFile(":/animation/icons/arrow_direction_left_next_previous_return_icon_32.png",
                          iconSize, QIcon::Normal, QIcon::On);
-        QAction* prev = new QAction(prevIcon, "Prev Keyframe");
+        QAction* prev = new QAction(prevIcon, "Prev Keyframe", this);
         connect(prev, &QAction::triggered, this, [this]() {
             auto times = track_.getAllTimes();
             auto it = std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
@@ -125,7 +125,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
         keyFrameHandlingIcon.addFile(
             ":/animation/icons/basket_delete_garbage_trash_waste_icon_32.png", iconSize,
             QIcon::Normal, QIcon::Off);
-        QAction* addAndDelete = new QAction(keyFrameHandlingIcon, "Add Keyframe");
+        QAction* addAndDelete = new QAction(keyFrameHandlingIcon, "Add Keyframe", this);
 
         connect(addAndDelete, &QAction::triggered, this, [this]() {
             track_.add(controller_.getCurrentTime(), QApplication::keyboardModifiers() == Qt::CTRL);
@@ -142,7 +142,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
         QIcon nextIcon;
         nextIcon.addFile(":/animation/icons/arrow_direction_previous_right_icon_32.png", iconSize,
                          QIcon::Normal, QIcon::On);
-        QAction* next = new QAction(nextIcon, "Next Keyframe");
+        QAction* next = new QAction(nextIcon, "Next Keyframe", this);
         connect(next, &QAction::triggered, this, [this]() {
             auto times = track_.getAllTimes();
             auto it = std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());

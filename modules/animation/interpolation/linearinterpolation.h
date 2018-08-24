@@ -73,7 +73,7 @@ public:
 template <typename Key>
 LinearInterpolation<Key>* LinearInterpolation<Key>::clone() const {
     return new LinearInterpolation<Key>(*this);
-};
+}
 
 template <typename Key>
 std::string LinearInterpolation<Key>::getName() const {
@@ -94,7 +94,7 @@ template <typename Key>
 std::string LinearInterpolation<Key>::classIdentifier() {
     return "org.inviwo.animation.linearinterpolation." +
            Defaultvalues<typename Key::value_type>::getName();
-};
+}
 
 template <typename Key>
 auto LinearInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,

@@ -79,7 +79,6 @@ public:
 
         const auto windowSize = rect().width();
         const auto digitSize = fm.width('0');
-        const auto textSize = digitSize * std::abs(3);
 
         const auto tgcGuess =
             static_cast<int>(std::floor(windowSize / digitSize / std::abs(3) / 2.0));

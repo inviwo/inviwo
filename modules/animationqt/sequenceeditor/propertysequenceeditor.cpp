@@ -63,7 +63,7 @@ public:
     PropertyEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
         : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-        auto& propTrack = dynamic_cast<BasePropertyTrack&>(parent->getTrack());
+        auto &propTrack = dynamic_cast<BasePropertyTrack &>(parent->getTrack());
 
         setObjectName("KeyframeEditorWidget");
 
@@ -87,8 +87,9 @@ public:
 
         property_.reset(propTrack.getProperty()->clone());
         propTrack.setOtherProperty(property_.get(), &keyframe);
-        property_->onChange([p = property_.get(), &propTrack,
-                             k = &keyframe_]() { propTrack.updateKeyframeFromProperty(p, k); });
+        property_->onChange([p = property_.get(), &propTrack, k = &keyframe_]() {
+            propTrack.updateKeyframeFromProperty(p, k);
+        });
         property_->setOwner(nullptr);
 
         auto propWidget =
@@ -173,10 +174,10 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
     sublayout->addWidget(interpolation_, 0, 1);
 
     auto map = manager.getInterpolationMapping();
-    auto startIt = map.lower_bound(bpt.getProperty()->getClassIdentifier());
-    auto stopIt = map.upper_bound(bpt.getProperty()->getClassIdentifier());
-    for (; startIt != stopIt; ++startIt) {
-        auto ip = manager.getInterpolationFactory().create(startIt->second);
+
+    for (auto range = map.equal_range(bpt.getProperty()->getClassIdentifier());
+         range.first != range.second; ++range.first) {
+        auto ip = manager.getInterpolationFactory().create(range.first->second);
         interpolation_->addItem(utilqt::toQString(ip->getName()),
                                 QVariant(utilqt::toQString(ip->getClassIdentifier())));
         if (valseq.getInterpolation().getClassIdentifier() == ip->getClassIdentifier()) {
@@ -184,7 +185,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
         }
     }
     connect(interpolation_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            [this, &valseq, &manager](int index) {
+            this, [this, &valseq, &manager](int index) {
                 const auto id = utilqt::fromQString(interpolation_->currentData().toString());
                 valseq.setInterpolation(manager.getInterpolationFactory().create(id));
             });
@@ -201,6 +202,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
     }
 
     connect(easingComboBox_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this,
             [&valseq](int index) { valseq.setEasingType(static_cast<easing::EasingType>(index)); });
 
     for (size_t i = 0; i < sequence_.size(); i++) {
