@@ -33,6 +33,7 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/datastructures/animationobserver.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,39 +46,49 @@ namespace inviwo {
 
 namespace animation {
 
-constexpr int TrackHeight = 25;
-constexpr int TimelineHeight = 35;
-constexpr int KeyframeWidth = 15;
-constexpr int KeyframeHeight = TrackHeight;
-constexpr int WidthPerSecond = 96;
-constexpr int WidthPerFrame = WidthPerSecond / 24;
-
 class AnimationController;
-class TrackQt;
+class TrackWidgetQt;
+class TrackWidgetQtFactory;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
                                                      public AnimationObserver {
 public:
-    AnimationEditorQt(AnimationController& controller);
+    AnimationEditorQt(AnimationController& controller, TrackWidgetQtFactory& widgetFactory);
     virtual ~AnimationEditorQt();
-
-    virtual void onTrackAdded(Track* track) override;
-    virtual void onTrackRemoved(Track* track) override;
-
-    virtual void keyPressEvent(QKeyEvent *event) override;
 
 protected:
     void updateSceneRect();
 
+    // AnimationObserver overloads
     virtual void onFirstMoved() override;
-
     virtual void onLastMoved() override;
+    virtual void onTrackAdded(Track* track) override;
+    virtual void onTrackRemoved(Track* track) override;
+
+    // QGraphicsScene overloads
+    virtual void keyPressEvent(QKeyEvent* event) override;
+    void dragEnterEvent(QGraphicsSceneDragDropEvent* event) override;
+    void dragLeaveEvent(QGraphicsSceneDragDropEvent* event) override;
+    void dragMoveEvent(QGraphicsSceneDragDropEvent* event) override;
+    void dropEvent(QGraphicsSceneDragDropEvent* event) override;
 
     AnimationController& controller_;
-    std::vector<std::unique_ptr<TrackQt>> tracks_;
+    TrackWidgetQtFactory& widgetFactory_;
+    std::unordered_map<Track*, std::unique_ptr<TrackWidgetQt>> tracks_;
+
+    /// Indicator line for the drag&drop of properties.
+    /// Shows a timeline indicating where the item will be dropped.
+    /// Manipulated in the drag* and drop* functions.
+    QGraphicsLineItem* dropIndicatorLine;
+
+    /// Shows a text describing what will be added on drop.
+    QGraphicsSimpleTextItem* dropIndicatorText;
+
+    std::unique_ptr<TrackWidgetQt> createTrackWidget(Track& track) const;
 };
 
-}  // namespace
-}  // namespace
+}  // namespace animation
+
+}  // namespace inviwo
 
 #endif  // IVW_ANIMATIONEDITORQT_H

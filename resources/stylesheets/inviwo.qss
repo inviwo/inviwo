@@ -31,7 +31,6 @@
 QWidget {
     font-family: "Segoe UI";
     color: #9d9995;
-    background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
     background-color: #323235;
     background: transparent;
 }
@@ -44,9 +43,6 @@ QDockWidget > .QWidget, QDockWidget > .QScrollArea, QDialog, QDockWidget#PythonI
 
 QDockWidget#PythonInfoWidget > .QWidget {
     background-color: #252527;
-}
-QDockWidget#PythonInfoWidget > .QWidget QScrollArea {
-    /*border: none;*/
 }
 
 QWidget#NetworkSearch {
@@ -64,16 +60,11 @@ QMainWindow::separator {
     border-width: 1px;
 }
 
-QWidget#PropertyWidget {
-}
-
 /* Composite property */
 QWidget#CompositeWidget {
-    /*border: 1px solid #4a4a4f;*/
     border: 1px solid red;
     border: none;
     background: #2b2b2d;
-    /*background: steelblue;*/
 }
 
 /* default background for nested composite properties with depth > 4 */
@@ -88,62 +79,38 @@ QWidget[bgType="toplevel"]#CompositeWidget {
 QWidget[bgType="toplevel"]#CompositeWidget > .QWidget, 
 QWidget[bgType="3"]#CompositeWidget,
 QWidget[bgType="0"]#CompositeWidget > .QWidget {
-    background-color: #323235;
     background-color: #2a2a2e;
 }
 QWidget[bgType="0"]#CompositeWidget, QWidget[bgType="1"]#CompositeWidget > .QWidget {
-    background-color: #38383c;
     background-color: #242428;
-    /*background-color: darkslategray;*/
 }
 QWidget[bgType="1"]#CompositeWidget, QWidget[bgType="2"]#CompositeWidget > .QWidget {
-    background: #323235;
     background-color: #2a2a2e;
-    /*background-color: darkslateblue;*/
 }
 QWidget[bgType="2"]#CompositeWidget, QWidget[bgType="3"]#CompositeWidget > .QWidget {
-    background: #3a3a3d;
     background-color: #242428;
-    /*background-color: maroon;*/
 }
-
-
-/*
-QWidget#CompositeContents {
-    border: 1px solid steelblue;
-    background: #2b2b2d;
-    background: red;
-}
-*/
-
 
 QWidget#CompositeContents > QWidget {
     border: 0px solid red;
-    /*background: #2b2b2d;*/
 }
 
 QTextEdit#SourceCodeEditor, QTextEdit#shaderwidgetcode {
     font-family: monospace;
 }
 
-
 /* Common defines for flat property editors, both active and disabled */
 QLineEdit, QAbstractSpinBox, QComboBox {
     color: #c8ccd0;
     background: transparent;
-    /* make background barely visible */
-    /*background: #3a3a3d;*/
     /* change the border color to transparent here, if borders around properties 
       should be invisible. DO NOT adjust the border width as the widgets will then 
       jump on hover!
       */
-    border: 1px solid #3a3a3e;
     border: 1px solid #3e3e3f;
-    /*border: 1px solid transparent; */
 }
 QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
     color: #777;
-    /*border-color: #3c3c40;*/
     background: transparent;
 }
 QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover, QComboBox:on, QComboBox:focus, QComboBox:hover {
@@ -151,15 +118,9 @@ QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover
     border: 1px solid #268bd2;
 }
 
-
-
-/* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
-/*
-QWidget#CompositeWidget QLabel, QWidget#CompositeWidget QWidget {
-    border: none;
-    background: transparent;
+QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBox:indicator:hover, QAbstractSpinBox:hover {
+    border: 1px solid #268bd2;
 }
-*/
 
 QDockWidget#ConsoleWidget QTextEdit {
     border: none;
@@ -214,8 +175,6 @@ QToolButton {
     background-color: transparent;
 }
 
-
-
 QToolButton#resetButton {
     width: 13px;
     height: 13px;
@@ -229,7 +188,6 @@ QToolButton:hover#resetButton {
 
 /*QToolTop */
 QToolTip {
-    /*font-family: "Courier";*/    
     color: #9d9995;
     background-color: #323235;  
     border-radius: 3px;
@@ -262,9 +220,6 @@ QPushButton:pressed {
     background: qlineargradient(x1:0, y1:1, x2:0, y2:0,
                                 stop:0 #6f6f75, stop:0.15 #323235, stop:0.95 #323235, stop:1 #222224);
 }
-QPushButton:focus{
-/*    border: 1px solid #268bd2;*/
-}
 QPushButton:disabled{
     color: #666;
     border: 1px solid #25272a;
@@ -293,13 +248,6 @@ QDockWidget::title, inviwo--InviwoDockWidgetTitleBar {
     border-bottom: 0px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #4a4a4e, stop:0.8 #323235, stop:1 #222224);
-    /* smooth transition at the bottom */
-/*
-    padding-top: 6px;
-    padding-bottom:-4px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #555, stop:0.7 #333, stop:.9 #222, stop: 1 #4D4D4D);
-*/
 }
 QToolButton#dockBtn:hover {
     margin-left: 1px;
@@ -309,17 +257,10 @@ QToolButton#dockBtn:hover {
 }
 QDockWidget {
     color: #999999;
-    /*border: 0px;*/
     titlebar-close-icon: url(:/stylesheets/images/close.png);
     titlebar-normal-icon: url(:/stylesheets/images/undock.png);
-
     background-color: #222;
     border-width: 2px;
-    /* border style does not work here... */
-    /*
-    border-color: white;
-    border-style: dashed;
-    */
 }
 
 
@@ -327,12 +268,9 @@ QTabWidget {
 }
 QTabWidget::pane:bottom {
     border-bottom: 2px solid #414145;
-    /*background: #414145; */ 
     /* cannot use other color than default background here because of QDockWidgets */
-    /*background: #252527;*/
 }
 QTabWidget::pane:top {
-    /*border-top: 2px solid #414145;*/
 }
 QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
@@ -379,7 +317,6 @@ QTabBar::tab:bottom:selected{
     border: 1px solid #888;
     color: #e9e4de;
     margin-top: -2px;
-    /*font-weight: bold;*/
 }
 QTabBar::tab:top:selected{
     background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
@@ -387,19 +324,16 @@ QTabBar::tab:top:selected{
     border: 1px solid #888;
     color: #e9e4de;
     margin-bottom: -2px;
-    /*font-weight: bold;*/
 }
 QTabBar::tab:bottom:hover {
     border-left: 1px solid #268bd2;
     border-right: 1px solid #268bd2;
     border-bottom: 1px solid #268bd2;
-    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
 }
 QTabBar::tab:top:hover {
     border-left: 1px solid #268bd2;
     border-right: 1px solid #268bd2;
     border-top: 1px solid #268bd2;
-    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
 }
 QTabBar::tab:bottom:!selected {
 }
@@ -443,13 +377,11 @@ QLabel {
     border: 0px;
 }
 
-
 /* QListView styles */
 QListView::item:selected {
     border: 0px;
     background-color: #47474b;
 }
-
 
 /* QGroupBox styles */
 QGroupBox {
@@ -548,8 +480,6 @@ QScrollBar:vertical {
     width: 12px;
 }
 QScrollBar::handle {
-    background: #1f1f21; /* dark */
-    background: #625e5b; /* brownish / text */
     background: #5b5f62; /* blueish / background */
     border-width: 2px;
     border-radius: 4px;
@@ -587,14 +517,13 @@ QLineEdit {
 }
 
 QSplitter:handle {
-    background: #c8ccd0;
-    border: 1px solid #c8ccd0;
+    background: #5b5f62;
+    border: 1px solid #5b5f62;
 }
 QSplitter::handle:pressed, QSplitter::handle:hover {
     background: #268bd2;
     border: 1px solid #268bd2;
 }
-
 
 
 /* QAbstractSpinBox styles */
@@ -678,21 +607,9 @@ QSlider::handle:disabled {
 }
 
 
-/* QSplitter styles */
-/*
-QSplitter:vertical {
-    height: 10px;
-}
-QSplitter:horizontal {
-    width: 10px;
-}
-*/
 /* main color definition for splitters is done with QSlider (see above) 
    only cosmetics are done here (rounded corners)!
 */
-
-
-
 QSplitter[Vertical="false"]#RangeSliderQt QFrame#valueArea, 
 QSplitter[Vertical="true"]#RangeSliderQt QFrame#valueArea {
     border: 0px;
@@ -851,12 +768,6 @@ QProgressBar::chunk {
                                 stop:0 #78d, stop:0.4999 #46a,
                                 stop:0.5 #45a, stop:1 #238);
 }
-
-
-QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBox:indicator:hover, QAbstractSpinBox:hover {
-    border: 1px solid #268bd2;
-}
-
 
 
 QDockWidget#ResourceManager QTableView {

@@ -251,7 +251,6 @@ std::string getOptionPropertyClassIdentifier() {
 }
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
 std::string getOptionPropertyClassIdentifier() {
-    using ET = typename std::underlying_type<T>::type;
     return "org.inviwo.OptionProperty" + util::enumName<T>();
 }
 

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -40,10 +40,10 @@
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/keyframe.h>
-#include <modules/animation/datastructures/interpolation.h>
+#include <modules/animation/datastructures/valuekeyframe.h>
+#include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/animation.h>
-#include <modules/animation/datastructures/interpolation.h>
 
 #include <modules/animation/factories/interpolationfactory.h>
 #include <modules/animation/factories/interpolationfactoryobject.h>
@@ -51,21 +51,23 @@
 #include <modules/animation/factories/trackfactory.h>
 #include <modules/animation/factories/trackfactoryobject.h>
 
-
 namespace inviwo {
 namespace animation {
 
 TEST(AnimationTests, FloatInterpolation) {
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 100.0f);
-    
+
     PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
 
-    KeyframeSequenceTyped<ValueKeyframe<float>> sequence(
-        {{Seconds{1}, 0.0f}, {Seconds{2}, 1.0f}, {Seconds{3}, 0.0f}},
-        std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 0.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{2.0}, 1.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{3.0}, 0.0f));
+    auto sequence = std::make_unique<KeyframeSequenceTyped<ValueKeyframe<float>>>(
+        std::move(fseq), std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
 
-    floatTrack.add(sequence);
+    floatTrack.add(std::move(sequence));
 
     EXPECT_EQ(0.0f, floatProperty.get());
 
@@ -73,11 +75,11 @@ TEST(AnimationTests, FloatInterpolation) {
 
     EXPECT_EQ(0.5f, floatProperty.get());
 
-    floatTrack(Seconds{ 1.5 }, Seconds{ 2.5 }, AnimationState::Playing);
+    floatTrack(Seconds{1.5}, Seconds{2.5}, AnimationState::Playing);
 
     EXPECT_EQ(0.5f, floatProperty.get());
 
-    floatTrack(Seconds{ 2.5 }, Seconds{ 3.5 }, AnimationState::Playing);
+    floatTrack(Seconds{2.5}, Seconds{3.5}, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
 
@@ -85,31 +87,29 @@ TEST(AnimationTests, FloatInterpolation) {
 
     EXPECT_EQ(3.0f, floatProperty.get());
 
-    floatTrack(Seconds{ 3.5 }, Seconds{ 4.5 }, AnimationState::Playing);
+    floatTrack(Seconds{3.5}, Seconds{4.5}, AnimationState::Playing);
 
     EXPECT_EQ(3.0f, floatProperty.get());
 
-    floatTrack(Seconds{ 3.5 }, Seconds{ 0.5 }, AnimationState::Playing);
+    floatTrack(Seconds{3.5}, Seconds{0.5}, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-    floatTrack(Seconds{ 0.5 }, Seconds{ 1.0 }, AnimationState::Playing);
+    floatTrack(Seconds{0.5}, Seconds{1.0}, AnimationState::Playing);
     EXPECT_EQ(0.0f, floatProperty.get());
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-    floatTrack(Seconds{ 0.5 }, Seconds{ 2.0 }, AnimationState::Playing);
+    floatTrack(Seconds{0.5}, Seconds{2.0}, AnimationState::Playing);
     EXPECT_EQ(1.0f, floatProperty.get());
 
     floatProperty.set(3.0f);
     EXPECT_EQ(3.0f, floatProperty.get());
-    floatTrack(Seconds{ 0.5 }, Seconds{ 3.0 }, AnimationState::Playing);
+    floatTrack(Seconds{0.5}, Seconds{3.0}, AnimationState::Playing);
     EXPECT_EQ(0.0f, floatProperty.get());
-
 }
-
 
 TEST(AnimationTests, AnimationTest) {
 
@@ -117,20 +117,25 @@ TEST(AnimationTests, AnimationTest) {
 
     DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(100.0));
 
-    KeyframeSequenceTyped<ValueKeyframe<float>> floatSequence(
-    { {Seconds{1.0}, 0.0f}, {Seconds{2.0}, 1.0f}, {Seconds{3.0}, 0.0f} },
-        std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 0.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{2.0}, 1.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{3.0}, 0.0f));
+    auto floatSequence = std::make_unique<KeyframeSequenceTyped<ValueKeyframe<float>>>(
+        std::move(fseq), std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
 
-    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence(
-    { {Seconds{1.0},  dvec3(1.0)}, {Seconds{2.0},  dvec3(0.0)}, {Seconds{3.0}, dvec3(1.0)} },
-        std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
+    std::vector<std::unique_ptr<ValueKeyframe<dvec3>>> dseq;
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{1.0}, dvec3{1.0}));
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{2.0}, dvec3{0.0}));
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{3.0}, dvec3{1.0}));
+    auto doubleSequence = std::make_unique<KeyframeSequenceTyped<ValueKeyframe<dvec3>>>(
+        std::move(dseq), std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
 
     Animation animation;
-
     {
         auto floatTrack =
             std::make_unique<PropertyTrack<FloatProperty, ValueKeyframe<float>>>(&floatProperty);
-        floatTrack->add(floatSequence);
+        floatTrack->add(std::move(floatSequence));
         animation.add(std::move(floatTrack));
     }
 
@@ -138,7 +143,7 @@ TEST(AnimationTests, AnimationTest) {
         auto doubleTrack =
             std::make_unique<PropertyTrack<DoubleVec3Property, ValueKeyframe<dvec3>>>(
                 &doubleProperty);
-        doubleTrack->add(doubleSequence);
+        doubleTrack->add(std::move(doubleSequence));
         animation.add(std::move(doubleTrack));
     }
 
@@ -150,13 +155,13 @@ TEST(AnimationTests, AnimationTest) {
     EXPECT_EQ(0.5f, floatProperty.get());
     EXPECT_EQ(dvec3(0.5), doubleProperty.get());
 
-    EXPECT_EQ(Seconds{1.0}, animation.firstTime());
-    EXPECT_EQ(Seconds{3.0}, animation.lastTime());
+    EXPECT_EQ(Seconds{1.0}, animation.getFirstTime());
+    EXPECT_EQ(Seconds{3.0}, animation.getLastTime());
 
-    animation[1][0].add(ValueKeyframe<dvec3>{Seconds{4.0}, dvec3(2.0)});
+    animation[1][0].add(std::make_unique<ValueKeyframe<dvec3>>(Seconds{4.0}, dvec3(2.0)));
 
-    EXPECT_EQ(Seconds{ 1.0 }, animation.firstTime());
-    EXPECT_EQ(Seconds{ 4.0 }, animation.lastTime());
+    EXPECT_EQ(Seconds{1.0}, animation.getFirstTime());
+    EXPECT_EQ(Seconds{4.0}, animation.getLastTime());
 
     animation(Seconds{0.0}, Seconds{3.5}, AnimationState::Playing);
 
@@ -165,27 +170,30 @@ TEST(AnimationTests, AnimationTest) {
 
     animation[1][0].remove(2);
 
-    animation(Seconds{ 0.0 }, Seconds{ 3.0 }, AnimationState::Playing);
+    animation(Seconds{0.0}, Seconds{3.0}, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
     EXPECT_EQ(dvec3(1.0), doubleProperty.get());
 
     {
-        KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2(
-        { {Seconds{6.0}, dvec3(1.0)}, {Seconds{7.0}, dvec3(0.0)}, {Seconds{8.0}, dvec3(1.0)} },
-            std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
-        animation[1].add(doubleSequence2);
+        std::vector<std::unique_ptr<ValueKeyframe<dvec3>>> dseq2;
+        dseq2.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{6.0}, dvec3{1.0}));
+        dseq2.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{7.0}, dvec3{0.0}));
+        dseq2.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{8.0}, dvec3{1.0}));
+        auto doubleSequence2 = std::make_unique<KeyframeSequenceTyped<ValueKeyframe<dvec3>>>(
+            std::move(dseq2), std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
+
+        animation[1].add(std::move(doubleSequence2));
     }
 
-    EXPECT_EQ(Seconds{ 1.0 }, animation.firstTime());
-    EXPECT_EQ(Seconds{ 8.0 }, animation.lastTime());
+    EXPECT_EQ(Seconds{1.0}, animation.getFirstTime());
+    EXPECT_EQ(Seconds{8.0}, animation.getLastTime());
 
-    animation(Seconds{ 0.0 }, Seconds{ 7.5 }, AnimationState::Playing);
+    animation(Seconds{0.0}, Seconds{7.5}, AnimationState::Playing);
 
     EXPECT_EQ(0.0f, floatProperty.get());
     EXPECT_EQ(dvec3(0.5), doubleProperty.get());
 }
-
 
 TEST(AnimationTests, KeyframeSerializationTest) {
     ValueKeyframe<dvec3> keyframe{Seconds{4.0}, dvec3(2.0)};
@@ -205,7 +213,6 @@ TEST(AnimationTests, KeyframeSerializationTest) {
     EXPECT_EQ(keyframe, keyframe2);
 }
 
-
 TEST(AnimationTests, InterpolationSerializationTest) {
     InterpolationFactory factory;
 
@@ -218,7 +225,6 @@ TEST(AnimationTests, InterpolationSerializationTest) {
 
     Interpolation* iptr = &linear;
 
-
     Serializer s(refPath);
     s.serialize("interpolation", iptr);
 
@@ -226,19 +232,15 @@ TEST(AnimationTests, InterpolationSerializationTest) {
     s.writeFile(ss);
 
     Deserializer d(ss, refPath);
-    d.setExceptionHandler([](ExceptionContext context) {throw;});
+    d.setExceptionHandler([](ExceptionContext context) { throw; });
     d.registerFactory(&factory);
-    
+
     Interpolation* iptr2 = nullptr;
     d.deserialize("interpolation", iptr2);
-
 
     delete iptr2;
     factory.unRegisterObject(&linearIFO);
 }
-
-
-
 
 TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     InterpolationFactory factory;
@@ -246,10 +248,12 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO;
     factory.registerObject(&linearIFO);
 
-
-    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence(
-    { {Seconds{1.0},  dvec3(1.0)}, {Seconds{2.0},  dvec3(0.0)}, {Seconds{3.0}, dvec3(1.0)} },
-        std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
+    std::vector<std::unique_ptr<ValueKeyframe<dvec3>>> dseq;
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{1.0}, dvec3{1.0}));
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{2.0}, dvec3{0.0}));
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{3.0}, dvec3{0.0}));
+    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence{
+        std::move(dseq), std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>()};
 
     const std::string refPath = "/tmp";
 
@@ -260,9 +264,9 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     s.writeFile(ss);
 
     Deserializer d(ss, refPath);
-    d.setExceptionHandler([](ExceptionContext context) {throw;});
+    d.setExceptionHandler([](ExceptionContext context) { throw; });
     d.registerFactory(&factory);
-    
+
     KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2;
 
     doubleSequence2.deserialize(d);
@@ -285,33 +289,35 @@ TEST(AnimationTests, TrackSerializationTest) {
     TrackFactoryObjectTemplate<PropertyTrack<FloatProperty, ValueKeyframe<float>>> floatTFO;
     trackFactory.registerObject(&floatTFO);
 
-
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
     PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty);
-    KeyframeSequenceTyped<ValueKeyframe<float>> sequence(
-    { {Seconds{1}, 0.0f}, {Seconds{2}, 1.0f}, {Seconds{3}, 0.0f} },
-        std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
-    floatTrack.add(sequence);
+
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 0.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{2.0}, 1.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{3.0}, 0.0f));
+    auto floatSequence = std::make_unique<KeyframeSequenceTyped<ValueKeyframe<float>>>(
+        std::move(fseq), std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
+    floatTrack.add(std::move(floatSequence));
 
     const std::string refPath = "/tmp";
 
     Serializer s(refPath);
     s.serialize("Property", &floatProperty);
     s.serialize("Track", floatTrack);
-    
+
     std::stringstream ss;
     s.writeFile(ss);
 
     Deserializer d(ss, refPath);
-    d.setExceptionHandler([](ExceptionContext context) {throw; });
+    d.setExceptionHandler([](ExceptionContext context) { throw; });
     d.registerFactory(&interpolationFactory);
     d.registerFactory(&propertyFactory);
     d.registerFactory(&trackFactory);
 
-
     Property* floatProperty2 = nullptr;
     Track* track = nullptr;
-    
+
     d.deserialize("Property", floatProperty2);
     d.deserialize("Track", track);
 
@@ -347,25 +353,29 @@ TEST(AnimationTests, AnimationSerializationTest) {
     trackFactory.registerObject(&floatTFO);
     trackFactory.registerObject(&dvec3TFO);
 
-
-
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
     DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(0.0));
 
-    KeyframeSequenceTyped<ValueKeyframe<float>> floatSequence(
-    { {Seconds{1.0}, 0.0f}, {Seconds{2.0}, 1.0f}, {Seconds{3.0}, 0.0f} },
-        std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 0.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{2.0}, 1.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{3.0}, 0.0f));
+    auto floatSequence = std::make_unique<KeyframeSequenceTyped<ValueKeyframe<float>>>(
+        std::move(fseq), std::make_unique<LinearInterpolation<ValueKeyframe<float>>>());
 
-    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence(
-    { {Seconds{1.0},  dvec3(1.0)}, {Seconds{2.0},  dvec3(0.0)}, {Seconds{3.0}, dvec3(1.0)} },
-        std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
+    std::vector<std::unique_ptr<ValueKeyframe<dvec3>>> dseq;
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{1.0}, dvec3{1.0}));
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{2.0}, dvec3{0.0}));
+    dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{3.0}, dvec3{0.0}));
+    auto doubleSequence = std::make_unique<KeyframeSequenceTyped<ValueKeyframe<dvec3>>>(
+        std::move(dseq), std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
 
     Animation animation;
 
     {
         auto floatTrack =
             std::make_unique<PropertyTrack<FloatProperty, ValueKeyframe<float>>>(&floatProperty);
-        floatTrack->add(floatSequence);
+        floatTrack->add(std::move(floatSequence));
         animation.add(std::move(floatTrack));
     }
 
@@ -373,10 +383,9 @@ TEST(AnimationTests, AnimationSerializationTest) {
         auto doubleTrack =
             std::make_unique<PropertyTrack<DoubleVec3Property, ValueKeyframe<dvec3>>>(
                 &doubleProperty);
-        doubleTrack->add(doubleSequence);
+        doubleTrack->add(std::move(doubleSequence));
         animation.add(std::move(doubleTrack));
     }
-
 
     const std::string refPath = "/tmp";
 
@@ -386,13 +395,11 @@ TEST(AnimationTests, AnimationSerializationTest) {
     std::stringstream ss;
     s.writeFile(ss);
 
-
     Deserializer d(ss, refPath);
-    d.setExceptionHandler([](ExceptionContext context) {throw; });
+    d.setExceptionHandler([](ExceptionContext context) { throw; });
     d.registerFactory(&interpolationFactory);
     d.registerFactory(&propertyFactory);
     d.registerFactory(&trackFactory);
-
 
     Animation animation2;
     d.deserialize("animation", animation2);
@@ -411,19 +418,17 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
     EXPECT_EQ(dt1[0], dt2[0]);
 
-
-
-    Seconds start = animation.firstTime();
-    Seconds end = animation.lastTime();
+    Seconds start = animation.getFirstTime();
+    Seconds end = animation.getLastTime();
 
     Seconds from = start;
-    for (Seconds to = start; to <= end; to += (end-start)/100) {
+    for (Seconds to = start; to <= end; to += (end - start) / 100) {
         animation(from, to, AnimationState::Playing);
         animation2(from, to, AnimationState::Playing);
 
         const auto& oldfloat = floatProperty.get();
-        const auto& newfloat =  ft2.getProperty()->get();
-        EXPECT_EQ(oldfloat, newfloat); 
+        const auto& newfloat = ft2.getProperty()->get();
+        EXPECT_EQ(oldfloat, newfloat);
 
         const auto& olddvec3 = doubleProperty.get();
         const auto& newdvec3 = dt2.getProperty()->get();
@@ -431,7 +436,6 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
         from = to;
     }
-
 
     delete ft2.getProperty();
     delete dt2.getProperty();
@@ -444,8 +448,6 @@ TEST(AnimationTests, AnimationSerializationTest) {
     trackFactory.unRegisterObject(&dvec3TFO);
 }
 
+}  // namespace animation
 
-
-}  // namespace
-
-}  // namespace
+}  // namespace inviwo

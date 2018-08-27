@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,63 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRACKQT_H
-#define IVW_TRACKQT_H
+#ifndef IVW_SEQUENCEEDITORWIDGET_H
+#define IVW_SEQUENCEEDITORWIDGET_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/animation/datastructures/trackobserver.h>
+
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsItem>
+#include <QWidget>
 #include <warn/pop>
+
+class QVBoxLayout;
+class QPaintEvent;
 
 namespace inviwo {
 
 namespace animation {
 
-class Track;
-class KeyframeSequenceQt;
+class SequenceEditorPanel;
+class KeyframeEditorWidget;
 
-class IVW_MODULE_ANIMATIONQT_API TrackQt : public QGraphicsItem, public TrackObserver {
+class IVW_MODULE_ANIMATIONQT_API SequenceEditorWidget : public QWidget,
+                                                        public KeyframeSequenceObserver {
 public:
-    TrackQt(Track& track);
-    virtual ~TrackQt();
-    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
-                       QWidget* widget) override;
+    SequenceEditorWidget(KeyframeSequence& sequence, Track& track);
+    virtual ~SequenceEditorWidget() = default;
 
-    Track& getTrack(); 
-    const Track& getTrack() const; 
+    void updateVisibility();
+
+    // KeyframeSequenceObserver overloads
+    virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence* seq) override;
+    virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) override;
+    virtual void onKeyframeRemoved(Keyframe* key, KeyframeSequence* seq) override;
+
+    Track& getTrack() { return track_; }
+
+    void setReorderNeeded();
+
 protected:
-    virtual QRectF boundingRect() const override;
+    virtual QWidget* create(Keyframe* key) = 0;
+    void reorderKeyframes();
+    virtual void paintEvent(QPaintEvent* event) override;
 
-    virtual void onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) override;
-    virtual void onKeyframeSequenceRemoved(Track* t, KeyframeSequence* s) override;
-
+    KeyframeSequence& sequence_;
     Track& track_;
-    std::vector<std::unique_ptr<KeyframeSequenceQt>> sequences_;
+
+    std::unordered_map<Keyframe*, QWidget*> keyframeEditorWidgets_;
+     
+    QVBoxLayout* keyframesLayout_{nullptr};
+
+    bool reorderNeeded_{true};
 };
 
-} // namespace
-
-} // namespace
-
-#endif // IVW_TRACKQT_H
-
+}  // namespace animation
+}  // namespace inviwo
+#endif  // IVW_SEQUENCEEDITORWIDGET_H

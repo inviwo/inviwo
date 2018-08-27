@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/animationqt/trackqt.h>
-#include <modules/animationqt/keyframesequenceqt.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/keyframesequence.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QGraphicsScene>
-#include <warn/pop>
+#include <modules/animation/datastructures/valuekeyframe.h>
 
 namespace inviwo {
 
-namespace animation {
+}  // namespace inviwo
 
-TrackQt::TrackQt(Track& track) : QGraphicsItem(), track_(track) {
-    for (size_t i = 0; i < track_.size(); ++i) {
-        sequences_.push_back(std::make_unique<KeyframeSequenceQt>(track_[i], this));
-    }
-    track_.addObserver(this);
-}
-
-TrackQt::~TrackQt() = default;
-
-void TrackQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options, QWidget* widget) {}
-
-Track& TrackQt::getTrack() { return track_; }
-
-const Track& TrackQt::getTrack() const { return track_; }
-
-QRectF TrackQt::boundingRect() const { return childrenBoundingRect(); }
-
-void TrackQt::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
-    sequences_.push_back(std::make_unique<KeyframeSequenceQt>(*s, this));
-}
-
-void TrackQt::onKeyframeSequenceRemoved(Track* t, KeyframeSequence* sequence) {
-    util::erase_remove_if(sequences_, [&](auto& sequenceqt) {
-        if (&(sequenceqt->getKeyframeSequence()) == sequence) {
-            this->scene()->removeItem(sequenceqt.get());
-            return true;
-        } else {
-            return false;
-        }
-    });
-}
-
-}  // namespace
-
-}  // namespace

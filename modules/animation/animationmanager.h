@@ -39,7 +39,7 @@
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/datastructures/animationobserver.h>
-#include <modules/animation/datastructures/interpolation.h>
+#include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/animationcontroller.h>
 
 #include <modules/animation/factories/interpolationfactory.h>
@@ -56,13 +56,12 @@ class BasePropertyTrack;
 
 /**
  * The AnimationManager is responsible for managing the factories related to animations as well as
- * owning the currently used Animation and AnimationController. It is also responsible for 
- * clearing, saving, and loading the animation when ever the workspace is cleared, saved, or loaded.
- * The AnimationManager also manages the ModuleCallback actions that are used to facilitate
- * the creation of property track from the context menu of properties. 
- * To be able to do this is has a map of track class identifiers to map to property class 
- * identifiers.
- * 
+ * owning the currently used Animation and AnimationController. It is also responsible for
+ * clearing, saving, and loading the animation and its controller when the workspace is cleared,
+ * saved, or loaded. The AnimationManager also manages the ModuleCallback actions that are used to
+ * facilitate the creation of property track from the context menu of properties. To be able to do
+ * this it has a map of track class identifiers to map to property class identifiers.
+ *
  * The modules that wish to extend the Animation with a new functionality ( Track or Interpolation )
  * will do so through the AnimationSuppliers and will register those with the factories here.
  *
@@ -70,7 +69,7 @@ class BasePropertyTrack;
  * @see AnimationController
  * @see Track
  */
-class IVW_MODULE_ANIMATION_API AnimationManager : public AnimationObserver, 
+class IVW_MODULE_ANIMATION_API AnimationManager : public AnimationObserver,
                                                   public PropertyOwnerObserver,
                                                   public ProcessorNetworkObserver {
 public:
@@ -96,7 +95,7 @@ public:
      */
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
-    
+
     /**
      * Register connection between a property and an interpolation.
      * Used to get the preferred interpolation method for a property.
@@ -104,24 +103,39 @@ public:
      * @param interpolationClassID Interpolation::getIdentifier()
      */
     void registerPropertyInterpolationConnection(const std::string& propertyClassID,
-                                         const std::string& interpolationClassID);
+                                                 const std::string& interpolationClassID);
 
     /**
-     * Callback for the module action callbacks.
+     * Add keyframe at current time given by AnimationController.
+     * @see addKeyframeCallback(Property* property, Seconds time)
      */
     void addKeyframeCallback(Property* property);
     /**
-     * Callback for the module action callbacks.
+     * Add keyframe at specified time.
+     * Creates a new track if no track with the supplied property exists.
+     */
+    void addKeyframeCallback(Property* property, Seconds time);
+    /**
+     * Add sequence at current time given by AnimationController.
+     * @see addSequenceCallback(Property* property, Seconds time)
      */
     void addSequenceCallback(Property* property);
+    /**
+     * Add sequence at specified time.
+     * Creates a new track if no track with the supplied property exists.
+     */
+    void addSequenceCallback(Property* property, Seconds time);
 
-private:
-    BasePropertyTrack* addNewTrack(Property* property);
-    /** 
+    /**
      * Lookup the default interpolation to use for a property.
      * @throw Exception if none is found.
      */
     std::unique_ptr<Interpolation> getDefaultInterpolation(Property* property);
+
+    const std::unordered_multimap<std::string, std::string>& getInterpolationMapping() const;
+
+private:
+    BasePropertyTrack* addNewTrack(Property* property);
 
     // PropertyOwnerObserver overload
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
@@ -140,7 +154,7 @@ private:
     InterpolationFactory interpolationFactory_;
 
     std::unordered_map<std::string, std::string> propertyToTrackMap_;
-    std::unordered_map<std::string, std::string> propertyToInterpolationMap_;
+    std::unordered_multimap<std::string, std::string> propertyToInterpolationMap_;
     std::unordered_map<const Property*, BasePropertyTrack*> trackMap_;
 
     Animation animation_;
@@ -149,11 +163,14 @@ private:
     WorkspaceManager::ClearHandle animationClearHandle_;
     WorkspaceManager::SerializationHandle animationSerializationHandle_;
     WorkspaceManager::DeserializationHandle animationDeserializationHandle_;
+
+    WorkspaceManager::ClearHandle animationControllerClearHandle_;
+    WorkspaceManager::SerializationHandle animationControllerSerializationHandle_;
+    WorkspaceManager::DeserializationHandle animationControllerDeserializationHandle_;
 };
 
-} // namespace animation
+}  // namespace animation
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONMANAGER_H
-
+#endif  // IVW_ANIMATIONMANAGER_H

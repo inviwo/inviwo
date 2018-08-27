@@ -41,11 +41,11 @@ class Track;
 
 class IVW_MODULE_ANIMATION_API AnimationObserver : public Observer {
 public:
-    virtual void onTrackAdded(Track* track){};
-    virtual void onTrackRemoved(Track* track){};
+    virtual void onTrackAdded(Track*){};
+    virtual void onTrackRemoved(Track*){};
 
-    virtual void onFirstMoved() {};
-    virtual void onLastMoved() {};
+    virtual void onFirstMoved(){};
+    virtual void onLastMoved(){};
 };
 
 class IVW_MODULE_ANIMATION_API AnimationObservable : public Observable<AnimationObserver> {
@@ -57,10 +57,8 @@ protected:
     void notifyLastMoved();
 };
 
-} // namespace
+}  // namespace animation
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_ANIMATIONOBSERVER_H
-
+#endif  // IVW_ANIMATIONOBSERVER_H

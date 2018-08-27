@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-
 #include <modules/animation/animationsupplier.h>
 #include <modules/animation/animationmodule.h>
 
@@ -51,15 +50,13 @@ AnimationSupplier::AnimationSupplier(AnimationManager& manager) : manager_(manag
 
 AnimationSupplier::AnimationSupplier(InviwoApplication* app) : manager_(getAnimationManager(app)) {}
 
-AnimationSupplier::~AnimationSupplier() {
-    unRegisterAll();
-}
+AnimationSupplier::~AnimationSupplier() { unRegisterAll(); }
 
 void AnimationSupplier::registerPropertyTrackConnection(const std::string& propertyClassID,
                                                         const std::string& trackClassID) {
     manager_.registerPropertyTrackConnection(propertyClassID, trackClassID);
 }
-    
+
 void AnimationSupplier::registerPropertyInterpolationConnection(
     const std::string& propertyClassID, const std::string& interpolationClassID) {
     manager_.registerPropertyInterpolationConnection(propertyClassID, interpolationClassID);
@@ -70,14 +67,13 @@ void AnimationSupplier::unRegisterAll() {
         manager_.getTrackFactory().unRegisterObject(elem.get());
     }
     tracks_.clear();
-    
+
     for (auto& elem : interpolations_) {
         manager_.getInterpolationFactory().unRegisterObject(elem.get());
     }
     interpolations_.clear();
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
-
+}  // namespace inviwo

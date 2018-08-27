@@ -1,5 +1,5 @@
 #Icons form https://www.iconfinder.com/iconsets/mayssam
-#License: Creative Commons (Attribution 3.0 Unported) 
+#License: Creative Commons (Attribution 3.0 Unported)
 
 import urllib.request
 
@@ -66,7 +66,9 @@ icons = [[925909, "arrow_direction_previous_right_icon"],
 [926647, "media_next_player_previous_song_track_icon"],
 [926643, "media_monitor_player_resize_screen_icon"],
 [925931, "alert_attention_danger_error_message_warning_icon"],
-[925915, "current_location_map_maps_marker_note_pin_icon"]
+[925915, "current_location_map_maps_marker_note_pin_icon"],
+[2625630, "basket_delete_garbage_trash_waste_icon"],
+[2625638, "eye_look_search_view_icon"],
 ]
 
 types = [
@@ -80,7 +82,7 @@ types = [
 
 for ind, name in icons:
 	print(str(ind) + " " + name)
-	for imgtype, size in types[3:]:
+	for imgtype, size in types:
 		urllib.request.urlretrieve("https://www.iconfinder.com/icons/" + str(ind) + "/download/"
 			+ imgtype + "/" + size, "icons/" + name + "_" + size + "." + imgtype)
 
@@ -92,4 +94,3 @@ with open("animation.qrc", 'w') as f:
 			f.write("		<file>icons/" + name + "_" + size + "." + imgtype + "</file>\n")
 	f.write("	</qresource>\n")
 	f.write("</RCC>\n")
-

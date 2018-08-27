@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,28 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/interpolation.h>
+#ifndef IVW_PROPERTYTRACKWIDGETQT_H
+#define IVW_PROPERTYTRACKWIDGETQT_H
+
+#include <modules/animationqt/animationqtmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <modules/animationqt/widgets/trackwidgetqt.h>
 
 namespace inviwo {
 
-} // namespace
+namespace animation {
 
+class IVW_MODULE_ANIMATIONQT_API PropertyTrackWidgetQt : public TrackWidgetQt {
+public:
+    PropertyTrackWidgetQt(Track& track);
+    virtual ~PropertyTrackWidgetQt() = default;
+
+    static std::string classIdentifier();
+};
+
+}  // namespace animation
+
+}  // namespace inviwo
+
+#endif  // IVW_PROPERTYTRACKWIDGETQT_H
