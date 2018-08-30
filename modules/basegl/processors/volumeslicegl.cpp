@@ -250,6 +250,7 @@ VolumeSliceGL::VolumeSliceGL()
 
     worldPosition_.setReadOnly(true);
     addProperty(worldPosition_);
+    worldPosition_.onChange([this]() { updateFromWorldPosition(); });
 
     addProperty(handleInteractionEvents_);
 
@@ -733,6 +734,31 @@ void VolumeSliceGL::rotationModeChange() {
         default:
             imageRotation_.setVisible(true);
             break;
+    }
+}
+
+void VolumeSliceGL::updateFromWorldPosition() {
+
+    if (!inport_.hasData() || updating_) return;
+
+    if (inport_.hasData()) {
+        util::KeepTrueWhileInScope guard(&updating_);
+
+        const mat4 worldToTexture(
+            inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix());
+        const vec3 texturePos = vec3(worldToTexture * vec4(worldPosition_.get(), 1.0f));
+
+        const mat4 worldToIndex(
+            inport_.getData()->getCoordinateTransformer().getWorldToIndexMatrix());
+        const ivec3 indexPos(ivec3(worldToIndex * vec4(worldPosition_.get(), 1.0f)) + ivec3(1));
+
+        NetworkLock lock(this);
+        sliceX_.set(indexPos.x);
+        sliceY_.set(indexPos.y);
+        sliceZ_.set(indexPos.z);
+
+        planePosition_.set(texturePos);
+        invalidateMesh();
     }
 }
 
