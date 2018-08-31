@@ -48,7 +48,7 @@
 #       pragma GCC diagnostic ignored "-Wunused-value"
 #   endif
 #elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 131000000)
+#   if (_MSC_FULL_VER >= 130946600)
 #       pragma warning(disable: 4548)
 #   endif
 #endif

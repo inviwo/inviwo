@@ -49,11 +49,14 @@ namespace inviwo {
 ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
     : CompositePropertyWidgetQt(property), listProperty_(property) {
 
+    if (!listProperty_) {
+        throw Exception("ListPropertyWidgetQt got a null ListProperty", IvwContext);
+    }
+
     setShowIfEmpty(true);
     setEmptyLabelString("No list entries");
 
     auto headerlayout = dynamic_cast<QHBoxLayout*>(layout()->itemAt(0)->layout());
-
     if (!headerlayout) {
         throw Exception("CompositePropertyWidget has no header layout.", IvwContext);
     }
@@ -71,7 +74,7 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
     connect(addItemButton_, &QToolButton::clicked, this, [&]() {
         if (listProperty_ && listProperty_->getPrefabCount() > 0) {
             if (listProperty_->getPrefabCount() == 1) {
-                listProperty_->addProperty(static_cast<size_t>(0));
+                addNewItem(0);
             } else {
                 // show context menu since there exist more than one prefab in the list property
                 QMenu m;
@@ -82,89 +85,74 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
                 }
 
                 if (auto selectedAction = m.exec(QCursor::pos())) {
-                    listProperty_->setInitiatingWidget(this);
-                    listProperty_->addProperty(selectedAction->data().toUInt());
-                    listProperty_->clearInitiatingWidget();
+                    addNewItem(selectedAction->data().toUInt());
                 }
             }
         }
     });
 
-    if (listProperty_) {
-        addItemButton_->setVisible((listProperty_->getUIFlags() & ListPropertyUIFlag::Add) ==
-                                   ListPropertyUIFlag::Add);
-    }
+    addItemButton_->setVisible(
+        static_cast<bool>(listProperty_->getUIFlags() & ListPropertyUIFlag::Add));
 
     headerlayout->insertWidget(headerlayout->count() - 2, addItemButton_);
 }
 
 void ListPropertyWidgetQt::updateFromProperty() {
     CompositePropertyWidgetQt::updateFromProperty();
-
-    if (listProperty_) {
-        addItemButton_->setEnabled(canAddElements());
-    }
+    addItemButton_->setEnabled(canAddElements());
 }
 
 bool ListPropertyWidgetQt::isChildRemovable() const {
-    return ((listProperty_->getUIFlags() & ListPropertyUIFlag::Remove) ==
-            ListPropertyUIFlag::Remove);
+    return static_cast<bool>(listProperty_->getUIFlags() & ListPropertyUIFlag::Remove);
 }
 
 std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
     auto menu = CompositePropertyWidgetQt::getContextMenu();
 
-    if (listProperty_) {
-        menu->addSeparator();
+    menu->addSeparator();
 
-        if ((listProperty_->getUIFlags() & ListPropertyUIFlag::Add) == ListPropertyUIFlag::Add) {
-            if (listProperty_->getPrefabCount() == 1) {
-                auto addAction = menu->addAction(utilqt::toQString(
-                    "Add " + listProperty_->getPrefabs().front()->getDisplayName()));
-                connect(addAction, &QAction::triggered, this, [&]() {
-                    listProperty_->setInitiatingWidget(this);
-                    listProperty_->addProperty(static_cast<size_t>(0));
-                    listProperty_->clearInitiatingWidget();
-                });
-            } else {
-                auto addItemMenu = menu->addMenu("&Add Item");
-                if (listProperty_->getPrefabCount() > 0) {
-                    for (auto&& item : util::enumerate(listProperty_->getPrefabs())) {
-                        auto addAction = addItemMenu->addAction(
-                            utilqt::toQString(item.second()->getDisplayName()));
-                        connect(addAction, &QAction::triggered, this, [&, index = item.first() ]() {
-                            listProperty_->setInitiatingWidget(this);
-                            listProperty_->addProperty(index);
-                            listProperty_->clearInitiatingWidget();
-                        });
-                    }
-                } else {  // no prefab objects available
-                    auto action = addItemMenu->addAction("No templates available");
-                    action->setEnabled(false);
+    if (listProperty_->getUIFlags() & ListPropertyUIFlag::Add) {
+        if (listProperty_->getPrefabCount() == 1) {
+            auto addAction = menu->addAction(
+                utilqt::toQString("Add " + listProperty_->getPrefabs().front()->getDisplayName()));
+            connect(addAction, &QAction::triggered, this, [this]() { addNewItem(0); });
+        } else {
+            auto addItemMenu = menu->addMenu("&Add Item");
+            if (listProperty_->getPrefabCount() > 0) {
+                for (auto&& item : util::enumerate(listProperty_->getPrefabs())) {
+                    auto addAction =
+                        addItemMenu->addAction(utilqt::toQString(item.second()->getDisplayName()));
+                    connect(addAction, &QAction::triggered, this,
+                            [this, index = item.first()]() { addNewItem(index); });
                 }
-
-                // disable add item menu if list property is already fully filled
-                const bool enable =
-                    (listProperty_->getMaxNumberOfElements() == 0) ||
-                    (listProperty_->size() < listProperty_->getMaxNumberOfElements());
-                addItemMenu->setEnabled(enable);
+            } else {  // no prefab objects available
+                auto action = addItemMenu->addAction("No templates available");
+                action->setEnabled(false);
             }
-        }
 
-        if ((listProperty_->getUIFlags() & ListPropertyUIFlag::Remove) ==
-            ListPropertyUIFlag::Remove) {
-            auto clearAction = menu->addAction(tr("&Clear Items"));
-            connect(clearAction, &QAction::triggered, this, [&]() {
-                listProperty_->setInitiatingWidget(this);
-                listProperty_->clear();
-                listProperty_->clearInitiatingWidget();
-            });
+            // disable add item menu if list property is already fully filled
+            addItemMenu->setEnabled(canAddElements());
         }
-
-        menu->addSeparator();
     }
 
+    if (listProperty_->getUIFlags() & ListPropertyUIFlag::Remove) {
+        auto clearAction = menu->addAction(tr("&Clear Items"));
+        connect(clearAction, &QAction::triggered, this, [&]() {
+            listProperty_->setInitiatingWidget(this);
+            listProperty_->clear();
+            listProperty_->clearInitiatingWidget();
+        });
+    }
+
+    menu->addSeparator();
+
     return menu;
+}
+
+void ListPropertyWidgetQt::addNewItem(size_t index) {
+    listProperty_->setInitiatingWidget(this);
+    listProperty_->addProperty(index);
+    listProperty_->clearInitiatingWidget();
 }
 
 bool ListPropertyWidgetQt::canAddElements() const {

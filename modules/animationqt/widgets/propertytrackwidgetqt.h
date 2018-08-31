@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/animationqt/widgets/trackwidgetqt.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
 namespace inviwo {
 
@@ -45,6 +46,10 @@ public:
     virtual ~PropertyTrackWidgetQt() = default;
 
     static std::string classIdentifier();
+
+    // override for qgraphicsitem_cast (refer qt documentation)
+    enum { Type = UserType + static_cast<int>(ItemTypes::PropertyTrack) };
+    virtual int type() const override { return Type; }
 };
 
 }  // namespace animation

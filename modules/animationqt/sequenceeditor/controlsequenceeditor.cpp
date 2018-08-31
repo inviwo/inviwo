@@ -57,10 +57,10 @@ namespace {
 
 class ControlEditorWidget : public QWidget, public KeyframeObserver {
 public:
-    ControlEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent) 
+    ControlEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
         : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-        auto& ctrlKey = dynamic_cast<ControlKeyframe&>(keyframe);
+        auto &ctrlKey = dynamic_cast<ControlKeyframe &>(keyframe);
 
         setObjectName("KeyframeEditorWidget");
 
@@ -130,9 +130,10 @@ private:
     QDoubleSpinBox *timeSpinner_{nullptr};
 };
 
-}
+}  // namespace
 
-ControlSequenceEditor::ControlSequenceEditor(KeyframeSequence &sequence, Track &track, AnimationManager& manager)
+ControlSequenceEditor::ControlSequenceEditor(KeyframeSequence &sequence, Track &track,
+                                             AnimationManager&)
     : SequenceEditorWidget(sequence, track) {
 
     sequence_.addObserver(this);
@@ -162,7 +163,7 @@ ControlSequenceEditor::ControlSequenceEditor(KeyframeSequence &sequence, Track &
     updateVisibility();
 }
 
-QWidget* ControlSequenceEditor::create(Keyframe* key) {
+QWidget *ControlSequenceEditor::create(Keyframe *key) {
     return new ControlEditorWidget(*key, this);
 }
 

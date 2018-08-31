@@ -28,21 +28,21 @@
  *********************************************************************************/
 
 #if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/assign-base-inaccessible` used without `warn/push`"
+#   error "`warn/ignore/no-unnamed-raii-objects` used without `warn/push`"
 #endif
 
-#if defined(WARN_IGNORE_ASSIGN_BASE_INACCESSIBLE)
-#   error "`warn/ignore/assign-base-inaccessible` already included"
+#if defined(WARN_IGNORE_NO_UNNAMED_RAII_OBJECTS)
+#   error "`warn/ignore/no-unnamed-raii-objects` already included"
 #endif
 
-#define WARN_IGNORE_ASSIGN_BASE_INACCESSIBLE
+#define WARN_IGNORE_NO_UNNAMED_RAII_OBJECTS
 
 #if defined(__clang__)
 //  Not available
 #elif defined(__GNUC__)
 //  Not available
 #elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 120000000)
-#       pragma warning(disable: 4626)
+#   if (_MSC_FULL_VER >= 150000000)
+#       pragma warning(disable: 26444)
 #   endif
 #endif
