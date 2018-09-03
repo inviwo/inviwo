@@ -36,6 +36,8 @@
 
 namespace inviwo {
 
+class MetaDataOwner;
+
 /**
  * \defgroup dataio Data Reader & Writers
  */
@@ -72,9 +74,19 @@ public:
     DataReaderType& operator=(const DataReaderType& that) = default;
     virtual DataReaderType* clone() const = 0;
     virtual ~DataReaderType() = default;
+
     virtual std::shared_ptr<T> readData(const std::string& filePath) = 0;
+
+    /**
+     * Optional overload that passed a MetaDataOwner to facilitate saving/loading state in the data
+     * reader the use is optional and the pointer can be null. 
+     * @see RawVolumeReader
+     */
+    virtual std::shared_ptr<T> readData(const std::string& filePath, MetaDataOwner*) {
+        return readData(filePath);
+    };
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATAREADER_H

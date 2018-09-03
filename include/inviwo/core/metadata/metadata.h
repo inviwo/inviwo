@@ -157,6 +157,7 @@ typedef MetaDataPrimitiveType<int, 0, 0> IntMetaData;
 typedef MetaDataPrimitiveType<float, 0, 0> FloatMetaData;
 typedef MetaDataPrimitiveType<double, 0, 0> DoubleMetaData;
 typedef MetaDataPrimitiveType<std::string, 0, 0> StringMetaData;
+typedef MetaDataPrimitiveType<size_t, 0, 0> SizeMetaData;
 
 typedef MetaDataPrimitiveType<vec2, 0, 0> FloatVec2MetaData;
 typedef MetaDataPrimitiveType<vec3, 0, 0> FloatVec3MetaData;
@@ -181,6 +182,10 @@ typedef MetaDataPrimitiveType<mat4, 0, 0> FloatMat4MetaData;
 typedef MetaDataPrimitiveType<dmat2, 0, 0> DoubleMat2MetaData;
 typedef MetaDataPrimitiveType<dmat3, 0, 0> DoubleMat3MetaData;
 typedef MetaDataPrimitiveType<dmat4, 0, 0> DoubleMat4MetaData;
+
+typedef MetaDataPrimitiveType<size2_t, 0, 0> Size2MetaData;
+typedef MetaDataPrimitiveType<size3_t, 0, 0> Size3MetaData;
+typedef MetaDataPrimitiveType<size4_t, 0, 0> Size4MetaData;
 
 // Vector specialization
 template <typename T, int N>
