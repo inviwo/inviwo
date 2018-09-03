@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,28 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
-
+#include <modules/webbrowser/properties/boolpropertywidgetcef.h>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+BoolPropertyWidgetCEF::BoolPropertyWidgetCEF(BoolProperty* property, CefRefPtr<CefFrame> frame,
+                                             std::string htmlId)
+    : TemplatePropertyWidgetCEF<bool>(property, frame, htmlId) {}
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+void BoolPropertyWidgetCEF::updateFromProperty() {
+    // LogInfo("updateFromProperty");
+    auto property = static_cast<BoolProperty*>(property_);
 
-KeyState KeyboardEvent::state() const { return state_; }
+    std::stringstream script;
+    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+    // Use click instead of setting value to make sure that appropriate events are fired.
+    script << "if (property!=null && property.checked !=" << (property->get() ? "true" : "false")
+           << "){property.click();}";
+    // Need to figure out how to make sure the frame is drawn after changing values.
+    // script << "window.focus();";
+    // Block OnQuery, called due to property.oninput()
+    onQueryBlocker_++;
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 
-IvwKey KeyboardEvent::key() const { return key_; }
-
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+}  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,36 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
+#include "utils/structs.glsl"
 
+uniform vec3 pickingColor;
+uniform ImageParameters outportParameters_;
 
-namespace inviwo {
+uniform sampler2D inport_;
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
-
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
-
-KeyState KeyboardEvent::state() const { return state_; }
-
-IvwKey KeyboardEvent::key() const { return key_; }
-
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
+void main() {
+	// Flip y-coord
+    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+	texCoords.y = 1.0 - texCoords.y;
+    vec4 color = texture(inport_, texCoords);
+    if (color.w > 0) {
+        FragData0 = texture(inport_, texCoords);
+        PickingData = vec4(pickingColor, 1.0);
+    } else {
+        discard;
+    }
     
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+}

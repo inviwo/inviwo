@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,40 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
-
+#include <modules/webbrowser/properties/propertywidgetcef.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
-
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
-
-KeyState KeyboardEvent::state() const { return state_; }
-
-IvwKey KeyboardEvent::key() const { return key_; }
-
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
+PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string htmlId)
+    : PropertyWidget(prop), htmlId_(htmlId), frame_(frame) {
+    if (prop) {
+        prop->addObserver(this);
+    }
+}
+void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
+    frame_ = frame;
+    // Make sure that we do not block synchronizations from new page.
+    onQueryBlocker_ = 0;
     
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
+}
 
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
+void PropertyWidgetCEF::deserialize(Deserializer& d) {
+    if (onQueryBlocker_ > 0) {
+        onQueryBlocker_--;
+        return;
+    }
+    property_->setInitiatingWidget(this);
+    d.deserialize("Property", *property_);
+    property_->clearInitiatingWidget();
+}
+    
+void PropertyWidgetCEF::onSetReadOnly(Property* property, bool readonly) {
+    std::stringstream script;
+    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+    script << "if(property!=null){property.readonly=" << (readonly ? "true" : "false") << ";}";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+}  // namespace inviwo

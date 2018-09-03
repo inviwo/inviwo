@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,42 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <modules/webbrowser/webrendererapp.h>
+#include <modules/webbrowser/app_switches.h>
 
 
-namespace inviwo {
+// This process will run the CEF web browser. Used as a sub-process by WebBrowserModule 
+// See WebBrowserModule::WebBrowserModule
+#ifdef WIN32
+int main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
+    // Enable High-DPI support on Windows 7 or newer.
+    CefEnableHighDPISupport();
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
-
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
-
-KeyState KeyboardEvent::state() const { return state_; }
-
-IvwKey KeyboardEvent::key() const { return key_; }
-
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
+    // Provide CEF with command-line arguments.
+    CefMainArgs mainArgs(hInstance);
+#else
+int main(int argc, char* argv[]) {
+        // Provide CEF with command-line arguments.
+        CefMainArgs mainArgs(argc, argv);
+#endif
     
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+    // Create a temporary CommandLine object.
+    CefRefPtr<CefCommandLine> command_line = CreateCommandLine(mainArgs);
+    
+    // Create a CefApp of the correct process type. The browser process is handled
+    // by webbrowsermodule.cpp.
+    CefRefPtr<CefApp> app = nullptr;
+    switch (GetProcessType(command_line)) {
+        case PROCESS_TYPE_RENDERER:
+            app = new inviwo::WebRendererApp();
+            break;
+        case PROCESS_TYPE_OTHER:
+            app = nullptr;
+            break;
+        default:
+            break;
+    }
+    
+    // Execute the sub-process.
+    return CefExecuteProcess(mainArgs, app.get(), NULL);
+}

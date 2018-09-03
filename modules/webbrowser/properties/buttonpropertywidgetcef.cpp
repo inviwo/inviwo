@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,41 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
-
+#include <modules/webbrowser/properties/buttonpropertywidgetcef.h>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+ButtonPropertyWidgetCEF::ButtonPropertyWidgetCEF(ButtonProperty* property,
+                                                 CefRefPtr<CefFrame> frame, std::string htmlId)
+    : PropertyWidgetCEF(property, frame, htmlId) {}
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+inline void ButtonPropertyWidgetCEF::updateFromProperty() {
 
-KeyState KeyboardEvent::state() const { return state_; }
+    std::stringstream script;
+    // Send click button event
+    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+    script << "if(property!=null){property.click();}";
+    // Block OnQuery, called due to property.click()
+    onQueryBlocker_++;
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 
-IvwKey KeyboardEvent::key() const { return key_; }
+bool ButtonPropertyWidgetCEF::onQuery(
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+    const CefString& request, bool persistent,
+    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
+    if (onQueryBlocker_ > 0) {
+        // LogInfo("blocked");
+        onQueryBlocker_--;
+        callback->Success("");
+        return true;
+    }
+    // Prevent calling updateFromProperty() for this widget
+    property_->setInitiatingWidget(this);
+    static_cast<ButtonProperty*>(property_)->pressButton();
+    callback->Success("");
+    property_->clearInitiatingWidget();
+    return true;
+}
 
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+}  // namespace inviwo

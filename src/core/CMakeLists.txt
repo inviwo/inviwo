@@ -448,6 +448,7 @@ set(SOURCE_FILES
     ports/porttraits.cpp
     processors/activityindicator.cpp
     processors/canvasprocessor.cpp
+    processors/canvasprocessorwidget.cpp
     processors/compositeprocessor.cpp
     processors/compositeprocessorfactoryobject.cpp
     processors/compositeprocessorutils.cpp

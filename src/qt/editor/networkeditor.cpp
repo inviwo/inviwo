@@ -461,8 +461,8 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
     if (!keyEvent->isAccepted()) {
         KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
-                                    utilqt::getModifiers(keyEvent));
-
+                                    utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
+                                    utilqt::fromQString(keyEvent->text()));
         progagateEventToSelecedProcessors(pressKeyEvent);
     }
 }
@@ -472,8 +472,8 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
 
     if (!keyEvent->isAccepted()) {
         KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
-                                      utilqt::getModifiers(keyEvent));
-
+                                      utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
+                                      utilqt::fromQString(keyEvent->text()));
         progagateEventToSelecedProcessors(releaseKeyEvent);
     }
 }

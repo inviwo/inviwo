@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,12 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
-
+#include <modules/webbrowser/webrendererapp.h>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+WebRendererApp::WebRendererApp() = default;
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+CefRefPtr<CefRenderProcessHandler> WebRendererApp::GetRenderProcessHandler() { return this; }
 
-KeyState KeyboardEvent::state() const { return state_; }
-
-IvwKey KeyboardEvent::key() const { return key_; }
-
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+}  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,28 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
+#ifndef IVW_CEFKEYBOARDMAPPING_H
+#define IVW_CEFKEYBOARDMAPPING_H
 
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+namespace cef {
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+/*
+ * Map IvwKey to CEF key
+ */
+int IVW_MODULE_WEBBROWSER_API mapKey(IvwKey key);
 
-KeyState KeyboardEvent::state() const { return state_; }
+/*
+ * Map KeyModifiers to CEF modifiers
+ */
+unsigned int IVW_MODULE_WEBBROWSER_API keyModifiers(KeyModifiers modifiers, IvwKey key);
 
-IvwKey KeyboardEvent::key() const { return key_; }
+};  // namespace cef
 
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
+};  // namespace inviwo
 
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+#endif  // IVW_CEFKEYBOARDMAPPING_H

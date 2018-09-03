@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,33 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
+#ifndef IVW_BOOLPROPERTYWIDGETCEF_H
+#define IVW_BOOLPROPERTYWIDGETCEF_H
 
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/properties/templatepropertywidgetcef.h>
+
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+/**
+ * \class BoolPropertyWidgetCEF
+ * Widget for synchronizing HTML elements:
+ * <input type="checkbox">
+ */
+class IVW_MODULE_WEBBROWSER_API BoolPropertyWidgetCEF : public TemplatePropertyWidgetCEF<bool> {
+public:
+    BoolPropertyWidgetCEF(BoolProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr,
+                          std::string htmlId = "");
+    virtual ~BoolPropertyWidgetCEF() = default;
+    /**
+     * Update HTML widget using calls javascript oninput() function on element.
+     * Assumes that widget is HTML input attribute.
+     */
+	virtual void updateFromProperty() override;
+};
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+}  // namespace inviwo
 
-KeyState KeyboardEvent::state() const { return state_; }
-
-IvwKey KeyboardEvent::key() const { return key_; }
-
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+#endif  // IVW_BOOLPROPERTYWIDGETCEF_H

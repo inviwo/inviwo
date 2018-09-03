@@ -38,7 +38,9 @@
 namespace inviwo {
 
 class Processor;
-
+/**
+ * \ProcessorWidget Base class for widgets connected to a Processor
+ */
 class IVW_CORE_API ProcessorWidget : public ProcessorWidgetObservable,
                                      public ProcessorWidgetMetaDataObserver {
 public:
@@ -48,6 +50,12 @@ public:
     virtual Processor* getProcessor() const;
 
     virtual bool isVisible() const;
+    /**
+     * Show or hide window.
+     * Calls onProcessorWidgetVisibilityChange if state changed.
+     * Calls notifyObserversAboutShow if visible = true and then invalidates processor.
+     * Calls notifyObserversAboutHide if visible = false.
+     */
     virtual void setVisible(bool visible);
     virtual void show();
     virtual void hide();

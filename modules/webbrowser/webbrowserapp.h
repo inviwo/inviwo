@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,34 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
+#ifndef IVW_WEBBROWSERAPP_H
+#define IVW_WEBBROWSERAPP_H
 
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <include/cef_app.h>
+#include <include/wrapper/cef_helpers.h>
+#include "include/wrapper/cef_message_router.h"
+#include <warn/pop>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+/**
+ * App to be used in the browser thread.
+ */
+class WebBrowserApp : public CefApp, public CefBrowserProcessHandler {
+public:
+    WebBrowserApp();
+    // CefBrowserProcessHandler methods:
+    CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE {
+        return this;
+    }
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+private:
+    IMPLEMENT_REFCOUNTING(WebBrowserApp)
+};
 
-KeyState KeyboardEvent::state() const { return state_; }
-
-IvwKey KeyboardEvent::key() const { return key_; }
-
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+};      // namespace inviwo
+#endif  // IVW_WEBBROWSERAPP_H

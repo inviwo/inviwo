@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,35 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
+#ifndef IVW_BUTTONPROPERTYWIDGETCEF_H
+#define IVW_BUTTONPROPERTYWIDGETCEF_H
 
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/properties/propertywidgetcef.h>
+
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+/**
+ * \class ButtonPropertyWidgetCEF
+ * Widget for synchronizing HTML elements:
+ * <input type="button">
+ */
+class IVW_MODULE_WEBBROWSER_API ButtonPropertyWidgetCEF : public PropertyWidgetCEF {
+public:
+    ButtonPropertyWidgetCEF(ButtonProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr,
+                            std::string htmlId = "");
+    virtual ~ButtonPropertyWidgetCEF() = default;
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+	virtual void updateFromProperty() override;
 
-KeyState KeyboardEvent::state() const { return state_; }
+    // Override callback from javascript, use pressButton instead of deserialize
+    virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+                         const CefString& request, bool persistent,
+		CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override;
+};
 
-IvwKey KeyboardEvent::key() const { return key_; }
+}  // namespace inviwo
 
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+#endif  // IVW_BUTTONPROPERTYWIDGETCEF_H

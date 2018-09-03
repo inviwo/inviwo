@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
-
+#include <modules/webbrowser/cefimageconverter.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
+CefImageConverter::CefImageConverter(vec3 pickingColor) {
+    shader_.activate();
+    shader_.setUniform("pickingColor", pickingColor);
+    shader_.deactivate();
+}
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& toInviwOutput,
+                                const ImageInport* background) {
+    if (background && background->isConnected()) {
+        utilgl::activateTargetAndCopySource(toInviwOutput, *background);
+    } else {
+        utilgl::activateAndClearTarget(toInviwOutput, ImageType::ColorPicking);
+    }
+    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+    shader_.activate();
 
-KeyState KeyboardEvent::state() const { return state_; }
+    utilgl::setShaderUniforms(shader_, toInviwOutput, "outportParameters_");
 
-IvwKey KeyboardEvent::key() const { return key_; }
+    // bind input image
+    TextureUnit texUnit;
+    utilgl::bindTexture(fromCefOutput, texUnit);
+    shader_.setUniform("inport_", texUnit);
 
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
+    utilgl::singleDrawImagePlaneRect();
+    shader_.deactivate();
+    utilgl::deactivateCurrentTarget();
+}
 
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+}  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,34 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/keyboardevent.h>
-
+#include <modules/webbrowser/properties/stringpropertywidgetcef.h>
 
 namespace inviwo {
 
-KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
-    : InteractionEvent(modifiers)
-    , text_(text)
-    , state_(state)
-    , key_(key)
-    , nativeVirtualKey_(nativeVirtualKey) {}
+StringPropertyWidgetCEF::StringPropertyWidgetCEF(StringProperty* property,
+                                                 CefRefPtr<CefFrame> frame, std::string htmlId)
+    : TemplatePropertyWidgetCEF<std::string>(property, frame, htmlId) {}
 
-KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
+/**
+ * Update HTML widget using calls javascript oninput() function on element.
+ * Assumes that widget is HTML input attribute.
+ */
 
-KeyState KeyboardEvent::state() const { return state_; }
+void StringPropertyWidgetCEF::updateFromProperty() {
+    auto property = static_cast<StringProperty*>(property_);
 
-IvwKey KeyboardEvent::key() const { return key_; }
+    std::stringstream script;
+    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
+    script << "if(property!=null){";
+    script << "property.value='" << property->get() << "';";
+    // Send oninput event to update element
+    script << "property.oninput();";
+    script << "}";
+    // Need to figure out how to make sure the frame is drawn after changing values.
+    // script << "window.focus();";
+    // Block OnQuery, called due to property.oninput()
+    onQueryBlocker_++;
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 
-void KeyboardEvent::setState(KeyState state) { state_ = state; }
-
-void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
-uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
-
-void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
-
-uint64_t KeyboardEvent::hash() const { return chash(); }
-
-}  // namespace
+}  // namespace inviwo
