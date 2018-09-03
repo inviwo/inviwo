@@ -59,12 +59,17 @@ function(ivw_make_unittest_target name target)
     set(SOURCE_FILES ${${CMAKE_PROJECT_NAME}_UNITTEST_FILES})
     ivw_group("Test Files" ${SOURCE_FILES})
 
+
     #--------------------------------------------------------------------
     # Create application
-    add_executable(${test_name} MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
+    add_executable(${test_name} ${SOURCE_FILES})
     target_link_libraries(${test_name} PUBLIC gtest)
     target_link_libraries(${test_name} PUBLIC ${target})
     set_target_properties(${test_name} PROPERTIES FOLDER unittests)
+
+    if(WIN32 AND MSVC)
+        target_link_libraries(${test_name} PRIVATE -DEBUG:FULL)
+    endif()
 
     #--------------------------------------------------------------------
     # Define defintions and properties

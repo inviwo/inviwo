@@ -34,17 +34,22 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/animationqt/widgets/trackwidgetqt.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
 namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATIONQT_API ControlTrackWidgetQt  : public TrackWidgetQt {
+class IVW_MODULE_ANIMATIONQT_API ControlTrackWidgetQt : public TrackWidgetQt {
 public:
     ControlTrackWidgetQt(Track& track);
     virtual ~ControlTrackWidgetQt() = default;
 
     static std::string classIdentifier();
+
+    // override for qgraphicsitem_cast (refer qt documentation)
+    enum { Type = UserType + static_cast<int>(ItemTypes::ControlTrack) };
+    virtual int type() const override { return Type; }
 };
 
 }  // namespace animation

@@ -69,6 +69,7 @@ public:
 
 protected:
     bool canAddElements() const;
+    void addNewItem(size_t index);
 
     ListProperty* listProperty_;
     QToolButton* addItemButton_;

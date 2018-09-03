@@ -115,34 +115,29 @@ void ListProperty::set(const ListProperty* src) {
         // TODO: should we sync/consider the UI flags here as well?
         maxNumElements_ = src->maxNumElements_;
 
-        std::vector<Property*> srcItems = src->getProperties();
+        const auto& srcItems = src->getProperties();
         std::vector<Property*> dstItems = getProperties();
 
-        // find list items matching class identifiers of source items
-        //
-        // TODO: ensure correct order of properties
-        for (size_t i = 0; i < srcItems.size(); ++i) {
-            auto it =
-                util::find_if(dstItems, [srcID = srcItems[i]->getClassIdentifier()](auto& elem) {
-                    return elem->getClassIdentifier() == srcID;
-                });
+        const auto count = std::min(srcItems.size(), dstItems.size());
 
-            if (it != dstItems.end()) {  // found match
-                (*it)->set(srcItems[i]);
-                (*it)->setDisplayName(srcItems[i]->getDisplayName());
-                dstItems.erase(it);
-            } else {  // item does not yet exist in this list property
-                // FIXME: cloning is not necessarily correct
-                // e.g. it does not consider observers, callbacks, and links
-                insertProperty(i, srcItems[i]->clone(), true);
+        auto linkSameId = [&]() {
+            for (size_t i = 0; i < count; ++i) {
+                if (srcItems[i]->getClassIdentifier() == dstItems[i]->getClassIdentifier()) {
+                    dstItems[i]->set(srcItems[i]);
+                } else {
+                    return i;
+                }
             }
-        }
+            return count;
+        };
+        auto synced = linkSameId();
 
-        // delete unmatched destination list elements
-        for (auto elem : dstItems) {
-            removeProperty(elem);
+        for (size_t i = synced; i < dstItems.size(); ++i) {
+            removeProperty(dstItems[i]);
         }
-
+        for (size_t i = synced; i < srcItems.size(); ++i) {
+            addProperty(srcItems[i]->clone(), true);
+        }
         propertyModified();
     } else {
         LogWarn("ListProperty prefab type mismatch. Unable to link");
@@ -222,7 +217,7 @@ void ListProperty::addProperty(Property& property) {
 }
 
 void ListProperty::insertProperty(size_t index, Property* property, bool owner) {
-    if (!util::contains_if(prefabs_, [&, id = property->getClassIdentifier() ](auto& elem) {
+    if (!util::contains_if(prefabs_, [&, id = property->getClassIdentifier()](auto& elem) {
             return elem->getClassIdentifier() == id;
         })) {
         throw Exception("Unsupported property type, no prefab matching `" +

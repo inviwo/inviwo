@@ -98,7 +98,7 @@ public:
 
     std::string id_;
     std::string name_;
-    T value_;
+    T value_ = T{};
 
     virtual void serialize(Serializer& s) const {
         s.serialize("id", id_);

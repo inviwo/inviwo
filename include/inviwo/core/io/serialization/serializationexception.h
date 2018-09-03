@@ -52,18 +52,17 @@ public:
     SerializationException(std::string message = "", ExceptionContext context = ExceptionContext(),
                            std::string key = "", std::string type = "", std::string id = "",
                            TxElement* n = nullptr);
-    virtual ~SerializationException() throw() {}
+    virtual ~SerializationException() noexcept = default;
 
-    virtual const std::string& getKey() const throw();
-    virtual const std::string& getType() const throw();
-    virtual const std::string& getId() const throw();
-    virtual const SerializationExceptionData& getData() const throw();
+    virtual const std::string& getKey() const noexcept;
+    virtual const std::string& getType() const noexcept;
+    virtual const std::string& getId() const noexcept;
+    virtual const SerializationExceptionData& getData() const noexcept;
 
 private:
     SerializationExceptionData data_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SERIALIZATIONEXCEPTION_H
-
+#endif  // IVW_SERIALIZATIONEXCEPTION_H

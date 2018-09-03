@@ -49,6 +49,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
     : QWidget(), controller_(controller), track_{track}, item_(item) {
 
     setObjectName("TrackControlsWidget");
+    setAutoFillBackground(true);
 
     track_.addObserver(this);
 
@@ -158,20 +159,11 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
     setLayout(layout_);
 }
 
+Track& TrackControlsWidgetQt::track() { return track_; }
+const Track& TrackControlsWidgetQt::track() const { return track_; }
+
 void TrackControlsWidgetQt::onEnabledChanged(Track*) {
     btnDisable_->setChecked(!track_.isEnabled());
-}
-
-void TrackControlsWidgetQt::mousePressEvent(QMouseEvent*) {
-    if (auto propertytrack = dynamic_cast<BasePropertyTrack*>(&track_)) {
-        // Deselect all processors first
-        util::setSelected(util::getInviwoApplication()->getProcessorNetwork()->getProcessors(),
-                          false);
-        auto property = propertytrack->getProperty();
-        // Select the processor the selected property belongs to
-        Processor* processor = property->getOwner()->getProcessor();
-        util::setSelected({processor}, true);
-    }
 }
 
 }  // namespace animation

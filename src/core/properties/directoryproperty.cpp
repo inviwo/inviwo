@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-const std::string DirectoryProperty::classIdentifier = "org.inviwo.BoolProperty";
+const std::string DirectoryProperty::classIdentifier = "org.inviwo.DirectoryProperty";
 std::string DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
 
 DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
@@ -44,7 +44,7 @@ DirectoryProperty::DirectoryProperty(std::string identifier, std::string display
     this->setFileMode(FileMode::DirectoryOnly);
 }
 
-DirectoryProperty::~DirectoryProperty() {}
+DirectoryProperty::~DirectoryProperty() = default;
 
 std::string DirectoryProperty::getClassIdentifierForWidget() const {
     return FileProperty::getClassIdentifier();
