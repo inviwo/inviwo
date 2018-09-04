@@ -29,11 +29,14 @@
 
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stacktrace.h>
 
 namespace inviwo {
 
 Exception::Exception(const std::string& message, ExceptionContext context)
-    : std::exception(), message_(message), context_(context) {}
+    : std::exception(), message_(message), context_(std::move(context)), stack_{getStackTrace()} {
+    stack_.erase(stack_.begin(), stack_.begin() + 3);
+}
 
 Exception::~Exception() noexcept = default;
 
@@ -41,6 +44,8 @@ std::string Exception::getMessage() const noexcept { return message_; }
 const char* Exception::what() const noexcept { return message_.c_str(); }
 
 const ExceptionContext& Exception::getContext() const { return context_; }
+
+const std::vector<std::string>& Exception::getStack() const { return stack_; }
 
 RangeException::RangeException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}
@@ -84,12 +89,12 @@ ExceptionContext::ExceptionContext(std::string caller, std::string file, std::st
                                    int line)
     : caller_(caller), file_(file), function_(function), line_(line) {}
 
-const std::string& ExceptionContext::getCaller() { return caller_; }
+const std::string& ExceptionContext::getCaller() const { return caller_; }
 
-const std::string& ExceptionContext::getFile() { return file_; }
+const std::string& ExceptionContext::getFile() const { return file_; }
 
-const std::string& ExceptionContext::getFunction() { return function_; }
+const std::string& ExceptionContext::getFunction() const { return function_; }
 
-const int& ExceptionContext::getLine() { return line_; }
+const int& ExceptionContext::getLine() const { return line_; }
 
 }  // namespace inviwo

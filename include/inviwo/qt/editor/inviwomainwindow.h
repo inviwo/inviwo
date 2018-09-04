@@ -107,6 +107,7 @@ public:
     * leaves the current workspace file as current workspace
     */
     void saveWorkspaceAsCopy();
+    bool askToSaveWorkspaceChanges();
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
 
@@ -134,8 +135,6 @@ private:
 
     void saveCanvases(std::string path, std::string fileName);
     void getScreenGrab(std::string path, std::string fileName);
-
-    bool askToSaveWorkspaceChanges();
 
     void addToRecentWorkspaces(QString workspaceFileName);
 
