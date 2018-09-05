@@ -42,6 +42,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoqtutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyboardutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/labelgraphicsitem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ordinalbasewidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/anglepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolcompositepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolpropertywidgetqt.h
@@ -103,6 +104,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/labelgraphicsitem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/lightpositionwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/lineeditqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ordinalbasewidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ordinaleditorwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processordockwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processorwidgetqt.cpp

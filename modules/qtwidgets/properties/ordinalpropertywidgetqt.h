@@ -32,6 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/ordinalbasewidget.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/sliderwidgetqt.h>
 #include <modules/qtwidgets/ordinaleditorwidget.h>

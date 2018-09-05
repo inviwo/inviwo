@@ -32,6 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/ordinalbasewidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -101,20 +102,6 @@ private:
     QSlider* slider_;
     double spinnerValue_;
     int sliderValue_;
-};
-
-template <typename T>
-class OrdinalBaseWidget {
-public:
-    virtual ~OrdinalBaseWidget() = default;
-
-    virtual T getValue() = 0;
-    virtual void setValue(T value) = 0;
-    virtual void initValue(T value) = 0;
-    virtual void setMinValue(T minValue) = 0;
-    virtual void setMaxValue(T maxValue) = 0;
-    virtual void setRange(T minValue, T maxValue) = 0;
-    virtual void setIncrement(T increment) = 0;
 };
 
 template <typename T>
