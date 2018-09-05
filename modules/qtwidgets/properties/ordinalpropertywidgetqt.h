@@ -148,7 +148,7 @@ template <typename T>
 class OrdinalPropertyWidgetQt : public PropertyWidgetQt {
 public:
     using BT = typename util::value_type<T>::type;
-    using SliderVectorTyped = std::vector<OrdinalBaseWidget<BT>*>;
+    using EditorWidgetVectorTyped = std::vector<OrdinalBaseWidget<BT>*>;
 
     OrdinalPropertyWidgetQt(OrdinalProperty<T>* property);
     virtual ~OrdinalPropertyWidgetQt() = default;
@@ -156,7 +156,7 @@ public:
     virtual std::unique_ptr<QMenu> getContextMenu() override;
 
 private:
-    // Connected to sliderwidget valueChanged()
+    // Connected to OrdinalEditorWidget::valueChanged()
     void setPropertyValue(int);
     void showSettings();
 
@@ -164,7 +164,7 @@ private:
     EditableLabelQt* label_;
     TemplatePropertySettingsWidgetQt<T>* settingsWidget_;
 
-    SliderVectorTyped sliders_;
+    EditorWidgetVectorTyped editors_;
     std::unique_ptr<PropertyTransformer<T>> transformer_;
 };
 
@@ -190,13 +190,13 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
     const std::array<QString, 3> sphericalChars{QString("r"), QString("<html>&theta;</html>"),
                                                 QString("<html>&phi;</html>")};
 
-    QWidget* sliderWidget = new QWidget();
-    QSizePolicy sliderPol = sliderWidget->sizePolicy();
-    sliderPol.setHorizontalStretch(3);
-    sliderWidget->setSizePolicy(sliderPol);
+    QWidget* centralWidget = new QWidget();
+    QSizePolicy policy = centralWidget->sizePolicy();
+    policy.setHorizontalStretch(3);
+    centralWidget->setSizePolicy(policy);
 
     QGridLayout* vLayout = new QGridLayout();
-    sliderWidget->setLayout(vLayout);
+    centralWidget->setLayout(vLayout);
     vLayout->setContentsMargins(0, 0, 0, 0);
     vLayout->setSpacing(0);
 
@@ -214,14 +214,14 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                         static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
                 signalMapperSetPropertyValue->setMapping(
                     editor, static_cast<int>(i + j * ordinalproperty_->getDim().x));
-                sliders_.push_back(editor);
+                editors_.push_back(editor);
                 controlWidget = editor;
             } else {
                 auto editor = new SliderWidgetQt<BT>();
                 connect(editor, &SliderWidgetQt<BT>::valueChanged, signalMapperSetPropertyValue,
                         static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
                 signalMapperSetPropertyValue->setMapping(editor, static_cast<int>(i));
-                sliders_.push_back(editor);
+                editors_.push_back(editor);
                 controlWidget = editor;
             }
 
@@ -242,12 +242,12 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
         }
     }
 
-    hLayout->addWidget(sliderWidget);
+    hLayout->addWidget(centralWidget);
 
-    sliderWidget->setMinimumHeight(sliderWidget->sizeHint().height());
-    QSizePolicy sp = sliderWidget->sizePolicy();
+    centralWidget->setMinimumHeight(centralWidget->sizeHint().height());
+    QSizePolicy sp = centralWidget->sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
-    sliderWidget->setSizePolicy(sp);
+    centralWidget->setSizePolicy(sp);
 
     connect(signalMapperSetPropertyValue,
             static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mapped), this,
@@ -272,17 +272,17 @@ void OrdinalPropertyWidgetQt<T>::updateFromProperty() {
 
     const size_t nelem = ordinalproperty_->getDim().x * ordinalproperty_->getDim().y;
     for (size_t i = 0; i < nelem; i++) {
-        sliders_[i]->setRange(util::glmcomp(min, i), util::glmcomp(max, i));
-        sliders_[i]->setIncrement(util::glmcomp(inc, i));
-        sliders_[i]->initValue(util::glmcomp(val, i));
+        editors_[i]->setRange(util::glmcomp(min, i), util::glmcomp(max, i));
+        editors_[i]->setIncrement(util::glmcomp(inc, i));
+        editors_[i]->initValue(util::glmcomp(val, i));
     }
 }
 
 template <typename T>
-void OrdinalPropertyWidgetQt<T>::setPropertyValue(int sliderId) {
+void OrdinalPropertyWidgetQt<T>::setPropertyValue(int editorId) {
     T propValue = transformer_->value(ordinalproperty_->get());
 
-    util::glmcomp(propValue, sliderId) = sliders_[sliderId]->getValue();
+    util::glmcomp(propValue, editorId) = editors_[editorId]->getValue();
     ordinalproperty_->setInitiatingWidget(this);
     ordinalproperty_->set(transformer_->invValue(propValue));
     ordinalproperty_->clearInitiatingWidget();
