@@ -34,7 +34,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(CompositeProperty, "org.inviwo.CompositeProperty");
+const std::string CompositeProperty::classIdentifier = "org.inviwo.CompositeProperty";
+std::string CompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 CompositeProperty::CompositeProperty(std::string identifier, std::string displayName,
                                      InvalidationLevel invalidationLevel,
@@ -47,7 +48,7 @@ CompositeProperty::CompositeProperty(std::string identifier, std::string display
 CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
 
 std::string CompositeProperty::getClassIdentifierForWidget() const {
-    return CompositeProperty::CLASS_IDENTIFIER;
+    return CompositeProperty::classIdentifier;
 }
 
 void CompositeProperty::setOwner(PropertyOwner* owner) {

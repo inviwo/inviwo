@@ -50,7 +50,8 @@ namespace inviwo {
 
 class IVW_CORE_API StringProperty : public TemplateProperty<std::string> {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
     /**
      *  \brief Constructor for the StringProperty
      *  The PropertySemantics can be set to Editor.

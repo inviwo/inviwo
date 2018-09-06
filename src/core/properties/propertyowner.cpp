@@ -1,4 +1,4 @@
-        /*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/event.h>
@@ -42,13 +42,10 @@
 namespace inviwo {
 
 PropertyOwner::PropertyOwner()
-    : PropertyOwnerObservable()
-    , invalidationLevel_(InvalidationLevel::Valid) {
-}
+    : PropertyOwnerObservable(), invalidationLevel_(InvalidationLevel::Valid) {}
 
 PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
-    : PropertyOwnerObservable()
-    , invalidationLevel_(rhs.invalidationLevel_) {
+    : PropertyOwnerObservable(), invalidationLevel_(rhs.invalidationLevel_) {
 
     for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
 }
@@ -115,18 +112,16 @@ Property* PropertyOwner::removeProperty(const std::string& identifier) {
                      [&identifier](Property* p) { return p->getIdentifier() == identifier; }));
 }
 
-Property* PropertyOwner::removeProperty(Property* property) {  
+Property* PropertyOwner::removeProperty(Property* property) {
     return removeProperty(std::find(properties_.begin(), properties_.end(), property));
 }
 
-Property* PropertyOwner::removeProperty(Property& property) {
-    return removeProperty(&property);
-}
+Property* PropertyOwner::removeProperty(Property& property) { return removeProperty(&property); }
 
 Property* PropertyOwner::removeProperty(size_t index) {
     if (index >= size()) {
         throw RangeException("Invalid index when removing property " + std::to_string(index) +
-                             " (" + std::to_string(size()) + " elements)",
+                                 " (" + std::to_string(size()) + " elements)",
                              IvwContext);
     }
     return removeProperty(begin() + index);
@@ -210,58 +205,36 @@ Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path)
     return nullptr;
 }
 
-size_t PropertyOwner::size() const {
-    return properties_.size();
-}
+size_t PropertyOwner::size() const { return properties_.size(); }
 
-Property* PropertyOwner::operator[](size_t i) {
-    return properties_[i];
-}
+Property* PropertyOwner::operator[](size_t i) { return properties_[i]; }
 
-const Property* PropertyOwner::operator[](size_t i) const {
-    return properties_[i];
-}
+const Property* PropertyOwner::operator[](size_t i) const { return properties_[i]; }
 
-PropertyOwner::iterator PropertyOwner::begin() {
-    return properties_.begin();
-}
+PropertyOwner::iterator PropertyOwner::begin() { return properties_.begin(); }
 
-PropertyOwner::iterator PropertyOwner::end() {
-    return properties_.end();
-}
+PropertyOwner::iterator PropertyOwner::end() { return properties_.end(); }
 
-PropertyOwner::const_iterator PropertyOwner::cbegin() const {
-    return properties_.cbegin();
-}
+PropertyOwner::const_iterator PropertyOwner::cbegin() const { return properties_.cbegin(); }
 
-PropertyOwner::const_iterator PropertyOwner::cend() const {
-    return properties_.cend();
-}
+PropertyOwner::const_iterator PropertyOwner::cend() const { return properties_.cend(); }
 
-bool PropertyOwner::isValid() const {
-    return invalidationLevel_ == InvalidationLevel::Valid;
-}
+bool PropertyOwner::isValid() const { return invalidationLevel_ == InvalidationLevel::Valid; }
 
 void PropertyOwner::setValid() {
     for (auto& elem : properties_) elem->setValid();
     invalidationLevel_ = InvalidationLevel::Valid;
 }
 
-inviwo::InvalidationLevel PropertyOwner::getInvalidationLevel() const {
-    return invalidationLevel_;
-}
+inviwo::InvalidationLevel PropertyOwner::getInvalidationLevel() const { return invalidationLevel_; }
 
 void PropertyOwner::invalidate(InvalidationLevel invalidationLevel, Property*) {
     invalidationLevel_ = std::max(invalidationLevel_, invalidationLevel);
 }
 
-Processor* PropertyOwner::getProcessor() {
-    return nullptr;
-}
+Processor* PropertyOwner::getProcessor() { return nullptr; }
 
-const Processor* PropertyOwner::getProcessor() const {
-    return nullptr;
-}
+const Processor* PropertyOwner::getProcessor() const { return nullptr; }
 
 void PropertyOwner::serialize(Serializer& s) const {
     auto ownedIdentifiers = util::transform(
@@ -276,7 +249,6 @@ void PropertyOwner::deserialize(Deserializer& d) {
     NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
     d.convertVersion(&tvc);
 
-    
     std::vector<std::string> ownedIdentifiers;
     d.deserialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
 
@@ -286,7 +258,7 @@ void PropertyOwner::deserialize(Deserializer& d) {
                    .setNewFilter([&](const std::string& id, size_t /*ind*/) {
                        return util::contains(ownedIdentifiers, id);
                    })
-                   .onNew([&](Property*& p) { addProperty(p, true); })
+                   .onNewIndexed([&](Property*& p, size_t i) { insertProperty(i, p, true); })
                    .onRemove([&](const std::string& id) {
                        if (util::contains_if(ownedProperties_, [&](std::unique_ptr<Property>& op) {
                                return op->getIdentifier() == id;
@@ -304,17 +276,15 @@ bool PropertyOwner::findPropsForComposites(TxElement* node) {
     return xml::findMatchingSubPropertiesForComposites(node, props);
 }
 
-void PropertyOwner::setAllPropertiesCurrentStateAsDefault(){
+void PropertyOwner::setAllPropertiesCurrentStateAsDefault() {
     for (auto& elem : properties_) (elem)->setCurrentStateAsDefault();
 }
 
-void PropertyOwner::resetAllPoperties(){
+void PropertyOwner::resetAllPoperties() {
     for (auto& elem : properties_) (elem)->resetToDefaultState();
 }
 
-std::vector<std::string> PropertyOwner::getPath() const {
-    return std::vector<std::string>();
-}
+std::vector<std::string> PropertyOwner::getPath() const { return std::vector<std::string>(); }
 
 void PropertyOwner::invokeEvent(Event* event) {
     for (auto elem : eventProperties_) {
@@ -331,4 +301,4 @@ InviwoApplication* PropertyOwner::getInviwoApplication() {
     return util::getInviwoApplication(getProcessor());
 }
 
-} // namespace
+}  // namespace inviwo

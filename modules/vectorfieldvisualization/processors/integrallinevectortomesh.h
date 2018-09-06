@@ -59,10 +59,11 @@ public:
     public:
         friend class IntegralLineVectorToMesh;
 
-        InviwoPropertyInfo();
+        virtual std::string getClassIdentifier() const override;
+        static const std::string classIdentifier;
 
         ColorByProperty(std::string identifier, std::string displayName,
-                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
 
         ColorByProperty(const ColorByProperty& rhs);
 

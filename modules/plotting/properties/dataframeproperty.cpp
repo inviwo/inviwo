@@ -33,7 +33,8 @@ namespace inviwo {
 
 namespace plot {
 
-PropertyClassIdentifier(DataFrameColumnProperty, "org.inviwo.DataFrameColumnProperty");
+const std::string DataFrameColumnProperty::classIdentifier = "org.inviwo.DataFrameColumnProperty";
+std::string DataFrameColumnProperty::getClassIdentifier() const { return classIdentifier; }
 
 DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::string displayName,
                                                  bool allowNone, size_t firstIndex)

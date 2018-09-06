@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-/** 
+/**
  * \ingroup properties
  * Property which contains one event matcher and one action to represent the current
  * key binding for the contained action.
@@ -50,7 +50,9 @@ class IVW_CORE_API EventProperty : public Property {
 public:
     using Action = std::function<void(Event*)>;
 
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     /**
      * \brief Constructor used to create a new action-key binding.
      *
@@ -86,16 +88,16 @@ public:
     virtual ~EventProperty() = default;
 
     void invokeEvent(Event*);
-    
+
     void setEventMatcher(std::unique_ptr<EventMatcher> matcher);
     EventMatcher* getEventMatcher() const;
-    
+
     void setAction(Action action);
     Action getAction() const;
 
     bool isEnabled() const;
-    void setEnabled(bool enabled); 
-    
+    void setEnabled(bool enabled);
+
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
 
@@ -108,6 +110,6 @@ private:
     bool enabled_ = true;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_EVENTPROPERTY_H

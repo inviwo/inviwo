@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SIMPLELIGHTINGPROPERTY_H
@@ -41,14 +41,14 @@
 namespace inviwo {
 
 namespace ShadingMode {
-    enum Modes {
-        None,
-        Ambient,
-        Diffuse,
-        Specular,
-        BlinnPhong,
-        Phong,
-    };
+enum Modes {
+    None,
+    Ambient,
+    Diffuse,
+    Specular,
+    BlinnPhong,
+    Phong,
+};
 }
 
 class CameraProperty;
@@ -59,21 +59,21 @@ class CameraProperty;
  */
 class IVW_CORE_API SimpleLightingProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
-    enum class Space : int {WORLD, VIEW};
-
+    enum class Space : int { WORLD, VIEW };
 
     SimpleLightingProperty(std::string identifier, std::string displayName,
                            CameraProperty* camera = nullptr,
                            InvalidationLevel = InvalidationLevel::InvalidResources,
                            PropertySemantics semantics = PropertySemantics::Default);
-    
+
     SimpleLightingProperty(const SimpleLightingProperty& rhs);
     SimpleLightingProperty& operator=(const SimpleLightingProperty& that);
     virtual SimpleLightingProperty* clone() const override;
     virtual ~SimpleLightingProperty();
-    
+
     // Light properties
     OptionPropertyInt shadingMode_;
     OptionPropertyInt referenceFrame_;
@@ -82,20 +82,19 @@ public:
     BoolProperty applyLightAttenuation_;
 
     // Material properties
-    // Diffuse color often come from the object 
+    // Diffuse color often come from the object
     // so we neglect it here
     FloatVec3Property ambientColor_;
-    FloatVec3Property diffuseColor_; 
+    FloatVec3Property diffuseColor_;
     FloatVec3Property specularColor_;
     FloatProperty specularExponent_;
-    
+
     vec3 getTransformedPosition() const;
 
 private:
-    CameraProperty* camera_; //< Non-owning reference.
+    CameraProperty* camera_;  //< Non-owning reference.
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SIMPLELIGHTINGPROPERTY_H
-
+#endif  // IVW_SIMPLELIGHTINGPROPERTY_H

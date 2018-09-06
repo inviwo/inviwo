@@ -29,7 +29,4 @@
 
 #include <modules/animation/factories/interpolationfactory.h>
 
-namespace inviwo {
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

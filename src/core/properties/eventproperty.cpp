@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(EventProperty, "org.inviwo.EventProperty");
+const std::string EventProperty::classIdentifier = "org.inviwo.EventProperty";
+std::string EventProperty::getClassIdentifier() const { return classIdentifier; }
 
 EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
                              Action action, std::unique_ptr<EventMatcher> matcher,
@@ -70,7 +71,7 @@ EventProperty& EventProperty::operator=(const EventProperty& that) {
         std::swap(matcher_, e);
         std::swap(action_, a);
 
-        enabled_= that.enabled_;
+        enabled_ = that.enabled_;
     }
     return *this;
 }
@@ -81,29 +82,19 @@ void EventProperty::invokeEvent(Event* e) {
     if (enabled_ && (*matcher_)(e)) action_(e);
 }
 
-EventMatcher* EventProperty::getEventMatcher() const {
-    return matcher_.get();
-}
+EventMatcher* EventProperty::getEventMatcher() const { return matcher_.get(); }
 
-EventProperty::Action EventProperty::getAction() const {
-    return action_;
-}
+EventProperty::Action EventProperty::getAction() const { return action_; }
 
-bool EventProperty::isEnabled() const {
-    return enabled_;
-}
+bool EventProperty::isEnabled() const { return enabled_; }
 
-void EventProperty::setEnabled(bool enabled) {
-    enabled_ = enabled;
-}
+void EventProperty::setEnabled(bool enabled) { enabled_ = enabled; }
 
 void EventProperty::setEventMatcher(std::unique_ptr<EventMatcher> matcher) {
     matcher_ = std::move(matcher);
 }
 
-void EventProperty::setAction(Action action) {
-    action_ = std::move(action);
-}
+void EventProperty::setAction(Action action) { action_ = std::move(action); }
 
 void EventProperty::setCurrentStateAsDefault() {
     if (matcher_) matcher_->setCurrentStateAsDefault();
@@ -116,16 +107,15 @@ void EventProperty::resetToDefaultState() {
 void EventProperty::serialize(Serializer& s) const {
     Property::serialize(s);
     if (this->serializationMode_ == PropertySerializationMode::None) return;
-    
+
     s.serialize("Event", matcher_.get());
 }
 
 void EventProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
     EventMatcher* e = matcher_.get();
-    d.deserialize("Event", e); // e has to be a lvalue.
-    if(e != matcher_.get()) matcher_.reset(e);
+    d.deserialize("Event", e);  // e has to be a lvalue.
+    if (e != matcher_.get()) matcher_.reset(e);
 }
 
-
-}  // namespace
+}  // namespace inviwo

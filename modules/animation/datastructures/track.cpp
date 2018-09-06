@@ -30,6 +30,24 @@
 #include <modules/animation/datastructures/track.h>
 
 namespace inviwo {
-    
-} // namespace
 
+namespace animation {
+
+bool operator<(const Track& a, const Track& b) { return a.getFirstTime() < b.getFirstTime(); }
+bool operator<=(const Track& a, const Track& b) { return a.getFirstTime() <= b.getFirstTime(); }
+bool operator>(const Track& a, const Track& b) { return a.getFirstTime() > b.getFirstTime(); }
+bool operator>=(const Track& a, const Track& b) { return a.getFirstTime() >= b.getFirstTime(); }
+
+bool operator<(const Track& a, const Seconds& b) { return a.getFirstTime() < b; }
+bool operator<=(const Track& a, const Seconds& b) { return a.getFirstTime() <= b; }
+bool operator>(const Track& a, const Seconds& b) { return a.getFirstTime() > b; }
+bool operator>=(const Track& a, const Seconds& b) { return a.getFirstTime() >= b; }
+
+bool operator<(const Seconds& a, const Track& b) { return a < b.getFirstTime(); }
+bool operator<=(const Seconds& a, const Track& b) { return a <= b.getFirstTime(); }
+bool operator>(const Seconds& a, const Track& b) { return a > b.getFirstTime(); }
+bool operator>=(const Seconds& a, const Track& b) { return a >= b.getFirstTime(); }
+
+}  // namespace animation
+
+}  // namespace inviwo

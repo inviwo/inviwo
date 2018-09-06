@@ -48,7 +48,8 @@ namespace inviwo {
  */
 class IVW_CORE_API VolumeIndicatorProperty : public CompositeProperty { 
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     VolumeIndicatorProperty(std::string identifier, std::string displayName,
                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,

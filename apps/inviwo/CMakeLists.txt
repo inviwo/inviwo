@@ -26,10 +26,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 
-# Add resource file
-qt5_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
-source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc)
-
 #--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(enabled_modules)
@@ -53,6 +49,7 @@ elseif(APPLE)
     set_source_files_properties(${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns)
 endif()
+source_group("Resource Files" FILES ${RES_FILES})
 
 #--------------------------------------------------------------------
 # Create application
@@ -60,7 +57,6 @@ add_executable(inviwo MACOSX_BUNDLE WIN32
     ${SOURCE_FILES} 
     ${HEADER_FILES} 
     ${MOC_FILES} 
-    ${QRC_FILE} 
     ${RES_FILES})
 target_link_libraries(inviwo PUBLIC 
     inviwo::core

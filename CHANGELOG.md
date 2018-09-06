@@ -1,5 +1,53 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-08-21
+The property class identifier system no longer uses the `InviwoPropertyInfo` / `PropertyClassIdentifier` macros but rather implements
+```
+virtual std::string getClassIdentifier() const override
+```
+The static class identifier 
+```
+static const std::string CLASS_IDENTIFIER
+```
+can still be added manually, but the preferred way is to either use
+```
+static const std::string classIdentifier
+```
+or specialize the `PropertyTraits` like:
+```
+template <>
+struct PropertyTraits<MyProperty> {
+    static std::string classIdentifier() {
+        return "org.somename.myproperty";
+    }
+};
+```
+To access a class identifier of a property type statically, the `PropertyTraits` class should be used  
+```
+PropertyTraits<MyProperty>::classIdentifier()
+```
+instead of accessing the `CLASS_IDENTIFIER` directly.
+
+An enum traits class has been added to help working with enums and serialization, especially in the case of OptionProperties. 
+For example given an enum:
+```
+enum class MyEnum { a, b };
+```
+EnumTraits can be specialized to provided a name for `MyEnum`, i.e.
+```
+template <>
+struct EnumTraits<MyEnum> {
+    static std::string name() {return "MyEnum"; }
+};
+```
+This name will then be used by the TemplateOptionProperty in its class identifier. 
+```
+
+TemplateOptionProperty<MyEnum> prop("test","test");    
+prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
+```
+This makes it possible to differentiate `MyEnum` from other enum TemplateOptionPropertys.
+
 ## 2018-07-26 ListProperty
 
 Added `ListProperty`, a new property for dynamically adding and removing properties.

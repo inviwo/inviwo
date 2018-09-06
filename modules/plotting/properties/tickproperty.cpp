@@ -33,9 +33,14 @@ namespace inviwo {
 
 namespace plot {
 
-PropertyClassIdentifier(TickProperty, "org.inviwo.TickProperty");
-PropertyClassIdentifier(MajorTickProperty, "org.inviwo.MajorTickProperty");
-PropertyClassIdentifier(MinorTickProperty, "org.inviwo.MinorTickProperty");
+const std::string TickProperty::classIdentifier = "org.inviwo.TickProperty";
+std::string TickProperty::getClassIdentifier() const { return classIdentifier; }
+
+const std::string MajorTickProperty::classIdentifier = "org.inviwo.MajorTickProperty";
+std::string MajorTickProperty::getClassIdentifier() const { return classIdentifier; }
+
+const std::string MinorTickProperty::classIdentifier = "org.inviwo.MinorTickProperty";
+std::string MinorTickProperty::getClassIdentifier() const { return classIdentifier; }
 
 MajorTickProperty::MajorTickProperty(const std::string& identifier, const std::string& displayName,
                                      InvalidationLevel invalidationLevel,

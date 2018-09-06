@@ -30,6 +30,8 @@
 #include <modules/animationqt/animationviewqt.h>
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animation/animationcontroller.h>
+#include <modules/animationqt/animationeditorqt.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -37,26 +39,176 @@
 #include <QPainter>
 #include <QScrollBar>
 #include <qmath.h>
+#include <QGridLayout>
+#include <QScrollBar>
+#include <QGraphicsScene>
+#include <QStyleOption>
 #include <warn/pop>
 
 namespace inviwo {
 
 namespace animation {
 
-constexpr auto LineWidth = 0.5;
+namespace {
 
-AnimationViewQt::AnimationViewQt(AnimationController& controller)
-    : QGraphicsView(), controller_(controller) {
+class TimeLine : public QWidget {
+public:
+    TimeLine(AnimationViewQt* parent) : QWidget(parent), view_(parent) {
+        setObjectName("AnimationTimeLine");
+        setMouseTracking(true);
+        setFixedHeight(timelineHeight);
+    }
+    virtual void paintEvent(QPaintEvent*) override {
+        QPainter painter(this);
+
+        // Draw grid
+        auto gridPen = painter.pen();
+        gridPen.setWidthF(1.0);
+        gridPen.setCosmetic(true);
+        auto font = painter.font();
+        QFontMetrics fm{font};
+        auto fontHeight = fm.lineSpacing();
+
+        const auto gridSpacing = widthPerSecond;
+        const auto viewStart = view_->mapToScene(view_->viewport()->rect().left(), 0).x();
+        const auto viewEnd = view_->mapToScene(view_->viewport()->rect().right(), 0).x();
+
+        const auto windowSize = rect().width();
+        const auto digitSize = fm.width('0');
+
+        const auto tgcGuess =
+            static_cast<int>(std::floor(windowSize / digitSize / std::abs(3) / 2.0));
+        const auto divGuess =
+            findDivisions(viewStart / widthPerSecond, viewEnd / widthPerSecond, tgcGuess);
+        const auto digits = divGuess.integerDigits + divGuess.fractionalDigits +
+                            (divGuess.fractionalDigits == 0 ? 0 : 1);
+        const auto tgc = static_cast<int>(std::floor(windowSize / ((3 + digits) * digitSize)));
+        const auto div = findDivisions(viewStart / widthPerSecond, viewEnd / widthPerSecond, tgc);
+
+        QVector<QLineF> majorTicksLines;
+        QVector<QLineF> minorTicksLines;
+        QString text{"%1"};
+
+        auto addMinor = [&](double pos) {
+            for (int j = 1; j < 5; ++j) {
+                const auto t =
+                    view_->mapFromScene(widthPerSecond * (pos + j * div.step / 5), 0).x();
+                minorTicksLines.push_back(QLineF(t, rect().top() + fontHeight, t, rect().bottom()));
+            }
+        };
+
+        addMinor(div.start - div.step);
+
+        for (auto i = 0; i <= div.count; ++i) {
+            const auto x = view_->mapFromScene(widthPerSecond * (div.start + i * div.step), 0).x();
+            QRectF box(x - 0.5 * gridSpacing, rect().top(), gridSpacing, timelineHeight);
+            painter.drawText(box, Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip,
+                             text.arg(div.start + i * div.step, 0, 'f', div.fractionalDigits));
+
+            majorTicksLines.push_back(QLineF(x, rect().top() + fontHeight, x, rect().bottom()));
+
+            addMinor(div.start + i * div.step);
+        }
+        addMinor(div.start + div.count * div.step);
+
+        painter.drawLines(minorTicksLines);
+        gridPen.setWidthF(2.0);
+        painter.setPen(gridPen);
+        painter.drawLines(majorTicksLines);
+
+        // Current time
+        const auto x =
+            view_->mapFromScene(timeToScenePos(view_->getController().getCurrentTime()), 0).x();
+        QPen timePen;
+        timePen.setColor(QColor(255, 255, 255));
+        timePen.setWidthF(1.0);
+        timePen.setCosmetic(true);
+        timePen.setStyle(Qt::DashLine);
+        painter.setPen(timePen);
+        painter.drawLine(QLineF(x, rect().top(), x, rect().bottom()));
+    }
+
+    virtual void mousePressEvent(QMouseEvent* e) override {
+        pressingOnTimeline_ = true;
+        view_->setTimelinePos(e->x());
+        QWidget::mousePressEvent(e);
+    }
+
+    virtual void mouseMoveEvent(QMouseEvent* e) override {
+        if (pressingOnTimeline_) {
+            view_->setTimelinePos(e->x());
+        }
+        QWidget::mouseMoveEvent(e);
+    }
+
+    virtual void mouseReleaseEvent(QMouseEvent* e) override {
+        pressingOnTimeline_ = false;
+        QWidget::mouseReleaseEvent(e);
+    }
+
+private:
+    bool pressingOnTimeline_ = false;
+    AnimationViewQt* view_;
+};
+
+}  // namespace
+
+AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEditorQt* aScene)
+    : QGraphicsView(), scene_{aScene}, controller_(controller) {
+
+    setObjectName("AnimationView");
+    setScene(scene_);
+    setViewportMargins(0, timelineHeight, 0, 0);
+    setSceneRect(QRectF());
+
+    // Time Line widget
+    timeline_ = new TimeLine{this};
+
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    horizontalScrollBar()->setTracking(true);
+    verticalScrollBar()->setTracking(true);
+
+    connect(horizontalScrollBar(), &QScrollBar::rangeChanged, this,
+            [this]() { timeline_->update(); });
+
+    connect(horizontalScrollBar(), &QScrollBar::valueChanged, this,
+            [this]() { timeline_->update(); });
+
+    QGridLayout* gridLayout = new QGridLayout();
+    gridLayout->setSpacing(0);
+    gridLayout->setMargin(0);
+
+    gridLayout->addWidget(timeline_, 0, 0);
+    gridLayout->addWidget(viewport(), 1, 0);
+
+    setLayout(gridLayout);
+    setFrameStyle(QFrame::NoFrame);
+
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
-    setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    setDragMode(QGraphicsView::NoDrag);
     setCacheMode(QGraphicsView::CacheBackground);
-    addObservation(&controller);
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    controller_.AnimationControllerObservable::addObserver(this);
+}
+
+void AnimationViewQt::keyPressEvent(QKeyEvent* keyEvent) {
+    if (keyEvent->modifiers() & Qt::ControlModifier) {
+        setDragMode(QGraphicsView::ScrollHandDrag);
+    } else if (keyEvent->modifiers() & Qt::ShiftModifier) {
+        setDragMode(QGraphicsView::RubberBandDrag);
+    }
+    QGraphicsView::keyPressEvent(keyEvent);
+}
+
+void AnimationViewQt::keyReleaseEvent(QKeyEvent* keyEvent) {
+    setDragMode(QGraphicsView::NoDrag);
+    QGraphicsView::keyReleaseEvent(keyEvent);
 }
 
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
-    if (e->y() < TimelineHeight) {
+    if (itemAt(e->pos()) == nullptr && e->modifiers() == Qt::NoModifier) {
         pressingOnTimeline_ = true;
         setTimelinePos(e->x());
     }
@@ -81,92 +233,38 @@ void AnimationViewQt::wheelEvent(QWheelEvent* e) {
     QPointF numPixels = e->pixelDelta() / 5.0;
     QPointF numDegrees = e->angleDelta() / 8.0 / 15;
 
-    if (e->modifiers() == Qt::ControlModifier) {
+    if (e->modifiers() & Qt::ControlModifier) {
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
         if (!numPixels.isNull()) {
-            zoom(qPow(1.05, numPixels.y()));
+            zoom(qPow(1.075, numPixels.y()));
         } else if (!numDegrees.isNull()) {
-            zoom(qPow(1.05, numDegrees.y()));
+            zoom(qPow(1.075, numDegrees.y()));
         }
+        timeline_->update();
+        e->accept();
     } else {
-        QGraphicsView::wheelEvent(e);
+        horizontalScrollBar()->event(e);
     }
-    e->accept();
 }
 
 void AnimationViewQt::setTimelinePos(int x) {
-    auto time = mapToScene(x, 0).x() / static_cast<double>(WidthPerSecond);
+    const auto time = mapToScene(x, 0).x() / static_cast<double>(widthPerSecond);
     controller_.eval(controller_.getCurrentTime(), Seconds(time));
 }
 
-void AnimationViewQt::zoom(double dz) { scale(dz, 1.0); }
-
-void AnimationViewQt::drawBackground(QPainter* painter, const QRectF& rect) {
-    painter->fillRect(rect, QColor(89, 89, 89));
-
-    // overlay grid
-    int gridSpacing = WidthPerSecond;
-    QRectF sRect = frameRect();
-    sRect.setWidth(std::max(sceneRect().width(), rect.width()));
-    qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
-    QVarLengthArray<QLineF, 100> lines;
-
-    for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
-        lines.append(QLineF(x, sRect.top(), x, sRect.bottom()));
+void AnimationViewQt::zoom(double dz) {
+    if (dz < 1.0 || transform().m11() < 250.0) {
+        scale(dz, 1.0);
     }
-
-    QPen gridPen;
-    gridPen.setColor(QColor(102, 102, 102));
-    gridPen.setWidthF(LineWidth);
-    gridPen.setCosmetic(true);
-    painter->setPen(gridPen);
-    painter->drawLines(lines.data(), lines.size());
 }
 
+AnimationController& AnimationViewQt::getController() { return controller_; }
+
+void AnimationViewQt::drawBackground(QPainter*, const QRectF&) {}
+
 void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
-    QRectF sRect(0, 0, 0, 0);
-    sRect.setWidth(std::max(sceneRect().width(), rect.width()));
-    sRect.setHeight(TimelineHeight);
-
-    // Background rect
-    QPen pen;
-    pen.setColor(QColor(102, 102, 102));
-    pen.setWidthF(LineWidth);
-    pen.setCosmetic(true);
-    painter->setPen(pen);
-    painter->fillRect(sRect, QColor(180, 180, 180));
-
-    int gridSpacing = WidthPerSecond;
-    qreal right = int(sRect.right()) - (int(sRect.right()) % gridSpacing);
-    QVarLengthArray<QLineF, 100> lines;
-    QVarLengthArray<QPointF, 100> points;
-
-    for (qreal x = sRect.left(); x <= right; x += gridSpacing) {
-        lines.append(QLineF(x, sRect.top(), x, sRect.bottom()));
-        points.append(QPointF(x, 30));
-    }
-
-    // Grid
-    QPen gridPen;
-    gridPen.setColor(QColor(102, 102, 102));
-    gridPen.setWidthF(LineWidth);
-    gridPen.setCosmetic(true);
-    painter->setPen(gridPen);
-    painter->drawLines(lines.data(), lines.size());
-
-    // Little hack to render text with correct scale
-    painter->save();
-    painter->resetTransform();
-    // Time stamps
-    char buf[32];
-    for (const auto& p : points) {
-        snprintf(buf, 32, "%.4f", p.x() / static_cast<double>(WidthPerSecond));
-        painter->drawText(mapFromScene(p.x(), p.y()), QString(buf));
-    }
-    painter->restore();
-
     // Current time
-    auto x = controller_.getCurrentTime().count() * WidthPerSecond;
+    auto x = timeToScenePos(controller_.getCurrentTime());
     QPen timePen;
     timePen.setColor(QColor(255, 255, 255));
     timePen.setWidthF(1.0);
@@ -176,15 +274,15 @@ void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
     painter->drawLine(QLineF(x, rect.top(), x, rect.bottom()));
 }
 
-void AnimationViewQt::onStateChanged(AnimationController* controller, AnimationState oldState,
-                                     AnimationState newState) {
+void AnimationViewQt::onStateChanged(AnimationController*, AnimationState, AnimationState) {
     this->viewport()->update();
 }
 
-void AnimationViewQt::onTimeChanged(AnimationController* controller, Seconds oldTime, Seconds newTime) {
+void AnimationViewQt::onTimeChanged(AnimationController*, Seconds, Seconds) {
+    timeline_->update();
     this->viewport()->update();
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

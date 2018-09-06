@@ -51,7 +51,8 @@ class IVW_CORE_API IsoTFProperty : public CompositeProperty,
                                    public TFPropertyObservable,
                                    public TFPropertyObserver {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     IsoTFProperty(const std::string& identifier, const std::string& displayName,
                   const IsoValueCollection& isovalues = {},

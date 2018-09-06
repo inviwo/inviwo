@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>Inviwo property syncing example</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script language="JavaScript">
+
+function checkboxInput(val) {
+     
+	window.cefQuery({
+		request: '{"id":"boolProperty", "value":"' + (+val) + '"}',
+		onSuccess: function(response) {
+			$("#boolProperty").fadeOut("fast");  
+			$("#boolProperty").fadeIn("fast");
+		},
+		onFailure: function(error_code, error_message) {}
+		
+	});
+}
+
+function buttonClicked(val) { 
+	// Indicate that button was clicked using JQuery animation
+	$("#buttonProperty").fadeOut("fast");  
+	$("#buttonProperty").fadeIn("fast");
+	window.cefQuery({
+		request: '{"id":"buttonProperty"}',
+		onSuccess: function(response) {},
+		onFailure: function(error_code, error_message) {}
+		
+	});
+}
+function textInput(val) {  
+	window.cefQuery({
+		request: '{"id":"stringProperty", "value":"' + val + '"}',
+		onSuccess: function(response) {
+			document.getElementById("stringProperty").focus();
+		},
+		onFailure: function(error_code, error_message) {}
+		
+	});
+}
+</script>
+
+</head>
+<body>
+<h3>HTML<->Inviwo synchronization (javascript & JSON)</h3>
+<div class="slidecontainer">
+  <p>Range<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
+  <span id="demo"></span></p>
+</div>
+  <p><input type="button" value="Button" id="buttonProperty" onclick="buttonClicked(this.value)"></p>
+  <p>Checkbox <input type="checkbox" value="Checkbox" id="boolProperty" onchange="checkboxInput(this.checked)"></p>
+  <p>Text <input type="text" id="stringProperty" value="not changed" oninput="textInput(this.value)"></p>
+<script>
+var slider = document.getElementById("ordinalProperty");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+
+slider.oninput = function() {
+  	  
+      window.cefQuery({
+		request: '{"id":"ordinalProperty", "value":"' + document.getElementById("ordinalProperty").value + '"}',
+		onSuccess: function(response) {
+		  
+		},
+		onFailure: function(error_code, error_message) {}
+		
+	});
+    output.innerHTML = document.getElementById("ordinalProperty").value;
+}
+
+</script>
+</body>
+</html>

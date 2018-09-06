@@ -31,11 +31,12 @@
 #include <inviwo/core/datastructures/camera.h>
 
 namespace inviwo {
-PropertyClassIdentifier(CameraTrackball, "org.inviwo.Trackball");
 
-CameraTrackball::CameraTrackball(CameraProperty* cameraProp)
-    : Trackball(cameraProp) {}
+const std::string CameraTrackball::classIdentifier = "org.inviwo.CameraTrackball";
+std::string CameraTrackball::getClassIdentifier() const { return classIdentifier; }
 
-CameraTrackball::~CameraTrackball() {}
+CameraTrackball::CameraTrackball(CameraProperty* cameraProp) : Trackball(cameraProp) {}
 
-}  // namespace
+CameraTrackball::~CameraTrackball() = default;
+
+}  // namespace inviwo

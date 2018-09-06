@@ -101,7 +101,7 @@ private:
 
     QMainWindow* mainWindow_;
     CodeEdit* pythonCode_;
-    QTextEdit* pythonOutput_;
+    CodeEdit* pythonOutput_;
 
     QColor infoTextColor_;
     QColor errorTextColor_;

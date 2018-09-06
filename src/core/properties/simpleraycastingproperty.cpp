@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(SimpleRaycastingProperty, "org.inviwo.SimpleRaycastingProperty");
+const std::string SimpleRaycastingProperty::classIdentifier = "org.inviwo.SimpleRaycastingProperty";
+std::string SimpleRaycastingProperty::getClassIdentifier() const { return classIdentifier; }
 
 SimpleRaycastingProperty::SimpleRaycastingProperty(std::string identifier, std::string displayName,
                                                    InvalidationLevel invalidationLevel,
@@ -109,4 +110,4 @@ SimpleRaycastingProperty* SimpleRaycastingProperty::clone() const {
     return new SimpleRaycastingProperty(*this);
 }
 
-}  // namespace
+}  // namespace inviwo

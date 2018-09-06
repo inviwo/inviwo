@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ADVANCED_MATERIAL_PROPERTY_H
@@ -52,18 +52,20 @@ enum class ShadingFunctionKind {
     None
 };
 
-/**  
+/**
  * \ingroup properties
  * Adds advanced shading properties to a PropertyOwner (Processor).
  * @see ShadingFunctionEnum
  */
-class IVW_CORE_API AdvancedMaterialProperty: public CompositeProperty {
+class IVW_CORE_API AdvancedMaterialProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     AdvancedMaterialProperty(std::string identifier, std::string displayName,
-                             InvalidationLevel=InvalidationLevel::InvalidResources,
+                             InvalidationLevel = InvalidationLevel::InvalidResources,
                              PropertySemantics semantics = PropertySemantics::Default);
-    
+
     AdvancedMaterialProperty(const AdvancedMaterialProperty& rhs);
     AdvancedMaterialProperty& operator=(const AdvancedMaterialProperty& that);
     virtual AdvancedMaterialProperty* clone() const override;
@@ -75,13 +77,13 @@ public:
     virtual void phaseFunctionChanged();
     virtual void deserialize(Deserializer& d) override;
 
-
     // Material properties
     OptionPropertyString phaseFunctionProp;
     FloatProperty indexOfRefractionProp;
     FloatProperty roughnessProp;
     FloatVec4Property specularColorProp;
     FloatProperty anisotropyProp;
+
 protected:
     float HenyehGreensteinToSchlick(float g) const;
 
@@ -101,6 +103,6 @@ protected:
     float getIndexOfRefractionTerm(float n1, float n2) const;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ADVANCED_MATERIAL_PROPERTY_H
+#endif  // IVW_ADVANCED_MATERIAL_PROPERTY_H

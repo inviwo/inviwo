@@ -13,6 +13,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramsubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshcameraalgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshconverter.h
@@ -82,6 +83,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tfselector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/vectorelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.h
@@ -120,6 +122,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/dataminmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramdistancetransform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/layerramsubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/axisalignedboundingbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshcameraalgorithms.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/mesh/meshconverter.cpp
@@ -185,6 +188,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tfselector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumecurlcpuprocessor.cpp

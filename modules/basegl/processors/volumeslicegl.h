@@ -144,6 +144,8 @@ private:
     void eventGestureShiftSlice(Event*);
     void eventUpdateMousePos(Event*);
 
+	void updateFromWorldPosition();
+
     VolumeInport inport_;
     ImageOutport outport_;
     Shader shader_;

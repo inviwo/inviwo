@@ -41,18 +41,10 @@ enum class PropertySerializationMode { Default = 0, All, None };
 
 template <typename T>
 struct ValueWrapper {
-    ValueWrapper(T val) : value(val), defaultValue(val), name("") {}
     ValueWrapper(std::string valname, T val) : value(val), defaultValue(val), name(valname) {}
-    ValueWrapper(const ValueWrapper<T>& rhs)
-        : value(rhs.value), defaultValue(rhs.defaultValue), name(rhs.name) {}
-    ValueWrapper<T>& operator=(const ValueWrapper<T>& that) {
-        if (this != &that) {
-            value = that.value;
-            defaultValue = that.defaultValue;
-            name = that.name;
-        }
-        return *this;
-    }
+    ValueWrapper(const ValueWrapper<T>& rhs) = default;
+    ValueWrapper<T>& operator=(const ValueWrapper<T>& that) = default;
+
     ValueWrapper<T>& operator=(const T& val) {
         value = val;
         return *this;
@@ -180,6 +172,6 @@ bool operator>=(const T& lhs, const ValueWrapper<T>& rhs) {
     return !operator<(lhs, rhs);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VALUEWRAPPER_H

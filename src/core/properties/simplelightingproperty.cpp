@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/simplelightingproperty.h>
@@ -32,7 +32,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(SimpleLightingProperty, "org.inviwo.SimpleLightingProperty");
+const std::string SimpleLightingProperty::classIdentifier = "org.inviwo.SimpleLightingProperty";
+std::string SimpleLightingProperty::getClassIdentifier() const { return classIdentifier; }
 
 SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::string displayName,
                                                CameraProperty* camera,
@@ -42,7 +43,7 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     , shadingMode_("shadingMode", "Shading", InvalidationLevel::InvalidResources)
     , referenceFrame_("referenceFrame", "Space")
     , lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10),
-    vec3(10, 10, 10))
+                     vec3(10, 10, 10))
     , lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
     , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false)
 
@@ -67,7 +68,7 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
         referenceFrame_.addOption("view", "View", static_cast<int>(Space::VIEW));
         referenceFrame_.setSelectedValue(static_cast<int>(Space::VIEW));
     }
-    
+
     referenceFrame_.setCurrentStateAsDefault();
 
     lightPosition_.setSemantics(PropertySemantics("Spherical"));
@@ -94,7 +95,7 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     , lightPosition_(rhs.lightPosition_)
     , lightAttenuation_(rhs.lightAttenuation_)
     , applyLightAttenuation_(rhs.applyLightAttenuation_)
-    , ambientColor_(rhs.ambientColor_) 
+    , ambientColor_(rhs.ambientColor_)
     , diffuseColor_(rhs.diffuseColor_)
     , specularColor_(rhs.specularColor_)
     , specularExponent_(rhs.specularExponent_) {
@@ -144,4 +145,4 @@ inviwo::vec3 SimpleLightingProperty::getTransformedPosition() const {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

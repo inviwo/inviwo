@@ -92,6 +92,7 @@ protected:
 
     Canvas* getCanvas() const;
 
+public:
     ImageInport inport_;
 
     IntVec2Property dimensions_;

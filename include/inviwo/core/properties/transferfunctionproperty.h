@@ -65,7 +65,8 @@ class IVW_CORE_API TransferFunctionProperty : public TemplateProperty<TransferFu
                                               public TFPropertyObservable {
 
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     TransferFunctionProperty(
         const std::string& identifier, const std::string& displayName,

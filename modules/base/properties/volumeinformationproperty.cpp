@@ -31,10 +31,11 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/stdextensions.h>
 
-
 namespace inviwo {
 
-PropertyClassIdentifier(VolumeInformationProperty, "org.inviwo.VolumeInformationProperty");
+const std::string VolumeInformationProperty::classIdentifier =
+    "org.inviwo.VolumeInformationProperty";
+std::string VolumeInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 auto VolumeInformationProperty::props() {
     return std::tie(dimensions_, format_, channels_, numVoxels_);
@@ -58,13 +59,15 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
     , valueRange_("valueRange", "Value range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
                   0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueUnit_("valueUnit", "Value unit", "arb. unit.") {
-   
-    util::for_each_in_tuple([&](auto& e) {
-        e.setReadOnly(true);
-        e.setSerializationMode(PropertySerializationMode::None);
-        e.setCurrentStateAsDefault();
-        this->addProperty(e);
-    }, props());
+
+    util::for_each_in_tuple(
+        [&](auto& e) {
+            e.setReadOnly(true);
+            e.setSerializationMode(PropertySerializationMode::None);
+            e.setCurrentStateAsDefault();
+            this->addProperty(e);
+        },
+        props());
 
     dataRange_.setSerializationMode(PropertySerializationMode::All);
     valueRange_.setSerializationMode(PropertySerializationMode::All);
@@ -85,7 +88,7 @@ VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProp
     , valueRange_(rhs.valueRange_)
     , valueUnit_(rhs.valueUnit_) {
 
-    util::for_each_in_tuple([&](auto& e) {this->addProperty(e);}, props());
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
     addProperty(dataRange_);
     addProperty(valueRange_);
@@ -113,13 +116,13 @@ VolumeInformationProperty* VolumeInformationProperty::clone() const {
 
 void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool deserialize) {
     const auto dim = volume.getDimensions();
-    
+
     dimensions_.set(dim);
     format_.set(volume.getDataFormat()->getString());
     channels_.set(volume.getDataFormat()->getComponents());
     numVoxels_.set(dim.x * dim.y * dim.z);
 
-    util::for_each_in_tuple([&](auto& e) {e.setCurrentStateAsDefault();}, props());
+    util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props());
 
     if (deserialize) {
         Property::setStateAsDefault(dataRange_, volume.dataMap_.dataRange);
@@ -148,4 +151,4 @@ void inviwo::VolumeInformationProperty::updateVolume(Volume& volume) {
     volume.dataMap_.valueUnit = valueUnit_.get();
 }
 
-}  // namespace
+}  // namespace inviwo

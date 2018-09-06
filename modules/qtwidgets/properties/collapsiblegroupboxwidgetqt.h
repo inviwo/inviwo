@@ -114,6 +114,15 @@ protected:
     virtual void setCollapsed(bool value);
     virtual void setChecked(bool checked);
 
+    /**
+     * \brief set the text which is shown if there are no sub-properties and showIfEmpty is true
+     *
+     * @param str    text to indicate that there are no sub-properties
+     *
+     * @see setShowIfEmpty
+     */
+    void setEmptyLabelString(const std::string& str);
+
     std::unique_ptr<QWidget> createPropertyLayoutWidget();
     void addButtonLayout(QGridLayout* layout, int row, Property* prop);
     void insertProperty(Property* prop, size_t index);

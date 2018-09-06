@@ -51,11 +51,11 @@ class IVW_CORE_API IsoValueProperty : public TemplateProperty<IsoValueCollection
                                       public TFPrimitiveSetObserver,
                                       public TFPropertyObservable {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     IsoValueProperty(const std::string& identifier, const std::string& displayName,
-                     const IsoValueCollection& value = {},
-                     VolumeInport* volumeInport = nullptr,
+                     const IsoValueCollection& value = {}, VolumeInport* volumeInport = nullptr,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
 

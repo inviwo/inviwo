@@ -49,7 +49,9 @@ namespace inviwo {
  */
 class IVW_CORE_API PositionProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     enum class Space : int { WORLD, VIEW };
 
     PositionProperty(std::string identifier, std::string displayName

@@ -28,17 +28,35 @@
  *********************************************************************************/
 
 #include <modules/animationqt/animationqtmodule.h>
-#include <modules/animationqt/animationeditordockwidgetqt.h>
-
-#include <modules/animation/animationmodule.h>
-#include <modules/animation/datastructures/animation.h>
-#include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/datastructures/keyframe.h>
-
-#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <modules/animation/animationmodule.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/valuekeyframe.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/datastructures/controltrack.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/animationcontroller.h>
+
+#include <modules/animationqt/animationeditordockwidgetqt.h>
+#include <modules/animationqt/demo/demonavigatordockwidgetqt.h>
+
+#include <modules/animationqt/widgets/propertytrackwidgetqt.h>
+#include <modules/animationqt/widgets/controltrackwidgetqt.h>
+
+#include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
+#include <modules/animationqt/sequenceeditor/controlsequenceeditor.h>
+
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,7 +68,49 @@
 
 namespace inviwo {
 
-AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app, "AnimationQt") {
+namespace {
+
+template <typename PropertyType>
+void registerTrackHelper(animation::AnimationQtSupplier& as) {
+    using namespace animation;
+
+    using ValueType = typename PropertyType::value_type;
+    using TrackType = PropertyTrack<PropertyType, ValueKeyframe<ValueType>>;
+
+    as.registerTrackToWidgetMap(TrackType::classIdentifier(),
+                                PropertyTrackWidgetQt::classIdentifier());
+
+    as.registerTrackToSequenceEditorMap(TrackType::classIdentifier(),
+                                        PropertySequenceEditor::classIdentifier());
+}
+
+template <template <typename> typename Prop>
+struct Reghelper {
+    template <typename T>
+    auto operator()(animation::AnimationQtSupplier& as) {
+        using namespace animation;
+        registerTrackHelper<Prop<T>>(as);
+    }
+};
+
+struct PropertyReghelper {
+    template <typename Prop>
+    auto operator()(animation::AnimationQtSupplier& as) {
+        using namespace animation;
+        registerTrackHelper<Prop>(as);
+    }
+};
+
+}  // namespace
+
+AnimationQtModule::AnimationQtModule(InviwoApplication* app)
+    : InviwoModule(app, "AnimationQt")
+    , animation::AnimationQtSupplier(*this)
+    , trackWidgetQtFactory_{}
+    , sequenceEditorFactory_{} {
+
+    using namespace animation;
+
     if (auto win = utilqt::getApplicationMainWindow()) {
         QString animationMenuName("Animation");
         QMenu* menu = nullptr;
@@ -70,22 +130,98 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app) : InviwoModule(app,
             win->menuBar()->addMenu(menu_.get());
             menu = menu_.get();
             // Release pointer if destroyed by Qt before module is destroyed
-            QObject::connect(menu_.get(), &QObject::destroyed,
-                             [&](QObject* obj) { menu_.release(); });
+            QObject::connect(menu_.get(), &QObject::destroyed, [&](QObject*) { menu_.release(); });
         }
-        auto& controller =
-            app->getModuleByType<AnimationModule>()->getAnimationManager().getAnimationController();
-        editor_ = std::make_unique<animation::AnimationEditorDockWidgetQt>(controller,
-                                                                           "Animation Editor", win);
-        menu->addAction(editor_->toggleViewAction());
-        editor_->hide();
-        editor_->loadState();
-        // Release pointer if destroyed by Qt before module is destroyed
-        QObject::connect(editor_.get(), &QObject::destroyed,
-                         [this](QObject* obj) { editor_.release(); });
+
+        {
+            auto action = menu->addAction("Animation Editor");
+            action->setCheckable(true);
+            win->connect(action, &QAction::triggered, [this, win, app]() {
+                if (!editor_) {
+                    auto animationModule = app->getModuleByType<AnimationModule>();
+                    auto& manager = animationModule->getAnimationManager();
+                    editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
+                        manager, "Animation Editor", getTrackWidgetQtFactory(),
+                        getSequenceEditorFactory(), win);
+                    win->addDockWidget(Qt::BottomDockWidgetArea, editor_.get());
+                    editor_->hide();
+                    editor_->loadState();
+                    // Release pointer if destroyed by Qt before module is destroyed
+                    QObject::connect(editor_.get(), &QObject::destroyed,
+                                     [this](QObject*) { editor_.release(); });
+                    editor_->setVisible(true);
+                } else {
+                    editor_->setVisible(!editor_->isVisible());
+                }
+            });
+        }
+
+        {
+            auto action = menu->addAction("Demo Navigator");
+            action->setCheckable(true);
+            win->connect(action, &QAction::triggered, [this, win, app]() {
+                if (!navigator_) {
+                    auto animationModule = app->getModuleByType<AnimationModule>();
+                    auto& demoController = animationModule->getDemoController();
+                    navigator_ = std::make_unique<DemoNavigatorDockWidgetQt>(demoController,
+                                                                             "Demo Navigator", win);
+                    win->addDockWidget(Qt::RightDockWidgetArea, navigator_.get());
+                    navigator_->hide();
+                    navigator_->loadState();
+                    // Release pointer if destroyed by Qt before module is destroyed
+                    QObject::connect(navigator_.get(), &QObject::destroyed,
+                                     [this](QObject*) { navigator_.release(); });
+                    navigator_->setVisible(true);
+                } else {
+                    navigator_->setVisible(!navigator_->isVisible());
+                }
+            });
+        }
     }
+
+    // register widgets
+    registerTrackWidgetQt<PropertyTrackWidgetQt>();
+    registerTrackWidgetQt<ControlTrackWidgetQt>();
+
+    registerSequenceEditor<PropertySequenceEditor>();
+    registerSequenceEditor<ControlSequenceEditor>();
+
+    // Map Ordinal properties
+    using Types = std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4,
+                             dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
+                             uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
+    util::for_each_type<Types>{}(Reghelper<OrdinalProperty>{}, *this);
+
+    util::for_each_type<std::tuple<float, double, int, unsigned int, size_t>>{}(
+        Reghelper<MinMaxProperty>{}, *this);
+
+    util::for_each_type<std::tuple<float, double, int, unsigned int, size_t, std::string>>{}(
+        Reghelper<TemplateOptionProperty>{}, *this);
+
+    util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
+        PropertyReghelper{}, *this);
+
+    registerTrackToWidgetMap(ControlTrack::classIdentifier(),
+                             ControlTrackWidgetQt::classIdentifier());
+
+    registerTrackToSequenceEditorMap(ControlTrack::classIdentifier(),
+                                     ControlSequenceEditor::classIdentifier());
 }
 
-AnimationQtModule::~AnimationQtModule() = default;
+AnimationQtModule::~AnimationQtModule() { unRegisterAll(); };
+
+animation::TrackWidgetQtFactory& AnimationQtModule::getTrackWidgetQtFactory() {
+    return trackWidgetQtFactory_;
+}
+const animation::TrackWidgetQtFactory& AnimationQtModule::getTrackWidgetQtFactory() const {
+    return trackWidgetQtFactory_;
+}
+
+animation::SequenceEditorFactory& AnimationQtModule::getSequenceEditorFactory() {
+    return sequenceEditorFactory_;
+}
+const animation::SequenceEditorFactory& AnimationQtModule::getSequenceEditorFactory() const {
+    return sequenceEditorFactory_;
+}
 
 }  // namespace inviwo

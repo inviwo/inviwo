@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUTTONPROPERTY_H
@@ -42,51 +42,52 @@ namespace inviwo {
  * You can only assign one function to the property.
  * To bind a function to a button property use onChange.
  * Example usage:
- *     
+ *
  *     myButton_.onChange([&](){doSomthing();});
- *     
+ *
  * @see ButtonPropertyWidgetQt
  */
 class IVW_CORE_API ButtonProperty : public Property {
 
 public:
-    InviwoPropertyInfo();
-    ButtonProperty(std::string identifier,
-                   std::string displayName,
-                   InvalidationLevel invalidationLevel=InvalidationLevel::InvalidOutput,
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    ButtonProperty(std::string identifier, std::string displayName,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
-    
 
     ButtonProperty(const ButtonProperty& rhs);
     ButtonProperty& operator=(const ButtonProperty& that);
     virtual ButtonProperty* clone() const override;
     virtual ~ButtonProperty();
-    
+
     /**
-     * Overrides the default implementation to 
+     * Overrides the default implementation to
      * enable buttons to be linked.
-     * Will cause the button to be pressed 
+     * Will cause the button to be pressed
      * when a linked button is pressed.
-     * 
+     *
      * @param src Button property
      */
     virtual void set(const Property* src) override;
 
     /**
-     * Causes onChange to be called. 
+     * Causes onChange to be called.
      * @see propertyModified
      * @see onChange
      */
     virtual void pressButton();
 
-    virtual void propertyModified() override; // override for custom onChange behavior
+    virtual void propertyModified() override;  // override for custom onChange behavior
 
     // Override Property::resetToDefaultState, to avoid calling propertyModified  on reset.
     virtual void resetToDefaultState() override;
+
 private:
     bool buttonPressed_ = false;
 };
 
-} //namespace
+}  // namespace inviwo
 
-#endif //IVW_BUTTONPROPERTY_H
+#endif  // IVW_BUTTONPROPERTY_H

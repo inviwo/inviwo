@@ -31,25 +31,44 @@
 #define IVW_ANIMATIONQTMODULE_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animationqt/animationeditordockwidgetqt.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <modules/animation/animationcontroller.h>
-#include <modules/animation/datastructures/animation.h>
 
-#include <QMenu>
+#include <modules/animationqt/factories/sequenceeditorfactory.h>
+#include <modules/animationqt/factories/trackwidgetqtfactory.h>
+#include <modules/animationqt/animationqtsupplier.h>
+
+class QMenu;
 
 namespace inviwo {
 
-class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule {
+namespace animation {
+class AnimationEditorDockWidgetQt;
+class DemoNavigatorDockWidgetQt;
+}  // namespace animation
+
+class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule,
+                                                     public animation::AnimationQtSupplier {
 public:
     AnimationQtModule(InviwoApplication* app);
     virtual ~AnimationQtModule();
+
+    animation::TrackWidgetQtFactory& getTrackWidgetQtFactory();
+    const animation::TrackWidgetQtFactory& getTrackWidgetQtFactory() const;
+
+    animation::SequenceEditorFactory& getSequenceEditorFactory();
+    const animation::SequenceEditorFactory& getSequenceEditorFactory() const;
+
 private:
+    animation::TrackWidgetQtFactory trackWidgetQtFactory_;
+    animation::SequenceEditorFactory sequenceEditorFactory_;
+
     // Keep references to added widgets so that they can be removed in destructor
     std::unique_ptr<animation::AnimationEditorDockWidgetQt> editor_;
-    std::unique_ptr<QMenu> menu_; // Show/hide animation editor 
+    std::unique_ptr<animation::DemoNavigatorDockWidgetQt> navigator_;
+
+    std::unique_ptr<QMenu> menu_;  // Show/hide animation editor
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONQTMODULE_H
+#endif  // IVW_ANIMATIONQTMODULE_H

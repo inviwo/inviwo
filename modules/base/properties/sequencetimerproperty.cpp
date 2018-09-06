@@ -32,7 +32,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(SequenceTimerProperty, "org.inviwo.SequenceTimerProperty");
+const std::string SequenceTimerProperty::classIdentifier = "org.inviwo.SequenceTimerProperty";
+std::string SequenceTimerProperty::getClassIdentifier() const { return classIdentifier; }
 
 SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string displayName,
                                              InvalidationLevel invalidationLevel,

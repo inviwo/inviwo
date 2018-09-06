@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(BasisProperty, "org.inviwo.VolumeBasisProperty");
+const std::string BasisProperty::classIdentifier = "org.inviwo.VolumeBasisProperty";
+std::string BasisProperty::getClassIdentifier() const { return classIdentifier; }
 
 BasisProperty::BasisProperty(std::string identifier, std::string displayName,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)

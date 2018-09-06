@@ -29,7 +29,4 @@
 
 #include <modules/animation/factories/trackfactory.h>
 
-namespace inviwo {
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

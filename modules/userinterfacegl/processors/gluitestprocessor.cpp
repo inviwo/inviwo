@@ -79,11 +79,11 @@ GLUITestProcessor::GLUITestProcessor()
                        vec4(0.0f), vec4(1.0f))
     , uiTextColor_("uiTextColor", "Text Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 1.0f, 1.0f, 0.5f), vec4(0.0f), vec4(1.0f))
-    , intPropertyVertical_("intPropertyVertical", "Int Property Vertical", false)
     , layoutDirection_("layoutDirection", "Layout Direction",
                        {{"horizontal", "Horizontal", glui::BoxLayout::LayoutDirection::Horizontal},
                         {"vertical", "Vertical", glui::BoxLayout::LayoutDirection::Vertical}},
                        1)
+    , intPropertyVertical_("intPropertyVertical", "Int Property Vertical", false)
     , layoutSpacing_("layoutSpacing", "Layout Spacing", 5, 0, 50)
     , layoutMargins_("layoutMargins", "Layout Margins", ivec4(10), ivec4(0), ivec4(50))
     , layout_(glui::BoxLayout::LayoutDirection::Vertical)
@@ -272,7 +272,7 @@ void GLUITestProcessor::process() {
         {
             // put UI elements in lower left corner of the canvas
             const ivec2 extent(layout_.getExtent());
-            ivec2 origin(ivec2(0, extent.y));
+            ivec2 origin(0, extent.y);
 
             layout_.render(origin, outport_.getDimensions());
         }
@@ -281,7 +281,7 @@ void GLUITestProcessor::process() {
             // render second layout in upper right corner
             const ivec2 extent(propertyLayout_.getExtent());
             const ivec2 outputDim(outport_.getDimensions());
-            ivec2 origin(ivec2(outputDim.x - extent.x, outputDim.y));
+            ivec2 origin(outputDim.x - extent.x, outputDim.y);
 
             propertyLayout_.render(origin, outport_.getDimensions());
         }

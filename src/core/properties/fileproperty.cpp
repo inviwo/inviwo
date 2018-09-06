@@ -33,7 +33,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(FileProperty, "org.inviwo.FileProperty");
+const std::string FileProperty::classIdentifier = "org.inviwo.FileProperty";
+std::string FileProperty::getClassIdentifier() const { return classIdentifier; }
 
 FileProperty::FileProperty(std::string identifier, std::string displayName, std::string value,
                            std::string contentType,

@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(IsoTFProperty, "org.inviwo.IsoTFProperty");
+const std::string IsoTFProperty::classIdentifier = "org.inviwo.IsoTFProperty";
+std::string IsoTFProperty::getClassIdentifier() const { return classIdentifier; }
 
 IsoTFProperty::IsoTFProperty(const std::string& identifier, const std::string& displayName,
                              const IsoValueCollection& isovalues, const TransferFunction& tf,
@@ -68,7 +69,7 @@ IsoTFProperty::IsoTFProperty(const IsoTFProperty& rhs)
 IsoTFProperty* IsoTFProperty::clone() const { return new IsoTFProperty(*this); }
 
 std::string IsoTFProperty::getClassIdentifierForWidget() const {
-    return IsoTFProperty::CLASS_IDENTIFIER;
+    return IsoTFProperty::classIdentifier;
 }
 
 void IsoTFProperty::setMask(double maskMin, double maskMax) { tf_.setMask(maskMin, maskMax); }

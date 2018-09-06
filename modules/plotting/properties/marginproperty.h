@@ -40,15 +40,17 @@ namespace inviwo {
 namespace plot {
 
 /**
-* \class MarginProperty
-* \brief Property for keeping track of margins
-*
-* For set functions, uses the same ordering as is common in CSS, clockwise starting from top eg
-* top, right, bottom, left
-*/
+ * \class MarginProperty
+ * \brief Property for keeping track of margins
+ *
+ * For set functions, uses the same ordering as is common in CSS, clockwise starting from top eg
+ * top, right, bottom, left
+ */
 class IVW_MODULE_PLOTTING_API MarginProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     MarginProperty(std::string identifier, std::string displayName, float top = 20.0f,
                    float right = 20.0f, float bottom = 20.0f, float left = 20.0f,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

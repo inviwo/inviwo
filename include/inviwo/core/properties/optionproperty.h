@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/introspection.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/enumtraits.h>
 #include <type_traits>
 #include <iterator>
 
@@ -97,7 +98,7 @@ public:
 
     std::string id_;
     std::string name_;
-    T value_;
+    T value_ = T{};
 
     virtual void serialize(Serializer& s) const {
         s.serialize("id", id_);
@@ -120,8 +121,7 @@ template <typename T>
 class TemplateOptionProperty : public BaseOptionProperty {
 
 public:
-    InviwoPropertyInfo();
-    using valueType = T;
+    using value_type = T;
 
     TemplateOptionProperty(const std::string& identifier, const std::string& displayName,
                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -144,6 +144,8 @@ public:
     TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that) = default;
     virtual TemplateOptionProperty<T>* clone() const override;
     virtual ~TemplateOptionProperty() = default;
+
+    virtual std::string getClassIdentifier() const override;
 
     /**
      * Implicit conversion operator. The OptionProperty will implicitly be converted to T when
@@ -249,8 +251,7 @@ std::string getOptionPropertyClassIdentifier() {
 }
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
 std::string getOptionPropertyClassIdentifier() {
-    using ET = typename std::underlying_type<T>::type;
-    return "org.inviwo.OptionPropertyEnum" + Defaultvalues<ET>::getName();
+    return "org.inviwo.OptionProperty" + util::enumName<T>();
 }
 
 template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
@@ -265,7 +266,16 @@ std::string getClassIdentifierForWidget() {
 }  // namespace detail
 
 template <typename T>
-PropertyClassIdentifier(TemplateOptionProperty<T>, detail::getOptionPropertyClassIdentifier<T>());
+struct PropertyTraits<TemplateOptionProperty<T>> {
+    static std::string classIdentifier() {
+        return detail::getOptionPropertyClassIdentifier<T>();
+    }
+};
+
+template <typename T>
+std::string TemplateOptionProperty<T>::getClassIdentifier() const {
+    return PropertyTraits<TemplateOptionProperty<T>>::classIdentifier();
+}
 
 template <typename T>
 std::string TemplateOptionProperty<T>::getClassIdentifierForWidget() const {
@@ -437,7 +447,7 @@ std::vector<T> TemplateOptionProperty<T>::getValues() const {
 
 template <typename T>
 const std::vector<OptionPropertyOption<T>>& TemplateOptionProperty<T>::getOptions() const {
-    return options_; 
+    return options_;
 }
 
 template <typename T>
@@ -456,7 +466,6 @@ template <typename T>
 const OptionPropertyOption<T>& TemplateOptionProperty<T>::getOptions(size_t index) const {
     return options_[index];
 }
-
 
 // Setters
 template <typename T>

@@ -37,15 +37,38 @@ namespace inviwo {
 
 namespace util {
 
+/**
+ * \class KeepTrueWhileInScope
+ * \brief sets the given bool variable to true and restores its state when leaving the scope
+ *
+ * An instance of this class will set a given bool variable to true upon construction.
+ * It restores the previous state of the bool variable when leaving the current scope. 
+ */
 class IVW_CORE_API KeepTrueWhileInScope {
 public:
-    KeepTrueWhileInScope(bool* b) : variable_(b) { if(variable_) (*variable_) = true; }
-    ~KeepTrueWhileInScope() { if(variable_) (*variable_) = false; }
+    KeepTrueWhileInScope(bool* b) : variable_(b), prevValue_(b ? *b : false) {
+        if (variable_) {
+            (*variable_) = true;
+        }
+    }
+    ~KeepTrueWhileInScope() {
+        if (variable_) (*variable_) = prevValue_;
+    }
 
 private:
     bool* variable_;
+    bool prevValue_;
 };
 
+/**
+ * \class OnScopeExit
+ * \brief calls the given function when leaving the current scope
+ *
+ * An instance of this class will call the provided action, i.e. a void function, when leaving the
+ * current scope. The action will also be called in case the constructor fails. 
+ *
+ * The action can be changed at any time by calling setAction() or release().
+ */
 struct IVW_CORE_API OnScopeExit {
     typedef std::function<void(void)> ExitAction;
 
@@ -74,10 +97,10 @@ struct IVW_CORE_API OnScopeExit {
     void release() { setAction(); }
 
 private:
-    #include <warn/push>
-    #include <warn/ignore/dll-interface>
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     ExitAction action_;
-    #include <warn/pop>
+#include <warn/pop>
 };
 
 template <typename T>
@@ -90,8 +113,8 @@ OnScopeExit::ExitAction RevertValue(T& t) {
     return std::bind(SetValue<T>, std::ref(t), t);
 }
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_RAIIUTILS_H

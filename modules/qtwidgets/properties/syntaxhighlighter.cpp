@@ -64,8 +64,8 @@ template <>
 void SyntaxHighligther::loadConfig<None>() {
     auto ivec4toQtColor = [](const ivec4& i) { return QColor(i.r, i.g, i.b, i.a); };
     auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
-    QColor textColor = ivec4toQtColor(settings->glslTextColor_.get());
-    backgroundColor_ = ivec4toQtColor(settings->glslBackgroundColor_.get());
+    QColor textColor = ivec4toQtColor(settings->pyTextColor_.get());
+    backgroundColor_ = ivec4toQtColor(settings->pyBGColor_.get());
     defaultFormat_.setBackground(backgroundColor_);
     defaultFormat_.setForeground(textColor);
 }
