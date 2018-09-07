@@ -37,6 +37,12 @@
 
 namespace inviwo {
 
+struct ColorWidgetReghelper;
+struct OrdinalWidgetReghelper;
+struct MinMaxWidgetReghelper;
+struct MinMaxTextWidgetReghelper;
+struct OptionWidgetReghelper;
+
 class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
 public:
     QtWidgetsModule(InviwoApplication* app);
@@ -47,9 +53,15 @@ public:
     void showTFHelpWindow() const;
 
 private:
+    friend ColorWidgetReghelper;
+    friend OrdinalWidgetReghelper;
+    friend MinMaxWidgetReghelper;
+    friend MinMaxTextWidgetReghelper;
+    friend OptionWidgetReghelper;
+
     std::unique_ptr<TFMenuHelper> tfMenuHelper_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_QTWIDGETMODULE_H
