@@ -66,7 +66,7 @@ public:
      * we can cache size and decimals to display.
      *
      */
-    virtual void setDecimals(int decimals);
+    void setDecimals(int decimals);
 
     /**
      * \brief Overrides the timerEvent to prevent
