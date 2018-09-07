@@ -165,6 +165,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
                    uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
     util::for_each_type<OrdinalTypes>{}(OrdinalWidgetReghelper{}, *this, "Default");
     util::for_each_type<OrdinalTypes>{}(OrdinalWidgetReghelper{}, *this, "Text");
+    util::for_each_type<OrdinalTypes>{}(OrdinalWidgetReghelper{}, *this, "SpinBox");
 
     // Register MinMaxProperty widgets
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;

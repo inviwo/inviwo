@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORDINALPROPERTYWIDGETQT_H
@@ -38,6 +38,7 @@
 #include <modules/qtwidgets/ordinaleditorwidget.h>
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/ordinalspinboxwidget.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/properties/propertyowner.h>
@@ -195,50 +196,73 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
     policy.setHorizontalStretch(3);
     centralWidget->setSizePolicy(policy);
 
-    QGridLayout* vLayout = new QGridLayout();
-    centralWidget->setLayout(vLayout);
-    vLayout->setContentsMargins(0, 0, 0, 0);
-    vLayout->setSpacing(0);
+    QGridLayout* gridLayout = new QGridLayout();
+    centralWidget->setLayout(gridLayout);
+    gridLayout->setContentsMargins(0, 0, 0, 0);
+    gridLayout->setSpacing(0);
 
     auto signalMapperSetPropertyValue = new QSignalMapper(this);
 
-    for (size_t j = 0; j < ordinalproperty_->getDim().y; j++) {
-        for (size_t i = 0; i < ordinalproperty_->getDim().x; i++) {
-            QWidget* controlWidget;
-            if (ordinalproperty_->getDim().y > 1 ||
-                ordinalproperty_->getSemantics() == PropertySemantics("Text")) {
+    if (ordinalproperty_->getSemantics() == PropertySemantics("SpinBox")) {
+        gridLayout->setHorizontalSpacing(5);
+        for (size_t j = 0; j < ordinalproperty_->getDim().y; j++) {
+            for (size_t i = 0; i < ordinalproperty_->getDim().x; i++) {
 
-                auto editor = new OrdinalEditorWidget<BT>();
-                connect(editor, &OrdinalEditorWidget<BT>::valueChanged,
+                auto editor = new OrdinalSpinBoxWidget<BT>();
+                connect(editor, &OrdinalSpinBoxWidget<BT>::valueChanged,
                         signalMapperSetPropertyValue,
                         static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
                 signalMapperSetPropertyValue->setMapping(
                     editor, static_cast<int>(i + j * ordinalproperty_->getDim().x));
                 editors_.push_back(editor);
-                controlWidget = editor;
-            } else {
-                auto editor = new SliderWidgetQt<BT>();
-                connect(editor, &SliderWidgetQt<BT>::valueChanged, signalMapperSetPropertyValue,
-                        static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-                signalMapperSetPropertyValue->setMapping(editor, static_cast<int>(i));
-                editors_.push_back(editor);
-                controlWidget = editor;
-            }
 
-            // Optionally add element descriptions
-            QWidget* edwidget;
-            if (ordinalproperty_->getSemantics() == PropertySemantics("Spherical")) {
-                edwidget = new QWidget(this);
-                QHBoxLayout* edLayout = new QHBoxLayout();
-                edLayout->setContentsMargins(0, 0, 0, 0);
-                edLayout->setSpacing(7);
-                edwidget->setLayout(edLayout);
-                edLayout->addWidget(new QLabel(sphericalChars[i], this));
-                edLayout->addWidget(static_cast<QWidget*>(controlWidget));
-            } else {
-                edwidget = controlWidget;
+                if ((ordinalproperty_->getDim().y > 1) || (ordinalproperty_->getDim().x == 1)) {
+                    gridLayout->addWidget(editor, static_cast<int>(i), static_cast<int>(j));
+                } else {
+                    gridLayout->addWidget(editor, static_cast<int>(j), static_cast<int>(i));
+                }
             }
-            vLayout->addWidget(edwidget, static_cast<int>(i), static_cast<int>(j));
+        }
+    } else {
+        for (size_t j = 0; j < ordinalproperty_->getDim().y; j++) {
+            for (size_t i = 0; i < ordinalproperty_->getDim().x; i++) {
+                QWidget* controlWidget;
+
+                if (ordinalproperty_->getDim().y > 1 ||
+                    ordinalproperty_->getSemantics() == PropertySemantics("Text")) {
+
+                    auto editor = new OrdinalEditorWidget<BT>();
+                    connect(editor, &OrdinalEditorWidget<BT>::valueChanged,
+                            signalMapperSetPropertyValue,
+                            static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+                    signalMapperSetPropertyValue->setMapping(
+                        editor, static_cast<int>(i + j * ordinalproperty_->getDim().x));
+                    editors_.push_back(editor);
+                    controlWidget = editor;
+                } else {
+                    auto editor = new SliderWidgetQt<BT>();
+                    connect(editor, &SliderWidgetQt<BT>::valueChanged, signalMapperSetPropertyValue,
+                            static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+                    signalMapperSetPropertyValue->setMapping(editor, static_cast<int>(i));
+                    editors_.push_back(editor);
+                    controlWidget = editor;
+                }
+
+                // Optionally add element descriptions
+                QWidget* edwidget;
+                if (ordinalproperty_->getSemantics() == PropertySemantics("Spherical")) {
+                    edwidget = new QWidget(this);
+                    QHBoxLayout* edLayout = new QHBoxLayout();
+                    edLayout->setContentsMargins(0, 0, 0, 0);
+                    edLayout->setSpacing(7);
+                    edwidget->setLayout(edLayout);
+                    edLayout->addWidget(new QLabel(sphericalChars[i], this));
+                    edLayout->addWidget(static_cast<QWidget*>(controlWidget));
+                } else {
+                    edwidget = controlWidget;
+                }
+                gridLayout->addWidget(edwidget, static_cast<int>(i), static_cast<int>(j));
+            }
         }
     }
 
@@ -304,8 +328,7 @@ std::unique_ptr<QMenu> OrdinalPropertyWidgetQt<T>::getContextMenu() {
     settingsAction->setToolTip(
         tr("&Open the property settings dialog to adjust min, max, and increment values"));
 
-    connect(settingsAction, &QAction::triggered, this,
-            &OrdinalPropertyWidgetQt<T>::showSettings);
+    connect(settingsAction, &QAction::triggered, this, &OrdinalPropertyWidgetQt<T>::showSettings);
 
     settingsAction->setEnabled(!property_->getReadOnly());
     settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);

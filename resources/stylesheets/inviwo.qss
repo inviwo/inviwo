@@ -310,8 +310,7 @@ QComboBox:on, QComboBox:focus, QComboBox:hover {
     background: #47474b;
     border: 1px solid #268bd2;
 }
-QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, 
-QCheckBox:indicator:hover, QAbstractSpinBox:hover {
+QPushButton:hover, QToolButton:hover, QCheckBox:indicator:hover {
     border: 1px solid #268bd2;
 }
 
@@ -566,6 +565,19 @@ QAbstractSpinBox::up-button:disabled {
 }
 QAbstractSpinBox::down-button:disabled {
      image: url(:/stylesheets/images/arrow_down.png);
+}
+
+/************************ 
+valueDragger handle
+************************/
+QWidget#valueDragger {
+    color: #9d9995;
+}
+QWidget#valueDragger:hover {
+    background: #268bd2;
+}
+QWidget#valueDragSpinBox:hover {
+    border: 1px solid #268bd2;    
 }
 
 /************************ 
