@@ -78,6 +78,8 @@ protected:
 using DoubleMinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<double, double>;
 using FloatMinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<double, float>;
 using IntMinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<int, int>;
+using IntSizeTMinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<int, size_t>;
+using Int64MinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<int, glm::i64>;
 
 template <typename BT, typename T>
 OrdinalMinMaxTextPropertyWidgetQt<BT, T>::OrdinalMinMaxTextPropertyWidgetQt(
@@ -160,7 +162,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin() {
     V value = minMaxProperty_->get();
 
     // check for modification of range start
-    if (std::abs(min - value.x) > glm::epsilon<T>()) {
+    if (glm::abs(min - value.x) > glm::epsilon<T>()) {
         const T sep = minMaxProperty_->getMinSeparation();
         V range = minMaxProperty_->getRange();
 
@@ -206,7 +208,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax() {
     V value = minMaxProperty_->get();
 
     // check for modification of range start
-    if (std::abs(max - value.y) > glm::epsilon<T>()) {
+    if (glm::abs(max - value.y) > glm::epsilon<T>()) {
         const T sep = minMaxProperty_->getMinSeparation();
         V range = minMaxProperty_->getRange();
 

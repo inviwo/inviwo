@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,76 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
+#ifndef IVW_DOUBLEVALUEDRAGSPINBOX_H
+#define IVW_DOUBLEVALUEDRAGSPINBOX_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tfhelpwindow.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWidget>
+#include <warn/pop>
 
 namespace inviwo {
 
-struct ColorWidgetReghelper;
-struct OrdinalWidgetReghelper;
-struct MinMaxWidgetReghelper;
-struct MinMaxTextWidgetReghelper;
-struct OptionWidgetReghelper;
+class CustomDoubleSpinBoxQt;
 
-class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
+template <typename T>
+class ValueDragger;
+
+class IVW_MODULE_QTWIDGETS_API DoubleValueDragSpinBox : public QWidget {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    QtWidgetsModule(InviwoApplication* app);
-    virtual ~QtWidgetsModule();
+    explicit DoubleValueDragSpinBox(QWidget *parent = nullptr);
+    virtual ~DoubleValueDragSpinBox() override = default;
 
-    TFHelpWindow* getTFHelpWindow() const;
+    void setReadOnly(bool r);
+    bool isReadOnly() const;
 
-    void showTFHelpWindow() const;
+    void setSpecialValueText(const QString &txt);
+    QString specialValueText() const;
+
+    void setWrapping(bool w);
+    bool wrapping() const;
+
+    QString text() const;
+
+    QString cleanText() const;
+    int decimals() const;
+    double maximum() const;
+    double minimum() const;
+    QString prefix() const;
+    void setDecimals(int prec);
+    void setMaximum(double max);
+    void setMinimum(double min);
+    void setPrefix(const QString &prefix);
+    void setRange(double minimum, double maximum);
+    void setSingleStep(double val);
+    void setSuffix(const QString &suffix);
+    double singleStep() const;
+    QString suffix() const;
+    double value() const;
+
+signals:
+    void valueChanged(double d);
+    void valueChanged(const QString &text);
+    void editingFinished();
+
+public slots:
+    void setValue(double value);
+    void selectAll();
+    void stepDown();
+    void stepUp();
 
 private:
-    friend ColorWidgetReghelper;
-    friend OrdinalWidgetReghelper;
-    friend MinMaxWidgetReghelper;
-    friend MinMaxTextWidgetReghelper;
-    friend OptionWidgetReghelper;
-
-    std::unique_ptr<TFMenuHelper> tfMenuHelper_;
+    CustomDoubleSpinBoxQt *spinBox_;
+    ValueDragger<double> *valueDragger_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_QTWIDGETMODULE_H
+#endif  // IVW_DOUBLEVALUEDRAGSPINBOX_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
+#ifndef IVW_ORDINALBASEWIDGET_H
+#define IVW_ORDINALBASEWIDGET_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tfhelpwindow.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-struct ColorWidgetReghelper;
-struct OrdinalWidgetReghelper;
-struct MinMaxWidgetReghelper;
-struct MinMaxTextWidgetReghelper;
-struct OptionWidgetReghelper;
-
-class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
+template <typename T>
+class OrdinalBaseWidget {
 public:
-    QtWidgetsModule(InviwoApplication* app);
-    virtual ~QtWidgetsModule();
+    virtual ~OrdinalBaseWidget() = default;
 
-    TFHelpWindow* getTFHelpWindow() const;
-
-    void showTFHelpWindow() const;
-
-private:
-    friend ColorWidgetReghelper;
-    friend OrdinalWidgetReghelper;
-    friend MinMaxWidgetReghelper;
-    friend MinMaxTextWidgetReghelper;
-    friend OptionWidgetReghelper;
-
-    std::unique_ptr<TFMenuHelper> tfMenuHelper_;
+    virtual T getValue() = 0;
+    virtual void setValue(T value) = 0;
+    virtual void initValue(T value) = 0;
+    virtual void setMinValue(T minValue) = 0;
+    virtual void setMaxValue(T maxValue) = 0;
+    virtual void setRange(T minValue, T maxValue) = 0;
+    virtual void setIncrement(T increment) = 0;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_QTWIDGETMODULE_H
+#endif  // IVW_ORDINALBASEWIDGET_H
