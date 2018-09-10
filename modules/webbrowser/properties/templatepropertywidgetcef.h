@@ -48,8 +48,8 @@ public:
     TemplatePropertyWidgetCEF() = default;
     TemplatePropertyWidgetCEF(TemplateProperty<T>* prop, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "") : PropertyWidgetCEF(prop, frame, htmlId){};
     
-    virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
-                         const CefString& request, bool persistent,
+    virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+                         const CefString& request, bool /*persistent*/,
                          CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override {
         // Check if we are blocking queries
         if (onQueryBlocker_ > 0) {

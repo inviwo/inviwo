@@ -72,7 +72,11 @@ OrdinalPropertyWidgetCEF<T>::OrdinalPropertyWidgetCEF(OrdinalProperty<T>* proper
 
 template <typename T>
 void OrdinalPropertyWidgetCEF<T>::updateFromProperty() {
-//    // LogInfo("updateFromProperty");
+	// Frame might be null if for example webpage is not found on startup
+	if (!frame_) {
+		return;
+	}
+    // LogInfo("updateFromProperty");
     auto property = static_cast<OrdinalProperty<T>*>(this->getProperty());
 
     std::stringstream script;
