@@ -186,7 +186,7 @@ void CanvasGLFW::character(GLFWwindow* window, unsigned int character) {
     // Needed for text input
     auto thisCanvas = getCanvasGLFW(window);
     // Convert UTF32 character
-    auto text = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(character);
+    auto text = std::wstring_convert<std::codecvt_utf8<int32_t>, int32_t>{}.to_bytes(character);
     KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, thisCanvas->modifiers_, character, text);
     
     thisCanvas->propagateEvent(&keyEvent);
