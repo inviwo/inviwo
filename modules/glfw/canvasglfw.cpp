@@ -186,7 +186,15 @@ void CanvasGLFW::character(GLFWwindow* window, unsigned int character) {
     // Needed for text input
     auto thisCanvas = getCanvasGLFW(window);
     // Convert UTF32 character
-    auto text = std::wstring_convert<std::codecvt_utf8<int32_t>, int32_t>{}.to_bytes(character);
+
+#if _MSC_VER 
+	// Linker error when using char16_t in visual studio
+	// https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
+	auto text = std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t>{}.to_bytes(character);
+#else 
+	auto text = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(character);
+#endif
+
     KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, thisCanvas->modifiers_, character, text);
     
     thisCanvas->propagateEvent(&keyEvent);

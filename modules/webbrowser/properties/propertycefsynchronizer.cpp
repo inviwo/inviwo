@@ -49,7 +49,7 @@ PropertyCefSynchronizer::PropertyCefSynchronizer() {
 };
 
 void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                        int httpStatusCode) {
+                                        int /*httpStatusCode*/) {
     // synchronize all properties
     // Ok to send javascript commands when frame loaded
     for (auto& widget : widgets_) {

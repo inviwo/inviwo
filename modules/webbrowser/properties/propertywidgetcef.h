@@ -109,7 +109,7 @@ public:
                          const CefString& request, bool persistent,
                          CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) = 0;
     
-    virtual void serialize(Serializer& s) const override {};
+    virtual void serialize(Serializer&) const override {};
     virtual void deserialize(Deserializer& d) override;
 protected:
     // PropertyObservable overrides

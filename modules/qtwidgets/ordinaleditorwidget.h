@@ -32,7 +32,8 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/qtwidgets/sliderwidgetqt.h>
+
+#include <modules/qtwidgets/ordinalbasewidget.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 #include <modules/qtwidgets/qstringhelper.h>
 

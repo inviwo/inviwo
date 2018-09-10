@@ -90,7 +90,7 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 }
 
 bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                      CefRefPtr<CefRequest> request, bool user_gesture, bool is_redirect) {
+                                      CefRefPtr<CefRequest> request, bool /*user_gesture*/, bool /*is_redirect*/) {
     CEF_REQUIRE_UI_THREAD();
 
     messageRouter_->OnBeforeBrowse(browser, frame);
@@ -98,7 +98,7 @@ bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 }
 
 void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                                 TerminationStatus status) {
+                                                 TerminationStatus /*status*/) {
     CEF_REQUIRE_UI_THREAD();
 
     messageRouter_->OnRenderProcessTerminated(browser);

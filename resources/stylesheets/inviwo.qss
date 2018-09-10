@@ -299,7 +299,7 @@ QLineEdit, QAbstractSpinBox, QComboBox {
       should be invisible. DO NOT adjust the border width as the widgets will then 
       jump on hover!
       */
-    border: 1px solid #3e3e3f;
+    border: 1px none transparent;
 }
 QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
     color: #777;
@@ -310,8 +310,7 @@ QComboBox:on, QComboBox:focus, QComboBox:hover {
     background: #47474b;
     border: 1px solid #268bd2;
 }
-QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, 
-QCheckBox:indicator:hover, QAbstractSpinBox:hover {
+QPushButton:hover, QToolButton:hover, QCheckBox:indicator:hover {
     border: 1px solid #268bd2;
 }
 
@@ -555,9 +554,6 @@ QLineEdit {
 /************************ 
 QAbstractSpinBox 
 ************************/
-QAbstractSpinBox {
-    margin-left: 5px;
-}
 QAbstractSpinBox::up-button {
      image: url(:/stylesheets/images/arrow_lighter_up.png);
 }
@@ -569,6 +565,19 @@ QAbstractSpinBox::up-button:disabled {
 }
 QAbstractSpinBox::down-button:disabled {
      image: url(:/stylesheets/images/arrow_down.png);
+}
+
+/************************ 
+valueDragger handle
+************************/
+QWidget#valueDragger {
+    color: #9d9995;
+}
+QWidget#valueDragger:hover {
+    background: #268bd2;
+}
+QWidget#valueDragSpinBox:hover {
+    border: 1px solid #268bd2;    
 }
 
 /************************ 
@@ -780,6 +789,41 @@ QWidget[bgType="2"]#CompositeWidget, QWidget[bgType="3"]#CompositeWidget > .QWid
 QWidget#CompositeContents > QWidget {
     border: 0px;
 }
+
+QWidget#compositeLabel QLabel {
+    font-weight: 650;
+}
+
+QWidget#CompositeWidget QToolButton#collapseButton {
+    border: 1px solid transparent;
+    background-color: transparent;
+    width: 8;
+    height: 13px;
+    margin-right: 1px;
+}
+QWidget#CompositeWidget QToolButton#addListItemButton {
+    border: 1px solid transparent;
+    background-color: transparent;
+    width: 12px;
+    height: 12px;
+}
+QWidget#CompositeWidget QToolButton#collapseButton:hover,
+QWidget#CompositeWidget QToolButton#addListItemButton:hover {
+    border: 1px solid #268bd2;
+}
+QWidget#CompositeWidget QToolButton#collapseButton:open {
+    image: url(:/stylesheets/images/arrow_lighter_right-small.png);
+}
+QWidget#CompositeWidget QToolButton#collapseButton:closed {
+    image: url(:/stylesheets/images/arrow_lighter_down-small.png);
+}
+QWidget#CompositeWidget QToolButton#addListItemButton {
+    image: url(:/stylesheets/images/addlistitem.png);
+}
+QWidget#CompositeWidget QToolButton#addListItemButton:disabled {
+    image: url(:/stylesheets/images/addlistitem_disabled.png);
+}
+
 
 /************************ 
 ConsoleWidget

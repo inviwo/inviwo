@@ -56,7 +56,7 @@ void PropertyWidgetCEF::deserialize(Deserializer& d) {
     property_->clearInitiatingWidget();
 }
     
-void PropertyWidgetCEF::onSetReadOnly(Property* property, bool readonly) {
+void PropertyWidgetCEF::onSetReadOnly(Property* /*property*/, bool readonly) {
     std::stringstream script;
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";
     script << "if(property!=null){property.readonly=" << (readonly ? "true" : "false") << ";}";

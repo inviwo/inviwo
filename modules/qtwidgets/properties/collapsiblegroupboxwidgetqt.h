@@ -129,7 +129,6 @@ protected:
     void insertPropertyWidget(PropertyWidgetQt* propertyWidget, bool insertAtEnd);
 
     std::string displayName_;
-    bool collapsed_;
     bool checked_;
     EditableLabelQt* label_;
     QToolButton* resetButton_;

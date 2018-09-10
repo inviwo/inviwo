@@ -63,11 +63,6 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
 
     // inject "add" button in the header of the composite property for adding list elements
     addItemButton_ = new QToolButton(this);
-    QIcon icon;
-    icon.addFile(":/stylesheets/images/addlistitem.png", QSize(), QIcon::Normal, QIcon::Off);
-    icon.addFile(":/stylesheets/images/addlistitem_disabled.png", QSize(), QIcon::Disabled,
-                 QIcon::Off);
-    addItemButton_->setIcon(icon);
     addItemButton_->setObjectName("addListItemButton");
     addItemButton_->setToolTip("Add list element");
 

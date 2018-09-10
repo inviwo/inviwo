@@ -218,7 +218,7 @@ void PythonEditorWidget::focusInEvent(QFocusEvent* event) {
     }
 }
 
-void PythonEditorWidget::appendToOutput(const std::string& msg, bool error) {
+void PythonEditorWidget::appendToOutput(const std::string& msg, bool) {
     pythonOutput_->appendPlainText(utilqt::toQString(msg));
 }
 
