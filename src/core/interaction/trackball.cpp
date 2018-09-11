@@ -866,7 +866,9 @@ void inviwo::Trackball::animate() {
             const glm::quat identity(1.0f, 0.0f, 0.0f, 0.0f);
             const float t = 0.1f;
             const float dot = glm::dot(lastRot_, identity);
-			if (dot != 0) {
+			const float dotEpsilon = (1.f - std::numeric_limits<float>::epsilon());
+			// Avoid division by zero 
+			if (std::abs(dot) > dotEpsilon) {
 				const float theta = std::acos(dot);
 				const float sintheta = std::sin(theta);
 				lastRot_ = lastRot_ * (std::sin((1.0f - t) * theta) / sintheta) +
