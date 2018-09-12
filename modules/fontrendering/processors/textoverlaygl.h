@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 
@@ -120,6 +121,12 @@ private:
     TextTextureObject textObject_;
 
     TextureQuadRenderer textureRenderer_;
+
+    BoolProperty textIsDragable_;
+    bool draggingText_;
+    EventProperty mouseMoveText_;
+    vec2 oldMousePos_;
+    void mouseMoveTextCallback(Event* e);
 };
 
 } // namespace
