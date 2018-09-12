@@ -243,10 +243,12 @@ else()
     COPY_FILES("inviwo-module-webbrowser" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 
     # Copy files into the bin directory (used by installer)
-    install(DIRECTORY "${CEF_BINARY_DIR}"
-            "${CEF_RESOURCE_DIR}"
+    install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
+            "${CEF_RESOURCE_DIR}/"
             DESTINATION bin
             COMPONENT inviwo-module-webbrowser)
+	# Copy helper executable into the bin directory (used by installer)
+	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION bin COMPONENT inviwo-module-webbrowser)
 endif()
 
 

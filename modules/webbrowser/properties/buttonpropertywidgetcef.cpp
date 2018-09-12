@@ -36,7 +36,10 @@ ButtonPropertyWidgetCEF::ButtonPropertyWidgetCEF(ButtonProperty* property,
     : PropertyWidgetCEF(property, frame, htmlId) {}
 
 inline void ButtonPropertyWidgetCEF::updateFromProperty() {
-
+	// Frame might be null if for example webpage is not found on startup
+	if (!frame_) {
+		return;
+	}
     std::stringstream script;
     // Send click button event
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";
@@ -47,8 +50,8 @@ inline void ButtonPropertyWidgetCEF::updateFromProperty() {
 }
 
 bool ButtonPropertyWidgetCEF::onQuery(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
-    const CefString& request, bool persistent,
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+    const CefString& /*request*/, bool /*persistent*/,
     CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
     if (onQueryBlocker_ > 0) {
         // LogInfo("blocked");
