@@ -224,33 +224,41 @@ TextOverlayGL::TextOverlayGL()
     }
 
     void TextOverlayGL::mouseMoveTextCallback(Event* event) {
-        if (textIsDragable_) {
+        if (textIsDragable_) { // test checkbox if text is dragable
             auto mouse_event = static_cast<MouseEvent*>(event);
             const auto new_mouse_pos = vec2(mouse_event->posNormalized());
+
+            // normalize text bounding box to [0,1]
             const auto text_size_normalized(vec2(textObject_.bbox.textExtent) /
                                             vec2(outport_.getDimensions()));
 
+            auto& text_pos = position_.get(); // for convenience
             switch (mouse_event->state()) {
-                case MouseState::Press: {
+                case MouseState::Press: { // start dragging text if first click was inside text's bounding box
                     draggingText_ = glm::all(
-                        glm::greaterThanEqual(new_mouse_pos, position_.get()) &&
-                        glm::lessThanEqual(new_mouse_pos, position_.get() + text_size_normalized));
+                        glm::greaterThanEqual(new_mouse_pos, text_pos) &&
+                        glm::lessThanEqual(new_mouse_pos, text_pos + text_size_normalized));
                     break;
                 }
-                case MouseState::Move: {
+                case MouseState::Move: { // drag text with mouse position difference from last frame as offset
                     if (draggingText_) {
                         const auto pos_delta = new_mouse_pos - oldMousePos_;
-                        position_.set(position_.get() + pos_delta);
+                        position_.set(text_pos + pos_delta);
                         event->markAsUsed();
                         break;
                     }
                 }
-                default: {
+                default: { // disable dragging if click was outside of text's bounding box or a double click
                     draggingText_ = false;
                     break;
                 }
             }
 
+            // restrict text into canvas
+            text_pos = glm::min(text_pos, vec2{1.0f} - text_size_normalized);
+            text_pos = glm::max(text_pos, vec2{0.0f});
+
+            // store old current mouse position for offset in next frame
             oldMousePos_ = new_mouse_pos;
         }
     }
