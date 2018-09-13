@@ -36,12 +36,24 @@
 #include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
-
+/**
+ * @class KeyboardEvent
+ * Generated when keys are pressed and released.
+ */
 class IVW_CORE_API KeyboardEvent : public InteractionEvent {
 public:
+    /**
+     * @param key Enumerate representation of pressed key
+     * @param state Pressed of released key
+     * @param modifiers Modifier keys, e.g. shift, held while pressing key
+     * @param nativeVirtualKey Platform dependent scancode of pressed key
+     * @param utfText Unicode representation of pressed keys
+     */
     KeyboardEvent(IvwKey key = IvwKey::Unknown,
                   KeyState state = KeyState::Press,
-                  KeyModifiers modifiers = KeyModifiers(flags::empty));
+                  KeyModifiers modifiers = KeyModifiers(flags::empty),
+                  uint32_t nativeVirtualKey = 0,
+                  const std::string& utfText = u8"");
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;
@@ -50,9 +62,27 @@ public:
 
     KeyState state() const;
     void setState(KeyState state);
-  
+    
+    /*
+     * Platform-independent code for key.
+     * @note Does not differentiate between lower and uppercase letters. Use text instead.
+     */
     virtual IvwKey key() const;
     void setKey(IvwKey key);
+    
+    /*
+     * Returns virtual key representation of pressed key.
+     * The key may be 0 even though the event contain information.
+     * See https://msdn.microsoft.com/en-us/library/windows/desktop/ff468858(v=vs.85).aspx
+     */
+    uint32_t getNativeVirtualKey() const;
+    void setNativeVirtualKey(uint32_t key);
+    
+    /*
+     * Returns Unicode representation of pressed keys
+     */
+    std::string text() const { return text_; };
+    void setText(const std::string& text) { text_ = text; }
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() {
@@ -60,8 +90,10 @@ public:
     }
 
 private:
+    std::string text_; ///< Unicode representation of pressed keys
     KeyState state_;
     IvwKey key_;
+    uint32_t nativeVirtualKey_;
 };
 
 }  // namespace

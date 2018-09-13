@@ -49,6 +49,14 @@ public:
     virtual dvec3 getSpacing() const = 0;
     virtual bool getEndianess() const = 0;
     virtual DataMapper getDataMapper() const = 0;
+    virtual size_t getDataOffset() const = 0;
+
+    virtual void setFormat(const DataFormatBase* format) = 0;
+    virtual void setDimensions(uvec3 dim) = 0;
+    virtual void setSpacing(dvec3 spacing) = 0;
+    virtual void setEndianess(bool endian) = 0;
+    virtual void setDataMapper(const DataMapper& datamapper) = 0;
+    virtual void setDataOffset(size_t offset) = 0;
 };
 
 }  // namespace inviwo

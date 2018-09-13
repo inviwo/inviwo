@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
-#include <modules/animationqt/widgets/editorconstants.h>
 
 #include <modules/animation/datastructures/animationtime.h>
 
@@ -121,12 +120,7 @@ void KeyframeSequenceWidgetQt::onKeyframeSequenceMoved(KeyframeSequence*) {
 }
 
 QRectF KeyframeSequenceWidgetQt::boundingRect() const {
-    const int pen = 2;
-    const auto start = mapFromScene(timeToScenePos(keyframeSequence_.getFirstTime()), 0).x();
-    const auto stop = mapFromScene(timeToScenePos(keyframeSequence_.getLastTime()), 0).x();
-
-    return QRectF{start - 0.5 * pen, -0.5 * trackHeight - 0.5 * pen, stop - start + pen,
-                  trackHeight + pen};
+    return childrenBoundingRect();
 }
 
 KeyframeWidgetQt* KeyframeSequenceWidgetQt::getKeyframeQt(const Keyframe* keyframe) const {

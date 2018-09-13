@@ -52,6 +52,8 @@ TFSelector::TFSelector()
     , tfOut_("tfOut", "TF Out", TransferFunction{})
     , selectedTF_("selectedTF", "Selected")
     , cycle_("cycle", "Cycle TFs")
+    , tfPresets_("presets", "Presets",
+                 std::make_unique<TransferFunctionProperty>("tfPreset1", "TF 1"))
     , interactions_("interactions", "Interactions")
     , nextTF_("nextTF", "Next TF",
               [this](Event* e) {
@@ -72,9 +74,7 @@ TFSelector::TFSelector()
                       }
                       e->markAsUsed();
                   },
-                  IvwKey::Comma, KeyState::Press)
-    , tfPresets_("presets", "Presets",
-                 std::make_unique<TransferFunctionProperty>("tfPreset1", "TF 1")) {
+                  IvwKey::Comma, KeyState::Press) {
 
     addPort(inport_);
     addPort(outport_);
@@ -96,12 +96,12 @@ TFSelector::TFSelector()
         for (auto p : tfPresets_.getProperties()) {
             p->onChange([]() {});
         }
-        if (tfPresets_.size() > 0) {
+        if (tfPresets_.size() > 0 && selectedTF_.size() > 0) {
             auto p = static_cast<TransferFunctionProperty*>(
                 tfPresets_.getPropertyByIdentifier(selectedTF_.getSelectedIdentifier()));
             tfOut_.set(p->get());
             // ensure that if the TF is modified, the output is in sync
-            p->onChange([this, ptr = p]() { tfOut_.set(ptr->get()); });
+            p->onChange([this, p]() { tfOut_.set(p->get()); });
         }
     });
 

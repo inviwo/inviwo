@@ -37,6 +37,8 @@
 #include <modules/openglqt/openglqtcapabilities.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <codecvt>
+
 namespace inviwo {
 
 GLFWwindow* CanvasGLFW::sharedContext_ = nullptr;
@@ -49,7 +51,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     , glWindow_(nullptr)
     , mouseButton_(MouseButton::None)
     , mouseState_(MouseState::Release)
-    , mouseModifiers_(flags::none) {
+    , modifiers_(flags::none) {
     
     glfwWindowHint(GLFW_FLOATING, alwaysOnTop_ ? GL_TRUE : GL_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
@@ -76,6 +78,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
 
     // register callbacks
     glfwSetKeyCallback(glWindow_, keyboard);
+    glfwSetCharCallback(glWindow_, character);
     glfwSetMouseButtonCallback(glWindow_, mouseButton);
     glfwSetCursorPosCallback(glWindow_, mouseMotion);
     glfwSetScrollCallback(glWindow_, scroll);
@@ -162,8 +165,8 @@ dvec2 CanvasGLFW::normalPos(dvec2 pos) const {
 }
 
 void CanvasGLFW::releaseContext() {}
-
-void CanvasGLFW::keyboard(GLFWwindow* window, int key, int /*scancode*/, int action, int /*mods*/) {
+    
+void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         // glfwSetWindowShouldClose(window, GL_TRUE);
         glfwTerminate();
@@ -172,9 +175,27 @@ void CanvasGLFW::keyboard(GLFWwindow* window, int key, int /*scancode*/, int act
     }
 
     auto thisCanvas = getCanvasGLFW(window);
+    auto keyState = (action == GLFW_PRESS) ? KeyState::Press : KeyState::Release;
+    thisCanvas->modifiers_ = mapModifiers(mods);
+    KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)), keyState, thisCanvas->modifiers_, scancode, "");
 
-    KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)));
+    thisCanvas->propagateEvent(&keyEvent);
+}
 
+void CanvasGLFW::character(GLFWwindow* window, unsigned int character) {
+    // Needed for text input
+    auto thisCanvas = getCanvasGLFW(window);
+    // Convert UTF32 character
+#if _MSC_VER 
+	// Linker error when using char16_t in visual studio
+	// https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
+	auto text = std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t>{}.to_bytes(character);
+#else 
+	auto text = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(character);
+#endif
+
+    KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, thisCanvas->modifiers_, character, text);
+    
     thisCanvas->propagateEvent(&keyEvent);
 }
 
@@ -182,14 +203,14 @@ void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mod
     auto thisCanvas = getCanvasGLFW(window);
     thisCanvas->mouseButton_ = mapMouseButton(button);
     thisCanvas->mouseState_ = mapMouseState(action);
-    thisCanvas->mouseModifiers_ = mapModifiers(mods);
+    thisCanvas->modifiers_ = mapModifiers(mods);
 
     dvec2 pos;
     glfwGetCursorPos(window, &pos.x, &pos.y);
     pos = thisCanvas->normalPos(pos);
 
     MouseEvent mouseEvent(thisCanvas->mouseButton_, thisCanvas->mouseState_,
-                          thisCanvas->mouseButton_, thisCanvas->mouseModifiers_, pos,
+                          thisCanvas->mouseButton_, thisCanvas->modifiers_, pos,
                           thisCanvas->getImageDimensions(),
                           thisCanvas->getDepthValueAtNormalizedCoord(pos));
 
@@ -204,7 +225,7 @@ void CanvasGLFW::mouseMotion(GLFWwindow* window, double x, double y) {
     MouseState state =
         (thisCanvas->mouseState_ == MouseState::Press ? MouseState::Move : thisCanvas->mouseState_);
     MouseEvent mouseEvent(thisCanvas->mouseButton_, state, thisCanvas->mouseButton_,
-                          thisCanvas->mouseModifiers_, pos, thisCanvas->getImageDimensions(),
+                          thisCanvas->modifiers_, pos, thisCanvas->getImageDimensions(),
                           thisCanvas->getDepthValueAtNormalizedCoord(pos));
 
     thisCanvas->propagateEvent(&mouseEvent);
@@ -217,7 +238,7 @@ void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
     glfwGetCursorPos(window, &pos.x, &pos.y);
     pos = thisCanvas->normalPos(pos);
 
-    WheelEvent wheelEvent(thisCanvas->mouseButton_, thisCanvas->mouseModifiers_,
+    WheelEvent wheelEvent(thisCanvas->mouseButton_, thisCanvas->modifiers_,
                           dvec2(xoffset, yoffset), pos, thisCanvas->getImageDimensions(),
                           thisCanvas->getDepthValueAtNormalizedCoord(pos));
 
@@ -250,6 +271,8 @@ KeyModifiers CanvasGLFW::mapModifiers(int modifiersGLFW) {
     if (modifiersGLFW & GLFW_MOD_CONTROL) result |= KeyModifier::Control;
 
     if (modifiersGLFW & GLFW_MOD_SHIFT) result |= KeyModifier::Shift;
+    
+    if (modifiersGLFW & GLFW_MOD_SUPER) result |= KeyModifier::Super;
 
     return result;
 }

@@ -163,11 +163,9 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     QSplitter* splitter = new QSplitter(nullptr);
     splitter->setOrientation(Qt::Vertical);
     pythonCode_ = new CodeEdit{Python};
-    pythonCode_->setObjectName("pythonEditor");
 
     setDefaultText();
-    pythonOutput_ = new QTextEdit(nullptr);
-    pythonOutput_->setObjectName("pythonConsole");
+    pythonOutput_ = new CodeEdit(None, nullptr);
     pythonOutput_->setReadOnly(true);
     pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
@@ -191,31 +189,6 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
 }
 
 PythonEditorWidget::~PythonEditorWidget() = default;
-
-void PythonEditorWidget::loadState() {
-    InviwoDockWidget::loadState();
-
-    // Restore state
-    QSettings settings;
-    settings.beginGroup(objectName());
-    QString lastFile = settings.value("lastScript", "").toString();
-    // If the script was saved to disk, the load it, else we use the script that was in the
-    // editor at last script execution or when inviwo closed (CloseEvent)
-    if (!lastFile.isEmpty()) {
-        loadFile(utilqt::fromQString(lastFile), false);
-    } else {
-        QString src = settings.value("source", "").toString();
-        if (src.length() != 0) {
-            pythonCode_->setPlainText(src);
-            script_.setSource(utilqt::fromQString(src));
-        }
-    }
-
-    auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
-    appendLog_->setChecked(append);
-
-    settings.endGroup();
-}
 
 void PythonEditorWidget::closeEvent(QCloseEvent* event) {
     if (unsavedChanges_) {
@@ -245,9 +218,8 @@ void PythonEditorWidget::focusInEvent(QFocusEvent* event) {
     }
 }
 
-void PythonEditorWidget::appendToOutput(const std::string& msg, bool error) {
-    pythonOutput_->setTextColor(error ? errorTextColor_ : infoTextColor_);
-    pythonOutput_->append(msg.c_str());
+void PythonEditorWidget::appendToOutput(const std::string& msg, bool) {
+    pythonOutput_->appendPlainText(utilqt::toQString(msg));
 }
 
 void PythonEditorWidget::fileChanged(const std::string& /*fileName*/) {
@@ -400,7 +372,7 @@ void PythonEditorWidget::run() {
     // user forgets to save it as a file.
     saveState();
 
-    mainWindow_->statusBar()->showMessage("Running");
+    mainWindow_->statusBar()->showMessage("Running ...");
     Clock c;
     c.start();
     bool ok = script_.run();
@@ -439,7 +411,7 @@ void PythonEditorWidget::setDefaultText() {
     setFileName("");
 }
 
-void PythonEditorWidget::clearOutput() { pythonOutput_->setText(""); }
+void PythonEditorWidget::clearOutput() { pythonOutput_->setPlainText(""); }
 
 void PythonEditorWidget::onTextChange() {
     std::string source = utilqt::fromQString(pythonCode_->toPlainText());
@@ -467,11 +439,38 @@ void PythonEditorWidget::updateTitleBar() {
 }
 
 void PythonEditorWidget::saveState() {
+    InviwoDockWidget::saveState();
+
     QSettings settings;
     settings.beginGroup(objectName());
     settings.setValue("appendLog", appendLog_->isChecked());
     settings.setValue("lastScript", utilqt::toQString(scriptFileName_));
     settings.setValue("source", pythonCode_->toPlainText());
+    settings.endGroup();
+}
+
+void PythonEditorWidget::loadState() {
+    InviwoDockWidget::loadState();
+
+    // Restore state
+    QSettings settings;
+    settings.beginGroup(objectName());
+    QString lastFile = settings.value("lastScript", "").toString();
+    // If the script was saved to disk, the load it, else we use the script that was in the
+    // editor at last script execution or when inviwo closed (CloseEvent)
+    if (!lastFile.isEmpty()) {
+        loadFile(utilqt::fromQString(lastFile), false);
+    } else {
+        QString src = settings.value("source", "").toString();
+        if (src.length() != 0) {
+            pythonCode_->setPlainText(src);
+            script_.setSource(utilqt::fromQString(src));
+        }
+    }
+
+    auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
+    appendLog_->setChecked(append);
+
     settings.endGroup();
 }
 

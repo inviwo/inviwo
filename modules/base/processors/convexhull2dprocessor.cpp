@@ -64,7 +64,7 @@ void ConvexHull2DProcessor::process() {
 
     // build a rotation matrix based on the normal
     const vec3 normal(glm::normalize(normal_.get()));
-    mat3 rotMatrix;
+    mat3 rotMatrix(1.0f);
     if (1.0f - std::abs(glm::dot(normal, vec3(0.0f, 0.0f, 1.0f))) > glm::epsilon<float>()) {
         // build right-hand coordinate system around normal
         vec3 right = glm::normalize(glm::cross(normal, vec3(0.0f, 0.0f, 1.0f)));

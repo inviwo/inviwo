@@ -75,7 +75,7 @@ void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, I
     outImageGL->activateBuffer(type);
 }
 
-void activateTargetAndCopySource(Image& targetImage, ImageInport& sourceInport, ImageType type) {
+void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport, ImageType type) {
     auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
     if (auto inImage = sourceInport.getData()) {
@@ -88,7 +88,7 @@ void activateTargetAndCopySource(Image& targetImage, ImageInport& sourceInport, 
     outImageGL->activateBuffer(type);
 }
 
-void activateTargetAndCopySource(ImageOutport& targetOutport, ImageInport& sourceInport,
+void activateTargetAndCopySource(ImageOutport& targetOutport, const ImageInport& sourceInport,
                                  ImageType type) {
     if (!targetOutport.hasEditableData()) {
         targetOutport.setData(

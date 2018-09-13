@@ -168,6 +168,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerMetaData(util::make_unique<FloatMetaData>());
     registerMetaData(util::make_unique<DoubleMetaData>());
     registerMetaData(util::make_unique<StringMetaData>());
+    registerMetaData(util::make_unique<SizeMetaData>());
     registerMetaData(util::make_unique<FloatVec2MetaData>());
     registerMetaData(util::make_unique<FloatVec3MetaData>());
     registerMetaData(util::make_unique<FloatVec4MetaData>());
@@ -186,6 +187,9 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerMetaData(util::make_unique<DoubleMat2MetaData>());
     registerMetaData(util::make_unique<DoubleMat4MetaData>());
     registerMetaData(util::make_unique<DoubleMat3MetaData>());
+    registerMetaData(util::make_unique<Size2MetaData>());
+    registerMetaData(util::make_unique<Size3MetaData>());
+    registerMetaData(util::make_unique<Size4MetaData>());
     registerMetaData(util::make_unique<VectorMetaData<2, float>>());
     registerMetaData(util::make_unique<VectorMetaData<3, float>>());
     registerMetaData(util::make_unique<VectorMetaData<4, float>>());

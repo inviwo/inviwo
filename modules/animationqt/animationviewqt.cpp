@@ -42,6 +42,7 @@
 #include <QGridLayout>
 #include <QScrollBar>
 #include <QGraphicsScene>
+#include <QStyleOption>
 #include <warn/pop>
 
 namespace inviwo {
@@ -53,8 +54,7 @@ namespace {
 class TimeLine : public QWidget {
 public:
     TimeLine(AnimationViewQt* parent) : QWidget(parent), view_(parent) {
-        std::string style = "border: 0px;\n background-color: #323235;";
-        setStyleSheet(style.c_str());
+        setObjectName("AnimationTimeLine");
         setMouseTracking(true);
         setFixedHeight(timelineHeight);
     }
@@ -62,14 +62,10 @@ public:
         QPainter painter(this);
 
         // Draw grid
-        QPen gridPen;
-        gridPen.setColor(QColor(157, 153, 149));
+        auto gridPen = painter.pen();
         gridPen.setWidthF(1.0);
         gridPen.setCosmetic(true);
-        painter.setPen(gridPen);
         auto font = painter.font();
-        font.setPointSize(12);
-        painter.setFont(font);
         QFontMetrics fm{font};
         auto fontHeight = fm.lineSpacing();
 
@@ -160,6 +156,7 @@ private:
 AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEditorQt* aScene)
     : QGraphicsView(), scene_{aScene}, controller_(controller) {
 
+    setObjectName("AnimationView");
     setScene(scene_);
     setViewportMargins(0, timelineHeight, 0, 0);
     setSceneRect(QRectF());
@@ -182,10 +179,8 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEdito
     gridLayout->setSpacing(0);
     gridLayout->setMargin(0);
 
-    std::string style = "border: 0px;\n background-color: #323235;";
     gridLayout->addWidget(timeline_, 0, 0);
     gridLayout->addWidget(viewport(), 1, 0);
-    viewport()->setStyleSheet(style.c_str());
 
     setLayout(gridLayout);
     setFrameStyle(QFrame::NoFrame);

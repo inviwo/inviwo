@@ -53,10 +53,10 @@ public:
     TrackControlsWidgetQt(QStandardItem* item, Track& track, AnimationController& controller);
     virtual ~TrackControlsWidgetQt() = default;
 
-private:
-    // QWidget overloads
-    virtual void mousePressEvent(QMouseEvent* e) override;
+    Track& track();
+    const Track& track() const;
 
+private:
     // TrackObserver overloads;
     virtual void onEnabledChanged(Track* track) override;
 

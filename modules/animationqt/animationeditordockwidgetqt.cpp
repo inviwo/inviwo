@@ -32,6 +32,8 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/raiiutils.h>
+
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -76,7 +78,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , controller_{manager.getAnimationController()} {
 
-    loadStyle();
 
     resize(QSize(1000, 400));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -112,6 +113,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
     // left part List widget of track labels
     auto animationLabelView = new AnimationLabelViewQt(controller_);
     animationLabelView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    animationLabelView->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
     animationLabelView->verticalScrollBar()->setTracking(true);
 
     auto splitter = new QSplitter();
@@ -128,7 +130,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
     connect(animationView_->verticalScrollBar(), &QScrollBar::valueChanged, this,
             [this, animationLabelView](auto val) {
                 if (vScrolling_) return;
-                vScrolling_ = true;
+                util::KeepTrueWhileInScope scrolling(&vScrolling_);
                 auto vs = animationView_->verticalScrollBar();
                 auto ls = animationLabelView->verticalScrollBar();
 
@@ -137,12 +139,11 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
                 const auto lval = static_cast<int>(std::round(val * lSize / vSize));
 
                 ls->setValue(lval);
-                vScrolling_ = false;
             });
     connect(animationLabelView->verticalScrollBar(), &QScrollBar::valueChanged, this,
             [this, animationLabelView](auto val) {
                 if (vScrolling_) return;
-                vScrolling_ = true;
+                util::KeepTrueWhileInScope scrolling(&vScrolling_);
                 auto vs = animationView_->verticalScrollBar();
                 auto ls = animationLabelView->verticalScrollBar();
 
@@ -151,7 +152,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
                 const auto vval = static_cast<int>(std::round(val * vSize / lSize));
 
                 vs->setValue(vval);
-                vScrolling_ = false;
             });
 
     {
@@ -272,13 +272,6 @@ void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, Animation
         QSignalBlocker block(btnPlayPause_);
         btnPlayPause_->setChecked(false);
     }
-}
-
-void AnimationEditorDockWidgetQt::loadStyle() {
-    QFile styleSheetFile(":/animation/animation.qss");
-    styleSheetFile.open(QFile::ReadOnly);
-    QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
-    setStyleSheet(styleSheet);
 }
 
 }  // namespace animation

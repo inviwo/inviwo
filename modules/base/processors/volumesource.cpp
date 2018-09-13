@@ -98,11 +98,11 @@ void VolumeSource::load(bool deserialize) {
     } else {
         try {
             if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
-                auto volumes = volVecReader->readData(file_.get());
+                auto volumes = volVecReader->readData(file_.get(), this);
                 std::swap(volumes, volumes_);
                 rm->addResource(file_.get(), volumes_, reload_.isModified());
             } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
-                auto volume = volreader->readData(file_.get());
+                auto volume = volreader->readData(file_.get(), this);
                 auto volumes = std::make_shared<VolumeSequence>();
                 volumes->push_back(volume);
                 std::swap(volumes, volumes_);

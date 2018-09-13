@@ -35,10 +35,10 @@ namespace inviwo {
 Exception::Exception(const std::string& message, ExceptionContext context)
     : std::exception(), message_(message), context_(context) {}
 
-Exception::~Exception() throw() {}
+Exception::~Exception() noexcept = default;
 
-std::string Exception::getMessage() const throw() { return message_; }
-const char* Exception::what() const throw() { return message_.c_str(); }
+std::string Exception::getMessage() const noexcept { return message_; }
+const char* Exception::what() const noexcept { return message_.c_str(); }
 
 const ExceptionContext& Exception::getContext() const { return context_; }
 

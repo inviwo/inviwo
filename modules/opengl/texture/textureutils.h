@@ -64,10 +64,10 @@ IVW_MODULE_OPENGL_API void activateTargetAndCopySource(Image& targetImage, const
                                                        ImageType type = ImageType::AllLayers);
 
 IVW_MODULE_OPENGL_API void activateTargetAndCopySource(Image& targetImage,
-                                                       ImageInport& sourceInport,
+                                                       const ImageInport& sourceInport,
                                                        ImageType type = ImageType::AllLayers);
 IVW_MODULE_OPENGL_API void activateTargetAndCopySource(ImageOutport& targetOutport,
-                                                       ImageInport& sourceInport,
+                                                       const ImageInport& sourceInport,
                                                        ImageType type = ImageType::AllLayers);
 
 IVW_MODULE_OPENGL_API void clearCurrentTarget();

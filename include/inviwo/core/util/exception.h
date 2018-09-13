@@ -72,9 +72,9 @@ using ExceptionHandler = std::function<void(ExceptionContext)>;
 class IVW_CORE_API Exception : public std::exception {
 public:
     Exception(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~Exception() throw();
-    virtual std::string getMessage() const throw();
-    virtual const char* what() const throw() override;
+    virtual ~Exception() noexcept;
+    virtual std::string getMessage() const noexcept;
+    virtual const char* what() const noexcept override;
     virtual const ExceptionContext& getContext() const;
 
 private:
@@ -82,42 +82,42 @@ private:
     ExceptionContext context_;
 };
 
-
 class IVW_CORE_API RangeException : public Exception {
 public:
     RangeException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~RangeException() throw() {}
+    virtual ~RangeException() noexcept = default;
 };
 
 class IVW_CORE_API NullPointerException : public Exception {
 public:
-    NullPointerException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~NullPointerException() throw() {}
+    NullPointerException(const std::string& message = "",
+                         ExceptionContext context = ExceptionContext());
+    virtual ~NullPointerException() noexcept = default;
 };
 
 class IVW_CORE_API IgnoreException : public Exception {
 public:
     IgnoreException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~IgnoreException() throw() {}
+    virtual ~IgnoreException() noexcept = default;
 };
 
 class IVW_CORE_API AbortException : public Exception {
 public:
     AbortException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~AbortException() throw() {}
+    virtual ~AbortException() noexcept = default;
 };
 
 class IVW_CORE_API FileException : public Exception {
 public:
     FileException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~FileException() throw() {}
+    virtual ~FileException() noexcept = default;
 };
-
 
 class IVW_CORE_API ResourceException : public Exception {
 public:
-    ResourceException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~ResourceException() throw() {}
+    ResourceException(const std::string& message = "",
+                      ExceptionContext context = ExceptionContext());
+    virtual ~ResourceException() noexcept = default;
 };
 
 class IVW_CORE_API ModuleInitException : public Exception {
@@ -125,10 +125,10 @@ public:
     ModuleInitException(const std::string& message = "",
                         ExceptionContext context = ExceptionContext(),
                         std::vector<std::string> modulesToDeregister = {});
-    virtual ~ModuleInitException() throw() {}
+    virtual ~ModuleInitException() noexcept = default;
 
     /**
-     * When registering a module fails, also remove these modules. 
+     * When registering a module fails, also remove these modules.
      * Useful for implicit dependencies. Like OpenGL's dependency on GLFW or OpenGLQt module.
      */
     const std::vector<std::string>& getModulesToDeregister() const;
@@ -141,10 +141,8 @@ struct IVW_CORE_API StandardExceptionHandler {
     void operator()(ExceptionContext);
 };
 
+}  // namespace inviwo
 
-
-}  // namespace
-
-#include <warn/pop> 
+#include <warn/pop>
 
 #endif  // IVW_EXCEPTION_H

@@ -75,6 +75,10 @@ VolumeSequenceSource::VolumeSequenceSource()
     addProperty(information_);
     addProperty(basis_);
 
+	// It does not make sense to change these for an entire sequence
+	information_.setReadOnly(true);
+	basis_.setReadOnly(true);
+
     auto updateVisible = [&]() {
         file_.setVisible(inputType_.get() == InputType::SingleFile);
         folder_.setVisible(inputType_.get() == InputType::Folder);
@@ -104,7 +108,7 @@ void VolumeSequenceSource::loadFile(bool deserialize) {
     std::string ext = filesystem::getFileExtension(file_.get());
     if (auto reader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
         try {
-            volumes_ = reader->readData(file_.get());
+            volumes_ = reader->readData(file_.get(), this);
         } catch (DataReaderException const& e) {
             LogProcessorError(e.getMessage());
         }
@@ -131,12 +135,12 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
             std::string ext = filesystem::getFileExtension(file);
             try {
                 if (auto reader1 = rf->getReaderForTypeAndExtension<Volume>(ext)) {
-                    auto volume = reader1->readData(file);
+                    auto volume = reader1->readData(file, this);
                     volume->setMetaData<StringMetaData>("filename", file);
                     volumes_->push_back(volume);
 
                 } else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
-                    auto volumes = reader2->readData(file);
+                    auto volumes = reader2->readData(file, this);
                     for (auto volume : *volumes) {
                         volume->setMetaData<StringMetaData>("filename", file);
                         volumes_->push_back(volume);
@@ -180,10 +184,6 @@ void VolumeSequenceSource::process() {
     }
 
     if (volumes_ && !volumes_->empty()) {
-        for (auto& vol : *volumes_) {
-            basis_.updateEntity(*vol);
-            information_.updateVolume(*vol);
-        }
         outport_.setData(volumes_);
     }
 }
@@ -191,6 +191,9 @@ void VolumeSequenceSource::process() {
 void VolumeSequenceSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     addFileNameFilters();
+	// It does not make sense to change these for an entire sequence
+	information_.setReadOnly(true);
+	basis_.setReadOnly(true);
     deserialized_ = true;
 }
 }  // namespace inviwo

@@ -35,6 +35,7 @@
 
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -66,6 +67,10 @@ public:
     void lock();
     void unlock();
     bool islocked() const;
+
+    // override for qgraphicsitem_cast (refer qt documentation)
+    enum { Type = UserType + static_cast<int>(ItemTypes::Keyframe) };
+    virtual int type() const override { return Type; }
 
 protected:
     virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
