@@ -197,7 +197,7 @@ struct DataTraits<dd::DataSet> {
                 auto channel = data.Channels.getChannel(channelKey);
                 oss << "      " << channelKey.first << '[' << channel->getNumComponents()
                     << "][" << channel->size() << ']' << "(Dim "
-                    << channelKey.second << ')';
+                    << (int)channelKey.second << ')';
             }
         Document doc;
         doc.append("p", oss.str());

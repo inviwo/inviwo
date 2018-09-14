@@ -59,7 +59,7 @@ TEST(AccessingData, Connectivity) {
             //// Iterate over all vertices of the respective cell.
             //// Basically a fromGridPrimitive/toGridPrimitive/fromIndex/toIndex object.
             //// Do something with them.
-            int idx = vert.getIndex();
+            ind idx = vert.getIndex();
 
             // Make sure the gird is bi-directional.
             grid->getConnections(neighbors, idx, vert.getType(), cell.getType());
@@ -72,7 +72,7 @@ TEST(AccessingData, Connectivity) {
         }
     }
 
-    EXPECT_TRUE(allFine, "Connectivity is not bi-directional.");
+    EXPECT_TRUE(allFine && "Connectivity is not bi-directional.");
 }
 
 }  // namespace

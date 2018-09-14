@@ -73,7 +73,7 @@ ind Channel::getNumComponents() const {
 
 
 void Channel::setGridPrimitiveType(GridPrimitive prim) {
-    setMetaData<IntMetaData>("GridPrimitiveType", prim);
+    setMetaData<IntMetaData>("GridPrimitiveType", (int)prim);
 }
 
 void Channel::setDataFormatId(DataFormatId format) {

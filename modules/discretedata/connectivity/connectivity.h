@@ -68,7 +68,7 @@ class IVW_MODULE_DISCRETEDATA_API Connectivity {
 public:
     Connectivity(GridPrimitive gridDimension)
         : gridDimension_(gridDimension)
-        , numGridPrimitives_(gridDimension + 1, -1) {
+        , numGridPrimitives_((int)gridDimension + 1, -1) {
     }  // Initialize sizes with -1. Overwrite when known.
     virtual ~Connectivity() = default;
 

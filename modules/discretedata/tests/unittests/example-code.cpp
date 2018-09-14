@@ -67,8 +67,8 @@ TEST(Using, Dataset) {
     // Fill randomly.
     generate(randomData.begin(), randomData.end(), []() { return rand(); });
     auto randomBuffer = std::make_shared<BufferChannel<int, 3>>(randomData,
-                                                              "Random",
-                                                              GridPrimitive::Vertex);
+                                                                "Random",
+                                                                GridPrimitive::Vertex);
 
     // Add to the dataset. There, it is kept as a const shared_ptr.
     dataset.Channels.addChannel(randomBuffer);
@@ -107,7 +107,7 @@ TEST(Using, Dataset) {
     EXPECT_TRUE(vertexBuffer && "Could not retrieve random BufferChannel from DataSet as Buffer.");
 
     /*********************************************************************************
-    * Random algortihm: apply an average filter.
+    * Random algorithm: apply an average filter.
     *********************************************************************************/
     std::vector<float> filteredRandom(vertexChannel->getNumComponents() * vertexChannel->size());
 
@@ -151,21 +151,22 @@ TEST(Using, Dataset) {
 
         // Cylinder coordinates.
         double angle = M_PI * 2 * x / size[0];
-        float radius = 5 + y;
+        float radius = 5.0f + y;
         pos.x = (float)sin(angle) * radius;
         pos.y = (float)cos(angle) * radius;
         pos.z = (float)z;
     };
 
     // Add as AnalyticChannel.
-    dataset.Grid->vertices_ = (std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(posFunc, grid->getNumElements(GridPrimitive::Volume),
-                               "Position", GridPrimitive::Vertex));
+    dataset.Grid->vertices_ = std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(
+                               posFunc, grid->getNumElements(GridPrimitive::Vertex),
+                               "Position", GridPrimitive::Vertex);
 
     /*********************************************************************************
     * Random algorithm: divide by volume.
     * Note: So far, only volume is available, length and area etc would be nice too.
     *********************************************************************************/
-    std::vector<float> normalizedSinCos(cellChannel->size() * cellChannel->getNumComponents());
+    std::vector<double> normalizedSinCos(cellChannel->size() * cellChannel->getNumComponents());
 
     // Iterate through all 3D cells, thus, volume.
     for (auto cell : dataset.Grid->all(GridPrimitive::Volume)) {
@@ -185,7 +186,6 @@ TEST(Using, Dataset) {
     * Random algorithm: divide averaged random data by volume.
     * "Distribute" the cell volumes uniformly across connected vertices.
     *********************************************************************************/
-    bool allFine = true;
     for (auto vertex : dataset.Grid->all(GridPrimitive::Vertex)) {
         double totalVolume = 0;
 
@@ -204,7 +204,7 @@ TEST(Using, Dataset) {
 //        if (totalVolume <= 0) EXPECT_FALSE("Some volume was 0 or negative");
 
         // Divide each value 
-        for (ind dim = 0; dim < 3; ++dim) filteredRandom[vertex * 3 + dim] /= totalVolume;
+        for (ind dim = 0; dim < 3; ++dim) filteredRandom[vertex * 3 + dim] /= (float)totalVolume;
     }
 
     // Ad to DataSet for fun.

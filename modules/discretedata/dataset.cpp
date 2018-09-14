@@ -47,7 +47,7 @@ void DataChannelMap::addChannel(SharedConstChannel sharedChannel) {
 }
 
 bool DataChannelMap::removeChannel(SharedConstChannel channel) {
-    return ChannelSet.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType()));
+    return ChannelSet.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType())) != 0;
 }
 
 SharedConstChannel DataChannelMap::getFirstChannel() const {

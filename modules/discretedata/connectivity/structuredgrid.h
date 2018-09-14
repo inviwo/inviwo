@@ -80,7 +80,7 @@ protected:
     };
 
     template <typename T>
-    double ComputeHexVolume(const std::vector<ind>& connections) const { return -1.0; }
+    double ComputeHexVolume(const std::vector<ind>&) const { return -1.0; }
 
 protected:
     std::vector<ind> numCellsPerDimension_;

@@ -43,13 +43,13 @@ PeriodicGrid::PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& 
 
     ind numCells = 1;
     ind numVerts = 1;
-    for (ind dim = GridPrimitive::Vertex; dim < gridDimension; ++dim) {
+    for (ind dim = (ind)GridPrimitive::Vertex; dim < (ind)gridDimension; ++dim) {
         numCells *= numCellsPerDimension_[dim];
         numVerts *= numCellsPerDimension_[dim] + 1;
     }
 
-    numGridPrimitives_[gridDimension] = numCells;
-    numGridPrimitives_[GridPrimitive::Vertex] = numVerts;
+    numGridPrimitives_[(ind)gridDimension] = numCells;
+    numGridPrimitives_[(ind)GridPrimitive::Vertex] = numVerts;
 }
 
 void PeriodicGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
@@ -127,12 +127,11 @@ void PeriodicGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrim
         // Linear Index to nD Vertex Index.
         std::vector<ind> VertexIndex = indexFromLinear(idxLin, vertDims);
 
-        // Prepare neighbors
-        std::vector<ind> CellNeighbors;
+        // Prepare neighbors.
         const ind MaxNeighbors = ind(1) << NumDimensions;
-        CellNeighbors.reserve(MaxNeighbors);
+        result.reserve(MaxNeighbors);
 
-        // Compute neighbors
+        // Compute neighbors.
         std::vector<ind> CurrentNeighbor;
         for (ind i(0); i < MaxNeighbors; i++) {
             // Base index is the vertex index. The same cell index is the upper-right one of the
@@ -173,7 +172,7 @@ void PeriodicGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrim
             }
 
             // If so, let's add it.
-            if (bOk) CellNeighbors.push_back(CurrentNeighborLinearIndex);
+            if (bOk) result.push_back(CurrentNeighborLinearIndex);
         }
 
         return;
@@ -214,19 +213,19 @@ void PeriodicGrid::sameLevelConnection(std::vector<ind>& result, ind idxLin,
     result.clear();
     ind dimensionProduct = 1;
     ind index = idxLin;
-    for (int dim = 0; dim < size.size(); ++dim) {
+    for (ind dim = 0; dim < (ind)size.size(); ++dim) {
         ind nextDimProd = dimensionProduct * size[dim];
         ind locIdx = index % size[dim];
         index      = index / size[dim];
 
         if (locIdx > 0)
             result.push_back(idxLin - dimensionProduct);
-        else if (isPeriodic((GridPrimitive)dim))
+        else if (isPeriodic(dim))
             result.push_back(idxLin + nextDimProd - 2 * dimensionProduct);
 
         if (locIdx < size[dim] - 2)
             result.push_back(idxLin + dimensionProduct);
-        else if (isPeriodic((GridPrimitive)dim))
+        else if (isPeriodic(dim))
             result.push_back(idxLin - nextDimProd + 2 * dimensionProduct);
 
         dimensionProduct = nextDimProd;

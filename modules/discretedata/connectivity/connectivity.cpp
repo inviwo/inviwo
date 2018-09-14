@@ -39,8 +39,8 @@ namespace dd {
 ind Connectivity::getNumElements(GridPrimitive elementType) const {
     assert((ind)numGridPrimitives_.size() == (ind)gridDimension_ + 1 &&
            "GridPrimitive count vector has the wrong size.");
-    assert(numGridPrimitives_[elementType] != -1 && "No size stored.");
-    return numGridPrimitives_[elementType];
+    assert(numGridPrimitives_[(int)elementType] != -1 && "No size stored.");
+    return numGridPrimitives_[(int)elementType];
 }
 
 ElementRange Connectivity::all(GridPrimitive dim) const { return ElementRange(dim, this); }

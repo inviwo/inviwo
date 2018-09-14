@@ -43,13 +43,13 @@ StructuredGrid::StructuredGrid(GridPrimitive gridDimension, const std::vector<in
 
     ind numCells = 1;
     ind numVerts = 1;
-    for (ind dim = GridPrimitive::Vertex; dim < gridDimension; ++dim) {
+    for (ind dim = (ind)GridPrimitive::Vertex; dim < (ind)gridDimension; ++dim) {
         numCells *= numCellsPerDimension_[dim];
         numVerts *= numCellsPerDimension_[dim] + 1;
     }
 
-    numGridPrimitives_[gridDimension] = numCells;
-    numGridPrimitives_[GridPrimitive::Vertex] = numVerts;
+    numGridPrimitives_[(ind)gridDimension] = numCells;
+    numGridPrimitives_[(ind)GridPrimitive::Vertex] = numVerts;
 }
 
 std::vector<ind> StructuredGrid::indexFromLinear(ind idxLin, const std::vector<ind>& size)

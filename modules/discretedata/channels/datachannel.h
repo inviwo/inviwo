@@ -42,7 +42,7 @@ typedef signed long long ind;
 *   Assign channels to any dimensions this way.
 *   If these do not suffice, cast the respective short.
 */
-enum GridPrimitive : char {
+enum class GridPrimitive : ind {
     Vertex = 0,
     Edge = 1,
     Face = 2,
