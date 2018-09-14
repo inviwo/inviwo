@@ -56,7 +56,8 @@ ImageSourceSeries::ImageSourceSeries()
     , imageFileName_("imageFileName", "Image File Name") {
 
     isReady_.setUpdate([this]() { return !fileList_.empty(); });
-
+    // Remove default data created by ImageOutport
+    outport_.setData(static_cast<Image*>(nullptr));
     addPort(outport_);
     addProperty(imageFilePattern_);
     addProperty(findFilesButton_);
@@ -74,7 +75,10 @@ ImageSourceSeries::ImageSourceSeries()
 }
 
 void ImageSourceSeries::process() {
-    if (fileList_.empty()) return;
+    if (fileList_.empty()) {
+        outport_.setData(static_cast<Image*>(nullptr));
+        return;
+    }
 
     if (imageFilePattern_.isModified()) {
         // check all matching files whether they have a supported file extension,
