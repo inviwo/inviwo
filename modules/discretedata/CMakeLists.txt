@@ -44,6 +44,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/dataset-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-access-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/example-code.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
