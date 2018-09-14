@@ -16,6 +16,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectioniterator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectivity.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/elementiterator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/periodicgrid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/structuredgrid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataset.inl
@@ -30,6 +31,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectioniterator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectivity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/elementiterator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/periodicgrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/structuredgrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataset.cpp
 )
