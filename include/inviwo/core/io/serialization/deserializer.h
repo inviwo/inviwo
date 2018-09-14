@@ -52,7 +52,6 @@ class FactoryBase;
 template <typename T, typename K>
 class ContainerWrapper;
 
-
 class IVW_CORE_API Deserializer : public SerializeBase {
 public:
     /**
@@ -63,7 +62,8 @@ public:
      */
     Deserializer(std::string fileName, bool allowReference = true);
     /**
-     * \brief Deserializes content from the stream using refPath to calculate relative paths to data.
+     * \brief Deserializes content from the stream using refPath to calculate relative paths to
+     * data.
      *
      * @param stream Stream with content that is to be deserialized.
      * @param refPath A path that will be used to decode the location of data during
@@ -106,8 +106,8 @@ public:
                      const std::string& itemKey = "item");
 
     template <typename T, typename C>
-    void deserialize(const std::string& key, std::vector<T*>& sVector,
-                     const std::string& itemKey, C identifier);
+    void deserialize(const std::string& key, std::vector<T*>& sVector, const std::string& itemKey,
+                     C identifier);
 
     template <typename T>
     void deserialize(const std::string& key, std::vector<T>& sVector,
@@ -215,7 +215,7 @@ public:
     void deserialize(const std::string& key, Mat& data);
 
     // bitsets
-    template<unsigned N>
+    template <unsigned N>
     void deserialize(const std::string& key, std::bitset<N>& bits);
 
     /**
@@ -231,7 +231,6 @@ public:
     template <class Base, class T>
     void deserializeAs(const std::string& key, T*& data);
 
-
     template <class T, class D>
     void deserialize(const std::string& key, std::unique_ptr<T, D>& data);
 
@@ -242,7 +241,7 @@ public:
     void handleError(const ExceptionContext& context);
 
     void convertVersion(VersionConverter* converter);
-    
+
     /**
      * \brief For allocating objects such as processors, properties.. using registered factories.
      *
@@ -269,9 +268,9 @@ public:
     int getInviwoWorkspaceVersion() const;
 
 private:
-
     // integers, strings
-    template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
+    template <typename T,
+              typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
     void getSafeValue(const std::string& key, T& data);
 
     // reals
@@ -280,11 +279,9 @@ private:
 
     void storeReferences(TxElement* node);
 
-
-
     ExceptionHandler exceptionHandler_;
     std::map<std::string, TxElement*> referenceLookup_;
-    
+
     std::vector<FactoryBase*> registeredFactories_;
 
     int inviwoWorkspaceVersion_ = 0;
@@ -337,14 +334,13 @@ private:
 
 namespace util {
 
-
 /**
- * A helper class for more advanced deserialization. useful when one has to call observer 
- * notifications for example. 
- * Example usage, serialize as usual  
+ * A helper class for more advanced deserialization. useful when one has to call observer
+ * notifications for example.
+ * Example usage, serialize as usual
  * ```{.cpp}
  *     s.serialize("TFPrimitives", values_, "point");
- *      
+ *
  * ```
  * Then deserialize with notifications:
  * ```{.cpp}
@@ -430,6 +426,10 @@ public:
         return *this;
     }
     IdentifiedDeserializer<K, T>& onNew(std::function<void(T&)> onNewItem) {
+        onNewItem_ = [onNewItem](T& i, size_t) { onNewItem(i); };
+        return *this;
+    }
+    IdentifiedDeserializer<K, T>& onNewIndexed(std::function<void(T&, size_t)> onNewItem) {
         onNewItem_ = onNewItem;
         return *this;
     }
@@ -441,7 +441,7 @@ public:
     template <typename C>
     void operator()(Deserializer& d, C& container) {
         T tmp{};
-        auto toRemove = util::transform(container, [&](const T& x)->K {return getID_(x);});
+        auto toRemove = util::transform(container, [&](const T& x) -> K { return getID_(x); });
         ContainerWrapper<T, K> cont(
             itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
                 util::erase_remove(toRemove, id);
@@ -450,7 +450,7 @@ public:
                     return {true, *it, [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {filter_(id, ind), tmp, [&](T& val) { onNewItem_(val); }};
+                    return {filter_(id, ind), tmp, [&](T& val) { onNewItem_(val, ind); }};
                 }
             });
 
@@ -459,11 +459,15 @@ public:
     }
 
 private:
-    std::function<K(const T&)> getID_ = [](const T&) -> K { throw Exception("GetID callback is not set!"); };
+    std::function<K(const T&)> getID_ = [](const T&) -> K {
+        throw Exception("GetID callback is not set!");
+    };
     std::function<T()> makeNewItem_ = []() -> T {
         throw Exception("MakeNew callback is not set!");
     };
-    std::function<void(T&)> onNewItem_ = [](T&) { throw Exception("OnNew callback is not set!"); };
+    std::function<void(T&, size_t)> onNewItem_ = [](T&, size_t) {
+        throw Exception("OnNew callback is not set!");
+    };
     std::function<void(const K&)> onRemoveItem_ = [](const K&) {
         throw Exception("OnRemove callback is not set!");
     };
@@ -479,14 +483,15 @@ private:
 template <typename K, typename T>
 class MapDeserializer {
 public:
-    MapDeserializer(std::string key, std::string itemKey, std::string attribKey = SerializeConstants::KeyAttribute) : key_(key), itemKey_(itemKey), attribKey_(attribKey) {}
+    MapDeserializer(std::string key, std::string itemKey,
+                    std::string attribKey = SerializeConstants::KeyAttribute)
+        : key_(key), itemKey_(itemKey), attribKey_(attribKey) {}
 
     MapDeserializer<K, T>& setMakeNew(std::function<T()> makeNewItem) {
         makeNewItem_ = makeNewItem;
         return *this;
     }
-    MapDeserializer<K, T>& setNewFilter(
-        std::function<bool(const K& id, size_t ind)> filter) {
+    MapDeserializer<K, T>& setNewFilter(std::function<bool(const K& id, size_t ind)> filter) {
         filter_ = filter;
         return *this;
     }
@@ -506,8 +511,8 @@ public:
     template <typename C>
     void operator()(Deserializer& d, C& container) {
         T tmp{};
-        auto toRemove =
-            util::transform(container, [](const std::pair<const K, T>& item) { return item.first; });
+        auto toRemove = util::transform(
+            container, [](const std::pair<const K, T>& item) { return item.first; });
         ContainerWrapper<T, K> cont(
             itemKey_, [&](K id, size_t ind) -> typename ContainerWrapper<T, K>::Item {
                 util::erase_remove(toRemove, id);
@@ -544,8 +549,8 @@ private:
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;
     };
-    std::function<K(const K&)> identifierTransform_ = [](const K &identifier) { 
-        return identifier; 
+    std::function<K(const K&)> identifierTransform_ = [](const K& identifier) {
+        return identifier;
     };
 
     const std::string key_;
@@ -553,8 +558,7 @@ private:
     const std::string attribKey_;
 };
 
-}  // namespace
-
+}  // namespace util
 
 template <typename T>
 T* Deserializer::getRegisteredType(const std::string& className) {
@@ -578,6 +582,7 @@ public:
     DeserializationErrorHandle(Deserializer& d, Args&&... args);
     virtual ~DeserializationErrorHandle();
     T& getHandler();
+
 private:
     T handler_;
     Deserializer& d_;
@@ -587,19 +592,18 @@ template <typename T>
 template <typename... Args>
 DeserializationErrorHandle<T>::DeserializationErrorHandle(Deserializer& d, Args&&... args)
     : handler_(std::forward<Args>(args)...), d_(d) {
-    d_.setExceptionHandler([this](ExceptionContext c) {handler_(c);});
+    d_.setExceptionHandler([this](ExceptionContext c) { handler_(c); });
 }
 
 template <typename T>
 DeserializationErrorHandle<T>::~DeserializationErrorHandle() {
-     d_.setExceptionHandler(nullptr);
+    d_.setExceptionHandler(nullptr);
 }
 
 template <typename T>
 T& DeserializationErrorHandle<T>::getHandler() {
     return handler_;
 }
-
 
 template <typename T>
 struct ParseWrapper {
@@ -694,7 +698,7 @@ void Deserializer::deserialize(const std::string& key, T& data, const Serializat
 // Flag types
 template <typename T>
 void Deserializer::deserialize(const std::string& key, flags::flags<T>& data,
-                 const SerializationTarget& target) {
+                               const SerializationTarget& target) {
 
     auto tmp = data.underlying_value();
     deserialize(key, tmp, target);
@@ -843,30 +847,30 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
 
 template <typename T>
 void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
-                                  const std::string& itemKey) {
-        NodeSwitch vectorNodeSwitch(*this, key);
-        if (!vectorNodeSwitch) return;
+                               const std::string& itemKey) {
+    NodeSwitch vectorNodeSwitch(*this, key);
+    if (!vectorNodeSwitch) return;
 
-        unsigned int i = 0;
-        TxEIt child(itemKey);
+    unsigned int i = 0;
+    TxEIt child(itemKey);
 
-        for (child = child.begin(rootElement_); child != child.end(); ++child) {
-            // In the next deserialization call do net fetch the "child" since we are looping...
-            // hence the "false" as the last arg.
-            NodeSwitch elementNodeSwitch(*this, &(*child), false);
-            try {
-                if (vector.size() <= i) {
-                    T item;
-                    deserialize(itemKey, item);
-                    vector.push_back(std::move(item));
-                } else {
-                    deserialize(itemKey, vector[i]);
-                }
-            } catch (...) {
-                handleError(IvwContext);
+    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+        // In the next deserialization call do net fetch the "child" since we are looping...
+        // hence the "false" as the last arg.
+        NodeSwitch elementNodeSwitch(*this, &(*child), false);
+        try {
+            if (vector.size() <= i) {
+                T item;
+                deserialize(itemKey, item);
+                vector.push_back(std::move(item));
+            } else {
+                deserialize(itemKey, vector[i]);
             }
-            i++;
+        } catch (...) {
+            handleError(IvwContext);
         }
+        i++;
+    }
 }
 
 template <typename T>
@@ -979,11 +983,11 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
         auto it = map.find(childkey);
         if (it != map.end()) {
             try {
-                if(auto ptr = it->second.get()) {
+                if (auto ptr = it->second.get()) {
                     deserialize(itemKey, ptr);
                 } else {
                     deserialize(itemKey, ptr);
-                    it->second.reset(ptr);          
+                    it->second.reset(ptr);
                 }
             } catch (...) {
                 handleError(IvwContext);
@@ -1110,8 +1114,8 @@ void Deserializer::deserializeAs(const std::string& key, T*& data) {
             data = typeptr;
         } else {
             delete ptr;
-            throw SerializationException("Could not deserialize \"" + key +
-                                         "\" types does not match", IvwContext);
+            throw SerializationException(
+                "Could not deserialize \"" + key + "\" types does not match", IvwContext);
         }
     }
 }
@@ -1128,11 +1132,11 @@ void Deserializer::deserializeAs(const std::string& key, std::unique_ptr<T, D>& 
             data.reset(typeptr);
         } else {
             delete ptr;
-            throw SerializationException("Could not deserialize \"" + key +
-                                         "\" types does not match", IvwContext);
+            throw SerializationException(
+                "Could not deserialize \"" + key + "\" types does not match", IvwContext);
         }
     }
 }
 
-}  // namespace
+}  // namespace inviwo
 #endif

@@ -68,8 +68,6 @@ protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
 
-    void loadStyle();
-
     AnimationController& controller_;
 
     // GUI-stuff

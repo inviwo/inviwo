@@ -71,6 +71,7 @@ public:
     static void move(GLFWwindow*,int,int);
 
     static void keyboard(GLFWwindow*, int, int, int, int);
+    static void character(GLFWwindow*, unsigned int); ///< UTF32 encoded text input
     static void mouseButton(GLFWwindow*, int, int, int);
     static void mouseMotion(GLFWwindow*, double, double);
     static void scroll(GLFWwindow*, double, double);
@@ -102,7 +103,7 @@ private:
 
     MouseButton mouseButton_;
     MouseState mouseState_;
-    KeyModifiers mouseModifiers_;
+    KeyModifiers modifiers_;
 
     static GLFWwindow* sharedContext_;
     static int glfwWindowCount_;

@@ -42,7 +42,7 @@
 #elif defined(__GNUC__)
 //  Not available
 #elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 130000000)
+#   if (_MSC_FULL_VER >= 120000000)
 #       pragma warning(disable: 4711)
 #   endif
 #endif

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DOUBLE_SPIN_BOX_QT_H
@@ -43,7 +43,7 @@ namespace inviwo {
 
 /** \class CustomDoubleSpinBoxQt
  *
- * Enables displaying a value with a certain precision without truncation the actual value, which
+ * Enables displaying a value with a certain precision without truncating the actual value, which
  * QDoubleSpinBox does.
  */
 class IVW_MODULE_QTWIDGETS_API CustomDoubleSpinBoxQt : public QDoubleSpinBox {
@@ -66,7 +66,7 @@ public:
      * we can cache size and decimals to display.
      *
      */
-    virtual void setDecimals(int decimals);
+    void setDecimals(int decimals);
 
     /**
      * \brief Overrides the timerEvent to prevent
@@ -80,6 +80,6 @@ protected:
     int displayDecimals_;
 };
 
-}//namespace
+}  // namespace inviwo
 
-#endif // IVW_DOUBLE_SPIN_BOX_QT_H
+#endif  // IVW_DOUBLE_SPIN_BOX_QT_H

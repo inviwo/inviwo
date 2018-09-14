@@ -36,16 +36,15 @@ SerializationException::SerializationException(std::string message, ExceptionCon
                                                TxElement* node)
     : Exception(message, context), data_(key, type, id, node) {}
 
-const std::string& SerializationException::getKey() const throw() { return data_.key; }
+const std::string& SerializationException::getKey() const noexcept { return data_.key; }
 
-const std::string& SerializationException::getType() const throw() { return data_.type; }
+const std::string& SerializationException::getType() const noexcept { return data_.type; }
 
-const std::string& SerializationException::getId() const throw() { return data_.id; }
+const std::string& SerializationException::getId() const noexcept { return data_.id; }
 
 const SerializationException::SerializationExceptionData& SerializationException::getData() const
-    throw() {
+    noexcept {
     return data_;
 }
 
-} // namespace
-
+}  // namespace inviwo

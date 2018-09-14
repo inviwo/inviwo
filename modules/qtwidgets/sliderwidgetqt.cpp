@@ -63,7 +63,7 @@ BaseSliderWidgetQt::BaseSliderWidgetQt()
     hLayout->addWidget(slider_);
     hLayout->addWidget(spinBox_);
     hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(0);
+    hLayout->setSpacing(5);
     setLayout(hLayout);
     connect(slider_, &QSlider::valueChanged, this, &BaseSliderWidgetQt::updateFromSlider);
     connect(

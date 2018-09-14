@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
-#include <modules/animationqt/widgets/editorconstants.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

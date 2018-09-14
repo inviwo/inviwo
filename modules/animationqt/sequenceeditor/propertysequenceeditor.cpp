@@ -185,7 +185,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
         }
     }
     connect(interpolation_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, [this, &valseq, &manager](int index) {
+            this, [this, &valseq, &manager](int) {
                 const auto id = utilqt::fromQString(interpolation_->currentData().toString());
                 valseq.setInterpolation(manager.getInterpolationFactory().create(id));
             });

@@ -173,7 +173,7 @@ void Animation::onFirstMoved(Track*) {
     notifyFirstMoved(); 
 }
 
-void Animation::onLastMoved(Track* track) { 
+void Animation::onLastMoved(Track*) { 
     notifyLastMoved(); 
 }
 

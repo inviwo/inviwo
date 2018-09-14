@@ -218,14 +218,6 @@ if(WIN32 AND MSVC)
     # For >=VS2015 enable edit and continue "ZI"
     add_compile_options($<$<CONFIG:Debug>:/ZI>)
 
-    # enable debug:fastlink for debug builds
-    # https://blogs.msdn.microsoft.com/vcblog/2014/11/12/speeding-up-the-incremental-developer-build-scenario/
-    # needs to be off for proper callstack from VLD https://vld.codeplex.com/discussions/654355 
-    if(NOT IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
-        set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
-    endif()
-
     add_compile_options(/bigobj)
 
     # set iterator debug level (default=2)

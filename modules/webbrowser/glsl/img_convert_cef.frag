@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,23 @@
  * 
  *********************************************************************************/
 
-QWidget#SequenceEditorPanel {
-    background-color: #323235;
-}
+#include "utils/structs.glsl"
 
-QWidget#SequenceEditorWidget  {
-    background-color: #2a2a2e;
+uniform vec3 pickingColor;
+uniform ImageParameters outportParameters_;
+
+uniform sampler2D inport_;
+
+void main() {
+	// Flip y-coord
+    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+	texCoords.y = 1.0 - texCoords.y;
+    vec4 color = texture(inport_, texCoords);
+    if (color.w > 0) {
+        FragData0 = texture(inport_, texCoords);
+        PickingData = vec4(pickingColor, 1.0);
+    } else {
+        discard;
+    }
+    
 }

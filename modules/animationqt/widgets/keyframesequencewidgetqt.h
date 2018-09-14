@@ -36,7 +36,7 @@
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/keyframesequenceobserver.h>
-
+#include <modules/animationqt/widgets/editorconstants.h>
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
 
 #include <warn/push>
@@ -59,6 +59,10 @@ public:
 
     KeyframeSequence& getKeyframeSequence();
     const KeyframeSequence& getKeyframeSequence() const;
+
+    // override for qgraphicsitem_cast (refer qt documentation)
+    enum { Type = UserType + static_cast<int>(ItemTypes::KeyframeSequence) };
+    virtual int type() const override { return Type; }
 
 protected:
     virtual void onKeyframeAdded(Keyframe* key, KeyframeSequence* seq) override;

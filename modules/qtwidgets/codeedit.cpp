@@ -168,12 +168,15 @@ void CodeEdit::updateLineNumberAreaWidth(int /* newBlockCount */) {
 }
 
 void CodeEdit::updateLineNumberArea(const QRect &rect, int dy) {
-    if (dy)
+    if (dy) {
         lineNumberArea_->scroll(0, dy);
-    else
+    } else {
         lineNumberArea_->update(0, rect.y(), lineNumberArea_->width(), rect.height());
+    }
 
-    if (rect.contains(viewport()->rect())) updateLineNumberAreaWidth(0);
+    if (rect.contains(viewport()->rect())) {
+        updateLineNumberAreaWidth(0);
+    }
 }
 
 void CodeEdit::resizeEvent(QResizeEvent *e) {
@@ -199,6 +202,8 @@ void CodeEdit::highlightCurrentLine() {
 }
 
 void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
+    if (document()->isEmpty()) return;
+
     QPainter painter(lineNumberArea_);
     painter.setRenderHint(QPainter::TextAntialiasing);
 

@@ -267,8 +267,9 @@ namespace inviwo {
 		sampleQuery_.addProperty(volumeSample_);
 		addProperty(sampleQuery_);
 
-		worldPosition_.setReadOnly(true);
-		addProperty(worldPosition_);
+    worldPosition_.setReadOnly(true);
+    addProperty(worldPosition_);
+    worldPosition_.onChange([this]() { updateFromWorldPosition(); });
 
 		addProperty(handleInteractionEvents_);
 
@@ -489,12 +490,10 @@ namespace inviwo {
 		utilgl::deactivateCurrentTarget();
 	}
 
-	void VolumeSliceGL::renderPositionIndicator() {
-		if (meshDirty_) {
-			mat4 trans = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
-			worldPosition_.set(vec3(trans * vec4(planePosition_.get(), 1.0f)));
-			updateIndicatorMesh();
-		}
+void VolumeSliceGL::renderPositionIndicator() {
+    if (meshDirty_) {
+        updateIndicatorMesh();
+    }
 
 		MeshDrawerGL drawer(meshCrossHair_.get());
 
@@ -827,26 +826,38 @@ namespace inviwo {
 		const ivec4 indexPos(sliceX_.get() - 1, sliceY_.get() - 1, sliceZ_.get() - 1, 1.0);
 		const vec3 texturePos(vec3(indexToTexture * vec4(indexPos)));
 
-		planePosition_.set(texturePos);
+    const mat4 indexToWorld(inport_.getData()->getCoordinateTransformer().getIndexToWorldMatrix());
+    const vec3 worldPos = vec3(indexToWorld * vec4(sliceX_.get(), sliceY_.get(), sliceZ_.get(), 1.0f));
+
+    {
+        NetworkLock lock(this);
+        planePosition_.set(texturePos);
+        worldPosition_.set(worldPos);
 	}
 
-	void VolumeSliceGL::positionChange() {
-		if (!inport_.hasData() || updating_) return;
-		util::KeepTrueWhileInScope guard(&updating_);
+}
+
+void VolumeSliceGL::positionChange() {
+    if (!inport_.hasData() || updating_) return;
+    util::KeepTrueWhileInScope guard(&updating_);
 
 		const mat4 textureToIndex(
 			inport_.getData()->getCoordinateTransformer().getTextureToIndexMatrix());
 		const vec4 texturePos(planePosition_.get(), 1.0);
 		const ivec3 indexPos(ivec3(textureToIndex * texturePos) + ivec3(1));
 
-		{
-			NetworkLock lock(this);
-			sliceX_.set(indexPos.x);
-			sliceY_.set(indexPos.y);
-			sliceZ_.set(indexPos.z);
-		}
-		invalidateMesh();
-	}
+    const mat4 textureToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+    const vec3 worldPos = vec3(textureToWorld * vec4(planePosition_.get(), 1.0f));
+
+    {
+        NetworkLock lock(this);
+        sliceX_.set(indexPos.x);
+        sliceY_.set(indexPos.y);
+        sliceZ_.set(indexPos.z);
+        worldPosition_.set(worldPos);
+    }
+    invalidateMesh();
+}
 
 	void VolumeSliceGL::rotationModeChange() {
 		switch (rotationAroundAxis_.get()) {
@@ -873,10 +884,35 @@ namespace inviwo {
 		}
 	}
 
-	// override to do member renaming.
-	void VolumeSliceGL::deserialize(Deserializer& d) {
-		util::renamePort(d, { { &inport_, "volume.inport" },{ &outport_, "image.outport" } });
-		Processor::deserialize(d);
-	}
+void VolumeSliceGL::updateFromWorldPosition() {
+
+    if (!inport_.hasData() || updating_) return;
+
+    if (inport_.hasData()) {
+        util::KeepTrueWhileInScope guard(&updating_);
+
+        const mat4 worldToTexture(
+            inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix());
+        const vec3 texturePos = vec3(worldToTexture * vec4(worldPosition_.get(), 1.0f));
+
+        const mat4 worldToIndex(
+            inport_.getData()->getCoordinateTransformer().getWorldToIndexMatrix());
+        const ivec3 indexPos(ivec3(worldToIndex * vec4(worldPosition_.get(), 1.0f)) + ivec3(1));
+
+        NetworkLock lock(this);
+        sliceX_.set(indexPos.x);
+        sliceY_.set(indexPos.y);
+        sliceZ_.set(indexPos.z);
+
+        planePosition_.set(texturePos);
+        invalidateMesh();
+    }
+}
+
+// override to do member renaming.
+void VolumeSliceGL::deserialize(Deserializer& d) {
+    util::renamePort(d, {{&inport_, "volume.inport"}, {&outport_, "image.outport"}});
+    Processor::deserialize(d);
+}
 
 }  // namespace inviwo
