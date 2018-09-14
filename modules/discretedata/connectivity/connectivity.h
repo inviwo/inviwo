@@ -85,13 +85,13 @@ public:
 
     /** \brief Get the map from one element to another
     *   E.g. cell to its vertices, vertex to its neighbors, vertex to connected faces
-    *   @param index Index of element in dimension from
+    *   @param result All connected indices in dimension 'to'
+    *   @param index Index of element in dimension 'from'
     *   @param from Dimension the index lives in
     *   @param to Dimension the result lives in
-    *   @return All connected indices in dimension to
     */
-    virtual std::vector<ind> getConnections(ind index, GridPrimitive from,
-                                            GridPrimitive to) const = 0;
+    virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
+                                GridPrimitive to) const = 0;
 
     /** \brief Range of all elements to iterate over
     *   @param dim Dimension to return the elements of

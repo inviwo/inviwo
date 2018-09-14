@@ -107,8 +107,11 @@ public:
     /** GridPrimitive type the iterator walks through */
     GridPrimitive getType() const { return dimension_; }
 
-    /** The current index. Equivalent to dereferencing. */
+    /** The current index. */
     ind getIndex() const { return index_; }
+
+    /** The current index. */
+    operator ind() const { return index_; }
 
     /** Iterate over connected GridPrimitives (neighbors etc) */
     ConnectionRange connection(GridPrimitive toType) const;

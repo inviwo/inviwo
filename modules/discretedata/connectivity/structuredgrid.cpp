@@ -30,6 +30,7 @@
 #include "structuredgrid.h"
 #include "discretedata/channels/analyticchannel.h"
 #include "discretedata/connectivity/elementiterator.h"
+#include "inviwo/core/util/formatdispatching.h"
 
 namespace inviwo {
 namespace dd {
@@ -62,27 +63,24 @@ std::vector<ind> StructuredGrid::indexFromLinear(ind idxLin, const std::vector<i
     return index;
 }
 
-std::vector<ind> StructuredGrid::sameLevelConnection(const ind idxLin,
-                                                     const std::vector<ind>& size) {
+void StructuredGrid::sameLevelConnection(std::vector<ind>& result, const ind idxLin,
+                                         const std::vector<ind>& size) {
     std::vector<ind> index = indexFromLinear(idxLin, size);
 
-    std::vector<ind> neighbors;
     ind dimensionProduct = 1;
     for (int dim = 0; dim < size.size(); ++dim) {
-        if (index[dim] > 0) neighbors.push_back(idxLin - dimensionProduct);
-        if (index[dim] < size[dim] - 1) neighbors.push_back(idxLin + dimensionProduct);
+        if (index[dim] > 0) result.push_back(idxLin - dimensionProduct);
+        if (index[dim] < size[dim] - 1) result.push_back(idxLin + dimensionProduct);
 
         dimensionProduct *= size[dim];
     }
-
-    return neighbors;
 }
 
-std::vector<ind> StructuredGrid::getConnections(ind idxLin, GridPrimitive from,
-                                                GridPrimitive to) const {
+void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin,
+                                    GridPrimitive from, GridPrimitive to) const {
     if (from == to && from == gridDimension_) {
         // Linear Index to nD Cell Index.
-        return sameLevelConnection(idxLin, numCellsPerDimension_);
+        return sameLevelConnection(result, idxLin, numCellsPerDimension_);
     }
 
     if (from == to && from == GridPrimitive::Vertex) {
@@ -91,50 +89,49 @@ std::vector<ind> StructuredGrid::getConnections(ind idxLin, GridPrimitive from,
             vertDims.push_back(dim + 1);
         }
 
-        return sameLevelConnection(idxLin, vertDims);
+        return sameLevelConnection(result, idxLin, vertDims);
     }
 
     if (from == gridDimension_ && to == GridPrimitive::Vertex) {
         // Prepare corners
-        const ind NumDimensions = numCellsPerDimension_.size();
-        const ind NumCorners = ind(1) << NumDimensions;
-        std::vector<ind> VertexCorners(NumCorners);
+        const ind numDimensions = numCellsPerDimension_.size();
+        const ind numCorners = ind(1) << numDimensions;
+        result.resize(numCorners);
 
         // Vertex Strides - how much to add to the linear index to go forward by 1 in each dimension
-        std::vector<ind> VStrides(NumDimensions);
-        ind DimProduct(1);
-        for (ind dim(0); dim < NumDimensions; dim++) {
-            VStrides[dim] = DimProduct;
-            DimProduct *= (numCellsPerDimension_[dim] + 1);
+        std::vector<ind> vStrides(numDimensions);
+        ind dimProduct(1);
+        for (ind dim(0); dim < numDimensions; dim++) {
+            vStrides[dim] = dimProduct;
+            dimProduct *= (numCellsPerDimension_[dim] + 1);
         }
 
         // Linear Index to nD Cell Index.
-        ind IdxRemainder = idxLin;
-        std::vector<ind> CellIndex(NumDimensions, -1);
-        for (ind dim(0); dim < NumDimensions; dim++) {
-            CellIndex[dim] = IdxRemainder % numCellsPerDimension_[dim];
-            IdxRemainder = (ind)(IdxRemainder / numCellsPerDimension_[dim]);
+        ind idxRemainder = idxLin;
+        std::vector<ind> cellIndex(numDimensions, -1);
+        for (ind dim(0); dim < numDimensions; dim++) {
+            cellIndex[dim] = idxRemainder % numCellsPerDimension_[dim];
+            idxRemainder = (ind)(idxRemainder / numCellsPerDimension_[dim]);
         }
 
         // The given cell index is also the index of its lower-left-front corner vertex
         // Let's compute the linear index for this vertex
-        ind LowerLeftFrontVertexLinearIndex = CellIndex[0];
-        for (ind dim(1); dim < NumDimensions; dim++) {
-            LowerLeftFrontVertexLinearIndex += CellIndex[dim] * VStrides[dim];
+        ind lowerLeftFrontVertexLinearIndex = cellIndex[0];
+        for (ind dim(1); dim < numDimensions; dim++) {
+            lowerLeftFrontVertexLinearIndex += cellIndex[dim] * vStrides[dim];
         }
 
-        VertexCorners[0] = LowerLeftFrontVertexLinearIndex;
-        for (ind i(1); i < NumCorners; i++) {
+        result[0] = lowerLeftFrontVertexLinearIndex;
+        for (ind i(1); i < numCorners; i++) {
             // Base is the lower-left-front corner.
-            VertexCorners[i] = LowerLeftFrontVertexLinearIndex;
+            result[i] = lowerLeftFrontVertexLinearIndex;
 
             // Add strides to the lower-left-front corner.
-            for (ind d(0); d < NumDimensions; d++) {
-                if (i & (ind(1) << d)) VertexCorners[i] += VStrides[d];
+            for (ind d(0); d < numDimensions; d++) {
+                if (i & (ind(1) << d)) result[i] += vStrides[d];
             }
         }
-
-        return VertexCorners;
+        return;
     }
 
     if (from == GridPrimitive::Vertex && to == gridDimension_) {
@@ -144,55 +141,66 @@ std::vector<ind> StructuredGrid::getConnections(ind idxLin, GridPrimitive from,
             vertDims.push_back(dim + 1);
         }
 
-        const ind NumDimensions = vertDims.size();
+        const ind numDimensions = vertDims.size();
 
         // Linear Index to nD Vertex Index.
-        std::vector<ind> VertexIndex = indexFromLinear(idxLin, vertDims);
+        std::vector<ind> vertexIndex = indexFromLinear(idxLin, vertDims);
 
         // Prepare neighbors
-        std::vector<ind> CellNeighbors;
-        const ind MaxNeighbors = ind(1) << NumDimensions;
-        CellNeighbors.reserve(MaxNeighbors);
+
+        //std::vector<ind> CellNeighbors;
+        const ind maxNeighbors = ind(1) << numDimensions;
+        result.reserve(maxNeighbors);
 
         // Compute neighbors
-        std::vector<ind> CurrentNeighbor;
-        for (ind i(0); i < MaxNeighbors; i++) {
+        std::vector<ind> currentNeighbor;
+        for (ind i(0); i < maxNeighbors; i++) {
             // Base index is the vertex index. The same cell index is the upper-right one of the
             // neighbors.
-            CurrentNeighbor = VertexIndex;
+            currentNeighbor = vertexIndex;
 
             // Generate new neighbor index
-            for (ind d(0); d < NumDimensions; d++) {
-                if (i & (ind(1) << d)) CurrentNeighbor[d]--;
+            for (ind d(0); d < numDimensions; d++) {
+                if (i & (ind(1) << d)) currentNeighbor[d]--;
             }
 
             // Is it in the allowed range? And compute linear index while checking.
             bool bOk(true);
-            ind CurrentNeighborLinearIndex(0);
-            ind DimensionProduct(1);
-            for (ind d(0); bOk && d < NumDimensions; d++) {
-                if (CurrentNeighbor[d] < 0 || CurrentNeighbor[d] >= numCellsPerDimension_[d]) {
+            ind currentNeighborLinearIndex(0);
+            ind dimensionProduct(1);
+            for (ind d(0); bOk && d < numDimensions; d++) {
+                if (currentNeighbor[d] < 0 || currentNeighbor[d] >= numCellsPerDimension_[d]) {
                     bOk = false;
                 }
 
-                CurrentNeighborLinearIndex += CurrentNeighbor[d] * DimensionProduct;
-                DimensionProduct *= numCellsPerDimension_[d];
+                currentNeighborLinearIndex += currentNeighbor[d] * dimensionProduct;
+                dimensionProduct *= numCellsPerDimension_[d];
             }
 
             // If so, let's add it.
-            if (bOk) CellNeighbors.push_back(CurrentNeighborLinearIndex);
+            if (bOk) result.push_back(currentNeighborLinearIndex);
         }
 
-        return CellNeighbors;
+        return;
     }
 
     assert(false && "Not implemented yet.");
-    return std::vector<ind>();
 }
 
 ind StructuredGrid::getNumCellsInDimension(ind dim) const {
     assert(numCellsPerDimension_[dim] >= 0 && "Number of elements not known yet.");
     return numCellsPerDimension_[dim];
+}
+
+void StructuredGrid::getNumCells(std::vector<ind>& result) const {
+    result.clear();
+    for (ind numCells : numCellsPerDimension_) {
+        if (numCells > 0) result.push_back(numCells);
+        else {
+            result.clear();
+            return;
+        }
+    }
 }
 
 double StructuredGrid::getPrimitiveMeasure(GridPrimitive dim, ind index) const {
@@ -202,47 +210,9 @@ double StructuredGrid::getPrimitiveMeasure(GridPrimitive dim, ind index) const {
     if (dim != GridPrimitive::Volume) return -1;
 
     double measure = -1;
-
-    // TODO: Make this kind of code obsolete or at least compact.
-    switch (vertices_->getDataFormatId()) {
-        case DataFormatId::Float16:
-            measure = computeHexVolume<float>(index);
-            break;
-        case DataFormatId::Float32:
-            measure = computeHexVolume<glm::f32>(index);
-            break;
-        case DataFormatId::Float64:
-            measure = computeHexVolume<glm::f64>(index);
-            break;
-        case DataFormatId::Int8:
-            measure = computeHexVolume<glm::i8>(index);
-            break;
-        case DataFormatId::Int16:
-            measure = computeHexVolume<glm::i16>(index);
-            break;
-        case DataFormatId::Int32:
-            measure = computeHexVolume<glm::i32>(index);
-            break;
-        case DataFormatId::Int64:
-            measure = computeHexVolume<glm::i64>(index);
-            break;
-        case DataFormatId::UInt8:
-            measure = computeHexVolume<glm::u8>(index);
-            break;
-        case DataFormatId::UInt16:
-            measure = computeHexVolume<glm::u16>(index);
-            break;
-        case DataFormatId::UInt32:
-            measure = computeHexVolume<glm::u32>(index);
-            break;
-        case DataFormatId::UInt64:
-            measure = computeHexVolume<glm::u64>(index);
-            break;
-
-        default:
-            LogWarn("Data type not supported. Edit " << __FILE__);
-            break;
-    }
+    HexVolumeComputer comp(this);
+    measure = inviwo::dispatching::dispatch<double, dispatching::filter::Scalars>(
+        vertices_->getDataFormatId(), comp, index);
 
     return measure;
 }

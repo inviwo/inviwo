@@ -57,5 +57,89 @@ DataChannel<T, N>::DataChannel(const std::string& name, GridPrimitive definedOn)
     if (std::is_same<T, glm::u64>::value) this->setDataFormatId(DataFormatId::UInt64);
 }
 
-}  // namespace
+template <typename T, ind N>
+template <typename VecNT>
+void DataChannel<T, N>::getMin(VecNT& dest) const {
+    static_assert(sizeof(VecNT) == sizeof(T) * N,
+                  "Size and type do not agree with the vector type.");
+
+    const MetaScalarType* min = getMetaData<MetaScalarType>("Minimum");
+    if (!min) {
+        computeMinMax();
+        min = getMetaData<MetaScalarType>("Minimum");
+    }
+
+    T* rawVec = reinterpret_cast<T*>           (&dest);
+    auto mStr = min->getClassIdentifier();
+    double* rawMin =
+        reinterpret_cast<double*>(&mStr);  // For 'N == 1' case
+    for (ind i = 0; i < N; ++i) rawVec[i] = static_cast<T>(rawMin[i]);
 }
+
+template <typename T, ind N>
+template <typename VecNT>
+void DataChannel<T, N>::getMax(VecNT& dest) const {
+    static_assert(sizeof(VecNT) == sizeof(T) * N,
+                  "Size and type do not agree with the vector type.");
+
+    const MetaScalarType* max = getMetaData<MetaScalarType>("Maximum");
+    if (!max) {
+        computeMinMax();
+        max = getMetaData<MetaScalarType>("Maximum");
+    }
+    T* rawVec = reinterpret_cast<T*>           (&dest);
+    auto mStr = max->getClassIdentifier();
+    double* rawMax =
+        reinterpret_cast<double*>(&mStr);  // For 'N == 1' case
+    for (ind i = 0; i < N; ++i) rawVec[i] = static_cast<T>(rawMax[i]);
+}
+
+template <typename T, ind N>
+template <typename VecNT>
+void DataChannel<T, N>::getMinMax(VecNT& minDest, VecNT& maxDest) const {
+    static_assert(sizeof(VecNT) == sizeof(T) * N,
+                  "Size and type do not agree with the vector type.");
+
+    getMin(minDest);
+    getMax(maxDest);
+}
+
+template <typename T, ind N>
+void DataChannel<T, N>::computeMinMax() const {
+
+    auto* this_mut = const_cast<DataChannel<T, N>*>(this);
+    MetaScalarType* minMeta = this_mut->createMetaData<MetaScalarType>("Minimum");
+    MetaScalarType* maxMeta = this_mut->createMetaData<MetaScalarType>("Maximum");
+
+    // Working on raw T* to catch 'glmVec = T' case (for N == 1)
+
+    T minT[N];  // = reinterpret_cast<T*>(&min);
+    T maxT[N];  // = reinterpret_cast<T*>(&max);
+
+    this->fill(minT, 0);
+    this->fill(maxT, 0);
+
+    for (GlmVector& val : this_mut->all<GlmVector>()) {
+        T* data = reinterpret_cast<T*>(&val);
+        for (ind dim = 0; dim < N; ++dim) {
+            minT[dim] = std::min(minT[dim], data[dim]);
+            maxT[dim] = std::max(maxT[dim], data[dim]);
+        }
+    }
+
+    double minD[N], maxD[N];
+    for (ind dim = 0; dim < N; ++dim) {
+        minD[dim] = static_cast<double>(minT[dim]);
+        maxD[dim] = static_cast<double>(maxT[dim]);
+    }
+
+    MetaVec& min = *reinterpret_cast<MetaVec*>(minD);
+    MetaVec& max = *reinterpret_cast<MetaVec*>(maxD);
+    std::cout << "Max: " << maxD[0] << '\n';
+
+    minMeta->set(min);
+    maxMeta->set(max);
+}
+
+}  // namespace dd
+}  // namespace inviwo

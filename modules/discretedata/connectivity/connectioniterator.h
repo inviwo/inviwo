@@ -143,6 +143,7 @@ public:
     ConnectionIterator end() {
         return ConnectionIterator(parent_, toDimension_, connections_, connections_->size());
     }
+    ind size() { return connections_->size(); }
 
 protected:
     const Connectivity* parent_;

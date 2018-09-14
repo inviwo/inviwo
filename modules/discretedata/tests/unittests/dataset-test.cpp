@@ -51,21 +51,21 @@ TEST(DataSet, ChannelInsertRemoveEdit) {
     // - Rename them
     DataSet set;
 
-    auto monomeVert = std::make_shared<AnalyticChannel<Vec3f, float, 3>>(
+    auto monomeVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
         [](Vec3f& a, ind idx) {
             a[0] = 0.0f;
             a[1] = (float)idx;
             a[2] = (float)(idx * idx);
         },
         100, "Monome", GridPrimitive::Vertex);
-    auto monomeFace = std::make_shared<AnalyticChannel<Vec3f, float, 3>>(
+    auto monomeFace = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
         [](Vec3f& a, ind idx) {
             a[0] = 0.0f;
             a[1] = (float)idx;
             a[2] = (float)(idx * idx);
         },
         100, "Monome", GridPrimitive::Face);
-    auto identityVert = std::make_shared<AnalyticChannel<Vec3f, float, 3>>(
+    auto identityVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
         [](Vec3f& a, ind idx) {
             a[0] = (float)idx;
             a[1] = (float)idx;

@@ -160,54 +160,6 @@ public:
     ConstChannelIterator<VecNT, T, N> end() const {
         return ConstChannelIterator<VecNT, T, N>((DataChannel<T, N>*)this, this->size());
     }
-
-    template <typename VecNT>
-    struct ChannelRange {
-        static_assert(sizeof(VecNT) == sizeof(T) * N,
-                      "Size and type do not agree with the vector type.");
-        typedef ChannelIterator<VecNT, T, N> iterator;
-
-        ChannelRange(VectorChannel<T, N>* channel) : parent_(channel) {}
-
-        iterator begin() { return parent_->template begin<VecNT>(); }
-        iterator end() { return parent_->template end<VecNT>(); }
-
-    private:
-        VectorChannel<T, N>* parent_;
-    };
-
-    template <typename VecNT>
-    struct ConstChannelRange {
-        static_assert(sizeof(VecNT) == sizeof(T) * N,
-                      "Size and type do not agree with the vector type.");
-        typedef ConstChannelIterator<VecNT, T, N> const_iterator;
-
-        ConstChannelRange(const VectorChannel<T, N>* channel) : parent_(channel) {}
-
-        const_iterator begin() const { return parent_->template begin<VecNT>(); }
-        const_iterator end() const { return parent_->template end<VecNT>(); }
-
-    private:
-        const VectorChannel<T, N>* parent_;
-    };
-
-    /** \brief Get iterator range
-     *   Templated iterator return type, only specified once.
-     *   @tparam VecNT Return type of resulting iterators
-     */
-    template <typename VecNT>
-    ChannelRange<VecNT> all() {
-        return ChannelRange<VecNT>(this);
-    }
-
-    /** \brief Get const iterator range
-     *   Templated iterator return type, only specified once.
-     *   @tparam VecNT Return type of resulting iterators
-     */
-    template <typename VecNT>
-    ConstChannelRange<VecNT> all() const {
-        return ConstChannelRange<VecNT>(this);
-    }
 };
 
 template <typename T>
@@ -278,6 +230,11 @@ public:
     template <typename VecNT>
     using const_iterator = ConstChannelIterator<VecNT, T, N>;
 
+private:
+    using MetaScalarType = MetaDataPrimitiveType<double, N, 0>;
+    using MetaVec        = typename inviwo::util::glmtype<double, N, 1>::type;
+    using GlmVector      = typename inviwo::util::glmtype<T, N, 1>::type;
+
     // Construction / Deconstruction
 public:
     /** \brief Direct construction
@@ -300,6 +257,66 @@ public:
                       "Size and type do not agree with the vector type.");
         this->fillRaw(reinterpret_cast<T*>(&dest), index);
     }
+
+    template <typename VecNT>
+    struct ChannelRange {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
+        typedef ChannelIterator<VecNT, T, N> iterator;
+
+        ChannelRange(DataChannel<T, N>* channel) : parent_(channel) {}
+
+        iterator begin() { return parent_->template begin<VecNT>(); }
+        iterator end() { return parent_->template end<VecNT>(); }
+
+    private:
+        DataChannel<T, N>* parent_;
+    };
+
+    template <typename VecNT>
+    struct ConstChannelRange {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
+        typedef ConstChannelIterator<VecNT, T, N> const_iterator;
+
+        ConstChannelRange(const DataChannel<T, N>* channel) : parent_(channel) {}
+
+        const_iterator begin() const { return parent_->template begin<VecNT>(); }
+        const_iterator end() const { return parent_->template end<VecNT>(); }
+
+    private:
+        const DataChannel<T, N>* parent_;
+    };
+
+    /** \brief Get iterator range
+     *   Templated iterator return type, only specified once.
+     *   @tparam VecNT Return type of resulting iterators
+     */
+    template <typename VecNT>
+    ChannelRange<VecNT> all() {
+        return ChannelRange<VecNT>(this);
+    }
+
+    /** \brief Get const iterator range
+     *   Templated iterator return type, only specified once.
+     *   @tparam VecNT Return type of resulting iterators
+     */
+    template <typename VecNT>
+    ConstChannelRange<VecNT> all() const {
+        return ConstChannelRange<VecNT>(this);
+    }
+
+    template <typename VecNT>
+    void getMin(VecNT& dest) const;
+
+    template <typename VecNT>
+    void getMax(VecNT& dest) const;
+
+    template <typename VecNT>
+    void getMinMax(VecNT& min, VecNT& max) const;
+
+protected:
+    void computeMinMax() const;
 };
 
 }  // namespace dd

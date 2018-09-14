@@ -34,9 +34,10 @@ namespace dd {
 
 ConnectionRange::ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
                                  const Connectivity* parent)
-    : parent_(parent), toDimension_(toDim) {
-    connections_ =
-        std::make_shared<const std::vector<ind>>(parent_->getConnections(fromIndex, fromDim, toDim));
+                                : parent_(parent), toDimension_(toDim) {
+    std::vector<ind>* neigh = new std::vector<ind>();
+    parent_->getConnections(*neigh, fromIndex, fromDim, toDim);
+    connections_ = std::shared_ptr<const std::vector<ind>>(neigh);
 }
 
 /** Increment randomly */

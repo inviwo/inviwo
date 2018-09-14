@@ -101,7 +101,8 @@ public:
     const VecNT& get(ind index) const;
 };
 
-#define BaseChannelDef std::conditional<N == 1, ScalarBufferChannel<T>, VectorBufferChannel<T, N>>::type
+#define BaseChannelDef \
+    std::conditional<N == 1, ScalarBufferChannel<T>, VectorBufferChannel<T, N>>::type
 
 /** \class DataBuffer
     \brief Data channel as array data
@@ -179,6 +180,8 @@ protected:
 public:
     virtual ind size() const override { return buffer_.size() / N; }
 
+    const std::vector<T>& data() const { return buffer_; }
+
     // Attributes
 protected:
     /** \brief Vector containing the buffer data
@@ -210,7 +213,7 @@ const Vec1T& ScalarBufferChannel<T>::get(ind index) const {
     return ((Child*)this)->buffer_[index];
 }
 
-    /** \brief Indexed point access
+/** \brief Indexed point access
  *   @param index Linear point index
  *   @return Reference to data
  */
@@ -228,7 +231,7 @@ VecNT& VectorBufferChannel<T, N>::get(ind index) {
  */
 template <typename T, ind N>
 template <typename VecNT>
-const VecNT& VectorBufferChannel<T, N> ::get(ind index) const {
+const VecNT& VectorBufferChannel<T, N>::get(ind index) const {
     static_assert(sizeof(VecNT) == sizeof(T) * N,
                   "Size and type do not agree with the vector type.");
     return *reinterpret_cast<const VecNT*>(&((Child*)this)->buffer_[index * N]);

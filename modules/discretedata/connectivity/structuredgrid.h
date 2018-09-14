@@ -46,78 +46,54 @@ class IVW_MODULE_DISCRETEDATA_API StructuredGrid : public Connectivity {
     // Construction / Deconstruction
 public:
     /** \brief Create an nD grid
-    *   @param gridDimension Dimension of grid (not vertices)
-    *   @param gridSize Number of cells in each dimension, expect size gridDimension+1
-    */
+     *   @param gridDimension Dimension of grid (not vertices)
+     *   @param gridSize Number of cells in each dimension, expect size gridDimension+1
+     */
     StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim);
     virtual ~StructuredGrid() = default;
 
     virtual ind getNumCellsInDimension(ind dim) const;
 
+    void getNumCells(std::vector<ind>& result) const;
+
     virtual double getPrimitiveMeasure(GridPrimitive dim, ind index) const override;
 
     // Methods
 public:
-    virtual std::vector<ind> getConnections(ind index, GridPrimitive from, GridPrimitive to) const;
+    virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
+                                GridPrimitive to) const;
 
-    static std::vector<ind> sameLevelConnection(ind idxLin, const std::vector<ind>& size);
+    static void sameLevelConnection(std::vector<ind>& result, ind idxLin,
+                                    const std::vector<ind>& size);
 
     static std::vector<ind> indexFromLinear(ind idxLin, const std::vector<ind>& size);
 
     // Attributes
 protected:
-    template <typename T>
-    double computeHexVolume(ind index) const;
+    struct HexVolumeComputer {
+        HexVolumeComputer(const StructuredGrid* p) : parent_(p) {}
+
+        template <typename R, typename T>
+        double operator()(ind index) const;
+
+        const StructuredGrid* parent_;
+    };
 
     template <typename T>
-    double computeHexVolume(const std::vector<ind>& connections) const;
+    double ComputeHexVolume(const std::vector<ind>& connections) const { return -1.0; }
 
 protected:
     std::vector<ind> numCellsPerDimension_;
 };
 
-template <typename T>
-double StructuredGrid::computeHexVolume(ind index) const {
+template <typename R, typename T>
+double StructuredGrid::HexVolumeComputer::operator()(ind index) const {
 
     // Get all corner points.
-    auto corners = getConnections(index, GridPrimitive::Volume, GridPrimitive::Vertex);
-    return StructuredGrid::template computeHexVolume<T>(corners);
+    std::vector<ind> corners;
+    parent_->getConnections(corners, index, GridPrimitive::Volume, GridPrimitive::Vertex);
+    return parent_->ComputeHexVolume<T>(corners);
 }
 
-template <typename T>
-double StructuredGrid::computeHexVolume(const std::vector<ind>& corners) const {
-    assert(corners.size() == 8 && "Not a hexahedron.");
-
-    // Work with respective type
-    std::shared_ptr<const DataChannel<T, 3>> doubleVertices =
-        std::dynamic_pointer_cast<const DataChannel<T, 3>, const Channel>(vertices_);
-    if (!doubleVertices) return -1;
-
-    // Tetrahedron corners
-    static constexpr ind tetrahedra[5][4] = {
-        {0, 3, 5, 6}, {1, 0, 3, 5}, {0, 2, 6, 3}, {5, 3, 6, 7}, {4, 5, 6, 0}};
-
-    // Setup variables for measure calculation
-    double measure = 0;
-    double cornerMatrix[4][3];
-    std::array<T, 3> vertex;
-
-    // Calculate measure of 5 tetrahedra
-    for (ind tet = 0; tet < 5; tet++) {
-        for (ind corner = 0; corner < 4; corner++) {
-            ind cornerIndex = corners[tetrahedra[tet][corner]];
-            doubleVertices->fill(vertex, cornerIndex);
-            for (ind dim = 0; dim < 3; ++dim) {
-                cornerMatrix[corner][dim] = double(vertex[(unsigned)dim]);
-            }
-        }
-
-        // Compute measure and sum
-        measure += dd_util::tetrahedronVolume(cornerMatrix);
-    }
-
-    return measure;
-}
-
-}  // namespace
-}
+}  // namespace dd
+}  // namespace inviwo

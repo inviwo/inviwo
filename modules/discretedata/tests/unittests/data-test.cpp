@@ -81,8 +81,8 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     yearTest->set(2017);
 
     // Set up the same channel as analytic channel.
-    AnalyticChannel<glm::vec3, float, 3>* testAnalytic =
-        new AnalyticChannel<glm::vec3, float, 3>(base, numElements, "MonomialAnalytical", GridPrimitive::Vertex);
+    AnalyticChannel<float, 3, glm::vec3>* testAnalytic = new AnalyticChannel<float, 3, glm::vec3>(
+        base, numElements, "MonomialAnalytical", GridPrimitive::Vertex);
 
     // Copy buffer.
     BufferFloat* copyBuffer = new BufferFloat(*testBuffer);

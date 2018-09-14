@@ -32,7 +32,7 @@
 namespace inviwo {
 namespace dd {
 
-template<typename T, ind N>
+template <typename T, ind N>
 class BufferChannel;
 
 template<typename T, ind N>

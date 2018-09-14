@@ -48,7 +48,7 @@ namespace dd {
 
     @author Anke Friederici and Tino Weinkauf
 */
-template <typename Vec, typename T, ind N>
+template <typename T, ind N, typename Vec = std::array<T, N>>
 class AnalyticChannel : public DataChannel<T, N> {
     // Types
 public:
