@@ -148,6 +148,7 @@ namespace inviwo {
 		void eventGestureShiftSlice(Event*);
 		void eventUpdateMousePos(Event*);
 		void eventAddPolylinePoint(Event*);
+		void updateFromWorldPosition();
 
 		VolumeInport inport_;
 		PolylineInport polyline_;

@@ -267,9 +267,9 @@ namespace inviwo {
 		sampleQuery_.addProperty(volumeSample_);
 		addProperty(sampleQuery_);
 
-    worldPosition_.setReadOnly(true);
-    addProperty(worldPosition_);
-    worldPosition_.onChange([this]() { updateFromWorldPosition(); });
+		worldPosition_.setReadOnly(true);
+		addProperty(worldPosition_);
+		worldPosition_.onChange([this]() { updateFromWorldPosition(); });
 
 		addProperty(handleInteractionEvents_);
 
