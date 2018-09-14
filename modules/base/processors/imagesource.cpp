@@ -53,8 +53,7 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     , file_("imageFileName", "File name", file, "image")
     , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
                       InvalidationLevel::Valid, PropertySemantics("Text")) {
-    // Remove default data created by ImageOutport
-    outport_.setData(static_cast<Image*>(nullptr));
+
     addPort(outport_);
 
     auto rf = app_->getDataReaderFactory();
@@ -66,16 +65,13 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
 
     imageDimension_.setReadOnly(true);
     addProperty(imageDimension_);
-    
+
     isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
     file_.onChange([this]() { isReady_.update(); });
 }
 
 void ImageSource::process() {
-    if (file_.get().empty()) {
-        outport_.setData(static_cast<Image*>(nullptr));
-        return;
-    }
+    if (file_.get().empty()) return;
 
     std::string ext = filesystem::getFileExtension(file_.get());
     auto factory = app_->getDataReaderFactory();
