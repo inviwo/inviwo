@@ -156,6 +156,7 @@ void Background::initializeResources() {
 }
 
 void Background::process() {
+
     if (inport_.hasData() != hadData_) initializeResources();
 
     if (inport_.hasData()) {

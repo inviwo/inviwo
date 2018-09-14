@@ -164,6 +164,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectorfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectormanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/porttraits.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/ports/polylineport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/volumeport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/activityindicator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessor.h
