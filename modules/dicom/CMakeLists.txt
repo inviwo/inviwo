@@ -58,4 +58,4 @@ target_include_directories(inviwo-module-dicom PUBLIC
 # but actually not freeimage functionality is used
 # TODO: link instead of compile with the libtiff sources
 # => modification of the freeimage library/module needed!
-target_link_libraries(inviwo-module-dicom PUBLIC inviwo::libtiff4 gdcmCommon gdcmDICT gdcmDSED gdcmIOD gdcmMSFF gdcmMEXD gdcmcharls gdcmzlib gdcmjpeg8 gdcmjpeg12 gdcmjpeg16 gdcmexpat gdcmopenjpeg)
+target_link_libraries(inviwo-module-dicom PUBLIC inviwo::tiff gdcmCommon gdcmDICT gdcmDSED gdcmIOD gdcmMSFF gdcmMEXD gdcmcharls gdcmzlib gdcmjpeg8 gdcmjpeg12 gdcmjpeg16 gdcmexpat gdcmopenjpeg)
