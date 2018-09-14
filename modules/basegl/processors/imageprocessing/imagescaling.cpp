@@ -75,16 +75,14 @@ ImageScaling::ImageScaling()
 
     customFactor_.setVisible(false);
 
-    auto triggerRescale = [this]() { resizeInports(); };
-
-    enabled_.onChange(triggerRescale);
     scalingFactor_.onChange([this]() {
         if (enabled_) {
             customFactor_.setVisible(scalingFactor_.get() < 0.0);
             resizeInports();
         }
     });
-    customFactor_.onChange(triggerRescale);
+    enabled_.onChange([this]() { resizeInports(); });
+    customFactor_.onChange([this]() { resizeInports(); });
 }
 
 void ImageScaling::process() {
@@ -101,7 +99,7 @@ void ImageScaling::process() {
 void ImageScaling::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
 
-    if ((event->hash() == ResizeEvent::chash())) {
+    if (event->hash() == ResizeEvent::chash()) {
         // cache size of the resize event
         lastValidOutputSize_ = event->getAs<ResizeEvent>()->size();
 
