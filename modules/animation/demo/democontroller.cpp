@@ -65,7 +65,7 @@ void DemoController::setFileOptions() {
         filesystem::getDirectoryContents(selectedPath, filesystem::ListMode::Files);
 
     int invNum = 0;
-    for (int elIdx = 0; elIdx < elements.size(); ++elIdx) {
+    for (size_t elIdx = 0; elIdx < elements.size(); ++elIdx) {
         std::string& elem = elements[elIdx];
         std::string ext = filesystem::getFileExtension(elem);
         ext = toLower(ext);
@@ -104,6 +104,8 @@ void DemoController::onChangeSelection(Offset offset) {
             break;
         case Offset::Last:
             nextFileIndex = numFiles - 1;
+        default:
+            return;
     }
 
     // No need to load anything

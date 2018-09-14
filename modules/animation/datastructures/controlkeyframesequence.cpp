@@ -52,8 +52,6 @@ ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
 
 AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
                                                        AnimationState state) const {
-    AnimationTimeState timeState{to, state};
-
     // 'it' will be the first key. with a time larger then 'to'.
     auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
                                    [](const auto& a, const auto& b) { return a < *b; });
