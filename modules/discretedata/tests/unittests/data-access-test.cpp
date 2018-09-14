@@ -50,16 +50,29 @@ TEST(AccessingData, Connectivity) {
         std::make_shared<StructuredGrid>(GridPrimitive::Volume, std::vector<ind>({4, 5, 6}));
     std::shared_ptr<Connectivity> grid = data.Grid;
 
+    bool allFine = true;
+    std::vector<ind> neighbors;
+
     for (ElementIterator cell : grid->all(GridPrimitive::Volume)) {
         // Now, we basically have a GridPrimitive/index object.
         for (ElementIterator vert : cell.connection(GridPrimitive::Vertex)) {
             //// Iterate over all vertices of the respective cell.
             //// Basically a fromGridPrimitive/toGridPrimitive/fromIndex/toIndex object.
             //// Do something with them.
-            // float* pos   = vert.getPosition<float>();
-            // float* orPos = grid.getPosition<float>(vert);
+            int idx = vert.getIndex();
+
+            // Make sure the gird is bi-directional.
+            grid->getConnections(neighbors, idx, vert.getType(), cell.getType());
+            if (std::find(neighbors.cbegin(), neighbors.cend(), cell.getIndex()) ==
+                neighbors.cend()) {
+                EXPECT_TRUE(allFine);
+                allFine = false;
+                break;
+            }
         }
     }
+
+    EXPECT_TRUE(allFine, "Connectivity is not bi-directional.");
 }
 
 }  // namespace
