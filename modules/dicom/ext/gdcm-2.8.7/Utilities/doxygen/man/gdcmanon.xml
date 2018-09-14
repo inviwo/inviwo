@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmanon</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmanon</refname>
+    <refpurpose>Tool to anonymize a DICOM file.</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmanon_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmanon [options] file-in file-out
+gdcmanon [options] dir-in  dir-out
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmanon_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcmanon</emphasis> tool is an implementation of PS 3.15 / E.1 / Basic Application Level Confidentiality Profile (Implementation of E.1.1 De-identify &amp; E.1.2 Re-identify)</para>
+
+<para>This tool is split into two very different operating mode: <itemizedlist>
+<listitem>
+<para>An implementation of PS 3.15, see -e and -d flags </para>
+</listitem>
+<listitem>
+<para>A dumb mode, see &#8211;dumb</para>
+</listitem>
+</itemizedlist>
+Dumb mode and PS 3.15 do not work well together, you should really only use one type of anonymization. In case of doubt, avoid using &#8211;dumb.</para>
+
+<para>In order to use the PS 3.15 implementation (-d &amp; -e flag), you&apos;ll need a certificate to do de-identification operations, and the associated private key to do the re-identification operation. If you are only doing a one-shot anonymization and do not need to properly re-identify the DICOM file, you can safely discard the private key and only keep the certificate. See OpenSSL refsection below for an example on how to generate the private key/certificate pair.</para>
+
+<para>gdcmanon will exit early if OpenSSL was not configured/build properly into the library (see GDCM_USE_SYSTEM_OPENSSL in cmake).</para>
+</refsection>
+<refsection xml:id="gdcmanon_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>file-in   DICOM input filename
+
+file-out  DICOM output filename
+</literallayout></para>
+
+<para>or</para>
+
+<para><literallayout>file-in   DICOM input directory
+
+file-out  DICOM output directory
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmanon_1options">
+<title>OPTIONS</title>
+
+<para>You need to specify at least one operating mode, from the following list (and only one):</para>
+<refsection xml:id="gdcmanon_1required_params">
+<title>Required parameters</title>
+
+<para><literallayout>  -e --de-identify            De-identify DICOM (default)
+  -d --re-identify            Re-identify DICOM
+     --dumb                   Dumb mode anonymizer
+</literallayout></para>
+
+<para>Warning when operating in dumb mode, you need to also specify an operation to do, such as &apos;remove&apos; or &apos;empty&apos; a tag, see below the dumb mode options.</para>
+</refsection>
+<refsection xml:id="gdcmanon_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>  -i --input                  DICOM filename / directory
+  -o --output                 DICOM filename / directory
+  -r --recursive              recursively process (sub-)directories.
+     --continue               Do not stop when file found is not DICOM.
+     --root-uid               Root UID.
+     --resources-path         Resources path.
+  -k --key                    Path to RSA Private Key.
+  -c --certificate            Path to Certificate.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmanon_1encryption_options">
+<title>encryption options</title>
+
+<para><literallayout>     --des            DES.
+     --des3           Triple DES.
+     --aes128         AES 128.
+     --aes192         AES 192.
+     --aes256         AES 256.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmanon_1dumb_mode_options">
+<title>dumb mode options</title>
+
+<para><literallayout>     --empty   %d,%d           DICOM tag(s) to empty
+     --remove  %d,%d           DICOM tag(s) to remove
+     --replace %d,%d,%s        DICOM tag(s) to replace
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmanon_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1environment_variable">
+<title>environment variable</title>
+
+<para><literallayout>  GDCM_ROOT_UID Root UID
+  GDCM_RESOURCES_PATH path pointing to resources files (Part3.xml, ...)
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmviewer_1usage">
+<title>Typical usage</title>
+<refsection xml:id="gdcmanon_1deident">
+<title>De-identification (anonymization, encrypt)</title>
+
+<para>The only thing required for this operation is a certificate file (in PEM format).</para>
+
+<para><literallayout>$ gdcmanon --certificate certificate.pem -e original.dcm original_anonymized.dcm
+</literallayout></para>
+
+<para>You can use &#8211;asn1 option from gdcmdump to dump the generated DataSet as ASN1 structure (see <emphasis role="bold">gdcmdump</emphasis>(1) for example).</para>
+</refsection>
+<refsection xml:id="gdcmanon_1reindent">
+<title>Re-identification (de-anonymization,decrypt)</title>
+
+<para>The only thing required for this operation is a private key (in PEM format). It is required that the private key used for the re-identification process, was the actual private key used to generate the certificate file (certificate.pem) used during the de-identification step.</para>
+
+<para><literallayout>$ gdcmanon --key privatekey.pem -d original_anonymized.dcm original_copy.dcm
+</literallayout></para>
+
+<para>You can then check that original.dcm and original_copy.dcm are identical.</para>
+</refsection>
+<refsection xml:id="gdcmanon_1caveat">
+<title>Multiple files caveat</title>
+
+<para>It is very important to understand the following refsection, when anonymizing more than one single file. When anonymizing multiple DICOM files, you are required to use the directory input. You cannot call multiple time the gdcmanon command line tool. Indeed the tool stores in memory during the process only a hash table of conversion so that each time a particular value is found it get always replaced by the same de-identified value (think: consistent Series Instance UID).</para>
+</refsection>
+<refsection xml:id="gdcmanon_1dumb">
+<title>Dumb mode</title>
+
+<para>This functionality is not described in the DICOM standard. Users are advised that improper use of that mode is not recommended, meaning that important tag can be emptied/removed/replaced resulting in illegal/invalid DICOM file. Only use when you know what you are doing. If you delete a Type 1 attribute, chance is that your DICOM file will be not accepted in most DICOM third party viewer. Unfortunately this is often this mode that is implemented in popular DICOM Viewer, always prefer what the DICOM standard describes, and avoid the dumb mode.</para>
+
+<para>The following example shows how to use dumb mode and achieve 5 operations at the same time: <itemizedlist>
+<listitem>
+<para>Empty the tag (0010,0010) Patient&apos;s Name, </para>
+</listitem>
+<listitem>
+<para>Empty the tag (0010,0020) Patient ID, </para>
+</listitem>
+<listitem>
+<para>Remove the tag (0010,0040) Patient&apos;s Sex </para>
+</listitem>
+<listitem>
+<para>Remove the tag (0010,1010) Patient&apos;s Age </para>
+</listitem>
+<listitem>
+<para>Replace the tag (0010,1030) Patient&apos;s Weight with the value &apos;10&apos;</para>
+</listitem>
+</itemizedlist>
+You are required to check which DICOM attribute is Type 1 and Type 1C, before trying to <emphasis role="bold">&apos;Empty&apos;</emphasis> or <emphasis role="bold">&apos;Remove&apos;</emphasis> a particular DICOM attribute. For the same reason, you are required to check what are valid value in a replace operation.</para>
+
+<para><literallayout>$ gdcmanon --dumb --empty 10,10 --empty 10,20 --remove 10,40 --remove 10,1010 --replace 10,1030,10 012345.002.050.dcm out.dcm
+</literallayout></para>
+
+<para>Multiple operation of &#8211;dumb mode can take place, just reuse the output of the previous operation. Always use gdcmdump on the input and output file to check what was actually achieved. You can use a diff program to check only what changed (see <emphasis role="bold">gdcmdiff</emphasis>(1) for example).</para>
+<refsection xml:id="gdcmanon_1irreversible_anon">
+<title>Irreversible Anonymization</title>
+
+<para>In some very rare cases, one would want to anonymize using the PS 3.15 mode so as to take benefit of the automatic conversion of all content that could contain Patient related information.</para>
+
+<para>In the end all Patient related information has been removed and has been secretly stored in the 0400,0500 DICOM attribute. However to make sure that no-one ever try to break that security using brute-force algorithm, one want want to remove completely this DICOM attribute. This will make the DICOM:</para>
+
+<para><itemizedlist>
+<listitem>
+<para>Completely free of any Patient related information (as per PS 3.15 specification) </para>
+</listitem>
+<listitem>
+<para>Remove any mean of people to brute force attack the file to find out the identity of the Patient</para>
+</listitem>
+</itemizedlist>
+In this case one could simply do, as a first step execute the reversible anonymizer:</para>
+
+<para><literallayout>$ gdcmanon -c certificate.pem input.dcm anonymized_reversible.dcm
+</literallayout></para>
+
+<para>and now completely remove the DICOM attribute containing the secretly encrypted Patient related information:</para>
+
+<para><literallayout>$ gdcmanon --dumb --remove 400,500 --remove 12,62 --remove 12,63 anonymized_reversible.dcm anonymized_irreversible.dcm
+</literallayout></para>
+
+<para><formalpara><title>Remarks: </title>
+
+<para>As mentionned in DICOM Sup 142, this anonymization is preferred over de-identification since: It is not required that the Encrypted Attributes Data Set be created; indeed, there may be circumstances where the Dataset is expected to be archived long enough that any contemporary encryption technology may be inadequate to provide long term protection against unauthorized recovery of identification</para>
+</formalpara>
+</para>
+</refsection>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmanon_1openssl">
+<title>OpenSSL</title>
+
+<para>On most system you can have access to OpenSSL to generate the Private Key/Certificate pair.</para>
+<refsection xml:id="gdcmanon_1priv_key">
+<title>Generating a Private Key</title>
+
+<para>Command line to generate a rsa key (512bit)</para>
+
+<para><literallayout>$ openssl genrsa -out CA_key.pem
+</literallayout></para>
+
+<para>Command line to generate a rsa key (2048bit)</para>
+
+<para><literallayout>$ openssl genrsa -out CA_key.pem 2048
+</literallayout></para>
+
+<para>Command line to generate a rsa key (2048bit) + passphrase</para>
+
+<para><literallayout>$ openssl genrsa -des3 -out CA_key.pem 2048
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmanon_1certificate">
+<title>Generating a Certificate</title>
+
+<para>From your previously generated Private Key, you can now generate a certificate in PEM (DER format is currently not supported).</para>
+
+<para><literallayout>$ openssl req -new -key CA_key.pem -x509 -days 365 -out CA_cert.cer
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmanon_1dicom_standard">
+<title>DICOM Standard:</title>
+
+<para>Page to the DICOM Standard:</para>
+
+<para><link xlink:href="http://dicom.nema.org/">http://dicom.nema.org/</link></para>
+
+<para>The DICOM Standard at the time of releasing gdcmanon is:</para>
+
+<para><link xlink:href="ftp://medical.nema.org/medical/dicom/2008/">ftp://medical.nema.org/medical/dicom/2008/</link></para>
+
+<para>Direct link to PS 3.15-2008:</para>
+
+<para><link xlink:href="ftp://medical.nema.org/medical/dicom/2008/08_15pu.pdf">ftp://medical.nema.org/medical/dicom/2008/08_15pu.pdf</link></para>
+</refsection>
+<refsection xml:id="gdcmanon_1gdcmanon_warnings">
+<title>Warnings</title>
+
+<para>Certain attributes may still contains Protected Health Information (PHI) after an anonymization step. This is typically the case for Patient&apos;s Address (0010,1040). The reason is that this particular attribute is not supposed to be in the composite IODs in the first place. DICOM Supp 142 includes it (however gdcmanon does not implement it).</para>
+</refsection>
+<refsection xml:id="gdcmanon_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmconv</emphasis>(1), <emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcmdiff</emphasis>(1), <emphasis role="bold">openssl</emphasis>(1), <emphasis role="bold">dumpasn1</emphasis>(1)</para>
+</refsection>
+</refentry>

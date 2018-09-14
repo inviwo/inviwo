@@ -1,0 +1,1173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmdump</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmdump</refname>
+    <refpurpose>dumps a DICOM file, it will display the structure and values contained in the specified DICOM file.</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmdump_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmdump [options] dcm_file
+gdcmdump [options] dcm_directory
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcmdump</emphasis> command line program dumps a DICOM file to the console. For those familiar with dcmdump (DCMTK) output, gdcmdump has some minor differences. Namely: <itemizedlist>
+<listitem>
+<para>For Implicit Transfer Syntax gdcmdump will print <emphasis role="bold">??</emphasis> instead of the dictionary VR</para>
+</listitem>
+</itemizedlist>
+gdcmdump has a limited private dictionary that is used to lookup private element whenever possible.</para>
+</refsection>
+<refsection xml:id="gdcmdump_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>dcm_file        DICOM input filename
+dcm_directory   DICOM input directory
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1options">
+<title>OPTIONS</title>
+<refsection xml:id="gdcmdump_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>  -x --xml-dict       generate the XML dict (only private elements for now).
+  -r --recursive      recursive (input is a directory)
+  -d --dump           dump value (limited use).
+  -p --print          print value instead of simply dumping (default).
+  -c --color          print in color.
+  -C --csa            print SIEMENS CSA Header (0029,[12]0,SIEMENS CSA HEADER).
+     --csa-asl        print decoded SIEMENS CSA MR_ASL (base64).
+     --csa-diffusion  print decoded SIEMENS CSA MRDiffusion (base64).
+     --mrprotocol     print SIEMENS MrProtocol only (within ASCCONV BEGIN/END).
+                        either encapsulated in CSA or directly (syngo XA10)
+  -P --pdb            print GEMS Protocol Data Block (0025,1b,GEMS_SERS_01).
+     --elscint        print ELSCINT Protocol Information (01f7,26,ELSCINT1).
+     --vepro          print VEPRO Protocol Information (0055,20,VEPRO VIF 3.0 DATA).
+                         or VEPRO Protocol Information (0055,20,VEPRO VIM 5.0 DATA).
+     --sds            print Philips MR Series Data Storage (1.3.46.670589.11.0.0.12.2) Information (2005,32,Philips MR Imaging DD 002).
+  -A --asn1           print encapsulated ASN1 structure &gt;(0400,0520).
+     --map-uid-names  map UID to names.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1special_options">
+<title>special options</title>
+
+<para><literallayout>  -I --ignore-errors   dumps even if file is corrupted (advanced users only, see disclaimers).
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmviewer_1usage">
+<title>Typical usage</title>
+<refsection xml:id="gdcmdump_1implicit">
+<title>Printing Implicit Transfer Syntax</title>
+
+<para>The VR are not found in the file, thus are presented with a <quote>(??)</quote>, and right next to it (if found) the correct VR.</para>
+
+<para>Eg.:</para>
+
+<para><literallayout>$ gdcmdump GE_DLX-8-MONO2-PrivateSyntax.dcm
+</literallayout></para>
+
+<para><literallayout># Dicom-File-Format
+...
+(0008,0000) ?? (UL) 434                                           # 4,1 Generic Group Length
+(0008,0005) ?? (CS) [ISO_IR 100]                                  # 10,1-n Specific Character Set
+(0008,0008) ?? (CS) [ORIGINAL\\PRIMARY\\SINGLE PLANE ]              # 30,2-n Image Type
+(0008,0016) ?? (UI) [1.2.840.10008.5.1.4.1.1.12.1]                # 28,1 SOP Class UID
+(0008,0018) ?? (UI) [1.2.840.113619.2.16.1.0.906539207.1.24207]   # 42,1 SOP Instance UID
+(0008,0020) ?? (DA) [19980923]                                    # 8,1 Study Date
+(0008,0021) ?? (DA) [19980923]                                    # 8,1 Series Date
+(0008,0022) ?? (DA) [19980923]                                    # 8,1 Acquisition Date
+(0008,0023) ?? (DA) [19980923]                                    # 8,1 Content Date
+(0008,0030) ?? (TM) [101229.000]                                  # 10,1 Study Time
+(0008,0031) ?? (TM) [101229.000]                                  # 10,1 Series Time
+(0008,0032) ?? (TM) [102653.000]                                  # 10,1 Acquisition Time
+(0008,0033) ?? (TM) [102653.000]                                  # 10,1 Content Time
+...
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1private_attribute">
+<title>Print Private Attributes</title>
+
+<para>GDCM has a limited private dictionary. Whenever possible, it will try to lookup the private data element.</para>
+
+<para><literallayout>$ gdcmdump 012345.002.050.dcm
+</literallayout></para>
+
+<para><literallayout>...
+(0009,0010) LO [GEMS_IDEN_01]                                     # 12,1 Private Creator
+(0009,1001) LO [GE_GENESIS_FF ]                                   # 14,1 Full fidelity
+(0009,1002) SH [MRCV]                                             # 4,1 Suite id
+(0009,1004) SH [SIGNA ]                                           # 6,1 Product id
+(0009,1027) SL 985968524                                          # 4,1 Image actual date
+(0009,1030) SH [19356UMR2 ]                                       # 10,1 Service id
+(0009,1031) SH [999 ]                                             # 4,1 Mobile location number
+(0009,10e3) UI [1.2.840.113619.1.1.4.1762386977]                  # 32,1 Equipment UID
+(0009,10e6) SH [08]                                               # 2,1 Genesis Version - now
+(0009,10e7) UL 2757786872                                         # 4,1 Exam Record checksum
+(0009,10e9) SL 985968523                                          # 4,1 Actual series data time stamp
+...
+(0019,0000) UL 1208                                               # 4,1 Generic Group Length
+(0019,0010) LO [GEMS_ACQU_01]                                     # 12,1 Private Creator
+(0019,100f) DS [424.399994]                                       # 10,1 Horiz. Frame of ref.
+(0019,1011) SS 0                                                  # 2,1 Series contrast
+...
+(0019,10e0) DS [0.000000]                                         # 8,1 User data 24 {# DTI Diffusion Dir., release 10.0 &amp; above}
+(0019,10e2) DS [0.000000]                                         # 8,1 Velocity Encode Scale
+(0019,10f2) SS 0                                                  # 2,1 Fast phases
+(0019,10f9) DS [98]                                               # 2,1 Transmit gain
+...
+(0021,0000) UL 372                                                # 4,1 Generic Group Length
+(0021,0010) LO [GEMS_RELA_01]                                     # 12,1 Private Creator
+(0021,1003) SS 0                                                  # 2,1 Series from which Prescribed
+...
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1siemens_csa">
+<title>SIEMENS CSA Header</title>
+
+<para>Using this option it is possible to dump as a readable text what is contained in the private attribute as found in typical SIEMENS MR DICOM file.</para>
+
+<para>Eg.:</para>
+
+<para><literallayout>$ gdcmdump --csa MR_SIEMENS_forceLoad29-1010_29-1020.dcm
+</literallayout></para>
+
+<para><literallayout>(0029,0010)siemens csa header
+Image shadow data (0029,xx10)
+
+0 - &apos;EchoLinePosition&apos; VM 1, VR IS, SyngoDT 6, NoOfItems 6, Data &apos;64      &apos;
+1 - &apos;EchoColumnPosition&apos; VM 1, VR IS, SyngoDT 6, NoOfItems 6, Data &apos;64      &apos;
+2 - &apos;EchoPartitionPosition&apos; VM 1, VR IS, SyngoDT 6, NoOfItems 6, Data &apos;32      &apos;
+3 - &apos;UsedChannelMask&apos; VM 1, VR UL, SyngoDT 9, NoOfItems 6, Data &apos;255     &apos;
+4 - &apos;Actual3DImaPartNumber&apos; VM 1, VR IS, SyngoDT 6, NoOfItems 0, Data
+5 - &apos;ICE_Dims&apos; VM 1, VR LO, SyngoDT 19, NoOfItems 6, Data &apos;X_1_1_1_1_1_1_31_1_1_1_1_19&apos;
+6 - &apos;B_value&apos; VM 1, VR IS, SyngoDT 6, NoOfItems 6, Data &apos;0       &apos;
+7 - &apos;Filter1&apos; VM 1, VR IS, SyngoDT 6, NoOfItems 0, Data
+8 - &apos;Filter2&apos; VM 1, VR IS, SyngoDT 6, NoOfItems 0, Data
+...
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1siemens_csaasl">
+<title>SIEMENS CSA Header: MR_ASL</title>
+
+<para>Using this option it is possible to dump a decoded (base64) version of MR_ASL contained in the CSA header.</para>
+
+<para>Eg.:</para>
+
+<para><literallayout>$ gdcmdump --csa-asl ASL.dcm
+</literallayout></para>
+
+<para><literallayout>
+(0018,9251) SQ (Sequence with undefined length)                   # u/l,1 MR Arterial Spin Labeling Sequence 
+  (fffe,e000) na (Item with undefined length) 
+    (0018,9252) LO [2D pulsed ASL (EP2D)]                         # 20,1 ASL Technique Description 
+    (0018,9257) CS [LABEL ]                                       # 6,1 ASL Context 
+    (0018,9259) CS [NO]                                           # 2,1 ASL Crusher Flag 
+    (0018,925c) CS [YES ]                                         # 4,1 ASL Bolus Cut-off Flag 
+    (0018,925d) SQ (Sequence with undefined length)               # u/l,1 ASL Bolus Cut-off Timing Sequence 
+      (fffe,e000) na (Item with undefined length) 
+        (0018,925e) LO [Q2TIPS]                                   # 6,1 ASL Bolus Cut-off Technique 
+        (0018,925f) IS (UL) [1990]                                # 4,1 ASL Bolus Cut-off Delay Time 
+      (fffe,e00d) 
+    (fffe,e0dd) 
+    (0018,9260) SQ (Sequence with undefined length)               # u/l,1 ASL Slab Sequence 
+      (fffe,e000) na (Item with undefined length) 
+        (0018,9253) US 1                                          # 2,1 ASL Slab Number 
+        (0018,9254) FD 109.5                                      # 8,1 ASL Slab Thickness 
+        (0018,9255) FD 0\0\1                                      # 24,3 ASL Slab Orientation 
+        (0018,9256) FD 0\-23.9333\-70.9189                        # 24,3 ASL Mid Slab Position 
+        (0018,9258) IS (UL) [10]                                  # 2,1 ASL Pulse Train Duration 
+      (fffe,e00d) 
+    (fffe,e0dd) 
+  (fffe,e00d) 
+(fffe,e0dd) 
+</literallayout></para>
+<para>This is completely equivalent to doing (by hand):</para>
+<para><literallayout>
+$ gdcmdump --csa asl.dcm | grep -A 6 MR_ASL 
+98 - 'MR_ASL' VM 1, VR UT, SyngoDT 27, NoOfItems 6, Data 'GABRklNRAAD//////v8A4P////8YAFKSTE8UADJEIHB1bHNlZCBBU0wgKEVQMkQpGABXkkNT 
+BgBMQUJFTCAYAGCSU1EAAP/////+/wDg/////xgAU5JVUwIAAQAYAFSSRkQIAAAAAAAAYFtA 
+GABVkkZEGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8YAFaSRkQYAAAAAAAAAAAAAAAAYOvu 
+N8AAAACAzrpRwBgAWJJJUwIAMTD+/w3gAAAAAP7/3eAAAAAAGABZkkNTAgBOTxgAXJJDUwQA 
+WUVTIBgAXZJTUQAA//////7/AOD/////GABekkxPBgBRMlRJUFMYAF+SSVMEADE5OTD+/w3g 
+AAAAAP7/3eAAAAAA/v8N4AAAAAD+/93gAAAAAA== 
+' 
+$  echo 'GABRklNRAAD//////v8A4P////8YAFKSTE8UADJEIHB1bHNlZCBBU0wgKEVQMkQpGABXkkNT 
+BgBMQUJFTCAYAGCSU1EAAP/////+/wDg/////xgAU5JVUwIAAQAYAFSSRkQIAAAAAAAAYFtA 
+GABVkkZEGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8YAFaSRkQYAAAAAAAAAAAAAAAAYOvu 
+N8AAAACAzrpRwBgAWJJJUwIAMTD+/w3gAAAAAP7/3eAAAAAAGABZkkNTAgBOTxgAXJJDUwQA 
+WUVTIBgAXZJTUQAA//////7/AOD/////GABekkxPBgBRMlRJUFMYAF+SSVMEADE5OTD+/w3g 
+AAAAAP7/3eAAAAAA/v8N4AAAAAD+/93gAAAAAA== 
+' | base64 -d > asl.dcm
+$ dcmdump -f asl.dcm
+</literallayout></para>
+<para>One should pay attention that currently two attributes (0018,925f) and (0018,9258) are using a VR that is different from what the DICOM standard specifies.</para>
+</refsection>
+<refsection xml:id="gdcmdump_1siemens_csadiffusion">
+<title>SIEMENS CSA Header: MRDiffusion</title>
+
+<para>Using this option it is possible to dump a decoded (base64) version of MRDiffusion contained in the CSA header.</para>
+
+<para>Eg.:</para>
+
+<para><literallayout>$ gdcmdump --csa-diffusion DIFFUSION.dcm
+</literallayout></para>
+
+<para><literallayout># Dicom-File-Format
+
+# Dicom-Meta-Information-Header
+# Used TransferSyntax: 
+
+# Dicom-Data-Set
+# Used TransferSyntax: Unknown Transfer Syntax
+(0018,9117) SQ (Sequence with undefined length)                   # u/l,1 MR Diffusion Sequence
+  (fffe,e000) na (Item with undefined length)
+    (0018,9075) CS [ISOTROPIC ]                                   # 10,1 Diffusion Directionality
+    (0018,9087) FD 0                                              # 8,1 Diffusion b-value
+  (fffe,e00d)
+(fffe,e0dd)
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1siemens_mrprotocol">
+<title>SIEMENS CSA Header: MrProtocol</title>
+
+<para>Using this option it is possible to dump a sorted version of MrProtocol (extra '"' are trimmed).</para>
+
+<para>Eg.:</para>
+
+<para><literallayout>$ gdcmdump --mrprotocol input.dcm
+</literallayout></para>
+
+<para><literallayout>
+MrProtocolVersion: 12510002
+acFlowComp[0] : 1
+adFlipAngleDegree[0] : 90
+alTE[0] : 60000
+alTR[0] : 3000000
+dRefSNR : 181090.7706
+dRefSNR_VOI : 181090.7706
+lAverages : 1
+lCombinedEchoes : 1
+lContrasts : 1
+lParadigmPeriodicity : 1
+lRepetitions : 79
+lScanTimeSec : 3
+lTotalScanTimeSec : 246
+sAdjFreSpec.ulMode : 0x1
+sAdjShimSpec.ulMode : 0x2
+sAdjWatSupSpec.ulMode : 0x1
+sAngio.ucPCFlowMode : 0x2
+sAngio.ucTOFInflow : 0x4
+sAutoAlign.dAAMatrix[0] : 1
+sAutoAlign.dAAMatrix[10] : 1
+sAutoAlign.dAAMatrix[15] : 1
+sAutoAlign.dAAMatrix[5] : 1
+sCOIL_SELECT_MEAS.asList[0].lElementSelected : 1
+sCOIL_SELECT_MEAS.asList[0].lRxChannelConnected : 1
+sCOIL_SELECT_MEAS.asList[0].sCoilElementID.lCoilCopy : 1
+sCOIL_SELECT_MEAS.asList[0].sCoilElementID.tCoilID : 8_Channel_Head
+sCOIL_SELECT_MEAS.asList[0].sCoilElementID.tElement : PH7
+sCOIL_SELECT_MEAS.asList[1].lElementSelected : 1
+sCOIL_SELECT_MEAS.asList[1].lRxChannelConnected : 2
+sCOIL_SELECT_MEAS.asList[1].sCoilElementID.lCoilCopy : 1
+sCOIL_SELECT_MEAS.asList[1].sCoilElementID.tCoilID : 8_Channel_Head
+sCOIL_SELECT_MEAS.asList[1].sCoilElementID.tElement : PH5
+sCOIL_SELECT_MEAS.asList[2].lElementSelected : 1
+sCOIL_SELECT_MEAS.asList[2].lRxChannelConnected : 3
+sCOIL_SELECT_MEAS.asList[2].sCoilElementID.lCoilCopy : 1
+sCOIL_SELECT_MEAS.asList[2].sCoilElementID.tCoilID : 8_Channel_Head
+sCOIL_SELECT_MEAS.asList[2].sCoilElementID.tElement : PH3
+sCOIL_SELECT_MEAS.asList[3].lElementSelected : 1
+sCOIL_SELECT_MEAS.asList[3].lRxChannelConnected : 4
+sCOIL_SELECT_MEAS.asList[3].sCoilElementID.lCoilCopy : 1
+sCOIL_SELECT_MEAS.asList[3].sCoilElementID.tCoilID : 8_Channel_Head
+sCOIL_SELECT_MEAS.asList[3].sCoilElementID.tElement : PH1
+sCOIL_SELECT_MEAS.asList[4].lElementSelected : 1
+sCOIL_SELECT_MEAS.asList[4].lRxChannelConnected : 5
+sCOIL_SELECT_MEAS.asList[4].sCoilElementID.lCoilCopy : 1
+sCOIL_SELECT_MEAS.asList[4].sCoilElementID.tCoilID : 8_Channel_Head
+sCOIL_SELECT_MEAS.asList[4].sCoilElementID.tElement : PH8
+sCOIL_SELECT_MEAS.asList[5].lElementSelected : 1
+sCOIL_SELECT_MEAS.asList[5].lRxChannelConnected : 6
+sCOIL_SELECT_MEAS.asList[5].sCoilElementID.lCoilCopy : 1
+sCOIL_SELECT_MEAS.asList[5].sCoilElementID.tCoilID : 8_Channel_Head
+sCOIL_SELECT_MEAS.asList[5].sCoilElementID.tElement : PH6
+sCOIL_SELECT_MEAS.asList[6].lElementSelected : 1
+sCOIL_SELECT_MEAS.asList[6].lRxChannelConnected : 7
+sCOIL_SELECT_MEAS.asList[6].sCoilElementID.lCoilCopy : 1
+sCOIL_SELECT_MEAS.asList[6].sCoilElementID.tCoilID : 8_Channel_Head
+sCOIL_SELECT_MEAS.asList[6].sCoilElementID.tElement : PH4
+sCOIL_SELECT_MEAS.asList[7].lElementSelected : 1
+sCOIL_SELECT_MEAS.asList[7].lRxChannelConnected : 8
+sCOIL_SELECT_MEAS.asList[7].sCoilElementID.lCoilCopy : 1
+sCOIL_SELECT_MEAS.asList[7].sCoilElementID.tCoilID : 8_Channel_Head
+sCOIL_SELECT_MEAS.asList[7].sCoilElementID.tElement : PH2
+sCOIL_SELECT_MEAS.sCOILPLUGS.auiNmbrOfNibbles[0] : 0x2
+sCOIL_SELECT_MEAS.sCOILPLUGS.auiNmbrOfNibbles[1] : 0x2
+sCOIL_SELECT_MEAS.sCOILPLUGS.auiNmbrOfNibbles[2] : 0x2
+sCOIL_SELECT_MEAS.sCOILPLUGS.auiNmbrOfNibbles[3] : 0x2
+sCOIL_SELECT_MEAS.sCOILPLUGS.auiNmbrOfNibbles[4] : 0x2
+sCOIL_SELECT_MEAS.sCOILPLUGS.aulPlugId[0] : 0xff
+sCOIL_SELECT_MEAS.sCOILPLUGS.aulPlugId[1] : 0xaa
+sCOIL_SELECT_MEAS.sCOILPLUGS.aulPlugId[2] : 0xee
+sCOIL_SELECT_MEAS.sCOILPLUGS.aulPlugId[3] : 0xee
+sCOIL_SELECT_MEAS.sCOILPLUGS.aulPlugId[4] : 0xa4
+sDiffusion.ulMode : 0x1
+sEFISPEC.bEFIDataValid : 1
+sEllipticalFilter.ucMode : 0x1
+sFastImaging.lEPIFactor : 128
+sFastImaging.lSegments : 1
+sFastImaging.lTurboFactor : 1
+sGRADSPEC.alShimCurrent[0] : -166
+sGRADSPEC.alShimCurrent[1] : 596
+sGRADSPEC.alShimCurrent[2] : -516
+sGRADSPEC.alShimCurrent[3] : 84
+sGRADSPEC.alShimCurrent[4] : -295
+sGRADSPEC.bB0CompensationValid : 1
+sGRADSPEC.bCrossTermCompensationValid : 1
+sGRADSPEC.bDelayValid : 1
+sGRADSPEC.bEddyCompensationValid : 1
+sGRADSPEC.bOffsetValid : 1
+sGRADSPEC.bSensitivityValid : 1
+sGRADSPEC.bShimCurrentValid : 1
+sGRADSPEC.flGSWDMinRiseTime : 5
+sGRADSPEC.flSensitivityX : 0.000353238
+sGRADSPEC.flSensitivityY : 0.000364826
+sGRADSPEC.flSensitivityZ : 0.000356804
+sGRADSPEC.lDelayX : 14
+sGRADSPEC.lDelayY : 15
+sGRADSPEC.lDelayZ : 13
+sGRADSPEC.lOffsetX : -10
+sGRADSPEC.lOffsetY : 22
+sGRADSPEC.lOffsetZ : 34
+sGRADSPEC.sB0CompensationX.aflAmplitude[0] : -0.0110937
+sGRADSPEC.sB0CompensationX.aflAmplitude[1] : -0.0276212
+sGRADSPEC.sB0CompensationX.aflAmplitude[2] : 0.00261628
+sGRADSPEC.sB0CompensationX.aflTimeConstant[0] : 1.86006
+sGRADSPEC.sB0CompensationX.aflTimeConstant[1] : 0.0451358
+sGRADSPEC.sB0CompensationX.aflTimeConstant[2] : 0.00199924
+sGRADSPEC.sB0CompensationY.aflAmplitude[0] : 0.0647921
+sGRADSPEC.sB0CompensationY.aflAmplitude[1] : 0.0207167
+sGRADSPEC.sB0CompensationY.aflAmplitude[2] : -0.0131878
+sGRADSPEC.sB0CompensationY.aflTimeConstant[0] : 0.852499
+sGRADSPEC.sB0CompensationY.aflTimeConstant[1] : 0.0633158
+sGRADSPEC.sB0CompensationY.aflTimeConstant[2] : 0.00199999
+sGRADSPEC.sB0CompensationZ.aflAmplitude[0] : 0.119857
+sGRADSPEC.sB0CompensationZ.aflAmplitude[1] : 0.0106907
+sGRADSPEC.sB0CompensationZ.aflAmplitude[2] : -0.0159243
+sGRADSPEC.sB0CompensationZ.aflTimeConstant[0] : 1.03958
+sGRADSPEC.sB0CompensationZ.aflTimeConstant[1] : 0.019543
+sGRADSPEC.sB0CompensationZ.aflTimeConstant[2] : 0.00141055
+sGRADSPEC.sCrossTermCompensationXY.aflAmplitude[0] : 0.000779649
+sGRADSPEC.sCrossTermCompensationXY.aflTimeConstant[0] : 0.609972
+sGRADSPEC.sCrossTermCompensationXZ.aflAmplitude[0] : -0.000357764
+sGRADSPEC.sCrossTermCompensationXZ.aflTimeConstant[0] : 0.757463
+sGRADSPEC.sCrossTermCompensationYX.aflAmplitude[0] : 0.00028701
+sGRADSPEC.sCrossTermCompensationYX.aflTimeConstant[0] : 0.692162
+sGRADSPEC.sCrossTermCompensationYZ.aflAmplitude[0] : 0.000341002
+sGRADSPEC.sCrossTermCompensationYZ.aflTimeConstant[0] : 0.643997
+sGRADSPEC.sEddyCompensationX.aflAmplitude[0] : 0.00321033
+sGRADSPEC.sEddyCompensationX.aflAmplitude[1] : 0.0764387
+sGRADSPEC.sEddyCompensationX.aflAmplitude[2] : -0.0119296
+sGRADSPEC.sEddyCompensationX.aflAmplitude[3] : 0.002806
+sGRADSPEC.sEddyCompensationX.aflAmplitude[4] : 0.00131044
+sGRADSPEC.sEddyCompensationX.aflTimeConstant[0] : 1.92825
+sGRADSPEC.sEddyCompensationX.aflTimeConstant[1] : 0.530542
+sGRADSPEC.sEddyCompensationX.aflTimeConstant[2] : 0.348189
+sGRADSPEC.sEddyCompensationX.aflTimeConstant[3] : 0.0172583
+sGRADSPEC.sEddyCompensationX.aflTimeConstant[4] : 0.00199055
+sGRADSPEC.sEddyCompensationY.aflAmplitude[0] : 0.00129643
+sGRADSPEC.sEddyCompensationY.aflAmplitude[1] : 0.0657945
+sGRADSPEC.sEddyCompensationY.aflAmplitude[2] : -0.00875319
+sGRADSPEC.sEddyCompensationY.aflAmplitude[3] : 0.00247817
+sGRADSPEC.sEddyCompensationY.aflAmplitude[4] : 0.00136282
+sGRADSPEC.sEddyCompensationY.aflTimeConstant[0] : 2.18733
+sGRADSPEC.sEddyCompensationY.aflTimeConstant[1] : 0.554603
+sGRADSPEC.sEddyCompensationY.aflTimeConstant[2] : 0.363992
+sGRADSPEC.sEddyCompensationY.aflTimeConstant[3] : 0.0174167
+sGRADSPEC.sEddyCompensationY.aflTimeConstant[4] : 0.0019934
+sGRADSPEC.sEddyCompensationZ.aflAmplitude[0] : 0.0106364
+sGRADSPEC.sEddyCompensationZ.aflAmplitude[1] : 0.0644895
+sGRADSPEC.sEddyCompensationZ.aflAmplitude[2] : -0.0116849
+sGRADSPEC.sEddyCompensationZ.aflAmplitude[3] : 0.00245425
+sGRADSPEC.sEddyCompensationZ.aflAmplitude[4] : -0.000382604
+sGRADSPEC.sEddyCompensationZ.aflTimeConstant[0] : 2.45763
+sGRADSPEC.sEddyCompensationZ.aflTimeConstant[1] : 0.728919
+sGRADSPEC.sEddyCompensationZ.aflTimeConstant[2] : 0.490303
+sGRADSPEC.sEddyCompensationZ.aflTimeConstant[3] : 0.0146871
+sGRADSPEC.sEddyCompensationZ.aflTimeConstant[4] : 0.00198729
+sGRADSPEC.ucMode : 0x11
+sGroupArray.anMember[10] : 10
+sGroupArray.anMember[11] : 11
+sGroupArray.anMember[12] : 12
+sGroupArray.anMember[13] : 13
+sGroupArray.anMember[14] : 14
+sGroupArray.anMember[15] : 15
+sGroupArray.anMember[16] : 16
+sGroupArray.anMember[17] : 17
+sGroupArray.anMember[18] : 18
+sGroupArray.anMember[19] : 19
+sGroupArray.anMember[1] : 1
+sGroupArray.anMember[20] : 20
+sGroupArray.anMember[21] : 21
+sGroupArray.anMember[22] : 22
+sGroupArray.anMember[23] : 23
+sGroupArray.anMember[24] : 24
+sGroupArray.anMember[25] : 25
+sGroupArray.anMember[26] : 26
+sGroupArray.anMember[27] : 27
+sGroupArray.anMember[28] : 28
+sGroupArray.anMember[29] : 29
+sGroupArray.anMember[2] : 2
+sGroupArray.anMember[30] : 30
+sGroupArray.anMember[31] : -1
+sGroupArray.anMember[3] : 3
+sGroupArray.anMember[4] : 4
+sGroupArray.anMember[5] : 5
+sGroupArray.anMember[6] : 6
+sGroupArray.anMember[7] : 7
+sGroupArray.anMember[8] : 8
+sGroupArray.anMember[9] : 9
+sGroupArray.asGroup[0].dDistFact : 0.1
+sGroupArray.asGroup[0].nSize : 31
+sGroupArray.lSize : 1
+sGroupArray.sPSat.dGap : 10
+sGroupArray.sPSat.dThickness : 50
+sKSpace.dPhaseResolution : 1
+sKSpace.dSliceResolution : 1
+sKSpace.lBaseResolution : 64
+sKSpace.lImagesPerSlab : 64
+sKSpace.lPartitions : 64
+sKSpace.lPhaseEncodingLines : 64
+sKSpace.ucAveragingMode : 0x2
+sKSpace.ucDimension : 0x2
+sKSpace.ucMultiSliceMode : 0x2
+sKSpace.ucPhasePartialFourier : 0x10
+sKSpace.ucSlicePartialFourier : 0x10
+sKSpace.unReordering : 0x1
+sNavigatorPara.ucRespComp : 0x4
+sPat.lAccelFact3D : 1
+sPat.lAccelFactPE : 1
+sPat.ucPATMode : 0x1
+sPat.ucRefScanMode : 0x1
+sPhysioImaging.lMethod1 : 1
+sPhysioImaging.lMethod2 : 1
+sPhysioImaging.lPhases : 1
+sPhysioImaging.lRetroGatedImages : 16
+sPhysioImaging.lSignal1 : 1
+sPhysioImaging.lSignal2 : 1
+sPhysioImaging.sPhysioECG.lArrhythmiaDetection : 1
+sPhysioImaging.sPhysioECG.lCardiacGateOffThreshold : 700000
+sPhysioImaging.sPhysioECG.lCardiacGateOnThreshold : 100000
+sPhysioImaging.sPhysioECG.lTriggerPulses : 1
+sPhysioImaging.sPhysioECG.lTriggerWindow : 5
+sPhysioImaging.sPhysioExt.lCardiacGateOffThreshold : 700000
+sPhysioImaging.sPhysioExt.lCardiacGateOnThreshold : 100000
+sPhysioImaging.sPhysioExt.lTriggerPulses : 1
+sPhysioImaging.sPhysioExt.lTriggerWindow : 5
+sPhysioImaging.sPhysioPulse.lCardiacGateOffThreshold : 700000
+sPhysioImaging.sPhysioPulse.lCardiacGateOnThreshold : 100000
+sPhysioImaging.sPhysioPulse.lTriggerPulses : 1
+sPhysioImaging.sPhysioPulse.lTriggerWindow : 5
+sPhysioImaging.sPhysioResp.dGatingRatio : 0.3
+sPhysioImaging.sPhysioResp.lRespGatePhase : 2
+sPhysioImaging.sPhysioResp.lRespGateThreshold : 20
+sPrepPulses.ucFatSat : 0x1
+sPrepPulses.ucFatSatMode : 0x2
+sPrepPulses.ucInversion : 0x4
+sPrepPulses.ucSatRecovery : 0x1
+sPrepPulses.ucWaterSat : 0x4
+sProtConsistencyInfo.flGMax : 26
+sProtConsistencyInfo.flNominalB0 : 1.494
+sProtConsistencyInfo.flRiseTime : 5
+sRXSPEC.aFFT_SCALE[0].bValid : 1
+sRXSPEC.aFFT_SCALE[0].flFactor : 0.720612
+sRXSPEC.aFFT_SCALE[0].lRxChannel : 1
+sRXSPEC.aFFT_SCALE[1].bValid : 1
+sRXSPEC.aFFT_SCALE[1].flFactor : 0.719059
+sRXSPEC.aFFT_SCALE[1].lRxChannel : 2
+sRXSPEC.aFFT_SCALE[2].bValid : 1
+sRXSPEC.aFFT_SCALE[2].flFactor : 0.705708
+sRXSPEC.aFFT_SCALE[2].lRxChannel : 3
+sRXSPEC.aFFT_SCALE[3].bValid : 1
+sRXSPEC.aFFT_SCALE[3].flFactor : 0.731533
+sRXSPEC.aFFT_SCALE[3].lRxChannel : 4
+sRXSPEC.aFFT_SCALE[4].bValid : 1
+sRXSPEC.aFFT_SCALE[4].flFactor : 0.722418
+sRXSPEC.aFFT_SCALE[4].lRxChannel : 5
+sRXSPEC.aFFT_SCALE[5].bValid : 1
+sRXSPEC.aFFT_SCALE[5].flFactor : 0.738751
+sRXSPEC.aFFT_SCALE[5].lRxChannel : 6
+sRXSPEC.aFFT_SCALE[6].bValid : 1
+sRXSPEC.aFFT_SCALE[6].flFactor : 0.719098
+sRXSPEC.aFFT_SCALE[6].lRxChannel : 7
+sRXSPEC.aFFT_SCALE[7].bValid : 1
+sRXSPEC.aFFT_SCALE[7].flFactor : 0.733029
+sRXSPEC.aFFT_SCALE[7].lRxChannel : 8
+sRXSPEC.alDwellTime[0] : 3000
+sRXSPEC.bGainValid : 1
+sRXSPEC.bVariCapVoltagesValid : 1
+sRXSPEC.lGain : 1
+sSliceArray.anAsc[10] : 10
+sSliceArray.anAsc[11] : 11
+sSliceArray.anAsc[12] : 12
+sSliceArray.anAsc[13] : 13
+sSliceArray.anAsc[14] : 14
+sSliceArray.anAsc[15] : 15
+sSliceArray.anAsc[16] : 16
+sSliceArray.anAsc[17] : 17
+sSliceArray.anAsc[18] : 18
+sSliceArray.anAsc[19] : 19
+sSliceArray.anAsc[1] : 1
+sSliceArray.anAsc[20] : 20
+sSliceArray.anAsc[21] : 21
+sSliceArray.anAsc[22] : 22
+sSliceArray.anAsc[23] : 23
+sSliceArray.anAsc[24] : 24
+sSliceArray.anAsc[25] : 25
+sSliceArray.anAsc[26] : 26
+sSliceArray.anAsc[27] : 27
+sSliceArray.anAsc[28] : 28
+sSliceArray.anAsc[29] : 29
+sSliceArray.anAsc[2] : 2
+sSliceArray.anAsc[30] : 30
+sSliceArray.anAsc[3] : 3
+sSliceArray.anAsc[4] : 4
+sSliceArray.anAsc[5] : 5
+sSliceArray.anAsc[6] : 6
+sSliceArray.anAsc[7] : 7
+sSliceArray.anAsc[8] : 8
+sSliceArray.anAsc[9] : 9
+sSliceArray.anPos[10] : 10
+sSliceArray.anPos[11] : 11
+sSliceArray.anPos[12] : 12
+sSliceArray.anPos[13] : 13
+sSliceArray.anPos[14] : 14
+sSliceArray.anPos[15] : 15
+sSliceArray.anPos[16] : 16
+sSliceArray.anPos[17] : 17
+sSliceArray.anPos[18] : 18
+sSliceArray.anPos[19] : 19
+sSliceArray.anPos[1] : 1
+sSliceArray.anPos[20] : 20
+sSliceArray.anPos[21] : 21
+sSliceArray.anPos[22] : 22
+sSliceArray.anPos[23] : 23
+sSliceArray.anPos[24] : 24
+sSliceArray.anPos[25] : 25
+sSliceArray.anPos[26] : 26
+sSliceArray.anPos[27] : 27
+sSliceArray.anPos[28] : 28
+sSliceArray.anPos[29] : 29
+sSliceArray.anPos[2] : 2
+sSliceArray.anPos[30] : 30
+sSliceArray.anPos[3] : 3
+sSliceArray.anPos[4] : 4
+sSliceArray.anPos[5] : 5
+sSliceArray.anPos[6] : 6
+sSliceArray.anPos[7] : 7
+sSliceArray.anPos[8] : 8
+sSliceArray.anPos[9] : 9
+sSliceArray.asSlice[0].dPhaseFOV : 230
+sSliceArray.asSlice[0].dReadoutFOV : 230
+sSliceArray.asSlice[0].dThickness : 4
+sSliceArray.asSlice[0].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[0].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[0].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[0].sPosition.dCor : -52.65585315
+sSliceArray.asSlice[0].sPosition.dSag : 2.24891108
+sSliceArray.asSlice[0].sPosition.dTra : -26.94105767
+sSliceArray.asSlice[10].dPhaseFOV : 230
+sSliceArray.asSlice[10].dReadoutFOV : 230
+sSliceArray.asSlice[10].dThickness : 4
+sSliceArray.asSlice[10].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[10].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[10].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[10].sPosition.dCor : -48.78027355
+sSliceArray.asSlice[10].sPosition.dSag : -1.356313999
+sSliceArray.asSlice[10].sPosition.dTra : 16.73939831
+sSliceArray.asSlice[11].dPhaseFOV : 230
+sSliceArray.asSlice[11].dReadoutFOV : 230
+sSliceArray.asSlice[11].dThickness : 4
+sSliceArray.asSlice[11].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[11].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[11].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[11].sPosition.dCor : -48.39271559
+sSliceArray.asSlice[11].sPosition.dSag : -1.716836507
+sSliceArray.asSlice[11].sPosition.dTra : 21.10744391
+sSliceArray.asSlice[12].dPhaseFOV : 230
+sSliceArray.asSlice[12].dReadoutFOV : 230
+sSliceArray.asSlice[12].dThickness : 4
+sSliceArray.asSlice[12].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[12].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[12].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[12].sPosition.dCor : -48.00515763
+sSliceArray.asSlice[12].sPosition.dSag : -2.077359015
+sSliceArray.asSlice[12].sPosition.dTra : 25.47548951
+sSliceArray.asSlice[13].dPhaseFOV : 230
+sSliceArray.asSlice[13].dReadoutFOV : 230
+sSliceArray.asSlice[13].dThickness : 4
+sSliceArray.asSlice[13].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[13].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[13].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[13].sPosition.dCor : -47.61759967
+sSliceArray.asSlice[13].sPosition.dSag : -2.437881523
+sSliceArray.asSlice[13].sPosition.dTra : 29.84353511
+sSliceArray.asSlice[14].dPhaseFOV : 230
+sSliceArray.asSlice[14].dReadoutFOV : 230
+sSliceArray.asSlice[14].dThickness : 4
+sSliceArray.asSlice[14].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[14].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[14].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[14].sPosition.dCor : -47.23004171
+sSliceArray.asSlice[14].sPosition.dSag : -2.798404031
+sSliceArray.asSlice[14].sPosition.dTra : 34.21158071
+sSliceArray.asSlice[15].dPhaseFOV : 230
+sSliceArray.asSlice[15].dReadoutFOV : 230
+sSliceArray.asSlice[15].dThickness : 4
+sSliceArray.asSlice[15].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[15].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[15].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[15].sPosition.dCor : -46.84248375
+sSliceArray.asSlice[15].sPosition.dSag : -3.158926539
+sSliceArray.asSlice[15].sPosition.dTra : 38.57962631
+sSliceArray.asSlice[16].dPhaseFOV : 230
+sSliceArray.asSlice[16].dReadoutFOV : 230
+sSliceArray.asSlice[16].dThickness : 4
+sSliceArray.asSlice[16].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[16].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[16].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[16].sPosition.dCor : -46.45492579
+sSliceArray.asSlice[16].sPosition.dSag : -3.519449047
+sSliceArray.asSlice[16].sPosition.dTra : 42.9476719
+sSliceArray.asSlice[17].dPhaseFOV : 230
+sSliceArray.asSlice[17].dReadoutFOV : 230
+sSliceArray.asSlice[17].dThickness : 4
+sSliceArray.asSlice[17].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[17].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[17].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[17].sPosition.dCor : -46.06736783
+sSliceArray.asSlice[17].sPosition.dSag : -3.879971555
+sSliceArray.asSlice[17].sPosition.dTra : 47.3157175
+sSliceArray.asSlice[18].dPhaseFOV : 230
+sSliceArray.asSlice[18].dReadoutFOV : 230
+sSliceArray.asSlice[18].dThickness : 4
+sSliceArray.asSlice[18].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[18].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[18].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[18].sPosition.dCor : -45.67980987
+sSliceArray.asSlice[18].sPosition.dSag : -4.240494063
+sSliceArray.asSlice[18].sPosition.dTra : 51.6837631
+sSliceArray.asSlice[19].dPhaseFOV : 230
+sSliceArray.asSlice[19].dReadoutFOV : 230
+sSliceArray.asSlice[19].dThickness : 4
+sSliceArray.asSlice[19].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[19].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[19].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[19].sPosition.dCor : -45.29225191
+sSliceArray.asSlice[19].sPosition.dSag : -4.601016571
+sSliceArray.asSlice[19].sPosition.dTra : 56.0518087
+sSliceArray.asSlice[1].dPhaseFOV : 230
+sSliceArray.asSlice[1].dReadoutFOV : 230
+sSliceArray.asSlice[1].dThickness : 4
+sSliceArray.asSlice[1].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[1].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[1].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[1].sPosition.dCor : -52.26829519
+sSliceArray.asSlice[1].sPosition.dSag : 1.888388572
+sSliceArray.asSlice[1].sPosition.dTra : -22.57301207
+sSliceArray.asSlice[20].dPhaseFOV : 230
+sSliceArray.asSlice[20].dReadoutFOV : 230
+sSliceArray.asSlice[20].dThickness : 4
+sSliceArray.asSlice[20].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[20].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[20].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[20].sPosition.dCor : -44.90469395
+sSliceArray.asSlice[20].sPosition.dSag : -4.961539079
+sSliceArray.asSlice[20].sPosition.dTra : 60.4198543
+sSliceArray.asSlice[21].dPhaseFOV : 230
+sSliceArray.asSlice[21].dReadoutFOV : 230
+sSliceArray.asSlice[21].dThickness : 4
+sSliceArray.asSlice[21].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[21].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[21].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[21].sPosition.dCor : -44.51713599
+sSliceArray.asSlice[21].sPosition.dSag : -5.322061587
+sSliceArray.asSlice[21].sPosition.dTra : 64.7878999
+sSliceArray.asSlice[22].dPhaseFOV : 230
+sSliceArray.asSlice[22].dReadoutFOV : 230
+sSliceArray.asSlice[22].dThickness : 4
+sSliceArray.asSlice[22].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[22].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[22].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[22].sPosition.dCor : -44.12957804
+sSliceArray.asSlice[22].sPosition.dSag : -5.682584095
+sSliceArray.asSlice[22].sPosition.dTra : 69.15594549
+sSliceArray.asSlice[23].dPhaseFOV : 230
+sSliceArray.asSlice[23].dReadoutFOV : 230
+sSliceArray.asSlice[23].dThickness : 4
+sSliceArray.asSlice[23].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[23].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[23].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[23].sPosition.dCor : -43.74202008
+sSliceArray.asSlice[23].sPosition.dSag : -6.043106603
+sSliceArray.asSlice[23].sPosition.dTra : 73.52399109
+sSliceArray.asSlice[24].dPhaseFOV : 230
+sSliceArray.asSlice[24].dReadoutFOV : 230
+sSliceArray.asSlice[24].dThickness : 4
+sSliceArray.asSlice[24].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[24].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[24].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[24].sPosition.dCor : -43.35446212
+sSliceArray.asSlice[24].sPosition.dSag : -6.403629111
+sSliceArray.asSlice[24].sPosition.dTra : 77.89203669
+sSliceArray.asSlice[25].dPhaseFOV : 230
+sSliceArray.asSlice[25].dReadoutFOV : 230
+sSliceArray.asSlice[25].dThickness : 4
+sSliceArray.asSlice[25].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[25].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[25].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[25].sPosition.dCor : -42.96690416
+sSliceArray.asSlice[25].sPosition.dSag : -6.764151619
+sSliceArray.asSlice[25].sPosition.dTra : 82.26008229
+sSliceArray.asSlice[26].dPhaseFOV : 230
+sSliceArray.asSlice[26].dReadoutFOV : 230
+sSliceArray.asSlice[26].dThickness : 4
+sSliceArray.asSlice[26].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[26].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[26].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[26].sPosition.dCor : -42.5793462
+sSliceArray.asSlice[26].sPosition.dSag : -7.124674127
+sSliceArray.asSlice[26].sPosition.dTra : 86.62812789
+sSliceArray.asSlice[27].dPhaseFOV : 230
+sSliceArray.asSlice[27].dReadoutFOV : 230
+sSliceArray.asSlice[27].dThickness : 4
+sSliceArray.asSlice[27].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[27].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[27].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[27].sPosition.dCor : -42.19178824
+sSliceArray.asSlice[27].sPosition.dSag : -7.485196635
+sSliceArray.asSlice[27].sPosition.dTra : 90.99617349
+sSliceArray.asSlice[28].dPhaseFOV : 230
+sSliceArray.asSlice[28].dReadoutFOV : 230
+sSliceArray.asSlice[28].dThickness : 4
+sSliceArray.asSlice[28].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[28].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[28].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[28].sPosition.dCor : -41.80423028
+sSliceArray.asSlice[28].sPosition.dSag : -7.845719143
+sSliceArray.asSlice[28].sPosition.dTra : 95.36421908
+sSliceArray.asSlice[29].dPhaseFOV : 230
+sSliceArray.asSlice[29].dReadoutFOV : 230
+sSliceArray.asSlice[29].dThickness : 4
+sSliceArray.asSlice[29].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[29].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[29].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[29].sPosition.dCor : -41.41667232
+sSliceArray.asSlice[29].sPosition.dSag : -8.206241651
+sSliceArray.asSlice[29].sPosition.dTra : 99.73226468
+sSliceArray.asSlice[2].dPhaseFOV : 230
+sSliceArray.asSlice[2].dReadoutFOV : 230
+sSliceArray.asSlice[2].dThickness : 4
+sSliceArray.asSlice[2].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[2].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[2].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[2].sPosition.dCor : -51.88073723
+sSliceArray.asSlice[2].sPosition.dSag : 1.527866064
+sSliceArray.asSlice[2].sPosition.dTra : -18.20496647
+sSliceArray.asSlice[30].dPhaseFOV : 230
+sSliceArray.asSlice[30].dReadoutFOV : 230
+sSliceArray.asSlice[30].dThickness : 4
+sSliceArray.asSlice[30].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[30].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[30].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[30].sPosition.dCor : -41.02911436
+sSliceArray.asSlice[30].sPosition.dSag : -8.566764159
+sSliceArray.asSlice[30].sPosition.dTra : 104.1003103
+sSliceArray.asSlice[3].dPhaseFOV : 230
+sSliceArray.asSlice[3].dReadoutFOV : 230
+sSliceArray.asSlice[3].dThickness : 4
+sSliceArray.asSlice[3].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[3].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[3].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[3].sPosition.dCor : -51.49317927
+sSliceArray.asSlice[3].sPosition.dSag : 1.167343556
+sSliceArray.asSlice[3].sPosition.dTra : -13.83692088
+sSliceArray.asSlice[4].dPhaseFOV : 230
+sSliceArray.asSlice[4].dReadoutFOV : 230
+sSliceArray.asSlice[4].dThickness : 4
+sSliceArray.asSlice[4].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[4].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[4].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[4].sPosition.dCor : -51.10562131
+sSliceArray.asSlice[4].sPosition.dSag : 0.8068210485
+sSliceArray.asSlice[4].sPosition.dTra : -9.468875277
+sSliceArray.asSlice[5].dPhaseFOV : 230
+sSliceArray.asSlice[5].dReadoutFOV : 230
+sSliceArray.asSlice[5].dThickness : 4
+sSliceArray.asSlice[5].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[5].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[5].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[5].sPosition.dCor : -50.71806335
+sSliceArray.asSlice[5].sPosition.dSag : 0.4462985405
+sSliceArray.asSlice[5].sPosition.dTra : -5.100829679
+sSliceArray.asSlice[6].dPhaseFOV : 230
+sSliceArray.asSlice[6].dReadoutFOV : 230
+sSliceArray.asSlice[6].dThickness : 4
+sSliceArray.asSlice[6].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[6].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[6].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[6].sPosition.dCor : -50.33050539
+sSliceArray.asSlice[6].sPosition.dSag : 0.08577603254
+sSliceArray.asSlice[6].sPosition.dTra : -0.7327840804
+sSliceArray.asSlice[7].dPhaseFOV : 230
+sSliceArray.asSlice[7].dReadoutFOV : 230
+sSliceArray.asSlice[7].dThickness : 4
+sSliceArray.asSlice[7].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[7].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[7].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[7].sPosition.dCor : -49.94294743
+sSliceArray.asSlice[7].sPosition.dSag : -0.2747464754
+sSliceArray.asSlice[7].sPosition.dTra : 3.635261518
+sSliceArray.asSlice[8].dPhaseFOV : 230
+sSliceArray.asSlice[8].dReadoutFOV : 230
+sSliceArray.asSlice[8].dThickness : 4
+sSliceArray.asSlice[8].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[8].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[8].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[8].sPosition.dCor : -49.55538947
+sSliceArray.asSlice[8].sPosition.dSag : -0.6352689834
+sSliceArray.asSlice[8].sPosition.dTra : 8.003307116
+sSliceArray.asSlice[9].dPhaseFOV : 230
+sSliceArray.asSlice[9].dReadoutFOV : 230
+sSliceArray.asSlice[9].dThickness : 4
+sSliceArray.asSlice[9].sNormal.dCor : 0.08808135446
+sSliceArray.asSlice[9].sNormal.dSag : -0.08193693363
+sSliceArray.asSlice[9].sNormal.dTra : 0.992737636
+sSliceArray.asSlice[9].sPosition.dCor : -49.16783151
+sSliceArray.asSlice[9].sPosition.dSag : -0.9957914914
+sSliceArray.asSlice[9].sPosition.dTra : 12.37135271
+sSliceArray.lConc : 1
+sSliceArray.lSize : 31
+sSliceArray.sTSat.dThickness : 50
+sSliceArray.ucMode : 0x4
+sSpecPara.lDecouplingType : 1
+sSpecPara.lExcitationType : 1
+sSpecPara.lNOEType : 1
+sSpecPara.lPhaseCyclingType : 1
+sSpecPara.lPhaseEncodingType : 1
+sSpecPara.lRFExcitationBandwidth : 1
+sSpecPara.lSpectralSuppression : 1
+sSpecPara.ucRemoveOversampling : 0x1
+sTXSPEC.aRFPULSE[0].bAmplitudeValid : 0x1
+sTXSPEC.aRFPULSE[0].flAmplitude : 263.068
+sTXSPEC.aRFPULSE[0].tName : SincRFPulse
+sTXSPEC.aRFPULSE[1].bAmplitudeValid : 0x1
+sTXSPEC.aRFPULSE[1].flAmplitude : 31.9334
+sTXSPEC.aRFPULSE[1].tName : SLoopFCSatNS
+sTXSPEC.asNucleusInfo[0].bAmplitudeCorrectionValid : 1
+sTXSPEC.asNucleusInfo[0].bFrequencyValid : 1
+sTXSPEC.asNucleusInfo[0].bReferenceAmplitudeValid : 1
+sTXSPEC.asNucleusInfo[0].flAmplitudeCorrection : 1
+sTXSPEC.asNucleusInfo[0].flReferenceAmplitude : 259.084
+sTXSPEC.asNucleusInfo[0].lFrequency : 63644057
+sTXSPEC.asNucleusInfo[0].tNucleus : 1H
+sTXSPEC.asNucleusInfo[1].bAmplitudeCorrectionValid : 1
+sTXSPEC.asNucleusInfo[1].bFrequencyValid : 1
+sTXSPEC.asNucleusInfo[1].bReferenceAmplitudeValid : 1
+sTXSPEC.bBTBValid : 1
+sTXSPEC.bKDynValid : 1
+sTXSPEC.flKDynMagnitudeClipHigh : 1.04
+sTXSPEC.flKDynMagnitudeClipLow : 0.96
+sTXSPEC.flKDynMagnitudeMax : 1.5
+sTXSPEC.flKDynMagnitudeMin : 0.5
+sTXSPEC.flKDynPhaseClip : 0.174533
+sTXSPEC.flKDynPhaseMax : 0.698132
+sTXSPEC.lBTB1ParallelCapacity : 9
+sTXSPEC.lBTB1SerialCapacity : 16
+sTXSPEC.lBTB2ParallelCapacity : 8
+sTXSPEC.lBTB2SerialCapacity : 16
+sTXSPEC.lNoOfTraPulses : 2
+sTXSPEC.ucExcitMode : 0x1
+sTXSPEC.ucRFPulseType : 0x2
+sTXSPEC.ucSimultaneousExcitation : 0x1
+tProtocolName : ep2d+AF8-BOLD+AF8-evntX4
+tReferenceImage0 : 1.3.12.2.1107.5.2.12.21296.30000006070308044128100000804
+tReferenceImage1 : 1.3.12.2.1107.5.2.12.21296.30000006070308044128100000798
+tReferenceImage2 : 1.3.12.2.1107.5.2.12.21296.30000006070308044128100000797
+tSequenceFileName : %SiemensSeq%\ep2d_pace
+tcurrentEVAProt : %CURRENTEVAPROT%\EVA6A.tmp
+tdefaultEVAProt : %SiemensEvaDefProt%\BOLD\t-test_10B10A_moco.evp
+ucDisableChangeStoreImages : 0x1
+ucDixon : 0x1
+ucOneSeriesForAllMeas : 0x1
+ucPHAPSMode : 0x1
+ucReconstructionMode : 0x1
+ucScanRegionPosValid : 0x1
+ulVersion : 0xbee332
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1gems_pdb">
+<title>GEMS Protocol Data Block</title>
+
+<para>Using this option it is possible to dump as a readable text what is contained in the private attribute as found in typical GEMS MR DICOM file.</para>
+
+<para>Protocol Data Block : 0025,xx1b,GEMS_SERS_01</para>
+
+<para><literallayout>$ gdcmdump --pdb GE_MR_0025xx1bProtocolDataBlock.dcm
+</literallayout></para>
+
+<para><literallayout>ENTRY "Head First"
+POSITION "Supine"
+ANREF "NA"
+COIL "HEAD"
+PLANE "OBLIQUE"
+SEDESCFLAG "1"
+SEDESC "AX FSE T2"
+IMODE "2D"
+PSEQ "FSE-XL"
+IOPT "FC, EDR, TRF, Fast"
+PLUG "22"
+FILTCHOICE "None"
+BWRT "-1"
+TRICKSIMG "1"
+TAG_SPACE "7"
+TAG_TYPE "None"
+...
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1elscint_pi">
+<title>ELSCINT Protocol Information</title>
+
+<para>Using this option it is possible to dump as a readable text what is contained in the private attribute as found in typical ELSCINT CT DICOM file.</para>
+
+<para>ELSCINT Protocol Information: (01f7,26,ELSCINT1)</para>
+
+<para><literallayout>$ gdcmdump --elscint ELSCINT1_ProtocolInformation.dcm
+</literallayout></para>
+
+<para><literallayout>ELSCINT1 Dumping info from tag (01f7,26,elscint1)
+ELSCINT1/Item name: []
+  ApprovedStep [yes]
+  RefSurview [1\0]
+  STD-first-img-pos [11.5]
+  current-step [yes]
+  ntimed-steps [0]
+  orig-n-slices [390]
+  protocol-file [Head_Multi_1032_usr.proc]
+  protocol-name [FACE-TRAUMA/Head/Hx]
+  protocol-path [/usr/diamond.root/spr/]
+  protocol-step [1]
+  protocol-version [2.51]
+
+ELSCINT1/Item name: [doseright]
+  ACS [n/a]
+  ACS-bed-position [0]
+  ACS-calc-mas [0]
+  ACS-iq-parameter [0]
+  ACS-learn-allowed [no]
+  ACS-water-radius [-1.000000]
+  ACS-water-radius-scan [-1]
+...
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1vepro_pi">
+<title>VEPRO Protocol Information</title>
+
+<para>Using this option it is possible to dump as a readable text what is contained in the private attribute as found in typical VEPRO CT DICOM file.</para>
+
+<para>ELSCINT Protocol Information: (0055,20,VEPRO VIM 5.0 DATA)</para>
+
+<para><literallayout>$ gdcmdump --vepro VEPRO_ProtocolInformation.dcm
+</literallayout></para>
+
+<para><literallayout>VIMDATA2: (0055,20,VEPRO VIM 5.0 DATA)
+  ID: VIM
+  Version: 5.0
+  UserName:
+  UserAdress1: Name of Institution
+  UserAdress2: Street of Institution
+  UserAdress3: City of Institution
+  UserAdress4:
+  UserAdress5:
+  RecDate: 20101001
+  RecTime: 211321
+  RecPlace:
+  RecSource: DICOM Distributor
+  DF1: P-09/10-41808
+  DF2: Sultana Razia
+  DF3: 19411001
+  DF4: F
+  DF5:
+  DF6:
+  DF7:
+  DF8: CT Scan Brain without Contrast
+  DF9: 10/10-0034873
+  DF10: 10/10-00348
+  DF11:
+  DF12:
+  DF13:
+  DF14:  Head 0.5
+  DF15: 4
+  DF16:
+  DF17:
+  DF18:
+  DF19:
+  DF20:
+  StudyUID: 1.2.392.200036.9116.2.6.1.48.1214228007.1285934880.206831
+  SeriesUID: 1.2.392.200036.9116.2.6.1.48.1214228007.1285935201.938653
+  Modality: CT
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1pms_mr_sds">
+<title>Philips Private MR Series Data Storage (1.3.46.670589.11.0.0.12.2)</title>
+
+<para>Using this option it is possible to dump as a readable text what is contained in the private attribute as found in typical Philips Private MR Series Data Storage file.</para>
+
+<para>PMS Series Data Storage (2005,32,Philips MR Imaging DD 002)</para>
+
+<para><literallayout>$ gdcmdump --sds PMS_SeriesDataStorage.dcm
+</literallayout></para>
+
+<para><literallayout>...
+PMS/Item name: [PDF_CONTROL_GEN_PARS/IEEE_PDF/Y ]
+...
+PMS/Item name: [PDF_CONTROL_PREP_PARS /IEEE_PDF/Y ]
+...
+PMS/Item name: [PDF_CONTROL_RECON_PARS/IEEE_PDF/Y ]
+...
+PMS/Item name: [PDF_CONTROL_SCAN_PARS /IEEE_PDF/Y ]
+...
+PMS/Item name: [PDF_EXAM_PARS /IEEE_PDF/Y ]
+...
+PMS/Item name: [PDF_HARDWARE_PARS /IEEE_PDF/Y ]
+...
+PMS/Item name: [PDF_PREP_PARS /IEEE_PDF/Y ]
+...
+PMS/Item name: [PDF_SPT_PARS/IEEE_PDF/Y ]
+  SP_scan_resol [256\256] # 2
+  SP_pda_profiles [0\0] # 2
+  SP_filter [324074] # 1
+  SP_analyse_with_iqt [0] # 1
+  SP_main_system_type [3] # 1
+  SP_gradient_system [6] # 1
+  SP_coil_type [2\2\0\0\0\0\0\0\0\0\0\0\0\0\0\0] # 16
+  SP_coil_id [2\34\0\0\0\0\0\0\0\0\0\0\0\0\0\0] # 16
+  SP_coil_part [0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0] # 16
+  SP_act_q [0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0] # 16
+  SP_act_coil_freq [0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0] # 16
+  SP_coil_m_pos [255\255\255\0\0\0\0\0\0\0\0\0\0\0\0\255] # 16
+  SP_coil_t_pos [255\128\255\0\0\0\0\0\0\0\0\0\0\0\0\255] # 16
+  SP_surface_coil_con [0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0] # 16
+  SP_proton_freq [127801349] # 1
+  SP_tm_result [2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2] # 16
+  SP_f0_result [0] # 1
+  SP_as_result [0] # 1
+  SP_po_result [0] # 1
+  SP_rg_result [0] # 1
+  SP_dc_result [0] # 1
+  SP_ph_result [0] # 1
+...
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdump_1asn1">
+<title>Encapsulated ASN1 Structure</title>
+
+<para>This option is mainly used for dumping the ASN1 structure of the encrypted Attribute (0040,0520)</para>
+
+<para><literallayout>$ gdcmdump encrypted.dcm
+</literallayout></para>
+
+<para><literallayout>...
+(0400,0500) SQ                                                    # u/l,1 Encrypted Attributes Sequence
+  (fffe,e000) na (Item with undefined length)
+    (0400,0510) UI [1.2.840.10008.1.2]                            # 18,1 Encrypted Content Transfer Syntax UID
+    (0400,0520) OB 30\\82\\03\\ba\\06\\09\\2a\\86\\48\\55\\04\\08\\13         # 958,1 Encrypted Content
+  (fffe,e00d)
+(fffe,e0dd)
+...
+</literallayout></para>
+
+<para><literallayout>$ gdcmdump --asn1 encrypted.dcm
+</literallayout></para>
+
+<para><literallayout>    0:d=0  hl=4 l= 954 cons: SEQUENCE
+    4:d=1  hl=2 l=   9 prim:  OBJECT            :pkcs7-envelopedData
+   15:d=1  hl=4 l= 939 cons:  cont [ 0 ]
+   19:d=2  hl=4 l= 935 cons:   SEQUENCE
+   23:d=3  hl=2 l=   1 prim:    INTEGER           :00
+   26:d=3  hl=4 l= 366 cons:    SET
+   30:d=4  hl=4 l= 362 cons:     SEQUENCE
+   34:d=5  hl=2 l=   1 prim:      INTEGER           :00
+   37:d=5  hl=2 l=  82 cons:      SEQUENCE
+   39:d=6  hl=2 l=  69 cons:       SEQUENCE
+   41:d=7  hl=2 l=  11 cons:        SET
+   43:d=8  hl=2 l=   9 cons:         SEQUENCE
+   45:d=9  hl=2 l=   3 prim:          OBJECT            :countryName
+   50:d=9  hl=2 l=   2 prim:          PRINTABLESTRING   :AU
+   54:d=7  hl=2 l=  19 cons:        SET
+   56:d=8  hl=2 l=  17 cons:         SEQUENCE
+   58:d=9  hl=2 l=   3 prim:          OBJECT            :stateOrProvinceName
+   63:d=9  hl=2 l=  10 prim:          PRINTABLESTRING   :Some-State
+   75:d=7  hl=2 l=  33 cons:        SET
+   77:d=8  hl=2 l=  31 cons:         SEQUENCE
+   79:d=9  hl=2 l=   3 prim:          OBJECT            :organizationName
+   84:d=9  hl=2 l=  24 prim:          PRINTABLESTRING   :Internet Widgits Pty Ltd
+  110:d=6  hl=2 l=   9 prim:       INTEGER           :AC966D88787A51B4
+  121:d=5  hl=2 l=  13 cons:      SEQUENCE
+  123:d=6  hl=2 l=   9 prim:       OBJECT            :rsaEncryption
+  134:d=6  hl=2 l=   0 prim:       NULL
+  136:d=5  hl=4 l= 256 prim:      OCTET STRING      [HEX DUMP]:822368070285AD756C962ECB973514B291F946...
+  396:d=3  hl=4 l= 558 cons:    SEQUENCE
+  400:d=4  hl=2 l=   9 prim:     OBJECT            :pkcs7-data
+  411:d=4  hl=2 l=  29 cons:     SEQUENCE
+  413:d=5  hl=2 l=   9 prim:      OBJECT            :aes-256-cbc
+  424:d=5  hl=2 l=  16 prim:      OCTET STRING      [HEX DUMP]:3B49AFE71749F2BFF1519EBAEA95A393
+  442:d=4  hl=4 l= 512 prim:     cont [ 0 ]
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmdump_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcmraw</emphasis>(1), <emphasis role="bold">gdcmanon</emphasis>(1)</para>
+</refsection>
+</refentry>

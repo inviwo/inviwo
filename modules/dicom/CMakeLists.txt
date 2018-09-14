@@ -1,21 +1,18 @@
 # Add grassroots Dicom reader
 set(GDCM_ALWAYS_TRACE_MACRO ON CACHE BOOL "enable errors/warnings/debug messages from GDCM" FORCE)
+set(GDCM_BUILD_DOCBOOK_MANPAGES OFF CACHE BOOL "disable build of docbook manpages" FORCE)
 
-add_subdirectory(ext/gdcm-2.4.4)
-ivw_folder(gdcmCommon ext/gdcm/)
-ivw_folder(gdcmDICT ext/gdcm/)
-ivw_folder(gdcmDSED ext/gdcm/)
-ivw_folder(gdcmIOD ext/gdcm/)
-ivw_folder(gdcmMSFF ext/gdcm/)
-ivw_folder(gdcmMEXD ext/gdcm/)
-ivw_folder(gdcmcharls ext/gdcm/)
-ivw_folder(gdcmzlib ext/gdcm/)
-ivw_folder(gdcmjpeg8 ext/gdcm/)
-ivw_folder(gdcmjpeg12 ext/gdcm/)
-ivw_folder(gdcmjpeg16 ext/gdcm/)
-ivw_folder(gdcmexpat ext/gdcm/)
-ivw_folder(gdcmopenjpeg ext/gdcm/)
-ivw_folder(socketxx ext/gdcm/)
+set(GDCM_EXT_DIR ext/gdcm-2.8.7)
+
+add_subdirectory(${GDCM_EXT_DIR})
+
+list(APPEND GDCM_TARGETS gdcmCommon gdcmDICT gdcmDSED gdcmIOD gdcmMSFF gdcmMEXD gdcmcharls gdcmzlib gdcmjpeg8 gdcmjpeg12 gdcmjpeg16 gdcmexpat gdcmopenjp2 socketxx gdcmgetopt)
+
+foreach(target ${GDCM_TARGETS})
+    ivw_folder(${target} ext/gdcm/)
+endforeach()
+
+ivw_suppress_compiler_warnings(${GDCM_TARGETS})
 
 #--------------------------------------------------------------------
 # Inviwo DICOM Module
@@ -43,13 +40,13 @@ ivw_group("Source Files" ${SOURCE_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(inviwo-module-dicom PUBLIC
-   ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm-2.4.4/Source/
-   ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm-2.4.4/Source/DataStructureAndEncodingDefinition
-   ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm-2.4.4/Source/Common
-   ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm-2.4.4/Source/Attribute
-   ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm-2.4.4/Source/DataDictionary
-   ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm-2.4.4/Source/InformationObjectDefinition
-   ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm-2.4.4/Source/MessageExchangeDefinition
+   ${CMAKE_CURRENT_SOURCE_DIR}/${GDCM_EXT_DIR}/Source/
+   ${CMAKE_CURRENT_SOURCE_DIR}/${GDCM_EXT_DIR}/Source/DataStructureAndEncodingDefinition
+   ${CMAKE_CURRENT_SOURCE_DIR}/${GDCM_EXT_DIR}/Source/Common
+   ${CMAKE_CURRENT_SOURCE_DIR}/${GDCM_EXT_DIR}/Source/Attribute
+   ${CMAKE_CURRENT_SOURCE_DIR}/${GDCM_EXT_DIR}/Source/DataDictionary
+   ${CMAKE_CURRENT_SOURCE_DIR}/${GDCM_EXT_DIR}/Source/InformationObjectDefinition
+   ${CMAKE_CURRENT_SOURCE_DIR}/${GDCM_EXT_DIR}/Source/MessageExchangeDefinition
    # gdcmConfigure.h
    ${GDCM_BINARY_DIR}/Source/Common/
 )
@@ -58,4 +55,4 @@ target_include_directories(inviwo-module-dicom PUBLIC
 # but actually not freeimage functionality is used
 # TODO: link instead of compile with the libtiff sources
 # => modification of the freeimage library/module needed!
-target_link_libraries(inviwo-module-dicom PUBLIC inviwo::tiff gdcmCommon gdcmDICT gdcmDSED gdcmIOD gdcmMSFF gdcmMEXD gdcmcharls gdcmzlib gdcmjpeg8 gdcmjpeg12 gdcmjpeg16 gdcmexpat gdcmopenjpeg)
+target_link_libraries(inviwo-module-dicom PUBLIC inviwo::tiff gdcmCommon gdcmDICT gdcmDSED gdcmIOD gdcmMSFF gdcmMEXD gdcmcharls gdcmzlib gdcmjpeg8 gdcmjpeg12 gdcmjpeg16 gdcmexpat gdcmopenjp2)

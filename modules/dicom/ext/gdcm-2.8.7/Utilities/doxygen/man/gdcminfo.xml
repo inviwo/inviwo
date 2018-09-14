@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcminfo</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcminfo</refname>
+    <refpurpose>Display meta info about the input DICOM file.</refpurpose>
+</refnamediv>
+ <refsynopsisdiv>
+      <cmdsynopsis>
+          <command>gdcminfo</command>
+        <arg choice="opt">
+            <option>options</option>
+        </arg>
+          <arg choice="opt" rep="repeat">file-in/dir-in</arg>
+      </cmdsynopsis>
+     </refsynopsisdiv>
+<refsection xml:id="gdcminfo_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcminfo</emphasis> command line program takes as input a DICOM file, or a directory and process it to extract meta-information about the DICOM file(s) processed.</para>
+</refsection>
+<refsection xml:id="gdcminfo_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>file-in/dir-in   DICOM input filename/dirname
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcminfo_1options">
+<title>OPTIONS</title>
+<refsection xml:id="gdcminfo_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>  -r --recursive          recursive traversal of an input directory
+  -d --check-deflated     check if file is proper deflated syntax.
+     --resources-path     Resources path.
+     --md5sum             Compute md5sum of Pixel Data attribute value.
+     --check-compression  check the encapsulated stream compression (lossless/lossy).
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcminfo_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1environment_variable">
+<title>environment variable</title>
+
+<para><envar>GDCM_RESOURCES_PATH</envar> path pointing to resources files (Part3.xml, ...)</para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmviewer_1simple_usage">
+<title>Simple usage</title>
+<refsection xml:id="gdcminfo_1gdcmdata">
+<title>gdcmData</title>
+
+<para>Using data from gdcmData:</para>
+
+<para><literallayout>$ gdcminfo gdcmData/012345.002.050.dcm
+</literallayout></para>
+
+<para><literallayout>MediaStorage is 1.2.840.10008.5.1.4.1.1.4 [MR Image Storage]
+NumberOfDimensions: 2
+Dimensions: (256,256)
+Origin: (-85,21.6,108.7)
+Spacing: (0.664062,0.664062,1.5)
+DirectionCosines: (1,0,0,0,0,-1)
+Rescale Intercept/Slope: (0,1)
+SamplesPerPixel    :1
+BitsAllocated      :16
+BitsStored         :16
+HighBit            :15
+PixelRepresentation:1
+Orientation Label: CORONAL
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcminfo_1dclunie">
+<title>Davie Clunie datasets:</title>
+
+<para>Using data from David Clunie datasets:</para>
+
+<para><literallayout>$ gdcminfo BRTUM001.dcm
+</literallayout></para>
+
+<para><literallayout>MediaStorage is 1.2.840.10008.5.1.4.1.1.4.1 [Enhanced MR Image Storage]
+NumberOfDimensions: 3
+Dimensions: (256,256,15)
+Origin: (40,-105,105)
+Spacing: (0.820312,0.820312,6)
+DirectionCosines: (0,1,0,0,0,-1)
+Rescale Intercept/Slope: (0,1)
+SamplesPerPixel    :1
+BitsAllocated      :16
+BitsStored         :16
+HighBit            :15
+PixelRepresentation:1
+Orientation Label: SAGITTAL
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcminfo_1md5sum">
+<title>Checking the md5sum of the Pixel Data</title>
+
+<para>After compressing a DICOM file (see gdcmconv) using a lossless compression algorithm, it is fairly easy to compare the two files for differences at DICOM attribute level. However one operation is slightly easier to do: how to make sure the compression was actually lossless ? In this case one could use the &#8211;md5sum operation.</para>
+
+<para>Take an uncompressed DICOM image file:</para>
+
+<para><literallayout>$ gdcminfo --md5sum SIEMENS_ImageLocationUN.dcm
+</literallayout></para>
+
+<para>The tool return: 0621954acd5815e0b4f7b65fcc6506b1</para>
+
+<para>Now compress this file:</para>
+
+<para><literallayout>$ gdcmconv --jpegls SIEMENS_ImageLocationUN.dcm lossless_compressed.dcm
+</literallayout></para>
+
+<para>and then check again the md5sum:</para>
+
+<para><literallayout>$ gdcminfo --md5sum lossless_compressed.dcm
+</literallayout></para>
+
+<para>The tool return: 0621954acd5815e0b4f7b65fcc6506b1</para>
+</refsection>
+<refsection xml:id="gdcminfo_1checking_lossless">
+<title>Checking if Pixel Data is lossless</title>
+
+<para>In some environment one wish to check whether or not the DICOM file is lossless. It is fairly easy to do that in most cases. Only on two occasions this is not clear from the sole DICOM Attributes. When the Transfer Syntax is JPEG 2000 Image Compression (1.2.840.10008.1.2.4.91) and when the Transfer Syntax is JPEG-LS Lossy (Near-Lossless) Image Compression (1.2.840.10008.1.2.4.81).</para>
+
+<para>In this case, the only solution is to open the Pixel Data element, read the specific JPEG header and check whether or not the JPEG transformation was lossless or not:</para>
+
+<para><literallayout>$ gdcminfo --check-compression gdcmData/MAROTECH_CT_JP2Lossy.dcm
+</literallayout></para>
+
+<para>The tool returns: <quote>Encapsulated Stream was found to be: lossy</quote></para>
+
+<para>Pay attention that this tool also checks the Image Lossy Compression attribute (0028,2110). This means <option>--check-compression</option> will also returns a value of lossy if a predecessor was found to be lossy compressed.</para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcminfo_1mosaic">
+<title>Checking image as if MOSAIC</title>
+<para>Dump the image as if MOSAIC. If the input is really MOSAIC image, then print the information of the true underlying MOSAIC volume.</para>
+<para><literallayout>$ gdcminfo --mosaic siemens_mosaic.dcm
+</literallayout></para>
+
+</refsection>
+<refsection xml:id="gdcminfo_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcmraw</emphasis>(1), <emphasis role="bold">gdcmconv</emphasis>(1)</para>
+</refsection>
+</refentry>

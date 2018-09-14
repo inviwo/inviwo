@@ -1,0 +1,120 @@
+# https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
+# https://github.com/travis-ci/travis-ci/issues/3505
+language: cpp
+# Use the faster container-based infrastructure.
+sudo: false
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: ClIqhtIIfQPhil8GH9bnJg70rvJfuYs7Z2Aq2SrdwQsIFNvvfFD5pVxQiaYbZI3nxNclggQ50BmGB96e6jLxbbd/xlIOjcU19W2nzyP6LGkXFHDHm8FwhqqDNpfYvirAOfqgjqf7khRe3ajF33jhrLrhb5QOO5640N93pdChu1sAvI0LZv8JFIUcN7A7To3+WYc7H4CK3U8B2V8nzqcBSHDZNBGAdeVdmldwrlBtQeWBg5wJAEzzUHn0x+kltqvuoPYi2ShpaUkEfHeUWYhOT1uoyXNRAqHXiM1jhiw3JCkqaf7sUKLzyx0ozjTnYntNMggtBzavKjuYg6RhdlNdNbdsi2nxrycCOyCZcF+d4limq+yDMqoP7g/DnPag7XFgjkG/ThULPu+pEK/6nV1NqGNWFu1CqgAwPW7hGbIUADPsMEb+Bz2L2KUof2wU1cdvGK4fzsM9Qpdipbagghn4b5eGtvyBzYzoCS02AKrYfimhcm8bVmlfaMVgd6PnJ19Y1+ADCWwStwaQL2S6udh66JVGNszY/kYSmZKn51RQQDkubmGpywzeNdn7gM9u8QR9s2Lsq0GaSdptcLOPmVNSg6mQJThbMRHM/H2UrSyo7/GLr28sNNbYNweGPevsnrRJPUdG2ENWVw5rg1sD1cLm8rLlD4H2f/b97X9NCl4bLxY=
+
+# -m32 is not supported 
+# no poppler, openjpeg, uuid, json
+# no swig
+
+# using debian-sid I get:
+# /usr/bin/ld: BFD (GNU Binutils for Ubuntu) 2.22 internal error, aborting at
+#  ../../bfd/reloc.c line 443 in bfd_get_reloc_size
+matrix:
+  fast_finish: true
+  include:
+    - compiler: gcc
+      os: linux
+      env:
+        - CFLAGS="-g -O2"
+        - CXXFLAGS="-g -O2"
+        - CMAKE_EXTRA="-DGDCM_WRAP_PYTHON:BOOL=OFF -DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF"
+        - B_NAME=default
+        - CPACK_NAME=Linux
+    - compiler: gcc
+      os: linux
+        # No docbook-xsl-ns
+      addons: {apt: {packages: [default-jdk, mono-devel, swig, libcharls-dev, libvtk5-dev, libexpat-dev, libz-dev, uuid-dev, python-all-dev, libpoppler-dev, xsltproc, docbook-xsl, dcmtk]}}
+      env:
+        - CFLAGS="-Wall -Wextra -m64"
+        - CXXFLAGS="-Wall -Wextra -m64"
+        # Cant use manpage with old docbook
+        - CMAKE_EXTRA="-DGDCM_USE_SYSTEM_OPENSSL:BOOL=ON -DGDCM_WRAP_PYTHON:BOOL=ON -DGDCM_WRAP_CSHARP:BOOL=ON -DGDCM_WRAP_JAVA:BOOL=ON -DGDCM_WRAP_PHP:BOOL=OFF -DGDCM_USE_SYSTEM_EXPAT:BOOL=ON -DGDCM_USE_SYSTEM_JSON:BOOL=OFF -DGDCM_USE_SYSTEM_LIBXML2:BOOL=ON -DGDCM_USE_SYSTEM_OPENJPEG:BOOL=OFF -DGDCM_USE_SYSTEM_POPPLER:BOOL=ON -DGDCM_USE_SYSTEM_UUID:BOOL=ON -DGDCM_USE_SYSTEM_ZLIB:BOOL=ON -DGDCM_WEAK_SWIG_CHECK:BOOL=ON -DGDCM_LEGACY_SILENT:BOOL=ON -DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF"
+        - B_NAME=system
+        - CPACK_NAME=Linux
+    - compiler: clang
+      os: linux
+      env:
+        - CFLAGS="-g -O0 -Wall -Wextra -m64 -fsanitize=address,undefined,shift"
+        - CXXFLAGS="-g -O0 -Wall -Wextra -m64 -fsanitize=address,undefined,shift"
+        - CMAKE_EXTRA="-DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF"
+        - B_NAME=fsanitize
+        - CPACK_NAME=Linux
+    - compiler: clang
+      os: osx
+      env:
+        - CFLAGS="-Wall -Wextra" # -m64 -fsanitize=address,undefined
+        - CXXFLAGS="-Wall -Wextra" # -m64 -fsanitize=address,undefined
+        # http://stackoverflow.com/questions/15678153/homebrew-python-on-mac-os-x-10-8-fatal-python-error-pythreadstate-get-no-cu
+        #- CMAKE_EXTRA="-DGDCM_WRAP_PYTHON:BOOL=ON -DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python2.7"
+        - CMAKE_EXTRA="-DGDCM_WRAP_PYTHON:BOOL=ON -DGDCM_WRAP_CSHARP:BOOL=OFF -DGDCM_WRAP_JAVA:BOOL=ON -DGDCM_USE_SYSTEM_UUID:BOOL=ON -DGDCM_USE_SYSTEM_ZLIB:BOOL=ON -DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF"
+        - B_NAME=default
+        - CPACK_NAME=Darwin
+
+before_install:
+  #- env
+  - cmake --version
+  #- swig -version
+  # do not run the full test suite for now on fsanitize and osx (takes too long)
+  - if [ "$B_NAME" == "fsanitize" ]; then mv Testing/Data Testing/Data.old; fi
+  # https://docs.travis-ci.com/user/osx-ci-environment/#Environment-variables
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then mv Testing/Data Testing/Data.old; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update                     ; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install swig docbook-xsl   ; fi
+  # https://github.com/travis-ci/travis-ci/issues/2312
+  #- if [ "$TRAVIS_OS_NAME" == "osx" ]; then virtualenv env -p python3       ; fi
+  #- if [ "$TRAVIS_OS_NAME" == "osx" ]; then source env/bin/activate         ; fi
+  # kakadu setup for linux/system:
+  - if [ "$B_NAME" == "system" ]; then wget http://kakadusoftware.com/wp-content/uploads/2014/06/KDU77_Demo_Apps_for_Linux-x86-64_150710.zip; fi
+  - if [ "$B_NAME" == "system" ]; then unzip KDU77_Demo_Apps_for_Linux-x86-64_150710.zip; fi
+  - if [ "$B_NAME" == "system" ]; then export PATH=$PATH:$PWD/KDU77_Demo_Apps_for_Linux-x86-64_150710; fi
+install: true
+before_script:
+  - cmake -Wno-dev -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=None -DGDCM_BUILD_TESTING:BOOL=ON -DGDCM_BUILD_APPLICATIONS:BOOL=ON -DGDCM_BUILD_SHARED_LIBS:BOOL=ON -DBUILDNAME:STRING=${TRAVIS_OS_NAME}-${TRAVIS_BRANCH}-${B_NAME} ${CMAKE_EXTRA} .
+  - ctest -D ExperimentalStart
+script:
+  - ctest -D ExperimentalBuild -j2
+  - ctest -D ExperimentalTest -j2 || true
+after_success:
+  - ctest -D ExperimentalSubmit || true
+  # prefer after_success since before_deploy is not called (conditions unmet)
+  - cpack -G TGZ
+  - cpack -G TBZ2
+after_failure: true
+
+before_deploy:
+- VTAG=$(echo $TRAVIS_TAG | cut -f2 -dv)
+deploy:
+  edge: true
+  provider: releases
+  api_key:
+    secure: R5+dbibdcgPHq6cAPC8uepifDuS3yjZu2dBB2oSeQtBZTAeN1VIfJMrF8TeQDqj2GC28RHxXm4BHwdJ2FUpBXjOS2eUE6Mto1Rbbvfi63MREnFPIAWkNyLtR2Jxq/Gzb8X05PbCWGwCNvX9eeo+qcWTpczuQvJ+/bds7MyRsk45+sUc+j7rglAbxewgijsXebCkObwaXmhqTYJwrvf2lyEnA2Jo1gL2WmK6iPjHvTOVS9JfBMqVRmlk7j8efnqag8fMCzNp1Ess5wBy5Jf58qvVs7RuuBi16s7vOOBtb9xVjcDB1KaAxc/dDQGQhRkrveBtH18ZpFrArOj6DBPbupS3+xuU4ywdYbCuGnvdpRFafBc+iNU4M81crkFUDmSPEQChBnL4wwpaYaQ1LlgdlF0r9/Rlu2/iqKe4t7rdZnkQqQ/3SNNf+x4AKnGmaSGasV/VUXstTGVrtl7hsDMzSdrVCXODao0SRv5tPSI3BgAZi7NzCJ/xv5LgA1EQVkGdTQN0ZpKZCQYfifL5K6oYDI+WlAFU0OcH+9dy4KNqF+QnzMh9iPwP0zR6BN9yE0w6ydnyNt0CkIUaxgaTtr+pHPXsmmtgXzQScESC8B9JHGocOXjT6MtyUmoP/ewlPz2G6x114PnAL7LlZ07jPqAASJwW/ZiXtBcVxv50hPhC7L80=
+  file:
+  - GDCM-$VTAG-$CPACK_NAME-x86_64.tar.gz
+  - GDCM-$VTAG-$CPACK_NAME-x86_64.tar.bz2
+  skip_cleanup: true
+  on:
+    repo: malaterre/GDCM
+    condition: $B_NAME = default
+    all_branches: true
+    tags: true
+
+# final
+after_script: true
+
+addons:
+  coverity_scan:
+    project:
+      name: malaterre/GDCM
+      description: "Grassroots DICOM"
+    notification_email: mathieu.malaterre@gmail.com
+    build_command_prepend: cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo
+      -DGDCM_BUILD_SHARED_LIBS:BOOL=ON ..
+    build_command: cmake --build .
+    branch_pattern: coverity_scan
