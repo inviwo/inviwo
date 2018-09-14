@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmscanner</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmscanner</refname>
+    <refpurpose>Scan a directory containing DICOM files.</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmxml_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmscanner [options] directory
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcmscanner</emphasis> is a command line tool to quickly extract value from a set of DICOM attribute in a DICOM File-Set.</para>
+<refsection xml:id="gdcmxml_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>  -d --dir       DICOM directory
+  -t --tag %d,%d DICOM tag(s) to look for
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1options">
+<title>OPTIONS</title>
+
+<para><literallayout>  -p --print      Print output.
+  -r --recursive  Recusively descend directory.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmviewer_1usage">
+<title>Typical usage</title>
+</refsection>
+<refsection xml:id="gdcmviewer_1simple_usage">
+<title>Simple usage</title>
+
+<para>In order to display all the value for Patient Name (0010,0010) in the directory name <emphasis role="bold">gdcmData</emphasis>, simply do:</para>
+
+<para><literallayout>$ gdcmscanner -t 10,10 -d gdcmData -p
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscanner_1complex_usage">
+<title>Complex usage</title>
+
+<para>Because gdcmscanner does not support progress, you have to wait until all files are traversed to see any results. This is quite cumbersome, on UNIX this can be worked around with the following trick:</para>
+
+<para><literallayout>$ find gdcmData -type d -exec gdcmscanner -t 10,10 -d {} -p &apos;;&apos;
+</literallayout></para>
+
+<para>So all directory are locally traversed (no child directory are recursively traversed), which means results comes out much faster.</para>
+</refsection>
+<refsection xml:id="gdcmxml_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcmraw</emphasis>(1)</para>
+</refsection>
+</refentry>

@@ -45,8 +45,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <modules/dicom/ext/gdcm-2.4.4/Source/DataStructureAndEncodingDefinition/gdcmTag.h>
-#include <modules/dicom/ext/gdcm-2.4.4/Source/DataStructureAndEncodingDefinition/gdcmAttribute.h>
+#include <modules/dicom/ext/gdcm-2.8.7/Source/DataStructureAndEncodingDefinition/gdcmTag.h>
+#include <modules/dicom/ext/gdcm-2.8.7/Source/DataStructureAndEncodingDefinition/gdcmAttribute.h>
 #include <warn/pop>
 
 #include <functional>
