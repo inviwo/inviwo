@@ -55,6 +55,11 @@ public:
                    float right = 20.0f, float bottom = 20.0f, float left = 20.0f,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
+
+    MarginProperty(const MarginProperty &rhs);
+    MarginProperty &operator=(const MarginProperty &that);
+    virtual MarginProperty *clone() const override;
+
     virtual ~MarginProperty() = default;
 
     void setMargins(float top, float right, float bottom, float left);

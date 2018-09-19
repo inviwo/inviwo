@@ -57,6 +57,7 @@ public:
     BoolProperty followObjectDuringRotation_;
     BoolProperty runtimeModuleReloading_;
     BoolProperty enableResourceManager_;
+    TemplateOptionProperty<MessageBreakLevel> breakOnMessage_;
 
     static size_t defaultPoolSize();
 };

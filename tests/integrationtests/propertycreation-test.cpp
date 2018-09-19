@@ -32,10 +32,12 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/util/zip.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
@@ -53,36 +55,56 @@ struct LogErrorCheck {
 
 }  // namespace
 
-class ProcessorCreationTests : public ::testing::TestWithParam<std::string> {
+class PropertyCreationTests : public ::testing::TestWithParam<std::string> {
 protected:
-    ProcessorCreationTests()
-        : network_{InviwoApplication::getPtr()->getProcessorNetwork()}
-        , factory_{InviwoApplication::getPtr()->getProcessorFactory()} {};
+    PropertyCreationTests() : factory_{InviwoApplication::getPtr()->getPropertyFactory()} {};
 
-    virtual ~ProcessorCreationTests() = default;
+    virtual ~PropertyCreationTests() = default;
 
     virtual void SetUp() override {}
     virtual void TearDown() override {}
 
-    ProcessorNetwork* network_;
-    ProcessorFactory* factory_;
+    PropertyFactory* factory_;
 };
 
-TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
+TEST_P(PropertyCreationTests, Create) {
     LogErrorCheck checklog;
-    auto s = factory_->create(GetParam());
-    ASSERT_TRUE(s.get() != nullptr);
-    s->resetAllPoperties();
+    auto s = factory_->create(GetParam(), "identifier", "displayname");
+    ASSERT_NE(s, nullptr);
 
-    const size_t sizeBefore = network_->getProcessors().size();
-    auto p = s.release();
-    network_->addProcessor(p);
-    EXPECT_EQ(sizeBefore + 1, network_->getProcessors().size());
-    network_->removeAndDeleteProcessor(p);
-    EXPECT_EQ(sizeBefore, network_->getProcessors().size());
+    auto c = std::unique_ptr<Property>(s->clone());
+    ASSERT_NE(c, nullptr);
+    EXPECT_EQ(s->getIdentifier(), c->getIdentifier());
+    EXPECT_EQ(s->getPath(), c->getPath());
+    EXPECT_EQ(s->getDisplayName(), c->getDisplayName());
+    EXPECT_EQ(s->getClassIdentifier(), c->getClassIdentifier());
+    EXPECT_EQ(s->getSemantics(), c->getSemantics());
+
+    // Try linking
+    c->set(s.get());
+    s->set(c.get());
+
+    if (auto sComp = dynamic_cast<CompositeProperty*>(s.get())) {
+        auto cComp = dynamic_cast<CompositeProperty*>(c.get());
+        ASSERT_NE(cComp, nullptr);
+
+        EXPECT_EQ(sComp->isCollapsed(), cComp->isCollapsed());
+
+        auto sProps = sComp->getPropertiesRecursive();
+        auto cProps = cComp->getPropertiesRecursive();
+        ASSERT_EQ(sProps.size(), cProps.size());
+
+        for (auto&& item : util::zip(sProps, cProps)) {
+            EXPECT_EQ(item.first()->getIdentifier(), item.second()->getIdentifier());
+            EXPECT_EQ(item.first()->getPath(), item.second()->getPath());
+            EXPECT_EQ(item.first()->getDisplayName(), item.second()->getDisplayName());
+            EXPECT_EQ(item.first()->getClassIdentifier(), item.second()->getClassIdentifier());
+            EXPECT_EQ(item.first()->getSemantics(), item.second()->getSemantics());
+        }
+    }
 }
 
 INSTANTIATE_TEST_CASE_P(
-    RegisteredProcessors, ProcessorCreationTests,
-    ::testing::ValuesIn(InviwoApplication::getPtr()->getProcessorFactory()->getKeys()));
+    RegisteredProperties, PropertyCreationTests,
+    ::testing::ValuesIn(InviwoApplication::getPtr()->getPropertyFactory()->getKeys()));
 }  // namespace inviwo

@@ -56,7 +56,6 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f)
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
-
     , cameraType_("cameraType", "Camera Type",
                   []() {
                       std::vector<OptionPropertyStringOption> options;
@@ -132,14 +131,18 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_.get()); });
     adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
 
-    addProperty(cameraType_);
-    addProperty(lookFrom_);
-    addProperty(lookTo_);
-    addProperty(lookUp_);
-    addProperty(aspectRatio_);
-    addProperty(nearPlane_);
-    addProperty(farPlane_);
-    addProperty(adjustCameraOnDataChange_);
+    {
+        // Make sure we put these properties before any owned properties.
+        size_t i = 0;
+        insertProperty(i++, cameraType_);
+        insertProperty(i++, lookFrom_);
+        insertProperty(i++, lookTo_);
+        insertProperty(i++, lookUp_);
+        insertProperty(i++, aspectRatio_);
+        insertProperty(i++, nearPlane_);
+        insertProperty(i++, farPlane_);
+        insertProperty(i++, adjustCameraOnDataChange_);
+    }
 
     changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
 

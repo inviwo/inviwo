@@ -45,6 +45,7 @@ class Processor;
 
 enum class LogLevel : int { Info, Warn, Error };
 enum class LogAudience : int { User, Developer };
+enum class MessageBreakLevel : int { Off, Error, Warn, Info };
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, LogLevel ll) {
@@ -70,6 +71,26 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
             break;
         case LogAudience::Developer:
             ss << "Developer";
+            break;
+    }
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             MessageBreakLevel ll) {
+    switch (ll) {
+        case MessageBreakLevel::Info:
+            ss << "Info";
+            break;
+        case MessageBreakLevel::Warn:
+            ss << "Warn";
+            break;
+        case MessageBreakLevel::Error:
+            ss << "Error";
+            break;
+        case MessageBreakLevel::Off:
+            ss << "Off";
             break;
     }
     return ss;
@@ -225,6 +246,9 @@ public:
     void setLogStacktrace(const bool& logStacktrace = true);
     bool getLogStacktrace() const;
 
+    void setMessageBreakLevel(MessageBreakLevel level);
+    MessageBreakLevel getMessageBreakLevel() const;
+
 private:
     friend Singleton<LogCentral>;
     static LogCentral* instance_;
@@ -234,7 +258,8 @@ private:
 #include <warn/ignore/dll-interface>
     std::vector<std::weak_ptr<Logger>> loggers_;
 #include <warn/pop>
-    bool logStacktrace_;
+    bool logStacktrace_ = false;
+    MessageBreakLevel breakLevel_ = MessageBreakLevel::Off;
 };
 
 namespace util {

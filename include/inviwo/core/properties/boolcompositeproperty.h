@@ -50,6 +50,9 @@ public:
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                           PropertySemantics semantics = PropertySemantics::Default);
 
+    BoolCompositeProperty(const BoolCompositeProperty& rhs);
+    BoolCompositeProperty& operator=(const BoolCompositeProperty& that) = default;
+
     virtual BoolCompositeProperty* clone() const override;
     virtual ~BoolCompositeProperty();
     virtual std::string getClassIdentifierForWidget() const override;
@@ -57,7 +60,6 @@ public:
     virtual bool isChecked() const;
     virtual void setChecked(bool checked);
 
-    virtual operator bool&();
     virtual operator const bool&() const;
 
     virtual BoolProperty* getBoolProperty();

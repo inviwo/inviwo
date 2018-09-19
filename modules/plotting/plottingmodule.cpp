@@ -41,6 +41,8 @@
 #include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plotting/properties/tickproperty.h>
 
+#include <modules/plotting/datastructures/dataframe.h>
+
 namespace inviwo {
 
 PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plotting") {
@@ -59,6 +61,8 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::MinorTickProperty>();
     registerProperty<plot::PlotTextProperty>();
     registerProperty<plot::TickProperty>();
+
+    registerDefaultsForDataType<plot::DataFrame>();
 }
 
 int PlottingModule::getVersion() const { return 1; }

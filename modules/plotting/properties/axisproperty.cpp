@@ -43,27 +43,23 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
                            PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , visible_("visible", "Visible", true)
-    , color_("color", "Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
+    , color_("color", "Color", vec4{vec3{0.0f}, 1.0f}, vec4{0.0f}, vec4{1.0f}, vec4{0.01f},
+             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , width_("width", "Width", 2.5f, 0.0f, 20.0f)
     , useDataRange_("useDataRange", "Use Data Range", true)
-    , range_("range", "Axis Range", 0.0, 100.0, 0.0, 1.0e4)
+    , range_("range", "Axis Range", 0.0, 100.0, 0.0, 1.0e4, 0.01, 0.0,
+             InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , orientation_("orientation", "Orientation",
                    {{"horizontal", "Horizontal", Orientation::Horizontal},
                     {"vertical", "Vertical", Orientation::Vertical}},
-                   0)
+                   orientation == Orientation::Horizontal ? 0 : 1)
     , placement_("placement", "Placement",
                  {{"outside", "Bottom / Left", Placement::Outside},
                   {"inside", "Top / Right", Placement::Inside}},
                  0)
-    //, logScale_("logScale", "logScale", false)
     , caption_("caption", "Caption", false)
     , labels_("labels", "Axis Labels", true)
     , ticks_("ticks", "Ticks") {
-
-    orientation_.setSelectedValue(orientation);
-    orientation_.setCurrentStateAsDefault();
-    color_.setSemantics(PropertySemantics::Color);
-    range_.setSemantics(PropertySemantics::Text);
 
     addProperty(visible_);
     addProperty(color_);
@@ -72,7 +68,6 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     addProperty(range_);
     addProperty(orientation_);
     addProperty(placement_);
-    // addProperty(logScale_);
 
     range_.setReadOnly(useDataRange_.get());
     useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
@@ -98,20 +93,8 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     ticks_.setCollapsed(true);
     setCollapsed(true);
 
-    auto adjustAlignment = [this]() {
-        vec2 anchor;
-        if (orientation_.get() == Orientation::Horizontal) {
-            // horizontal axis, center labels
-            anchor = vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
-        } else {
-            // vertical axis
-            anchor = vec2((placement_.get() == Placement::Outside) ? 1.0 : -1.0, 0.0f);
-        }
-        labels_.font_.anchorPos_.set(anchor);
-        caption_.font_.anchorPos_.set(anchor);
-    };
-    orientation_.onChange(adjustAlignment);
-    placement_.onChange(adjustAlignment);
+    orientation_.onChange([this]() { adjustAlignment(); });
+    placement_.onChange([this]() { adjustAlignment(); });
     // update label alignment to match current status
     adjustAlignment();
 }
@@ -125,19 +108,17 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , range_(rhs.range_)
     , orientation_(rhs.orientation_)
     , placement_(rhs.placement_)
-    /*, logScale_(rhs.logScale_)*/
     , caption_(rhs.caption_)
     , labels_(rhs.labels_)
     , ticks_(rhs.ticks_) {
 
-    color_.setSemantics(PropertySemantics::Color);
     addProperty(visible_);
     addProperty(color_);
     addProperty(width_);
+    addProperty(useDataRange_);
     addProperty(range_);
     addProperty(orientation_);
     addProperty(placement_);
-    // addProperty(logScale_);
 
     range_.setReadOnly(useDataRange_.get());
     useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
@@ -146,25 +127,8 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     addProperty(labels_);
     addProperty(ticks_);
 
-    caption_.setCollapsed(true);
-    labels_.setCollapsed(true);
-    ticks_.setCollapsed(true);
-    setCollapsed(true);
-
-    auto adjustAlignment = [this]() {
-        vec2 anchor;
-        if (orientation_.get() == Orientation::Horizontal) {
-            // horizontal axis, center labels
-            anchor = vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
-        } else {
-            // vertical axis
-            anchor = vec2((placement_.get() == Placement::Outside) ? 1.0 : -1.0, 0.0f);
-        }
-        labels_.font_.anchorPos_.set(anchor);
-        caption_.font_.anchorPos_.set(anchor);
-    };
-    orientation_.onChange(adjustAlignment);
-    placement_.onChange(adjustAlignment);
+    orientation_.onChange([this]() { adjustAlignment(); });
+    placement_.onChange([this]() { adjustAlignment(); });
     // update label alignment to match current status
     adjustAlignment();
 }
@@ -188,6 +152,19 @@ void AxisProperty::setRange(const dvec2& range) {
     if (useDataRange_) {
         range_.set(range);
     }
+}
+
+void AxisProperty::adjustAlignment() {
+    vec2 anchor;
+    if (orientation_.get() == Orientation::Horizontal) {
+        // horizontal axis, center labels
+        anchor = vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
+    } else {
+        // vertical axis
+        anchor = vec2((placement_.get() == Placement::Outside) ? 1.0 : -1.0, 0.0f);
+    }
+    labels_.font_.anchorPos_.set(anchor);
+    caption_.font_.anchorPos_.set(anchor);
 }
 
 }  // namespace plot

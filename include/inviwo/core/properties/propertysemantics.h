@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYSEMANTICS_H
@@ -38,20 +38,19 @@
 namespace inviwo {
 
 class IVW_CORE_API PropertySemantics : public Serializable {
-
 public:
     PropertySemantics();
     PropertySemantics(std::string semantic);
-    PropertySemantics(const PropertySemantics& rhs);
-    PropertySemantics& operator=(const PropertySemantics& that);
-    virtual ~PropertySemantics() {}
+    PropertySemantics(const PropertySemantics& rhs) = default;
+    PropertySemantics(PropertySemantics&& rhs) noexcept = default;
+    PropertySemantics& operator=(const PropertySemantics& that) = default;
+    PropertySemantics& operator=(PropertySemantics&& that) noexcept = default;
+    virtual ~PropertySemantics() noexcept = default;
 
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
 
     const std::string& getString() const;
-
-    friend std::ostream& operator << (std::ostream& os, const inviwo::PropertySemantics& obj);
 
     static const PropertySemantics Default;
     static const PropertySemantics Text;
@@ -67,18 +66,32 @@ private:
     std::string semantic_;
 };
 
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const PropertySemantics& obj) {
+    ss << obj.getString();
+    return ss;
+}
 
 inline bool operator==(const PropertySemantics& lhs, const PropertySemantics& rhs) {
     return lhs.getString() == rhs.getString();
 }
-inline bool operator< (const PropertySemantics& lhs, const PropertySemantics& rhs) {
+inline bool operator<(const PropertySemantics& lhs, const PropertySemantics& rhs) {
     return lhs.getString() < rhs.getString();
 }
-inline bool operator!=(const PropertySemantics& lhs, const PropertySemantics& rhs) {return !operator==(lhs,rhs);}
-inline bool operator> (const PropertySemantics& lhs, const PropertySemantics& rhs) {return  operator< (rhs,lhs);}
-inline bool operator<=(const PropertySemantics& lhs, const PropertySemantics& rhs) {return !operator> (lhs,rhs);}
-inline bool operator>=(const PropertySemantics& lhs, const PropertySemantics& rhs) {return !operator< (lhs,rhs);}
+inline bool operator!=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+    return !operator==(lhs, rhs);
+}
+inline bool operator>(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+    return operator<(rhs, lhs);
+}
+inline bool operator<=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+    return !operator>(lhs, rhs);
+}
+inline bool operator>=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+    return !operator<(lhs, rhs);
+}
 
-} //Namespace
+}  // namespace inviwo
 
-#endif //IVW_PROPERTYSEMANTICS_H
+#endif  // IVW_PROPERTYSEMANTICS_H
