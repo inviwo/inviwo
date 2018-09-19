@@ -35,7 +35,7 @@
 #include <inviwo/core/metadata/metadata.h>
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 template <typename T, ind N>
 DataChannel<T, N>::DataChannel(const std::string& name, GridPrimitive definedOn)
@@ -141,5 +141,5 @@ void DataChannel<T, N>::computeMinMax() const {
     maxMeta->set(max);
 }
 
-}  // namespace dd
-}  // namespace inviwo
+}  // namespace
+}

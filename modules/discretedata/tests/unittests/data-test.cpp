@@ -40,7 +40,7 @@
 #include <ext/glm/glm/glm/vec3.hpp>
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 typedef BufferChannel<float, 3> BufferFloat;
 

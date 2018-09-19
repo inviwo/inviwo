@@ -33,7 +33,7 @@
 #include "inviwo/core/util/formatdispatching.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 StructuredGrid::StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim)
     : Connectivity(gridDimension), numCellsPerDimension_(numCellsPerDim) {

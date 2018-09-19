@@ -34,7 +34,7 @@
 #include "discretedata/connectivity/elementiterator.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 ind Connectivity::getNumElements(GridPrimitive elementType) const {
     assert((ind)numGridPrimitives_.size() == (ind)gridDimension_ + 1 &&

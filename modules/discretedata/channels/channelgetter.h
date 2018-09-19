@@ -30,7 +30,7 @@
 #pragma once
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 template <typename T, ind N>
 class BufferChannel;

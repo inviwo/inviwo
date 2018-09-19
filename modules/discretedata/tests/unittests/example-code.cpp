@@ -42,7 +42,7 @@
 #include "discretedata/connectivity/periodicgrid.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 TEST(Using, Dataset) {
     // An empty dataset to hold the grid and data on that grid.
@@ -50,7 +50,7 @@ TEST(Using, Dataset) {
 
     // Create a curvelinear grid.
     std::shared_ptr<PeriodicGrid> grid = std::make_shared<PeriodicGrid>(
-        GridPrimitive::Volume, std::vector<ind>({10, 4, 5}), std::vector<bool>({true, false, false}));
+        GridPrimitive::Volume, std::vector<ind>({10, 1, 1}), std::vector<bool>({true, false, false}));
 
     // Make the x dimension periodic (redundant), that is, the outer yz-planes overlap.
     grid->setPeriodic(0, true);
@@ -194,7 +194,7 @@ TEST(Using, Dataset) {
 
             // Get all neighboring vertices. Save their number.
             // We could again iterate through those now, if needed.
-            ind numNeighbors = vertex.connection(GridPrimitive::Vertex).size();
+            ind numNeighbors = adjacentCell.connection(GridPrimitive::Vertex).size();
 
             double volume = dataset.Grid->getPrimitiveMeasure(GridPrimitive::Volume, adjacentCell);
             std::cout << adjacentCell << ":\t" << volume << std::endl;
@@ -213,5 +213,5 @@ TEST(Using, Dataset) {
     dataset.Channels.addChannel(avgBuffer);
 }
 
-}  // namespace dd
-}  // namespace inviwo
+}  // namespace
+}

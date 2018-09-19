@@ -33,7 +33,7 @@
 #include <inviwo/core/metadata/metadataowner.h>
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 /** Discretedata index type **/
 typedef signed long long ind;
@@ -319,8 +319,8 @@ protected:
     void computeMinMax() const;
 };
 
-}  // namespace dd
-}  // namespace inviwo
+}  // namespace
+}
 
 // Circumvent circular reference.
 #include "channeliterator.h"

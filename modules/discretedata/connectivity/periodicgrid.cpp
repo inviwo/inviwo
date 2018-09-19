@@ -33,7 +33,7 @@
 #include "inviwo/core/util/formatdispatching.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 PeriodicGrid::PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim, const std::vector<bool>& isDimPeriodic)
     : StructuredGrid(gridDimension, numCellsPerDim), isDimPeriodic_(isDimPeriodic) {
@@ -223,10 +223,10 @@ void PeriodicGrid::sameLevelConnection(std::vector<ind>& result, ind idxLin,
         else if (isPeriodic(dim))
             result.push_back(idxLin + nextDimProd - 2 * dimensionProduct);
 
-        if (locIdx < size[dim] - 2)
-            result.push_back(idxLin + dimensionProduct);
-        else if (isPeriodic(dim))
+        if (isPeriodic(dim) && locIdx == size[dim] - 2)
             result.push_back(idxLin - nextDimProd + 2 * dimensionProduct);
+        else if (locIdx < size[dim] - 1)
+            result.push_back(idxLin + dimensionProduct);
 
         dimensionProduct = nextDimProd;
     }

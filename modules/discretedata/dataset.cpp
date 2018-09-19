@@ -31,7 +31,7 @@
 #include "discretedata/channels/bufferchannel.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 SharedChannel DataChannelMap::addChannel(Channel* channel) {
     SharedChannel sharedChannel(channel);

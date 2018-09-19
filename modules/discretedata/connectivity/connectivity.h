@@ -35,7 +35,7 @@
 #include "discretedata/channels/datachannel.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 class ElementRange;
 class ElementIterator;

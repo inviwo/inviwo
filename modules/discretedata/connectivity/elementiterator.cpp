@@ -31,7 +31,7 @@
 #include <discretedata/connectivity/connectioniterator.h>
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 /** Increment randomly */
 ElementIterator operator+(ind offset, ElementIterator& iter) {

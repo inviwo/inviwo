@@ -34,7 +34,7 @@
 #include "datachannel.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 Channel::Channel(ind numComponents, const std::string& name, DataFormatId format,
                  GridPrimitive prim) {

@@ -42,7 +42,7 @@
 #include "discretedata/connectivity/structuredgrid.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 TEST(AccessingData, Connectivity) {
     DataSet data;  // Assume there is data.

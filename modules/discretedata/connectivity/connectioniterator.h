@@ -37,7 +37,7 @@
 #include "discretedata/connectivity/elementiterator.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 class ConnectionRange;
 

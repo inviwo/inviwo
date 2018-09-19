@@ -32,7 +32,7 @@
 #include "discretedata/connectivity/structuredgrid.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 /** \class StructuredGrid
     \brief A curvilinear grid in nD, with some dimensions set to wrap
@@ -83,14 +83,14 @@ protected:
 template <typename R, typename T>
 double PeriodicGrid::PeriodicHexVolumeComputer::operator()(ind index) const {
     // Work with respective type
-    std::shared_ptr<const DataChannel<T, 3>> doubleVertices =
-        std::dynamic_pointer_cast<const DataChannel<T, 3>, const Channel>(parent_->vertices_);
+    std::shared_ptr<const DataChannel<T::type, 3>> doubleVertices =
+        std::dynamic_pointer_cast<const DataChannel<T::type, 3>, const Channel>(parent_->vertices_);
     if (!doubleVertices) return -1;
 
     // Get all corner points.
     std::vector<ind> corners;
     parent_->getConnections(corners, index, GridPrimitive::Volume, GridPrimitive::Vertex);
-    return parent_->ComputeHexVolume<T>(corners);
+    return parent_->ComputeHexVolume<T::type>(corners);
 }
 
 }  // namespace

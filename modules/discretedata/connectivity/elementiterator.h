@@ -35,7 +35,7 @@
 #include "connectivity.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 class ConnectionRange;
 

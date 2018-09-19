@@ -37,7 +37,7 @@
 #include "connectivity/connectivity.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 typedef std::shared_ptr<Channel> SharedChannel;
 typedef std::shared_ptr<const Channel> SharedConstChannel;
@@ -180,14 +180,14 @@ public:
     std::shared_ptr<Connectivity> Grid;
 };
 
-}  // namespace dd
+}  // namespace discretedata
 
 template <>
-struct DataTraits<dd::DataSet> {
+struct DataTraits<discretedata::DataSet> {
     static std::string classIdentifier() { return "org.inviwo.DiscreteData"; }
     static std::string dataName() { return "DataSet"; }
     static uvec3 colorCode() { return uvec3(255, 144, 1); }
-    static Document info(const dd::DataSet& data) {
+    static Document info(const discretedata::DataSet& data) {
         std::ostringstream oss;
         oss << "Data set with " << data.Channels.getNumChannels() << " channels.";
 

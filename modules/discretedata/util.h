@@ -32,6 +32,7 @@
 #include "discretedata/connectivity/connectivity.h"
 
 namespace inviwo {
+namespace discretedata {
 namespace dd_util {
 
 inline double tetrahedronVolume(double corners[4][3]) {
@@ -43,4 +44,5 @@ inline double tetrahedronVolume(double corners[4][3]) {
 }
 
 } // namespace
+}
 }

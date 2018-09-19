@@ -36,7 +36,7 @@
 #include "channelgetter.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 template <typename T, ind N>
 class BufferChannel;
@@ -237,5 +237,5 @@ const VecNT& VectorBufferChannel<T, N>::get(ind index) const {
     return *reinterpret_cast<const VecNT*>(&((Child*)this)->buffer_[index * N]);
 }
 
-}  // namespace dd
-}  // namespace inviwo
+}  // namespace
+}

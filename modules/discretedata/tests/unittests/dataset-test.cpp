@@ -38,7 +38,7 @@
 #include "discretedata/channels/analyticchannel.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 typedef glm::vec3 Vec3f;
 TEST(DataSet, ChannelInsertRemoveEdit) {

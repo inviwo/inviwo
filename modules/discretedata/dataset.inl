@@ -28,7 +28,7 @@
 *********************************************************************************/
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 template <typename T, ind N>
 std::shared_ptr<const DataChannel<T, N>> DataChannelMap::getFirstChannel() const {

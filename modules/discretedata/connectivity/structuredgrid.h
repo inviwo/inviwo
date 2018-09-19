@@ -33,7 +33,7 @@
 #include "discretedata/util.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 class ElementIterator;
 
@@ -95,5 +95,5 @@ double StructuredGrid::HexVolumeComputer::operator()(ind index) const {
     return parent_->ComputeHexVolume<T>(corners);
 }
 
-}  // namespace dd
-}  // namespace inviwo
+}  // namespace
+}

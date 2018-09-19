@@ -33,7 +33,7 @@
 #include "bufferchannel.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 template<typename T, ind N>
 T* BufferGetter<T, N>::get(ind index) {

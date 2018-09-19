@@ -30,7 +30,7 @@
 #include "discretedata/connectivity/connectioniterator.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 ConnectionRange::ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
                                  const Connectivity* parent)

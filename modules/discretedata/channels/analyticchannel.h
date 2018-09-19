@@ -35,7 +35,7 @@
 #include "channelgetter.h"
 
 namespace inviwo {
-namespace dd {
+namespace discretedata {
 
 /** \class DataAnalytic
     \brief Data channel by function evaluated at each (linear) index.
