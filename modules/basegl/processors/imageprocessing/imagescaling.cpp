@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/imageprocessing/imagescaling.h>
 
 #include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
@@ -74,18 +75,14 @@ ImageScaling::ImageScaling()
 
     customFactor_.setVisible(false);
 
-    auto triggerRescale = [this]() {
-        ResizeEvent e(calcInputImageSize());
-        inport_.propagateEvent(&e);
-    };
-
-    enabled_.onChange(triggerRescale);
     scalingFactor_.onChange([this]() {
-        customFactor_.setVisible(scalingFactor_.get() < 0.0);
-        ResizeEvent e(calcInputImageSize());
-        inport_.propagateEvent(&e);
+        if (enabled_) {
+            customFactor_.setVisible(scalingFactor_.get() < 0.0);
+            resizeInports();
+        }
     });
-    customFactor_.onChange(triggerRescale);
+    enabled_.onChange([this]() { resizeInports(); });
+    customFactor_.onChange([this]() { resizeInports(); });
 }
 
 void ImageScaling::process() {
@@ -101,37 +98,48 @@ void ImageScaling::process() {
 
 void ImageScaling::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
-    event->markAsVisited(this);
-
-    invokeEvent(event);
-    if (event->hasBeenUsed()) return;
 
     if (event->hash() == ResizeEvent::chash()) {
-        if (inport_.isConnected()) {
-            ResizeEvent e(calcInputImageSize());
-            inport_.propagateEvent(&e);
+        // cache size of the resize event
+        lastValidOutputSize_ = event->getAs<ResizeEvent>()->size();
+
+        if (enabled_) {
+            event->markAsVisited(this);
+
+            if (resizeInports()) event->markAsUsed();
+            return;
         }
-    } else {
-        bool used = event->hasBeenUsed();
-        if (event->shouldPropagateTo(&inport_, this, source)) {
-            inport_.propagateEvent(event);
-            used |= event->hasBeenUsed();
-        }
-        if (used) event->markAsUsed();
     }
+
+    Processor::propagateEvent(event, source);
+}
+
+void ImageScaling::deserialize(Deserializer& d) {
+    util::KeepTrueWhileInScope deserializing(&deserializing_);
+    Processor::deserialize(d);
 }
 
 size2_t ImageScaling::calcInputImageSize() const {
-    size2_t size(8, 8);
-    if (outport_.hasData()) {
-        size = outport_.getDimensions();
+    if (!enabled_) return lastValidOutputSize_;
+
+    const double factor = (scalingFactor_.get() < 0.0) ? customFactor_.get() : scalingFactor_.get();
+    return size2_t(dvec2(lastValidOutputSize_) / factor);
+}
+
+bool ImageScaling::resizeInports() {
+    if (deserializing_) return false;
+
+    ResizeEvent e(calcInputImageSize());
+
+    bool used = e.hasBeenUsed();
+    for (auto inport : getInports()) {
+        if (e.shouldPropagateTo(inport, this, &outport_)) {
+            inport->propagateEvent(&e);
+            used |= e.hasBeenUsed();
+            e.markAsUnused();
+        }
     }
-    if (enabled_.get()) {
-        const double factor =
-            (scalingFactor_.get() < 0.0) ? customFactor_.get() : scalingFactor_.get();
-        size = size2_t(dvec2(size) / factor);
-    }
-    return size;
+    return used;
 }
 
 }  // namespace inviwo
