@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     inviwo::LogCentral::init(&logger);
     auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     logger.registerLogger(logCounter);
-    inviwo::InviwoApplicationQt inviwoApp("Inviwo", argc, argv);
+    inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
     inviwoApp.setWindowIcon(QIcon(":/inviwo/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
     QFile styleSheetFile(":/stylesheets/inviwo.qss");
@@ -124,20 +124,22 @@ int main(int argc, char** argv) {
                 std::stringstream ss;
                 auto j = inviwo::util::make_ostream_joiner(ss, "\n");
                 std::copy(e.getStack().begin(), e.getStack().end(), j);
-                LogErrorCustom("inviwo.app", ss.str());
+                LogErrorCustom("Inviwo", ss.str());
             }
             {
                 std::stringstream ss;
-                ss << e.getMessage() + "\n Stack Trace:\n";
-                auto j = inviwo::util::make_ostream_joiner(ss, "\n");
-                if (std::distance(e.getStack().begin(), e.getStack().end()) > 10) {
-                    std::copy(e.getStack().begin(), e.getStack().begin() + 10, j);
-                    ss << "\n...";
-                } else {
-                    std::copy(e.getStack().begin(), e.getStack().end(), j);
+                ss << e.getMessage();
+                if (!e.getStack().empty()) {
+                    ss << "\nStack Trace:\n";
+                    auto j = inviwo::util::make_ostream_joiner(ss, "\n");
+                    if (std::distance(e.getStack().begin(), e.getStack().end()) > 10) {
+                        std::copy(e.getStack().begin(), e.getStack().begin() + 10, j);
+                        ss << "\n...";
+                    } else {
+                        std::copy(e.getStack().begin(), e.getStack().end(), j);
+                    }
                 }
                 ss << "\nApplication state might be corrupted, be warned.";
-
                 auto res = QMessageBox::critical(
                     &mainWin, "Fatal Error", QString::fromStdString(ss.str()),
                     QMessageBox::Ignore | QMessageBox::Close, QMessageBox::Close);
@@ -148,11 +150,19 @@ int main(int argc, char** argv) {
             }
 
         } catch (const std::exception& e) {
-            LogErrorCustom("inviwo.cpp", e.what());
-            QMessageBox::critical(nullptr, "Fatal Error", e.what());
-            return 1;
+            LogErrorCustom("Inviwo", e.what());
+            std::stringstream ss;
+            ss << e.what();
+            ss << "\nApplication state might be corrupted, be warned.";
+            auto res =
+                QMessageBox::critical(&mainWin, "Fatal Error", QString::fromStdString(ss.str()),
+                                      QMessageBox::Ignore | QMessageBox::Close, QMessageBox::Close);
+            if (res == QMessageBox::Close) {
+                mainWin.askToSaveWorkspaceChanges();
+                return 1;
+            }
         } catch (...) {
-            LogErrorCustom("inviwo.cpp", "Uncaught exception, terminating");
+            LogErrorCustom("Inviwo", "Uncaught exception, terminating");
             QMessageBox::critical(nullptr, "Fatal Error", "Uncaught exception, terminating");
             return 1;
         }

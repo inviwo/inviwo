@@ -44,13 +44,11 @@ BoolCompositeProperty::BoolCompositeProperty(std::string identifier, std::string
     checked_.setVisible(false);
     checked_.setCurrentStateAsDefault();
     addProperty(checked_);
-    checked_.onChange([this]() { Property::propertyModified(); });
 }
 
 BoolCompositeProperty::BoolCompositeProperty(const BoolCompositeProperty& rhs)
     : CompositeProperty(rhs), checked_{rhs.checked_} {
     addProperty(checked_);
-    checked_.onChange([this]() { Property::propertyModified(); });
 }
 
 BoolCompositeProperty* BoolCompositeProperty::clone() const {

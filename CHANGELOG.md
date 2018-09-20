@@ -1,5 +1,12 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-09-21
+Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in %APPDATA%/inviwo.
+
+Added System settings for breaking into the debugger on various log message levels, and on throwing exceptions. Also added an option to add stacktraces to exceptions. All to help with debugging. 
+
+The inviwo app will now catch unchought inviwo exceptions in main and present an dialog with information and an option to continue or abort. It will also give an option to save your workspace before closing.
+
 ## 2018-08-21
 The property class identifier system no longer uses the `InviwoPropertyInfo` / `PropertyClassIdentifier` macros but rather implements
 ```

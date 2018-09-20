@@ -31,11 +31,41 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stacktrace.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+
 namespace inviwo {
 
+namespace {
+
+std::vector<std::string> stackTrace() {
+    if (auto app = InviwoApplication::getPtr()) {
+        if (auto sys = app->getSettingsByType<SystemSettings>()) {
+            if (sys->stackTraceInException_) {
+                auto stack = getStackTrace();
+                const auto offset = std::min(size_t(4), stack.size());
+                stack.erase(stack.begin(), stack.begin() + offset);
+                return stack;
+            }
+        }
+    }
+    return {};
+}
+
+bool breakOnException() {
+    if (auto app = InviwoApplication::getPtr()) {
+        if (auto sys = app->getSettingsByType<SystemSettings>()) {
+            return sys->breakOnException_;
+        }
+    }
+    return false;
+}
+
+}  // namespace
+
 Exception::Exception(const std::string& message, ExceptionContext context)
-    : std::exception(), message_(message), context_(std::move(context)), stack_{getStackTrace()} {
-    stack_.erase(stack_.begin(), stack_.begin() + 3);
+    : std::exception(), message_(message), context_(std::move(context)), stack_{stackTrace()} {
+    if (breakOnException()) util::debugBreak();
 }
 
 Exception::~Exception() noexcept = default;

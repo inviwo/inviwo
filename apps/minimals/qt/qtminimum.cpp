@@ -49,8 +49,7 @@ int main(int argc, char** argv) {
     auto logger = std::make_shared<inviwo::ConsoleLogger>();
     LogCentral::getPtr()->registerLogger(logger);
 
-    std::string appName = "Inviwo v" + IVW_VERSION + " - QtApp";
-    InviwoApplicationQt inviwoApp(appName, argc, argv);
+    InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
     inviwoApp.printApplicationInfo();
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
     inviwoApp.setProgressCallback([](std::string m) {
