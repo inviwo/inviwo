@@ -47,6 +47,7 @@
 #include <modules/python3/interface/pybuffer.h>
 #include <modules/python3/interface/pymesh.h>
 #include <modules/python3/interface/pytfprimitiveset.h>
+#include <modules/python3/interface/pypickingmapper.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -88,6 +89,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposePort(m);
     exposeProcessors(m);
     exposeNetwork(m);
+    exposePickingMapper(m);
 
     exposeDataMapper(dataModule);
     exposeImage(dataModule);
