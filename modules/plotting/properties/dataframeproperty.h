@@ -49,6 +49,11 @@ public:
     DataFrameColumnProperty(std::string identifier, std::string displayName,
                             DataInport<DataFrame> &port, bool allowNone = false,
                             size_t firstIndex = 0);
+
+    DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
+    DataFrameColumnProperty& operator=(const DataFrameColumnProperty& that);
+    virtual DataFrameColumnProperty* clone() const override;
+
     virtual ~DataFrameColumnProperty() = default;
 
     void setOptions(std::shared_ptr<const DataFrame> dataframe);

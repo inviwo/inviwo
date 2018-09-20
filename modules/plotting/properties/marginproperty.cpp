@@ -51,6 +51,30 @@ MarginProperty::MarginProperty(
     addProperty(left_);
 }
 
+MarginProperty::MarginProperty(const MarginProperty& rhs)
+    : CompositeProperty(rhs)
+    , top_{rhs.top_}
+    , right_{rhs.right_}
+    , bottom_{rhs.bottom_}
+    , left_{rhs.left_} {
+
+    addProperty(top_);
+    addProperty(right_);
+    addProperty(bottom_);
+    addProperty(left_);
+}
+MarginProperty& MarginProperty::operator=(const MarginProperty& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        top_ = that.top_;
+        right_ = that.right_;
+        bottom_ = that.bottom_;
+        left_ = that.left_;
+    }
+    return *this;
+}
+MarginProperty* MarginProperty::clone() const { return new MarginProperty(*this); };
+
 void MarginProperty::setMargins(float top, float right, float bottom, float left) {
     top_.set(top);
     right_.set(right);

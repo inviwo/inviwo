@@ -46,7 +46,7 @@ DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::st
 }
 
 DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::string displayName,
-                                                 DataInport<DataFrame> &port, bool allowNone,
+                                                 DataInport<DataFrame>& port, bool allowNone,
                                                  size_t firstIndex)
     : OptionPropertyInt(identifier, displayName)
     , dataframe_(port.getData())
@@ -62,6 +62,19 @@ DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::st
     });
 }
 
+DataFrameColumnProperty::DataFrameColumnProperty(const DataFrameColumnProperty& rhs)
+    : OptionPropertyInt(rhs)
+    , dataframe_{nullptr}
+    , allowNone_{rhs.allowNone_}
+    , firstIndex_{rhs.firstIndex_} {}
+
+DataFrameColumnProperty& DataFrameColumnProperty::operator=(const DataFrameColumnProperty& that) =
+    default;
+
+DataFrameColumnProperty* DataFrameColumnProperty::clone() const {
+    return new DataFrameColumnProperty(*this);
+}
+
 void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> dataframe) {
     if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
     dataframe_ = dataframe;
@@ -74,7 +87,7 @@ void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> datafr
     }
 
     int idx = 0;
-    for (const auto &col : *dataframe) {
+    for (const auto& col : *dataframe) {
         auto header = col->getHeader();
         auto identifier = header;
         util::erase_remove_if(identifier, [](char cc) {
@@ -109,8 +122,8 @@ std::shared_ptr<const BufferBase> DataFrameColumnProperty::getBuffer() {
     return nullptr;
 }
 
-void DataFrameColumnProperty::set(const Property *srcProperty) {
-    if (auto src = dynamic_cast<const DataFrameColumnProperty *>(srcProperty)) {
+void DataFrameColumnProperty::set(const Property* srcProperty) {
+    if (auto src = dynamic_cast<const DataFrameColumnProperty*>(srcProperty)) {
         if (src->options_.size() == 0) return;
 
         if (options_.size() == 0) return;
