@@ -39,7 +39,8 @@ namespace inviwo {
 namespace {
 
 std::vector<std::string> stackTrace() {
-    if (auto app = InviwoApplication::getPtr()) {
+    if (InviwoApplication::isInitialized()) {
+        auto app = InviwoApplication::getPtr();
         if (auto sys = app->getSettingsByType<SystemSettings>()) {
             if (sys->stackTraceInException_) {
                 auto stack = getStackTrace();
@@ -53,7 +54,8 @@ std::vector<std::string> stackTrace() {
 }
 
 bool breakOnException() {
-    if (auto app = InviwoApplication::getPtr()) {
+    if (InviwoApplication::isInitialized()) {
+        auto app = InviwoApplication::getPtr();
         if (auto sys = app->getSettingsByType<SystemSettings>()) {
             return sys->breakOnException_;
         }

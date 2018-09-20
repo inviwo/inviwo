@@ -5,7 +5,9 @@ Settings are no longer shared between executables. I.e. The Inviwo app and the i
 
 Added System settings for breaking into the debugger on various log message levels, and on throwing exceptions. Also added an option to add stacktraces to exceptions. All to help with debugging. 
 
-The inviwo app will now catch unchought inviwo exceptions in main and present an dialog with information and an option to continue or abort. It will also give an option to save your workspace before closing.
+The inviwo app will now catch uncaught inviwo exceptions in main and present an dialog with information and an option to continue or abort. It will also give an option to save your workspace before closing.
+
+InviwoApplicationQt now has the same order of constructor arguments as InviwoApplication.
 
 ## 2018-08-21
 The property class identifier system no longer uses the `InviwoPropertyInfo` / `PropertyClassIdentifier` macros but rather implements
