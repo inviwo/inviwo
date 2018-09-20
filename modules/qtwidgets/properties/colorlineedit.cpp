@@ -37,7 +37,9 @@
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
 #include <QLocale>
-#include <QSignalBlocker>
+#include <QStyle>
+#include <QEvent>
+#include <QKeyEvent>
 #include <warn/pop>
 
 namespace inviwo {

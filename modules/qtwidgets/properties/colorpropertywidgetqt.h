@@ -39,6 +39,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/metadata/metadata.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -102,7 +103,7 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
     btnColor_->setAutoRaise(true);
     btnColor_->setObjectName("ColorButton");
 
-    connect(btnColor_, &IvwPushButton::clicked, this, &ColorPropertyWidgetQt::openColorDialog);
+    connect(btnColor_, &QToolBar::clicked, this, &ColorPropertyWidgetQt::openColorDialog);
     hLayout->addWidget(label_);
 
     connect(colorLineEdit_, &ColorLineEdit::colorChanged, this,
