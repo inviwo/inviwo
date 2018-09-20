@@ -105,6 +105,11 @@ QToolButton:hover#resetButton {
     image: url(:/icons/reset.png);
 }
 
+QToolButton#ColorButton {
+    border: 1px solid black;
+    border-radius: 2px;
+} 
+
 /************************ 
 QDockWidget
 ************************/
@@ -314,6 +319,12 @@ QPushButton:hover, QToolButton:hover, QCheckBox:indicator:hover {
     border: 1px solid #268bd2;
 }
 
+QLineEdit#ColorLineEdit[input="valid"] {
+    border: 1px solid #1a800d;
+}
+QLineEdit#ColorLineEdit[input="invalid"] {
+    border: 1px solid #801717;
+}
 
 /************************ 
  QPushButton 
