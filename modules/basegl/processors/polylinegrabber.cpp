@@ -47,6 +47,7 @@ namespace inviwo {
 		, pt_("pt", "Point to Add")
 		, clearPolyline_("clearpolyline", "Clear Points")
 		, polyline_(std::make_shared<std::vector<vec3>>())
+		, clip_("clip", "Clip Polyline", 0.0f, 1.0f)
 		, outport_("polylineport")
 	{
 		outport_.setData(polyline_);
@@ -55,21 +56,33 @@ namespace inviwo {
 		clearPolyline_.onChange([this]() { polyline_->clear(); });
 		addProperty(clearPolyline_);
 
+		clip_.onChange([this]() {
+			size_t from = clip_.getStart() * polyline_->size();
+			size_t to = clip_.getEnd() * polyline_->size();
+			std::vector<vec3>::const_iterator first = polyline_->begin() + from;
+			std::vector<vec3>::const_iterator last = polyline_->begin() + to;
+			auto newVec = std::make_shared<std::vector<vec3>>(first, last);
+			outport_.setData(newVec);
+			invalidate(InvalidationLevel::InvalidOutput);
+		});
+		addProperty(clip_);
+
 		//pt_.setVisible(false);
 		pt_.setReadOnly(true);
-		pt_.onChange([this]() { addPoint(pt_); });
+		//pt_.onChange([this]() { addPoint(pt_); });
 		addProperty(pt_);
 
 		//TODO transform and use data points
-
-		/*std::ifstream inputStream("C:/Users/ulm_VISCOMSTUD7/Documents/kircher/2009 - Aortic Artery Mouse/2134.dijkstra");
+		// volume 2143.dat dimensions: 256 x 256 x 255
+		std::ifstream inputStream("C:/Users/ulm_VISCOMSTUD7/Documents/kircher/data/2009 - Aortic Artery Mouse/2134.dijkstra");
 		if (inputStream.is_open()) {
 			vec3 pt;
 			while (inputStream >> pt.x >> pt.y >> pt.z) {
-				addPoint(pt);
+				LogInfo("point=" << pt);
+				addPoint(pt / vec3(256,256,255));
 			}
 		}
-		inputStream.close();*/
+		inputStream.close();
 
 		//TODO smoothen the normal
 
@@ -80,6 +93,7 @@ namespace inviwo {
 
 	void PolylineGrabber::addPoint(const vec3& pt)
 	{
+		//TODO prevent onChange to be called immediately after loading workspace
 		polyline_->push_back(pt);
 		invalidate(InvalidationLevel::InvalidOutput);
 	}

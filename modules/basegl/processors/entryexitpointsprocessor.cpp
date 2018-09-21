@@ -55,9 +55,12 @@ namespace inviwo {
 			vec3(0.0f, 1.0f, 0.0f), &inport_)
 		, capNearClipping_("capNearClipping", "Cap near plane clipping", true)
 		, trackball_(&camera_)
-		, entryShader_("uvPassThrough.vert", "entryPoints.frag")
-		, exitShader_("uvPassThrough.vert", "exitPoints.frag")
+		, entryShader_("uv_pass_through.vert", "cpr_tubular_entry_points.frag")
+		, exitShader_("uv_pass_through.vert", "cpr_tubular_exit_points.frag")
 		, enableVolumeReformation_("reformation", "Volume Reformation", false)
+		, upVector_("upVector", "Up Vector", vec3(0,1,0))
+		, radius_("radius", "Radius", 0.5f)
+		, angleOffset_("angleOffset", "Angle Offset", 0.0f, 0.0f, 2.0f * M_PI)
 		, quad_{ nullptr }
 	{
 		addPort(inport_);
@@ -68,7 +71,12 @@ namespace inviwo {
 		addProperty(capNearClipping_);
 		addProperty(camera_);
 		addProperty(trackball_);
+
 		addProperty(enableVolumeReformation_);
+		addProperty(upVector_);
+		addProperty(radius_);
+		addProperty(angleOffset_);
+
 		entryPort_.addResizeEventListener(&camera_);
 
 		entryExitHelper_.getEntryExitShader().onReload(
@@ -84,9 +92,21 @@ namespace inviwo {
 
 	EntryExitPoints::~EntryExitPoints() {}
 
+	void EntryExitPoints::setupPolylineShader(Shader& shader, bool needRebuild) {
+		if (needRebuild) {
+			shader[ShaderType::Fragment]->removeShaderDefine("NUM_PTS");
+			shader[ShaderType::Fragment]->addShaderDefine("NUM_PTS", std::to_string(polyline_.getData()->size()));
+			shader.build();
+		}
+		shader.activate();
+		shader.setUniform("pts", *(polyline_.getData()));
+		shader.setUniform("accumulated_distance", accumulatedDistance_);
+	}
+
 	void EntryExitPoints::process() {
 		if (enableVolumeReformation_.get() && polyline_.hasData() && polyline_.getData()) {
 			if (polyline_.getData()->size() >= 2) {
+
 				const auto n0 = accumulatedDistance_.size();
 				calcAccumulatedDistance();
 				const auto n1 = accumulatedDistance_.size();
@@ -94,26 +114,17 @@ namespace inviwo {
 
 				// generate entry points
 				utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
-				if (rebuild) {
-					entryShader_[ShaderType::Fragment]->removeShaderDefine("NUM_PTS");
-					entryShader_[ShaderType::Fragment]->addShaderDefine("NUM_PTS", std::to_string(polyline_.getData()->size()));
-					entryShader_.build();
-				}
-				entryShader_.activate();
+				setupPolylineShader(entryShader_, rebuild);
 				const auto quadGL_ = quad_->getRepresentation<BufferGL>();
 				quadGL_->enable();
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 				// generate exit points
 				utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
-				if (rebuild) {
-					exitShader_[ShaderType::Fragment]->removeShaderDefine("NUM_PTS");
-					exitShader_[ShaderType::Fragment]->addShaderDefine("NUM_PTS", std::to_string(polyline_.getData()->size()));
-					exitShader_.build();
-				}
-				exitShader_.activate();
-				exitShader_.setUniform("pts", *(polyline_.getData()));
-				exitShader_.setUniform("accumulated_distance", accumulatedDistance_);
+				setupPolylineShader(exitShader_, rebuild);
+				exitShader_.setUniform("up_vector", upVector_.get());
+				exitShader_.setUniform("radius", radius_.get());
+				exitShader_.setUniform("angle_offset", angleOffset_.get());
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 				quadGL_->disable();
 			}

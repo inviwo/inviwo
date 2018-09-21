@@ -29,18 +29,28 @@
 
 const float TWO_PI = 6.28318530718;
 
+// NUM_PTS should be set from host code
+// whenever it changes the shader must be rebuilt
 #ifndef NUM_PTS
 #define NUM_PTS 2
 #endif
 
 uniform vec3 pts[ NUM_PTS ];
 uniform float accumulated_distance[ NUM_PTS ];
+uniform vec3 up_vector;
+uniform float radius;
+uniform float angle_offset;
 
 smooth in vec2 uv;
 
+/**
+ * Return interpolated point in polyline pts.
+ * Rely on precomputed accumulated distances.
+ * @param t between 0 and 1 
+ * @param normal
+ * @param direction */
 vec3 interpolate_linear(float t, out vec3 normal, out vec3 direction)
 {
-    bool rotate_normal_left = true;
     vec3 pt = vec3(0.0);
 
     if (t <= 0.0)
@@ -66,12 +76,20 @@ vec3 interpolate_linear(float t, out vec3 normal, out vec3 direction)
                 vec3 p1 = pts[idx - 1];
                 vec3 p2 = pts[idx];
 				direction = normalize(p2 - p1);
-				normal = normalize(vec3(direction.y, -direction.x, 0.0)); // ToDo: calc. actual normal
 
                 float d1 = accumulated_distance[idx - 1];
                 float d2 = accumulated_distance[idx];
 
                 float t_normalized = (t - d1) / (d2 - d1);
+				
+				// smoothing direction
+				vec3 p3 = idx < NUM_PTS-1 ? pts[idx+1] : p2;
+				vec3 next_direction = normalize(p3-p2);
+				direction = mix(direction, next_direction, t_normalized);
+
+				normal = normalize(cross(up_vector, direction));
+				//normal = normalize(vec3(direction.y, -direction.x, direction.z)); // ToDo: calc. actual normal
+
                 pt = mix(p1, p2, t_normalized);
 
                 break;
@@ -88,14 +106,17 @@ void main() {
     vec3 entry_pt = interpolate_linear(uv.x, normal, direction);
 	
 	float angle = uv.y * TWO_PI;
-	//vec3 normal = vec3(0, 1, 0);
-	//vec3 binormal = vec3(0, 0, 1);
 	vec3 binormal = cross(normal, direction);
-	float radius = 0.5;
-	vec3 exit_pt = entry_pt + (normal * sin(angle) + binormal * cos(angle)) * radius;
+	vec3 exit_pt = entry_pt + (normal * sin(angle + angle_offset) + binormal * cos(angle + angle_offset)) * radius;
     FragData0 = vec4(exit_pt, 0);
-
-    /*vec3 start = vec3(0, 0.5, 0.5);
-    vec3 end = vec3(1, 0.5, 0.5);
-    FragData0 = vec4(mix(start, end, uv.x), 0);*/
+	
+	// uncomment for hardcoded 2-point-polyline with radius 0.5
+	/*vec3 start = vec3(0, 0.5, 0.5);
+	vec3 end = vec3(1, 0.5, 0.5);
+	vec3 pos = mix(start, end, uv.x);
+	float angle = uv.y * TWO_PI;
+	vec3 normal = vec3(0, 1, 0);
+	vec3 binormal = vec3(0, 0, 1);
+	float radius = 0.5;
+    FragData0 = vec4(pos + (normal * sin(angle) + binormal * cos(angle)) * radius, 0);*/
 }

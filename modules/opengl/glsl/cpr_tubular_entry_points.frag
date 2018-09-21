@@ -29,6 +29,8 @@
 
 const float TWO_PI = 6.28318530718;
 
+// NUM_PTS should be set from host code
+// whenever it changes the shader must be rebuilt
 #ifndef NUM_PTS
 #define NUM_PTS 2
 #endif
@@ -38,24 +40,21 @@ uniform float accumulated_distance[ NUM_PTS ];
 
 smooth in vec2 uv;
 
-vec3 interpolate_linear(float t, out vec3 normal, out vec3 direction)
+/**
+ * Return interpolated point in polyline pts.
+ * Rely on precomputed accumulated distances.
+ * @param t between 0 and 1 */
+vec3 interpolate_linear(float t)
 {
-    bool rotate_normal_left = true;
     vec3 pt = vec3(0.0);
 
     if (t <= 0.0)
     {
         pt = pts[0];
-
-		direction = normalize(pts[1] - pts[0]);
-		normal = normalize(vec3(direction.y, -direction.x, direction.z));
     }
     else if (t >= 1.0)
     {
         pt = pts[NUM_PTS - 1];
-
-		direction = normalize(pts[NUM_PTS - 2] - pts[NUM_PTS - 1]);
-		normal = normalize(vec3(direction.y, -direction.x, direction.z));
     }
     else
     {
@@ -65,13 +64,12 @@ vec3 interpolate_linear(float t, out vec3 normal, out vec3 direction)
             {
                 vec3 p1 = pts[idx - 1];
                 vec3 p2 = pts[idx];
-				direction = normalize(p2 - p1);
-				normal = normalize(vec3(direction.y, -direction.x, 0.0)); // ToDo: calc. actual normal
 
                 float d1 = accumulated_distance[idx - 1];
                 float d2 = accumulated_distance[idx];
 
                 float t_normalized = (t - d1) / (d2 - d1);
+
                 pt = mix(p1, p2, t_normalized);
 
                 break;
@@ -83,11 +81,10 @@ vec3 interpolate_linear(float t, out vec3 normal, out vec3 direction)
 }
 
 void main() {
-	vec3 normal;
-	vec3 direction;
-    vec3 entry_pt = interpolate_linear(uv.x, normal, direction);
+    vec3 entry_pt = interpolate_linear(uv.x);
     FragData0 = vec4(entry_pt, 1.0);
 
+	// uncomment for hardcoded 2-point-polyline
     /*vec3 start = vec3(0, 0.5, 0.5);
     vec3 end = vec3(1, 0.5, 0.5);
     FragData0 = vec4(mix(start, end, uv.x), 0);*/

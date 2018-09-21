@@ -92,8 +92,12 @@ namespace inviwo {
 		Shader exitShader_;
 
 		BoolProperty enableVolumeReformation_;
+		FloatVec3Property upVector_;
+		FloatProperty radius_;
+		FloatProperty angleOffset_;
 		std::vector<float> accumulatedDistance_;
 		void calcAccumulatedDistance();
+		void setupPolylineShader(Shader& shader, bool needRebuild);
 
 		std::shared_ptr<Buffer<vec2>> quad_;
 	};

@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/polylineport.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <vector>
 #include <memory>
 
@@ -61,6 +62,8 @@ namespace inviwo {
 		ButtonProperty clearPolyline_;
 
 		std::shared_ptr<std::vector<vec3>> polyline_;
+
+		FloatMinMaxProperty clip_;
 
 		PolylineOutport outport_;
 	};
