@@ -304,7 +304,7 @@ QLineEdit, QAbstractSpinBox, QComboBox {
       should be invisible. DO NOT adjust the border width as the widgets will then 
       jump on hover!
       */
-    border: 1px none transparent;
+    border: 1px solid transparent;
 }
 QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
     color: #777;
