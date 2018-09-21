@@ -57,7 +57,9 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                       "Break on Message",
                       {MessageBreakLevel::Off, MessageBreakLevel::Error, MessageBreakLevel::Warn,
                        MessageBreakLevel::Info},
-                      0} {
+                      0}
+    , breakOnException_{"breakOnException", "Break on Exception", false}
+    , stackTraceInException_{"stackTraceInException", "Create Stack Trace for Exceptions", false} {
 
     addProperty(applicationUsageMode_);
     addProperty(poolSize_);
@@ -71,6 +73,8 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     addProperty(runtimeModuleReloading_);
     addProperty(enableResourceManager_);
     addProperty(breakOnMessage_);
+    addProperty(breakOnException_);
+    addProperty(stackTraceInException_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });

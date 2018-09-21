@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     auto logger = std::make_shared<inviwo::ConsoleLogger>();
     LogCentral::getPtr()->registerLogger(logger);
 
-    InviwoApplication inviwoApp(argc, argv, "Inviwo v" + IVW_VERSION + " - GLFWApp");
+    InviwoApplication inviwoApp(argc, argv, "Inviwo-GLFW");
     inviwoApp.printApplicationInfo();
     inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
     inviwoApp.setProgressCallback([](std::string m) {

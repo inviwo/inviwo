@@ -58,6 +58,8 @@ public:
     BoolProperty runtimeModuleReloading_;
     BoolProperty enableResourceManager_;
     TemplateOptionProperty<MessageBreakLevel> breakOnMessage_;
+    BoolProperty breakOnException_;
+    BoolProperty stackTraceInException_;
 
     static size_t defaultPoolSize();
 };
