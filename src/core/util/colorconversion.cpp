@@ -58,13 +58,13 @@ vec4 hex2rgba(std::string str) {
         }();
 
         const unsigned long v = [numStr]() {
-            try {
-                return std::stoul("0x" + numStr, nullptr, 16);
-            } catch (...) {
-                // string was not properly formatted
+            unsigned long v = 0;
+            std::istringstream stream("0x" + numStr);
+            if (!(stream >> std::hex >> v)) {
                 throw Exception("Invalid hex code \"#" + numStr + "\".",
                                 IvwContextCustom("color::hex2rgba"));
             }
+            return v;
         }();
         auto *c = reinterpret_cast<const unsigned char *>(&v);
         switch (numStr.size()) {
