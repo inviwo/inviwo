@@ -43,7 +43,10 @@ class QRegularExpressionValidator;
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API ColorLineEdit : public QLineEdit {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     enum class ColorRepresentation { Integer, FloatingPoint, Hexadecimal };
 
