@@ -66,6 +66,9 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
     addItemButton_->setObjectName("addListItemButton");
     addItemButton_->setToolTip("Add list element");
 
+    setFocusPolicy(addItemButton_->focusPolicy());
+    setFocusProxy(addItemButton_);
+
     connect(addItemButton_, &QToolButton::clicked, this, [&]() {
         if (listProperty_ && listProperty_->getPrefabCount() > 0) {
             if (listProperty_->getPrefabCount() == 1) {

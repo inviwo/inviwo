@@ -47,6 +47,9 @@ IsoTFPropertyWidgetQt::IsoTFPropertyWidgetQt(IsoTFProperty* property)
     , label_{new EditableLabelQt(this, property_)}
     , btnOpenTF_{new TFPushButton(property, this)} {
 
+    setFocusPolicy(btnOpenTF_->focusPolicy());
+    setFocusProxy(btnOpenTF_);
+
     QHBoxLayout* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 

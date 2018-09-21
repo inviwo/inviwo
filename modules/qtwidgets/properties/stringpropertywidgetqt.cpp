@@ -48,6 +48,9 @@ namespace inviwo {
 StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
     : PropertyWidgetQt(property), property_(property), lineEdit_{new LineEditQt()} {
 
+    setFocusPolicy(lineEdit_->focusPolicy());
+    setFocusProxy(lineEdit_);
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);

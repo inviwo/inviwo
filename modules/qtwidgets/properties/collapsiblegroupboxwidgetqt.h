@@ -128,6 +128,8 @@ protected:
     void insertProperty(Property* prop, size_t index);
     void insertPropertyWidget(PropertyWidgetQt* propertyWidget, bool insertAtEnd);
 
+    virtual void updateFocusPolicy();
+
     std::string displayName_;
     bool checked_;
     EditableLabelQt* label_;

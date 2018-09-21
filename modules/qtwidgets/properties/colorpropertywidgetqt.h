@@ -91,6 +91,9 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
     , currentColor_{}
     , label_{new EditableLabelQt(this, property)} {
 
+    setFocusPolicy(colorLineEdit_->focusPolicy());
+    setFocusProxy(colorLineEdit_);
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(PropertyWidgetQt::spacing);
@@ -98,12 +101,14 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
 
     QSizePolicy spBtn = sizePolicy();
     spBtn.setHorizontalPolicy(QSizePolicy::Fixed);
+    spBtn.setVerticalPolicy(QSizePolicy::Fixed);
     spBtn.setHorizontalStretch(0);
     btnColor_->setSizePolicy(spBtn);
     btnColor_->setAutoRaise(true);
     btnColor_->setObjectName("ColorButton");
+    btnColor_->setFocusPolicy(Qt::ClickFocus);
 
-    connect(btnColor_, &QToolBar::clicked, this, &ColorPropertyWidgetQt::openColorDialog);
+    connect(btnColor_, &QToolButton::clicked, this, &ColorPropertyWidgetQt::openColorDialog);
     hLayout->addWidget(label_);
 
     connect(colorLineEdit_, &ColorLineEdit::colorChanged, this,
@@ -248,8 +253,8 @@ void ColorPropertyWidgetQt<T>::updateFromProperty() {
     currentColor_ = detail::ColorConverter<T>::toQColor(ordinalProperty_->get());
     updateButton();
 
-    auto rep =
-        static_cast<ColorLineEdit::ColorRepresentation>(ordinalProperty_->getMetaData<IntMetaData>(
+    auto rep = static_cast<ColorLineEdit::ColorRepresentation>(
+        ordinalProperty_->template getMetaData<IntMetaData>(
             "representation", static_cast<int>(util::DefaultColorRepresentation<T>::value)));
 
     colorLineEdit_->setColor(ordinalProperty_->get(), rep);
@@ -272,8 +277,8 @@ std::unique_ptr<QMenu> ColorPropertyWidgetQt<T>::getContextMenu() {
 
     auto representationMenu = menu->addMenu("&Representation");
 
-    auto rep =
-        static_cast<ColorLineEdit::ColorRepresentation>(ordinalProperty_->getMetaData<IntMetaData>(
+    auto rep = static_cast<ColorLineEdit::ColorRepresentation>(
+        ordinalProperty_->template getMetaData<IntMetaData>(
             "representation", static_cast<int>(util::DefaultColorRepresentation<T>::value)));
 
     auto actionGroup = new QActionGroup(menu.get());
@@ -283,8 +288,8 @@ std::unique_ptr<QMenu> ColorPropertyWidgetQt<T>::getContextMenu() {
         action->setCheckable(true);
         action->setChecked(colorRep == rep);
         connect(action, &QAction::triggered, this, [this, colorRep]() {
-            ordinalProperty_->setMetaData<IntMetaData>("representation",
-                                                       static_cast<int>(colorRep));
+            ordinalProperty_->template setMetaData<IntMetaData>("representation",
+                                                                static_cast<int>(colorRep));
             colorLineEdit_->setRepresentation(colorRep);
         });
         actionGroup->addAction(action);
@@ -315,6 +320,8 @@ void ColorPropertyWidgetQt<T>::updateButton() {
                                      "    border: 1px solid transparent;"
                                      "    background-color: %1;"
                                      "    border-radius: 3px;"
+                                     "    width: 4ex;"
+                                     "    height: 4ex;"
                                      "}"
                                      "QToolButton:hover {"
                                      "    border: 1px solid #268bd2;"
