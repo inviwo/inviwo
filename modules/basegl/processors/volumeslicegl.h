@@ -49,6 +49,9 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/inviwoopengl.h>
 
+#include <memory>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+
 namespace inviwo {
 
 	class Mesh;

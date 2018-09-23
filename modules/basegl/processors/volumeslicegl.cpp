@@ -128,8 +128,8 @@ namespace inviwo {
 			[this](Event* e) { eventAddPolylinePoint(e); },
 			MouseButton::Left)
 		, enablePolylinePicking_("polylinePicking", "Enable Polyline Picking", false)
-		, lastPolylinePoint_("lastPolylinePoint", "Last Polyline Point", vec3(0))
-		, polylineVertexBuf_(util::makeBuffer<vec2>(std::vector<vec2>({})))
+		, lastPolylinePoint_("lastPolylinePoint", "Last Polyline Point", vec3{0.0f})
+        , polylineVertexBuf_(util::makeBuffer<vec2>({}))
 		, meshDirty_(true)
 		, updating_(false)
 		, sliceRotation_(1.0f)
