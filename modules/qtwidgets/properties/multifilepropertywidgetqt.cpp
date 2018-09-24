@@ -61,6 +61,9 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     , lineEdit_{new FilePathLineEditQt(this)}
     , label_{new EditableLabelQt(this, property_)} {
 
+    setFocusPolicy(lineEdit_->focusPolicy());
+    setFocusProxy(lineEdit_);
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);

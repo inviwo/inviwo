@@ -309,6 +309,7 @@ void TFPropertyDialog::initializeDialog() {
     {
         colorDialog_ = util::make_unique<QColorDialog>(this);
         colorDialog_->hide();
+        colorDialog_->setAttribute(Qt::WA_DeleteOnClose, false);
         // we don't want to see alpha in the color dialog
         colorDialog_->setOption(QColorDialog::ShowAlphaChannel, false);
         colorDialog_->setOption(QColorDialog::NoButtons, true);

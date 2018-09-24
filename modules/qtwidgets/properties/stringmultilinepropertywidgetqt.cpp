@@ -49,6 +49,8 @@ StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty 
     hLayout->addWidget(label_);
 
     textEdit_ = new MultilineTextEdit;
+    setFocusPolicy(textEdit_->focusPolicy());
+    setFocusProxy(textEdit_);
 
     QSizePolicy sp = textEdit_->sizePolicy();
     sp.setHorizontalStretch(3);

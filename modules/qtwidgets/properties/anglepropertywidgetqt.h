@@ -83,6 +83,9 @@ AnglePropertyWidgetQt<T>::AnglePropertyWidgetQt(OrdinalProperty<T>* property)
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(displayName_);
 
+    setFocusPolicy(angleWidget_->focusPolicy());
+    setFocusProxy(angleWidget_);
+
     // Do not allow the user to change the radius
     angleWidget_->setMinRadius(1.);
     connect(angleWidget_, &AngleRadiusWidget::angleChanged, this,

@@ -47,6 +47,9 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     , radiusSpinBox_{new CustomDoubleSpinBoxQt(this)}
     , label_{new EditableLabelQt(this, property_)} {
 
+    setFocusPolicy(radiusSpinBox_->focusPolicy());
+    setFocusProxy(radiusSpinBox_);
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);

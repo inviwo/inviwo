@@ -38,6 +38,9 @@
 namespace inviwo {
 
 BaseOrdinalSpinBoxWidget::BaseOrdinalSpinBoxWidget() : editor_{new DoubleValueDragSpinBox(this)} {
+        
+    setFocusPolicy(editor_->focusPolicy());
+    setFocusProxy(editor_);
 
     QHBoxLayout* hLayout = new QHBoxLayout();
 

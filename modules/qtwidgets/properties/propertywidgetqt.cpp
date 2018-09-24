@@ -248,18 +248,16 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
     return menu;
 }
-    
+
 std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     auto mimeData = util::make_unique<QMimeData>();
     if (!property_) return mimeData;
-    
+
     Serializer serializer("");
     {
         // Need to set the serialization mode to all temporarily to be able to copy the
         // property.
-        auto toReset =
-        PropertyPresetManager::scopedSerializationModeAll(
-                                                          property_);
+        auto toReset = PropertyPresetManager::scopedSerializationModeAll(property_);
         std::vector<Property*> properties = {property_};
         serializer.serialize("Properties", properties, "Property");
     }
@@ -267,7 +265,7 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     serializer.writeFile(ss);
     auto str = ss.str();
     QByteArray dataArray(str.c_str(), static_cast<int>(str.length()));
-    
+
     mimeData->setData(QString("application/x.vnd.inviwo.property+xml"), dataArray);
     mimeData->setData(QString("text/plain"), dataArray);
     return mimeData;
@@ -301,30 +299,30 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
         }
     }
 }
-    
-void PropertyWidgetQt::mousePressEvent(QMouseEvent *event) {
+
+void PropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         mousePressedPosition_ = event->pos();
     }
     QWidget::mousePressEvent(event);
 }
 
-void PropertyWidgetQt::mouseMoveEvent(QMouseEvent *event) {
+void PropertyWidgetQt::mouseMoveEvent(QMouseEvent* event) {
 
     if (!(event->buttons() & Qt::LeftButton)) return;
-    
-    if ((event->pos() - mousePressedPosition_).manhattanLength()
-        < QApplication::startDragDistance())
+
+    if ((event->pos() - mousePressedPosition_).manhattanLength() <
+        QApplication::startDragDistance())
         return;
-    
+
     if (!property_) return;
-    
-    QDrag *drag = new QDrag(this);
+
+    QDrag* drag = new QDrag(this);
     auto mimeData = getPropertyMimeData();
     // Displayed while dragging property
     mimeData->setText(utilqt::toLocalQString(property_->getDisplayName()));
     drag->setMimeData(mimeData.release());
-    
+
     drag->exec();
 }
 

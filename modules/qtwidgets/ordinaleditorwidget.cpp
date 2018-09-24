@@ -42,6 +42,9 @@ BaseOrdinalEditorWidget::BaseOrdinalEditorWidget() : editor_{ new IvwLineEdit(th
 
     QHBoxLayout* hLayout = new QHBoxLayout();
 
+    setFocusPolicy(editor_->focusPolicy());
+    setFocusProxy(editor_);
+
     QSizePolicy sp = editor_->sizePolicy();
     sp.setHorizontalPolicy(QSizePolicy::Minimum);
     editor_->setSizePolicy(sp);
