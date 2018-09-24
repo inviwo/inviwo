@@ -67,7 +67,7 @@ namespace inviwo {
 		, polyline_("polyline")
 		, outport_("outport", DataFormat<glm::u8vec4>::get(), false)
 		, shader_("standard.vert", "volumeslice.frag", false)
-		, uiShader_("standard.vert", "img_color.frag", true)
+		, uiShader_("standard.vert", "standard.frag", true)
 		, trafoGroup_("trafoGroup", "Transformations")
 		, pickGroup_("pickGroup", "Position Selection")
 		, tfGroup_("tfGroup", "Transfer Function Properties")
@@ -531,8 +531,10 @@ void VolumeSliceGL::renderPositionIndicator() {
 			meshCurve_->setModelMatrix(mat4(1.0f));
 
 			//TODO color points whether they are on slice or above or below
-			//auto colorBuf = util::makeBuffer<vec4>(std::vector<vec4>(12, color));
-			//meshCrossHair_->addBuffer(BufferType::ColorAttrib, colorBuf);
+			auto colorBuf = util::makeBuffer<vec4>(
+				std::vector<vec4>(polyline_.getData()->size(), 
+				indicatorColor_.get()));
+			meshCurve_->addBuffer(BufferType::ColorAttrib, colorBuf);
 
 			meshCurve_->addBuffer(BufferType::PositionAttrib, polylineVertexBuf_);
 			meshCurve_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Strip), indexBuf);
@@ -544,7 +546,6 @@ void VolumeSliceGL::renderPositionIndicator() {
 			utilgl::LineWidthState linewidth(2.5f); // Only width 1 is guaranteed to be supported
 
 			uiShader_.activate();
-			uiShader_.setUniform("color", indicatorColor_.get());
 			uiShader_.setUniform("dataToClip", glm::mat4(1));
 
 			utilgl::DepthFuncState depth(GL_ALWAYS);
@@ -594,6 +595,8 @@ void VolumeSliceGL::renderPositionIndicator() {
 
 		// clear up existing attribute buffers
 		// meshCrossHair_->deinitialize();
+		auto colorBuf = util::makeBuffer<vec4>(std::vector<vec4>(12, color));
+		meshCrossHair_->addBuffer(BufferType::ColorAttrib, colorBuf);
 		meshCrossHair_->addBuffer(BufferType::PositionAttrib, posBuf);
 		meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indexBuf1);
 
