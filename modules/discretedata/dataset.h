@@ -35,6 +35,7 @@
 
 #include "channels/bufferchannel.h"
 #include "connectivity/connectivity.h"
+#include "connectivity/structuredgrid.h"
 
 namespace inviwo {
 namespace discretedata {
@@ -67,7 +68,10 @@ class IVW_MODULE_DISCRETEDATA_API DataSet {
 
     // Construction / Deconstruction
 public:
-    DataSet() = default;
+    DataSet(const std::shared_ptr<const Connectivity> grid) : Grid(grid) {}
+
+    /** Constructor. Takes generates a StructuredGrid. **/
+    DataSet(GridPrimitive size, std::vector<ind>& numCellsPerDim) : Grid(std::make_shared<StructuredGrid>(size, numCellsPerDim)) {}
     virtual ~DataSet() = default;
 
     /** Default copy shares Channels and Connectivity */
@@ -160,7 +164,7 @@ public:
     /** Connectivity of grid
     *   Several grid types are possible (rectlinear, structured, unstructured)
     */
-    std::shared_ptr<Connectivity> Grid;
+    const std::shared_ptr<const Connectivity> Grid;
 };
 
 }  // namespace discretedata

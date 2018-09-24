@@ -46,9 +46,6 @@ namespace inviwo {
 namespace discretedata {
 
 TEST(Using, Dataset) {
-    // An empty dataset to hold the grid and data on that grid.
-    DataSet dataset;
-
     // Create a curvelinear grid.
     std::shared_ptr<PeriodicGrid> grid = std::make_shared<PeriodicGrid>(
         GridPrimitive::Volume, std::vector<ind>({10, 1, 1}), std::vector<bool>({true, false, false}));
@@ -56,7 +53,8 @@ TEST(Using, Dataset) {
     // Make the x dimension periodic (redundant), that is, the outer yz-planes overlap.
     grid->setPeriodic(0, true);
 
-    dataset.Grid = grid;
+    // An empty dataset to hold the grid and data on that grid.
+    DataSet dataset(grid);
 
     /*********************************************************************************
      * Create some "data" in a buffer.

@@ -36,6 +36,7 @@
 #include "discretedata/dataset.h"
 #include "discretedata/channels/bufferchannel.h"
 #include "discretedata/channels/analyticchannel.h"
+#include "discretedata/connectivity/structuredgrid.h"
 
 namespace inviwo {
 namespace discretedata {
@@ -49,7 +50,7 @@ TEST(DataSet, ChannelInsertRemoveEdit) {
     // - Create several channels
     // - Add and remove them
     // - Rename them
-    DataSet set;
+    DataSet set(GridPrimitive::Vertex, std::vector<ind>(1, 100));
 
     auto monomeVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
         [](Vec3f& a, ind idx) {
