@@ -72,7 +72,7 @@ TEST(Using, Dataset) {
                                                                 GridPrimitive::Vertex);
 
     // Add to the dataset. There, it is kept as a const shared_ptr.
-    dataset.Channels.addChannel(randomBuffer);
+    dataset.addChannel(randomBuffer);
 
     /*********************************************************************************
     * Other variant of a channel: analytic data.
@@ -89,22 +89,22 @@ TEST(Using, Dataset) {
             "SinCos",
             GridPrimitive::Volume
         );
-    dataset.Channels.addChannel(sinChannel);
+    dataset.addChannel(sinChannel);
 
     /*********************************************************************************
     * Access data from the DataSet: by name and dimension.
     *********************************************************************************/
     // Get the data as a DataChannel: BufferChannel and AnalyticChannel behave the same.
-    auto cellChannel = dataset.Channels.getChannel<float, 2>("SinCos", GridPrimitive::Volume);
+    auto cellChannel = dataset.getChannel<float, 2>("SinCos", GridPrimitive::Volume);
     EXPECT_TRUE(cellChannel && "Could not retrieve AnalyticChannel from DataSet.");
 
-    auto vertexChannel = dataset.Channels.getChannel<int, 3>("Random", GridPrimitive::Vertex);
+    auto vertexChannel = dataset.getChannel<int, 3>("Random", GridPrimitive::Vertex);
     EXPECT_TRUE(vertexChannel && "Could not retrieve random BufferChannel from DataSet.");
 
     // Get the data as a Buffer of 3 int, explicitely.
     // Creates a BufferChannel from implicit data, such as Analytic Channel.
     // Returns nullptr if no channel is found, or none with <int, 3>.
-    auto vertexBuffer  = dataset.Channels.getAsBuffer<int, 3>("Random", GridPrimitive::Vertex);
+    auto vertexBuffer  = dataset.getAsBuffer<int, 3>("Random", GridPrimitive::Vertex);
     EXPECT_TRUE(vertexBuffer && "Could not retrieve random BufferChannel from DataSet as Buffer.");
 
     /*********************************************************************************
@@ -162,7 +162,7 @@ TEST(Using, Dataset) {
     auto vertices = std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(
                                posFunc, grid->getNumElements(GridPrimitive::Vertex),
                                "Position", GridPrimitive::Vertex);
-    dataset.Channels.addChannel(vertices);
+    dataset.addChannel(vertices);
 
     /*********************************************************************************
     * Random algorithm: divide by volume.
@@ -211,7 +211,7 @@ TEST(Using, Dataset) {
     // Ad to DataSet for fun.
     auto avgBuffer = std::make_shared<BufferChannel<float, 3>>(filteredRandom, "FilteredRandom",
                                                                GridPrimitive::Vertex);
-    dataset.Channels.addChannel(avgBuffer);
+    dataset.addChannel(avgBuffer);
 }
 
 }  // namespace

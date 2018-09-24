@@ -31,21 +31,21 @@ namespace inviwo {
 namespace discretedata {
 
 template <typename T, ind N>
-std::shared_ptr<const DataChannel<T, N>> DataChannelMap::getFirstChannel() const {
+std::shared_ptr<const DataChannel<T, N>> DataSet::getFirstChannel() const {
     SharedConstChannel channel = getFirstChannel();
 
     return std::dynamic_pointer_cast<const DataChannel<T, N>, const Channel>(channel);
 }
 
 template <typename T, ind N>
-std::shared_ptr<const DataChannel<T, N>> DataChannelMap::getChannel(const std::string& name,
+std::shared_ptr<const DataChannel<T, N>> DataSet::getChannel(const std::string& name,
                                                                  GridPrimitive definedOn) const {
     std::shared_ptr<const Channel> channel = getChannel(name.c_str(), definedOn);;
     return std::dynamic_pointer_cast<const DataChannel<T, N>, const Channel>(channel);
 }
 
 template <typename T, ind N>
-std::shared_ptr<const BufferChannel<T, N>> DataChannelMap::getAsBuffer(const std::string& name,
+std::shared_ptr<const BufferChannel<T, N>> DataSet::getAsBuffer(const std::string& name,
                                                                     GridPrimitive definedOn) const {
     SharedConstChannel channel = getChannel(name, definedOn);
 

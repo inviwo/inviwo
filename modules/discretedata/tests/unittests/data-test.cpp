@@ -89,12 +89,12 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     copyBuffer->setName("MonomialBufferCopy");
 
     // Add to DataSet
-    dataset.Channels.addChannel(testBuffer);
-    dataset.Channels.addChannel(testAnalytic);
-    dataset.Channels.addChannel(copyBuffer);
+    dataset.addChannel(testBuffer);
+    dataset.addChannel(testAnalytic);
+    dataset.addChannel(copyBuffer);
 
     //  Test access
-    auto setBuffer = dataset.Channels.getChannel("MonomialBufferCopy");
+    auto setBuffer = dataset.getChannel("MonomialBufferCopy");
 
     EXPECT_EQ(setBuffer->getMetaData<IntMetaData>("YearCreated")->get(), 2017);
 
@@ -135,7 +135,7 @@ TEST(CreatingCopyingIndexing, DataChannels) {
         c++;
     }
 
-    auto datasetChannel = dataset.Channels.getChannel<float, 3>("MonomialAnalytical", GridPrimitive::Vertex);
+    auto datasetChannel = dataset.getChannel<float, 3>("MonomialAnalytical", GridPrimitive::Vertex);
     c = 0;
 
     // Test indexing and explicit iterator use.

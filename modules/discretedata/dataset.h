@@ -53,87 +53,7 @@ typedef std::map<
     std::pair<std::string, GridPrimitive>,  // Hashing by both name and GridPrimitive type
     SharedConstChannel,  // Shared channels, type information only as meta property
     ChannelCompare>  // Lesser operator on string-Primitve pairs
-    BaseChannelMap;
-
-class IVW_MODULE_DISCRETEDATA_API DataChannelMap {
-public:
-    DataChannelMap() = default;
-    virtual ~DataChannelMap() = default;
-
-    /** Default copy shares Channels */
-    DataChannelMap(const DataChannelMap& copy) = default;
-
-    // Methods
-public:
-    /** Add a new channel to the set
-    *   @param channel Pointer to data, takes memory ownership
-    *   @return Shared pointer for further handling
-    */
-    SharedChannel addChannel(Channel* channel);
-
-    /** Add a new channel to the set
-    *   @param channel Shared pointer to data, remains valid
-    */
-    void addChannel(SharedConstChannel channel);
-
-    /** Returns the first channel from an unordered list.
-    */
-    SharedConstChannel getFirstChannel() const;
-
-    /** Returns the first channel from an unordered list.
-    */
-    template <typename T, ind N>
-    std::shared_ptr<const DataChannel<T, N>> getFirstChannel() const;
-
-    /** Returns the specified channel, returns first instance found
-    *   @param name Unique name of requested channel
-    *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
-    */
-    SharedConstChannel getChannel(const std::string& name,
-                                  GridPrimitive definedOn = GridPrimitive::Vertex) const;
-
-    /** Returns the specified channel if it is in the desired format, returns first instance found
-    *   @param key Unique name and GridPrimitive type the channel is defined on
-    */
-    SharedConstChannel getChannel(
-        std::pair<std::string, GridPrimitive>& key) const;
-
-    /** Returns the specified channel if it is in the desired format, returns first instance found
-    *   @param name Unique name of requested channel
-    *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
-    */
-    template <typename T, ind N>
-    std::shared_ptr<const DataChannel<T, N>> getChannel(
-        const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex) const;
-
-    /** Returns the specified buffer, converts to buffer or copies
-    *   @param name Unique name of requested buffer
-    *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
-    */
-    template <typename T, ind N>
-    std::shared_ptr<const BufferChannel<T, N>> getAsBuffer(
-        const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex) const;
-
-    /** Remove channel from set by shared pointer, data remains valid if shared outside
-    *   Swaps position in vector
-    *   @param channel Shared pointer to data
-    *   @return Successfull - channel was saved in the set indeed
-    */
-    bool removeChannel(SharedConstChannel channel);
-
-    /** Number of channels currently held
-    */
-    ind getNumChannels() const { return ChannelSet.size(); }
-
-    std::vector<std::pair<std::string, GridPrimitive>> getChannelNames() const;
-
-    // Attributes
-protected:
-    /** Set of data channels
-    *   Indexed by name and defining dimension (0D vertices, 1D edges etc).
-    */
-    BaseChannelMap ChannelSet;
-};
+    DataChannelMap;
 
 /** \class DataSet
     \brief Data package containing structure by cell connectivity and data
@@ -155,17 +75,80 @@ public:
 
     // Methods
 public:
-    /// Returns a const typed shared pointer to the grid, if casting is possible.
+    /** Returns a const typed shared pointer to the grid, if casting is possible. **/
     template <typename G>
     const std::shared_ptr<const G> getGrid() const {
         return std::dynamic_pointer_cast<const G, const Connectivity>(Grid);
     }
 
-    /// Returns a typed shared pointer to the grid, if casting is possible.
+    /** Returns a typed shared pointer to the grid, if casting is possible. **/
     template <typename G>
     std::shared_ptr<G> getGrid() {
         return Grid;
     }
+
+    // Channels
+
+    /** Add a new channel to the set
+     *   @param channel Pointer to data, takes memory ownership
+     *   @return Shared pointer for further handling
+     */
+    SharedChannel addChannel(Channel* channel);
+
+    /** Add a new channel to the set
+     *   @param channel Shared pointer to data, remains valid
+     */
+    void addChannel(SharedConstChannel channel);
+
+    /** Returns the first channel from an unordered list.
+     */
+    SharedConstChannel getFirstChannel() const;
+
+    /** Returns the first channel from an unordered list.
+     */
+    template <typename T, ind N>
+    std::shared_ptr<const DataChannel<T, N>> getFirstChannel() const;
+
+    /** Returns the specified channel, returns first instance found
+     *   @param name Unique name of requested channel
+     *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
+     */
+    SharedConstChannel getChannel(const std::string& name,
+                                  GridPrimitive definedOn = GridPrimitive::Vertex) const;
+
+    /** Returns the specified channel if it is in the desired format, returns first instance found
+     *   @param key Unique name and GridPrimitive type the channel is defined on
+     */
+    SharedConstChannel getChannel(std::pair<std::string, GridPrimitive>& key) const;
+
+    /** Returns the specified channel if it is in the desired format, returns first instance found
+     *   @param name Unique name of requested channel
+     *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
+     */
+    template <typename T, ind N>
+    std::shared_ptr<const DataChannel<T, N>> getChannel(
+        const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex) const;
+
+    /** Returns the specified buffer, converts to buffer or copies
+     *   @param name Unique name of requested buffer
+     *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
+     */
+    template <typename T, ind N>
+    std::shared_ptr<const BufferChannel<T, N>> getAsBuffer(
+        const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex) const;
+
+    /** Remove channel from set by shared pointer, data remains valid if shared outside
+     *   Swaps position in vector
+     *   @param channel Shared pointer to data
+     *   @return Successfull - channel was saved in the set indeed
+     */
+    bool removeChannel(SharedConstChannel channel);
+
+    /** Number of channels currently held
+     */
+    ind getNumChannels() const { return Channels.size(); }
+
+    std::vector<std::pair<std::string, GridPrimitive>> getChannelNames() const;
 
     // Attributes
 public:
@@ -189,12 +172,12 @@ struct DataTraits<discretedata::DataSet> {
     static uvec3 colorCode() { return uvec3(255, 144, 1); }
     static Document info(const discretedata::DataSet& data) {
         std::ostringstream oss;
-        oss << "Data set with " << data.Channels.getNumChannels() << " channels.";
+        oss << "Data set with " << data.getNumChannels() << " channels.";
 
-        auto channelKeyList = data.Channels.getChannelNames();
+        auto channelKeyList = data.getChannelNames();
         if (channelKeyList.size() != 0)
             for (auto& channelKey : channelKeyList) {
-                auto channel = data.Channels.getChannel(channelKey);
+                auto channel = data.getChannel(channelKey);
                 oss << "      " << channelKey.first << '[' << channel->getNumComponents()
                     << "][" << channel->size() << ']' << "(Dim "
                     << (int)channelKey.second << ')';

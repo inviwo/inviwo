@@ -73,9 +73,9 @@ TEST(DataSet, ChannelInsertRemoveEdit) {
         },
         100, "Identity", GridPrimitive::Vertex);
 
-    set.Channels.addChannel(monomeVert);
-    set.Channels.addChannel(monomeFace);
-    set.Channels.addChannel(identityVert);
+    set.addChannel(monomeVert);
+    set.addChannel(monomeFace);
+    set.addChannel(identityVert);
 
     // auto mV_comp = set.getChannel("Monome", GridPrimitive::Vertex);
     // EXPECT_EQ(mV_comp.get(), mV.get());

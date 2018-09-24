@@ -33,51 +33,51 @@
 namespace inviwo {
 namespace discretedata {
 
-SharedChannel DataChannelMap::addChannel(Channel* channel) {
+SharedChannel DataSet::addChannel(Channel* channel) {
     SharedChannel sharedChannel(channel);
     addChannel(sharedChannel);
 
     return sharedChannel;
 }
 
-void DataChannelMap::addChannel(SharedConstChannel sharedChannel) {
-    ChannelSet.insert(std::make_pair(
+void DataSet::addChannel(SharedConstChannel sharedChannel) {
+    Channels.insert(std::make_pair(
         std::make_pair(sharedChannel->getName(), sharedChannel->getGridPrimitiveType()),
         sharedChannel));
 }
 
-bool DataChannelMap::removeChannel(SharedConstChannel channel) {
-    return ChannelSet.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType())) != 0;
+bool DataSet::removeChannel(SharedConstChannel channel) {
+    return Channels.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType())) != 0;
 }
 
-SharedConstChannel DataChannelMap::getFirstChannel() const {
-    auto it = ChannelSet.begin();
+SharedConstChannel DataSet::getFirstChannel() const {
+    auto it = Channels.begin();
 
-    if (it == ChannelSet.end()) return SharedConstChannel();
+    if (it == Channels.end()) return SharedConstChannel();
 
     return it->second;
 }
 
-SharedConstChannel DataChannelMap::getChannel(const std::string& name,
+SharedConstChannel DataSet::getChannel(const std::string& name,
                                               const GridPrimitive definedOn) const {
     auto key = std::make_pair(name, definedOn);
     return getChannel(key);
 }
 
-SharedConstChannel DataChannelMap::getChannel(std::pair<std::string, GridPrimitive>& key) const {
-    auto it = ChannelSet.find(key);
+SharedConstChannel DataSet::getChannel(std::pair<std::string, GridPrimitive>& key) const {
+    auto it = Channels.find(key);
 
-    if (it == ChannelSet.end()) return SharedConstChannel();
+    if (it == Channels.end()) return SharedConstChannel();
 
     return it->second;
 }
 
-std::vector<std::pair<std::string, GridPrimitive>> DataChannelMap::getChannelNames() const {
+std::vector<std::pair<std::string, GridPrimitive>> DataSet::getChannelNames() const {
     ind numChannels = getNumChannels();
 
     std::vector<std::pair<std::string, GridPrimitive>> channelNames;
     channelNames.reserve(numChannels);
-    for (auto& key : ChannelSet) {
+    for (auto& key : Channels) {
         channelNames.push_back(key.first);
     }
 
