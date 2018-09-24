@@ -117,10 +117,6 @@ protected:
 
     /** Saves the known number of primitves */
     mutable std::vector<ind> numGridPrimitives_;
-
-public:
-    /** Vertex positions */
-    std::shared_ptr<const Channel> vertices_;
 };
 
 }  // namespace discretedata
