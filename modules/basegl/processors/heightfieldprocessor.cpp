@@ -113,7 +113,7 @@ void HeightFieldProcessor::initializeResources() {
 }
 
 void HeightFieldProcessor::process() {
-    if (imageInport_.hasData()) {
+    if (imageInport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_);
     } else {
         utilgl::activateAndClearTarget(outport_);

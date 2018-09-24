@@ -239,7 +239,13 @@ void TFPropertyDialog::initializeDialog() {
                         return elem->getType() == TFPrimitiveSetType::Relative;
                     });
                 primitivePos_->setValueMapping(allRelative, range);
+
+                zoomHSlider_->setTooltipFormat([ sliderRange = sliderRange_, range ](int, int val) {
+                    return toString(
+                        glm::mix(range.x, range.y, static_cast<double>(val) / sliderRange));
+                });
             };
+            portChange();
 
             port->onChange(portChange);
             port->onConnect(portChange);
