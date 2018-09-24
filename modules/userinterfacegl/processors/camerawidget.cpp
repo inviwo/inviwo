@@ -207,7 +207,7 @@ void CameraWidget::process() {
     }
 
     // combine the previously rendered widget image with the input
-    if (inport_.isConnected()) {
+    if (inport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, inport_);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);

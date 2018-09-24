@@ -145,7 +145,7 @@ VolumeAxis::VolumeAxis()
 }
 
 void VolumeAxis::process() {
-    if (imageInport_.isConnected()) {
+    if (imageInport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);

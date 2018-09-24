@@ -77,7 +77,7 @@ AxisRenderProcessor::AxisRenderProcessor()
 }
 
 void AxisRenderProcessor::process() {
-    if (inport_.isConnected()) {
+    if (inport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepth);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
