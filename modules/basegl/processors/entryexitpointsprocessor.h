@@ -88,10 +88,15 @@ namespace inviwo {
 
 		algorithm::EntryExitPointsHelper entryExitHelper_;
 
-		Shader entryShader_;
-		Shader exitShader_;
+		Shader entryShaderCprTubular_;
+		Shader exitShaderCprTubular_;
 
-		BoolProperty enableVolumeReformation_;
+		//Shader entryShaderCprPlanar_;
+		//Shader exitShaderCprPlanar_;
+
+		BoolProperty enableCprTubular_;
+		BoolProperty enableCprPlanar_;
+
 		FloatVec3Property upVector_;
 		FloatProperty radius_;
 		FloatProperty angleOffset_;

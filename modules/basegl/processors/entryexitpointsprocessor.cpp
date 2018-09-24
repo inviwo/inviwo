@@ -50,19 +50,24 @@ namespace inviwo {
 		, inport_("geometry")
 		, polyline_("polyline")
 		, entryPort_("entry", DataVec4UInt16::get())
-		, exitPort_("exit", DataVec4UInt16::get())
-		, camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-			vec3(0.0f, 1.0f, 0.0f), &inport_)
+		, exitPort_("exit", DataVec4UInt16::get()), camera_("camera", "Camera",
+			vec3{ 0.0f, 0.0f, -2.0f },
+			vec3{ 0.0f, 0.0f, 0.0f },
+			vec3{ 0.0f, 1.0f, 0.0f }, &inport_)
 		, capNearClipping_("capNearClipping", "Cap near plane clipping", true)
 		, trackball_(&camera_)
-		, entryShader_("uv_pass_through.vert", "cpr_tubular_entry_points.frag")
-		, exitShader_("uv_pass_through.vert", "cpr_tubular_exit_points.frag")
-		, enableVolumeReformation_("reformation", "Volume Reformation", false)
-		, upVector_("upVector", "Up Vector", vec3(0,1,0))
+		, entryShaderCprTubular_("uv_pass_through.vert", "cpr_tubular_entry_points.frag")
+		, exitShaderCprTubular_("uv_pass_through.vert", "cpr_tubular_exit_points.frag")
+		//, entryShaderCprPlanar_("uv_pass_through.vert", "cpr_planar_entry_points.frag")
+		//, exitShaderCprPlanar_("uv_pass_through.vert", "cpr_planar_exit_points.frag")
+		, enableCprTubular_("enable_cpr_tubular", "CPR Tubular", false)
+		, enableCprPlanar_("enable_cpr_planar", "CPR Planar", false)
+		, upVector_("upVector", "Up Vector", vec3{ 0.0f, 1.0f, 0.0f })
 		, radius_("radius", "Radius", 0.5f)
 		, angleOffset_("angleOffset", "Angle Offset", 0.0f, 0.0f, 2.0f * M_PI)
 		, quad_{ nullptr }
 	{
+		
 		addPort(inport_);
 		polyline_.setOptional(true);
 		addPort(polyline_);
@@ -72,7 +77,8 @@ namespace inviwo {
 		addProperty(camera_);
 		addProperty(trackball_);
 
-		addProperty(enableVolumeReformation_);
+        addProperty(enableCprPlanar_);
+		addProperty(enableCprTubular_);
 		addProperty(upVector_);
 		addProperty(radius_);
 		addProperty(angleOffset_);
@@ -84,8 +90,10 @@ namespace inviwo {
 		entryExitHelper_.getNearClipShader().onReload(
 			[this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-		entryShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-		exitShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+		entryShaderCprTubular_.onReload(
+            [this]() { invalidate(InvalidationLevel::InvalidResources); });
+		exitShaderCprTubular_.onReload(
+            [this]() { invalidate(InvalidationLevel::InvalidResources); });
 
 		quad_ = util::makeBuffer<vec2>({ { -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } });
 	}
@@ -104,7 +112,7 @@ namespace inviwo {
 	}
 
 	void EntryExitPoints::process() {
-		if (enableVolumeReformation_.get() && polyline_.hasData() && polyline_.getData()) {
+		if (enableCprTubular_.get() && polyline_.hasData() && polyline_.getData()) {
 			if (polyline_.getData()->size() >= 2) {
 
 				const auto n0 = accumulatedDistance_.size();
@@ -114,17 +122,17 @@ namespace inviwo {
 
 				// generate entry points
 				utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
-				setupPolylineShader(entryShader_, rebuild);
+				setupPolylineShader(entryShaderCprTubular_, rebuild);
 				const auto quadGL_ = quad_->getRepresentation<BufferGL>();
 				quadGL_->enable();
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 				// generate exit points
 				utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
-				setupPolylineShader(exitShader_, rebuild);
-				exitShader_.setUniform("up_vector", upVector_.get());
-				exitShader_.setUniform("radius", radius_.get());
-				exitShader_.setUniform("angle_offset", angleOffset_.get());
+				setupPolylineShader(exitShaderCprTubular_, rebuild);
+				exitShaderCprTubular_.setUniform("up_vector", upVector_.get());
+				exitShaderCprTubular_.setUniform("radius", radius_.get());
+				exitShaderCprTubular_.setUniform("angle_offset", angleOffset_.get());
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 				quadGL_->disable();
 			}
