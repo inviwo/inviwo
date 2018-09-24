@@ -53,9 +53,14 @@ PeriodicGrid::PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& 
 }
 
 void PeriodicGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
-                                  GridPrimitive to) const {
+                                  GridPrimitive to, bool isPosition) const {
     result.clear();
 
+    if (isPosition) {
+        // Position-wise, there is no difference from a StructuredGrid.
+        StructuredGrid::getConnections(result, idxLin, from, to, isPosition);
+        return;
+    }
     if (from == to && from == gridDimension_) {
         // In this variant, the last cell is the same as the first within each dimension.
         sameLevelConnection(result, idxLin, numCellsPerDimension_);
@@ -186,29 +191,9 @@ ind PeriodicGrid::getNumCellsInDimension(ind dim) const {
     return numCellsPerDimension_[dim];
 }
 
-double PeriodicGrid::getPrimitiveMeasure(GridPrimitive dim, ind index) const {
-    if (!this->vertices_) return -1;
-
-    // Only implemented 3D bodies so far.
-    if (dim != GridPrimitive::Volume) return -1;
-
-    double measure = -1;
-
-
-    PeriodicHexVolumeComputer comp(this);
-    measure = inviwo::dispatching::dispatch <double, dispatching::filter::Scalars>(
-        vertices_->getDataFormatId(), comp, index);
-
-    return measure;
-}
-
 void PeriodicGrid::sameLevelConnection(std::vector<ind>& result, ind idxLin,
                                        const std::vector<ind>& size) const {
-    
-//    std::vector<ind> index = StructuredGrid::indexFromLinear(idxLin, size);
-//    assert(index.size() == size.size() && "Dimensions of input not matching.");
 
-    /// READ HERE HERE ///
 
     result.clear();
     ind dimensionProduct = 1;

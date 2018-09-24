@@ -56,44 +56,21 @@ public:
 
     void getNumCells(std::vector<ind>& result) const;
 
-    virtual double getPrimitiveMeasure(GridPrimitive dim, ind index) const override;
+    virtual CellType getCellType(GridPrimitive dim, ind index) const override;
 
     // Methods
 public:
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
-                                GridPrimitive to) const;
+                                GridPrimitive to, bool positions = false) const override;
 
     static void sameLevelConnection(std::vector<ind>& result, ind idxLin,
                                     const std::vector<ind>& size);
 
     static std::vector<ind> indexFromLinear(ind idxLin, const std::vector<ind>& size);
 
-    // Attributes
-protected:
-    struct HexVolumeComputer {
-        HexVolumeComputer(const StructuredGrid* p) : parent_(p) {}
-
-        template <typename R, typename T>
-        double operator()(ind index) const;
-
-        const StructuredGrid* parent_;
-    };
-
-    template <typename T>
-    double ComputeHexVolume(const std::vector<ind>&) const { return -1.0; }
-
 protected:
     std::vector<ind> numCellsPerDimension_;
 };
-
-template <typename R, typename T>
-double StructuredGrid::HexVolumeComputer::operator()(ind index) const {
-
-    // Get all corner points.
-    std::vector<ind> corners;
-    parent_->getConnections(corners, index, GridPrimitive::Volume, GridPrimitive::Vertex);
-    return parent_->ComputeHexVolume<T>(corners);
-}
 
 }  // namespace
 }

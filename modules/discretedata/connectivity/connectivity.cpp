@@ -45,8 +45,23 @@ ind Connectivity::getNumElements(GridPrimitive elementType) const {
 
 ElementRange Connectivity::all(GridPrimitive dim) const { return ElementRange(dim, this); }
 
-double Connectivity::getPrimitiveMeasure(ElementIterator& element) const {
-    return getPrimitiveMeasure(element.getType(), element.getIndex());
+CellType Connectivity::getCellType(GridPrimitive dim, ind) const {
+    switch (dim) {
+        case GridPrimitive::Vertex:
+            return CellType::VERTEX;
+        case GridPrimitive::Edge:
+            return CellType::LINE;
+        case GridPrimitive::Face:
+            return CellType::QUAD;
+        case GridPrimitive::Volume:
+            return CellType::HEXAHEDRON;
+        default:
+            return CellType::HIGHER_ORDER_HEXAHEDRON;
+    }
+}
+
+CellType Connectivity::getCellType(ElementIterator& element) const {
+    return getCellType(element.getType(), element.getIndex());
 }
 
 }  // namespace

@@ -40,6 +40,7 @@
 #include "discretedata/connectivity/elementiterator.h"
 #include "discretedata/connectivity/connectioniterator.h"
 #include "discretedata/connectivity/periodicgrid.h"
+#include "discretedata/connectivity/euclideanmeasure.h"
 
 namespace inviwo {
 namespace discretedata {
@@ -158,9 +159,10 @@ TEST(Using, Dataset) {
     };
 
     // Add as AnalyticChannel.
-    dataset.Grid->vertices_ = std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(
+    auto vertices = std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(
                                posFunc, grid->getNumElements(GridPrimitive::Vertex),
                                "Position", GridPrimitive::Vertex);
+    dataset.Channels.addChannel(vertices);
 
     /*********************************************************************************
     * Random algorithm: divide by volume.
@@ -172,7 +174,7 @@ TEST(Using, Dataset) {
     for (auto cell : dataset.Grid->all(GridPrimitive::Volume)) {
 
         // Get cell volume.
-        double volume = dataset.Grid->getPrimitiveMeasure(cell);
+        double volume = euclidean::getMeasure(*vertices, cell);
 
         // Get data from our [sin, cos] channel.
         glm::vec2 cellData;
@@ -196,12 +198,11 @@ TEST(Using, Dataset) {
             // We could again iterate through those now, if needed.
             ind numNeighbors = adjacentCell.connection(GridPrimitive::Vertex).size();
 
-            double volume = dataset.Grid->getPrimitiveMeasure(GridPrimitive::Volume, adjacentCell);
-            std::cout << adjacentCell << ":\t" << volume << std::endl;
+            double volume = euclidean::getMeasure(*vertices, adjacentCell);
             totalVolume += volume / numNeighbors;
         }
 
-//        if (totalVolume <= 0) EXPECT_FALSE("Some volume was 0 or negative");
+        if (totalVolume <= 0) EXPECT_FALSE("Some volume was 0 or negative");
 
         // Divide each value 
         for (ind dim = 0; dim < 3; ++dim) filteredRandom[vertex * 3 + dim] /= (float)totalVolume;

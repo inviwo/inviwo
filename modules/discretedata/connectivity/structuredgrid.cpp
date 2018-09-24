@@ -30,7 +30,6 @@
 #include "structuredgrid.h"
 #include "discretedata/channels/analyticchannel.h"
 #include "discretedata/connectivity/elementiterator.h"
-#include "inviwo/core/util/formatdispatching.h"
 
 namespace inviwo {
 namespace discretedata {
@@ -77,7 +76,7 @@ void StructuredGrid::sameLevelConnection(std::vector<ind>& result, const ind idx
 }
 
 void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin,
-                                    GridPrimitive from, GridPrimitive to) const {
+                                    GridPrimitive from, GridPrimitive to, bool) const {
     if (from == to && from == gridDimension_) {
         // Linear Index to nD Cell Index.
         return sameLevelConnection(result, idxLin, numCellsPerDimension_);
@@ -203,18 +202,19 @@ void StructuredGrid::getNumCells(std::vector<ind>& result) const {
     }
 }
 
-double StructuredGrid::getPrimitiveMeasure(GridPrimitive dim, ind index) const {
-    if (!this->vertices_) return -1;
-
-    // Only implemented 3D bodies so far.
-    if (dim != GridPrimitive::Volume) return -1;
-
-    double measure = -1;
-    HexVolumeComputer comp(this);
-    measure = inviwo::dispatching::dispatch<double, dispatching::filter::Scalars>(
-        vertices_->getDataFormatId(), comp, index);
-
-    return measure;
+CellType StructuredGrid::getCellType(GridPrimitive dim, ind) const {
+    switch (dim) {
+        case GridPrimitive::Vertex:
+            return CellType::VERTEX;
+        case GridPrimitive::Edge:
+            return CellType::LINE;
+        case GridPrimitive::Face:
+            return CellType::QUAD;
+        case GridPrimitive::Volume:
+            return CellType::HEXAHEDRON;
+        default:
+            return CellType::HIGHER_ORDER_HEXAHEDRON;
+    }
 }
 
 }  // namespace

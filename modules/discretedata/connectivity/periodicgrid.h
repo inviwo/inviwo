@@ -51,15 +51,13 @@ public:
     virtual ~PeriodicGrid() = default;
 
     ind getNumCellsInDimension(ind dim) const;
-
-    virtual double getPrimitiveMeasure(GridPrimitive dim, ind index) const override;
     
     bool isPeriodic(ind dim) const { return isDimPeriodic_[dim]; }
 
     void setPeriodic(ind dim, bool periodic = true) { isDimPeriodic_[dim] = periodic; }
 
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
-                                            GridPrimitive to) const override;
+                                GridPrimitive to, bool isPosition) const override;
 
 protected:
     void sameLevelConnection(std::vector<ind>& result, ind idxLin,

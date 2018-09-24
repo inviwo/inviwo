@@ -13,9 +13,11 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/channels/channeliterator.inl
     ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.inl
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/cell.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectioniterator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectivity.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/elementiterator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/euclideanmeasure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/periodicgrid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/structuredgrid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataset.h

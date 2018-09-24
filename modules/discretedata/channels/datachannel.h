@@ -43,6 +43,7 @@ typedef signed long long ind;
 *   If these do not suffice, cast the respective short.
 */
 enum class GridPrimitive : ind {
+    Undef = -1,
     Vertex = 0,
     Edge = 1,
     Face = 2,
@@ -115,7 +116,6 @@ protected:
     */
     void setNumComponents(ind);
 
-    // Attributes
 public:
     virtual ind size() const = 0;
 };

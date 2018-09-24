@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include "discretedata/channels/datachannel.h"
+#include "discretedata/connectivity/cell.h"
 
 namespace inviwo {
 namespace discretedata {
@@ -91,23 +92,23 @@ public:
     *   @param to Dimension the result lives in
     */
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
-                                GridPrimitive to) const = 0;
+                                GridPrimitive to, bool isPosition = false) const = 0;
 
     /** \brief Range of all elements to iterate over
     *   @param dim Dimension to return the elements of
     */
     ElementRange all(GridPrimitive dim) const;
 
-    /** \brief Get the measure (i.e., length, area, volume...) of an element
-    *   @param dim Dimension of element (edge, face, volume...)
-    *   @Param index Index of respective element type
-    */
-    virtual double getPrimitiveMeasure(GridPrimitive, ind) const { return -1; }
+    /** \brief Get the cell type (i.e. triangle, quad...; tetrahedron, voxel...)
+     *   @param dim Dimension of element (edge, face, volume...)
+     *   @Param index Index of respective element type
+     */
+    virtual CellType getCellType(GridPrimitive dim, ind index) const;
 
-    /** \brief Get the measure (i.e., length, area, volume...) of an element
-    *   @param element Element to get measure of
-    */
-    virtual double getPrimitiveMeasure(ElementIterator& element) const;
+    /** \brief Get the cell type (i.e. triangle, quad...; tetrahedron, voxel...)
+     *   @param element Element to get measure of
+     */
+    virtual CellType getCellType(ElementIterator& element) const;
 
     // Attributes
 protected:
@@ -122,7 +123,7 @@ public:
     std::shared_ptr<const Channel> vertices_;
 };
 
-}  // namespace
-}
+}  // namespace discretedata
+}  // namespace inviwo
 
 #include <discretedata/connectivity/elementiterator.h>
