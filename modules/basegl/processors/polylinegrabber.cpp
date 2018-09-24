@@ -53,7 +53,10 @@ namespace inviwo {
 		outport_.setData(polyline_);
 		addPort(outport_);
 
-		clearPolyline_.onChange([this]() { polyline_->clear(); });
+		clearPolyline_.onChange([this]() { 
+			polyline_->clear();
+			invalidate(InvalidationLevel::InvalidOutput);
+		});
 		addProperty(clearPolyline_);
 
 		clip_.onChange([this]() {
@@ -69,7 +72,7 @@ namespace inviwo {
 
 		//pt_.setVisible(false);
 		pt_.setReadOnly(true);
-		//pt_.onChange([this]() { addPoint(pt_); });
+		pt_.onChange([this]() { addPoint(pt_); });
 		addProperty(pt_);
 
 		//TODO transform and use data points
@@ -95,6 +98,7 @@ namespace inviwo {
 	{
 		//TODO prevent onChange to be called immediately after loading workspace
 		polyline_->push_back(pt);
+		outport_.setData(polyline_);
 		invalidate(InvalidationLevel::InvalidOutput);
 	}
 
