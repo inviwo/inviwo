@@ -72,10 +72,19 @@ void main() {
     texCoord /=  vec2(textureSize(color_, 0));
 
 #ifdef SINGLE_CHANNEL
-    FragData0 = mix(vec4(vec3(texture(color_, texCoord).r), 1.0), borderColor_, borderValue);
+    vec4 srcColor = vec4(vec3(texture(color_, texCoord).r), 1.0);
 #else
-    FragData0 = mix(texture(color_, texCoord), borderColor_, borderValue);
+    vec4 srcColor = texture(color_, texCoord);
 #endif
+
+#if !defined(BLENDMODE_REPLACE)
+    // if a blend mode other than "replace" is used, discard output for transparent fragments
+    if (srcColor.a == 0.0) {
+	    discard;
+    }
+#endif
+
+    FragData0 = mix(srcColor, borderColor_, borderValue);
 
 #ifdef ADDITIONAL_COLOR_LAYERS
     ADDITIONAL_COLOR_LAYER_WRITE
