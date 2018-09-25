@@ -70,7 +70,7 @@ public:
     /** Dereference to get data */
     VecNT& operator*();
 
-    //*** Bidirectional Iteration ***\\
+    /*** Bidirectional Iteration ***\
 
     /** Walk forward */
     ChannelIterator<VecNT, T, N>& operator++() {
@@ -93,7 +93,7 @@ public:
     /** Compare */
     bool operator!=(const ChannelIterator<VecNT, T, N>& other) const { return !(other == *this); }
 
-    //*** Random Access Iteration ***\\
+    /*** Random Access Iteration ***/
 
     /** Increment randomly */
     ChannelIterator<VecNT, T, N> operator+(ind offset) { return ChannelIterator<VecNT, T, N>(Getter, Index + offset); }
@@ -152,7 +152,7 @@ public:
     /** Dereference to get data */
     VecNT operator*();
 
-    //*** Bidirectional Iteration ***\\
+    /*** Bidirectional Iteration ***/
 
     /** Walk forward */
     ConstChannelIterator<VecNT, T, N>& operator++() {
@@ -175,7 +175,7 @@ public:
     /** Compare */
     bool operator!=(ConstChannelIterator<VecNT, T, N>& other) { return !(other == *this); }
 
-    //*** Random Access Iteration ***\\
+    /*** Random Access Iteration ***/
 
     /** Increment randomly */
     ConstChannelIterator<VecNT, T, N> operator+(ind offset) { return ConstChannelIterator<VecNT, T, N>(Parent, Index + offset); }

@@ -63,10 +63,10 @@ void DataChannel<T, N>::getMin(VecNT& dest) const {
     static_assert(sizeof(VecNT) == sizeof(T) * N,
                   "Size and type do not agree with the vector type.");
 
-    const MetaScalarType* min = getMetaData<MetaScalarType>("Minimum");
+    const MetaScalarType* min = this->template getMetaData<MetaScalarType>("Minimum");
     if (!min) {
         computeMinMax();
-        min = getMetaData<MetaScalarType>("Minimum");
+        min = this->template getMetaData<MetaScalarType>("Minimum");
     }
 
     T* rawVec = reinterpret_cast<T*>           (&dest);
@@ -82,10 +82,10 @@ void DataChannel<T, N>::getMax(VecNT& dest) const {
     static_assert(sizeof(VecNT) == sizeof(T) * N,
                   "Size and type do not agree with the vector type.");
 
-    const MetaScalarType* max = getMetaData<MetaScalarType>("Maximum");
+    const MetaScalarType* max = this->template getMetaData<MetaScalarType>("Maximum");
     if (!max) {
         computeMinMax();
-        max = getMetaData<MetaScalarType>("Maximum");
+        max = this->template getMetaData<MetaScalarType>("Maximum");
     }
     T* rawVec = reinterpret_cast<T*>           (&dest);
     auto mStr = max->getClassIdentifier();

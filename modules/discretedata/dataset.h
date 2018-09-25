@@ -51,7 +51,7 @@ struct ChannelCompare {
 };
 // Map used for storing and querying channels by name and GridPrimitive type.
 typedef std::map<
-    std::pair<std::string, GridPrimitive>,  // Hashing by both name and GridPrimitive type
+    std::pair<std::string, GridPrimitive>,  // Ordering by both name and GridPrimitive type
     SharedConstChannel,  // Shared channels, type information only as meta property
     ChannelCompare>  // Lesser operator on string-Primitve pairs
     DataChannelMap;
@@ -154,13 +154,17 @@ public:
 
     std::vector<std::pair<std::string, GridPrimitive>> getChannelNames() const;
 
+    DataChannelMap::const_iterator cbegin() const { return Channels.cbegin(); }
+    DataChannelMap::const_iterator cend() const { return Channels.cend(); }
+
     // Attributes
-public:
+protected:
     /** Set of data channels
     *   Indexed by name and defining dimension (0D vertices, 1D edges etc).
     */
     DataChannelMap Channels;
 
+public:
     /** Connectivity of grid
     *   Several grid types are possible (rectlinear, structured, unstructured)
     */
