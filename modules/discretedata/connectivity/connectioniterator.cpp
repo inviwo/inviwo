@@ -40,13 +40,11 @@ ConnectionRange::ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimi
     connections_ = std::shared_ptr<const std::vector<ind>>(neigh);
 }
 
-/** Increment randomly */
 ConnectionIterator operator+(ind offset, ConnectionIterator& iter) {
     return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
                               iter.toIndex_ + offset);
 }
 
-/** Decrement randomly */
 ConnectionIterator operator-(ind offset, ConnectionIterator& iter) {
     return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
                               iter.toIndex_ - offset);

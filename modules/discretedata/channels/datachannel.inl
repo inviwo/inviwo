@@ -113,8 +113,8 @@ void DataChannel<T, N>::computeMinMax() const {
 
     // Working on raw T* to catch 'glmVec = T' case (for N == 1)
 
-    T minT[N];  // = reinterpret_cast<T*>(&min);
-    T maxT[N];  // = reinterpret_cast<T*>(&max);
+    T minT[N];
+    T maxT[N];
 
     this->fill(minT, 0);
     this->fill(maxT, 0);

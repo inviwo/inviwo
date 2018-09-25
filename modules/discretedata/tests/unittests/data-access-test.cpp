@@ -55,9 +55,9 @@ TEST(AccessingData, Connectivity) {
     for (ElementIterator cell : grid->all(GridPrimitive::Volume)) {
         // Now, we basically have a GridPrimitive/index object.
         for (ElementIterator vert : cell.connection(GridPrimitive::Vertex)) {
-            //// Iterate over all vertices of the respective cell.
-            //// Basically a fromGridPrimitive/toGridPrimitive/fromIndex/toIndex object.
-            //// Do something with them.
+            // Iterate over all vertices of the respective cell.
+            // Basically a fromGridPrimitive/toGridPrimitive/fromIndex/toIndex object.
+            // Do something with them.
             ind idx = vert.getIndex();
 
             // Make sure the gird is bi-directional.

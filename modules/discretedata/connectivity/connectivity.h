@@ -119,7 +119,7 @@ protected:
     mutable std::vector<ind> numGridPrimitives_;
 };
 
-}  // namespace discretedata
-}  // namespace inviwo
+}  // namespace
+}
 
 #include <discretedata/connectivity/elementiterator.h>

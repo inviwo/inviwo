@@ -77,13 +77,6 @@ TEST(DataSet, ChannelInsertRemoveEdit) {
     set.addChannel(monomeVert);
     set.addChannel(monomeFace);
     set.addChannel(identityVert);
-
-    // auto mV_comp = set.getChannel("Monome", GridPrimitive::Vertex);
-    // EXPECT_EQ(mV_comp.get(), mV.get());
-    // TODO:
-    // - Convert to buffer
-    // - Assign to other GridPrimitives
-    // - Check size with connectivity
 }
 
 }  // namespace

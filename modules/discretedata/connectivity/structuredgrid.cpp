@@ -146,16 +146,14 @@ void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin,
         std::vector<ind> vertexIndex = indexFromLinear(idxLin, vertDims);
 
         // Prepare neighbors
-
-        //std::vector<ind> CellNeighbors;
         const ind maxNeighbors = ind(1) << numDimensions;
         result.reserve(maxNeighbors);
 
         // Compute neighbors
         std::vector<ind> currentNeighbor;
         for (ind i(0); i < maxNeighbors; i++) {
-            // Base index is the vertex index. The same cell index is the upper-right one of the
-            // neighbors.
+            // Base index is the vertex index.
+            // The same cell index is the upper-right one of the neighbors.
             currentNeighbor = vertexIndex;
 
             // Generate new neighbor index
