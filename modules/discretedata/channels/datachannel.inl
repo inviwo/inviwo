@@ -107,9 +107,9 @@ void DataChannel<T, N>::getMinMax(VecNT& minDest, VecNT& maxDest) const {
 template <typename T, ind N>
 void DataChannel<T, N>::computeMinMax() const {
 
-    auto* this_mut = const_cast<DataChannel<T, N>*>(this);
-    MetaScalarType* minMeta = this_mut->createMetaData<MetaScalarType>("Minimum");
-    MetaScalarType* maxMeta = this_mut->createMetaData<MetaScalarType>("Maximum");
+    auto* this_mut = const_cast<MetaDataOwner*>(static_cast<const MetaDataOwner*>(this));
+    MetaScalarType* minMeta = this_mut->template createMetaData<MetaScalarType>("Minimum");
+    MetaScalarType* maxMeta = this_mut->template createMetaData<MetaScalarType>("Maximum");
 
     // Working on raw T* to catch 'glmVec = T' case (for N == 1)
 
@@ -119,8 +119,8 @@ void DataChannel<T, N>::computeMinMax() const {
     this->fill(minT, 0);
     this->fill(maxT, 0);
 
-    for (GlmVector& val : this_mut->all<GlmVector>()) {
-        T* data = reinterpret_cast<T*>(&val);
+    for (const GlmVector& val : this->all<GlmVector>()) {
+        const T* data = reinterpret_cast<const T*>(&val);
         for (ind dim = 0; dim < N; ++dim) {
             minT[dim] = std::min(minT[dim], data[dim]);
             maxT[dim] = std::max(maxT[dim], data[dim]);

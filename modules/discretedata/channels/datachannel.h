@@ -190,11 +190,11 @@ public:
 
     template <typename Vec1T = T>
     const_iterator<Vec1T> begin() const {
-        return const_iterator<Vec1T>(this->newIterator(), 0);
+        return const_iterator<Vec1T>(static_cast<const DataChannel<T, 1>*>(this), 0);
     }
     template <typename Vec1T = T>
     const_iterator<Vec1T> end() const {
-        return const_iterator<Vec1T>(this->newIterator(), this->size());
+        return const_iterator<Vec1T>(static_cast<const DataChannel<T, 1>*>(this), this->size());
     }
 };
 

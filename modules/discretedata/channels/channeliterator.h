@@ -152,7 +152,7 @@ public:
     /** Dereference to get data */
     VecNT operator*();
 
-    /*** Bidirectional Iteration ***/
+    /** Bidirectional Iteration **/
 
     /** Walk forward */
     ConstChannelIterator<VecNT, T, N>& operator++() {
@@ -175,7 +175,7 @@ public:
     /** Compare */
     bool operator!=(ConstChannelIterator<VecNT, T, N>& other) { return !(other == *this); }
 
-    /*** Random Access Iteration ***/
+    /** Random Access Iteration **/
 
     /** Increment randomly */
     ConstChannelIterator<VecNT, T, N> operator+(ind offset) { return ConstChannelIterator<VecNT, T, N>(Parent, Index + offset); }
@@ -192,7 +192,7 @@ public:
     // Members
 protected:
 
-    /** Constant DataChannel **/
+    /** Constant DataChannel */
     const DataChannel<T, N>* Parent;
 
     /** Index to the current element */
