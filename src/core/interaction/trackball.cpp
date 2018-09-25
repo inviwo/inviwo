@@ -869,7 +869,7 @@ void inviwo::Trackball::animate() {
             const float t = 0.1f;
             const float dot = glm::dot(lastRot_, identity);
 			// Avoid division by zero when sin( n*pi ) == 0.
-			// Occurs when acos(+-1) == 0/pi (90 degreees)  
+			// Occurs when acos(+-1) == 0/pi (0/180 degreees)  
 			if (std::abs(dot) < 1.f) {
 				const float theta = std::acos(dot);
 				const float sintheta = std::sin(theta);
