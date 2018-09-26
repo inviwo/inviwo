@@ -45,6 +45,8 @@
 
 #include <modules/basegl/algorithm/entryexitpoints.h>
 
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <modules/opengl/buffer/buffergl.h>
 #include <memory>
 
 namespace inviwo {
@@ -63,11 +65,6 @@ namespace inviwo {
  * ### Properties
  *   * __Camera__ Camera of the scene.
  */
-
-    template <typename T>
-    class Buffer<T>;
-
-    class BufferGL;
 
 class IVW_MODULE_BASEGL_API EntryExitPoints : public Processor {
 public:

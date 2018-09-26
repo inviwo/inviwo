@@ -31,10 +31,8 @@
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
-#include <modules/opengl/buffer/buffergl.h>
 
 namespace inviwo {
 
@@ -71,6 +69,9 @@ EntryExitPoints::EntryExitPoints()
     addProperty(camera_);
     addProperty(trackball_);
     entryPort_.addResizeEventListener(&camera_);
+
+    addProperty(enableCprTubular_);
+    addProperty(enableCprPlanar_);
 
     entryExitHelper_.getEntryExitShader().onReload(
         [this]() { invalidate(InvalidationLevel::InvalidResources); });
