@@ -28,6 +28,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayoutgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
@@ -93,6 +94,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayoutgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp

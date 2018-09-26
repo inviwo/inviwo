@@ -50,22 +50,16 @@ namespace inviwo {
 class Shader;
 
 /*! \class OverlayProperty
-*
-* \brief CompositeProperty for overlay images. An overlay is defined by
-* a position, a anchor position, and the blend mode used for compositing.
-*/
+ *
+ * \brief CompositeProperty for overlay images. An overlay is defined by
+ * a position, a anchor position, and the blend mode used for compositing.
+ */
 // TODO: implement absolute positioning.
 //    this will require the image dimensions of the source and the overlay
 class IVW_MODULE_BASEGL_API OverlayProperty : public CompositeProperty {
 public:
-    enum class Positioning {
-        Relative,
-        Absolute
-    };
-    enum class BlendMode : GLint {
-        Replace = GL_NONE,
-        Over = GL_SRC_ALPHA
-    };
+    enum class Positioning { Relative, Absolute };
+    enum class BlendMode : GLint { Replace = GL_NONE, Over = GL_SRC_ALPHA };
 
     OverlayProperty(std::string identifier, std::string displayName,
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -76,7 +70,8 @@ public:
 
     const ivec4& getViewport() const;
 
-    GLint getBlendMode() const;
+    BlendMode getBlendMode() const;
+    GLint getBlendModeGL() const;
 
 private:
     virtual void deserialize(Deserializer& d) override;
@@ -104,30 +99,30 @@ private:
 };
 
 /** \docpage{org.inviwo.ImageOverlayGL, Image Overlay}
-* Places one or more input images on top of the source image.
-* ![](org.inviwo.ImageOverlayGL.png?classIdentifier=org.inviwo.ImageOverlayGL)
-*
-* ### Inports
-*   * __ImageInport__ Source image.
-*   * __ImageInport__ Overlay images (multi-port).
-*
-* ### Outports
-*   * __ImageOutport__ The output image.
-*
-* ### Properties
-*   * __Overlay Interaction__ Allow interactions on overlay images.
-*   * __Pass Events to Main View__  Events unhandled by the overlay will be passed 
-*                           on to the main view
-*   * __Size__              Size of the overlay image.
-*   * __Position__          Position of the overlay image.
-*   * __Anchor Position__   Anchor of the overlay image for alignment.
-*   * __Blend Mode__        Blend mode used for mixing the overlay image.
-*/
+ * Places one or more input images on top of the source image.
+ * ![](org.inviwo.ImageOverlayGL.png?classIdentifier=org.inviwo.ImageOverlayGL)
+ *
+ * ### Inports
+ *   * __ImageInport__ Source image.
+ *   * __ImageInport__ Overlay images (multi-port).
+ *
+ * ### Outports
+ *   * __ImageOutport__ The output image.
+ *
+ * ### Properties
+ *   * __Overlay Interaction__ Allow interactions on overlay images.
+ *   * __Pass Events to Main View__  Events unhandled by the overlay will be passed
+ *                           on to the main view
+ *   * __Size__              Size of the overlay image.
+ *   * __Position__          Position of the overlay image.
+ *   * __Anchor Position__   Anchor of the overlay image for alignment.
+ *   * __Blend Mode__        Blend mode used for mixing the overlay image.
+ */
 
 /*! \class ImageOverlayGL
-*
-* \brief Places one or more input images on top of the source image.
-*/
+ *
+ * \brief Places one or more input images on top of the source image.
+ */
 class IVW_MODULE_BASEGL_API ImageOverlayGL : public Processor {
 public:
     ImageOverlayGL();
@@ -140,6 +135,7 @@ public:
 
 protected:
     virtual void process() override;
+    virtual void initializeResources() override;
 
     void updateViewports(ivec2 size, bool force = false);
     void onStatusChange();
@@ -151,7 +147,7 @@ private:
 
     BoolProperty enabled_;
     BoolProperty overlayInteraction_;  //<! allows to interact with overlay images, otherwise only
-                                       //the source image will receive interaction events
+                                       // the source image will receive interaction events
     BoolProperty passThroughEvent_;
 
     OverlayProperty overlayProperty_;
@@ -165,6 +161,6 @@ private:
     ivec2 currentDim_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGEOVERLAYGL_H
