@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-smooth in vec2 uv;
+smooth in vec3 texCoord_;
 
 const uint num_pts = 5;
 const vec3 pts[ num_pts ] = {
@@ -127,10 +127,10 @@ void main() {
     vec3 normal = vec3(0.0);
     vec3 direction = vec3(0.0);
     vec3 binormal = vec3(0.0);
-    vec3 pt_centerline = interpolate_linear(uv.x, normal, direction, binormal);
+    vec3 pt_centerline = interpolate_linear(texCoord_.x, normal, direction, binormal);
     vec3 entry_pt = pt_centerline
                         + dist_to_centerline * normal
-                        + mix(depth_offset_start, depth_offset_end, uv.y) * binormal;
+                        + mix(depth_offset_start, depth_offset_end, texCoord_.y) * binormal;
     
     FragData0 = vec4(entry_pt, 1.0);
 }

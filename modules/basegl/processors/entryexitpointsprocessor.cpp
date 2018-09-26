@@ -54,14 +54,12 @@ EntryExitPoints::EntryExitPoints()
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
     , trackball_(&camera_)
-    , entryShaderCprTubular_("uv_pass_through.vert", "cpr_tubular_entry_points.frag")
-    , exitShaderCprTubular_("uv_pass_through.vert", "cpr_tubular_exit_points.frag")
-    , entryShaderCprPlanar_("uv_pass_through.vert", "cpr_planar_entry_points.frag")
-    , exitShaderCprPlanar_("uv_pass_through.vert", "cpr_planar_exit_points.frag")
+    , entryShaderCprTubular_("standard.vert", "cpr_tubular_entry_points.frag")
+    , exitShaderCprTubular_("standard.vert", "cpr_tubular_exit_points.frag")
+    , entryShaderCprPlanar_("standard.vert", "cpr_planar_entry_points.frag")
+    , exitShaderCprPlanar_("standard.vert", "cpr_planar_exit_points.frag")
     , enableCprTubular_("enable_cpr_tubular", "CPR Tubular", false)
-    , enableCprPlanar_("enable_cpr_planar", "CPR Planar", false)
-    , quadGeometry_(nullptr)
-    , quadGL_(nullptr) {
+    , enableCprPlanar_("enable_cpr_planar", "CPR Planar", false) {
     addPort(inport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -78,32 +76,30 @@ EntryExitPoints::EntryExitPoints()
     entryExitHelper_.getNearClipShader().onReload(
         [this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    entryShaderCprTubular_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    exitShaderCprTubular_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    entryShaderCprTubular_.onReload(
+        [this]() { invalidate(InvalidationLevel::InvalidResources); });
+    exitShaderCprTubular_.onReload(
+        [this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    entryShaderCprPlanar_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    exitShaderCprPlanar_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
-    quadGeometry_ =
-        util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-    quadGL_ = quadGeometry_->getRepresentation<BufferGL>();
+    entryShaderCprPlanar_.onReload(
+        [this]() { invalidate(InvalidationLevel::InvalidResources); });
+    exitShaderCprPlanar_.onReload(
+        [this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 EntryExitPoints::~EntryExitPoints() {}
 
 void EntryExitPoints::process() {
     if (enableCprPlanar_ && quadGL_) {
-        // is this utilgl::activateAndClearTarget necessary?
+        // draw entry points
         utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
-
         entryShaderCprPlanar_.activate();
-        quadGL_->enable();
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        utilgl::singleDrawImagePlaneRect();
+
+        // draw exit points
         utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
         exitShaderCprPlanar_.activate();
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        //utilgl::singleDrawImagePlaneRect();
-        quadGL_->disable();
+        utilgl::singleDrawImagePlaneRect();
     } else {
         entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(),
                          camera_.get(), *inport_.getData().get(), capNearClipping_.get());

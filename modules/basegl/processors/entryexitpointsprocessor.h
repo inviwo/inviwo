@@ -45,10 +45,6 @@
 
 #include <modules/basegl/algorithm/entryexitpoints.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <modules/opengl/buffer/buffergl.h>
-#include <memory>
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.EntryExitPoints, Entry exit points}
@@ -98,9 +94,6 @@ private:
 
     BoolProperty enableCprTubular_;
     BoolProperty enableCprPlanar_;
-
-    std::shared_ptr<Buffer<vec2>> quadGeometry_;
-    const BufferGL* quadGL_;
 };
 
 } // namespace
