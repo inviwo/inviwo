@@ -71,7 +71,7 @@ double HexVolumeComputer::operator()(const Connectivity& grid, const Channel& po
     // Get all corner points.
     std::vector<ind> corners;
     grid.getConnections(corners, index, GridPrimitive::Volume, GridPrimitive::Vertex, true);
-    return computeHexVolume<T::type>(positions, corners);
+    return computeHexVolume<typename T::type>(positions, corners);
 }
 
 template <typename T>

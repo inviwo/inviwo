@@ -57,39 +57,15 @@ public:
     void setPeriodic(ind dim, bool periodic = true) { isDimPeriodic_[dim] = periodic; }
 
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
-                                GridPrimitive to, bool isPosition) const override;
+                                GridPrimitive to, bool isPosition = false) const override;
 
 protected:
     void sameLevelConnection(std::vector<ind>& result, ind idxLin,
                              const std::vector<ind>& size) const;
 
 protected:
-
-struct PeriodicHexVolumeComputer {
-        PeriodicHexVolumeComputer(const PeriodicGrid* p) : parent_(p) {}
-
-    template <typename R, typename T>
-    double operator ()(ind index) const;
-
-    const PeriodicGrid* parent_;
-};
-
-protected:
     std::vector<bool> isDimPeriodic_;
 };
-
-template <typename R, typename T>
-double PeriodicGrid::PeriodicHexVolumeComputer::operator()(ind index) const {
-    // Work with respective type
-    std::shared_ptr<const DataChannel<T::type, 3>> doubleVertices =
-        std::dynamic_pointer_cast<const DataChannel<T::type, 3>, const Channel>(parent_->vertices_);
-    if (!doubleVertices) return -1;
-
-    // Get all corner points.
-    std::vector<ind> corners;
-    parent_->getConnections(corners, index, GridPrimitive::Volume, GridPrimitive::Vertex);
-    return parent_->ComputeHexVolume<T::type>(corners);
-}
 
 }  // namespace
 }
