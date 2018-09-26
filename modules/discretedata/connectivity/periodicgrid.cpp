@@ -37,7 +37,7 @@ namespace discretedata {
 
 PeriodicGrid::PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim, const std::vector<bool>& isDimPeriodic)
     : StructuredGrid(gridDimension, numCellsPerDim), isDimPeriodic_(isDimPeriodic) {
-    assert(numCellsPerDim.size() == gridDimension &&
+    assert(numCellsPerDim.size() == (size_t)gridDimension &&
            "Grid dimension should match cell dimension.");
     numCellsPerDimension_ = std::vector<ind>(numCellsPerDim);
 
