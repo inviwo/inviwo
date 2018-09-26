@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmgendir</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmgendir</refname>
+    <refpurpose>Tool to generate a DICOMDIR file from a File-Set.</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmgendir_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmgendir [options] file-in file-out
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmgendir_1description">
+<title>DESCRIPTION</title>
+</refsection>
+<refsection xml:id="gdcmgendir_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>file-in   DICOM input filename
+
+file-out  DICOM output filename
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmgendir_1options">
+<title>OPTIONS</title>
+<refsection xml:id="gdcmgendir_1params">
+<title>Parameters</title>
+
+<para><literallayout></literallayout></para>
+</refsection>
+<refsection xml:id="gdcmgendir_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>  -i --input              DICOM filename or directory
+  -o --output             DICOM filename or directory
+  -r --recursive          recursive.
+     --descriptor         descriptor.
+     --root-uid           Root UID.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmgendir_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1environment_variable">
+<title>environment variable</title>
+
+<para><literallayout>  GDCM_ROOT_UID Root UID
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmviewer_1usage">
+<title>Typical usage</title>
+</refsection>
+<refsection xml:id="gdcmgendir_1note">
+<title>NOTE</title>
+
+<para>One may have to run some preliminary steps in order to get gdcmgendir to generate the DICOMDIR file. Namely two steps: <itemizedlist>
+<listitem>
+<para>Batch renaming of the DICOM filename into something compatible with ISO 9660 filename convention </para>
+</listitem>
+<listitem>
+<para>Convert all DICOM file into the Explicit VR Little Endian Uncompressed (1.2.840.10008.1.2.1)</para>
+</listitem>
+</itemizedlist>
+Step 1. can be solved in a numerous way. Eg. on UNIX environment this could either be solved using the mkisofs command line tool. Filenames should not contains any extension since the VR CS does not allow for the &apos;.&apos; character. Only upper case, digit 0-9, the space &apos; &apos; and the underscore &apos;_&apos; character are valid in VR CS, with a maximum of 8 bytes. Another simple tool that can be handy is &apos;rename&apos; in conjunction with &apos;basename&apos;.</para>
+
+<para>Step 2. can simply be achieved using the gdcmconv command line tool:</para>
+
+<para><literallayout>  $ for i in `ls IMG*`; do gdcmconv --raw --force $i /tmp/out/$i; done
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmgendir_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmconv</emphasis>(1), <emphasis role="bold">gdcmanon</emphasis>(1), <emphasis role="bold">rename</emphasis>(1), <emphasis role="bold">mkisofs</emphasis>(1)</para>
+</refsection>
+</refentry>

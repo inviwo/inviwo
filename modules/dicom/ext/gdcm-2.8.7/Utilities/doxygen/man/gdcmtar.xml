@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmtar</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmtar</refname>
+    <refpurpose>Concatenate/Extract DICOM files.</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmtar_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmtar [options] file-in file-out
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcmtar</emphasis> is a command line tool used to tar/untar multi-frames images (including SIEMENS MOSAIC file)</para>
+</refsection>
+<refsection xml:id="gdcmtar_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>file-in   DICOM input filename
+
+file-out  DICOM output filename
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1options">
+<title>OPTIONS</title>
+<refsection xml:id="gdcmtar_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>     --enhance        Enhance (default)
+  -U --unenhance      Unenhance
+  -M --mosaic         Split SIEMENS Mosaic image into multiple frames.
+     --mosaic-private When splitting SIEMENS Mosaic image into multiple frames, preserve private attributes (advanced user only).
+  -p --pattern        Specify trailing file pattern.
+     --root-uid       Root UID.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1environment_variable">
+<title>environment variable</title>
+
+<para><literallayout>  GDCM_ROOT_UID Root UID
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmviewer_1usage">
+<title>Typical usage</title>
+<refsection xml:id="gdcmtar_1mosaic">
+<title>SIEMENS Mosaic</title>
+<para>This option will turn a 2D frame containing sub-frame of a SIEMENS MOSAIC into a set of MR Image Storage (legacy).</para>
+<para><literallayout>$ gdcminfo MR-sonata-3D-as-Tile.dcm
+</literallayout></para>
+
+<para><literallayout>MediaStorage is 1.2.840.10008.5.1.4.1.1.4 [MR Image Storage]
+TransferSyntax is 1.2.840.10008.1.2.1 [Explicit VR Little Endian]
+NumberOfDimensions: 2
+Dimensions: (384,384,1)
+...
+</literallayout></para>
+
+<para><literallayout>$ gdcmtar --mosaic -i MR-sonata-3D-as-Tile.dcm -o mosaic --pattern %03d.dcm
+</literallayout></para>
+
+<para>Will output:</para>
+
+<para><literallayout>-rw-r--r--   1 mathieu mathieu 72882 2009-08-10 11:14 mosaic000.dcm
+-rw-r--r--   1 mathieu mathieu 72886 2009-08-10 11:14 mosaic001.dcm
+-rw-r--r--   1 mathieu mathieu 72886 2009-08-10 11:14 mosaic002.dcm
+-rw-r--r--   1 mathieu mathieu 72886 2009-08-10 11:14 mosaic003.dcm
+-rw-r--r--   1 mathieu mathieu 72886 2009-08-10 11:14 mosaic004.dcm
+-rw-r--r--   1 mathieu mathieu 72886 2009-08-10 11:14 mosaic005.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic006.dcm
+-rw-r--r--   1 mathieu mathieu 72882 2009-08-10 11:14 mosaic007.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic008.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic009.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic010.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic011.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic012.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic013.dcm
+-rw-r--r--   1 mathieu mathieu 72882 2009-08-10 11:14 mosaic014.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic015.dcm
+-rw-r--r--   1 mathieu mathieu 72882 2009-08-10 11:14 mosaic016.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic017.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic018.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic019.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic020.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic021.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic022.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic023.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic024.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic025.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic026.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic027.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic028.dcm
+-rw-r--r--   1 mathieu mathieu 72884 2009-08-10 11:14 mosaic029.dcm
+-rw-r--r--   1 mathieu mathieu 72882 2009-08-10 11:14 mosaic030.dcm
+</literallayout></para>
+
+<para><literallayout>$ gdcminfo mosaic000.dcm
+</literallayout></para>
+
+<para><literallayout>MediaStorage is 1.2.840.10008.5.1.4.1.1.4 [MR Image Storage]
+TransferSyntax is 1.2.840.10008.1.2.1 [Explicit VR Little Endian]
+NumberOfDimensions: 2
+Dimensions: (64,64,1)
+...
+</literallayout></para>
+<para>By default all private attributes are removed since they may not match the newly generated SOP Instance. One way to preserve the private attributes is to use the --mosaic-private command line option</para>
+<para><literallayout>$ gdcmtar --mosaic --mosaic-private -i MR-sonata-3D-as-Tile.dcm -o mosaic --pattern %03d.dcm
+</literallayout></para>
+
+
+</refsection>
+</refsection>
+<refsection xml:id="gdcmtar_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcmraw</emphasis>(1), <emphasis role="bold">gdcminfo</emphasis>(1)</para>
+</refsection>
+</refentry>
