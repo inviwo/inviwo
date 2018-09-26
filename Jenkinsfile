@@ -93,6 +93,7 @@ node {
                               -DIVW_MODULE_POSTPROCESSING=ON \
                               -DIVW_MODULE_USERINTERFACEGL=ON \
                               -DIVW_MODULE_HDF5=ON \
+                              -DIVW_MODULE_DISCRETEDATA=ON \
                               -DIVW_UNITTESTS=ON \
                               -DIVW_UNITTESTS_RUN_ON_BUILD=OFF \
                               -DIVW_INTEGRATION_TESTS=ON \
