@@ -90,7 +90,7 @@ EntryExitPoints::EntryExitPoints()
 EntryExitPoints::~EntryExitPoints() {}
 
 void EntryExitPoints::process() {
-    if (enableCprPlanar_ && quadGL_) {
+    if (enableCprPlanar_) {
         // draw entry points
         utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
         entryShaderCprPlanar_.activate();
