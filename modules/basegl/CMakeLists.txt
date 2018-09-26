@@ -191,6 +191,11 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumegradientmagnitude.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumemerger.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumeslice.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/uv_pass_through.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cpr_tubular_entry_points.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cpr_tubular_exit_points.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cpr_planar_entry_points.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cpr_planar_exit_points.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

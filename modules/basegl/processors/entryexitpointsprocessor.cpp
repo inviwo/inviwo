@@ -31,13 +31,17 @@
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/buffer/buffergl.h>
 
 namespace inviwo {
 
 const ProcessorInfo EntryExitPoints::processorInfo_{
     "org.inviwo.EntryExitPoints",  // Class identifier
     "Entry Exit Points",           // Display name
-    "Mesh Rendering",          // Category
+    "Mesh Rendering",              // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
@@ -51,7 +55,15 @@ EntryExitPoints::EntryExitPoints()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
-    , trackball_(&camera_) {
+    , trackball_(&camera_)
+    , entryShaderCprTubular_("uv_pass_through.vert", "cpr_tubular_entry_points.frag")
+    , exitShaderCprTubular_("uv_pass_through.vert", "cpr_tubular_exit_points.frag")
+    , entryShaderCprPlanar_("uv_pass_through.vert", "cpr_planar_entry_points.frag")
+    , exitShaderCprPlanar_("uv_pass_through.vert", "cpr_planar_exit_points.frag")
+    , enableCprTubular_("enable_cpr_tubular", "CPR Tubular", false)
+    , enableCprPlanar_("enable_cpr_planar", "CPR Planar", false)
+    , quadGeometry_(nullptr)
+    , quadGL_(nullptr) {
     addPort(inport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -64,13 +76,37 @@ EntryExitPoints::EntryExitPoints()
         [this]() { invalidate(InvalidationLevel::InvalidResources); });
     entryExitHelper_.getNearClipShader().onReload(
         [this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    entryShaderCprTubular_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    exitShaderCprTubular_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    entryShaderCprPlanar_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    exitShaderCprPlanar_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    quadGeometry_ =
+        util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
+    quadGL_ = quadGeometry_->getRepresentation<BufferGL>();
 }
 
 EntryExitPoints::~EntryExitPoints() {}
 
 void EntryExitPoints::process() {
-    entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(), camera_.get(),
-                     *inport_.getData().get(), capNearClipping_.get());
+    if (enableCprPlanar_ && quadGL_) {
+        // is this utilgl::activateAndClearTarget necessary?
+        utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
+
+        entryShaderCprPlanar_.activate();
+        quadGL_->enable();
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
+        exitShaderCprPlanar_.activate();
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        //utilgl::singleDrawImagePlaneRect();
+        quadGL_->disable();
+    } else {
+        entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(),
+                         camera_.get(), *inport_.getData().get(), capNearClipping_.get());
+    }
 }
 
 void EntryExitPoints::deserialize(Deserializer& d) {
@@ -78,4 +114,4 @@ void EntryExitPoints::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-}  // namespace
+}  // namespace inviwo

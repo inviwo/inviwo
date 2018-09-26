@@ -38,11 +38,14 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
+
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 
 #include <modules/basegl/algorithm/entryexitpoints.h>
+
+#include <memory>
 
 namespace inviwo {
 
@@ -60,6 +63,11 @@ namespace inviwo {
  * ### Properties
  *   * __Camera__ Camera of the scene.
  */
+
+    template <typename T>
+    class Buffer<T>;
+
+    class BufferGL;
 
 class IVW_MODULE_BASEGL_API EntryExitPoints : public Processor {
 public:
@@ -84,6 +92,18 @@ private:
     CameraTrackball trackball_;
 
     algorithm::EntryExitPointsHelper entryExitHelper_;
+
+    Shader entryShaderCprTubular_;
+    Shader exitShaderCprTubular_;
+
+    Shader entryShaderCprPlanar_;
+    Shader exitShaderCprPlanar_;
+
+    BoolProperty enableCprTubular_;
+    BoolProperty enableCprPlanar_;
+
+    std::shared_ptr<Buffer<vec2>> quadGeometry_;
+    const BufferGL* quadGL_;
 };
 
 } // namespace
