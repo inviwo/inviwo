@@ -53,6 +53,10 @@ public:
     static const std::string classIdentifier;
     
     ParallelCoordinatesAxisSettingsProperty(std::string identifier, std::string displayName);
+    ParallelCoordinatesAxisSettingsProperty(const ParallelCoordinatesAxisSettingsProperty& rhs);
+    ParallelCoordinatesAxisSettingsProperty& operator=(const ParallelCoordinatesAxisSettingsProperty& that);
+    virtual ParallelCoordinatesAxisSettingsProperty* clone() const override;
+
     virtual ~ParallelCoordinatesAxisSettingsProperty() = default;
 
     /**

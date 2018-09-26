@@ -50,6 +50,9 @@ ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
     connect(button_, &QPushButton::released, this, [&]() {
         if (!property_->getReadOnly()) property_->pressButton();
     });
+    setFocusPolicy(button_->focusPolicy());
+    setFocusProxy(button_);
+
     hLayout->addWidget(button_);
     setLayout(hLayout);
     updateFromProperty();

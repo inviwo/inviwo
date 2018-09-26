@@ -67,9 +67,8 @@ public:
     void setTitle(const std::string& title);
     const std::string& getTitle() const;
     void setLabelFormat(const std::string& formatStr);
-    /** 
+    /**
      * \brief sets range property of axis and ensures the min/max limits are adjusted accordingly
-     * 
      * @param range   new axis range
      */
     void setRange(const dvec2& range);
@@ -83,7 +82,6 @@ public:
 
     TemplateOptionProperty<Orientation> orientation_;
     TemplateOptionProperty<Placement> placement_;
-    // BoolProperty logScale_;
 
     // caption besides axis
     PlotTextProperty caption_;
@@ -91,6 +89,10 @@ public:
     PlotTextProperty labels_;
 
     TickProperty ticks_;
+
+private:
+    void adjustAlignment();
+
 };
 
 }  // namespace plot

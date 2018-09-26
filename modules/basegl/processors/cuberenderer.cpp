@@ -87,7 +87,7 @@ CubeRenderer::CubeRenderer()
 }
 
 void CubeRenderer::process() {
-    if (imageInport_.hasData()) {
+    if (imageInport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepthPicking);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);

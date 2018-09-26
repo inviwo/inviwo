@@ -200,7 +200,7 @@ void exposeProcessors(pybind11::module &m) {
         });
 
     py::class_<PythonScriptProcessor, Processor, ProcessorPtr<PythonScriptProcessor>>(
-        m, "PythonScriptProcessor")
+        m, "PythonScriptProcessor", py::dynamic_attr{})
         .def("setInitializeResources", &PythonScriptProcessor::setInitializeResources)
         .def("setProcess", &PythonScriptProcessor::setProcess);
 }

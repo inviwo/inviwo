@@ -40,14 +40,19 @@ DirectoryProperty::DirectoryProperty(std::string identifier, std::string display
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
-    this->setAcceptMode(AcceptMode::Open);
-    this->setFileMode(FileMode::DirectoryOnly);
+    setAcceptMode(AcceptMode::Open);
+    setFileMode(FileMode::DirectoryOnly);
+}
+
+DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs) = default;
+DirectoryProperty& DirectoryProperty::operator=(const DirectoryProperty& that) = default;
+DirectoryProperty* DirectoryProperty::clone() const {
+    return new DirectoryProperty(*this);
 }
 
 DirectoryProperty::~DirectoryProperty() = default;
-
 std::string DirectoryProperty::getClassIdentifierForWidget() const {
     return FileProperty::getClassIdentifier();
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -47,11 +47,10 @@ namespace inviwo {
 struct IVW_CORE_API ExceptionContext {
     ExceptionContext(std::string caller = "", std::string file = "", std::string function = "",
                      int line = 0);
-
-    const std::string& getCaller();
-    const std::string& getFile();
-    const std::string& getFunction();
-    const int& getLine();
+    const std::string& getCaller() const;
+    const std::string& getFile() const;
+    const std::string& getFunction() const;
+    const int& getLine() const;
 
 private:
     std::string caller_;
@@ -76,10 +75,12 @@ public:
     virtual std::string getMessage() const noexcept;
     virtual const char* what() const noexcept override;
     virtual const ExceptionContext& getContext() const;
+    const std::vector<std::string>& getStack() const;
 
 private:
     std::string message_;
     ExceptionContext context_;
+    std::vector<std::string> stack_;
 };
 
 class IVW_CORE_API RangeException : public Exception {

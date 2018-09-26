@@ -126,6 +126,12 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(label_);
 
+    slider_->handle(0)->setFocusProxy(spinBoxMin_);
+    slider_->handle(1)->setFocusProxy(spinBoxMax_);
+
+    setFocusPolicy(spinBoxMin_->focusPolicy());
+    setFocusProxy(spinBoxMin_);
+
     QHBoxLayout* hSliderLayout = new QHBoxLayout();
     QWidget* sliderWidget = new QWidget();
     sliderWidget->setLayout(hSliderLayout);
