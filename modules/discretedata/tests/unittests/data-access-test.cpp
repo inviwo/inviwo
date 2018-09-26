@@ -45,8 +45,9 @@ namespace inviwo {
 namespace discretedata {
 
 TEST(AccessingData, Connectivity) {
+    std::vector<ind> size = {4, 5, 6};
     auto grid =
-        std::make_shared<StructuredGrid>(GridPrimitive::Volume, std::vector<ind>({4, 5, 6}));
+        std::make_shared<StructuredGrid>(GridPrimitive::Volume, size);
     DataSet data(grid);  // Assume there is data.
 
     bool allFine = true;

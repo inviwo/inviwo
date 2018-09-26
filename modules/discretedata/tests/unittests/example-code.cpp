@@ -47,8 +47,10 @@ namespace discretedata {
 
 TEST(Using, Dataset) {
     // Create a curvelinear grid.
+    std::vector<ind> gridSize = {10, 1, 1};
+    std::vector<bool> periodic = {true, false, false};
     std::shared_ptr<PeriodicGrid> grid = std::make_shared<PeriodicGrid>(
-        GridPrimitive::Volume, std::vector<ind>({10, 1, 1}), std::vector<bool>({true, false, false}));
+        GridPrimitive::Volume, gridSize, periodic);
 
     // Make the x dimension periodic (redundant), that is, the outer yz-planes overlap.
     grid->setPeriodic(0, true);

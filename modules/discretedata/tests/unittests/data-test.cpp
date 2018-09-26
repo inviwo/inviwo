@@ -59,8 +59,9 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     // - Compare results in analytic and buffer channel
     // - Copy, assign BufferChannel and test again
 
-    size_t numElements = 3;
-    DataSet dataset(GridPrimitive::Vertex, std::vector<ind>({numElements}));
+    ind numElements = 3;
+    std::vector<ind> size = {numElements};
+    DataSet dataset(GridPrimitive::Vertex, size);
 
     void(*base)(glm::vec3&, ind) = [](glm::vec3& dest, ind idx) {
         dest[0] = 1.0f;
