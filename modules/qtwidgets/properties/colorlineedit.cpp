@@ -184,7 +184,7 @@ void ColorLineEdit::updateColor() {
 
     ivwAssert((tokens.size() == 1) || (tokens.size() == 3) || (tokens.size() == 4),
               "Invalid number of color components");
-    ivwAssert((tokens.size() == 1) && tokens.front().startsWith("#"),
+    ivwAssert((tokens.size() > 1) || ((tokens.size() == 1) && tokens.front().startsWith("#")),
               "Invalid single component (expected hex color code starting with '#')");
 
     if (tokens.size() == 1) {
