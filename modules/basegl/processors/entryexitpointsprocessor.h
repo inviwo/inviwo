@@ -68,7 +68,7 @@ public:
     static const ProcessorInfo processorInfo_;
     
     EntryExitPoints();
-    virtual ~EntryExitPoints();
+    virtual ~EntryExitPoints() = default;
 
     virtual void process() override;
 

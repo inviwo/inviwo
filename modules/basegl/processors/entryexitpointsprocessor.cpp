@@ -87,8 +87,6 @@ EntryExitPoints::EntryExitPoints()
         [this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-EntryExitPoints::~EntryExitPoints() {}
-
 void EntryExitPoints::process() {
     if (enableCprPlanar_) {
         // draw entry points
