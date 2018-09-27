@@ -61,6 +61,8 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     , labels_("labels", "Axis Labels", true)
     , ticks_("ticks", "Ticks") {
 
+    color_.setSemantics(PropertySemantics::Color);
+
     addProperty(visible_);
     addProperty(color_);
     addProperty(width_);

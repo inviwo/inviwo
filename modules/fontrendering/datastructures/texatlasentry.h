@@ -39,7 +39,7 @@ struct IVW_MODULE_FONTRENDERING_API TexAtlasEntry {
     std::string value;
     ivec2 texPos;
     ivec2 texExtent;
-    ivec4 color;
+    vec4 color;
 };
 
 struct IVW_MODULE_FONTRENDERING_API TexAtlasRenderInfo {
