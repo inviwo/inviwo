@@ -30,64 +30,47 @@
 
 namespace inviwo {
 
-PlaneProperty::PlaneProperty(std::string identifier, std::string displayName,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , enable_("enable", "Enable", true, InvalidationLevel::InvalidResources)
-    , mode_("mode", "Mode", InvalidationLevel::InvalidResources)
-    , position_("position", "Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
-    , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f))
-    , color_("color", "Color", vec4(1.0f, 1.0f, 1.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-             InvalidationLevel::InvalidOutput, PropertySemantics::Color) {
-    addProperty(enable_);
-    addProperty(mode_);
-    addProperty(position_);
-    addProperty(normal_);
-    addProperty(color_);
-
-    mode_.onChange([this](){onModeChange();});
-    mode_.addOption("plane", "Plane", 0);
-
-    setAllPropertiesCurrentStateAsDefault();
-}
-
 const std::string PlaneProperty::classIdentifier = "org.inviwo.PlaneProperty";
 std::string PlaneProperty::getClassIdentifier() const { return classIdentifier; }
 
+PlaneProperty::PlaneProperty(const std::string& identifier, const std::string& displayName,
+                             vec3 position, vec3 normal, vec4 color,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : BoolCompositeProperty(identifier, displayName, true, invalidationLevel, semantics)
+    , position_("position", "Position", position, vec3(0.0f), vec3(1.0f), vec3(0.01f),
+             InvalidationLevel::InvalidOutput, PropertySemantics("SpinBox"))
+    , normal_("normal", "Normal", normal, vec3(-1.0f), vec3(1.0f), vec3(0.01f),
+             InvalidationLevel::InvalidOutput, PropertySemantics("SpinBox"))
+    , color_("color", "Color", color, vec4(0.0f), vec4(1.0f), vec4(0.01f),
+             InvalidationLevel::InvalidOutput, PropertySemantics::Color) {
+
+    getBoolProperty()->setIdentifier("enable");
+
+    addProperty(position_);
+    addProperty(normal_);
+    addProperty(color_);
+}
+
+PlaneProperty::PlaneProperty(const std::string& identifier, const std::string& displayName,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : PlaneProperty(identifier, displayName, vec3(0.5f), vec3(0.0f, 0.0f, 1.0f), vec4(1.0f),
+                    invalidationLevel, semantics) {}
+
 PlaneProperty::PlaneProperty(const PlaneProperty& rhs)
-    : CompositeProperty(rhs)
-    , enable_(rhs.enable_)
-    , mode_(rhs.mode_)
+    : BoolCompositeProperty(rhs)
     , position_(rhs.position_)
     , normal_(rhs.normal_)
     , color_(rhs.color_) {
 
-    addProperty(enable_);
-    addProperty(mode_);
     addProperty(position_);
     addProperty(normal_);
     addProperty(color_);
-
-    mode_.onChange([this](){onModeChange();});
-    setAllPropertiesCurrentStateAsDefault();
 }
 
-PlaneProperty& PlaneProperty::operator=(const PlaneProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        enable_ = that.enable_;
-        mode_ = that.mode_;
-        position_ = that.position_;
-        normal_ = that.normal_;
-        color_ = that.color_;
-    }
-    return *this;
-}
+PlaneProperty& PlaneProperty::operator=(const PlaneProperty& that) = default;
 
 PlaneProperty* PlaneProperty::clone() const { return new PlaneProperty(*this); }
 
 PlaneProperty::~PlaneProperty() = default;
 
-void PlaneProperty::onModeChange() {}
-
-}  // namespace
+}  // namespace inviwo

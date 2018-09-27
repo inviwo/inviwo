@@ -81,7 +81,8 @@ void exposeBuffer(pybind11::module &m) {
         .value("ColorAttrib", BufferType::ColorAttrib)
         .value("TexcoordAttrib", BufferType::TexcoordAttrib)
         .value("CurvatureAttrib", BufferType::CurvatureAttrib)
-        .value("IndexAttrib", BufferType::IndexAttrib);
+        .value("IndexAttrib", BufferType::IndexAttrib)
+        .value("Unspecified", BufferType::NumberOfBufferTypes);
 
     py::enum_<BufferUsage>(m, "BufferUsage")
         .value("Static", BufferUsage::Static)

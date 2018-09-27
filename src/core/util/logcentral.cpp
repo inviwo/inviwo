@@ -82,6 +82,22 @@ void LogCentral::log(std::string source, LogLevel level, LogAudience audience, c
             }
         });
     }
+
+    switch (breakLevel_) {
+        case MessageBreakLevel::Off:
+            break;
+        case MessageBreakLevel::Error:
+            if (level >= LogLevel::Error) util::debugBreak();
+            break;
+        case MessageBreakLevel::Warn:
+            if (level >= LogLevel::Warn) util::debugBreak();
+            break;
+        case MessageBreakLevel::Info:
+            if (level >= LogLevel::Info) util::debugBreak();
+            break;
+        default:
+            break;
+    }
 }
 
 void LogCentral::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
@@ -128,6 +144,9 @@ void LogCentral::logAssertion(const char* file, const char* function, int line, 
 void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = logStacktrace; }
 
 bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
+
+void LogCentral::setMessageBreakLevel(MessageBreakLevel level) { breakLevel_ = level; }
+MessageBreakLevel LogCentral::getMessageBreakLevel() const { return breakLevel_; }
 
 LogCentral* LogCentral::instance_ = nullptr;
 

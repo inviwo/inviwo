@@ -53,7 +53,8 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
 
     if (!app->getSystemSettings().enablePickingProperty_) {
-        throw ModuleInitException("Picking must be enabled in SystemSettings (View->Settings->System settings->Enable picking");
+		LogInfo("Enabling picking system setting since it is required for interaction (View->Settings->System settings->Enable picking).");
+		app->getSystemSettings().enablePickingProperty_.set(true);
     }
     // CEF initialization
 

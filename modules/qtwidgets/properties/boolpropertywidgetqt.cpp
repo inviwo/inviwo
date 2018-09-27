@@ -65,6 +65,9 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         // set up a validator accepting "true"/1 and "false"/0
         lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0"), lineEdit_));
 
+        setFocusPolicy(lineEdit_->focusPolicy());
+        setFocusProxy(lineEdit_);
+
         auto setPropertyValueFromString = [=]() {
             QString str(lineEdit_->text());
             property_->set(str == "true" || str == "1");
@@ -75,6 +78,9 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         checkBox_ = new QCheckBox();
         checkBox_->setEnabled(!property_->getReadOnly());
         checkBox_->setFixedSize(QSize(15, 15));
+
+        setFocusPolicy(checkBox_->focusPolicy());
+        setFocusProxy(checkBox_);
 
         auto setPropertyValueFromCheckbox = [=](bool checked) {
             property_->set(checked);

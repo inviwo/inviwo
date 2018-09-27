@@ -46,6 +46,9 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
     , label_{new EditableLabelQt(this, property)}
     , btnOpenTF_{new TFPushButton(property, this)} {
 
+    setFocusPolicy(btnOpenTF_->focusPolicy());
+    setFocusProxy(btnOpenTF_);
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
 

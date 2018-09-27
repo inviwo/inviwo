@@ -258,12 +258,20 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                     edwidget->setLayout(edLayout);
                     edLayout->addWidget(new QLabel(sphericalChars[i], this));
                     edLayout->addWidget(static_cast<QWidget*>(controlWidget));
+
+                    edwidget->setFocusPolicy(controlWidget->focusPolicy());
+                    edwidget->setFocusProxy(controlWidget);
                 } else {
                     edwidget = controlWidget;
                 }
                 gridLayout->addWidget(edwidget, static_cast<int>(i), static_cast<int>(j));
             }
         }
+    }
+
+    if ((gridLayout->count() > 0) && gridLayout->itemAt(0)->widget()) {
+        setFocusPolicy(gridLayout->itemAt(0)->widget()->focusPolicy());
+        setFocusProxy(gridLayout->itemAt(0)->widget());
     }
 
     hLayout->addWidget(centralWidget);

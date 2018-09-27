@@ -239,7 +239,13 @@ void TFPropertyDialog::initializeDialog() {
                         return elem->getType() == TFPrimitiveSetType::Relative;
                     });
                 primitivePos_->setValueMapping(allRelative, range);
+
+                zoomHSlider_->setTooltipFormat([ sliderRange = sliderRange_, range ](int, int val) {
+                    return toString(
+                        glm::mix(range.x, range.y, static_cast<double>(val) / sliderRange));
+                });
             };
+            portChange();
 
             port->onChange(portChange);
             port->onConnect(portChange);
@@ -309,6 +315,7 @@ void TFPropertyDialog::initializeDialog() {
     {
         colorDialog_ = util::make_unique<QColorDialog>(this);
         colorDialog_->hide();
+        colorDialog_->setAttribute(Qt::WA_DeleteOnClose, false);
         // we don't want to see alpha in the color dialog
         colorDialog_->setOption(QColorDialog::ShowAlphaChannel, false);
         colorDialog_->setOption(QColorDialog::NoButtons, true);

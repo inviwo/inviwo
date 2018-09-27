@@ -9,6 +9,7 @@ set(SOURCE_FILES
     inviwoapplication-test.cpp
     network-test.cpp
     processorcreation-test.cpp
+    propertycreation-test.cpp
     volume-test.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
@@ -23,7 +24,7 @@ foreach(module ${enabled_modules})
 endforeach()
 
 # Create application
-add_executable(inviwo-integrationtests MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
+add_executable(inviwo-integrationtests ${SOURCE_FILES})
 target_link_libraries(inviwo-integrationtests PRIVATE 
     inviwo::core
     inviwo::module::glfw

@@ -23,6 +23,7 @@ set(MOC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/ordinaleditorwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processordockwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processorwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/colorlineedit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/doublevaluedragspinbox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalspinboxwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringmultilinepropertywidgetqt.h
@@ -118,6 +119,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/buttonpropertywidgetqt.cpp  
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/collapsiblegroupboxwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/colorlineedit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/colorpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/compositepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/doublevaluedragspinbox.cpp

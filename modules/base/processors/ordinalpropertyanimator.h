@@ -42,7 +42,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 
-
 #include <glm/vector_relational.hpp>
 
 #include <tuple>
@@ -56,7 +55,7 @@ public:
     virtual void update() = 0;
 };
 
-enum class BoundaryType {Stop, Periodic, Mirror};
+enum class BoundaryType { Stop, Periodic, Mirror };
 
 template <typename T>
 class OrdinalAnimationProperty : public BaseOrdinalAnimationProperty {
@@ -65,6 +64,9 @@ public:
     using valueType = T;
 
     OrdinalAnimationProperty(const std::string& identifier, const std::string& displayName);
+    OrdinalAnimationProperty(const OrdinalAnimationProperty& rhs);
+    OrdinalAnimationProperty& operator=(const OrdinalAnimationProperty& that) = default;
+    virtual OrdinalAnimationProperty* clone() const override;
     virtual ~OrdinalAnimationProperty() = default;
 
     void setLimits();
@@ -76,8 +78,6 @@ public:
     TemplateOptionProperty<BoundaryType> boundary_;
     BoolProperty active_;
 };
-
-
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
@@ -112,6 +112,25 @@ OrdinalAnimationProperty<T>::OrdinalAnimationProperty(const std::string& identif
     addProperty(delta_);
     addProperty(boundary_);
     addProperty(active_);
+}
+
+template <typename T>
+OrdinalAnimationProperty<T>::OrdinalAnimationProperty(const OrdinalAnimationProperty& rhs)
+    : BaseOrdinalAnimationProperty(rhs)
+    , value_{rhs.value_}
+    , delta_{rhs.delta_}
+    , boundary_{rhs.boundary_}
+    , active_{rhs.active_} {
+
+    addProperty(value_);
+    addProperty(delta_);
+    addProperty(boundary_);
+    addProperty(active_);
+}
+
+template <typename T>
+OrdinalAnimationProperty<T>* OrdinalAnimationProperty<T>::clone() const {
+    return new OrdinalAnimationProperty<T>(*this);
 }
 
 template <typename T>
@@ -161,7 +180,7 @@ T mirror(const T& val, const T& min, const T& max) {
     }
 }
 
-}
+}  // namespace detail
 
 template <typename T>
 void OrdinalAnimationProperty<T>::update() {
@@ -259,6 +278,6 @@ private:
     };
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ORDINALPROPERTYANIMATOR_H

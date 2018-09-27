@@ -73,7 +73,7 @@ OrdinalPropertyWidgetCEF<T>::OrdinalPropertyWidgetCEF(OrdinalProperty<T>* proper
 template <typename T>
 void OrdinalPropertyWidgetCEF<T>::updateFromProperty() {
 	// Frame might be null if for example webpage is not found on startup
-	if (!frame_) {
+    if (!PropertyWidgetCEF::frame_) {
 		return;
 	}
     // LogInfo("updateFromProperty");

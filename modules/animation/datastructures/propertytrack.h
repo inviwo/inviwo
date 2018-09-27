@@ -210,7 +210,7 @@ public:
      * @param dstProperty The property to set
      * @param keyframe The keyframe to set from
      */
-    void setOtherProperty(Property* dstProperty, Keyframe* keyframe) {
+    void setOtherProperty(Property* dstProperty, Keyframe* keyframe) override {
         IVW_ASSERT(dstProperty->getClassIdentifier() == PropertyTraits<Prop>::classIdentifier(),
                    "Incorrect Property type");
         detail::setOtherPropertyHelper(static_cast<Prop*>(dstProperty),
@@ -227,7 +227,7 @@ public:
      * @param srcProperty The property to set from
      * @param keyframe The keyframe to set
      */
-    void updateKeyframeFromProperty(Property* srcProperty, Keyframe* keyframe) {
+    void updateKeyframeFromProperty(Property* srcProperty, Keyframe* keyframe) override {
         ivwAssert(srcProperty->getClassIdentifier() == PropertyTraits<Prop>::classIdentifier(),
                   "Incorrect Property type");
         detail::updateKeyframeFromPropertyHelper(static_cast<Prop*>(srcProperty),

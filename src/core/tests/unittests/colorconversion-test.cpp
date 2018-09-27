@@ -58,10 +58,15 @@ TEST(colorconversion, rgb2hex) {
 
 TEST(colorconversion, hex2rgba) {
     EXPECT_THROW(hex2rgba("ffaabbcc"), Exception);
-    EXPECT_THROW(hex2rgba("#aaf"), Exception);
+    EXPECT_THROW(hex2rgba("#aa"), Exception);
     EXPECT_THROW(hex2rgba("#aaffc"), Exception);
-    EXPECT_THROW(hex2rgba("#aaffccddaa"), Exception);
+    EXPECT_THROW(hex2rgba("#aaffccdda"), Exception);
+    EXPECT_THROW(hex2rgba("#test"), Exception);
 
+    EXPECT_EQ(vec4(0xaa, 0xbb, 0xcc, 0xff) / 255.0f, hex2rgba("#abc"));
+    EXPECT_EQ(vec4(0xaa, 0xbb, 0xcc, 0xdd) / 255.0f, hex2rgba("#abcd"));
+
+    EXPECT_EQ(vec4(0xaa, 0xbb, 0xcc, 0xff) / 255.0f, hex2rgba("#aabbcc"));
     EXPECT_EQ(vec4(0xaa, 0xbb, 0xcc, 0xdd) / 255.0f, hex2rgba("#aabbccdd"));
     EXPECT_EQ(vec4(0x0a, 0x0b, 0x0c, 0x0d) / 255.0f, hex2rgba("#0a0b0c0d"));
     EXPECT_EQ(vec4(0xd0, 0xc0, 0xb0, 0xa0) / 255.0f, hex2rgba("#d0c0b0a0"));
