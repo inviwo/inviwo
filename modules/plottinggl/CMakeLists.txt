@@ -8,6 +8,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotters/persistencediagramplotgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotters/scatterplotgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisrenderprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/colorscalelegend.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/persistencediagramplotprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinates.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h
@@ -24,6 +25,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotters/persistencediagramplotgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotters/scatterplotgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisrenderprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/colorscalelegend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/persistencediagramplotprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinates.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.cpp
@@ -38,6 +40,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/legend.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_axis.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_axis.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_common.glsl
