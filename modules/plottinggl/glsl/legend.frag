@@ -30,8 +30,8 @@
 uniform sampler2D color_;
 
 uniform vec2 position_;
-uniform vec2 dimensions_;
-uniform vec2 legendSize_;
+uniform ivec2 dimensions_;
+uniform ivec2 legendSize_;
 
 // variable rotationTF_ =
 // 0 -> 0 degree rotation ccw
