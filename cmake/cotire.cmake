@@ -3516,7 +3516,7 @@ function (cotire_init_target _targetName)
 	endif()
 	set_target_properties(${_targetName} PROPERTIES EXCLUDE_FROM_ALL TRUE)
 	if (MSVC_IDE)
-		set_target_properties(${_targetName} PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+		#set_target_properties(${_targetName} PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD TRUE)
 	endif()
 endfunction()
 
