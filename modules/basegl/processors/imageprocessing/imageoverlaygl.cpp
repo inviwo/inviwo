@@ -61,7 +61,7 @@ OverlayProperty::OverlayProperty(std::string identifier, std::string displayName
                  InvalidationLevel::Valid)
     , blendMode_("blendMode", "Blending Mode",
                  {{"replace", "Replace", BlendMode::Replace}, {"over", "Blend", BlendMode::Over}},
-                 1, InvalidationLevel::Valid)
+                 1, InvalidationLevel::InvalidResources)
     , positioningMode_("positioningMode", "Positioning Mode",
                        {{"absolute", "Absolute", Positioning::Absolute},
                         {"relative", "Relative", Positioning::Relative}},
@@ -114,7 +114,9 @@ void OverlayProperty::setViewDimensions(ivec2 viewDim) {
 
 const ivec4& OverlayProperty::getViewport() const { return viewport_; }
 
-GLint OverlayProperty::getBlendMode() const { return static_cast<GLint>(blendMode_.get()); }
+auto OverlayProperty::getBlendMode() const -> BlendMode { return blendMode_; }
+
+GLint OverlayProperty::getBlendModeGL() const { return static_cast<GLint>(blendMode_.get()); }
 
 void OverlayProperty::deserialize(Deserializer& d) {
     isDeserializing_ = true;
@@ -181,7 +183,7 @@ ImageOverlayGL::ImageOverlayGL()
     , border_("border", "Border", true)
     , borderColor_("borderColor", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
     , borderWidth_("borderWidth", "Width", 2, 0, 100)
-    , shader_("img_identity.vert", "img_overlay.frag")
+    , shader_("img_identity.vert", "img_overlay.frag", false)
     , viewManager_()
     , currentDim_(0u, 0u) {
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -259,6 +261,16 @@ void ImageOverlayGL::onStatusChange() {
     }
 }
 
+void ImageOverlayGL::initializeResources() {
+    if (overlayProperty_.getBlendMode() == OverlayProperty::BlendMode::Replace) {
+        shader_.getFragmentShaderObject()->addShaderDefine("BLENDMODE_REPLACE");
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("BLENDMODE_REPLACE");
+    }
+
+    shader_.build();
+}
+
 void ImageOverlayGL::process() {
     if (!enabled_.get()) {
         outport_.setData(inport_.getData());
@@ -267,8 +279,8 @@ void ImageOverlayGL::process() {
 
     utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::ImageType::ColorDepthPicking);
 
-    if (overlayPort_.hasData()) {  // draw overlay
-        utilgl::DepthFuncState(GL_ALWAYS);
+    if (overlayPort_.isReady()) {  // draw overlay
+        utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
         ivec4 viewport = overlayProperty_.getViewport();
         int borderWidth = 0;
@@ -278,7 +290,7 @@ void ImageOverlayGL::process() {
             viewport += ivec4(-borderWidth, -borderWidth, 2 * borderWidth, 2 * borderWidth);
         }
 
-        utilgl::BlendModeState blendMode(overlayProperty_.getBlendMode(), GL_ONE_MINUS_SRC_ALPHA);
+        utilgl::BlendModeState blendMode(overlayProperty_.getBlendModeGL(), GL_ONE_MINUS_SRC_ALPHA);
 
         TextureUnit colorUnit, depthUnit, pickingUnit;
         shader_.activate();

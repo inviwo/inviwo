@@ -43,7 +43,7 @@ enum class FilterResult { Upper, Lower, None };
  * @param range to use for filtering
  * @return true if if value is outside range and not missing data.
  */
-FilterResult filterValue(const double &value, const dvec2 &range) {
+FilterResult filterValue(const double& value, const dvec2& range) {
     // Do not filter missing data (NaN)
     if (util::isnan(value)) return FilterResult::None;
     if (value < range.x) {
@@ -57,8 +57,11 @@ FilterResult filterValue(const double &value, const dvec2 &range) {
 
 }  // namespace detail
 
-PropertyClassIdentifier(ParallelCoordinatesAxisSettingsProperty,
-                        "org.inviwo.parallelcoordinates.axissettingsproperty");
+const std::string ParallelCoordinatesAxisSettingsProperty::classIdentifier =
+    "org.inviwo.parallelcoordinates.axissettingsproperty";
+std::string ParallelCoordinatesAxisSettingsProperty::getClassIdentifier() const {
+    return classIdentifier;
+}
 
 ParallelCoordinatesAxisSettingsProperty::ParallelCoordinatesAxisSettingsProperty(
     std::string identifier, std::string displayName)
@@ -74,13 +77,27 @@ ParallelCoordinatesAxisSettingsProperty::ParallelCoordinatesAxisSettingsProperty
     usePercentiles_.setSerializationMode(PropertySerializationMode::All);
 }
 
+ParallelCoordinatesAxisSettingsProperty::ParallelCoordinatesAxisSettingsProperty(
+    const ParallelCoordinatesAxisSettingsProperty& rhs)
+    : BoolCompositeProperty(rhs), usePercentiles_{rhs.usePercentiles_}, range_{rhs.range_} {
+    addProperty(range_);
+    addProperty(usePercentiles_);
+}
+
+ParallelCoordinatesAxisSettingsProperty& ParallelCoordinatesAxisSettingsProperty::operator=(
+    const ParallelCoordinatesAxisSettingsProperty& that) = default;
+
+ParallelCoordinatesAxisSettingsProperty* ParallelCoordinatesAxisSettingsProperty::clone() const {
+    return new ParallelCoordinatesAxisSettingsProperty(*this);
+}
+
 void ParallelCoordinatesAxisSettingsProperty::updateFromColumn(std::shared_ptr<const Column> col) {
     col_ = col;
     util::KeepTrueWhileInScope updating(&updating_);
     col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
             using T = typename util::PrecsionValueType<decltype(ram)>;
-            auto &dataVector = ram->getDataContainer();
+            auto& dataVector = ram->getDataContainer();
 
             auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
             double minV = minMax.first.x;
@@ -106,7 +123,6 @@ void ParallelCoordinatesAxisSettingsProperty::updateFromColumn(std::shared_ptr<c
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
         });
 }
-
 
 double ParallelCoordinatesAxisSettingsProperty::getNormalized(double v) const {
     if (range_.getRangeMax() == range_.getRangeMin()) {
@@ -145,7 +161,6 @@ double ParallelCoordinatesAxisSettingsProperty::getNormalized(double v) const {
         return o + t * r;
     }
 }
-
 
 double ParallelCoordinatesAxisSettingsProperty::getNormalizedAt(size_t idx) const {
     return getNormalized(at(idx));
@@ -195,7 +210,7 @@ void ParallelCoordinatesAxisSettingsProperty::moveHandle(bool upper, double mous
     range_.set(range);
 }
 
-void ParallelCoordinatesAxisSettingsProperty::updateBrushing(std::unordered_set<size_t> &brushed) {
+void ParallelCoordinatesAxisSettingsProperty::updateBrushing(std::unordered_set<size_t>& brushed) {
     if (updating_) return;
     auto range = range_.get();
     // Increase range to avoid conversion issues

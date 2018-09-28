@@ -46,7 +46,8 @@ template <typename T>
 class MinMaxProperty : public TemplateProperty<glm::tvec2<T, glm::defaultp> > {
 public:
     typedef glm::tvec2<T, glm::defaultp> range_type;
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     MinMaxProperty(std::string identifier, std::string displayName,
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
@@ -140,8 +141,11 @@ using Int64MinMaxProperty = MinMaxProperty<glm::i64>;
 using IntMinMaxProperty = MinMaxProperty<int>;
 
 template <typename T>
-PropertyClassIdentifier(MinMaxProperty<T>,
-                        "org.inviwo." + Defaultvalues<T>::getName() + "MinMaxProperty");
+struct PropertyTraits<MinMaxProperty<T>> {
+    static std::string classIdentifier() {
+        return "org.inviwo." + Defaultvalues<T>::getName() + "MinMaxProperty";
+    }
+};
 
 template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string identifier, std::string displayName, T valueMin,
@@ -168,6 +172,11 @@ MinMaxProperty<T>& MinMaxProperty<T>::operator=(const range_type& value) {
 template <typename T>
 MinMaxProperty<T>* MinMaxProperty<T>::clone() const {
     return new MinMaxProperty<T>(*this);
+}
+
+template <typename T>
+std::string MinMaxProperty<T>::getClassIdentifier() const {
+    return PropertyTraits<MinMaxProperty<T>>::classIdentifier();
 }
 
 template <typename T>

@@ -450,8 +450,6 @@ void VolumeSliceGL::process() {
 
 void VolumeSliceGL::renderPositionIndicator() {
     if (meshDirty_) {
-        mat4 trans = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
-        worldPosition_.set(vec3(trans * vec4(planePosition_.get(), 1.0f)));
         updateIndicatorMesh();
     }
 
@@ -691,7 +689,15 @@ void VolumeSliceGL::sliceChange() {
     const ivec4 indexPos(sliceX_.get() - 1, sliceY_.get() - 1, sliceZ_.get() - 1, 1.0);
     const vec3 texturePos(vec3(indexToTexture * vec4(indexPos)));
 
-    planePosition_.set(texturePos);
+    const mat4 indexToWorld(inport_.getData()->getCoordinateTransformer().getIndexToWorldMatrix());
+    const vec3 worldPos = vec3(indexToWorld * vec4(sliceX_.get(), sliceY_.get(), sliceZ_.get(), 1.0f));
+
+    {
+        NetworkLock lock(this);
+        planePosition_.set(texturePos);
+        worldPosition_.set(worldPos);
+	}
+
 }
 
 void VolumeSliceGL::positionChange() {
@@ -703,11 +709,15 @@ void VolumeSliceGL::positionChange() {
     const vec4 texturePos(planePosition_.get(), 1.0);
     const ivec3 indexPos(ivec3(textureToIndex * texturePos) + ivec3(1));
 
+    const mat4 textureToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+    const vec3 worldPos = vec3(textureToWorld * vec4(planePosition_.get(), 1.0f));
+
     {
         NetworkLock lock(this);
         sliceX_.set(indexPos.x);
         sliceY_.set(indexPos.y);
         sliceZ_.set(indexPos.z);
+        worldPosition_.set(worldPos);
     }
     invalidateMesh();
 }

@@ -31,49 +31,56 @@
 #define IVW_ANIMATIONEDITORDOCKWIDGETQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animation/animationcontrollerobserver.h>
-#include <modules/animation/animationcontroller.h>
 #include <inviwo/core/common/inviwo.h>
+
 #include <modules/qtwidgets/inviwodockwidget.h>
 
+#include <modules/animation/animationcontrollerobserver.h>
+
 class QToolButton;
+class QMainWindow;
 
 namespace inviwo {
 
 namespace animation {
 
+class AnimationManager;
+class AnimationController;
 class AnimationEditorQt;
 class AnimationViewQt;
-class AnimationLabelViewQt;
+class SequenceEditorPanel;
+class TrackWidgetQtFactory;
+class SequenceEditorFactory;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
                                                                public AnimationControllerObserver {
 public:
-    AnimationEditorDockWidgetQt(AnimationController& controller, const std::string& widgetName,
-                                QWidget* parent);
+    AnimationEditorDockWidgetQt(AnimationManager& controller, const std::string& widgetName,
+                                TrackWidgetQtFactory& widgetFactory,
+                                SequenceEditorFactory& editorFactory, QWidget* parent);
+    AnimationEditorDockWidgetQt(const AnimationEditorDockWidgetQt&) = delete;
+    AnimationEditorDockWidgetQt(AnimationEditorDockWidgetQt&&)= delete;
+    AnimationEditorDockWidgetQt& operator=(const AnimationEditorDockWidgetQt&) = delete;
+    AnimationEditorDockWidgetQt& operator=(AnimationEditorDockWidgetQt&&) = delete;
     virtual ~AnimationEditorDockWidgetQt();
 
 protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
 
-    virtual void onPlaybackModeChanged(AnimationController* controller, PlaybackMode prevMode,
-                                       PlaybackMode newMode) override;
-
     AnimationController& controller_;
 
     // GUI-stuff
     QAction* btnPlayPause_;
-    QAction* btnStop_;
-    QAction* loop_;
     std::unique_ptr<AnimationEditorQt> animationEditor_;
     AnimationViewQt* animationView_;
-    AnimationLabelViewQt* animationLabelView_;
+    SequenceEditorPanel* sequenceEditorView_;
+    QMainWindow* mainWindow_;
+    bool vScrolling_ = false;
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-
+#endif  // IVW_ANIMATIONEDITORDOCKWIDGETQT_H

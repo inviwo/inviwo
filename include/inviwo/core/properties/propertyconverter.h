@@ -61,7 +61,8 @@ template <typename SrcProperty, typename DstProperty>
 class TemplatePropertyConverter : public PropertyConverter {
 public:
     TemplatePropertyConverter()
-        : PropertyConverter(SrcProperty::CLASS_IDENTIFIER, DstProperty::CLASS_IDENTIFIER) {}
+        : PropertyConverter(PropertyTraits<SrcProperty>::classIdentifier(),
+                            PropertyTraits<DstProperty>::classIdentifier()) {}
     virtual ~TemplatePropertyConverter() = default;
 
     virtual void convert(const Property *src, Property *dst) const override {

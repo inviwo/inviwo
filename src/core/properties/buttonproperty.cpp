@@ -32,13 +32,16 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(ButtonProperty, "org.inviwo.ButtonProperty");
+const std::string ButtonProperty::classIdentifier = "org.inviwo.ButtonProperty";
+std::string ButtonProperty::getClassIdentifier() const { return classIdentifier; }
 
 ButtonProperty::ButtonProperty(
     std::string identifier, std::string displayName,
     InvalidationLevel invalidationLevel /*=InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
-    : Property(identifier, displayName, invalidationLevel, semantics) {}
+    : Property(identifier, displayName, invalidationLevel, semantics) {
+    setValid(); // the initial state for a button should be valid
+}
 
 ButtonProperty::ButtonProperty(const ButtonProperty& rhs) : Property(rhs) {}
 

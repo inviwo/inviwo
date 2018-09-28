@@ -119,7 +119,7 @@ template <typename BaseRepr>
 const RepresentationConverterPackage<BaseRepr>*
 RepresentationConverterFactory<BaseRepr>::getRepresentationConverter(ConverterID id) {
     RepresentationConverterPackage<BaseRepr>* res = nullptr;
-    size_t steps = std::numeric_limits<size_t>::max();
+    const size_t steps = std::numeric_limits<size_t>::max();
     {
         std::unique_lock<std::mutex> lock(mutex_);
         auto range = packages_.equal_range(id);

@@ -57,7 +57,8 @@ class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {
 public:
     class Properties : public CompositeProperty {
     public:
-        InviwoPropertyInfo();
+        virtual std::string getClassIdentifier() const override;
+        static const std::string classIdentifier;
 
         Properties(std::string identifier, std::string displayName,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -86,7 +87,7 @@ public:
         AxisProperty yAxis_;
     };
 
-    explicit ScatterPlotGL(Processor* processor = nullptr);
+    explicit ScatterPlotGL(Processor *processor = nullptr);
     virtual ~ScatterPlotGL() = default;
 
     void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
@@ -143,8 +144,7 @@ protected:
     std::unique_ptr<IndexBuffer> indices_;
     std::unique_ptr<BufferObjectArray> boa_;
 
-
-    Processor* processor_;
+    Processor *processor_;
 };
 
 }  // namespace plot

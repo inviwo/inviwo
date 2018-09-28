@@ -40,6 +40,6 @@ const std::string& InterpolationFactoryObject::getClassIdentifier() const {
     return classIdentifier_;
 }
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo

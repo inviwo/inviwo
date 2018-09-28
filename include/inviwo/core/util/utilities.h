@@ -46,8 +46,9 @@ namespace util {
 
 IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string filename);
 
-IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
-                                  std::string name = "UPN", std::string ext = ".png");
+IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, const std::string& dir,
+                                  const std::string& name = "UPN", const std::string& ext = ".png",
+                                  bool onlyActiveCanvases = false);
 
 IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = "");
 
@@ -78,7 +79,7 @@ IVW_CORE_API std::string cleanIdentifier(const std::string& identifier,
  * Returns filename without extension if inviwo-module was not found.
  *
  * @param  filePath Path to module file
- * @return name of the module 
+ * @return name of the module
  */
 IVW_CORE_API std::string stripModuleFileNameDecoration(std::string filePath);
 

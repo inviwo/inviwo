@@ -246,7 +246,7 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
     // fill pixmap background with a checkerboard
     painter.fillRect(r, QBrush(checkerBoard));
 
-    if (propertyConcept.hasTF()) {
+    if (propertyConcept.hasTF() && !propertyConcept.getTransferFunction()->empty()) {
         // draw TF gradient on top
 
         QVector<QGradientStop> gradientStops;

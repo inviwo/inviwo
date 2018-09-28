@@ -51,8 +51,11 @@ static double norm(const glm::vec<L, T, Q> &glm) {
 }
 }  // namespace detail
 
-PropertyClassIdentifier(IntegralLineVectorToMesh::ColorByProperty,
-                        "org.inviwo.IntegralLineVectorToMesh.ColorByProperty");
+const std::string IntegralLineVectorToMesh::ColorByProperty::classIdentifier =
+    "org.inviwo.IntegralLineVectorToMesh.ColorByProperty";
+std::string IntegralLineVectorToMesh::ColorByProperty::getClassIdentifier() const {
+    return classIdentifier;
+}
 
 IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(
     std::string identifier, std::string displayName,

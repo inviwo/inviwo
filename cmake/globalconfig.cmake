@@ -99,11 +99,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/modules")
 
 #--------------------------------------------------------------------
 # Add parameter for paths to external modules
-set(IVW_EXTERNAL_MODULES "" CACHE STRING "Paths to directory containing external modules")
-
+set(IVW_EXTERNAL_MODULES "" CACHE STRING "Semicolon (;) separated paths to directories containing external modules")
+# Convert to valid paths, i.e. exchange backslash to slash
+file(TO_CMAKE_PATH "${IVW_EXTERNAL_MODULES}" IVW_EXTERNAL_MODULES)
 #--------------------------------------------------------------------
 # Add parameter for paths to external projects
-set(IVW_EXTERNAL_PROJECTS "" CACHE STRING "Paths to directory containing external projects")
+set(IVW_EXTERNAL_PROJECTS "" CACHE STRING "Semicolon (;) separated paths to directories with apps. CMake add_subdirectory will be called for each path.")
+# Convert to valid paths, i.e. exchange backslash to slash
+file(TO_CMAKE_PATH "${IVW_EXTERNAL_PROJECTS}" IVW_EXTERNAL_PROJECTS)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
    "Single Directory for all static libraries.")
 
@@ -217,14 +220,6 @@ if(WIN32 AND MSVC)
 
     # For >=VS2015 enable edit and continue "ZI"
     add_compile_options($<$<CONFIG:Debug>:/ZI>)
-
-    # enable debug:fastlink for debug builds
-    # https://blogs.msdn.microsoft.com/vcblog/2014/11/12/speeding-up-the-incremental-developer-build-scenario/
-    # needs to be off for proper callstack from VLD https://vld.codeplex.com/discussions/654355 
-    if(NOT IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
-        set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
-    endif()
 
     add_compile_options(/bigobj)
 

@@ -78,7 +78,6 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     : PropertyWidgetQt(property)
     , PropertyOwnerObserver()
     , displayName_(displayName)
-    , collapsed_(false)
     , checked_(false)
     , propertyOwner_(owner)
     , showIfEmpty_(false)
@@ -94,10 +93,11 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     propertyWidgetGroupLayout_ = static_cast<QGridLayout*>(propertyWidgetGroup_->layout());
 
     btnCollapse_ = new QToolButton(this);
+    btnCollapse_->setCheckable(true);
+    btnCollapse_->setChecked(false);
     btnCollapse_->setObjectName("collapseButton");
-    btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_lighter_down.png"));
-    connect(btnCollapse_, &QToolButton::clicked, this,
-            &CollapsibleGroupBoxWidgetQt::toggleCollapsed);
+    connect(btnCollapse_, &QToolButton::toggled, this, &CollapsibleGroupBoxWidgetQt::setCollapsed);
+    btnCollapse_->setFocusPolicy(Qt::NoFocus);
 
     if (property_) {
         label_ = new EditableLabelQt(this, property_, false);
@@ -121,6 +121,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
             propertyOwner_->resetAllPoperties();
         }
     });
+    resetButton_->setFocusPolicy(Qt::NoFocus);
 
     resetButton_->setToolTip(tr("Reset the group of properties to its default state"));
 
@@ -130,14 +131,17 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     checkBox_->setChecked(checked_);
     checkBox_->setVisible(checkable_);
 
+    updateFocusPolicy();
+
     QObject::connect(checkBox_, &QCheckBox::clicked, this,
                      [&]() { setChecked(checkBox_->isChecked()); });
 
     QHBoxLayout* heading = new QHBoxLayout();
     heading->setContentsMargins(0, 0, 0, 0);
-    heading->setSpacing(PropertyWidgetQt::spacing);
+    heading->setSpacing(0);
     heading->addWidget(btnCollapse_);
     heading->addWidget(label_);
+    heading->addSpacing(PropertyWidgetQt::spacing);
     heading->addStretch(1);
     heading->addWidget(checkBox_);
     heading->addWidget(resetButton_);
@@ -211,7 +215,7 @@ const std::vector<Property*>& CollapsibleGroupBoxWidgetQt::getProperties() { ret
 
 void CollapsibleGroupBoxWidgetQt::toggleCollapsed() { setCollapsed(!isCollapsed()); }
 
-bool CollapsibleGroupBoxWidgetQt::isCollapsed() const { return collapsed_; }
+bool CollapsibleGroupBoxWidgetQt::isCollapsed() const { return btnCollapse_->isChecked(); }
 
 bool CollapsibleGroupBoxWidgetQt::isChecked() const { return checked_; }
 
@@ -235,6 +239,7 @@ void CollapsibleGroupBoxWidgetQt::setCheckable(bool checkable) {
     checkable_ = checkable;
     // update header
     checkBox_->setVisible(checkable_);
+    updateFocusPolicy();
 }
 
 bool CollapsibleGroupBoxWidgetQt::isChildRemovable() const { return false; }
@@ -252,14 +257,8 @@ void CollapsibleGroupBoxWidgetQt::setVisible(bool visible) {
 
 void CollapsibleGroupBoxWidgetQt::setCollapsed(bool collapse) {
     setUpdatesEnabled(false);
-    if (collapsed_ && !collapse) {
-        propertyWidgetGroup_->show();
-        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_lighter_down.png"));
-    } else if (!collapsed_ && collapse) {
-        propertyWidgetGroup_->hide();
-        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_lighter_right.png"));
-    }
-    collapsed_ = collapse;
+    propertyWidgetGroup_->setVisible(!collapse);
+    btnCollapse_->setChecked(collapse);
     setUpdatesEnabled(true);
 }
 
@@ -329,6 +328,11 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
             newWidget->setParentPropertyWidget(this);
             newWidget->initState();
 
+            // need to re-set tab order for all following widgets to ensure tab order is correct
+            // (see http://doc.qt.io/qt-5/qwidget.html#setTabOrder)
+            for (auto it = propertyWidgets_.begin() + 1; it != propertyWidgets_.end(); ++it) {
+                setTabOrder((*(it - 1)), (*it));
+            }
         } else {
             LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());
         }
@@ -385,6 +389,10 @@ const std::vector<PropertyWidgetQt*>& CollapsibleGroupBoxWidgetQt::getPropertyWi
 
 void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) { showIfEmpty_ = val; }
 
+void CollapsibleGroupBoxWidgetQt::setEmptyLabelString(const std::string& str) {
+    defaultLabel_->setText(utilqt::toQString(str));
+}
+
 std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget() {
     auto widget = std::make_unique<QWidget>(this);
     widget->setObjectName("CompositeContents");
@@ -392,7 +400,7 @@ std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget
     auto propertyLayout = std::make_unique<QGridLayout>();
     propertyLayout->setObjectName("PropertyWidgetLayout");
     propertyLayout->setAlignment(Qt::AlignTop);
-    propertyLayout->setContentsMargins(PropertyWidgetQt::spacing, PropertyWidgetQt::spacing, 0,
+    propertyLayout->setContentsMargins(PropertyWidgetQt::spacing * 2, PropertyWidgetQt::spacing, 0,
                                        PropertyWidgetQt::spacing);
     propertyLayout->setHorizontalSpacing(0);
     propertyLayout->setVerticalSpacing(PropertyWidgetQt::spacing);
@@ -485,6 +493,12 @@ void CollapsibleGroupBoxWidgetQt::insertProperty(Property* prop, size_t index) {
         propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
 
         insertPropertyWidget(propertyWidget, insertAtEnd);
+
+        // need to re-set tab order for all following widgets to ensure tab order is correct
+        // (see http://doc.qt.io/qt-5/qwidget.html#setTabOrder)
+        for (auto wit = propertyWidgets_.begin() + 1; wit != propertyWidgets_.end(); ++wit) {
+            setTabOrder(*(wit - 1), *wit);
+        }
     } else {
         LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
 
@@ -500,7 +514,6 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
             collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
             // make the collapsible widget go all the way to the right border
             layout->addWidget(widget, row, 0, 1, 2);
-
         } else {  // not a collapsible widget
             widget->setNestedDepth(this->getNestedDepth());
             // property widget should only be added to the left column of the layout
@@ -573,6 +586,15 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
                 }
             }
         }
+    }
+}
+
+void CollapsibleGroupBoxWidgetQt::updateFocusPolicy() {
+    if (checkable_) {
+        setFocusPolicy(checkBox_->focusPolicy());
+        setFocusProxy(checkBox_);
+    } else {
+        setFocusPolicy(Qt::NoFocus);
     }
 }
 

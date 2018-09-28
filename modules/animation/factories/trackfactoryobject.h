@@ -53,7 +53,7 @@ protected:
 template <typename T>
 class TrackFactoryObjectTemplate : public TrackFactoryObject {
 public:
-    // Requiers a static classIdentifier() method on T
+    // Requires a static classIdentifier() method on T
     TrackFactoryObjectTemplate() : TrackFactoryObject(T::classIdentifier()) {}
 
     TrackFactoryObjectTemplate(const std::string& classIdentifier)
@@ -63,9 +63,8 @@ public:
     virtual std::unique_ptr<Track> create() const override { return std::make_unique<T>(); }
 };
 
-} // namespace
+}  // namespace animation
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TRACKFACTORYOBJECT_H
-
+#endif  // IVW_TRACKFACTORYOBJECT_H

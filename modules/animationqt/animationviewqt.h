@@ -31,9 +31,10 @@
 #define IVW_ANIMATIONVIEWQT_H
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/animationcontrollerobserver.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,43 +46,43 @@ namespace inviwo {
 namespace animation {
 
 class AnimationController;
-
-/**
- * \class AnimationViewQt
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
+class AnimationEditorQt;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationViewQt : public QGraphicsView,
                                                    public AnimationControllerObserver {
 public:
-    AnimationViewQt(AnimationController& controller);
+    AnimationViewQt(AnimationController& controller, AnimationEditorQt* scene);
     virtual ~AnimationViewQt() = default;
+
+
+    void setTimelinePos(int x);
+    AnimationController& getController();
 
 protected:
     virtual void mousePressEvent(QMouseEvent* e) override;
     virtual void mouseMoveEvent(QMouseEvent* e) override;
     virtual void mouseReleaseEvent(QMouseEvent* e) override;
     virtual void wheelEvent(QWheelEvent* e) override;
+    virtual void keyPressEvent(QKeyEvent * keyEvent) override;
+    virtual void keyReleaseEvent(QKeyEvent * keyEvent) override;
 
-    void setTimelinePos(int x);
     void zoom(double dz);
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
-
-    // virtual void setupViewport(QWidget* widget) override;
 
     virtual void onStateChanged(AnimationController* controller, AnimationState oldState,
                                 AnimationState newState) override;
     virtual void onTimeChanged(AnimationController* controller, Seconds oldTime,
                                Seconds newTime) override;
 
+    AnimationEditorQt* scene_;
     AnimationController& controller_;
     bool pressingOnTimeline_ = false;
+    QWidget* timeline_;
 };
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ANIMATIONVIEWQT_H

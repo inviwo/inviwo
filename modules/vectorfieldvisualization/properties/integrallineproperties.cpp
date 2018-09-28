@@ -35,10 +35,10 @@ IntegralLineProperties::IntegralLineProperties(std::string identifier, std::stri
     : CompositeProperty(identifier, displayName)
     , numberOfSteps_("steps", "Number of Steps", 100, 1, 1000)
     , stepSize_("stepSize", "Step size", 0.001f, 0.001f, 1.0f, 0.001f)
+    , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
     , stepDirection_("stepDirection", "Step Direction")
     , integrationScheme_("integrationScheme", "Integration Scheme")
-    , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
-    , normalizeSamples_("normalizeSamples", "Normalize Samples", true) {
+    , seedPointsSpace_("seedPointsSpace", "Seed Points Space") {
     setUpProperties();
 }
 
@@ -46,10 +46,10 @@ IntegralLineProperties::IntegralLineProperties(const IntegralLineProperties& rhs
     : CompositeProperty(rhs)
     , numberOfSteps_(rhs.numberOfSteps_)
     , stepSize_(rhs.stepSize_)
+    , normalizeSamples_(rhs.normalizeSamples_)
     , stepDirection_(rhs.stepDirection_)
     , integrationScheme_(rhs.integrationScheme_)
-    , seedPointsSpace_(rhs.seedPointsSpace_)
-    , normalizeSamples_(rhs.normalizeSamples_) {
+    , seedPointsSpace_(rhs.seedPointsSpace_) {
     setUpProperties();
 }
 
@@ -58,10 +58,10 @@ IntegralLineProperties& IntegralLineProperties::operator=(const IntegralLineProp
         CompositeProperty::operator=(that);
         numberOfSteps_ = that.numberOfSteps_;
         stepSize_ = that.stepSize_;
+        normalizeSamples_ = that.normalizeSamples_;
         stepDirection_ = that.stepDirection_;
         integrationScheme_ = that.integrationScheme_;
         seedPointsSpace_ = that.seedPointsSpace_;
-        normalizeSamples_ = that.normalizeSamples_;
     }
     return *this;
 }

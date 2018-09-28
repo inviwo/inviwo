@@ -68,18 +68,18 @@ bool PythonScript::compile() {
 
 bool PythonScript::run(std::function<void(pybind11::dict)> callback) {
     namespace py = pybind11;
-    
+
     // Copy the dict to get a clean slate every time we run the script
-    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr())); 
+    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     return run(global, callback);
 }
 
 bool PythonScript::run(std::unordered_map<std::string, pybind11::object> locals,
                        std::function<void(pybind11::dict)> callback) {
     namespace py = pybind11;
-    
+
     // Copy the dict to get a clean slate every time we run the script
-    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));   
+    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     for (auto& item : locals) {
         global[py::str(item.first)] = item.second;
     }
@@ -90,7 +90,6 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
     namespace py = pybind11;
 
     if (isCompileNeeded_ && !compile()) {
-        LogError("Failed to run script, script could not be compiled");
         return false;
     }
 
@@ -107,7 +106,6 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
         return false;
     }
 }
-
 
 void PythonScript::setFilename(const std::string& filename) { filename_ = filename; }
 
@@ -126,8 +124,9 @@ bool PythonScript::checkCompileError() {
     namespace py = pybind11;
     if (!PyErr_Occurred()) return true;
 
-    LogError("Compile Error occurred when compiling script " << filename_
-                                                             << ", see below for info");
+    std::stringstream errstr;
+    errstr << "Compile Error occurred when compiling script " << filename_ << "\n";
+
     py::object type;
     py::object value;
     py::object traceback;
@@ -152,7 +151,12 @@ bool PythonScript::checkCompileError() {
         log << std::string(py::str(value));
     }
 
-    LogError(log.str());
+    errstr << log.str();
+    InviwoApplication::getPtr()
+        ->getModuleByType<Python3Module>()
+        ->getPythonInterpreter()
+        ->pythonExecutionOutputEvent(errstr.str(), PythonOutputType::sysstderr);
+
     return false;
 }
 

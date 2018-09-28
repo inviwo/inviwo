@@ -1,4 +1,4 @@
-<RCC>
+<!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
         <file>icons/about.png</file>
         <file>icons/composite-create.png</file>
@@ -64,11 +64,12 @@
         <file>inviwo/inviwo-logo-300px.png</file>
         <file>inviwo/inviwo-logo-light-600px.png</file>
         
-        <file>images/splashscreen.png</file>
-        <file>images/liu-white.png</file>
-        <file>images/liu-white-crop.png</file>
+        <file>images/kth.png</file>
         <file>images/liu-black.png</file>
+        <file>images/liu-white-crop.png</file>
+        <file>images/liu-white.png</file>
         <file>images/serc.png</file>
+        <file>images/splashscreen.png</file>
         <file>images/uulm.png</file>
         <file>stylesheets/images/addlistitem.png</file>
         <file>stylesheets/images/addlistitem_disabled.png</file>
@@ -76,7 +77,9 @@
         <file>stylesheets/images/arrow_darker_right.png</file>
         <file>stylesheets/images/arrow_down-small.png</file>
         <file>stylesheets/images/arrow_down.png</file>
+        <file>stylesheets/images/arrow_lighter_down-small.png</file>
         <file>stylesheets/images/arrow_lighter_down.png</file>
+        <file>stylesheets/images/arrow_lighter_right-small.png</file>
         <file>stylesheets/images/arrow_lighter_right.png</file>
         <file>stylesheets/images/arrow_lighter_up.png</file>
         <file>stylesheets/images/arrow_up-small.png</file>

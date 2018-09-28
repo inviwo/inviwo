@@ -23,7 +23,11 @@ set(MOC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/ordinaleditorwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processordockwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processorwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/colorlineedit.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/doublevaluedragspinbox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalspinboxwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/stringmultilinepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/valuedragspinbox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rangesliderqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderwidgetqt.h
@@ -42,6 +46,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoqtutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyboardutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/labelgraphicsitem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ordinalbasewidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/anglepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolcompositepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolpropertywidgetqt.h
@@ -52,6 +57,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/eventpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/filepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontsizepropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/indicatorwidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isotfpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/lightpropertywidgetqt.h
@@ -69,6 +75,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/texteditorwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfprimitivesetwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/valuedragger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qstringhelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmoduledefine.h
@@ -103,6 +110,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/labelgraphicsitem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/lightpositionwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/lineeditqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ordinalbasewidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ordinaleditorwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processordockwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/processorwidgetqt.cpp
@@ -111,12 +119,15 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/boolpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/buttonpropertywidgetqt.cpp  
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/collapsiblegroupboxwidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/colorlineedit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/colorpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/compositepropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/doublevaluedragspinbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/eventpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/filepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontsizepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/glslsyntaxhighlighter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/indicatorwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isotfpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/isovaluepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/lightpropertywidgetqt.cpp
@@ -126,6 +137,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalminmaxpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalminmaxtextpropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalpropertywidgetqt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/ordinalspinboxwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertyeditorwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertysettingswidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/propertywidgetqt.cpp
@@ -136,6 +148,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/texteditorwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfprimitivesetwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/valuedragger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/valuedragspinbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetssettings.cpp
@@ -156,14 +170,20 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
-# Create library
+# Add moc files
 qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
+# Add resource file
+qt5_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
+source_group("Resource Files" FILES 
+    ${IVW_RESOURCES_DIR}/inviwo.qrc
+    ${QRC_FILE}	
+)
+
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES})
 target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
 
 ivw_compile_optimize_on_target(inviwo-module-qtwidgets)

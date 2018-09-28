@@ -52,8 +52,11 @@ namespace inviwo {
 
 namespace plot {
 
-PropertyClassIdentifier(PersistenceDiagramPlotGL::Properties,
-                        "org.inviwo.PersistenceDiagramPlotGL.Properties");
+const std::string PersistenceDiagramPlotGL::Properties::classIdentifier =
+    "org.inviwo.PersistenceDiagramPlotGL.Properties";
+std::string PersistenceDiagramPlotGL::Properties::getClassIdentifier() const {
+    return classIdentifier;
+}
 
 PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::string displayName,
                                                  InvalidationLevel invalidationLevel,
@@ -177,8 +180,10 @@ PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
     , processor_(processor) {
 
     if (processor_) {
-        pointShader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
-        lineShader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
+        pointShader_.onReload(
+            [this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
+        lineShader_.onReload(
+            [this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
     properties_.hovering_.onChange([this]() {
         if (!properties_.hovering_.get()) {
@@ -308,10 +313,9 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
         };
         auto colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
 
-        auto getColor = [
-            this, hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
-            buffer = colorBuffer, normalizeValue
-        ](uint32_t index) {
+        auto getColor = [this,
+                         hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
+                         buffer = colorBuffer, normalizeValue](uint32_t index) {
             if (hoverEnabled && util::contains(hoveredIndices_, index)) {
                 return properties_.hoverColor_.get();
             } else if (color_) {

@@ -41,15 +41,45 @@
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/introspection.h>
 
 #include <functional>
 
 namespace inviwo {
 
+/**
+ * \class PropertyTraits
+ * \brief A traits class for getting the class identifier from a Property.
+ * This provides a customization point if one wants to generate the class identifier dynamically,
+ * by specializing the traits for your kind of Property:
+ * \code{.cpp}
+ *     template <typename T>
+ *     struct PropertyTraits<MyProperty<T>> {
+ *        static std::string classIdentifier() {
+ *           return generateMyPropertyClassIdentifier<T>();
+ *        }
+ *     };
+ * \endcode
+ * The default behavior returns the static member "classIdentifier" or "CLASS_IDENTIFIER";
+ */
+template <typename T>
+struct PropertyTraits {
+    /**
+     * The Class Identifier has to be globally unique. Use a reverse DNS naming scheme.
+     * Example: "org.someorg.mypropertytype"
+     * The default implementation will look for a static std::string member "T::classIdentifier" or
+     * "T::CLASS_IDENTIFIER". In case it is not found an empty string will be returned. An empty
+     * class identifier will be considered an error in various factories.
+     */
+    static std::string classIdentifier() { return util::classIdentifier<T>(); }
+};
+
+// Deprecated
 #define InviwoPropertyInfo()                                                             \
     virtual std::string getClassIdentifier() const override { return CLASS_IDENTIFIER; } \
     static const std::string CLASS_IDENTIFIER
 
+// Deprecated
 #define PropertyClassIdentifier(T, classIdentifier) \
     const std::string T::CLASS_IDENTIFIER = classIdentifier
 
@@ -212,33 +242,35 @@ public:
     /**
      * Add an on change callback to the property.
      * The callback is run when ever propertyModified is called. Usually when even the value of
-     * property changes. The return value is a RAII guard for the callback and will remove the 
-     * callback on destruction. Hence one must keep the return value around as long as the 
-     * callback should be active. To remove the callback one only need to destruct or reset the 
-     * return value. Multiple callbacks can be registered at the same time. 
+     * property changes. The return value is a RAII guard for the callback and will remove the
+     * callback on destruction. Hence one must keep the return value around as long as the
+     * callback should be active. To remove the callback one only need to destruct or reset the
+     * return value. Multiple callbacks can be registered at the same time.
      */
     std::shared_ptr<std::function<void()>> onChangeScoped(std::function<void()> callback);
-    
+
     /**
      * Add an on change callback to the property.
      * The callback is run when ever propertyModified is called. Usually when even the value of
      * property changes. The return value can be passed to removeOnChange to remove the callback.
      * Prefer onChangeScoped when the callback need to be removed.
-     * Multiple callbacks can be registered at the same time. 
+     * Multiple callbacks can be registered at the same time.
      */
     const BaseCallBack* onChange(std::function<void()> callback);
-    
+
     /**
      * Remove an on change callback registered using onChange.
      */
     void removeOnChange(const BaseCallBack* callback);
 
+    // clang-format off
     template <typename T>
     [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
     const BaseCallBack* onChange(T* object, void (T::*method)());
     template <typename T>
-    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
+    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] 
     void removeOnChange(T* object);
+    // clang-format on
 
     virtual void setUsageMode(UsageMode usageMode);
     virtual UsageMode getUsageMode() const;
@@ -301,17 +333,21 @@ private:
     std::vector<std::pair<std::string, std::string>> autoLinkTo_;
 };
 
+// clang-format off
 template <typename T>
-[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
+[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]] 
 const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
-    return onChangeCallback_.addLambdaCallback([o, m]() {if (m) (*o.*m)(); });
+    return onChangeCallback_.addLambdaCallback([o, m]() {
+        if (m) (*o.*m)();
+    });
 }
 
 template <typename T>
-[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
+[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] 
 void Property::removeOnChange(T* o) {
     onChangeCallback_.removeMemberFunction(o);
 }
+// clang-format on
 
 template <typename T, typename U>
 void Property::setStateAsDefault(T& property, const U& state) {

@@ -38,14 +38,14 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API OpenGLException : public Exception {
 public:
     OpenGLException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~OpenGLException() throw() {}
+    virtual ~OpenGLException() noexcept = default;
 };
 
 class IVW_MODULE_OPENGL_API OpenGLInitException : public ModuleInitException {
 public:
     OpenGLInitException(const std::string& message = "",
                         ExceptionContext context = ExceptionContext());
-    virtual ~OpenGLInitException() throw() {}
+    virtual ~OpenGLInitException() noexcept = default;
 };
 
 }  // namespace

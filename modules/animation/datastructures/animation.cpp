@@ -35,23 +35,37 @@ namespace animation {
 
 Animation::Animation() = default;
 
-AniamtionTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
-    AniamtionTimeState ts{to, state};
+AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
+    AnimationTimeState ts{to, state};
     for (const auto& track : priorityTracks_) {
         ts = (*track)(from, ts.time, ts.state);
     }
     return ts;
 }
 
-bool Animation::empty() const {
-    return tracks_.empty();
-}
+bool Animation::empty() const { return tracks_.empty(); }
 
 size_t Animation::size() const { return tracks_.size(); }
 
 const Track& Animation::operator[](size_t i) const { return *tracks_[i]; }
 
 Track& Animation::operator[](size_t i) { return *tracks_[i]; }
+
+auto Animation::begin() -> iterator {
+    return util::makeIndirectIterator<true>(tracks_.begin());
+}
+
+auto Animation::begin() const -> const_iterator {
+    return util::makeIndirectIterator<true>(tracks_.begin());
+}
+
+auto Animation::end() -> iterator {
+    return util::makeIndirectIterator<true>(tracks_.end());
+}
+
+auto Animation::end() const -> const_iterator {
+    return util::makeIndirectIterator<true>(tracks_.end());
+}
 
 void Animation::add(std::unique_ptr<Track> track) {
     tracks_.push_back(std::move(track));
@@ -61,83 +75,80 @@ void Animation::add(std::unique_ptr<Track> track) {
     notifyTrackAdded(tracks_.back().get());
 }
 
-void Animation::removeTrack(size_t i) {
+std::unique_ptr<Track> Animation::remove(size_t i) {
     auto track = std::move(tracks_[i]);
     tracks_.erase(tracks_.begin() + i);
     util::erase_remove(priorityTracks_, track.get());
     notifyTrackRemoved(track.get());
+    return track;
 }
 
-void Animation::removeTrack(const std::string& id) {
+std::unique_ptr<Track> Animation::remove(const std::string& id) {
     auto it = std::find_if(tracks_.begin(), tracks_.end(),
                            [&](const auto& track) { return track->getIdentifier() == id; });
     if (it != tracks_.end()) {
-        removeTrack(std::distance(tracks_.begin(), it));
+        return remove(std::distance(tracks_.begin(), it));
+    } else {
+        return nullptr;
     }
 }
 
-void Animation::removeKeyframe(Keyframe* key) {
-    for (size_t t = 0; t < tracks_.size(); ++t) {
-        auto& track = *tracks_[t];
-        for (size_t s = 0; s < track.size(); ++s) {
-            auto& seq = track[s];
-            for (size_t k = 0; k < seq.size(); ++k) {
-                if (&seq[k] == key) {
-                    if (seq.size() == 1) {
-                        track.remove(s);
-                    } else {
-                        seq.remove(k);
-                    }
-                    return;
-                }
-            }
+std::unique_ptr<Keyframe> Animation::remove(Keyframe* key) {
+    for (auto& track : tracks_) {
+        if (auto res = track->remove(key)) {
+            return std::move(res);
         }
     }
+    return nullptr;
+}
+
+std::unique_ptr<KeyframeSequence> Animation::remove(KeyframeSequence* seq) {
+    for (auto& track : tracks_) {
+        if (auto res = track->remove(seq)) {
+            return std::move(res);
+        }
+    }
+    return nullptr;
 }
 
 void Animation::clear() {
     while (!empty()) {
-        removeTrack(tracks_.size() - 1);
+        remove(tracks_.size() - 1);
     }
 }
 
 std::vector<Seconds> Animation::getAllTimes() const {
-    
     std::vector<Seconds> result;
 
-    for (size_t t = 0; t < tracks_.size(); ++t) {
-        auto& track = *tracks_[t];
-        for (size_t s = 0; s < track.size(); ++s) {
-            auto& seq = track[s];
-            for (size_t k = 0; k < seq.size(); ++k) {
-                result.push_back(seq[k].getTime());
-            }
-        }
+    for (auto& track : tracks_) {
+        auto times = track->getAllTimes();
+        result.insert(result.end(), times.begin(), times.end());
     }
     std::sort(result.begin(), result.end());
     return result;
 }
 
-Seconds Animation::firstTime() const {
+Seconds Animation::getFirstTime() const {
+    Seconds time{0};
+
     auto it = std::min_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
-        return a->firstTime() < b->firstTime();
+        return a->getFirstTime() < b->getFirstTime();
     });
     if (it != tracks_.end()) {
-        return (*it)->firstTime();
-    } else {
-        return Seconds{0.0};
+        time = (*it)->getFirstTime();
     }
+    return time;
 }
 
-Seconds Animation::lastTime() const {
+Seconds Animation::getLastTime() const {
+    Seconds time{0};
     auto it = std::max_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
-        return a->lastTime() < b->lastTime();
+        return a->getLastTime() < b->getLastTime();
     });
     if (it != tracks_.end()) {
-        return (*it)->lastTime();
-    } else {
-        return Seconds{0.0};
+        time = (*it)->getLastTime();
     }
+    return time;
 }
 
 void Animation::serialize(Serializer& s) const { s.serialize("tracks", tracks_, "track"); }
@@ -147,10 +158,10 @@ void Animation::deserialize(Deserializer& d) {
         .setGetId([](const std::unique_ptr<Track>& t) { return t->getIdentifier(); })
         .setMakeNew([]() { return std::unique_ptr<Track>(); })
         .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
-        .onRemove([&](const std::string& id) { removeTrack(id); })(d, tracks_);
+        .onRemove([&](const std::string& id) { remove(id); })(d, tracks_);
 }
 
-void Animation::onPriorityChanged(Track* t) { doPrioritySort(); }
+void Animation::onPriorityChanged(Track*) { doPrioritySort(); }
 
 void Animation::doPrioritySort() {
     std::stable_sort(
@@ -158,11 +169,14 @@ void Animation::doPrioritySort() {
         [](const auto& a, const auto& b) { return a->getPriority() > b->getPriority(); });
 }
 
-void Animation::onFirstMoved(Track* t) { notifyFirstMoved(); }
+void Animation::onFirstMoved(Track*) { 
+    notifyFirstMoved(); 
+}
 
-void Animation::onLastMoved(Track* t) { notifyLastMoved(); }
+void Animation::onLastMoved(Track*) { 
+    notifyLastMoved(); 
+}
 
-} // namespace
+}  // namespace animation
 
-} // namespace
-
+}  // namespace inviwo

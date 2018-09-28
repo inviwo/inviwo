@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     auto logger = std::make_shared<ConsoleLogger>();
     LogCentral::getPtr()->setLogLevel(LogLevel::Error);
     LogCentral::getPtr()->registerLogger(logger);
-    InviwoApplication app(argc, argv, "inviwo");
+    InviwoApplication app(argc, argv, "Inviwo-Unittests-Core");
 
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;

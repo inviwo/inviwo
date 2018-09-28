@@ -32,21 +32,27 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(DirectoryProperty, "org.inviwo.DirectoryProperty");
+const std::string DirectoryProperty::classIdentifier = "org.inviwo.DirectoryProperty";
+std::string DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
 
 DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
                                      std::string value, std::string contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
-    this->setAcceptMode(AcceptMode::Open);
-    this->setFileMode(FileMode::DirectoryOnly);
+    setAcceptMode(AcceptMode::Open);
+    setFileMode(FileMode::DirectoryOnly);
 }
 
-DirectoryProperty::~DirectoryProperty() {}
+DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs) = default;
+DirectoryProperty& DirectoryProperty::operator=(const DirectoryProperty& that) = default;
+DirectoryProperty* DirectoryProperty::clone() const {
+    return new DirectoryProperty(*this);
+}
 
+DirectoryProperty::~DirectoryProperty() = default;
 std::string DirectoryProperty::getClassIdentifierForWidget() const {
     return FileProperty::getClassIdentifier();
 }
 
-}  // namespace
+}  // namespace inviwo

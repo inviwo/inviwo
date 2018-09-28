@@ -240,7 +240,7 @@ void PathLinesDeprecated::process() {
 void PathLinesDeprecated::deserialize(Deserializer &d) {
     DoubleProperty dProperty("stepSize", "Step size", 0.001f, 0.001f, 1.0f, 0.001f);
     util::renameProperty(d, {{&dProperty, "dt"}});
-    util::changePropertyType(d, {{&dProperty, FloatProperty::CLASS_IDENTIFIER}});
+    util::changePropertyType(d, {{&dProperty, PropertyTraits<FloatProperty>::classIdentifier()}});
     Processor::deserialize(d);
 }
 

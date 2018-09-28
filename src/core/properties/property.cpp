@@ -307,9 +307,13 @@ void Property::notifyAboutChange() {
 }
 
 void Property::setCurrentStateAsDefault() {
+    displayName_.setAsDefault();
     readOnly_.setAsDefault();
     semantics_.setAsDefault();
+    visible_.setAsDefault();
+    usageMode_.setAsDefault();
 }
+
 void Property::resetToDefaultState() { propertyModified(); }
 
 void Property::set(const Property* /*src*/) { propertyModified(); }

@@ -34,7 +34,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(FontProperty, "org.inviwo.FontProperty");
+const std::string FontProperty::classIdentifier = "org.inviwo.FontProperty";
+std::string FontProperty::getClassIdentifier() const { return classIdentifier; }
 
 FontProperty::FontProperty(const std::string& identifier, const std::string& displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)

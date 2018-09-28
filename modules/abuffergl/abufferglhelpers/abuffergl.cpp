@@ -47,12 +47,14 @@ namespace inviwo {
 static int ABUFFER_RGBA_DATA_TYPE_SIZE = sizeof(Abuffer_RGBA_Type);
 static int ABUFFER_EXT_DATA_TYPE_SIZE = sizeof(Abuffer_ExtDataType);
 
-PropertyClassIdentifier(ABufferGLCompositeProperty, "org.inviwo.ABufferGLCompositeProperty");
+const std::string ABufferGLCompositeProperty::classIdentifier =
+    "org.inviwo.ABufferGLCompositeProperty";
+std::string ABufferGLCompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 ABufferGLCompositeProperty::ABufferGLCompositeProperty(std::string identifier,
-    std::string displayName,
-    InvalidationLevel invalidationLevel,
-    PropertySemantics semantics)
+                                                       std::string displayName,
+                                                       InvalidationLevel invalidationLevel,
+                                                       PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , abufferEnable_("enable-abuffer", "Enable ABuffer")
     , abufferPageSize_("abuffer-page-size", "ABuffer Page Size (power of 2)", 3, 3, 5, 1)
@@ -80,12 +82,12 @@ ABufferGLCompositeProperty::ABufferGLCompositeProperty(const ABufferGLCompositeP
     , abufferReSize_(rhs.abufferReSize_)
     , abufferWriteABufferInfoToFile_(rhs.abufferWriteABufferInfoToFile_)
     , bgColor_(rhs.bgColor_)
-    , verboseLogging_(rhs.verboseLogging_)
-{
+    , verboseLogging_(rhs.verboseLogging_) {
     setAllPropertiesCurrentStateAsDefault();
 }
 
-ABufferGLCompositeProperty& ABufferGLCompositeProperty::operator=(const ABufferGLCompositeProperty& that) {
+ABufferGLCompositeProperty& ABufferGLCompositeProperty::operator=(
+    const ABufferGLCompositeProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
         abufferEnable_ = that.abufferEnable_;
@@ -105,7 +107,7 @@ ABufferGLCompositeProperty* ABufferGLCompositeProperty::clone() const {
 ABufferGLCompositeProperty::~ABufferGLCompositeProperty() {}
 
 std::string ABufferGLCompositeProperty::getClassIdentifierForWidget() const {
-    return CompositeProperty::CLASS_IDENTIFIER;
+    return PropertyTraits<CompositeProperty>::classIdentifier();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -124,8 +126,7 @@ Inviwo_ABufferGL4::Inviwo_ABufferGL4(ivec2 dim)
     , semaphoreImgTexture_(nullptr)
     , globalAtomicCounterBuffer_(nullptr)
     , dim_(dim)
-    , verboseLogging_(false)
-{
+    , verboseLogging_(false) {
     settings_.sharedPoolSize_ = dim_.x * dim_.y * settings_.getSquaredPageSize() * 40;
 }
 
@@ -156,7 +157,8 @@ bool Inviwo_ABufferGL4::aBuffer_isMemoryReallocationRequired(ivec2 currentPortDi
 
 bool Inviwo_ABufferGL4::abuffer_isMemoryPoolExpansionRequired() {
     if (globalAtomicCounterBuffer_ && globalAtomicsBufferId_) {
-        glm::uint totalABuffUsed = abuffer_fetchCurrentAtomicCounterValue() * settings_.getSquaredPageSize();
+        glm::uint totalABuffUsed =
+            abuffer_fetchCurrentAtomicCounterValue() * settings_.getSquaredPageSize();
         if (fabs(float(settings_.sharedPoolSize_ - totalABuffUsed)) <
             float(settings_.sharedPoolSize_ * .30f)) {
             return true;
@@ -347,7 +349,7 @@ void Inviwo_ABufferGL4::aBuffer_bindTextures() {
     glBindImageTextureEXT(tex2->getUnitNumber(), layer->getTexture()->getID(), 0, false, 0,
                           GL_READ_WRITE, GL_R32UI);
     LGL_ERROR;
-    
+
     /// Semaphore///
     imageGL = semaphoreImgTexture_->getEditableRepresentation<ImageGL>();
     layer = imageGL->getColorLayerGL(0);
@@ -423,9 +425,9 @@ void Inviwo_ABufferGL4::abuffer_addShaderDefinesAndBuild(Shader* shader) {
     fragObj->addShaderDefine("BACKGROUND_COLOR_A", toString(pBackgroundColor.w));
 
     fragObj->addShaderDefine("USE_ABUFFER", toString(settings_.abufferEnable_.get() ? 1 : 0));
-    fragObj->addShaderDefine("ABUFFER_USE_TEXTURES", toString(1));        //( always 1)
-    fragObj->addShaderDefine("SHAREDPOOL_USE_TEXTURES", toString(0));     //( always 0)
-    fragObj->addShaderDefine("ABUFFER_RESOLVE_USE_SORTING", toString(1)); //( always 1)
+    fragObj->addShaderDefine("ABUFFER_USE_TEXTURES", toString(1));         //( always 1)
+    fragObj->addShaderDefine("SHAREDPOOL_USE_TEXTURES", toString(0));      //( always 0)
+    fragObj->addShaderDefine("ABUFFER_RESOLVE_USE_SORTING", toString(1));  //( always 1)
 
     fragObj->addShaderDefine("ABUFFER_PAGE_SIZE", toString(settings_.getSquaredPageSize()));
     fragObj->addShaderDefine("ABUFFER_DISPNUMFRAGMENTS", toString(0));
@@ -450,10 +452,11 @@ void Inviwo_ABufferGL4::aBuffer_unbind() {
     layer->unbindTexture();
 }
 
-void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage, ImageType layerType) {
-    //TextureUnit* tex1 = texUnits_[0]; //unused
-    //TextureUnit* tex2 = texUnits_[1]; //unused
-    //TextureUnit* tex3 = texUnits_[2]; //unused
+void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage,
+                                                ImageType layerType) {
+    // TextureUnit* tex1 = texUnits_[0]; //unused
+    // TextureUnit* tex2 = texUnits_[1]; //unused
+    // TextureUnit* tex3 = texUnits_[2]; //unused
 
     TextureUnitContainer units;
 
@@ -469,16 +472,15 @@ void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* i
     // setGlobalShaderParameters(resolveABufferShader_);
     // utilgl::setShaderUniforms(&resolveABufferShader_, camera_, "camera_");
     // utilgl::setShaderUniforms(&resolveABufferShader_, lightingProperty_, "light_");
-    
 
     abuffer_addUniforms(&resolveABufferShader_);
     // aBuffer_addUniforms(resolveABufferShader_, tex1, tex2, tex3);
     if (inputimage) {
         resolveABufferShader_.setUniform("isInputImageGiven", true);
-        utilgl::bindAndSetUniforms(resolveABufferShader_, units,
-            *inputimage, "inputimage", layerType);
-    }
-    else resolveABufferShader_.setUniform("isInputImageGiven", false);
+        utilgl::bindAndSetUniforms(resolveABufferShader_, units, *inputimage, "inputimage",
+                                   layerType);
+    } else
+        resolveABufferShader_.setUniform("isInputImageGiven", false);
 
     LGL_ERROR;
 
@@ -490,7 +492,8 @@ void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* i
     utilgl::deactivateCurrentTarget();
 }
 
-void Inviwo_ABufferGL4::aBuffer_resetLinkList(ImageGL* imageGL, bool forceReset, ImageType layerType) {
+void Inviwo_ABufferGL4::aBuffer_resetLinkList(ImageGL* imageGL, bool forceReset,
+                                              ImageType layerType) {
     // TODO: Remove explicit reset. Alternatively perform reset after every reslove, this can avoid
     // some overheads.
     if (forceReset) {
@@ -576,7 +579,8 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
             glm::uint totalABuffUsed = abuffer_fetchCurrentAtomicCounterValue();
 
             ss << "Atomic Counter Usage : used-counter = " << totalABuffUsed
-               << " max-counter = " << settings_.sharedPoolSize_ / settings_.getSquaredPageSize() << std::endl;
+               << " max-counter = " << settings_.sharedPoolSize_ / settings_.getSquaredPageSize()
+               << std::endl;
 
             ss << std::endl;
             ss << " ------------------------------------ " << std::endl;
@@ -595,21 +599,26 @@ void Inviwo_ABufferGL4::abuffer_printDebugInfo(glm::ivec2 pos) {
                             if (offset == 0) offset = settings_.getSquaredPageSize();
                         }
 
-                        glm::uint dataSize = settings_.getSquaredPageSize() * ABUFFER_RGBA_DATA_TYPE_SIZE;
+                        glm::uint dataSize =
+                            settings_.getSquaredPageSize() * ABUFFER_RGBA_DATA_TYPE_SIZE;
                         glBindBuffer(GL_TEXTURE_BUFFER, shared_RGBA_DataListBuffID_);
-                        Abuffer_RGBA_Type* rgbData = new Abuffer_RGBA_Type[settings_.getSquaredPageSize()];
+                        Abuffer_RGBA_Type* rgbData =
+                            new Abuffer_RGBA_Type[settings_.getSquaredPageSize()];
                         glm::uint startOffset_rgb =
-                            (pageIndices[i] * settings_.getSquaredPageSize()) * ABUFFER_RGBA_DATA_TYPE_SIZE;
+                            (pageIndices[i] * settings_.getSquaredPageSize()) *
+                            ABUFFER_RGBA_DATA_TYPE_SIZE;
                         void* gldata_RGBA = glMapBufferRange(GL_TEXTURE_BUFFER, startOffset_rgb,
                                                              dataSize, GL_MAP_READ_BIT);
                         memcpy(rgbData, gldata_RGBA, dataSize);
                         glUnmapBuffer(GL_TEXTURE_BUFFER);
 
                         glBindBuffer(GL_TEXTURE_BUFFER, shared_Ext_DataListBuffID_);
-                        Abuffer_ExtDataType* extData = new Abuffer_ExtDataType[settings_.getSquaredPageSize()];
+                        Abuffer_ExtDataType* extData =
+                            new Abuffer_ExtDataType[settings_.getSquaredPageSize()];
                         dataSize = settings_.getSquaredPageSize() * ABUFFER_EXT_DATA_TYPE_SIZE;
                         glm::uint startOffset_ext =
-                            (pageIndices[i] * settings_.getSquaredPageSize()) * ABUFFER_EXT_DATA_TYPE_SIZE;
+                            (pageIndices[i] * settings_.getSquaredPageSize()) *
+                            ABUFFER_EXT_DATA_TYPE_SIZE;
                         void* gldata_EXT = glMapBufferRange(GL_TEXTURE_BUFFER, startOffset_ext,
                                                             dataSize, GL_MAP_READ_BIT);
                         memcpy(extData, gldata_EXT, dataSize);
@@ -731,7 +740,8 @@ void Inviwo_ABufferGL4::abuffer_textureInfo() {
         if (ABUFFER_FRAGMENT_COUNT_INFO) {
             // std::sort(allFragmentPageCounts.begin(), allFragmentPageCounts.end());
             std::string basePath = inviwo::filesystem::findBasePath();
-            auto fstream = filesystem::ofstream((basePath + rndInt + "abuffer_linklistnodecount.txt"));
+            auto fstream =
+                filesystem::ofstream((basePath + rndInt + "abuffer_linklistnodecount.txt"));
             for (size_t i = 0; i < allFragementCounts.size(); i++) {
                 fstream << allFragementCounts[i] << "\n";
             }
@@ -795,4 +805,4 @@ void Inviwo_ABufferGL4::ABufferGLInteractionHandler::invokeEvent(Event* event) {
     if (mEvent) prevMousePos_ = glm::ivec2(mEvent->x(), mEvent->y());
 }
 
-}  // namespace
+}  // namespace inviwo

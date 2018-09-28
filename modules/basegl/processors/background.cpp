@@ -121,7 +121,7 @@ void Background::initializeResources() {
     }
     shader_.getFragmentShaderObject()->addShaderDefine("BACKGROUND_STYLE_FUNCTION", bgStyleValue);
 
-    if (inport_.hasData()) {
+    if (inport_.isReady()) {
         shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR",
                                                            "texture(inportColor, texCoord)");
         // set shader inputs to match number of available color layers
@@ -156,9 +156,9 @@ void Background::initializeResources() {
 }
 
 void Background::process() {
-    if (inport_.hasData() != hadData_) initializeResources();
+    if (inport_.isReady() != hadData_) initializeResources();
 
-    if (inport_.hasData()) {
+    if (inport_.isReady()) {
         // Check data format, make sure we always have 4 channels
         auto inDataFromat = inport_.getData()->getDataFormat();
         auto format =
@@ -173,7 +173,7 @@ void Background::process() {
 
     shader_.activate();
 
-    if (inport_.hasData()) {
+    if (inport_.isReady()) {
         TextureUnitContainer textureUnits;
 
         auto image = inport_.getData();

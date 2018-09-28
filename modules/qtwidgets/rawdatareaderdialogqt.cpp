@@ -50,14 +50,23 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     QGridLayout* dataTypeLayout = new QGridLayout();
     QLabel* bitDepthLabel = new QLabel("Data format");
     bitDepth_ = new QComboBox();
-    bitDepth_->addItem("UCHAR");
-    bitDepth_->addItem("CHAR");
-    bitDepth_->addItem("USHORT");
-    bitDepth_->addItem("USHORT (12-bits)");
-    bitDepth_->addItem("UINT");
-    bitDepth_->addItem("INT");
-    bitDepth_->addItem("FLOAT");
-    bitDepth_->addItem("DOUBLE");
+    bitDepth_->addItem("char (8-bit signed integer)", static_cast<int>(DataFormatId::Int8));
+    bitDepth_->addItem("unsigned char (8-bit unsigned integer)",
+                       static_cast<int>(DataFormatId::UInt8));
+    bitDepth_->addItem("short (16-bit signed integer)", static_cast<int>(DataFormatId::Int16));
+    bitDepth_->addItem("unsigned 12-bit (12-bit unsigned integer)",
+                       static_cast<int>(DataFormatId::NotSpecialized));
+    bitDepth_->addItem("unsigned short (16-bit unsigned integer)",
+                       static_cast<int>(DataFormatId::UInt16));
+    bitDepth_->addItem("signed int (32-bit signed integer)", static_cast<int>(DataFormatId::Int32));
+    bitDepth_->addItem("unsigned int (32-bit unsigned integer)",
+                       static_cast<int>(DataFormatId::UInt32));
+    bitDepth_->addItem("signed long int (64-bit integer)", static_cast<int>(DataFormatId::Int64));
+    bitDepth_->addItem("unsigned long int (64-bit unsigned integer)",
+                       static_cast<int>(DataFormatId::UInt64));
+    bitDepth_->addItem("half (16-bit floating point)", static_cast<int>(DataFormatId::Float16));
+    bitDepth_->addItem("float (32-bit floating point)", static_cast<int>(DataFormatId::Float32));
+    bitDepth_->addItem("double (64-bit floating point)", static_cast<int>(DataFormatId::Float64));
     connect(bitDepth_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             [=](int index) { selectedDataTypeChanged(index); });
     QLabel* channelLabel = new QLabel("Data channels");
@@ -66,9 +75,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     channels_->setValue(1);
 
     QLabel* dataRangeLabel = new QLabel("Data format range");
-    dataRangeLabel->setToolTip(
-        "Data range refer to the range of the data type, i.e. [0 4095] for 12-bit unsigned integer "
-        "data.");
+    dataRangeLabel->setToolTip("Data range refer to the range of the data");
     dataRangeMin_ = new QDoubleSpinBox();
     dataRangeMin_->setRange(-std::numeric_limits<double>::max(),
                             std::numeric_limits<double>::max());
@@ -91,7 +98,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
 
     auto rowCount = 0;
     dataTypeLayout->addWidget(bitDepthLabel, rowCount, 0);
-    dataTypeLayout->addWidget(bitDepth_, rowCount++, 2);
+    dataTypeLayout->addWidget(bitDepth_, rowCount++, 1, 1, 2);
 
     dataTypeLayout->addWidget(new QLabel("Min"), rowCount, 1);
     dataTypeLayout->addWidget(new QLabel("Max"), rowCount++, 2);
@@ -148,36 +155,43 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     spaceLayout->addWidget(spaceZ_);
     space->setLayout(spaceLayout);
 
+    /*
     QLabel* timeStepLabel = new QLabel("Time steps");
     timeSteps_ = new QSpinBox();
+    */
+
     dataSizeLayout->addWidget(dimensionLabel, 0, 0);
     dataSizeLayout->addWidget(dimensions, 0, 1);
     dataSizeLayout->addWidget(spaceLabel, 1, 0);
     dataSizeLayout->addWidget(space, 1, 1);
-    dataSizeLayout->addWidget(timeStepLabel, 2, 0);
-    dataSizeLayout->addWidget(timeSteps_, 2, 1);
+    //dataSizeLayout->addWidget(timeStepLabel, 2, 0);
+    //dataSizeLayout->addWidget(timeSteps_, 2, 1);
     QGroupBox* dataSizeBox = new QGroupBox("Data size", this);
     dataSizeBox->setLayout(dataSizeLayout);
 
     QGridLayout* readOptionsLayout = new QGridLayout();
-    QLabel* headerOffsetLabel = new QLabel("Header offset");
-    headerOffset_ = new QSpinBox();
-    headerOffset_->setRange(0, 4096);
-    headerOffset_->setValue(0);
-    headerOffset_->setSuffix(" Byte");
+    QLabel* dataOffsetLabel = new QLabel("Data offset");
+    dataOffset_ = new QSpinBox();
+    dataOffset_->setRange(0, 4096);
+    dataOffset_->setValue(0);
+    dataOffset_->setSuffix(" Byte");
+    /*
     QLabel* timeStepOffsetLabel = new QLabel("Time step offset");
     timeStepOffset_ = new QSpinBox();
     timeStepOffset_->setRange(0, 4096);
     timeStepOffset_->setValue(0);
     timeStepOffset_->setSuffix(" Byte");
+    */
     QLabel* endianessLabel = new QLabel("Endianess");
     endianess_ = new QComboBox();
     endianess_->addItem("Little Endian");
     endianess_->addItem("Big Endian");
-    readOptionsLayout->addWidget(headerOffsetLabel, 0, 0);
-    readOptionsLayout->addWidget(headerOffset_, 0, 1);
+    readOptionsLayout->addWidget(dataOffsetLabel, 0, 0);
+    readOptionsLayout->addWidget(dataOffset_, 0, 1);
+    /*
     readOptionsLayout->addWidget(timeStepOffsetLabel, 1, 0);
     readOptionsLayout->addWidget(timeStepOffset_, 1, 1);
+    */
     readOptionsLayout->addWidget(endianessLabel, 2, 0);
     readOptionsLayout->addWidget(endianess_, 2, 1);
     QGroupBox* readOptionsBox = new QGroupBox("Read options", this);
@@ -198,7 +212,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     selectedDataTypeChanged(2);
 }
 
-RawDataReaderDialogQt::~RawDataReaderDialogQt() {}
+RawDataReaderDialogQt::~RawDataReaderDialogQt() = default;
 
 bool RawDataReaderDialogQt::show() { return QDialog::exec() == QDialog::Accepted; }
 
@@ -207,15 +221,22 @@ void RawDataReaderDialogQt::setFile(std::string fileName) {
 }
 
 const DataFormatBase* RawDataReaderDialogQt::getFormat() const {
-    if (utilqt::fromLocalQString(bitDepth_->currentText()) == "USHORT (12-bits)") {
+    auto id = static_cast<DataFormatId>(bitDepth_->currentData().toInt());
+    if (id == DataFormatId::NotSpecialized) {
         return DataFormatBase::get(NumericType::UnsignedInteger, channels_->value(), 16);
     } else {
-        auto channelsText =
-            channels_->value() > 1 ? "Vec" + std::to_string(channels_->value()) : "";
-        return DataFormatBase::get(channelsText +
-                                   utilqt::fromLocalQString(bitDepth_->currentText()));
+        const auto df = DataFormatBase::get(id);
+        return DataFormatBase::get(df->getNumericType(), channels_->value(), df->getPrecision());
     }
 }
+
+void RawDataReaderDialogQt::setFormat(const DataFormatBase* format) {
+    channels_->setValue(static_cast<int>(format->getComponents()));
+    const auto df = DataFormatBase::get(format->getNumericType(), 1, format->getPrecision());
+    const auto index = bitDepth_->findData(static_cast<int>(df->getId()));
+    bitDepth_->setCurrentIndex(index);
+}
+
 uvec3 RawDataReaderDialogQt::getDimensions() const {
     uvec3 dimensions;
     dimensions.x = dimX_->value();
@@ -223,6 +244,13 @@ uvec3 RawDataReaderDialogQt::getDimensions() const {
     dimensions.z = dimZ_->value();
     return dimensions;
 }
+
+void RawDataReaderDialogQt::setDimensions(uvec3 dim) {
+    dimX_->setValue(dim.x);
+    dimY_->setValue(dim.y);
+    dimZ_->setValue(dim.z);
+}
+
 dvec3 RawDataReaderDialogQt::getSpacing() const {
     QLocale locale = spaceX_->locale();
     glm::dvec3 space(0.01f);
@@ -234,7 +262,22 @@ dvec3 RawDataReaderDialogQt::getSpacing() const {
     return space;
 }
 
+void RawDataReaderDialogQt::setSpacing(dvec3 spacing) {
+    QLocale locale = spaceX_->locale();
+    spaceX_->setText(locale.toString(spacing.x));
+    spaceY_->setText(locale.toString(spacing.y));
+    spaceZ_->setText(locale.toString(spacing.z));
+}
+
 bool RawDataReaderDialogQt::getEndianess() const { return endianess_->currentIndex() == 0; }
+
+void RawDataReaderDialogQt::setEndianess(bool endian) {
+    if(endian) {
+        endianess_->setCurrentIndex(0);
+    }else{
+        endianess_->setCurrentIndex(1);
+    }
+}
 
 DataMapper RawDataReaderDialogQt::getDataMapper() const {
     DataMapper dm;
@@ -244,52 +287,41 @@ DataMapper RawDataReaderDialogQt::getDataMapper() const {
     return dm;
 }
 
+void RawDataReaderDialogQt::setDataMapper(const DataMapper& datamapper) {
+    dataRangeMin_->setValue(datamapper.dataRange.x);
+    dataRangeMax_->setValue(datamapper.dataRange.y);
+    valueRangeMin_->setValue(datamapper.valueRange.x);
+    valueRangeMax_->setValue(datamapper.valueRange.y);
+    valueUnit_->setText(utilqt::toLocalQString(datamapper.valueUnit));
+}
+
+size_t RawDataReaderDialogQt::getDataOffset() const {
+    return static_cast<size_t>(dataOffset_->value());
+}
+
+void RawDataReaderDialogQt::setDataOffset(size_t offset) {
+    dataOffset_->setValue(static_cast<int>(offset));
+}
+
 void RawDataReaderDialogQt::selectedDataTypeChanged(int index) {
-    switch (index) {
-        case 0:  // UCHAR
-            dataRangeMin_->setValue(0);
-            dataRangeMax_->setValue(255);
-            valueRangeMin_->setValue(0);
-            valueRangeMax_->setValue(255);
-            break;
-        case 1:  // CHAR
-            dataRangeMin_->setValue(-128);
-            dataRangeMax_->setValue(127);
-            valueRangeMin_->setValue(-128);
-            valueRangeMax_->setValue(127);
-            break;
-        case 2:  // USHORT
-            dataRangeMin_->setValue(0);
-            dataRangeMax_->setValue(std::numeric_limits<glm::u16>::max());
-            valueRangeMin_->setValue(-1000);
-            valueRangeMax_->setValue(3000);
-            break;
-        case 3:  // USHORT (12-bits)
-            dataRangeMin_->setValue(0);
-            dataRangeMax_->setValue(4095);
-            valueRangeMin_->setValue(-1000);
-            valueRangeMax_->setValue(3000);
-            break;
-        case 4:  // UINT
-            dataRangeMin_->setValue(std::numeric_limits<unsigned int>::lowest());
-            dataRangeMax_->setValue(std::numeric_limits<unsigned int>::max());
-            valueRangeMin_->setValue(std::numeric_limits<unsigned int>::lowest());
-            valueRangeMax_->setValue(std::numeric_limits<unsigned int>::max());
-            break;
-        case 5:  // INT
-            dataRangeMin_->setValue(std::numeric_limits<int>::lowest());
-            dataRangeMax_->setValue(std::numeric_limits<int>::max());
-            valueRangeMin_->setValue(std::numeric_limits<int>::lowest());
-            valueRangeMax_->setValue(std::numeric_limits<int>::max());
-            break;
-        case 6:  // FLOAT
-        case 7:  // DOUBLE
-            dataRangeMin_->setValue(0);
-            dataRangeMax_->setValue(1);
-            valueRangeMin_->setValue(0);
-            valueRangeMax_->setValue(1);
-            break;
-    };
+    auto id = static_cast<DataFormatId>(bitDepth_->itemData(index).toInt());
+    if (id == DataFormatId::NotSpecialized) {
+        dataRangeMin_->setValue(0);
+        dataRangeMax_->setValue(4095);
+        valueRangeMin_->setValue(0);
+        valueRangeMax_->setValue(4095);
+    } else if (DataFormatBase::get(id)->getNumericType() == NumericType::Float) {
+        dataRangeMin_->setValue(0);
+        dataRangeMax_->setValue(1);
+        valueRangeMin_->setValue(0);
+        valueRangeMax_->setValue(1);
+    } else {
+        auto df = DataFormatBase::get(id);
+        dataRangeMin_->setValue(df->getMin());
+        dataRangeMax_->setValue(df->getMax());
+        valueRangeMin_->setValue(df->getMin());
+        valueRangeMax_->setValue(df->getMax());
+    }
 }
 
 }  // namespace inviwo

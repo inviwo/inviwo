@@ -57,6 +57,9 @@ namespace inviwo {
 FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
     : PropertyWidgetQt(property), property_(property), lineEdit_{new FilePathLineEditQt(this)} {
 
+    setFocusPolicy(lineEdit_->focusPolicy());
+    setFocusProxy(lineEdit_);
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);

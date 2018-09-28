@@ -71,11 +71,14 @@ public:
 
     virtual void propagateEvent(Event*, Outport* source) override;
 
+    virtual void deserialize(Deserializer& d) override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
+    
 private:
     size2_t calcInputImageSize() const;
+    bool resizeInports();
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -83,6 +86,9 @@ private:
     BoolProperty enabled_;
     OptionPropertyDouble scalingFactor_; //<! if negative, use custom scaling factor
     DoubleProperty customFactor_;
+
+    size2_t lastValidOutputSize_ = { 0u, 0u };
+    bool deserializing_ = false;
 };
 
 } // namespace

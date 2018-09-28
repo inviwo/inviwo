@@ -99,6 +99,7 @@ set(INTERFACE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyinviwomodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pymesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pynetwork.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pypickingmapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyprocessors.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyproperties.h
@@ -118,6 +119,7 @@ set(INTERFACE_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyinviwomodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pymesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pynetwork.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interface/pypickingmapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyprocessors.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface/pyproperties.cpp

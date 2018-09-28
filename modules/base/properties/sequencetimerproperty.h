@@ -46,7 +46,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API SequenceTimerProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     SequenceTimerProperty(std::string identifier, std::string displayName,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -69,6 +70,6 @@ private:
     void onPlaySequenceToggled();
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SEQUENCETIMERPROPERTY_H

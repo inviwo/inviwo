@@ -41,6 +41,7 @@
 #include <warn/pop>
 
 class QMenu;
+class QMimeData;
 
 namespace inviwo {
 
@@ -78,8 +79,20 @@ public:
     void setParentPropertyWidget(PropertyWidgetQt* parent);
 
     virtual std::unique_ptr<QMenu> getContextMenu();
+                                                      
+    /*
+     * Serializes the property and sets the output xml as MIME data.
+     * MIME type is set to "application/x.vnd.inviwo.property+xml"
+     * and "text/plain".
+     * Returns empty QMimeData if property is nullptr.
+     */
+    virtual std::unique_ptr<QMimeData> getPropertyMimeData() const;
 
 protected:
+    virtual void mousePressEvent(QMouseEvent *event) override;
+    // Create drag event if left button is pressed and moved
+    // further than QApplication::startDragDistance()
+    virtual void mouseMoveEvent(QMouseEvent *event) override;
     // PropertyObservable overrides
     virtual void onSetReadOnly(Property* property, bool readonly) override;
     virtual void onSetVisible(Property* property, bool visible) override;
@@ -90,6 +103,8 @@ protected:
 
     virtual bool event(QEvent* event) override;  //< for custom tooltips.
     virtual void paintEvent(QPaintEvent* pe) override;
+                                                      
+    QPoint mousePressedPosition_; /// Assigned on mousePressEvent
 
 private:
     void addModuleMenuActions(QMenu* menu, InviwoApplication* app);

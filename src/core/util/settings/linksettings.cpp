@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/settings/linksettings.h>
@@ -54,8 +54,8 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
 
     auto properties = factory->getKeys();
     std::sort(properties.begin(), properties.end());
-    for (auto& property : properties) registerProperty(property);       
-    
+    for (auto& property : properties) registerProperty(property);
+
     factory->addObserver(this);
 }
 
@@ -65,8 +65,9 @@ void LinkSettings::onRegister(PropertyFactoryObject* p) {
 }
 
 void LinkSettings::registerProperty(std::string property) {
-    bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
-    // Have to check we we already have a property from deserialization.
+    const bool enabled =
+        (property == PropertyTraits<CameraProperty>::classIdentifier()) != 0 ? true : false;
+    // Have to check we already have a property from deserialization.
     auto ids = "link" + dotSeperatedToPascalCase(property);
 
     auto it = propertyMap_.find(ids);
@@ -90,11 +91,11 @@ void LinkSettings::onUnRegister(PropertyFactoryObject* p) {
 
 bool LinkSettings::isLinkable(const Property* property) const {
     auto ids = "link" + dotSeperatedToPascalCase(property->getClassIdentifier());
-    auto it  = propertyMap_.find(ids);
+    auto it = propertyMap_.find(ids);
     if (it != propertyMap_.end()) {
         return it->second->get();
     }
     return false;
 }
 
-} // namespace
+}  // namespace inviwo

@@ -45,7 +45,7 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
     , trackFactory_{}
     , interpolationFactory_{}
     , animation_{}
-    , controller_{&animation_, app} {
+    , controller_{animation_, app} {
 
     {
         auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
@@ -74,6 +74,13 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
         [&](Serializer& s) { s.serialize("Animation", animation_); });
     animationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
         [&](Deserializer& d) { d.deserialize("Animation", animation_); });
+
+    animationControllerClearHandle_ =
+        app_->getWorkspaceManager()->onClear([&]() { controller_.resetAllPoperties(); });
+    animationControllerSerializationHandle_ = app_->getWorkspaceManager()->onSave(
+        [&](Serializer& s) { s.serialize("AnimationController", controller_); });
+    animationControllerDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
+        [&](Deserializer& d) { d.deserialize("AnimationController", controller_); });
 }
 
 TrackFactory& AnimationManager::getTrackFactory() { return trackFactory_; }
@@ -91,9 +98,9 @@ void AnimationManager::registerPropertyTrackConnection(const std::string& proper
     propertyToTrackMap_[propertyClassID] = trackClassID;
 }
 
-void AnimationManager::registerPropertyInterpolationConnection(const std::string& propertyClassID,
-                                                        const std::string& interpolationClassID) {
-    propertyToInterpolationMap_[propertyClassID] = interpolationClassID;
+void AnimationManager::registerPropertyInterpolationConnection(
+    const std::string& propertyClassID, const std::string& interpolationClassID) {
+    propertyToInterpolationMap_.emplace(propertyClassID, interpolationClassID);
 }
 
 Animation& AnimationManager::getAnimation() { return animation_; }
@@ -105,16 +112,18 @@ AnimationController& AnimationManager::getAnimationController() { return control
 const AnimationController& AnimationManager::getAnimationController() const { return controller_; }
 
 void AnimationManager::addKeyframeCallback(Property* property) {
+    addKeyframeCallback(property, controller_.getCurrentTime());
+}
+
+void AnimationManager::addKeyframeCallback(Property* property, Seconds time) {
     auto it = trackMap_.find(property);
     try {
         auto interpolation = getDefaultInterpolation(property);
         if (it != trackMap_.end()) {
             // Note: interpolation will only be used if a new sequence is created.
-            it->second->addKeyFrameUsingPropertyValue(controller_.getCurrentTime(),
-                                                      std::move(interpolation));
+            it->second->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
         } else if (auto basePropertyTrack = addNewTrack(property)) {
-            basePropertyTrack->addKeyFrameUsingPropertyValue(controller_.getCurrentTime(),
-                                                             std::move(interpolation));
+            basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
         } else {
             LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
         }
@@ -125,15 +134,17 @@ void AnimationManager::addKeyframeCallback(Property* property) {
 }
 
 void AnimationManager::addSequenceCallback(Property* property) {
+    addSequenceCallback(property, controller_.getCurrentTime());
+}
+
+void AnimationManager::addSequenceCallback(Property* property, Seconds time) {
     auto it = trackMap_.find(property);
     try {
         auto interpolation = getDefaultInterpolation(property);
         if (it != trackMap_.end()) {
-            it->second->addSequenceUsingPropertyValue(controller_.getCurrentTime(),
-                                                      std::move(interpolation));
+            it->second->addSequenceUsingPropertyValue(time, std::move(interpolation));
         } else if (auto basePropertyTrack = addNewTrack(property)) {
-            basePropertyTrack->addKeyFrameUsingPropertyValue(controller_.getCurrentTime(),
-                                                             std::move(interpolation));
+            basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
         } else {
             LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
         }
@@ -151,12 +162,11 @@ BasePropertyTrack* AnimationManager::addNewTrack(Property* property) {
                 try {
                     basePropertyTrack->setProperty(const_cast<Property*>(property));
                 } catch (Exception e) {
-                    LogWarn(e.getMessage() << " Invalid property class identified?")
-                    return nullptr;
+                    LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
                 }
-                animation_.add(std::move(track)); // Callback will add track to trackMap_           
+                animation_.add(std::move(track));  // Callback will add track to trackMap_
                 property->getOwner()->addObserver(this);
-                return basePropertyTrack; 
+                return basePropertyTrack;
             }
         }
     }
@@ -170,27 +180,34 @@ std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Propert
     if (interpolationIt != propertyToInterpolationMap_.end()) {
         interpolation = interpolationFactory_.create(interpolationIt->second);
         if (!interpolation) {
-            throw Exception("Default interpolation method for " + property->getClassIdentifier() +
-                            " was registered but the interpolation method was not added to the "
-                            "interpolation factory. @Developer: Please follow examples in animationmodule.cpp");
+            throw Exception(
+                "Default interpolation method for " + property->getClassIdentifier() +
+                " was registered but the interpolation method was not added to the "
+                "interpolation factory. @Developer: Please follow examples in animationmodule.cpp");
         }
     } else {
-        throw Exception("No interpolation method for " + property->getClassIdentifier() +
-                        " was registered. @Developer: Please follow examples in animationmodule.cpp");
+        throw Exception(
+            "No interpolation method for " + property->getClassIdentifier() +
+            " was registered. @Developer: Please follow examples in animationmodule.cpp");
     }
     return interpolation;
 }
-void AnimationManager::onWillRemoveProperty(Property* property, size_t index) {
+
+const std::unordered_multimap<std::string, std::string>& AnimationManager::getInterpolationMapping()
+    const {
+    return propertyToInterpolationMap_;
+}
+
+void AnimationManager::onWillRemoveProperty(Property* property, size_t) {
     auto it = trackMap_.find(property);
     if (it != trackMap_.end()) {
-        animation_.removeTrack(it->second->getIdentifier());
+        animation_.remove(it->second->getIdentifier());
     }
 }
 
 void AnimationManager::onTrackRemoved(Track* track) {
-    util::map_erase_remove_if(trackMap_, [&](const auto& elem) {
-        return elem.second->toTrack() == track;
-    });
+    util::map_erase_remove_if(trackMap_,
+                              [&](const auto& elem) { return elem.second->toTrack() == track; });
 }
 
 void AnimationManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
@@ -205,7 +222,7 @@ void AnimationManager::onProcessorNetworkWillRemoveProcessor(Processor* processo
     });
 
     for (const auto& item : toRemove) {
-        animation_.removeTrack(item);
+        animation_.remove(item);
     }
 }
 
@@ -215,6 +232,6 @@ void AnimationManager::onTrackAdded(Track* track) {
     }
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

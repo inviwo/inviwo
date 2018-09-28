@@ -31,10 +31,12 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
-PropertyClassIdentifier(CompositeProperty, "org.inviwo.CompositeProperty");
+const std::string CompositeProperty::classIdentifier = "org.inviwo.CompositeProperty";
+std::string CompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 CompositeProperty::CompositeProperty(std::string identifier, std::string displayName,
                                      InvalidationLevel invalidationLevel,
@@ -47,7 +49,7 @@ CompositeProperty::CompositeProperty(std::string identifier, std::string display
 CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
 
 std::string CompositeProperty::getClassIdentifierForWidget() const {
-    return CompositeProperty::CLASS_IDENTIFIER;
+    return CompositeProperty::classIdentifier;
 }
 
 void CompositeProperty::setOwner(PropertyOwner* owner) {
@@ -64,13 +66,16 @@ void CompositeProperty::set(const Property* srcProperty) {
 void CompositeProperty::set(const CompositeProperty* src) {
     NetworkLock lock(this);
     const auto& subProperties = src->getProperties();
-    if (subProperties.size() == this->properties_.size()) {
+    if (subProperties.size() == properties_.size()) {
         for (size_t i = 0; i < subProperties.size(); i++) {
             this->properties_[i]->set(subProperties[i]);
         }
         propertyModified();
     } else {
-        LogWarn("CompositeProperty mismatch. Unable to link");
+        LogWarn("Unable to link CompositeProperties: \n"
+                << joinString(src->getPath(), ".") << "\n to \n"
+                << joinString(getPath(), ".") << ".\nNumber of sub properties differ ("
+                << subProperties.size() << " vs " << properties_.size() << ")");
     }
 }
 

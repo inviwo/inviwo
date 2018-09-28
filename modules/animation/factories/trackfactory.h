@@ -48,8 +48,7 @@ public:
     using StandardFactory<Track, TrackFactoryObject>::create;
 };
 
-} // namespace
-} // namespace
+}  // namespace animation
+}  // namespace inviwo
 
-#endif // IVW_TRACKFACTORY_H
-
+#endif  // IVW_TRACKFACTORY_H

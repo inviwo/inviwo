@@ -52,7 +52,14 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , followObjectDuringRotation_("followObjectDuringRotation",
                                   "Follow Object During Camera Rotation", false)
     , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
-    , enableResourceManager_("enableResourceManager", "Enable Resource Manager", false) {
+    , enableResourceManager_("enableResourceManager", "Enable Resource Manager", false)
+    , breakOnMessage_{"breakOnMessage",
+                      "Break on Message",
+                      {MessageBreakLevel::Off, MessageBreakLevel::Error, MessageBreakLevel::Warn,
+                       MessageBreakLevel::Info},
+                      0}
+    , breakOnException_{"breakOnException", "Break on Exception", false}
+    , stackTraceInException_{"stackTraceInException", "Create Stack Trace for Exceptions", false} {
 
     addProperty(applicationUsageMode_);
     addProperty(poolSize_);
@@ -65,6 +72,9 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     addProperty(followObjectDuringRotation_);
     addProperty(runtimeModuleReloading_);
     addProperty(enableResourceManager_);
+    addProperty(breakOnMessage_);
+    addProperty(breakOnException_);
+    addProperty(stackTraceInException_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
@@ -73,6 +83,9 @@ SystemSettings::SystemSettings(InviwoApplication* app)
         if (isDeserializing_) return;
         LogInfo("Inviwo needs to be restarted for Runtime Module Reloading change to take effect");
     });
+
+    breakOnMessage_.onChange(
+        [this]() { LogCentral::getPtr()->setMessageBreakLevel(breakOnMessage_.get()); });
 
     load();
 }

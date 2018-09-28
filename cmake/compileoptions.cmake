@@ -66,7 +66,7 @@ function(ivw_define_standard_properties)
                 if(NOT OpenMP_ON)
                     list(APPEND comp_opts "/permissive-")
                 endif()
-                list(APPEND comp_opts "/std:c++latest")
+                list(APPEND comp_opts "/std:c++14")
                 #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
             endif()
         endif()

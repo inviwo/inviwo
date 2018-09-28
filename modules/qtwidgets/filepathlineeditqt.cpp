@@ -55,7 +55,6 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     warningLabel_->setPixmap(QPixmap(":/icons/filewarning.png"));
     warningLabel_->setFixedSize(labelSize);
     warningLabel_->setToolTip("Invalid File: Could not locate file");
-    //warningLabel_->setStyleSheet("QLabel { border : none; padding: 2px }");
     warningLabel_->hide();
 
     QObject::connect(this, &QLineEdit::returnPressed, [this]() {

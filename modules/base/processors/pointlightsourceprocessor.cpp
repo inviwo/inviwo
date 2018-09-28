@@ -36,7 +36,8 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(PointLightTrackball, "org.inviwo.PointLightTrackball");
+const std::string PointLightTrackball::classIdentifier = "org.inviwo.PointLightTrackball";
+std::string PointLightTrackball::getClassIdentifier() const { return classIdentifier; }
 
 const ProcessorInfo PointLightSourceProcessor::processorInfo_{
     "org.inviwo.Pointlightsource",  // Class identifier

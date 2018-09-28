@@ -45,7 +45,8 @@ namespace inviwo {
  */
 class IVW_CORE_API RaycastingProperty : public CompositeProperty {
 public:
-    InviwoPropertyInfo();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
     enum class RenderingType { Dvr, DvrIsosurface, Isosurface };
     enum class Classification { None, TF, Voxel };

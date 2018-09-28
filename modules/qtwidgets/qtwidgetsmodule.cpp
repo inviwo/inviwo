@@ -83,6 +83,53 @@
 
 namespace inviwo {
 
+struct ColorWidgetReghelper {
+    template <typename T>
+    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+        using PropertyType = OrdinalProperty<T>;
+        using PropertyWidget = ColorPropertyWidgetQt<T>;
+
+        qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
+    }
+};
+
+struct OrdinalWidgetReghelper {
+    template <typename T>
+    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+        using PropertyType = OrdinalProperty<T>;
+        using PropertyWidget = OrdinalPropertyWidgetQt<T>;
+
+        qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
+    }
+};
+
+struct MinMaxWidgetReghelper {
+    template <typename T>
+    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+        using PropertyType = MinMaxProperty<T>;
+        using PropertyWidget = OrdinalMinMaxPropertyWidgetQt<T>;
+        qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
+    }
+};
+struct MinMaxTextWidgetReghelper {
+    template <typename T>
+    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+        using PropertyType = MinMaxProperty<T>;
+        using DataType = std::conditional_t<std::is_integral<T>::value, int, double>;
+        using PropertyWidget = OrdinalMinMaxTextPropertyWidgetQt<DataType, T>;
+        qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
+    }
+};
+
+struct OptionWidgetReghelper {
+    template <typename T>
+    auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
+        using PropertyType = TemplateOptionProperty<T>;
+
+        qm.registerPropertyWidget<OptionPropertyWidgetQt, PropertyType>(semantics);
+    }
+};
+
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     : InviwoModule(app, "QtWidgets"), tfMenuHelper_(util::make_unique<TFMenuHelper>()) {
     if (!qApp) {
@@ -90,103 +137,54 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     }
     registerSettings(util::make_unique<QtWidgetsSettings>());
 
+    // Register bool property widgets
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Text");
-    registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");
-    registerPropertyWidget<BoolCompositePropertyWidgetQt, BoolCompositeProperty>("Default");
 
-    registerPropertyWidget<ColorPropertyWidgetQt<ivec3>, IntVec3Property>("Color");
-    registerPropertyWidget<ColorPropertyWidgetQt<ivec4>, IntVec4Property>("Color");
-    registerPropertyWidget<ColorPropertyWidgetQt<vec3>, FloatVec3Property>("Color");
-    registerPropertyWidget<ColorPropertyWidgetQt<vec4>, FloatVec4Property>("Color");
-    registerPropertyWidget<ColorPropertyWidgetQt<dvec3>, DoubleVec3Property>("Color");
-    registerPropertyWidget<ColorPropertyWidgetQt<dvec4>, DoubleVec4Property>("Color");
+    // Register composite/list property widgets
     registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>("Default");
-    registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
+    registerPropertyWidget<BoolCompositePropertyWidgetQt, BoolCompositeProperty>("Default");
+    registerPropertyWidget<ListPropertyWidgetQt, ListProperty>("Default");
+
+    // Register file property widgets
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::TextEditor);
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::PythonEditor);
-    registerPropertyWidget<FontSizePropertyWidgetQt, IntProperty>("Fontsize");
+
     registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
 
-    registerPropertyWidget<FloatMat2PropertyWidgetQt, FloatMat2Property>("Default");
-    registerPropertyWidget<FloatMat3PropertyWidgetQt, FloatMat3Property>("Default");
-    registerPropertyWidget<FloatMat4PropertyWidgetQt, FloatMat4Property>("Default");
-    registerPropertyWidget<FloatMinMaxPropertyWidgetQt, FloatMinMaxProperty>("Default");
-    registerPropertyWidget<FloatMinMaxTextPropertyWidgetQt, FloatMinMaxProperty>("Text");
-    registerPropertyWidget<FloatPropertyWidgetQt, FloatProperty>("Default");
-    registerPropertyWidget<FloatAnglePropertyWidgetQt, FloatProperty>("Angle");
-    registerPropertyWidget<FloatPropertyWidgetQt, FloatProperty>("Text");
-    registerPropertyWidget<FloatVec2PropertyWidgetQt, FloatVec2Property>("Default");
-    registerPropertyWidget<FloatVec2PropertyWidgetQt, FloatVec2Property>("Text");
-    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Default");
-    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Text");
-    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Spherical");
-    registerPropertyWidget<FloatVec4PropertyWidgetQt, FloatVec4Property>("Default");
-    registerPropertyWidget<FloatVec4PropertyWidgetQt, FloatVec4Property>("Text");
+    // Register color property widgets
+    using ColorTypes = std::tuple<ivec3, ivec4, vec3, vec4, dvec3, dvec4>;
+    util::for_each_type<ColorTypes>{}(ColorWidgetReghelper{}, *this, "Color");
 
-    registerPropertyWidget<FloatQuaternionPropertyWidgetQt, FloatQuaternionProperty>("Default");
-    registerPropertyWidget<FloatQuaternionPropertyWidgetQt, FloatQuaternionProperty>("Text");
+    // Register ordinal property widgets
+    using OrdinalTypes =
+        std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
+                   dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
+                   uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
+    util::for_each_type<OrdinalTypes>{}(OrdinalWidgetReghelper{}, *this, "Default");
+    util::for_each_type<OrdinalTypes>{}(OrdinalWidgetReghelper{}, *this, "Text");
+    util::for_each_type<OrdinalTypes>{}(OrdinalWidgetReghelper{}, *this, "SpinBox");
 
-    registerPropertyWidget<DoubleMat2PropertyWidgetQt, DoubleMat2Property>("Default");
-    registerPropertyWidget<DoubleMat3PropertyWidgetQt, DoubleMat3Property>("Default");
-    registerPropertyWidget<DoubleMat4PropertyWidgetQt, DoubleMat4Property>("Default");
-    registerPropertyWidget<DoubleMinMaxPropertyWidgetQt, DoubleMinMaxProperty>("Default");
-    registerPropertyWidget<DoubleMinMaxTextPropertyWidgetQt, DoubleMinMaxProperty>("Text");
-    registerPropertyWidget<DoublePropertyWidgetQt, DoubleProperty>("Default");
-    registerPropertyWidget<DoubleAnglePropertyWidgetQt, DoubleProperty>("Angle");
-    registerPropertyWidget<DoublePropertyWidgetQt, DoubleProperty>("Text");
-    registerPropertyWidget<DoubleVec2PropertyWidgetQt, DoubleVec2Property>("Default");
-    registerPropertyWidget<DoubleVec2PropertyWidgetQt, DoubleVec2Property>("Text");
-    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Default");
-    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Text");
-    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Spherical");
-    registerPropertyWidget<DoubleVec4PropertyWidgetQt, DoubleVec4Property>("Default");
-    registerPropertyWidget<DoubleVec4PropertyWidgetQt, DoubleVec4Property>("Text");
+    // Register MinMaxProperty widgets
+    using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
+    util::for_each_type<ScalarTypes>{}(MinMaxWidgetReghelper{}, *this, "Default");
+    util::for_each_type<ScalarTypes>{}(MinMaxTextWidgetReghelper{}, *this, "Text");
 
-    registerPropertyWidget<DoubleQuaternionPropertyWidgetQt, DoubleQuaternionProperty>("Default");
-    registerPropertyWidget<DoubleQuaternionPropertyWidgetQt, DoubleQuaternionProperty>("Text");
+    // Register option property widgets
+    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
+    util::for_each_type<OptionTypes>{}(OptionWidgetReghelper{}, *this, "Default");
 
-    registerPropertyWidget<IntSizeTMinMaxPropertyWidgetQt, IntSizeTMinMaxProperty>("Default");
-    registerPropertyWidget<Int64MinMaxPropertyWidgetQt, Int64MinMaxProperty>("Default");
-    registerPropertyWidget<IntMinMaxPropertyWidgetQt, IntMinMaxProperty>("Default");
-    registerPropertyWidget<IntMinMaxTextPropertyWidgetQt, IntMinMaxProperty>("Text");
-    registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Default");
-    registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Text");
-    registerPropertyWidget<IntSizeTPropertyWidgetQt, IntSizeTProperty>("Default");
-    registerPropertyWidget<IntSizeTPropertyWidgetQt, IntSizeTProperty>("Text");
-    registerPropertyWidget<IntVec2PropertyWidgetQt, IntVec2Property>("Default");
-    registerPropertyWidget<IntVec2PropertyWidgetQt, IntVec2Property>("Text");
-    registerPropertyWidget<IntVec3PropertyWidgetQt, IntVec3Property>("Default");
-    registerPropertyWidget<IntVec3PropertyWidgetQt, IntVec3Property>("Text");
-    registerPropertyWidget<IntVec4PropertyWidgetQt, IntVec4Property>("Default");
-    registerPropertyWidget<IntVec4PropertyWidgetQt, IntVec4Property>("Text");
-    registerPropertyWidget<IntSize2PropertyWidgetQt, IntSize2Property>("Default");
-    registerPropertyWidget<IntSize2PropertyWidgetQt, IntSize2Property>("Text");
-    registerPropertyWidget<IntSize3PropertyWidgetQt, IntSize3Property>("Default");
-    registerPropertyWidget<IntSize3PropertyWidgetQt, IntSize3Property>("Text");
-    registerPropertyWidget<IntSize4PropertyWidgetQt, IntSize4Property>("Default");
-    registerPropertyWidget<IntSize4PropertyWidgetQt, IntSize4Property>("Text");
-    registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Default");
-    registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Text");
-
-    registerPropertyWidget<ListPropertyWidgetQt, ListProperty>("Default");
-
-    registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
-
-    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyUInt>("Default");
-    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyInt>("Default");
-    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertySize_t>("Default");
-    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyFloat>("Default");
-    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyDouble>("Default");
-    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyString>("Default");
+    // Register string property widgets
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Default");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Password");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::TextEditor);
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::PythonEditor);
     registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
+
+    // Register TF property widgets
     registerPropertyWidget<IsoValuePropertyWidgetQt, IsoValueProperty>("Default");
     registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>("Text");
     registerPropertyWidget<TFPrimitiveSetWidgetQt, IsoValueProperty>("Text (Normalized)");
@@ -196,6 +194,20 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<IsoTFPropertyWidgetQt, IsoTFProperty>("Default");
     registerPropertyWidget<CompositePropertyWidgetQt, IsoTFProperty>("Composite");
 
+    // Register misc property widgets
+    registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
+    registerPropertyWidget<FontSizePropertyWidgetQt, IntProperty>("Fontsize");
+    registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");
+
+    registerPropertyWidget<FloatAnglePropertyWidgetQt, FloatProperty>("Angle");
+    registerPropertyWidget<DoubleAnglePropertyWidgetQt, DoubleProperty>("Angle");
+
+    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Spherical");
+    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Spherical");
+
+    registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
+
+    // Register dialogs
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
     registerDialog<InviwoFileDialog>("FileDialog");
 }
