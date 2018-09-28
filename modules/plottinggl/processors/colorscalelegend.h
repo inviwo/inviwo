@@ -135,8 +135,8 @@ private:
     // axis properties
     plot::AxisProperty axis_;
     plot::AxisRenderer axisRenderer_;
-    vec2 axisStart_, axisEnd_;
-    vec2 bottomLeft_, bottomRight_, topLeft_, topRight_;
+    ivec2 axisStart_, axisEnd_;
+    ivec2 bottomLeft_, bottomRight_, topLeft_, topRight_;
 };
 
 }  // namespace inviwo

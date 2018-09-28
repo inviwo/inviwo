@@ -46,9 +46,9 @@ ColorScaleLegend::ColorScaleLegend()
     , inport_("inport")
     , outport_("outport")
     , volumeInport_("volumeInport")
+    , isotfComposite_("isotfComposite", "TF & Isovalues")
     , positioning_("positioning", "Positioning & Size")
     , style_("style", "Style")
-    , isotfComposite_("isotfComposite", "TF & Isovalues")
     , legendPlacement_("legendPlacement", "Legend Placement",
                        {{"top", "Top", 0},
                         {"right", "Right", 1},
@@ -173,31 +173,31 @@ vec2 ColorScaleLegend::getRealSize() {
 // this function handles the legend rotation and updates the axis thereafter
 void ColorScaleLegend::setAxisPosition() {
     float ticsWidth = ceil(axis_.ticks_.majorTicks_.tickWidth_.get());
-    float borderWidth = borderWidth_.get();
+    auto borderWidth = borderWidth_.get();
 
     switch (rotation_.get()) {
         default:
         case 0:  // 0 degrees rotation (top)
-            axisStart_ = bottomLeft_ + vec2(ticsWidth / 2, 0) - vec2(borderWidth);
-            axisEnd_ = bottomRight_ - vec2(ticsWidth / 2, 0) + vec2(borderWidth, -borderWidth);
+            axisStart_ = bottomLeft_ + ivec2(ticsWidth / 2, 0) - ivec2(borderWidth);
+            axisEnd_ = bottomRight_ - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth, -borderWidth);
             axis_.orientation_.set(plot::AxisProperty::Orientation::Horizontal);
             axis_.placement_.set(plot::AxisProperty::Placement::Outside);
             break;
         case 1:  // 90 degrees rotation (right)
-            axisStart_ = bottomLeft_ + vec2(0, ticsWidth / 2) - vec2(borderWidth);
-            axisEnd_ = topLeft_ - vec2(0, ticsWidth / 2) + vec2(-borderWidth, borderWidth);
+            axisStart_ = bottomLeft_ + ivec2(0, ticsWidth / 2) - ivec2(borderWidth);
+            axisEnd_ = topLeft_ - ivec2(0, ticsWidth / 2) + ivec2(-borderWidth, borderWidth);
             axis_.orientation_.set(plot::AxisProperty::Orientation::Vertical);
             axis_.placement_.set(plot::AxisProperty::Placement::Outside);
             break;
         case 2:  // 180 degrees rotation (bottom)
-            axisStart_ = topLeft_ + vec2(ticsWidth / 2, 0) + vec2(-borderWidth, borderWidth);
-            axisEnd_ = topRight_ - vec2(ticsWidth / 2, 0) + vec2(borderWidth);
+            axisStart_ = topLeft_ + ivec2(ticsWidth / 2, 0) + ivec2(-borderWidth, borderWidth);
+            axisEnd_ = topRight_ - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth);
             axis_.orientation_.set(plot::AxisProperty::Orientation::Horizontal);
             axis_.placement_.set(plot::AxisProperty::Placement::Inside);
             break;
         case 3:  // 270 degrees rotation (left)
-            axisStart_ = bottomRight_ + vec2(0, ticsWidth / 2) + vec2(borderWidth, -borderWidth);
-            axisEnd_ = topRight_ - vec2(0, ticsWidth / 2) + vec2(borderWidth);
+            axisStart_ = bottomRight_ + ivec2(0, ticsWidth / 2) + ivec2(borderWidth, -borderWidth);
+            axisEnd_ = topRight_ - ivec2(0, ticsWidth / 2) + ivec2(borderWidth);
             axis_.orientation_.set(plot::AxisProperty::Orientation::Vertical);
             axis_.placement_.set(plot::AxisProperty::Placement::Inside);
             break;
@@ -242,10 +242,10 @@ void ColorScaleLegend::setLegendRotation() {
 
     // update the legend size boundaries
     if (rotation_.get() % 2 == 0) {
-        float maxLength = outport_.getDimensions().x - margin_.get() * 2;
+        auto maxLength = outport_.getDimensions().x - margin_.get() * 2;
         legendSize_.setMaxValue(vec2(maxLength, legendSize_.getMaxValue().y));
     } else {
-        float maxLength = outport_.getDimensions().x - margin_.get() * 2;
+        auto maxLength = outport_.getDimensions().x - margin_.get() * 2;
         legendSize_.setMaxValue(vec2(maxLength, legendSize_.getMaxValue().y));
     }
 }
@@ -263,10 +263,10 @@ void ColorScaleLegend::process() {
     updatePositionBoundaries();
     setLegendPosition();
 
-    vec2 dimensions = outport_.getDimensions();
+    ivec2 dimensions = outport_.getDimensions();
     vec2 position = position_.get();
-    vec2 legendSize = getRealSize();
-    float borderWidth = borderWidth_.get();
+    ivec2 legendSize = getRealSize();
+    auto borderWidth = borderWidth_.get();
 
     // define the legend corners
     bottomLeft_ = vec2(position.x * dimensions.x - (legendSize.x / 2.0),
