@@ -43,7 +43,6 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -60,19 +59,23 @@ namespace inviwo {
  *
  * ### Properties
  *   * __TF & Isovalues__ The transfer function to render onto the legend.
- *   * __Positioning__
+ *   * __Positioning & Size__
  *		+ __Legend Placement__ Defines to which side of the canvas the legend should be
  *          aligned or if the position and rotation should be customly set by the user
- *		+ __Legend Rotation__ (Only available if "Custom" is chosen as placement) Sets the legend rotation
-
- *		+ __Position__ (Only available if "Custom" is chosen as placement) Sets the legend position in screen coordinates (0 to 1)
- *		+ __Margin__ (Only available if "Custom" is chosen as placement) Sets the legend margin to canvas borders in pixels *		+ __Number
- *   * __Style__
+ *		+ __Legend Rotation__ (Only available if "Custom" is chosen as placement) Sets the
+ *          legend rotation
+ *		+ __Position__ (Only available if "Custom" is chosen as placement) Sets the legend
+ *          position in screen coordinates (0 to 1)
+ *		+ __Margin__ (Only available if "Custom" is chosen as placement) Sets the legend
+ *          margin to canvas borders in pixels
  *		+ __Legend Size__ Sets the legend width and height in pixels
- *		+ __Border Width__ Sets the border width in pixels
- *		+ __Border Color__ Sets the border, axis, title and label colors
- *		+ __Background__ Sets the legend background, either to none or to checkerboard pattern
- *		+ __Checker Board Size__ Sets the pattern size of the checkerboard 
+ *   * __Style__
+ *		+ __Legend Title__ Sets the axis caption
+ *		+ __Color__ Sets the border, axis, title and label colors
+ *		+ __Background__ Sets the legend background, either to none or to checkerboard
+ *          pattern
+ *		+ __Checker Board Size__ Sets the pattern size of the checkerboard
+ *      + __Border Width__ Sets the border width in pixels
  */
 
 /**
@@ -99,6 +102,7 @@ private:
     void updatePositionBoundaries();
     void setLegendPosition();
     void setLegendRotation();
+    vec2 getRealSize();
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -112,20 +116,17 @@ private:
     // position properties
     TemplateOptionProperty<int> legendPlacement_;
     TemplateOptionProperty<int> rotation_;
-    int lastLegendOrientation_;
     FloatVec2Property position_;
     IntProperty margin_;
+    IntVec2Property legendSize_;
 
     // style customization properties
-    IntVec2Property legendSize_;
-    IntProperty borderWidth_;
-    FloatVec4Property borderColor_;
     StringProperty title_;
+    FloatVec4Property color_;
     IntProperty fontSize_;
-
-    // legend background properties
     TemplateOptionProperty<BackgroundStyle> backgroundStyle_;
     FloatProperty checkerBoardSize_;
+    IntProperty borderWidth_;
 
     // shader variables
     TextureQuadRenderer textureRenderer_;
