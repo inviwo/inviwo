@@ -64,9 +64,6 @@ vec2 mirrorVertically(vec2 v) {
 
 // map the gl_FragCoord to the transfer function coordinates
 vec2 calcSamplePos() {
-
-    int mirrorHorizontal = min(1, max(rotationTF_ - 1, 0));
-
     // mirror variables vertically
     vec2 alteredDimensions = mirrorVertically(dimensions_);
     vec2 alteredFragCoords = mirrorVertically(gl_FragCoord.xy);
@@ -74,13 +71,9 @@ vec2 calcSamplePos() {
     vec2 alteredPosition = mirrorVertically(position_);
 
     vec2 pixelPosA = alteredPosition * alteredDimensions - (alteredLegendSize / 2.0);
-    // apply possible horizontal mirroring of output image
-    pixelPosA += alteredLegendSize * mirrorHorizontal;
     vec2 screenPosA = pixelPosA / alteredDimensions;
 
     vec2 pixelPosB = alteredPosition * alteredDimensions + (alteredLegendSize / 2.0);
-    // apply possible horizontal mirroring of output image
-    pixelPosB -= alteredLegendSize * mirrorHorizontal;
     vec2 screenPosB = pixelPosB / alteredDimensions;
 
     // map the fragment coordinates to the legends local coordinates
@@ -107,7 +100,7 @@ void main() {
         calcSamplePos().y > 1)
         colorTF = borderColor_;
 
-    // increase alpha to allow better visibility by 1 - (1 - a)^4 and then add "noBackground_" to
+    // increase alpha to allow better visibility by 1 - (1 - a)^4 and then add "backgroundAlpha_" to
     // set alpha to 1 if no background is wanted
     colorTF.a = min(1.0f - pow(1.0f - colorTF.a, 4.0f) + backgroundAlpha_, 1.0f);
 
