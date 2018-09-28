@@ -67,7 +67,7 @@ ColorScaleLegend::ColorScaleLegend()
     , margin_("margin", "Margin (in pixels)", 25, 0, 100)
     , legendSize_("legendSize", "Legend Size", vec2(25, 200), vec2(10, 10), vec2(400, 400))
     , borderWidth_("borderWidth", "Border Width", 2, 0, 10)
-    , borderColor_("borderColor", "Border Color", vec4(1, 1, 1, 1))
+    , borderColor_("borderColor", "Border Color", vec4(0, 0, 0, 1))
     , title_("title", "Legend Title", "Legend Title")
     , fontSize_("fontSize", "Font Size", 14, 8, 36)
     , backgroundStyle_("backgroundStyle", "Background",
