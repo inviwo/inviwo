@@ -43,11 +43,11 @@ typedef signed long long ind;
 *   If these do not suffice, cast the respective short.
 */
 enum class GridPrimitive : ind {
-    Undef = -1,
-    Vertex = 0,
-    Edge = 1,
-    Face = 2,
-    Volume = 3,
+    Undef       = -1,
+    Vertex      = 0,
+    Edge        = 1,
+    Face        = 2,
+    Volume      = 3,
     HyperVolume = 4
 };
 

@@ -36,7 +36,7 @@ namespace discretedata {
 
 StructuredGrid::StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim)
     : Connectivity(gridDimension), numCellsPerDimension_(numCellsPerDim) {
-    assert(numCellsPerDim.size() == gridDimension &&
+    assert(numCellsPerDim.size() == static_cast<size_t>(gridDimension) &&
            "Grid dimension should match cell dimension.");
     numCellsPerDimension_ = std::vector<ind>(numCellsPerDim);
 
