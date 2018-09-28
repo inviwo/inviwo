@@ -236,6 +236,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumedescriptionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/datavisualizer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/datavisualizermanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
@@ -507,6 +509,8 @@ set(SOURCE_FILES
     properties/tfpropertyconcept.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
+    properties/imageproperty.cpp
+    properties/volumedescriptionproperty.cpp
     rendering/datavisualizer.cpp
     rendering/datavisualizermanager.cpp
     rendering/meshdrawerfactory.cpp

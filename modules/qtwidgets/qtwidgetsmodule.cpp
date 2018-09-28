@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/imageproperty.h>
 
 #include <modules/qtwidgets/properties/anglepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
@@ -70,6 +71,7 @@
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 #include <modules/qtwidgets/properties/tfprimitivesetwidgetqt.h>
 #include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/imagepropertywidgetqt.h>
 
 #include <inviwo/core/io/rawvolumereader.h>
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>
@@ -153,6 +155,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::PythonEditor);
 
     registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
+
+    registerPropertyWidget<ImagePropertyWidgetQt, ImageProperty>("Default");
 
     // Register color property widgets
     using ColorTypes = std::tuple<ivec3, ivec4, vec3, vec4, dvec3, dvec4>;

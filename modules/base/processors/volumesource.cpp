@@ -60,6 +60,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     , outport_("data")
     , file_("filename", "File", file, "volume")
     , reload_("reload", "Reload data")
+    , volumeIndex_("volumeindex", "Volume Index", 0, 0, 0, 1)
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
     , volumeSequence_("Sequence", "Sequence") {
@@ -78,6 +79,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
 
     addProperty(file_);
     addProperty(reload_);
+    addProperty(volumeIndex_);
     addProperty(information_);
     addProperty(basis_);
     addProperty(volumeSequence_);
@@ -116,10 +118,62 @@ void VolumeSource::load(bool deserialize) {
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
+        for (auto& prop : volumeDescriptions_) {
+            removeProperty(*prop);
+        }
+        volumeDescriptions_.clear();
+
+        size_t volumeIdx{0};
+        volumeDescriptions_.reserve(volumes_->size());
+        center_slice_img_data_.resize(volumes_->size());
+
         // store filename in metadata
         for (auto volume : *volumes_) {
             if (!volume->hasMetaData<StringMetaData>("filename"))
                 volume->setMetaData<StringMetaData>("filename", file_.get());
+
+            const auto volume_dim = volume->getDimensions();
+            const auto center_slice_idx = volume_dim.z / 2;
+            const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+
+            center_slice_img_data_[volumeIdx] =
+                std::vector<unsigned char>(volume_dim.x * volume_dim.y);
+
+            double min_value{std::numeric_limits<double>::max()}, max_value{0.0};
+            double min_value_normalized{std::numeric_limits<double>::max()}, max_value_normalized{0.0};
+            const size3_t step_size{1};
+            for (size_t y{0}; y < volume_dim.y; y += step_size.y) {
+                for (size_t x{0}; x < volume_dim.x; x += step_size.x) {
+                    const size3_t pt{x, y, center_slice_idx};
+
+                    const auto value = volumeRAM->getAsDouble(pt);
+                    const auto value_normalized = volumeRAM->getAsNormalizedDouble(pt);
+
+                    const auto img_value = static_cast<unsigned char>(value * 255.0);
+                    const auto img_value_normalized = static_cast<unsigned char>(value_normalized * 255.0);
+
+                    max_value = glm::max(max_value, value);
+                    min_value = glm::min(min_value, value);
+                    max_value_normalized = glm::max(max_value_normalized, value_normalized);
+                    min_value_normalized = glm::min(min_value_normalized, value_normalized);
+
+                    // something is wrong here, img_value_normalized should be the correct one, but the normalization does weird things
+                    //center_slice_img_data_[volumeIdx][y * volume_dim.x + x] = img_value_normalized;
+                    center_slice_img_data_[volumeIdx][y * volume_dim.x + x] = img_value;
+                }
+            }
+
+            auto volumeDescription = std::make_shared<VolumeDesriptionProperty>(
+                std::string("VolumeDescription") + std::to_string(volumeIdx),
+                std::string("Volume Description ") + std::to_string(volumeIdx), volumeIdx,
+                center_slice_img_data_[volumeIdx].data(), // sliceData,
+                volume_dim);
+            volumeDescriptions_.emplace_back(volumeDescription);
+            auto prop = volumeDescriptions_.back();
+            addProperty(*prop);
+            prop->setCollapsed(true);
+            prop->onChange([this, prop]() { volumeIndex_.set(prop->image_.getImageIdx()); });
+            volumeIdx++;
         }
 
         basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
@@ -127,6 +181,9 @@ void VolumeSource::load(bool deserialize) {
 
         volumeSequence_.updateMax(volumes_->size());
         volumeSequence_.setVisible(volumes_->size() > 1);
+
+        volumeIndex_.set(size_t{0});
+        volumeIndex_.setMaxValue(glm::max(static_cast<size_t>(volumes_->size()) - 1, size_t{0}));
     }
 }
 
@@ -145,15 +202,22 @@ void VolumeSource::process() {
         deserialized_ = false;
     }
 
-    if (volumes_ && !volumes_->empty()) {
-        const size_t index = std::min(volumes_->size(), volumeSequence_.index_.get()) - 1;
+    if (volumes_ && !volumes_->empty() && volumeIndex_ >= 0 && volumeIndex_ < volumes_->size()) {
+        volumeSequence_.index_.set(volumeIndex_ + 1);
 
-        if (!(*volumes_)[index]) return;
+        const auto& vol = (*volumes_)[volumeIndex_];
+        if (!vol) {
+            return;
+        }
 
-        basis_.updateEntity(*(*volumes_)[index]);
-        information_.updateVolume(*(*volumes_)[index]);
+        basis_.updateForNewEntity(*vol);
+        information_.updateForNewVolume(*vol);
 
-        outport_.setData((*volumes_)[index]);
+        outport_.setData(vol);
+
+        // overrides volume data, but we want to set the basis and information from the volume
+        /*basis_.updateEntity(*vol);
+        information_.updateVolume(*vol);*/
     }
 }
 

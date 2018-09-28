@@ -75,6 +75,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfprimitivesetwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/valuedragger.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/imagepropertywidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qstringhelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmoduledefine.h
@@ -148,6 +149,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/tfpropertywidgetqt.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/valuedragger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/valuedragspinbox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/imagepropertywidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/propertylistwidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetsmodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/qtwidgetssettings.cpp

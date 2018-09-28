@@ -42,6 +42,8 @@
 
 namespace inviwo {
 
+const float magic_number = 1e5f;
+
 const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
 std::string CameraProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -49,13 +51,13 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
                                vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , lookFrom_("lookFrom", "Look from", eye, -vec3(100.0f), vec3(100.0f), vec3(0.1f),
+    , lookFrom_("lookFrom", "Look from", eye, -vec3(magic_number), vec3(magic_number), vec3(0.1f),
                 InvalidationLevel::InvalidOutput, PropertySemantics("Spherical"))
-    , lookTo_("lookTo", "Look to", center, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
-    , lookUp_("lookUp", "Look up", lookUp, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
+    , lookTo_("lookTo", "Look to", center, -vec3(magic_number), vec3(magic_number), vec3(0.1f))
+    , lookUp_("lookUp", "Look up", lookUp, -vec3(magic_number), vec3(magic_number), vec3(0.1f))
     , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f)
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
-    , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
+    , farPlane_("far", "Far Plane", 100.0f, 1.0f, magic_number, 1.0f)
 
     , cameraType_("cameraType", "Camera Type",
                   []() {
