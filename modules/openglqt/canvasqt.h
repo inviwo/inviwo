@@ -165,9 +165,9 @@ void CanvasQtBase<T>::setFullScreenInternal(bool fullscreen) {
         // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
         // No need to process user events, i.e. mouse/keyboard etc.
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        this->parentWidget()->setWindowState(parentWidget()->windowState() | Qt::WindowFullScreen);
+        this->parentWidget()->setWindowState(this->parentWidget()->windowState() | Qt::WindowFullScreen);
     } else {
-        this->parentWidget()->setWindowState(parentWidget()->windowState() & ~Qt::WindowFullScreen);
+        this->parentWidget()->setWindowState(this->parentWidget()->windowState() & ~Qt::WindowFullScreen);
     }
 }
 
