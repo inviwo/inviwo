@@ -159,14 +159,15 @@ void CanvasQtBase<T>::render(std::shared_ptr<const Image> image, LayerType layer
 template <typename T>
 void CanvasQtBase<T>::setFullScreenInternal(bool fullscreen) {
     if (fullscreen) {
-		// Prevent Qt resize event with incorrect size when going full screen.
-		// This is equivalent to suggested solution using QTimer
-		// https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
-		// No need to process user events, i.e. mouse/keyboard etc.
+        // Prevent Qt resize event with incorrect size when going full screen.
+        // Reproduce error by loading a workspace with a full screen canvas.
+        // This is equivalent to suggested solution using QTimer
+        // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
+        // No need to process user events, i.e. mouse/keyboard etc.
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        this->parentWidget()->showFullScreen();
+        this->parentWidget()->setWindowState(this->parentWidget()->windowState() | Qt::WindowFullScreen);
     } else {
-        this->parentWidget()->showNormal();
+        this->parentWidget()->setWindowState(this->parentWidget()->windowState() & ~Qt::WindowFullScreen);
     }
 }
 

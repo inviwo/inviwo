@@ -85,13 +85,11 @@ void evaluateTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexB
 size_t addVertex(K3DTree<size_t, float> &vertexTree, std::vector<vec3> &positions,
                  std::vector<vec3> &normals, const vec3 pos) {
     auto nearest = vertexTree.findNearest(vec3(pos));
-    vec3 p;
-    if (nearest) {
-        p.x = nearest->getPosition()[0];
-        p.y = nearest->getPosition()[1];
-        p.z = nearest->getPosition()[2];
-    }
-    if (!nearest || (glm::distance2(p, pos) > glm::epsilon<float>())) {
+    const auto nearestPos = [&]() {
+        return vec3{nearest->getPosition()[0], nearest->getPosition()[1],
+                    nearest->getPosition()[2]};
+    };
+    if (!nearest || (glm::distance2(nearestPos(), pos) > glm::epsilon<float>())) {
         nearest = vertexTree.insert(pos, positions.size());
         positions.push_back(pos);
         normals.push_back(vec3(0, 0, 0));
