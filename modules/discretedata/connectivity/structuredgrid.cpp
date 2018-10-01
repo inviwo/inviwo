@@ -1,35 +1,35 @@
 /*********************************************************************************
-*
-* Inviwo - Interactive Visualization Workshop
-*
-* Copyright (c) 2012-2018 Inviwo Foundation
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* 1. Redistributions of source code must retain the above copyright notice, this
-* list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice,
-* this list of conditions and the following disclaimer in the documentation
-* and/or other materials provided with the distribution.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*********************************************************************************/
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2012-2018 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
 
-#include "structuredgrid.h"
-#include "discretedata/channels/analyticchannel.h"
-#include "discretedata/connectivity/elementiterator.h"
+#include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/channels/analyticchannel.h>
+#include <modules/discretedata/connectivity/elementiterator.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -51,8 +51,7 @@ StructuredGrid::StructuredGrid(GridPrimitive gridDimension, const std::vector<in
     numGridPrimitives_[(ind)GridPrimitive::Vertex] = numVerts;
 }
 
-std::vector<ind> StructuredGrid::indexFromLinear(ind idxLin, const std::vector<ind>& size)
-{
+std::vector<ind> StructuredGrid::indexFromLinear(ind idxLin, const std::vector<ind>& size) {
     std::vector<ind> index(size.size());
     for (ind dim = 0; dim < (ind)size.size(); ++dim) {
         index[dim] = idxLin % size[dim];
@@ -75,8 +74,8 @@ void StructuredGrid::sameLevelConnection(std::vector<ind>& result, const ind idx
     }
 }
 
-void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin,
-                                    GridPrimitive from, GridPrimitive to, bool) const {
+void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
+                                    GridPrimitive to, bool) const {
     if (from == to && from == gridDimension_) {
         // Linear Index to nD Cell Index.
         return sameLevelConnection(result, idxLin, numCellsPerDimension_);
@@ -192,7 +191,8 @@ ind StructuredGrid::getNumCellsInDimension(ind dim) const {
 void StructuredGrid::getNumCells(std::vector<ind>& result) const {
     result.clear();
     for (ind numCells : numCellsPerDimension_) {
-        if (numCells > 0) result.push_back(numCells);
+        if (numCells > 0)
+            result.push_back(numCells);
         else {
             result.clear();
             return;
@@ -203,17 +203,17 @@ void StructuredGrid::getNumCells(std::vector<ind>& result) const {
 CellType StructuredGrid::getCellType(GridPrimitive dim, ind) const {
     switch (dim) {
         case GridPrimitive::Vertex:
-            return CellType::VERTEX;
+            return CellType::Vertex;
         case GridPrimitive::Edge:
-            return CellType::LINE;
+            return CellType::Line;
         case GridPrimitive::Face:
-            return CellType::QUAD;
+            return CellType::Quad;
         case GridPrimitive::Volume:
-            return CellType::HEXAHEDRON;
+            return CellType::Hexahedron;
         default:
-            return CellType::HIGHER_ORDER_HEXAHEDRON;
+            return CellType::HigherOrderHexahedron;
     }
 }
 
-}  // namespace
-}
+}  // namespace discretedata
+}  // namespace inviwo

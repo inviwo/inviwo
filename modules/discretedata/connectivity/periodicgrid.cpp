@@ -1,41 +1,42 @@
 /*********************************************************************************
-*
-* Inviwo - Interactive Visualization Workshop
-*
-* Copyright (c) 2012-2018 Inviwo Foundation
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* 1. Redistributions of source code must retain the above copyright notice, this
-* list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice,
-* this list of conditions and the following disclaimer in the documentation
-* and/or other materials provided with the distribution.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*********************************************************************************/
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2012-2018 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
 
-#include "periodicgrid.h"
-#include "discretedata/channels/analyticchannel.h"
-#include "discretedata/connectivity/elementiterator.h"
-#include "inviwo/core/util/formatdispatching.h"
+#include <modules/discretedata/connectivity/periodicgrid.h>
+#include <modules/discretedata/channels/analyticchannel.h>
+#include <modules/discretedata/connectivity/elementiterator.h>
+#include <inviwo/core/util/formatdispatching.h>
 
 namespace inviwo {
 namespace discretedata {
 
-PeriodicGrid::PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim, const std::vector<bool>& isDimPeriodic)
+PeriodicGrid::PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim,
+                           const std::vector<bool>& isDimPeriodic)
     : StructuredGrid(gridDimension, numCellsPerDim), isDimPeriodic_(isDimPeriodic) {
     assert(numCellsPerDim.size() == static_cast<size_t>(gridDimension) &&
            "Grid dimension should match cell dimension.");
@@ -108,7 +109,8 @@ void PeriodicGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrim
             // Add strides to the lower-left-front corner.
             for (ind d(0); d < numDimensions; d++) {
                 if (i & (ind(1) << d)) {
-                    // Last cell in a periodic dimension does not connect to the last vertex, but the first one.
+                    // Last cell in a periodic dimension does not connect to the last vertex, but
+                    // the first one.
                     if (isPeriodic(d) && cellIndex[d] == numCellsPerDimension_[d])
                         result[i] -= VStrides[d] * (numCellsPerDimension_[d]);
                     else
@@ -157,8 +159,7 @@ void PeriodicGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrim
                     if (isPeriodic(d)) {
                         // Map to last cell in dimension, the one going over the boundary.
                         CurrentNeighbor[d] = numCellsPerDimension_[d] - 2;
-                    }
-                    else {
+                    } else {
                         bOk = false;
                     }
                 }
@@ -166,8 +167,7 @@ void PeriodicGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrim
                     if (isPeriodic(d)) {
                         // Map to first cell in dimension.
                         CurrentNeighbor[d] = 0;
-                    }
-                    else {
+                    } else {
                         bOk = false;
                     }
                 }
@@ -194,14 +194,13 @@ ind PeriodicGrid::getNumCellsInDimension(ind dim) const {
 void PeriodicGrid::sameLevelConnection(std::vector<ind>& result, ind idxLin,
                                        const std::vector<ind>& size) const {
 
-
     result.clear();
     ind dimensionProduct = 1;
     ind index = idxLin;
     for (ind dim = 0; dim < (ind)size.size(); ++dim) {
         ind nextDimProd = dimensionProduct * size[dim];
         ind locIdx = index % size[dim];
-        index      = index / size[dim];
+        index = index / size[dim];
 
         if (locIdx > 0)
             result.push_back(idxLin - dimensionProduct);
@@ -217,5 +216,5 @@ void PeriodicGrid::sameLevelConnection(std::vector<ind>& result, ind idxLin,
     }
 }
 
-}  // namespace
-}
+}  // namespace discretedata
+}  // namespace inviwo
