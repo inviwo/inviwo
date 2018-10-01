@@ -70,16 +70,16 @@ CanvasProcessor::CanvasProcessor()
     , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...",
                              InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
-    , toggleFullscreen_("toggleFullscreen", "Toggle Full Screen")
-    , fullscreen_("fullscreen", "FullScreen", [this](Event*) { setFullScreen(!isFullScreen()); },
+    , fullScreen_("fullscreen", "Toggle Full Screen", false)
+    , fullScreenEvent_("fullscreenEvent", "FullScreen",
+                       [this](Event*) { fullScreen_.set(!fullScreen_); },
                   IvwKey::F, KeyState::Press, KeyModifier::Shift)
     , saveLayerEvent_("saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
-        IvwKey::Undefined, KeyState::Press)
+                      IvwKey::Undefined, KeyState::Press)
     , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
-          ProcessorWidgetMetaData::CLASS_IDENTIFIER)}
-    , canvasWidget_(nullptr) {
+          ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
     widgetMetaData_->addObserver(this);
 
     setEvaluateWhenHidden(false);
@@ -133,7 +133,7 @@ CanvasProcessor::CanvasProcessor()
     addProperty(saveLayerDirectory_);
     addProperty(imageTypeExt_);
 
-    saveLayerButton_.onChange([this](){saveImageLayer();});
+    saveLayerButton_.onChange([this]() { saveImageLayer(); });
     addProperty(saveLayerButton_);
 
     saveLayerToFileButton_.onChange([this]() {
@@ -155,10 +155,13 @@ CanvasProcessor::CanvasProcessor()
         }
     });
 
-    toggleFullscreen_.onChange([this]() { setFullScreen(!isFullScreen()); });
-
-    addProperty(toggleFullscreen_);
-    addProperty(fullscreen_);
+    addProperty(fullScreen_);
+    fullScreen_.onChange([this]() { 
+		if (auto c = getCanvas()) {
+            c->setFullScreen(fullScreen_.get());
+        }
+    });
+    addProperty(fullScreenEvent_);
     addProperty(saveLayerEvent_);
     addProperty(allowContextMenu_);
 
@@ -176,15 +179,19 @@ CanvasProcessor::CanvasProcessor()
 CanvasProcessor::~CanvasProcessor() {
     if (processorWidget_) {
         processorWidget_->hide();
-        canvasWidget_->getCanvas()->setEventPropagator(nullptr);
+        getCanvas()->setEventPropagator(nullptr);
     }
 }
 
 void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
-    if (auto cw = dynamic_cast<CanvasProcessorWidget*>(processorWidget.get())) {
-        canvasWidget_ = cw;
+    if (processorWidget && !dynamic_cast<CanvasProcessorWidget*>(processorWidget.get())) {
+        throw Exception("Expected CanvasProcessorWidget in CanvasProcessor::setProcessorWidget");
     }
     Processor::setProcessorWidget(std::move(processorWidget));
+	// Widget may be set after deserialization
+    if (auto c = getCanvas()) {
+        c->setFullScreen(fullScreen_.get());
+    }
     isSink_.update();
     isReady_.update();
 }
@@ -292,8 +299,8 @@ const Layer* CanvasProcessor::getVisibleLayer() const {
 std::shared_ptr<const Image> CanvasProcessor::getImage() const { return inport_.getData(); }
 
 Canvas* CanvasProcessor::getCanvas() const {
-    if (canvasWidget_) {
-        return canvasWidget_->getCanvas();
+    if (auto canvasWidget = static_cast<CanvasProcessorWidget*>(processorWidget_.get())) {
+        return canvasWidget->getCanvas();
     } else {
         return nullptr;
     }
@@ -344,19 +351,6 @@ void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
     }
 }
 
-bool CanvasProcessor::isFullScreen() const {
-    if (auto c = getCanvas()) {
-        return c->isFullScreen();
-    }
-    return false;
-}
-
-void CanvasProcessor::setFullScreen(bool fullscreen) {
-    if (auto c = getCanvas()) {
-        c->setFullScreen(fullscreen);
-    }
-}
-
 bool CanvasProcessor::isContextMenuAllowed() const { return allowContextMenu_; }
 
 void CanvasProcessor::setEvaluateWhenHidden(bool value) {
@@ -368,9 +362,7 @@ void CanvasProcessor::setEvaluateWhenHidden(bool value) {
         isReady_.setUpdate([this]() {
             return allInportsAreReady() && processorWidget_ && processorWidget_->isVisible();
         });
-    
     }
 }
-
 
 }  // namespace inviwo

@@ -1,5 +1,22 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-09-27 Full screen on startup
+Core: Renamed key mapping to fullscreenEvent and instead use fullscreen for a bool property.
+You will need to change the key mapping again if you have changed it from shift + f.
+
+Python: Full screen is now exposed as a property in the canvas instead of a function.
+
+## 2018-09-24 Color property improvements
+Updated the color property widget which allows to edit colors directly. Supports floating point range `[0,1]`, int range `[0,255]`, and hex color codes (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).
+Invalid input is indicated by red border and changes discarded if either <Esc> is pressed or the widget looses focus.
+
+
+## 2018-09-24 Spinbox semantics for ordinal properties
+New property semantics for ordinal properties: `SpinBox`
+
+This widget allows to adjust the value by dragging the arrow up/down indicator with the mouse. The rate of change per sec is shown in a tooltip. Alternatively, use the mouse wheel to adjust the value.
+
+
 ## 2018-09-21
 Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in %APPDATA%/inviwo.
 
@@ -56,6 +73,12 @@ TemplateOptionProperty<MyEnum> prop("test","test");
 prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
 ```
 This makes it possible to differentiate `MyEnum` from other enum TemplateOptionPropertys.
+
+## 2018-09-19 Web browser
+Use html5 web pages inside of Inviwo. Uses Chromium Embedded Framework (CEF) to render web pages off-screen. The rendered web page is transferred to an Inviwo Image.
+
+Inviwo properties can be synchronized using javascript, see the web browser module example.
+ 
 
 ## 2018-07-26 ListProperty
 

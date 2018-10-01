@@ -80,4 +80,11 @@ ProcessorWidget* Canvas::getProcessorWidgetOwner() const { return ownerWidget_; 
 
 void Canvas::setProcessorWidgetOwner(ProcessorWidget* ownerWidget) { ownerWidget_ = ownerWidget; }
 
-}  // namespace
+bool Canvas::isFullScreen() const { return isFullScreen_; }
+
+void Canvas::setFullScreen(bool fullscreen) {
+    isFullScreen_ = fullscreen;
+    setFullScreenInternal(fullscreen);
+}
+
+}  // namespace inviwo

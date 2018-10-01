@@ -293,10 +293,4 @@ Canvas::ContextID CanvasGLFW::contextId() const {
     return static_cast<ContextID>(glWindow_);
 }
 
-bool CanvasGLFW::isFullScreen() const {
-    return false;
-}
-
-void CanvasGLFW::setFullScreen(bool /*fullscreen*/) {}
-
 }  // namespace
