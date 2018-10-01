@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/processors/colorscalelegend.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
