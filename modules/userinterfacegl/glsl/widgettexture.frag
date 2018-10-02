@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *********************************************************************************/
-#ifdef ADDITIONAL_COLOR_LAYERS
-ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS
-#endif
 
 uniform sampler2D color_;
 uniform sampler2D depth_;
@@ -40,10 +37,6 @@ void main() {
 	vec4 dstColor = texture(color_, texCoord_.xy);
 
 	if (dstColor.a == 0.0) discard;
-
-#ifdef ADDITIONAL_COLOR_LAYERS
-    ADDITIONAL_COLOR_LAYER_WRITE
-#endif
 
     FragData0 = dstColor;
     PickingData = texture(picking_, texCoord_.xy);
