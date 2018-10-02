@@ -97,8 +97,10 @@ VolumeSliceGL::VolumeSliceGL()
     , transferFunction_("transferFunction", "Transfer Function", &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
     , sampleQuery_("sampleQuery", "Sampling Query", false)
-    , normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f), vec4(0.0f), vec4(1.0f),
-                        vec4(0.001f), InvalidationLevel::Valid, PropertySemantics::Text)
+    , normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f),
+                        vec4(std::numeric_limits<float>::lowest()),
+                        vec4(std::numeric_limits<float>::max()), vec4(0.001f),
+                        InvalidationLevel::Valid, PropertySemantics::Text)
     , volumeSample_("volumeSample", "Sample Output", vec4(0.0f),
                     vec4(std::numeric_limits<float>::lowest()),
                     vec4(std::numeric_limits<float>::max()), vec4(0.001f), InvalidationLevel::Valid,
@@ -446,6 +448,17 @@ void VolumeSliceGL::process() {
 
     if (posPicking_.get() && showIndicator_.get()) renderPositionIndicator();
     utilgl::deactivateCurrentTarget();
+
+    // update volume sample from indicator position, if active
+    if (sampleQuery_.isChecked() && posPicking_.get()) {
+        // convert world volume position to voxel coords
+        auto volume = inport_.getData();
+        const mat4 worldToIndex(volume->getCoordinateTransformer().getWorldToIndexMatrix());
+        const vec3 indexPos(ivec3(worldToIndex * vec4(worldPosition_.get(), 1)));
+        const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+        normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
+        volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
+    }
 }
 
 void VolumeSliceGL::renderPositionIndicator() {
@@ -656,28 +669,33 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
     }
 
     auto volume = inport_.getData();
-    auto mouseEvent = static_cast<MouseEvent*>(event);
 
-    auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
-    // convert normalized volume position to voxel coords
-    const mat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
-    const vec4 texturePos(volPos, 1.0);
-    ivec3 indexPos(ivec3(textureToIndex * texturePos));
+    // if position indicator is active, update volume sample from indicator position instead of
+    // mouse position (this is done in process())
+    if (!posPicking_.get()) {
+        auto mouseEvent = static_cast<MouseEvent*>(event);
 
-    const ivec3 volDim(volume->getDimensions());
+        auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
+        // convert normalized volume position to voxel coords
+        const mat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
+        const vec4 texturePos(volPos, 1.0);
+        ivec3 indexPos(ivec3(textureToIndex * texturePos));
 
-    bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim)) ||
-                       glm::any(glm::lessThan(indexPos, ivec3(0)));
-    if (outOfBounds) {
-        normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
-        volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
-    } else {
-        // sample input volume at given index position
-        const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
-        normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
-        volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
+        const ivec3 volDim(volume->getDimensions());
+
+        bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim)) ||
+                           glm::any(glm::lessThan(indexPos, ivec3(0)));
+        if (outOfBounds) {
+            normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+            volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+        } else {
+            // sample input volume at given index position
+            const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+            normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
+            volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
+        }
+        event->markAsUsed();
     }
-    event->markAsUsed();
 }
 
 void VolumeSliceGL::sliceChange() {
@@ -690,14 +708,14 @@ void VolumeSliceGL::sliceChange() {
     const vec3 texturePos(vec3(indexToTexture * vec4(indexPos)));
 
     const mat4 indexToWorld(inport_.getData()->getCoordinateTransformer().getIndexToWorldMatrix());
-    const vec3 worldPos = vec3(indexToWorld * vec4(sliceX_.get(), sliceY_.get(), sliceZ_.get(), 1.0f));
+    const vec3 worldPos =
+        vec3(indexToWorld * vec4(sliceX_.get(), sliceY_.get(), sliceZ_.get(), 1.0f));
 
     {
         NetworkLock lock(this);
         planePosition_.set(texturePos);
         worldPosition_.set(worldPos);
-	}
-
+    }
 }
 
 void VolumeSliceGL::positionChange() {
@@ -709,7 +727,8 @@ void VolumeSliceGL::positionChange() {
     const vec4 texturePos(planePosition_.get(), 1.0);
     const ivec3 indexPos(ivec3(textureToIndex * texturePos) + ivec3(1));
 
-    const mat4 textureToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+    const mat4 textureToWorld(
+        inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
     const vec3 worldPos = vec3(textureToWorld * vec4(planePosition_.get(), 1.0f));
 
     {
@@ -719,6 +738,7 @@ void VolumeSliceGL::positionChange() {
         sliceZ_.set(indexPos.z);
         worldPosition_.set(worldPos);
     }
+
     invalidateMesh();
 }
 
