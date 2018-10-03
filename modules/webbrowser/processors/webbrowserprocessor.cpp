@@ -125,15 +125,9 @@ WebBrowserProcessor::WebBrowserProcessor()
 
     // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in
     // destructor
-    if (sourceType_.get() == SourceType::LocalFile) {
-        browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, fileName_.get(),
-                                                     browserSettings, nullptr);
-        browser_->GetMainFrame()->LoadURL(fileName_.get());
-    } else if (sourceType_.get() == SourceType::WebAddress) {
-        browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, url_.get(),
-                                                     browserSettings, nullptr);
-        browser_->GetMainFrame()->LoadURL(url_.get());
-    }
+    browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, getSource(),
+                                                 browserSettings, nullptr);
+    browser_->GetMainFrame()->LoadURL(fileName_.get());
 
     // Inject events into CEF browser_
     cefInteractionHandler_.setHost(browser_->GetHost());
@@ -180,13 +174,20 @@ WebBrowserProcessor::WebBrowserProcessor()
 
         browserClient_->propertyCefSynchronizer_->startSynchronize(p.get(), id);
         // Must reload page to connect property with Frame, see PropertyCefSynchronizer::OnLoadEnd
-        if (sourceType_.get() == SourceType::LocalFile) {
-            browser_->GetMainFrame()->LoadURL(fileName_.get());
-        } else if (sourceType_.get() == SourceType::WebAddress) {
-            browser_->GetMainFrame()->LoadURL(url_.get());
-        }
+        browser_->GetMainFrame()->LoadURL(getSource());
+
         p.release();
     });
+}
+
+std::string WebBrowserProcessor::getSource() {
+    std::string sourceString;
+    if (sourceType_.get() == SourceType::LocalFile) {
+        sourceString = fileName_.get();
+    } else if (sourceType_.get() == SourceType::WebAddress) {
+        sourceString = url_.get();
+    }
+    return sourceString;
 }
 
 WebBrowserProcessor::~WebBrowserProcessor() {
@@ -209,21 +210,13 @@ void WebBrowserProcessor::deserialize(Deserializer& d) {
         browserClient_->propertyCefSynchronizer_->startSynchronize(prop, prop->getIdentifier());
     }
     // Must reload page to connect property with Frame, see PropertyCefSynchronizer::OnLoadEnd
-    if (sourceType_.get() == SourceType::LocalFile) {
-        browser_->GetMainFrame()->LoadURL(fileName_.get());
-    } else if (sourceType_.get() == SourceType::WebAddress) {
-        browser_->GetMainFrame()->LoadURL(url_.get());
-    }
+    browser_->GetMainFrame()->LoadURL(getSource());
 }
 
 void WebBrowserProcessor::process() {
     if (fileName_.isModified() || url_.isModified() || reload_.isModified() ||
         sourceType_.isModified()) {
-        if (sourceType_.get() == SourceType::LocalFile) {
-            browser_->GetMainFrame()->LoadURL(fileName_.get());
-        } else if (sourceType_.get() == SourceType::WebAddress) {
-            browser_->GetMainFrame()->LoadURL(url_.get());
-        }
+        browser_->GetMainFrame()->LoadURL(getSource());
     }
 
     // Vertical flip of CEF output image
