@@ -1069,6 +1069,9 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
         msgBox.setInformativeText("Do you want to save your changes?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Yes);
+        // set minimum size to suppress Qt warning
+        // see bug report https://bugreports.qt.io/browse/QTBUG-63661
+        msgBox.setMinimumSize(msgBox.minimumSizeHint());
         int answer = msgBox.exec();
 
         switch (answer) {
