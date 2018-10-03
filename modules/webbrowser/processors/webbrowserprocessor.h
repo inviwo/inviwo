@@ -38,6 +38,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -102,6 +103,7 @@ public:
     ImageInport background_;
     ImageOutport outport_;
     
+    FileProperty fileName_;
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
     CompositeProperty addPropertyGroup_;
@@ -109,6 +111,14 @@ public:
     StringProperty propertyHtmlId_; ///< Html id of property to add
     ButtonProperty add_;
 protected:
+
+
+
+    enum class SourceType { LocalFile, WebAddress };
+
+    TemplateOptionProperty<SourceType> sourceType_;
+
+
     CEFInteractionHandler cefInteractionHandler_;
     PickingMapper picking_;
     CefImageConverter cefToInviwoImageConverter_;
@@ -116,6 +126,7 @@ protected:
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
+
 };
 
 }  // namespace inviwo
