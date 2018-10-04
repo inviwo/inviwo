@@ -47,8 +47,6 @@
 #include <modules/opengl/canvasgl.h>
 #include <modules/opengl/debugmessages.h>
 #include <modules/openglqt/canvasqglwidget.h>
-//#include <modules/openglqt/canvasqwindow.h>
-//#include <modules/openglqt/canvasqopenglwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -62,6 +60,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QWidget>
+#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {
@@ -85,10 +84,8 @@ public:
         return static_cast<CanvasQtBase<T>*>(T::sharedCanvas_);
     }
 
-    virtual bool isFullScreen() const override;
-    virtual void setFullScreen(bool fullscreen) override;
-
 protected:
+    virtual void setFullScreenInternal(bool fullscreen) override;
     virtual bool event(QEvent* e) override;
 
 private:
@@ -160,17 +157,18 @@ void CanvasQtBase<T>::render(std::shared_ptr<const Image> image, LayerType layer
 }
 
 template <typename T>
-void inviwo::CanvasQtBase<T>::setFullScreen(bool fullscreen) {
+void CanvasQtBase<T>::setFullScreenInternal(bool fullscreen) {
     if (fullscreen) {
-        this->parentWidget()->showFullScreen();
+        // Prevent Qt resize event with incorrect size when going full screen.
+        // Reproduce error by loading a workspace with a full screen canvas.
+        // This is equivalent to suggested solution using QTimer
+        // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
+        // No need to process user events, i.e. mouse/keyboard etc.
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        this->parentWidget()->setWindowState(this->parentWidget()->windowState() | Qt::WindowFullScreen);
     } else {
-        this->parentWidget()->showNormal();
+        this->parentWidget()->setWindowState(this->parentWidget()->windowState() & ~Qt::WindowFullScreen);
     }
-}
-
-template <typename T>
-bool inviwo::CanvasQtBase<T>::isFullScreen() const {
-    return this->parentWidget()->windowState() == Qt::WindowFullScreen;
 }
 
 template <typename T>

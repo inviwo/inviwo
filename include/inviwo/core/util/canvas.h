@@ -76,16 +76,26 @@ public:
 
     virtual void releaseContext() = 0;
 
-    virtual bool isFullScreen() const = 0;
-    virtual void setFullScreen(bool fullscreen) = 0;
+    bool isFullScreen() const;
+    /** 
+	 * Sets window state of canvas to cover the entire screen.
+	 * Will call setFullScreenInternal after setting full screen flag.
+	 * @see setFullScreenInternal
+	 */
+    void setFullScreen(bool fullscreen);
 
 protected:
     void propagateEvent(Event* e);
+    /**
+     * Derived classes should override to implment actual window state.
+     */
+	virtual void setFullScreenInternal(bool fullscreen) = 0;
 
     size2_t screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference
     PickingController pickingController_;
     ProcessorWidget* ownerWidget_;  //< non-owning reference
+    bool isFullScreen_ = false;
 };
 
 }  // namespace

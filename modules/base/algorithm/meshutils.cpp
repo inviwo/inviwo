@@ -67,7 +67,6 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
                                    const size_t& nsegments) {
     auto mesh = std::make_shared<BasicMesh>();
     vec3 p, p1;
-    vec3 t;
     float angle = static_cast<float>(M_PI * 2.0 / nsegments);
     float a = glm::length(majorAxis);
     float b = glm::length(minorAxis);

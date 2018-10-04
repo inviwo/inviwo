@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,29 +24,21 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_TEXATLASENTRY_H
-#define IVW_TEXATLASENTRY_H
+uniform sampler2D color_;
+uniform sampler2D depth_;
+uniform sampler2D picking_;
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+in vec3 texCoord_;
 
-namespace inviwo {
+void main() {
+	vec4 dstColor = texture(color_, texCoord_.xy);
 
-struct IVW_MODULE_FONTRENDERING_API TexAtlasEntry {
-    std::string value;
-    ivec2 texPos;
-    ivec2 texExtent;
-    vec4 color;
-};
+	if (dstColor.a == 0.0) discard;
 
-struct IVW_MODULE_FONTRENDERING_API TexAtlasRenderInfo {
-    std::vector<ivec2> size;
-    std::vector<mat4> texTransform;
-};
-
-}  // namespace inviwo
-
-#endif  // IVW_TEXATLASENTRY_H
+    FragData0 = dstColor;
+    PickingData = texture(picking_, texCoord_.xy);
+    gl_FragDepth = texture(depth_, texCoord_.xy).r;
+}

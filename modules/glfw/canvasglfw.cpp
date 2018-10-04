@@ -186,6 +186,7 @@ void CanvasGLFW::character(GLFWwindow* window, unsigned int character) {
     // Needed for text input
     auto thisCanvas = getCanvasGLFW(window);
     // Convert UTF32 character
+
 #if _MSC_VER 
 	// Linker error when using char16_t in visual studio
 	// https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
@@ -291,11 +292,5 @@ Canvas::ContextID CanvasGLFW::activeContext() const {
 Canvas::ContextID CanvasGLFW::contextId() const {
     return static_cast<ContextID>(glWindow_);
 }
-
-bool CanvasGLFW::isFullScreen() const {
-    return false;
-}
-
-void CanvasGLFW::setFullScreen(bool /*fullscreen*/) {}
 
 }  // namespace

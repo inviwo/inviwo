@@ -67,6 +67,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderui.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderui.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/widgetrenderer.vert
+	${CMAKE_CURRENT_SOURCE_DIR}/glsl/widgettexture.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
