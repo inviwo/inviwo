@@ -36,6 +36,7 @@
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/qt/editor/processorpreview.h>
@@ -80,8 +81,9 @@ void ProcessorTree::mouseMoveEvent(QMouseEvent* e) {
         if (item &&
             item->data(0, ProcessorTree::typeRole).toInt() == ProcessorTree::ProcessoorType) {
             auto id = item->data(0, identifierRole).toString();
-            processorTreeWidget_->recordProcessorUse(utilqt::fromQString(id));
-            new ProcessorDragObject(this, id);
+            if (auto p = processorTreeWidget_->createProcessor(id)) {
+                new ProcessorDragObject(this, std::move(p));
+            }
         }
     }
 }
@@ -95,7 +97,7 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     , helpWidget_{helpWidget} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(400, 700)); // default size
+    resize(QSize(400, 700));  // default size
 
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
@@ -145,16 +147,14 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
 
-    onModulesDidRegister_ =
-        parent->getInviwoApplication()->getModuleManager().onModulesDidRegister([this]() {
-            addProcessorsToTree();
-            app_->getProcessorFactory()->addObserver(this);
-        });
-    onModulesWillUnregister_ =
-        parent->getInviwoApplication()->getModuleManager().onModulesWillUnregister([this]() {
-            processorTree_->clear();
-            app_->getProcessorFactory()->removeObserver(this);
-        });
+    onModulesDidRegister_ = app_->getModuleManager().onModulesDidRegister([this]() {
+        addProcessorsToTree();
+        app_->getProcessorFactory()->addObserver(this);
+    });
+    onModulesWillUnregister_ = app_->getModuleManager().onModulesWillUnregister([this]() {
+        processorTree_->clear();
+        app_->getProcessorFactory()->removeObserver(this);
+    });
 
     QSettings settings;
     settings.beginGroup(objectName());
@@ -188,21 +188,20 @@ void ProcessorTreeWidget::focusSearch() {
 }
 
 void ProcessorTreeWidget::addSelectedProcessor() {
-    std::string id;
+    QString id;
     auto items = processorTree_->selectedItems();
     if (items.size() > 0) {
-        id = items[0]->data(0, ProcessorTree::identifierRole).toString().toStdString();
+        id = items[0]->data(0, ProcessorTree::identifierRole).toString();
     } else {
         auto count = processorTree_->topLevelItemCount();
         if (count == 1) {
             auto item = processorTree_->topLevelItem(0);
             if (item->childCount() == 1) {
-                id =
-                    item->child(0)->data(0, ProcessorTree::identifierRole).toString().toStdString();
+                id = item->child(0)->data(0, ProcessorTree::identifierRole).toString();
             }
         }
     }
-    if (!id.empty()) {
+    if (!id.isEmpty()) {
         addProcessor(id);
         processorTree_->clearSelection();
     } else {
@@ -211,25 +210,35 @@ void ProcessorTreeWidget::addSelectedProcessor() {
     }
 }
 
-void ProcessorTreeWidget::addProcessor(std::string className) {
+std::unique_ptr<Processor> ProcessorTreeWidget::createProcessor(QString cid) {
+    // Make sure the default render context is active to make sure any FBOs etc created in
+    // the processor belong to the default context.
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    const auto className = utilqt::fromQString(cid);
     try {
-        // create processor, add it to processor network, and generate it's widgets
-        auto network = app_->getProcessorNetwork();
         if (auto p = app_->getProcessorFactory()->create(className)) {
-            auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-
-            auto bb = util::getBoundingBox(network->getProcessors());
-            meta->setPosition(ivec2{bb.first.x, bb.second.y} + ivec2(0, 75));
-
-            network->addProcessor(p.get());
-            util::autoLinkProcessor(network, p.get());
-            p.release();
             recordProcessorUse(className);
+            return p;
         }
     } catch (Exception& exception) {
-        util::log(exception.getContext(),
-                  "Unable to create processor " + className + " due to " + exception.getMessage(),
-                  LogLevel::Error);
+        util::log(
+            exception.getContext(),
+            "Unable to create processor \"" + className + "\" due to:\n" + exception.getMessage(),
+            LogLevel::Error);
+    }
+    return nullptr;
+}
+
+void ProcessorTreeWidget::addProcessor(QString className) {
+    // create processor, add it to processor network, and generate it's widgets
+    auto network = app_->getProcessorNetwork();
+    if (auto processor = createProcessor(className)) {
+        auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        const auto bb = util::getBoundingBox(network->getProcessors());
+        meta->setPosition(ivec2{bb.first.x, bb.second.y} + ivec2(0, 75));
+
+        auto p = network->addProcessor(std::move(processor));
+        util::autoLinkProcessor(network, p);
     }
 }
 
@@ -498,9 +507,8 @@ void ProcessorTreeWidget::currentItemChanged(QTreeWidgetItem* current,
 
 static QString mimeType = "inviwo/ProcessorDragObject";
 
-ProcessorDragObject::ProcessorDragObject(QWidget* source, const QString& className) : QDrag(source) {
-    std::string cid = utilqt::fromQString(className);
-    auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
+ProcessorDragObject::ProcessorDragObject(QWidget* source, std::unique_ptr<Processor> processor)
+    : QDrag(source) {
     auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(processor.get(), 0.8));
     setPixmap(img);
     auto mime = new ProcessorMimeData(std::move(processor));
@@ -510,10 +518,7 @@ ProcessorDragObject::ProcessorDragObject(QWidget* source, const QString& classNa
 }
 
 bool ProcessorDragObject::canDecode(const QMimeData* mimeData) {
-    if (mimeData->hasFormat(mimeType))
-        return true;
-    else
-        return false;
+    return mimeData->hasFormat(mimeType);
 }
 
 bool ProcessorDragObject::decode(const QMimeData* mimeData, QString& className) {

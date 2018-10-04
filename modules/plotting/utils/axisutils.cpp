@@ -181,8 +181,11 @@ std::vector<double> getMinorTickPositions(const AxisProperty& property) {
     }
 
     // Minor ticks fill the entire axis, except where a major tick is supposed to be.
-    const size_t totalTicks = minorTickDelta > 0 ?
-        static_cast<size_t>((stopMinor - startMinor + glm::epsilon<double>()) / minorTickDelta) + 1 : 0;
+    const size_t totalTicks =
+        minorTickDelta > 0 ? static_cast<size_t>((stopMinor - startMinor + glm::epsilon<double>()) /
+                                                 minorTickDelta) +
+                                 1
+                           : 0;
 
     std::vector<double> tickPositions;
     tickPositions.reserve(totalTicks);
@@ -336,7 +339,8 @@ std::shared_ptr<Mesh> generateAxisMesh3D(const AxisProperty& property, const vec
 
 vec2 getAxisCaptionPosition(const AxisProperty& property, const vec2& startPos,
                             const vec2& endPos) {
-    const vec2 axisPos((startPos + endPos) * property.caption_.position_.get());
+
+    const vec2 axisPos = glm::mix(startPos, endPos, property.caption_.position_.get());
 
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = vec2(axisDir.y, -axisDir.x);
@@ -431,6 +435,6 @@ std::vector<std::pair<double, vec3>> getLabelPositions3D(const AxisProperty& pro
     return labelPositions;
 }
 
-}  // namespace plotting
+}  // namespace plot
 
 }  // namespace inviwo

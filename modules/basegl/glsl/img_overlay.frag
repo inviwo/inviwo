@@ -49,11 +49,9 @@ void main() {
     // if border is present, we need to adjust the texture coords
     vec2 texCoord = gl_FragCoord.xy - viewport_.xy;
 
-    bool isBorder = false;
     // The BorderValue is used as a step function for determining the output results by mix.
     // If set to false, the textures will be sampled, otherwise the border color is set.
     bool border = false; 
-
     if (borderWidth_ > 0) {
         // set border flag iff the fragment coord is within the border
         vec2 centeredPos = (texCoord - viewport_.zw * 0.5);
