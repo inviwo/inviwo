@@ -27,57 +27,29 @@
  *
  *********************************************************************************/
 
-uniform sampler2D color_;
+uniform sampler2D transferFunction;
 
-uniform vec2 position_;
-uniform ivec2 dimensions_;
-uniform ivec2 legendSize_;
-
-// variable rotationTF_ =
+// variable legendRotation =
 // 0 -> 0 degree rotation ccw
 // 1 -> 90 degree rotation ccw
 // 2 -> 180 degree rotation ccw
 // 3 -> 270 degree rotation ccw
-uniform int rotationTF_;
+uniform int legendRotation;
 
-uniform int backgroundAlpha_;
-uniform int checkerBoardSize_;
+uniform int backgroundStyle;
+uniform float checkerBoardSize;
 uniform vec4 checkerColor1 = vec4(0.5, 0.5, 0.5, 1);
 uniform vec4 checkerColor2 = vec4(1, 1, 1, 1);
 
-uniform vec4 borderColor_;
+uniform vec4 color = vec4(0, 0, 0, 1);
+uniform int borderWidth = 1;
+uniform ivec4 viewport = ivec4(0, 128, 128, 128);
 
-#define M_PI 3.1415926535897932384626433832795
 
 // modified checkerboard for this specific shader
-vec4 checkerBoard() {
-    vec2 t = floor(ivec2(gl_FragCoord.x - position_.x * dimensions_.x,
-                         dimensions_.y - (gl_FragCoord.y - position_.y * dimensions_.y)) /
-                   vec2(checkerBoardSize_));
+vec4 checkerBoard(vec2 pos) {
+	vec2 t = floor(pos / vec2(checkerBoardSize));
     return mix(checkerColor2, checkerColor1, mod(t.x + t.y, 2.0) < 1.0 ? 1.0 : 0.0);
-}
-
-vec2 mirrorVertically(vec2 v) {
-    float mirrorVertical = mod(rotationTF_, 2);
-    return v.xy * (1 - mirrorVertical) + v.yx * mirrorVertical;
-}
-
-// map the gl_FragCoord to the transfer function coordinates
-vec2 calcSamplePos() {
-    // mirror variables vertically
-    vec2 alteredDimensions = mirrorVertically(dimensions_);
-    vec2 alteredFragCoords = mirrorVertically(gl_FragCoord.xy);
-    vec2 alteredLegendSize = mirrorVertically(legendSize_);
-    vec2 alteredPosition = mirrorVertically(position_);
-
-    vec2 pixelPosA = alteredPosition * alteredDimensions - (alteredLegendSize / 2.0);
-    vec2 screenPosA = pixelPosA / alteredDimensions;
-
-    vec2 pixelPosB = alteredPosition * alteredDimensions + (alteredLegendSize / 2.0);
-    vec2 screenPosB = pixelPosB / alteredDimensions;
-
-    // map the fragment coordinates to the legends local coordinates
-    return ((alteredFragCoords / alteredDimensions) - screenPosA) / (screenPosB - screenPosA);
 }
 
 vec4 over(vec4 colorB, vec4 colorA) {
@@ -88,26 +60,24 @@ vec4 over(vec4 colorB, vec4 colorA) {
 }
 
 void main() {
+    vec2 texCoord = gl_FragCoord.xy - viewport.xy;
+    vec2 outputDim = viewport.zw - vec2(2 * borderWidth);
+	vec2 centeredPos = (texCoord - viewport.zw * 0.5);
+	vec2 normPos = texCoord / outputDim;
 
-    vec2 samplePos = calcSamplePos();
+    float tfSamplePos = mix(normPos.x, normPos.y, mod(legendRotation, 2));
+    vec4 colorTF = texture(transferFunction, vec2(tfSamplePos, 0.0));
 
-    vec4 colorTF = texture(color_, samplePos);
-
-    // if the sampled position is outside the original square, it is part of the border
-    // NOTE: This method is a little bit unprecise, and the border width can differ with +-1 pixel
-    // or so
-    if (calcSamplePos().x < 0 || calcSamplePos().x > 1 || calcSamplePos().y < 0 ||
-        calcSamplePos().y > 1)
-        colorTF = borderColor_;
-
-    // increase alpha to allow better visibility by 1 - (1 - a)^4 and then add "backgroundAlpha_" to
+    // increase alpha to allow better visibility by 1 - (1 - a)^4 and then add "backgroundAlpha" to
     // set alpha to 1 if no background is wanted
-    colorTF.a = min(1.0f - pow(1.0f - colorTF.a, 4.0f) + backgroundAlpha_, 1.0f);
+    colorTF.a = min(1.0f - pow(1.0f - colorTF.a, 4.0f) + backgroundStyle, 1.0f);
 
     // blend in the checkerboard as background to the TF depending on its opacity
-    vec4 finalColor = over(checkerBoard(), colorTF);
+    vec4 finalColor = over(checkerBoard(centeredPos), colorTF);
 
-    FragData0 = finalColor;
+	// set border flag iff the fragment coord is within the border
+    bool border = borderWidth > 0 && any(greaterThan(abs(centeredPos), outputDim * 0.5));
+    FragData0 =  mix(finalColor, color, border);
 
     // no depth input, reset depth to largest value
     gl_FragDepth = 1.0;

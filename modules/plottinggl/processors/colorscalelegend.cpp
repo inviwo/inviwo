@@ -36,8 +36,8 @@ namespace inviwo {
 const ProcessorInfo ColorScaleLegend::processorInfo_{
     "org.inviwo.ColorScaleLegend",  // Class identifier
     "Color Scale Legend",           // Display name
-    "Drawing",                      // Category
-    CodeState::Experimental,        // Code state
+    "Plotting",                     // Category
+    CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
 };
 const ProcessorInfo ColorScaleLegend::getProcessorInfo() const { return processorInfo_; }
@@ -112,7 +112,7 @@ ColorScaleLegend::ColorScaleLegend()
 
     addProperty(axis_);
 
-    rotation_.onChange([&]() { setLegendRotation(); });
+    rotation_.onChange([&]() { updateLegendState(); });
 
     title_.onChange([&]() { axis_.caption_.title_.set(title_.get()); });
 
@@ -129,16 +129,15 @@ ColorScaleLegend::ColorScaleLegend()
         axis_.ticks_.majorTicks_.color_.set(color_.get());
         axis_.ticks_.minorTicks_.color_.set(color_.get());
     });
+    // set initial axis parameters
+    axis_.width_ = 0;
+    axis_.caption_.title_.set(title_.get());
+    axis_.caption_.setChecked(true);
+    axis_.labels_.font_.fontFace_.set(axis_.caption_.font_.fontFace_.get());
+    axis_.caption_.offset_.set(8);
+    fontSize_.propertyModified();
 
-    legendPlacement_.onChange([&]() {
-        if (legendPlacement_.get() == 4) {
-            rotation_.setVisible(true);
-            position_.setVisible(true);
-        } else {
-            rotation_.setVisible(false);
-            position_.setVisible(false);
-        }
-    });
+    legendPlacement_.onChange([&]() { updateLegendState(); });
 
     backgroundStyle_.onChange([&]() {
         switch (backgroundStyle_.get()) {
@@ -153,17 +152,7 @@ ColorScaleLegend::ColorScaleLegend()
     });
 }
 
-void ColorScaleLegend::initializeResources() {
-    // set initial axis parameters
-    axis_.width_ = 0;
-    axis_.caption_.title_.set(title_.get());
-    axis_.caption_.setChecked(true);
-    axis_.labels_.font_.fontFace_.set(axis_.caption_.font_.fontFace_.get());
-    axis_.caption_.offset_.set(8);
-    fontSize_.propertyModified();
-
-    shader_.build();
-}
+void ColorScaleLegend::initializeResources() { shader_.build(); }
 
 vec2 ColorScaleLegend::getRealSize() {
     vec2 size = legendSize_.get();
@@ -172,109 +161,82 @@ vec2 ColorScaleLegend::getRealSize() {
 }
 
 // this function handles the legend rotation and updates the axis thereafter
-void ColorScaleLegend::setAxisPosition() {
-    float ticsWidth = ceil(axis_.ticks_.majorTicks_.tickWidth_.get());
-    auto borderWidth = borderWidth_.get();
+std::pair<ivec2, ivec2> ColorScaleLegend::getAxisPosition() {
+    const float ticsWidth = ceil(axis_.ticks_.majorTicks_.tickWidth_.get());
+    const auto borderWidth = borderWidth_.get();
+
+    const ivec2 dimensions = outport_.getDimensions();
+    const vec2 position = position_.get();
+    const ivec2 legendSize = getRealSize();
+
+    // define the legend corners
+    const ivec2 bottomLeft = position * vec2{dimensions} - vec2{legendSize} * vec2{0.5};
+    const ivec2 bottomRight = vec2(bottomLeft.x + legendSize.x, bottomLeft.y);
+    const ivec2 topLeft = vec2(bottomLeft.x, bottomLeft.y + legendSize.y);
+    const ivec2 topRight = vec2(bottomRight.x, topLeft.y);
+
+    ivec2 axisStart{0};
+    ivec2 axisEnd{0};
 
     switch (rotation_.get()) {
         default:
         case 0:  // 0 degrees rotation (top)
-            axisStart_ = bottomLeft_ + ivec2(ticsWidth / 2, 0) - ivec2(borderWidth);
-            axisEnd_ = bottomRight_ - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth, -borderWidth);
+            axisStart = bottomLeft + ivec2(ticsWidth / 2, 0) - ivec2(borderWidth);
+            axisEnd = bottomRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth, -borderWidth);
             axis_.orientation_.set(plot::AxisProperty::Orientation::Horizontal);
             axis_.placement_.set(plot::AxisProperty::Placement::Outside);
             break;
         case 1:  // 90 degrees rotation (right)
-            axisStart_ = bottomLeft_ + ivec2(0, ticsWidth / 2) - ivec2(borderWidth);
-            axisEnd_ = topLeft_ - ivec2(0, ticsWidth / 2) + ivec2(-borderWidth, borderWidth);
+            axisStart = bottomLeft + ivec2(0, ticsWidth / 2) - ivec2(borderWidth);
+            axisEnd = topLeft - ivec2(0, ticsWidth / 2) + ivec2(-borderWidth, borderWidth);
             axis_.orientation_.set(plot::AxisProperty::Orientation::Vertical);
             axis_.placement_.set(plot::AxisProperty::Placement::Outside);
             break;
         case 2:  // 180 degrees rotation (bottom)
-            axisStart_ = topLeft_ + ivec2(ticsWidth / 2, 0) + ivec2(-borderWidth, borderWidth);
-            axisEnd_ = topRight_ - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth);
+            axisStart = topLeft + ivec2(ticsWidth / 2, 0) + ivec2(-borderWidth, borderWidth);
+            axisEnd = topRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth);
             axis_.orientation_.set(plot::AxisProperty::Orientation::Horizontal);
             axis_.placement_.set(plot::AxisProperty::Placement::Inside);
             break;
         case 3:  // 270 degrees rotation (left)
-            axisStart_ = bottomRight_ + ivec2(0, ticsWidth / 2) + ivec2(borderWidth, -borderWidth);
-            axisEnd_ = topRight_ - ivec2(0, ticsWidth / 2) + ivec2(borderWidth);
+            axisStart = bottomRight + ivec2(0, ticsWidth / 2) + ivec2(borderWidth, -borderWidth);
+            axisEnd = topRight - ivec2(0, ticsWidth / 2) + ivec2(borderWidth);
             axis_.orientation_.set(plot::AxisProperty::Orientation::Vertical);
             axis_.placement_.set(plot::AxisProperty::Placement::Inside);
             break;
     }
+    return {axisStart, axisEnd};
 }
 
-// set the boundaries of the position so that the legend is always inside the output canvas
-void ColorScaleLegend::updatePositionBoundaries() {
-    auto legendSize = getRealSize();
-    auto dim = outport_.getDimensions();
-    vec2 normalizedMin(((float)legendSize.x / 2) / dim.x, ((float)legendSize.y / 2) / dim.y);
-    vec2 normalizedMax(1.0 - normalizedMin.x, 1.0 - normalizedMin.y);
-    vec2 normalizedMargin((float)margin_.get() / dim.x, (float)margin_.get() / dim.y);
+void ColorScaleLegend::updateLegendState() {
+    const vec2 dim{outport_.getDimensions()};
 
-    position_.setMinValue(
-        vec2(normalizedMin.x + normalizedMargin.x, normalizedMin.y + normalizedMargin.y));
-    position_.setMaxValue(
-        vec2(normalizedMax.x - normalizedMargin.x, normalizedMax.y - normalizedMargin.y));
-}
-
-void ColorScaleLegend::setLegendPosition() {
-    switch (legendPlacement_.get()) {
-        default:
-            break;
-        case 0:
-            position_.set(vec2(0.5, 1));
-            break;
-        case 1:
-            position_.set(vec2(1, 0.5));
-            break;
-        case 2:
-            position_.set(vec2(0.5, 0));
-            break;
-        case 3:
-            position_.set(vec2(0, 0.5));
-            break;
+    const std::array<vec2, 4> pos = {{{0.5f, 1.0f}, {1.0f, 0.5f}, {0.5f, 0.0f}, {0.0f, 0.5f}}};
+    if (legendPlacement_.get() == 4) {
+        rotation_.setVisible(true);
+        position_.setVisible(true);
+    } else {
+        rotation_.setVisible(false);
+        position_.setVisible(false);
+        position_.set(pos[legendPlacement_]);
+        rotation_.set(legendPlacement_.get());
     }
-}
 
-void ColorScaleLegend::setLegendRotation() {
-    if (legendPlacement_.get() != 4) rotation_.set(legendPlacement_.get());
-
-    // update the legend size boundaries
-    if (rotation_.get() % 2 == 0) {
-        auto maxLength = outport_.getDimensions().x - margin_.get() * 2;
+    if (rotation_ % 2 == 0) {
+        auto maxLength = dim.x - margin_ * 2;
         legendSize_.setMaxValue(vec2(maxLength, legendSize_.getMaxValue().y));
     } else {
-        auto maxLength = outport_.getDimensions().x - margin_.get() * 2;
+        auto maxLength = dim.y - margin_ * 2;
         legendSize_.setMaxValue(vec2(maxLength, legendSize_.getMaxValue().y));
     }
-}
 
-void ColorScaleLegend::process() {
+    const vec2 legendSize{getRealSize()};
+    const vec2 normalizedMin{legendSize / dim / 2.0f};
+    const vec2 normalizedMax{vec2{1.0} - normalizedMin};
+    const vec2 normalizedMargin{vec2{static_cast<float>(margin_)} / dim};
 
-    // draw cached overlay on top of the input image
-    if (inport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, inport_);
-    } else {
-        utilgl::activateAndClearTarget(outport_);
-    }
-
-    setLegendRotation();
-    updatePositionBoundaries();
-    setLegendPosition();
-
-    ivec2 dimensions = outport_.getDimensions();
-    vec2 position = position_.get();
-    ivec2 legendSize = getRealSize();
-    auto borderWidth = borderWidth_.get();
-
-    // define the legend corners
-    bottomLeft_ = vec2(position.x * dimensions.x - (legendSize.x / 2.0),
-                       position.y * dimensions.y - (legendSize.y / 2.0));
-    bottomRight_ = vec2(bottomLeft_.x + legendSize.x, bottomLeft_.y);
-    topLeft_ = vec2(bottomLeft_.x, bottomLeft_.y + legendSize.y);
-    topRight_ = vec2(bottomRight_.x, topLeft_.y);
+    position_.setMinValue(normalizedMin + normalizedMargin);
+    position_.setMaxValue(normalizedMax - normalizedMargin);
 
     // update the legend range if a volume is connected to inport
     if (volumeInport_.isChanged() && volumeInport_.isConnected()) {
@@ -282,34 +244,38 @@ void ColorScaleLegend::process() {
     } else if (!volumeInport_.isConnected()) {
         axis_.setRange(vec2(0, 1));
     }
-    setAxisPosition();
-    axisRenderer_.render(dimensions, axisStart_, axisEnd_);
+}
+
+void ColorScaleLegend::process() {
+    // draw cached overlay on top of the input image
+    if (inport_.isReady()) {
+        utilgl::activateTargetAndCopySource(outport_, inport_);
+    } else {
+        utilgl::activateAndClearTarget(outport_);
+    }
+
+    updateLegendState();
+
+    const auto axisPos = getAxisPosition();
+    const ivec2 dimensions = outport_.getDimensions();
+    axisRenderer_.render(dimensions, axisPos.first, axisPos.second);
 
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    TextureUnit colorUnit;
-    shader_.activate();
-    shader_.setUniform("color_", colorUnit.getUnitNumber());
-    shader_.setUniform("dimensions_", dimensions);
-    shader_.setUniform("position_", position);
-    shader_.setUniform("legendSize_", legendSize);
-    shader_.setUniform("borderColor_", color_.get());
-    shader_.setUniform("backgroundAlpha_", (int)backgroundStyle_.get());
-    shader_.setUniform("checkerBoardSize_", (int)checkerBoardSize_.get());
-    shader_.setUniform("rotationTF_", rotation_.get());
+    TextureUnitContainer units;
+    utilgl::Activate<Shader> activate(&shader_);
+    utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
+    utilgl::setUniforms(shader_, position_, color_, borderWidth_, backgroundStyle_,
+                        checkerBoardSize_, rotation_, isotfComposite_);
 
-    utilgl::bindTexture(isotfComposite_.tf_, colorUnit);
-
-    utilgl::ViewportState viewport(bottomLeft_.x - borderWidth, bottomLeft_.y - borderWidth,
-                                   legendSize.x + (borderWidth * 2),
-                                   legendSize.y + (borderWidth * 2));
+    const ivec2 legendSize = getRealSize();
+    const ivec2 bottomLeft = position_.get() * vec2{dimensions} - vec2{legendSize} * vec2{0.5};
+    const ivec4 view{bottomLeft - ivec2{borderWidth_}, legendSize + ivec2{borderWidth_ * 2}};
+    shader_.setUniform("viewport", view);
+    utilgl::ViewportState viewport(view);
 
     utilgl::singleDrawImagePlaneRect();
-
-    shader_.deactivate();
-
-    TextureUnit::setZeroUnit();
     utilgl::deactivateCurrentTarget();
 }
 

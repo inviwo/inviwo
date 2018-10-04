@@ -98,10 +98,8 @@ public:
 private:
     enum class BackgroundStyle { CheckerBoard, NoBackground };
 
-    void setAxisPosition();
-    void updatePositionBoundaries();
-    void setLegendPosition();
-    void setLegendRotation();
+    std::pair<ivec2, ivec2> getAxisPosition();
+    void updateLegendState();
     vec2 getRealSize();
 
     ImageInport inport_;
@@ -114,8 +112,8 @@ private:
     CompositeProperty style_;
 
     // position properties
-    TemplateOptionProperty<int> legendPlacement_;
-    TemplateOptionProperty<int> rotation_;
+    OptionPropertyInt legendPlacement_;
+    OptionPropertyInt rotation_;
     FloatVec2Property position_;
     IntProperty margin_;
     IntVec2Property legendSize_;
@@ -135,8 +133,6 @@ private:
     // axis properties
     plot::AxisProperty axis_;
     plot::AxisRenderer axisRenderer_;
-    ivec2 axisStart_, axisEnd_;
-    ivec2 bottomLeft_, bottomRight_, topLeft_, topRight_;
 };
 
 }  // namespace inviwo
