@@ -51,7 +51,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     registerProcessor<plot::AxisRenderProcessor>();
-    registerProcessor<ColorScaleLegend>(); //shouldn't it be part of "plot::" as well?
+    registerProcessor<plot::ColorScaleLegend>();
     registerProcessor<plot::ParallelCoordinates>();
     registerProcessor<plot::PersistenceDiagramPlotProcessor>();
     registerProcessor<plot::ScatterPlotMatrixProcessor>();

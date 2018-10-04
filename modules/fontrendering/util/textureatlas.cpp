@@ -145,11 +145,11 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices, double minA
         elem.texPos.y = lineHeights[elem.texPos.y] + margin_;
     }
 
-    const int height = [&](int w) {
-        while (w < lineHeights.back()) {
-            w *= 2;
+    const int height = [&](int h) {
+        while (h < lineHeights.back()) {
+            h *= 2;
         }
-        return w;
+        return h;
     }(32);
 
     if (height > maxTexSize_) {

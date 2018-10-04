@@ -32,6 +32,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
+namespace plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ColorScaleLegend::processorInfo_{
@@ -39,7 +40,7 @@ const ProcessorInfo ColorScaleLegend::processorInfo_{
     "Color Scale Legend",           // Display name
     "Plotting",                     // Category
     CodeState::Stable,              // Code state
-    Tags::GL,                       // Tags
+    "GL, Plotting, TF"              // Tags
 };
 const ProcessorInfo ColorScaleLegend::getProcessorInfo() const { return processorInfo_; }
 
@@ -240,7 +241,7 @@ void ColorScaleLegend::updateLegendState() {
     position_.setMaxValue(normalizedMax - normalizedMargin);
 
     // update the legend range if a volume is connected to inport
-    if (volumeInport_.isChanged() && volumeInport_.isConnected()) {
+    if (volumeInport_.isChanged() && volumeInport_.hasData()) {
         axis_.setRange(volumeInport_.getData()->dataMap_.dataRange);
     } else if (!volumeInport_.isConnected()) {
         axis_.setRange(vec2(0, 1));
@@ -279,5 +280,5 @@ void ColorScaleLegend::process() {
     utilgl::singleDrawImagePlaneRect();
     utilgl::deactivateCurrentTarget();
 }
-
+}  // namespace plot
 }  // namespace inviwo

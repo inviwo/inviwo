@@ -46,6 +46,8 @@
 
 namespace inviwo {
 
+namespace plot {
+
 /** \docpage{org.inviwo.ColorScaleLegend, Color Scale Legend}
  * ![](org.inviwo.ColorScaleLegend.png?classIdentifier=org.inviwo.ColorScaleLegend)
  * Explanation of how to use the processor.
@@ -80,9 +82,7 @@ namespace inviwo {
 
 /**
  * \class ColorScaleLegend
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * Adds a legend displaying the transfer function of this processor to the image output.
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
 class IVW_MODULE_PLOTTINGGL_API ColorScaleLegend : public Processor {
 public:
@@ -135,6 +135,7 @@ private:
     plot::AxisRenderer axisRenderer_;
 };
 
+}  // namespace plot
 }  // namespace inviwo
 
 #endif  // IVW_COLORSCALELEGEND_H

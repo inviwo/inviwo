@@ -48,7 +48,7 @@ uniform ivec4 viewport = ivec4(0, 128, 128, 128);
 
 // modified checkerboard for this specific shader
 vec4 checkerBoard(vec2 pos) {
-	vec2 t = floor(pos / vec2(checkerBoardSize));
+    vec2 t = floor(pos / vec2(checkerBoardSize));
     return mix(checkerColor2, checkerColor1, mod(t.x + t.y, 2.0) < 1.0 ? 1.0 : 0.0);
 }
 
@@ -62,20 +62,20 @@ vec4 over(vec4 colorB, vec4 colorA) {
 void main() {
     vec2 texCoord = gl_FragCoord.xy - viewport.xy;
     vec2 outputDim = viewport.zw - vec2(2 * borderWidth);
-	vec2 centeredPos = (texCoord - viewport.zw * 0.5);
-	vec2 normPos = texCoord / outputDim;
+    vec2 centeredPos = (texCoord - viewport.zw * 0.5);
+    vec2 normPos = texCoord / outputDim;
 
     float tfSamplePos = mix(normPos.x, normPos.y, mod(legendRotation, 2));
     vec4 colorTF = texture(transferFunction, vec2(tfSamplePos, 0.0));
 
     // increase alpha to allow better visibility by 1 - (1 - a)^4 and then add "backgroundAlpha" to
     // set alpha to 1 if no background is wanted
-    colorTF.a = min(1.0f - pow(1.0f - colorTF.a, 4.0f) + backgroundStyle, 1.0f);
+    colorTF.a = mix(1.0f - pow(1.0f - colorTF.a, 4.0f), 1.0, float(backgroundStyle));
 
     // blend in the checkerboard as background to the TF depending on its opacity
     vec4 finalColor = over(checkerBoard(centeredPos), colorTF);
 
-	// set border flag iff the fragment coord is within the border
+    // set border flag iff the fragment coord is within the border
     bool border = borderWidth > 0 && any(greaterThan(abs(centeredPos), outputDim * 0.5));
     FragData0 =  mix(finalColor, color, border);
 
