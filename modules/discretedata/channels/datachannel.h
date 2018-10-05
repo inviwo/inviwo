@@ -1,34 +1,34 @@
 /*********************************************************************************
-*
-* Inviwo - Interactive Visualization Workshop
-*
-* Copyright (c) 2012-2018 Inviwo Foundation
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* 1. Redistributions of source code must retain the above copyright notice, this
-* list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice,
-* this list of conditions and the following disclaimer in the documentation
-* and/or other materials provided with the distribution.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*********************************************************************************/
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2012-2018 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
 
 #pragma once
-#include <discretedata/discretedatamoduledefine.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
@@ -36,18 +36,18 @@ namespace inviwo {
 namespace discretedata {
 
 /** Discretedata index type **/
-typedef signed long long ind;
+using ind = signed long long;
 
 /** Mapping structure name to respective dimension.
-*   Assign channels to any dimensions this way.
-*   If these do not suffice, cast the respective short.
-*/
+ *  Assign channels to any dimensions this way.
+ *  If these do not suffice, cast the respective short.
+ */
 enum class GridPrimitive : ind {
-    Undef       = -1,
-    Vertex      = 0,
-    Edge        = 1,
-    Face        = 2,
-    Volume      = 3,
+    Undef = -1,
+    Vertex = 0,
+    Edge = 1,
+    Face = 2,
+    Volume = 3,
     HyperVolume = 4
 };
 
@@ -75,16 +75,15 @@ class IVW_MODULE_DISCRETEDATA_API Channel : public MetaDataOwner {
     // Construction / Deconstruction
 public:
     /** \brief Direct construction
-    *   @param numComponents Size of vector at each position
-    *   @param name Name associated with the channel
-    *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
-    */
+     *   @param numComponents Size of vector at each position
+     *   @param name Name associated with the channel
+     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+     */
     Channel(ind numComponents, const std::string& name, DataFormatId dataFormat,
             GridPrimitive definedOn = GridPrimitive::Vertex);
 
     virtual ~Channel() = default;
 
-    // Methods
 public:
     /** Returns the "Name" meta data */
     const std::string getName() const;
@@ -103,17 +102,17 @@ public:
 
 protected:
     /** Sets the "GridPrimitiveType" meta data
-    *   Should be constant, only DataSet is allowed to write.
-    */
+     *   Should be constant, only DataSet is allowed to write.
+     */
     void setGridPrimitiveType(GridPrimitive);
 
     /** Sets the "DataFromatId" meta data
-    */
+     */
     void setDataFormatId(DataFormatId);
 
     /** Sets the "NumComponents" meta data
-    *   Should be constant, only DataSet is allowed to write.
-    */
+     *   Should be constant, only DataSet is allowed to write.
+     */
     void setNumComponents(ind);
 
 public:
@@ -129,7 +128,7 @@ public:
         : Channel(N, name, dataFormat, definedOn) {}
 
 protected:
-    virtual void fillRaw(T * dest, ind index) const = 0;
+    virtual void fillRaw(T* dest, ind index) const = 0;
 
     virtual ChannelGetter<T, N>* newIterator() = 0;
 };
@@ -232,8 +231,8 @@ public:
 
 private:
     using MetaScalarType = MetaDataPrimitiveType<double, N, 0>;
-    using MetaVec        = typename inviwo::util::glmtype<double, N, 1>::type;
-    using GlmVector      = typename inviwo::util::glmtype<T, N, 1>::type;
+    using MetaVec = typename inviwo::util::glmtype<double, N, 1>::type;
+    using GlmVector = typename inviwo::util::glmtype<T, N, 1>::type;
 
     // Construction / Deconstruction
 public:
@@ -277,7 +276,7 @@ public:
     struct ConstChannelRange {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
-        typedef ConstChannelIterator<VecNT, T, N> const_iterator;
+        using const_iterator = ConstChannelIterator<VecNT, T, N>;
 
         ConstChannelRange(const DataChannel<T, N>* channel) : parent_(channel) {}
 
@@ -319,8 +318,8 @@ protected:
     void computeMinMax() const;
 };
 
-}  // namespace
-}
+}  // namespace discretedata
+}  // namespace inviwo
 
 // Circumvent circular reference.
 #include "channeliterator.h"
