@@ -113,7 +113,7 @@ double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimit
 
     CellType cell = grid.getCellType(dim, index);
     switch (cell) {
-        case CellType::HEXAHEDRON:
+        case CellType::Hexahedron:
             if (positions.getNumComponents() == 3) {
                 // Only implemented 3D bodies so far.
                 if (dim != GridPrimitive::Volume) return -1;

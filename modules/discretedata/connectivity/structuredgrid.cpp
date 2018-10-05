@@ -31,31 +31,37 @@
 #include <modules/discretedata/channels/analyticchannel.h>
 #include <modules/discretedata/connectivity/elementiterator.h>
 
+#include <inviwo/core/util/assertion.h>
+
+
 namespace inviwo {
 namespace discretedata {
 
 StructuredGrid::StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim)
     : Connectivity(gridDimension), numCellsPerDimension_(numCellsPerDim) {
-    assert(numCellsPerDim.size() == static_cast<size_t>(gridDimension) &&
-           "Grid dimension should match cell dimension.");
+    IVW_ASSERT(static_cast<ind>(gridDimension) > static_cast<ind>(GridPrimitive::Vertex),
+               "GridPrimitive need to be at least Edge for a structured grid");
+    IVW_ASSERT(static_cast<ind>(numCellsPerDim.size()) == static_cast<ind>(gridDimension),
+               "Grid dimension should match cell dimension.");
     numCellsPerDimension_ = std::vector<ind>(numCellsPerDim);
 
     ind numCells = 1;
     ind numVerts = 1;
-    for (ind dim = (ind)GridPrimitive::Vertex; dim < (ind)gridDimension; ++dim) {
+    for (ind dim = static_cast<ind>(GridPrimitive::Vertex); dim < static_cast<ind>(gridDimension);
+         ++dim) {
         numCells *= numCellsPerDimension_[dim];
         numVerts *= numCellsPerDimension_[dim] + 1;
     }
 
-    numGridPrimitives_[(ind)gridDimension] = numCells;
-    numGridPrimitives_[(ind)GridPrimitive::Vertex] = numVerts;
+    numGridPrimitives_[static_cast<ind>(gridDimension)] = numCells;
+    numGridPrimitives_[static_cast<ind>(GridPrimitive::Vertex)] = numVerts;
 }
 
 std::vector<ind> StructuredGrid::indexFromLinear(ind idxLin, const std::vector<ind>& size) {
     std::vector<ind> index(size.size());
-    for (ind dim = 0; dim < (ind)size.size(); ++dim) {
+    for (ind dim = 0; dim < static_cast<ind>(size.size()); ++dim) {
         index[dim] = idxLin % size[dim];
-        idxLin = (ind)(idxLin / size[dim]);
+        idxLin = static_cast<ind>((idxLin) / size[dim]);
     }
 
     return index;
