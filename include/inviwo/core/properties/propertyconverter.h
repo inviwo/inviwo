@@ -114,6 +114,20 @@ protected:
     }
 };
 
+class FileToStringConverter : public TemplatePropertyConverter<FileProperty, StringProperty> {
+protected:
+    virtual void convertimpl(const FileProperty *src, StringProperty *dst) const override {
+        dst->set(src->get());
+    }
+};
+
+class StringToFileConverter : public TemplatePropertyConverter<StringProperty, FileProperty> {
+protected:
+    virtual void convertimpl(const StringProperty *src, FileProperty *dst) const override {
+        dst->set(src->get());
+    }
+};
+
 }  // namespace inviwo
 
 #endif  // IVW_PROPERTYCONVERTER_H
