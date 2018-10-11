@@ -1,31 +1,31 @@
 /*********************************************************************************
-*
-* Inviwo - Interactive Visualization Workshop
-*
-* Copyright (c) 2012-2018 Inviwo Foundation
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* 1. Redistributions of source code must retain the above copyright notice, this
-* list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice,
-* this list of conditions and the following disclaimer in the documentation
-* and/or other materials provided with the distribution.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*********************************************************************************/
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2012-2018 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
 
 #pragma once
 
@@ -33,15 +33,12 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datatraits.h>
 
-#include "channels/bufferchannel.h"
-#include "connectivity/connectivity.h"
-#include "connectivity/structuredgrid.h"
+#include <modules/discretedata/channels/bufferchannel.h>
+#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/connectivity/structuredgrid.h>
 
 namespace inviwo {
 namespace discretedata {
-
-typedef std::shared_ptr<Channel> SharedChannel;
-typedef std::shared_ptr<const Channel> SharedConstChannel;
 
 struct ChannelCompare {
     bool operator()(const std::pair<std::string, GridPrimitive>& u,
@@ -50,11 +47,12 @@ struct ChannelCompare {
     }
 };
 // Map used for storing and querying channels by name and GridPrimitive type.
-typedef std::map<
-    std::pair<std::string, GridPrimitive>,  // Ordering by both name and GridPrimitive type
-    SharedConstChannel,  // Shared channels, type information only as meta property
-    ChannelCompare>  // Lesser operator on string-Primitve pairs
-    DataChannelMap;
+// Ordering by both name and GridPrimitive type,
+using DataChannelMap =
+    std::map<std::pair<std::string, GridPrimitive>,
+             std::shared_ptr<const Channel>,  // Shared channels, type information only as meta
+                                              // property
+             ChannelCompare>;                 // Lesser operator on string-Primitve pairs
 
 /** \class DataSet
     \brief Data package containing structure by cell connectivity and data
@@ -71,7 +69,8 @@ public:
     DataSet(const std::shared_ptr<const Connectivity> grid) : Grid(grid) {}
 
     /** Constructor. Takes generates a StructuredGrid. **/
-    DataSet(GridPrimitive size, std::vector<ind>& numCellsPerDim) : Grid(std::make_shared<StructuredGrid>(size, numCellsPerDim)) {}
+    DataSet(GridPrimitive size, std::vector<ind>& numCellsPerDim)
+        : Grid(std::make_shared<StructuredGrid>(size, numCellsPerDim)) {}
     virtual ~DataSet() = default;
 
     /** Default copy shares Channels and Connectivity */
@@ -97,16 +96,16 @@ public:
      *   @param channel Pointer to data, takes memory ownership
      *   @return Shared pointer for further handling
      */
-    SharedChannel addChannel(Channel* channel);
+    std::shared_ptr<Channel> addChannel(Channel* channel);
 
     /** Add a new channel to the set
      *   @param channel Shared pointer to data, remains valid
      */
-    void addChannel(SharedConstChannel channel);
+    void addChannel(std::shared_ptr<const Channel> channel);
 
     /** Returns the first channel from an unordered list.
      */
-    SharedConstChannel getFirstChannel() const;
+    std::shared_ptr<const Channel> getFirstChannel() const;
 
     /** Returns the first channel from an unordered list.
      */
@@ -117,13 +116,13 @@ public:
      *   @param name Unique name of requested channel
      *   @param definedOn GridPrimitive type the channel is defined on, default 0D vertices
      */
-    SharedConstChannel getChannel(const std::string& name,
-                                  GridPrimitive definedOn = GridPrimitive::Vertex) const;
+    std::shared_ptr<const Channel> getChannel(
+        const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex) const;
 
     /** Returns the specified channel if it is in the desired format, returns first instance found
      *   @param key Unique name and GridPrimitive type the channel is defined on
      */
-    SharedConstChannel getChannel(std::pair<std::string, GridPrimitive>& key) const;
+    std::shared_ptr<const Channel> getChannel(std::pair<std::string, GridPrimitive>& key) const;
 
     /** Returns the specified channel if it is in the desired format, returns first instance found
      *   @param name Unique name of requested channel
@@ -146,7 +145,7 @@ public:
      *   @param channel Shared pointer to data
      *   @return Successfull - channel was saved in the set indeed
      */
-    bool removeChannel(SharedConstChannel channel);
+    bool removeChannel(std::shared_ptr<const Channel> channel);
 
     /** Number of channels currently held
      */
@@ -160,14 +159,14 @@ public:
     // Attributes
 protected:
     /** Set of data channels
-    *   Indexed by name and defining dimension (0D vertices, 1D edges etc).
-    */
+     *   Indexed by name and defining dimension (0D vertices, 1D edges etc).
+     */
     DataChannelMap Channels;
 
 public:
     /** Connectivity of grid
-    *   Several grid types are possible (rectlinear, structured, unstructured)
-    */
+     *   Several grid types are possible (rectlinear, structured, unstructured)
+     */
     const std::shared_ptr<const Connectivity> Grid;
 };
 
@@ -186,9 +185,8 @@ struct DataTraits<discretedata::DataSet> {
         if (channelKeyList.size() != 0)
             for (auto& channelKey : channelKeyList) {
                 auto channel = data.getChannel(channelKey);
-                oss << "      " << channelKey.first << '[' << channel->getNumComponents()
-                    << "][" << channel->size() << ']' << "(Dim "
-                    << (int)channelKey.second << ')';
+                oss << "      " << channelKey.first << '[' << channel->getNumComponents() << "]["
+                    << channel->size() << ']' << "(Dim " << (int)channelKey.second << ')';
             }
         Document doc;
         doc.append("p", oss.str());
@@ -196,6 +194,6 @@ struct DataTraits<discretedata::DataSet> {
     }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #include "dataset.inl"

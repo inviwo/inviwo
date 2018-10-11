@@ -30,8 +30,8 @@
 #include <discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include "discretedata/connectivity/connectivity.h"
-#include "discretedata/connectivity/elementiterator.h"
+#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/connectivity/elementiterator.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -48,15 +48,15 @@ ElementRange Connectivity::all(GridPrimitive dim) const { return ElementRange(di
 CellType Connectivity::getCellType(GridPrimitive dim, ind) const {
     switch (dim) {
         case GridPrimitive::Vertex:
-            return CellType::VERTEX;
+            return CellType::Vertex;
         case GridPrimitive::Edge:
-            return CellType::LINE;
+            return CellType::Line;
         case GridPrimitive::Face:
-            return CellType::QUAD;
+            return CellType::Quad;
         case GridPrimitive::Volume:
-            return CellType::HEXAHEDRON;
+            return CellType::Hexahedron;
         default:
-            return CellType::HIGHER_ORDER_HEXAHEDRON;
+            return CellType::HigherOrderHexahedron;
     }
 }
 

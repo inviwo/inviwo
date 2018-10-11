@@ -1,46 +1,45 @@
 /*********************************************************************************
-*
-* Inviwo - Interactive Visualization Workshop
-*
-* Copyright (c) 2012-2018 Inviwo Foundation
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* 1. Redistributions of source code must retain the above copyright notice, this
-* list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice,
-* this list of conditions and the following disclaimer in the documentation
-* and/or other materials provided with the distribution.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*********************************************************************************/
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2012-2018 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
-#include <iostream>
 
-#include "discretedata/dataset.h"
-#include "discretedata/channels/bufferchannel.h"
-#include "discretedata/channels/analyticchannel.h"
-#include "discretedata/connectivity/connectivity.h"
-#include "discretedata/connectivity/elementiterator.h"
-#include "discretedata/connectivity/connectioniterator.h"
-#include "discretedata/connectivity/periodicgrid.h"
-#include "discretedata/connectivity/euclideanmeasure.h"
+#include <modules/discretedata/dataset.h>
+#include <modules/discretedata/channels/bufferchannel.h>
+#include <modules/discretedata/channels/analyticchannel.h>
+#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/connectivity/elementiterator.h>
+#include <modules/discretedata/connectivity/connectioniterator.h>
+#include <modules/discretedata/connectivity/periodicgrid.h>
+#include <modules/discretedata/connectivity/euclideanmeasure.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -49,8 +48,8 @@ TEST(Using, Dataset) {
     // Create a curvelinear grid.
     std::vector<ind> gridSize = {10, 1, 1};
     std::vector<bool> periodic = {true, false, false};
-    std::shared_ptr<PeriodicGrid> grid = std::make_shared<PeriodicGrid>(
-        GridPrimitive::Volume, gridSize, periodic);
+    std::shared_ptr<PeriodicGrid> grid =
+        std::make_shared<PeriodicGrid>(GridPrimitive::Volume, gridSize, periodic);
 
     // Make the x dimension periodic (redundant), that is, the outer yz-planes overlap.
     grid->setPeriodic(0, true);
@@ -67,49 +66,45 @@ TEST(Using, Dataset) {
 
     // Fill randomly.
     generate(randomData.begin(), randomData.end(), []() { return rand(); });
-    auto randomBuffer = std::make_shared<BufferChannel<int, 3>>(randomData,
-                                                                "Random",
-                                                                GridPrimitive::Vertex);
+    auto randomBuffer =
+        std::make_shared<BufferChannel<int, 3>>(randomData, "Random", GridPrimitive::Vertex);
 
     // Add to the dataset. There, it is kept as a const shared_ptr.
     dataset.addChannel(randomBuffer);
 
     /*********************************************************************************
-    * Other variant of a channel: analytic data.
-    * The function is evaluated when accessed.
-    *********************************************************************************/
+     * Other variant of a channel: analytic data.
+     * The function is evaluated when accessed.
+     *********************************************************************************/
     auto sinChannel = std::make_shared<AnalyticChannel<float, 2, glm::vec2>>(
         // Some function, taking a ref to the data to fill and a linear index.
-            [](glm::vec2& data, ind idx) {
-                data[0] = sin(0.01f * idx);
-                data[1] = cos(0.01f * idx);
-            },
+        [](glm::vec2& data, ind idx) {
+            data[0] = sin(0.01f * idx);
+            data[1] = cos(0.01f * idx);
+        },
         // Lives on the 3D cells, not the vertices.
-            grid->getNumElements(GridPrimitive::Volume),
-            "SinCos",
-            GridPrimitive::Volume
-        );
+        grid->getNumElements(GridPrimitive::Volume), "SinCos", GridPrimitive::Volume);
     dataset.addChannel(sinChannel);
 
     /*********************************************************************************
-    * Access data from the DataSet: by name and dimension.
-    *********************************************************************************/
+     * Access data from the DataSet: by name and dimension.
+     *********************************************************************************/
     // Get the data as a DataChannel: BufferChannel and AnalyticChannel behave the same.
     auto cellChannel = dataset.getChannel<float, 2>("SinCos", GridPrimitive::Volume);
-    EXPECT_TRUE(cellChannel && "Could not retrieve AnalyticChannel from DataSet.");
+    EXPECT_TRUE(cellChannel) << "Could not retrieve AnalyticChannel from DataSet.";
 
     auto vertexChannel = dataset.getChannel<int, 3>("Random", GridPrimitive::Vertex);
-    EXPECT_TRUE(vertexChannel && "Could not retrieve random BufferChannel from DataSet.");
+    EXPECT_TRUE(vertexChannel) << "Could not retrieve random BufferChannel from DataSet.";
 
     // Get the data as a Buffer of 3 int, explicitely.
     // Creates a BufferChannel from implicit data, such as Analytic Channel.
     // Returns nullptr if no channel is found, or none with <int, 3>.
-    auto vertexBuffer  = dataset.getAsBuffer<int, 3>("Random", GridPrimitive::Vertex);
-    EXPECT_TRUE(vertexBuffer && "Could not retrieve random BufferChannel from DataSet as Buffer.");
+    auto vertexBuffer = dataset.getAsBuffer<int, 3>("Random", GridPrimitive::Vertex);
+    EXPECT_TRUE(vertexBuffer) << "Could not retrieve random BufferChannel from DataSet as Buffer.";
 
     /*********************************************************************************
-    * Random algorithm: apply an average filter.
-    *********************************************************************************/
+     * Random algorithm: apply an average filter.
+     *********************************************************************************/
     std::vector<float> filteredRandom(vertexChannel->getNumComponents() * vertexChannel->size());
 
     // Iterate through all vertices.
@@ -118,7 +113,8 @@ TEST(Using, Dataset) {
         ind numNeighbors = 0;
 
         // Iterate through all neighbors.
-        // If another GridPrimitive is specified, we get all such primitives connected to the current vertex.
+        // If another GridPrimitive is specified, we get all such primitives connected to the
+        // current vertex.
         for (auto vertexNeighbor : vertex.connection(GridPrimitive::Vertex)) {
             // Because we have a buffer, we can directly access the data.
             // Any type of the correct size can be used.
@@ -133,13 +129,13 @@ TEST(Using, Dataset) {
 
         // Assign to the result vector.
         for (ind dim = 0; dim < 3; ++dim)
-            filteredRandom[vertex* 3 + dim] = (float)sum[dim] / numNeighbors;
+            filteredRandom[vertex * 3 + dim] = (float)sum[dim] / numNeighbors;
     }
 
     /*********************************************************************************
-    * Grid does not have positions yet.
-    * Add cylindric coordinates.
-    *********************************************************************************/
+     * Grid does not have positions yet.
+     * Add cylindric coordinates.
+     *********************************************************************************/
     std::vector<ind> size;
     grid->getNumCells(size);
 
@@ -160,14 +156,13 @@ TEST(Using, Dataset) {
 
     // Add as AnalyticChannel.
     auto vertices = std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(
-                               posFunc, grid->getNumElements(GridPrimitive::Vertex),
-                               "Position", GridPrimitive::Vertex);
+        posFunc, grid->getNumElements(GridPrimitive::Vertex), "Position", GridPrimitive::Vertex);
     dataset.addChannel(vertices);
 
     /*********************************************************************************
-    * Random algorithm: divide by volume.
-    * Note: So far, only volume is available, length and area etc would be nice too.
-    *********************************************************************************/
+     * Random algorithm: divide by volume.
+     * Note: So far, only volume is available, length and area etc would be nice too.
+     *********************************************************************************/
     std::vector<double> normalizedSinCos(cellChannel->size() * cellChannel->getNumComponents());
 
     // Iterate through all 3D cells, thus, volume.
@@ -180,14 +175,13 @@ TEST(Using, Dataset) {
         glm::vec2 cellData;
         cellChannel->fill(cellData, cell);
 
-        for (ind dim = 0; dim < 2; ++dim)
-            normalizedSinCos[cell * 2 + dim] = cellData[dim] / volume;
+        for (ind dim = 0; dim < 2; ++dim) normalizedSinCos[cell * 2 + dim] = cellData[dim] / volume;
     }
 
     /*********************************************************************************
-    * Random algorithm: divide averaged random data by volume.
-    * "Distribute" the cell volumes uniformly across connected vertices.
-    *********************************************************************************/
+     * Random algorithm: divide averaged random data by volume.
+     * "Distribute" the cell volumes uniformly across connected vertices.
+     *********************************************************************************/
     for (auto vertex : dataset.Grid->all(GridPrimitive::Vertex)) {
         double totalVolume = 0;
 
@@ -202,9 +196,9 @@ TEST(Using, Dataset) {
             totalVolume += volume / numNeighbors;
         }
 
-        if (totalVolume <= 0) EXPECT_FALSE("Some volume was 0 or negative");
+        EXPECT_TRUE(totalVolume > 0) << "Some volume was 0 or negative";
 
-        // Divide each value 
+        // Divide each value
         for (ind dim = 0; dim < 3; ++dim) filteredRandom[vertex * 3 + dim] /= (float)totalVolume;
     }
 
@@ -214,5 +208,5 @@ TEST(Using, Dataset) {
     dataset.addChannel(avgBuffer);
 }
 
-}  // namespace
-}
+}  // namespace discretedata
+}  // namespace inviwo
