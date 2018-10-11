@@ -59,8 +59,7 @@ DataFrameExporter::DataFrameExporter()
     , overwrite_("overwrite", "Overwrite", false)
     , separateVectorTypesIntoColumns_("separateVectorTypesIntoColumns",
                                       "Separate Vector Types Into Columns", true)
-    , addCitationsOnStrings_("addCitationsOnStrings",
-                             "Add Citations (\"\") on Strings", true)
+    , addCitationsOnStrings_("addCitationsOnStrings", "Add Citations (\"\") on Strings", true)
     , delimiter_("delimiter", "Delimiter", ",")
     , export_(false) {
     exportFile_.clearNameFilters();
