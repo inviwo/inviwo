@@ -81,6 +81,8 @@ private:
     ButtonProperty exportButton_;
     BoolProperty overwrite_;
     BoolProperty separateVectorTypesIntoColumns_;
+    BoolProperty addCitationsOnStrings_;
+    StringProperty delimiter_;
 
     bool export_;
 };
