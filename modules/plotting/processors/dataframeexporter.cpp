@@ -59,6 +59,8 @@ DataFrameExporter::DataFrameExporter()
     , overwrite_("overwrite", "Overwrite", false)
     , separateVectorTypesIntoColumns_("separateVectorTypesIntoColumns",
                                       "Separate Vector Types Into Columns", true)
+    , addCitationsOnStrings_("addCitationsOnStrings", "Add Citations (\"\") on Strings", true)
+    , delimiter_("delimiter", "Delimiter", ",")
     , export_(false) {
     exportFile_.clearNameFilters();
     exportFile_.addNameFilter("CSV (*.csv)");
@@ -69,6 +71,8 @@ DataFrameExporter::DataFrameExporter()
     addProperty(exportButton_);
     addProperty(overwrite_);
     addProperty(separateVectorTypesIntoColumns_);
+    addProperty(addCitationsOnStrings_);
+    addProperty(delimiter_);
 
     exportFile_.setAcceptMode(AcceptMode::Save);
     exportFile_.onChange([&]() {
@@ -103,7 +107,9 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
     std::ofstream file(exportFile_);
     auto dataFrame = dataFrame_.getData();
 
-    const std::string delimiter = ", ";
+    const std::string delimiter = delimiter_.get();
+    std::string citation = "\"";
+    if (!addCitationsOnStrings_.get()) citation = "";
     const char lineterminator = '\n';
     const std::array<char, 4> componentNames = {'X', 'Y', 'Z', 'W'};
 
@@ -113,7 +119,7 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
         const auto components = col->getBuffer()->getDataFormat()->getComponents();
         if (components > 1 && separateVectorTypesIntoColumns) {
             for (size_t k = 0; k < components; k++) {
-                oj = col->getHeader() + ' ' + componentNames[k];
+                oj = citation + col->getHeader() + ' ' + componentNames[k] + citation;
             }
         } else {
             oj = col->getHeader();
@@ -125,8 +131,8 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
     for (const auto& col : *dataFrame) {
         auto df = col->getBuffer()->getDataFormat();
         if (auto cc = dynamic_cast<const CategoricalColumn*>(col.get())) {
-            printers.push_back([cc](std::ostream& os, size_t index) {
-                os << "\"" << cc->getAsString(index) << "\"";
+            printers.push_back([cc, citation](std::ostream& os, size_t index) {
+                os << citation << cc->getAsString(index) << citation;
             });
         } else if (df->getComponents() == 1) {
             col->getBuffer()
@@ -151,9 +157,9 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
         } else {
             col->getBuffer()
                 ->getRepresentation<BufferRAM>()
-                ->dispatch<void, dispatching::filter::Vecs>([&printers](auto br) {
-                    printers.push_back([br](std::ostream& os, size_t index) {
-                        os << "\"" << br->getDataContainer()[index] << "\"";
+                ->dispatch<void, dispatching::filter::Vecs>([&printers, citation](auto br) {
+                    printers.push_back([br, citation](std::ostream& os, size_t index) {
+                        os << citation << br->getDataContainer()[index] << citation;
                     });
                 });
         }
