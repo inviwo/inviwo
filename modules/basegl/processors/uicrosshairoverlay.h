@@ -57,40 +57,68 @@ public:
 protected:
     virtual void process() override;
 
-	void invalidateMesh();
-
-	void renderPositionIndicator();
-	void updateIndicatorMesh();
+	// Interact with crosshair at mouse drag
 	void eventSetRotateMarker(Event*);
+
+	// Update pos on mouse move
 	void eventUpdateMousePos(Event*);
-	// updates the selected position, pos is given in normalized viewport coordinates, i.e. [0,1]
+
+	// Crosshair renderer
+	void render();
+	void invalidateMesh();
+	void updateIndicatorMesh();
+
+	//
+	vec3 convertScreenPosToVolume(const vec2 &screenPos) const;
+	vec2 convertVolPosToScreen(const vec3& volPos) const;
+
+	// Set crosshair center from normalized viewport coords, i.e. [0,1]
 	void setVolPosFromScreenPos(vec2 pos);
+
+	// Get normalized viewport coords
 	vec2 getScreenPosFromVolPos();
-	vec3 convertScreenPosToVolume(const vec2 &screenPos, bool clamp = true) const;
-	void planeSettingsChanged();
+
+	void rotateNormal(); // to keep normals in sync
 
 private:
     ImageInport inport_;
-	VolumeInport volumeInport_;
     ImageOutport outport_;
 
+	// Center of the crosshair in volume coords
 	FloatVec3Property planePosition_;
+
+	// Normal pointing out of the image plane, used as crosshair rotation axis
 	FloatVec3Property planeNormal_;
 
+	FloatVec3Property planeUp_; // to link with mpr entry exit
+
+	// Rotation in world coords to keep multiple image planes in sync through property linking
+	FloatMat4Property normalRotationMatrix_;
+
+	// Rotation in local coords (axis 0,0,1)
+	mat4 markerRotationMatrix_;
+
+	//TODO use color of planes
 	FloatVec4Property indicatorColor_;
+
+	// Detect mouse click
 	EventProperty mouseSetMarker_;
+
+	// Detect mouse move
 	EventProperty mousePositionTracker_;
 
-	FloatMat4Property normalRotationMatrix_; // applied to plane normals
-
-	mat4 markerRotationMatrix_; // applied to crosshair
+	// Position from last mouse move event
 	vec2 lastMousePos_;
+
+	// How mouse action translates to crosshair behavior:
+	// move only == NONE
+	// drag center == MOVE
+	// drag peripherie == ROTATE
 	enum { NONE, MOVE, ROTATE } interactionState_;
 
+	// Crosshair geo and shader
 	Shader uiShader_;
-
 	std::unique_ptr<Mesh> meshCrossHair_;
-
 	bool meshDirty_;
 };
 

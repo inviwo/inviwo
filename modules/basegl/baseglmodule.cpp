@@ -35,6 +35,7 @@
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
+#include <modules/basegl/processors/mprentryexitpointsprocessor.h>
 #include <modules/basegl/processors/firstivwprocessor.h>
 #include <modules/basegl/processors/heightfieldprocessor.h>
 #include <modules/basegl/processors/imageprocessing/findedges.h>
@@ -103,6 +104,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<DrawLines>();
     registerProcessor<DrawPoints>();
     registerProcessor<EntryExitPoints>();
+    registerProcessor<MPREntryExitPoints>();
     registerProcessor<FirstIvwProcessor>();
     registerProcessor<HeightFieldProcessor>();
     registerProcessor<ImageCompositeProcessorGL>();

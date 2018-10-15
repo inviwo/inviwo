@@ -17,6 +17,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mprentryexitpointsprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.h
@@ -83,6 +84,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mprentryexitpointsprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.cpp
@@ -193,6 +195,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumegradientmagnitude.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumemerger.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumeslice.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/mpr_entry_exit_points.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
