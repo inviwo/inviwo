@@ -31,10 +31,14 @@
 #define IVW_UICROSSHAIROVERLAY_H
 
 #include <modules/basegl/baseglmoduledefine.h>
+#include <modules/opengl/shader/shader.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/processors/processor.h>
-
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 

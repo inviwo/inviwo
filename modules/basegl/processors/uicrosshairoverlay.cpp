@@ -31,13 +31,17 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 
 #include <cctype>
 #include <locale>
