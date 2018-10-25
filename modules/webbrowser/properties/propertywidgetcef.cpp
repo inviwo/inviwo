@@ -33,6 +33,42 @@
 
 namespace inviwo {
 
+class CefDOMSearchId : public CefStringVisitor {
+public:
+    CefDOMSearchId(const std::string& htmlId, PropertyWidgetCEF* widget,
+                   const CefRefPtr<CefFrame> frame)
+        : CefStringVisitor(), htmlId_(htmlId), widget_(widget), frame_(frame){};
+
+    void Visit(const CefString& string) OVERRIDE {
+        domString_ = string;
+
+        // Remove any occurences of " or ' from the domString_ to remove possible variations on html
+        // id declarations.
+        domString_.erase(std::remove(domString_.begin(), domString_.end(), '"'), domString_.end());
+        domString_.erase(std::remove(domString_.begin(), domString_.end(), '\''), domString_.end());
+
+        std::stringstream ss1;
+        ss1 << "id:" << htmlId_;
+        std::stringstream ss2;
+        ss2 << "id=" << htmlId_;
+
+        // If the widget's html-id is in the given frame's DOM-document, set it's frame.
+        if (domString_.find(ss1.str()) != std::string::npos ||
+            domString_.find(ss2.str()) != std::string::npos) {
+            widget_->setFrame(frame_);
+            widget_->updateFromProperty();
+        }
+    };
+
+    std::string domString_;
+
+private:
+    std::string htmlId_;
+    PropertyWidgetCEF* widget_;
+    const CefRefPtr<CefFrame> frame_;
+    IMPLEMENT_REFCOUNTING(CefDOMSearchId);
+};
+
 PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string htmlId)
     : PropertyWidget(prop), htmlId_(htmlId), frame_(frame) {
     if (prop) {
@@ -43,7 +79,13 @@ void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
     frame_ = frame;
     // Make sure that we do not block synchronizations from new page.
     onQueryBlocker_ = 0;
-    
+}
+
+void PropertyWidgetCEF::setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame) {
+    // Create a visitor from this widget and run it on the frame to see if the widget id can be
+    // found in the frame's html code.
+    CefRefPtr<CefDOMSearchId> visitor = new CefDOMSearchId(htmlId_, this, frame);
+    frame->GetSource(visitor);
 }
 
 void PropertyWidgetCEF::deserialize(Deserializer& d) {
@@ -55,7 +97,7 @@ void PropertyWidgetCEF::deserialize(Deserializer& d) {
     d.deserialize("Property", *property_);
     property_->clearInitiatingWidget();
 }
-    
+
 void PropertyWidgetCEF::onSetReadOnly(Property* /*property*/, bool readonly) {
     std::stringstream script;
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";

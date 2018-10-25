@@ -82,6 +82,11 @@ public:
      * Set frame containing html item.
      */
     void setFrame(CefRefPtr<CefFrame> frame);
+
+    /*
+     * Check if widget is part of a given frame.
+     */
+    void setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame);
     /*
      * Set id of corresponding element in HTML-webpage.
      * @param id HTML element id in webpage.
