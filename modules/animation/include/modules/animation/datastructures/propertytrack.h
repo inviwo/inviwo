@@ -317,7 +317,8 @@ AnimationTimeState PropertyTrack<Prop, Key>::operator()(Seconds from, Seconds to
     if (!this->isEnabled() || this->empty()) return {to, state};
 
     // 'it' will be the first seq. with a first time larger then 'to'.
-    auto it = std::upper_bound(this->begin(), this->end(), to);
+    auto it = std::upper_bound(this->begin(), this->end(), to,
+                               [](const auto& a, const auto& b) { return a < b; });
 
     if (it == this->begin()) {
         if (from > it->getFirstTime()) {  // case 1

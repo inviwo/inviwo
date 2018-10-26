@@ -115,7 +115,8 @@ private:
 template <typename Key>
 bool operator==(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
     return a.getEasingType() == b.getEasingType() && a.getInterpolation() == b.getInterpolation() &&
-           std::equal(a.begin(), a.end(), b.begin(), b.end());
+           std::equal(a.begin(), a.end(), b.begin(), b.end(),
+                      [](const auto& a, const auto& b) { return a == b; });
 }
 template <typename Key>
 bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
