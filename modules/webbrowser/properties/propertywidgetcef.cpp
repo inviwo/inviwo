@@ -49,7 +49,7 @@ public:
             auto start = domString.find("<!--");
             auto stop = domString.find("-->");
             if (start != std::string::npos)
-                domString = domString.substr(0, start) + domString.substr(stop + 3, domString.length());
+                domString.erase(start, stop - start + 3);
             else
                 break;
         }
