@@ -42,12 +42,22 @@ public:
         : CefStringVisitor(), htmlId_(htmlId), widget_(widget), frame_(frame){};
 
     void Visit(const CefString& string) OVERRIDE {
-        std::string domString_ = string;
+        std::string domString = string;
+
+        // Remove all the html comments to avoid finding element id's in the comments.
+        while (true) {
+            auto start = domString.find("<!--");
+            auto stop = domString.find("-->");
+            if (start != std::string::npos)
+                domString = domString.substr(0, start) + domString.substr(stop + 3, domString.length());
+            else
+                break;
+        }
 
         // Remove any occurences of " or ' from the domString_ to remove possible variations on html
         // id declarations.
-        domString_.erase(std::remove(domString_.begin(), domString_.end(), '"'), domString_.end());
-        domString_.erase(std::remove(domString_.begin(), domString_.end(), '\''), domString_.end());
+        domString.erase(std::remove(domString.begin(), domString.end(), '"'), domString.end());
+        domString.erase(std::remove(domString.begin(), domString.end(), '\''), domString.end());
 
         std::stringstream ss1;
         ss1 << "id:" << htmlId_;
@@ -55,8 +65,8 @@ public:
         ss2 << "id=" << htmlId_;
 
         // If the widget's html-id is in the given frame's DOM-document, set it's frame.
-        if (domString_.find(ss1.str()) != std::string::npos ||
-            domString_.find(ss2.str()) != std::string::npos) {
+        if (domString.find(ss1.str()) != std::string::npos ||
+            domString.find(ss2.str()) != std::string::npos) {
             widget_->frame_ = frame_;
             widget_->updateFromProperty();
         }
