@@ -32,7 +32,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/opengl/buffer/buffergl.h>
-
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
