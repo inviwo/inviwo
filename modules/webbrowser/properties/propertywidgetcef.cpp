@@ -33,6 +33,8 @@
 
 namespace inviwo {
 
+// Checks if widget html id exist in the frame and sets it if it does.
+// Note: Cannot use CefDOMVisitor since it requires the renderer process.
 class CefDOMSearchId : public CefStringVisitor {
 public:
     CefDOMSearchId(const std::string& htmlId, PropertyWidgetCEF* widget,
@@ -40,7 +42,7 @@ public:
         : CefStringVisitor(), htmlId_(htmlId), widget_(widget), frame_(frame){};
 
     void Visit(const CefString& string) OVERRIDE {
-        domString_ = string;
+        std::string domString_ = string;
 
         // Remove any occurences of " or ' from the domString_ to remove possible variations on html
         // id declarations.
@@ -55,12 +57,10 @@ public:
         // If the widget's html-id is in the given frame's DOM-document, set it's frame.
         if (domString_.find(ss1.str()) != std::string::npos ||
             domString_.find(ss2.str()) != std::string::npos) {
-            widget_->setFrame(frame_);
+            widget_->frame_ = frame_;
             widget_->updateFromProperty();
         }
     };
-
-    std::string domString_;
 
 private:
     std::string htmlId_;
@@ -76,7 +76,8 @@ PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, 
     }
 }
 void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
-    frame_ = frame;
+    setFrameIfPartOfFrame(frame);
+    // frame_ = frame;
     // Make sure that we do not block synchronizations from new page.
     onQueryBlocker_ = 0;
 }

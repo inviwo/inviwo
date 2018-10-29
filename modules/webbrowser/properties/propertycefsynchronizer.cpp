@@ -53,7 +53,7 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
     // synchronize all properties
     // Ok to send javascript commands when frame loaded
     for (auto& widget : widgets_) {
-        widget->setFrameIfPartOfFrame(frame);
+        widget->setFrame(frame);
     }
 }
 
