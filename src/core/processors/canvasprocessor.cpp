@@ -72,14 +72,14 @@ CanvasProcessor::CanvasProcessor()
     , inputSize_("inputSize", "Input Dimension Parameters")
     , fullScreen_("fullscreen", "Toggle Full Screen", false)
     , fullScreenEvent_("fullscreenEvent", "FullScreen",
-                       [this](Event*) { fullScreen_.set(!fullScreen_); },
-                  IvwKey::F, KeyState::Press, KeyModifier::Shift)
+                       [this](Event*) { fullScreen_.set(!fullScreen_); }, IvwKey::F,
+                       KeyState::Press, KeyModifier::Shift)
     , saveLayerEvent_("saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
                       IvwKey::Undefined, KeyState::Press)
     , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
     , previousImageSize_(customInputDimensions_)
-    , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
-          ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
+    , widgetMetaData_{
+          createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
     widgetMetaData_->addObserver(this);
 
     setEvaluateWhenHidden(false);
@@ -88,7 +88,14 @@ CanvasProcessor::CanvasProcessor()
     addProperty(inputSize_);
 
     dimensions_.setSerializationMode(PropertySerializationMode::None);
-    dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
+    dimensions_.onChange([this]() {
+        widgetMetaData_->setDimensions(dimensions_.get());
+        // Ensure that sizeChanged() is called for a hidden canvas, since this will also create a
+        // matching ResizeEvent. In Qt, calling QWidget::resize() will not trigger a resize event
+        // as long as the widget is not visible. Hence, there will be no ResizeEvent propagation in the
+        // network.
+        if (!widgetMetaData_->isVisible()) sizeChanged();
+    });
     inputSize_.addProperty(dimensions_);
 
     enableCustomInputDimensions_.onChange([this]() { sizeChanged(); });
@@ -156,8 +163,8 @@ CanvasProcessor::CanvasProcessor()
     });
 
     addProperty(fullScreen_);
-    fullScreen_.onChange([this]() { 
-		if (auto c = getCanvas()) {
+    fullScreen_.onChange([this]() {
+        if (auto c = getCanvas()) {
             c->setFullScreen(fullScreen_.get());
         }
     });
@@ -188,7 +195,7 @@ void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> proces
         throw Exception("Expected CanvasProcessorWidget in CanvasProcessor::setProcessorWidget");
     }
     Processor::setProcessorWidget(std::move(processorWidget));
-	// Widget may be set after deserialization
+    // Widget may be set after deserialization
     if (auto c = getCanvas()) {
         c->setFullScreen(fullScreen_.get());
     }
