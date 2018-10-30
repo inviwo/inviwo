@@ -206,9 +206,8 @@ void FilePatternProperty::updateFileList() {
 
             if (!hasWildcard) {
                 // look for exact match
-                std::string filename = filePath + '/' + pattern;
-                if (filesystem::fileExists(filename)) {
-                    files_.push_back(std::make_tuple(-1, filename));
+                if (util::contains(fileList, pattern)) {
+                    files_.push_back(std::make_tuple(-1, item));
                 }
             } else if (hasDigits) {
                 ivec2 indexRange{-1, std::numeric_limits<int>::max()};
