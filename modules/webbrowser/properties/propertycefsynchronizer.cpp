@@ -54,7 +54,6 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
     // Ok to send javascript commands when frame loaded
     for (auto& widget : widgets_) {
         widget->setFrame(frame);
-        widget->updateFromProperty();
     }
 }
 
@@ -67,7 +66,7 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     auto key = std::string(R"("id":")");
     auto keyStart = requestStr.find(key);
     if (keyStart == std::string::npos) {
-        LogWarn(R"(No id found. Expected {"id":"elementId", "value":"x")" + requestStr);
+        LogWarn(R"(No id found. Expected {"id":"elementId", "value":"x"})" + requestStr);
         return false;
     }
     size_t offset = keyStart + key.length();
