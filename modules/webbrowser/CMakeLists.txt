@@ -129,7 +129,11 @@ ivw_add_unittest(${TEST_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
-target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+if (OS_MACOSX)
+	target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+else ()
+	target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+endif()
 
 #--------------------------------------------------------------------
 # Package or build shaders into resources
@@ -172,11 +176,24 @@ set(WEBBROWSER_HELPER_SOURCES
 # place helper in separate executable
 set(CEF_HELPER_TARGET "inviwo_web_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
 
-add_executable(${CEF_HELPER_TARGET} MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
+if (OS_MACOSX)
+	add_executable(${CEF_HELPER_TARGET} MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
+elseif (WIN32)
+	add_executable(${CEF_HELPER_TARGET} WIN32 ${WEBBROWSER_HELPER_SOURCES})
+else()
+	add_executable(${CEF_HELPER_TARGET} ${WEBBROWSER_HELPER_SOURCES})
+endif()
+
 add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
 # Build helper before module so that we can copy it
 add_dependencies(inviwo-module-webbrowser ${CEF_HELPER_TARGET})
-target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+
+if (WIN32)
+	target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+else()
+	target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+endif()
+
 # Add IVW_ROOT_DIR to include file in "modules/webbrowser/...h"
 target_include_directories(${CEF_HELPER_TARGET} PRIVATE "${IVW_ROOT_DIR}")
 # IVW_EXTENSIONS_DIR is necessary to be able to include warn

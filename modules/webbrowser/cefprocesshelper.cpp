@@ -34,7 +34,8 @@
 // This process will run the CEF web browser. Used as a sub-process by WebBrowserModule 
 // See WebBrowserModule::WebBrowserModule
 #ifdef WIN32
-int main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
+int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine,
+                      int nCmdShow) {
     // Enable High-DPI support on Windows 7 or newer.
     CefEnableHighDPISupport();
 
