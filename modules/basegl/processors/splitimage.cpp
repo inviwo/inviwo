@@ -80,8 +80,6 @@ void SplitImage::process() {
         utilgl::singleDrawImagePlaneRect();
         shader->deactivate();
     } else {
-        utilgl::DepthMaskState depthMask(GL_FALSE);
-        utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
         utilgl::GlBoolState scissor(GL_SCISSOR_TEST, GL_TRUE);
 
         const ivec2 dims(outport_.getDimensions());

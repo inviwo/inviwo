@@ -32,10 +32,12 @@
 
 #include <inviwo/core/datastructures/image/layerram.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 template <typename T>
 class LayerRAMPrecision : public LayerRAM {
@@ -66,12 +68,12 @@ public:
     virtual void setDimensions(size2_t dimensions) override;
 
     /**
-    * \brief update the swizzle mask of the channels for sampling the layer
-    * Needs to be overloaded by child classes.
-    *
-    * @param mask    new swizzle mask
-    */
-    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+     * \brief update the swizzle mask of the channels for sampling the layer
+     * Needs to be overloaded by child classes.
+     *
+     * @param mask    new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
 
     virtual double getAsDouble(const size2_t& pos) const override;
@@ -118,14 +120,22 @@ LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
                                         const SwizzleMask& swizzleMask)
     : LayerRAM(dimensions, type, DataFormat<T>::get())
     , data_(new T[dimensions_.x * dimensions_.y]())
-    , swizzleMask_(swizzleMask) {}
+    , swizzleMask_(swizzleMask) {
+    std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
+              (type == LayerType::Depth) ? T{1} : T{0});
+}
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType type,
                                         const SwizzleMask& swizzleMask)
     : LayerRAM(dimensions, type, DataFormat<T>::get())
     , data_(data ? data : new T[dimensions_.x * dimensions_.y]())
-    , swizzleMask_(swizzleMask) {}
+    , swizzleMask_(swizzleMask) {
+    if (!data) {
+        std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
+                  (type == LayerType::Depth) ? T{1} : T{0});
+    }
+}
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
@@ -142,7 +152,7 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         auto data = util::make_unique<T[]>(dim.x * dim.y);
         std::memcpy(data.get(), that.data_.get(), dim.x * dim.y * sizeof(T));
         data_.swap(data);
-        
+
         dimensions_ = that.dimensions_;
         swizzleMask_ = that.swizzleMask_;
     }
@@ -158,7 +168,6 @@ template <typename T>
 T* inviwo::LayerRAMPrecision<T>::getDataTyped() {
     return data_.get();
 }
-
 
 template <typename T>
 const T* inviwo::LayerRAMPrecision<T>::getDataTyped() const {
@@ -192,7 +201,7 @@ void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setSwizzleMask(const SwizzleMask &mask) {
+void LayerRAMPrecision<T>::setSwizzleMask(const SwizzleMask& mask) {
     swizzleMask_ = mask;
     updateBaseMetaFromRepresentation();
 }
@@ -282,6 +291,6 @@ void LayerRAMPrecision<T>::setFromNormalizedDVec4(const size2_t& pos, dvec4 val)
     data_[posToIndex(pos, dimensions_)] = util::glm_convert_normalized<T>(val);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LAYERRAMPRECISION_H

@@ -321,6 +321,9 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
             oldWidgets_.emplace_back(*wit);
             prop->deregisterWidget(*wit);
             (*wit)->setParent(nullptr);
+            // hide the underlying QWidget. Otherwise it will be shown as a floating window since it
+            // no longer has a parent widget.
+            static_cast<QWidget*>(*wit)->setVisible(false);
             // Replace the item in propertyWidgets_;
             *wit = newWidget;
 
