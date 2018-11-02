@@ -1,7 +1,10 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-11-05
+The SplitImage processor now features a draggable handle. This handle allows to adjust the split position in the canvas with either mouse or touch.
+
 ## 2018-10-04 Color Scale Legend
-Added a Color Scale Legend processor to the plottinggl module that draws a 1D transfer funtion and the corresponding value axis on top of an image.
+Added a Color Scale Legend processor to the plottinggl module that draws a 1D transfer function and the corresponding value axis on top of an image.
 
 ## 2018-09-27 Full screen on startup
 Core: Renamed key mapping to fullscreenEvent and instead use fullscreen for a bool property.
