@@ -41,8 +41,6 @@
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/openglcapabilities.h>
 
-#include <inviwomodulespaths.h>
-
 #include <string>
 
 namespace inviwo {

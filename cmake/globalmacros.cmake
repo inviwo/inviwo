@@ -65,174 +65,6 @@ function(ivw_configure_application_module_dependencies target)
     endif()
 endfunction()
 
-#--------------------------------------------------------------------
-# Create a file ("executable_name-enabled-modules.txt") in the binary output directory.
-# The application can use the file to check the enabled modules at runtime.
-# Usage: ivw_create_enabled_modules_file("application_name" ${enabled_modules})
-# where enabled_modules is a list of module names (i.e. InviwoBaseModule)
-function(ivw_create_enabled_modules_file executable_name)
-    set(enabled_modules "")
-    foreach(mod ${ARGN})  
-        ivw_mod_name_to_dir(mod_name ${mod})
-        set(enabled_modules "${enabled_modules}${mod_name}\n") 
-    endforeach()
-    if(MSVC OR XCODE_VERSION)
-        # Multi-configuration generators (VS, Xcode) append a per-configuration 
-        # subdirectory to the specified directory
-        foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
-            file(WRITE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${OUTPUTCONFIG}/${executable_name}-enabled-modules.txt" ${enabled_modules})
-        endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
-    else()
-        file(WRITE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${executable_name}-enabled-modules.txt" ${enabled_modules})
-    endif()
-endfunction()
-
-# Generate header for modules
-function(ivw_generate_module_paths_header)
-    set(dirs "")
-    foreach(dir ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
-        if(IS_DIRECTORY ${dir})
-            list(APPEND dirs ${dir})
-        else()
-            message("Path to external module is not a directory (${dir})")
-        endif()
-    endforeach()
-
-    list_to_longstringvector(vec ${dirs})
-    list(LENGTH IVW_EXTERNAL_MODULES count)
-    math(EXPR count "${count}+1")
-    set(paths "const std::array<const std::string, ${count}> inviwoModulePaths_ = {${vec}}")
-    set(IVW_MODULES_PATHS_ARRAY ${paths})
-
-    configure_file(${IVW_CMAKE_TEMPLATES}/inviwomodulespaths_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/inviwomodulespaths.h @ONLY)
-endfunction()
-
-#--------------------------------------------------------------------
-# Generate a module registration header file (with configure file etc)
-function(ivw_private_generate_module_registration_file mod)
-    ivw_mod_name_to_dir(module_dependencies ${${mod}_dependencies})
-    list_to_stringvector(module_depends_vector ${module_dependencies})
-    list_to_stringvector(module_depends_version_vector ${${mod}_dependenciesversion})
-    list_to_stringvector(module_alias_vector ${${mod}_aliases})
-    string(TOUPPER "${${mod}_class}" u_module)
-    if(${${mod}_protected})
-        set(module_protected "ProtectedModule::on")
-    else()
-        set(module_protected "ProtectedModule::off")
-    endif()
-
-    get_filename_component(path ${${mod}_header} DIRECTORY)
-
-    ivw_private_generate_licence_header(MOD ${mod} RETVAL module_license_vector)
-
-    set(fuction_args
-        "        \"${${mod}_class}\", // Module name \n"
-        "        \"${${mod}_version}\", // Module version\n"
-        "        \"${${mod}_description}\", // Description\n" 
-        "        \"${IVW_VERSION}\", // Inviwo core version when built \n" 
-        "        ${module_depends_vector}, // Dependencies\n" 
-        "        ${module_depends_version_vector}, // Version number of dependencies\n"
-        "        ${module_alias_vector}, // List of aliases\n"
-        "        // List of license information\n"
-        "        ${module_license_vector},\n"
-        "        ${module_protected} // protected"
-    )
-
-    join(";" "" fuction_args ${fuction_args})
-    string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" fuction_args "${fuction_args}")
-    string(REPLACE "__SEMICOLON__" ";" fuction_args "${fuction_args}")
-
-    set(MODULE ${${mod}_class})
-    if(${${mod}_class} STREQUAL "Core")
-        set(MODULE_NAME "InviwoCore")
-        set(API_HEADER inviwo/core/common/inviwocoredefine.h)
-        set(API_DEFINE IVW_CORE_API)
-    else()
-        set(MODULE_NAME "${${mod}_class}Module")
-        set(API_HEADER modules/${${mod}_dir}/${${mod}_dir}moduledefine.h)
-        set(API_DEFINE IVW_MODULE_${u_module}_API)
-    endif()
-
-    set(U_MODULE ${u_module})
-    set(MODULE_HEADER ${${mod}_header})
-    set(MODULE_ARGS ${fuction_args})
-    set(LIBRARY_HEADER ${path}/${${mod}_dir}modulesharedlibrary.h)
-
-    configure_file(
-        ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.cpp 
-        ${CMAKE_BINARY_DIR}/modules/_generated/${path}/${${mod}_dir}modulesharedlibrary.cpp 
-        @ONLY
-    )
-    configure_file(
-        ${IVW_CMAKE_TEMPLATES}/mod_shared_library_template.h
-        ${CMAKE_BINARY_DIR}/modules/_generated/${path}/${${mod}_dir}modulesharedlibrary.h 
-        @ONLY
-    )
-endfunction()
-
-#--------------------------------------------------------------------
-# Generate a module registration header files (with configure file etc)
-function(ivw_private_generate_module_registration_files modules_var)
-    # For runtime loading export a module factory function for all modules.
-    # Function will be requested by the application after loading the library (dll/so)
-    # Does not require modules to be linked to the application
-    # For static loading generate function for creating modules in a single function
-    # Requires all modules to be linked to the application
-
-    set(static_headers "")
-    set(static_functions "")
-
-    foreach(mod ${${modules_var}})
-        if(NOT ${${mod}_opt})
-            continue()
-        endif()
-
-        get_filename_component(path ${${mod}_header} DIRECTORY)
-        list(APPEND static_headers
-            "#ifdef REG_${mod}\n"
-            "#include <${path}/${${mod}_dir}modulesharedlibrary.h>\n"
-            "#endif\n"
-        )
-        list(APPEND static_functions
-            "    #ifdef REG_${mod}\n" 
-            "    modules.emplace_back(create${${mod}_class}Module())__SEMICOLON__\n"
-            "    #endif\n"
-        )
-        ivw_private_generate_module_registration_file(${mod})
-    endforeach()
-
-    join(";" "" static_headers ${static_headers})
-    join(";" "" static_functions ${static_functions})
-    string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" static_functions "${static_functions}")
-    string(REPLACE "__SEMICOLON__" ";" static_functions "${static_functions}")
-
-    set(MODULE_HEADERS "${static_headers}")
-    set(MODULE_CLASS_FUNCTIONS "${static_functions}")
-    # uses: MODULE_HEADERS MODULE_CLASS_FUNCTIONS
-    configure_file(
-        ${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
-        ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h 
-        @ONLY
-    )
-endfunction()
-
-function(ivw_private_create_pyconfig modulepaths activemodules)
-    # template vars:
-    set(MODULEPATHS ${modulepaths})
-    set(ACTIVEMODULES ${activemodules})
-
-    find_package(Git QUIET)
-    if(GIT_FOUND)
-        ivw_debug_message(STATUS "git found: ${GIT_EXECUTABLE}")
-    else()
-        set(GIT_EXECUTABLE "")
-    endif()
-
-    configure_file(${IVW_CMAKE_TEMPLATES}/pyconfig_template.ini 
-                   ${CMAKE_BINARY_DIR}/pyconfig.ini @ONLY)
-endfunction()
-
 function(ivw_private_filter_dependency_list retval module)
     set(the_list "")
     if(ARGN)
@@ -271,38 +103,68 @@ endfunction()
 
 function(ivw_private_setup_module_data)
     set(options CORE)
-    set(oneValueArgs DIR BASE)
+    set(oneValueArgs DIR BASE NAME)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(dir ${ARG_DIR})
+    set(name ${ARG_NAME})
     set(module_path ${ARG_BASE})
     ivw_dir_to_mod_dep(mod ${dir})
     ivw_dir_to_mod_prefix(opt ${dir})           # OpenGL -> IVW_MODULE_OPENGL
     ivw_dir_to_module_taget_name(target ${dir}) # OpenGL -> inviwo-module-opengl
+
+    ivw_private_get_ivw_module_include_path(${module_path}/${dir} includePrefix includePath orgName)
+    # includePrefix -> inviwo/opengl
+    # includePath -> ... inviwo/modules/opengl/include/inviwo/opengl
+    # orgName -> inviwo
+
     # Get the classname with the right casing
     if(${ARG_CORE})
-        set(name "Core")
+        set(class "InviwoCore")
         set(alias "inviwo::core")
         set(header "inviwo/core/common/inviwocore.h")
+        set(api "IVW_CORE_API")
+        set(includePrefix "inviwo/core")
+        set(includePath "${module_path}/${dir}/inviwo/core")
+        set(orgName "inviwo")
+        set(apiDefineInc "inviwo/core/common/inviwocoredefine.h")
+        set(sharedLibInc "inviwo/core/common/coremodulesharedlibrary.h")
+        set(sharedLibCpp ${CMAKE_BINARY_DIR}/modules/${dir}/src/common/${dir}modulesharedlibrary.cpp)
     else()
-        ivw_private_get_ivw_module_name(${module_path}/${dir}/CMakeLists.txt name)
+        set(class "${name}Module")
         set(alias "inviwo::module::${dir}")
-        set(header "modules/${dir}/${dir}module.h")
+        set(header "${includePrefix}/${dir}module.h")
+        string(TOUPPER "${name}" u_module)
+        set(api "IVW_MODULE_${u_module}_API")
+        set(apiDefineInc ${includePrefix}/${dir}moduledefine.h)
+        set(sharedLibInc ${includePrefix}/${dir}modulesharedlibrary.h)
+        set(sharedLibCpp ${CMAKE_BINARY_DIR}/modules/${dir}/src/${dir}modulesharedlibrary.cpp)
     endif()
+    set(sharedLibHpp ${CMAKE_BINARY_DIR}/modules/${dir}/include/${sharedLibInc})
+
     # Get module version
     ivw_private_get_ivw_module_version(${module_path}/${dir}/CMakeLists.txt version)
-    set("${mod}_dir"      "${dir}"                CACHE INTERNAL "Module dir")
-    set("${mod}_base"     "${module_path}"        CACHE INTERNAL "Module base")
-    set("${mod}_path"     "${module_path}/${dir}" CACHE INTERNAL "Module path")
-    set("${mod}_opt"      "${opt}"                CACHE INTERNAL "Module cmake option")
-    set("${mod}_target"   "${target}"             CACHE INTERNAL "Module target")
-    set("${mod}_alias"    "${alias}"              CACHE INTERNAL "Module alias")
-    set("${mod}_class"    "${name}"               CACHE INTERNAL "Module class")
-    set("${mod}_name"     "Inviwo${name}Module"   CACHE INTERNAL "Module name")
-    set("${mod}_version"  "${version}"            CACHE INTERNAL "Module version")
-    set("${mod}_header"   "${header}"             CACHE INTERNAL "Module header")
-    set("${mod}_licenses" ""                      CACHE INTERNAL "License ids")
+    set("${mod}_name"         "${name}"               CACHE INTERNAL "Module name")
+    set("${mod}_dir"          "${dir}"                CACHE INTERNAL "Module dir")
+    set("${mod}_base"         "${module_path}"        CACHE INTERNAL "Module base")
+    set("${mod}_path"         "${module_path}/${dir}" CACHE INTERNAL "Module path")
+    set("${mod}_opt"          "${opt}"                CACHE INTERNAL "Module cmake option")
+    set("${mod}_target"       "${target}"             CACHE INTERNAL "Module target")
+    set("${mod}_alias"        "${alias}"              CACHE INTERNAL "Module alias")
+    set("${mod}_class"        "${class}"              CACHE INTERNAL "Module class")
+    set("${mod}_modName"      "Inviwo${name}Module"   CACHE INTERNAL "Module mod name")
+    set("${mod}_version"      "${version}"            CACHE INTERNAL "Module version")
+    set("${mod}_header"       "${header}"             CACHE INTERNAL "Module header")
+    set("${mod}_licenses"     ""                      CACHE INTERNAL "License ids")
+    set("${mod}_incPrefix"    "${includePrefix}"      CACHE INTERNAL "Module include Prefix")
+    set("${mod}_incPath"      "${includePath}"        CACHE INTERNAL "Module include Path")
+    set("${mod}_orgName"      "${orgName}"            CACHE INTERNAL "Module Org Name")
+    set("${mod}_api"          "${api}"                CACHE INTERNAL "API Macro")
+    set("${mod}_apiDefineInc" "${apiDefineInc}"       CACHE INTERNAL "API header include")
+    set("${mod}_sharedLibInc" "${sharedLibInc}"       CACHE INTERNAL "Shared lib include")
+    set("${mod}_sharedLibCpp" "${sharedLibCpp}"       CACHE INTERNAL "Shared lib Source")
+    set("${mod}_sharedLibHpp" "${sharedLibHpp}"       CACHE INTERNAL "Shared lib Header")
 
     # Check of there is a depends.cmake
     # Optionally defines: dependencies, aliases, protected
@@ -352,7 +214,7 @@ function(ivw_register_modules retval)
 
     ivw_dir_to_mod_dep(mod core)
     list(APPEND modules ${mod})
-    ivw_private_setup_module_data(CORE DIR "core" BASE ${IVW_SOURCE_DIR})
+    ivw_private_setup_module_data(CORE NAME "Core" DIR "core" BASE ${IVW_SOURCE_DIR})
     ivw_add_module_option_to_cache(${${mod}_dir} ON FALSE)
 
     foreach(module_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
@@ -369,7 +231,9 @@ function(ivw_register_modules retval)
             if(${valid})
                 ivw_debug_message(STATUS "register module: ${dir}")
                 list(APPEND modules ${mod})
-                ivw_private_setup_module_data(DIR ${dir} BASE ${module_path})
+                ivw_private_get_ivw_module_name(${module_path}/${dir}/CMakeLists.txt name)
+                ivw_private_get_ivw_module_version(${module_path}/${dir}/CMakeLists.txt version)
+                ivw_private_setup_module_data(NAME ${name} VERSION ${version} DIR ${dir} BASE ${module_path})
             endif()
         endforeach()
     endforeach()
@@ -409,9 +273,9 @@ function(ivw_register_modules retval)
                 else()
                     # Find the best substitute
                     list(GET ${alias_${dependency}_mods} 0 new_mod)
-                    set(new_dep ${${new_mod}_name})
+                    set(new_dep ${${new_mod}_modName})
                     foreach(alias_mod ${alias_${dependency}_mods})
-                        set(new_dep ${${alias_mod}_name})
+                        set(new_dep ${${alias_mod}_modName})
                         if(${${alias_mod}_opt}}) # if substitution is enabled we stick with that one.
                             break()
                         endif()
@@ -421,7 +285,7 @@ function(ivw_register_modules retval)
                 endif()
                 set(alias_names "")
                 foreach(alias_mod ${alias_${dependency}_mods})
-                    list(APPEND alias_names ${${alias_mod}_name})
+                    list(APPEND alias_names ${${alias_mod}_modName})
                 endforeach()
                 set_property(CACHE ${${mod}_opt}_${dependency} PROPERTY STRINGS ${alias_names})
             else()
@@ -429,8 +293,8 @@ function(ivw_register_modules retval)
             endif()
         endforeach()
         # Validate that there only are module dependencies
-        ivw_private_filter_dependency_list(new_dependencies ${${mod}_class} ${new_dependencies})
-        ivw_private_check_dependency_list(new_dependencies modules ${${mod}_class} ${new_dependencies})
+        ivw_private_filter_dependency_list(new_dependencies ${${mod}_name} ${new_dependencies})
+        ivw_private_check_dependency_list(new_dependencies modules ${${mod}_name} ${new_dependencies})
         set("${mod}_dependencies" ${new_dependencies} CACHE INTERNAL "Module dependencies")
         ivw_mod_name_to_mod_dep(udependencies ${new_dependencies})
         set("${mod}_udependencies" ${udependencies} CACHE INTERNAL "Module uppercase dependencies")
@@ -449,7 +313,7 @@ function(ivw_register_modules retval)
                 # Dependency was not found, not an inviwo module...
                 # We do not take responsibility for external library versions.
                 # Distribute the dependency along with the library!
-                # ivw_message("${${mod}_class}: ${dependency} dependency not found")
+                # ivw_message("${${mod}_name}: ${dependency} dependency not found")
             endif()
         endforeach()
         set("${mod}_dependenciesversion" ${dependencies_version} CACHE INTERNAL "Module dependency versions")
@@ -480,7 +344,7 @@ function(ivw_register_modules retval)
     foreach(mod ${sorted_modules})
         if(${${mod}_opt})
             add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
-            list(APPEND ivw_module_names ${${mod}_name})
+            list(APPEND ivw_module_names ${${mod}_modName})
             ivw_private_generate_module_registration_file(${mod})
         endif()
     endforeach()
@@ -515,26 +379,43 @@ endfunction()
 #--------------------------------------------------------------------
 # Creates source group structure recursively
 function(ivw_group group_name)
-    foreach(currentSourceFile ${ARGN})
-        if(NOT IS_ABSOLUTE ${currentSourceFile})
-            set(currentSourceFile ${CMAKE_CURRENT_SOURCE_DIR}/${currentSourceFile})
-        endif()
-        string(REPLACE "include/inviwo/" "src/" currentSourceFileModified ${currentSourceFile})
-        file(RELATIVE_PATH folder ${CMAKE_CURRENT_SOURCE_DIR} ${currentSourceFileModified})
-        get_filename_component(folder ${folder} PATH)
+    set(options "")
+    set(oneValueArgs "BASE")
+    set(multiValueArgs "")
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    ivw_dir_to_mod_dep(mod ${PROJECT_NAME})
+    
+    if(ARG_BASE)
+        set(base ${ARG_BASE})
+    elseif(group_name STREQUAL "Header Files" AND ${mod}_incPath)
+        set(base "${${mod}_incPath}")
+    elseif(group_name STREQUAL "Header Files" AND  EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    elseif(group_name STREQUAL "Source Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    elseif(group_name STREQUAL "Test Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests")
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests")
+     elseif(group_name STREQUAL "Shader Files" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/glsl")
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}/glsl")
+    else()
+        set(base "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
 
-        if(group_name STREQUAL "Test Files")
-            string(REPLACE "tests/unittests" "" folder ${folder})
+    foreach(file ${ARG_UNPARSED_ARGUMENTS})
+        if(NOT IS_ABSOLUTE ${file})
+            set(file ${CMAKE_CURRENT_SOURCE_DIR}/${file})
         endif()
+        file(RELATIVE_PATH folder ${base} ${file})
+        get_filename_component(folder ${folder} PATH)
 
         if(NOT folder STREQUAL "")
             string(REGEX REPLACE "/+$" "" folderlast ${folder})
             string(REPLACE "/" "\\" folderlast ${folderlast})
-            source_group("${group_name}\\${folderlast}" FILES ${currentSourceFile})
+            source_group("${group_name}\\${folderlast}" FILES ${file})
         else()
-            source_group("${group_name}" FILES ${currentSourceFile})
+            source_group("${group_name}" FILES ${file})
         endif(NOT folder STREQUAL "")
-    endforeach(currentSourceFile ${ARGN})
+    endforeach(file ${ARGN})
 endfunction()
 
 #--------------------------------------------------------------------
@@ -549,9 +430,15 @@ endfunction()
 # that is included from ivw_register_modules. 
 function(ivw_create_module)
     set(options "NO_PCH")
-    set(oneValueArgs "")
+    set(oneValueArgs "VERSION")
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        set(LEGACY false)
+    else()
+        set(LEGACY true)
+    endif()
 
     string(TOLOWER ${PROJECT_NAME} l_project_name)
     ivw_debug_message(STATUS "create module: ${PROJECT_NAME}")
@@ -568,19 +455,29 @@ function(ivw_create_module)
 
     # Add module class files
     set(mod_class_files 
-        ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}module.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}module.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}moduledefine.h
         # Add module creation function for dll/so loading
-        ${CMAKE_BINARY_DIR}/modules/_generated/modules/${l_project_name}/${l_project_name}modulesharedlibrary.cpp
-        ${CMAKE_BINARY_DIR}/modules/_generated/modules/${l_project_name}/${l_project_name}modulesharedlibrary.h
+        ${CMAKE_CURRENT_BINARY_DIR}/src/${l_project_name}modulesharedlibrary.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/include/${${mod}_incPrefix}/${l_project_name}modulesharedlibrary.h
     )
+    if(LEGACY)
+        list(APPEND mod_class_files
+            ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}module.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}module.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}moduledefine.h
+        )
+    endif()
+
     remove_duplicates(ivw_unique_mod_files ${ARG_UNPARSED_ARGUMENTS} ${mod_class_files} ${cmake_files})
 
     # Create library
     add_library(${${mod}_target} ${ivw_unique_mod_files})
     add_library(${${mod}_alias} ALIAS ${${mod}_target})
-    
+    target_include_directories(${${mod}_target} PUBLIC 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )
+
     # Define standard properties
     ivw_define_standard_definitions(${${mod}_opt} ${${mod}_target})
     ivw_define_standard_properties(${${mod}_target})

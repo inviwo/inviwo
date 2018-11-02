@@ -326,7 +326,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/zip.h
 )
-ivw_group("Header Files" ${HEADER_FILES})
+ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
@@ -608,11 +608,14 @@ set(TEST_FILES
 ivw_add_unittest(${TEST_FILES})
 
 set(GEN_FILES
-    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.h
-    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/coremodulesharedlibrary.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/common/coremodulesharedlibrary.cpp
 )
-source_group("Source Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.cpp)
-source_group("Header Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.h)
+source_group("Header Files\\common" FILES ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/coremodulesharedlibrary.h)
+source_group("Source Files\\common" FILES ${CMAKE_CURRENT_BINARY_DIR}/src/common/coremodulesharedlibrary.cpp)
+
+set(cmake_files "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
+source_group("CMake Files" FILES ${cmake_files})
 
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
@@ -638,11 +641,11 @@ target_compile_definitions(inviwo-core PRIVATE
 #--------------------------------------------------------------------
 # Add core folders to includes, this will also be picked up by all the modules
 target_include_directories(inviwo-core PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
     $<BUILD_INTERFACE:${IVW_MODULE_DIR}> # We should not use these..."
     $<BUILD_INTERFACE:${IVW_ROOT_DIR}> # We should not use these..."
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/modules/_generated>
 )
 
 # Add path for external modules

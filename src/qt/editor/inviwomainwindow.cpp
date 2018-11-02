@@ -66,8 +66,6 @@
 #include <inviwo/qt/editor/dataopener.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
 
-#include <inviwomodulespaths.h>
-
 #include <warn/push>
 #include <warn/ignore/all>
 

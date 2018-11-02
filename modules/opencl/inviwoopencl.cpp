@@ -37,7 +37,6 @@
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwomodulespaths.h>
 #include <iostream>
 #include <sstream>
 #include <stdio.h>

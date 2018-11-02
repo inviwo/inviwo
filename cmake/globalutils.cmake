@@ -572,6 +572,35 @@ function(ivw_private_get_ivw_module_name path retval)
 endfunction()
 
 #--------------------------------------------------------------------
+# Get the module include path
+function(ivw_private_get_ivw_module_include_path path includePrefix includePath orgName)
+    get_filename_component(name ${path} NAME)
+    if(EXISTS "${path}/include/${name}") 
+        set(${includePath} "${path}/include/${name}" PARENT_SCOPE)
+        set(${includePrefix} "${name}" PARENT_SCOPE)
+        set(${orgName} "" PARENT_SCOPE)
+        return()
+    endif()
+    
+    if(EXISTS "${path}/include/")
+        file(GLOB subdirs RELATIVE "${path}/include/" "${path}/include/[^.]*")
+        foreach(item IN LISTS subdirs)
+            if(EXISTS "${path}/include/${item}/${name}")
+                set(${includePath} "${path}/include/${item}/${name}" PARENT_SCOPE)
+                set(${includePrefix} "${item}/${name}" PARENT_SCOPE)
+                set(${orgName} "${item}" PARENT_SCOPE)
+                return()
+            endif()
+        endforeach()
+    endif()
+    
+    set(${includePath} "${path}" PARENT_SCOPE)
+    set(${includePrefix} "modules/${name}" PARENT_SCOPE)
+    set(${orgName} "modules" PARENT_SCOPE)
+    
+endfunction()
+
+#--------------------------------------------------------------------
 # Get the module version from a CMakeLists.txt
 # Major.Minor.Path
 # Returns 1.0.0 if no version is found
@@ -579,7 +608,6 @@ function(ivw_private_get_ivw_module_version path retval)
     file(READ ${path} contents)
     string(REPLACE "\n" ";" lines "${contents}")
     foreach(line ${lines})
-        #\s*ivw_module_version\(\s*(\w+)\s*\)\s*
         # This regex does not seem to be supported in cmake so use a two-step solution
         #string(REGEX MATCHALL "IVW_.+_VERSION\\s([0-9]+)\\.([0-9]+)\\.([0-9]+)" found_item ${line})
         string(REGEX MATCH "IVW_(.+)_VERSION" found_mod ${line})
@@ -588,11 +616,10 @@ function(ivw_private_get_ivw_module_version path retval)
             # Extract version number
             string(REGEX MATCH "\\s*\"*([0-9]+)\\.([0-9]+)\\.([0-9]+)" found_item ${line})
             if(NOT "${CMAKE_MATCH_1}" STREQUAL "" AND NOT "${CMAKE_MATCH_2}" STREQUAL "" AND NOT "${CMAKE_MATCH_3}" STREQUAL "")
-            #ivw_message("Found version (${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3})")
-            set(${retval} "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}" PARENT_SCOPE)
-            return()
+                set(${retval} "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}" PARENT_SCOPE)
+                return()
+            endif()
         endif()
-       endif()
     endforeach()
     #ivw_message("Did not find version in (${path})")
     set(${retval} "1.0.0" PARENT_SCOPE)

@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-        modules.emplace_back(createCoreModule());
+        modules.emplace_back(createInviwoCore());
         modules.emplace_back(createPython3Module());
         app.registerModules(std::move(modules));
     }
