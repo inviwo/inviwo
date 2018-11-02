@@ -91,15 +91,7 @@ public:
     virtual void retrieveStaticInfo() override;
     virtual void retrieveDynamicInfo() override;
 
-    std::string getBuildDateString() const;
-    int getBuildTimeYear() const;
-    int getBuildTimeMonth() const;
-    int getBuildTimeDay() const;
-    int getBuildTimeHour() const;
-    int getBuildTimeMinute() const;
-    int getBuildTimeSecond() const;
-    std::size_t getGitNumberOfHashes() const;
-    const std::pair<std::string, std::string>& getGitHash(std::size_t i) const;
+    const util::BuildInfo& getBuildInfo() const;
 
 private:
     bool lookupOSInfo();
