@@ -52,7 +52,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     , mouseButton_(MouseButton::None)
     , mouseState_(MouseState::Release)
     , modifiers_(flags::none) {
-    
+
     glfwWindowHint(GLFW_FLOATING, alwaysOnTop_ ? GL_TRUE : GL_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
@@ -65,9 +65,9 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     }
 #endif
 
-    glWindow_ = glfwCreateWindow(static_cast<int>(getCanvasDimensions().x), 
-                                 static_cast<int>(getCanvasDimensions().y),
-                                 windowTitle_.c_str(), nullptr, sharedContext_);
+    glWindow_ = glfwCreateWindow(static_cast<int>(getCanvasDimensions().x),
+                                 static_cast<int>(getCanvasDimensions().y), windowTitle_.c_str(),
+                                 nullptr, sharedContext_);
 
     if (!glWindow_) {
         glfwTerminate();
@@ -90,7 +90,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     RenderContext::getPtr()->registerContext(this, windowTitle);
 }
 
-CanvasGLFW::~CanvasGLFW() { 
+CanvasGLFW::~CanvasGLFW() {
     RenderContext::getPtr()->unRegisterContext(this);
     glfwDestroyWindow(glWindow_);
     if (glWindow_ == sharedContext_) sharedContext_ = nullptr;
@@ -115,12 +115,35 @@ void CanvasGLFW::hide() {
     }
 }
 
-void CanvasGLFW::setWindowSize(ivec2 size) {
-    glfwSetWindowSize(glWindow_, size.x, size.y);
-}
+void CanvasGLFW::setWindowSize(ivec2 size) { glfwSetWindowSize(glWindow_, size.x, size.y); }
 
-void CanvasGLFW::setWindowPosition(ivec2 pos) {
-    glfwSetWindowPos(glWindow_, pos.x, pos.y);
+void CanvasGLFW::setWindowPosition(ivec2 pos) { glfwSetWindowPos(glWindow_, pos.x, pos.y); }
+
+void CanvasGLFW::setFullScreenInternal(bool fullscreen) {
+    if (fullscreen) {
+        glfwGetWindowPos(glWindow_, &oldPos_[0], &oldPos_[1]);
+        glfwGetWindowSize(glWindow_, &oldSize_[0], &oldSize_[1]);
+
+        int monitorCount;
+        GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+
+        GLFWmonitor* target = *monitors;  // Start with the primary monitor;
+        for (GLFWmonitor** monitor = monitors; monitor < monitors + monitorCount; ++monitor) {
+            ivec2 mpos;
+            glfwGetMonitorPos(*monitor, &mpos[0], &mpos[1]);
+            const GLFWvidmode* mode = glfwGetVideoMode(*monitor);
+            if (glm::all(glm::greaterThanEqual(oldPos_, mpos)) &&
+                glm::all(glm::lessThan(oldPos_, mpos + ivec2(mode->width, mode->height)))) {
+                target = *monitor;  // Window is on this monitor
+                break;
+            }
+        }
+        const GLFWvidmode* mode = glfwGetVideoMode(target);
+        glfwSetWindowMonitor(glWindow_, target, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+    } else {
+        glfwSetWindowMonitor(glWindow_, nullptr, oldPos_.x, oldPos_.y, oldSize_.x, oldSize_.y,
+                             GLFW_DONT_CARE);
+    }
 }
 
 void CanvasGLFW::setWindowTitle(std::string windowTitle) {
@@ -144,7 +167,7 @@ void CanvasGLFW::reshape(GLFWwindow* window, int width, int height) {
 }
 
 void CanvasGLFW::move(GLFWwindow* window, int x, int y) {
-    getCanvasGLFW(window)->getProcessorWidgetOwner()->ProcessorWidget::setPosition(ivec2(x,y));
+    getCanvasGLFW(window)->getProcessorWidgetOwner()->ProcessorWidget::setPosition(ivec2(x, y));
 }
 
 void CanvasGLFW::setAlwaysOnTopByDefault(bool alwaysOnTop) { alwaysOnTop_ = alwaysOnTop; }
@@ -165,7 +188,7 @@ dvec2 CanvasGLFW::normalPos(dvec2 pos) const {
 }
 
 void CanvasGLFW::releaseContext() {}
-    
+
 void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         // glfwSetWindowShouldClose(window, GL_TRUE);
@@ -177,7 +200,8 @@ void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action,
     auto thisCanvas = getCanvasGLFW(window);
     auto keyState = (action == GLFW_PRESS) ? KeyState::Press : KeyState::Release;
     thisCanvas->modifiers_ = mapModifiers(mods);
-    KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)), keyState, thisCanvas->modifiers_, scancode, "");
+    KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)), keyState, thisCanvas->modifiers_,
+                           scancode, "");
 
     thisCanvas->propagateEvent(&keyEvent);
 }
@@ -187,16 +211,17 @@ void CanvasGLFW::character(GLFWwindow* window, unsigned int character) {
     auto thisCanvas = getCanvasGLFW(window);
     // Convert UTF32 character
 
-#if _MSC_VER 
-	// Linker error when using char16_t in visual studio
-	// https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
-	auto text = std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t>{}.to_bytes(character);
-#else 
-	auto text = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(character);
+#if _MSC_VER
+    // Linker error when using char16_t in visual studio
+    // https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
+    auto text = std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t>{}.to_bytes(character);
+#else
+    auto text = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(character);
 #endif
 
-    KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, thisCanvas->modifiers_, character, text);
-    
+    KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, thisCanvas->modifiers_, character,
+                           text);
+
     thisCanvas->propagateEvent(&keyEvent);
 }
 
@@ -239,8 +264,8 @@ void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
     glfwGetCursorPos(window, &pos.x, &pos.y);
     pos = thisCanvas->normalPos(pos);
 
-    WheelEvent wheelEvent(thisCanvas->mouseButton_, thisCanvas->modifiers_,
-                          dvec2(xoffset, yoffset), pos, thisCanvas->getImageDimensions(),
+    WheelEvent wheelEvent(thisCanvas->mouseButton_, thisCanvas->modifiers_, dvec2(xoffset, yoffset),
+                          pos, thisCanvas->getImageDimensions(),
                           thisCanvas->getDepthValueAtNormalizedCoord(pos));
 
     thisCanvas->propagateEvent(&wheelEvent);
@@ -260,7 +285,7 @@ MouseButton CanvasGLFW::mapMouseButton(int mouseButtonGLFW) {
 MouseState CanvasGLFW::mapMouseState(int mouseStateGLFW) {
     if (mouseStateGLFW == GLFW_PRESS)
         return MouseState::Press;
-    else // (mouseStateGLFW == GLFW_RELEASE)
+    else  // (mouseStateGLFW == GLFW_RELEASE)
         return MouseState::Release;
 }
 
@@ -272,16 +297,15 @@ KeyModifiers CanvasGLFW::mapModifiers(int modifiersGLFW) {
     if (modifiersGLFW & GLFW_MOD_CONTROL) result |= KeyModifier::Control;
 
     if (modifiersGLFW & GLFW_MOD_SHIFT) result |= KeyModifier::Shift;
-    
+
     if (modifiersGLFW & GLFW_MOD_SUPER) result |= KeyModifier::Super;
 
     return result;
 }
 
 std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
-    auto res = dispatchFront([&]() {
-        return util::make_unique<CanvasGLFW>("Background", screenDimensions_);
-    });
+    auto res = dispatchFront(
+        [&]() { return util::make_unique<CanvasGLFW>("Background", screenDimensions_); });
     return res.get();
 }
 
@@ -289,8 +313,6 @@ Canvas::ContextID CanvasGLFW::activeContext() const {
     return static_cast<ContextID>(glfwGetCurrentContext());
 }
 
-Canvas::ContextID CanvasGLFW::contextId() const {
-    return static_cast<ContextID>(glWindow_);
-}
+Canvas::ContextID CanvasGLFW::contextId() const { return static_cast<ContextID>(glWindow_); }
 
-}  // namespace
+}  // namespace inviwo
