@@ -43,7 +43,7 @@ VolumeCLBase::VolumeCLBase()
               << volumeStruct_.getSize());
 }
 
-VolumeCLBase::VolumeCLBase(const VolumeCLBase& rhs)
+VolumeCLBase::VolumeCLBase(const VolumeCLBase&)
     : volumeStruct_(std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters))) {}
 
 vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {

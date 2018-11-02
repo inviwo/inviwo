@@ -62,7 +62,7 @@ P moveHelper(std::true_type, const P &pos, const V &offset, F stepsize) {
 }
 
 template <typename P, typename V, typename F>
-P moveHelper(std::false_type, const P &pos, const V &offset, F stepsize) {
+P moveHelper(std::false_type, const P &pos, const V &offset, F /*stepsize*/) {
     return pos + offset;
 }
 

@@ -295,7 +295,7 @@ void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e
     }
 }
 
-void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
+void LinkDialogGraphicsScene::offsetItems(double yIncrement, bool scrollLeft) {
     auto proc = scrollLeft ? srcProcessor_ : dstProcessor_;
 
     auto tree =
