@@ -667,15 +667,16 @@ if (IVW_EXTERNAL_MODULES)
 endif()
 
 # Add core dependencies to this list
-target_link_libraries(inviwo-core PUBLIC ticpp inviwo::glm)
-target_link_libraries(inviwo-core PUBLIC ticpp inviwo::tinydir)
+target_link_libraries(inviwo-core PUBLIC 
+    ticpp 
+    inviwo::glm
+    inviwo::tinydir
+    inviwo::tclap
+    inviwo::warn
+    $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
+    $<$<BOOL:${WIN32}>:inviwo::stackwalker>
+)
 
-if(IVW_SIGAR)
-    target_link_libraries(inviwo-core PUBLIC inviwo::sigar)
-endif()
-if(WIN32)
-    target_link_libraries(inviwo-core PUBLIC inviwo::stackwalker)
-endif()
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
    mark_as_advanced(CORESERVICES_LIBRARY)
@@ -740,7 +741,7 @@ if (TARGET inviwo::stackwalker)
     )
 endif()
 
-ivw_register_license_file(NAME "tclap" TARGET tclap MODULE Core
+ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core
     URL http://tclap.sourceforge.net/
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
