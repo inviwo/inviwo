@@ -34,7 +34,7 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 add_library(GLEW ${SOURCE_FILES} ${HEADER_FILES})
 add_library(inviwo::GLEW ALIAS GLEW)
 target_link_libraries(GLEW PUBLIC ${OPENGL_LIBRARIES})
-set_target_properties(GLEW PROPERTIES VERSION GLEW_VERSION SOVERSION ${GLEW_MAJOR_VERSION}.${GLEW_MINOR_VERSION})
+set_target_properties(GLEW PROPERTIES VERSION ${GLEW_VERSION} SOVERSION ${GLEW_MAJOR_VERSION}.${GLEW_MINOR_VERSION})
 
 #--------------------------------------------------------------------
 # Set includes
