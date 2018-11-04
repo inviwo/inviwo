@@ -33,6 +33,13 @@
 #include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
 #include <modules/webbrowser/properties/stringpropertywidgetcef.h>
 
+#include <modules/webbrowser/webbrowsermodule.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include "include/cef_parser.h"
+#include <warn/pop>
+
 namespace inviwo {
 PropertyCefSynchronizer::PropertyCefSynchronizer() {
     registerPropertyWidget<BoolPropertyWidgetCEF, BoolProperty>(PropertySemantics("Default"));
@@ -56,6 +63,30 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
         widget->setFrame(frame);
         widget->updateFromProperty();
     }
+}
+
+void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser,
+                 CefRefPtr<CefFrame> frame,
+                 CefLoadHandler::ErrorCode errorCode,
+                 const CefString& errorText,
+                 const CefString& failedUrl) {
+    std::stringstream ss;
+    ss << "<html><head><title>Page failed to load</title></head>"
+    "<body bgcolor=\"white\">"
+    "<h3>Page failed to load.</h3>"
+    "URL: <a href=\""
+    << failedUrl.c_str() << "\">" << failedUrl.c_str()
+    << "</a><br/>Error: " << WebBrowserModule::getCefErrorString(errorCode) << " ("
+    << errorCode << ")";
+    
+    if (!errorText.empty())
+        ss << "<br/>" << errorText.c_str();
+    
+    ss << "</body></html>";
+    // TODO: This does not seem to call OnPaint with new page,
+    // which means that the error page will not be displayed until next url is inserted.
+    // Tried to invalidate Browser host but it did not work
+    frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
 }
 
 bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
