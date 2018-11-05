@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,28 @@
  * 
  *********************************************************************************/
 
-uniform mat4 dataToClip = mat4(1);
+#include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
-out vec4 color_;
-out vec3 texCoord_;
+uniform GeometryParameters geometry;
 
+// initialize camera matrices with the identity matrix to enable default rendering
+// without any transformation, i.e. all lines in clip space
+uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
+                                    mat4(1), mat4(1), vec3(0), 0, 1);
+
+uniform bool pickingEnabled = true; // disables color output
+uniform vec4 color = vec4(0, 0, 0, 1);
+uniform uint pickId;
+
+out vec4 worldPosition_;
+out vec4 vertexColor_;
+flat out vec4 pickColors_;
+ 
 void main() {
-    color_ = in_Color;
-    texCoord_ = in_TexCoord;
-    gl_Position = dataToClip * in_Vertex;
+    vertexColor_ = (pickingEnabled ? vec4(0) : color);
+
+    worldPosition_ = geometry.dataToWorld * in_Vertex;
+    gl_Position = camera.worldToClip * worldPosition_;
+    pickColors_ = mix(vec4(0.0), vec4(pickingIndexToColor(pickId), 1.0), bvec4(pickingEnabled));
 }
