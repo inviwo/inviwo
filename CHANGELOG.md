@@ -12,6 +12,10 @@ You will need to change the key mapping again if you have changed it from shift 
 
 Python: Full screen is now exposed as a property in the canvas instead of a function.
 
+## 2018-09-26 Initial DiscreteData
+Adding the DiscreteData module. The idea is to handle datasets that support all kinds of grids, data representations and interpolations on them.
+Current status: Dataset; Explicit and implicit channel; Structured and periodic structured grid.
+
 ## 2018-09-24 Color property improvements
 Updated the color property widget which allows to edit colors directly. Supports floating point range `[0,1]`, int range `[0,255]`, and hex color codes (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).
 Invalid input is indicated by red border and changes discarded if either <Esc> is pressed or the widget looses focus.
