@@ -68,6 +68,9 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
         // Crash when default locale "C" is used. Reproduce with GLFWMinimum application
         locale = std::locale("en_US").name();
     }
+
+    void* sandbox_info = NULL; // Windows specific 
+
 #ifdef DARWIN  // Mac specific
 
     // Find CEF framework and helper app in
@@ -115,6 +118,12 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 #ifdef WIN32
     // Enable High-DPI support on Windows 7 or newer.
     CefEnableHighDPISupport();
+#if defined(CEF_USE_SANDBOX)
+    // Manage the life span of the sandbox information object. This is necessary
+    // for sandbox support on Windows. See cef_sandbox_win.h for complete details.
+    CefScopedSandboxInfo scoped_sandbox;
+    sandbox_info = scoped_sandbox.sandbox_info();
+#endif
 #endif
     // When generating projects with CMake the CEF_USE_SANDBOX value will be defined
     // automatically. Pass -DUSE_SANDBOX=OFF to the CMake command-line to disable
@@ -144,7 +153,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);
 
-    bool result = CefInitialize(args, settings, browserApp, nullptr);
+    bool result = CefInitialize(args, settings, browserApp, sandbox_info);
 
     if (!result) {
         throw ModuleInitException("Failed to initialize Chromium Embedded Framework");

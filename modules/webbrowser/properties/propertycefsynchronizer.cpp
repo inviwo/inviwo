@@ -72,20 +72,19 @@ void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser,
                  const CefString& failedUrl) {
     std::stringstream ss;
     ss << "<html><head><title>Page failed to load</title></head>"
-    "<body bgcolor=\"white\">"
-    "<h3>Page failed to load.</h3>"
-    "URL: <a href=\""
-    << failedUrl.c_str() << "\">" << failedUrl.c_str()
-    << "</a><br/>Error: " << WebBrowserModule::getCefErrorString(errorCode) << " ("
-    << errorCode << ")";
-    
-    if (!errorText.empty())
-        ss << "<br/>" << errorText.c_str();
-    
+          "<body bgcolor=\"white\">"
+          "<h3>Page failed to load.</h3>"
+          "URL: <a href=\""
+       << failedUrl.ToString() << "\">" << failedUrl.ToString()
+       << "</a><br/>Error: " << WebBrowserModule::getCefErrorString(errorCode) << " (" << errorCode
+       << ")";
+
+    if (!errorText.empty()) {
+        ss << "<br/>Description: " << errorText.ToString();
+    }
+
     ss << "</body></html>";
-    // TODO: This does not seem to call OnPaint with new page,
-    // which means that the error page will not be displayed until next url is inserted.
-    // Tried to invalidate Browser host but it did not work
+
     frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
 }
 

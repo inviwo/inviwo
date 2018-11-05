@@ -43,6 +43,13 @@ set(CEF_SHARED_LINKER_FLAGS_RELEASE ${CMAKE_SHARED_LINKER_FLAGS_RELASE}})
 # Inviwo: Split space separated flags into a list (fixes max compile errors)
 separate_arguments(CEF_COMPILER_FLAGS_RELEASE)
 
+# sandbox lib is built with MT_StaticRelease but Inviwo is built with MD_DynamicRelease and hence are not compatible
+if (WIN32)
+	unset(USE_SANDBOX CACHE)
+	unset(USE_SANDBOX PARENT_SCOPE)
+	list(FILTER CEF_COMPILER_DEFINES EXCLUDE REGEX "CEF_USE_SANDBOX")
+endif()
+
 # Include the libcef_dll_wrapper target.
 # Comes from the libcef_dll/CMakeLists.txt file in the binary distribution
 # directory.
@@ -133,11 +140,6 @@ ivw_add_unittest(${TEST_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
-if (OS_MACOSX)
-	target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_dll_wrapper ${CEF_STANDARD_LIBS})
-else ()
-	target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
-endif()
 
 #--------------------------------------------------------------------
 # Package or build shaders into resources
@@ -193,12 +195,6 @@ add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
 # Build helper before module so that we can copy it
 add_dependencies(inviwo-module-webbrowser ${CEF_HELPER_TARGET})
 
-if (WIN32)
-	target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
-else()
-	target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_dll_wrapper ${CEF_STANDARD_LIBS})
-endif()
-
 # Add IVW_ROOT_DIR to include file in "modules/webbrowser/...h"
 target_include_directories(${CEF_HELPER_TARGET} PRIVATE "${IVW_ROOT_DIR}")
 # IVW_EXTENSIONS_DIR is necessary to be able to include warn
@@ -212,12 +208,11 @@ ivw_suppress_compiler_warnings(${CEF_HELPER_TARGET})
 # This function is not for turning off cotire... It is for setting the cotire ignore include paths.
 #ivw_cotire_ignore_on_target(inviwo-module-webbrowser)
 
-# Inviwo: Needed? (Windows only) Add the custom manifest files to the executable.
-#ADD_WINDOWS_CEF_MANIFEST("${CEF_TARGET_OUT_DIR}" "${WEBBROWSER_MODULE_PATH}" "${CEF_HELPER_TARGET}" "exe")
 # Put in ext folder in developer IDE
 ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
 
 if (OS_MACOSX)
+	target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_dll_wrapper ${CEF_STANDARD_LIBS})
     # Output paths for the app bundles: bin/configuration, for example bin/Debug.
     # Note: This is hardcoded to inviwo app.
     # Other apps need to copy the helper and the cef framework to its framework dir,
@@ -250,10 +245,46 @@ if (OS_MACOSX)
     set_target_properties(${CEF_HELPER_TARGET} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/helper-Info.plist
     )
-else()
+elseif (WIN32)
+	target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+	target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+
+	if(USE_SANDBOX)
+		message("Adding libs")
+		# Logical target used to link the cef_sandbox library.
+		ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+		target_link_libraries(inviwo-module-webbrowser PRIVATE cef_sandbox_lib ${CEF_SANDBOX_STANDARD_LIBS})
+	endif()
+
+	# Inviwo: Needed? (Windows only) Add the custom manifest files to the executable.
+	#ADD_WINDOWS_CEF_MANIFEST("${CEF_TARGET_OUT_DIR}" "${WEBBROWSER_MODULE_PATH}" "${CEF_HELPER_TARGET}" "exe")
+
     # Copy CEF binary and resource files to the target output directory.
     COPY_FILES("inviwo-module-webbrowser" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
     COPY_FILES("inviwo-module-webbrowser" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+
+    # Copy files into the bin directory (used by installer)
+    install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
+            "${CEF_RESOURCE_DIR}/"
+            DESTINATION bin
+            COMPONENT inviwo-module-webbrowser)
+	# Copy helper executable into the bin directory (used by installer)
+	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION bin COMPONENT inviwo-module-webbrowser)
+
+else () # Linux
+	target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+	target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+
+	# Set rpath so that libraries can be placed next to the executable.
+	set_target_properties(inviwo-module-webbrowser PROPERTIES INSTALL_RPATH "$ORIGIN")
+	set_target_properties(inviwo-module-webbrowser PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+	set_target_properties(inviwo-module-webbrowser PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR})
+	# Copy CEF binary and resource files to the target output directory.
+    COPY_FILES("inviwo-module-webbrowser" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
+    COPY_FILES("inviwo-module-webbrowser" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+
+	# Set SUID permissions on the chrome-sandbox target.
+	SET_LINUX_SUID_PERMISSIONS("inviwo-module-webbrowser" "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
 
     # Copy files into the bin directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
