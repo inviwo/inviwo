@@ -127,7 +127,6 @@ WebBrowserProcessor::WebBrowserProcessor()
     // destructor
     browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, getSource(),
                                                  browserSettings, nullptr);
-    browser_->GetMainFrame()->LoadURL(fileName_.get());
 
     // Inject events into CEF browser_
     cefInteractionHandler_.setHost(browser_->GetHost());
@@ -183,10 +182,16 @@ WebBrowserProcessor::WebBrowserProcessor()
 std::string WebBrowserProcessor::getSource() {
     std::string sourceString;
     if (sourceType_.get() == SourceType::LocalFile) {
-        sourceString = fileName_.get();
+        sourceString = "file://" + fileName_.get();
     } else if (sourceType_.get() == SourceType::WebAddress) {
         sourceString = url_.get();
     }
+#ifndef NDEBUG
+    // CEF does not allow empty urls in debug mode
+    if (sourceString.empty()) {
+        sourceString = "https://www.inviwo.org";
+    }
+#endif
     return sourceString;
 }
 
