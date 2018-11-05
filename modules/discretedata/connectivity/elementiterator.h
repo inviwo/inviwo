@@ -116,7 +116,7 @@ public:
     /** Iterate over connected GridPrimitives (neighbors etc) */
     ConnectionRange connection(GridPrimitive toType) const;
 
-    const Connectivity* getGrid() { return parent_; }
+    const Connectivity* getGrid() const { return parent_; }
 
     // Members
 protected:

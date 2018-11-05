@@ -33,6 +33,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectioniterator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectivity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/elementiterator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/euclideanmeasure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/periodicgrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/structuredgrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataset.cpp
