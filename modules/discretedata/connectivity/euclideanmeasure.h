@@ -44,13 +44,14 @@ namespace euclidean {
  *  @param cell Cell type
  *  @param positions Vertex positions
  */
-double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimitive dim, ind index);
+IVW_MODULE_DISCRETEDATA_API double getMeasure(const Connectivity& grid, const Channel& positions,
+                                             GridPrimitive dim, ind index);
 
 /** \brief Get the measure (i.e., length, area, volume...) of an element
  *  @param element Element to get measure of
  *  @param positions Vertex positions
  */
-double getMeasure(const Channel& positions, ElementIterator& element) {
+inline double getMeasure(const Channel& positions, const ElementIterator& element) {
     return getMeasure(*element.getGrid(), positions, element.getType(), element.getIndex());
 };
 
@@ -106,28 +107,6 @@ double HexVolumeComputer::computeHexVolume(const Channel& positions,
     }
 
     return measure;
-}
-
-double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimitive dim,
-                  ind index) {
-
-    CellType cell = grid.getCellType(dim, index);
-    switch (cell) {
-        case CellType::Hexahedron:
-            if (positions.getNumComponents() == 3) {
-                // Only implemented 3D bodies so far.
-                if (dim != GridPrimitive::Volume) return -1;
-
-                double measure = -1;
-
-                measure = inviwo::dispatching::dispatch<double, dispatching::filter::Scalars>(
-                    positions.getDataFormatId(), HexVolumeComputer(), grid, positions, index);
-
-                return measure;
-            }
-        default:
-            return -1.0;
-    }
 }
 
 }  // namespace euclidean
