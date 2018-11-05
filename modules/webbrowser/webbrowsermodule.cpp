@@ -54,8 +54,10 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
 
     if (!app->getSystemSettings().enablePickingProperty_) {
-		LogInfo("Enabling picking system setting since it is required for interaction (View->Settings->System settings->Enable picking).");
-		app->getSystemSettings().enablePickingProperty_.set(true);
+        LogInfo(
+            "Enabling picking system setting since it is required for interaction "
+            "(View->Settings->System settings->Enable picking).");
+        app->getSystemSettings().enablePickingProperty_.set(true);
     }
     // CEF initialization
     // Specify the path for the sub-process executable.
@@ -69,7 +71,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
         locale = std::locale("en_US").name();
     }
 
-    void* sandbox_info = NULL; // Windows specific 
+    void* sandbox_info = NULL;  // Windows specific
 
 #ifdef DARWIN  // Mac specific
 
@@ -81,22 +83,18 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // Load the CEF framework library at runtime instead of linking directly
     // as required by the macOS sandbox implementation.
     if (!cefLib_.LoadInMain()) {
-        throw ModuleInitException("Could not find Chromium Embedded Framework.framework: " + frameworkPath);
+        throw ModuleInitException("Could not find Chromium Embedded Framework.framework: " +
+                                  frameworkPath);
     }
 
     CefMainArgs args(app->getCommandLineParser().getARGC(), app->getCommandLineParser().getARGV());
     CefSettings settings;
-    CefString(&settings.framework_dir_path)
-        .FromASCII((frameworkDirectory).c_str());
+    CefString(&settings.framework_dir_path).FromASCII((frameworkDirectory).c_str());
     // Crashes if not set and non-default locale is used
     CefString(&settings.locales_dir_path)
-        .FromASCII((frameworkDirectory +
-                    std::string("/Resources"))
-                       .c_str());
+        .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
     CefString(&settings.resources_dir_path)
-        .FromASCII((frameworkDirectory +
-                    std::string("/Resources"))
-                       .c_str());
+        .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
     // Locale returns "en_US.UFT8" but "en.UTF8" is needed by CEF
     auto startErasePos = locale.find('_');
     if (startErasePos != std::string::npos) {
@@ -129,7 +127,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // automatically. Pass -DUSE_SANDBOX=OFF to the CMake command-line to disable
     // use of the sandbox.
 #if !defined(CEF_USE_SANDBOX)
-        settings.no_sandbox = true;
+    settings.no_sandbox = true;
 #endif
     // checkout detailed settings options
     // http://magpcss.org/ceforum/apidocs/projects/%28default%29/_cef_settings_t.html nearly all
@@ -137,11 +135,10 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     settings.multi_threaded_message_loop = false;  // not supported, except windows
     // We want to use off-screen rendering
     settings.windowless_rendering_enabled = true;
-    
+
     // CefString(&settings.cache_path).FromASCII("");
     // CefString(&settings.log_file).FromASCII("");
     // settings.log_severity = LOGSEVERITY_WARNING;
-
 
     CefString(&settings.locale).FromASCII(locale.c_str());
 
@@ -149,7 +146,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
     CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
-    
+
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);
 
@@ -177,70 +174,114 @@ WebBrowserModule::~WebBrowserModule() {
     app_->waitForPool();
     CefShutdown();
 }
-    
+
 std::string WebBrowserModule::getDataURI(const std::string& data, const std::string& mime_type) {
     return "data:" + mime_type + ";base64," +
-    CefURIEncode(CefBase64Encode(data.data(), data.size()), false)
-    .ToString();
+           CefURIEncode(CefBase64Encode(data.data(), data.size()), false).ToString();
 }
-    
-std::string WebBrowserModule::getCefErrorString(cef_errorcode_t code) {
-#define CASE(code) \
-case code:       \
-return #code
 
-switch (code) {
-        CASE(ERR_NONE);
-        CASE(ERR_FAILED);
-        CASE(ERR_ABORTED);
-        CASE(ERR_INVALID_ARGUMENT);
-        CASE(ERR_INVALID_HANDLE);
-        CASE(ERR_FILE_NOT_FOUND);
-        CASE(ERR_TIMED_OUT);
-        CASE(ERR_FILE_TOO_BIG);
-        CASE(ERR_UNEXPECTED);
-        CASE(ERR_ACCESS_DENIED);
-        CASE(ERR_NOT_IMPLEMENTED);
-        CASE(ERR_CONNECTION_CLOSED);
-        CASE(ERR_CONNECTION_RESET);
-        CASE(ERR_CONNECTION_REFUSED);
-        CASE(ERR_CONNECTION_ABORTED);
-        CASE(ERR_CONNECTION_FAILED);
-        CASE(ERR_NAME_NOT_RESOLVED);
-        CASE(ERR_INTERNET_DISCONNECTED);
-        CASE(ERR_SSL_PROTOCOL_ERROR);
-        CASE(ERR_ADDRESS_INVALID);
-        CASE(ERR_ADDRESS_UNREACHABLE);
-        CASE(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-        CASE(ERR_TUNNEL_CONNECTION_FAILED);
-        CASE(ERR_NO_SSL_VERSIONS_ENABLED);
-        CASE(ERR_SSL_VERSION_OR_CIPHER_MISMATCH);
-        CASE(ERR_SSL_RENEGOTIATION_REQUESTED);
-        CASE(ERR_CERT_COMMON_NAME_INVALID);
-        CASE(ERR_CERT_DATE_INVALID);
-        CASE(ERR_CERT_AUTHORITY_INVALID);
-        CASE(ERR_CERT_CONTAINS_ERRORS);
-        CASE(ERR_CERT_NO_REVOCATION_MECHANISM);
-        CASE(ERR_CERT_UNABLE_TO_CHECK_REVOCATION);
-        CASE(ERR_CERT_REVOKED);
-        CASE(ERR_CERT_INVALID);
-        CASE(ERR_CERT_END);
-        CASE(ERR_INVALID_URL);
-        CASE(ERR_DISALLOWED_URL_SCHEME);
-        CASE(ERR_UNKNOWN_URL_SCHEME);
-        CASE(ERR_TOO_MANY_REDIRECTS);
-        CASE(ERR_UNSAFE_REDIRECT);
-        CASE(ERR_UNSAFE_PORT);
-        CASE(ERR_INVALID_RESPONSE);
-        CASE(ERR_INVALID_CHUNKED_ENCODING);
-        CASE(ERR_METHOD_NOT_SUPPORTED);
-        CASE(ERR_UNEXPECTED_PROXY_AUTH);
-        CASE(ERR_EMPTY_RESPONSE);
-        CASE(ERR_RESPONSE_HEADERS_TOO_BIG);
-        CASE(ERR_CACHE_MISS);
-        CASE(ERR_INSECURE_RESPONSE);
-    default:
-        return "UNKNOWN";
-}
+std::string WebBrowserModule::getCefErrorString(cef_errorcode_t code) {
+    switch (code) {
+        case ERR_NONE:
+            return "ERR_NONE";
+        case ERR_FAILED:
+            return "ERR_FAILED";
+        case ERR_ABORTED:
+            return "ERR_ABORTED";
+        case ERR_INVALID_ARGUMENT:
+            return "ERR_INVALID_ARGUMENT";
+        case ERR_INVALID_HANDLE:
+            return "ERR_INVALID_HANDLE";
+        case ERR_FILE_NOT_FOUND:
+            return "ERR_FILE_NOT_FOUND";
+        case ERR_TIMED_OUT:
+            return "ERR_TIMED_OUT";
+        case ERR_FILE_TOO_BIG:
+            return "ERR_FILE_TOO_BIG";
+        case ERR_UNEXPECTED:
+            return "ERR_UNEXPECTED";
+        case ERR_ACCESS_DENIED:
+            return "ERR_ACCESS_DENIED";
+        case ERR_NOT_IMPLEMENTED:
+            return "ERR_NOT_IMPLEMENTED";
+        case ERR_CONNECTION_CLOSED:
+            return "ERR_CONNECTION_CLOSED";
+        case ERR_CONNECTION_RESET:
+            return "ERR_CONNECTION_RESET";
+        case ERR_CONNECTION_REFUSED:
+            return "ERR_CONNECTION_REFUSED";
+        case ERR_CONNECTION_ABORTED:
+            return "ERR_CONNECTION_ABORTED";
+        case ERR_CONNECTION_FAILED:
+            return "ERR_CONNECTION_FAILED";
+        case ERR_NAME_NOT_RESOLVED:
+            return "ERR_NAME_NOT_RESOLVED";
+        case ERR_INTERNET_DISCONNECTED:
+            return "ERR_INTERNET_DISCONNECTED";
+        case ERR_SSL_PROTOCOL_ERROR:
+            return "ERR_SSL_PROTOCOL_ERROR";
+        case ERR_ADDRESS_INVALID:
+            return "ERR_ADDRESS_INVALID";
+        case ERR_ADDRESS_UNREACHABLE:
+            return "ERR_ADDRESS_UNREACHABLE";
+        case ERR_SSL_CLIENT_AUTH_CERT_NEEDED:
+            return "ERR_SSL_CLIENT_AUTH_CERT_NEEDED";
+        case ERR_TUNNEL_CONNECTION_FAILED:
+            return "ERR_TUNNEL_CONNECTION_FAILED";
+        case ERR_NO_SSL_VERSIONS_ENABLED:
+            return "ERR_NO_SSL_VERSIONS_ENABLED";
+        case ERR_SSL_VERSION_OR_CIPHER_MISMATCH:
+            return "ERR_SSL_VERSION_OR_CIPHER_MISMATCH";
+        case ERR_SSL_RENEGOTIATION_REQUESTED:
+            return "ERR_SSL_RENEGOTIATION_REQUESTED";
+        case ERR_CERT_COMMON_NAME_INVALID:
+            return "ERR_CERT_COMMON_NAME_INVALID";
+        case ERR_CERT_DATE_INVALID:
+            return "ERR_CERT_DATE_INVALID";
+        case ERR_CERT_AUTHORITY_INVALID:
+            return "ERR_CERT_AUTHORITY_INVALID";
+        case ERR_CERT_CONTAINS_ERRORS:
+            return "ERR_CERT_CONTAINS_ERRORS";
+        case ERR_CERT_NO_REVOCATION_MECHANISM:
+            return "ERR_CERT_NO_REVOCATION_MECHANISM";
+        case ERR_CERT_UNABLE_TO_CHECK_REVOCATION:
+            return "ERR_CERT_UNABLE_TO_CHECK_REVOCATION";
+        case ERR_CERT_REVOKED:
+            return "ERR_CERT_REVOKED";
+        case ERR_CERT_INVALID:
+            return "ERR_CERT_INVALID";
+        case ERR_CERT_END:
+            return "ERR_CERT_END";
+        case ERR_INVALID_URL:
+            return "ERR_INVALID_URL";
+        case ERR_DISALLOWED_URL_SCHEME:
+            return "ERR_DISALLOWED_URL_SCHEME";
+        case ERR_UNKNOWN_URL_SCHEME:
+            return "ERR_UNKNOWN_URL_SCHEME";
+        case ERR_TOO_MANY_REDIRECTS:
+            return "ERR_TOO_MANY_REDIRECTS";
+        case ERR_UNSAFE_REDIRECT:
+            return "ERR_UNSAFE_REDIRECT";
+        case ERR_UNSAFE_PORT:
+            return "ERR_UNSAFE_PORT";
+        case ERR_INVALID_RESPONSE:
+            return "ERR_INVALID_RESPONSE";
+        case ERR_INVALID_CHUNKED_ENCODING:
+            return "ERR_INVALID_CHUNKED_ENCODING";
+        case ERR_METHOD_NOT_SUPPORTED:
+            return "ERR_METHOD_NOT_SUPPORTED";
+        case ERR_UNEXPECTED_PROXY_AUTH:
+            return "ERR_UNEXPECTED_PROXY_AUTH";
+        case ERR_EMPTY_RESPONSE:
+            return "ERR_EMPTY_RESPONSE";
+        case ERR_RESPONSE_HEADERS_TOO_BIG:
+            return "ERR_RESPONSE_HEADERS_TOO_BIG";
+        case ERR_CACHE_MISS:
+            return "ERR_CACHE_MISS";
+        case ERR_INSECURE_RESPONSE:
+            return "ERR_INSECURE_RESPONSE";
+        default:
+            return "UNKNOWN";
+    }
 }
 }  // namespace inviwo

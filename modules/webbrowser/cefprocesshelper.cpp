@@ -30,7 +30,7 @@
 #include <modules/webbrowser/webrendererapp.h>
 #include <modules/webbrowser/app_switches.h>
 
-#if DARWIN // Mac
+#if DARWIN  // Mac
 #include "include/wrapper/cef_library_loader.h"
 // When generating projects with CMake the CEF_USE_SANDBOX value will be defined
 // automatically. Pass -DUSE_SANDBOX=OFF to the CMake command-line to disable
@@ -39,9 +39,9 @@
 #include "include/cef_sandbox_mac.h"
 #endif
 
-#endif // Mac
+#endif  // Mac
 
-// This process will run the CEF web browser. Used as a sub-process by WebBrowserModule 
+// This process will run the CEF web browser. Used as a sub-process by WebBrowserModule
 // See WebBrowserModule::WebBrowserModule
 #ifdef WIN32
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine,
@@ -51,13 +51,12 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
     // Provide CEF with command-line arguments.
     CefMainArgs mainArgs(hInstance);
-#elif DARWIN // Mac
+#elif DARWIN  // Mac
 int main(int argc, char* argv[]) {
 #if defined(CEF_USE_SANDBOX)
     // Initialize the macOS sandbox for this helper process.
     CefScopedSandboxContext sandbox_context;
-    if (!sandbox_context.Initialize(argc, argv))
-        return 1;
+    if (!sandbox_context.Initialize(argc, argv)) return 1;
 #endif
     // Load the CEF framework library at runtime instead of linking directly
     // as required by the macOS sandbox implementation.
@@ -70,13 +69,13 @@ int main(int argc, char* argv[]) {
     CefMainArgs mainArgs(argc, argv);
 #else
 int main(int argc, char* argv[]) {
-        // Provide CEF with command-line arguments.
-        CefMainArgs mainArgs(argc, argv);
+    // Provide CEF with command-line arguments.
+    CefMainArgs mainArgs(argc, argv);
 #endif
-    
+
     // Create a temporary CommandLine object.
     CefRefPtr<CefCommandLine> command_line = CreateCommandLine(mainArgs);
-    
+
     // Create a CefApp of the correct process type. The browser process is handled
     // by webbrowsermodule.cpp.
     CefRefPtr<CefApp> app = nullptr;
@@ -88,7 +87,7 @@ int main(int argc, char* argv[]) {
             // No app, but it is ok to pass nullptr to CefExecuteProcess
             break;
     }
-    
+
     // Execute the sub-process.
     return CefExecuteProcess(mainArgs, app, NULL);
 }

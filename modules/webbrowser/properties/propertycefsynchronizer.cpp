@@ -65,11 +65,9 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
     }
 }
 
-void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser,
-                 CefRefPtr<CefFrame> frame,
-                 CefLoadHandler::ErrorCode errorCode,
-                 const CefString& errorText,
-                 const CefString& failedUrl) {
+void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                          CefLoadHandler::ErrorCode errorCode,
+                                          const CefString& errorText, const CefString& failedUrl) {
     std::stringstream ss;
     ss << "<html><head><title>Page failed to load</title></head>"
           "<body bgcolor=\"white\">"
@@ -106,10 +104,8 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
         return false;
     }
     auto id = requestStr.substr(offset, idEnd - offset);
-    auto widget =
-    std::find_if(std::begin(widgets_), std::end(widgets_), [id](const auto& widget) {
-        return id == widget->getHtmlId();
-    });
+    auto widget = std::find_if(std::begin(widgets_), std::end(widgets_),
+                               [id](const auto& widget) { return id == widget->getHtmlId(); });
     if (widget != widgets_.end()) {
         auto nextValPos = requestStr.find("}", idEnd);
         if (nextValPos == std::string::npos) {
