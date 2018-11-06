@@ -55,8 +55,11 @@ namespace inviwo {
 
 	struct DICOMDIRSeries {
 		std::vector<DICOMDIRImage> images;
-		size_t totalByteCount = 0;
-		std::string modality; // e.g. "CT"
+		std::string modality = "CT"; // e.g. "CT", "MR"...
+		double slope = 1.0;
+		double intercept = 0.0;
+
+		// Icon images from series: see tag (0088,0200)
 	};
 
 	struct DICOMDIRStudy {
@@ -76,38 +79,74 @@ namespace inviwo {
 		virtual GdcmVolumeReader* clone() const;
 		virtual ~GdcmVolumeReader() = default;
 
-		// interface gdcm - mevis reader (for single volumes)
+		/**
+		* Old function that tries to read single volume from single file.
+		* Apparently this can be applied to the "mevis" format.
+		*/
 		SharedVolume generateVolume(const gdcm::Image &image, const gdcm::File &file);
 		const DataFormatBase* getFormat() { return format_; }
 		size3_t getDimension() { return dimension_; }
 
-		// the entry point of the reader
+		/**
+		* Entry point of the reader, called from VolumeSource processor
+		*/
 		virtual std::shared_ptr<VolumeSequence> readData(const std::string& filePath);
 
 	private:
-		// file or folder from where volume(s) from last readData call
+		/**
+		* Holds file or folder path from last call to readData
+		*/
 		std::string file_;
 
-		// format and dimension only relevant when a single volume is read
+		/**
+		* Holds voxel format if single volume was read.
+		*/
 		const DataFormatBase* format_;
+
+		/**
+		* Holds dimension if single volume was read.
+		*/
 		size3_t dimension_;
 
-		// volumes from last readData call
+		/**
+		* Holds volumes from last call to readData
+		*/
 		SharedVolumeSequence volumes_;
 
+		/**
+		* Try to read all volumes contained in given path using standard DICOMDIR format
+		*/
 		static SharedVolumeSequence tryReadDICOMDIR(const std::string& fileOrDirectory);
 
+		/**
+		* Non-recursive version of tryReadDICOMsequenceRecursive
+		*/
 		static SharedVolumeSequence tryReadDICOMsequence(const std::string& sequenceDirectory);
 
+		/**
+		* Tries to read all volumes contained in given directory path, including subdirectories.
+		* Looks only at all the image files and ignores possibly existing DIOCMDIR.
+		*/
 		static SharedVolumeSequence tryReadDICOMsequenceRecursive(const std::string& directory);
 
-		static SharedVolume getVolumeDescription(DICOMDIRSeries series);
+		/**
+		* Creates inviwo volume handle from DICOM series on disk.
+		* Only metadata, no actual voxels are returned.
+		*/
+		static SharedVolume getVolumeDescription(DICOMDIRSeries& series);
 	};
 
 	
 	/**
 	 * \brief A loader for dcm files. Used to create VolumeRAM representations.
 	 * This class us used by the GdcmVolumeReader.
+	 *
+	 * Also when the VolumeSource processor calls volume->getRepresentation<VolumeRAM>() this class gets active
+	 * and loads the actual voxels into RAM.
+
+	 * Remember that when you want to read "values" (e.g. in Hounsfield units) from the volume you have to do that through the data mapper.
+	 * This is how it works assuming you have the handle to "volume" and the filled RAM representation "volumeRAM":
+	 * LogInfo("value=" << volume->dataMap_.mapFromDataToValue(volumeRAM->getAsDouble({ 119, 296, 0 })));
 	 */
 	class IVW_MODULE_DICOM_API GCDMVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
 	public:

@@ -64,9 +64,15 @@ namespace inviwo {
 		return new GdcmVolumeReader(*this);
 	}
 
-	SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries series) {
+
+	/**
+	* Creates inviwo volume handle from DICOM series on disk.
+	* Only metadata.
+	*/
+	SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
+
+		// Construct image stack, that is the volume, from DICOM series
 		std::vector<gdcm::Image> imageStack;
-		unsigned long totalByteCount = 0;
 		unsigned int maxWidth = 0, maxHeight = 0;
 		// Read images and extract relevant metadata
 		// possible optimization: dont read whole image (gdcm::ImageRegionReader)
@@ -86,24 +92,43 @@ namespace inviwo {
 			if (imageReader.Read()) {
 				gdcm::Image image = imageReader.GetImage();
 				imageStack.push_back(image);
-				totalByteCount += image.GetBufferLength();
 				const unsigned int* dimensions = image.GetDimensions();
 				maxWidth = std::max<unsigned int>(maxWidth, dimensions[0]);
 				maxHeight = std::max<unsigned int>(maxHeight, dimensions[1]);
 			}
 		}
+
+		// Query DICOM metadata
 		size_t channelCount = 0; // e.g. 3 for RGB
 		size_t channelBits = 0; // bit width of each channel
 		size_t usedChannelBits = 0; // bit width of data in each channel
 		unsigned short isSignedInt = 0;
 		gdcm::PixelFormat pixelformat;
+
+		// Origin can be used to transform the xy image grid into xyz world space
 		glm::dvec3 origin;
+
+		// Spacing between voxels in millimeters
+		// note that this must be reconstructed by GDCM with varying accuracy
+		// http://gdcm.sourceforge.net/wiki/index.php/Imager_Pixel_Spacing#ImagerPixelSpacing_to_PixelSpacing
 		glm::dvec3 spacing;
-		double rescaleIntercept, rescaleSlope; // https://blog.kitware.com/dicom-rescale-intercept-rescale-slope-and-itk/
+
+		// Rescale describes the conversion from disk data to hounsfield value
+		// https://blog.kitware.com/dicom-rescale-intercept-rescale-slope-and-itk/
+		double rescaleIntercept, rescaleSlope;
+
+		// Photometric interpretation string
+		// e.g. MONOCHROME1 where lowest value is white or MONOCHROME2 where lowest value is black
+		// https://dicom.innolitics.com/ciods/mr-image/image-pixel/00280004
+		std::string piString;
+
 		if (imageStack.size() > 0) {
 			// premise: all images have consistent values
+			//TODO order the stack spatially using dicom patient orientation and position (see below)
+			// 
 			gdcm::Image image = imageStack[0];
 			auto colorspace = image.GetPhotometricInterpretation();
+			colorspace.GetString();
 			channelCount = colorspace.GetSamplesPerPixel();
 			origin.x = image.GetOrigin(0);
 			origin.y = image.GetOrigin(1);
@@ -121,89 +146,59 @@ namespace inviwo {
 		else {
 			return 0;
 		}
-		series.totalByteCount = totalByteCount;
+
+		// Save info that helps to lazy load the volume later
+		series.slope = rescaleSlope;
+		series.intercept = rescaleIntercept;
+
 		const size3_t volumeDimensions(maxWidth, maxHeight, imageStack.size());
-		const auto voxelFormat = DataFormatBase::get(isSignedInt ? NumericType::SignedInteger : NumericType::UnsignedInteger, channelCount, channelBits);
+
+		const auto voxelFormat = DataFormatBase::get(
+			isSignedInt ? NumericType::SignedInteger : NumericType::UnsignedInteger, 
+			channelCount, 
+			channelBits);
+
 		const SharedVolume outputVolume = std::make_shared<Volume>(volumeDimensions, voxelFormat);
+
 		outputVolume->dataMap_.dataRange = isSignedInt ? 
 			dvec2 { -std::pow(2, usedChannelBits - 1), std::pow(2, usedChannelBits - 1) - 1 } :
 			dvec2 { 0, std::pow(2, usedChannelBits) - 1 };
-		std::cout << (outputVolume->dataMap_.dataRange[0] * rescaleSlope + rescaleIntercept) << std::endl; // for CT this should yield hounsfield range
-		std::cout << (outputVolume->dataMap_.dataRange[1] * rescaleSlope + rescaleIntercept) << std::endl;
+
+		// Convert disk data to hounsfield value using the DICOM rescale tags (this is only valid for CT scans)
+		const auto HU_min = outputVolume->dataMap_.dataRange[0] * rescaleSlope + rescaleIntercept;
+		const auto HU_max =  outputVolume->dataMap_.dataRange[1] * rescaleSlope + rescaleIntercept;
 		outputVolume->dataMap_.valueRange = series.modality == "CT" ?
-			dvec2 { -1000, 3000 } : // hounsfield range for human body
+			dvec2 { HU_min, HU_max } : // hounsfield range for human body
 			dvec2 { 0, 1000 }; // this may be MRI (http://mriquestions.com/what-is-the-b-value.html) or something different
+		outputVolume->dataMap_.valueUnit = series.modality == "CT" ?  "HU" : "unknown";
+
+		//TODO use spacing for basis and origin for world
+		outputVolume->setBasis(mat4{ 1 }); // ModelMatrix (data -> model)
+		outputVolume->setWorldMatrix(mat4{ 1 }); // WorldMatrx (model -> world)
 		return outputVolume;
 
-		// Find out and tell inviwo the pixel memory format
-
-		/* 
-		tried it manually but gdcm can give us pixelformat as string as well as min/max possible values
-		const DataFormatBase* format = inviwo::DataFormatBase::get(
-			(isSignedInt ? std::string("INT") : std::string("UINT")) + std::to_string(channelBits));
-		SharedVolume vol = std::make_shared<Volume>(dim, format);
-		if (isSignedInt) {
-			vol->dataMap_.dataRange = dvec2(-std::pow(2, channelBits - 1), std::pow(2, channelBits - 1) - 1);
-			vol->dataMap_.valueRange = dvec2(-std::pow(2, usedChannelBits - 1), std::pow(2, usedChannelBits - 1) - 1);
-		}
-		else {
-			vol->dataMap_.dataRange = dvec2(0, std::pow(2, channelBits) - 1);
-			vol->dataMap_.valueRange = dvec2(0, std::pow(2, usedChannelBits) - 1);
-		}
-		const inviwo::DataFormatBase* tmp = DataFormatBase::get(pixelformat.GetScalarTypeAsString());
-		if (!tmp) throw DataReaderException("Error: cant find corresponding voxel format in inviwo: " + std::string(pixelformat.GetScalarTypeAsString()));
-		std::size_t precision = (pixelformat.GetPixelSize() * 8) / channelCount;
-		auto format = DataFormatBase::get(tmp->getNumericType(), channelCount, precision);
-		if (!format) throw DataReaderException("Error: cant find corresponding voxel format in inviwo");
-		SharedVolume vol = std::make_shared<Volume>(dim, format);
-		//vol->setOffset(origin); // center
-		glm::mat3 basis(1.0f);
-		basis[0][0] = dim.x * spacing.x;
-		basis[1][1] = dim.y * spacing.y;
-		basis[2][2] = dim.z * spacing.z;
-		vol->setBasis(basis); // sets ModelMatrix too
-		vol->setWorldMatrix(mat4{1.0f});
-
-		// set correct value range
-		//vol->dataMap_.initWithFormat(format);
-		//vol->dataMap_.dataRange = dvec2(pixelformat.GetMin(), pixelformat.GetMax());
-		// Each voxel value in the dataset
-		// should be scaled as
-		//     y = slope * x + intercept
-		// where x = voxel value stored
-		// y = output units
-		auto maxValue = static_cast<double>(pixelformat.GetMax());
-		TODO get modality from dicom file MediaStorage
-		if (modality == "CT") {
-			// Computed Tomography
-			volume->dataMap_.valueUnit = "HU"; // Hounsfield Unit
-			if (format->getPrecision() == 16) {
-				// Only show a subset (12-bit) of the data range
-				// Should be valid for scans of the human body
-				// where the range is [-1000 3095]
-				volume->dataMap_.dataRange = { 0.0, 4095 };
-				// Linearly map data into [-1024 3071] HU, assuming intercept = -1024
-				maxValue = volume->dataMap_.dataRange.y;
-			}
-		}
-		vol->dataMap_.valueRange.x = rescaleSlope * static_cast<double>(pixelformat.GetMin()) + rescaleIntercept;
-		vol->dataMap_.valueRange.y = rescaleSlope * maxValue + rescaleIntercept;
-		vol->dataMap_.valueUnit = "arb. unit.";
-		return vol;
-		*/
 		// More info:
-		// [!] Window center and window width https://www.dabsoft.ch/dicom/3/C.11.2.1.2/
-		// Relevant image metainfo http://gdcm.sourceforge.net/html/gdcminfo.html
-		// Spacing between Slices https://dicom.innolitics.com/ciods/mr-image/mr-image/00180088
+
+		// Window center and window width https://www.dabsoft.ch/dicom/3/C.11.2.1.2/
 		// Slice Location https://dicom.innolitics.com/ciods/mr-image/image-plane/00201041
 		// Frame of Reference https://dicom.innolitics.com/ciods/segmentation/frame-of-reference/00200052
+
 		// Images with same series UID belong to same volume -> DiscriminateVolume.cxx example
 		// (https://stackoverflow.com/questions/18529967/how-to-decide-if-a-dicom-series-is-a-3d-volume-or-a-series-of-images)
-		// Maybe have to order images in volume based on position tag
-		// (https://stackoverflow.com/questions/40008507/how-to-spatially-order-files-in-a-dicom-data-sequence)
-		// DICOMDIR (series records) contains icon images: see tag (0088,0200)
+
+		// Ordering slices:
+		//   (0020,0037) ImageOrientationPatient (IOP) – rotation
+		//   (0020,0032) ImagePositionPatient (IPP) – translation
+
+		// gdcminfo command line utility 
+		// http://gdcm.sourceforge.net/html/gdcminfo.html
 	}
 
+
+	/**
+	* Tries to read all volumes contained in given directory path, including subdirectories.
+	* Looks only at all the image files and ignores possibly existing DIOCMDIR.
+	*/
 	SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequenceRecursive(const std::string& directory) {
 		SharedVolumeSequence outputVolumes = tryReadDICOMsequence(directory);
 		const auto childDirectories = filesystem::getDirectoryContents(directory, filesystem::ListMode::Directories);
@@ -216,6 +211,9 @@ namespace inviwo {
 		return outputVolumes;
 	}
 
+	/**
+	* Non-recursive version of tryReadDICOMsequenceRecursive
+	*/
 	SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequence(const std::string& sequenceDirectory) {
 		const auto files = filesystem::getDirectoryContents(sequenceDirectory);
 		SharedVolumeSequence outputVolumes = std::make_shared<VolumeSequence>();
@@ -281,6 +279,9 @@ namespace inviwo {
 		return outputVolumes;
 	}
 
+	/**
+	* Try to read all volumes contained in given path using standard DICOMDIR format
+	*/
 	SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOrDirectory) {
 		std::string dicomdirPath = fileOrDirectory;
 		std::ifstream dicomdirInputStream;
@@ -431,6 +432,9 @@ namespace inviwo {
 		return outputVolumes;
 	}
 
+	/**
+	* Entry point of the reader, called from VolumeSource processor
+	*/
 	SharedVolumeSequence GdcmVolumeReader::readData(const std::string& filePath) {
 		auto path = filePath;
 		if (!filesystem::fileExists(path)) {
@@ -497,6 +501,11 @@ namespace inviwo {
 		return outputVolumes;
 	}
 
+
+	/**
+	* Old function that tries to read single volume from single file.
+	* Apparently this can be applied to the "mevis" format.
+	*/
 	SharedVolume GdcmVolumeReader::generateVolume(const gdcm::Image &image, const gdcm::File &file) {
 		/*char* buf = new char[image.GetBufferLength()];
 		bool codecFound = image.GetBuffer(buf);
@@ -640,6 +649,10 @@ namespace inviwo {
 		return volume;
 	}
 
+	/**
+	* Reads DICOM volume data from disk to RAM
+	* @param series represents the volume as collection of image file paths
+	*/
 	void GCDMVolumeRAMLoader::getVolumeData(DICOMDIRSeries series, void* outData) {
 		unsigned long totalByteCount = 0;
 		for (DICOMDIRImage imgInfo : series.images) {
@@ -647,31 +660,28 @@ namespace inviwo {
 			std::ifstream imageInputStream;
 			imageInputStream.open(imgInfo.path, std::ios::binary);
 			if (!imageInputStream.is_open()) {
-				//LogInfo("Vol#" << i << " Img=" << imgInfo.path << " could not open file => skip");
-				continue;
+				throw DataReaderException(std::string("Could not open file: ") + imgInfo.path);
 			}
 			imageReader.SetStream(imageInputStream);
 			if (!imageReader.CanRead()) {
-				//LogInfo("Vol#" << i << " Img=" << imgInfo.path << " not a DICOM file => skip");
+				// Image is probably no DICOM file, its best to just skip it
 				continue;
 			}
 			if (imageReader.Read()) {
 				gdcm::Image image = imageReader.GetImage();
+				// Get RAW image (gdcm does the decoding for us)
 				if (!image.GetBuffer((char*)outData + totalByteCount)) {
-					throw new DataReaderException("Decode image failed");
+					throw DataReaderException(std::string("Could not decode image: ") + imgInfo.path);
 				}
 				totalByteCount += image.GetBufferLength();
 			}
 		}
-		//LogInfo("Starting to load image data into volume");
-		//std::shared_ptr<VolumeRAM> volRAM(vol->getEditableRepresentation<VolumeRAM>());
-		//char* rawVolData = new char[totalByteCount]();
-		//volRAM->setData(rawVolData, dim);
 	}
 
 	template <class T>
 	std::shared_ptr<VolumeRAM> GCDMVolumeRAMLoader::dispatch() const {
-		// typesafe allocation using format type
+		// T is the voxel memory format
+		// F is the corresponding datatype (i.e. the template arg with which the format was created)
 		typedef typename T::type F;
 		const std::size_t size = dimension_[0] * dimension_[1] * dimension_[2];
 		auto data = util::make_unique<F[]>(size);
@@ -687,10 +697,15 @@ namespace inviwo {
 			return repr;
 		}
 		else {
-			//char* data = new char[series_.totalByteCount]();
+
 			getVolumeData(series_, (void*)data.get());
+
 			auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimension_);
-			//repr->setData(data.get(), dimension_);
+
+			// Remember that when you want to read "values" (e.g. in Hounsfield units) from the volume you have to do that through the data mapper
+			// This is how it works assuming you have the handle to "volume" and the filled RAM representation "volumeRAM":
+			//LogInfo("value=" << volume->dataMap_.mapFromDataToValue(volumeRAM->getAsDouble({ 119, 296, 0 })));
+
 			data.release();
 			return repr;
 		}
