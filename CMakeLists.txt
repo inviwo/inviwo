@@ -161,6 +161,8 @@ add_subdirectory(ext/tclap)
 add_subdirectory(ext/tinydir)
 add_subdirectory(ext/half)
 add_subdirectory(ext/utf)
+add_subdirectory(ext/json)
+add_subdirectory(ext/fmt)
 
 option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)
@@ -210,6 +212,10 @@ ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
 #--------------------------------------------------------------------
 # Add modules
 ivw_register_modules(all_modules)
+
+#--------------------------------------------------------------------
+# Add Inviwo meta
+add_subdirectory(tools/meta)
 
 #--------------------------------------------------------------------
 # Add Qt

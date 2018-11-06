@@ -45,7 +45,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${MOC_FILES}
 )
-ivw_group("Header Files" ${HEADER_FILES})
+
+ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/editor/ ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files

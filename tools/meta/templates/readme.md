@@ -1,0 +1,1 @@
+Description of the {{ module/name }} module

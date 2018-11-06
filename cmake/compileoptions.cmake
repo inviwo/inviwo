@@ -79,18 +79,20 @@ function(ivw_define_standard_properties)
 
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             #https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_NON_VIRTUAL_DESTRUCTOR YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_FUNCTION YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_VARIABLE YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_RETURN_TYPE YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_PEDANTIC YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SHADOW YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
-            set_property(TARGET ${target} PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
+            set_target_properties(${target} PROPERTIES 
+                XCODE_ATTRIBUTE_GCC_WARN_NON_VIRTUAL_DESTRUCTOR YES
+                XCODE_ATTRIBUTE_GCC_WARN_UNUSED_FUNCTION YES
+                XCODE_ATTRIBUTE_GCC_WARN_UNUSED_VARIABLE YES
+                XCODE_ATTRIBUTE_GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS YES
+                XCODE_ATTRIBUTE_GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS YES
+                XCODE_ATTRIBUTE_GCC_WARN_ABOUT_RETURN_TYPE YES
+                XCODE_ATTRIBUTE_GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS YES
+                XCODE_ATTRIBUTE_GCC_WARN_PEDANTIC YES
+                XCODE_ATTRIBUTE_GCC_WARN_SHADOW YES
+                XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES
+                XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES
+                XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code"
+            )
          endif()
     endforeach()
 endfunction()
@@ -103,30 +105,20 @@ macro(ivw_define_standard_definitions project_name target)
     ivw_to_macro_name(u_project_name ${project_name})
     set_target_properties(${target} PROPERTIES DEFINE_SYMBOL ${u_project_name}_EXPORTS)
 
-    if(IVW_PROFILING)
-        target_compile_definitions(${target} PRIVATE IVW_PROFILING)
-    endif()
-
-    if(IVW_FORCE_ASSERTIONS)
-        target_compile_definitions(${target} PRIVATE IVW_FORCE_ASSERTIONS)
-    endif()
-    
-    if(BUILD_SHARED_LIBS)
-        target_compile_definitions(${target} PRIVATE INVIWO_ALL_DYN_LINK)
-    endif()
-
+    target_compile_definitions(${target} PRIVATE 
+        $<$<BOOL:${BUILD_SHARED_LIBS}>:INVIWO_ALL_DYN_LINK>
+        $<$<BOOL:${IVW_PROFILING}>:IVW_PROFILING>
+        $<$<BOOL:${IVW_FORCE_ASSERTIONS}>:IVW_FORCE_ASSERTIONS>
+    )
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        # Large memory support
-        if(CMAKE_SIZEOF_VOID_P MATCHES 4)
-            set_property(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " /LARGEADDRESSAWARE") 
-        endif()
-        target_compile_definitions(${target} PRIVATE _CRT_SECURE_NO_WARNINGS 
-                                                     _CRT_SECURE_NO_DEPRECATE
-                                                     _SCL_SECURE_NO_WARNINGS
-                                                     NOMINMAX
-                                                     WIN32_LEAN_AND_MEAN
-                                                     UNICODE
-                                                     _UNICODE
+        target_compile_definitions(${target} PRIVATE 
+            _CRT_SECURE_NO_WARNINGS
+            _CRT_SECURE_NO_DEPRECATE
+            _SCL_SECURE_NO_WARNINGS
+            NOMINMAX
+            WIN32_LEAN_AND_MEAN
+            UNICODE
+            _UNICODE
         )
     else()
         target_compile_definitions(${target} PRIVATE HAVE_CONFIG_H)

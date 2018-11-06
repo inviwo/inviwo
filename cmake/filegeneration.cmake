@@ -87,7 +87,7 @@ function(ivw_private_generate_module_registration_file mod)
         "        ${module_protected} // protected"
     )
 
-    join(";" "" fuction_args ${fuction_args})
+    ivw_join(";" "" fuction_args ${fuction_args})
     string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" fuction_args "${fuction_args}")
     string(REPLACE "__SEMICOLON__" ";" fuction_args "${fuction_args}")
 
@@ -141,8 +141,8 @@ function(ivw_private_generate_module_registration_files modules_var)
         ivw_private_generate_module_registration_file(${mod})
     endforeach()
 
-    join(";" "" static_headers ${static_headers})
-    join(";" "" static_functions ${static_functions})
+    ivw_join(";" "" static_headers ${static_headers})
+    ivw_join(";" "" static_functions ${static_functions})
     string(REPLACE "__LINEBREAK__" "\\n\"\n        \"" static_functions "${static_functions}")
     string(REPLACE "__SEMICOLON__" ";" static_functions "${static_functions}")
 
