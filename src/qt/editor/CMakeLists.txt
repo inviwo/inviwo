@@ -42,8 +42,10 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorstatusgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${MOC_FILES}
+    $<$<TARGET_EXISTS:inviwo-meta>:${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmetamenu.h>
 )
 
 ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/editor/ ${HEADER_FILES})
@@ -58,6 +60,7 @@ set(SOURCE_FILES
     fileassociations.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
+    inviwoeditmenu.cpp
     inviwoeditmenu.cpp
     inviwomainwindow.cpp
     linkdialog/linkdialog.cpp
@@ -80,8 +83,11 @@ set(SOURCE_FILES
     processorstatusgraphicsitem.cpp
     resourcemanager/resourcemanagerdockwidget.cpp
     settingswidget.cpp
+    toolsmenu.cpp
     undomanager.cpp
+    $<$<TARGET_EXISTS:inviwo-meta>:toolsmetamenu.cpp>
 )
+
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
@@ -103,7 +109,9 @@ target_link_libraries(inviwo-qteditor PUBLIC
     Qt5::Gui 
     Qt5::Widgets 
     Qt5::Help
+    $<$<TARGET_EXISTS:inviwo::meta>:inviwo::meta>
 )
+target_compile_definitions(inviwo-qteditor PRIVATE $<$<TARGET_EXISTS:inviwo-meta>:IVW_INVIWO_META>)
 
 #--------------------------------------------------------------------
 # Define defintions

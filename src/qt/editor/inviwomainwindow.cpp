@@ -43,6 +43,7 @@
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/inviwoaboutwindow.h>
+#include <inviwo/qt/editor/toolsmenu.h>
 #include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>
@@ -96,6 +97,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
     , editMenu_{new InviwoEditMenu(this)}  // needed in ConsoleWidget
+    , toolsMenu_{new ToolsMenu(this)}
     , consoleWidget_{[this]() {
         // initialize console widget first to receive log messages
         auto cw = std::make_shared<ConsoleWidget>(this);
@@ -285,6 +287,7 @@ void InviwoMainWindow::addActions() {
     menu->addMenu(editMenu_);
     auto viewMenuItem = menu->addMenu(tr("&View"));
     auto networkMenuItem = menu->addMenu(tr("&Network"));
+    menu->addMenu(toolsMenu_);
     auto helpMenuItem = menu->addMenu(tr("&Help"));
 
     auto workspaceToolBar = addToolBar("File");
@@ -1105,6 +1108,7 @@ InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_;
 InviwoApplicationQt* InviwoMainWindow::getInviwoApplicationQt() const { return app_; }
 
 InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const { return editMenu_; }
+ToolsMenu* InviwoMainWindow::getToolsMenu() const { return toolsMenu_; }
 
 void InviwoMainWindow::dragEnterEvent(QDragEnterEvent* event) { dragMoveEvent(event); }
 
