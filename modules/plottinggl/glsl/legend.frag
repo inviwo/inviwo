@@ -75,8 +75,8 @@ void main() {
     // blend in the checkerboard as background to the TF depending on its opacity
     vec4 finalColor = over(checkerBoard(centeredPos), colorTF);
 
-    // set border flag iff the fragment coord is within the border
-    bool border = borderWidth > 0 && any(greaterThan(abs(centeredPos), outputDim * 0.5));
+    // set border flag if the fragment coord is within the border
+    float border = borderWidth > 0 && any(greaterThan(abs(centeredPos), outputDim * 0.5)) ? 1.f : 0.f;
     FragData0 =  mix(finalColor, color, border);
 
     // no depth input, reset depth to largest value
