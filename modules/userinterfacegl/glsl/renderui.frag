@@ -33,7 +33,7 @@ uniform sampler2DArray arrayTexSampler;
 // texture indices for normal, pressed, checked, 
 // halo normal, halo pressed, halo checked
 // border normal, border pressed, border checked
-uniform int arrayTexMap[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uniform int arrayTexMap[9] = int[]( 0, 0, 0, 0, 0, 0, 0, 0, 0 );
 
 uniform vec4 uiColor = vec4(0.0, 0.0, 0.0, 1.0);
 uniform vec4 uiBorderColor = vec4(0.0, 0.0, 0.0, 1.0);

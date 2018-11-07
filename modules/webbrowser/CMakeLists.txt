@@ -213,6 +213,8 @@ ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
 
 if (OS_MACOSX)
 	target_link_libraries(inviwo-module-webbrowser PUBLIC libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+    target_link_libraries(${CEF_HELPER_TARGET} PRIVATE libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+
     # Output paths for the app bundles: bin/configuration, for example bin/Debug.
     # Note: This is hardcoded to inviwo app.
     # Other apps need to copy the helper and the cef framework to its framework dir,
