@@ -94,9 +94,13 @@ void DataFrameExporter::exportNow() {
         LogWarn("File already exists: " << exportFile_);
         return;
     }
-    if (exportFile_.getSelectedExtension() == exportFile_.getNameFilters()[0]) {
+    // convert the fileEnding to all lower case, for string comparison a few lines down.
+    std::string fileEnding = filesystem::getFileExtension(exportFile_.get());
+    std::transform(fileEnding.begin(), fileEnding.end(), fileEnding.begin(), ::tolower);
+
+    if (fileEnding == "csv") {
         exportAsCSV(separateVectorTypesIntoColumns_);
-    } else if (exportFile_.getSelectedExtension() == exportFile_.getNameFilters()[1]) {
+    } else if (fileEnding == "xml") {
         exportAsXML();
     } else {
         LogWarn("Unsupported file type: " << exportFile_);
