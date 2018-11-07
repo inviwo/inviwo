@@ -169,13 +169,13 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
             ss << "    vec4 " << vol << ";\n";
             ss << "    if (all(greaterThanEqual(" << coord << ", vec3(0))) &&"
                << " all(lessThanEqual(" << coord << ", vec3(1)))) {\n";
-            ss << "        " << vol << " = getNormalizedVoxel(" << v << ", " << vp << ", " << coord
+            ss << "        " << vol << " = getVoxel(" << v << ", " << vp << ", " << coord
                << ");\n";
             ss << "    } else {\n";
             ss << "        " << vol << " = borderValue;\n";
             ss << "    }\n\n";
         } else {
-            ss << "    vec4 " << vol << " = getNormalizedVoxel(" << v << ", " << vp
+            ss << "    vec4 " << vol << " = getVoxel(" << v << ", " << vp
                << ", texCoord_.xyz);\n";
         }
     }
