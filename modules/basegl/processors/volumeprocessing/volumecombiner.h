@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
@@ -61,6 +62,7 @@ namespace inviwo {
 * 
 *
 * ### Properties
+*   * __Normalization mode__ Determine how to normalize the incoming volumes.
 *   * __Volume 1 Scaling__ Scaling factor for volume 1.
 *   * __Volume 2 Scaling__ Scaling factor for volume 2.
 *   * __useWorldSpace__ Retrieve data in world space corrdinate system. 
@@ -82,6 +84,9 @@ public:
     virtual void process() override;
 
 private:
+
+    enum class NormalizationMode { Normalized, SignedNormalized, NotNormalized };
+
     std::string buildEquation() const;
     void buildShader(const std::string& eqn);
     void updateProperties();
@@ -91,6 +96,7 @@ private:
     std::shared_ptr<Volume> volume_;
     StringProperty description_;
     StringProperty eqn_;
+    TemplateOptionProperty<NormalizationMode> normalizationMode_;
     CompositeProperty scales_;
     ButtonProperty addScale_;
     ButtonProperty removeScale_;
