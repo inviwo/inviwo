@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FILEEXTENSION_H
@@ -44,24 +44,35 @@ public:
     FileExtension(std::string extension, std::string description);
     virtual ~FileExtension() = default;
 
-    /** 
+    /**
      * \brief extracts a FileExtension object from a string. This function assumes
      * that the extension is given within the right most parentheses.
-     * 
+     *
      * @param str Input string  formed like "Text files (*.txt)".
      * @return FileExtension object created from the information given in the input string.
      */
-    static FileExtension createFileExtensionFromString(const std::string &str);
+    static FileExtension createFileExtensionFromString(const std::string& str);
     std::string toString() const;
 
     bool empty() const;
+    bool matchesAll() const;
+
+    /**
+     * \brief checks whether the given string is matched by this FileExtension
+     * Extensions are matched case insensitive while an empty FileExtension, i.e. '*', will match
+     * all strings.
+     *
+     * @param str   string to be tested
+     * @return true if the string is matched by the FileExtension
+     */
+    bool matches(const std::string& str) const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
     static FileExtension all();
 
-    std::string extension_; ///< File extension in lower case letters.
+    std::string extension_;  ///< File extension in lower case letters.
     std::string description_;
 };
 
@@ -69,10 +80,13 @@ IVW_CORE_API bool operator==(const FileExtension&, const FileExtension&);
 IVW_CORE_API bool operator!=(const FileExtension&, const FileExtension&);
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, const FileExtension& ext) {
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const FileExtension& ext) {
+    if (ext.extension_.empty()) {
+        return ss;
+    }
     ss << ext.description_ << " ";
-    // consider the special case when the extension is empty, i.e. the file selector is '*'
-    if (ext.extension_.empty() || ext.extension_ == "*") {
+    if (ext.extension_ == "*") {
         ss << "(*)";
     } else {
         ss << "(*." << ext.extension_ << ")";
@@ -80,20 +94,18 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-} // namespace
+}  // namespace inviwo
 
 namespace std {
-    template<>
-    struct hash<inviwo::FileExtension>
-    {
-        size_t operator()(const inviwo::FileExtension& f) const {
-            size_t h = 0;
-            inviwo::util::hash_combine(h, f.extension_);
-            inviwo::util::hash_combine(h, f.description_);
-            return h;
-        }
-    };
-}
+template <>
+struct hash<inviwo::FileExtension> {
+    size_t operator()(const inviwo::FileExtension& f) const {
+        size_t h = 0;
+        inviwo::util::hash_combine(h, f.extension_);
+        inviwo::util::hash_combine(h, f.description_);
+        return h;
+    }
+};
+}  // namespace std
 
-#endif // IVW_FILEEXTENSION_H
-
+#endif  // IVW_FILEEXTENSION_H
