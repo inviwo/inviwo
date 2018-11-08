@@ -60,6 +60,12 @@ VolumeCombiner::VolumeCombiner()
     , outport_("outport")
     , description_("description", "Volumes")
     , eqn_("eqn", "Equation", "v1")
+    , normalizationMode_(
+          "normalizationMode", "Normalization Mode",
+          {{"normalized", "Normalize volumes", NormalizationMode::Normalized},
+           {"signedNormalized", "Normalize volumes with sign", NormalizationMode::SignedNormalized},
+           {"noNormalization", "No normalization", NormalizationMode::NotNormalized}},
+          0)
     , scales_("scales", "Scale factors")
     , addScale_("addScale", "Add Scale Factor")
     , removeScale_("removeScale", "Remove Scale Factor")
@@ -82,12 +88,15 @@ VolumeCombiner::VolumeCombiner()
     addPort(outport_);
     addProperty(description_);
     addProperty(eqn_);
+    addProperty(normalizationMode_);
     addProperty(addScale_);
     addProperty(removeScale_);
     addProperty(scales_);
     addProperty(useWorldSpace_);
 
     useWorldSpace_.addProperty(borderValue_);
+
+    normalizationMode_.onChange([&]() { dirty_ = true; });
 
     addScale_.onChange([&]() {
         size_t i = scales_.size();
@@ -157,6 +166,16 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 
     ss << "\nvoid main() {\n";
 
+    // Determine which normalization mode should be used
+    std::string getVoxel;
+    auto mode = normalizationMode_.get();
+    if (mode == NormalizationMode::Normalized)
+        getVoxel = "getNormalizedVoxel";
+    else if (mode == NormalizationMode::SignedNormalized)
+        getVoxel = "getSignNormalizedVoxel";
+    else
+        getVoxel = "getVoxel";
+
     for (auto&& i : util::enumerate(inport_)) {
         const std::string vol = "vol" + toString(i.first());
         const std::string v = "volume" + idToString(i.first());
@@ -169,13 +188,13 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
             ss << "    vec4 " << vol << ";\n";
             ss << "    if (all(greaterThanEqual(" << coord << ", vec3(0))) &&"
                << " all(lessThanEqual(" << coord << ", vec3(1)))) {\n";
-            ss << "        " << vol << " = getNormalizedVoxel(" << v << ", " << vp << ", " << coord
+            ss << "        " << vol << " = " << getVoxel << "(" << v << ", " << vp << ", " << coord
                << ");\n";
             ss << "    } else {\n";
             ss << "        " << vol << " = borderValue;\n";
             ss << "    }\n\n";
         } else {
-            ss << "    vec4 " << vol << " = getNormalizedVoxel(" << v << ", " << vp
+            ss << "    vec4 " << vol << " = " << getVoxel << "(" << v << ", " << vp
                << ", texCoord_.xyz);\n";
         }
     }
@@ -196,7 +215,6 @@ void VolumeCombiner::updateProperties() {
     }
     description_.set(desc.str());
 }
-
 
 void VolumeCombiner::process() {
     if (inport_.isChanged()) {
