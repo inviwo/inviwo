@@ -117,6 +117,8 @@ namespace inviwo {
 		// https://blog.kitware.com/dicom-rescale-intercept-rescale-slope-and-itk/
 		double rescaleIntercept, rescaleSlope;
 
+        double windowLevel, windowWidth;
+
 		// Photometric interpretation string
 		// e.g. MONOCHROME1 where lowest value is white or MONOCHROME2 where lowest value is black
 		// https://dicom.innolitics.com/ciods/mr-image/image-pixel/00280004
@@ -142,6 +144,11 @@ namespace inviwo {
 			channelBits = image.GetPixelFormat().GetBitsAllocated();
 			usedChannelBits = image.GetPixelFormat().GetBitsStored();
 			isSignedInt = image.GetPixelFormat().GetPixelRepresentation();
+
+            // TODO: fill these
+            // https://sourceforge.net/p/gdcm/mailman/message/26943067/
+            windowLevel = 0.0;
+            windowWidth = 0.0;
 		}
 		else {
 			return 0;
@@ -164,17 +171,28 @@ namespace inviwo {
 			dvec2 { -std::pow(2, usedChannelBits - 1), std::pow(2, usedChannelBits - 1) - 1 } :
 			dvec2 { 0, std::pow(2, usedChannelBits) - 1 };
 
-		// Convert disk data to hounsfield value using the DICOM rescale tags (this is only valid for CT scans)
-		const auto HU_min = outputVolume->dataMap_.dataRange[0] * rescaleSlope + rescaleIntercept;
-		const auto HU_max =  outputVolume->dataMap_.dataRange[1] * rescaleSlope + rescaleIntercept;
-		outputVolume->dataMap_.valueRange = series.modality == "CT" ?
-			dvec2 { HU_min, HU_max } : // hounsfield range for human body
-			dvec2 { 0, 1000 }; // this may be MRI (http://mriquestions.com/what-is-the-b-value.html) or something different
-		outputVolume->dataMap_.valueUnit = series.modality == "CT" ?  "HU" : "unknown";
+        // Convert disk data to hounsfield value using the DICOM rescale tags (this is only
+        // valid for CT scans)
+        outputVolume->dataMap_.valueRange =
+            outputVolume->dataMap_.dataRange * rescaleSlope + rescaleIntercept;
+
+        outputVolume->dataMap_.rescaleSlope = rescaleSlope;
+        outputVolume->dataMap_.rescaleIntercept = rescaleIntercept;
+        // https://www.dabsoft.ch/dicom/3/C.11.2.1.2/
+        // https://www.radiantviewer.com/dicom-viewer-manual/change_brightness_contrast.htm
+        outputVolume->dataMap_.windowLevel = windowLevel;
+        outputVolume->dataMap_.windowWidth = windowWidth;
+
+        if (series.modality == "CT") {
+            outputVolume->dataMap_.valueUnit = "HU";
+        } else {
+            outputVolume->dataMap_.valueUnit = "unknown";
+        }
 
 		//TODO use spacing for basis and origin for world
-		outputVolume->setBasis(mat4{ 1 }); // ModelMatrix (data -> model)
+        outputVolume->setBasis(glm::scale(1.0f / vec3(spacing)));  // ModelMatrix (data -> model)
 		outputVolume->setWorldMatrix(mat4{ 1 }); // WorldMatrx (model -> world)
+
 		return outputVolume;
 
 		// More info:
