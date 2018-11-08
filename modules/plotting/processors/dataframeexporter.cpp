@@ -96,11 +96,10 @@ void DataFrameExporter::exportNow() {
     }
     // convert the fileEnding to all lower case, for string comparison a few lines down.
     std::string fileEnding = filesystem::getFileExtension(exportFile_.get());
-    std::transform(fileEnding.begin(), fileEnding.end(), fileEnding.begin(), ::tolower);
-
-    if (fileEnding == "csv") {
+    
+    if (iCaseCmp(fileEnding, "csv")) {
         exportAsCSV(separateVectorTypesIntoColumns_);
-    } else if (fileEnding == "xml") {
+    } else if (iCaseCmp(fileEnding, "xml")) {
         exportAsXML();
     } else {
         LogWarn("Unsupported file type: " << exportFile_);
