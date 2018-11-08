@@ -101,7 +101,7 @@ DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::st
 
     auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
-    file_.addNameFilter(FileExtension("*", "All Files"));
+    file_.addNameFilter(FileExtension::all());
     file_.addNameFilters(rf->template getExtensionsForType<DataType>());
 }
 
@@ -142,7 +142,7 @@ void DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
-    file_.addNameFilter(FileExtension("*", "All Files"));
+    file_.addNameFilter(FileExtension::all());
     file_.addNameFilters(rf->template getExtensionsForType<DataType>());
     deserialized_ = true;
 }

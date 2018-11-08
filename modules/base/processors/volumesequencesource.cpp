@@ -75,9 +75,9 @@ VolumeSequenceSource::VolumeSequenceSource()
     addProperty(information_);
     addProperty(basis_);
 
-	// It does not make sense to change these for an entire sequence
-	information_.setReadOnly(true);
-	basis_.setReadOnly(true);
+    // It does not make sense to change these for an entire sequence
+    information_.setReadOnly(true);
+    basis_.setReadOnly(true);
 
     auto updateVisible = [&]() {
         file_.setVisible(inputType_.get() == InputType::SingleFile);
@@ -172,7 +172,7 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
 void VolumeSequenceSource::addFileNameFilters() {
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     file_.clearNameFilters();
-    file_.addNameFilter(FileExtension("*", "All Files"));
+    file_.addNameFilter(FileExtension::all());
     file_.addNameFilters(rf->getExtensionsForType<VolumeSequence>());
 }
 
@@ -191,9 +191,9 @@ void VolumeSequenceSource::process() {
 void VolumeSequenceSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     addFileNameFilters();
-	// It does not make sense to change these for an entire sequence
-	information_.setReadOnly(true);
-	basis_.setReadOnly(true);
+    // It does not make sense to change these for an entire sequence
+    information_.setReadOnly(true);
+    basis_.setReadOnly(true);
     deserialized_ = true;
 }
 }  // namespace inviwo

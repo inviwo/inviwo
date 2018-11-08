@@ -58,7 +58,7 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
 
     auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
-    file_.addNameFilter(FileExtension("*", "All Files"));
+    file_.addNameFilter(FileExtension::all());
     file_.addNameFilters(rf->getExtensionsForType<Layer>());
 
     addProperty(file_);
@@ -106,7 +106,7 @@ void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
-    file_.addNameFilter(FileExtension("*", "All Files"));
+    file_.addNameFilter(FileExtension::all());
     file_.addNameFilters(rf->getExtensionsForType<Layer>());
 }
 
