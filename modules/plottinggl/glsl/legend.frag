@@ -70,14 +70,14 @@ void main() {
 
     // increase alpha to allow better visibility by 1 - (1 - a)^4 and then add "backgroundAlpha" to
     // set alpha to 1 if no background is wanted
-    colorTF.a = mix(1.0f - pow(1.0f - colorTF.a, 4.0f), 1.0, float(backgroundStyle));
+    colorTF.a = mix(1.0 - pow(1.0 - colorTF.a, 4.0), 1.0, float(backgroundStyle));
 
     // blend in the checkerboard as background to the TF depending on its opacity
     vec4 finalColor = over(checkerBoard(centeredPos), colorTF);
 
     // set border flag if the fragment coord is within the border
-    float border = borderWidth > 0 && any(greaterThan(abs(centeredPos), outputDim * 0.5)) ? 1.f : 0.f;
-    FragData0 =  mix(finalColor, color, border);
+    bool border = borderWidth > 0 && any(greaterThan(abs(centeredPos), outputDim * 0.5));
+    FragData0 =  mix(finalColor, color, bvec4(border));
 
     // no depth input, reset depth to largest value
     gl_FragDepth = 1.0;
