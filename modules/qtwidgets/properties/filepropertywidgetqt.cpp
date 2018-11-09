@@ -82,22 +82,6 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
         connect(lineEdit_, &FilePathLineEditQt::editingFinished, this, [this]() {
             // editing is done, sync property with contents
             property_->set(lineEdit_->getPath());
-            // figure out best matching extension
-            FileExtension ext;
-            FileExtension matchAll;
-            for (const auto& filter : property_->getNameFilters()) {
-                if (filter.matchesAll()) {
-                    matchAll = filter;
-                } else if (filter.matches(*property_)) {
-                    ext = filter;
-                    break;
-                }
-            }
-            if (ext.empty() && !matchAll.empty()) {
-                property_->setSelectedExtension(matchAll);
-            } else {
-                property_->setSelectedExtension(ext);
-            }
         });
         auto sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);

@@ -83,6 +83,28 @@ void MultiFileProperty::set(const std::vector<std::string>& values) {
         tmp.push_back(filesystem::cleanupPath(elem));
     }
     TemplateProperty<std::vector<std::string> >::set(tmp);
+
+    // figure out best matching extension based on first filename
+    const auto& files = get();
+    if (files.empty()) {
+        setSelectedExtension(FileExtension());
+    } else {
+        FileExtension ext;
+        FileExtension matchAll;
+        for (const auto& filter : getNameFilters()) {
+            if (filter.matchesAll()) {
+                matchAll = filter;
+            } else if (filter.matches(files.front())) {
+                ext = filter;
+                break;
+            }
+        }
+        if (ext.empty() && !matchAll.empty()) {
+            setSelectedExtension(matchAll);
+        } else {
+            setSelectedExtension(ext);
+        }
+    }
 }
 
 void MultiFileProperty::set(const Property* property) {
@@ -93,7 +115,7 @@ void MultiFileProperty::serialize(Serializer& s) const {
     /*
     We always use absolute paths inside of inviwo but serialize
     several version to have a higher success rate when moving stuff around.
-    
+
     Saved path versions:
      1) Absolute (equivalent to this->get())
      2) Relative workspace

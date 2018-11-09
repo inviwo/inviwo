@@ -55,6 +55,12 @@ public:
     std::string toString() const;
 
     bool empty() const;
+    /**
+     * \brief returns true, if the current extension matches all files, i.e. it is equal to '*'.
+     * Note: the description can be different from all().
+     *
+     * @return true if extension_ == '*'
+     */
     bool matchesAll() const;
 
     /**
