@@ -79,27 +79,6 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     connect(lineEdit_, &FilePathLineEditQt::editingFinished, [&]() {
         // editing is done, sync property with contents
         property_->set(lineEdit_->getPath());
-        // figure out best matching extension based on first filename
-        const auto& files = property_->get();
-        if (files.empty()) {
-            property_->setSelectedExtension(FileExtension());
-        } else {
-            FileExtension ext;
-            FileExtension matchAll;
-            for (const auto& filter : property_->getNameFilters()) {
-                if (filter.matchesAll()) {
-                    matchAll = filter;
-                } else if (filter.matches(files.front())) {
-                    ext = filter;
-                    break;
-                }
-            }
-            if (ext.empty() && !matchAll.empty()) {
-                property_->setSelectedExtension(matchAll);
-            } else {
-                property_->setSelectedExtension(ext);
-            }
-        }
     });
 #if defined(IVW_DEBUG)
     QObject::connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
