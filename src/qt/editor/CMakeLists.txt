@@ -45,8 +45,10 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${MOC_FILES}
-    $<$<TARGET_EXISTS:inviwo-meta>:${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmetamenu.h>
 )
+if(TARGET inviwo::meta)
+    list(APPEND HEADER_FILES ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmetamenu.h)
+endif()
 
 ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/editor/ ${HEADER_FILES})
 
@@ -85,8 +87,10 @@ set(SOURCE_FILES
     settingswidget.cpp
     toolsmenu.cpp
     undomanager.cpp
-    $<$<TARGET_EXISTS:inviwo-meta>:toolsmetamenu.cpp>
 )
+if(TARGET inviwo::meta)
+    list(APPEND SOURCE_FILES toolsmetamenu.cpp)
+endif()
 
 ivw_group("Source Files" ${SOURCE_FILES})
 
