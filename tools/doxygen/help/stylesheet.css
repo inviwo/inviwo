@@ -93,8 +93,6 @@ div.PointCloudPort {
 }
 
 pre.fragment {
-	/*border: 1px solid #CCCCCC;*/
-	/*background-color: #f5f5f5;*/
 	padding: 4px 6px;
 	margin: 4px 8px 4px 10px;
 	overflow: auto;
