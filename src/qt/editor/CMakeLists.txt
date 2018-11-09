@@ -109,9 +109,11 @@ target_link_libraries(inviwo-qteditor PUBLIC
     Qt5::Gui 
     Qt5::Widgets 
     Qt5::Help
-    $<$<TARGET_EXISTS:inviwo::meta>:inviwo::meta>
 )
-target_compile_definitions(inviwo-qteditor PRIVATE $<$<TARGET_EXISTS:inviwo-meta>:IVW_INVIWO_META>)
+if(TARGET inviwo::meta)
+    target_link_libraries(inviwo-qteditor PUBLIC inviwo::meta)
+    target_compile_definitions(inviwo-qteditor PRIVATE IVW_INVIWO_META)
+endif()
 
 #--------------------------------------------------------------------
 # Define defintions
