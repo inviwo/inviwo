@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 #include <iostream>
 #include <string>
 
-#include <inviwo/meta/cmake/grammer.hpp>
+#include <inviwo/meta/cmake/grammar.hpp>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,9 +50,9 @@ bool test(const std::string& input) {
                p::string_input<>(input, ""), id) != nullptr;
 }
 
-TEST(CMakeGrammer, empty) { EXPECT_TRUE(p::parse<exact<>>(p::string_input<>("", ""))); }
+TEST(CMakeGrammar, empty) { EXPECT_TRUE(p::parse<exact<>>(p::string_input<>("", ""))); }
 
-TEST(CMakeGrammer, space) {
+TEST(CMakeGrammar, space) {
     EXPECT_TRUE(test<cmake::space>(" "));
     EXPECT_FALSE(test<cmake::space>(" a"));
     EXPECT_TRUE(test<cmake::space>("    "));
@@ -60,11 +60,11 @@ TEST(CMakeGrammer, space) {
     EXPECT_FALSE(test<cmake::space>("_"));
 }
 
-TEST(CMakeGrammer, line_comment) {
+TEST(CMakeGrammar, line_comment) {
     EXPECT_TRUE(test<cmake::line_comment>("#"));
     EXPECT_TRUE(test<cmake::line_comment>("# str"));
 }
-TEST(CMakeGrammer, line_ending) {
+TEST(CMakeGrammar, line_ending) {
     EXPECT_TRUE(test<cmake::line_ending>("\n"));
     EXPECT_FALSE(test<cmake::line_ending>("a\n"));
     EXPECT_FALSE(test<cmake::line_ending>("\na"));
@@ -73,18 +73,18 @@ TEST(CMakeGrammer, line_ending) {
     EXPECT_TRUE(test<cmake::line_ending>("# comment\n"));
 }
 
-TEST(CMakeGrammer, identifier) {
+TEST(CMakeGrammar, identifier) {
     EXPECT_TRUE(test<cmake::identifier>("set"));
     EXPECT_FALSE(test<cmake::identifier>("5set"));
 }
 
-TEST(CMakeGrammer, bracket) { EXPECT_TRUE(test<cmake::bracket_argument>("[[test]]")); }
+TEST(CMakeGrammar, bracket) { EXPECT_TRUE(test<cmake::bracket_argument>("[[test]]")); }
 
-TEST(CMakeGrammer, unquoted_argument) {
+TEST(CMakeGrammar, unquoted_argument) {
     EXPECT_TRUE(test<cmake::unquoted_argument>("arg"));
     EXPECT_FALSE(test<cmake::unquoted_argument>("\targ"));
 }
-TEST(CMakeGrammer, quoted_element) {
+TEST(CMakeGrammar, quoted_element) {
     EXPECT_TRUE(test<cmake::quoted_element>("a"));
     EXPECT_TRUE(test<cmake::quoted_element>(" "));
     EXPECT_TRUE(test<cmake::quoted_element>("\t"));
@@ -92,25 +92,25 @@ TEST(CMakeGrammer, quoted_element) {
     EXPECT_FALSE(test<cmake::quoted_element>("\""));
     EXPECT_FALSE(test<cmake::quoted_element>("\\"));
 }
-TEST(CMakeGrammer, quoted_argument) {
+TEST(CMakeGrammar, quoted_argument) {
     EXPECT_TRUE(test<cmake::quoted_argument>(R"("a arg \t")"));
     EXPECT_FALSE(test<cmake::quoted_argument>(R"("a arg" \t")"));
 }
 
-TEST(CMakeGrammer, argument) {
+TEST(CMakeGrammar, argument) {
     EXPECT_TRUE(test<cmake::arguments>("arg"));
     EXPECT_TRUE(test<cmake::arguments>("\"arg\""));
 }
 
-TEST(CMakeGrammer, arguments) { EXPECT_TRUE(test<cmake::arguments>("arg1 \"arg2\" ")); }
+TEST(CMakeGrammar, arguments) { EXPECT_TRUE(test<cmake::arguments>("arg1 \"arg2\" ")); }
 
-TEST(CMakeGrammer, command_invocation) {
+TEST(CMakeGrammar, command_invocation) {
     EXPECT_TRUE(test<cmake::command>("set()"));
     EXPECT_TRUE(test<cmake::command>("set(arg)"));
     EXPECT_TRUE(test<cmake::command>("set(arg1 \"arg2\")"));
 }
 
-TEST(CMakeGrammer, file_element) {
+TEST(CMakeGrammar, file_element) {
     EXPECT_TRUE(test<cmake::file_element>("set()\n"));
     EXPECT_TRUE(test<cmake::file_element>("set()  \n"));
     EXPECT_TRUE(test<cmake::file_element>("# comment\n"));
@@ -119,7 +119,7 @@ TEST(CMakeGrammer, file_element) {
     EXPECT_TRUE(test<cmake::file_element>("set() # comment\n"));
 }
 
-TEST(CMakeGrammer, file) {
+TEST(CMakeGrammar, file) {
     EXPECT_TRUE(test<cmake::file>(R"(
 set()
 # comment
@@ -162,7 +162,7 @@ std::ostream& print(std::ostream& os, const p::parse_tree::node& n) {
     return os;
 }
 
-TEST(CMakeGrammer, parse) {
+TEST(CMakeGrammar, parse) {
     p::string_input<> in(R"(
 set()
 # comment

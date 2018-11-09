@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.12.0)
-cmake_policy(VERSION 3.12.0)
+cmake_minimum_required(VERSION 3.8.0)
+cmake_policy(VERSION 3.8.0)
 project(inviwo-meta VERSION 0.0.1 DESCRIPTION "CMakeList Parser" LANGUAGES CXX)
 
 if(NOT cxx_std_17 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
@@ -18,7 +18,7 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
 
 set(headers
 	include/inviwo/meta/cmake/cmakefile.hpp
-	include/inviwo/meta/cmake/grammer.hpp
+	include/inviwo/meta/cmake/grammar.hpp
 	include/inviwo/meta/creator.hpp
 	include/inviwo/meta/filetemplates.hpp
 	include/inviwo/meta/inviwometadefine.hpp

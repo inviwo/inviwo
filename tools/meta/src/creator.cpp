@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@
 #include <array>
 #include <string>
 #include <algorithm>
+#include <chrono>
+#include <ctime>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -71,6 +73,10 @@ void Creator::createProcessor(const fs::path& processorPath) const {
 }
 
 json::json Creator::createSettings(const InviwoModule& im, std::string_view fileName) const {
+    using clock = std::chrono::system_clock;
+    const auto now = clock::to_time_t(clock::now());
+    const auto year = 1900 + std::localtime(&now)->tm_year;
+
     const auto dfName =
         std::regex_replace(std::string{fileName}, std::regex("([a-z])([A-Z])"), "$1 $2");
     return {{"module",
@@ -78,7 +84,8 @@ json::json Creator::createSettings(const InviwoModule& im, std::string_view file
               {"api", im.api()},
               {"include", im.moduleInclude()},
               {"define_include", im.defineInclude()}}},
-            {"file", {{"name", fileName}, {"disp_name", dfName}}}};
+            {"file", {{"name", fileName}, {"disp_name", dfName}}},
+            {"year", year}};
 }
 
 void Creator::generate(const std::filesystem::path& filePath, std::string_view tag) const {

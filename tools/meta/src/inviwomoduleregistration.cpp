@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ namespace inviwo::meta {
 InviwoModuleRegistration::InviwoModuleRegistration(const std::filesystem::path& aModulecpp)
     : modulecpp{aModulecpp} {
     std::ifstream ifs{modulecpp};
-    if (!ifs) throw std::runtime_error("Unable to open module file '{}");
+    if (!ifs) throw util::makeError("Unable to open module file '{}'", modulecpp.generic_string());
     file = std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 }
 
@@ -52,7 +52,7 @@ void InviwoModuleRegistration::addInclude(const std::filesystem::path& incPath) 
     const std::vector incMatches(std::sregex_iterator(file.begin(), file.end(), reInclude),
                                  std::sregex_iterator());
 
-    if (incMatches.empty()) throw std::runtime_error("Could not find includes!");
+    if (incMatches.empty()) throw util::makeError("Could not find any includes statments in '{}'",  modulecpp.generic_string());
 
     if (std::find_if(incMatches.begin(), incMatches.end(), [&](auto& m) {
             return m.str(1) == incPath.generic_string();
@@ -85,7 +85,7 @@ void InviwoModuleRegistration::registerProcessor(std::string_view name,
     addInclude(incPath);
 
     const auto mProcessor = std::regex(
-        R"(([ \t]*(?:\/\/)?[ \t]*registerProcessor<([a-zA-Z0-9_:\<\>]+)>\(\);.*)(?=\n\r|\n))");
+        R"(([ \t]*(?:\/\/)?[ \t]*registerProcessor<([a-zA-Z0-9_:\<\>,]+)>\(\);.*)(?=\n\r|\n))");
     const std::vector procMatches(std::sregex_iterator(file.begin(), file.end(), mProcessor),
                                   std::sregex_iterator());
 

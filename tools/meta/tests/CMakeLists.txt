@@ -2,7 +2,7 @@ project(inviwo-meta-unittests)
 
 set(tests
     main-test.cpp
-    grammer-test.cpp
+    grammar-test.cpp
     cmakefile-test.cpp
     filteriterator-test.cpp
     transformiterator-test.cpp

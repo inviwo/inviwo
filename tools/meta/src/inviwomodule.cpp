@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -278,16 +278,15 @@ std::vector<std::pair<std::filesystem::path, std::string>> InviwoModule::dirs() 
             {"docs/images", "Put images that should show up in doxygen here"},
             {incPath(), "Put headers here"},
             {srcPath(), "Put sources here"},
-            {incPath() / "processors", "Put processors headers here"},
-            {srcPath() / "processors", "Put processors sources here"},
-            {incPath() / "properties", "Put properties headers here"},
-            {srcPath() / "properties", "Put properties sources here"},
+            {incPath() / "processors", "Put Processor headers here"},
+            {srcPath() / "processors", "Put Processor sources here"},
+            {incPath() / "properties", "Put Property headers here"},
+            {srcPath() / "properties", "Put Property sources here"},
             {"tests", "Test related things"},
             {"tests/unittests", "Put unittests here"},
             {"tests/regression",
              "Regression Test workspaces, listed in File::Test::ExampleModule. Automatically "
-             "run in "
-             "regression tests on Jenkins"}};
+             "run in regression tests on Jenkins"}};
 }
 
 }  // namespace inviwo::meta

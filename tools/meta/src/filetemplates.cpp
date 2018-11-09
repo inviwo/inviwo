@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -126,7 +126,7 @@ const FileTemplate& FileTemplates::operator[](const std::string& key) const {
     if (it != templates.end()) {
         return it->second;
     } else {
-        throw util::makeError("Error: FileTempaltes invalid key '{}'", key);
+        throw util::makeError("Error: FileTemplates invalid key '{}'", key);
     }
 }
 

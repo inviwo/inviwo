@@ -76,7 +76,7 @@ void createProcessorDocMenu(InviwoApplication *app, QMenu *docsMenu) {
 
         auto modMenu = docsMenu->addMenu(utilqt::toQString(m->getIdentifier()));
         for (auto &pfo : processors) {
-            auto action = modMenu->addAction(pfo->getDisplayName().c_str());
+            auto action = modMenu->addAction(utilqt::toQString(pfo->getDisplayName()));
             docsMenu->connect(action, &QAction::triggered, [pfo, factory]() {
                 const auto processor = factory->create(pfo->getClassIdentifier());
                 const auto &inports = processor->getInports();

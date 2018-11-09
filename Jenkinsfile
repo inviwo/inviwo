@@ -66,7 +66,7 @@ node {
                 sh "rm -r build"
             }
             dir('build') {
-                nicelog(['CC=/usr/bin/gcc-5', 'CXX=/usr/bin/g++-5']) {
+                nicelog([]) {
                     sh """
                         ccache -z # reset ccache statistics
                         # tell ccache where the project root is
