@@ -460,24 +460,24 @@ function(ivw_create_module)
         # Add module creation function for dll/so loading
         ${CMAKE_CURRENT_BINARY_DIR}/src/${l_project_name}modulesharedlibrary.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/include/${${mod}_incPrefix}/${l_project_name}modulesharedlibrary.h
+        $<$<BOOL:${LEGACY}>:${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}module.h>
+        $<$<BOOL:${LEGACY}>:${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}module.cpp>
+        $<$<BOOL:${LEGACY}>:${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}moduledefine.h>
     )
-    if(LEGACY)
-        list(APPEND mod_class_files
-            ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}module.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}module.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/${l_project_name}moduledefine.h
-        )
-    endif()
 
     remove_duplicates(ivw_unique_mod_files ${ARG_UNPARSED_ARGUMENTS} ${mod_class_files} ${cmake_files})
 
     # Create library
     add_library(${${mod}_target} ${ivw_unique_mod_files})
     add_library(${${mod}_alias} ALIAS ${${mod}_target})
+
+    get_filename_component(base_parent ${${mod}_base} PATH)
     target_include_directories(${${mod}_target} PUBLIC 
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
+        $<$<BOOL:${LEGACY}>:${${mod}_base}>
+        $<$<BOOL:${LEGACY}>:${base_parent}>
     )
 
     # Define standard properties

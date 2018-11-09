@@ -98,7 +98,7 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
 
     connect(
         selectionModel(), &QItemSelectionModel::selectionChanged, this,
-        [this](const QItemSelection& selected, const QItemSelection& deselected) {
+        [this](const QItemSelection& selected, const QItemSelection& /*deselected*/) {
             for (auto& index : selected.indexes()) {
                 if (auto tcw = static_cast<TrackControlsWidgetQt*>(indexWidget(index))) {
                     if (auto propertytrack = dynamic_cast<BasePropertyTrack*>(&tcw->track())) {

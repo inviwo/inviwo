@@ -128,13 +128,8 @@ protected:
     Matrix<N + 1, float> worldMatrix_;
 };
 
-#ifdef _MSC_VER
-template class IVW_CORE_API SpatialEntity<2>;
-template class IVW_CORE_API SpatialEntity<3>;
-#else
-extern template class IVW_CORE_API SpatialEntity<2>;
-extern template class IVW_CORE_API SpatialEntity<3>;
-#endif
+IVW_CORE_EXT template class IVW_CORE_API SpatialEntity<2>;
+IVW_CORE_EXT template class IVW_CORE_API SpatialEntity<3>;
 
 template <unsigned int N>
 class StructuredGridEntity : public SpatialEntity<N> {
@@ -175,6 +170,8 @@ protected:
     Vector<N, size_t> dimensions_;
 };
 
+IVW_CORE_EXT template class IVW_CORE_API StructuredGridEntity<2>;
+IVW_CORE_EXT template class IVW_CORE_API StructuredGridEntity<3>;
 
 /*---------------------------------------------------------------*
  *  Implementations                                              *

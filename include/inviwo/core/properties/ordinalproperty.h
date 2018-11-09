@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/util/glm.h>
 #include <string>
-#include <sstream>
 
 namespace inviwo {
 
@@ -257,12 +256,11 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
     bool modified = false;
 
     if ((minVal != minValue_.value) || (maxVal != maxValue_.value)) {
-        if (glm::any(glm::greaterThan(minVal, maxVal))) {
+        if (glm::max(minVal, maxVal) != maxVal) {
             LogWarn("Invalid range given for \"" << this->getDisplayName() << "\" ("
                                                  << Defaultvalues<T>::getName()
                                                  << "Property). Using min range as reference.");
         }
-
         minValue_.value = minVal;
         maxValue_.value = glm::max(minVal, maxVal);
         modified = true;
@@ -271,7 +269,7 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
         increment_ = increment;
         modified = true;
     }
-    auto retVal = validateValues(value);
+    const auto retVal = validateValues(value);
     if (retVal.first) {
         value_.value = retVal.second;
         modified = true;
@@ -344,6 +342,42 @@ Document OrdinalProperty<T>::getDescription() const {
 
     return doc;
 }
+
+// Scalar properties
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<float>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<int>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<size_t>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<glm::i64>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<double>;
+
+// Vector properties
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<vec2>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<vec3>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<vec4>;
+
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dvec2>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dvec3>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dvec4>;
+
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<ivec2>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<ivec3>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<ivec4>;
+
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<size2_t>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<size3_t>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<size4_t>;
+
+// Matrix properties
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<mat2>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<mat3>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<mat4>;
+
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dmat2>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dmat3>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dmat4>;
+
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<glm::dquat>;
+IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<glm::fquat>;
 
 }  // namespace inviwo
 

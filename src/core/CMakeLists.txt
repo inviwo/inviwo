@@ -344,6 +344,7 @@ set(SOURCE_FILES
     datastructures/buffer/bufferrepresentation.cpp
     datastructures/camera.cpp
     datastructures/camerafactoryobject.cpp
+    datastructures/coordinatetransformer.cpp
     datastructures/datamapper.cpp
     datastructures/datatraits.cpp
     datastructures/geometry/basicmesh.cpp
@@ -483,6 +484,7 @@ set(SOURCE_FILES
     properties/listproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
+    properties/ordinalproperty.cpp
     properties/planeproperty.cpp
     properties/positionproperty.cpp
     properties/property.cpp
@@ -644,27 +646,7 @@ target_include_directories(inviwo-core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
-    $<BUILD_INTERFACE:${IVW_MODULE_DIR}> # We should not use these..."
-    $<BUILD_INTERFACE:${IVW_ROOT_DIR}> # We should not use these..."
 )
-
-# Add path for external modules
-# example we have an extarnal path to: /my/dir/structure/repo/modules
-# inside the module folder we have a bunch of modules.
-# we will add /my/dir/structure/repo as an include path since
-# we usually refer to module headers as <modules/mymodule1/someheader.h>
-# hence we add the parent of the path given.
-# Except for in the module registration where we don't include 'modules'
-# So we need to add the acctual path also
-if (IVW_EXTERNAL_MODULES)
-    foreach(dir ${IVW_EXTERNAL_MODULES})
-        get_filename_component(dir_parent ${dir} PATH)
-        target_include_directories(inviwo-core PUBLIC 
-            $<BUILD_INTERFACE:${dir_parent}>
-            $<BUILD_INTERFACE:${dir}>
-        )
-    endforeach()
-endif()
 
 # Add core dependencies to this list
 target_link_libraries(inviwo-core PUBLIC 
@@ -675,6 +657,7 @@ target_link_libraries(inviwo-core PUBLIC
     inviwo::warn
     $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
     $<$<BOOL:${WIN32}>:inviwo::stackwalker>
+    $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
 )
 
 if(APPLE)
@@ -682,10 +665,6 @@ if(APPLE)
    mark_as_advanced(CORESERVICES_LIBRARY)
    target_link_libraries(inviwo-core PRIVATE ${CORESERVICES_LIBRARY})
 endif (APPLE)
-if(UNIX)
-    # Required for dlopen
-    target_link_libraries(inviwo-core PRIVATE ${CMAKE_DL_LIBS})
-endif(UNIX)
 
 #Optimize compiliation with PCH etc
 ivw_compile_optimize_on_target(inviwo-core)
