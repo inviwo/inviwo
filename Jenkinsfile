@@ -121,7 +121,8 @@ node {
        
         nicecmd('Start X', 'build/bin') {
             sh '''
-                if [ ! xset -display :2 q &>/dev/null ]; then
+                if ! xset -display :2 q &>/dev/null
+                then
                     startx -- :2 &
                 fi
             '''
