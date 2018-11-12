@@ -66,15 +66,12 @@ node {
                 sh "rm -r build"
             }
             dir('build') {
-                nicelog([]) {
+                nicelog {
                     sh """
                         ccache -z # reset ccache statistics
                         # tell ccache where the project root is
                         export CPATH=`pwd`
                         export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
-                        
-                        which python3
-                        python3 --version
                         
                         cmake -G \"Ninja\" -LA \
                               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
