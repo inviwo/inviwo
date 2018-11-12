@@ -191,7 +191,11 @@ node {
         stage('Stop X') {
             dir('build/bin') {
                 nicelog {
-                    sh 'kill %1'
+                    sh '''
+                        jobs
+                        ps xu
+                        kill %1
+                    '''
                 }
             }
         }
