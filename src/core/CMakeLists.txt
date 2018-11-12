@@ -589,7 +589,6 @@ else()
 endif()
 
 set(TEST_FILES
-    tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/conversion-test.cpp
@@ -600,7 +599,9 @@ set(TEST_FILES
     tests/unittests/filesystem-test.cpp
     tests/unittests/glm-test.cpp
     tests/unittests/indirectiterator-tests.cpp
+    tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/metadata-test.cpp
+    tests/unittests/network-evaluator-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp

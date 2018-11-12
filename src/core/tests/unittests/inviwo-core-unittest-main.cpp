@@ -36,6 +36,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/common/coremodulesharedlibrary.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -51,6 +52,7 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->setLogLevel(LogLevel::Error);
     LogCentral::getPtr()->registerLogger(logger);
     InviwoApplication app(argc, argv, "Inviwo-Unittests-Core");
+    app.getSystemSettings().stackTraceInException_.set(true);
 
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
