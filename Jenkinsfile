@@ -128,9 +128,8 @@ node {
             '''
         }
             
-        nicecmd('Unit Tests', 'build/bin') {
+        nicecmd('Unit Tests', 'build/bin', 'DISPLAY=:2') {
             sh '''
-                export DISPLAY=:2
                 rc=0
                 for unittest in inviwo-unittests-*
                     do echo ==================================
@@ -141,17 +140,13 @@ node {
             '''    
         }
 
-        nicecmd('Integration Tests', 'build/bin') {
-            sh '''
-                export DISPLAY=:2
-                ./inviwo-integrationtests
-            '''
+        nicecmd('Integration Tests', 'build/bin', 'DISPLAY=:2') {
+            sh './inviwo-integrationtests'
         }
         
         try {
-            nicecmd('Regression Tests', 'regress') {
+            nicecmd('Regression Tests', 'regress', 'DISPLAY=:2') {
                 sh """
-                    export DISPLAY=:2
                     python3 ../inviwo/tools/regression.py \
                             --inviwo ../build/bin/inviwo \
                             --header ${env.JENKINS_HOME}/inviwo-config/header.html \
@@ -168,11 +163,8 @@ node {
             sh 'python3 tools/refactoring/check-copyright.py .'
         }
         
-        nicecmd('Doxygen', 'build') {
-            sh '''
-                export DISPLAY=:2
-                ninja DOXY-ALL
-            '''
+        nicecmd('Doxygen', 'build', 'DISPLAY=:2') {
+            sh 'ninja DOXY-ALL'
         }
         
         stage('Publish') {
