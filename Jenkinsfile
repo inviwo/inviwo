@@ -118,17 +118,18 @@ node {
                 }
             }
         }
-       
-        nicecmd('Start X', 'build/bin') {
+
+        def display = 1
+        nicecmd('Start X', 'build/bin', ['DISP=' + display]) {
             sh '''
-                if ! xset -display :2 q &>/dev/null
+                if ! xset -display :${DISP} q &>/dev/null
                 then
-                    startx -- :2 &
+                    startx -- :${DISP} &
                 fi
             '''
         }
             
-        nicecmd('Unit Tests', 'build/bin', 'DISPLAY=:2') {
+        nicecmd('Unit Tests', 'build/bin', ['DISPLAY=:' + display]) {
             sh '''
                 rc=0
                 for unittest in inviwo-unittests-*
@@ -140,12 +141,12 @@ node {
             '''    
         }
 
-        nicecmd('Integration Tests', 'build/bin', 'DISPLAY=:2') {
+        nicecmd('Integration Tests', 'build/bin', ['DISPLAY=:' + display]) {
             sh './inviwo-integrationtests'
         }
         
         try {
-            nicecmd('Regression Tests', 'regress', 'DISPLAY=:2') {
+            nicecmd('Regression Tests', 'regress', ['DISPLAY=:' + display]) {
                 sh """
                     python3 ../inviwo/tools/regression.py \
                             --inviwo ../build/bin/inviwo \
@@ -163,7 +164,7 @@ node {
             sh 'python3 tools/refactoring/check-copyright.py .'
         }
         
-        nicecmd('Doxygen', 'build', 'DISPLAY=:2') {
+        nicecmd('Doxygen', 'build', ['DISPLAY=:' + display]) {
             sh 'ninja DOXY-ALL'
         }
         
