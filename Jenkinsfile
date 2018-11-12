@@ -31,10 +31,10 @@ def nicelog(env = [], fun) {
     }
 }
 
-def nicecmd(stageName, dir, fun) {
+def nicecmd(stageName, dirName, env = [], fun) {
     stage(stageName) {
-        dir(dir) {
-            nicelog {
+        dir(dirName) {
+            nicelog(env) {
                 fun()
             }
         }
