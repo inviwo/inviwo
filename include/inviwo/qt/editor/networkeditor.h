@@ -116,7 +116,7 @@ public:
 
     // Port inspectors
     std::shared_ptr<const Image> renderPortInspectorImage(Outport* port);
-    
+
     ProcessorGraphicsItem* getProcessorGraphicsItem(Processor* key) const;
     ConnectionGraphicsItem* getConnectionGraphicsItem(const PortConnection& key) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
@@ -140,7 +140,7 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
-    void progagateEventToSelecedProcessors(KeyboardEvent &pressKeyEvent);
+    void progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent);
 
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
@@ -160,6 +160,19 @@ private:
     friend class ProcessorGraphicsItem;
     friend class ConnectionGraphicsItem;
 
+    class IVW_QTEDITOR_API AdjustSceneToChangesBlocker {
+    public:
+        AdjustSceneToChangesBlocker(NetworkEditor& network);
+        AdjustSceneToChangesBlocker() = delete;
+        AdjustSceneToChangesBlocker(const AdjustSceneToChangesBlocker&) = delete;
+        AdjustSceneToChangesBlocker(AdjustSceneToChangesBlocker&&) = delete;
+        AdjustSceneToChangesBlocker& operator=(AdjustSceneToChangesBlocker) = delete;
+        ~AdjustSceneToChangesBlocker();
+
+    private:
+        NetworkEditor& network_;
+    };
+
     // Overrides for ProcessorNetworkObserver
     virtual void onProcessorNetworkChange() override;
 
@@ -171,7 +184,7 @@ private:
 
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
-    
+
     // Processors
     ProcessorGraphicsItem* addProcessorRepresentations(Processor* processor);
     void removeProcessorRepresentations(Processor* processor);
@@ -198,7 +211,7 @@ private:
     LinkConnectionGraphicsItem* getLinkGraphicsItemAt(const QPointF pos) const;
 
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
-    virtual void drawForeground(QPainter *painter, const QRectF &rect) override;
+    virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
 
     void deleteItems(QList<QGraphicsItem*> items);
 
@@ -216,8 +229,8 @@ private:
     bool validConnectionTarget_;
 
     QList<QGraphicsItem*> clickedOnItems_;
-    std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0,0}};
-    mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0,0}};
+    std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0, 0}};
+    mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
 
     // Connection and link state
     ProcessorGraphicsItem* processorItem_;
@@ -230,6 +243,8 @@ private:
     std::string filename_;
     bool modified_;
     bool backgroundVisible_;
+
+    bool adjustSceneToChange_;
 };
 
 template <typename T>
@@ -241,6 +256,6 @@ T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
     return nullptr;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NETWORKEDITOR_H
