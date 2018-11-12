@@ -31,6 +31,17 @@ def nicelog(env = [], fun) {
     }
 }
 
+def nicecmd(stageName, dir, fun) {
+    stage(stageName) {
+        dir(dir) {
+            nicelog {
+                fun()
+            }
+        }
+    }
+}
+
+
 node {
     properties([
         parameters([
@@ -107,16 +118,11 @@ node {
                 }
             }
         }
-        
        
-        stage('Start X') {
-            dir('build/bin') {
-                nicelog {
-                    sh 'startx -- :2 &'
-                }
-            }
+        nicecmd('Start X', 'build/bin') {
+            sh 'startx -- :2 &'
         }
-        
+            
         stage('Unit tests') {
             dir('build/bin') {
                 nicelog {
@@ -147,14 +153,12 @@ node {
 
         stage('Copyright check') {
             dir('inviwo') {
-            nicelog {
-                sh '''
-                python3 tools/refactoring/check-copyright.py .
-                '''
+                nicelog {
+                    sh '''
+                        python3 tools/refactoring/check-copyright.py .
+                    '''
+                }
             }
-
-            }
-
         }
         
         stage('Doxygen') {
@@ -188,17 +192,11 @@ node {
             currentBuild.result = 'UNSTABLE'
         }
         
-        stage('Stop X') {
-            dir('build/bin') {
-                nicelog {
-                    sh '''
-                        jobs
-                        ps xu
-                        kill %1
-                    '''
-                }
+        try {
+            nicecmd('Start X', 'build/bin') {
+                sh 'pkill -U `id -u jenkins` X'
             }
-        }
+        } catch () {}
         
         stage('Publish') {
             publishHTML([
