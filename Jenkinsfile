@@ -187,6 +187,15 @@ node {
             // Mark as unstable, if we mark as failed, the report will not be published.
             currentBuild.result = 'UNSTABLE'
         }
+        
+        stage('Stop X') {
+            dir('build/bin') {
+                nicelog {
+                    sh 'kill %1'
+                }
+            }
+        }
+        
         stage('Publish') {
             publishHTML([
                 allowMissing: true,
