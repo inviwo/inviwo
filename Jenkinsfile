@@ -73,6 +73,9 @@ node {
                         export CPATH=`pwd`
                         export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
                         
+                        which python3
+                        python3 --version
+                        
                         cmake -G \"Ninja\" -LA \
                               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                               -DCMAKE_BUILD_TYPE=${params['Build Type']} \
