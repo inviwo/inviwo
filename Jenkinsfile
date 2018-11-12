@@ -196,7 +196,7 @@ node {
             nicecmd('Start X', 'build/bin') {
                 sh 'pkill -U `id -u jenkins` X'
             }
-        } catch () {}
+        } catch (e) {}
         
         stage('Publish') {
             publishHTML([
