@@ -107,12 +107,20 @@ node {
                 }
             }
         }
-
+        
+       
+        stage('Start X') {
+            dir('build/bin') {
+                nicelog {
+                    sh 'startx -- :2 &'
+                }
+            }
+        }
+        
         stage('Unit tests') {
             dir('build/bin') {
                 nicelog {
                     sh '''
-                        startx -- :2 &
                         export DISPLAY=:2
                         rc=0
                         for unittest in inviwo-unittests-*
@@ -130,7 +138,6 @@ node {
             dir('build/bin') {
                 nicelog {
                     sh '''
-                        startx -- :2 &
                         export DISPLAY=:2
                         ./inviwo-integrationtests
                     '''
@@ -154,7 +161,6 @@ node {
             dir('build') {
                 nicelog {
                     sh '''
-                        startx -- :2 &
                         export DISPLAY=:2
                         ninja DOXY-ALL
                     '''
@@ -167,7 +173,6 @@ node {
                 dir('regress') {
                     nicelog {
                         sh """
-                            startx -- :2 &
                             export DISPLAY=:2
                             python3 ../inviwo/tools/regression.py \
                                     --inviwo ../build/bin/inviwo \
