@@ -120,83 +120,57 @@ node {
         }
        
         nicecmd('Start X', 'build/bin') {
-            sh 'startx -- :2 &'
+            if ! xset -display :2 q &>/dev/null; then
+                sh 'startx -- :2 &'
+            fi
         }
             
-        stage('Unit tests') {
-            dir('build/bin') {
-                nicelog {
-                    sh '''
-                        export DISPLAY=:2
-                        rc=0
-                        for unittest in inviwo-unittests-*
-                            do echo ==================================
-                            echo Running: ${unittest}
-                            ./${unittest} || rc=$?
-                        done
-                        exit ${rc}
-                    '''
-                }
-            }
+        nicecmd('Unit Tests', 'build/bin') {
+            sh '''
+                export DISPLAY=:2
+                rc=0
+                for unittest in inviwo-unittests-*
+                    do echo ==================================
+                    echo Running: ${unittest}
+                    ./${unittest} || rc=$?
+                done
+                exit ${rc}
+            '''    
         }
 
-        stage('Integration tests') {
-            dir('build/bin') {
-                nicelog {
-                    sh '''
-                        export DISPLAY=:2
-                        ./inviwo-integrationtests
-                    '''
-                }
-            }
-        }
-
-        stage('Copyright check') {
-            dir('inviwo') {
-                nicelog {
-                    sh '''
-                        python3 tools/refactoring/check-copyright.py .
-                    '''
-                }
-            }
-        }
-        
-        stage('Doxygen') {
-            dir('build') {
-                nicelog {
-                    sh '''
-                        export DISPLAY=:2
-                        ninja DOXY-ALL
-                    '''
-                }
-            }
+        nicecmd('Integration Tests', 'build/bin') {
+            sh '''
+                export DISPLAY=:2
+                ./inviwo-integrationtests
+            '''
         }
         
         try {
-            stage('Regression tests') {
-                dir('regress') {
-                    nicelog {
-                        sh """
-                            export DISPLAY=:2
-                            python3 ../inviwo/tools/regression.py \
-                                    --inviwo ../build/bin/inviwo \
-                                    --header ${env.JENKINS_HOME}/inviwo-config/header.html \
-                                    --output . \
-                                    --repos ../inviwo
-                        """
-                    }
-                }
+            nicecmd('Regression Tests', 'regress') {
+                sh """
+                    export DISPLAY=:2
+                    python3 ../inviwo/tools/regression.py \
+                            --inviwo ../build/bin/inviwo \
+                            --header ${env.JENKINS_HOME}/inviwo-config/header.html \
+                            --output . \
+                            --repos ../inviwo
+                """
             }
         } catch (e) {
             // Mark as unstable, if we mark as failed, the report will not be published.
             currentBuild.result = 'UNSTABLE'
         }
+
+        nicecmd('Copyright Check', 'inviwo') {
+            sh 'python3 tools/refactoring/check-copyright.py .'
+        }
         
-        try {
-            nicecmd('Start X', 'build/bin') {
-                sh 'pkill -U `id -u jenkins` X'
-            }
-        } catch (e) {}
+        nicecmd('Doxygen', 'build') {
+            sh '''
+                export DISPLAY=:2
+                ninja DOXY-ALL
+            '''
+        }
         
         stage('Publish') {
             publishHTML([
