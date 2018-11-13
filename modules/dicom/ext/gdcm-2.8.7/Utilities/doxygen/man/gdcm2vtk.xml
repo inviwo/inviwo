@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcm2vtk</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcm2vtk</refname>
+    <refpurpose>Convert a file supported by VTK into DICOM.</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmxml_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcm2vtk [options] file-in file-out
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcm2vtk</emphasis> takes as input any file supported by VTK (including DICOM file) and will generate as output a DICOM file.</para>
+</refsection>
+<refsection xml:id="gdcmxml_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>file-in   input filename (DICOM or VTK supported)
+
+file-out  output filename (DICOM or VTK supported)
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1options">
+<title>OPTIONS</title>
+<refsection xml:id="gdcmxml_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>     --force-rescale    force rescale.
+     --force-spacing    force spacing.
+     --palette-color    when supported generate a PALETTE COLOR file.
+     --argb             when supported generate a ARGB file.
+     --compress         when supported generate a compressed file.
+     --use-vtkdicom     Use vtkDICOMImageReader (instead of GDCM).
+     --modality         set Modality.
+     --lower-left       set lower left.
+     --shift            set shift.
+     --scale            set scale.
+     --compress         set compression (MetaIO).
+  -T --study-uid        Study UID.
+  -S --series-uid       Series UID.
+     --root-uid         Root UID.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcm2vtk_1compression_options">
+<title>compression options</title>
+
+<para><literallayout>  -J --jpeg             Compress image in jpeg.
+  -K --j2k              Compress image in j2k.
+  -L --jpegls           Compress image in jpeg-ls.
+  -R --rle              Compress image in rle (lossless only).
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1environment_variable">
+<title>environment variable</title>
+
+<para><literallayout>  GDCM_ROOT_UID Root UID
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmxml_1description2">
+<title>DESCRIPTION</title>
+
+<para>Convert a file supported by VTK into DICOM.</para>
+
+<para>Typical usage is:</para>
+
+<para><literallayout>$ gdcm2vtk inputfile output.dcm
+</literallayout></para>
+
+<para>It uses the internal factory mechanism of VTK to recognize a file (CanRead function). See VTK supported file here: <literallayout>  What image file formats can VTK read and write? http://www.vtk.org/Wiki/VTK_FAQ#What_image_file_formats_can_VTK_read_and_write.3F
+</literallayout></para>
+
+<para>If your input file has 4 components, the 4th comp (alpha) will be removed from the output file as DICOM does not support alpha component anymore (see &#8211;argb option).</para>
+
+<para>Special care was taken for the following file format:</para>
+
+<para><literallayout>   1. DICOM: Direction Cosines and vtkMedicalImageInformation are passed to the output
+   2. BMP: The file can be saved with a Lookup Table (see --palette-color)
+   3. GE Signa: vtkMedicalImageProperties is passed to the output
+   4. MINC: Direction Cosines is passed to the output
+   5. TIFF: vtkTIFFReader is currently in bad shape in VTK (different behavior in VTK 5.2 and git/master). Only use it, if you know what you are doing.
+</literallayout></para>
+<refsection xml:id="gdcm2vtk_1convert_meta">
+<title>CONVERT MetaImage (mhd, mha)</title>
+
+<para><literallayout>$ gdcm2vtk inputfile output.mha
+</literallayout></para>
+
+<para>This command will convert the input DICOM file: inputfile into a MetaImage .mha file. Same goes for .mhd file.</para>
+</refsection>
+<refsection xml:id="gdcm2vtk_1convert_mha">
+<title>CONVERT MHA/MHD</title>
+
+<para><literallayout>$ gdcm2vtk inputfile output.mha
+</literallayout> or <literallayout>$ gdcm2vtk inputfile output.mhd
+</literallayout></para>
+
+<para>This command will convert the input DICOM file: inputfile into a MetaImageData .mha/.mhd file.</para>
+</refsection>
+<refsection xml:id="gdcm2vtk_1convert_vti">
+<title>CONVERT VTI</title>
+
+<para><literallayout>$ gdcm2vtk inputfile output.vti
+</literallayout></para>
+
+<para>This command will convert the input DICOM file: inputfile into a XML VTK ImageData .vti file.</para>
+</refsection>
+<refsection xml:id="gdcm2vtk_1convert_vtk">
+<title>CONVERT VTK</title>
+
+<para><literallayout>$ gdcm2vtk inputfile output.vtk
+</literallayout></para>
+
+<para>This command will convert the input DICOM file: inputfile into an old VTK Structured PointSets .vtk file.</para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcm2vtk_1convert_dicom">
+<title>CONVERT DICOM</title>
+
+<para><literallayout>$ gdcm2vtk input.dcm output.dcm
+</literallayout></para>
+
+<para><emphasis>vtkGDCMImageReader</emphasis> will be used to read in a DICOM file, not the default vtkDICOMImageReader. See option &#8211;use-vtkdicom to use vtkDICOMImageReader.</para>
+</refsection>
+<refsection xml:id="gdcm2vtk_1round_tripmhd">
+<title>RoundTrip DICOM to MHD to DICOM</title>
+
+<para><literallayout>$ gdcm2vtk input_ybr.dcm output.mhd
+$ gdcm2vtk --modality US --imageformat 7 output.mhd output.dcm
+</literallayout></para>
+
+<para>The above refsection shows how to convert a DICOM using the Photometric Interpretation of YBR_FULL (or even YBR_FULL_422 is lossy) into another file format: MetaImage (mhd). Since this file format does not handle color space, we have to explicitly set it using the &#8211;imageformat command line option. The &#8211;modality command line option is required in this case since the default Secondary Capture Image Storage Class family does not allow for YBR Photometric Interpretation.</para>
+</refsection>
+<refsection xml:id="gdcm2vtk_1gdcm2vtk_notes">
+<title>gdcm2vtk notes</title>
+
+<para>IMPORTANT NOTE: The internal VTK structured will be filled from the input DICOM, and then pass to the output DICOM writer. Some information might be lost during the conversion DICOM to VTK to DICOM. This option is mostly used to test the vtkGDCMImageReader/vtkGDCMImageWriter combination.</para>
+
+<para>IMPORTANT NOTE: When converting from a lossy format such as JPEG, the information of lossiness is important. The output DICOM will contains the required Lossy Image Compression attribute that indicates that image was lossy-compressed somewhere along the pipeline. See also gdcmimg (better handling of JPEG in general).</para>
+
+<para>IMPORTANT NOTE: When using &#8211;use-vtkdicom the output DICOM file will always be written as MR Image Storage as this information is not available from the reader itself. This allow setting the Image Orientation (Patient) properly.</para>
+</refsection>
+<refsection xml:id="gdcmxml_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcmviewer</emphasis>(1), <emphasis role="bold">gdcmimg</emphasis>(1)</para>
+</refsection>
+</refentry>

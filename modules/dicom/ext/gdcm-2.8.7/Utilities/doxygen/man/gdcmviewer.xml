@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmviewer</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmviewer</refname>
+    <refpurpose>Simple DICOM viewer.</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmviewer_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmviewer [options] file-in
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmviewer_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcmviewer</emphasis> is a simple tool that show how to use <emphasis>vtkGDCMImageReader</emphasis>. The class that use gdcm to make a layer to VTK. <emphasis role="bold">gdcmviewer</emphasis> is basically only just a wrapper around VTK/GDCM.</para>
+
+<para>This tool is meant for testing integration of GDCM in VTK. You should see it as a demo tool. It does compile with VTK ranging from 4.2 to 5.10, but only with VTK 5.2 (or above) can play with the widgets (as described below).</para>
+</refsection>
+<refsection xml:id="gdcmviewer_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>file-in   DICOM input filename
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmviewer_1options">
+<title>OPTIONS</title>
+<refsection xml:id="gdcmviewer_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>     --force-rescale    force rescale (advanced users)
+     --force-spacing    force spacing (advanced users)
+  -r --recursive        Recusively descend directory
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmviewer_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmviewer_1usage">
+<title>Typical usage</title>
+</refsection>
+<refsection xml:id="gdcmviewer_1simple_usage">
+<title>Simple usage</title>
+
+<para>For now gdcmviewer should be started from a command line prompt. The next argument should be the name of the DICOM file you wish to read. For instance:</para>
+
+<para><literallayout>$ gdcmviewer -V 012345.002.050.dcm
+</literallayout></para>
+
+<para>gdcmviewer will try to read your file, and then print the vtk information associated with this file. Basically what kind of image you are looking at.</para>
+
+<para><itemizedlist>
+<listitem>
+<para>ScalarType is the DICOM Real World Value type </para>
+</listitem>
+<listitem>
+<para>Dimensions is the dimension of the image </para>
+</listitem>
+<listitem>
+<para>Spacing is the spacing of the image </para>
+</listitem>
+<listitem>
+<para>NumberOfScalarComponents should be 1 for grayscale &amp; PALETTE COLOR and 3 for RGB, YBR data.</para>
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection xml:id="gdcmviewer_1wiki_link">
+<title>Wiki Link</title>
+
+<para>The wiki page, with color pictures can be found at: <link xlink:href="http://gdcm.sourceforge.net/wiki/index.php/Gdcmviewer">http://gdcm.sourceforge.net/wiki/index.php/Gdcmviewer</link></para>
+</refsection>
+<refsection xml:id="gdcmviewer_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcm2vtk</emphasis>(1)</para>
+</refsection>
+</refentry>

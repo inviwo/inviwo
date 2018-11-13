@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmdiff</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmdiff</refname>
+    <refpurpose>dumps differences of two DICOM files</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmdiff_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmdiff [options] file1 file2
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdiff_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcmdiff</emphasis> command line program takes as input two DICOM files: file1 and file2.</para>
+</refsection>
+<refsection xml:id="gdcmdiff_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>file1   DICOM input filename
+
+file2   DICOM output filename
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdiff_1options">
+<title>OPTIONS</title>
+<refsection xml:id="gdcmdiff_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>  -m      --meta          Compare metainformation. Default is off.
+  -t &lt;n&gt;  --truncate &lt;n&gt;  String values trimmed to n characters.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdiff_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmviewer_1simple_usage">
+<title>Simple usage</title>
+
+<para><emphasis role="bold">gdcmdiff</emphasis> is a great tool to produce a diff in between two DICOM files. Usage is simply:</para>
+
+<para><literallayout>$ gdcmdiff input1.dcm input2.dcm
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmdiff_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcminfo</emphasis>(1)</para>
+</refsection>
+</refentry>

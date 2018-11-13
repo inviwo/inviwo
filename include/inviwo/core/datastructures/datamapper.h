@@ -53,6 +53,10 @@ public:
     dvec2 dataRange;        ///< Minimum and maximum data range
     dvec2 valueRange;       ///< Minimum and maximum value range
     std::string valueUnit;  ///< Unit, i.e. Hounsfield/absorption/W.
+    double rescaleSlope;
+    double rescaleIntercept;
+    double windowLevel;
+    double windowWidth;
 
     void initWithFormat(const DataFormatBase* format);
 
