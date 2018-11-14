@@ -1,5 +1,31 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-11-14
+A new inviwo-meta library and an inviwo-meta-cli commandline app has been added to superseed the make-new-module.py and make-new-file.py python scripts. The library is also exposed in the tools menu of inviwo. 
+
+## 2018-11-14
+Generated files are now stored in the corresponding CMAKE_CURRENT_BINAY_DIR for the sub directory in question.
+for a module that means `{build folder}/modules/{module name}`. CMAKE_CURRENT_BINAY_DIR/include path is added as an include path for each module. Hence generated headers are put in 
+     `{build folder}/modules/{module name}/include/{organization}/{module name}/`
+Same is true for generated header of inviwo core, like `moduleregistration.h` they are now placed in:
+    `{build folder}/modules/core/include/inviwo/core/`.
+Which mean that for the module loading in apps
+    `#include <moduleregistration.h>`
+needs to be changed to 
+    `#include <inviwo/core/moduleregistration.h>`
+
+
+## 2018-11-14
+New Module structure. We have introduced a new module structure where we separate headers and source files in the same way as is done for the core part of inviwo. Hence module headers should now be placed under the include folder like:
+    `.../{module name}/include/{organization}/{module name}/`
+and sources goes in the source folder:
+    `.../{module name}/src/` 
+`{module name}` it the lower case name of the module, `{organization}` default to inviwo but can be user specified. 
+The headers can then be included using 
+    `#include <{organization}/{module name}/header.h>`
+The implementation is backwards compatible so one old modules can continue to exits, but the structure is considered deprecated.
+The main reasons for the change are, to make packaging of headers easier and to make it impossible to accidentally include headers to module that are not depended on.
+
 ## 2018-11-05
 The SplitImage processor now features a draggable handle. This handle allows to adjust the split position in the canvas with either mouse or touch.
 

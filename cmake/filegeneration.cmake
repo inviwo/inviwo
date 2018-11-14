@@ -27,8 +27,6 @@ function(ivw_generate_module_paths_header)
     foreach(dir ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
         if(IS_DIRECTORY ${dir})
             list(APPEND dirs ${dir})
-        else()
-            message("Path to external module is not a directory (${dir})")
         endif()
     endforeach()
 
