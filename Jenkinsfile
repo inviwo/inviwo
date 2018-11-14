@@ -119,7 +119,7 @@ node {
             }
         }
 
-        def display = 1
+        def display = 0
         nicecmd('Start X', 'build/bin', ['DISP=' + display]) {
             sh '''
                 if ! xset -display :${DISP} q &>/dev/null
