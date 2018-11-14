@@ -83,9 +83,11 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
 #if defined(IVW_DEBUG)
     QObject::connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
         // undo textual changes by resetting the contents of the line edit
-        ivwAssert(lineEdit_->getPath() == (!property_->get().empty() ? property_->get().front() : ""), "MultiFilePropertyWidgetQt: paths not equal after canceling edit");
+        ivwAssert(
+            lineEdit_->getPath() == (!property_->get().empty() ? property_->get().front() : ""),
+            "MultiFilePropertyWidgetQt: paths not equal after canceling edit");
     });
-#endif // IVW_DEBUG
+#endif  // IVW_DEBUG
 
     QSizePolicy sp = lineEdit_->sizePolicy();
     sp.setHorizontalStretch(3);
@@ -117,7 +119,6 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     updateFromProperty();
 }
 
-
 void MultiFilePropertyWidgetQt::setPropertyValue() {
     std::string fileName = (!property_->get().empty() ? property_->get().front() : "");
 
@@ -131,12 +132,16 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
     importFileDialog.setAcceptMode(property_->getAcceptMode());
     importFileDialog.setFileMode(property_->getFileMode());
 
+    auto ext = property_->getSelectedExtension();
+    if (!ext.empty()) importFileDialog.setSelectedExtenstion(ext);
+
     if (importFileDialog.exec()) {
         std::vector<std::string> filenames;
         for (auto item : importFileDialog.selectedFiles()) {
             filenames.push_back(item.toStdString());
         }
         property_->set(filenames);
+        property_->setSelectedExtension(importFileDialog.getSelectedFileExtension());
     }
 
     updateFromProperty();
@@ -145,7 +150,7 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
 void MultiFilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
     auto mineData = drop->mimeData();
     if (mineData->hasUrls()) {
-        if(mineData->urls().size()>0) {
+        if (mineData->urls().size() > 0) {
             auto url = mineData->urls().first();
             property_->set(url.toLocalFile().toStdString());
 
