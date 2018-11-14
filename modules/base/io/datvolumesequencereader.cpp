@@ -76,9 +76,12 @@ DatVolumeSequenceReader& DatVolumeSequenceReader::operator=(const DatVolumeSeque
     return *this;
 }
 
-DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const { return new DatVolumeSequenceReader(*this); }
+DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const {
+    return new DatVolumeSequenceReader(*this);
+}
 
-std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader::readData(const std::string& filePath) {
+std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader::readData(
+    const std::string& filePath) {
     std::string fileName = filePath;
     if (!filesystem::fileExists(fileName)) {
         std::string newPath = filesystem::addBasePath(fileName);
@@ -231,7 +234,6 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         if (enableLogOutput_) {
             LogInfo("Loaded multiple volumes: " << fileName << " volumes: " << datFiles.size());
         }
-        
 
     } else {
         if (dimensions_ == size3_t(0))
@@ -343,7 +345,8 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
                         "specified. "
                         << "Data range refer to the range of the data type, i.e. [0 4095] for "
                            "12-bit unsigned integer data. "
-                        << "It is important that the data range is specified for data types with a large range "
+                        << "It is important that the data range is specified for data types with a "
+                           "large range "
                         << "(for example 32/64-bit float and integer) since the data is often "
                            "normalized to [0 1], "
                         << "when for example performing color mapping, i.e. applying a transfer "
@@ -377,4 +380,4 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
     return volumes;
 }
 
-}  // namespace
+}  // namespace inviwo

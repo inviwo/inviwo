@@ -43,8 +43,9 @@ function(ivw_handle_shader_resources path)
         set(L_MODULE ${l_project_name})
         set(ADD_INCLUDES "")
         set(ADD_RESOURCES "")
+        ivw_private_get_ivw_module_include_path(${CMAKE_CURRENT_LIST_DIR} includePrefix includePath orgName)
         configure_file(${IVW_CMAKE_TEMPLATES}/shader_resource_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/modules/${l_project_name}/shader_resources.h)
+                       ${CMAKE_CURRENT_BINARY_DIR}/include/${includePrefix}/shader_resources.h)
     endif()
 endfunction()
 
@@ -59,21 +60,23 @@ function(ivw_generate_shader_resource parent_path)
     string(TOUPPER ${PROJECT_NAME} u_project_name)
     string(TOLOWER ${PROJECT_NAME} l_project_name)
 
+    ivw_private_get_ivw_module_include_path(${CMAKE_CURRENT_LIST_DIR} includePrefix includePath orgName)
+
     foreach(shader_path ${ARGN})
         file(RELATIVE_PATH shaderkey ${parent_path} ${shader_path})
         string(REPLACE "/" "_" tmp ${shaderkey})
         string(REPLACE "." "_" tmp ${tmp})
         string(REPLACE " " "_" varName ${tmp})
 
-        set(headerpath "modules/${l_project_name}/glsl/${varName}.h")
+        set(headerpath "${includePrefix}/glsl/${varName}.h")
 
-        set(outfile "${CMAKE_BINARY_DIR}/modules/_generated/${headerpath}")
+        set(outfile "${CMAKE_CURRENT_BINARY_DIR}/include/${headerpath}")
         set(cmd "${cmd}ivw_generate_shader_header(\"${varName}\" \"${shader_path}\" \"${outfile}\")\n")
         set(includes "${includes}#include <${headerpath}>\n")
         set(resources "${resources}    manager->addShaderResource(\"${shaderkey}\", ${varName});\n")
     endforeach()
 
-    file(WRITE ${CMAKE_BINARY_DIR}/modules/${l_project_name}/create_shader_resource.cmake ${cmd})
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/create_shader_resource.cmake ${cmd})
 
     add_definitions(-D${u_project_name}_INCLUDE_SHADER_RESOURCES)
 
@@ -81,11 +84,12 @@ function(ivw_generate_shader_resource parent_path)
     set(L_MODULE ${l_project_name})
     set(ADD_INCLUDES "${includes}")
     set(ADD_RESOURCES "${resources}")
+
     configure_file(${IVW_CMAKE_TEMPLATES}/shader_resource_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/modules/${l_project_name}/shader_resources.h)
+                   ${CMAKE_CURRENT_BINARY_DIR}/include/${includePrefix}/shader_resources.h)
 
     add_custom_target("inviwo-shader-resources-${l_project_name}"
-        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${l_project_name}/create_shader_resource.cmake
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/create_shader_resource.cmake
         DEPENDS ${ARGN}
         WORKING_DIRECTORY ${OUTPUT_DIR}
         COMMENT "Generating Shader resources for ${PROJECT_NAME}"

@@ -64,6 +64,7 @@ class InviwoEditMenu;
 class InviwoAboutWindow;
 class ResourceManagerDockWidget;
 class FileAssociations;
+class ToolsMenu;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -95,6 +96,7 @@ public:
     InviwoApplicationQt* getInviwoApplicationQt() const;
 
     InviwoEditMenu* getInviwoEditMenu() const;
+    ToolsMenu* getToolsMenu() const;
 
     void newWorkspace();
     void openWorkspace();
@@ -152,6 +154,7 @@ private:
 
     InviwoApplicationQt* app_;
     InviwoEditMenu* editMenu_ = nullptr;
+    ToolsMenu* toolsMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;
     QMenu* testMenu_ = nullptr;
     std::shared_ptr<ConsoleWidget> consoleWidget_;

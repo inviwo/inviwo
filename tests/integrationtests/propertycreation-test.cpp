@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/util/stringlogger.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -45,12 +46,16 @@ namespace inviwo {
 namespace {
 
 struct LogErrorCheck {
-    LogErrorCheck() : logCounter_{std::make_shared<LogErrorCounter>()} {
+    LogErrorCheck()
+        : logCounter_{std::make_shared<LogErrorCounter>()}
+        , stringLog_{std::make_shared<StringLogger>()} {
         LogCentral::getPtr()->registerLogger(logCounter_);
+        LogCentral::getPtr()->registerLogger(stringLog_);
     }
-    ~LogErrorCheck() { EXPECT_EQ(0, logCounter_->getErrorCount()); }
+    ~LogErrorCheck() { EXPECT_EQ(0, logCounter_->getErrorCount()) << stringLog_->getLog(); }
 
     std::shared_ptr<LogErrorCounter> logCounter_;
+    std::shared_ptr<StringLogger> stringLog_;
 };
 
 }  // namespace
