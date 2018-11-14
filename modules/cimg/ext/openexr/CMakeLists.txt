@@ -5,7 +5,7 @@ OPTION(OpenEXR_GENERATE_LUT "Enable the generation of lookup tables used by Open
 
 IF(${generate_lookup_tables})
   ## create lookup tables in the generated files folder of the build
-  SET(lookup_table_dir ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr)
+  SET(lookup_table_dir ${CMAKE_CURRENT_BINARY_DIR}/include)
 ELSE()
   ## use the pre-computed lookup tables
   SET(lookup_table_dir ${CMAKE_CURRENT_SOURCE_DIR}/lut)

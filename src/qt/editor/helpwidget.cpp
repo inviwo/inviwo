@@ -206,6 +206,7 @@ void HelpWidget::updateDoc() {
     if (current_ == requested_) return;
 
     if (visibleRegion().isEmpty()) return;
+    current_ = requested_;
 
     const QString path("qthelp:///doc/docpage-%1.html");
     QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(requested_))));
@@ -214,16 +215,15 @@ void HelpWidget::updateDoc() {
         return;
     }
 
-    replaceInString(requested_, ".", "_8");
-    foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(requested_))));
+    std::string classIdentifier = requested_;
+    replaceInString(classIdentifier, ".", "_8");
+    foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
     if (foundUrl.isValid()) {
         helpBrowser_->setSource(foundUrl);
         return;
     }
 
     helpBrowser_->setText(QString::fromStdString("No documentation available for: " + requested_));
-
-    current_ = requested_;
 }
 
 HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine)

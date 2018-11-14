@@ -46,7 +46,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/consolelogger.h>
-#include <moduleregistration.h>
+#include <inviwo/core/moduleregistration.h>
 
 using namespace inviwo;
 

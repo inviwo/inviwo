@@ -18,8 +18,8 @@ IF(${OpenEXR_GENERATE_LUT})
   )
 
   ADD_CUSTOM_COMMAND (
-    OUTPUT ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/b44ExpLogTable.h
-    COMMAND b44ExpLogTable > ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/b44ExpLogTable.h
+    OUTPUT${CMAKE_CURRENT_BINARY_DIR}/include/b44ExpLogTable.h
+    COMMAND b44ExpLogTable >${CMAKE_CURRENT_BINARY_DIR}/include/b44ExpLogTable.h
     DEPENDS b44ExpLogTable
   )
 
@@ -38,8 +38,8 @@ IF(${OpenEXR_GENERATE_LUT})
   )
 
   ADD_CUSTOM_COMMAND (
-    OUTPUT ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/dwaLookups.h
-    COMMAND dwaLookups > ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/dwaLookups.h
+    OUTPUT${CMAKE_CURRENT_BINARY_DIR}/include/dwaLookups.h
+    COMMAND dwaLookups >${CMAKE_CURRENT_BINARY_DIR}/include/dwaLookups.h
     DEPENDS dwaLookups
   )
 ENDIF()
@@ -145,6 +145,8 @@ ADD_LIBRARY ( openexr-ilmimf ${LIB_TYPE}
 )
 
 TARGET_LINK_LIBRARIES ( openexr-ilmimf PUBLIC
+  openexr-ifmconf
+  openexr-conf
   openexr-half
   openexr-iex
   openexr-imath
@@ -289,7 +291,6 @@ ivw_suppress_compiler_warnings(openexr-ilmimf)
 
 target_include_directories(openexr-ilmimf PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr>
 )
 
 #--------------------------------------------------------------------

@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     InviwoApplication app(argc, argv, "Inviwo-Unittests-CImg");
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-        modules.emplace_back(createCoreModule());
+        modules.emplace_back(createInviwoCore());
         modules.emplace_back(createCImgModule());
         app.registerModules(std::move(modules));
     }

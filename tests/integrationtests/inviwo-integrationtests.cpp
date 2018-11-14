@@ -46,7 +46,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/logerrorcounter.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <moduleregistration.h>
+#include <inviwo/core/moduleregistration.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

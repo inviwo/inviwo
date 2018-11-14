@@ -195,6 +195,10 @@ public:
     virtual const Matrix<N+1, float> getWorldToDataMatrix() const = 0;
 };
 
+// https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
+IVW_CORE_EXT template class IVW_CORE_API SpatialCoordinateTransformer<2>;
+IVW_CORE_EXT template class IVW_CORE_API SpatialCoordinateTransformer<3>;
+
 template<unsigned int N>
 class StructuredCoordinateTransformer : public SpatialCoordinateTransformer<N> {
 public:
@@ -408,6 +412,9 @@ public:
      */
     virtual const Matrix<N+1, float> getWorldToViewMatrix() const = 0;
 };
+
+IVW_CORE_EXT template class IVW_CORE_API SpatialCameraCoordinateTransformer<2>;
+IVW_CORE_EXT template class IVW_CORE_API SpatialCameraCoordinateTransformer<3>;
 
 template<unsigned int N>
 class StructuredCameraCoordinateTransformer : public SpatialCameraCoordinateTransformer<N> {

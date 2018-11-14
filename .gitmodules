@@ -27,3 +27,12 @@
 [submodule "ext/glm/glm"]
 	path = ext/glm/glm
 	url = https://github.com/inviwo/glm.git
+[submodule "ext/fmt/fmt"]
+	path = ext/fmt/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "tools/meta/ext/pegtl"]
+	path = tools/meta/ext/pegtl
+	url = https://github.com/taocpp/PEGTL.git
+[submodule "tools/meta/ext/inja"]
+	path = tools/meta/ext/inja
+url=https://github.com/pantor/inja.git

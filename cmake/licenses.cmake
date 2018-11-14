@@ -150,9 +150,9 @@ function(ivw_private_generate_licence_header)
                      "\"${ivw_licence_${id}_module}\", // Module"
                      "\"${ivw_licence_${id}_type}\", // Type"
                      "${files}}")
-        join(";" "\n          " license ${license})
+        ivw_join(";" "\n          " license ${license})
         list(APPEND licenses "${license}")
     endforeach(id)
-    join(";" ",\n         " licenses ${licenses})
+    ivw_join(";" ",\n         " licenses ${licenses})
     set(${ARG_RETVAL} "{${licenses}}" PARENT_SCOPE)
 endfunction()

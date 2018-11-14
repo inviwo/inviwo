@@ -39,7 +39,7 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/util/filelogger.h>
 #include "inviwosplashscreen.h"
-#include <moduleregistration.h>
+#include <inviwo/core/moduleregistration.h>
 
 #include <sstream>
 #include <algorithm>

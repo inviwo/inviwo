@@ -31,6 +31,17 @@ def nicelog(env = [], fun) {
     }
 }
 
+def nicecmd(stageName, dirName, env = [], fun) {
+    stage(stageName) {
+        dir(dirName) {
+            nicelog(env) {
+                fun()
+            }
+        }
+    }
+}
+
+
 node {
     properties([
         parameters([
@@ -66,7 +77,7 @@ node {
                 sh "rm -r build"
             }
             dir('build') {
-                nicelog(['CC=/usr/bin/gcc-5', 'CXX=/usr/bin/g++-5']) {
+                nicelog {
                     sh """
                         ccache -z # reset ccache statistics
                         # tell ccache where the project root is
@@ -108,76 +119,46 @@ node {
             }
         }
 
-        stage('Unit tests') {
-            dir('build/bin') {
-                nicelog {
-                    sh '''
-                        export DISPLAY=:0
-                        rc=0
-                        for unittest in inviwo-unittests-*
-                            do echo ==================================
-                            echo Running: ${unittest}
-                            ./${unittest} || rc=$?
-                        done
-                        exit ${rc}
-                    '''
-                }
-            }
+        def display = 0           
+        nicecmd('Unit Tests', 'build/bin', ['DISPLAY=:' + display]) {
+            sh '''
+                rc=0
+                for unittest in inviwo-unittests-*
+                    do echo ==================================
+                    echo Running: ${unittest}
+                    ./${unittest} || rc=$?
+                done
+                exit ${rc}
+            '''    
         }
 
-        stage('Integration tests') {
-            dir('build/bin') {
-                nicelog {
-                    sh '''
-                        export DISPLAY=:0
-                        ./inviwo-integrationtests
-                    '''
-                }
-            }
-        }
-
-        stage('Copyright check') {
-            dir('inviwo') {
-            nicelog {
-                sh '''
-                python3 tools/refactoring/check-copyright.py .
-                '''
-            }
-
-            }
-
-        }
-        
-        stage('Doxygen') {
-            dir('build') {
-                nicelog {
-                    sh '''
-                        export DISPLAY=:0
-                        ninja DOXY-ALL
-                    '''
-                }
-            }
+        nicecmd('Integration Tests', 'build/bin', ['DISPLAY=:' + display]) {
+            sh './inviwo-integrationtests'
         }
         
         try {
-            stage('Regression tests') {
-                dir('regress') {
-                    nicelog {
-                        sh """
-                            export DISPLAY=:0
-                            python3 ../inviwo/tools/regression.py \
-                                    --inviwo ../build/bin/inviwo \
-                                    --header ${env.JENKINS_HOME}/inviwo-config/header.html \
-                                    --output . \
-                                    --repos ../inviwo
-                        """
-                    }
-                }
+            nicecmd('Regression Tests', 'regress', ['DISPLAY=:' + display]) {
+                sh """
+                    python3 ../inviwo/tools/regression.py \
+                            --inviwo ../build/bin/inviwo \
+                            --header ${env.JENKINS_HOME}/inviwo-config/header.html \
+                            --output . \
+                            --repos ../inviwo
+                """
             }
         } catch (e) {
             // Mark as unstable, if we mark as failed, the report will not be published.
             currentBuild.result = 'UNSTABLE'
         }
+
+        nicecmd('Copyright Check', 'inviwo') {
+            sh 'python3 tools/refactoring/check-copyright.py .'
+        }
+        
+        nicecmd('Doxygen', 'build', ['DISPLAY=:' + display]) {
+            sh 'ninja DOXY-ALL'
+        }
+        
         stage('Publish') {
             publishHTML([
                 allowMissing: true,

@@ -30,9 +30,5 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 
 namespace inviwo {
- 
-template class SpatialEntity<2>;
-template class SpatialEntity<3>;
- 
- 
+  
 } // namespace

@@ -312,6 +312,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/statecoordinator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/stringlogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/templatesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
@@ -326,7 +327,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/zip.h
 )
-ivw_group("Header Files" ${HEADER_FILES})
+ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
@@ -344,6 +345,7 @@ set(SOURCE_FILES
     datastructures/buffer/bufferrepresentation.cpp
     datastructures/camera.cpp
     datastructures/camerafactoryobject.cpp
+    datastructures/coordinatetransformer.cpp
     datastructures/datamapper.cpp
     datastructures/datatraits.cpp
     datastructures/geometry/basicmesh.cpp
@@ -483,6 +485,7 @@ set(SOURCE_FILES
     properties/listproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
+    properties/ordinalproperty.cpp
     properties/planeproperty.cpp
     properties/positionproperty.cpp
     properties/property.cpp
@@ -560,6 +563,7 @@ set(SOURCE_FILES
     util/stacktrace.cpp
     util/statecoordinator.cpp
     util/stringconversion.cpp
+    util/stringlogger.cpp
     util/systemcapabilities.cpp
     util/threadpool.cpp
     util/timer.cpp
@@ -608,11 +612,14 @@ set(TEST_FILES
 ivw_add_unittest(${TEST_FILES})
 
 set(GEN_FILES
-    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.h
-    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/coremodulesharedlibrary.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/common/coremodulesharedlibrary.cpp
 )
-source_group("Source Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.cpp)
-source_group("Header Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated/inviwo/core/common/coremodulesharedlibrary.h)
+source_group("Header Files\\common" FILES ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/coremodulesharedlibrary.h)
+source_group("Source Files\\common" FILES ${CMAKE_CURRENT_BINARY_DIR}/src/common/coremodulesharedlibrary.cpp)
+
+set(cmake_files "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
+source_group("CMake Files" FILES ${cmake_files})
 
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
@@ -638,50 +645,28 @@ target_compile_definitions(inviwo-core PRIVATE
 #--------------------------------------------------------------------
 # Add core folders to includes, this will also be picked up by all the modules
 target_include_directories(inviwo-core PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
-    $<BUILD_INTERFACE:${IVW_MODULE_DIR}> # We should not use these..."
-    $<BUILD_INTERFACE:${IVW_ROOT_DIR}> # We should not use these..."
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/modules/_generated>
 )
 
-# Add path for external modules
-# example we have an extarnal path to: /my/dir/structure/repo/modules
-# inside the module folder we have a bunch of modules.
-# we will add /my/dir/structure/repo as an include path since
-# we usually refer to module headers as <modules/mymodule1/someheader.h>
-# hence we add the parent of the path given.
-# Except for in the module registration where we don't include 'modules'
-# So we need to add the acctual path also
-if (IVW_EXTERNAL_MODULES)
-    foreach(dir ${IVW_EXTERNAL_MODULES})
-        get_filename_component(dir_parent ${dir} PATH)
-        target_include_directories(inviwo-core PUBLIC 
-            $<BUILD_INTERFACE:${dir_parent}>
-            $<BUILD_INTERFACE:${dir}>
-        )
-    endforeach()
-endif()
-
 # Add core dependencies to this list
-target_link_libraries(inviwo-core PUBLIC ticpp inviwo::glm)
-target_link_libraries(inviwo-core PUBLIC ticpp inviwo::tinydir)
+target_link_libraries(inviwo-core PUBLIC 
+    ticpp 
+    inviwo::glm
+    inviwo::tinydir
+    inviwo::tclap
+    inviwo::warn
+    $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
+    $<$<BOOL:${WIN32}>:inviwo::stackwalker>
+    $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
+)
 
-if(IVW_SIGAR)
-    target_link_libraries(inviwo-core PUBLIC inviwo::sigar)
-endif()
-if(WIN32)
-    target_link_libraries(inviwo-core PUBLIC inviwo::stackwalker)
-endif()
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
    mark_as_advanced(CORESERVICES_LIBRARY)
    target_link_libraries(inviwo-core PRIVATE ${CORESERVICES_LIBRARY})
 endif (APPLE)
-if(UNIX)
-    # Required for dlopen
-    target_link_libraries(inviwo-core PRIVATE ${CMAKE_DL_LIBS})
-endif(UNIX)
 
 #Optimize compiliation with PCH etc
 ivw_compile_optimize_on_target(inviwo-core)
@@ -737,7 +722,7 @@ if (TARGET inviwo::stackwalker)
     )
 endif()
 
-ivw_register_license_file(NAME "tclap" TARGET tclap MODULE Core
+ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core
     URL http://tclap.sourceforge.net/
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING

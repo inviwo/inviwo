@@ -5,3 +5,4 @@ set(dependencies
     InviwoAnimationModule  
 	InviwoQtWidgetsModule
 )
+set(EnableByDefault ON)
