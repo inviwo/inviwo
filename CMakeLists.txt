@@ -199,11 +199,6 @@ if(PYTHONLIBS_FOUND)
     list(APPEND ivw_default_modules "Python3" "Python3Qt")
 endif()
 
-find_package(OpenCL QUIET)
-if(OPENCL_FOUND)
-    list(APPEND ivw_default_modules "OpenCL" "BaseCL")
-endif()
-
 ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
 ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
 
