@@ -78,10 +78,8 @@ endif()
 # Build
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
-
 # Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/tools") 
-
 
 # Make sure we do look for python 3 here, before it is done in any subdirectory or external library. 
 # If we do not specify version number on our first call to find_package(PythonLibs) it returns the 
@@ -173,37 +171,6 @@ endif()
 # Add stackwalker for windows for stack traces in the log
 if(WIN32)
     add_subdirectory(ext/stackwalker)
-endif()
-
-#--------------------------------------------------------------------
-# Add default modules
-set(ivw_default_modules
-    "Assimp" 
-    "Base"
-    "BaseGL"
-    "CImg"
-    "FontRendering"
-    "OpenGL"
-    "OpenGLQt"
-    "PVM"
-    "Nifti"
-    "QtWidgets"
-    "EigenUtils"
-    "BrushingAndLinking"
-    "VectorFieldVisualization"
-    "VectorFieldVisualizationGL"
-    "PostProcessing"
-    "Nifti" 
-    CACHE INTERNAL "Default Inviwo Modules"
-)
-
-if(PYTHONLIBS_FOUND)
-    list(APPEND ivw_default_modules "Python3" "Python3Qt")
-endif()
-
-find_package(OpenCL QUIET)
-if(OPENCL_FOUND)
-    list(APPEND ivw_default_modules "OpenCL" "BaseCL")
 endif()
 
 ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)

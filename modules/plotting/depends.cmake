@@ -6,3 +6,4 @@ set(dependencies
     #InviwoBaseGLModule  
     InviwoFontRenderingModule
 )
+set(EnableByDefault ON)
