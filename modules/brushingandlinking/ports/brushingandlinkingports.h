@@ -54,26 +54,26 @@ public:
 
     void sendSelectionEvent(const std::unordered_set<size_t> &indices);
 
-    void sendClusterSelectionEvent(const std::unordered_set<size_t> &indices);
+    void sendClusterSelectionEvent(const std::unordered_set<int> &indices);
 
-    void sendSomeOtherSelectionEvent(const std::unordered_set<size_t> &indices);
+    void sendSomeOtherSelectionEvent(const std::unordered_set<int> &indices);
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
-    bool isClusterSelected(size_t idx) const;
-    bool isSomeOtherSelected(size_t idx) const;
+    bool isClusterSelected(int idx) const;
+    bool isSomeOtherSelected(int idx) const;
 
     const std::unordered_set<size_t> &getSelectedIndices() const;
     const std::unordered_set<size_t> &getFilteredIndices() const;
-    const std::unordered_set<size_t> &getClusterSelectedIndices() const;
-    const std::unordered_set<size_t> &getSomeOtherSelectedIndices() const;
+    const std::unordered_set<int> & getClusterSelectedIndices() const;
+    const std::unordered_set<int> & getSomeOtherSelectedIndices() const;
 
     virtual std::string getClassIdentifier() const override;
 
     std::unordered_set<size_t> filterCache_;
     std::unordered_set<size_t> selectionCache_;
-    std::unordered_set<size_t> clusterSelectionCache_;
-    std::unordered_set<size_t> someOtherSelectionCache_;
+    std::unordered_set<int> clusterSelectionCache_;
+    std::unordered_set<int> someOtherSelectionCache_;
 };
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport

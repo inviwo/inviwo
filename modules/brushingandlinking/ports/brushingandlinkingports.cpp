@@ -56,14 +56,14 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
 }
 
 void BrushingAndLinkingInport::sendClusterSelectionEvent(
-    const std::unordered_set<size_t>& indices) {
+        const std::unordered_set<int> &indices) {
     clusterSelectionCache_ = indices;
     ClusterSelectionEvent event(this, clusterSelectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendSomeOtherSelectionEvent(
-    const std::unordered_set<size_t>& indices) {
+        const std::unordered_set<int> &indices) {
     someOtherSelectionCache_ = indices;
     SomeOtherSelectionEvent event(this, someOtherSelectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
@@ -85,7 +85,7 @@ bool BrushingAndLinkingInport::isSelected(size_t idx) const {
     }
 }
 
-bool BrushingAndLinkingInport::isClusterSelected(size_t idx) const {
+bool BrushingAndLinkingInport::isClusterSelected(int idx) const {
     if (isConnected()) {
         return getData()->isClusterSelected(idx);
     } else {
@@ -93,7 +93,7 @@ bool BrushingAndLinkingInport::isClusterSelected(size_t idx) const {
     }
 }
 
-bool BrushingAndLinkingInport::isSomeOtherSelected(size_t idx) const {
+bool BrushingAndLinkingInport::isSomeOtherSelected(int idx) const {
     if (isConnected()) {
         return getData()->isSomeOtherSelected(idx);
     } else {
@@ -117,7 +117,7 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices()
     }
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getClusterSelectedIndices() const {
+const std::unordered_set<int> & BrushingAndLinkingInport::getClusterSelectedIndices() const {
     if (isConnected()) {
         return getData()->getClusterSelectedIndices();
     } else {
@@ -125,7 +125,7 @@ const std::unordered_set<size_t>& BrushingAndLinkingInport::getClusterSelectedIn
     }
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getSomeOtherSelectedIndices() const {
+const std::unordered_set<int> & BrushingAndLinkingInport::getSomeOtherSelectedIndices() const {
     if (isConnected()) {
         return getData()->getSomeOtherSelectedIndices();
     } else {

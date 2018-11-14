@@ -27,25 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SOMEOTHERSELECTIONEVENT_H
-#define IVW_SOMEOTHERSELECTIONEVENT_H
-
-#include <inviwo/core/common/inviwo.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/events/signedbrushingandlinkingevent.h>
-
 namespace inviwo {
 
-/**
- * \class SelectionEvent
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API SomeOtherSelectionEvent : public SignedBrushingAndLinkingEvent {
-public:
-    SomeOtherSelectionEvent(const BrushingAndLinkingInport *src,
-                            const std::unordered_set<int> &indices);
-    virtual ~SomeOtherSelectionEvent() = default;
-};
+SignedBrushingAndLinkingEvent::SignedBrushingAndLinkingEvent(const BrushingAndLinkingInport* src,
+                                                 const std::unordered_set<int>& indices)
+    : source_(src), indices_(indices) {}
 
-}  // namespace inviwo
+SignedBrushingAndLinkingEvent* SignedBrushingAndLinkingEvent::clone() const {
+    return new SignedBrushingAndLinkingEvent(*this);
+}
 
-#endif  // IVW_SOMEOTHERSELECTIONEVENT_H
+const inviwo::BrushingAndLinkingInport* SignedBrushingAndLinkingEvent::getSource() const {
+    return source_;
+}
+
+const std::unordered_set<int>& SignedBrushingAndLinkingEvent::getIndices() const { return indices_; }
+
+
+uint64_t SignedBrushingAndLinkingEvent::hash() const {
+    return chash();
+}
+
+
+}  // namespace

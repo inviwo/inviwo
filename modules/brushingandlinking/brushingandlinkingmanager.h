@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <modules/brushingandlinking/datastructures/signedindexlist.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 
 namespace inviwo {
@@ -58,8 +59,8 @@ public:
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
-    bool isClusterSelected(size_t idx) const;
-    bool isSomeOtherSelected(size_t idx) const;
+    bool isClusterSelected(int idx) const;
+    bool isSomeOtherSelected(int idx) const;
 
     void setSelected(const BrushingAndLinkingInport* src,
                      const std::unordered_set<size_t>& indices);
@@ -67,22 +68,22 @@ public:
     void setFiltered(const BrushingAndLinkingInport* src,
                      const std::unordered_set<size_t>& indices);
 
-    void setClusterSelected(const BrushingAndLinkingInport* src,
-                            const std::unordered_set<size_t>& indices);
+    void setClusterSelected(const BrushingAndLinkingInport *src,
+                            const std::unordered_set<int> &indices);
 
-    void setSomeOtherSelected(const BrushingAndLinkingInport* src,
-                              const std::unordered_set<size_t>& indices);
+    void setSomeOtherSelected(const BrushingAndLinkingInport *src,
+                              const std::unordered_set<int> &indices);
 
     const std::unordered_set<size_t>& getSelectedIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;
-    const std::unordered_set<size_t>& getClusterSelectedIndices() const;
-    const std::unordered_set<size_t>& getSomeOtherSelectedIndices() const;
+    const std::unordered_set<int> & getClusterSelectedIndices() const;
+    const std::unordered_set<int> & getSomeOtherSelectedIndices() const;
 
 private:
     IndexList selected_;
     IndexList filtered_;
-    IndexList clusterSelected_;
-    IndexList someOtherSelected_;
+    SignedIndexList clusterSelected_;
+    SignedIndexList someOtherSelected_;
 
     std::shared_ptr<std::function<void()>> callback1_;
     std::shared_ptr<std::function<void()>> callback2_;

@@ -79,11 +79,11 @@ bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.
 
 bool BrushingAndLinkingManager::isSelected(size_t idx) const { return selected_.has(idx); }
 
-bool BrushingAndLinkingManager::isClusterSelected(size_t idx) const {
+bool BrushingAndLinkingManager::isClusterSelected(int idx) const {
     return clusterSelected_.has(idx);
 }
 
-bool BrushingAndLinkingManager::isSomeOtherSelected(size_t idx) const {
+bool BrushingAndLinkingManager::isSomeOtherSelected(int idx) const {
     return someOtherSelected_.has(idx);
 }
 
@@ -97,13 +97,13 @@ void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
     filtered_.set(src, indices);
 }
 
-void BrushingAndLinkingManager::setClusterSelected(const BrushingAndLinkingInport* src,
-                                                   const std::unordered_set<size_t>& indices) {
+void BrushingAndLinkingManager::setClusterSelected(const BrushingAndLinkingInport *src,
+                                                   const std::unordered_set<int> &indices) {
     clusterSelected_.set(src, indices);
 }
 
-void BrushingAndLinkingManager::setSomeOtherSelected(const BrushingAndLinkingInport* src,
-                                                     const std::unordered_set<size_t>& indices) {
+void BrushingAndLinkingManager::setSomeOtherSelected(const BrushingAndLinkingInport *src,
+                                                     const std::unordered_set<int> &indices) {
     someOtherSelected_.set(src, indices);
 }
 
@@ -115,11 +115,11 @@ const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices(
     return filtered_.getIndices();
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingManager::getClusterSelectedIndices() const {
+const std::unordered_set<int> & BrushingAndLinkingManager::getClusterSelectedIndices() const {
     return clusterSelected_.getIndices();
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingManager::getSomeOtherSelectedIndices() const {
+const std::unordered_set<int> & BrushingAndLinkingManager::getSomeOtherSelectedIndices() const {
     return someOtherSelected_.getIndices();
 }
 

@@ -27,25 +27,53 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SOMEOTHERSELECTIONEVENT_H
-#define IVW_SOMEOTHERSELECTIONEVENT_H
-
-#include <inviwo/core/common/inviwo.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/events/signedbrushingandlinkingevent.h>
+#include <modules/brushingandlinking/datastructures/signedindexlist.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
 
-/**
- * \class SelectionEvent
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API SomeOtherSelectionEvent : public SignedBrushingAndLinkingEvent {
-public:
-    SomeOtherSelectionEvent(const BrushingAndLinkingInport *src,
-                            const std::unordered_set<int> &indices);
-    virtual ~SomeOtherSelectionEvent() = default;
-};
+SignedIndexList::SignedIndexList() {}
+
+SignedIndexList::~SignedIndexList() {}
+
+size_t SignedIndexList::getSize() const { return indices_.size(); }
+
+bool SignedIndexList::has(int idx) const { return indices_.find(idx) != indices_.end(); }
+
+void SignedIndexList::set(const BrushingAndLinkingInport *src,
+                          const std::unordered_set<int> &indices) {
+    indicesBySource_[src] = indices;
+    update();
+}
+
+void SignedIndexList::remove(const BrushingAndLinkingInport *src) {
+    indicesBySource_.erase(src);
+    update();
+}
+
+std::shared_ptr<std::function<void()>> SignedIndexList::onChange(std::function<void()> V) {
+    return onUpdate_.add(V);
+}
+
+void SignedIndexList::update() {
+    indices_.clear();
+
+    using T =
+        std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<int>>::value_type;
+    util::map_erase_remove_if(indicesBySource_, [](const T &p) {
+        return !p.first->isConnected() ||
+               p.second.empty();  // remove if port is disconnected or if the set is empty
+    });
+
+    for (auto p : indicesBySource_) {
+        indices_.insert(p.second.begin(), p.second.end());
+    }
+    onUpdate_.invoke();
+}
+
+void SignedIndexList::clear() {
+    indices_.clear();
+    update();
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_SOMEOTHERSELECTIONEVENT_H

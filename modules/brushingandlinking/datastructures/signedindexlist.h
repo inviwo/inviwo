@@ -27,25 +27,43 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SOMEOTHERSELECTIONEVENT_H
-#define IVW_SOMEOTHERSELECTIONEVENT_H
+#ifndef IVW_SIGNEDINDEXLIST_H
+#define IVW_SIGNEDINDEXLIST_H
 
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/dispatcher.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/events/signedbrushingandlinkingevent.h>
 
 namespace inviwo {
+class BrushingAndLinkingInport;
+class BrushingAndLinkingManager;
 
-/**
- * \class SelectionEvent
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API SomeOtherSelectionEvent : public SignedBrushingAndLinkingEvent {
+class IVW_MODULE_BRUSHINGANDLINKING_API SignedIndexList {
 public:
-    SomeOtherSelectionEvent(const BrushingAndLinkingInport *src,
-                            const std::unordered_set<int> &indices);
-    virtual ~SomeOtherSelectionEvent() = default;
+    SignedIndexList ();
+    virtual ~SignedIndexList ();
+
+    size_t getSize() const;
+    bool has(int idx) const;
+
+    void set(const BrushingAndLinkingInport *src, const std::unordered_set<int> &incices);
+    void remove(const BrushingAndLinkingInport *src);
+
+    std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
+
+    void update();
+    void clear();
+    const std::unordered_set<int> &getIndices() const {
+        return indices_;
+    }
+
+private:
+    std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<int>>
+        indicesBySource_;
+    std::unordered_set<int> indices_;
+    Dispatcher<void()> onUpdate_;
 };
 
-}  // namespace inviwo
+}  // namespace
 
-#endif  // IVW_SOMEOTHERSELECTIONEVENT_H
+#endif  // IVW_SIGNEDINDEXLIST_H

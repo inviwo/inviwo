@@ -27,25 +27,43 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SOMEOTHERSELECTIONEVENT_H
-#define IVW_SOMEOTHERSELECTIONEVENT_H
+#ifndef IVW_SIGNEDBRUSHINGANDLINKINGEVENT_H
+#define IVW_SIGNEDBRUSHINGANDLINKINGEVENT_H
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/events/signedbrushingandlinkingevent.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
+class BrushingAndLinkingInport;
 /**
- * \class SelectionEvent
+ * \class SignedBrushingAndLinkingEvent
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API SomeOtherSelectionEvent : public SignedBrushingAndLinkingEvent {
+class IVW_MODULE_BRUSHINGANDLINKING_API SignedBrushingAndLinkingEvent : public Event {
 public:
-    SomeOtherSelectionEvent(const BrushingAndLinkingInport *src,
-                            const std::unordered_set<int> &indices);
-    virtual ~SomeOtherSelectionEvent() = default;
+    SignedBrushingAndLinkingEvent(const BrushingAndLinkingInport* src,
+                            const std::unordered_set<int>& indices);
+    virtual ~SignedBrushingAndLinkingEvent() = default;
+
+    virtual SignedBrushingAndLinkingEvent* clone() const override;
+
+    const BrushingAndLinkingInport* getSource() const;
+
+    const std::unordered_set<int>& getIndices() const;
+
+    virtual uint64_t hash() const override;
+
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.SignedBrushingAndLinkingEvent");
+    }
+
+private:
+    const BrushingAndLinkingInport* source_;
+    const std::unordered_set<int>& indices_;
 };
 
-}  // namespace inviwo
+}  // namespace
 
-#endif  // IVW_SOMEOTHERSELECTIONEVENT_H
+#endif // IVW_SIGNEDBRUSHINGANDLINKINGEVENT_H

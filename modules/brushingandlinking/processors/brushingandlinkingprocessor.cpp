@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/events/brushingandlinkingevent.h>
+#include <modules/brushingandlinking/events/signedbrushingandlinkingevent.h>
 #include <modules/brushingandlinking/events/filteringevent.h>
 #include <modules/brushingandlinking/events/selectionevent.h>
 #include <modules/brushingandlinking/events/clusterselectionevent.h>
@@ -55,7 +56,8 @@ void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
             manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
             event->markAsUsed();
         }
-		else if (dynamic_cast<ClusterSelectionEvent*>(event)) {
+    }if (auto brushingEvent = dynamic_cast<SignedBrushingAndLinkingEvent*>(event)) {
+		if (dynamic_cast<ClusterSelectionEvent*>(event)) {
 			manager_->setClusterSelected(brushingEvent->getSource(), brushingEvent->getIndices());
 			event->markAsUsed();
 		}

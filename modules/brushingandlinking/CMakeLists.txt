@@ -8,7 +8,9 @@ set(HEADER_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/brushingandlinkingprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/brushingandlinkingmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/indexlist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/signedindexlist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/events/brushingandlinkingevent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/events/signedbrushingandlinkingevent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/events/clusterselectionevent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/events/filteringevent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/events/selectionevent.h
@@ -24,7 +26,9 @@ set(SOURCE_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/brushingandlinkingprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/brushingandlinkingmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/indexlist.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/signedindexlist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/events/brushingandlinkingevent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/events/signedbrushingandlinkingevent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/events/clusterselectionevent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/events/filteringevent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/events/selectionevent.cpp

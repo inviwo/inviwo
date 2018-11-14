@@ -32,17 +32,17 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
+#include <modules/brushingandlinking/events/signedbrushingandlinkingevent.h>
 
 namespace inviwo {
 
 /**
  * \class SelectionEvent
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API ClusterSelectionEvent : public BrushingAndLinkingEvent {
+class IVW_MODULE_BRUSHINGANDLINKING_API ClusterSelectionEvent : public SignedBrushingAndLinkingEvent {
 public:
-    ClusterSelectionEvent(const BrushingAndLinkingInport* src,
-                          const std::unordered_set<size_t>& indices);
+    ClusterSelectionEvent(const BrushingAndLinkingInport *src,
+                          const std::unordered_set<int> &indices);
     virtual ~ClusterSelectionEvent() = default;
 };
 
