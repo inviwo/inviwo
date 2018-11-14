@@ -179,6 +179,35 @@ void VolumeSource::load(bool deserialize) {
             LogInfo("min/max(nm): " << glm::dvec2(min_value_normalized_manually,
                                                   max_value_normalized_manually));
 
+            const auto& datamap = volume->dataMap_;
+
+            const auto windowCenterStr =
+                datamap.windowCenters.empty() ? "" : datamap.windowCenters[center_slice_idx];
+            const auto windowWidthStr =
+                datamap.windowWidths.empty() ? "" : datamap.windowWidths[center_slice_idx];
+
+            double windowCenter{0.0};
+            double windowWidth{0.0};
+            bool windowConversionSuccessful{true};
+
+            try {
+                windowCenter = std::stod(windowCenterStr);
+            } catch (...) {
+                windowCenter = 0.0;
+                windowConversionSuccessful = false;
+            }
+
+            try {
+                windowWidth = std::stod(windowWidthStr);
+            } catch (...) {
+                windowCenter = 0.0;
+                windowConversionSuccessful = false;
+            }
+
+            const auto windowWidthHalf = 0.5 * windowWidth;
+            const auto windowMin = windowCenter - windowWidthHalf;
+            const auto windowMax = windowCenter + windowWidthHalf;
+
             unsigned char min_value_img{std::numeric_limits<unsigned char>::max()},
                 max_value_img{0};
             for (size_t y{0}; y < volume_dim.y; y += step_size.y) {
@@ -186,15 +215,14 @@ void VolumeSource::load(bool deserialize) {
                     const size3_t pt{x, y, center_slice_idx};
 
                     const auto value = volumeRAM->getAsDouble(pt); // in data range
+                    double value_HU = value * datamap.rescaleSlope + datamap.rescaleIntercept;
+                    double value_normalized =
+                        windowConversionSuccessful ? (value_HU - windowMin) / windowWidth
+                                                  : (value - datamap.dataRange.x) /
+                                                        (datamap.dataRange.y - datamap.dataRange.x);
+                    double value_clamped = glm::clamp(value_normalized, 0.0, 1.0);
 
-                    const auto value_normalized_manually =
-                        (value - volume->dataMap_.dataRange.x) /
-                            (volume->dataMap_.dataRange.y - volume->dataMap_.dataRange.x);// *
-                            //volume->dataMap_.rescaleSlope +
-                        //volume->dataMap_.rescaleIntercept;
-
-                    const auto img_value =
-                        static_cast<unsigned char>(value_normalized_manually * 255.0);
+                    const auto img_value = static_cast<unsigned char>(value_clamped * 255.0);
 
                     max_value_img = glm::max(max_value_img, img_value);
                     min_value_img = glm::min(min_value_img, img_value);
