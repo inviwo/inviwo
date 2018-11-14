@@ -71,7 +71,7 @@ std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec
             int outcode = outcodeP1 ? outcodeP1 : outcodeP2;
 
             // compute intersection
-            vec2 p;
+            vec2 p{0};
             if (outcode & 0x0001) {  // left
                 p.x = rectMin.x;
                 p.y = p1.y + (p2.y - p1.y) * (rectMin.x - p1.x) / (p2.x - p1.x);
