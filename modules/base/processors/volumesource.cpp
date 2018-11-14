@@ -133,51 +133,11 @@ void VolumeSource::load(bool deserialize) {
                 volume->setMetaData<StringMetaData>("filename", file_.get());
 
             const auto volume_dim = volume->getDimensions();
-            const auto center_slice_idx = volume_dim.z / 2;
+            const auto center_slice_idx = glm::max((volume_dim.z - 1) / 2, 0ULL);
             const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
 
             center_slice_img_data_[volumeIdx] =
                 std::vector<unsigned char>(volume_dim.x * volume_dim.y);
-
-            double min_value{std::numeric_limits<double>::max()}, max_value{0.0};
-            double min_value_normalized_manually{std::numeric_limits<double>::max()},
-                max_value_normalized_manually{0.0};
-
-            const size3_t step_size{1};
-            for (size_t z{0}; z < volume_dim.z; z += step_size.z) {
-                for (size_t y{0}; y < volume_dim.y; y += step_size.y) {
-                    for (size_t x{0}; x < volume_dim.x; x += step_size.x) {
-                        const size3_t pt{x, y, z};
-
-                        const auto value = volumeRAM->getAsDouble(pt); // in data range
-
-                        const auto value_normalized_manually =
-                            (value - volume->dataMap_.dataRange.x) /
-                            (volume->dataMap_.dataRange.y - volume->dataMap_.dataRange.x)
-                            * volume->dataMap_.rescaleSlope + volume->dataMap_.rescaleIntercept;
-
-                        const auto img_value =
-                            static_cast<unsigned char>(value_normalized_manually * 255.0);
-
-                        max_value = glm::max(max_value, value);
-                        min_value = glm::min(min_value, value);
-
-                        max_value_normalized_manually =
-                            glm::max(max_value_normalized_manually, value_normalized_manually);
-                        min_value_normalized_manually =
-                            glm::min(min_value_normalized_manually, value_normalized_manually);
-                    }
-                }
-            }
-
-            LogInfo("############");
-            LogInfo("value range: " << volume->dataMap_.valueRange);
-            LogInfo("data range:  " << volume->dataMap_.dataRange);
-            LogInfo("slope:       " << volume->dataMap_.rescaleSlope);
-            LogInfo("intercept:   " << volume->dataMap_.rescaleIntercept);
-            LogInfo("min/max:     " << glm::dvec2(min_value, max_value));
-            LogInfo("min/max(nm): " << glm::dvec2(min_value_normalized_manually,
-                                                  max_value_normalized_manually));
 
             const auto& datamap = volume->dataMap_;
 
@@ -210,6 +170,7 @@ void VolumeSource::load(bool deserialize) {
 
             unsigned char min_value_img{std::numeric_limits<unsigned char>::max()},
                 max_value_img{0};
+            const size2_t step_size{1};
             for (size_t y{0}; y < volume_dim.y; y += step_size.y) {
                 for (size_t x{0}; x < volume_dim.x; x += step_size.x) {
                     const size3_t pt{x, y, center_slice_idx};
