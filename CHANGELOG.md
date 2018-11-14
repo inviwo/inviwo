@@ -1,6 +1,13 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2018-11-14
+Added an option to control if a module should be on by default, and remove the old global setting.
+To enable the module by default add the following to the module `depends.cmake` file:
+```
+    set(EnableByDefault ON)
+```
+
+## 2018-11-14
 A new inviwo-meta library and an inviwo-meta-cli commandline app has been added to supersede the `make-new-module.py` and `make-new-file.py` python scripts. The library is also exposed in the tools menu of inviwo. Note that the inviwo-meta library relies on C++17 features and, thus, requires a recent compiler.
 
 ## 2018-11-14

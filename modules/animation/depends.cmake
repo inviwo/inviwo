@@ -4,3 +4,4 @@
 set(dependencies
     InviwoCImgModule
 )
+set(EnableByDefault ON)
