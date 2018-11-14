@@ -109,7 +109,8 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     , network_(mainwindow->getInviwoApplication()->getProcessorNetwork())
     , filename_("")
     , modified_(false)
-    , backgroundVisible_(true) {
+    , backgroundVisible_(true)
+    , adjustSceneToChange_(true) {
 
     network_->addObserver(this);
 
@@ -167,8 +168,10 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
     processorGraphicsItems_[processor] = processorGraphicsItem;
     addItem(processorGraphicsItem);
     updateSceneSize();
-    for (auto v : views()) {
-        v->ensureVisible(processorGraphicsItem);
+    if (adjustSceneToChange_) {
+        for (auto v : views()) {
+            v->ensureVisible(processorGraphicsItem);
+        }
     }
     return processorGraphicsItem;
 }
@@ -326,7 +329,7 @@ void NetworkEditor::setBackgroundVisible(bool visible) {
 bool NetworkEditor::isBackgroundVisible() const { return backgroundVisible_; }
 
 void NetworkEditor::updateSceneSize() {
-    if (!processorItem_) {
+    if (adjustSceneToChange_ && !processorItem_) {
         setSceneRect(getProcessorsBoundingRect());
         forEachObserver([&](auto o) { o->onSceneSizeChanged(); });
     }
@@ -508,10 +511,12 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             for (auto vis : dataVis) {
                 auto action = subMenu->addAction(utilqt::toQString(vis->getName()));
                 connect(action, &QAction::triggered, [this, vis, outport]() {
+                    AdjustSceneToChangesBlocker blocker(*this);
+
                     auto pos = util::getPosition(outport->getProcessor());
                     auto oldPos = util::getPositions(network_);
                     auto added = vis->addVisualizerNetwork(outport, network_);
-                    // add bellow pos
+                    // add below pos
                     const auto bounds = util::getBoundingBox(added);
                     for (auto p : oldPos) {
                         if ((p.x > pos.x - ProcessorGraphicsItem::size_.width() / 2) &&
@@ -628,12 +633,12 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
             menu.addSeparator();
             QAction* invalidateOutputAction = menu.addAction(tr("Invalidate &Output"));
-            connect(invalidateOutputAction, &QAction::triggered, [ processor]() {
+            connect(invalidateOutputAction, &QAction::triggered, [processor]() {
                 processor->getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
             });
 
             QAction* invalidateResourcesAction = menu.addAction(tr("Invalidate &Resources"));
-            connect(invalidateResourcesAction, &QAction::triggered, [ processor]() {
+            connect(invalidateResourcesAction, &QAction::triggered, [processor]() {
                 processor->getProcessor()->invalidate(InvalidationLevel::InvalidResources);
             });
             menu.addSeparator();
@@ -1349,5 +1354,15 @@ void NetworkEditor::onProcessorNetworkDidRemoveLink(const PropertyLink& property
 }
 
 void NetworkEditor::onProcessorNetworkChange() { setModified(); }
+
+NetworkEditor::AdjustSceneToChangesBlocker::AdjustSceneToChangesBlocker(NetworkEditor& network)
+    : network_(network) {
+    network_.adjustSceneToChange_ = false;
+}
+
+NetworkEditor::AdjustSceneToChangesBlocker::~AdjustSceneToChangesBlocker() {
+    network_.adjustSceneToChange_ = true;
+    network_.updateSceneSize();
+}
 
 }  // namespace inviwo

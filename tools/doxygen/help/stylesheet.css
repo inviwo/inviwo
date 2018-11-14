@@ -93,13 +93,11 @@ div.PointCloudPort {
 }
 
 pre.fragment {
-	border: 1px solid #CCCCCC;
-	background-color: #f5f5f5;
 	padding: 4px 6px;
-	margin: 4px 8px 4px 2px;
+	margin: 4px 8px 4px 10px;
 	overflow: auto;
 	word-wrap: break-word;
-	font-size:  9pt;
+	font-size:  80%;
 	line-height: 125%;
 }
 
