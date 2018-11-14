@@ -45,11 +45,13 @@
 
 namespace inviwo {
 
-// Mouse click activates the area for mouse/key interactions.
+// 
+// clang-format off
 /** \docpage{org.inviwo.ImageLayoutGL, Image Layout}
  * ![](org.inviwo.ImageLayoutGL.png?classIdentifier=org.inviwo.ImageLayoutGL)
  *
  * Provides layouting for multiple input images. The order of the input images will determine the result.
+ * A mouse click activates the respective area for handling mouse/key interactions.
  * Available layouts include
  * <table>
  *   <tr><td><tt>Single</tt></td><td>The first input image fills the entire output.</td></tr>
@@ -60,10 +62,7 @@ namespace inviwo {
  *   <tr><td><tt>Three Right, One Left</tt></td><td>The first 3 images are vertically arranged on the right, the fourth is shown on the left.</td></tr>
  *   <tr><td><tt>Horizontal Split Multiple</tt></td><td>Two or more images are put on top of each other.</td></tr>
  *   <tr><td><tt>Vertical Split Multiple</tt></td><td>Two or more images are put next to each other side by side.</td></tr>
- *
  * </table>
- *
- * Clicking an image with the mouse will activate the area for mouse and key interactions.
  *
  * ### Inports
  *   * __Image Inport__ Multi-inport for multiple images. Only the first four images will be layouted.
@@ -76,49 +75,50 @@ namespace inviwo {
  *   * __Split Position__ Position of the layout splitter.
  *
  */
-    class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
-    public:
-        virtual const ProcessorInfo getProcessorInfo() const override;
-        static const ProcessorInfo processorInfo_;
+// clang-format on
+class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
+public:
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-        enum class Layout {
-            Single,
-            HorizontalSplit,
-            VerticalSplit,
-            CrossSplit,
-            ThreeLeftOneRight,
-            ThreeRightOneLeft,
-            HorizontalSplitMultiple,
-            VerticalSplitMultiple,
-        };
-
-        ImageLayoutGL();
-        virtual ~ImageLayoutGL();
-
-        virtual void propagateEvent(Event*, Outport* source) override;
-
-    protected:
-        virtual void process() override;
-
-        void updateViewports(ivec2 size, bool force = false);
-        void onStatusChange();
-
-    private:
-        ImageMultiInport multiinport_;
-        ImageOutport outport_;
-
-        TemplateOptionProperty<Layout> layout_;
-        FloatProperty horizontalSplitter_;
-        FloatProperty verticalSplitter_;
-        FloatProperty vertical3Left1RightSplitter_;
-        FloatProperty vertical3Right1LeftSplitter_;
-
-        Shader shader_;
-        ViewManager viewManager_;
-        Layout currentLayout_;
-        ivec2 currentDim_;
+    enum class Layout {
+        Single,
+        HorizontalSplit,
+        VerticalSplit,
+        CrossSplit,
+        ThreeLeftOneRight,
+        ThreeRightOneLeft,
+        HorizontalSplitMultiple,
+        VerticalSplitMultiple,
     };
 
-}  // namespace
+    ImageLayoutGL();
+    virtual ~ImageLayoutGL();
+
+    virtual void propagateEvent(Event*, Outport* source) override;
+
+protected:
+    virtual void process() override;
+
+    void updateViewports(ivec2 size, bool force = false);
+    void onStatusChange(bool propagate = true);
+
+private:
+    ImageMultiInport multiinport_;
+    ImageOutport outport_;
+
+    TemplateOptionProperty<Layout> layout_;
+    FloatProperty horizontalSplitter_;
+    FloatProperty verticalSplitter_;
+    FloatProperty vertical3Left1RightSplitter_;
+    FloatProperty vertical3Right1LeftSplitter_;
+
+    Shader shader_;
+    ViewManager viewManager_;
+    Layout currentLayout_;
+    ivec2 currentDim_;
+};
+
+}  // namespace inviwo
 
 #endif  // IVW_IMAGELAYOUTGL_H

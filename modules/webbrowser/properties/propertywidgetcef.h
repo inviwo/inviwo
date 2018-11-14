@@ -77,11 +77,16 @@ public:
     PropertyWidgetCEF() = default;
     PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
 
+    friend class CefDOMSearchId;
+    friend class PropertyCefSynchronizer;
+
     virtual ~PropertyWidgetCEF() = default;
+
     /*
-     * Set frame containing html item.
+     * Checks if frame contains the html id of the widget and sets it if it is.
+     * CefFrame is required for communication between Inviwo and the web browser.
      */
-    void setFrame(CefRefPtr<CefFrame> frame);
+    void setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame);
     /*
      * Set id of corresponding element in HTML-webpage.
      * @param id HTML element id in webpage.
@@ -114,6 +119,10 @@ public:
 protected:
     // PropertyObservable overrides
     virtual void onSetReadOnly(Property* property, bool readonly) override;
+    /*
+     * Set frame containing html item.
+     */
+    void setFrame(CefRefPtr<CefFrame> frame);
 
     std::string htmlId_;         /// Id in used in html, usually Processor.PropertyId
     CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding properties

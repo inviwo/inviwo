@@ -78,18 +78,18 @@ public:
 
     bool isFullScreen() const;
     /** 
-	 * Sets window state of canvas to cover the entire screen.
-	 * Will call setFullScreenInternal after setting full screen flag.
-	 * @see setFullScreenInternal
-	 */
+     * Sets window state of canvas to cover the entire screen.
+     * Will call setFullScreenInternal after setting full screen flag.
+     * @see setFullScreenInternal
+     */
     void setFullScreen(bool fullscreen);
 
 protected:
     void propagateEvent(Event* e);
     /**
-     * Derived classes should override to implment actual window state.
+     * Derived classes should override to implement actual window state.
      */
-	virtual void setFullScreenInternal(bool fullscreen) = 0;
+    virtual void setFullScreenInternal(bool fullscreen) = 0;
 
     size2_t screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference

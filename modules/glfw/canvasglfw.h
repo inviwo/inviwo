@@ -87,8 +87,7 @@ public:
     virtual ContextID contextId() const override;
 
 protected:
-    // TODO: Implement fullscreen functionality
-    virtual void setFullScreenInternal(bool fullscreen) override { }
+    virtual void setFullScreenInternal(bool fullscreen) override;
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();
 
@@ -103,6 +102,9 @@ private:
     MouseButton mouseButton_;
     MouseState mouseState_;
     KeyModifiers modifiers_;
+
+    ivec2 oldPos_{0};
+    ivec2 oldSize_{256};
 
     static GLFWwindow* sharedContext_;
     static int glfwWindowCount_;

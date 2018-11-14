@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,16 +24,37 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-uniform mat4 dataToClip = mat4(1);
+#include "discretedata/connectivity/euclideanmeasure.h"
 
-out vec4 color_;
-out vec3 texCoord_;
+namespace inviwo {
+namespace discretedata {
+namespace euclidean {
 
-void main() {
-    color_ = in_Color;
-    texCoord_ = in_TexCoord;
-    gl_Position = dataToClip * in_Vertex;
+double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimitive dim,
+                  ind index) {
+
+    CellType cell = grid.getCellType(dim, index);
+    switch (cell) {
+        case CellType::Hexahedron:
+            if (positions.getNumComponents() == 3) {
+                // Only implemented 3D bodies so far.
+                if (dim != GridPrimitive::Volume) return -1;
+
+                double measure = -1;
+
+                measure = inviwo::dispatching::dispatch<double, dispatching::filter::Scalars>(
+                    positions.getDataFormatId(), HexVolumeComputer(), grid, positions, index);
+
+                return measure;
+            }
+        default:
+            return -1.0;
+    }
+}
+
+}
+}
 }

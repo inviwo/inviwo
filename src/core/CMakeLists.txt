@@ -570,17 +570,19 @@ set(SOURCE_FILES
     util/volumesequenceutils.cpp
     util/volumeutils.cpp
 )
+ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # include implementation for build info - the build info will be 
 # updated during every compilation
 if(IVW_EMBED_BUILDINFO)
-    list(APPEND SOURCE_FILES "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp")
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
+    ivw_group("Source Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/src/" 
+        "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")    
 else()
     list(APPEND SOURCE_FILES util/buildinfoini.cpp)
+    ivw_group("Source Files" util/buildinfoini.cpp)
 endif()
-
-ivw_group("Source Files" ${SOURCE_FILES})
 
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
@@ -614,11 +616,6 @@ source_group("Header Files\\common" FILES ${CMAKE_BINARY_DIR}/modules/_generated
 
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
-# Define Build Type if not empty
-if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
-    add_definitions(-DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}")
-endif()
-add_definitions(-DCMAKE_GENERATOR="${CMAKE_GENERATOR}")
 
 #--------------------------------------------------------------------
 # Create library
@@ -629,6 +626,14 @@ add_library(inviwo::core ALIAS inviwo-core)
 # Define standard defintions
 ivw_define_standard_definitions(inviwo-core inviwo-core)
 ivw_define_standard_properties(inviwo-core)
+
+# Special Core Defines
+target_compile_definitions(inviwo-core PRIVATE
+    -DCMAKE_BUILD_TYPE=\"$<CONFIG>\" 
+    -DCMAKE_GENERATOR=\"${CMAKE_GENERATOR}\"
+    -DCMAKE_CXX_COMPILER_ID=\"${CMAKE_CXX_COMPILER_ID}\"
+    -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"   
+)
 
 #--------------------------------------------------------------------
 # Add core folders to includes, this will also be picked up by all the modules
@@ -784,7 +789,7 @@ set(build_info_script_list
     "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
     "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.cpp"
     "    ${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.ini"
-    "    ${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp"
+    "    ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp"
     "    inviwo_buildinfo.ini"
     "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
 )
@@ -793,8 +798,9 @@ file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script
 
 # Custom target for updating the build information (this target is always out-of-date)
 add_custom_target(inviwo-buildinfo-header ALL
-    BYPRODUCTS "${CMAKE_BINARY_DIR}/modules/_generated/inviwo_buildinfo.cpp"
-    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/" -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
+    BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
+    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/\" 
+        -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
     WORKING_DIRECTORY ${OUTPUT_DIR}
     COMMENT "Generating inviwo build info (buildinfo)"
     VERBATIM

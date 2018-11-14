@@ -66,7 +66,7 @@ public:
             callback->Failure(0, "Failed to parse value " + requestStr);
             return true;
         }
-        auto stream = std::stringstream(requestStr.substr(start, end));
+        auto stream = std::stringstream(requestStr.substr(start, end - start));
         if (stream >> value) {
             getProperty()->setInitiatingWidget(this);
             static_cast< TemplateProperty<T>* >(getProperty())->set(value);

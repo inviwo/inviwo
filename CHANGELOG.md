@@ -1,13 +1,20 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-11-05
+The SplitImage processor now features a draggable handle. This handle allows to adjust the split position in the canvas with either mouse or touch.
+
 ## 2018-10-04 Color Scale Legend
-Added a Color Scale Legend processor to the plottinggl module that draws a 1D transfer funtion and the corresponding value axis on top of an image.
+Added a Color Scale Legend processor to the plottinggl module that draws a 1D transfer function and the corresponding value axis on top of an image.
 
 ## 2018-09-27 Full screen on startup
 Core: Renamed key mapping to fullscreenEvent and instead use fullscreen for a bool property.
 You will need to change the key mapping again if you have changed it from shift + f.
 
 Python: Full screen is now exposed as a property in the canvas instead of a function.
+
+## 2018-09-26 Initial DiscreteData
+Adding the DiscreteData module. The idea is to handle datasets that support all kinds of grids, data representations and interpolations on them.
+Current status: Dataset; Explicit and implicit channel; Structured and periodic structured grid.
 
 ## 2018-09-24 Color property improvements
 Updated the color property widget which allows to edit colors directly. Supports floating point range `[0,1]`, int range `[0,255]`, and hex color codes (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).

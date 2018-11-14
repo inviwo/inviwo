@@ -139,7 +139,7 @@ Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::sampleDataS
 template <typename DataType, typename P, typename T, unsigned int DataDims>
 Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::getVoxel(
     const size3_t &pos) const {
-    return data_[ic_(pos)];
+    return static_cast<const Vector<DataDims, T>>(data_[ic_(pos)]);
 }
 
 }  // namespace inviwo

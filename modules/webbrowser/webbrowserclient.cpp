@@ -98,8 +98,22 @@ bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 }
 
 void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                                 TerminationStatus /*status*/) {
+                                                 TerminationStatus status) {
     CEF_REQUIRE_UI_THREAD();
+    switch (status) {
+        case TS_ABNORMAL_TERMINATION:
+            LogError("Web renderer process killed due to non-zero exit status (TS_ABNORMAL_TERMINATION).");
+            break;
+        case TS_PROCESS_WAS_KILLED:
+            LogError("Web renderer process killed due to SIGKILL or task manager kill (TS_PROCESS_WAS_KILLED).");
+            break;
+        case TS_PROCESS_CRASHED:
+            LogError("Web renderer process killed due to segmentation fault (TS_ABNORMAL_TERMINATION).");
+            break;
+        case TS_PROCESS_OOM:
+            LogError("Web renderer process killed due to out of memory (TS_PROCESS_OOM). Some platforms may use TS_PROCESS_CRASHED instead.");
+            break;
+    }
 
     messageRouter_->OnRenderProcessTerminated(browser);
 }

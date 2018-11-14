@@ -264,8 +264,9 @@ CommandLineParser& InviwoApplication::getCommandLineParser() { return commandLin
 
 void InviwoApplication::printApplicationInfo() {
     LogInfoCustom("InviwoInfo", "Inviwo Version: " << IVW_VERSION);
-    if (systemCapabilities_->getBuildTimeYear() != 0) {
-        LogInfoCustom("InviwoInfo", "Build Date: " << systemCapabilities_->getBuildDateString());
+    if (systemCapabilities_->getBuildInfo().year != 0) {
+        LogInfoCustom("InviwoInfo",
+                      "Build Date: " << systemCapabilities_->getBuildInfo().getDate());
     }
     LogInfoCustom("InviwoInfo", "Base Path: " << getBasePath());
     LogInfoCustom("InviwoInfo", "ThreadPool Worker Threads: " << pool_.getSize());

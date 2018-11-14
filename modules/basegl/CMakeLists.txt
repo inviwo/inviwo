@@ -141,9 +141,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/axisalignedcutplaneslice.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/background.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/capnearclipping.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagegradient.frag
@@ -178,6 +178,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/splitter.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.vert
