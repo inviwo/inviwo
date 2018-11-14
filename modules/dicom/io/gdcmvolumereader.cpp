@@ -71,6 +71,9 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
     std::vector<gdcm::Image> imageStack;
     unsigned int maxWidth = 0, maxHeight = 0;
 
+	double smallestVoxelValue = std::numeric_limits<double>::infinity();
+	double largestVoxelValue = -std::numeric_limits<double>::infinity();
+
     // Read images and extract relevant metadata
     // possible optimization: dont read whole image (gdcm::ImageRegionReader)
     for (DICOMDIRImage& imgInfo : series.images) {
@@ -78,13 +81,13 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
         std::ifstream imageInputStream(imgInfo.path, std::ios::binary);
 
         if (!imageInputStream.is_open()) {
-            // LogInfo("Vol#" << i << " Img=" << imgInfo.path << " could not open file => skip");
+            // could not open file => skip
             continue;
         }
 
         imageReader.SetStream(imageInputStream);
         if (!imageReader.CanRead()) {
-            // LogInfo("Vol#" << i << " Img=" << imgInfo.path << " not a DICOM file => skip");
+            // not a DICOM file => skip
             continue;
         }
 
@@ -115,6 +118,42 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
                     imgInfo.windowWidth = windowWidth.str();
                 }
             }
+
+			{  // read smallest image pixel value
+				const gdcm::Tag smallestImagePixelValueTag(0x0028, 0x0106);
+				if (dataset.FindDataElement(smallestImagePixelValueTag)) {
+					const gdcm::DataElement el = dataset.GetDataElement(smallestImagePixelValueTag);
+					const gdcm::ByteValue* ptr = el.GetByteValue();
+					if (el.GetVR() == gdcm::VR::SS) {
+						short v;
+						ptr->GetBuffer((char*)&v, 2);
+						smallestVoxelValue = std::min(smallestVoxelValue, static_cast<double>(v));
+					}
+					else if (el.GetVR() == gdcm::VR::US) {
+						unsigned short v;
+						ptr->GetBuffer((char*)&v, 2);
+						smallestVoxelValue = std::min(smallestVoxelValue, static_cast<double>(v));
+					}
+				}
+			}
+
+			{  // read largest image pixel value
+				const gdcm::Tag largestImagePixelValueTag(0x0028, 0x0107);
+				if (dataset.FindDataElement(largestImagePixelValueTag)) {
+					const gdcm::DataElement el = dataset.GetDataElement(largestImagePixelValueTag);
+					const gdcm::ByteValue* ptr = el.GetByteValue();
+					if (el.GetVR() == gdcm::VR::SS) {
+						short v;
+						ptr->GetBuffer((char*)&v, 2);
+						largestVoxelValue = std::max(largestVoxelValue, static_cast<double>(v));
+					}
+					else if (el.GetVR() == gdcm::VR::US) {
+						unsigned short v;
+						ptr->GetBuffer((char*)&v, 2);
+						largestVoxelValue = std::max(largestVoxelValue, static_cast<double>(v));
+					}
+				}
+			}
         }
     }
 
@@ -172,10 +211,11 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
         return 0;
     }
 
-    // Save info that helps to lazy load the volume later
+    // Save info that helps to lazy load the volume later in GCDMVolumeRAMLoader::dispatch
     series.slope = rescaleSlope;
     series.intercept = rescaleIntercept;
 
+	// The volume should have enough space for the largest image
     const size3_t volumeDimensions(maxWidth, maxHeight, imageStack.size());
 
     const auto voxelFormat =
@@ -184,9 +224,18 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
 
     const SharedVolume outputVolume = std::make_shared<Volume>(volumeDimensions, voxelFormat);
 
+	// Compute data range from the used bits, differentiating between unsigned and 2's complement or...
     outputVolume->dataMap_.dataRange =
         isSignedInt ? dvec2{-std::pow(2, usedChannelBits - 1), std::pow(2, usedChannelBits - 1) - 1}
                     : dvec2{0, std::pow(2, usedChannelBits) - 1};
+
+	// ... use DICOM's explicit datarange if existing
+	if (smallestVoxelValue < std::numeric_limits<double>::infinity()) {
+		outputVolume->dataMap_.dataRange.x = smallestVoxelValue;
+	}
+	if (largestVoxelValue > -std::numeric_limits<double>::infinity()) {
+		outputVolume->dataMap_.dataRange.y = largestVoxelValue;
+	}
 
     // Convert disk data to hounsfield value using the DICOM rescale tags (this is only
     // valid for CT scans)
