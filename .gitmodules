@@ -35,4 +35,4 @@
 	url = https://github.com/taocpp/PEGTL.git
 [submodule "tools/meta/ext/inja"]
 	path = tools/meta/ext/inja
-	url = https://github.com/petersteneteg/inja.git
+url=https://github.com/pantor/inja.git
