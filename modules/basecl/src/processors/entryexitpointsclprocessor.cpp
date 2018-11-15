@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "entryexitpointsclprocessor.h"
+#include <modules/basecl/processors/entryexitpointsclprocessor.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opencl/image/imagecl.h>
 #include <modules/opencl/image/imageclgl.h>

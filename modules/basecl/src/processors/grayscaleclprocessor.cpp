@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "grayscaleclprocessor.h"
+#include <modules/basecl/processors/grayscaleclprocessor.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/image/imagecl.h>
 #include <modules/opencl/image/imageclgl.h>

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "volumeraycastercl.h"
+#include <modules/basecl/volumeraycastercl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <modules/opencl/inviwoopencl.h>

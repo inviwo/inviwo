@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "volumeraycasterclprocessor.h"
+#include <modules/basecl/processors/volumeraycasterclprocessor.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/kernelmanager.h>
 #include <modules/opencl/buffer/buffercl.h>

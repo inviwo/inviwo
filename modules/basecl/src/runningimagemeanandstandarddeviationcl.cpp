@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include "runningimagemeanandstandarddeviationcl.h"
+#include <modules/basecl/runningimagemeanandstandarddeviationcl.h>
 #include <modules/opencl/image/layercl.h>
 #include <modules/opencl/image/layerclgl.h>
 #include <modules/opencl/syncclgl.h>

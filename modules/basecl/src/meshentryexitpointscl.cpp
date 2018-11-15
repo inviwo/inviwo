@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "meshentryexitpointscl.h"
+#include <modules/basecl/meshentryexitpointscl.h>
 #include <modules/opencl/image/layercl.h>
 #include <modules/opencl/image/layerclgl.h>
 #include <modules/opencl/buffer/buffercl.h>
