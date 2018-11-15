@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "assimpreader.h"
+#include <modules/assimp/assimpreader.h>
 
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>

@@ -10,14 +10,17 @@ ivw_module(Assimp)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/assimpreader.h
+    include/modules/assimp/assimpmodule.h
+    include/modules/assimp/assimpmoduledefine.h
+    include/modules/assimp/assimpreader.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/assimpreader.cpp
+    src/assimpmodule.cpp
+    src/assimpreader.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
