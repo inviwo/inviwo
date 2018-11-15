@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <chrono>
 #include <ctime>
+#include <set>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -217,6 +218,70 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
 
     for (auto [key, file] : files) {
         generate(im, file, key);
+    }
+}
+
+void Creator::updateModule(const fs::path& modulePath, std::string_view org) const {
+    auto oldIm = InviwoModule::findInviwoModule(modulePath, inviwoRepo_);
+    oldIm.setDryrun(true);  // Don't save
+    InviwoModule im{oldIm.path(), ModuleConf{oldIm.name(), org}};
+
+    logf("Updating module '{}' at '{}'", im.name(), im.path().generic_string());
+
+    log(" * Settings");
+    log("Name", im.name());
+    log("Include", im.moduleInclude());
+    log("API", im.api());
+    log("API Include", im.defineInclude());
+
+    auto file = templates_["file"];
+
+    if (auto sources = im.findGroup(*file.source->cmakeGroup)) {
+        auto& args = sources->arguments;
+        args.erase(++args.begin(), args.end());
+    }
+    if (auto headers = im.findGroup(*file.header->cmakeGroup)) {
+        auto& args = headers->arguments;
+        args.erase(++args.begin(), args.end());
+    }
+
+    std::set<fs::path> oldFolders;
+    log(" * Moving files:");
+    for (auto& item : fs::recursive_directory_iterator(modulePath)) {
+        if (item.path().extension() == ".cpp") {
+            const auto relpath = fs::relative(item.path(), oldIm.path() / oldIm.srcPath());
+            logf("  - {}\n    -> {}", fs::relative(item.path(), oldIm.path()).generic_string(),
+                 (im.srcPath() / relpath).generic_string());
+            fs::create_directories((im.path() / im.srcPath() / relpath).parent_path());
+            fs::copy_file(item.path(), im.path() / im.srcPath() / relpath);
+            fs::remove(item.path());
+            oldFolders.insert(fs::relative(item.path(), oldIm.path()).parent_path());
+
+            im.addFileToGroup(*(file.source->cmakeGroup), im.srcPath() / relpath);
+
+        } else if (item.path().extension() == ".h") {
+            const auto relpath = fs::relative(item.path(), oldIm.path() / oldIm.incPath());
+            logf("  - {}\n    -> {}", fs::relative(item.path(), oldIm.path()).generic_string(),
+                 (im.incPath() / relpath).generic_string());
+            fs::create_directories((im.path() / im.incPath() / relpath).parent_path());
+            fs::copy_file(item.path(), im.path() / im.incPath() / relpath);
+            fs::remove(item.path());
+            oldFolders.insert(fs::relative(item.path(), oldIm.path()).parent_path());
+
+            im.addFileToGroup(*(file.header->cmakeGroup), im.incPath() / relpath);
+        }
+    }
+
+    log(" * Removing empty folders:");
+    for (auto item : oldFolders) {
+        while (!item.empty()) {
+            if (fs::exists(oldIm.path() / item) && fs::is_directory(oldIm.path() / item) &&
+                fs::is_empty(oldIm.path() / item)) {
+                logf("  - {}", item.generic_string()),
+                fs::remove(oldIm.path() / item);
+            }
+            item = item.parent_path();
+        }
     }
 }
 

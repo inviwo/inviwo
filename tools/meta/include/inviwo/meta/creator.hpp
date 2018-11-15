@@ -63,6 +63,7 @@ public:
     void createFile(const std::filesystem::path& filePath) const;
     void createProcessor(const std::filesystem::path& processorPath) const;
     void createTest(const std::filesystem::path& testPath) const;
+    void updateModule(const std::filesystem::path& modulePath, std::string_view org) const;
 
     Options opts;
 

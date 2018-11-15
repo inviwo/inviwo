@@ -72,6 +72,10 @@ int main(int argc, char** argv) {
     TCLAP::MultiArg<std::string> tests{
         "t", "tests", "Tests to add, form: path/name1 path/name2 ...", false, "test"};
 
+    TCLAP::MultiArg<std::string> updateModule{
+        "", "updateModule", "Update module to new structure", false, "module"};
+
+
     cmd.add(verbose);
     cmd.add(dryrun);
     cmd.add(force);
@@ -82,6 +86,7 @@ int main(int argc, char** argv) {
     cmd.add(files);
     cmd.add(processors);
     cmd.add(tests);
+    cmd.add(updateModule);
 
     auto getInviwoPath = [&]() -> std::filesystem::path {
         if (inviwoDir.isSet()) {
@@ -131,6 +136,16 @@ int main(int argc, char** argv) {
                 creator.createTest(std::filesystem::path{item});
             }
         }
+
+        if (updateModule.isSet()) {
+            for (auto& item : updateModule.getValue()) {
+
+
+                creator.updateModule(std::filesystem::path{item}, org.getValue());
+            }
+        }
+
+
     } catch (const std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
         return 1;
