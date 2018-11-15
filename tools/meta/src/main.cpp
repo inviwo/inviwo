@@ -139,8 +139,6 @@ int main(int argc, char** argv) {
 
         if (updateModule.isSet()) {
             for (auto& item : updateModule.getValue()) {
-
-
                 creator.updateModule(std::filesystem::path{item}, org.getValue());
             }
         }

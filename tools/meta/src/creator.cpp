@@ -31,6 +31,7 @@
 #include <inviwo/meta/paths.hpp>
 #include <inviwo/meta/util.hpp>
 #include <inviwo/meta/inviwomoduleconf.hpp>
+#include <inviwo/meta/includetools.hpp>
 
 #include <exception>
 #include <array>
@@ -245,28 +246,44 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org) con
         args.erase(++args.begin(), args.end());
     }
 
+    const auto replace_extension = [](fs::path path, std::string_view ext) {
+        path.replace_extension(ext);
+        return path;
+    };
+
     std::set<fs::path> oldFolders;
     log(" * Moving files:");
-    for (auto& item : fs::recursive_directory_iterator(modulePath)) {
+    for (auto& item : fs::recursive_directory_iterator(oldIm.path())) {
+        const auto relpath = fs::relative(item.path(), oldIm.path());
+        if (*relpath.begin() == "tests") continue;
+
         if (item.path().extension() == ".cpp") {
-            const auto relpath = fs::relative(item.path(), oldIm.path() / oldIm.srcPath());
-            logf("  - {}\n    -> {}", fs::relative(item.path(), oldIm.path()).generic_string(),
+            logf("  - {}\n    -> {}", relpath.generic_string(),
                  (im.srcPath() / relpath).generic_string());
-            fs::create_directories((im.path() / im.srcPath() / relpath).parent_path());
-            fs::copy_file(item.path(), im.path() / im.srcPath() / relpath);
+            const auto dst = im.path() / im.srcPath() / relpath;
+            fs::create_directories(dst.parent_path());
+            fs::copy_file(item.path(), dst);
             fs::remove(item.path());
-            oldFolders.insert(fs::relative(item.path(), oldIm.path()).parent_path());
+            oldFolders.insert(relpath.parent_path());
 
             im.addFileToGroup(*(file.source->cmakeGroup), im.srcPath() / relpath);
 
+            const auto oldinc = relpath.filename().replace_extension(".h").generic_string();
+            const auto newinc = im.getHeaderInclude(replace_extension(dst, ".h"));
+            const auto relacedInclude = util::replaceInlcude(dst, fmt::format(R"("{}")", oldinc),
+                                                             fmt::format(R"(<{}>)", newinc));
+            if (relacedInclude) {
+                logf(R"(    Change include from "{}" to <{}>)", oldinc, newinc);
+            }
+
         } else if (item.path().extension() == ".h") {
-            const auto relpath = fs::relative(item.path(), oldIm.path() / oldIm.incPath());
-            logf("  - {}\n    -> {}", fs::relative(item.path(), oldIm.path()).generic_string(),
+            logf("  - {}\n    -> {}", relpath.generic_string(),
                  (im.incPath() / relpath).generic_string());
-            fs::create_directories((im.path() / im.incPath() / relpath).parent_path());
-            fs::copy_file(item.path(), im.path() / im.incPath() / relpath);
+            const auto dst = im.path() / im.incPath() / relpath;
+            fs::create_directories(dst.parent_path());
+            fs::copy_file(item.path(), dst);
             fs::remove(item.path());
-            oldFolders.insert(fs::relative(item.path(), oldIm.path()).parent_path());
+            oldFolders.insert(relpath.parent_path());
 
             im.addFileToGroup(*(file.header->cmakeGroup), im.incPath() / relpath);
         }
@@ -277,8 +294,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org) con
         while (!item.empty()) {
             if (fs::exists(oldIm.path() / item) && fs::is_directory(oldIm.path() / item) &&
                 fs::is_empty(oldIm.path() / item)) {
-                logf("  - {}", item.generic_string()),
-                fs::remove(oldIm.path() / item);
+                logf("  - {}", item.generic_string()), fs::remove(oldIm.path() / item);
             }
             item = item.parent_path();
         }
