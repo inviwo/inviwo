@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "lic2d.h"
+#include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/imagegl.h>

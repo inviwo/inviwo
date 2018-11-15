@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "lic3d.h"
+#include <modules/vectorfieldvisualizationgl/processors/3d/lic3d.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>

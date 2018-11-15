@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "hedgehog2d.h"
+#include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/util/imagesampler.h>
 

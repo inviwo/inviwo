@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "vector3ddivergence.h"
+#include <modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h>
 
 namespace inviwo {
 

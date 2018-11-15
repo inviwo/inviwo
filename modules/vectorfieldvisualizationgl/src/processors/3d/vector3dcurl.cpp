@@ -27,44 +27,25 @@
  *
  *********************************************************************************/
 
-#include "vector2ddivergence.h"
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/shader/shaderutils.h>
+#include <modules/vectorfieldvisualizationgl/processors/3d/vector3dcurl.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo Vector2DDivergence::processorInfo_{
-    "org.inviwo.Vector2DDivergence",  // Class identifier
-    "Vector 2D Divergence",           // Display name
-    "Vector Field Visualization",     // Category
-    CodeState::Stable,                // Code state
-    Tags::GL,                         // Tags
+const ProcessorInfo Vector3DCurl::processorInfo_{
+    "org.inviwo.Vector3DCurl",     // Class identifier
+    "Vector 3D Curl",              // Display name
+    "Vector Field Visualization",  // Category
+    CodeState::Stable,             // Code state
+    Tags::GL,                      // Tags
 };
-const ProcessorInfo Vector2DDivergence::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo Vector3DCurl::getProcessorInfo() const { return processorInfo_; }
 
-Vector2DDivergence::Vector2DDivergence()
-    : Processor()
-    , inport_("inport", true)
-    , outport_("outport", DataVec4Float32::get())
-    , shader_("vector2ddivergence.frag") {
-
-    addPort(inport_);
-    addPort(outport_);
+Vector3DCurl::Vector3DCurl() : VolumeGLProcessor("vector3dcurl.frag") {
+    this->dataFormat_ = DataVec4Float32::get();
 }
 
-void Vector2DDivergence::process() {
-    utilgl::activateAndClearTarget(outport_);
+Vector3DCurl::~Vector3DCurl() {}
 
-    shader_.activate();
-    TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
-
-    utilgl::singleDrawImagePlaneRect();
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
-}
-
+void Vector3DCurl::postProcess() {}
 }  // namespace inviwo

@@ -27,25 +27,46 @@
  *
  *********************************************************************************/
 
-#include "vector3dcurl.h"
+#include <modules/vectorfieldvisualizationgl/processors/2d/vector2dcurl.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo Vector3DCurl::processorInfo_{
-    "org.inviwo.Vector3DCurl",     // Class identifier
-    "Vector 3D Curl",              // Display name
+const ProcessorInfo Vector2DCurl::processorInfo_{
+    "org.inviwo.Vector2DCurl",     // Class identifier
+    "Vector 2D Curl",              // Display name
     "Vector Field Visualization",  // Category
-    CodeState::Stable,             // Code state
+    CodeState::Experimental,       // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo Vector3DCurl::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo Vector2DCurl::getProcessorInfo() const { return processorInfo_; }
 
-Vector3DCurl::Vector3DCurl() : VolumeGLProcessor("vector3dcurl.frag") {
-    this->dataFormat_ = DataVec4Float32::get();
+Vector2DCurl::Vector2DCurl()
+    : Processor()
+    , inport_("inport", true)
+    , outport_("outport", DataVec4Float32::get())
+    , shader_("vector2dcurl.frag")
+
+{
+
+    addPort(inport_);
+    addPort(outport_);
 }
 
-Vector3DCurl::~Vector3DCurl() {}
+void Vector2DCurl::process() {
+    utilgl::activateAndClearTarget(outport_);
 
-void Vector3DCurl::postProcess() {}
+    shader_.activate();
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
+
+    utilgl::singleDrawImagePlaneRect();
+    shader_.deactivate();
+    utilgl::deactivateCurrentTarget();
+}
+
 }  // namespace inviwo

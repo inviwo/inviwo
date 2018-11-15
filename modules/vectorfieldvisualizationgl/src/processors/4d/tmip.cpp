@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "tmip.h"
+#include <modules/vectorfieldvisualizationgl/processors/4d/tmip.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/util/shuntingyard.h>

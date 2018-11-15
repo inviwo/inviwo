@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "vector2dmagnitude.h"
+#include <modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/imagegl.h>
@@ -36,28 +36,27 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo Vector2DMagnitude::processorInfo_{
-    "org.inviwo.Vector2DMagnitude",  // Class identifier
-    "Vector 2D Magnitude",           // Display name
-    "Vector Field Visualization",    // Category
-    CodeState::Stable,               // Code state
-    Tags::GL,                        // Tags
+const ProcessorInfo Vector2DDivergence::processorInfo_{
+    "org.inviwo.Vector2DDivergence",  // Class identifier
+    "Vector 2D Divergence",           // Display name
+    "Vector Field Visualization",     // Category
+    CodeState::Stable,                // Code state
+    Tags::GL,                         // Tags
 };
-const ProcessorInfo Vector2DMagnitude::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo Vector2DDivergence::getProcessorInfo() const { return processorInfo_; }
 
-Vector2DMagnitude::Vector2DMagnitude()
+Vector2DDivergence::Vector2DDivergence()
     : Processor()
     , inport_("inport", true)
-    , outport_("outport", DataFloat32::get())
-    , shader_("vector2dmagnitude.frag") {
+    , outport_("outport", DataVec4Float32::get())
+    , shader_("vector2ddivergence.frag") {
 
     addPort(inport_);
     addPort(outport_);
 }
 
-void Vector2DMagnitude::process() {
+void Vector2DDivergence::process() {
     utilgl::activateAndClearTarget(outport_);
-    outport_.getEditableData()->getColorLayer()->setSwizzleMask(swizzlemasks::luminance);
 
     shader_.activate();
     TextureUnitContainer units;

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "vectorfieldgenerator2d.h"
+#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
