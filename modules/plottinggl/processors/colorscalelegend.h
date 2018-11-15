@@ -38,7 +38,6 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
-#include <modules/basegl/viewmanager.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
