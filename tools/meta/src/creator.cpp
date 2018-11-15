@@ -256,6 +256,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org) con
     for (auto& item : fs::recursive_directory_iterator(oldIm.path())) {
         const auto relpath = fs::relative(item.path(), oldIm.path());
         if (*relpath.begin() == "tests") continue;
+        if (*relpath.begin() == "ext") continue;
 
         if (item.path().extension() == ".cpp") {
             logf("  - {}\n    -> {}", relpath.generic_string(),
