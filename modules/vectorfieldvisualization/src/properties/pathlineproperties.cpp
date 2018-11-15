@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "pathlineproperties.h"
+#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 
 namespace inviwo {
 

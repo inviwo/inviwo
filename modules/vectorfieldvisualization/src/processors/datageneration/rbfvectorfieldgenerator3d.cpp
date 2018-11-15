@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "rbfvectorfieldgenerator3d.h"
+#include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/image/image.h>

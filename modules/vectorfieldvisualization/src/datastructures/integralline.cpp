@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "integralline.h"
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>
 #include <inviwo/core/util/interpolation.h>
 
 namespace inviwo {

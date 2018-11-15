@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "seedpointgenerator.h"
+#include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
 
 #include <glm/gtx/vector_angle.hpp>
 #include <math.h>

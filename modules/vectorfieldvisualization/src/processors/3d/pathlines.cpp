@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "pathlines.h"
+#include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
 #include <inviwo/core/util/volumesequencesampler.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/util/imagesampler.h>

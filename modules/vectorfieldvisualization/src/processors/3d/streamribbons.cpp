@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "streamribbons.h"
+#include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>

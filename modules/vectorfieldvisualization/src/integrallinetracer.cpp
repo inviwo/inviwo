@@ -27,30 +27,6 @@
  *
  *********************************************************************************/
 
-#include "streamlineproperties.h"
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
 
-namespace inviwo {
-
-const std::string StreamLineProperties::classIdentifier = "org.inviwo.StreamLineProperties";
-std::string StreamLineProperties::getClassIdentifier() const { return classIdentifier; }
-
-StreamLineProperties::StreamLineProperties(std::string identifier, std::string displayName)
-    : IntegralLineProperties(identifier, displayName) {}
-
-StreamLineProperties::StreamLineProperties(const StreamLineProperties& rhs)
-    : IntegralLineProperties(rhs) {}
-
-StreamLineProperties* StreamLineProperties::clone() const {
-    return new StreamLineProperties(*this);
-}
-
-StreamLineProperties::~StreamLineProperties() {}
-
-StreamLineProperties& StreamLineProperties::operator=(const StreamLineProperties& that) {
-    if (this != &that) {
-        IntegralLineProperties::operator=(that);
-    }
-    return *this;
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

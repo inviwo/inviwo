@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "integrallineproperties.h"
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 
 namespace inviwo {
 
