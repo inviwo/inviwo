@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,36 +24,58 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "exampleprocessor.h"
+#include <modules/example/exampleprogressbar.h>
+#include <thread>
 
 namespace inviwo {
 
-const ProcessorInfo ExampleProcessor::processorInfo_{
-    "org.inviwo.ExampleProcessor",  // Class identifier
-    "Example Processor",            // Display name
-    "Geometry Creation",            // Category
-    CodeState::Experimental,        // Code state
-    Tags::None,                     // Tags
+const ProcessorInfo ExampleProgressBar::processorInfo_{
+    "org.inviwo.ExampleProgressBar",  // Class identifier
+    "Example Progress Bar",           // Display name
+    "Various",                        // Category
+    CodeState::Experimental,          // Code state
+    Tags::None,                       // Tags
 };
-const ProcessorInfo ExampleProcessor::getProcessorInfo() const {
+const ProcessorInfo ExampleProgressBar::getProcessorInfo() const {
     return processorInfo_;
 }
 
-ExampleProcessor::ExampleProcessor()
-    : Processor()
-    , inport_("inputVolume")
-    , outport_("outputMesh") {
-
+ExampleProgressBar::ExampleProgressBar()
+    : Processor(), inport_("inputImage"), outport_("outputImage") {
     addPort(inport_);
     addPort(outport_);
+
+    // initially hide progress bar
+    // progressBar_.hide();
 }
 
-ExampleProcessor::~ExampleProcessor() = default;
+ExampleProgressBar::~ExampleProgressBar() = default;
 
-void ExampleProcessor::process() {
+void ExampleProgressBar::process() {
+    // progressBar_.show();
+
+    // reset progress bar
+    progressBar_.resetProgress();
+
+    const int sleepTime = 10;
+
+    const int numSteps = 100;
+    for (int i = 0; i < numSteps; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+        // update progress bar state
+        updateProgress(i / static_cast<float>(numSteps));
+    }
+
+    // set progress bar to 100%
+    progressBar_.finishProgress();
+    // progressBar_.hide();
+
+    // dummy operation, pass on image data
+    outport_.setData(inport_.getData());
 }
-} // namespace
+
+}  // inviwo namespace
 

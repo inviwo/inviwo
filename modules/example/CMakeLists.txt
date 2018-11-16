@@ -5,18 +5,21 @@ ivw_module(Example)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/exampleprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/exampleprogressbar.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/simpleraycaster.h
+    include/modules/example/examplemodule.h
+    include/modules/example/examplemoduledefine.h
+    include/modules/example/exampleprocessor.h
+    include/modules/example/exampleprogressbar.h
+    include/modules/example/processors/simpleraycaster.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/exampleprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/exampleprogressbar.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/simpleraycaster.cpp
+    src/examplemodule.cpp
+    src/exampleprocessor.cpp
+    src/exampleprogressbar.cpp
+    src/processors/simpleraycaster.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
