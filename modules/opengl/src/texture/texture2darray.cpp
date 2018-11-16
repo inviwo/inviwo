@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "texture2darray.h"
+#include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/openglcapabilities.h>
 
 namespace inviwo {

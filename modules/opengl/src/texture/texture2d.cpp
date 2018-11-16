@@ -24,57 +24,56 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "texture3d.h"
+#include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/openglcapabilities.h>
 
 namespace inviwo {
 
-Texture3D::Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
-    : Texture(GL_TEXTURE_3D, glFormat, filtering, level), dimensions_(dimensions) {  
-    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
+Texture2D::Texture2D(size2_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+                     GLint level)
+    : Texture(GL_TEXTURE_2D, glFormat, filtering, level), dimensions_(dimensions) {
+    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
 }
 
-Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
+Texture2D::Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                      GLenum filtering, GLint level)
-    : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, level)
+    : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering, level)
     , dimensions_(dimensions) {
-    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
+    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
 }
 
-Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
-    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
+Texture2D::Texture2D(const Texture2D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
+    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
         // GPU memcpy
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
                            static_cast<GLsizei>(dimensions_.x), static_cast<GLsizei>(dimensions_.y),
-                           static_cast<GLsizei>(dimensions_.z));
+                           1);
     } else {
         // Copy data through PBO
         loadFromPBO(&rhs);
     }
 }
 
-Texture3D::Texture3D(Texture3D&& rhs) 
-    : Texture(std::move(rhs))
-    , dimensions_(std::move(rhs.dimensions_)) {
-}
+Texture2D::Texture2D(Texture2D&& rhs)
+    : Texture(std::move(rhs)), dimensions_(std::move(rhs.dimensions_)) {}
 
-Texture3D& Texture3D::operator=(const Texture3D& rhs) {
+Texture2D& Texture2D::operator=(const Texture2D& rhs) {
     if (this != &rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
-        setTextureParameters(&Texture3D::default3DTextureParameterFunction);
+        setTextureParameters(&Texture2D::default2DTextureParameterFunction);
         initialize(nullptr);
+
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
             // GPU memcpy
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
                                0, static_cast<GLsizei>(rhs.dimensions_.x),
-                               static_cast<GLsizei>(rhs.dimensions_.y),
-                               static_cast<GLsizei>(rhs.dimensions_.z));
+                               static_cast<GLsizei>(rhs.dimensions_.y), 1);
         } else {
             // Copy data through PBO
             loadFromPBO(&rhs);
@@ -84,7 +83,7 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
     return *this;
 }
 
-Texture3D& Texture3D::operator=(Texture3D&& rhs) {
+Texture2D& Texture2D::operator=(Texture2D&& rhs) {
     if (this != &rhs) {
         Texture::operator=(std::move(rhs));
         dimensions_ = std::move(rhs.dimensions_);
@@ -92,48 +91,41 @@ Texture3D& Texture3D::operator=(Texture3D&& rhs) {
     return *this;
 }
 
-Texture3D* Texture3D::clone() const { return new Texture3D(*this); }
+Texture2D* Texture2D::clone() const { return new Texture2D(*this); }
 
-void Texture3D::initialize(const void* data) {
+void Texture2D::initialize(const void* data) {
     // Notify observers
     forEachObserver([](TextureObserver* o) { o->notifyBeforeTextureInitialization(); });
-
-    // Allocate data
+    
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    glTexImage3D(GL_TEXTURE_3D, level_, internalformat_, static_cast<GLsizei>(dimensions_.x),
-                 static_cast<GLsizei>(dimensions_.y), static_cast<GLsizei>(dimensions_.z), 0,
-                 format_, dataType_, data);
+    glTexImage2D(GL_TEXTURE_2D, level_, internalformat_, static_cast<GLsizei>(dimensions_.x),
+                 static_cast<GLsizei>(dimensions_.y), 0, format_, dataType_, data);
     LGL_ERROR;
     forEachObserver([](TextureObserver* o) { o->notifyAfterTextureInitialization(); });
 }
 
-size_t Texture3D::getNumberOfValues() const {
-    return dimensions_.x * dimensions_.y * dimensions_.z;
-}
+size_t Texture2D::getNumberOfValues() const { return dimensions_.x * dimensions_.y; }
 
-void Texture3D::upload(const void* data) {
+void Texture2D::upload(const void* data) {
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, static_cast<GLsizei>(dimensions_.x),
-                    static_cast<GLsizei>(dimensions_.y), static_cast<GLsizei>(dimensions_.z),
-                    format_, dataType_, data);
-    LGL_ERROR;
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<GLsizei>(dimensions_.x),
+                    static_cast<GLsizei>(dimensions_.y), format_, dataType_, data);
+    LGL_ERROR_SUPPRESS;
 }
 
-void Texture3D::uploadAndResize(const void* data, const size3_t& dim) {
-    dimensions_ = dim;
+void Texture2D::resize(size2_t dimensions) {
+    dimensions_ = dimensions;
     setPBOAsInvalid();
-    initialize(data);
+    initialize(nullptr);
 }
 
-void Texture3D::default3DTextureParameterFunction(Texture* tex) {
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, tex->getFiltering());
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, tex->getFiltering());
+void Texture2D::default2DTextureParameterFunction(Texture* tex) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex->getFiltering());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex->getFiltering());
 }
 
 }  // namespace

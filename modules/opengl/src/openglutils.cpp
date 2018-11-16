@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "openglutils.h"
+#include <modules/opengl/openglutils.h>
 
 #include <algorithm>
 

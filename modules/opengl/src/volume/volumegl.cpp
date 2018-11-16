@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "volumegl.h"
+#include <modules/opengl/volume/volumegl.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/glformats.h>

@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include "texture.h"
+#include <modules/opengl/texture/texture.h>
 
 #include <modules/opengl/openglutils.h>
 

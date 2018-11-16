@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <string>
-#include "shaderobject.h"
+#include <modules/opengl/shader/shaderobject.h>
 
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/filesystem.h>
