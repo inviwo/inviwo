@@ -34,7 +34,6 @@
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <modules/openglqt/openglqtcapabilities.h>
 #include <inviwo/core/util/rendercontext.h>
 
 #include <codecvt>
