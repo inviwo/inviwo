@@ -3,7 +3,7 @@ project(opencl)
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/opencl.cpp
+    opencl.cpp
 )
 
 #--------------------------------------------------------------------

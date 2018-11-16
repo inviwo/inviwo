@@ -73,7 +73,7 @@
 #include <CL/cl_ext.h>
 #endif
 
-#include <modules/opengl/ext/glew/include/GL/glew.h> //TODO: Why is <GL/glew.h> not working
+#include <GL/glew.h>
 #if defined(__APPLE__) || defined(__MACOSX)
 #include <OpenGL/OpenGL.h>
 #include <OpenCL/opencl.h>

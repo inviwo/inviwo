@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/opencl/clformats.h>
-#include "openclformatexception.h"
+#include <modules/opencl/openclformatexception.h>
 
 namespace inviwo {
 
