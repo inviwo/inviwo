@@ -34,7 +34,7 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareaderexception.h>
-#include "ext/tidds/ddsbase.h"
+#include <tidds/ddsbase.h>
 
 namespace inviwo {
 
