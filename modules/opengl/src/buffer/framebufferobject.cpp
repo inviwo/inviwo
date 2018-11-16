@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "framebufferobject.h"
+#include <modules/opengl/buffer/framebufferobject.h>
 #include <inviwo/core/util/assertion.h>
 
 #if defined(IVW_DEBUG)

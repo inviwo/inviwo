@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "openglexception.h"
+#include <modules/opengl/openglexception.h>
 
 namespace inviwo {
 

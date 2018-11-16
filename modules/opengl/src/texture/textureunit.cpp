@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "textureunit.h"
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/openglexception.h>
 #include <inviwo/core/util/assertion.h>
 

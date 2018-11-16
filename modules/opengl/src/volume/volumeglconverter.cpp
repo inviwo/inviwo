@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "volumeglconverter.h"
+#include <modules/opengl/volume/volumeglconverter.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 
 namespace inviwo {

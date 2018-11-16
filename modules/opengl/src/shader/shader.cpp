@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "shader.h"
+#include <modules/opengl/shader/shader.h>
 
 #include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/core/util/stdextensions.h>

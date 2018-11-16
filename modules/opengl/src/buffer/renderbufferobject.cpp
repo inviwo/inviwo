@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include "renderbufferobject.h"
+#include <modules/opengl/buffer/renderbufferobject.h>
 
 namespace inviwo {
 

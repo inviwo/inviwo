@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "canvasgl.h"
+#include <modules/opengl/canvasgl.h>
 
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/processors/processor.h>
