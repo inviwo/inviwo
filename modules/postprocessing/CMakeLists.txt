@@ -5,7 +5,6 @@ ivw_module(PostProcessing)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    include/modules/postprocessing/glsl/Fxaa3_11.h
     include/modules/postprocessing/postprocessingmodule.h
     include/modules/postprocessing/postprocessingmoduledefine.h
     include/modules/postprocessing/processors/depthdarkening.h
