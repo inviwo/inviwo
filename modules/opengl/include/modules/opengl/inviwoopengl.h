@@ -42,12 +42,10 @@
 #define GLEW_NO_GLU
 #endif
 
-#include <modules/opengl/ext/glew/include/GL/glew.h> //TODO: Why is <GL/glew.h> not working
+#include <GL/glew.h>
 
 #ifdef WIN32
-#include <modules/opengl/ext/glew/include/GL/wglew.h>
-#else
-//#include <modules/opengl/ext/glew/include/GL/glxew.h>
+#include <GL/wglew.h>
 #endif
 
 #include <string>
