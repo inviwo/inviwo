@@ -44,7 +44,6 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-
 #ifdef IVW_INVIWO_META
 #include <inviwo/qt/editor/toolsmetamenu.h>
 #endif
@@ -120,24 +119,23 @@ void createProcessorDocMenu(InviwoApplication *app, QMenu *docsMenu) {
 
                 QApplication::clipboard()->setText(utilqt::toQString(oss.str()));
                 LogInfoCustom("ToolMenu", "DOXYGEN Template code for processor "
-                                                   << dispName << " copied to clipboard");
+                                              << dispName << " copied to clipboard");
                 LogInfoCustom("ToolMenu", oss.str());
             });
         }
     }
 }
 
-void createRegressionActions(InviwoApplication *app, QMenu *menu) {
+void createRegressionActions(QWidget *parent, InviwoApplication *app, QMenu *menu) {
     for (const auto &module : app->getModules()) {
         auto action = menu->addAction(utilqt::toQString(module->getIdentifier()));
 
-        menu->connect(
-            action, &QAction::triggered,
-            [modulename = module->getIdentifier(), app](bool /*state*/) {
+        QObject::connect(
+            action, &QAction::triggered, [modulename = module->getIdentifier(), parent, app]() {
                 bool ok;
-                const auto name =
-                    QInputDialog::getText(nullptr, "Create regression test", "Regression test name",
-                                          QLineEdit::Normal, "", &ok);
+                const auto name = QInputDialog::getText(
+                    parent, "Create Regression Test", "Regression test name", QLineEdit::Normal, "",
+                    &ok, Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
                 if (ok) {
                     const auto lname = toLower(utilqt::fromQString(name));
 
@@ -167,21 +165,22 @@ void createRegressionActions(InviwoApplication *app, QMenu *menu) {
 }  // namespace
 
 ToolsMenu::ToolsMenu(InviwoMainWindow *win) : QMenu(tr("&Tools"), win) {
-    auto docsMenu = addMenu("Create Processors Docs");
-    connect(docsMenu, &QMenu::aboutToShow,
-            [docsMenu, win]() { createProcessorDocMenu(win->getInviwoApplication(), docsMenu); });
-    connect(docsMenu, &QMenu::aboutToHide, [docsMenu]() { docsMenu->clear(); });
-
-    auto regresionMenu = addMenu("Create Regression test");
-    connect(regresionMenu, &QMenu::aboutToShow, [regresionMenu, win]() {
-        createRegressionActions(win->getInviwoApplication(), regresionMenu);
+    auto docsMenu = addMenu("Create &Processors Docs");
+    connect(docsMenu, &QMenu::aboutToShow, [docsMenu, win]() {
+        docsMenu->clear();
+        createProcessorDocMenu(win->getInviwoApplication(), docsMenu);
     });
-    connect(regresionMenu, &QMenu::aboutToHide, [regresionMenu]() { regresionMenu->clear(); });
+
+    auto regressionMenu = addMenu("Create &Regression Test");
+    connect(regressionMenu, &QMenu::aboutToShow, [regressionMenu, win]() {
+        regressionMenu->clear();
+        createRegressionActions(win, win->getInviwoApplication(), regressionMenu);
+    });
 
 #ifdef IVW_INVIWO_META
-    auto sourceMenu = addMenu("Create Sources");
+    auto sourceMenu = addMenu("Create &Sources");
     addInviwoMetaAction(sourceMenu);
 #endif
-}  // namespace inviwo
+}
 
 }  // namespace inviwo

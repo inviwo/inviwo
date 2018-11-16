@@ -46,7 +46,8 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
 
     bool ok;
     QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
-                                         defaultResponse.c_str(), &ok);
+                                         defaultResponse.c_str(), &ok,
+                                         Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
     if (ok && !text.isEmpty()) {
         return pybind11::str(text.toLocal8Bit().constData());
     } else if (ok) {
