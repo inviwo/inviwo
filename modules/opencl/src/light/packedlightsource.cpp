@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "packedlightsource.h"
+#include <modules/opencl/light/packedlightsource.h>
 
 namespace inviwo {
 
