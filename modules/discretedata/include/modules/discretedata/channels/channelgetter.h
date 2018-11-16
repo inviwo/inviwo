@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <modules/discretedata/discretedatatypes.h>
+
 namespace inviwo {
 namespace discretedata {
 

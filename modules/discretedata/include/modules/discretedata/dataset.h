@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <discretedata/discretedatamoduledefine.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datatraits.h>
 

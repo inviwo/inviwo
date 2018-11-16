@@ -31,25 +31,11 @@
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/metadata/metadataowner.h>
+#include <modules/discretedata/discretedatatypes.h>
 
 namespace inviwo {
 namespace discretedata {
 
-/** Discretedata index type **/
-using ind = signed long long;
-
-/** Mapping structure name to respective dimension.
- *  Assign channels to any dimensions this way.
- *  If these do not suffice, cast the respective short.
- */
-enum class GridPrimitive : ind {
-    Undef = -1,
-    Vertex = 0,
-    Edge = 1,
-    Face = 2,
-    Volume = 3,
-    HyperVolume = 4
-};
 
 template <typename VecNT, typename T, ind N>
 class ChannelIterator;
@@ -197,7 +183,8 @@ public:
     }
 };
 
-#define BaseChannelDef std::conditional<N == 1, ScalarChannel<T>, VectorChannel<T, N>>::type
+template <typename T, int N>
+using BaseChannelDef = typename std::conditional<N == 1, ScalarChannel<T>, VectorChannel<T, N>>::type;
 
 /** \class DataChannel
     \brief A single vector component of a data set.
@@ -213,11 +200,8 @@ public:
     @author Anke Friederici and Tino Weinkauf
 */
 template <typename T, ind N>
-class DataChannel : public BaseChannelDef {
-
-    using BaseChannel = typename BaseChannelDef;
-
-#undef BaseChannelDef
+class DataChannel : public BaseChannelDef<T, N> {
+    using BaseChannel = typename BaseChannelDef<T, N>;
 
     friend class DataSet;
     friend struct ChannelGetter<T, N>;

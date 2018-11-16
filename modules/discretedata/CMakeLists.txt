@@ -5,38 +5,39 @@ ivw_module(DiscreteData)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/analyticchannel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/bufferchannel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/channelgetter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/channelgetter.inl
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/channeliterator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/channeliterator.inl
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.inl
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/cell.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectioniterator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectivity.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/elementiterator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/euclideanmeasure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/periodicgrid.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/structuredgrid.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dataset.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dataset.inl
-    ${CMAKE_CURRENT_SOURCE_DIR}/util.h
+    include/modules/discretedata/channels/analyticchannel.h
+    include/modules/discretedata/channels/bufferchannel.h
+    include/modules/discretedata/channels/channelgetter.h
+    include/modules/discretedata/channels/channeliterator.h
+    include/modules/discretedata/channels/datachannel.h
+    include/modules/discretedata/connectivity/cell.h
+    include/modules/discretedata/connectivity/connectioniterator.h
+    include/modules/discretedata/connectivity/connectivity.h
+    include/modules/discretedata/connectivity/elementiterator.h
+    include/modules/discretedata/connectivity/euclideanmeasure.h
+    include/modules/discretedata/connectivity/periodicgrid.h
+    include/modules/discretedata/connectivity/structuredgrid.h
+    include/modules/discretedata/dataset.h
+    include/modules/discretedata/discretedatamodule.h
+    include/modules/discretedata/discretedatamoduledefine.h
+    include/modules/discretedata/discretedatatypes.h
+    include/modules/discretedata/util.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/channels/datachannel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectioniterator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/connectivity.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/elementiterator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/euclideanmeasure.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/periodicgrid.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectivity/structuredgrid.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dataset.cpp
+    src/channels/datachannel.cpp
+    src/connectivity/connectioniterator.cpp
+    src/connectivity/connectivity.cpp
+    src/connectivity/elementiterator.cpp
+    src/connectivity/euclideanmeasure.cpp
+    src/connectivity/periodicgrid.cpp
+    src/connectivity/structuredgrid.cpp
+    src/dataset.cpp
+    src/discretedatamodule.cpp
+    src/discretedatatypes.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

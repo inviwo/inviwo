@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,32 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <discretedata/connectivity/elementiterator.h>
-#include <discretedata/connectivity/connectioniterator.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 namespace discretedata {
 
-/** Increment randomly */
-ElementIterator operator+(ind offset, ElementIterator& iter) {
-    return ElementIterator(iter.parent_, iter.dimension_, iter.index_ + offset);
-}
+/** Discretedata index type **/
+using ind = signed long long;
 
-/** Decrement randomly */
-ElementIterator operator-(ind offset, ElementIterator& iter) {
-    return ElementIterator(iter.parent_, iter.dimension_, iter.index_ - offset);
-}
-
-ElementIterator ElementIterator::operator*() const {
-    assert(parent_ && "No channel to iterate is set.");
-
-    return *this;
-}
-
-ConnectionRange ElementIterator::connection(GridPrimitive toType) const {
-    return ConnectionRange(index_, dimension_, toType, parent_);
-}
+/** Mapping structure name to respective dimension.
+ *  Assign channels to any dimensions this way.
+ *  If these do not suffice, cast the respective short.
+ */
+enum class GridPrimitive : ind {
+    Undef = -1,
+    Vertex = 0,
+    Edge = 1,
+    Face = 2,
+    Volume = 3,
+    HyperVolume = 4
+};
 
 }  // namespace discretedata
 }  // namespace inviwo

@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <discretedata/discretedatamoduledefine.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
 
 #include <modules/discretedata/channels/datachannel.h>
 #include <modules/discretedata/channels/channelgetter.h>

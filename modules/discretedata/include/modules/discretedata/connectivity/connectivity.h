@@ -32,14 +32,12 @@
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/discretedata/channels/datachannel.h>
+#include <modules/discretedata/discretedatatypes.h>
 #include <modules/discretedata/connectivity/cell.h>
+#include <modules/discretedata/connectivity/elementiterator.h>
 
 namespace inviwo {
 namespace discretedata {
-
-class ElementRange;
-class ElementIterator;
 
 /** \class Connectivity
     \brief Basis interface of all connectivity types.
@@ -122,4 +120,4 @@ protected:
 }  // namespace discretedata
 }  // namespace inviwo
 
-#include <discretedata/connectivity/elementiterator.h>
+
