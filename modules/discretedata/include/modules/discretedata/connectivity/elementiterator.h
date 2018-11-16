@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <discretedata/discretedatamoduledefine.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/discretedatatypes.h>
 
 namespace inviwo {
 namespace discretedata {
 
 class ConnectionRange;
+class Connectivity;
 
 /** \class ElementIterator
  *   Iterates over one GridPrimitive type in a Connectivity.
@@ -47,11 +47,8 @@ class IVW_MODULE_DISCRETEDATA_API ElementIterator {
     friend ElementIterator operator-(ind, ElementIterator&);
 
 public:
-    ElementIterator(const Connectivity* parent, GridPrimitive dimension, ind index = 0)
-        : index_(index), parent_(parent), dimension_(dimension) {}
-
-    ElementIterator() : index_(-1), parent_(nullptr), dimension_(GridPrimitive(-1)) {}
-
+    ElementIterator(const Connectivity* parent, GridPrimitive dimension, ind index = 0);
+    ElementIterator();
     ~ElementIterator() = default;
 
     /** Dereference to 'get data' */
@@ -59,46 +56,33 @@ public:
 
     //*** Bidirectional Iteration ***\\
 
-    /** Walk forward */
     ElementIterator& operator++() {
         index_++;
         return *this;
     }
-
-    /** Walk backward */
     ElementIterator& operator--() {
         index_--;
         return *this;
     }
 
-    /** Compare */
     bool operator==(ElementIterator& other) {
         return other.parent_ == parent_  // Compare pointers.
                && other.dimension_ == dimension_ && other.index_ == index_;
     }
-
-    /** Compare */
     bool operator!=(ElementIterator& other) { return !(other == *this); }
 
     //*** Random Access Iteration ***\\
 
-    /** Increment randomly */
     ElementIterator operator+(ind offset) {
         return ElementIterator(parent_, dimension_, index_ + offset);
     }
-
-    /** Increment randomly */
     ElementIterator& operator+=(ind offset) {
         index_ += offset;
         return *this;
     }
-
-    /** Decrement randomly */
     ElementIterator operator-(ind offset) {
         return ElementIterator(parent_, dimension_, index_ - offset);
     }
-
-    /** Decrement randomly */
     ElementIterator& operator-=(ind offset) {
         index_ -= offset;
         return *this;
@@ -135,10 +119,8 @@ public:
     ElementRange(GridPrimitive dim, const Connectivity* parent)
         : dimension_(dim), parent_(parent) {}
 
-    ElementIterator begin() { return ElementIterator(parent_, dimension_, 0); }
-    ElementIterator end() {
-        return ElementIterator(parent_, dimension_, parent_->getNumElements(dimension_));
-    }
+    ElementIterator begin();
+    ElementIterator end();
 
 protected:
     GridPrimitive dimension_;

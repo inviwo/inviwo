@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,8 @@
  *
  *********************************************************************************/
 
-#include "discretedata/connectivity/euclideanmeasure.h"
+#include <modules/discretedata/discretedatatypes.h>
 
 namespace inviwo {
-namespace discretedata {
-namespace euclidean {
 
-double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimitive dim,
-                  ind index) {
-
-    CellType cell = grid.getCellType(dim, index);
-    switch (cell) {
-        case CellType::Hexahedron:
-            if (positions.getNumComponents() == 3) {
-                // Only implemented 3D bodies so far.
-                if (dim != GridPrimitive::Volume) return -1;
-
-                double measure = -1;
-
-                measure = inviwo::dispatching::dispatch<double, dispatching::filter::Scalars>(
-                    positions.getDataFormatId(), HexVolumeComputer(), grid, positions, index);
-
-                return measure;
-            }
-        default:
-            return -1.0;
-    }
-}
-
-}
-}
-}
+}  // namespace inviwo

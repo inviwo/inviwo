@@ -69,47 +69,31 @@ public:
     /** Dereference to get data */
     VecNT& operator*();
 
-    /*** Bidirectional Iteration ***\
-
-    /** Walk forward */
+    /*** Bidirectional Iteration ***/
     ChannelIterator<VecNT, T, N>& operator++() {
         Index++;
         return *this;
     }
-
-    /** Walk backward */
     ChannelIterator<VecNT, T, N>& operator--() {
         Index--;
         return *this;
     }
 
-    /** Compare */
     bool operator==(const ChannelIterator<VecNT, T, N>& other) const {
         return *other.Getter == *Getter && other.Index == Index;
     }
-
-    /** Compare */
     bool operator!=(const ChannelIterator<VecNT, T, N>& other) const { return !(other == *this); }
 
     /*** Random Access Iteration ***/
-
-    /** Increment randomly */
     ChannelIterator<VecNT, T, N> operator+(ind offset) {
         return ChannelIterator<VecNT, T, N>(Getter, Index + offset);
     }
-
-    /** Increment randomly */
     ChannelIterator<VecNT, T, N> operator+=(ind offset) { Index += offset; }
-
-    /** Decrement randomly */
     ChannelIterator<VecNT, T, N> operator-(ind offset) {
         return ChannelIterator<VecNT, T, N>(Getter, Index - offset);
     }
-
-    /** Decrement randomly */
     ChannelIterator<VecNT, T, N> operator-=(ind offset) { Index -= offset; }
 
-    // Members
 protected:
     /** Abstract struct handling the dereferencing **/
     ChannelGetter<T, N>* Getter;
@@ -154,46 +138,29 @@ public:
     VecNT operator*();
 
     /** Bidirectional Iteration **/
-
-    /** Walk forward */
     ConstChannelIterator<VecNT, T, N>& operator++() {
         Index++;
         return *this;
     }
-
-    /** Walk backward */
     ConstChannelIterator<VecNT, T, N>& operator--() {
         Index--;
         return *this;
     }
-
-    /** Compare */
     bool operator==(ConstChannelIterator<VecNT, T, N>& other) {
         return other.Parent == Parent && other.Index == Index;
     }
-
-    /** Compare */
     bool operator!=(ConstChannelIterator<VecNT, T, N>& other) { return !(other == *this); }
 
     /** Random Access Iteration **/
-
-    /** Increment randomly */
     ConstChannelIterator<VecNT, T, N> operator+(ind offset) {
         return ConstChannelIterator<VecNT, T, N>(Parent, Index + offset);
     }
-
-    /** Increment randomly */
     ConstChannelIterator<VecNT, T, N> operator+=(ind offset) { Index += offset; }
-
-    /** Decrement randomly */
     ConstChannelIterator<VecNT, T, N> operator-(ind offset) {
         return ConstChannelIterator<VecNT, T, N>(Parent, Index - offset);
     }
-
-    /** Decrement randomly */
     ConstChannelIterator<VecNT, T, N> operator-=(ind offset) { Index -= offset; }
 
-    // Members
 protected:
     /** Constant DataChannel */
     const DataChannel<T, N>* Parent;

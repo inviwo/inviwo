@@ -36,7 +36,7 @@
 #include <modules/discretedata/channels/bufferchannel.h>
 #include <modules/discretedata/channels/analyticchannel.h>
 
-#include <ext/glm/glm/glm/vec3.hpp>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 namespace discretedata {
