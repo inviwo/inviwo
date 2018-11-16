@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include "openglqtcapabilities.h"
+#include <modules/openglqt/openglqtcapabilities.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/logcentral.h>
