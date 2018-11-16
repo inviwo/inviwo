@@ -53,7 +53,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 
-#include <inviwomodulespaths.h>
+#include <inviwo/core/inviwomodulespaths.h>
 
 #include <algorithm>
 

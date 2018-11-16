@@ -97,6 +97,9 @@ public:
     void setContentType(const std::string& contentType);
     std::string getContentType() const;
 
+    const FileExtension& getSelectedExtension() const;
+    void setSelectedExtension(const FileExtension& ext);
+
     /**
      *	Request a file from the user through the use of a widget.
      */
@@ -106,6 +109,7 @@ public:
 
 private:
     std::vector<FileExtension> nameFilters_;
+    FileExtension selectedExtension_;
     AcceptMode acceptMode_;
     FileMode fileMode_;
     std::string contentType_;

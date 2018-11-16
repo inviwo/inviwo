@@ -35,18 +35,18 @@
 
 namespace inviwo {
 
-InviwoModuleFactoryObject* create@MODULE@Module() {
-    return new InviwoModuleFactoryObjectTemplate<@MODULE_NAME@>(
+InviwoModuleFactoryObject* create@MODULE_CLASS@() {
+    return new InviwoModuleFactoryObjectTemplate<@MODULE_CLASS@>(
 @MODULE_ARGS@
     );
 }
 
-#ifdef INVIWO_ALL_DYN_LINK // Prevent multiple definitions of function in static build
+#ifdef INVIWO_ALL_DYN_LINK  // Prevent multiple definitions of function in static build
 extern "C" {
 @API_DEFINE@ InviwoModuleFactoryObject* createModule() {
-    return create@MODULE@Module();
+    return create@MODULE_CLASS@();
 }
 }
 #endif
 
-}  //namespace
+}  //namespace inviwo

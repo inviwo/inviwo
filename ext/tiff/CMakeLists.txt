@@ -599,14 +599,15 @@ set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES_SAVE})
 set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_SAVE})
 
 # liblzma2
-option(lzma "use liblzma (required for LZMA2 compression)" ON)
-if (lzma)
-  find_package(LibLZMA)
-endif()
+# Inviwo: Hide option and disable LZMA2 compression since it is not include in inviwo
+#option(lzma "use liblzma (required for LZMA2 compression)" ON)
+#if (lzma)
+#  find_package(LibLZMA)
+#endif()
 set(LZMA_SUPPORT 0)
-if(LIBLZMA_FOUND)
-  set(LZMA_SUPPORT 1)
-endif()
+#if(LIBLZMA_FOUND)
+#  set(LZMA_SUPPORT 1)
+#endif()
 
 # 8/12-bit jpeg mode
 # Inviwo: Hide option, don't uses since jpeg12 is not included in inviwo

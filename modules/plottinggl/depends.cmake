@@ -8,3 +8,4 @@ set(dependencies
     InviwoBrushingAndLinkingModule  
     InviwoFontRenderingModule  
 )
+set(EnableByDefault ON)

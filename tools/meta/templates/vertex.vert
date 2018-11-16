@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) {{ year }} Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,6 @@
  *
  *********************************************************************************/
 
-#if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/uninitialized-var` used without `warn/push`"
-#endif
+void main(void) {
 
-#if defined(WARN_IGNORE_UNINITIALIZED_VAR)
-#   error "`warn/ignore/uninitialized-var` already included"
-#endif
-
-#define WARN_IGNORE_UNINITIALIZED_VAR
-
-#if defined(__clang__)
-//  Not available
-#elif defined(__GNUC__)
-//  Not available
-#elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 150000000)
-#       pragma warning(disable: 26495)
-#   endif
-#endif
+}

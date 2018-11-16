@@ -11,9 +11,12 @@ currentYear = 2018
 
 excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking2/*", 
 					"*/genetree/*", "*.DS_Store", "*DS_mapp", ".md", "*.suo" , "*.h5",
-					"*.jpg", "*.JPG", "*.jpeg", "*.lib", "*.dll", "*.inv",
+					"*.jpg", "*.JPG", "*.jpeg", "*.lib", "*.dll", "*.inv", "*.dat", "*.ivf",
 					"*.png", "*.ttf", "*.tif", "*.pyc", "*.raw", "*.bmp", "*.wav", "*.xcf", "*.ico", "*.icns",
-					"*.qch", "*.qhc", "*.exr", "*.pwm", "*.pvm", "*.pdf", "*.otf", "*.exe", "*.fbx"]
+					"*.qch", "*.qhc", "*.exr", "*.pwm", "*.pvm", "*.pdf", "*.otf", "*.exe", "*.fbx", "*.svg", 
+					"*.itf", "*.qrc", "*.md", ".gitignore", ".clang-format", "LICENSE", ".gitmodules", "Jenkinsfile",
+					".gitattributes",  "AUTHORS", "*/tools/meta/templates/*", "*.natvis", "*/depends.cmake", 
+					"*moduledefine.h"]
 
 try:
 	import colorama

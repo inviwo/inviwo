@@ -42,7 +42,7 @@ public:
     ConverterException(const std::string& message = "",
                        ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
-    virtual ~ConverterException() throw() {}
+    virtual ~ConverterException() noexcept = default;
 };
 
 class IVW_CORE_API BaseRepresentationConverter {

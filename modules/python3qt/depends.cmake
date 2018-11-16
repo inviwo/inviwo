@@ -5,3 +5,7 @@ set(dependencies
     InviwoPython3Module
     InviwoQtWidgetsModule
 )
+
+if(PYTHONLIBS_FOUND)
+    set(EnableByDefault ON)
+endif()

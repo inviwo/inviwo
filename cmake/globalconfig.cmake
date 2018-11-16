@@ -153,13 +153,14 @@ include(${CMAKE_CURRENT_LIST_DIR}/globalutils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/filegeneration.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 
 #Generate headers
 ivw_generate_module_paths_header()
 configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h 
-               ${CMAKE_BINARY_DIR}/modules/_generated/inviwocommondefines.h 
+               ${CMAKE_BINARY_DIR}/modules/core/include/inviwo/core/inviwocommondefines.h 
                @ONLY IMMEDIATE)
 
 #--------------------------------------------------------------------

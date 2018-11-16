@@ -54,6 +54,8 @@
 #include <glm/gtx/std_based_type.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/scalar_relational.hpp>
+#include <glm/gtx/scalar_multiplication.hpp>
 
 #include <half/half.hpp>
 
