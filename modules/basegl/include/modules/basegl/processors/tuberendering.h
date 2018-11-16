@@ -38,7 +38,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
-#include <opengl/shader/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 
 namespace inviwo {
