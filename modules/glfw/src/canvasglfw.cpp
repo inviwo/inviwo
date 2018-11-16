@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "canvasglfw.h"
+#include <modules/glfw/canvasglfw.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
