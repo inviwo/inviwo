@@ -49,10 +49,9 @@
 #pragma warning(disable : 4611)
 #pragma warning(disable : 5040)
 #endif
-#define cimg_verbosity 0  // Disable all cimg output
-#define cimg_display 0    // Do not use any gui stuff
-struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-
-#include <modules/cimg/ext/cimg/CImg.h>
+struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was
+                  // unexpected here" when using /permissive-
+#include <CImg.h>
 #include <warn/pop>
 
 #include <cstdio>
@@ -64,15 +63,16 @@ namespace inviwo {
 namespace cimgutil {
 
 template <typename T>
-std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img, const std::string& ext);
+std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
+                                            const std::string& ext);
 
 template <typename T>
-const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img, const std::string& ext);
-
-////////////////////////////////////////////////////////////////////////////////
+const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
+                                                  const std::string& ext);
 
 template <typename T>
-std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img, const std::string& ext) {
+std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
+                                            const std::string& ext) {
     // estimate upper bound for size of the image with an additional header
     const size_t header = 1024;  // assume 1kB is enough for a header
     const size_t upperBound = img.width() * img.height() * img.spectrum() * sizeof(T) + header;
@@ -98,7 +98,8 @@ std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img, co
 }
 
 template <typename T>
-const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img, const std::string& extension) {
+const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
+                                                  const std::string& extension) {
     // the following code was taken from CImg::save() and slightly adapted
     if (extension.empty()) {
         throw cimg_library::CImgIOException("specified extension is empty");

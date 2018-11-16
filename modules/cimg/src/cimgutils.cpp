@@ -49,9 +49,7 @@
 #pragma warning(disable : 4458)
 #pragma warning(disable : 4611)
 #endif
-#define cimg_verbosity 0  // Disable all cimg output
-#define cimg_display 0    // Do not use any gui stuff
-#include <modules/cimg/ext/cimg/CImg.h>
+#include <CImg.h>
 #include <warn/pop>
 
 #include <warn/push>
