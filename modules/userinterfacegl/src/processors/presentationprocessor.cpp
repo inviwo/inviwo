@@ -36,7 +36,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/interaction/events/event.h>
-#include "opengl/image/imagegl.h"
+#include <modules/opengl/image/imagegl.h>
 
 namespace inviwo {
 
