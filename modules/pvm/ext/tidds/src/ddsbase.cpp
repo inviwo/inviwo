@@ -18,7 +18,7 @@
  * change to LGPL with kind permission from Stefan Roettger
  */
 
-#include "ddsbase.h"
+#include <tidds/ddsbase.h>
 
 #ifdef WIN32
 #  define snprintf _snprintf

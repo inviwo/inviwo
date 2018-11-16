@@ -30,7 +30,7 @@
 #include <modules/pvm/pvmvolumewriter.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include "ext/tidds/ddsbase.h"
+#include <tidds/ddsbase.h>
 
 namespace inviwo {
 

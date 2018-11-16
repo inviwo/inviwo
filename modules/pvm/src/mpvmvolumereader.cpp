@@ -35,8 +35,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareaderexception.h>
 
-#include "ext/tidds/ddsbase.h"
-#include "pvmvolumereader.h"
+#include <tidds/ddsbase.h>
+#include <modules/pvm/pvmvolumereader.h>
 
 namespace inviwo {
 
