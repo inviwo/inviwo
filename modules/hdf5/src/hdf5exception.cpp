@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,55 +27,15 @@
  *
  *********************************************************************************/
 
-#include "hdf5pathselection.h"
-#include <modules/hdf5/datastructures/hdf5metadata.h>
+#include <modules/hdf5/hdf5exception.h>
 
 namespace inviwo {
 
 namespace hdf5 {
 
-const ProcessorInfo PathSelection::processorInfo_{
-    "org.inviwo.hdf5.PathSelection",  // Class identifier
-    "HDF5 Path Selection",            // Display name
-    "Data Input",                     // Category
-    CodeState::Stable,                // Code state
-    Tags::None,                       // Tags
-};
-const ProcessorInfo PathSelection::getProcessorInfo() const { return processorInfo_; }
-
-PathSelection::PathSelection()
-    : Processor(), inport_("inport"), outport_("outport"), selection_("selection", "Select Group") {
-    addPort(inport_);
-    addPort(outport_);
-
-    addProperty(selection_);
-    selection_.setSerializationMode(PropertySerializationMode::All);
-
-    inport_.onChange([this]() { onDataChange(); });
-}
-
-void PathSelection::process() {
-    if (inport_.hasData()) {
-        auto data = inport_.getData();
-        outport_.setData(data->getHandleForPath(selection_.getSelectedValue()));
-    }
-}
-
-void PathSelection::onDataChange() {
-    const auto data = inport_.getData();
-
-    std::vector<OptionPropertyStringOption> options;
-    for (const auto& meta : util::getMetaData(data->getGroup())) {
-        if (meta.type_ == MetaData::HDFType::Group) {
-            options.emplace_back(meta.path_, meta.path_, meta.path_);
-        }
-    }
-    selection_.replaceOptions(options);
-    selection_.setCurrentStateAsDefault();
-}
+Exception::Exception(const std::string& message,
+                     ExceptionContext context): ::inviwo::Exception(message, context) {}
 
 }  // namespace
 
 }  // namespace
-
-

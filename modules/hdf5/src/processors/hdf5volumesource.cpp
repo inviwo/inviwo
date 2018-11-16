@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "hdf5volumesource.h"
+#include <modules/hdf5/processors/hdf5volumesource.h>
 #include <modules/hdf5/datastructures/hdf5handle.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
 #include <inviwo/core/io/datareader.h>

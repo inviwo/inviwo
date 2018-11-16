@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include "hdf5handle.h"
+#include <modules/hdf5/datastructures/hdf5handle.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/raiiutils.h>

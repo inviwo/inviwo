@@ -27,76 +27,65 @@
  *
  *********************************************************************************/
 
-#include "hdf5path.h"
-#include <inviwo/core/util/stringconversion.h>
+#include <modules/hdf5/hdf5types.h>
 
 namespace inviwo {
 
 namespace hdf5 {
 
 
-Path::Path() = default;
+#include <warn/push>
+#include <warn/ignore/switch-enum>
 
-Path::Path(const std::string& path) : path_{} {
-    splitString(path);
-}
+IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(const H5::DataSet& dataset) {
+    NumericType numerictype;
+    const int components = 1;
+    size_t presision = 8;
 
-Path::Path(const Path& rhs) = default;
-Path::Path(Path&& rhs) = default;
+    switch (dataset.getTypeClass()) {
+        case H5T_INTEGER: {
+            H5::IntType type = dataset.getIntType();
+            presision = type.getPrecision();
 
-Path& Path::operator=(const Path& that) = default;
-Path& Path::operator=(Path&& that) = default;
 
-Path& Path::push(const std::string& path) {
-    splitString(path);
-    return *this;
-}
-Path& Path::push(const Path& rhs) {
-    for (auto elem : rhs.path_) {
-        path_.push_back(elem);
+            switch (type.getSign()) {
+                case H5T_SGN_NONE: {
+                    numerictype = NumericType::UnsignedInteger;
+                    break;
+                }
+                case H5T_SGN_2: {
+                    numerictype = NumericType::SignedInteger;
+                    break;
+                }
+                default: {
+                    LogWarnCustom("HDFType", "HDF type not supported");
+                    return nullptr;
+                }
+            }
+
+            break;
+        }
+        case H5T_FLOAT: {
+            H5::FloatType type = dataset.getFloatType();
+            numerictype = NumericType::Float;
+            presision = type.getPrecision();
+            break;
+        }
+        case H5T_ARRAY: {
+            H5::ArrayType type = dataset.getArrayType();
+            LogWarnCustom("HDFType", "HDF type not supported");
+            return nullptr;
+        }
+        default: {
+            LogWarnCustom("HDFType", "HDF type not supported");
+            return nullptr;
+        }
     }
-    return *this;
-}
-Path& Path::pop() {
-    path_.pop_back();
-    return *this;
+
+    return DataFormatBase::get(numerictype, components, presision);
 }
 
-Path& Path::operator+=(const Path& rhs) {
-    for (auto elem : rhs.path_) {
-        path_.push_back(elem);
-    }
-    return *this;
-}
-Path& Path::operator+=(const std::string& path) {
-    splitString(path);
-    return *this;
-}
-
-Path::operator std::string() const { return toString(); }
-
-std::string Path::toString() const { return "/" + joinString(path_, "/"); }
-
-void Path::splitString(const std::string& string) {
-    std::stringstream data(string);
-
-    std::string line;
-    while (std::getline(data, line, '/')) {
-        if (!line.empty()) path_.push_back(line);
-    }
-}
-
-Path operator+(const Path& lhs, const Path& rhs) {
-    Path newpath(lhs);
-    newpath.push(rhs);
-    return newpath;
-}
-
-Path operator+(const Path& lhs, const std::string& rhs) {
-    Path newpath(lhs);
-    newpath.push(rhs);
-    return newpath;
-}
+#include <warn/pop>
 
 }  // namespace
 

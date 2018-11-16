@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include "hdf5utils.h"
+#include <modules/hdf5/hdf5utils.h>
 
 namespace inviwo {
 

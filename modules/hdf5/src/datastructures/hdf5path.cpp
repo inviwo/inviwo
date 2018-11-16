@@ -27,15 +27,78 @@
  *
  *********************************************************************************/
 
-#include "hdf5exception.h"
+#include <modules/hdf5/datastructures/hdf5path.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
 namespace hdf5 {
 
-Exception::Exception(const std::string& message,
-                     ExceptionContext context): ::inviwo::Exception(message, context) {}
+
+Path::Path() = default;
+
+Path::Path(const std::string& path) : path_{} {
+    splitString(path);
+}
+
+Path::Path(const Path& rhs) = default;
+Path::Path(Path&& rhs) = default;
+
+Path& Path::operator=(const Path& that) = default;
+Path& Path::operator=(Path&& that) = default;
+
+Path& Path::push(const std::string& path) {
+    splitString(path);
+    return *this;
+}
+Path& Path::push(const Path& rhs) {
+    for (auto elem : rhs.path_) {
+        path_.push_back(elem);
+    }
+    return *this;
+}
+Path& Path::pop() {
+    path_.pop_back();
+    return *this;
+}
+
+Path& Path::operator+=(const Path& rhs) {
+    for (auto elem : rhs.path_) {
+        path_.push_back(elem);
+    }
+    return *this;
+}
+Path& Path::operator+=(const std::string& path) {
+    splitString(path);
+    return *this;
+}
+
+Path::operator std::string() const { return toString(); }
+
+std::string Path::toString() const { return "/" + joinString(path_, "/"); }
+
+void Path::splitString(const std::string& string) {
+    std::stringstream data(string);
+
+    std::string line;
+    while (std::getline(data, line, '/')) {
+        if (!line.empty()) path_.push_back(line);
+    }
+}
+
+Path operator+(const Path& lhs, const Path& rhs) {
+    Path newpath(lhs);
+    newpath.push(rhs);
+    return newpath;
+}
+
+Path operator+(const Path& lhs, const std::string& rhs) {
+    Path newpath(lhs);
+    newpath.push(rhs);
+    return newpath;
+}
 
 }  // namespace
 
 }  // namespace
+

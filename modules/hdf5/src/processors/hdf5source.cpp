@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include "hdf5source.h"
+#include <modules/hdf5/processors/hdf5source.h>
 #include <modules/hdf5/datastructures/hdf5handle.h>
 
 namespace inviwo {

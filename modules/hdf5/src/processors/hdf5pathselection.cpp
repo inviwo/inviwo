@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,67 +27,55 @@
  *
  *********************************************************************************/
 
-#include "hdf5types.h"
+#include <modules/hdf5/processors/hdf5pathselection.h>
+#include <modules/hdf5/datastructures/hdf5metadata.h>
 
 namespace inviwo {
 
 namespace hdf5 {
 
+const ProcessorInfo PathSelection::processorInfo_{
+    "org.inviwo.hdf5.PathSelection",  // Class identifier
+    "HDF5 Path Selection",            // Display name
+    "Data Input",                     // Category
+    CodeState::Stable,                // Code state
+    Tags::None,                       // Tags
+};
+const ProcessorInfo PathSelection::getProcessorInfo() const { return processorInfo_; }
 
-#include <warn/push>
-#include <warn/ignore/switch-enum>
+PathSelection::PathSelection()
+    : Processor(), inport_("inport"), outport_("outport"), selection_("selection", "Select Group") {
+    addPort(inport_);
+    addPort(outport_);
 
-IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(const H5::DataSet& dataset) {
-    NumericType numerictype;
-    const int components = 1;
-    size_t presision = 8;
+    addProperty(selection_);
+    selection_.setSerializationMode(PropertySerializationMode::All);
 
-    switch (dataset.getTypeClass()) {
-        case H5T_INTEGER: {
-            H5::IntType type = dataset.getIntType();
-            presision = type.getPrecision();
-
-
-            switch (type.getSign()) {
-                case H5T_SGN_NONE: {
-                    numerictype = NumericType::UnsignedInteger;
-                    break;
-                }
-                case H5T_SGN_2: {
-                    numerictype = NumericType::SignedInteger;
-                    break;
-                }
-                default: {
-                    LogWarnCustom("HDFType", "HDF type not supported");
-                    return nullptr;
-                }
-            }
-
-            break;
-        }
-        case H5T_FLOAT: {
-            H5::FloatType type = dataset.getFloatType();
-            numerictype = NumericType::Float;
-            presision = type.getPrecision();
-            break;
-        }
-        case H5T_ARRAY: {
-            H5::ArrayType type = dataset.getArrayType();
-            LogWarnCustom("HDFType", "HDF type not supported");
-            return nullptr;
-        }
-        default: {
-            LogWarnCustom("HDFType", "HDF type not supported");
-            return nullptr;
-        }
-    }
-
-    return DataFormatBase::get(numerictype, components, presision);
+    inport_.onChange([this]() { onDataChange(); });
 }
 
-#include <warn/pop>
+void PathSelection::process() {
+    if (inport_.hasData()) {
+        auto data = inport_.getData();
+        outport_.setData(data->getHandleForPath(selection_.getSelectedValue()));
+    }
+}
+
+void PathSelection::onDataChange() {
+    const auto data = inport_.getData();
+
+    std::vector<OptionPropertyStringOption> options;
+    for (const auto& meta : util::getMetaData(data->getGroup())) {
+        if (meta.type_ == MetaData::HDFType::Group) {
+            options.emplace_back(meta.path_, meta.path_, meta.path_);
+        }
+    }
+    selection_.replaceOptions(options);
+    selection_.setCurrentStateAsDefault();
+}
 
 }  // namespace
 
 }  // namespace
+
 

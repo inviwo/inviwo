@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "hdf5metadata.h"
+#include <modules/hdf5/datastructures/hdf5metadata.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/stringconversion.h>
 
