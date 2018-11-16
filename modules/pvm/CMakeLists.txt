@@ -7,9 +7,11 @@ ivw_module(PVM)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/mpvmvolumereader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pvmvolumereader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pvmvolumewriter.h
+    include/modules/pvm/mpvmvolumereader.h
+    include/modules/pvm/pvmmodule.h
+    include/modules/pvm/pvmmoduledefine.h
+    include/modules/pvm/pvmvolumereader.h
+    include/modules/pvm/pvmvolumewriter.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -17,9 +19,10 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/mpvmvolumereader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pvmvolumereader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pvmvolumewriter.cpp
+    src/mpvmvolumereader.cpp
+    src/pvmmodule.cpp
+    src/pvmvolumereader.cpp
+    src/pvmvolumewriter.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
