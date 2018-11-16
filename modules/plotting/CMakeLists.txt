@@ -5,49 +5,52 @@ ivw_module(Plotting)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/column.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframe.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframeutil.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/datapoint.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/csvsource.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframecolumntocolorvector.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframeexporter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagetodataframe.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/syntheticdataframe.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetodataframe.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetodataframe.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/axisproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/dataframeproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/marginproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/plottextproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tickproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/axisutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/csvreader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/statsutils.h
+    include/modules/plotting/datastructures/column.h
+    include/modules/plotting/datastructures/dataframe.h
+    include/modules/plotting/datastructures/dataframeutil.h
+    include/modules/plotting/datastructures/datapoint.h
+    include/modules/plotting/plottingmodule.h
+    include/modules/plotting/plottingmoduledefine.h
+    include/modules/plotting/processors/csvsource.h
+    include/modules/plotting/processors/dataframecolumntocolorvector.h
+    include/modules/plotting/processors/dataframeexporter.h
+    include/modules/plotting/processors/imagetodataframe.h
+    include/modules/plotting/processors/syntheticdataframe.h
+    include/modules/plotting/processors/volumesequencetodataframe.h
+    include/modules/plotting/processors/volumetodataframe.h
+    include/modules/plotting/properties/axisproperty.h
+    include/modules/plotting/properties/dataframeproperty.h
+    include/modules/plotting/properties/marginproperty.h
+    include/modules/plotting/properties/plottextproperty.h
+    include/modules/plotting/properties/tickproperty.h
+    include/modules/plotting/utils/axisutils.h
+    include/modules/plotting/utils/csvreader.h
+    include/modules/plotting/utils/statsutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/column.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframe.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/dataframeutil.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/csvsource.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframecolumntocolorvector.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/dataframeexporter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagetodataframe.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/syntheticdataframe.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetodataframe.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetodataframe.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/axisproperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/dataframeproperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/marginproperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/plottextproperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/tickproperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/axisutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/csvreader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/statsutils.cpp
+    src/datastructures/column.cpp
+    src/datastructures/dataframe.cpp
+    src/datastructures/dataframeutil.cpp
+    src/plottingmodule.cpp
+    src/processors/csvsource.cpp
+    src/processors/dataframecolumntocolorvector.cpp
+    src/processors/dataframeexporter.cpp
+    src/processors/imagetodataframe.cpp
+    src/processors/syntheticdataframe.cpp
+    src/processors/volumesequencetodataframe.cpp
+    src/processors/volumetodataframe.cpp
+    src/properties/axisproperty.cpp
+    src/properties/dataframeproperty.cpp
+    src/properties/marginproperty.cpp
+    src/properties/plottextproperty.cpp
+    src/properties/tickproperty.cpp
+    src/utils/axisutils.cpp
+    src/utils/csvreader.cpp
+    src/utils/statsutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
