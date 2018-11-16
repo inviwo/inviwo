@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "textoverlaygl.h"
+#include <modules/fontrendering/processors/textoverlaygl.h>
 #include <modules/fontrendering/util/fontutils.h>
 
 #include <inviwo/core/common/inviwoapplication.h>

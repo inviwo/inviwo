@@ -7,27 +7,27 @@ ivw_module(FontRendering)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/texatlasentry.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/fontrenderingmodule.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/fontrenderingmoduledefine.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/textoverlaygl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/textrenderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/fontutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/textureatlas.h
+    include/modules/fontrendering/datastructures/texatlasentry.h
+    include/modules/fontrendering/fontrenderingmodule.h
+    include/modules/fontrendering/fontrenderingmoduledefine.h
+    include/modules/fontrendering/processors/textoverlaygl.h
+    include/modules/fontrendering/properties/fontproperty.h
+    include/modules/fontrendering/textrenderer.h
+    include/modules/fontrendering/util/fontutils.h
+    include/modules/fontrendering/util/textureatlas.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/texatlasentry.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/fontrenderingmodule.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/textoverlaygl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/fontproperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/textrenderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/fontutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/textureatlas.cpp
+    src/datastructures/texatlasentry.cpp
+    src/fontrenderingmodule.cpp
+    src/processors/textoverlaygl.cpp
+    src/properties/fontproperty.cpp
+    src/textrenderer.cpp
+    src/util/fontutils.cpp
+    src/util/textureatlas.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
