@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "openglqtmenu.h"
+#include <modules/openglqt/openglqtmenu.h>
 
 #include <modules/opengl/shader/shaderresource.h>
 
