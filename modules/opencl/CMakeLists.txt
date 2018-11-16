@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/modules/opencl/buffer/bufferclconverter.h
     include/modules/opencl/buffer/bufferclgl.h
     include/modules/opencl/buffer/bufferclglconverter.h
+    include/modules/opencl/cl.hpp
     include/modules/opencl/clformats.h
     include/modules/opencl/clockcl.h
     include/modules/opencl/glmcl.h
@@ -71,7 +72,6 @@ set(SOURCE_FILES
     src/openclmodule.cpp
     src/settings/openclsettings.cpp
     src/syncclgl.cpp
-    src/test/opencl.cpp
     src/volume/volumecl.cpp
     src/volume/volumeclbase.cpp
     src/volume/volumeclconverter.cpp
