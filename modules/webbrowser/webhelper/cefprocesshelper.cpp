@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/webrendererapp.h>
-#include <modules/webbrowser/app_switches.h>
+#include <webrendererapp.h>
+#include <app_switches.h>
 
 #if DARWIN  // Mac
 #include "include/wrapper/cef_library_loader.h"
