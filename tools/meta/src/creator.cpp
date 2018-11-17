@@ -40,6 +40,7 @@
 #include <chrono>
 #include <ctime>
 #include <set>
+#include <regex>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -222,7 +223,8 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
     }
 }
 
-void Creator::updateModule(const fs::path& modulePath, std::string_view org) const {
+void Creator::updateModule(const fs::path& modulePath, std::string_view org,
+                           const std::vector<std::string>& filters) const {
     auto oldIm = InviwoModule::findInviwoModule(modulePath, inviwoRepo_);
     oldIm.setDryrun(true);  // Don't save
     InviwoModule im{oldIm.path(), ModuleConf{oldIm.name(), org}};
@@ -251,13 +253,23 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org) con
         return path;
     };
 
+    auto filter = [&](const fs::path& path) {
+        const auto p = path.generic_string();
+        const auto test = std::regex(R"(^tests/)");
+        const auto ext = std::regex(R"(^ext/)");
+
+        return std::regex_search(p, test) || std::regex_search(p, ext) ||
+               std::any_of(filters.begin(), filters.end(), [&](const std::string& f) {
+                   return std::regex_search(p, std::regex(f));
+               });
+    };
+
     std::set<fs::path> oldFolders;
     log(" * Moving files:");
     for (auto& item : fs::recursive_directory_iterator(oldIm.path())) {
         const auto relpath = fs::relative(item.path(), oldIm.path());
-        if (*relpath.begin() == "tests") continue;
-        if (*relpath.begin() == "ext") continue;
-
+        if (filter(relpath)) continue;
+        
         if (item.path().extension() == ".cpp") {
             logf("  - {}\n    -> {}", relpath.generic_string(),
                  (im.srcPath() / relpath).generic_string());

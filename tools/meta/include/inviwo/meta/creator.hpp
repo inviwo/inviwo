@@ -36,6 +36,7 @@
 #include <filesystem>
 #include <optional>
 #include <string_view>
+#include <string>
 #include <iostream>
 
 #include <nlohmann/json.hpp>
@@ -56,14 +57,14 @@ public:
 
     Creator(const std::filesystem::path& inviwoRepo,
             std::optional<std::filesystem::path> templateDir = {},
-            std::optional<std::filesystem::path> configFile = {},
-            Options opts = Options{});
+            std::optional<std::filesystem::path> configFile = {}, Options opts = Options{});
 
     void createModule(const std::filesystem::path& modulePath, std::string_view org) const;
     void createFile(const std::filesystem::path& filePath) const;
     void createProcessor(const std::filesystem::path& processorPath) const;
     void createTest(const std::filesystem::path& testPath) const;
-    void updateModule(const std::filesystem::path& modulePath, std::string_view org) const;
+    void updateModule(const std::filesystem::path& modulePath, std::string_view org,
+                      const std::vector<std::string>& filters) const;
 
     Options opts;
 
