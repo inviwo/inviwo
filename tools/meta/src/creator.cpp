@@ -225,6 +225,11 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
 
 void Creator::updateModule(const fs::path& modulePath, std::string_view org,
                            const std::vector<std::string>& filters) const {
+    if (fs::exists(modulePath / "src") || fs::exists(modulePath / "include")) {
+        logf("Module at '{}' already updated", modulePath.generic_string());
+        return;
+    }
+
     auto oldIm = InviwoModule::findInviwoModule(modulePath, inviwoRepo_);
     oldIm.setDryrun(true);  // Don't save
     InviwoModule im{oldIm.path(), ModuleConf{oldIm.name(), org}};
@@ -269,7 +274,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
     for (auto& item : fs::recursive_directory_iterator(oldIm.path())) {
         const auto relpath = fs::relative(item.path(), oldIm.path());
         if (filter(relpath)) continue;
-        
+
         if (item.path().extension() == ".cpp") {
             logf("  - {}\n    -> {}", relpath.generic_string(),
                  (im.srcPath() / relpath).generic_string());
