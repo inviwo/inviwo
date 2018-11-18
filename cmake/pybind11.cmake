@@ -34,7 +34,7 @@
  set(_allPyBindWrappers "" CACHE INTERNAL  "")
 
 if(PYTHONLIBS_FOUND)
-    add_subdirectory(${IVW_ROOT_DIR}/ext/pybind11)
+    add_subdirectory(${IVW_EXTENSIONS_DIR}/pybind11)
 
     if(MSVC)
         # Prevent setting the /GL and -LTCG flag 

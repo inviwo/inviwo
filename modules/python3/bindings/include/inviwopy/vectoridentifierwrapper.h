@@ -27,18 +27,66 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYPROPERTYOWNER_H
-#define IVW_PYPROPERTYOWNER_H
+#ifndef IVW_VECTORIDENTIFIERWRAPPER_H
+#define IVW_VECTORIDENTIFIERWRAPPER_H
 
-#include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <pybind11/pybind11.h>
+#include <memory>
 
 namespace inviwo {
 
-void exposePropertyOwner(pybind11::module &m);
+template <typename V>
+class VectorIdentifierWrapper {
+public:
+    VectorIdentifierWrapper(const V& vector) : vector_{vector} {}
+
+    auto& getFromIdentifier(const std::string& identifier) const {
+        using std::begin;
+        using std::end;
+        auto it = std::find_if(begin(vector_), end(vector_), [&](const auto& elem) {
+            return elem->getIdentifier() == identifier;
+        });
+        if (it != end(vector_)) {
+            return *(*it);
+        } else {
+            throw pybind11::key_error();
+        }
+    }
+
+    auto& getFromIndex(size_t ind) const {
+        if (ind < vector_.size()) {
+            return *vector_[ind];
+        } else {
+            throw pybind11::index_error();
+        }
+    }
+
+    size_t size() { return vector_.size(); }
+
+    bool contains(const std::string& identifier) {
+        return std::find_if(begin(vector_), end(vector_), [&](const auto& elem) {
+                   return elem->getIdentifier() == identifier;
+               }) != end(vector_);
+    }
+
+private:
+    const V& vector_;
+};
+
+template <typename V>
+void exposeVectorIdentifierWrapper(pybind11::module& m, const std::string& name) {
+    namespace py = pybind11;
+    using VecWrapper = VectorIdentifierWrapper<V>;
+
+    py::class_<VecWrapper>(m, name.c_str())
+        .def("__getattr__", &VecWrapper::getFromIdentifier, py::return_value_policy::reference)
+        .def("__getitem__", &VecWrapper::getFromIndex, py::return_value_policy::reference)
+        .def("__len__", &VecWrapper::size)
+        .def("__contains__", &VecWrapper::contains);
+}
 
 }  // namespace inviwo
 
-#endif  // IVW_PYPROPERTYOWNER_H
+#endif  // IVW_VECTORIDENTIFIERWRAPPER_H

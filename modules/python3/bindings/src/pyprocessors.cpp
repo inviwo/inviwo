@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pyprocessors.h>
+#include <inviwopy/pyprocessors.h>
 
-#include <modules/python3/interface/inviwopy.h>
-#include <modules/python3/interface/vectoridentifierwrapper.h>
+#include <inviwopy/inviwopy.h>
+#include <inviwopy/vectoridentifierwrapper.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>

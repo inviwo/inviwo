@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pyinviwoapplication.h>
+#include <inviwopy/pyinviwoapplication.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 
-#include <modules/python3/interface/vectoridentifierwrapper.h>
+#include <inviwopy/vectoridentifierwrapper.h>
 
 namespace inviwo {
 

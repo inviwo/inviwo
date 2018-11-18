@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pyvolume.h>
+#include <inviwopy/pyvolume.h>
 
 #include <inviwo/core/util/formatdispatching.h>
 
-#include <modules/python3/interface/inviwopy.h>
-#include <modules/python3/interface/pynetwork.h>
-#include <modules/python3/interface/pyglmtypes.h>
+#include <inviwopy/inviwopy.h>
+#include <inviwopy/pynetwork.h>
+#include <inviwopy/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
-#include <modules/python3/interface/pyport.h>
+#include <inviwopy/pyport.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>

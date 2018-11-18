@@ -27,8 +27,33 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/vectoridentifierwrapper.h>
+#include <inviwopy/pydatamapper.h>
+
+#include <inviwo/core/datastructures/datamapper.h>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+
+#include <sstream>
+
+namespace py = pybind11;
 
 namespace inviwo {
+
+void exposeDataMapper(py::module &m) {
+
+    py::class_<DataMapper>(m, "DataMapper")
+        .def(py::init())
+        .def_readwrite("dataRange", &DataMapper::dataRange)
+        .def_readwrite("valueRange", &DataMapper::valueRange)
+        .def_readwrite("valueUnit", &DataMapper::valueUnit)
+        .def("__repr__", [](const DataMapper &datamapper) {
+            std::ostringstream oss;
+            oss << "<DataMapper:  dataRange = " << datamapper.dataRange
+                << ",  valueRange = " << datamapper.valueRange << ",  valueUnit = \""
+                << datamapper.valueUnit << "\">";
+            return oss.str();
+        });
+}
 
 }  // namespace inviwo

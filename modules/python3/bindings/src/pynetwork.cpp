@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pynetwork.h>
+#include <inviwopy/pynetwork.h>
 
-#include <modules/python3/interface/inviwopy.h>
-#include <modules/python3/interface/pyglmtypes.h>
+#include <inviwopy/inviwopy.h>
+#include <inviwopy/pyglmtypes.h>
 
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>

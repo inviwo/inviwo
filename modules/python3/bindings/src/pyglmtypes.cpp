@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pyglmtypes.h>
+#include <inviwopy/pyglmtypes.h>
 
 #include <inviwo/core/util/ostreamjoiner.h>
 

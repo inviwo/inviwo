@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pydataformat.h>
+#include <inviwopy/pydataformat.h>
 
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/stdextensions.h>

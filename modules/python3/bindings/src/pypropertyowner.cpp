@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pypropertyowner.h>
+#include <inviwopy/pypropertyowner.h>
 #include <inviwo/core/properties/propertyowner.h>
 
-#include <modules/python3/interface/inviwopy.h>
-#include <modules/python3/interface/vectoridentifierwrapper.h>
-#include <modules/python3/interface/pyproperties.h>
+#include <inviwopy/inviwopy.h>
+#include <inviwopy/vectoridentifierwrapper.h>
+#include <inviwopy/pyproperties.h>
 
 #include <pybind11/detail/common.h>
 

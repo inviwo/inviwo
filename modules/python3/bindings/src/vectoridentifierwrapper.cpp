@@ -27,35 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pyinviwomodule.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwopy/vectoridentifierwrapper.h>
 
 namespace inviwo {
-
-void exposeInviwoModule(pybind11::module &m) {
-    namespace py = pybind11;
-
-    py::enum_<inviwo::ModulePath>(m, "ModulePath")
-        .value("Data", ModulePath::Data)
-        .value("Images", ModulePath::Images)
-        .value("PortInspectors", ModulePath::PortInspectors)
-        .value("Scripts", ModulePath::Scripts)
-        .value("Volumes", ModulePath::Volumes)
-        .value("Workspaces", ModulePath::Workspaces)
-        .value("Tests", ModulePath::Tests)
-        .value("TestImages", ModulePath::TestImages)
-        .value("TestVolumes", ModulePath::TestVolumes)
-        .value("UnitTests", ModulePath::UnitTests)
-        .value("RegressionTests", ModulePath::RegressionTests)
-        .value("GLSL", ModulePath::GLSL)
-        .value("CL", ModulePath::CL);
-
-    py::class_<InviwoModule>(m, "InviwoModule")
-        .def_property_readonly("identifier", &InviwoModule::getIdentifier)
-        .def_property_readonly("description", &InviwoModule::getDescription)
-        .def_property_readonly("path", [](InviwoModule *m) { return m->getPath(); })
-        .def_property_readonly("version", &InviwoModule::getVersion)
-        .def("getPath", [](InviwoModule *m, ModulePath type) { return m->getPath(type); });
-}
 
 }  // namespace inviwo

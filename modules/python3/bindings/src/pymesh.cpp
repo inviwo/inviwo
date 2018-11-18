@@ -27,14 +27,14 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pymesh.h>
+#include <inviwopy/pymesh.h>
 
 #include <inviwo/core/util/formatdispatching.h>
 
-#include <modules/python3/interface/inviwopy.h>
-#include <modules/python3/interface/pynetwork.h>
-#include <modules/python3/interface/pyglmtypes.h>
-#include <modules/python3/interface/pyport.h>
+#include <inviwopy/inviwopy.h>
+#include <inviwopy/pynetwork.h>
+#include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyport.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>

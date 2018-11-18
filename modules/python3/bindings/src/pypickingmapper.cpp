@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pypickingmapper.h>
+#include <inviwopy/pypickingmapper.h>
 
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/pickingstate.h>
