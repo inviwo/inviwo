@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,35 @@
  *
  *********************************************************************************/
 
-#include "pythonlogger.h"
+#include <inviwopy/pyinviwomodule.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-void PythonLogger::onPyhonExecutionOutput(const std::string &msg,
-                                          PythonOutputType outputType) {
-    switch (outputType) {
-        case PythonOutputType::sysstderr:
-            LogError(msg);
-            break;
-        case PythonOutputType::sysstdout:
-        default:
-            LogInfo(msg);
-    }
+void exposeInviwoModule(pybind11::module &m) {
+    namespace py = pybind11;
+
+    py::enum_<inviwo::ModulePath>(m, "ModulePath")
+        .value("Data", ModulePath::Data)
+        .value("Images", ModulePath::Images)
+        .value("PortInspectors", ModulePath::PortInspectors)
+        .value("Scripts", ModulePath::Scripts)
+        .value("Volumes", ModulePath::Volumes)
+        .value("Workspaces", ModulePath::Workspaces)
+        .value("Tests", ModulePath::Tests)
+        .value("TestImages", ModulePath::TestImages)
+        .value("TestVolumes", ModulePath::TestVolumes)
+        .value("UnitTests", ModulePath::UnitTests)
+        .value("RegressionTests", ModulePath::RegressionTests)
+        .value("GLSL", ModulePath::GLSL)
+        .value("CL", ModulePath::CL);
+
+    py::class_<InviwoModule>(m, "InviwoModule")
+        .def_property_readonly("identifier", &InviwoModule::getIdentifier)
+        .def_property_readonly("description", &InviwoModule::getDescription)
+        .def_property_readonly("path", [](InviwoModule *m) { return m->getPath(); })
+        .def_property_readonly("version", &InviwoModule::getVersion)
+        .def("getPath", [](InviwoModule *m, ModulePath type) { return m->getPath(type); });
 }
 
-}  // namespace
+}  // namespace inviwo

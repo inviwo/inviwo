@@ -27,27 +27,27 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/inviwopy.h>
+#include <inviwopy/inviwopy.h>
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 
-#include <modules/python3/interface/pydataformat.h>
-#include <modules/python3/interface/pyinviwoapplication.h>
-#include <modules/python3/interface/pyinviwomodule.h>
-#include <modules/python3/interface/pyimage.h>
-#include <modules/python3/interface/pynetwork.h>
-#include <modules/python3/interface/pyprocessors.h>
-#include <modules/python3/interface/pyglmtypes.h>
-#include <modules/python3/interface/pyport.h>
-#include <modules/python3/interface/pyproperties.h>
-#include <modules/python3/interface/pypropertyowner.h>
-#include <modules/python3/interface/pyvolume.h>
-#include <modules/python3/interface/pydatamapper.h>
-#include <modules/python3/interface/pybuffer.h>
-#include <modules/python3/interface/pymesh.h>
-#include <modules/python3/interface/pytfprimitiveset.h>
-#include <modules/python3/interface/pypickingmapper.h>
+#include <inviwopy/pydataformat.h>
+#include <inviwopy/pyinviwoapplication.h>
+#include <inviwopy/pyinviwomodule.h>
+#include <inviwopy/pyimage.h>
+#include <inviwopy/pynetwork.h>
+#include <inviwopy/pyprocessors.h>
+#include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyport.h>
+#include <inviwopy/pyproperties.h>
+#include <inviwopy/pypropertyowner.h>
+#include <inviwopy/pyvolume.h>
+#include <inviwopy/pydatamapper.h>
+#include <inviwopy/pybuffer.h>
+#include <inviwopy/pymesh.h>
+#include <inviwopy/pytfprimitiveset.h>
+#include <inviwopy/pypickingmapper.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 

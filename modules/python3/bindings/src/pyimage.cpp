@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pyimage.h>
+#include <inviwopy/pyimage.h>
 
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -38,11 +38,11 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
-#include <modules/python3/interface/inviwopy.h>
-#include <modules/python3/interface/pynetwork.h>
-#include <modules/python3/interface/pyglmtypes.h>
+#include <inviwopy/inviwopy.h>
+#include <inviwopy/pynetwork.h>
+#include <inviwopy/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
-#include <modules/python3/interface/pyport.h>
+#include <inviwopy/pyport.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>

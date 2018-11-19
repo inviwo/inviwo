@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pytfprimitiveset.h>
+#include <inviwopy/pytfprimitiveset.h>
 
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/datastructures/transferfunction.h>

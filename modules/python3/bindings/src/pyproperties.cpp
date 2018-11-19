@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pyproperties.h>
+#include <inviwopy/pyproperties.h>
 #include <inviwo/core/properties/propertyfactory.h>
 
-#include <modules/python3/interface/inviwopy.h>
+#include <inviwopy/inviwopy.h>
 
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>

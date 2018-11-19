@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,20 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pydatamapper.h>
-
-#include <inviwo/core/datastructures/datamapper.h>
-
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-
-#include <sstream>
-
-namespace py = pybind11;
+#include <modules/python3/pythonlogger.h>
 
 namespace inviwo {
 
-void exposeDataMapper(py::module &m) {
-
-    py::class_<DataMapper>(m, "DataMapper")
-        .def(py::init())
-        .def_readwrite("dataRange", &DataMapper::dataRange)
-        .def_readwrite("valueRange", &DataMapper::valueRange)
-        .def_readwrite("valueUnit", &DataMapper::valueUnit)
-        .def("__repr__", [](const DataMapper &datamapper) {
-            std::ostringstream oss;
-            oss << "<DataMapper:  dataRange = " << datamapper.dataRange
-                << ",  valueRange = " << datamapper.valueRange << ",  valueUnit = \""
-                << datamapper.valueUnit << "\">";
-            return oss.str();
-        });
+void PythonLogger::onPyhonExecutionOutput(const std::string &msg,
+                                          PythonOutputType outputType) {
+    switch (outputType) {
+        case PythonOutputType::sysstderr:
+            LogError(msg);
+            break;
+        case PythonOutputType::sysstdout:
+        default:
+            LogInfo(msg);
+    }
 }
 
-}  // namespace inviwo
+}  // namespace

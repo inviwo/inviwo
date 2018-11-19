@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/interface/pyport.h>
+#include <inviwopy/pyport.h>
 
-#include <modules/python3/interface/pyglmtypes.h>
+#include <inviwopy/pyglmtypes.h>
 
 #include <vector>
 
