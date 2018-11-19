@@ -5,20 +5,23 @@ ivw_module(EigenUtils)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/eigenutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/eigenports.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmatrixtoimage.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmix.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigennormalize.h
+    include/modules/eigenutils/eigenports.h
+    include/modules/eigenutils/eigenutils.h
+    include/modules/eigenutils/eigenutilsmodule.h
+    include/modules/eigenutils/eigenutilsmoduledefine.h
+    include/modules/eigenutils/processors/eigenmatrixtoimage.h
+    include/modules/eigenutils/processors/eigenmix.h
+    include/modules/eigenutils/processors/eigennormalize.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmatrixtoimage.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigenmix.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/eigennormalize.cpp
+    src/eigenutilsmodule.cpp
+    src/processors/eigenmatrixtoimage.cpp
+    src/processors/eigenmix.cpp
+    src/processors/eigennormalize.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

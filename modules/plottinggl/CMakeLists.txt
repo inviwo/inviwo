@@ -5,34 +5,37 @@ ivw_module(PlottingGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/plotters/persistencediagramplotgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/plotters/scatterplotgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisrenderprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/colorscalelegend.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/persistencediagramplotprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinates.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/scatterplotmatrixprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/scatterplotprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeaxis.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/axisrenderer.h
+    include/modules/plottinggl/plotters/persistencediagramplotgl.h
+    include/modules/plottinggl/plotters/scatterplotgl.h
+    include/modules/plottinggl/plottingglmodule.h
+    include/modules/plottinggl/plottingglmoduledefine.h
+    include/modules/plottinggl/processors/axisrenderprocessor.h
+    include/modules/plottinggl/processors/colorscalelegend.h
+    include/modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h
+    include/modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h
+    include/modules/plottinggl/processors/persistencediagramplotprocessor.h
+    include/modules/plottinggl/processors/scatterplotmatrixprocessor.h
+    include/modules/plottinggl/processors/scatterplotprocessor.h
+    include/modules/plottinggl/processors/volumeaxis.h
+    include/modules/plottinggl/utils/axisrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/plotters/persistencediagramplotgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/plotters/scatterplotgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisrenderprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/colorscalelegend.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/persistencediagramplotprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinates.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/scatterplotmatrixprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/scatterplotprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeaxis.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/axisrenderer.cpp
+    src/plotters/persistencediagramplotgl.cpp
+    src/plotters/scatterplotgl.cpp
+    src/plottingglmodule.cpp
+    src/processors/axisrenderprocessor.cpp
+    src/processors/colorscalelegend.cpp
+    src/processors/parallelcoordinates/parallelcoordinates.cpp
+    src/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.cpp
+    src/processors/persistencediagramplotprocessor.cpp
+    src/processors/scatterplotmatrixprocessor.cpp
+    src/processors/scatterplotprocessor.cpp
+    src/processors/volumeaxis.cpp
+    src/utils/axisrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

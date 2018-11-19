@@ -6,52 +6,55 @@ ivw_module(VectorFieldVisualization)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithms/integrallineoperations.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integralline.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integrallineset.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ports/seedpointsport.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/seedpointgenerator2d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/pathlines.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamlines.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamribbons.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator2d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator3d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointsfrommask.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/discardshortlines.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinetracerprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/seed3dto4d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/seedsfrommasksequence.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/integrallineproperties.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/pathlineproperties.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/streamlineproperties.h
+    include/modules/vectorfieldvisualization/algorithms/integrallineoperations.h
+    include/modules/vectorfieldvisualization/datastructures/integralline.h
+    include/modules/vectorfieldvisualization/datastructures/integrallineset.h
+    include/modules/vectorfieldvisualization/integrallinetracer.h
+    include/modules/vectorfieldvisualization/ports/seedpointsport.h
+    include/modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h
+    include/modules/vectorfieldvisualization/processors/3d/pathlines.h
+    include/modules/vectorfieldvisualization/processors/3d/streamlines.h
+    include/modules/vectorfieldvisualization/processors/3d/streamribbons.h
+    include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h
+    include/modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h
+    include/modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h
+    include/modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h
+    include/modules/vectorfieldvisualization/processors/discardshortlines.h
+    include/modules/vectorfieldvisualization/processors/integrallinetracerprocessor.h
+    include/modules/vectorfieldvisualization/processors/integrallinevectortomesh.h
+    include/modules/vectorfieldvisualization/processors/seed3dto4d.h
+    include/modules/vectorfieldvisualization/processors/seedsfrommasksequence.h
+    include/modules/vectorfieldvisualization/properties/integrallineproperties.h
+    include/modules/vectorfieldvisualization/properties/pathlineproperties.h
+    include/modules/vectorfieldvisualization/properties/streamlineproperties.h
+    include/modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h
+    include/modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithms/integrallineoperations.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integralline.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/integrallineset.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/seedpointgenerator2d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/pathlines.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamlines.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamribbons.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator2d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator3d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointgenerator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/seedpointsfrommask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/discardshortlines.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/integrallinevectortomesh.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/seed3dto4d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/seedsfrommasksequence.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/integrallineproperties.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/pathlineproperties.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/streamlineproperties.cpp
+    src/algorithms/integrallineoperations.cpp
+    src/datastructures/integralline.cpp
+    src/datastructures/integrallineset.cpp
+    src/integrallinetracer.cpp
+    src/processors/2d/seedpointgenerator2d.cpp
+    src/processors/3d/pathlines.cpp
+    src/processors/3d/streamlines.cpp
+    src/processors/3d/streamribbons.cpp
+    src/processors/datageneration/rbfvectorfieldgenerator2d.cpp
+    src/processors/datageneration/rbfvectorfieldgenerator3d.cpp
+    src/processors/datageneration/seedpointgenerator.cpp
+    src/processors/datageneration/seedpointsfrommask.cpp
+    src/processors/discardshortlines.cpp
+    src/processors/integrallinevectortomesh.cpp
+    src/processors/seed3dto4d.cpp
+    src/processors/seedsfrommasksequence.cpp
+    src/properties/integrallineproperties.cpp
+    src/properties/pathlineproperties.cpp
+    src/properties/streamlineproperties.cpp
+    src/vectorfieldvisualizationmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
