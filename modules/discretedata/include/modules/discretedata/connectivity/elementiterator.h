@@ -97,25 +97,25 @@ public:
     }
     bool operator!=(ElementIterator& other) { return !(other == *this); }
 
-    // GridPrimitive type the iterator walks through
+    //! GridPrimitive type the iterator walks through
     GridPrimitive getType() const { return dimension_; }
 
     ind getIndex() const { return index_; }
     operator ind() const { return index_; }
 
-    // Iterate over connected GridPrimitives (neighbors etc)
+    //! Iterate over connected GridPrimitives (neighbors etc)
     ConnectionRange connection(GridPrimitive toType) const;
 
     const Connectivity* getGrid() const { return parent_; }
 
 protected:
-    // Index to the current element
+    //! Index to the current element
     ind index_;
 
-    // Pointer to Connectivity iterated through - Does not delete
+    //! Pointer to Connectivity iterated through - Does not delete
     const Connectivity* parent_;
 
-    // GridPrimitive type iterated over (0D vertices etc)
+    //! GridPrimitive type iterated over (0D vertices etc)
     const GridPrimitive dimension_;
 };
 

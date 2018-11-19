@@ -106,27 +106,27 @@ public:
     }
     bool operator!=(ConnectionIterator& other) { return !(other == *this); }
 
-    // GridPrimitive type the iterator walks through
+    //! GridPrimitive type the iterator walks through
     GridPrimitive getType() const { return toDimension_; }
 
-    // The current index. Equivalent to dereferencing. 
+    //! The current index. Equivalent to dereferencing. 
     ind getIndex() const { return connection_->at(toIndex_); }
 
-    // Iterate over connected GridPrimitives (neighbors etc)
+    //! Iterate over connected GridPrimitives (neighbors etc)
     ConnectionRange connection(GridPrimitive type) const;
 
 protected:
-    // Index to the current element
+    //! Index to the current element
     ind toIndex_;
 
-    // Pointer to Connectivity iterated through - Does not delete
+    //! Pointer to Connectivity iterated through - Does not delete
     const Connectivity* parent_;
 
-    // GridPrimitive type iterated over (0D vertices etc)
+    //! GridPrimitive type iterated over (0D vertices etc)
     const GridPrimitive toDimension_;
 
     // TODO: Find better solution. Keeping a ChannelIterator?
-    // List of neighborhood indices
+    //! List of neighborhood indices
     std::shared_ptr<const std::vector<ind>> connection_;
 };
 

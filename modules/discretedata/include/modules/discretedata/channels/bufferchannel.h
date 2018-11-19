@@ -39,54 +39,59 @@
 namespace inviwo {
 namespace discretedata {
 
-/** \brief Data channel as array data
-
-    Data block with a size of
-    NumDataPoints * NumComponents.
-    The buffer is not constant, copy to change.
-
-    @author Anke Friederici and Tino Weinkauf
-*/
+/** 
+ * \brief Data channel as array data
+ *
+ * Data block with a size of
+ * NumDataPoints * NumComponents.
+ * The buffer is not constant, copy to change.
+ *
+ * @author Anke Friederici and Tino Weinkauf
+ */
 template <typename T, ind N = 1>
 class BufferChannel : public DataChannel<T, N> {
     friend class DataSet;
     friend struct BufferGetter<BufferChannel>;
-    using DefaultVec = DataChannel<T, N>::DefaultVec;
+    using DefaultVec = typename DataChannel<T, N>::DefaultVec;
 
 public:
-    /** \brief Direct construction, empty data
-     *   @param numElements Total number of indexed positions
-     *   @param numComponents Size of vector at each position
-     *   @param name Name associated with the channel
-     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+    /** 
+     * \brief Direct construction, empty data
+     * @param numElements Total number of indexed positions
+     * @param numComponents Size of vector at each position
+     * @param name Name associated with the channel
+     * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     BufferChannel(ind numElements, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T, N>(name, definedOn), buffer_(numElements * N) {}
 
-    /** \brief Direct construction
-     *   @param data Raw data, copy values
-     *   @param name Name associated with the channel
-     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+    /** 
+     * \brief Direct construction
+     * @param data Raw data, copy values
+     * @param name Name associated with the channel
+     * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     BufferChannel(const std::vector<T>& rawData, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T, N>(name, definedOn), buffer_(rawData) {}
 
-    /** \brief Direct construction
-     *   @param data Raw data, move values
-     *   @param name Name associated with the channel
-     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+    /** 
+     * \brief Direct construction
+     * @param data Raw data, move values
+     * @param name Name associated with the channel
+     * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     BufferChannel(std::vector<T>&& data, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T, N>(name, definedOn), buffer_(std::move(data)) {}
 
-    /** \brief Direct construction
-     *   @param data Pointer to data, copy numElements * numComponents
-     *   @param numElements Total number of indexed positions
-     *   @param name Name associated with the channel
-     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+    /** 
+     * \brief Direct construction
+     * @param data Pointer to data, copy numElements * numComponents
+     * @param numElements Total number of indexed positions
+     * @param name Name associated with the channel
+     * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     BufferChannel(T* const data, ind numElements, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
@@ -96,24 +101,28 @@ public:
 
     const std::vector<T>& data() const { return buffer_; }
 
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
+    /** 
+     * \brief Indexed point access
+     * @param index Linear point index
+     * @return Reference to data
      */
-    DefaultVec& operator[](ind index) { 
-        return *reinterpret_cast<DefaultVec*>(&buffer_[index * N]); }
+    DefaultVec& operator[](ind index) {
+        return *reinterpret_cast<DefaultVec*>(&buffer_[index * N]);
+    }
 
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
+    /** 
+     * \brief Indexed point access
+     * @param index Linear point index
+     * @return Reference to data
      */
     const DefaultVec& operator[](ind index) const {
         return *reinterpret_cast<const DefaultVec*>(&buffer_[index * N]);
     }
 
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
+    /** 
+     * \brief Indexed point access
+     * @param index Linear point index
+     * @return Reference to data
      */
     template <typename VecNT = DefaultVec>
     VecNT& get(ind index) {
@@ -122,9 +131,10 @@ public:
         return *reinterpret_cast<VecNT*>(&buffer_[index * N]);
     }
 
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
+    /** 
+     * \brief Indexed point access
+     * @param index Linear point index
+     * @return Reference to data
      */
     template <typename VecNT = DefaultVec>
     const VecNT& get(ind index) const {
@@ -138,17 +148,19 @@ protected:
         return new BufferGetter<BufferChannel<T, N>>(this);
     }
 
-    /** \brief Indexed point access, constant
-     *   @param dest Position to write to, expect write of NumComponents many T
-     *   @param index Linear point index
+    /** 
+     * \brief Indexed point access, constant
+     * @param dest Position to write to, expect write of NumComponents many T
+     * @param index Linear point index
      */
     virtual void fillRaw(T* dest, ind index) const override {
         memcpy(dest, &buffer_[index * N], sizeof(T) * N);
     }
 
-    /** \brief Vector containing the buffer data
-     *   Resizeable only by DataSet. Handle with care:
-     *   Resize invalidates pointers to memory, but iterators remain valid.
+    /** 
+     * \brief Vector containing the buffer data
+     * Resizeable only by DataSet. Handle with care:
+     * Resize invalidates pointers to memory, but iterators remain valid.
      */
     std::vector<T> buffer_;
 };

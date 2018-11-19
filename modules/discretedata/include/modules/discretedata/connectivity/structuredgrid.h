@@ -37,16 +37,16 @@ namespace discretedata {
 
 class ElementIterator;
 
-/** \class StructuredGrid
-    \brief A curvilinear grid in nD
-
-    @author Anke Friederici and Tino Weinkauf
-*/
+/**
+ * \brief A curvilinear grid in nD
+ * @author Anke Friederici and Tino Weinkauf
+ */
 class IVW_MODULE_DISCRETEDATA_API StructuredGrid : public Connectivity {
 public:
-    /** \brief Create an nD grid
-     *   @param gridDimension Dimension of grid (not vertices)
-     *   @param gridSize Number of cells in each dimension, expect size gridDimension+1
+    /**
+     * \brief Create an nD grid
+     * @param gridDimension Dimension of grid (not vertices)
+     * @param gridSize Number of cells in each dimension, expect size gridDimension+1
      */
     StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim);
     virtual ~StructuredGrid() = default;

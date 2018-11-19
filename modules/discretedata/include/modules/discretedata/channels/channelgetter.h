@@ -47,7 +47,7 @@ struct ChannelGetter {
 
     virtual T* get(ind index) = 0;
 
-    /** Compare by the parent pointer */
+    //! Compare by the parent pointer
     bool operator==(const ChannelGetter<T, N>& other) const { return equal(other); }
     bool operator!=(const ChannelGetter<T, N>& other) const { return !(*this == other); }
     virtual ChannelGetter<T, N>* clone() const = 0;

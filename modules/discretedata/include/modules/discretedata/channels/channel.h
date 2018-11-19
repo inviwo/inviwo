@@ -38,19 +38,21 @@
 namespace inviwo {
 namespace discretedata {
 
-/** \brief An untyped scalar or vector component of a data set.
-
-    General version of a DataChannel for use in general containers
-    (see DataSet).
-
-    @author Anke Friederici and Tino Weinkauf
-*/
+/** 
+ * \brief An untyped scalar or vector component of a data set.
+ *
+ * General version of a DataChannel for use in general containers
+ * (see DataSet).
+ *
+ * @author Anke Friederici and Tino Weinkauf
+ */
 class IVW_MODULE_DISCRETEDATA_API Channel : public MetaDataOwner {
 public:
-    /** \brief Direct construction
-     *   @param numComponents Size of vector at each position
-     *   @param name Name associated with the channel
-     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+    /** 
+     * \brief Direct construction
+     * @param numComponents Size of vector at each position
+     * @param name Name associated with the channel
+     * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     Channel(ind numComponents, const std::string& name, DataFormatId dataFormat,
             GridPrimitive definedOn = GridPrimitive::Vertex);
@@ -70,15 +72,17 @@ public:
     virtual ind size() const = 0;
 
 protected:
-    /** Sets the "GridPrimitiveType" meta data
-     *  Should be constant, only DataSet is allowed to write.
+    /** 
+     * Sets the "GridPrimitiveType" meta data
+     * Should be constant, only DataSet is allowed to write.
      */
     void setGridPrimitiveType(GridPrimitive);
 
     void setDataFormatId(DataFormatId);
 
-    /** Sets the "NumComponents" meta data
-     *  Should be constant, only DataSet is allowed to write.
+    /** 
+     * Sets the "NumComponents" meta data
+     * Should be constant, only DataSet is allowed to write.
      */
     void setNumComponents(ind);
 

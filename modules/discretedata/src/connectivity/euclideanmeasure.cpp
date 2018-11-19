@@ -55,6 +55,6 @@ double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimit
     }
 }
 
-}
-}
-}
+}  // namespace euclidean
+}  // namespace discretedata
+}  // namespace inviwo

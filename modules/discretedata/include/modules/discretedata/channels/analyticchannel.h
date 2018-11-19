@@ -38,17 +38,17 @@
 namespace inviwo {
 namespace discretedata {
 
-/** \class DataAnalytic
-    \brief Data channel by function evaluated at each (linear) index.
-
-    Realization of DataChannel.
-
-    Data is stored implicitly by a function f:index -> vec<T, N>,
-    where the destination memory is pre-allocated.
-    Indices are linear.
-
-    @author Anke Friederici and Tino Weinkauf
-*/
+/** 
+ * \brief Data channel by function evaluated at each (linear) index.
+ *
+ * Realization of DataChannel.
+ *
+ * Data is stored implicitly by a function f:index -> vec<T, N>,
+ * where the destination memory is pre-allocated.
+ * Indices are linear.
+ *
+ *   @author Anke Friederici and Tino Weinkauf
+ */
 template <typename T, ind N, typename Vec = std::array<T, N>>
 class AnalyticChannel : public DataChannel<T, N> {
 public:
@@ -56,11 +56,12 @@ public:
     using Function = typename std::function<void(Vec&, ind)>;
 
 public:
-    /** \brief Direct construction
-     *   @param dataFunction Data generator, mapping of linear index to T*
-     *   @param numElements Total number of indexed positions
-     *   @param name Name associated with the channel
-     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+    /** 
+     * \brief Direct construction
+     * @param dataFunction Data generator, mapping of linear index to T*
+     * @param numElements Total number of indexed positions
+     * @param name Name associated with the channel
+     * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     AnalyticChannel(Function dataFunction, ind numElements, const std::string& name,
                     GridPrimitive definedOn = GridPrimitive::Vertex)
@@ -73,10 +74,11 @@ public:
 public:
     ind size() const override { return numElements_; }
 
-    /** \brief Indexed point access, constant
-     *   Will write to the memory of dest via reinterpret_cast.
-     *   @param dest Position to write to, expect write of NumComponents many T
-     *   @param index Linear point index
+    /** 
+     * \brief Indexed point access, constant
+     * Will write to the memory of dest via reinterpret_cast.
+     * @param dest Position to write to, expect write of NumComponents many T
+     * @param index Linear point index
      */
     void fillRaw(T* dest, ind index) const override {
         Vec& destVec = *reinterpret_cast<Vec*>(dest);

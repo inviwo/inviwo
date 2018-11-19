@@ -176,21 +176,21 @@ public:
     bool operator!=(ConstChannelIterator& other) { return !(other == *this); }
 
 protected:
-    /** Constant DataChannel */
+    //! Constant DataChannel
     const Parent* parent;
 
-    /** index to the current element */
+    //! index to the current element
     ind index;
 };
 
-/** Increment randomly */
+//! Increment randomly
 template <typename Parent, typename VecNT>
 ConstChannelIterator<Parent, VecNT> operator+(
     ind offset, ConstChannelIterator<Parent, VecNT>& iter) {
     return ConstChannelIterator<Parent, VecNT>(iter.parent, iter.index + offset);
 }
 
-/** Decrement randomly */
+//! Decrement randomly
 template <typename Parent, typename VecNT>
 ConstChannelIterator<Parent, VecNT> operator-(
     ind offset, ConstChannelIterator<Parent, VecNT>& iter) {

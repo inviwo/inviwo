@@ -32,16 +32,11 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/discretedata/discretedatatypes.h>
 #include <modules/discretedata/channels/channel.h>
+#include <modules/discretedata/channels/channelgetter.h>
 #include <modules/discretedata/channels/channeliterator.h>
 
 namespace inviwo {
 namespace discretedata {
-
-template <typename T, ind N>
-struct ChannelGetter;
-
-template <typename T, ind N>
-class DataChannel;
 
 template <typename T, ind N>
 class BaseChannel : public Channel {
@@ -56,16 +51,17 @@ protected:
 };
 
 
-/** \brief A single vector component of a data set.
-
-    The type is arbitrary but is expected to support the basic arithmetic operations.
-    It is specified via type, base type and number of components.
-
-    Several realizations extend this pure virtual class that differ in data storage/generation.
-    Direct indexing is virtual, avoid where possible.
-
-    @author Anke Friederici and Tino Weinkauf
-*/
+/** 
+ * \brief A single vector component of a data set.
+ *
+ * The type is arbitrary but is expected to support the basic arithmetic operations.
+ * It is specified via type, base type and number of components.
+ *
+ * Several realizations extend this pure virtual class that differ in data storage/generation.
+ * Direct indexing is virtual, avoid where possible.
+ *
+ * @author Anke Friederici and Tino Weinkauf
+ */
 template <typename T, ind N>
 class DataChannel : public BaseChannel<T, N> {
     friend class DataSet;
@@ -85,17 +81,19 @@ public:
                                   std::array<T, N>>::type;
 
 public:
-    /** \brief Direct construction
-     *   @param name Name associated with the channel
-     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
+    /** 
+     * \brief Direct construction
+     * @param name Name associated with the channel
+     * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     DataChannel(const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex);
     virtual ~DataChannel() = default;
 
-    /** \brief Indexed point access, copy data
-     *   Thread safe.
-     *   @param dest Position to write to, expect T[NumComponents]
-     *   @param index Linear point index
+    /** 
+     * \brief Indexed point access, copy data
+     * Thread safe.
+     * @param dest Position to write to, expect T[NumComponents]
+     * @param index Linear point index
      */
     template <typename VecNT>
     void fill(VecNT& dest, ind index) const {
@@ -129,7 +127,7 @@ public:
     struct ChannelRange {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
-        using iterator = iterator<VecNT>;
+        using iterator = DataChannel::iterator<VecNT>;
 
         ChannelRange(DataChannel<T, N>* channel) : parent_(channel) {}
 
@@ -144,7 +142,7 @@ public:
     struct ConstChannelRange {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
-        using const_iterator = const_iterator<VecNT>;
+        using const_iterator = DataChannel::const_iterator<VecNT>;
 
         ConstChannelRange(const DataChannel<T, N>* channel) : parent_(channel) {}
 
@@ -155,18 +153,20 @@ public:
         const DataChannel<T, N>* parent_;
     };
 
-    /** \brief Get iterator range
-     *   Templated iterator return type, only specified once.
-     *   @tparam VecNT Return type of resulting iterators
+    /** 
+     * \brief Get iterator range
+     * Templated iterator return type, only specified once.
+     * @tparam VecNT Return type of resulting iterators
      */
     template <typename VecNT = DefaultVec>
     ChannelRange<VecNT> all() {
         return ChannelRange<VecNT>(this);
     }
 
-    /** \brief Get const iterator range
-     *   Templated iterator return type, only specified once.
-     *   @tparam VecNT Return type of resulting iterators
+    /** 
+     * \brief Get const iterator range
+     * Templated iterator return type, only specified once.
+     * @tparam VecNT Return type of resulting iterators
      */
     template <typename VecNT = DefaultVec>
     ConstChannelRange<VecNT> all() const {

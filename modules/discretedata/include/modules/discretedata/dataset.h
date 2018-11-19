@@ -54,11 +54,12 @@ using DataChannelMap =
                                               // property
              ChannelCompare>;                 // Lesser operator on string-Primitve pairs
 
-/** \brief Data package containing structure by cell connectivity and data
-    Conglomerate of data grid and several data channels assigned to grid dimensions.
-
-    @author Anke Friederici and Tino Weinkauf
-*/
+/** 
+ * \brief Data package containing structure by cell connectivity and data
+ * Conglomerate of data grid and several data channels assigned to grid dimensions.
+ *
+ * @author Anke Friederici and Tino Weinkauf
+ */
 class IVW_MODULE_DISCRETEDATA_API DataSet {
 public:
     DataSet(const std::shared_ptr<const Connectivity> grid) : grid(grid) {}

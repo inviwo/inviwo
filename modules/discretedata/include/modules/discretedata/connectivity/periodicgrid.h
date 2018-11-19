@@ -34,17 +34,18 @@
 namespace inviwo {
 namespace discretedata {
 
-/** \class StructuredGrid
-    \brief A curvilinear grid in nD, with some dimensions set to wrap
-    Assume first point in a dimension equals the last point in that dimension
-
-    @author Anke Friederici and Tino Weinkauf
-*/
+/**
+ * \brief A curvilinear grid in nD, with some dimensions set to wrap
+ * Assume first point in a dimension equals the last point in that dimension
+ *
+ * @author Anke Friederici and Tino Weinkauf
+ */
 class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid {
 public:
-    /** \brief Create an nD grid
-     *   @param gridDimension Dimension of grid (not vertices)
-     *   @param gridSize Number of cells in each dimension, expect size gridDimension+1
+    /** 
+     * \brief Create an nD grid
+     * @param gridDimension Dimension of grid (not vertices)
+     * @param gridSize Number of cells in each dimension, expect size gridDimension+1
      */
     PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim,
                  const std::vector<bool>& isDimPeriodic);

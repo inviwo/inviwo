@@ -42,10 +42,7 @@ namespace discretedata {
 
 typedef glm::vec3 Vec3f;
 TEST(DataSet, ChannelInsertRemoveEdit) {
-
-    // ************************************************* \\
-    // Testing Handling of Data Sets                     \\
-    // ************************************************* \\
+    // Testing Handling of Data Sets
     // - Create several channels
     // - Add and remove them
     // - Rename them

@@ -65,10 +65,10 @@ struct CachedGetter : public ChannelGetter<typename Parent::value_type, Parent::
 protected:
     virtual Channel* parent() const override { return parent_; }
 
-    // Memory is invalidated on iteration
+    //! Memory is invalidated on iteration
     std::array<value_type, num_comp> data;
 
-    /** Index that is currently pointed to */
+    //! Index that is currently pointed to
     ind dataIndex;
 
     Parent* parent_;
