@@ -34,72 +34,30 @@
 namespace inviwo {
 namespace discretedata {
 
-template <typename T, ind N>
-class BufferChannel;
-
-template <typename T, ind N>
-class DataChannel;
+class Channel;
 
 template <typename T, ind N>
 struct ChannelGetter {
+    ChannelGetter() = default;
+    ChannelGetter(const ChannelGetter&) = delete;
+    ChannelGetter(ChannelGetter&&) = delete;
+    ChannelGetter& operator=(const ChannelGetter&) = delete;
+    ChannelGetter& operator=(ChannelGetter&&) = delete;
+    virtual ~ChannelGetter() = default;
 
-    ChannelGetter(DataChannel<T, N>* parent) : parent_(parent) {}
-
-    /** Dereference to get data */
     virtual T* get(ind index) = 0;
 
-    /** Dereference to get data */
-    virtual const T* get(ind index) const = 0;
-
     /** Compare by the parent pointer */
-    bool operator==(const ChannelGetter<T, N>& other) const {
-        return this->parent_ == other.parent_;
-    }
+    bool operator==(const ChannelGetter<T, N>& other) const { return equal(other); }
     bool operator!=(const ChannelGetter<T, N>& other) const { return !(*this == other); }
-    virtual ChannelGetter<T, N>* New() const = 0;
+    virtual ChannelGetter<T, N>* clone() const = 0;
 
 protected:
-    /** Pointer to DataChannel iterated through - Do not delete */
-    DataChannel<T, N>* parent_;
-};
-
-template <typename T, ind N>
-struct BufferGetter : public ChannelGetter<T, N> {
-
-    BufferGetter(BufferChannel<T, N>* parent) : ChannelGetter<T, N>(parent) {}
-
-    /** Dereference to get data */
-    virtual T* get(ind index);
-
-    virtual const T* get(ind index) const;
-
-    virtual ChannelGetter<T, N>* New() const override;
-};
-
-template <typename T, ind N>
-struct CachedGetter : public ChannelGetter<T, N> {
-
-    CachedGetter(DataChannel<T, N>* parent)
-        : ChannelGetter<T, N>(parent), Data(nullptr), DataIndex(-1) {}
-
-    /** Dereference to get data */
-    virtual T* get(ind index) override;
-
-    virtual const T* get(ind index) const override;
-
-    virtual ChannelGetter<T, N>* New() const override {
-        return new CachedGetter<T, N>(this->parent_);
+    virtual bool equal(const ChannelGetter<T, N>& other) const {
+        return parent() == other.parent();
     }
-
-    /** Pointer to heap data
-     * - Memory is invalidated on iteration */
-    mutable std::array<T, N>* Data;
-
-    /** Index that is currently pointed to */
-    mutable ind DataIndex;
+    virtual Channel* parent() const = 0;
 };
 
 }  // namespace discretedata
 }  // namespace inviwo
-
-#include "channelgetter.inl"

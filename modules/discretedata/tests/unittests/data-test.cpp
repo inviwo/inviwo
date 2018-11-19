@@ -41,15 +41,16 @@
 namespace inviwo {
 namespace discretedata {
 
-typedef BufferChannel<float, 3> BufferFloat;
+using BufferFloat = BufferChannel<float, 3>;
 
 // Most basic vector that should be correctly handled for indexing.
 struct TestVec3f {
-    float x, y, z;
+    float x;
+    float y;
+    float z;
 };
 
 TEST(CreatingCopyingIndexing, DataChannels) {
-
     // ************************************************* \\
     // Testing Indexing in Analytic/Buffer               \\
     // ************************************************* \\
@@ -57,30 +58,30 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     // - Compare results in analytic and buffer channel
     // - Copy, assign BufferChannel and test again
 
-    ind numElements = 3;
+    const ind numElements = 3;
     std::vector<ind> size(numElements);
     DataSet dataset(GridPrimitive::Volume, size);
 
-    void (*base)(glm::vec3&, ind) = [](glm::vec3& dest, ind idx) {
+    auto base = [](glm::vec3& dest, ind idx) {
         dest[0] = 1.0f;
-        dest[1] = (float)idx;
-        dest[2] = (float)idx * idx;
+        dest[1] = static_cast<float>(idx);
+        dest[2] = static_cast<float>(idx * idx);
     };
 
     // Setting up a buffer to test against an analytic channel.
     std::vector<float> data;
     for (int dIdx = 0; dIdx < numElements; ++dIdx) {
-        data.push_back(1);
-        data.push_back((float)dIdx);
-        data.push_back((float)dIdx * dIdx);
+        data.push_back(1.0f);
+        data.push_back(static_cast<float>(dIdx));
+        data.push_back(static_cast<float>(dIdx * dIdx));
     }
-    BufferChannel<float, 3>* testBuffer =
+    auto testBuffer =
         new BufferFloat(data.data(), numElements, "MonomialBuffer", GridPrimitive::Vertex);
     IntMetaData* yearTest = testBuffer->createMetaData<IntMetaData>("YearCreated");
     yearTest->set(2017);
 
     // Set up the same channel as analytic channel.
-    AnalyticChannel<float, 3, glm::vec3>* testAnalytic = new AnalyticChannel<float, 3, glm::vec3>(
+    auto testAnalytic = new AnalyticChannel<float, 3, glm::vec3>(
         base, numElements, "MonomialAnalytical", GridPrimitive::Vertex);
 
     // Copy buffer.
@@ -94,18 +95,16 @@ TEST(CreatingCopyingIndexing, DataChannels) {
 
     //  Test access
     auto setBuffer = dataset.getChannel("MonomialBufferCopy");
-
     EXPECT_EQ(setBuffer->getMetaData<IntMetaData>("YearCreated")->get(), 2017);
 
     // Check equality of indexing and filling.
-
     ind c = 0;
 
     // Test indexing.
     for (TestVec3f& b_it : testBuffer->all<TestVec3f>()) {
-        glm::vec3 b_fill, b_get;
+        glm::vec3 b_fill;
         testBuffer->fill(b_fill, c);
-        b_get = testBuffer->get<glm::vec3>(c);
+        auto b_get = testBuffer->get<glm::vec3>(c);
 
         // All methods of indexing should return the same value.
         EXPECT_EQ(b_fill.y, c);
@@ -121,9 +120,9 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     // Test indexing and explicit iterator use.
     for (auto a_it = testAnalytic->begin<glm::vec3>(); a_it != testAnalytic->end<glm::vec3>();
          ++a_it) {
-        glm::vec3 a_fill, b_get;
+        glm::vec3 a_fill;
         testAnalytic->fill(a_fill, c);
-        b_get = testBuffer->get<glm::vec3>(c);
+        auto b_get = testBuffer->get<glm::vec3>(c);
 
         // All methods of indexing should return the same value.
         EXPECT_EQ(a_fill.y, (*a_it).y);

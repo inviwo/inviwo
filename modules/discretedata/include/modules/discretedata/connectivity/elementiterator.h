@@ -39,8 +39,8 @@ namespace discretedata {
 class ConnectionRange;
 class Connectivity;
 
-/** \class ElementIterator
- *   Iterates over one GridPrimitive type in a Connectivity.
+/**
+ * Iterates over one GridPrimitive type in a Connectivity.
  */
 class IVW_MODULE_DISCRETEDATA_API ElementIterator {
     friend ElementIterator operator+(ind, ElementIterator&);
@@ -51,28 +51,30 @@ public:
     ElementIterator();
     ~ElementIterator() = default;
 
-    /** Dereference to 'get data' */
-    ElementIterator operator*() const;
+    ElementIterator& operator*();
 
-    //*** Bidirectional Iteration ***\\
-
+    // Bidirectional iterator
     ElementIterator& operator++() {
         index_++;
         return *this;
     }
+    ElementIterator operator++(int) {
+        auto i = *this;
+        index_++;
+        return i;
+    }
+
     ElementIterator& operator--() {
         index_--;
         return *this;
     }
-
-    bool operator==(ElementIterator& other) {
-        return other.parent_ == parent_  // Compare pointers.
-               && other.dimension_ == dimension_ && other.index_ == index_;
+    ElementIterator operator--(int) {
+        auto i = *this;
+        index_--;
+        return i;
     }
-    bool operator!=(ElementIterator& other) { return !(other == *this); }
 
-    //*** Random Access Iteration ***\\
-
+    // Random Access iterator
     ElementIterator operator+(ind offset) {
         return ElementIterator(parent_, dimension_, index_ + offset);
     }
@@ -88,29 +90,32 @@ public:
         return *this;
     }
 
-    /** GridPrimitive type the iterator walks through */
+    // Compare
+    bool operator==(ElementIterator& other) {
+        return other.parent_ == parent_  // Compare pointers.
+               && other.dimension_ == dimension_ && other.index_ == index_;
+    }
+    bool operator!=(ElementIterator& other) { return !(other == *this); }
+
+    // GridPrimitive type the iterator walks through
     GridPrimitive getType() const { return dimension_; }
 
-    /** The current index. */
     ind getIndex() const { return index_; }
-
-    /** The current index. */
     operator ind() const { return index_; }
 
-    /** Iterate over connected GridPrimitives (neighbors etc) */
+    // Iterate over connected GridPrimitives (neighbors etc)
     ConnectionRange connection(GridPrimitive toType) const;
 
     const Connectivity* getGrid() const { return parent_; }
 
-    // Members
 protected:
-    /** Index to the current element */
+    // Index to the current element
     ind index_;
 
-    /** Pointer to Connectivity iterated through - Does not delete */
+    // Pointer to Connectivity iterated through - Does not delete
     const Connectivity* parent_;
 
-    /** GridPrimitive type iterated over (0D vertices etc) */
+    // GridPrimitive type iterated over (0D vertices etc)
     const GridPrimitive dimension_;
 };
 

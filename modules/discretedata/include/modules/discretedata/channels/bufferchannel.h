@@ -34,78 +34,12 @@
 
 #include <modules/discretedata/channels/datachannel.h>
 #include <modules/discretedata/channels/channelgetter.h>
+#include <modules/discretedata/channels/buffergetter.h>
 
 namespace inviwo {
 namespace discretedata {
 
-template <typename T, ind N>
-class BufferChannel;
-
-template <typename T>
-class ScalarBufferChannel : public DataChannel<T, 1> {
-
-    using Child = BufferChannel<T, 1>;
-
-public:
-    ScalarBufferChannel(const std::string& name, GridPrimitive definedOn)
-        : DataChannel<T, 1>(name, definedOn) {}
-
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
-     */
-    T& operator[](ind index);
-
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
-     */
-    const T& operator[](ind index) const;
-
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
-     */
-    template <typename Vec1T = T>
-    Vec1T& get(ind index);
-
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
-     */
-    template <typename Vec1T = T>
-    const Vec1T& get(ind index) const;
-};
-
-template <typename T, ind N>
-class VectorBufferChannel : public DataChannel<T, N> {
-
-    using Child = BufferChannel<T, N>;
-
-public:
-    VectorBufferChannel(const std::string& name, GridPrimitive definedOn)
-        : DataChannel<T, N>(name, definedOn) {}
-
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
-     */
-    template <typename VecNT>
-    VecNT& get(ind index);
-
-    /** \brief Indexed point access
-     *   @param index Linear point index
-     *   @return Reference to data
-     */
-    template <typename VecNT>
-    const VecNT& get(ind index) const;
-};
-
-#define BaseChannelDef \
-    std::conditional<N == 1, ScalarBufferChannel<T>, VectorBufferChannel<T, N>>::type
-
-/** \class DataBuffer
-    \brief Data channel as array data
+/** \brief Data channel as array data
 
     Data block with a size of
     NumDataPoints * NumComponents.
@@ -114,16 +48,11 @@ public:
     @author Anke Friederici and Tino Weinkauf
 */
 template <typename T, ind N = 1>
-class BufferChannel : public BaseChannelDef {
-
-    using BaseChannel = typename BaseChannelDef;
-#undef BaseChannelDef
-
-    friend BaseChannel;
+class BufferChannel : public DataChannel<T, N> {
     friend class DataSet;
-    friend struct BufferGetter<T, N>;
+    friend struct BufferGetter<BufferChannel>;
+    using DefaultVec = DataChannel<T, N>::DefaultVec;
 
-    // Construction / Deconstruction
 public:
     /** \brief Direct construction, empty data
      *   @param numElements Total number of indexed positions
@@ -133,7 +62,7 @@ public:
      */
     BufferChannel(ind numElements, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : BaseChannel(name, definedOn), buffer_(numElements * N) {}
+        : DataChannel<T, N>(name, definedOn), buffer_(numElements * N) {}
 
     /** \brief Direct construction
      *   @param data Raw data, copy values
@@ -142,7 +71,7 @@ public:
      */
     BufferChannel(const std::vector<T>& rawData, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : BaseChannel(name, definedOn), buffer_(rawData) {}
+        : DataChannel<T, N>(name, definedOn), buffer_(rawData) {}
 
     /** \brief Direct construction
      *   @param data Raw data, move values
@@ -151,7 +80,7 @@ public:
      */
     BufferChannel(std::vector<T>&& data, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : BaseChannel(name, definedOn), buffer_(std::move(data)) {}
+        : DataChannel<T, N>(name, definedOn), buffer_(std::move(data)) {}
 
     /** \brief Direct construction
      *   @param data Pointer to data, copy numElements * numComponents
@@ -161,11 +90,52 @@ public:
      */
     BufferChannel(T* const data, ind numElements, const std::string& name,
                   GridPrimitive definedOn = GridPrimitive::Vertex)
-        : BaseChannel(name, definedOn), buffer_(data, data + numElements * N) {}
+        : DataChannel<T, N>(name, definedOn), buffer_(data, data + numElements * N) {}
+
+    virtual ind size() const override { return buffer_.size() / N; }
+
+    const std::vector<T>& data() const { return buffer_; }
+
+    /** \brief Indexed point access
+     *   @param index Linear point index
+     *   @return Reference to data
+     */
+    DefaultVec& operator[](ind index) { 
+        return *reinterpret_cast<DefaultVec*>(&buffer_[index * N]); }
+
+    /** \brief Indexed point access
+     *   @param index Linear point index
+     *   @return Reference to data
+     */
+    const DefaultVec& operator[](ind index) const {
+        return *reinterpret_cast<const DefaultVec*>(&buffer_[index * N]);
+    }
+
+    /** \brief Indexed point access
+     *   @param index Linear point index
+     *   @return Reference to data
+     */
+    template <typename VecNT = DefaultVec>
+    VecNT& get(ind index) {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
+        return *reinterpret_cast<VecNT*>(&buffer_[index * N]);
+    }
+
+    /** \brief Indexed point access
+     *   @param index Linear point index
+     *   @return Reference to data
+     */
+    template <typename VecNT = DefaultVec>
+    const VecNT& get(ind index) const {
+        static_assert(sizeof(VecNT) == sizeof(T) * N,
+                      "Size and type do not agree with the vector type.");
+        return *reinterpret_cast<const VecNT*>(&buffer_[index * N]);
+    }
 
 protected:
     virtual ChannelGetter<T, N>* newIterator() override {
-        return reinterpret_cast<ChannelGetter<T, N>*>(new BufferGetter<T, N>(this));
+        return new BufferGetter<BufferChannel<T, N>>(this);
     }
 
     /** \brief Indexed point access, constant
@@ -176,66 +146,12 @@ protected:
         memcpy(dest, &buffer_[index * N], sizeof(T) * N);
     }
 
-    // Methods
-public:
-    virtual ind size() const override { return buffer_.size() / N; }
-
-    const std::vector<T>& data() const { return buffer_; }
-
-    // Attributes
-protected:
     /** \brief Vector containing the buffer data
      *   Resizeable only by DataSet. Handle with care:
      *   Resize invalidates pointers to memory, but iterators remain valid.
      */
     std::vector<T> buffer_;
 };
-
-template <typename T>
-T& ScalarBufferChannel<T>::operator[](ind index) {
-    return ((Child*)this)->buffer_[index];
-}
-
-template <typename T>
-const T& ScalarBufferChannel<T>::operator[](ind index) const {
-    return ((Child*)this)->buffer_[index];
-}
-
-template <typename T>
-template <typename Vec1T>
-Vec1T& ScalarBufferChannel<T>::get(ind index) {
-    return ((Child*)this)->buffer_[index];
-}
-
-template <typename T>
-template <typename Vec1T>
-const Vec1T& ScalarBufferChannel<T>::get(ind index) const {
-    return ((Child*)this)->buffer_[index];
-}
-
-/** \brief Indexed point access
- *   @param index Linear point index
- *   @return Reference to data
- */
-template <typename T, ind N>
-template <typename VecNT>
-VecNT& VectorBufferChannel<T, N>::get(ind index) {
-    static_assert(sizeof(VecNT) == sizeof(T) * N,
-                  "Size and type do not agree with the vector type.");
-    return *reinterpret_cast<VecNT*>(&((Child*)this)->buffer_[index * N]);
-}
-
-/** \brief Indexed point access
- *   @param index Linear point index
- *   @return Reference to data
- */
-template <typename T, ind N>
-template <typename VecNT>
-const VecNT& VectorBufferChannel<T, N>::get(ind index) const {
-    static_assert(sizeof(VecNT) == sizeof(T) * N,
-                  "Size and type do not agree with the vector type.");
-    return *reinterpret_cast<const VecNT*>(&((Child*)this)->buffer_[index * N]);
-}
 
 }  // namespace discretedata
 }  // namespace inviwo

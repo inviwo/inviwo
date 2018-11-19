@@ -41,7 +41,6 @@ namespace discretedata {
     @author Anke Friederici and Tino Weinkauf
 */
 class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid {
-    // Construction / Deconstruction
 public:
     /** \brief Create an nD grid
      *   @param gridDimension Dimension of grid (not vertices)

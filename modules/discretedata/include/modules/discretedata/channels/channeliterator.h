@@ -31,14 +31,11 @@
 
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
+#include <modules/discretedata/discretedatatypes.h>
 #include <modules/discretedata/channels/channelgetter.h>
 
 namespace inviwo {
 namespace discretedata {
-
-template <typename T, ind N>
-struct ChannelGetter;
 
 /** \struct ChannelIterator
  *   Generalized iterator over any DataChannel.
@@ -46,72 +43,77 @@ struct ChannelGetter;
  */
 template <typename VecNT, typename T, ind N>
 class ChannelIterator {
-
     static_assert(sizeof(VecNT) == sizeof(T) * N,
                   "Size and type do not agree with the vector type.");
 
 public:
-    ChannelIterator(ChannelGetter<T, N>* parent, ind index) : Getter(parent), Index(index) {}
-
-    ChannelIterator() : Getter(nullptr), Index(-1) {}
-
-    ~ChannelIterator() { delete Getter; }
-
+    ChannelIterator(ChannelGetter<T, N>* parent, ind index) : getter(parent), index(index) {}
+    ChannelIterator() : getter(nullptr), index(-1) {}
+    ~ChannelIterator() = default;
     ChannelIterator(const ChannelIterator<VecNT, T, N>& other)
-        : Getter(other.Getter->New()), Index(other.Index) {}
-
+        : getter(other.getter->clone()), index(other.index) {}
     ChannelIterator<VecNT, T, N>& operator=(const ChannelIterator<VecNT, T, N>& other) {
-        Getter = other->New();
-        Index = other.Index;
+        getter.reset(other->clone());
+        index = other.index;
         return *this;
     }
 
-    /** Dereference to get data */
     VecNT& operator*();
 
-    /*** Bidirectional Iteration ***/
+    // Bidirectional iterator
     ChannelIterator<VecNT, T, N>& operator++() {
-        Index++;
+        index++;
         return *this;
+    }
+    ChannelIterator<VecNT, T, N> operator++(int) {
+        auto i = *this;
+        index++;
+        return i;
     }
     ChannelIterator<VecNT, T, N>& operator--() {
-        Index--;
+        index--;
         return *this;
     }
+    ChannelIterator<VecNT, T, N>& operator--(int) {
+        auto i = *this;
+        index--;
+        return i;
+    }
 
+    // Random Access iterator
+    ChannelIterator<VecNT, T, N> operator+(ind offset) {
+        return ChannelIterator<VecNT, T, N>(getter, index + offset);
+    }
+    ChannelIterator<VecNT, T, N> operator+=(ind offset) { index += offset; }
+    ChannelIterator<VecNT, T, N> operator-(ind offset) {
+        return ChannelIterator<VecNT, T, N>(getter, index - offset);
+    }
+    ChannelIterator<VecNT, T, N> operator-=(ind offset) { index -= offset; }
+
+    // compare
     bool operator==(const ChannelIterator<VecNT, T, N>& other) const {
-        return *other.Getter == *Getter && other.Index == Index;
+        return *other.getter == *getter && other.index == index;
     }
     bool operator!=(const ChannelIterator<VecNT, T, N>& other) const { return !(other == *this); }
 
-    /*** Random Access Iteration ***/
-    ChannelIterator<VecNT, T, N> operator+(ind offset) {
-        return ChannelIterator<VecNT, T, N>(Getter, Index + offset);
-    }
-    ChannelIterator<VecNT, T, N> operator+=(ind offset) { Index += offset; }
-    ChannelIterator<VecNT, T, N> operator-(ind offset) {
-        return ChannelIterator<VecNT, T, N>(Getter, Index - offset);
-    }
-    ChannelIterator<VecNT, T, N> operator-=(ind offset) { Index -= offset; }
-
 protected:
     /** Abstract struct handling the dereferencing **/
-    ChannelGetter<T, N>* Getter;
+    std::unique_ptr<ChannelGetter<T, N>> getter;
 
     /** Index to the current element */
-    ind Index;
+    ind index;
 };
 
 /** Increment randomly */
 template <typename VecNT, typename T, ind N>
 ChannelIterator<VecNT, T, N> operator+(ind offset, ChannelIterator<VecNT, T, N>& iter) {
-    return ChannelIterator<VecNT, T, N>(iter.Getter, iter.Index + offset);
+    return ChannelIterator<VecNT, T, N>(iter.getter, iter.index + offset);
 }
 
 /** Decrement randomly */
 template <typename VecNT, typename T, ind N>
 ChannelIterator<VecNT, T, N> operator-(ind offset, ChannelIterator<VecNT, T, N>& iter) {
-    return ChannelIterator<VecNT, T, N>(iter.Getter, iter.Index - offset);
+    return ChannelIterator<VecNT, T, N>(iter.getter, iter.index - offset);
 }
 
 /*********************************************************************************
@@ -122,70 +124,93 @@ ChannelIterator<VecNT, T, N> operator-(ind offset, ChannelIterator<VecNT, T, N>&
  *   Generalized iterator over any const DataChannel.
  *   Returns by value using the DataChannel's fill.
  */
-template <typename VecNT, typename T, ind N>
+template <typename Parent, typename VecNT>
 class ConstChannelIterator {
-
-    static_assert(sizeof(VecNT) == sizeof(T) * N,
+public:
+    using T = typename Parent::value_type;
+    static constexpr ind num_comp = Parent::num_comp;
+    static_assert(sizeof(VecNT) == sizeof(T) * num_comp,
                   "Size and type do not agree with the vector type.");
 
-public:
-    ConstChannelIterator(const DataChannel<T, N>* parent, ind index)
-        : Parent(parent), Index(index) {}
 
-    ConstChannelIterator() : Parent(nullptr), Index(-1) {}
+    ConstChannelIterator(const Parent* parent, ind index)
+        : parent(parent), index(index) {}
+    ConstChannelIterator() : parent(nullptr), index(-1) {}
 
-    /** Dereference to get data */
     VecNT operator*();
 
-    /** Bidirectional Iteration **/
-    ConstChannelIterator<VecNT, T, N>& operator++() {
-        Index++;
+    // Bidirectional iterator
+    ConstChannelIterator& operator++() {
+        index++;
         return *this;
     }
-    ConstChannelIterator<VecNT, T, N>& operator--() {
-        Index--;
+    ConstChannelIterator operator++(int) {
+        auto i = *this;
+        index++;
+        return i;
+    }
+    ConstChannelIterator& operator--() {
+        index--;
         return *this;
     }
-    bool operator==(ConstChannelIterator<VecNT, T, N>& other) {
-        return other.Parent == Parent && other.Index == Index;
+    ConstChannelIterator& operator--(int) {
+        auto i = *this;
+        index--;
+        return *this;
     }
-    bool operator!=(ConstChannelIterator<VecNT, T, N>& other) { return !(other == *this); }
 
-    /** Random Access Iteration **/
-    ConstChannelIterator<VecNT, T, N> operator+(ind offset) {
-        return ConstChannelIterator<VecNT, T, N>(Parent, Index + offset);
+    // Random Access iterator
+    ConstChannelIterator operator+(ind offset) {
+        return ConstChannelIterator(parent, index + offset);
     }
-    ConstChannelIterator<VecNT, T, N> operator+=(ind offset) { Index += offset; }
-    ConstChannelIterator<VecNT, T, N> operator-(ind offset) {
-        return ConstChannelIterator<VecNT, T, N>(Parent, Index - offset);
+    ConstChannelIterator operator+=(ind offset) { index += offset; }
+    ConstChannelIterator operator-(ind offset) {
+        return ConstChannelIterator(parent, index - offset);
     }
-    ConstChannelIterator<VecNT, T, N> operator-=(ind offset) { Index -= offset; }
+    ConstChannelIterator operator-=(ind offset) { index -= offset; }
+
+    // compare
+    bool operator==(ConstChannelIterator& other) {
+        return other.parent == parent && other.index == index;
+    }
+    bool operator!=(ConstChannelIterator& other) { return !(other == *this); }
 
 protected:
     /** Constant DataChannel */
-    const DataChannel<T, N>* Parent;
+    const Parent* parent;
 
-    /** Index to the current element */
-    ind Index;
+    /** index to the current element */
+    ind index;
 };
 
 /** Increment randomly */
-template <typename VecNT, typename T, ind N>
-ConstChannelIterator<VecNT, T, N> operator+(ind offset, ConstChannelIterator<VecNT, T, N>& iter) {
-    return ConstChannelIterator<VecNT, T, N>(iter.Parent, iter.Index + offset);
+template <typename Parent, typename VecNT>
+ConstChannelIterator<Parent, VecNT> operator+(
+    ind offset, ConstChannelIterator<Parent, VecNT>& iter) {
+    return ConstChannelIterator<Parent, VecNT>(iter.parent, iter.index + offset);
 }
 
 /** Decrement randomly */
-template <typename VecNT, typename T, ind N>
-ConstChannelIterator<VecNT, T, N> operator-(ind offset, ConstChannelIterator<VecNT, T, N>& iter) {
-    return ConstChannelIterator<VecNT, T, N>(iter.Parent, iter.Index - offset);
+template <typename Parent, typename VecNT>
+ConstChannelIterator<Parent, VecNT> operator-(
+    ind offset, ConstChannelIterator<Parent, VecNT>& iter) {
+    return ConstChannelIterator<Parent, VecNT>(iter.parent, iter.index - offset);
 }
+
+template <typename Parent, typename VecNT>
+VecNT ConstChannelIterator<Parent, VecNT>::operator*() {
+    VecNT data;
+    parent->fill(data, index);
+    return data;
+}
+
+template <typename VecNT, typename T, inviwo::discretedata::ind N>
+VecNT& ChannelIterator<VecNT, T, N>::operator*() {
+    T* data = getter->get(index);
+    return *reinterpret_cast<VecNT*>(data);
+}
+
+
 
 }  // namespace discretedata
 }  // namespace inviwo
-
-// Circumvent circular reference.
-#include "datachannel.h"
-#include "bufferchannel.h"
-
-#include "channeliterator.inl"

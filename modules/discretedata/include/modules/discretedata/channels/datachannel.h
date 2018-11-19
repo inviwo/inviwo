@@ -30,18 +30,12 @@
 #pragma once
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/metadata/metadataowner.h>
 #include <modules/discretedata/discretedatatypes.h>
+#include <modules/discretedata/channels/channel.h>
+#include <modules/discretedata/channels/channeliterator.h>
 
 namespace inviwo {
 namespace discretedata {
-
-
-template <typename VecNT, typename T, ind N>
-class ChannelIterator;
-
-template <typename VecNT, typename T, ind N>
-class ConstChannelIterator;
 
 template <typename T, ind N>
 struct ChannelGetter;
@@ -49,65 +43,8 @@ struct ChannelGetter;
 template <typename T, ind N>
 class DataChannel;
 
-/** \class Channel
-    \brief An untyped scalar or vector component of a data set.
-
-    General version of a DataChannel for use in general containers
-    (see DataSet).
-
-    @author Anke Friederici and Tino Weinkauf
-*/
-class IVW_MODULE_DISCRETEDATA_API Channel : public MetaDataOwner {
-    // Construction / Deconstruction
-public:
-    /** \brief Direct construction
-     *   @param numComponents Size of vector at each position
-     *   @param name Name associated with the channel
-     *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
-     */
-    Channel(ind numComponents, const std::string& name, DataFormatId dataFormat,
-            GridPrimitive definedOn = GridPrimitive::Vertex);
-
-    virtual ~Channel() = default;
-
-public:
-    /** Returns the "Name" meta data */
-    const std::string getName() const;
-
-    /** Sets the "Name" meta data */
-    void setName(const std::string&);
-
-    /** Returns the "GridPrimitiveType" meta data */
-    GridPrimitive getGridPrimitiveType() const;
-
-    /** Returns the "DataFormatId" meta data */
-    DataFormatId getDataFormatId() const;
-
-    /** Returns the "NumComponents" meta data */
-    ind getNumComponents() const;
-
-protected:
-    /** Sets the "GridPrimitiveType" meta data
-     *   Should be constant, only DataSet is allowed to write.
-     */
-    void setGridPrimitiveType(GridPrimitive);
-
-    /** Sets the "DataFromatId" meta data
-     */
-    void setDataFormatId(DataFormatId);
-
-    /** Sets the "NumComponents" meta data
-     *   Should be constant, only DataSet is allowed to write.
-     */
-    void setNumComponents(ind);
-
-public:
-    virtual ind size() const = 0;
-};
-
 template <typename T, ind N>
 class BaseChannel : public Channel {
-
 public:
     BaseChannel(const std::string& name, DataFormatId dataFormat,
                 GridPrimitive definedOn = GridPrimitive::Vertex)
@@ -115,120 +52,46 @@ public:
 
 protected:
     virtual void fillRaw(T* dest, ind index) const = 0;
-
     virtual ChannelGetter<T, N>* newIterator() = 0;
 };
 
-template <typename T, ind N>
-class VectorChannel : public BaseChannel<T, N> {
 
-protected:
-    VectorChannel(const std::string& name, DataFormatId dataFormat,
-                  GridPrimitive definedOn = GridPrimitive::Vertex)
-        : BaseChannel<T, N>(name, dataFormat, definedOn) {}
+/** \brief A single vector component of a data set.
 
-public:
-    template <typename VecNT>
-    ChannelIterator<VecNT, T, N> begin() {
-        return ChannelIterator<VecNT, T, N>(this->newIterator(), 0);
-    }
-    template <typename VecNT>
-    ChannelIterator<VecNT, T, N> end() {
-        return ChannelIterator<VecNT, T, N>(this->newIterator(), this->size());
-    }
-
-    template <typename VecNT>
-    ConstChannelIterator<VecNT, T, N> begin() const {
-        return ConstChannelIterator<VecNT, T, N>((DataChannel<T, N>*)this, 0);
-    }
-    template <typename VecNT>
-    ConstChannelIterator<VecNT, T, N> end() const {
-        return ConstChannelIterator<VecNT, T, N>((DataChannel<T, N>*)this, this->size());
-    }
-};
-
-template <typename T>
-class ScalarChannel : public BaseChannel<T, 1> {
-
-public:
-    template <typename Vec1T = T>
-    using iterator = ChannelIterator<Vec1T, T, 1>;
-    template <typename Vec1T = T>
-    using const_iterator = ConstChannelIterator<Vec1T, T, 1>;
-
-    // Methods
-
-    ScalarChannel(const std::string& name, DataFormatId dataFormat,
-                  GridPrimitive definedOn = GridPrimitive::Vertex)
-        : BaseChannel<T, 1>(name, dataFormat, definedOn) {}
-
-    void operator()(T& dest, int index) const { this->fillRaw(&dest, index); }
-
-    template <typename Vec1T = T>
-    iterator<Vec1T> begin() {
-        return iterator<Vec1T>(this->newIterator(), 0);
-    }
-    template <typename Vec1T = T>
-    iterator<Vec1T> end() {
-        return iterator<Vec1T>(this->newIterator(), this->size());
-    }
-
-    template <typename Vec1T = T>
-    const_iterator<Vec1T> begin() const {
-        return const_iterator<Vec1T>(static_cast<const DataChannel<T, 1>*>(this), 0);
-    }
-    template <typename Vec1T = T>
-    const_iterator<Vec1T> end() const {
-        return const_iterator<Vec1T>(static_cast<const DataChannel<T, 1>*>(this), this->size());
-    }
-};
-
-template <typename T, int N>
-using BaseChannelDef = typename std::conditional<N == 1, ScalarChannel<T>, VectorChannel<T, N>>::type;
-
-/** \class DataChannel
-    \brief A single vector component of a data set.
-
-    The type is arbitrary but is expected to support
-    the basic arithmetic operations.
+    The type is arbitrary but is expected to support the basic arithmetic operations.
     It is specified via type, base type and number of components.
 
-    Several realizations extend this pure virtual class
-    that differ in data storage/generation.
+    Several realizations extend this pure virtual class that differ in data storage/generation.
     Direct indexing is virtual, avoid where possible.
 
     @author Anke Friederici and Tino Weinkauf
 */
 template <typename T, ind N>
-class DataChannel : public BaseChannelDef<T, N> {
-    using BaseChannel = typename BaseChannelDef<T, N>;
-
+class DataChannel : public BaseChannel<T, N> {
     friend class DataSet;
     friend struct ChannelGetter<T, N>;
 
 public:
+    static constexpr ind num_comp = N;
+    using value_type = T;
+
     template <typename VecNT>
     using iterator = ChannelIterator<VecNT, T, N>;
+    template <typename VecNT = T>
+    using const_iterator = ConstChannelIterator<DataChannel<T, N>, VecNT>;
 
-    template <typename VecNT>
-    using const_iterator = ConstChannelIterator<VecNT, T, N>;
+    using DefaultVec =
+        typename std::conditional<(N <= 4), typename inviwo::util::glmtype<T, N>::type,
+                                  std::array<T, N>>::type;
 
-private:
-    using MetaScalarType = MetaDataPrimitiveType<double, N, 0>;
-    using MetaVec = typename inviwo::util::glmtype<double, N, 1>::type;
-    using GlmVector = typename inviwo::util::glmtype<T, N, 1>::type;
-
-    // Construction / Deconstruction
 public:
     /** \brief Direct construction
      *   @param name Name associated with the channel
      *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     DataChannel(const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex);
-
     virtual ~DataChannel() = default;
 
-public:
     /** \brief Indexed point access, copy data
      *   Thread safe.
      *   @param dest Position to write to, expect T[NumComponents]
@@ -242,10 +105,31 @@ public:
     }
 
     template <typename VecNT>
+    void operator()(VecNT& dest, ind index) const { fill(dest, index); }
+
+    template <typename VecNT = DefaultVec>
+    iterator<VecNT> begin() {
+        return iterator<VecNT>(this->newIterator(), 0);
+    }
+    template <typename VecNT = DefaultVec>
+    iterator<VecNT> end() {
+        return iterator<VecNT>(this->newIterator(), this->size());
+    }
+
+    template <typename VecNT = DefaultVec>
+    const_iterator<VecNT> begin() const {
+        return const_iterator<VecNT>(this, 0);
+    }
+    template <typename VecNT = DefaultVec>
+    const_iterator<VecNT> end() const {
+        return const_iterator<VecNT>(this, this->size());
+    }
+
+    template <typename VecNT>
     struct ChannelRange {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
-        typedef ChannelIterator<VecNT, T, N> iterator;
+        using iterator = iterator<VecNT>;
 
         ChannelRange(DataChannel<T, N>* channel) : parent_(channel) {}
 
@@ -260,7 +144,7 @@ public:
     struct ConstChannelRange {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
-        using const_iterator = ConstChannelIterator<VecNT, T, N>;
+        using const_iterator = const_iterator<VecNT>;
 
         ConstChannelRange(const DataChannel<T, N>* channel) : parent_(channel) {}
 
@@ -275,7 +159,7 @@ public:
      *   Templated iterator return type, only specified once.
      *   @tparam VecNT Return type of resulting iterators
      */
-    template <typename VecNT>
+    template <typename VecNT = DefaultVec>
     ChannelRange<VecNT> all() {
         return ChannelRange<VecNT>(this);
     }
@@ -284,7 +168,7 @@ public:
      *   Templated iterator return type, only specified once.
      *   @tparam VecNT Return type of resulting iterators
      */
-    template <typename VecNT>
+    template <typename VecNT = DefaultVec>
     ConstChannelRange<VecNT> all() const {
         return ConstChannelRange<VecNT>(this);
     }
@@ -300,12 +184,82 @@ public:
 
 protected:
     void computeMinMax() const;
+
+private:
+    mutable std::array<double, N> min_;
+    mutable std::array<double, N> max_;
+    mutable bool validMinMax_ = false;
 };
+
+template <typename T, ind N>
+DataChannel<T, N>::DataChannel(const std::string& name, GridPrimitive definedOn)
+    : BaseChannel<T, N>(name, DataFormat<T>::id(), definedOn) {}
+
+template <typename T, ind N>
+template <typename VecNT>
+void DataChannel<T, N>::getMin(VecNT& dest) const {
+    static_assert(sizeof(VecNT) == sizeof(T) * N,
+                  "Size and type do not agree with the vector type.");
+
+    if (!validMinMax_) {
+        computeMinMax();
+    }
+
+    T* rawVec = reinterpret_cast<T*>(&dest);
+    for (ind i = 0; i < N; ++i) {
+        rawVec[i] = min_[i];
+    }
+}
+
+template <typename T, ind N>
+template <typename VecNT>
+void DataChannel<T, N>::getMax(VecNT& dest) const {
+    static_assert(sizeof(VecNT) == sizeof(T) * N,
+                  "Size and type do not agree with the vector type.");
+
+    if (!validMinMax_) {
+        computeMinMax();
+    }
+
+    T* rawVec = reinterpret_cast<T*>(&dest);
+    for (ind i = 0; i < N; ++i) {
+        rawVec[i] = max_[i];
+    }
+}
+
+template <typename T, ind N>
+template <typename VecNT>
+void DataChannel<T, N>::getMinMax(VecNT& minDest, VecNT& maxDest) const {
+    static_assert(sizeof(VecNT) == sizeof(T) * N,
+                  "Size and type do not agree with the vector type.");
+    getMin(minDest);
+    getMax(maxDest);
+}
+
+template <typename T, ind N>
+void DataChannel<T, N>::computeMinMax() const {
+    using Vec = std::array<T, N>;
+
+    Vec minT;
+    Vec maxT;
+
+    this->fill(minT, 0);
+    this->fill(maxT, 0);
+
+    for (const Vec& val : this->all<Vec>()) {
+        for (ind dim = 0; dim < N; ++dim) {
+            minT[dim] = std::min(minT[dim], val[dim]);
+            maxT[dim] = std::max(maxT[dim], val[dim]);
+        }
+    }
+
+    for (ind dim = 0; dim < N; ++dim) {
+        min_[dim] = static_cast<double>(minT[dim]);
+        max_[dim] = static_cast<double>(maxT[dim]);
+    }
+
+    validMinMax_ = true;
+}
 
 }  // namespace discretedata
 }  // namespace inviwo
-
-// Circumvent circular reference.
-#include "channeliterator.h"
-
-#include "datachannel.inl"

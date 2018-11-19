@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/discretedata/channels/datachannel.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-template <typename VecNT, typename T, inviwo::discretedata::ind N>
-VecNT& inviwo::discretedata::ChannelIterator<VecNT, T, N>::operator*() {
-    T* data = Getter->get(Index);
-    return *reinterpret_cast<VecNT*>(data);
-}
+#include <modules/discretedata/discretedatatypes.h>
+#include <modules/discretedata/channels/channelgetter.h>
 
-/*********************************************************************************
- * Constant Iterator
- *********************************************************************************/
+namespace inviwo {
 
-template <typename VecNT, typename T, inviwo::discretedata::ind N>
-VecNT inviwo::discretedata::ConstChannelIterator<VecNT, T, N>::operator*() {
-    VecNT data;
-    Parent->fill(data, Index);
-    return data;
-}
+namespace discretedata {
+
+template <typename Parent>
+struct BufferGetter : public ChannelGetter<typename Parent::value_type, Parent::num_comp> {
+    using value_type = typename Parent::value_type;
+    static constexpr int num_comp = Parent::num_comp;
+
+    BufferGetter(Parent* parent) : ChannelGetter<value_type, num_comp>(), parent_{parent} {}
+    virtual ~BufferGetter() = default;
+    virtual BufferGetter* clone() const override { return new BufferGetter(parent_); }
+
+    virtual value_type* get(ind index) override { return &(parent_->buffer_[index * num_comp]); }
+
+protected:
+    virtual Channel* parent() const override { return parent_; }
+    Parent* parent_;
+};
+
+}  // namespace discretedata
+}  // namespace inviwo

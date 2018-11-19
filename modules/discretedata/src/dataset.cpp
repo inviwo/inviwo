@@ -41,19 +41,19 @@ std::shared_ptr<Channel> DataSet::addChannel(Channel* channel) {
 }
 
 void DataSet::addChannel(std::shared_ptr<const Channel> sharedChannel) {
-    Channels.insert(std::make_pair(
+    channels_.insert(std::make_pair(
         std::make_pair(sharedChannel->getName(), sharedChannel->getGridPrimitiveType()),
         sharedChannel));
 }
 
 bool DataSet::removeChannel(std::shared_ptr<const Channel> channel) {
-    return Channels.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType())) != 0;
+    return channels_.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType())) != 0;
 }
 
 std::shared_ptr<const Channel> DataSet::getFirstChannel() const {
-    auto it = Channels.begin();
+    auto it = channels_.begin();
 
-    if (it == Channels.end()) return std::shared_ptr<const Channel>();
+    if (it == channels_.end()) return std::shared_ptr<const Channel>();
 
     return it->second;
 }
@@ -66,9 +66,9 @@ std::shared_ptr<const Channel> DataSet::getChannel(const std::string& name,
 
 std::shared_ptr<const Channel> DataSet::getChannel(
     std::pair<std::string, GridPrimitive>& key) const {
-    auto it = Channels.find(key);
+    auto it = channels_.find(key);
 
-    if (it == Channels.end()) return std::shared_ptr<const Channel>();
+    if (it == channels_.end()) return std::shared_ptr<const Channel>();
 
     return it->second;
 }
@@ -78,7 +78,7 @@ std::vector<std::pair<std::string, GridPrimitive>> DataSet::getChannelNames() co
 
     std::vector<std::pair<std::string, GridPrimitive>> channelNames;
     channelNames.reserve(numChannels);
-    for (auto& key : Channels) {
+    for (auto& key : channels_) {
         channelNames.push_back(key.first);
     }
 

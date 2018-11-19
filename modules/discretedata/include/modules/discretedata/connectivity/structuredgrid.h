@@ -43,7 +43,6 @@ class ElementIterator;
     @author Anke Friederici and Tino Weinkauf
 */
 class IVW_MODULE_DISCRETEDATA_API StructuredGrid : public Connectivity {
-    // Construction / Deconstruction
 public:
     /** \brief Create an nD grid
      *   @param gridDimension Dimension of grid (not vertices)
@@ -58,8 +57,6 @@ public:
 
     virtual CellType getCellType(GridPrimitive dim, ind index) const override;
 
-    // Methods
-public:
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
                                 GridPrimitive to, bool positions = false) const override;
 

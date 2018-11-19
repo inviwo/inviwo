@@ -7,6 +7,9 @@ ivw_module(DiscreteData)
 set(HEADER_FILES
     include/modules/discretedata/channels/analyticchannel.h
     include/modules/discretedata/channels/bufferchannel.h
+    include/modules/discretedata/channels/buffergetter.h
+    include/modules/discretedata/channels/cachedgetter.h
+    include/modules/discretedata/channels/channel.h
     include/modules/discretedata/channels/channelgetter.h
     include/modules/discretedata/channels/channeliterator.h
     include/modules/discretedata/channels/datachannel.h
@@ -28,6 +31,9 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/channels/buffergetter.cpp
+    src/channels/cachedgetter.cpp
+    src/channels/channel.cpp
     src/channels/datachannel.cpp
     src/connectivity/connectioniterator.cpp
     src/connectivity/connectivity.cpp
@@ -54,4 +60,4 @@ ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES})

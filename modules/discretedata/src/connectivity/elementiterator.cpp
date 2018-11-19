@@ -39,19 +39,16 @@ ElementIterator::ElementIterator(const Connectivity* parent, GridPrimitive dimen
 
 ElementIterator::ElementIterator() : ElementIterator(nullptr, GridPrimitive(-1), -1) {}
 
-/** Increment randomly */
 ElementIterator operator+(ind offset, ElementIterator& iter) {
     return ElementIterator(iter.parent_, iter.dimension_, iter.index_ + offset);
 }
 
-/** Decrement randomly */
 ElementIterator operator-(ind offset, ElementIterator& iter) {
     return ElementIterator(iter.parent_, iter.dimension_, iter.index_ - offset);
 }
 
-ElementIterator ElementIterator::operator*() const {
+ElementIterator& ElementIterator::operator*() {
     assert(parent_ && "No channel to iterate is set.");
-
     return *this;
 }
 

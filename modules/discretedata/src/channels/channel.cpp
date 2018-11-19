@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,36 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/discretedatamoduledefine.h>
-#include <modules/discretedata/channels/datachannel.h>
+#include <modules/discretedata/channels/channel.h>
 
 namespace inviwo {
+
+namespace discretedata {
+
+Channel::Channel(ind numComponents, const std::string& name, DataFormatId format,
+                 GridPrimitive prim)
+    : MetaDataOwner()
+    , name_{name}
+    , format_{DataFormatBase::get(format)}
+    , grid_{prim}
+    , numComponents_{numComponents} {}
+
+const std::string Channel::getName() const { return name_; }
+
+void Channel::setName(const std::string& name) { name_ = name; }
+
+GridPrimitive Channel::getGridPrimitiveType() const { return grid_; }
+
+DataFormatId Channel::getDataFormatId() const { return format_->getId(); }
+
+ind Channel::getNumComponents() const { return numComponents_; }
+
+void Channel::setGridPrimitiveType(GridPrimitive prim) { grid_ = prim; }
+
+void Channel::setDataFormatId(DataFormatId format) { format_ = DataFormatBase::get(format); }
+
+void Channel::setNumComponents(ind numComp) { numComponents_ = numComp; }
+
+}  // namespace discretedata
 
 }  // namespace inviwo

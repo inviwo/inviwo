@@ -32,17 +32,17 @@
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/discretedata/channels/datachannel.h>
-#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/discretedatatypes.h>
 #include <modules/discretedata/connectivity/elementiterator.h>
 
 namespace inviwo {
 namespace discretedata {
 
 class ConnectionRange;
+class Connectivity;
 
-/** \class ConnectionIterator
- *   Iterates over one GridPrimitive type in a Connectivity.
+/** 
+ * Iterates over one GridPrimitive type in a Connectivity.
  */
 class IVW_MODULE_DISCRETEDATA_API ConnectionIterator {
     friend ConnectionIterator operator+(ind, ConnectionIterator&);
@@ -58,79 +58,75 @@ public:
 
     ~ConnectionIterator() = default;
 
-    /** Dereference to 'get data' */
     ElementIterator operator*() const;
 
-    //*** Bidirectional Iteration ***\\
-
-    /** Walk forward */
+    // Bidirectional iterator
     ConnectionIterator& operator++() {
         toIndex_++;
         return *this;
     }
-
-    /** Walk backward */
+    ConnectionIterator operator++(int) {
+        auto i = *this;
+        toIndex_++;
+        return i;
+    }
     ConnectionIterator& operator--() {
         toIndex_--;
         return *this;
     }
-
-    /** Compare. Has false positives with iterators started from different elements but suffices for
-     * iteration */
-    bool operator==(ConnectionIterator& other) {
-        return other.parent_ == parent_  // Compare pointers.
-               && other.toDimension_ == toDimension_ && other.toIndex_ == toIndex_;
+    ConnectionIterator operator--(int) {
+        auto i = *this;
+        toIndex_--;
+        return i;
     }
 
-    /** Compare */
-    bool operator!=(ConnectionIterator& other) { return !(other == *this); }
-
-    //*** Random Access Iteration ***\\
-
-    /** Increment randomly */
+    // Random access iterator
     ConnectionIterator operator+(ind offset) {
         return ConnectionIterator(parent_, toDimension_, connection_, toIndex_ + offset);
     }
-
-    /** Increment randomly */
     ConnectionIterator& operator+=(ind offset) {
         toIndex_ += offset;
         return *this;
     }
-
-    /** Decrement randomly */
     ConnectionIterator operator-(ind offset) {
         return ConnectionIterator(parent_, toDimension_, connection_, toIndex_ - offset);
     }
-
-    /** Decrement randomly */
     ConnectionIterator& operator-=(ind offset) {
         toIndex_ -= offset;
         return *this;
     }
 
-    /** GridPrimitive type the iterator walks through */
+    /**
+     * Compare. Has false positives with iterators started from different elements but suffices for
+     * iteration 
+     */
+    bool operator==(ConnectionIterator& other) {
+        return other.parent_ == parent_  // Compare pointers.
+               && other.toDimension_ == toDimension_ && other.toIndex_ == toIndex_;
+    }
+    bool operator!=(ConnectionIterator& other) { return !(other == *this); }
+
+    // GridPrimitive type the iterator walks through
     GridPrimitive getType() const { return toDimension_; }
 
-    /** The current index. Equivalent to dereferencing. */
+    // The current index. Equivalent to dereferencing. 
     ind getIndex() const { return connection_->at(toIndex_); }
 
-    /** Iterate over connected GridPrimitives (neighbors etc) */
+    // Iterate over connected GridPrimitives (neighbors etc)
     ConnectionRange connection(GridPrimitive type) const;
 
-    // Members
 protected:
-    /** Index to the current element */
+    // Index to the current element
     ind toIndex_;
 
-    /** Pointer to Connectivity iterated through - Does not delete */
+    // Pointer to Connectivity iterated through - Does not delete
     const Connectivity* parent_;
 
-    /** GridPrimitive type iterated over (0D vertices etc) */
+    // GridPrimitive type iterated over (0D vertices etc)
     const GridPrimitive toDimension_;
 
     // TODO: Find better solution. Keeping a ChannelIterator?
-    /** List of neighborhood indices */
+    // List of neighborhood indices
     std::shared_ptr<const std::vector<ind>> connection_;
 };
 

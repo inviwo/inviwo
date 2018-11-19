@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,71 +26,67 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/metadata/metadataowner.h>
 
-#include <modules/discretedata/channels/datachannel.h>
-#include <modules/discretedata/channels/channelgetter.h>
-#include <modules/discretedata/channels/cachedgetter.h>
+#include <modules/discretedata/discretedatatypes.h>
 
 namespace inviwo {
 namespace discretedata {
 
-/** \class DataAnalytic
-    \brief Data channel by function evaluated at each (linear) index.
+/** \brief An untyped scalar or vector component of a data set.
 
-    Realization of DataChannel.
-
-    Data is stored implicitly by a function f:index -> vec<T, N>,
-    where the destination memory is pre-allocated.
-    Indices are linear.
+    General version of a DataChannel for use in general containers
+    (see DataSet).
 
     @author Anke Friederici and Tino Weinkauf
 */
-template <typename T, ind N, typename Vec = std::array<T, N>>
-class AnalyticChannel : public DataChannel<T, N> {
-public:
-    static_assert(sizeof(Vec) == sizeof(T) * N, "Size and type do not agree with the vector type.");
-    using Function = typename std::function<void(Vec&, ind)>;
-
+class IVW_MODULE_DISCRETEDATA_API Channel : public MetaDataOwner {
 public:
     /** \brief Direct construction
-     *   @param dataFunction Data generator, mapping of linear index to T*
-     *   @param numElements Total number of indexed positions
+     *   @param numComponents Size of vector at each position
      *   @param name Name associated with the channel
      *   @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
-    AnalyticChannel(Function dataFunction, ind numElements, const std::string& name,
-                    GridPrimitive definedOn = GridPrimitive::Vertex)
-        : DataChannel<T, N>(name, definedOn)
-        , numElements_(numElements)
-        , dataFunction_(dataFunction) {}
+    Channel(ind numComponents, const std::string& name, DataFormatId dataFormat,
+            GridPrimitive definedOn = GridPrimitive::Vertex);
 
-    virtual ~AnalyticChannel() = default;
+    virtual ~Channel() = default;
 
-public:
-    ind size() const override { return numElements_; }
+    const std::string getName() const;
 
-    /** \brief Indexed point access, constant
-     *   Will write to the memory of dest via reinterpret_cast.
-     *   @param dest Position to write to, expect write of NumComponents many T
-     *   @param index Linear point index
-     */
-    void fillRaw(T* dest, ind index) const override {
-        Vec& destVec = *reinterpret_cast<Vec*>(dest);
-        dataFunction_(destVec, index);
-    }
+    void setName(const std::string&);
+
+    GridPrimitive getGridPrimitiveType() const;
+
+    DataFormatId getDataFormatId() const;
+
+    ind getNumComponents() const;
+
+    virtual ind size() const = 0;
 
 protected:
-    virtual CachedGetter<AnalyticChannel>* newIterator() override {
-        return new CachedGetter<AnalyticChannel>(this);
-    }
+    /** Sets the "GridPrimitiveType" meta data
+     *  Should be constant, only DataSet is allowed to write.
+     */
+    void setGridPrimitiveType(GridPrimitive);
 
-public:
-    ind numElements_;
-    Function dataFunction_;
+    void setDataFormatId(DataFormatId);
+
+    /** Sets the "NumComponents" meta data
+     *  Should be constant, only DataSet is allowed to write.
+     */
+    void setNumComponents(ind);
+
+private:
+    std::string name_;
+    const DataFormatBase* format_;
+    GridPrimitive grid_;
+    ind numComponents_;
 };
 
 }  // namespace discretedata
