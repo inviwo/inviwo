@@ -26,7 +26,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
 
 # sandbox lib is built with MT_StaticRelease but Inviwo is built with 
 # MD_DynamicRelease and hence are not compatible
-option(USE_SANDBOX "Enable or disable use of the sandbox." OFF)
+if (WIN32)
+    option(USE_SANDBOX "Enable or disable use of the sandbox." OFF)
+endif()
 
 # Load the CEF configuration.
 # Execute FindCEF.cmake which must exist in CMAKE_MODULE_PATH.
@@ -61,6 +63,7 @@ set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP})
 
 # Determine the target output directory.
 # Inviwo: use module target directory as output dir$<TARGET_FILE_DIR:inviwo-module-webbrowser>
+#SET_CEF_TARGET_OUT_DIR()
 set(CEF_TARGET_OUT_DIR $<TARGET_FILE_DIR:inviwo-module-webbrowser>)
 
 # Display configuration settings.
