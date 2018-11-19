@@ -72,8 +72,13 @@ int main(int argc, char** argv) {
     TCLAP::MultiArg<std::string> tests{
         "t", "tests", "Tests to add, form: path/name1 path/name2 ...", false, "test"};
 
-    TCLAP::MultiArg<std::string> updateModule{"", "updateModule", "Update module to new structure",
-                                              false, "module"};
+    TCLAP::MultiArg<std::string> updateModule{
+        "", "updateModule",
+        "Update a module to use include and src folders\n"
+        "Will move all .h file into the include/<org>/<module> sub folder\n"
+        "and all .cpp into the src folder\n"
+        "except for files under /ext, /tests, or paths excluded be the given updatePathFilter.",
+        false, "module"};
 
     TCLAP::MultiArg<std::string> updatePathFilter{
         "", "updatePathFilter", "Exclude file matching filter from module update", false, "filter"};

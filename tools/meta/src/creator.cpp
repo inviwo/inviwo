@@ -288,7 +288,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
 
             const auto oldinc = relpath.filename().replace_extension(".h").generic_string();
             const auto newinc = im.getHeaderInclude(replace_extension(dst, ".h"));
-            const auto relacedInclude = util::replaceInlcude(dst, fmt::format(R"("{}")", oldinc),
+            const auto relacedInclude = util::replaceInclude(dst, fmt::format(R"("{}")", oldinc),
                                                              fmt::format(R"(<{}>)", newinc));
             if (relacedInclude) {
                 logf(R"(    Change include from "{}" to <{}>)", oldinc, newinc);
