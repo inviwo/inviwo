@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
         LogCentral::getPtr()->registerLogger(logCounter);
 
         InviwoApplication inviwoApp(argc, argv, "Inviwo-IntegrationTests");
+        inviwoApp.getSystemSettings().stackTraceInException_.set(true);
         inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
         inviwoApp.setProgressCallback([](std::string m) {
             LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "",

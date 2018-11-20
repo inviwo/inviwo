@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,18 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/network/evaluationerrorhandler.h>
-#include <inviwo/core/processors/processor.h>
+#pragma once
 
-namespace inviwo {
+#include <inviwo/meta/inviwometadefine.hpp>
 
-void StandardEvaluationErrorHandler::operator()(Processor* processor, EvaluationType type,
-                                                ExceptionContext context) {
-    const std::string id = processor->getIdentifier();
-    const std::string func = [&]() {
-        switch (type) {
-            case EvaluationType::InitResource:
-                return "InitializeResources";
-            case EvaluationType::Process:
-                return "Process";
-            case EvaluationType::NotReady:
-                return "DoIfNotReady";
-            default:
-                return "Unknown";
-        }
-    }();
+#include <filesystem>
+#include <string_view>
 
-    try {
-        throw;
-    } catch (Exception& e) {
-        util::log(e.getContext(), id + " Error in " + func + ": " + e.getMessage(),
-                  LogLevel::Error);
+namespace inviwo::meta::util {
 
-        if(!e.getStack().empty()) {
-            std::stringstream ss;
-            ss << "Stack Trace:\n";
-            e.getStack(ss);
-            util::log(e.getContext(), ss.str(), LogLevel::Info);
-        }
-    } catch (std::exception& e) {
-        util::log(context, id + " Error in " + func + ": " + std::string(e.what()),
-                  LogLevel::Error);
-    } catch (...) {
-        util::log(context, id + " Error in " + func + ": " + "Unknown error", LogLevel::Error);
-    }
+/**
+ * Look for "#include oldInclude" and replace with "#include newInclude" in file
+ */
+INVIWO_META_API bool replaceInclude(std::filesystem::path file, std::string_view oldInclude,
+                                    std::string_view newInclude);
 }
-
-} // namespace
-

@@ -65,6 +65,11 @@ if(POLICY CMP0066)
     cmake_policy(SET CMP0066 NEW)
 endif()
 
+if(POLICY CMP0074)
+    # find_package uses <PackageName>_ROOT variables
+    cmake_policy(SET CMP0074 NEW)
+endif()
+
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 # option for setting the project/solution name of the Inviwo project

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,41 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/network/evaluationerrorhandler.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/meta/includetools.hpp>
+#include <inviwo/meta/util.hpp>
 
-namespace inviwo {
+#include <fstream>
+#include <streambuf>
+#include <regex>
+#include <sstream>
+#include <fmt/format.h>
 
-void StandardEvaluationErrorHandler::operator()(Processor* processor, EvaluationType type,
-                                                ExceptionContext context) {
-    const std::string id = processor->getIdentifier();
-    const std::string func = [&]() {
-        switch (type) {
-            case EvaluationType::InitResource:
-                return "InitializeResources";
-            case EvaluationType::Process:
-                return "Process";
-            case EvaluationType::NotReady:
-                return "DoIfNotReady";
-            default:
-                return "Unknown";
-        }
+namespace inviwo::meta::util {
+
+bool replaceInclude(std::filesystem::path file, std::string_view oldInclude,
+                    std::string_view newInclude) {
+
+    const auto data = [&file]() {
+        std::ifstream ifs{file};
+        if (!ifs) throw util::makeError("Unable to open module file '{}'", file.generic_string());
+        return std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
     }();
 
-    try {
-        throw;
-    } catch (Exception& e) {
-        util::log(e.getContext(), id + " Error in " + func + ": " + e.getMessage(),
-                  LogLevel::Error);
+    const auto reInclude = std::regex(fmt::format(R"(#include\s* {})", oldInclude));
 
-        if(!e.getStack().empty()) {
-            std::stringstream ss;
-            ss << "Stack Trace:\n";
-            e.getStack(ss);
-            util::log(e.getContext(), ss.str(), LogLevel::Info);
-        }
-    } catch (std::exception& e) {
-        util::log(context, id + " Error in " + func + ": " + std::string(e.what()),
-                  LogLevel::Error);
-    } catch (...) {
-        util::log(context, id + " Error in " + func + ": " + "Unknown error", LogLevel::Error);
+    if (std::regex_search(data, reInclude)) {
+
+        const auto replaced =
+            std::regex_replace(data, reInclude, fmt::format(R"(#include {})", newInclude));
+
+        std::ofstream ofs{file};
+        if (!ofs) throw util::makeError("Unable to open module file '{}'", file.generic_string());
+        ofs << replaced;
+
+        return true;
+    } else {
+        return false;
     }
 }
 
-} // namespace
-
+}  // namespace inviwo::meta::util
