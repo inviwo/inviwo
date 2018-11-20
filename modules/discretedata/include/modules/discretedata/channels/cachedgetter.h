@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,53 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <modules/discretedata/discretedatatypes.h>
+#include <modules/discretedata/channels/channelgetter.h>
 #include <modules/discretedata/channels/datachannel.h>
 
-template <typename VecNT, typename T, inviwo::discretedata::ind N>
-VecNT& inviwo::discretedata::ChannelIterator<VecNT, T, N>::operator*() {
-    T* data = Getter->get(Index);
-    return *reinterpret_cast<VecNT*>(data);
-}
+namespace inviwo {
+namespace discretedata {
 
-/*********************************************************************************
- * Constant Iterator
- *********************************************************************************/
+template <typename Parent>
+struct CachedGetter : public ChannelGetter<typename Parent::value_type, Parent::num_comp> {
+    using value_type = typename Parent::value_type;
+    static constexpr int num_comp = Parent::num_comp;
 
-template <typename VecNT, typename T, inviwo::discretedata::ind N>
-VecNT inviwo::discretedata::ConstChannelIterator<VecNT, T, N>::operator*() {
-    VecNT data;
-    Parent->fill(data, Index);
-    return data;
-}
+    CachedGetter(Parent* parent)
+        : ChannelGetter<value_type, num_comp>(), dataIndex(-1), parent_{parent} {}
+    virtual ~CachedGetter() = default;
+    virtual CachedGetter* clone() const override { return new CachedGetter(parent_); }
+
+    virtual value_type* get(ind index) override {
+        assert(this->parent_ && "No channel to iterate is set.");
+
+        // Is the data up to date?
+        if (dataIndex != index) {
+            this->parent_->fill(data, index);
+            dataIndex = index;
+        }
+
+        // Always return data.
+        // If the iterator is changed and dereferenced, the pointer becomes invalid.
+        return data.data();
+    }
+
+protected:
+    virtual Channel* parent() const override { return parent_; }
+
+    //! Memory is invalidated on iteration
+    std::array<value_type, num_comp> data;
+
+    //! Index that is currently pointed to
+    ind dataIndex;
+
+    Parent* parent_;
+};
+
+}  // namespace discretedata
+}  // namespace inviwo

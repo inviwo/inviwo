@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,37 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/discretedata/connectivity/connectioniterator.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 namespace discretedata {
 
-ConnectionRange::ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
-                                 const Connectivity* parent)
-    : parent_(parent), toDimension_(toDim) {
-    std::vector<ind>* neigh = new std::vector<ind>();
-    parent_->getConnections(*neigh, fromIndex, fromDim, toDim);
-    connections_ = std::shared_ptr<const std::vector<ind>>(neigh);
-}
+//! Discretedata index type
+using ind = signed long long;
 
-ConnectionIterator operator+(ind offset, ConnectionIterator& iter) {
-    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
-                              iter.toIndex_ + offset);
-}
-
-ConnectionIterator operator-(ind offset, ConnectionIterator& iter) {
-    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
-                              iter.toIndex_ - offset);
-}
-
-ElementIterator ConnectionIterator::operator*() const {
-    return ElementIterator(parent_, toDimension_, connection_->at(toIndex_));
-}
-
-ConnectionRange ConnectionIterator::connection(GridPrimitive toType) const {
-    return ConnectionRange(this->getIndex(), toDimension_, toType, parent_);
-}
+/** 
+ * Mapping structure name to respective dimension.
+ * Assign channels to any dimensions this way.
+ * If these do not suffice, cast the respective short.
+ */
+enum class GridPrimitive : ind {
+    Undef = -1,
+    Vertex = 0,
+    Edge = 1,
+    Face = 2,
+    Volume = 3,
+    HyperVolume = 4
+};
 
 }  // namespace discretedata
 }  // namespace inviwo

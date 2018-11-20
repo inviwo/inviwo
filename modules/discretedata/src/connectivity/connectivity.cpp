@@ -27,7 +27,7 @@
 *
 *********************************************************************************/
 
-#include <discretedata/discretedatamoduledefine.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/discretedata/connectivity/connectivity.h>

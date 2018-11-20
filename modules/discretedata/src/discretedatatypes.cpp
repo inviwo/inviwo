@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,54 +27,8 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
-
-#include <modules/discretedata/dataset.h>
-#include <modules/discretedata/channels/bufferchannel.h>
-#include <modules/discretedata/channels/analyticchannel.h>
-#include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/discretedatatypes.h>
 
 namespace inviwo {
-namespace discretedata {
 
-typedef glm::vec3 Vec3f;
-TEST(DataSet, ChannelInsertRemoveEdit) {
-    // Testing Handling of Data Sets
-    // - Create several channels
-    // - Add and remove them
-    // - Rename them
-    std::vector<ind> size(1, 100);
-    DataSet set(GridPrimitive::Edge, size);
-
-    auto monomeVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = 0.0f;
-            a[1] = (float)idx;
-            a[2] = (float)(idx * idx);
-        },
-        100, "Monome", GridPrimitive::Vertex);
-    auto monomeFace = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = 0.0f;
-            a[1] = (float)idx;
-            a[2] = (float)(idx * idx);
-        },
-        100, "Monome", GridPrimitive::Face);
-    auto identityVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = (float)idx;
-            a[1] = (float)idx;
-            a[2] = (float)idx;
-        },
-        100, "Identity", GridPrimitive::Vertex);
-
-    set.addChannel(monomeVert);
-    set.addChannel(monomeFace);
-    set.addChannel(identityVert);
-}
-
-}  // namespace discretedata
 }  // namespace inviwo

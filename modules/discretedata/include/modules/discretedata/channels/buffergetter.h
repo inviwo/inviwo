@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <modules/discretedata/discretedatatypes.h>
+#include <modules/discretedata/channels/channelgetter.h>
 
 namespace inviwo {
+
 namespace discretedata {
 
-/** \class StructuredGrid
-    \brief A curvilinear grid in nD, with some dimensions set to wrap
-    Assume first point in a dimension equals the last point in that dimension
+template <typename Parent>
+struct BufferGetter : public ChannelGetter<typename Parent::value_type, Parent::num_comp> {
+    using value_type = typename Parent::value_type;
+    static constexpr int num_comp = Parent::num_comp;
 
-    @author Anke Friederici and Tino Weinkauf
-*/
-class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid {
-    // Construction / Deconstruction
-public:
-    /** \brief Create an nD grid
-     *   @param gridDimension Dimension of grid (not vertices)
-     *   @param gridSize Number of cells in each dimension, expect size gridDimension+1
-     */
-    PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim,
-                 const std::vector<bool>& isDimPeriodic);
-    virtual ~PeriodicGrid() = default;
+    BufferGetter(Parent* parent) : ChannelGetter<value_type, num_comp>(), parent_{parent} {}
+    virtual ~BufferGetter() = default;
+    virtual BufferGetter* clone() const override { return new BufferGetter(parent_); }
 
-    ind getNumCellsInDimension(ind dim) const;
-
-    bool isPeriodic(ind dim) const { return isDimPeriodic_[dim]; }
-
-    void setPeriodic(ind dim, bool periodic = true) { isDimPeriodic_[dim] = periodic; }
-
-    virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
-                                GridPrimitive to, bool isPosition = false) const override;
+    virtual value_type* get(ind index) override { return &(parent_->buffer_[index * num_comp]); }
 
 protected:
-    void sameLevelConnection(std::vector<ind>& result, ind idxLin,
-                             const std::vector<ind>& size) const;
-
-protected:
-    std::vector<bool> isDimPeriodic_;
+    virtual Channel* parent() const override { return parent_; }
+    Parent* parent_;
 };
 
 }  // namespace discretedata

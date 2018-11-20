@@ -27,54 +27,47 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#pragma once
 
-#include <modules/discretedata/dataset.h>
-#include <modules/discretedata/channels/bufferchannel.h>
-#include <modules/discretedata/channels/analyticchannel.h>
-#include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/util.h>
 
 namespace inviwo {
 namespace discretedata {
 
-typedef glm::vec3 Vec3f;
-TEST(DataSet, ChannelInsertRemoveEdit) {
-    // Testing Handling of Data Sets
-    // - Create several channels
-    // - Add and remove them
-    // - Rename them
-    std::vector<ind> size(1, 100);
-    DataSet set(GridPrimitive::Edge, size);
+class ElementIterator;
 
-    auto monomeVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = 0.0f;
-            a[1] = (float)idx;
-            a[2] = (float)(idx * idx);
-        },
-        100, "Monome", GridPrimitive::Vertex);
-    auto monomeFace = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = 0.0f;
-            a[1] = (float)idx;
-            a[2] = (float)(idx * idx);
-        },
-        100, "Monome", GridPrimitive::Face);
-    auto identityVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = (float)idx;
-            a[1] = (float)idx;
-            a[2] = (float)idx;
-        },
-        100, "Identity", GridPrimitive::Vertex);
+/**
+ * \brief A curvilinear grid in nD
+ * @author Anke Friederici and Tino Weinkauf
+ */
+class IVW_MODULE_DISCRETEDATA_API StructuredGrid : public Connectivity {
+public:
+    /**
+     * \brief Create an nD grid
+     * @param gridDimension Dimension of grid (not vertices)
+     * @param gridSize Number of cells in each dimension, expect size gridDimension+1
+     */
+    StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim);
+    virtual ~StructuredGrid() = default;
 
-    set.addChannel(monomeVert);
-    set.addChannel(monomeFace);
-    set.addChannel(identityVert);
-}
+    virtual ind getNumCellsInDimension(ind dim) const;
+
+    void getNumCells(std::vector<ind>& result) const;
+
+    virtual CellType getCellType(GridPrimitive dim, ind index) const override;
+
+    virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
+                                GridPrimitive to, bool positions = false) const override;
+
+    static void sameLevelConnection(std::vector<ind>& result, ind idxLin,
+                                    const std::vector<ind>& size);
+
+    static std::vector<ind> indexFromLinear(ind idxLin, const std::vector<ind>& size);
+
+protected:
+    std::vector<ind> numCellsPerDimension_;
+};
 
 }  // namespace discretedata
 }  // namespace inviwo

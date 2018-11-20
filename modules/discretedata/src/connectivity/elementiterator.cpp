@@ -27,53 +27,39 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
-
-#include <modules/discretedata/dataset.h>
-#include <modules/discretedata/channels/bufferchannel.h>
-#include <modules/discretedata/channels/analyticchannel.h>
-#include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/connectivity/elementiterator.h>
+#include <modules/discretedata/connectivity/connectioniterator.h>
+#include <modules/discretedata/connectivity/connectivity.h>
 
 namespace inviwo {
 namespace discretedata {
 
-typedef glm::vec3 Vec3f;
-TEST(DataSet, ChannelInsertRemoveEdit) {
-    // Testing Handling of Data Sets
-    // - Create several channels
-    // - Add and remove them
-    // - Rename them
-    std::vector<ind> size(1, 100);
-    DataSet set(GridPrimitive::Edge, size);
+ElementIterator::ElementIterator(const Connectivity* parent, GridPrimitive dimension, ind index)
+    : index_(index), parent_(parent), dimension_(dimension) {}
 
-    auto monomeVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = 0.0f;
-            a[1] = (float)idx;
-            a[2] = (float)(idx * idx);
-        },
-        100, "Monome", GridPrimitive::Vertex);
-    auto monomeFace = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = 0.0f;
-            a[1] = (float)idx;
-            a[2] = (float)(idx * idx);
-        },
-        100, "Monome", GridPrimitive::Face);
-    auto identityVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = (float)idx;
-            a[1] = (float)idx;
-            a[2] = (float)idx;
-        },
-        100, "Identity", GridPrimitive::Vertex);
+ElementIterator::ElementIterator() : ElementIterator(nullptr, GridPrimitive(-1), -1) {}
 
-    set.addChannel(monomeVert);
-    set.addChannel(monomeFace);
-    set.addChannel(identityVert);
+ElementIterator operator+(ind offset, ElementIterator& iter) {
+    return ElementIterator(iter.parent_, iter.dimension_, iter.index_ + offset);
+}
+
+ElementIterator operator-(ind offset, ElementIterator& iter) {
+    return ElementIterator(iter.parent_, iter.dimension_, iter.index_ - offset);
+}
+
+ElementIterator& ElementIterator::operator*() {
+    assert(parent_ && "No channel to iterate is set.");
+    return *this;
+}
+
+ConnectionRange ElementIterator::connection(GridPrimitive toType) const {
+    return ConnectionRange(index_, dimension_, toType, parent_);
+}
+
+ElementIterator ElementRange::begin() { return ElementIterator(parent_, dimension_, 0); }
+
+ElementIterator ElementRange::end() {
+    return ElementIterator(parent_, dimension_, parent_->getNumElements(dimension_));
 }
 
 }  // namespace discretedata

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,50 +26,71 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/discretedata/connectivity/connectivity.h>
-#include <modules/discretedata/util.h>
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/metadata/metadataowner.h>
+
+#include <modules/discretedata/discretedatatypes.h>
 
 namespace inviwo {
 namespace discretedata {
 
-class ElementIterator;
-
-/** \class StructuredGrid
-    \brief A curvilinear grid in nD
-
-    @author Anke Friederici and Tino Weinkauf
-*/
-class IVW_MODULE_DISCRETEDATA_API StructuredGrid : public Connectivity {
-    // Construction / Deconstruction
+/** 
+ * \brief An untyped scalar or vector component of a data set.
+ *
+ * General version of a DataChannel for use in general containers
+ * (see DataSet).
+ *
+ * @author Anke Friederici and Tino Weinkauf
+ */
+class IVW_MODULE_DISCRETEDATA_API Channel : public MetaDataOwner {
 public:
-    /** \brief Create an nD grid
-     *   @param gridDimension Dimension of grid (not vertices)
-     *   @param gridSize Number of cells in each dimension, expect size gridDimension+1
+    /** 
+     * \brief Direct construction
+     * @param numComponents Size of vector at each position
+     * @param name Name associated with the channel
+     * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
-    StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim);
-    virtual ~StructuredGrid() = default;
+    Channel(ind numComponents, const std::string& name, DataFormatId dataFormat,
+            GridPrimitive definedOn = GridPrimitive::Vertex);
 
-    virtual ind getNumCellsInDimension(ind dim) const;
+    virtual ~Channel() = default;
 
-    void getNumCells(std::vector<ind>& result) const;
+    const std::string getName() const;
 
-    virtual CellType getCellType(GridPrimitive dim, ind index) const override;
+    void setName(const std::string&);
 
-    // Methods
-public:
-    virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
-                                GridPrimitive to, bool positions = false) const override;
+    GridPrimitive getGridPrimitiveType() const;
 
-    static void sameLevelConnection(std::vector<ind>& result, ind idxLin,
-                                    const std::vector<ind>& size);
+    DataFormatId getDataFormatId() const;
 
-    static std::vector<ind> indexFromLinear(ind idxLin, const std::vector<ind>& size);
+    ind getNumComponents() const;
+
+    virtual ind size() const = 0;
 
 protected:
-    std::vector<ind> numCellsPerDimension_;
+    /** 
+     * Sets the "GridPrimitiveType" meta data
+     * Should be constant, only DataSet is allowed to write.
+     */
+    void setGridPrimitiveType(GridPrimitive);
+
+    void setDataFormatId(DataFormatId);
+
+    /** 
+     * Sets the "NumComponents" meta data
+     * Should be constant, only DataSet is allowed to write.
+     */
+    void setNumComponents(ind);
+
+private:
+    std::string name_;
+    const DataFormatBase* format_;
+    GridPrimitive grid_;
+    ind numComponents_;
 };
 
 }  // namespace discretedata

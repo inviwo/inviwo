@@ -27,53 +27,36 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
-
-#include <modules/discretedata/dataset.h>
-#include <modules/discretedata/channels/bufferchannel.h>
-#include <modules/discretedata/channels/analyticchannel.h>
-#include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/connectivity/connectioniterator.h>
+#include <modules/discretedata/connectivity/connectivity.h>
 
 namespace inviwo {
 namespace discretedata {
 
-typedef glm::vec3 Vec3f;
-TEST(DataSet, ChannelInsertRemoveEdit) {
-    // Testing Handling of Data Sets
-    // - Create several channels
-    // - Add and remove them
-    // - Rename them
-    std::vector<ind> size(1, 100);
-    DataSet set(GridPrimitive::Edge, size);
+ConnectionRange::ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
+                                 const Connectivity* parent)
+    : parent_(parent), toDimension_(toDim) {
+    std::vector<ind>* neigh = new std::vector<ind>();
+    parent_->getConnections(*neigh, fromIndex, fromDim, toDim);
+    connections_ = std::shared_ptr<const std::vector<ind>>(neigh);
+}
 
-    auto monomeVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = 0.0f;
-            a[1] = (float)idx;
-            a[2] = (float)(idx * idx);
-        },
-        100, "Monome", GridPrimitive::Vertex);
-    auto monomeFace = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = 0.0f;
-            a[1] = (float)idx;
-            a[2] = (float)(idx * idx);
-        },
-        100, "Monome", GridPrimitive::Face);
-    auto identityVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
-        [](Vec3f& a, ind idx) {
-            a[0] = (float)idx;
-            a[1] = (float)idx;
-            a[2] = (float)idx;
-        },
-        100, "Identity", GridPrimitive::Vertex);
+ConnectionIterator operator+(ind offset, ConnectionIterator& iter) {
+    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
+                              iter.toIndex_ + offset);
+}
 
-    set.addChannel(monomeVert);
-    set.addChannel(monomeFace);
-    set.addChannel(identityVert);
+ConnectionIterator operator-(ind offset, ConnectionIterator& iter) {
+    return ConnectionIterator(iter.parent_, iter.toDimension_, iter.connection_,
+                              iter.toIndex_ - offset);
+}
+
+ElementIterator ConnectionIterator::operator*() const {
+    return ElementIterator(parent_, toDimension_, connection_->at(toIndex_));
+}
+
+ConnectionRange ConnectionIterator::connection(GridPrimitive toType) const {
+    return ConnectionRange(this->getIndex(), toDimension_, toType, parent_);
 }
 
 }  // namespace discretedata

@@ -27,31 +27,46 @@
  *
  *********************************************************************************/
 
-#include <discretedata/connectivity/elementiterator.h>
-#include <discretedata/connectivity/connectioniterator.h>
+#pragma once
+
+#include <modules/discretedata/connectivity/structuredgrid.h>
 
 namespace inviwo {
 namespace discretedata {
 
-/** Increment randomly */
-ElementIterator operator+(ind offset, ElementIterator& iter) {
-    return ElementIterator(iter.parent_, iter.dimension_, iter.index_ + offset);
-}
+/**
+ * \brief A curvilinear grid in nD, with some dimensions set to wrap
+ * Assume first point in a dimension equals the last point in that dimension
+ *
+ * @author Anke Friederici and Tino Weinkauf
+ */
+class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid {
+public:
+    /** 
+     * \brief Create an nD grid
+     * @param gridDimension Dimension of grid (not vertices)
+     * @param gridSize Number of cells in each dimension, expect size gridDimension+1
+     */
+    PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim,
+                 const std::vector<bool>& isDimPeriodic);
+    virtual ~PeriodicGrid() = default;
 
-/** Decrement randomly */
-ElementIterator operator-(ind offset, ElementIterator& iter) {
-    return ElementIterator(iter.parent_, iter.dimension_, iter.index_ - offset);
-}
+    ind getNumCellsInDimension(ind dim) const;
 
-ElementIterator ElementIterator::operator*() const {
-    assert(parent_ && "No channel to iterate is set.");
+    bool isPeriodic(ind dim) const { return isDimPeriodic_[dim]; }
 
-    return *this;
-}
+    void setPeriodic(ind dim, bool periodic = true) { isDimPeriodic_[dim] = periodic; }
 
-ConnectionRange ElementIterator::connection(GridPrimitive toType) const {
-    return ConnectionRange(index_, dimension_, toType, parent_);
-}
+    virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
+                                GridPrimitive to, bool isPosition = false) const override;
+
+protected:
+    void sameLevelConnection(std::vector<ind>& result, ind idxLin,
+                             const std::vector<ind>& size) const;
+
+protected:
+    std::vector<bool> isDimPeriodic_;
+};
 
 }  // namespace discretedata
 }  // namespace inviwo
