@@ -144,7 +144,7 @@ public:
     }
 
 protected:
-    virtual ChannelGetter<T, N>* newIterator() override {
+    virtual BufferGetter<BufferChannel<T, N>>* newIterator() override {
         return new BufferGetter<BufferChannel<T, N>>(this);
     }
 
