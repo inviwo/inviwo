@@ -47,6 +47,7 @@ target_link_libraries(${CEF_HELPER_TARGET} PRIVATE
 	$<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
 	libcef_dll_wrapper 
 	${CEF_STANDARD_LIBS}
+    inviwo::warn
 )
 
 if (OS_MACOSX)
