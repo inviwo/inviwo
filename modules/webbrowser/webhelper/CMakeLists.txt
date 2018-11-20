@@ -29,7 +29,12 @@ add_executable(${CEF_HELPER_TARGET} WIN32 MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOUR
 add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
 # Build helper before module so that we can copy it
 add_dependencies(inviwo-module-webbrowser ${CEF_HELPER_TARGET})
-target_link_libraries(${CEF_HELPER_TARGET} PUBLIC inviwo::warn)
+target_link_libraries(${CEF_HELPER_TARGET} PRIVATE 
+    $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
+    libcef_dll_wrapper 
+    ${CEF_STANDARD_LIBS}
+    inviwo::warn
+)
 target_include_directories(${CEF_HELPER_TARGET} PRIVATE 
 	${CMAKE_CURRENT_SOURCE_DIR}
 	"${CEF_INCLUDE_PATH}"
@@ -42,13 +47,6 @@ ivw_suppress_compiler_warnings(${CEF_HELPER_TARGET})
 
 # Put in ext folder in developer IDE
 ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
-
-target_link_libraries(${CEF_HELPER_TARGET} PRIVATE 
-	$<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
-	libcef_dll_wrapper 
-	${CEF_STANDARD_LIBS}
-    inviwo::warn
-)
 
 if (OS_MACOSX)
     # Output paths for the app bundles: bin/configuration, for example bin/Debug.
