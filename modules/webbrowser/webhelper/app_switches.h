@@ -30,8 +30,6 @@
 #ifndef IVW_APP_SWITCHES_H
 #define IVW_APP_SWITCHES_H
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/cef_command_line.h"

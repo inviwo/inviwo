@@ -30,8 +30,6 @@
 #ifndef IVW_WEBBROWSERAPP_H
 #define IVW_WEBBROWSERAPP_H
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_app.h>
