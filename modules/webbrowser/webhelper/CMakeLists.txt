@@ -58,7 +58,7 @@ if (OS_MACOSX)
 
     # Copy files into the bin directory (used during development)
     add_custom_command(
-        TARGET inviwo-module-webbrowser
+        TARGET ${CEF_HELPER_TARGET}
         POST_BUILD
         # Copy the CEF framework into the Frameworks directory.
         COMMAND ${CMAKE_COMMAND} -E copy_directory
