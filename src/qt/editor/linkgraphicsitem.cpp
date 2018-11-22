@@ -114,9 +114,9 @@ QPointF LinkConnectionDragGraphicsItem::compare(const QPointF startLeft, const Q
                                                 const QPointF& endLeft, const QPointF& endRight,
                                                 const QPointF& left,const QPointF& center, const QPointF& right) {
 
-    if (endLeft.x() < startLeft.x()) {
+    if (startLeft.x() > endRight.x()) {
         return left;
-    } else if (startRight.x() > endRight.x()) {
+    } else if (startRight.x() < endLeft.x()) {
         return right;
     } else {
         return center;
@@ -131,7 +131,7 @@ QPointF LinkConnectionDragGraphicsItem::getStartPoint() const {
 QPointF LinkConnectionDragGraphicsItem::getEndPoint() const {
     const auto startLeft = outLink_->getLeftPos();
     const auto startRight = outLink_->getRightPos();
-    return compare(startLeft, startRight, inLeft_, inRight_, inRight_, inLeft_, inLeft_);
+    return compare(startLeft, startRight, inLeft_, inRight_, inRight_, inRight_, inLeft_);
 }
 
 QPointF LinkConnectionDragGraphicsItem::getStartDir() const {
@@ -144,7 +144,7 @@ QPointF LinkConnectionDragGraphicsItem::getEndDir() const {
     const auto qp = QPointF(1, 0);
     const auto startLeft = outLink_->getLeftPos();
     const auto startRight = outLink_->getRightPos();
-    return compare(startLeft, startRight, inLeft_, inRight_, qp, -qp, -qp);
+    return compare(startLeft, startRight, inLeft_, inRight_, qp, qp, -qp);
 }
 
 void LinkConnectionDragGraphicsItem::setEndPoint(QPointF endPoint) {
@@ -195,7 +195,7 @@ QPointF LinkConnectionGraphicsItem::getEndPoint() const {
     const auto startRight = outLink_->getRightPos();
     const auto endRight = inLink_->getRightPos();
     const auto endLeft = inLink_->getLeftPos();
-    return compare(startLeft, startRight, endLeft, endRight, endRight, endLeft, endLeft);
+    return compare(startLeft, startRight, endLeft, endRight, endRight, endRight, endLeft);
 }
 
 QPointF LinkConnectionGraphicsItem::getStartDir() const {
@@ -212,7 +212,7 @@ QPointF LinkConnectionGraphicsItem::getEndDir() const {
     const auto startRight = outLink_->getRightPos();
     const auto endRight = inLink_->getRightPos();
     const auto endLeft = inLink_->getLeftPos();
-    return compare(startLeft, startRight, endLeft, endRight, qp, -qp, -qp);
+    return compare(startLeft, startRight, endLeft, endRight, qp, qp, -qp);
 }
 
 ProcessorLinkGraphicsItem* LinkConnectionGraphicsItem::getDestProcessorLinkGraphicsItem() const {
