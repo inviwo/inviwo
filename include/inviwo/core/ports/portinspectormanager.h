@@ -81,7 +81,7 @@ private:
     void returnPortInspector(std::unique_ptr<PortInspector>);
 
     static void insertNetwork(PortInspector* portInspector, ProcessorNetwork* network,
-                              Outport* outport);
+                              Outport* outport, bool bidirectionalAutoLinks);
     static void removeNetwork(PortInspector* portInspector, ProcessorNetwork* network);
 
     virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;

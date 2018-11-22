@@ -69,6 +69,9 @@ class LinkDialog;
 class InviwoMainWindow;
 class Image;
 class MenuItem;
+class ProcessorDragHelper;
+class ConnectionDragHelper;
+class LinkDragHelper;
 
 /**
  * The NetworkEditor supports interactive editing of a ProcessorNetwork. Processors can be added
@@ -84,6 +87,9 @@ class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
+    friend ProcessorDragHelper;
+    friend ConnectionDragHelper;
+    friend LinkDragHelper;
 public:
     NetworkEditor(InviwoMainWindow* mainwindow);
     virtual ~NetworkEditor() = default;
@@ -144,10 +150,6 @@ protected:
 
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
-
-    virtual void dragEnterEvent(QGraphicsSceneDragDropEvent* de) override;
-    virtual void dragMoveEvent(QGraphicsSceneDragDropEvent* de) override;
-    virtual void dropEvent(QGraphicsSceneDragDropEvent* de) override;
 
     void placeProcessorOnConnection(Processor* processorItem,
                                     ConnectionGraphicsItem* connectionItem);
@@ -219,23 +221,20 @@ private:
     using ConnectionMap = std::map<PortConnection, ConnectionGraphicsItem*>;
     using LinkMap = std::map<ProcessorPair, LinkConnectionGraphicsItem*>;
 
+    // Drag n drop state
+    ProcessorDragHelper* processorDragHelper_;
+    LinkDragHelper* linkDragHelper_;
+    ConnectionDragHelper* connectionDragHelper_;
+    ProcessorGraphicsItem* processorItem_;
+
     ProcessorMap processorGraphicsItems_;
     ConnectionMap connectionGraphicsItems_;
     LinkMap linkGraphicsItems_;
-
-    // Drag n drop state
-    ConnectionGraphicsItem* oldConnectionTarget_;
-    ProcessorGraphicsItem* oldProcessorTarget_;
-    bool validConnectionTarget_;
 
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0, 0}};
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
 
-    // Connection and link state
-    ProcessorGraphicsItem* processorItem_;
-    ConnectionDragGraphicsItem* connectionCurve_;
-    LinkConnectionDragGraphicsItem* linkCurve_;
 
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;

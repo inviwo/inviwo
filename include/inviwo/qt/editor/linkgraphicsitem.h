@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LINKGRAPHICSITEM_H
@@ -48,19 +48,13 @@ class ProcessorLink;
 
 class IVW_QTEDITOR_API LinkGraphicsItem : public EditorGraphicsItem {
 public:
-    LinkGraphicsItem(QPointF startPoint, QPointF endPoint, ivec3 color = ivec3(0xbd, 0xcd, 0xd5),
-                     QPointF startDir = QPointF(1.0f, 0.0), QPointF endDir = QPointF(0.0f, 0.0f));
+    LinkGraphicsItem(ivec3 color = ivec3(0xbd, 0xcd, 0xd5));
     ~LinkGraphicsItem();
 
-    QPointF getStartPoint() const;
-    QPointF getEndPoint() const;
-    QPointF getStartDir() const;
-    QPointF getEndDir() const;
-
-    void setStartPoint(QPointF startPoint);
-    void setEndPoint(QPointF endPoint);
-    void setStartDir(QPointF dir);
-    void setEndDir(QPointF dir);
+    virtual QPointF getStartPoint() const = 0;
+    virtual QPointF getEndPoint() const = 0;
+    virtual QPointF getStartDir() const = 0;
+    virtual QPointF getEndDir() const = 0;
 
     virtual void updateShape();
 
@@ -78,36 +72,39 @@ public:
 protected:
     virtual QPainterPath obtainCurvePath() const;
 
-    QPointF startPoint_;
-    QPointF endPoint_;
     QColor color_;
-    QPointF startDir_;
-    QPointF endDir_;
-
     QPainterPath path_;
     QRectF rect_;
 };
 
 class IVW_QTEDITOR_API LinkConnectionDragGraphicsItem : public LinkGraphicsItem {
 public:
-    LinkConnectionDragGraphicsItem(ProcessorLinkGraphicsItem* outLink,
-                                   QPointF endPos);
+    LinkConnectionDragGraphicsItem(ProcessorLinkGraphicsItem* outLink, QPointF endPos);
     ~LinkConnectionDragGraphicsItem();
+
+    virtual QPointF getStartPoint() const override;
+    virtual QPointF getEndPoint() const override;
+    virtual QPointF getStartDir() const override;
+    virtual QPointF getEndDir() const override;
+    virtual void setEndPoint(QPointF endPoint);
+    virtual void setEndPoint(QPointF endPointLeft, QPointF endPointRight);
 
     void reactToProcessorHover(ProcessorGraphicsItem* processor);
     virtual ProcessorLinkGraphicsItem* getSrcProcessorLinkGraphicsItem() const;
     virtual ProcessorGraphicsItem* getSrcProcessorGraphicsItem() const;
-    virtual void updateShape();
 
     enum { Type = UserType + LinkConnectionDragGraphicsType };
     int type() const { return Type; }
 
 protected:
+    static QPointF compare(const QPointF startLeft, const QPointF& startRight,
+                           const QPointF& endLeft, const QPointF& endRight, const QPointF& left,
+                           const QPointF& center, const QPointF& right);
+
     QPointF inLeft_;
     QPointF inRight_;
 
-    virtual QPainterPath obtainCurvePath() const;
-    ProcessorLinkGraphicsItem* outLink_;  //< non-onwing reference
+    ProcessorLinkGraphicsItem* outLink_;  //< non-owning reference
 };
 
 class IVW_QTEDITOR_API LinkConnectionGraphicsItem : public LinkConnectionDragGraphicsItem {
@@ -116,9 +113,13 @@ public:
                                ProcessorLinkGraphicsItem* inLink);
     ~LinkConnectionGraphicsItem();
 
+    virtual QPointF getStartPoint() const override;
+    virtual QPointF getEndPoint() const override;
+    virtual QPointF getStartDir() const override;
+    virtual QPointF getEndDir() const override;
+
     virtual ProcessorLinkGraphicsItem* getDestProcessorLinkGraphicsItem() const;
     virtual ProcessorGraphicsItem* getDestProcessorGraphicsItem() const;
-    virtual void updateShape();
 
     enum { Type = UserType + LinkConnectionGraphicsType };
     int type() const { return Type; }
@@ -126,10 +127,9 @@ public:
     virtual void showToolTip(QGraphicsSceneHelpEvent* e);
 
 protected:
-    virtual QPainterPath obtainCurvePath() const;
-    ProcessorLinkGraphicsItem* inLink_;  //< non-onwing reference
+    ProcessorLinkGraphicsItem* inLink_;  //< non-owning reference
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CONNECTIONGRAPHICSITEM_H

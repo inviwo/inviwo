@@ -33,7 +33,6 @@
 #include <QPainter>
 #include <QString>
 #include <QPainterPath>
-#include <QVector2D>
 #include <warn/pop>
 
 #include <inviwo/qt/editor/linkgraphicsitem.h>
@@ -46,39 +45,34 @@
 
 namespace inviwo {
 
-LinkGraphicsItem::LinkGraphicsItem(QPointF startPoint, QPointF endPoint, ivec3 color,
-                                   QPointF startDir, QPointF endDir)
-    : startPoint_(startPoint)
-    , endPoint_(endPoint)
-    , color_(color.r, color.g, color.b)
-    , startDir_(startDir)
-    , endDir_(endDir) {
+LinkGraphicsItem::LinkGraphicsItem(ivec3 color) : color_(color.r, color.g, color.b) {
     setZValue(LINKGRAPHICSITEM_DEPTH);
 }
 
-LinkGraphicsItem::~LinkGraphicsItem() {}
+LinkGraphicsItem::~LinkGraphicsItem() = default;
 
-void LinkGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                             QWidget* widget) {
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
-
-    if (isSelected())
+void LinkGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
+    if (isSelected()) {
         p->setPen(QPen(Qt::darkRed, 2.0, Qt::DotLine, Qt::RoundCap));
-    else
+    } else {
         p->setPen(QPen(color_, 2.0, Qt::DotLine, Qt::RoundCap));
-
+    }
     p->drawPath(path_);
 }
 
 QPainterPath LinkGraphicsItem::obtainCurvePath() const {
     QPainterPath bezierCurve;
-    float dist =
-        1.0f +
-        std::min(50.0f, 2.0f * static_cast<float>(QVector2D(startPoint_ - endPoint_).length()));
 
-    bezierCurve.moveTo(startPoint_);
-    bezierCurve.cubicTo(startPoint_ + dist * startDir_, endPoint_ + dist * endDir_, endPoint_);
+    const auto start = getStartPoint();
+    const auto end = getEndPoint();
+
+    const auto diff = start - end;
+    const auto dist = std::sqrt(QPointF::dotProduct(diff, diff));
+    const auto strength = 1.0 + std::min(50.0, 2.0 * dist);
+
+    bezierCurve.moveTo(getStartPoint());
+    bezierCurve.cubicTo(getStartPoint() + strength * getStartDir(),
+                        getEndPoint() + strength * getEndDir(), getEndPoint());
     return bezierCurve;
 }
 
@@ -90,56 +84,23 @@ QPainterPath LinkGraphicsItem::shape() const {
 
 QRectF LinkGraphicsItem::boundingRect() const { return rect_; }
 
-void LinkGraphicsItem::setStartPoint(QPointF startPoint) {
-    updateShape();
-    startPoint_ = startPoint;
-}
-
-void LinkGraphicsItem::setEndPoint(QPointF endPoint) {
-    updateShape();
-    endPoint_ = endPoint;
-}
-
-QPointF LinkGraphicsItem::getStartPoint() const { return startPoint_; }
-
-void LinkGraphicsItem::setStartDir(QPointF dir) {
-    updateShape();
-    startDir_ = dir;
-}
-
-QPointF LinkGraphicsItem::getStartDir() const { return startDir_; }
-
-void LinkGraphicsItem::setEndDir(QPointF dir) {
-    updateShape();
-    endDir_ = dir;
-}
-
-QPointF LinkGraphicsItem::getEndDir() const { return endDir_; }
-
-QPointF LinkGraphicsItem::getEndPoint() const { return endPoint_; }
-
 void LinkGraphicsItem::updateShape() {
-    prepareGeometryChange();
+    const auto start = utilqt::toGLM(getStartPoint());
+    const auto end = utilqt::toGLM(getEndPoint());
 
-    QPointF topLeft =
-        QPointF(std::min(startPoint_.x(), endPoint_.x()), std::min(startPoint_.y(), endPoint_.y()));
-    rect_ = QRectF(topLeft.x() - 40.0, topLeft.y() - 10.0,
-                   std::abs(startPoint_.x() - endPoint_.x()) + 80.0,
-                   std::abs(startPoint_.y() - endPoint_.y()) + 20.0);
+    rect_ = QRectF(utilqt::toQPoint(glm::min(start, end)), utilqt::toQPoint(glm::max(start, end)))
+                .marginsAdded(QMarginsF{40.0, 10.0, 40.0, 10.0});
 
     path_ = obtainCurvePath();
-}
 
-//////////////////////////////////////////////////////////////////////////
+    prepareGeometryChange();
+}
 
 LinkConnectionDragGraphicsItem::LinkConnectionDragGraphicsItem(ProcessorLinkGraphicsItem* outLink,
                                                                QPointF endPos)
-    : LinkGraphicsItem(QPointF(0, 0), endPos)
-    , inLeft_(endPoint_)
-    , inRight_(endPoint_)
-    , outLink_(outLink) {}
+    : LinkGraphicsItem(), inLeft_(endPos), inRight_(endPos), outLink_(outLink) {}
 
-LinkConnectionDragGraphicsItem::~LinkConnectionDragGraphicsItem() {}
+LinkConnectionDragGraphicsItem::~LinkConnectionDragGraphicsItem() = default;
 
 ProcessorLinkGraphicsItem* LinkConnectionDragGraphicsItem::getSrcProcessorLinkGraphicsItem() const {
     return outLink_;
@@ -149,84 +110,62 @@ ProcessorGraphicsItem* LinkConnectionDragGraphicsItem::getSrcProcessorGraphicsIt
     return outLink_->getProcessorGraphicsItem();
 }
 
-QPainterPath LinkConnectionDragGraphicsItem::obtainCurvePath() const {
-    QPointF inLeft = inLeft_;
-    QPointF inRight = inRight_;
-    QPointF outRight = outLink_->getRightPos();
-    QPointF outLeft = outLink_->getLeftPos();
+QPointF LinkConnectionDragGraphicsItem::compare(const QPointF startLeft, const QPointF& startRight,
+                                                const QPointF& endLeft, const QPointF& endRight,
+                                                const QPointF& left,const QPointF& center, const QPointF& right) {
 
-    QPointF start;
-    QPointF stop;
-    QPointF ctrlPointStart;
-    QPointF ctrlPointStop;
-    QPointF qp = QPointF(1, 0);
-    QPainterPath bezierCurve;
-
-    if (outLeft.x() <= inLeft.x()) {
-        start = outLeft;
-        stop = inLeft;
-        ctrlPointStart = qp;
-        ctrlPointStop = -qp;
-    } else if (outRight.x() >= inRight.x()) {
-        start = outRight;
-        stop = inRight;
-        ctrlPointStart = -qp;
-        ctrlPointStop = qp;
+    if (endLeft.x() < startLeft.x()) {
+        return left;
+    } else if (startRight.x() > endRight.x()) {
+        return right;
     } else {
-        start = outLeft;
-        stop = inRight;
-        ctrlPointStart = qp;
-        ctrlPointStop = qp;
+        return center;
     }
+}
 
-    float dist =
-        1.0f + std::min(50.0f, 2.0f * static_cast<float>(QVector2D(start - stop).length()));
-    bezierCurve.moveTo(start);
-    bezierCurve.cubicTo(start + dist * ctrlPointStart, stop + dist * ctrlPointStop, stop);
-    return bezierCurve;
+QPointF LinkConnectionDragGraphicsItem::getStartPoint() const {
+    const auto startLeft = outLink_->getLeftPos();
+    const auto startRight = outLink_->getRightPos();
+    return compare(startLeft, startRight, inLeft_, inRight_, startLeft, startRight, startRight);
+}
+QPointF LinkConnectionDragGraphicsItem::getEndPoint() const {
+    const auto startLeft = outLink_->getLeftPos();
+    const auto startRight = outLink_->getRightPos();
+    return compare(startLeft, startRight, inLeft_, inRight_, inRight_, inLeft_, inLeft_);
+}
+
+QPointF LinkConnectionDragGraphicsItem::getStartDir() const {
+    const auto qp = QPointF(1, 0);
+    const auto startLeft = outLink_->getLeftPos();
+    const auto startRight = outLink_->getRightPos();
+    return compare(startLeft, startRight, inLeft_, inRight_, -qp, qp, qp);
+}
+QPointF LinkConnectionDragGraphicsItem::getEndDir() const {
+    const auto qp = QPointF(1, 0);
+    const auto startLeft = outLink_->getLeftPos();
+    const auto startRight = outLink_->getRightPos();
+    return compare(startLeft, startRight, inLeft_, inRight_, qp, -qp, -qp);
+}
+
+void LinkConnectionDragGraphicsItem::setEndPoint(QPointF endPoint) {
+    inLeft_ = endPoint;
+    inRight_ = endPoint;
+    updateShape();
+}
+
+void LinkConnectionDragGraphicsItem::setEndPoint(QPointF endPointLeft, QPointF endPointRight) {
+    inLeft_ = endPointLeft;
+    inRight_ = endPointRight;
+    updateShape();
 }
 
 void LinkConnectionDragGraphicsItem::reactToProcessorHover(ProcessorGraphicsItem* processor) {
     if (processor != nullptr) {
-        inLeft_ = processor->getLinkGraphicsItem()->getRightPos();
-        inRight_ = processor->getLinkGraphicsItem()->getLeftPos();
-    } else {
-        inLeft_ = endPoint_;
-        inRight_ = endPoint_;
+        inRight_ = processor->getLinkGraphicsItem()->getRightPos();
+        inLeft_ = processor->getLinkGraphicsItem()->getLeftPos();
+        updateShape();
     }
 }
-
-void LinkConnectionDragGraphicsItem::updateShape() {
-    QPointF inLeft = inLeft_;
-    QPointF inRight = inRight_;
-    QPointF outRight = outLink_->getRightPos();
-    QPointF outLeft = outLink_->getLeftPos();
-
-    QPointF start;
-    QPointF stop;
-
-    if (outLeft.x() < inLeft.x()) {
-        start = outLeft;
-        stop = inLeft;
-    } else if (outRight.x() > inRight.x()) {
-        start = outRight;
-        stop = inRight;
-    } else {
-        start = outLeft;
-        stop = inRight;
-    }
-
-    QPointF topLeft = QPointF(std::min(start.x(), stop.x()), std::min(start.y(), stop.y()));
-    QPointF bottomRight = QPointF(std::max(start.x(), stop.x()), std::max(start.y(), stop.y()));
-    rect_ = QRectF(topLeft.x() - 30, topLeft.y() - 10, bottomRight.x() - topLeft.x() + 70,
-                   bottomRight.y() - topLeft.y() + 20);
-
-    path_ = obtainCurvePath();
-
-    prepareGeometryChange();
-}
-
-//////////////////////////////////////////////////////////////////////////
 
 LinkConnectionGraphicsItem::LinkConnectionGraphicsItem(ProcessorLinkGraphicsItem* outLink,
                                                        ProcessorLinkGraphicsItem* inLink)
@@ -244,41 +183,36 @@ LinkConnectionGraphicsItem::~LinkConnectionGraphicsItem() {
     inLink_->removeLink(this);
 }
 
-QPainterPath LinkConnectionGraphicsItem::obtainCurvePath() const {
-    QPointF inRight = inLink_->getRightPos();
-    QPointF inLeft = inLink_->getLeftPos();
-    QPointF outRight = outLink_->getRightPos();
-    QPointF outLeft = outLink_->getLeftPos();
+QPointF LinkConnectionGraphicsItem::getStartPoint() const {
+    const auto startLeft = outLink_->getLeftPos();
+    const auto startRight = outLink_->getRightPos();
+    const auto endRight = inLink_->getRightPos();
+    const auto endLeft = inLink_->getLeftPos();
+    return compare(startLeft, startRight, endLeft, endRight, startLeft, startRight, startRight);
+}
+QPointF LinkConnectionGraphicsItem::getEndPoint() const {
+    const auto startLeft = outLink_->getLeftPos();
+    const auto startRight = outLink_->getRightPos();
+    const auto endRight = inLink_->getRightPos();
+    const auto endLeft = inLink_->getLeftPos();
+    return compare(startLeft, startRight, endLeft, endRight, endRight, endLeft, endLeft);
+}
 
-    QPointF start;
-    QPointF stop;
-    QPointF ctrlPointStart;
-    QPointF ctrlPointStop;
-    QPointF qp = QPointF(1, 0);
-    QPainterPath bezierCurve;
-
-    if (outLeft.x() <= inRight.x()) {
-        start = outLeft;
-        stop = inRight;
-        ctrlPointStart = qp;
-        ctrlPointStop = -qp;
-    } else if (outRight.x() >= inLeft.x()) {
-        start = outRight;
-        stop = inLeft;
-        ctrlPointStart = -qp;
-        ctrlPointStop = qp;
-    } else {
-        start = outLeft;
-        stop = inLeft;
-        ctrlPointStart = qp;
-        ctrlPointStop = qp;
-    }
-
-    float dist =
-        1.0f + std::min(50.0f, 2.0f * static_cast<float>(QVector2D(start - stop).length()));
-    bezierCurve.moveTo(start);
-    bezierCurve.cubicTo(start + dist * ctrlPointStart, stop + dist * ctrlPointStop, stop);
-    return bezierCurve;
+QPointF LinkConnectionGraphicsItem::getStartDir() const {
+    const auto qp = QPointF(1, 0);
+    const auto startLeft = outLink_->getLeftPos();
+    const auto startRight = outLink_->getRightPos();
+    const auto endRight = inLink_->getRightPos();
+    const auto endLeft = inLink_->getLeftPos();
+    return compare(startLeft, startRight, endLeft, endRight, -qp, qp, qp);
+}
+QPointF LinkConnectionGraphicsItem::getEndDir() const {
+    const auto qp = QPointF(1, 0);
+    const auto startLeft = outLink_->getLeftPos();
+    const auto startRight = outLink_->getRightPos();
+    const auto endRight = inLink_->getRightPos();
+    const auto endLeft = inLink_->getLeftPos();
+    return compare(startLeft, startRight, endLeft, endRight, qp, -qp, -qp);
 }
 
 ProcessorLinkGraphicsItem* LinkConnectionGraphicsItem::getDestProcessorLinkGraphicsItem() const {
@@ -287,36 +221,6 @@ ProcessorLinkGraphicsItem* LinkConnectionGraphicsItem::getDestProcessorLinkGraph
 
 ProcessorGraphicsItem* LinkConnectionGraphicsItem::getDestProcessorGraphicsItem() const {
     return inLink_->getProcessorGraphicsItem();
-}
-
-void LinkConnectionGraphicsItem::updateShape() {
-    QPointF inRight = inLink_->getRightPos();
-    QPointF inLeft = inLink_->getLeftPos();
-    QPointF outRight = outLink_->getRightPos();
-    QPointF outLeft = outLink_->getLeftPos();
-
-    QPointF start;
-    QPointF stop;
-
-    if (outLeft.x() < inRight.x()) {
-        start = outLeft;
-        stop = inRight;
-    } else if (outRight.x() > inLeft.x()) {
-        start = outRight;
-        stop = inLeft;
-    } else {
-        start = outLeft;
-        stop = inLeft;
-    }
-
-    QPointF topLeft = QPointF(std::min(start.x(), stop.x()), std::min(start.y(), stop.y()));
-    QPointF bottomRight = QPointF(std::max(start.x(), stop.x()), std::max(start.y(), stop.y()));
-    rect_ = QRectF(topLeft.x() - 30, topLeft.y() - 10, bottomRight.x() - topLeft.x() + 70,
-                   bottomRight.y() - topLeft.y() + 20);
-
-    path_ = obtainCurvePath();
-
-    prepareGeometryChange();
 }
 
 std::string getLinkInfoTableRows(const std::vector<PropertyLink>& links,
@@ -404,4 +308,4 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     showToolTipHelper(e, QString(info.c_str()));
 }
 
-}  // namespace
+}  // namespace inviwo

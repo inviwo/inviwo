@@ -183,15 +183,22 @@ void ProcessorGraphicsItem::positionLablels() {
     tagLabel_->setPos(QPointF(rect().left() + labelMargin + offset + 4, -3));
 }
 
-QPointF ProcessorGraphicsItem::portPosition(PortType type, size_t index) {
+QPointF ProcessorGraphicsItem::portOffset(PortType type, size_t index) {
     const QPointF offset = {12.5f, (type == PortType::In ? 1.0f : -1.0f) * 4.5f};
     const QPointF delta = {12.5f, 0.0f};
     const QPointF rowDelta = {0.0f, (type == PortType::In ? -1.0f : 1.0f) * 12.5f};
     const size_t portsPerRow = 10;
 
-    return (type == PortType::In ? rect().topLeft() : rect().bottomLeft()) + offset +
-           rowDelta * static_cast<qreal>(index / portsPerRow) +
+    auto poffset = QPointF{-ProcessorGraphicsItem::size_.width() / 2,
+                           (type == PortType::In ? -ProcessorGraphicsItem::size_.height() / 2
+                                                 : ProcessorGraphicsItem::size_.height() / 2)};
+
+    return poffset + offset + rowDelta * static_cast<qreal>(index / portsPerRow) +
            delta * static_cast<qreal>(index % portsPerRow);
+}
+
+QPointF ProcessorGraphicsItem::portPosition(PortType type, size_t index) {
+    return rect().center() + portOffset(type, index);
 }
 
 void ProcessorGraphicsItem::addInport(Inport* port) {
@@ -395,9 +402,7 @@ void ProcessorGraphicsItem::onLabelGraphicsItemChanged(LabelGraphicsItem* item) 
     }
 }
 
-void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem*) {
-    positionLablels();
-}
+void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem*) { positionLablels(); }
 
 std::string ProcessorGraphicsItem::getIdentifier() const { return processor_->getIdentifier(); }
 

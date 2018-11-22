@@ -136,6 +136,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/positionmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processormetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processorwidgetmetadata.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/autolinker.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/evaluationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networklock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkutils.h
@@ -426,6 +427,7 @@ set(SOURCE_FILES
     metadata/positionmetadata.cpp
     metadata/processormetadata.cpp
     metadata/processorwidgetmetadata.cpp
+    network/autolinker.cpp
     network/evaluationerrorhandler.cpp
     network/networklock.cpp
     network/networkutils.cpp

@@ -156,11 +156,6 @@ QColor CurveGraphicsItem::getColor() const {
     return color_;
 }
 
-
-
-//////////////////////////////////////////////////////////////////////////
-
-
 ConnectionDragGraphicsItem::ConnectionDragGraphicsItem(ProcessorOutportGraphicsItem* outport,
                                                        QPointF endPoint,
                                                        uvec3 color)

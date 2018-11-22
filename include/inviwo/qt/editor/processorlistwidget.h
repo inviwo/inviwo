@@ -141,9 +141,6 @@ private:
 class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {
 public:
     ProcessorDragObject(QWidget* source, std::unique_ptr<Processor> processor);
-
-    static bool canDecode(const QMimeData* mimeData);
-    static bool decode(const QMimeData* mimeData, QString& className);
 };
 
 }  // namespace inviwo

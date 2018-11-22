@@ -35,8 +35,10 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/network/autolinker.h>
 
 #include <iterator>
+#include <unordered_set>
 
 namespace inviwo {
 
@@ -173,6 +175,8 @@ void util::setSelected(const std::vector<Processor*>& processors, bool selected)
 }
 
 util::PropertyDistanceSorter::PropertyDistanceSorter() {}
+
+void util::PropertyDistanceSorter::setTarget(vec2 pos) { pos_ = pos; }
 void util::PropertyDistanceSorter::setTarget(const Property* target) { pos_ = getPosition(target); }
 
 bool util::PropertyDistanceSorter::operator()(const Property* a, const Property* b) {
@@ -189,79 +193,6 @@ vec2 util::PropertyDistanceSorter::getPosition(const Property* p) {
 
 vec2 util::PropertyDistanceSorter::getPosition(const Processor* processor) {
     return util::getPosition(processor);
-}
-
-void util::autoLinkProcessor(ProcessorNetwork* network, Processor* processor) {
-    auto app = network->getApplication();
-    auto linkSettings = app->getSettingsByType<LinkSettings>();
-
-    auto linkChecker = [&](const Property* p) { return !linkSettings->isLinkable(p); };
-
-    auto allNewPropertes = processor->getPropertiesRecursive();
-
-    std::vector<Property*> properties;
-    network->forEachProcessor([&](Processor* p) {
-        if (p != processor) {
-            std::vector<Property*> props = p->getPropertiesRecursive();
-            properties.insert(properties.end(), props.begin(), props.end());
-        }
-    });
-
-    auto destprops = allNewPropertes;
-    // remove properties for which auto linking is disabled
-    util::erase_remove_if(properties, linkChecker);
-    util::erase_remove_if(destprops, linkChecker);
-
-    util::PropertyDistanceSorter distSorter;
-
-    // auto link based on global settings
-    for (auto& destprop : destprops) {
-        std::vector<Property*> candidates = properties;
-
-        auto isNotAutoLinkAble = [&](const Property* p) {
-            return !network->canLink(p, destprop) ||
-                   p->getClassIdentifier() != destprop->getClassIdentifier() ||
-                   p->getIdentifier() != destprop->getIdentifier();
-        };
-        util::erase_remove_if(candidates, isNotAutoLinkAble);
-
-        if (candidates.size() > 0) {
-            distSorter.setTarget(destprop);
-            std::sort(candidates.begin(), candidates.end(), distSorter);
-
-            network->addLink(candidates.front(), destprop);
-            // Propagate the link to the new Processor.
-            network->evaluateLinksFromProperty(candidates.front());
-            network->addLink(destprop, candidates.front());
-        }
-    }
-
-    // Auto link based property
-    for (auto& destprop : allNewPropertes) {
-        std::vector<Property*> candidates;
-        for (auto& srcPropertyIdentifier : destprop->getAutoLinkToProperty()) {
-            auto& classID = srcPropertyIdentifier.first;
-            auto& path = srcPropertyIdentifier.second;
-
-            network->forEachProcessor([&](Processor* srcProcessor) {
-                if (srcProcessor != processor && srcProcessor->getClassIdentifier() == classID) {
-                    if (auto src = srcProcessor->getPropertyByPath(splitString(path, '.'))) {
-                        candidates.push_back(src);
-                    }
-                }
-            });
-        }
-
-        if (candidates.size() > 0) {
-            distSorter.setTarget(destprop);
-            std::sort(candidates.begin(), candidates.end(), distSorter);
-
-            network->addLink(candidates.front(), destprop);
-            // Propagate the link to the new Processor.
-            network->evaluateLinksFromProperty(candidates.front());
-            network->addLink(destprop, candidates.front());
-        }
-    }
 }
 
 void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
@@ -384,7 +315,9 @@ void util::detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
 
         for (auto& p : processors) {
             network_->addProcessor(p.get());
-            util::autoLinkProcessor(network_, p.get());
+
+            AutoLinker::addLinks(network_, p.get());
+
             addedProcessors_.push_back(p.get());
             p.release();
         }
