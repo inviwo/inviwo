@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
+#include <inviwo/qt/editor/processorlinkgraphicsitem.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
