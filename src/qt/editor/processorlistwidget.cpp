@@ -37,6 +37,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/network/autolinker.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/qt/editor/processorpreview.h>
@@ -285,7 +286,7 @@ void ProcessorTreeWidget::addProcessor(QString className) {
         meta->setPosition(ivec2{bb.first.x, bb.second.y} + ivec2(0, 75));
 
         auto p = network->addProcessor(std::move(processor));
-        util::autoLinkProcessor(network, p);
+        AutoLinker::addLinks(network, p);
     }
 }
 
@@ -562,20 +563,6 @@ ProcessorDragObject::ProcessorDragObject(QWidget* source, std::unique_ptr<Proces
     setMimeData(mime);
     setHotSpot(QPoint(img.width() / 2, img.height() / 2));
     start(Qt::MoveAction);
-}
-
-bool ProcessorDragObject::canDecode(const QMimeData* mimeData) {
-    return mimeData->hasFormat(mimeType);
-}
-
-bool ProcessorDragObject::decode(const QMimeData* mimeData, QString& className) {
-    QByteArray byteData = mimeData->data(mimeType);
-
-    if (byteData.isEmpty()) return false;
-
-    QDataStream ds(&byteData, QIODevice::ReadOnly);
-    ds >> className;
-    return true;
 }
 
 bool ProcessorTreeItem::operator<(const QTreeWidgetItem& other) const {

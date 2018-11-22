@@ -156,11 +156,6 @@ QColor CurveGraphicsItem::getColor() const {
     return color_;
 }
 
-
-
-//////////////////////////////////////////////////////////////////////////
-
-
 ConnectionDragGraphicsItem::ConnectionDragGraphicsItem(ProcessorOutportGraphicsItem* outport,
                                                        QPointF endPoint,
                                                        uvec3 color)
@@ -225,6 +220,8 @@ ProcessorGraphicsItem* ConnectionGraphicsItem::getInProcessor() const {
 Outport* ConnectionGraphicsItem::getOutport() const { return connection_.getOutport(); }
 
 Inport* ConnectionGraphicsItem::getInport() const { return connection_.getInport(); }
+
+PortConnection ConnectionGraphicsItem::getPortConnection() const { return connection_; }
 
 QPointF ConnectionGraphicsItem::getEndPoint() const {   
     return inport_->mapToScene(inport_->rect().center());

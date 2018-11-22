@@ -69,6 +69,9 @@ class LinkDialog;
 class InviwoMainWindow;
 class Image;
 class MenuItem;
+class ProcessorDragHelper;
+class ConnectionDragHelper;
+class LinkDragHelper;
 
 /**
  * The NetworkEditor supports interactive editing of a ProcessorNetwork. Processors can be added
@@ -95,7 +98,8 @@ public:
     void selectAll();
     void deleteSelection();
 
-    std::string getCurrentFilename() const { return filename_; }
+    const std::string& getCurrentFilename() const;
+    ProcessorNetwork* getNetwork() const;
 
     void addPropertyWidgets(Processor* processor);
     void removeAndDeletePropertyWidgets(Processor* processor);
@@ -122,6 +126,10 @@ public:
     LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
                                                     Processor* processor2) const;
+    ProcessorGraphicsItem* getProcessorGraphicsItemAt(const QPointF pos) const;
+    ProcessorInportGraphicsItem* getProcessorInportGraphicsItemAt(const QPointF pos) const;
+    ConnectionGraphicsItem* getConnectionGraphicsItemAt(const QPointF pos) const;
+    LinkConnectionGraphicsItem* getLinkGraphicsItemAt(const QPointF pos) const;
 
     void setBackgroundVisible(bool visible);
     bool isBackgroundVisible() const;
@@ -132,9 +140,10 @@ public:
     static std::string getMimeTag();
     void resetAllTimeMeasurements();
 
+    void showLinkDialog(Processor* processor1, Processor* processor2);
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
@@ -144,14 +153,6 @@ protected:
 
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
-
-    virtual void dragEnterEvent(QGraphicsSceneDragDropEvent* de) override;
-    virtual void dragMoveEvent(QGraphicsSceneDragDropEvent* de) override;
-    virtual void dropEvent(QGraphicsSceneDragDropEvent* de) override;
-
-    void placeProcessorOnConnection(Processor* processorItem,
-                                    ConnectionGraphicsItem* connectionItem);
-    void placeProcessorOnProcessor(Processor* processorItem, Processor* oldProcessorItem);
 
     // Override for tooltips
     virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
@@ -200,15 +201,10 @@ private:
     void removeLink(LinkConnectionGraphicsItem* linkGraphicsItem);
     LinkConnectionGraphicsItem* addLinkGraphicsItem(Processor* processor1, Processor* processor2);
     void removeLinkGraphicsItem(LinkConnectionGraphicsItem* linkGraphicsItem);
-    void showLinkDialog(Processor* processor1, Processor* processor2);
 
     // Get QGraphicsItems
     template <typename T>
     T* getGraphicsItemAt(const QPointF pos) const;
-    ProcessorGraphicsItem* getProcessorGraphicsItemAt(const QPointF pos) const;
-    ProcessorInportGraphicsItem* getProcessorInportGraphicsItemAt(const QPointF pos) const;
-    ConnectionGraphicsItem* getConnectionGraphicsItemAt(const QPointF pos) const;
-    LinkConnectionGraphicsItem* getLinkGraphicsItemAt(const QPointF pos) const;
 
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
@@ -219,23 +215,20 @@ private:
     using ConnectionMap = std::map<PortConnection, ConnectionGraphicsItem*>;
     using LinkMap = std::map<ProcessorPair, LinkConnectionGraphicsItem*>;
 
+    // Drag n drop state
+    ProcessorDragHelper* processorDragHelper_;
+    LinkDragHelper* linkDragHelper_;
+    ConnectionDragHelper* connectionDragHelper_;
+    ProcessorGraphicsItem* processorItem_;
+
     ProcessorMap processorGraphicsItems_;
     ConnectionMap connectionGraphicsItems_;
     LinkMap linkGraphicsItems_;
-
-    // Drag n drop state
-    ConnectionGraphicsItem* oldConnectionTarget_;
-    ProcessorGraphicsItem* oldProcessorTarget_;
-    bool validConnectionTarget_;
 
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0, 0}};
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
 
-    // Connection and link state
-    ProcessorGraphicsItem* processorItem_;
-    ConnectionDragGraphicsItem* connectionCurve_;
-    LinkConnectionDragGraphicsItem* linkCurve_;
 
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;

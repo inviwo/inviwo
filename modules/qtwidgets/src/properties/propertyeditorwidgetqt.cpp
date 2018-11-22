@@ -167,13 +167,13 @@ void PropertyEditorWidgetQt::loadState() {
     }
 
     if (property_->hasMetaData<IntVec2MetaData>(sizeKey)) {
-        resize(utilqt::toQSize(property_->getMetaData<IntVec2MetaData>(sizeKey, ivec2{})));
+        resize(utilqt::toQSize(property_->getMetaData<IntVec2MetaData>(sizeKey, ivec2{0})));
     } else if (settings.contains("size")) {
         resize(settings.value("size").toSize());
     }
 
     if (property_->hasMetaData<IntVec2MetaData>(positionKey)) {
-        auto pos = utilqt::toQPoint(property_->getMetaData<IntVec2MetaData>(positionKey, ivec2{}));
+        auto pos = utilqt::toQPoint(property_->getMetaData<IntVec2MetaData>(positionKey, ivec2{0}));
         auto newPos = utilqt::movePointOntoDesktop(pos, InviwoDockWidget::size(), false);
         move(newPos);
     } else if (auto mainWindow = utilqt::getApplicationMainWindow()) {

@@ -149,6 +149,7 @@ IVW_CORE_API std::vector<Processor*> topologicalSort(ProcessorNetwork* network);
 
 struct IVW_CORE_API PropertyDistanceSorter {
     PropertyDistanceSorter();
+    void setTarget(vec2 pos);
     void setTarget(const Property* target);
     bool operator()(const Property* a, const Property* b);
 
@@ -159,7 +160,6 @@ private:
     vec2 pos_ = {0, 0};
     std::map<const Property*, vec2> cache_;
 };
-
 
 /**
  * Retrieve the positions of the processors in the list.
@@ -203,8 +203,6 @@ IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, ivec
  */
 IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
 
-IVW_CORE_API void autoLinkProcessor(ProcessorNetwork* network, Processor* processor);
-
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::string& refPath);
 
@@ -212,6 +210,13 @@ IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
 IVW_CORE_API std::vector<Processor*> appendDeserialized(ProcessorNetwork* network, std::istream& is,
                                                         const std::string& refPath,
                                                         InviwoApplication* app);
+
+IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
+                                           std::unique_ptr<Processor> processor,
+                                           PortConnection connection);
+
+IVW_CORE_API void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> newProcessor,
+                                   Processor* oldProcessor);
 
 }  // namespace util
 

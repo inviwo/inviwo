@@ -140,6 +140,7 @@ public:
     ProcessorGraphicsItem* getInProcessor() const;
     Outport* getOutport() const;
     Inport* getInport() const;
+    PortConnection getPortConnection() const;
     ProcessorInportGraphicsItem* getInportGraphicsItem() const;
 
     // override for qgraphicsitem_cast (refer qt documentation)
