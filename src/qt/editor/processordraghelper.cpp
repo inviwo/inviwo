@@ -46,7 +46,6 @@
 #include <QGraphicsItem>
 #include <QGraphicsSceneDragDropEvent>
 #include <QMimeData>
-#include <QGuiApplication>
 #include <QGraphicsView>
 #include <warn/pop>
 
@@ -162,25 +161,25 @@ bool ProcessorDragHelper::move(QGraphicsSceneDragDropEvent* e, const ProcessorMi
     }
 
     if (!processorItem && !connectionItem) {
-        updateAutoConnections(e->scenePos());
+        updateAutoConnections(e);
     } else {
         resetAutoConnections();
     }
 
-    updateAutoLinks(e->scenePos());
+    updateAutoLinks(e);
 
     return true;
 }
 
-void ProcessorDragHelper::updateAutoConnections(QPointF pos) {
-    bool enable = QGuiApplication::keyboardModifiers().testFlag(Qt::ShiftModifier);
-
-    if (!enable) {
+void ProcessorDragHelper::updateAutoConnections(QGraphicsSceneDragDropEvent* e) {
+    if (!e->modifiers().testFlag(Qt::ShiftModifier)) {
         resetAutoConnections();
         return;
     }
 
+    const auto pos = e->scenePos();
     const auto zoom = 1.0 / editor_->views().front()->transform().m11();
+
     decltype(autoConnections_) updatedConnections;
     for (auto&& item : util::enumerate(autoConnectCandidates_)) {
         const auto ind = item.first();
@@ -221,13 +220,13 @@ void ProcessorDragHelper::updateAutoConnections(QPointF pos) {
     std::swap(autoConnections_, updatedConnections);
 }
 
-void ProcessorDragHelper::updateAutoLinks(QPointF pos) {
-    bool enable = !QGuiApplication::keyboardModifiers().testFlag(Qt::AltModifier);
-
-    if (!enable) {
+void ProcessorDragHelper::updateAutoLinks(QGraphicsSceneDragDropEvent* e) {
+    if (e->modifiers().testFlag(Qt::AltModifier)) {
         resetAutoLinks();
         return;
     }
+
+    const auto pos = e->scenePos();
     const auto zoom = 1.0 / editor_->views().front()->transform().m11();
     decltype(autoLinks_) links;
 
@@ -268,8 +267,8 @@ bool ProcessorDragHelper::leave(QGraphicsSceneDragDropEvent* e, const ProcessorM
 bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime) {
     e->accept();
 
-    bool enableAutoLinks = !QGuiApplication::keyboardModifiers().testFlag(Qt::AltModifier);
-    bool enableAutoConnections = QGuiApplication::keyboardModifiers().testFlag(Qt::ShiftModifier);
+    const bool enableAutoLinks = !e->modifiers().testFlag(Qt::AltModifier);
+    const bool enableAutoConnections = e->modifiers().testFlag(Qt::ShiftModifier);
 
     auto network = editor_->network_;
     NetworkLock lock(network);

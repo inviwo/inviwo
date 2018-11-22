@@ -72,8 +72,8 @@ private:
     bool leave(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
     bool drop(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
     
-    void updateAutoConnections(QPointF pos);
-    void updateAutoLinks(QPointF pos);
+    void updateAutoConnections(QGraphicsSceneDragDropEvent* e);
+    void updateAutoLinks(QGraphicsSceneDragDropEvent* e);
 
 
     static bool canSplitConnection(Processor* p, ConnectionGraphicsItem* connection);
