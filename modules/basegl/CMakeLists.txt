@@ -7,6 +7,11 @@ ivw_module(BaseGL)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/delaunay.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/edge.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/triangle.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/vec2_indexed.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/numeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/imagevisualizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/meshvisualizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeraycastvisualizer.h

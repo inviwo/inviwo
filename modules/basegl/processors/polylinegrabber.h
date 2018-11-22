@@ -34,39 +34,48 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/polylineport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+
 #include <vector>
 #include <memory>
 
 namespace inviwo {
-	/**
-	* \class
-	* \brief 
-	*/
-	class IVW_MODULE_BASEGL_API PolylineGrabber : public Processor {
-	public:
-		PolylineGrabber();
-		virtual ~PolylineGrabber() = default;
+    /**
+    * \class
+    * \brief 
+    */
+    class IVW_MODULE_BASEGL_API PolylineGrabber : public Processor {
+    public:
+        PolylineGrabber();
+        virtual ~PolylineGrabber() = default;
 
-		virtual const ProcessorInfo getProcessorInfo() const override;
-		static const ProcessorInfo processorInfo_;
+        virtual const ProcessorInfo getProcessorInfo() const override;
+        static const ProcessorInfo processorInfo_;
 
-	protected:
+    protected:
 
-	private:
-		void addPoint(const vec3& pt);
+    private:
+        void addPoint(const vec3& pt);
 
-		FloatVec3Property pt_;
+        FloatVec3Property pt_;
+        bool readyToRecord_;
 
-		ButtonProperty clearPolyline_;
+        ButtonProperty clearPolyline_;
+        ButtonProperty loadExamplePolyline_;
+        ButtonProperty performDelaunayOnPts_;
 
-		std::shared_ptr<std::vector<vec3>> polyline_;
+        FloatProperty offset_;
 
-		FloatMinMaxProperty clip_;
+        std::shared_ptr<std::vector<vec3>> polyline_;
 
-		PolylineOutport outport_;
-	};
+        FloatMinMaxProperty clip_;
+
+        PolylineOutport outport_;
+        MeshOutport meshOutport1_;
+        MeshOutport meshOutport2_;
+    };
 }
 
 #endif  // IVW_POLYLINEGRABBER_H
