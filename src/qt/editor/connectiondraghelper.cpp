@@ -47,6 +47,8 @@ namespace inviwo {
 ConnectionDragHelper::ConnectionDragHelper(NetworkEditor &editor)
     : QObject(&editor), editor_{editor} {}
 
+ConnectionDragHelper::~ConnectionDragHelper() = default;
+
 bool ConnectionDragHelper::eventFilter(QObject *, QEvent *event) {
     if (connection_ && event->type() == QEvent::GraphicsSceneMouseMove) {
         auto e = static_cast<QGraphicsSceneMouseEvent *>(event);

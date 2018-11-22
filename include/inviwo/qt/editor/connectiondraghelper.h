@@ -39,6 +39,7 @@
 
 #include <memory>
 
+class QEvent;
 
 namespace inviwo {
 
@@ -54,7 +55,7 @@ class IVW_QTEDITOR_API ConnectionDragHelper : public QObject {
 
 public:
     ConnectionDragHelper(NetworkEditor& editor);
-    virtual ~ConnectionDragHelper() = default;
+    virtual ~ConnectionDragHelper();
 
     void start(ProcessorOutportGraphicsItem* outport, QPointF endPoint, uvec3 color);
     void reset();

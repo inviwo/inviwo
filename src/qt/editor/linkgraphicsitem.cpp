@@ -43,6 +43,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 
+#include <modules/qtwidgets/inviwoqtutils.h>
+
 namespace inviwo {
 
 LinkGraphicsItem::LinkGraphicsItem(ivec3 color) : color_(color.r, color.g, color.b) {

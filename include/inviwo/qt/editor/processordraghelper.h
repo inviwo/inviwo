@@ -39,6 +39,7 @@
 #include <unordered_map>
 #include <memory>
 
+class QEvent;
 class QGraphicsSceneDragDropEvent;
 
 namespace inviwo {
@@ -49,7 +50,11 @@ class ConnectionGraphicsItem;
 class NetworkEditor;
 class AutoLinker;
 class LinkConnectionDragGraphicsItem;
+class ConnectionDragGraphicsItem;
+class ProcessorGraphicsItem;
 class Property;
+class Inport;
+class Outport;
 
 class IVW_QTEDITOR_API ProcessorDragHelper : public QObject {
 #include <warn/push>

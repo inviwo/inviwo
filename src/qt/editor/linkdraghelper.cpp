@@ -45,6 +45,8 @@ namespace inviwo {
 
 LinkDragHelper::LinkDragHelper(NetworkEditor &editor) : QObject(&editor), editor_{editor} {}
 
+LinkDragHelper::~LinkDragHelper() = default;
+
 void LinkDragHelper::start(ProcessorLinkGraphicsItem *item, QPointF endPos) {
     link_ = std::make_unique<LinkConnectionDragGraphicsItem>(item, endPos);
     editor_.addItem(link_.get());

@@ -39,6 +39,8 @@
 
 #include <memory>
 
+class QEvent;
+
 namespace inviwo {
 
 class NetworkEditor;
@@ -53,7 +55,7 @@ class IVW_QTEDITOR_API LinkDragHelper : public QObject {
 
 public:
     LinkDragHelper(NetworkEditor& editor);
-    virtual ~LinkDragHelper() = default;
+    virtual ~LinkDragHelper();
 
     void start(ProcessorLinkGraphicsItem* outLink, QPointF endPos);
     void reset();
