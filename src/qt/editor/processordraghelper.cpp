@@ -35,11 +35,13 @@
 #include <inviwo/core/network/autolinker.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
+#include <inviwo/qt/editor/processorportgraphicsitem.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 
 #include <inviwo/qt/editor/networkeditor.h>
@@ -82,6 +84,8 @@ std::pair<Iter, Iter> filterAndSortOutports(Iter begin, Iter end, dvec2 pos, Pre
 
 ProcessorDragHelper::ProcessorDragHelper(NetworkEditor& editor)
     : QObject(&editor), editor_{editor} {}
+
+ProcessorDragHelper::~ProcessorDragHelper() = default;
 
 bool ProcessorDragHelper::eventFilter(QObject*, QEvent* event) {
     if (event->type() == QEvent::GraphicsSceneDragEnter) {
@@ -284,9 +288,6 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
     }};
 
     try {
-        // activate default render context
-        RenderContext::getPtr()->activateDefaultRenderContext();
-
         auto processor = mime->get();
         if (!processor) {
             LogError("Unable to get processor from drag object");

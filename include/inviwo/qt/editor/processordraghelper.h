@@ -64,7 +64,7 @@ class IVW_QTEDITOR_API ProcessorDragHelper : public QObject {
 
 public:
     ProcessorDragHelper(NetworkEditor& editor);
-    virtual ~ProcessorDragHelper() = default;
+    virtual ~ProcessorDragHelper();
 
     virtual bool eventFilter(QObject *obj, QEvent *event) override;
 
