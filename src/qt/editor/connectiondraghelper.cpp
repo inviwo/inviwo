@@ -31,6 +31,7 @@
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
+#include <inviwo/qt/editor/processorportgraphicsitem.h>
 
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
@@ -43,14 +44,14 @@
 
 namespace inviwo {
 
-ConnectionDragHelper::ConnectionDragHelper(NetworkEditor *editor)
-    : QObject(editor), editor_{editor} {}
+ConnectionDragHelper::ConnectionDragHelper(NetworkEditor &editor)
+    : QObject(&editor), editor_{editor} {}
 
 bool ConnectionDragHelper::eventFilter(QObject *, QEvent *event) {
     if (connection_ && event->type() == QEvent::GraphicsSceneMouseMove) {
         auto e = static_cast<QGraphicsSceneMouseEvent *>(event);
         connection_->setEndPoint(e->scenePos());
-        connection_->reactToPortHover(editor_->getProcessorInportGraphicsItemAt(e->scenePos()));
+        connection_->reactToPortHover(editor_.getProcessorInportGraphicsItemAt(e->scenePos()));
         e->accept();
     } else if (connection_ && event->type() == QEvent::GraphicsSceneMouseRelease) {
         auto e = static_cast<QGraphicsSceneMouseEvent *>(event);
@@ -58,14 +59,14 @@ bool ConnectionDragHelper::eventFilter(QObject *, QEvent *event) {
         auto startPort = connection_->getOutportGraphicsItem()->getPort();
         reset();
 
-        auto endItem = editor_->getProcessorInportGraphicsItemAt(e->scenePos());
+        auto endItem = editor_.getProcessorInportGraphicsItemAt(e->scenePos());
         if (endItem && endItem->getPort()->canConnectTo(startPort)) {
             Inport *endPort = endItem->getPort();
 
             if (endPort->getNumberOfConnections() >= endPort->getMaxNumberOfConnections()) {
-                editor_->network_->removeConnection(endPort->getConnectedOutport(), endPort);
+                editor_.getNetwork()->removeConnection(endPort->getConnectedOutport(), endPort);
             }
-            editor_->network_->addConnection(startPort, endPort);
+            editor_.getNetwork()->addConnection(startPort, endPort);
         }
         e->accept();
     }
@@ -74,15 +75,11 @@ bool ConnectionDragHelper::eventFilter(QObject *, QEvent *event) {
 
 void ConnectionDragHelper::start(ProcessorOutportGraphicsItem *outport, QPointF endPoint,
                                  uvec3 color) {
-    reset();
-    connection_ = new ConnectionDragGraphicsItem(outport, endPoint, color);
-    editor_->addItem(connection_);
+    connection_ = std::make_unique<ConnectionDragGraphicsItem>(outport, endPoint, color);
+    editor_.addItem(connection_.get());
     connection_->show();
 }
 
-void ConnectionDragHelper::reset() {
-    delete connection_;
-    connection_ = nullptr;
-}
+void ConnectionDragHelper::reset() { connection_.reset(); }
 
 }  // namespace inviwo

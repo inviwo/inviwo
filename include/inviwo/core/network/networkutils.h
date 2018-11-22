@@ -211,6 +211,13 @@ IVW_CORE_API std::vector<Processor*> appendDeserialized(ProcessorNetwork* networ
                                                         const std::string& refPath,
                                                         InviwoApplication* app);
 
+IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
+                                           std::unique_ptr<Processor> processor,
+                                           PortConnection connection);
+
+IVW_CORE_API void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> newProcessor,
+                                   Processor* oldProcessor);
+
 }  // namespace util
 
 }  // namespace inviwo

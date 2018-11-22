@@ -58,7 +58,7 @@ class IVW_QTEDITOR_API ProcessorDragHelper : public QObject {
 #include <warn/pop>
 
 public:
-    ProcessorDragHelper(NetworkEditor *editor);
+    ProcessorDragHelper(NetworkEditor& editor);
     virtual ~ProcessorDragHelper() = default;
 
     virtual bool eventFilter(QObject *obj, QEvent *event) override;
@@ -83,7 +83,7 @@ private:
     void resetAutoConnections();
     void resetAutoLinks();
 
-    NetworkEditor* editor_;
+    NetworkEditor& editor_;
     ConnectionGraphicsItem* connectionTarget_ = nullptr;
     ProcessorGraphicsItem* processorTarget_ = nullptr;
 

@@ -30,15 +30,17 @@
 #include <inviwo/qt/editor/processordraghelper.h>
 
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/network/autolinker.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/raiiutils.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/qt/editor/processormimedata.h>
-#include <inviwo/core/network/autolinker.h>
-#include <inviwo/core/processors/processorutils.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 
 #include <warn/push>
@@ -76,8 +78,8 @@ std::pair<Iter, Iter> filterAndSortOutports(Iter begin, Iter end, dvec2 pos, Pre
 
 }  // namespace
 
-ProcessorDragHelper::ProcessorDragHelper(NetworkEditor* editor)
-    : QObject(editor), editor_{editor} {}
+ProcessorDragHelper::ProcessorDragHelper(NetworkEditor& editor)
+    : QObject(&editor), editor_{editor} {}
 
 bool ProcessorDragHelper::eventFilter(QObject*, QEvent* event) {
     if (event->type() == QEvent::GraphicsSceneDragEnter) {
@@ -113,7 +115,7 @@ bool ProcessorDragHelper::enter(QGraphicsSceneDragDropEvent* e, const ProcessorM
     autoConnectCandidates_.clear();
     for (auto& inport : processor->getInports()) {
         std::vector<Outport*> candidates;
-        editor_->network_->forEachProcessor([&](Processor* sourceProcessor) {
+        editor_.getNetwork()->forEachProcessor([&](Processor* sourceProcessor) {
             for (auto outport : sourceProcessor->getOutports()) {
                 if (inport->canConnectTo(outport)) {
                     candidates.push_back(outport);
@@ -124,7 +126,7 @@ bool ProcessorDragHelper::enter(QGraphicsSceneDragDropEvent* e, const ProcessorM
         autoConnectCandidates_.emplace_back(inport, std::move(candidates));
     }
 
-    autoLinker_ = std::make_unique<AutoLinker>(editor_->network_, processor, nullptr);
+    autoLinker_ = std::make_unique<AutoLinker>(editor_.getNetwork(), processor, nullptr);
 
     move(e, mime);
     return true;
@@ -133,10 +135,9 @@ bool ProcessorDragHelper::move(QGraphicsSceneDragDropEvent* e, const ProcessorMi
     e->accept();
 
     auto processor = mime->processor();
-    auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-    meta->setPosition(utilqt::toGLM(e->scenePos()));
+    util::setPosition(processor, utilqt::toGLM(e->scenePos()));
 
-    auto connectionItem = editor_->getConnectionGraphicsItemAt(e->scenePos());
+    auto connectionItem = editor_.getConnectionGraphicsItemAt(e->scenePos());
     if (connectionItem) {
         if (!connectionTarget_) {
             connectionItem->setBorderColor(canSplitConnection(processor, connectionItem) ? Qt::green
@@ -149,7 +150,7 @@ bool ProcessorDragHelper::move(QGraphicsSceneDragDropEvent* e, const ProcessorMi
         resetConnection();
     }
 
-    auto processorItem = editor_->getProcessorGraphicsItemAt(e->scenePos());
+    auto processorItem = editor_.getProcessorGraphicsItemAt(e->scenePos());
     if (processorItem) {
         if (!processorTarget_) {
             processorItem->setHighlight(true);
@@ -178,7 +179,7 @@ void ProcessorDragHelper::updateAutoConnections(QGraphicsSceneDragDropEvent* e) 
     }
 
     const auto pos = e->scenePos();
-    const auto zoom = 1.0 / editor_->views().front()->transform().m11();
+    const auto zoom = 1.0 / editor_.views().front()->transform().m11();
 
     decltype(autoConnections_) updatedConnections;
     for (auto&& item : util::enumerate(autoConnectCandidates_)) {
@@ -198,17 +199,17 @@ void ProcessorDragHelper::updateAutoConnections(QGraphicsSceneDragDropEvent* e) 
 
         if (validOutports.first != validOutports.second) {
             const auto endpos = pos + zoom * ProcessorGraphicsItem::portOffset(
-                                                  ProcessorGraphicsItem::PortType::In, ind);
+                                                 ProcessorGraphicsItem::PortType::In, ind);
             auto oldit = autoConnections_.find(inport);
             if (oldit == autoConnections_.end() ||
                 oldit->second->getOutportGraphicsItem()->getPort() != *validOutports.first) {
                 auto outport = *validOutports.first;
 
-                auto pgi = editor_->getProcessorGraphicsItem(outport->getProcessor());
+                auto pgi = editor_.getProcessorGraphicsItem(outport->getProcessor());
                 auto ogi = pgi->getOutportGraphicsItem(outport);
                 auto connection = std::make_unique<ConnectionDragGraphicsItem>(
                     ogi, endpos, outport->getColorCode());
-                editor_->addItem(connection.get());
+                editor_.addItem(connection.get());
                 connection->show();
                 updatedConnections[inport] = std::move(connection);
             } else {
@@ -227,7 +228,7 @@ void ProcessorDragHelper::updateAutoLinks(QGraphicsSceneDragDropEvent* e) {
     }
 
     const auto pos = e->scenePos();
-    const auto zoom = 1.0 / editor_->views().front()->transform().m11();
+    const auto zoom = 1.0 / editor_.views().front()->transform().m11();
     decltype(autoLinks_) links;
 
     autoLinker_->sortAutoLinkCandidates();
@@ -243,10 +244,10 @@ void ProcessorDragHelper::updateAutoLinks(QGraphicsSceneDragDropEvent* e) {
                                         pos + zoom * QPointF{75.0, 0.0});
                 links[sourceProcessor] = std::move(it->second);
             } else {
-                auto pgi = editor_->getProcessorGraphicsItem(sourceProcessor);
+                auto pgi = editor_.getProcessorGraphicsItem(sourceProcessor);
                 auto lgi = std::make_unique<LinkConnectionDragGraphicsItem>(
                     pgi->getLinkGraphicsItem(), pos);
-                editor_->addItem(lgi.get());
+                editor_.addItem(lgi.get());
                 lgi->show();
                 links[sourceProcessor] = std::move(lgi);
             }
@@ -270,8 +271,16 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
     const bool enableAutoLinks = !e->modifiers().testFlag(Qt::AltModifier);
     const bool enableAutoConnections = e->modifiers().testFlag(Qt::ShiftModifier);
 
-    auto network = editor_->network_;
+    auto network = editor_.getNetwork();
     NetworkLock lock(network);
+
+    util::OnScopeExit resetter{[&]() {
+        resetConnection();
+        resetProcessor();
+        resetAutoConnections();
+        resetAutoLinks();
+    }};
+
     try {
         // activate default render context
         RenderContext::getPtr()->activateDefaultRenderContext();
@@ -281,35 +290,31 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
             LogError("Unable to get processor from drag object");
             return true;
         }
-        editor_->clearSelection();
+        editor_.clearSelection();
 
-        auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-
-        if (processorTarget_) {
-            meta->setPosition(utilqt::toGLM(processorTarget_->scenePos()));
-        } else {
-            meta->setPosition(utilqt::toGLM(editor_->snapToGrid(e->scenePos())));
-        }
-
-        auto p = processor.get();
-        network->addProcessor(processor.release());
-
-        if (enableAutoLinks) {
-            autoLinker_->addLinksToClosestCandidates(true);
-        }
-
+        util::setPosition(processor.get(), utilqt::toGLM(NetworkEditor::snapToGrid(e->scenePos())));
         if (connectionTarget_) {
-            editor_->placeProcessorOnConnection(p, connectionTarget_);
+            if (!util::addProcessorOnConnection(network, std::move(processor),
+                                                connectionTarget_->getPortConnection())) {
+                LogError("Unable to add processor on connection");
+                return true;
+            }
+            if (enableAutoLinks) autoLinker_->addLinksToClosestCandidates(true);
         } else if (processorTarget_) {
-            editor_->placeProcessorOnProcessor(p, processorTarget_->getProcessor());
+            util::replaceProcessor(network, std::move(processor), processorTarget_->getProcessor());
         } else if (enableAutoConnections) {
+            network->addProcessor(std::move(processor));
             for (auto& item : autoConnections_) {
                 if (item.second) {
                     item.second->hide();
-                    editor_->network_->addConnection(
+                    editor_.getNetwork()->addConnection(
                         item.second->getOutportGraphicsItem()->getPort(), item.first);
                 }
             }
+            if (enableAutoLinks) autoLinker_->addLinksToClosestCandidates(true);
+        } else {
+            network->addProcessor(std::move(processor));
+            if (enableAutoLinks) autoLinker_->addLinksToClosestCandidates(true);
         }
     } catch (Exception& exception) {
         util::log(exception.getContext(),
@@ -318,10 +323,6 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
                   LogLevel::Error);
     }
 
-    resetConnection();
-    resetProcessor();
-    resetAutoConnections();
-    resetAutoLinks();
     return true;
 }
 

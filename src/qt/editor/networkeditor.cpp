@@ -103,9 +103,9 @@ const int NetworkEditor::gridSpacing_ = 25;
 
 NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     : QGraphicsScene()
-    , processorDragHelper_{new ProcessorDragHelper(this)}
-    , linkDragHelper_{new LinkDragHelper(this)}
-    , connectionDragHelper_{new ConnectionDragHelper(this)}
+    , processorDragHelper_{new ProcessorDragHelper(*this)}
+    , linkDragHelper_{new LinkDragHelper(*this)}
+    , connectionDragHelper_{new ConnectionDragHelper(*this)}
     , processorItem_(nullptr)
     , mainwindow_(mainwindow)
     , network_(mainwindow->getInviwoApplication()->getProcessorNetwork())
@@ -139,9 +139,10 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
     });
 }
 
-////////////////////////////////////////////////////////
-//   PRIVATE METHODS FOR ADDING/REMOVING PROCESSORS   //
-////////////////////////////////////////////////////////
+const std::string& NetworkEditor::getCurrentFilename() const { return filename_; }
+
+ProcessorNetwork* NetworkEditor::getNetwork() const { return network_; }
+
 ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* processor) {
     // generate GUI representations (graphics item, property widget, processor widget)
     ProcessorGraphicsItem* ret = addProcessorGraphicsItem(processor);
@@ -285,9 +286,6 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
     dialog->show();
 }
 
-//////////////////////////////////////
-//   PORT INSPECTOR FUNCTIONALITY   //
-//////////////////////////////////////
 std::shared_ptr<const Image> NetworkEditor::renderPortInspectorImage(Outport* outport) {
     auto pim = mainwindow_->getInviwoApplication()->getPortInspectorManager();
     return pim->renderPortInspectorImage(outport);
@@ -301,9 +299,6 @@ void NetworkEditor::setModified(const bool modified) {
     }
 }
 
-////////////////////////////////////////////
-//   OBTAIN GRAPHICS ITEMS FROM NETWORK   //
-////////////////////////////////////////////
 ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItem(Processor* key) const {
     return util::map_find_or_null(processorGraphicsItems_, key);
 }
@@ -364,18 +359,11 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItemAt(const QPointF p
     return getGraphicsItemAt<LinkConnectionGraphicsItem>(pos);
 }
 
-////////////////////////////////
-//   EVENT HANDLING METHODS   //
-////////////////////////////////
 void NetworkEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     if (auto p = getProcessorGraphicsItemAt(e->scenePos())) {
         processorItem_ = p;
     }
     QGraphicsScene::mousePressEvent(e);
-}
-
-void NetworkEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
-    QGraphicsScene::mouseMoveEvent(e);
 }
 
 void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
@@ -384,7 +372,7 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
         QPointF newpos = snapToGrid(pos);
         if (pos != newpos) elem.second->setPos(newpos);
     }
-    
+
     if (processorItem_) {
         processorItem_ = nullptr;
         updateSceneSize();
@@ -792,113 +780,6 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
             return false;
         }
     });
-}
-
-void NetworkEditor::placeProcessorOnConnection(Processor* processor,
-                                               ConnectionGraphicsItem* connectionItem) {
-    Inport* connectionInport = connectionItem->getInport();
-    Outport* connectionOutport = connectionItem->getOutport();
-
-    Inport* inport = util::find_if_or_null(
-        processor->getInports(),
-        [connectionOutport](Inport* port) { return port->canConnectTo(connectionOutport); });
-
-    Outport* outport = util::find_if_or_null(
-        processor->getOutports(),
-        [connectionInport](Outport* port) { return connectionInport->canConnectTo(port); });
-
-    if (inport && outport) {
-        NetworkLock lock(network_);
-        // Remove old connection
-        network_->removeConnection(connectionOutport, connectionInport);
-
-        // Add new Connections
-        network_->addConnection(connectionOutport, inport);
-        network_->addConnection(outport, connectionInport);
-    } else {
-        connectionItem->resetBorderColors();
-    }
-}
-
-void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor* oldProcessor) {
-    const std::vector<Inport*>& inports = newProcessor->getInports();
-    const std::vector<Outport*>& outports = newProcessor->getOutports();
-    const std::vector<Inport*>& oldInports = oldProcessor->getInports();
-    const std::vector<Outport*>& oldOutports = oldProcessor->getOutports();
-
-    NetworkLock lock(network_);
-
-    std::vector<PortConnection> newConnections;
-
-    for (size_t i = 0; i < std::min(inports.size(), oldInports.size()); ++i) {
-        for (auto outport : oldInports[i]->getConnectedOutports()) {
-            if (inports[i]->canConnectTo(outport)) {
-                // save new connection connectionOutportoldInport-processorInport
-                newConnections.emplace_back(outport, inports[i]);
-            }
-        }
-    }
-
-    for (size_t i = 0; i < std::min(outports.size(), oldOutports.size()); ++i) {
-        for (auto inport : oldOutports[i]->getConnectedInports()) {
-            if (inport->canConnectTo(outports[i])) {
-                // save new connection processorOutport-connectionInport
-                newConnections.emplace_back(outports[i], inport);
-            }
-        }
-    }
-
-    // Copy over the value of old props to new ones if id and classname are equal.
-    auto newProps = newProcessor->getProperties();
-    auto oldProps = oldProcessor->getProperties();
-
-    std::map<Property*, Property*> propertymap;
-
-    for (auto newProp : newProps) {
-        for (auto oldProp : oldProps) {
-            if (newProp->getIdentifier() == oldProp->getIdentifier() &&
-                newProp->getClassIdentifier() == oldProp->getClassIdentifier()) {
-                newProp->set(oldProp);
-                propertymap[oldProp] = newProp;
-            }
-        }
-    }
-
-    // Move property links to the new processor
-    auto links = network_->getLinks();
-    for (auto oldProp : oldProps) {
-        for (auto link : links) {
-            if (link.getDestination() == oldProp) {
-                auto match = propertymap.find(oldProp);
-                if (match != propertymap.end()) {
-                    // add link from
-                    Property* start = link.getSource();
-                    // to
-                    Property* end = match->second;
-
-                    network_->addLink(start, end);
-                }
-            }
-            if (link.getSource() == oldProp) {
-                auto match = propertymap.find(oldProp);
-                if (match != propertymap.end()) {
-                    // add link from
-                    Property* start = match->second;
-                    // to
-                    Property* end = link.getDestination();
-
-                    network_->addLink(start, end);
-                }
-            }
-        }
-    }
-
-    // remove old processor
-    network_->removeProcessor(oldProcessor);
-    delete oldProcessor;
-
-    // create all new connections
-    for (auto& con : newConnections) network_->addConnection(con);
 }
 
 QByteArray NetworkEditor::copy() const {

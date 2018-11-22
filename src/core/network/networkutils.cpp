@@ -42,7 +42,9 @@
 
 namespace inviwo {
 
-std::unordered_set<Processor*> util::getDirectPredecessors(Processor* processor) {
+namespace util {
+
+std::unordered_set<Processor*> getDirectPredecessors(Processor* processor) {
     std::unordered_set<Processor*> predecessors;
     for (auto port : processor->getInports()) {
         for (auto connectedPort : port->getConnectedOutports()) {
@@ -52,7 +54,7 @@ std::unordered_set<Processor*> util::getDirectPredecessors(Processor* processor)
     return predecessors;
 }
 
-std::unordered_set<Processor*> util::getDirectSuccessors(Processor* processor) {
+std::unordered_set<Processor*> getDirectSuccessors(Processor* processor) {
     std::unordered_set<Processor*> successors;
     for (auto port : processor->getOutports()) {
         for (auto connectedPort : port->getConnectedInports()) {
@@ -62,7 +64,7 @@ std::unordered_set<Processor*> util::getDirectSuccessors(Processor* processor) {
     return successors;
 }
 
-std::unordered_set<Processor*> util::getPredecessors(Processor* processor) {
+std::unordered_set<Processor*> getPredecessors(Processor* processor) {
     std::unordered_set<Processor*> predecessors;
     std::unordered_set<Processor*> state;
     traverseNetwork<TraversalDirection::Up, VisitPattern::Post>(
@@ -71,7 +73,7 @@ std::unordered_set<Processor*> util::getPredecessors(Processor* processor) {
     return predecessors;
 }
 
-std::unordered_set<Processor*> util::getSuccessors(Processor* processor) {
+std::unordered_set<Processor*> getSuccessors(Processor* processor) {
     std::unordered_set<Processor*> successors;
     std::unordered_set<Processor*> state;
     traverseNetwork<TraversalDirection::Down, VisitPattern::Post>(
@@ -80,7 +82,7 @@ std::unordered_set<Processor*> util::getSuccessors(Processor* processor) {
     return successors;
 }
 
-std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
+std::vector<Processor*> topologicalSort(ProcessorNetwork* network) {
     // perform topological sorting and store processor order in sorted
 
     std::vector<Processor*> sinkProcessors;
@@ -96,31 +98,31 @@ std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
     return sorted;
 }
 
-std::vector<ivec2> util::getPositions(const std::vector<Processor*>& processors) {
-    return util::transform(processors, [](Processor* p) { return util::getPosition(p); });
+std::vector<ivec2> getPositions(const std::vector<Processor*>& processors) {
+    return util::transform(processors, [](Processor* p) { return getPosition(p); });
 }
 
-std::vector<ivec2> util::getPositions(ProcessorNetwork* network) {
+std::vector<ivec2> getPositions(ProcessorNetwork* network) {
     std::vector<ivec2> res;
-    network->forEachProcessor([&](Processor* p) { res.push_back(util::getPosition(p)); });
+    network->forEachProcessor([&](Processor* p) { res.push_back(getPosition(p)); });
     return res;
 }
 
-ivec2 util::getCenterPosition(const std::vector<Processor*>& processors) {
+ivec2 getCenterPosition(const std::vector<Processor*>& processors) {
     ivec2 center{0};
     if (processors.empty()) return center;
 
     for (auto p : processors) {
-        center += util::getPosition(p);
+        center += getPosition(p);
     }
     return center / static_cast<int>(processors.size());
 }
 
-ivec2 util::getCenterPosition(ProcessorNetwork* network) {
+ivec2 getCenterPosition(ProcessorNetwork* network) {
     ivec2 center{0};
     int count = 0;
     network->forEachProcessor([&](Processor* p) {
-        center += util::getPosition(p);
+        center += getPosition(p);
         ++count;
     });
     if (count == 0) {
@@ -130,25 +132,25 @@ ivec2 util::getCenterPosition(ProcessorNetwork* network) {
     }
 }
 
-std::pair<ivec2, ivec2> util::getBoundingBox(const std::vector<Processor*>& processors) {
+std::pair<ivec2, ivec2> getBoundingBox(const std::vector<Processor*>& processors) {
     if (processors.empty()) return {ivec2{0}, ivec2{0}};
     ivec2 minPos{std::numeric_limits<int>::max()};
     ivec2 maxPos{std::numeric_limits<int>::lowest()};
 
     for (auto p : processors) {
-        auto pos = util::getPosition(p);
+        auto pos = getPosition(p);
         minPos = glm::min(minPos, pos);
         maxPos = glm::max(maxPos, pos);
     }
     return {minPos, maxPos};
 }
 
-std::pair<ivec2, ivec2> util::getBoundingBox(ProcessorNetwork* network) {
+std::pair<ivec2, ivec2> getBoundingBox(ProcessorNetwork* network) {
     ivec2 minPos{std::numeric_limits<int>::max()};
     ivec2 maxPos{std::numeric_limits<int>::lowest()};
     bool empty = true;
     network->forEachProcessor([&](Processor* p) {
-        auto pos = util::getPosition(p);
+        auto pos = getPosition(p);
         minPos = glm::min(minPos, pos);
         maxPos = glm::max(maxPos, pos);
         empty = false;
@@ -160,43 +162,42 @@ std::pair<ivec2, ivec2> util::getBoundingBox(ProcessorNetwork* network) {
     }
 }
 
-void util::offsetPosition(const std::vector<Processor*>& processors, ivec2 offset) {
+void offsetPosition(const std::vector<Processor*>& processors, ivec2 offset) {
     for (auto p : processors) {
-        if (auto meta = util::getMetaData(p)) {
+        if (auto meta = getMetaData(p)) {
             meta->setPosition(meta->getPosition() + offset);
         }
     }
 }
 
-void util::setSelected(const std::vector<Processor*>& processors, bool selected) {
+void setSelected(const std::vector<Processor*>& processors, bool selected) {
     for (auto p : processors) {
         setSelected(p, selected);
     }
 }
 
-util::PropertyDistanceSorter::PropertyDistanceSorter() {}
+PropertyDistanceSorter::PropertyDistanceSorter() {}
 
-void util::PropertyDistanceSorter::setTarget(vec2 pos) { pos_ = pos; }
-void util::PropertyDistanceSorter::setTarget(const Property* target) { pos_ = getPosition(target); }
+void PropertyDistanceSorter::setTarget(vec2 pos) { pos_ = pos; }
+void PropertyDistanceSorter::setTarget(const Property* target) { pos_ = getPosition(target); }
 
-bool util::PropertyDistanceSorter::operator()(const Property* a, const Property* b) {
+bool PropertyDistanceSorter::operator()(const Property* a, const Property* b) {
     float da = glm::distance(pos_, getPosition(a));
     float db = glm::distance(pos_, getPosition(b));
     return da < db;
 }
 
-vec2 util::PropertyDistanceSorter::getPosition(const Property* p) {
+vec2 PropertyDistanceSorter::getPosition(const Property* p) {
     auto it = cache_.find(p);
     if (it != cache_.end()) return it->second;
     return cache_[p] = getPosition(p->getOwner()->getProcessor());
 }
 
-vec2 util::PropertyDistanceSorter::getPosition(const Processor* processor) {
+vec2 PropertyDistanceSorter::getPosition(const Processor* processor) {
     return util::getPosition(processor);
 }
 
-void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
-                             const std::string& refPath) {
+void serializeSelected(ProcessorNetwork* network, std::ostream& os, const std::string& refPath) {
     Serializer serializer(refPath);
 
     detail::PartialProcessorNetwork ppc(network);
@@ -204,9 +205,8 @@ void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
     serializer.writeFile(os);
 }
 
-std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network, std::istream& is,
-                                                 const std::string& refPath,
-                                                 InviwoApplication* app) {
+std::vector<Processor*> appendDeserialized(ProcessorNetwork* network, std::istream& is,
+                                           const std::string& refPath, InviwoApplication* app) {
     NetworkLock lock(network);
     auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(is, refPath);
 
@@ -216,14 +216,14 @@ std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network, std:
     return ppc.getAddedProcessors();
 }
 
-util::detail::PartialProcessorNetwork::PartialProcessorNetwork(ProcessorNetwork* network)
+detail::PartialProcessorNetwork::PartialProcessorNetwork(ProcessorNetwork* network)
     : network_(network) {}
 
-std::vector<Processor*> util::detail::PartialProcessorNetwork::getAddedProcessors() const {
+std::vector<Processor*> detail::PartialProcessorNetwork::getAddedProcessors() const {
     return addedProcessors_;
 }
 
-void util::detail::PartialProcessorNetwork::serialize(Serializer& s) const {
+void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     std::vector<Processor*> selected;
     util::copy_if(network_->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
         auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
@@ -293,7 +293,7 @@ void util::detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 }
 
-void util::detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
+void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
     try {
         std::vector<std::unique_ptr<Processor>> processors;
         std::vector<std::unique_ptr<PortConnection>> connections;
@@ -355,49 +355,167 @@ void util::detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
     }
 }
 
-util::detail::PartialConnection::PartialConnection(std::string path, Inport* inport)
+detail::PartialConnection::PartialConnection(std::string path, Inport* inport)
     : outportPath_(path), inport_(inport) {}
 
-util::detail::PartialConnection::PartialConnection() {}
+detail::PartialConnection::PartialConnection() {}
 
-void util::detail::PartialConnection::serialize(Serializer& s) const {
+void detail::PartialConnection::serialize(Serializer& s) const {
     s.serialize("OutPortPath", outportPath_);
     s.serialize("InPort", inport_);
 }
 
-void util::detail::PartialConnection::deserialize(Deserializer& d) {
+void detail::PartialConnection::deserialize(Deserializer& d) {
     d.deserialize("OutPortPath", outportPath_);
     d.deserialize("InPort", inport_);
 }
 
-util::detail::PartialSrcLink::PartialSrcLink(Property* src, std::string path)
+detail::PartialSrcLink::PartialSrcLink(Property* src, std::string path)
     : src_(src), dstPath_(path) {}
 
-util::detail::PartialSrcLink::PartialSrcLink() {}
+detail::PartialSrcLink::PartialSrcLink() {}
 
-void util::detail::PartialSrcLink::serialize(Serializer& s) const {
+void detail::PartialSrcLink::serialize(Serializer& s) const {
     s.serialize("SourceProperty", src_);
     s.serialize("DestinationPropertyPath", dstPath_);
 }
 
-void util::detail::PartialSrcLink::deserialize(Deserializer& d) {
+void detail::PartialSrcLink::deserialize(Deserializer& d) {
     d.deserialize("SourceProperty", src_);
     d.deserialize("DestinationPropertyPath", dstPath_);
 }
 
-util::detail::PartialDstLink::PartialDstLink(std::string path, Property* dst)
+detail::PartialDstLink::PartialDstLink(std::string path, Property* dst)
     : srcPath_(path), dst_(dst) {}
 
-util::detail::PartialDstLink::PartialDstLink() {}
+detail::PartialDstLink::PartialDstLink() {}
 
-void util::detail::PartialDstLink::serialize(Serializer& s) const {
+void detail::PartialDstLink::serialize(Serializer& s) const {
     s.serialize("SourcePropertyPath", srcPath_);
     s.serialize("DestinationProperty", dst_);
 }
 
-void util::detail::PartialDstLink::deserialize(Deserializer& d) {
+void detail::PartialDstLink::deserialize(Deserializer& d) {
     d.deserialize("SourcePropertyPath", srcPath_);
     d.deserialize("DestinationProperty", dst_);
 }
 
+bool addProcessorOnConnection(ProcessorNetwork* network, std::unique_ptr<Processor> processor,
+                              PortConnection connection) {
+
+    Inport* connectionInport = connection.getInport();
+    Outport* connectionOutport = connection.getOutport();
+
+    Inport* inport = util::find_if_or_null(
+        processor->getInports(),
+        [connectionOutport](Inport* port) { return port->canConnectTo(connectionOutport); });
+
+    Outport* outport = util::find_if_or_null(
+        processor->getOutports(),
+        [connectionInport](Outport* port) { return connectionInport->canConnectTo(port); });
+
+    if (inport && outport) {
+        NetworkLock lock(network);
+        network->addProcessor(std::move(processor));
+
+        // Remove old connection
+        network->removeConnection(connection);
+
+        // Add new Connections
+        network->addConnection(connectionOutport, inport);
+        network->addConnection(outport, connectionInport);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> aNewProcessor,
+                                   Processor* oldProcessor) {
+
+    auto newProcessor = network->addProcessor(std::move(aNewProcessor));
+
+    util::setPosition(newProcessor, util::getPosition(oldProcessor));
+
+    const std::vector<Inport*>& inports = newProcessor->getInports();
+    const std::vector<Outport*>& outports = newProcessor->getOutports();
+    const std::vector<Inport*>& oldInports = oldProcessor->getInports();
+    const std::vector<Outport*>& oldOutports = oldProcessor->getOutports();
+
+    NetworkLock lock(network);
+
+    std::vector<PortConnection> newConnections;
+
+    for (size_t i = 0; i < std::min(inports.size(), oldInports.size()); ++i) {
+        for (auto outport : oldInports[i]->getConnectedOutports()) {
+            if (inports[i]->canConnectTo(outport)) {
+                // save new connection connectionOutportoldInport-processorInport
+                newConnections.emplace_back(outport, inports[i]);
+            }
+        }
+    }
+
+    for (size_t i = 0; i < std::min(outports.size(), oldOutports.size()); ++i) {
+        for (auto inport : oldOutports[i]->getConnectedInports()) {
+            if (inport->canConnectTo(outports[i])) {
+                // save new connection processorOutport-connectionInport
+                newConnections.emplace_back(outports[i], inport);
+            }
+        }
+    }
+
+    // Copy over the value of old props to new ones if id and class name are equal.
+    auto newProps = newProcessor->getProperties();
+    auto oldProps = oldProcessor->getProperties();
+
+    std::map<Property*, Property*> propertymap;
+
+    for (auto newProp : newProps) {
+        for (auto oldProp : oldProps) {
+            if (newProp->getIdentifier() == oldProp->getIdentifier() &&
+                newProp->getClassIdentifier() == oldProp->getClassIdentifier()) {
+                newProp->set(oldProp);
+                propertymap[oldProp] = newProp;
+            }
+        }
+    }
+
+    // Move property links to the new processor
+    auto links = network->getLinks();
+    for (auto oldProp : oldProps) {
+        for (auto link : links) {
+            if (link.getDestination() == oldProp) {
+                auto match = propertymap.find(oldProp);
+                if (match != propertymap.end()) {
+                    // add link from
+                    Property* start = link.getSource();
+                    // to
+                    Property* end = match->second;
+
+                    network->addLink(start, end);
+                }
+            }
+            if (link.getSource() == oldProp) {
+                auto match = propertymap.find(oldProp);
+                if (match != propertymap.end()) {
+                    // add link from
+                    Property* start = match->second;
+                    // to
+                    Property* end = link.getDestination();
+
+                    network->addLink(start, end);
+                }
+            }
+        }
+    }
+
+    // remove old processor
+    network->removeProcessor(oldProcessor);
+    delete oldProcessor;
+
+    // create all new connections
+    for (auto& con : newConnections) network->addConnection(con);
+}
+
+}  // namespace util
 }  // namespace inviwo

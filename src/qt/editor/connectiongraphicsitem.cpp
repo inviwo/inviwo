@@ -221,6 +221,8 @@ Outport* ConnectionGraphicsItem::getOutport() const { return connection_.getOutp
 
 Inport* ConnectionGraphicsItem::getInport() const { return connection_.getInport(); }
 
+PortConnection ConnectionGraphicsItem::getPortConnection() const { return connection_; }
+
 QPointF ConnectionGraphicsItem::getEndPoint() const {   
     return inport_->mapToScene(inport_->rect().center());
 }

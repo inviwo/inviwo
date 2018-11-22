@@ -37,6 +37,8 @@
 #include <QPointF>
 #include <warn/pop>
 
+#include <memory>
+
 namespace inviwo {
 
 class NetworkEditor;
@@ -50,7 +52,7 @@ class IVW_QTEDITOR_API LinkDragHelper : public QObject {
 #include <warn/pop>
 
 public:
-    LinkDragHelper(NetworkEditor* editor);
+    LinkDragHelper(NetworkEditor& editor);
     virtual ~LinkDragHelper() = default;
 
     void start(ProcessorLinkGraphicsItem* outLink, QPointF endPos);
@@ -59,8 +61,8 @@ public:
     virtual bool eventFilter(QObject* obj, QEvent* event) override;
 
 private:
-    NetworkEditor* editor_;
-    LinkConnectionDragGraphicsItem* link_ = nullptr;
+    NetworkEditor& editor_;
+    std::unique_ptr<LinkConnectionDragGraphicsItem> link_;
 };
 
 }  // namespace inviwo
