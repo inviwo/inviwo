@@ -1,5 +1,4 @@
-#ifndef H_DELAUNAY
-#define H_DELAUNAY
+#pragma once
 
 #include "vec2_indexed.h"
 #include "edge.h"
@@ -119,5 +118,3 @@ class Delaunay
         std::vector<Edge> _edges;
         std::vector<Vec2Indexed> _vertices;
 };
-
-#endif

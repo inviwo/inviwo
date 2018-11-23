@@ -79,6 +79,7 @@
 #include <modules/basegl/processors/volumeraycaster.h>
 #include <modules/basegl/processors/volumeslicegl.h>
 #include <modules/basegl/processors/polylinegrabber.h>
+#include <modules/basegl/processors/delaunaytriangulation2d.h>
 #include <modules/basegl/processors/volumeprocessing/volumeshader.h>
 #include <modules/basegl/datavisualizer/volumeraycastvisualizer.h>
 #include <modules/basegl/datavisualizer/volumeslicevisualizer.h>
@@ -125,6 +126,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeRaycaster>();
     registerProcessor<VolumeSliceGL>();
     registerProcessor<PolylineGrabber>();
+    registerProcessor<DelaunayTriangulation2D>();
 
     // image processing
     registerProcessor<FindEdges>();

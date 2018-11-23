@@ -69,6 +69,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/polylinegrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/delaunaytriangulation2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -78,6 +79,10 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/edge.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/triangle.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/vec2_indexed.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/numeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/imagevisualizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/meshvisualizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeraycastvisualizer.cpp
@@ -135,6 +140,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/polylinegrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/delaunaytriangulation2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

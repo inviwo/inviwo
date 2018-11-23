@@ -55,7 +55,7 @@ namespace inviwo {
         , clearPolyline_("clearpolyline", "Clear Points")
         , loadExamplePolyline_("loadexamplepolyline", "Load Example Polyline")
         , performDelaunayOnPts_("performdelaunay", "Perform Delaunay")
-        , offset_("offset", "Offset", 0.0f, 0.0f, 1.0f, 0.001f)
+        , offset_("offset", "Offset", 0.0f, -1.0f, 1.0f, 0.001f)
         , polyline_(std::make_shared<std::vector<vec3>>())
         , clip_("clip", "Clip Polyline", 0.0f, 1.0f)
         , outport_("polylineport")
