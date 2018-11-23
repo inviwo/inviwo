@@ -245,12 +245,16 @@ TEST(NetworkEvaluator, Error) {
 
     {
         SCOPED_TRACE("Invalid output with throw");
+        unsigned int throwCount = 0;
+        evaluator.setExceptionHandler(
+            [&throwCount](Processor*, EvaluationType, ExceptionContext) { ++throwCount; });
+
         shouldThrow = true;
         a->invalidate(InvalidationLevel::InvalidOutput);
+        EXPECT_EQ(throwCount, 1);
         ai.checkAndReset(0, 1, 0);
         bi.checkAndReset(0, 1, 0);
     }
-
 }
 
 }  // namespace inviwo
