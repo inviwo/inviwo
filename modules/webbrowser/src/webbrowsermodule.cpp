@@ -133,12 +133,14 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // http://magpcss.org/ceforum/apidocs/projects/%28default%29/_cef_settings_t.html nearly all
     // the settings can be set via args too.
     settings.multi_threaded_message_loop = false;  // not supported, except windows
+
     // We want to use off-screen rendering
     settings.windowless_rendering_enabled = true;
 
-    // CefString(&settings.cache_path).FromASCII("");
-    // CefString(&settings.log_file).FromASCII("");
-    // settings.log_severity = LOGSEVERITY_WARNING;
+    // Let the Inviwo application (Qt/GLFW) handle operating system event processing
+    // instead of CEF. Setting external message pump to false will cause mouse events
+    // to be processed in CefDoMessageLoopWork() instead of in the Qt application loop.
+    settings.external_message_pump = true;
 
     CefString(&settings.locale).FromASCII(locale.c_str());
 
