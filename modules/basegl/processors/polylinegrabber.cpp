@@ -28,12 +28,6 @@
 *********************************************************************************/
 
 #include "polylinegrabber.h"
-#include "basegl/algorithm/vec2_indexed.h"
-#include "basegl/algorithm/edge.h"
-#include "basegl/algorithm/triangle.h"
-#include "basegl/algorithm/delaunay.h"
-
-#include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 
 #include <fstream>
 
@@ -54,18 +48,12 @@ namespace inviwo {
         , readyToRecord_(false)
         , clearPolyline_("clearpolyline", "Clear Points")
         , loadExamplePolyline_("loadexamplepolyline", "Load Example Polyline")
-        , performDelaunayOnPts_("performdelaunay", "Perform Delaunay")
-        , offset_("offset", "Offset", 0.0f, -1.0f, 1.0f, 0.001f)
         , polyline_(std::make_shared<std::vector<vec3>>())
         , clip_("clip", "Clip Polyline", 0.0f, 1.0f)
         , outport_("polylineport")
-        , meshOutport1_("meshport1")
-        , meshOutport2_("meshport2")
     {
         outport_.setData(polyline_);
         addPort(outport_);
-        addPort(meshOutport1_);
-        addPort(meshOutport2_);
 
         clearPolyline_.onChange([this]() { 
             polyline_->clear();
@@ -90,93 +78,6 @@ namespace inviwo {
             invalidate(InvalidationLevel::InvalidOutput);
         });
         addProperty(loadExamplePolyline_);
-
-        performDelaunayOnPts_.onChange([this]() {
-            if (polyline_->size() >= 3) {
-                std::vector<Vec2Indexed> pts_2d;
-                pts_2d.reserve(polyline_->size());
-                for (size_t idx = 0; idx < polyline_->size(); ++idx) {
-                    const auto& pt = polyline_->at(idx);
-                    // specify dimensions (x, y, or z) or project along normal before
-                    pts_2d.emplace_back(pt.z, pt.y, idx);
-                }
-
-                Delaunay delaunayTriangulation;
-                const auto triangles = delaunayTriangulation.triangulate(pts_2d);
-
-                auto mesh = std::make_shared<SimpleMesh>();
-                mesh->setModelMatrix(mat4(1.f));
-                for (const auto& v : *polyline_) {
-                    mesh->addVertex(v, v, vec4(v, 1.0f));
-                }
-                mesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
-                for (const auto& t : triangles) {
-                    mesh->addIndex(static_cast<unsigned int>(t.p1.idx));
-                    mesh->addIndex(static_cast<unsigned int>(t.p2.idx));
-                    mesh->addIndex(static_cast<unsigned int>(t.p3.idx));
-                }
-
-                for (size_t idx = 0; idx < polyline_->size(); ++idx) {
-                    vec3 normal{0.0f};
-                    size_t n_faces{0};
-                    for (const auto& t : triangles) {
-                        if (idx == t.p1.idx || idx == t.p2.idx || idx == t.p3.idx) {
-                            const vec3 triangle_normal = glm::normalize(glm::cross(
-                                polyline_->at(t.p1.idx) - polyline_->at(t.p2.idx),
-                                polyline_->at(t.p1.idx) - polyline_->at(t.p3.idx)
-                            ));
-                            normal += triangle_normal;
-                            n_faces++;
-                        }
-                    }
-                    
-                    if (n_faces > 0) {
-                        normal = glm::normalize(normal);
-                    }
-                }
-
-                meshOutport1_.setData(mesh);
-
-                mesh = std::make_shared<SimpleMesh>();
-                mesh->setModelMatrix(mat4(1.f));
-                for (const auto& v : *polyline_) {
-                    mesh->addVertex(v, v + vec3(offset_), vec4(v + vec3(offset_), 1.0f));
-                }
-                mesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
-                for (const auto& t : triangles) {
-                    mesh->addIndex(static_cast<unsigned int>(t.p1.idx));
-                    mesh->addIndex(static_cast<unsigned int>(t.p2.idx));
-                    mesh->addIndex(static_cast<unsigned int>(t.p3.idx));
-                }
-
-                for (size_t idx = 0; idx < polyline_->size(); ++idx) {
-                    vec3 normal{0.0f};
-                    size_t n_faces{0};
-                    for (const auto& t : triangles) {
-                        if (idx == t.p1.idx || idx == t.p2.idx || idx == t.p3.idx) {
-                            const vec3 triangle_normal = glm::normalize(
-                                glm::cross(polyline_->at(t.p1.idx) - polyline_->at(t.p2.idx),
-                                           polyline_->at(t.p1.idx) - polyline_->at(t.p3.idx)));
-                            normal += triangle_normal;
-                            n_faces++;
-                        }
-                    }
-
-                    if (n_faces > 0) {
-                        normal = glm::normalize(normal);
-                    }
-                }
-
-                meshOutport2_.setData(mesh);
-
-                invalidate(InvalidationLevel::InvalidOutput);
-            } else {
-                LogWarn("not enough points for triangulation!");
-            }
-        });
-        addProperty(performDelaunayOnPts_);
-
-        addProperty(offset_);
 
         clip_.onChange([this]() {
             const auto from =

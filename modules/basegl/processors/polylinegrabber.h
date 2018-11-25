@@ -34,7 +34,6 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/polylineport.h>
-#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
@@ -64,17 +63,12 @@ namespace inviwo {
 
         ButtonProperty clearPolyline_;
         ButtonProperty loadExamplePolyline_;
-        ButtonProperty performDelaunayOnPts_;
-
-        FloatProperty offset_;
 
         std::shared_ptr<std::vector<vec3>> polyline_;
 
         FloatMinMaxProperty clip_;
 
         PolylineOutport outport_;
-        MeshOutport meshOutport1_;
-        MeshOutport meshOutport2_;
     };
 }
 

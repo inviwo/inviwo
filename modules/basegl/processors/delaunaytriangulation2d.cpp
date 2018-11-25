@@ -62,7 +62,7 @@ const ProcessorInfo DelaunayTriangulation2D::getProcessorInfo() const { return p
     void DelaunayTriangulation2D::process() {
         const auto& view_mat = camera_.viewMatrix();
         const auto& pts = *ptsInport_.getData();
-        const vec3 color_offset{0.0f};
+        const vec3 offset{0.0f};
 
         if (pts.size() >= 3) {
             std::vector<Vec2Indexed> pts_2d;
@@ -82,7 +82,7 @@ const ProcessorInfo DelaunayTriangulation2D::getProcessorInfo() const { return p
             for (const auto& p : pts) {
                 // pos, color, texCoord
                 // color and texCoord = pos to match volume coordinate for ray-casting later
-                mesh->addVertex(p, p + color_offset, vec4(p, 1.0f));
+                mesh->addVertex(p, p + offset, vec4(p + offset, 1.0f));
             }
 
             mesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
