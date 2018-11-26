@@ -154,7 +154,7 @@ IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severi
 
 IVW_MODULE_OPENGL_API void configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
     if (!glDebugMessageControl) return;
-        
+
     using namespace debug;
 
     auto set = [](bool n, bool l, bool m, bool h) {
@@ -192,9 +192,11 @@ void handleOpenGLDebugMode(Canvas::ContextID context) {
     auto mode = openglSettings->debugMessages_.getSelectedValue();
     auto severity = openglSettings->debugSeverity_.getSelectedValue();
     setOpenGLDebugMode(mode, severity);
-    logDebugMode(mode, severity, context);
+    if (mode != debug::Mode::Off) {
+        logDebugMode(mode, severity, context);
+    }
 }
 
-} // namespace
+}  // namespace utilgl
 
-} // namespace
+}  // namespace inviwo
