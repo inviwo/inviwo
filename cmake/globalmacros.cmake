@@ -167,10 +167,11 @@ function(ivw_private_setup_module_data)
     set("${mod}_sharedLibHpp" "${sharedLibHpp}"       CACHE INTERNAL "Shared lib Header")
 
     # Check of there is a depends.cmake
-    # Optionally defines: dependencies, aliases, protected
+    # Optionally defines: dependencies, aliases, protected, EnableByDefault
     # Save dependencies to INVIWO<NAME>MODULE_dependencies
     # Save aliases to INVIWO<NAME>MODULE_aliases
     # Save protected to INVIWO<NAME>MODULE_protected
+    # Save EnableByDefault to INVIWO<NAME>MODULE_EnableByDefault
     set(dependencies "")
     set(aliases "")
     set(protected OFF)
@@ -178,10 +179,16 @@ function(ivw_private_setup_module_data)
     if(EXISTS "${${mod}_path}/depends.cmake")
         include(${${mod}_path}/depends.cmake)
     endif()
+
+    # set by ivw_add_build_module_dependency to enable non modules to force modules to build
+    if(DEFINED ${mod}_enableExternal)
+        set(EnableByDefault ${${mod}_enableExternal})
+    endif()
+
     if(${ARG_CORE})
-        set("${mod}_dependencies" ${dependencies} CACHE INTERNAL "Module dependencies")
-        set("${mod}_protected"    ON              CACHE INTERNAL "Protected Module")
-        set("${mod}_enableByDefault" ON           CACHE INTERNAL "Enable module by default")
+        set("${mod}_dependencies"    ${dependencies} CACHE INTERNAL "Module dependencies")
+        set("${mod}_protected"       ON              CACHE INTERNAL "Protected Module")
+        set("${mod}_enableByDefault" ON              CACHE INTERNAL "Enable module by default")
     else()
         set("${mod}_dependencies"   "InviwoCoreModule;${dependencies}" CACHE INTERNAL "Module dependencies")
         set("${mod}_protected"       ${protected}                      CACHE INTERNAL "Protected Module")
@@ -369,9 +376,14 @@ endfunction()
 # Set module build option to true if the owner is built
 function(ivw_add_build_module_dependency the_module the_owner)
     ivw_dir_to_mod_dep(mod ${the_module})
-    if(${the_owner} AND NOT ${${mod}_opt})
-        ivw_add_module_option_to_cache(${mod} ON FORCE)
-        message(STATUS "${${mod}_name} was set to build, due to dependency towards ${the_owner}")
+    if(DEFINED ${mod}_opt)
+        if(NOT ${${mod}_opt} AND ${the_owner})
+            ivw_add_module_option_to_cache(${mod} ON FORCE)
+            message(STATUS "${${mod}_name} was set to build, due to dependency towards ${the_owner}") 
+        endif()
+    elseif(${the_owner})
+        set("${mod}_enableExternal" ON CACHE INTERNAL "Enable module for external dependency")
+        message(STATUS "${mod} was set to build, due to dependency towards ${the_owner}")
     endif()
 endfunction()
 

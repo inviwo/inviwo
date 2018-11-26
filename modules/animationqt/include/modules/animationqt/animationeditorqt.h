@@ -44,6 +44,8 @@ class QKeyEvent;
 
 namespace inviwo {
 
+class TextLabelOverlay;
+
 namespace animation {
 
 class AnimationController;
@@ -53,7 +55,8 @@ class TrackWidgetQtFactory;
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
                                                      public AnimationObserver {
 public:
-    AnimationEditorQt(AnimationController& controller, TrackWidgetQtFactory& widgetFactory);
+    AnimationEditorQt(AnimationController& controller, TrackWidgetQtFactory& widgetFactory,
+                      TextLabelOverlay& overlay);
     virtual ~AnimationEditorQt();
 
 protected:
@@ -81,9 +84,7 @@ protected:
     /// Manipulated in the drag* and drop* functions.
     QGraphicsLineItem* dropIndicatorLine;
 
-    /// Shows a text describing what will be added on drop.
-    QGraphicsSimpleTextItem* dropIndicatorText;
-
+    TextLabelOverlay& overlay_;
     std::unique_ptr<TrackWidgetQt> createTrackWidget(Track& track) const;
 };
 

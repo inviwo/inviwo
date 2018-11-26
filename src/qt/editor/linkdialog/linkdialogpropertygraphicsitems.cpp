@@ -190,7 +190,7 @@ QVariant LinkDialogPropertyGraphicsItem::itemChange(GraphicsItemChange change,
                                                     const QVariant& value) {
     if (change == QGraphicsItem::ItemScenePositionHasChanged) {
         for (auto connection : connections_) {
-            connection->updateStartEndPoint();
+            connection->updateShape();
         }
     }
     return QGraphicsItem::itemChange(change, value);

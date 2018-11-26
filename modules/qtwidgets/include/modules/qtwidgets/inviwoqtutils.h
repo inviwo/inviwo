@@ -118,9 +118,10 @@ IVW_MODULE_QTWIDGETS_API ivec4 toivec4(const QColor&);
 
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec3&);
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec3&);
-
+IVW_MODULE_QTWIDGETS_API QColor toQColor(const uvec3&);
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec4&);
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec4&);
+IVW_MODULE_QTWIDGETS_API QColor toQColor(const uvec4&);
 
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TransferFunctionProperty& tfproperty,
                                            const QSize& size);

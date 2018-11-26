@@ -179,7 +179,7 @@ if(WIN32)
 endif()
 
 ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
-ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
+ivw_add_build_module_dependency(Base IVW_INTEGRATION_TESTS)
 
 #--------------------------------------------------------------------
 # Add modules

@@ -41,6 +41,7 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${MOC_FILES}
     include/modules/qtwidgets/codeedit.h
     include/modules/qtwidgets/eventconverterqt.h
     include/modules/qtwidgets/inviwoqtutils.h
@@ -81,13 +82,13 @@ set(HEADER_FILES
     include/modules/qtwidgets/qtwidgetsmoduledefine.h
     include/modules/qtwidgets/qtwidgetssettings.h
     include/modules/qtwidgets/rawdatareaderdialogqt.h
+    include/modules/qtwidgets/textlabeloverlay.h
     include/modules/qtwidgets/tf/tfcontrolpointconnection.h
     include/modules/qtwidgets/tf/tfeditorcontrolpoint.h
     include/modules/qtwidgets/tf/tfeditorisovalue.h
     include/modules/qtwidgets/tf/tfeditorprimitive.h
     include/modules/qtwidgets/tf/tfeditorview.h
     include/modules/qtwidgets/tf/tfpropertydialog.h
-    ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -117,7 +118,7 @@ set(SOURCE_FILES
     src/properties/anglepropertywidgetqt.cpp
     src/properties/boolcompositepropertywidgetqt.cpp
     src/properties/boolpropertywidgetqt.cpp
-    src/properties/buttonpropertywidgetqt.cpp  
+    src/properties/buttonpropertywidgetqt.cpp
     src/properties/collapsiblegroupboxwidgetqt.cpp
     src/properties/colorlineedit.cpp
     src/properties/colorpropertywidgetqt.cpp
@@ -147,7 +148,7 @@ set(SOURCE_FILES
     src/properties/syntaxhighlighter.cpp
     src/properties/texteditorwidgetqt.cpp
     src/properties/tfprimitivesetwidgetqt.cpp
-    src/properties/tfpropertywidgetqt.cpp 
+    src/properties/tfpropertywidgetqt.cpp
     src/properties/valuedragger.cpp
     src/properties/valuedragspinbox.cpp
     src/propertylistwidget.cpp
@@ -156,6 +157,7 @@ set(SOURCE_FILES
     src/rangesliderqt.cpp
     src/rawdatareaderdialogqt.cpp
     src/sliderwidgetqt.cpp
+    src/textlabeloverlay.cpp
     src/tf/tfcoloredit.cpp
     src/tf/tfcontrolpointconnection.cpp
     src/tf/tfeditor.cpp

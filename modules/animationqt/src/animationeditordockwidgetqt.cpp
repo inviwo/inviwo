@@ -34,10 +34,10 @@
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/util/raiiutils.h>
 
-
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
+#include <modules/qtwidgets/textlabeloverlay.h>
 
 #include <modules/animation/animationmanager.h>
 #include <modules/animation/animationcontroller.h>
@@ -78,7 +78,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , controller_{manager.getAnimationController()} {
 
-
     resize(QSize(1000, 400));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
@@ -102,9 +101,20 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
     }
 
     // Entire mid part
-    animationEditor_ = std::make_unique<AnimationEditorQt>(controller_, widgetFactory);
+    auto overlay = new TextLabelOverlay(nullptr);
+    animationEditor_ = std::make_unique<AnimationEditorQt>(controller_, widgetFactory, *overlay);
     animationView_ = new AnimationViewQt(controller_, animationEditor_.get());
     animationView_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    {
+        overlay->setParent(animationView_->viewport());
+        auto grid = new QGridLayout(animationView_->viewport());
+        grid->setContentsMargins(7, 7, 7, 7);
+        grid->addWidget(overlay, 0, 0, Qt::AlignTop | Qt::AlignLeft);
+        auto sp = overlay->sizePolicy();
+        sp.setHorizontalStretch(10);
+        sp.setHorizontalPolicy(QSizePolicy::Expanding);
+        overlay->setSizePolicy(sp);
+    }
 
     mainWindow_ = new QMainWindow();
     mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
