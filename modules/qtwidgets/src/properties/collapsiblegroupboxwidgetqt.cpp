@@ -40,7 +40,9 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/editablelabelqt.h>
+#include <inviwo/core/properties/propertypresetmanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -55,6 +57,7 @@
 #include <QAction>
 #include <QClipboard>
 #include <QMimeData>
+#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {
