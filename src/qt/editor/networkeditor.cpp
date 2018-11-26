@@ -142,6 +142,10 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainwindow)
 const std::string& NetworkEditor::getCurrentFilename() const { return filename_; }
 
 ProcessorNetwork* NetworkEditor::getNetwork() const { return network_; }
+InviwoMainWindow* NetworkEditor::getMainWindow() const { return mainwindow_; }
+TextLabelOverlay& NetworkEditor::getOverlay() const {
+    return mainwindow_->getNetworkEditorOverlay();
+};
 
 ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* processor) {
     // generate GUI representations (graphics item, property widget, processor widget)
@@ -960,6 +964,7 @@ void NetworkEditor::drawForeground(QPainter* /*painter*/, const QRectF& /*rect*/
     painter->drawRect(QGraphicsScene::itemsBoundingRect());
     */
 }
+
 
 void NetworkEditor::initiateConnection(ProcessorOutportGraphicsItem* item) {
     const auto pos = item->mapToScene(item->rect().center());

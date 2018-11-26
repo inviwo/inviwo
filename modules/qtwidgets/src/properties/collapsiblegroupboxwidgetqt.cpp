@@ -40,7 +40,9 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/editablelabelqt.h>
+#include <inviwo/core/properties/propertypresetmanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,6 +55,9 @@
 #include <QCheckBox>
 #include <QMenu>
 #include <QAction>
+#include <QClipboard>
+#include <QMimeData>
+#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {
@@ -169,12 +174,80 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
         menu->addAction(utilqt::toQString(displayName_));
         menu->addSeparator();
 
+        auto copyAction = menu->addAction(QIcon(":/icons/edit-copy.png"), "&Copy");
+        connect(copyAction, &QAction::triggered, this, [this]() {
+            if (!propertyOwner_) return;
+            QApplication::clipboard()->setMimeData(getPropertyOwnerMimeData().release());
+        });
+
+        auto pasteAction = menu->addAction(QIcon(":/icons/edit-paste.png"), "&Paste");
+        pasteAction->setEnabled(QApplication::clipboard()->mimeData()->formats().contains(
+            QString("application/x.vnd.inviwo.propertyowner+xml")));
+
+        connect(pasteAction, &QAction::triggered, this, [this]() {
+            if (!propertyOwner_) return;
+
+            auto clipboard = QApplication::clipboard();
+            auto mimeData = clipboard->mimeData();
+            QByteArray data;
+            if (mimeData->formats().contains(
+                    QString("application/x.vnd.inviwo.propertyowner+xml"))) {
+                data = mimeData->data(QString("application/x.vnd.inviwo.propertyowner+xml"));
+            } else {
+                return;
+            }
+            std::stringstream ss;
+            for (auto d : data) ss << d;
+
+            auto app = propertyOwner_->getInviwoApplication();
+            try {
+                auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
+                std::unique_ptr<Processor> propertyOwner;
+                d.deserialize("Processor", propertyOwner);
+                if (propertyOwner) {
+                    NetworkLock lock(propertyOwner_->getProcessor()->getNetwork());
+                    for (const auto& source : propertyOwner->getProperties()) {
+                        if (auto target =
+                                propertyOwner_->getPropertyByIdentifier(source->getIdentifier())) {
+                            target->set(source);
+                        }
+                    }
+                }
+            } catch (Exception& e) {
+                LogError(e.getMessage());
+            }
+        });
+
         auto resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the group of properties to its default state"));
         connect(resetAction, &QAction::triggered, this,
                 [&]() { propertyOwner_->resetAllPoperties(); });
     }
     return menu;
+}
+
+std::unique_ptr<QMimeData> CollapsibleGroupBoxWidgetQt::getPropertyOwnerMimeData() const {
+    auto mimeData = util::make_unique<QMimeData>();
+    if (!propertyOwner_) return mimeData;
+
+    Serializer serializer("");
+    {
+        // Need to set the serialization mode to all temporarily to be able to copy the
+        // property.
+        std::vector<util::OnScopeExit> toReset;
+        for (auto p : propertyOwner_->getPropertiesRecursive()) {
+            toReset.emplace_back(PropertyPresetManager::scopedSerializationModeAll(p));
+        }
+        serializer.serialize("Processor", static_cast<Processor*>(propertyOwner_));
+    }
+    std::stringstream ss;
+    serializer.writeFile(ss);
+    auto str = ss.str();
+    QByteArray dataArray(str.c_str(), static_cast<int>(str.length()));
+
+    mimeData->setData(QString("application/x.vnd.inviwo.propertyowner+xml"), dataArray);
+    mimeData->setData(QString("text/plain"), dataArray);
+    return mimeData;
 }
 
 QSize CollapsibleGroupBoxWidgetQt::sizeHint() const {

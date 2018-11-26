@@ -46,9 +46,10 @@ namespace inviwo {
 
 class InviwoMainWindow;
 class MenuItem;
+class NetworkSearch;
+class TextLabelOverlay;
 
 class IVW_QTEDITOR_API NetworkEditorView : public QGraphicsView, public NetworkEditorObserver {
-
 public:
     NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWindow* parent = nullptr);
     ~NetworkEditorView();
@@ -58,6 +59,9 @@ public:
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
     void exportViewToFile(const QString& filename, bool entireScene, bool backgroundVisible);
+
+    TextLabelOverlay& getOverlay() const;
+    NetworkSearch& getNetworkSearch() const;
 
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent* e) override;
@@ -73,7 +77,10 @@ private:
     virtual void onSceneSizeChanged() override;
 
     InviwoMainWindow* mainwindow_;
-    NetworkEditor* networkEditor_;
+    NetworkEditor* editor_;
+    NetworkSearch* search_;
+    TextLabelOverlay* overlay_;
+
     ivec2 scrollPos_;
     WorkspaceManager::DeserializationHandle loadHandle_;
     WorkspaceManager::ClearHandle clearHandle_;

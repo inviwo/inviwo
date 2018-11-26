@@ -72,6 +72,7 @@ class MenuItem;
 class ProcessorDragHelper;
 class ConnectionDragHelper;
 class LinkDragHelper;
+class TextLabelOverlay;
 
 /**
  * The NetworkEditor supports interactive editing of a ProcessorNetwork. Processors can be added
@@ -100,6 +101,8 @@ public:
 
     const std::string& getCurrentFilename() const;
     ProcessorNetwork* getNetwork() const;
+    InviwoMainWindow* getMainWindow() const;
+    TextLabelOverlay& getOverlay() const;
 
     void addPropertyWidgets(Processor* processor);
     void removeAndDeletePropertyWidgets(Processor* processor);

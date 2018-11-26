@@ -33,6 +33,8 @@
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
 
+#include <modules/qtwidgets/inviwoqtutils.h>
+
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 
@@ -77,7 +79,8 @@ bool ConnectionDragHelper::eventFilter(QObject *, QEvent *event) {
 
 void ConnectionDragHelper::start(ProcessorOutportGraphicsItem *outport, QPointF endPoint,
                                  uvec3 color) {
-    connection_ = std::make_unique<ConnectionDragGraphicsItem>(outport, endPoint, color);
+    connection_ =
+        std::make_unique<ConnectionDragGraphicsItem>(outport, endPoint, utilqt::toQColor(color));
     editor_.addItem(connection_.get());
     connection_->show();
 }

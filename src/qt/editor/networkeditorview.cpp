@@ -36,6 +36,8 @@
 #include <inviwo/qt/editor/inviwoeditmenu.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/textlabeloverlay.h>
+#include <inviwo/qt/editor/networksearch.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -52,6 +54,8 @@
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QUrl>
+#include <QLabel>
+#include <QGridLayout>
 #include <warn/pop>
 
 namespace inviwo {
@@ -60,10 +64,34 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     : QGraphicsView(parent)
     , NetworkEditorObserver()
     , mainwindow_(parent)
-    , networkEditor_(networkEditor) {
+    , editor_(networkEditor)
+    , search_{new NetworkSearch(mainwindow_)}
+    , overlay_{new TextLabelOverlay(viewport())}
+    , scrollPos_{0, 0}
+    , loadHandle_{mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
+          [this](Deserializer&) { fitNetwork(); })}
+    , clearHandle_{mainwindow_->getInviwoApplication()->getWorkspaceManager()->onClear(
+          [this]() { fitNetwork(); })} {
 
-    NetworkEditorObserver::addObservation(networkEditor_);
-    QGraphicsView::setScene(networkEditor_);
+    NetworkEditorObserver::addObservation(editor_);
+    QGraphicsView::setScene(editor_);
+
+    auto grid = new QGridLayout(viewport());
+    grid->setContentsMargins(7, 7, 7, 7);
+
+    {
+        grid->addWidget(overlay_, 0, 0, Qt::AlignTop | Qt::AlignLeft);
+        auto sp = overlay_->sizePolicy();
+        sp.setHorizontalStretch(10);
+        sp.setHorizontalPolicy(QSizePolicy::Expanding);
+        overlay_->setSizePolicy(sp);
+    }
+    {
+        auto sp = search_->sizePolicy();
+        sp.setHorizontalStretch(1);
+        search_->setSizePolicy(sp);
+        grid->addWidget(search_, 0, 1, Qt::AlignTop | Qt::AlignRight);
+    }
 
     setRenderHint(QPainter::Antialiasing, true);
     setMouseTracking(true);
@@ -73,12 +101,6 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
 
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-    loadHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
-        [this](Deserializer&) { fitNetwork(); });
-
-    clearHandle_ = mainwindow_->getInviwoApplication()->getWorkspaceManager()->onClear(
-        [this]() { fitNetwork(); });
-
     auto editmenu = mainwindow_->getInviwoEditMenu();
 
     editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
@@ -86,9 +108,9 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
         [this](MenuItemType t) -> bool {
             switch (t) {
                 case MenuItemType::cut:
-                    return networkEditor_->selectedItems().size() > 0;
+                    return editor_->selectedItems().size() > 0;
                 case MenuItemType::copy:
-                    return networkEditor_->selectedItems().size() > 0;
+                    return editor_->selectedItems().size() > 0;
                 case MenuItemType::paste: {
                     auto clipboard = QApplication::clipboard();
                     auto mimeData = clipboard->mimeData();
@@ -102,19 +124,18 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                     }
                 }
                 case MenuItemType::del:
-                    return networkEditor_->selectedItems().size() > 0;
+                    return editor_->selectedItems().size() > 0;
                 case MenuItemType::select:
                     return true;
                 default:
                     return false;
             }
-
         },
         [this](MenuItemType t) -> void {
             switch (t) {
                 case MenuItemType::cut: {
-                    if (networkEditor_->selectedItems().empty()) return;
-                    auto data = networkEditor_->cut();
+                    if (editor_->selectedItems().empty()) return;
+                    auto data = editor_->cut();
                     auto mimedata = util::make_unique<QMimeData>();
                     mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
                     mimedata->setData(QString("text/plain"), data);
@@ -122,8 +143,8 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                     return;
                 }
                 case MenuItemType::copy: {
-                    if (networkEditor_->selectedItems().empty()) return;
-                    auto data = networkEditor_->copy();
+                    if (editor_->selectedItems().empty()) return;
+                    auto data = editor_->copy();
                     auto mimedata = util::make_unique<QMimeData>();
                     mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
                     mimedata->setData(QString("text/plain"), data);
@@ -135,24 +156,23 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                     auto mimeData = clipboard->mimeData();
                     if (mimeData->formats().contains(
                             utilqt::toQString(NetworkEditor::getMimeTag()))) {
-                        networkEditor_->paste(
+                        editor_->paste(
                             mimeData->data(utilqt::toQString(NetworkEditor::getMimeTag())));
                     } else if (mimeData->formats().contains(QString("text/plain"))) {
-                        networkEditor_->paste(mimeData->data(QString("text/plain")));
+                        editor_->paste(mimeData->data(QString("text/plain")));
                     }
                     return;
                 }
                 case MenuItemType::del:
-                    if (networkEditor_->selectedItems().empty()) return;
-                    networkEditor_->deleteSelection();
+                    if (editor_->selectedItems().empty()) return;
+                    editor_->deleteSelection();
                     return;
                 case MenuItemType::select:
-                    networkEditor_->selectAll();
+                    editor_->selectAll();
                     return;
                 default:
                     return;
             }
-
         }));
 }
 
@@ -166,8 +186,8 @@ void NetworkEditorView::hideNetwork(bool hide) {
             QGraphicsView::setScene(nullptr);
         }
     } else {
-        if (scene() != networkEditor_) {
-            QGraphicsView::setScene(networkEditor_);
+        if (scene() != editor_) {
+            QGraphicsView::setScene(editor_);
             horizontalScrollBar()->setValue(scrollPos_.x);
             verticalScrollBar()->setValue(scrollPos_.y);
         }
@@ -183,13 +203,17 @@ void NetworkEditorView::mouseDoubleClickEvent(QMouseEvent* e) {
     }
 }
 
+TextLabelOverlay& NetworkEditorView::getOverlay() const { return *overlay_; }
+
+NetworkSearch& NetworkEditorView::getNetworkSearch() const { return *search_; }
+
 void NetworkEditorView::resizeEvent(QResizeEvent* e) { QGraphicsView::resizeEvent(e); }
 
 void NetworkEditorView::fitNetwork() {
     const auto network = mainwindow_->getInviwoApplication()->getProcessorNetwork();
     if (network) {
         if (network->getProcessors().size() > 0) {
-            QRectF br = networkEditor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
+            QRectF br = editor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
             QSizeF viewsize = size();
             QSizeF brsize = br.size();
 
@@ -214,7 +238,7 @@ void NetworkEditorView::fitNetwork() {
 }
 
 void NetworkEditorView::onSceneSizeChanged() {
-    auto br = networkEditor_->getProcessorsBoundingRect();
+    auto br = editor_->getProcessorsBoundingRect();
     if (sceneRect().contains(br)) return;
 
     QSizeF viewsize = viewport()->size();
@@ -287,13 +311,12 @@ void NetworkEditorView::exportViewToFile(const QString& filename, bool entireSce
     QRectF rect;
     if (entireScene) {
         rect = scene()->itemsBoundingRect() + QMargins(10, 10, 10, 10);
-
     } else {
         rect = viewport()->rect();
     }
     const QRect destRect(QPoint(0, 0), rect.size().toSize());
 
-    networkEditor_->setBackgroundVisible(backgroundVisible);
+    editor_->setBackgroundVisible(backgroundVisible);
 
     auto renderCall = [&, entireScene](QPainter& painter) {
         if (entireScene) {
@@ -320,7 +343,7 @@ void NetworkEditorView::exportViewToFile(const QString& filename, bool entireSce
         image.save(filename);
     }
 
-    networkEditor_->setBackgroundVisible(true);
+    editor_->setBackgroundVisible(true);
 }
 
 }  // namespace inviwo

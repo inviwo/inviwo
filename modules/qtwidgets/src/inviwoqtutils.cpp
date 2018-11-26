@@ -115,9 +115,13 @@ QColor toQColor(const vec3& v) { return toQColor(ivec3(v * 255.0f)); }
 
 QColor toQColor(const ivec3& v) { return QColor(v.r, v.g, v.b); }
 
+QColor toQColor(const uvec3& v) { return QColor(v.r, v.g, v.b); }
+
 QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
 
 QColor toQColor(const ivec4& v) { return QColor(v.r, v.g, v.b, v.a); }
+
+QColor toQColor(const uvec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 
 QMainWindow* getApplicationMainWindow() {
     auto widgets = QApplication::allWidgets();

@@ -369,6 +369,12 @@ QLabel {
     border: 0px;
 }
 
+QLabel#TextLabelOverlay {
+    color: #c8ccd0;
+    font-weight: 600;
+    font-size: 10pt;
+}
+
 /************************ 
 QGroupBox
 ************************/

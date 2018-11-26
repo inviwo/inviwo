@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CONNECTIONGRAPHICSITEM_H
@@ -55,19 +55,19 @@ class PortInspectionManager;
 
 class IVW_QTEDITOR_API CurveGraphicsItem : public EditorGraphicsItem {
 public:
-    CurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color = uvec3(38, 38, 38));
-    ~CurveGraphicsItem();
+    CurveGraphicsItem(QColor color = QColor(38, 38, 38), QColor borderColor = Qt::black,
+                      QColor selectedBorderColor = Qt::darkRed);
+    virtual ~CurveGraphicsItem();
+
+    virtual QPointF getStartPoint() const = 0;
+    virtual QPointF getEndPoint() const = 0;
 
     virtual QPainterPath shape() const;
-    virtual QPointF getStartPoint() const;
-    virtual QPointF getEndPoint() const;
     virtual QColor getColor() const;
 
     virtual void updateShape();
 
-    void setStartPoint(QPointF startPoint);
-    void setEndPoint(QPointF endPoint);
-    void setColor(QColor color);
+    virtual void setColor(QColor color);
 
     void resetBorderColors();
     void setBorderColor(QColor borderColor);
@@ -80,16 +80,14 @@ public:
     /**
      * Overloaded paint method from QGraphicsItem. Here the actual representation is drawn.
      */
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
     QRectF boundingRect() const;
 
     virtual QPainterPath obtainCurvePath() const;
     virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const;
 
 protected:
-    QPointF startPoint_;
-    QPointF endPoint_;
-
     QColor color_;
     QColor borderColor_;
     QColor selectedBorderColor_;
@@ -101,11 +99,13 @@ protected:
 class IVW_QTEDITOR_API ConnectionDragGraphicsItem : public CurveGraphicsItem {
 public:
     ConnectionDragGraphicsItem(ProcessorOutportGraphicsItem* outport, QPointF endPoint,
-                               uvec3 color = uvec3(38, 38, 38));
-    ~ConnectionDragGraphicsItem();
+                               QColor color = QColor(38, 38, 38));
+    virtual ~ConnectionDragGraphicsItem();
 
     // Override
     virtual QPointF getStartPoint() const override;
+    virtual QPointF getEndPoint() const override;
+    void setEndPoint(QPointF endPoint);
 
     void reactToPortHover(ProcessorInportGraphicsItem* inport);
     ProcessorOutportGraphicsItem* getOutportGraphicsItem() const;
@@ -115,6 +115,7 @@ public:
     virtual int type() const override { return Type; }
 
 protected:
+    QPointF endPoint_;
     ProcessorOutportGraphicsItem* outport_;
 };
 
@@ -122,7 +123,7 @@ protected:
  * Graphical representation of the connection between two ports in the network editor.
  */
 
-class IVW_QTEDITOR_API ConnectionGraphicsItem : public ConnectionDragGraphicsItem {
+class IVW_QTEDITOR_API ConnectionGraphicsItem : public CurveGraphicsItem {
 public:
     /**
      * Construct a new graphical representation between the outport of the outProcessor
@@ -142,23 +143,26 @@ public:
     Inport* getInport() const;
     PortConnection getPortConnection() const;
     ProcessorInportGraphicsItem* getInportGraphicsItem() const;
+    ProcessorOutportGraphicsItem* getOutportGraphicsItem() const;
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ConnectionGraphicsType };
     virtual int type() const override { return Type; }
 
     // Override
+    virtual QPointF getStartPoint() const override;
     virtual QPointF getEndPoint() const override;
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
 
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private:
+    ProcessorOutportGraphicsItem* outport_;
     ProcessorInportGraphicsItem* inport_;
     PortConnection connection_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CONNECTIONGRAPHICSITEM_H

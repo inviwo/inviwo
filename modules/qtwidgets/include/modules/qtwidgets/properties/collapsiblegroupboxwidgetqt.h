@@ -42,6 +42,7 @@ class QPushButton;
 class QLabel;
 class QGridLayout;
 class QCheckBox;
+class QMimeData;
 
 namespace inviwo {
 
@@ -91,6 +92,7 @@ public:
     void toggleCollapsed();
 
     virtual std::unique_ptr<QMenu> getContextMenu() override;
+    std::unique_ptr<QMimeData> getPropertyOwnerMimeData() const;
 
 protected:
     // Overridden from PropertyWidget

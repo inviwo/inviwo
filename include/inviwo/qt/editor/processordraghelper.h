@@ -71,15 +71,17 @@ public:
     void clear(ConnectionGraphicsItem* connection);
     void clear(ProcessorGraphicsItem* processor);
 
-private:
+
     bool enter(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
     bool move(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
     bool leave(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
     bool drop(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
-    
+
+private:
     void updateAutoConnections(QGraphicsSceneDragDropEvent* e);
     void updateAutoLinks(QGraphicsSceneDragDropEvent* e);
 
+    void setText(QGraphicsSceneDragDropEvent* e, const std::string& processor);
 
     static bool canSplitConnection(Processor* p, ConnectionGraphicsItem* connection);
 
