@@ -73,7 +73,8 @@ CameraWidget::CameraWidget()
     , enabled_("enabled", "Enabled", true)
     , invertDirections_("invertDirections", "Invert Directions", false, InvalidationLevel::Valid)
     , useObjectRotAxis_("useObjectRotationAxis", "Use Vertical Object Axis for Rotation", false)
-    , showRollWidget_("showRollWidget", "Show Widget for Camera Roll", true)
+    , showRollWidget_("showRollWidget", "Camera Roll", true)
+    , showDollyWidget_("showDolly", "Camera Dolly", false)
     , speed_("speed", "Speed (deg per pixel)", 0.25f, 0.01f, 5.0f, 0.05f, InvalidationLevel::Valid)
     , angleIncrement_("angleIncrement", "Angle (deg) per Click", 15.0f, 0.05f, 90.0f, 0.5f,
                       InvalidationLevel::Valid)
@@ -81,15 +82,15 @@ CameraWidget::CameraWidget()
                         InvalidationLevel::Valid)
 
     , appearance_("appearance", "Appearance")
-    , scaling_("scaling", "Scaling", 1.0f, 0.01f, 5.0f, 0.01f)
-    , position_("position", "Position", vec2(0.5f, 0.5f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , anchorPos_("Anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
+    , scaling_("scaling", "Scaling", 0.4f, 0.01f, 5.0f, 0.01f)
+    , position_("position", "Position", vec2(0.01f, 0.01f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
+    , anchorPos_("Anchor", "Anchor", vec2(-1.0f, 1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
     , showCube_("showCube", "Show Orientation Cube", true)
     , customColorComposite_("enableCustomColor", "Custom Widget Color", false,
                             InvalidationLevel::InvalidResources)
     , axisColoring_("axisColoring", "RGB Axis Coloring", false, InvalidationLevel::InvalidResources)
     , userColor_("userColor", "User Color", vec4(vec3(0.7f), 1.0f), vec4(0.0f), vec4(1.0f))
-    , cubeColor_("cubeColor", "Cube Color", vec4(0.6f, 0.42f, 0.42f, 1.0f), vec4(0.0f), vec4(1.0f))
+    , cubeColor_("cubeColor", "Cube Color", vec4(0.11f, 0.42f, 0.63f, 1.0f), vec4(0.0f), vec4(1.0f))
 
     , interactions_("interactions", "Interactions")
 
@@ -135,6 +136,7 @@ CameraWidget::CameraWidget()
     settings_.addProperty(invertDirections_);
     settings_.addProperty(useObjectRotAxis_);
     settings_.addProperty(showRollWidget_);
+    settings_.addProperty(showDollyWidget_);
     settings_.addProperty(speed_);
     settings_.addProperty(angleIncrement_);
     settings_.addProperty(minTouchMovement_);
@@ -285,8 +287,10 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
     meshDrawer->draw();
 
     // draw zoom buttons
-    utilgl::setShaderUniforms(shader_, *meshDrawers_[2]->getMesh(), "geometry");
-    meshDrawers_[2]->draw();
+    if (showDollyWidget_.get()) {
+        utilgl::setShaderUniforms(shader_, *meshDrawers_[2]->getMesh(), "geometry");
+        meshDrawers_[2]->draw();
+    }
 
     if (showCube_.get()) {
         // draw cube behind the widget using the view matrix of the output camera
