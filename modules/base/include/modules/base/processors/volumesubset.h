@@ -76,9 +76,9 @@ private:
     BoolProperty enabled_;
     BoolProperty adjustBasisAndOffset_;
 
-    IntMinMaxProperty rangeX_;
-    IntMinMaxProperty rangeY_;
-    IntMinMaxProperty rangeZ_;
+    IntSizeTMinMaxProperty rangeX_;
+    IntSizeTMinMaxProperty rangeY_;
+    IntSizeTMinMaxProperty rangeZ_;
 
     size3_t dims_;
 };

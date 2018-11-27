@@ -59,7 +59,7 @@ TextLabelOverlay::~TextLabelOverlay() = default;
 void TextLabelOverlay::setText(const std::string& text, std::chrono::milliseconds fade) {
     QLabel::setText(utilqt::toQString(text));
     if (fade != std::chrono::milliseconds{0}) {
-        timer_->start(fade.count());
+        timer_->start(static_cast<int>(fade.count()));
     }
     show();
 }

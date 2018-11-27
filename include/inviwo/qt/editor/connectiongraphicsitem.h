@@ -62,7 +62,7 @@ public:
     virtual QPointF getStartPoint() const = 0;
     virtual QPointF getEndPoint() const = 0;
 
-    virtual QPainterPath shape() const;
+    virtual QPainterPath shape() const override;
     virtual QColor getColor() const;
 
     virtual void updateShape();
@@ -75,14 +75,14 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + CurveGraphicsType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
     /**
      * Overloaded paint method from QGraphicsItem. Here the actual representation is drawn.
      */
     virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
-    QRectF boundingRect() const;
+    virtual QRectF boundingRect() const override;
 
     virtual QPainterPath obtainCurvePath() const;
     virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const;

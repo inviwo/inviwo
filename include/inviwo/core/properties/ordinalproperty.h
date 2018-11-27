@@ -53,11 +53,11 @@ public:
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 
-    OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
-    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that) = default;
+    OrdinalProperty(const OrdinalProperty<T>& rhs);
+    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that);
     OrdinalProperty<T>& operator=(const T& value);
     virtual OrdinalProperty<T>* clone() const override;
-    virtual ~OrdinalProperty() = default;
+    virtual ~OrdinalProperty();
 
     virtual std::string getClassIdentifier() const override;
 
@@ -167,6 +167,12 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
 }
 
 template <typename T>
+OrdinalProperty<T>::OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
+
+template <typename T>
+OrdinalProperty<T>& OrdinalProperty<T>::operator=(const OrdinalProperty<T>& that) = default;
+
+template <typename T>
 OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {
     TemplateProperty<T>::operator=(value);
     return *this;
@@ -176,6 +182,9 @@ template <typename T>
 OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
     return new OrdinalProperty<T>(*this);
 }
+
+template <typename T>
+OrdinalProperty<T>::~OrdinalProperty() = default;
 
 template <typename T>
 std::string OrdinalProperty<T>::getClassIdentifier() const {
